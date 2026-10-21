@@ -320,14 +320,14 @@ var File_google_cloud_discoveryengine_v1_safety_proto protoreflect.FileDescripto
 
 const file_google_cloud_discoveryengine_v1_safety_proto_rawDesc = "" +
 	"\n" +
-	",google/cloud/discoveryengine/v1/safety.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\"\x99\x05\n" +
-	"\fSafetyRating\x12N\n" +
-	"\bcategory\x18\x01 \x01(\x0e2-.google.cloud.discoveryengine.v1.HarmCategoryB\x03\xe0A\x03R\bcategory\x12d\n" +
-	"\vprobability\x18\x02 \x01(\x0e2=.google.cloud.discoveryengine.v1.SafetyRating.HarmProbabilityB\x03\xe0A\x03R\vprobability\x120\n" +
-	"\x11probability_score\x18\x05 \x01(\x02B\x03\xe0A\x03R\x10probabilityScore\x12[\n" +
-	"\bseverity\x18\x06 \x01(\x0e2:.google.cloud.discoveryengine.v1.SafetyRating.HarmSeverityB\x03\xe0A\x03R\bseverity\x12*\n" +
-	"\x0eseverity_score\x18\a \x01(\x02B\x03\xe0A\x03R\rseverityScore\x12\x1d\n" +
-	"\ablocked\x18\x03 \x01(\bB\x03\xe0A\x03R\ablocked\"b\n" +
+	",google/cloud/discoveryengine/v1/safety.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\"\x9f\x05\n" +
+	"\fSafetyRating\x12O\n" +
+	"\bcategory\x18\x01 \x01(\x0e2-.google.cloud.discoveryengine.v1.HarmCategoryB\x04\xe2A\x01\x03R\bcategory\x12e\n" +
+	"\vprobability\x18\x02 \x01(\x0e2=.google.cloud.discoveryengine.v1.SafetyRating.HarmProbabilityB\x04\xe2A\x01\x03R\vprobability\x121\n" +
+	"\x11probability_score\x18\x05 \x01(\x02B\x04\xe2A\x01\x03R\x10probabilityScore\x12\\\n" +
+	"\bseverity\x18\x06 \x01(\x0e2:.google.cloud.discoveryengine.v1.SafetyRating.HarmSeverityB\x04\xe2A\x01\x03R\bseverity\x12+\n" +
+	"\x0eseverity_score\x18\a \x01(\x02B\x04\xe2A\x01\x03R\rseverityScore\x12\x1e\n" +
+	"\ablocked\x18\x03 \x01(\bB\x04\xe2A\x01\x03R\ablocked\"b\n" +
 	"\x0fHarmProbability\x12 \n" +
 	"\x1cHARM_PROBABILITY_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +

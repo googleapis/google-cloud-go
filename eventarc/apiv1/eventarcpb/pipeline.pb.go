@@ -1418,84 +1418,84 @@ var File_google_cloud_eventarc_v1_pipeline_proto protoreflect.FileDescriptor
 
 const file_google_cloud_eventarc_v1_pipeline_proto_rawDesc = "" +
 	"\n" +
-	"'google/cloud/eventarc/v1/pipeline.proto\x12\x18google.cloud.eventarc.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/eventarc/v1/logging_config.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb8\x1c\n" +
-	"\bPipeline\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12K\n" +
-	"\x06labels\x18\x04 \x03(\v2..google.cloud.eventarc.v1.Pipeline.LabelsEntryB\x03\xe0A\x01R\x06labels\x12\x1d\n" +
-	"\x03uid\x18\x05 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12Z\n" +
-	"\vannotations\x18\x06 \x03(\v23.google.cloud.eventarc.v1.Pipeline.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12&\n" +
-	"\fdisplay_name\x18\a \x01(\tB\x03\xe0A\x01R\vdisplayName\x12W\n" +
-	"\fdestinations\x18\b \x03(\v2..google.cloud.eventarc.v1.Pipeline.DestinationB\x03\xe0A\x02R\fdestinations\x12Q\n" +
+	"'google/cloud/eventarc/v1/pipeline.proto\x12\x18google.cloud.eventarc.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/eventarc/v1/logging_config.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe1\x1c\n" +
+	"\bPipeline\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12L\n" +
+	"\x06labels\x18\x04 \x03(\v2..google.cloud.eventarc.v1.Pipeline.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12\x1e\n" +
+	"\x03uid\x18\x05 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12[\n" +
+	"\vannotations\x18\x06 \x03(\v23.google.cloud.eventarc.v1.Pipeline.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12'\n" +
+	"\fdisplay_name\x18\a \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12X\n" +
+	"\fdestinations\x18\b \x03(\v2..google.cloud.eventarc.v1.Pipeline.DestinationB\x04\xe2A\x01\x02R\fdestinations\x12R\n" +
 	"\n" +
-	"mediations\x18\t \x03(\v2,.google.cloud.eventarc.v1.Pipeline.MediationB\x03\xe0A\x01R\n" +
-	"mediations\x12Q\n" +
+	"mediations\x18\t \x03(\v2,.google.cloud.eventarc.v1.Pipeline.MediationB\x04\xe2A\x01\x01R\n" +
+	"mediations\x12R\n" +
 	"\x0fcrypto_key_name\x18\n" +
-	" \x01(\tB)\xe0A\x01\xfaA#\n" +
-	"!cloudkms.googleapis.com/CryptoKeyR\rcryptoKeyName\x12n\n" +
-	"\x14input_payload_format\x18\v \x01(\v27.google.cloud.eventarc.v1.Pipeline.MessagePayloadFormatB\x03\xe0A\x01R\x12inputPayloadFormat\x12S\n" +
-	"\x0elogging_config\x18\f \x01(\v2'.google.cloud.eventarc.v1.LoggingConfigB\x03\xe0A\x01R\rloggingConfig\x12V\n" +
-	"\fretry_policy\x18\r \x01(\v2..google.cloud.eventarc.v1.Pipeline.RetryPolicyB\x03\xe0A\x01R\vretryPolicy\x12\x17\n" +
-	"\x04etag\x18c \x01(\tB\x03\xe0A\x03R\x04etag\x12(\n" +
-	"\rsatisfies_pzs\x18\x0e \x01(\bB\x03\xe0A\x03R\fsatisfiesPzs\x1a\xd9\x03\n" +
-	"\x14MessagePayloadFormat\x12i\n" +
-	"\bprotobuf\x18\x01 \x01(\v2F.google.cloud.eventarc.v1.Pipeline.MessagePayloadFormat.ProtobufFormatB\x03\xe0A\x01H\x00R\bprotobuf\x12]\n" +
-	"\x04avro\x18\x02 \x01(\v2B.google.cloud.eventarc.v1.Pipeline.MessagePayloadFormat.AvroFormatB\x03\xe0A\x01H\x00R\x04avro\x12]\n" +
-	"\x04json\x18\x03 \x01(\v2B.google.cloud.eventarc.v1.Pipeline.MessagePayloadFormat.JsonFormatB\x03\xe0A\x01H\x00R\x04json\x1a\f\n" +
+	" \x01(\tB*\xe2A\x01\x01\xfaA#\n" +
+	"!cloudkms.googleapis.com/CryptoKeyR\rcryptoKeyName\x12o\n" +
+	"\x14input_payload_format\x18\v \x01(\v27.google.cloud.eventarc.v1.Pipeline.MessagePayloadFormatB\x04\xe2A\x01\x01R\x12inputPayloadFormat\x12T\n" +
+	"\x0elogging_config\x18\f \x01(\v2'.google.cloud.eventarc.v1.LoggingConfigB\x04\xe2A\x01\x01R\rloggingConfig\x12W\n" +
+	"\fretry_policy\x18\r \x01(\v2..google.cloud.eventarc.v1.Pipeline.RetryPolicyB\x04\xe2A\x01\x01R\vretryPolicy\x12\x18\n" +
+	"\x04etag\x18c \x01(\tB\x04\xe2A\x01\x03R\x04etag\x12)\n" +
+	"\rsatisfies_pzs\x18\x0e \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzs\x1a\xde\x03\n" +
+	"\x14MessagePayloadFormat\x12j\n" +
+	"\bprotobuf\x18\x01 \x01(\v2F.google.cloud.eventarc.v1.Pipeline.MessagePayloadFormat.ProtobufFormatB\x04\xe2A\x01\x01H\x00R\bprotobuf\x12^\n" +
+	"\x04avro\x18\x02 \x01(\v2B.google.cloud.eventarc.v1.Pipeline.MessagePayloadFormat.AvroFormatB\x04\xe2A\x01\x01H\x00R\x04avro\x12^\n" +
+	"\x04json\x18\x03 \x01(\v2B.google.cloud.eventarc.v1.Pipeline.MessagePayloadFormat.JsonFormatB\x04\xe2A\x01\x01H\x00R\x04json\x1a\f\n" +
 	"\n" +
-	"JsonFormat\x1aB\n" +
-	"\x0eProtobufFormat\x120\n" +
-	"\x11schema_definition\x18\x01 \x01(\tB\x03\xe0A\x01R\x10schemaDefinition\x1a>\n" +
+	"JsonFormat\x1aC\n" +
+	"\x0eProtobufFormat\x121\n" +
+	"\x11schema_definition\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x10schemaDefinition\x1a?\n" +
 	"\n" +
-	"AvroFormat\x120\n" +
-	"\x11schema_definition\x18\x01 \x01(\tB\x03\xe0A\x01R\x10schemaDefinitionB\x06\n" +
-	"\x04kind\x1a\xc4\v\n" +
-	"\vDestination\x12h\n" +
-	"\x0enetwork_config\x18\x01 \x01(\v2<.google.cloud.eventarc.v1.Pipeline.Destination.NetworkConfigB\x03\xe0A\x01R\rnetworkConfig\x12g\n" +
-	"\rhttp_endpoint\x18\x02 \x01(\v2;.google.cloud.eventarc.v1.Pipeline.Destination.HttpEndpointB\x03\xe0A\x01H\x00R\fhttpEndpoint\x12G\n" +
-	"\bworkflow\x18\x03 \x01(\tB)\xe0A\x01\xfaA#\n" +
-	"!workflows.googleapis.com/WorkflowH\x00R\bworkflow\x12M\n" +
-	"\vmessage_bus\x18\x04 \x01(\tB*\xe0A\x01\xfaA$\n" +
+	"AvroFormat\x121\n" +
+	"\x11schema_definition\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x10schemaDefinitionB\x06\n" +
+	"\x04kind\x1a\xd4\v\n" +
+	"\vDestination\x12i\n" +
+	"\x0enetwork_config\x18\x01 \x01(\v2<.google.cloud.eventarc.v1.Pipeline.Destination.NetworkConfigB\x04\xe2A\x01\x01R\rnetworkConfig\x12h\n" +
+	"\rhttp_endpoint\x18\x02 \x01(\v2;.google.cloud.eventarc.v1.Pipeline.Destination.HttpEndpointB\x04\xe2A\x01\x01H\x00R\fhttpEndpoint\x12H\n" +
+	"\bworkflow\x18\x03 \x01(\tB*\xe2A\x01\x01\xfaA#\n" +
+	"!workflows.googleapis.com/WorkflowH\x00R\bworkflow\x12N\n" +
+	"\vmessage_bus\x18\x04 \x01(\tB+\xe2A\x01\x01\xfaA$\n" +
 	"\"eventarc.googleapis.com/MessageBusH\x00R\n" +
-	"messageBus\x12;\n" +
-	"\x05topic\x18\b \x01(\tB#\xe0A\x01\xfaA\x1d\n" +
-	"\x1bpubsub.googleapis.com/TopicH\x00R\x05topic\x12}\n" +
-	"\x15authentication_config\x18\x05 \x01(\v2C.google.cloud.eventarc.v1.Pipeline.Destination.AuthenticationConfigB\x03\xe0A\x01R\x14authenticationConfig\x12p\n" +
-	"\x15output_payload_format\x18\x06 \x01(\v27.google.cloud.eventarc.v1.Pipeline.MessagePayloadFormatB\x03\xe0A\x01R\x13outputPayloadFormat\x1ap\n" +
-	"\rNetworkConfig\x12_\n" +
-	"\x12network_attachment\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(compute.googleapis.com/NetworkAttachmentR\x11networkAttachment\x1ad\n" +
-	"\fHttpEndpoint\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x02R\x03uri\x12=\n" +
-	"\x18message_binding_template\x18\x03 \x01(\tB\x03\xe0A\x01R\x16messageBindingTemplate\x1a\xa9\x04\n" +
-	"\x14AuthenticationConfig\x12u\n" +
-	"\vgoogle_oidc\x18\x01 \x01(\v2M.google.cloud.eventarc.v1.Pipeline.Destination.AuthenticationConfig.OidcTokenB\x03\xe0A\x01H\x00R\n" +
-	"googleOidc\x12v\n" +
-	"\voauth_token\x18\x02 \x01(\v2N.google.cloud.eventarc.v1.Pipeline.Destination.AuthenticationConfig.OAuthTokenB\x03\xe0A\x01H\x00R\n" +
-	"oauthToken\x1a\x80\x01\n" +
-	"\tOidcToken\x12R\n" +
-	"\x0fservice_account\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!iam.googleapis.com/ServiceAccountR\x0eserviceAccount\x12\x1f\n" +
-	"\baudience\x18\x02 \x01(\tB\x03\xe0A\x01R\baudience\x1a{\n" +
+	"messageBus\x12<\n" +
+	"\x05topic\x18\b \x01(\tB$\xe2A\x01\x01\xfaA\x1d\n" +
+	"\x1bpubsub.googleapis.com/TopicH\x00R\x05topic\x12~\n" +
+	"\x15authentication_config\x18\x05 \x01(\v2C.google.cloud.eventarc.v1.Pipeline.Destination.AuthenticationConfigB\x04\xe2A\x01\x01R\x14authenticationConfig\x12q\n" +
+	"\x15output_payload_format\x18\x06 \x01(\v27.google.cloud.eventarc.v1.Pipeline.MessagePayloadFormatB\x04\xe2A\x01\x01R\x13outputPayloadFormat\x1aq\n" +
+	"\rNetworkConfig\x12`\n" +
+	"\x12network_attachment\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(compute.googleapis.com/NetworkAttachmentR\x11networkAttachment\x1af\n" +
+	"\fHttpEndpoint\x12\x16\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03uri\x12>\n" +
+	"\x18message_binding_template\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x16messageBindingTemplate\x1a\xaf\x04\n" +
+	"\x14AuthenticationConfig\x12v\n" +
+	"\vgoogle_oidc\x18\x01 \x01(\v2M.google.cloud.eventarc.v1.Pipeline.Destination.AuthenticationConfig.OidcTokenB\x04\xe2A\x01\x01H\x00R\n" +
+	"googleOidc\x12w\n" +
+	"\voauth_token\x18\x02 \x01(\v2N.google.cloud.eventarc.v1.Pipeline.Destination.AuthenticationConfig.OAuthTokenB\x04\xe2A\x01\x01H\x00R\n" +
+	"oauthToken\x1a\x82\x01\n" +
+	"\tOidcToken\x12S\n" +
+	"\x0fservice_account\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!iam.googleapis.com/ServiceAccountR\x0eserviceAccount\x12 \n" +
+	"\baudience\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\baudience\x1a}\n" +
 	"\n" +
-	"OAuthToken\x12R\n" +
-	"\x0fservice_account\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!iam.googleapis.com/ServiceAccountR\x0eserviceAccount\x12\x19\n" +
-	"\x05scope\x18\x02 \x01(\tB\x03\xe0A\x01R\x05scopeB\"\n" +
+	"OAuthToken\x12S\n" +
+	"\x0fservice_account\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!iam.googleapis.com/ServiceAccountR\x0eserviceAccount\x12\x1a\n" +
+	"\x05scope\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x05scopeB\"\n" +
 	" authentication_method_descriptorB\x18\n" +
-	"\x16destination_descriptor\x1a\xdf\x01\n" +
-	"\tMediation\x12j\n" +
-	"\x0etransformation\x18\x01 \x01(\v2;.google.cloud.eventarc.v1.Pipeline.Mediation.TransformationB\x03\xe0A\x01H\x00R\x0etransformation\x1aN\n" +
-	"\x0eTransformation\x12<\n" +
-	"\x17transformation_template\x18\x01 \x01(\tB\x03\xe0A\x01R\x16transformationTemplateB\x16\n" +
-	"\x14mediation_descriptor\x1a\xc5\x01\n" +
-	"\vRetryPolicy\x12&\n" +
-	"\fmax_attempts\x18\x01 \x01(\x05B\x03\xe0A\x01R\vmaxAttempts\x12F\n" +
-	"\x0fmin_retry_delay\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\rminRetryDelay\x12F\n" +
-	"\x0fmax_retry_delay\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\rmaxRetryDelay\x1a9\n" +
+	"\x16destination_descriptor\x1a\xe1\x01\n" +
+	"\tMediation\x12k\n" +
+	"\x0etransformation\x18\x01 \x01(\v2;.google.cloud.eventarc.v1.Pipeline.Mediation.TransformationB\x04\xe2A\x01\x01H\x00R\x0etransformation\x1aO\n" +
+	"\x0eTransformation\x12=\n" +
+	"\x17transformation_template\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x16transformationTemplateB\x16\n" +
+	"\x14mediation_descriptor\x1a\xc8\x01\n" +
+	"\vRetryPolicy\x12'\n" +
+	"\fmax_attempts\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\vmaxAttempts\x12G\n" +
+	"\x0fmin_retry_delay\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\rminRetryDelay\x12G\n" +
+	"\x0fmax_retry_delay\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\rmaxRetryDelay\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a>\n" +

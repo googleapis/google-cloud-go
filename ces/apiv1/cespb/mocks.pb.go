@@ -167,15 +167,15 @@ var File_google_cloud_ces_v1_mocks_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1_mocks_proto_rawDesc = "" +
 	"\n" +
-	"\x1fgoogle/cloud/ces/v1/mocks.proto\x12\x13google.cloud.ces.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a&google/cloud/ces/v1/toolset_tool.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xee\x02\n" +
-	"\x0eMockedToolCall\x12:\n" +
-	"\atool_id\x18\x04 \x01(\tB\x1f\xe0A\x01\xfaA\x19\n" +
-	"\x17ces.googleapis.com/ToolH\x00R\x06toolId\x12A\n" +
-	"\atoolset\x18\x05 \x01(\v2 .google.cloud.ces.v1.ToolsetToolB\x03\xe0A\x01H\x00R\atoolset\x125\n" +
-	"\x04tool\x18\x01 \x01(\tB!\xe0A\x01\xfaA\x19\n" +
-	"\x17ces.googleapis.com/Tool\x18\x01R\x04tool\x12P\n" +
-	"\x15expected_args_pattern\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x02R\x13expectedArgsPattern\x12A\n" +
-	"\rmock_response\x18\x03 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\fmockResponseB\x11\n" +
+	"\x1fgoogle/cloud/ces/v1/mocks.proto\x12\x13google.cloud.ces.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a&google/cloud/ces/v1/toolset_tool.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xf3\x02\n" +
+	"\x0eMockedToolCall\x12;\n" +
+	"\atool_id\x18\x04 \x01(\tB \xe2A\x01\x01\xfaA\x19\n" +
+	"\x17ces.googleapis.com/ToolH\x00R\x06toolId\x12B\n" +
+	"\atoolset\x18\x05 \x01(\v2 .google.cloud.ces.v1.ToolsetToolB\x04\xe2A\x01\x01H\x00R\atoolset\x126\n" +
+	"\x04tool\x18\x01 \x01(\tB\"\xe2A\x01\x01\xfaA\x19\n" +
+	"\x17ces.googleapis.com/Tool\x18\x01R\x04tool\x12Q\n" +
+	"\x15expected_args_pattern\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x02R\x13expectedArgsPattern\x12B\n" +
+	"\rmock_response\x18\x03 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\fmockResponseB\x11\n" +
 	"\x0ftool_identifierBR\n" +
 	"\x17com.google.cloud.ces.v1B\n" +
 	"MocksProtoP\x01Z)cloud.google.com/go/ces/apiv1/cespb;cespbb\x06proto3"

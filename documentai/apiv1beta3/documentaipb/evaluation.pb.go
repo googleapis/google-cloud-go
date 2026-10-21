@@ -732,7 +732,7 @@ const file_google_cloud_documentai_v1beta3_evaluation_proto_rawDesc = "" +
 	"$documentai.googleapis.com/EvaluationR\n" +
 	"evaluation\x12`\n" +
 	"\x11aggregate_metrics\x18\x04 \x01(\v23.google.cloud.documentai.v1beta3.Evaluation.MetricsR\x10aggregateMetrics\x12k\n" +
-	"\x17aggregate_metrics_exact\x18\x05 \x01(\v23.google.cloud.documentai.v1beta3.Evaluation.MetricsR\x15aggregateMetricsExact\"\xe4\x17\n" +
+	"\x17aggregate_metrics_exact\x18\x05 \x01(\v23.google.cloud.documentai.v1beta3.Evaluation.MetricsR\x15aggregateMetricsExact\"\xe8\x17\n" +
 	"\n" +
 	"Evaluation\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12;\n" +
@@ -777,13 +777,13 @@ const file_google_cloud_documentai_v1beta3_evaluation_proto_rawDesc = "" +
 	"\fmetrics_type\x18\a \x01(\x0e2N.google.cloud.documentai.v1beta3.Evaluation.MultiConfidenceMetrics.MetricsTypeR\vmetricsType\":\n" +
 	"\vMetricsType\x12\x1c\n" +
 	"\x18METRICS_TYPE_UNSPECIFIED\x10\x00\x12\r\n" +
-	"\tAGGREGATE\x10\x01\x1a\xa3\x04\n" +
-	"\x12EvaluationRevision\x12$\n" +
-	"\vrevision_id\x18\x01 \x01(\tB\x03\xe0A\x03R\n" +
-	"revisionId\x12f\n" +
-	"\x11document_counters\x18\x02 \x01(\v24.google.cloud.documentai.v1beta3.Evaluation.CountersB\x03\xe0A\x03R\x10documentCounters\x12y\n" +
-	"\x14all_entities_metrics\x18\x03 \x01(\v2B.google.cloud.documentai.v1beta3.Evaluation.MultiConfidenceMetricsB\x03\xe0A\x03R\x12allEntitiesMetrics\x12}\n" +
-	"\x0eentity_metrics\x18\x04 \x03(\v2Q.google.cloud.documentai.v1beta3.Evaluation.EvaluationRevision.EntityMetricsEntryB\x03\xe0A\x03R\rentityMetrics\x1a\x84\x01\n" +
+	"\tAGGREGATE\x10\x01\x1a\xa7\x04\n" +
+	"\x12EvaluationRevision\x12%\n" +
+	"\vrevision_id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"revisionId\x12g\n" +
+	"\x11document_counters\x18\x02 \x01(\v24.google.cloud.documentai.v1beta3.Evaluation.CountersB\x04\xe2A\x01\x03R\x10documentCounters\x12z\n" +
+	"\x14all_entities_metrics\x18\x03 \x01(\v2B.google.cloud.documentai.v1beta3.Evaluation.MultiConfidenceMetricsB\x04\xe2A\x01\x03R\x12allEntitiesMetrics\x12~\n" +
+	"\x0eentity_metrics\x18\x04 \x03(\v2Q.google.cloud.documentai.v1beta3.Evaluation.EvaluationRevision.EntityMetricsEntryB\x04\xe2A\x01\x03R\rentityMetrics\x1a\x84\x01\n" +
 	"\x12EntityMetricsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12X\n" +
 	"\x05value\x18\x02 \x01(\v2B.google.cloud.documentai.v1beta3.Evaluation.MultiConfidenceMetricsR\x05value:\x028\x01\x1a\x84\x01\n" +

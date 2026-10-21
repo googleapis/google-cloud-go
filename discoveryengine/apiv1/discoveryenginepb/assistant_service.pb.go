@@ -751,41 +751,41 @@ var File_google_cloud_discoveryengine_v1_assistant_service_proto protoreflect.Fi
 
 const file_google_cloud_discoveryengine_v1_assistant_service_proto_rawDesc = "" +
 	"\n" +
-	"7google/cloud/discoveryengine/v1/assistant_service.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a3google/cloud/discoveryengine/v1/assist_answer.proto\x1a4google/cloud/discoveryengine/v1/search_service.proto\x1a-google/cloud/discoveryengine/v1/session.proto\"s\n" +
-	"\x12AssistUserMetadata\x12 \n" +
-	"\ttime_zone\x18\x01 \x01(\tB\x03\xe0A\x01R\btimeZone\x12;\n" +
-	"\x17preferred_language_code\x18\x02 \x01(\tB\x03\xe0A\x01R\x15preferredLanguageCode\"\x82\r\n" +
-	"\x13StreamAssistRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(discoveryengine.googleapis.com/AssistantR\x04name\x12A\n" +
-	"\x05query\x18\x02 \x01(\v2&.google.cloud.discoveryengine.v1.QueryB\x03\xe0A\x01R\x05query\x12H\n" +
-	"\asession\x18\x03 \x01(\tB.\xe0A\x01\xfaA(\n" +
-	"&discoveryengine.googleapis.com/SessionR\asession\x12]\n" +
-	"\ruser_metadata\x18\x06 \x01(\v23.google.cloud.discoveryengine.v1.AssistUserMetadataB\x03\xe0A\x01R\fuserMetadata\x12e\n" +
-	"\vagents_spec\x18\x16 \x01(\v2?.google.cloud.discoveryengine.v1.StreamAssistRequest.AgentsSpecB\x03\xe0A\x01R\n" +
-	"agentsSpec\x12b\n" +
+	"7google/cloud/discoveryengine/v1/assistant_service.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a3google/cloud/discoveryengine/v1/assist_answer.proto\x1a4google/cloud/discoveryengine/v1/search_service.proto\x1a-google/cloud/discoveryengine/v1/session.proto\"u\n" +
+	"\x12AssistUserMetadata\x12!\n" +
+	"\ttime_zone\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\btimeZone\x12<\n" +
+	"\x17preferred_language_code\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x15preferredLanguageCode\"\x92\r\n" +
+	"\x13StreamAssistRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(discoveryengine.googleapis.com/AssistantR\x04name\x12B\n" +
+	"\x05query\x18\x02 \x01(\v2&.google.cloud.discoveryengine.v1.QueryB\x04\xe2A\x01\x01R\x05query\x12I\n" +
+	"\asession\x18\x03 \x01(\tB/\xe2A\x01\x01\xfaA(\n" +
+	"&discoveryengine.googleapis.com/SessionR\asession\x12^\n" +
+	"\ruser_metadata\x18\x06 \x01(\v23.google.cloud.discoveryengine.v1.AssistUserMetadataB\x04\xe2A\x01\x01R\fuserMetadata\x12f\n" +
+	"\vagents_spec\x18\x16 \x01(\v2?.google.cloud.discoveryengine.v1.StreamAssistRequest.AgentsSpecB\x04\xe2A\x01\x01R\n" +
+	"agentsSpec\x12c\n" +
 	"\n" +
-	"tools_spec\x18\x12 \x01(\v2>.google.cloud.discoveryengine.v1.StreamAssistRequest.ToolsSpecB\x03\xe0A\x01R\ttoolsSpec\x12q\n" +
-	"\x0fgeneration_spec\x18\x13 \x01(\v2C.google.cloud.discoveryengine.v1.StreamAssistRequest.GenerationSpecB\x03\xe0A\x01R\x0egenerationSpec\x1a\xaa\x01\n" +
+	"tools_spec\x18\x12 \x01(\v2>.google.cloud.discoveryengine.v1.StreamAssistRequest.ToolsSpecB\x04\xe2A\x01\x01R\ttoolsSpec\x12r\n" +
+	"\x0fgeneration_spec\x18\x13 \x01(\v2C.google.cloud.discoveryengine.v1.StreamAssistRequest.GenerationSpecB\x04\xe2A\x01\x01R\x0egenerationSpec\x1a\xac\x01\n" +
 	"\n" +
-	"AgentsSpec\x12o\n" +
-	"\vagent_specs\x18\x01 \x03(\v2I.google.cloud.discoveryengine.v1.StreamAssistRequest.AgentsSpec.AgentSpecB\x03\xe0A\x01R\n" +
-	"agentSpecs\x1a+\n" +
-	"\tAgentSpec\x12\x1e\n" +
-	"\bagent_id\x18\x01 \x01(\tB\x03\xe0A\x02R\aagentId\x1a\x9b\x06\n" +
-	"\tToolsSpec\x12\x89\x01\n" +
-	"\x15vertex_ai_search_spec\x18\x01 \x01(\v2Q.google.cloud.discoveryengine.v1.StreamAssistRequest.ToolsSpec.VertexAiSearchSpecB\x03\xe0A\x01R\x12vertexAiSearchSpec\x12\x82\x01\n" +
-	"\x12web_grounding_spec\x18\x02 \x01(\v2O.google.cloud.discoveryengine.v1.StreamAssistRequest.ToolsSpec.WebGroundingSpecB\x03\xe0A\x01R\x10webGroundingSpec\x12\x8b\x01\n" +
-	"\x15image_generation_spec\x18\x03 \x01(\v2R.google.cloud.discoveryengine.v1.StreamAssistRequest.ToolsSpec.ImageGenerationSpecB\x03\xe0A\x01R\x13imageGenerationSpec\x12\x8b\x01\n" +
-	"\x15video_generation_spec\x18\x04 \x01(\v2R.google.cloud.discoveryengine.v1.StreamAssistRequest.ToolsSpec.VideoGenerationSpecB\x03\xe0A\x01R\x13videoGenerationSpec\x1a\x9e\x01\n" +
-	"\x12VertexAiSearchSpec\x12k\n" +
-	"\x10data_store_specs\x18\x02 \x03(\v2<.google.cloud.discoveryengine.v1.SearchRequest.DataStoreSpecB\x03\xe0A\x01R\x0edataStoreSpecs\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x1a\x12\n" +
+	"AgentsSpec\x12p\n" +
+	"\vagent_specs\x18\x01 \x03(\v2I.google.cloud.discoveryengine.v1.StreamAssistRequest.AgentsSpec.AgentSpecB\x04\xe2A\x01\x01R\n" +
+	"agentSpecs\x1a,\n" +
+	"\tAgentSpec\x12\x1f\n" +
+	"\bagent_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\aagentId\x1a\xa1\x06\n" +
+	"\tToolsSpec\x12\x8a\x01\n" +
+	"\x15vertex_ai_search_spec\x18\x01 \x01(\v2Q.google.cloud.discoveryengine.v1.StreamAssistRequest.ToolsSpec.VertexAiSearchSpecB\x04\xe2A\x01\x01R\x12vertexAiSearchSpec\x12\x83\x01\n" +
+	"\x12web_grounding_spec\x18\x02 \x01(\v2O.google.cloud.discoveryengine.v1.StreamAssistRequest.ToolsSpec.WebGroundingSpecB\x04\xe2A\x01\x01R\x10webGroundingSpec\x12\x8c\x01\n" +
+	"\x15image_generation_spec\x18\x03 \x01(\v2R.google.cloud.discoveryengine.v1.StreamAssistRequest.ToolsSpec.ImageGenerationSpecB\x04\xe2A\x01\x01R\x13imageGenerationSpec\x12\x8c\x01\n" +
+	"\x15video_generation_spec\x18\x04 \x01(\v2R.google.cloud.discoveryengine.v1.StreamAssistRequest.ToolsSpec.VideoGenerationSpecB\x04\xe2A\x01\x01R\x13videoGenerationSpec\x1a\xa0\x01\n" +
+	"\x12VertexAiSearchSpec\x12l\n" +
+	"\x10data_store_specs\x18\x02 \x03(\v2<.google.cloud.discoveryengine.v1.SearchRequest.DataStoreSpecB\x04\xe2A\x01\x01R\x0edataStoreSpecs\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x1a\x12\n" +
 	"\x10WebGroundingSpec\x1a\x15\n" +
 	"\x13ImageGenerationSpec\x1a\x15\n" +
-	"\x13VideoGenerationSpec\x1a0\n" +
-	"\x0eGenerationSpec\x12\x1e\n" +
-	"\bmodel_id\x18\x01 \x01(\tB\x03\xe0A\x01R\amodelId\"\xbc\x02\n" +
+	"\x13VideoGenerationSpec\x1a1\n" +
+	"\x0eGenerationSpec\x12\x1f\n" +
+	"\bmodel_id\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\amodelId\"\xbc\x02\n" +
 	"\x14StreamAssistResponse\x12E\n" +
 	"\x06answer\x18\x01 \x01(\v2-.google.cloud.discoveryengine.v1.AssistAnswerR\x06answer\x12d\n" +
 	"\fsession_info\x18\x02 \x01(\v2A.google.cloud.discoveryengine.v1.StreamAssistResponse.SessionInfoR\vsessionInfo\x12!\n" +

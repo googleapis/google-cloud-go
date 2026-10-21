@@ -229402,21 +229402,20 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\v_access_keyB\x10\n" +
 	"\x0e_access_key_idB\x15\n" +
 	"\x13_access_key_versionB\x10\n" +
-	"\x0e_origin_region\"\xbb\x03\n" +
-	"+AbandonInstancesInstanceGroupManagerRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12\xc8\x01\n" +
-	":instance_group_managers_abandon_instances_request_resource\x18\xf8\xf9\x83\x99\x01 \x01(\v2E.google.cloud.compute.v1.InstanceGroupManagersAbandonInstancesRequestB\x03\xe0A\x02R4instanceGroupManagersAbandonInstancesRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\x0e_origin_region\"\xbf\x03\n" +
+	"+AbandonInstancesInstanceGroupManagerRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12\xc9\x01\n" +
+	":instance_group_managers_abandon_instances_request_resource\x18\xf8\xf9\x83\x99\x01 \x01(\v2E.google.cloud.compute.v1.InstanceGroupManagersAbandonInstancesRequestB\x04\xe2A\x01\x02R4instanceGroupManagersAbandonInstancesRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xda\x03\n" +
-	"1AbandonInstancesRegionInstanceGroupManagerRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12\xdb\x01\n" +
-	"Aregion_instance_group_managers_abandon_instances_request_resource\x18\xa3\xd2\xf7\xe8\x01 \x01(\v2K.google.cloud.compute.v1.RegionInstanceGroupManagersAbandonInstancesRequestB\x03\xe0A\x02R:regionInstanceGroupManagersAbandonInstancesRequestResource\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xde\x03\n" +
+	"1AbandonInstancesRegionInstanceGroupManagerRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12\xdc\x01\n" +
+	"Aregion_instance_group_managers_abandon_instances_request_resource\x18\xa3\xd2\xf7\xe8\x01 \x01(\v2K.google.cloud.compute.v1.RegionInstanceGroupManagersAbandonInstancesRequestB\x04\xe2A\x01\x02R:regionInstanceGroupManagersAbandonInstancesRequestResource\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
 	"\v_request_id\"\xa7\x01\n" +
@@ -229541,205 +229540,199 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\x17_public_ptr_domain_nameB\x12\n" +
 	"\x10_security_policyB\x11\n" +
 	"\x0f_set_public_ptrB\a\n" +
-	"\x05_type\"\xe5\x02\n" +
-	"\x1eAddAccessConfigInstanceRequest\x12d\n" +
-	"\x16access_config_resource\x18\x90\xff\xf6\xb8\x01 \x01(\v2%.google.cloud.compute.v1.AccessConfigB\x03\xe0A\x02R\x14accessConfigResource\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x124\n" +
-	"\x11network_interface\x18\xe8\xc0\x9d\xae\x01 \x01(\tB\x03\xe0A\x02R\x10networkInterface\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\x05_type\"\xea\x02\n" +
+	"\x1eAddAccessConfigInstanceRequest\x12e\n" +
+	"\x16access_config_resource\x18\x90\xff\xf6\xb8\x01 \x01(\v2%.google.cloud.compute.v1.AccessConfigB\x04\xe2A\x01\x02R\x14accessConfigResource\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x125\n" +
+	"\x11network_interface\x18\xe8\xc0\x9d\xae\x01 \x01(\tB\x04\xe2A\x01\x02R\x10networkInterface\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\x86\x03\n" +
-	"#AddAssociationFirewallPolicyRequest\x120\n" +
-	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x03\xe0A\x02R\x0efirewallPolicy\x12\x8b\x01\n" +
-	"$firewall_policy_association_resource\x18\xba\xb8\xe1{ \x01(\v22.google.cloud.compute.v1.FirewallPolicyAssociationB\x03\xe0A\x02R!firewallPolicyAssociationResource\x12H\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\x88\x03\n" +
+	"#AddAssociationFirewallPolicyRequest\x121\n" +
+	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x04\xe2A\x01\x02R\x0efirewallPolicy\x12\x8c\x01\n" +
+	"$firewall_policy_association_resource\x18\xba\xb8\xe1{ \x01(\v22.google.cloud.compute.v1.FirewallPolicyAssociationB\x04\xe2A\x01\x02R!firewallPolicyAssociationResource\x12H\n" +
 	"\x1creplace_existing_association\x18\xf8\xb0\xf5c \x01(\bH\x00R\x1areplaceExistingAssociation\x88\x01\x01\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01B\x1f\n" +
 	"\x1d_replace_existing_associationB\r\n" +
-	"\v_request_id\"\xb9\x03\n" +
-	"*AddAssociationNetworkFirewallPolicyRequest\x120\n" +
-	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x03\xe0A\x02R\x0efirewallPolicy\x12\x8b\x01\n" +
-	"$firewall_policy_association_resource\x18\xba\xb8\xe1{ \x01(\v22.google.cloud.compute.v1.FirewallPolicyAssociationB\x03\xe0A\x02R!firewallPolicyAssociationResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12H\n" +
+	"\v_request_id\"\xbc\x03\n" +
+	"*AddAssociationNetworkFirewallPolicyRequest\x121\n" +
+	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x04\xe2A\x01\x02R\x0efirewallPolicy\x12\x8c\x01\n" +
+	"$firewall_policy_association_resource\x18\xba\xb8\xe1{ \x01(\v22.google.cloud.compute.v1.FirewallPolicyAssociationB\x04\xe2A\x01\x02R!firewallPolicyAssociationResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12H\n" +
 	"\x1creplace_existing_association\x18\xf8\xb0\xf5c \x01(\bH\x00R\x1areplaceExistingAssociation\x88\x01\x01\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01B\x1f\n" +
 	"\x1d_replace_existing_associationB\r\n" +
-	"\v_request_id\"\x91\x03\n" +
+	"\v_request_id\"\x93\x03\n" +
 	"/AddAssociationOrganizationSecurityPolicyRequest\x12H\n" +
 	"\x1creplace_existing_association\x18\xf8\xb0\xf5c \x01(\bH\x00R\x1areplaceExistingAssociation\x88\x01\x01\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12/\n" +
-	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x03\xe0A\x02R\x0esecurityPolicy\x12\x8b\x01\n" +
-	"$security_policy_association_resource\x18\xfa\xec\xcd\x05 \x01(\v22.google.cloud.compute.v1.SecurityPolicyAssociationB\x03\xe0A\x02R!securityPolicyAssociationResourceB\x1f\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x120\n" +
+	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x04\xe2A\x01\x02R\x0esecurityPolicy\x12\x8c\x01\n" +
+	"$security_policy_association_resource\x18\xfa\xec\xcd\x05 \x01(\v22.google.cloud.compute.v1.SecurityPolicyAssociationB\x04\xe2A\x01\x02R!securityPolicyAssociationResourceB\x1f\n" +
 	"\x1d_replace_existing_associationB\r\n" +
-	"\v_request_id\"\xdd\x04\n" +
+	"\v_request_id\"\xe1\x04\n" +
 	"0AddAssociationRegionNetworkFirewallPolicyRequest\x12N\n" +
-	" associated_policy_to_be_replaced\x18\x9c\xba\xefr \x01(\tH\x00R\x1cassociatedPolicyToBeReplaced\x88\x01\x01\x120\n" +
-	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x03\xe0A\x02R\x0efirewallPolicy\x12\x8b\x01\n" +
-	"$firewall_policy_association_resource\x18\xba\xb8\xe1{ \x01(\v22.google.cloud.compute.v1.FirewallPolicyAssociationB\x03\xe0A\x02R!firewallPolicyAssociationResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12H\n" +
+	" associated_policy_to_be_replaced\x18\x9c\xba\xefr \x01(\tH\x00R\x1cassociatedPolicyToBeReplaced\x88\x01\x01\x121\n" +
+	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x04\xe2A\x01\x02R\x0efirewallPolicy\x12\x8c\x01\n" +
+	"$firewall_policy_association_resource\x18\xba\xb8\xe1{ \x01(\v22.google.cloud.compute.v1.FirewallPolicyAssociationB\x04\xe2A\x01\x02R!firewallPolicyAssociationResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12H\n" +
 	"\x1creplace_existing_association\x18\xf8\xb0\xf5c \x01(\bH\x01R\x1areplaceExistingAssociation\x88\x01\x01\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x02R\trequestId\x88\x01\x01B#\n" +
 	"!_associated_policy_to_be_replacedB\x1f\n" +
 	"\x1d_replace_existing_associationB\r\n" +
-	"\v_request_id\"\xfc\x02\n" +
-	"\x1fAddHealthCheckTargetPoolRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\x80\x03\n" +
+	"\x1fAddHealthCheckTargetPoolRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12'\n" +
-	"\vtarget_pool\x18\x8a\xe4\xf8\x1d \x01(\tB\x03\xe0A\x02R\n" +
-	"targetPool\x12\xa4\x01\n" +
-	".target_pools_add_health_check_request_resource\x18\xa4\xbaŀ\x01 \x01(\v29.google.cloud.compute.v1.TargetPoolsAddHealthCheckRequestB\x03\xe0A\x02R(targetPoolsAddHealthCheckRequestResourceB\r\n" +
-	"\v_request_id\"\xef\x02\n" +
-	"\x1cAddInstanceTargetPoolRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12(\n" +
+	"\vtarget_pool\x18\x8a\xe4\xf8\x1d \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"targetPool\x12\xa5\x01\n" +
+	".target_pools_add_health_check_request_resource\x18\xa4\xbaŀ\x01 \x01(\v29.google.cloud.compute.v1.TargetPoolsAddHealthCheckRequestB\x04\xe2A\x01\x02R(targetPoolsAddHealthCheckRequestResourceB\r\n" +
+	"\v_request_id\"\xf3\x02\n" +
+	"\x1cAddInstanceTargetPoolRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12'\n" +
-	"\vtarget_pool\x18\x8a\xe4\xf8\x1d \x01(\tB\x03\xe0A\x02R\n" +
-	"targetPool\x12\x9a\x01\n" +
-	"*target_pools_add_instance_request_resource\x18\xf4ӻ\xcc\x01 \x01(\v26.google.cloud.compute.v1.TargetPoolsAddInstanceRequestB\x03\xe0A\x02R%targetPoolsAddInstanceRequestResourceB\r\n" +
-	"\v_request_id\"\xff\x02\n" +
-	" AddInstancesInstanceGroupRequest\x12-\n" +
-	"\x0einstance_group\x18\xd5\xd4\xd5& \x01(\tB\x03\xe0A\x02R\rinstanceGroup\x12\xa6\x01\n" +
-	".instance_groups_add_instances_request_resource\x18\u07ba\xac\xd8\x01 \x01(\v2:.google.cloud.compute.v1.InstanceGroupsAddInstancesRequestB\x03\xe0A\x02R)instanceGroupsAddInstancesRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xbf\x02\n" +
-	"\"AddNetworkInterfaceInstanceRequest\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x12p\n" +
-	"\x1anetwork_interface_resource\x18\x85\x94\xae\x9b\x01 \x01(\v2).google.cloud.compute.v1.NetworkInterfaceB\x03\xe0A\x02R\x18networkInterfaceResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xd7\x02\n" +
-	"\x18AddNodesNodeGroupRequest\x12&\n" +
-	"\n" +
-	"node_group\x18\x82\xfc\x8b\xe0\x01 \x01(\tB\x03\xe0A\x02R\tnodeGroup\x12\x8d\x01\n" +
-	"&node_groups_add_nodes_request_resource\x18\xb8\xd6\xcb> \x01(\v22.google.cloud.compute.v1.NodeGroupsAddNodesRequestB\x03\xe0A\x02R!nodeGroupsAddNodesRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xb9\x03\n" +
-	"2AddPacketMirroringRuleNetworkFirewallPolicyRequest\x120\n" +
-	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x03\xe0A\x02R\x0efirewallPolicy\x12v\n" +
-	"\x1dfirewall_policy_rule_resource\x18\x83ߺw \x01(\v2+.google.cloud.compute.v1.FirewallPolicyRuleB\x03\xe0A\x02R\x1afirewallPolicyRuleResource\x12*\n" +
-	"\fmax_priority\x18\x9f\xac\x97\x9d\x01 \x01(\x05H\x00R\vmaxPriority\x88\x01\x01\x12)\n" +
-	"\fmin_priority\x18\xf1\x81\xb4\x7f \x01(\x05H\x01R\vminPriority\x88\x01\x01\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x02R\trequestId\x88\x01\x01B\x0f\n" +
-	"\r_max_priorityB\x0f\n" +
-	"\r_min_priorityB\r\n" +
-	"\v_request_id\"\xae\x02\n" +
-	"\x18AddPeeringNetworkRequest\x12 \n" +
-	"\anetwork\x18\xae\xb4\x85o \x01(\tB\x03\xe0A\x02R\anetwork\x12\x8d\x01\n" +
-	"%networks_add_peering_request_resource\x18\xb5\x8d\xb3\xb9\x01 \x01(\v22.google.cloud.compute.v1.NetworksAddPeeringRequestB\x03\xe0A\x02R!networksAddPeeringRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xe4\x02\n" +
-	"\x1eAddResourcePoliciesDiskRequest\x12\x1a\n" +
-	"\x04disk\x18\x9d\x9b\xbc\x01 \x01(\tB\x03\xe0A\x02R\x04disk\x12\xa0\x01\n" +
-	",disks_add_resource_policies_request_resource\x18\xa3\xf8\xde\xec\x01 \x01(\v28.google.cloud.compute.v1.DisksAddResourcePoliciesRequestB\x03\xe0A\x02R'disksAddResourcePoliciesRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xfc\x02\n" +
-	"\"AddResourcePoliciesInstanceRequest\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x12\xac\x01\n" +
-	"0instances_add_resource_policies_request_resource\x18\x9b֫\xe9\x01 \x01(\v2<.google.cloud.compute.v1.InstancesAddResourcePoliciesRequestB\x03\xe0A\x02R+instancesAddResourcePoliciesRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12(\n" +
+	"\vtarget_pool\x18\x8a\xe4\xf8\x1d \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"targetPool\x12\x9b\x01\n" +
+	"*target_pools_add_instance_request_resource\x18\xf4ӻ\xcc\x01 \x01(\v26.google.cloud.compute.v1.TargetPoolsAddInstanceRequestB\x04\xe2A\x01\x02R%targetPoolsAddInstanceRequestResourceB\r\n" +
 	"\v_request_id\"\x83\x03\n" +
-	"$AddResourcePoliciesRegionDiskRequest\x12\x1a\n" +
-	"\x04disk\x18\x9d\x9b\xbc\x01 \x01(\tB\x03\xe0A\x02R\x04disk\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12\xb3\x01\n" +
-	"3region_disks_add_resource_policies_request_resource\x18\x8e\xff\xc1\x87\x01 \x01(\v2>.google.cloud.compute.v1.RegionDisksAddResourcePoliciesRequestB\x03\xe0A\x02R-regionDisksAddResourcePoliciesRequestResource\x12%\n" +
+	" AddInstancesInstanceGroupRequest\x12.\n" +
+	"\x0einstance_group\x18\xd5\xd4\xd5& \x01(\tB\x04\xe2A\x01\x02R\rinstanceGroup\x12\xa7\x01\n" +
+	".instance_groups_add_instances_request_resource\x18\u07ba\xac\xd8\x01 \x01(\v2:.google.cloud.compute.v1.InstanceGroupsAddInstancesRequestB\x04\xe2A\x01\x02R)instanceGroupsAddInstancesRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xfe\x01\n" +
-	"\x1cAddRuleFirewallPolicyRequest\x120\n" +
-	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x03\xe0A\x02R\x0efirewallPolicy\x12v\n" +
-	"\x1dfirewall_policy_rule_resource\x18\x83ߺw \x01(\v2+.google.cloud.compute.v1.FirewallPolicyRuleB\x03\xe0A\x02R\x1afirewallPolicyRuleResource\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xc3\x02\n" +
+	"\"AddNetworkInterfaceInstanceRequest\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x12q\n" +
+	"\x1anetwork_interface_resource\x18\x85\x94\xae\x9b\x01 \x01(\v2).google.cloud.compute.v1.NetworkInterfaceB\x04\xe2A\x01\x02R\x18networkInterfaceResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xaa\x03\n" +
-	"#AddRuleNetworkFirewallPolicyRequest\x120\n" +
-	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x03\xe0A\x02R\x0efirewallPolicy\x12v\n" +
-	"\x1dfirewall_policy_rule_resource\x18\x83ߺw \x01(\v2+.google.cloud.compute.v1.FirewallPolicyRuleB\x03\xe0A\x02R\x1afirewallPolicyRuleResource\x12*\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xdb\x02\n" +
+	"\x18AddNodesNodeGroupRequest\x12'\n" +
+	"\n" +
+	"node_group\x18\x82\xfc\x8b\xe0\x01 \x01(\tB\x04\xe2A\x01\x02R\tnodeGroup\x12\x8e\x01\n" +
+	"&node_groups_add_nodes_request_resource\x18\xb8\xd6\xcb> \x01(\v22.google.cloud.compute.v1.NodeGroupsAddNodesRequestB\x04\xe2A\x01\x02R!nodeGroupsAddNodesRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xbc\x03\n" +
+	"2AddPacketMirroringRuleNetworkFirewallPolicyRequest\x121\n" +
+	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x04\xe2A\x01\x02R\x0efirewallPolicy\x12w\n" +
+	"\x1dfirewall_policy_rule_resource\x18\x83ߺw \x01(\v2+.google.cloud.compute.v1.FirewallPolicyRuleB\x04\xe2A\x01\x02R\x1afirewallPolicyRuleResource\x12*\n" +
 	"\fmax_priority\x18\x9f\xac\x97\x9d\x01 \x01(\x05H\x00R\vmaxPriority\x88\x01\x01\x12)\n" +
-	"\fmin_priority\x18\xf1\x81\xb4\x7f \x01(\x05H\x01R\vminPriority\x88\x01\x01\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\fmin_priority\x18\xf1\x81\xb4\x7f \x01(\x05H\x01R\vminPriority\x88\x01\x01\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x02R\trequestId\x88\x01\x01B\x0f\n" +
 	"\r_max_priorityB\x0f\n" +
 	"\r_min_priorityB\r\n" +
-	"\v_request_id\"\x8a\x02\n" +
+	"\v_request_id\"\xb1\x02\n" +
+	"\x18AddPeeringNetworkRequest\x12!\n" +
+	"\anetwork\x18\xae\xb4\x85o \x01(\tB\x04\xe2A\x01\x02R\anetwork\x12\x8e\x01\n" +
+	"%networks_add_peering_request_resource\x18\xb5\x8d\xb3\xb9\x01 \x01(\v22.google.cloud.compute.v1.NetworksAddPeeringRequestB\x04\xe2A\x01\x02R!networksAddPeeringRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xe8\x02\n" +
+	"\x1eAddResourcePoliciesDiskRequest\x12\x1b\n" +
+	"\x04disk\x18\x9d\x9b\xbc\x01 \x01(\tB\x04\xe2A\x01\x02R\x04disk\x12\xa1\x01\n" +
+	",disks_add_resource_policies_request_resource\x18\xa3\xf8\xde\xec\x01 \x01(\v28.google.cloud.compute.v1.DisksAddResourcePoliciesRequestB\x04\xe2A\x01\x02R'disksAddResourcePoliciesRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\x80\x03\n" +
+	"\"AddResourcePoliciesInstanceRequest\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x12\xad\x01\n" +
+	"0instances_add_resource_policies_request_resource\x18\x9b֫\xe9\x01 \x01(\v2<.google.cloud.compute.v1.InstancesAddResourcePoliciesRequestB\x04\xe2A\x01\x02R+instancesAddResourcePoliciesRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\x87\x03\n" +
+	"$AddResourcePoliciesRegionDiskRequest\x12\x1b\n" +
+	"\x04disk\x18\x9d\x9b\xbc\x01 \x01(\tB\x04\xe2A\x01\x02R\x04disk\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12\xb4\x01\n" +
+	"3region_disks_add_resource_policies_request_resource\x18\x8e\xff\xc1\x87\x01 \x01(\v2>.google.cloud.compute.v1.RegionDisksAddResourcePoliciesRequestB\x04\xe2A\x01\x02R-regionDisksAddResourcePoliciesRequestResource\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\x80\x02\n" +
+	"\x1cAddRuleFirewallPolicyRequest\x121\n" +
+	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x04\xe2A\x01\x02R\x0efirewallPolicy\x12w\n" +
+	"\x1dfirewall_policy_rule_resource\x18\x83ߺw \x01(\v2+.google.cloud.compute.v1.FirewallPolicyRuleB\x04\xe2A\x01\x02R\x1afirewallPolicyRuleResource\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xad\x03\n" +
+	"#AddRuleNetworkFirewallPolicyRequest\x121\n" +
+	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x04\xe2A\x01\x02R\x0efirewallPolicy\x12w\n" +
+	"\x1dfirewall_policy_rule_resource\x18\x83ߺw \x01(\v2+.google.cloud.compute.v1.FirewallPolicyRuleB\x04\xe2A\x01\x02R\x1afirewallPolicyRuleResource\x12*\n" +
+	"\fmax_priority\x18\x9f\xac\x97\x9d\x01 \x01(\x05H\x00R\vmaxPriority\x88\x01\x01\x12)\n" +
+	"\fmin_priority\x18\xf1\x81\xb4\x7f \x01(\x05H\x01R\vminPriority\x88\x01\x01\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x02R\trequestId\x88\x01\x01B\x0f\n" +
+	"\r_max_priorityB\x0f\n" +
+	"\r_min_priorityB\r\n" +
+	"\v_request_id\"\x8c\x02\n" +
 	"(AddRuleOrganizationSecurityPolicyRequest\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12/\n" +
-	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x03\xe0A\x02R\x0esecurityPolicy\x12w\n" +
-	"\x1dsecurity_policy_rule_resource\x18ú\x82\xc0\x01 \x01(\v2+.google.cloud.compute.v1.SecurityPolicyRuleB\x03\xe0A\x02R\x1asecurityPolicyRuleResourceB\r\n" +
-	"\v_request_id\"\xd9\x03\n" +
-	")AddRuleRegionNetworkFirewallPolicyRequest\x120\n" +
-	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x03\xe0A\x02R\x0efirewallPolicy\x12v\n" +
-	"\x1dfirewall_policy_rule_resource\x18\x83ߺw \x01(\v2+.google.cloud.compute.v1.FirewallPolicyRuleB\x03\xe0A\x02R\x1afirewallPolicyRuleResource\x12*\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x120\n" +
+	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x04\xe2A\x01\x02R\x0esecurityPolicy\x12x\n" +
+	"\x1dsecurity_policy_rule_resource\x18ú\x82\xc0\x01 \x01(\v2+.google.cloud.compute.v1.SecurityPolicyRuleB\x04\xe2A\x01\x02R\x1asecurityPolicyRuleResourceB\r\n" +
+	"\v_request_id\"\xdd\x03\n" +
+	")AddRuleRegionNetworkFirewallPolicyRequest\x121\n" +
+	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x04\xe2A\x01\x02R\x0efirewallPolicy\x12w\n" +
+	"\x1dfirewall_policy_rule_resource\x18\x83ߺw \x01(\v2+.google.cloud.compute.v1.FirewallPolicyRuleB\x04\xe2A\x01\x02R\x1afirewallPolicyRuleResource\x12*\n" +
 	"\fmax_priority\x18\x9f\xac\x97\x9d\x01 \x01(\x05H\x00R\vmaxPriority\x88\x01\x01\x12)\n" +
-	"\fmin_priority\x18\xf1\x81\xb4\x7f \x01(\x05H\x01R\vminPriority\x88\x01\x01\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\fmin_priority\x18\xf1\x81\xb4\x7f \x01(\x05H\x01R\vminPriority\x88\x01\x01\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x02R\trequestId\x88\x01\x01B\x0f\n" +
 	"\r_max_priorityB\x0f\n" +
 	"\r_min_priorityB\r\n" +
-	"\v_request_id\"\xe2\x02\n" +
-	"\"AddRuleRegionSecurityPolicyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12/\n" +
-	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x03\xe0A\x02R\x0esecurityPolicy\x12w\n" +
-	"\x1dsecurity_policy_rule_resource\x18ú\x82\xc0\x01 \x01(\v2+.google.cloud.compute.v1.SecurityPolicyRuleB\x03\xe0A\x02R\x1asecurityPolicyRuleResource\x12+\n" +
+	"\v_request_id\"\xe6\x02\n" +
+	"\"AddRuleRegionSecurityPolicyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x120\n" +
+	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x04\xe2A\x01\x02R\x0esecurityPolicy\x12x\n" +
+	"\x1dsecurity_policy_rule_resource\x18ú\x82\xc0\x01 \x01(\v2+.google.cloud.compute.v1.SecurityPolicyRuleB\x04\xe2A\x01\x02R\x1asecurityPolicyRuleResource\x12+\n" +
 	"\rvalidate_only\x18\xb5\xfa\xdfs \x01(\bH\x00R\fvalidateOnly\x88\x01\x01B\x10\n" +
-	"\x0e_validate_only\"\xb3\x02\n" +
-	"\x1cAddRuleSecurityPolicyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12/\n" +
-	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x03\xe0A\x02R\x0esecurityPolicy\x12w\n" +
-	"\x1dsecurity_policy_rule_resource\x18ú\x82\xc0\x01 \x01(\v2+.google.cloud.compute.v1.SecurityPolicyRuleB\x03\xe0A\x02R\x1asecurityPolicyRuleResource\x12+\n" +
+	"\x0e_validate_only\"\xb6\x02\n" +
+	"\x1cAddRuleSecurityPolicyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x120\n" +
+	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x04\xe2A\x01\x02R\x0esecurityPolicy\x12x\n" +
+	"\x1dsecurity_policy_rule_resource\x18ú\x82\xc0\x01 \x01(\v2+.google.cloud.compute.v1.SecurityPolicyRuleB\x04\xe2A\x01\x02R\x1asecurityPolicyRuleResource\x12+\n" +
 	"\rvalidate_only\x18\xb5\xfa\xdfs \x01(\bH\x00R\fvalidateOnly\x88\x01\x01B\x10\n" +
-	"\x0e_validate_only\"\x9d\x02\n" +
-	"#AddSignedUrlKeyBackendBucketRequest\x12-\n" +
-	"\x0ebackend_bucket\x18\xf5\xe3\xdd+ \x01(\tB\x03\xe0A\x02R\rbackendBucket\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\x0e_validate_only\"\xa0\x02\n" +
+	"#AddSignedUrlKeyBackendBucketRequest\x12.\n" +
+	"\x0ebackend_bucket\x18\xf5\xe3\xdd+ \x01(\tB\x04\xe2A\x01\x02R\rbackendBucket\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12e\n" +
-	"\x17signed_url_key_resource\x18\x81\xa3\x9b\xda\x01 \x01(\v2%.google.cloud.compute.v1.SignedUrlKeyB\x03\xe0A\x02R\x14signedUrlKeyResourceB\r\n" +
-	"\v_request_id\"\xa1\x02\n" +
-	"$AddSignedUrlKeyBackendServiceRequest\x120\n" +
-	"\x0fbackend_service\x18\x8a\xc0\xae\x92\x01 \x01(\tB\x03\xe0A\x02R\x0ebackendService\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12f\n" +
+	"\x17signed_url_key_resource\x18\x81\xa3\x9b\xda\x01 \x01(\v2%.google.cloud.compute.v1.SignedUrlKeyB\x04\xe2A\x01\x02R\x14signedUrlKeyResourceB\r\n" +
+	"\v_request_id\"\xa4\x02\n" +
+	"$AddSignedUrlKeyBackendServiceRequest\x121\n" +
+	"\x0fbackend_service\x18\x8a\xc0\xae\x92\x01 \x01(\tB\x04\xe2A\x01\x02R\x0ebackendService\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12e\n" +
-	"\x17signed_url_key_resource\x18\x81\xa3\x9b\xda\x01 \x01(\v2%.google.cloud.compute.v1.SignedUrlKeyB\x03\xe0A\x02R\x14signedUrlKeyResourceB\r\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12f\n" +
+	"\x17signed_url_key_resource\x18\x81\xa3\x9b\xda\x01 \x01(\v2%.google.cloud.compute.v1.SignedUrlKeyB\x04\xe2A\x01\x02R\x14signedUrlKeyResourceB\r\n" +
 	"\v_request_id\"\x88\x0f\n" +
 	"\aAddress\x12!\n" +
 	"\aaddress\x18\xf4\xb7\xde\xdc\x01 \x01(\tH\x00R\aaddress\x88\x01\x01\x12)\n" +
@@ -229867,13 +229860,13 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\taddresses\x18\xa2\xf7\x81\xa1\x01 \x03(\v2 .google.cloud.compute.v1.AddressR\taddresses\x12B\n" +
 	"\awarning\x18\x9cߖ\x18 \x01(\v2 .google.cloud.compute.v1.WarningH\x00R\awarning\x88\x01\x01B\n" +
 	"\n" +
-	"\b_warning\"\xec\x01\n" +
+	"\b_warning\"\xee\x01\n" +
 	"\x15AdvanceRolloutRequest\x126\n" +
-	"\x13current_wave_number\x18\x89\xb3\x81U \x01(\x03H\x00R\x11currentWaveNumber\x88\x01\x01\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\x13current_wave_number\x18\x89\xb3\x81U \x01(\x03H\x00R\x11currentWaveNumber\x88\x01\x01\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12!\n" +
-	"\arollout\x18\xb1\x83Ԑ\x01 \x01(\tB\x03\xe0A\x02R\arolloutB\x16\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12\"\n" +
+	"\arollout\x18\xb1\x83Ԑ\x01 \x01(\tB\x04\xe2A\x01\x02R\arolloutB\x16\n" +
 	"\x14_current_wave_numberB\r\n" +
 	"\v_request_id\"\xc7\x05\n" +
 	"\x17AdvancedMachineFeatures\x12H\n" +
@@ -229895,7 +229888,7 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\x1c_performance_monitoring_unitB\x13\n" +
 	"\x11_threads_per_coreB\r\n" +
 	"\v_turbo_modeB\x15\n" +
-	"\x13_visible_core_count\"\xbc\x03\n" +
+	"\x13_visible_core_count\"\xbd\x03\n" +
 	"%AggregatedListAcceleratorTypesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
 	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
@@ -229903,360 +229896,8 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
-	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
-	"\a_filterB\x15\n" +
-	"\x13_include_all_scopesB\x0e\n" +
-	"\f_max_resultsB\v\n" +
-	"\t_order_byB\r\n" +
-	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xb5\x03\n" +
-	"\x1eAggregatedListAddressesRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
-	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
-	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
-	"maxResults\x88\x01\x01\x12!\n" +
-	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
-	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
-	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
-	"\a_filterB\x15\n" +
-	"\x13_include_all_scopesB\x0e\n" +
-	"\f_max_resultsB\v\n" +
-	"\t_order_byB\r\n" +
-	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xb7\x03\n" +
-	" AggregatedListAutoscalersRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
-	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
-	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
-	"maxResults\x88\x01\x01\x12!\n" +
-	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
-	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
-	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
-	"\a_filterB\x15\n" +
-	"\x13_include_all_scopesB\x0e\n" +
-	"\f_max_resultsB\v\n" +
-	"\t_order_byB\r\n" +
-	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xba\x03\n" +
-	"#AggregatedListBackendBucketsRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
-	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
-	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
-	"maxResults\x88\x01\x01\x12!\n" +
-	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
-	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
-	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
-	"\a_filterB\x15\n" +
-	"\x13_include_all_scopesB\x0e\n" +
-	"\f_max_resultsB\v\n" +
-	"\t_order_byB\r\n" +
-	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xbb\x03\n" +
-	"$AggregatedListBackendServicesRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
-	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
-	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
-	"maxResults\x88\x01\x01\x12!\n" +
-	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
-	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
-	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
-	"\a_filterB\x15\n" +
-	"\x13_include_all_scopesB\x0e\n" +
-	"\f_max_resultsB\v\n" +
-	"\t_order_byB\r\n" +
-	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xb5\x03\n" +
-	"\x1eAggregatedListDiskTypesRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
-	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
-	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
-	"maxResults\x88\x01\x01\x12!\n" +
-	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
-	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
-	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
-	"\a_filterB\x15\n" +
-	"\x13_include_all_scopesB\x0e\n" +
-	"\f_max_resultsB\v\n" +
-	"\t_order_byB\r\n" +
-	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xb1\x03\n" +
-	"\x1aAggregatedListDisksRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
-	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
-	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
-	"maxResults\x88\x01\x01\x12!\n" +
-	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
-	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
-	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
-	"\a_filterB\x15\n" +
-	"\x13_include_all_scopesB\x0e\n" +
-	"\f_max_resultsB\v\n" +
-	"\t_order_byB\r\n" +
-	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xbb\x03\n" +
-	"$AggregatedListForwardingRulesRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
-	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
-	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
-	"maxResults\x88\x01\x01\x12!\n" +
-	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
-	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
-	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
-	"\a_filterB\x15\n" +
-	"\x13_include_all_scopesB\x0e\n" +
-	"\f_max_resultsB\v\n" +
-	"\t_order_byB\r\n" +
-	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xbe\x03\n" +
-	"'AggregatedListFutureReservationsRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
-	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
-	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
-	"maxResults\x88\x01\x01\x12!\n" +
-	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
-	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
-	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
-	"\a_filterB\x15\n" +
-	"\x13_include_all_scopesB\x0e\n" +
-	"\f_max_resultsB\v\n" +
-	"\t_order_byB\r\n" +
-	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xbc\x03\n" +
-	"%AggregatedListGlobalOperationsRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
-	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
-	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
-	"maxResults\x88\x01\x01\x12!\n" +
-	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
-	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
-	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
-	"\a_filterB\x15\n" +
-	"\x13_include_all_scopesB\x0e\n" +
-	"\f_max_resultsB\v\n" +
-	"\t_order_byB\r\n" +
-	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xc5\x03\n" +
-	".AggregatedListGlobalVmExtensionPoliciesRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
-	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
-	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
-	"maxResults\x88\x01\x01\x12!\n" +
-	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
-	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
-	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
-	"\a_filterB\x15\n" +
-	"\x13_include_all_scopesB\x0e\n" +
-	"\f_max_resultsB\v\n" +
-	"\t_order_byB\r\n" +
-	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xb8\x03\n" +
-	"!AggregatedListHealthChecksRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
-	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
-	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
-	"maxResults\x88\x01\x01\x12!\n" +
-	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
-	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
-	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
-	"\a_filterB\x15\n" +
-	"\x13_include_all_scopesB\x0e\n" +
-	"\f_max_resultsB\v\n" +
-	"\t_order_byB\r\n" +
-	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xc1\x03\n" +
-	"*AggregatedListInstanceGroupManagersRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
-	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
-	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
-	"maxResults\x88\x01\x01\x12!\n" +
-	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
-	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
-	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
-	"\a_filterB\x15\n" +
-	"\x13_include_all_scopesB\x0e\n" +
-	"\f_max_resultsB\v\n" +
-	"\t_order_byB\r\n" +
-	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xba\x03\n" +
-	"#AggregatedListInstanceGroupsRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
-	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
-	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
-	"maxResults\x88\x01\x01\x12!\n" +
-	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
-	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
-	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
-	"\a_filterB\x15\n" +
-	"\x13_include_all_scopesB\x0e\n" +
-	"\f_max_resultsB\v\n" +
-	"\t_order_byB\r\n" +
-	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xbd\x03\n" +
-	"&AggregatedListInstanceTemplatesRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
-	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
-	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
-	"maxResults\x88\x01\x01\x12!\n" +
-	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
-	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
-	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
-	"\a_filterB\x15\n" +
-	"\x13_include_all_scopesB\x0e\n" +
-	"\f_max_resultsB\v\n" +
-	"\t_order_byB\r\n" +
-	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xb5\x03\n" +
-	"\x1eAggregatedListInstancesRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
-	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
-	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
-	"maxResults\x88\x01\x01\x12!\n" +
-	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
-	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
-	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
-	"\a_filterB\x15\n" +
-	"\x13_include_all_scopesB\x0e\n" +
-	"\f_max_resultsB\v\n" +
-	"\t_order_byB\r\n" +
-	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xbc\x03\n" +
-	"%AggregatedListInstantSnapshotsRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
-	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
-	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
-	"maxResults\x88\x01\x01\x12!\n" +
-	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
-	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
-	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
-	"\a_filterB\x15\n" +
-	"\x13_include_all_scopesB\x0e\n" +
-	"\f_max_resultsB\v\n" +
-	"\t_order_byB\r\n" +
-	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xc3\x03\n" +
-	",AggregatedListInterconnectAttachmentsRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
-	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
-	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
-	"maxResults\x88\x01\x01\x12!\n" +
-	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
-	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
-	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
-	"\a_filterB\x15\n" +
-	"\x13_include_all_scopesB\x0e\n" +
-	"\f_max_resultsB\v\n" +
-	"\t_order_byB\r\n" +
-	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xb8\x03\n" +
-	"!AggregatedListMachineTypesRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
-	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
-	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
-	"maxResults\x88\x01\x01\x12!\n" +
-	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
-	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
-	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
-	"\a_filterB\x15\n" +
-	"\x13_include_all_scopesB\x0e\n" +
-	"\f_max_resultsB\v\n" +
-	"\t_order_byB\r\n" +
-	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xbe\x03\n" +
-	"'AggregatedListNetworkAttachmentsRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
-	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
-	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
-	"maxResults\x88\x01\x01\x12!\n" +
-	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
-	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
-	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
-	"\a_filterB\x15\n" +
-	"\x13_include_all_scopesB\x0e\n" +
-	"\f_max_resultsB\v\n" +
-	"\t_order_byB\r\n" +
-	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xc7\x03\n" +
-	"0AggregatedListNetworkEdgeSecurityServicesRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
-	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
-	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
-	"maxResults\x88\x01\x01\x12!\n" +
-	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
-	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
-	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
-	"\a_filterB\x15\n" +
-	"\x13_include_all_scopesB\x0e\n" +
-	"\f_max_resultsB\v\n" +
-	"\t_order_byB\r\n" +
-	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xc1\x03\n" +
-	"*AggregatedListNetworkEndpointGroupsRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
-	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
-	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
-	"maxResults\x88\x01\x01\x12!\n" +
-	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
-	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
-	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
-	"\a_filterB\x15\n" +
-	"\x13_include_all_scopesB\x0e\n" +
-	"\f_max_resultsB\v\n" +
-	"\t_order_byB\r\n" +
-	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xc3\x03\n" +
-	",AggregatedListNetworkFirewallPoliciesRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
-	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
-	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
-	"maxResults\x88\x01\x01\x12!\n" +
-	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
-	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
 	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
 	"\a_filterB\x15\n" +
 	"\x13_include_all_scopesB\x0e\n" +
@@ -230264,175 +229905,15 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\t_order_byB\r\n" +
 	"\v_page_tokenB\x19\n" +
 	"\x17_service_project_number\"\xb6\x03\n" +
-	"\x1fAggregatedListNodeGroupsRequest\x12\x1f\n" +
+	"\x1eAggregatedListAddressesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
 	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
-	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
-	"\a_filterB\x15\n" +
-	"\x13_include_all_scopesB\x0e\n" +
-	"\f_max_resultsB\v\n" +
-	"\t_order_byB\r\n" +
-	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xb9\x03\n" +
-	"\"AggregatedListNodeTemplatesRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
-	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
-	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
-	"maxResults\x88\x01\x01\x12!\n" +
-	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
-	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
-	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
-	"\a_filterB\x15\n" +
-	"\x13_include_all_scopesB\x0e\n" +
-	"\f_max_resultsB\v\n" +
-	"\t_order_byB\r\n" +
-	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xb5\x03\n" +
-	"\x1eAggregatedListNodeTypesRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
-	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
-	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
-	"maxResults\x88\x01\x01\x12!\n" +
-	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
-	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
-	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
-	"\a_filterB\x15\n" +
-	"\x13_include_all_scopesB\x0e\n" +
-	"\f_max_resultsB\v\n" +
-	"\t_order_byB\r\n" +
-	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xbc\x03\n" +
-	"%AggregatedListPacketMirroringsRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
-	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
-	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
-	"maxResults\x88\x01\x01\x12!\n" +
-	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
-	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
-	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
-	"\a_filterB\x15\n" +
-	"\x13_include_all_scopesB\x0e\n" +
-	"\f_max_resultsB\v\n" +
-	"\t_order_byB\r\n" +
-	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xc3\x03\n" +
-	",AggregatedListPublicDelegatedPrefixesRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
-	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
-	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
-	"maxResults\x88\x01\x01\x12!\n" +
-	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
-	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
-	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
-	"\a_filterB\x15\n" +
-	"\x13_include_all_scopesB\x0e\n" +
-	"\f_max_resultsB\v\n" +
-	"\t_order_byB\r\n" +
-	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xbd\x03\n" +
-	"&AggregatedListRegionCommitmentsRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
-	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
-	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
-	"maxResults\x88\x01\x01\x12!\n" +
-	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
-	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
-	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
-	"\a_filterB\x15\n" +
-	"\x13_include_all_scopesB\x0e\n" +
-	"\f_max_resultsB\v\n" +
-	"\t_order_byB\r\n" +
-	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xc7\x03\n" +
-	"0AggregatedListRegionCompositeHealthChecksRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
-	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
-	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
-	"maxResults\x88\x01\x01\x12!\n" +
-	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
-	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
-	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
-	"\a_filterB\x15\n" +
-	"\x13_include_all_scopesB\x0e\n" +
-	"\f_max_resultsB\v\n" +
-	"\t_order_byB\r\n" +
-	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xcb\x03\n" +
-	"4AggregatedListRegionHealthAggregationPoliciesRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
-	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
-	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
-	"maxResults\x88\x01\x01\x12!\n" +
-	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
-	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
-	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
-	"\a_filterB\x15\n" +
-	"\x13_include_all_scopesB\x0e\n" +
-	"\f_max_resultsB\v\n" +
-	"\t_order_byB\r\n" +
-	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xc5\x03\n" +
-	".AggregatedListRegionHealthCheckServicesRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
-	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
-	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
-	"maxResults\x88\x01\x01\x12!\n" +
-	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
-	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
-	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
-	"\a_filterB\x15\n" +
-	"\x13_include_all_scopesB\x0e\n" +
-	"\f_max_resultsB\v\n" +
-	"\t_order_byB\r\n" +
-	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xbf\x03\n" +
-	"(AggregatedListRegionHealthSourcesRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
-	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
-	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
-	"maxResults\x88\x01\x01\x12!\n" +
-	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
-	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
-	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
-	"\a_filterB\x15\n" +
-	"\x13_include_all_scopesB\x0e\n" +
-	"\f_max_resultsB\v\n" +
-	"\t_order_byB\r\n" +
-	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xc7\x03\n" +
-	"0AggregatedListRegionNotificationEndpointsRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
-	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
-	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
-	"maxResults\x88\x01\x01\x12!\n" +
-	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
-	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
 	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
 	"\a_filterB\x15\n" +
 	"\x13_include_all_scopesB\x0e\n" +
@@ -230440,79 +229921,15 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\t_order_byB\r\n" +
 	"\v_page_tokenB\x19\n" +
 	"\x17_service_project_number\"\xb8\x03\n" +
-	"!AggregatedListReservationsRequest\x12\x1f\n" +
+	" AggregatedListAutoscalersRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
 	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
-	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
-	"\a_filterB\x15\n" +
-	"\x13_include_all_scopesB\x0e\n" +
-	"\f_max_resultsB\v\n" +
-	"\t_order_byB\r\n" +
-	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xbc\x03\n" +
-	"%AggregatedListResourcePoliciesRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
-	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
-	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
-	"maxResults\x88\x01\x01\x12!\n" +
-	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
-	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
-	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
-	"\a_filterB\x15\n" +
-	"\x13_include_all_scopesB\x0e\n" +
-	"\f_max_resultsB\v\n" +
-	"\t_order_byB\r\n" +
-	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xb3\x03\n" +
-	"\x1cAggregatedListRoutersRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
-	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
-	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
-	"maxResults\x88\x01\x01\x12!\n" +
-	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
-	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
-	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
-	"\a_filterB\x15\n" +
-	"\x13_include_all_scopesB\x0e\n" +
-	"\f_max_resultsB\v\n" +
-	"\t_order_byB\r\n" +
-	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xbc\x03\n" +
-	"%AggregatedListSecurityPoliciesRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
-	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
-	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
-	"maxResults\x88\x01\x01\x12!\n" +
-	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
-	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
-	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
-	"\a_filterB\x15\n" +
-	"\x13_include_all_scopesB\x0e\n" +
-	"\f_max_resultsB\v\n" +
-	"\t_order_byB\r\n" +
-	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xbe\x03\n" +
-	"'AggregatedListServiceAttachmentsRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
-	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
-	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
-	"maxResults\x88\x01\x01\x12!\n" +
-	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
-	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
 	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
 	"\a_filterB\x15\n" +
 	"\x13_include_all_scopesB\x0e\n" +
@@ -230520,31 +229937,15 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\t_order_byB\r\n" +
 	"\v_page_tokenB\x19\n" +
 	"\x17_service_project_number\"\xbb\x03\n" +
-	"$AggregatedListSslCertificatesRequest\x12\x1f\n" +
+	"#AggregatedListBackendBucketsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
 	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
-	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
-	"\a_filterB\x15\n" +
-	"\x13_include_all_scopesB\x0e\n" +
-	"\f_max_resultsB\v\n" +
-	"\t_order_byB\r\n" +
-	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xb7\x03\n" +
-	" AggregatedListSslPoliciesRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
-	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
-	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
-	"maxResults\x88\x01\x01\x12!\n" +
-	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
-	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
 	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
 	"\a_filterB\x15\n" +
 	"\x13_include_all_scopesB\x0e\n" +
@@ -230552,15 +229953,575 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\t_order_byB\r\n" +
 	"\v_page_tokenB\x19\n" +
 	"\x17_service_project_number\"\xbc\x03\n" +
-	"%AggregatedListStoragePoolTypesRequest\x12\x1f\n" +
+	"$AggregatedListBackendServicesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
 	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
+	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
+	"\a_filterB\x15\n" +
+	"\x13_include_all_scopesB\x0e\n" +
+	"\f_max_resultsB\v\n" +
+	"\t_order_byB\r\n" +
+	"\v_page_tokenB\x19\n" +
+	"\x17_service_project_number\"\xb6\x03\n" +
+	"\x1eAggregatedListDiskTypesRequest\x12\x1f\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
+	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
+	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
+	"maxResults\x88\x01\x01\x12!\n" +
+	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
+	"\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
+	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
+	"\a_filterB\x15\n" +
+	"\x13_include_all_scopesB\x0e\n" +
+	"\f_max_resultsB\v\n" +
+	"\t_order_byB\r\n" +
+	"\v_page_tokenB\x19\n" +
+	"\x17_service_project_number\"\xb2\x03\n" +
+	"\x1aAggregatedListDisksRequest\x12\x1f\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
+	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
+	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
+	"maxResults\x88\x01\x01\x12!\n" +
+	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
+	"\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
+	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
+	"\a_filterB\x15\n" +
+	"\x13_include_all_scopesB\x0e\n" +
+	"\f_max_resultsB\v\n" +
+	"\t_order_byB\r\n" +
+	"\v_page_tokenB\x19\n" +
+	"\x17_service_project_number\"\xbc\x03\n" +
+	"$AggregatedListForwardingRulesRequest\x12\x1f\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
+	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
+	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
+	"maxResults\x88\x01\x01\x12!\n" +
+	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
+	"\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
+	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
+	"\a_filterB\x15\n" +
+	"\x13_include_all_scopesB\x0e\n" +
+	"\f_max_resultsB\v\n" +
+	"\t_order_byB\r\n" +
+	"\v_page_tokenB\x19\n" +
+	"\x17_service_project_number\"\xbf\x03\n" +
+	"'AggregatedListFutureReservationsRequest\x12\x1f\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
+	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
+	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
+	"maxResults\x88\x01\x01\x12!\n" +
+	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
+	"\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
+	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
+	"\a_filterB\x15\n" +
+	"\x13_include_all_scopesB\x0e\n" +
+	"\f_max_resultsB\v\n" +
+	"\t_order_byB\r\n" +
+	"\v_page_tokenB\x19\n" +
+	"\x17_service_project_number\"\xbd\x03\n" +
+	"%AggregatedListGlobalOperationsRequest\x12\x1f\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
+	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
+	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
+	"maxResults\x88\x01\x01\x12!\n" +
+	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
+	"\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
+	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
+	"\a_filterB\x15\n" +
+	"\x13_include_all_scopesB\x0e\n" +
+	"\f_max_resultsB\v\n" +
+	"\t_order_byB\r\n" +
+	"\v_page_tokenB\x19\n" +
+	"\x17_service_project_number\"\xc6\x03\n" +
+	".AggregatedListGlobalVmExtensionPoliciesRequest\x12\x1f\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
+	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
+	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
+	"maxResults\x88\x01\x01\x12!\n" +
+	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
+	"\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
+	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
+	"\a_filterB\x15\n" +
+	"\x13_include_all_scopesB\x0e\n" +
+	"\f_max_resultsB\v\n" +
+	"\t_order_byB\r\n" +
+	"\v_page_tokenB\x19\n" +
+	"\x17_service_project_number\"\xb9\x03\n" +
+	"!AggregatedListHealthChecksRequest\x12\x1f\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
+	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
+	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
+	"maxResults\x88\x01\x01\x12!\n" +
+	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
+	"\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
+	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
+	"\a_filterB\x15\n" +
+	"\x13_include_all_scopesB\x0e\n" +
+	"\f_max_resultsB\v\n" +
+	"\t_order_byB\r\n" +
+	"\v_page_tokenB\x19\n" +
+	"\x17_service_project_number\"\xc2\x03\n" +
+	"*AggregatedListInstanceGroupManagersRequest\x12\x1f\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
+	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
+	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
+	"maxResults\x88\x01\x01\x12!\n" +
+	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
+	"\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
+	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
+	"\a_filterB\x15\n" +
+	"\x13_include_all_scopesB\x0e\n" +
+	"\f_max_resultsB\v\n" +
+	"\t_order_byB\r\n" +
+	"\v_page_tokenB\x19\n" +
+	"\x17_service_project_number\"\xbb\x03\n" +
+	"#AggregatedListInstanceGroupsRequest\x12\x1f\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
+	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
+	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
+	"maxResults\x88\x01\x01\x12!\n" +
+	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
+	"\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
+	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
+	"\a_filterB\x15\n" +
+	"\x13_include_all_scopesB\x0e\n" +
+	"\f_max_resultsB\v\n" +
+	"\t_order_byB\r\n" +
+	"\v_page_tokenB\x19\n" +
+	"\x17_service_project_number\"\xbe\x03\n" +
+	"&AggregatedListInstanceTemplatesRequest\x12\x1f\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
+	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
+	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
+	"maxResults\x88\x01\x01\x12!\n" +
+	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
+	"\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
+	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
+	"\a_filterB\x15\n" +
+	"\x13_include_all_scopesB\x0e\n" +
+	"\f_max_resultsB\v\n" +
+	"\t_order_byB\r\n" +
+	"\v_page_tokenB\x19\n" +
+	"\x17_service_project_number\"\xb6\x03\n" +
+	"\x1eAggregatedListInstancesRequest\x12\x1f\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
+	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
+	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
+	"maxResults\x88\x01\x01\x12!\n" +
+	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
+	"\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
+	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
+	"\a_filterB\x15\n" +
+	"\x13_include_all_scopesB\x0e\n" +
+	"\f_max_resultsB\v\n" +
+	"\t_order_byB\r\n" +
+	"\v_page_tokenB\x19\n" +
+	"\x17_service_project_number\"\xbd\x03\n" +
+	"%AggregatedListInstantSnapshotsRequest\x12\x1f\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
+	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
+	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
+	"maxResults\x88\x01\x01\x12!\n" +
+	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
+	"\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
+	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
+	"\a_filterB\x15\n" +
+	"\x13_include_all_scopesB\x0e\n" +
+	"\f_max_resultsB\v\n" +
+	"\t_order_byB\r\n" +
+	"\v_page_tokenB\x19\n" +
+	"\x17_service_project_number\"\xc4\x03\n" +
+	",AggregatedListInterconnectAttachmentsRequest\x12\x1f\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
+	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
+	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
+	"maxResults\x88\x01\x01\x12!\n" +
+	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
+	"\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
+	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
+	"\a_filterB\x15\n" +
+	"\x13_include_all_scopesB\x0e\n" +
+	"\f_max_resultsB\v\n" +
+	"\t_order_byB\r\n" +
+	"\v_page_tokenB\x19\n" +
+	"\x17_service_project_number\"\xb9\x03\n" +
+	"!AggregatedListMachineTypesRequest\x12\x1f\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
+	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
+	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
+	"maxResults\x88\x01\x01\x12!\n" +
+	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
+	"\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
+	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
+	"\a_filterB\x15\n" +
+	"\x13_include_all_scopesB\x0e\n" +
+	"\f_max_resultsB\v\n" +
+	"\t_order_byB\r\n" +
+	"\v_page_tokenB\x19\n" +
+	"\x17_service_project_number\"\xbf\x03\n" +
+	"'AggregatedListNetworkAttachmentsRequest\x12\x1f\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
+	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
+	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
+	"maxResults\x88\x01\x01\x12!\n" +
+	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
+	"\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
+	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
+	"\a_filterB\x15\n" +
+	"\x13_include_all_scopesB\x0e\n" +
+	"\f_max_resultsB\v\n" +
+	"\t_order_byB\r\n" +
+	"\v_page_tokenB\x19\n" +
+	"\x17_service_project_number\"\xc8\x03\n" +
+	"0AggregatedListNetworkEdgeSecurityServicesRequest\x12\x1f\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
+	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
+	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
+	"maxResults\x88\x01\x01\x12!\n" +
+	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
+	"\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
+	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
+	"\a_filterB\x15\n" +
+	"\x13_include_all_scopesB\x0e\n" +
+	"\f_max_resultsB\v\n" +
+	"\t_order_byB\r\n" +
+	"\v_page_tokenB\x19\n" +
+	"\x17_service_project_number\"\xc2\x03\n" +
+	"*AggregatedListNetworkEndpointGroupsRequest\x12\x1f\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
+	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
+	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
+	"maxResults\x88\x01\x01\x12!\n" +
+	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
+	"\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
+	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
+	"\a_filterB\x15\n" +
+	"\x13_include_all_scopesB\x0e\n" +
+	"\f_max_resultsB\v\n" +
+	"\t_order_byB\r\n" +
+	"\v_page_tokenB\x19\n" +
+	"\x17_service_project_number\"\xc4\x03\n" +
+	",AggregatedListNetworkFirewallPoliciesRequest\x12\x1f\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
+	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
+	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
+	"maxResults\x88\x01\x01\x12!\n" +
+	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
+	"\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
+	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
+	"\a_filterB\x15\n" +
+	"\x13_include_all_scopesB\x0e\n" +
+	"\f_max_resultsB\v\n" +
+	"\t_order_byB\r\n" +
+	"\v_page_tokenB\x19\n" +
+	"\x17_service_project_number\"\xb7\x03\n" +
+	"\x1fAggregatedListNodeGroupsRequest\x12\x1f\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
+	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
+	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
+	"maxResults\x88\x01\x01\x12!\n" +
+	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
+	"\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
+	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
+	"\a_filterB\x15\n" +
+	"\x13_include_all_scopesB\x0e\n" +
+	"\f_max_resultsB\v\n" +
+	"\t_order_byB\r\n" +
+	"\v_page_tokenB\x19\n" +
+	"\x17_service_project_number\"\xba\x03\n" +
+	"\"AggregatedListNodeTemplatesRequest\x12\x1f\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
+	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
+	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
+	"maxResults\x88\x01\x01\x12!\n" +
+	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
+	"\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
+	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
+	"\a_filterB\x15\n" +
+	"\x13_include_all_scopesB\x0e\n" +
+	"\f_max_resultsB\v\n" +
+	"\t_order_byB\r\n" +
+	"\v_page_tokenB\x19\n" +
+	"\x17_service_project_number\"\xb6\x03\n" +
+	"\x1eAggregatedListNodeTypesRequest\x12\x1f\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
+	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
+	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
+	"maxResults\x88\x01\x01\x12!\n" +
+	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
+	"\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
+	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
+	"\a_filterB\x15\n" +
+	"\x13_include_all_scopesB\x0e\n" +
+	"\f_max_resultsB\v\n" +
+	"\t_order_byB\r\n" +
+	"\v_page_tokenB\x19\n" +
+	"\x17_service_project_number\"\xbd\x03\n" +
+	"%AggregatedListPacketMirroringsRequest\x12\x1f\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
+	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
+	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
+	"maxResults\x88\x01\x01\x12!\n" +
+	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
+	"\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
+	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
+	"\a_filterB\x15\n" +
+	"\x13_include_all_scopesB\x0e\n" +
+	"\f_max_resultsB\v\n" +
+	"\t_order_byB\r\n" +
+	"\v_page_tokenB\x19\n" +
+	"\x17_service_project_number\"\xc4\x03\n" +
+	",AggregatedListPublicDelegatedPrefixesRequest\x12\x1f\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
+	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
+	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
+	"maxResults\x88\x01\x01\x12!\n" +
+	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
+	"\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
+	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
+	"\a_filterB\x15\n" +
+	"\x13_include_all_scopesB\x0e\n" +
+	"\f_max_resultsB\v\n" +
+	"\t_order_byB\r\n" +
+	"\v_page_tokenB\x19\n" +
+	"\x17_service_project_number\"\xbe\x03\n" +
+	"&AggregatedListRegionCommitmentsRequest\x12\x1f\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
+	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
+	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
+	"maxResults\x88\x01\x01\x12!\n" +
+	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
+	"\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
+	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
+	"\a_filterB\x15\n" +
+	"\x13_include_all_scopesB\x0e\n" +
+	"\f_max_resultsB\v\n" +
+	"\t_order_byB\r\n" +
+	"\v_page_tokenB\x19\n" +
+	"\x17_service_project_number\"\xc8\x03\n" +
+	"0AggregatedListRegionCompositeHealthChecksRequest\x12\x1f\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
+	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
+	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
+	"maxResults\x88\x01\x01\x12!\n" +
+	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
+	"\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
+	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
+	"\a_filterB\x15\n" +
+	"\x13_include_all_scopesB\x0e\n" +
+	"\f_max_resultsB\v\n" +
+	"\t_order_byB\r\n" +
+	"\v_page_tokenB\x19\n" +
+	"\x17_service_project_number\"\xcc\x03\n" +
+	"4AggregatedListRegionHealthAggregationPoliciesRequest\x12\x1f\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
+	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
+	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
+	"maxResults\x88\x01\x01\x12!\n" +
+	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
+	"\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
+	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
+	"\a_filterB\x15\n" +
+	"\x13_include_all_scopesB\x0e\n" +
+	"\f_max_resultsB\v\n" +
+	"\t_order_byB\r\n" +
+	"\v_page_tokenB\x19\n" +
+	"\x17_service_project_number\"\xc6\x03\n" +
+	".AggregatedListRegionHealthCheckServicesRequest\x12\x1f\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
+	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
+	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
+	"maxResults\x88\x01\x01\x12!\n" +
+	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
+	"\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
+	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
+	"\a_filterB\x15\n" +
+	"\x13_include_all_scopesB\x0e\n" +
+	"\f_max_resultsB\v\n" +
+	"\t_order_byB\r\n" +
+	"\v_page_tokenB\x19\n" +
+	"\x17_service_project_number\"\xc0\x03\n" +
+	"(AggregatedListRegionHealthSourcesRequest\x12\x1f\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
+	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
+	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
+	"maxResults\x88\x01\x01\x12!\n" +
+	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
+	"\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
+	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
+	"\a_filterB\x15\n" +
+	"\x13_include_all_scopesB\x0e\n" +
+	"\f_max_resultsB\v\n" +
+	"\t_order_byB\r\n" +
+	"\v_page_tokenB\x19\n" +
+	"\x17_service_project_number\"\xc8\x03\n" +
+	"0AggregatedListRegionNotificationEndpointsRequest\x12\x1f\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
+	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
+	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
+	"maxResults\x88\x01\x01\x12!\n" +
+	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
+	"\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
+	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
+	"\a_filterB\x15\n" +
+	"\x13_include_all_scopesB\x0e\n" +
+	"\f_max_resultsB\v\n" +
+	"\t_order_byB\r\n" +
+	"\v_page_tokenB\x19\n" +
+	"\x17_service_project_number\"\xb9\x03\n" +
+	"!AggregatedListReservationsRequest\x12\x1f\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
+	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
+	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
+	"maxResults\x88\x01\x01\x12!\n" +
+	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
+	"\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
+	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
+	"\a_filterB\x15\n" +
+	"\x13_include_all_scopesB\x0e\n" +
+	"\f_max_resultsB\v\n" +
+	"\t_order_byB\r\n" +
+	"\v_page_tokenB\x19\n" +
+	"\x17_service_project_number\"\xbd\x03\n" +
+	"%AggregatedListResourcePoliciesRequest\x12\x1f\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
+	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
+	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
+	"maxResults\x88\x01\x01\x12!\n" +
+	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
+	"\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
+	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
+	"\a_filterB\x15\n" +
+	"\x13_include_all_scopesB\x0e\n" +
+	"\f_max_resultsB\v\n" +
+	"\t_order_byB\r\n" +
+	"\v_page_tokenB\x19\n" +
+	"\x17_service_project_number\"\xb4\x03\n" +
+	"\x1cAggregatedListRoutersRequest\x12\x1f\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
+	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
+	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
+	"maxResults\x88\x01\x01\x12!\n" +
+	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
+	"\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
+	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
+	"\a_filterB\x15\n" +
+	"\x13_include_all_scopesB\x0e\n" +
+	"\f_max_resultsB\v\n" +
+	"\t_order_byB\r\n" +
+	"\v_page_tokenB\x19\n" +
+	"\x17_service_project_number\"\xbd\x03\n" +
+	"%AggregatedListSecurityPoliciesRequest\x12\x1f\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
+	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
+	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
+	"maxResults\x88\x01\x01\x12!\n" +
+	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
+	"\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
+	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
+	"\a_filterB\x15\n" +
+	"\x13_include_all_scopesB\x0e\n" +
+	"\f_max_resultsB\v\n" +
+	"\t_order_byB\r\n" +
+	"\v_page_tokenB\x19\n" +
+	"\x17_service_project_number\"\xbf\x03\n" +
+	"'AggregatedListServiceAttachmentsRequest\x12\x1f\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
+	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
+	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
+	"maxResults\x88\x01\x01\x12!\n" +
+	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
+	"\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
+	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
+	"\a_filterB\x15\n" +
+	"\x13_include_all_scopesB\x0e\n" +
+	"\f_max_resultsB\v\n" +
+	"\t_order_byB\r\n" +
+	"\v_page_tokenB\x19\n" +
+	"\x17_service_project_number\"\xbc\x03\n" +
+	"$AggregatedListSslCertificatesRequest\x12\x1f\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
+	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
+	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
+	"maxResults\x88\x01\x01\x12!\n" +
+	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
+	"\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
 	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
 	"\a_filterB\x15\n" +
 	"\x13_include_all_scopesB\x0e\n" +
@@ -230568,6 +230529,38 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\t_order_byB\r\n" +
 	"\v_page_tokenB\x19\n" +
 	"\x17_service_project_number\"\xb8\x03\n" +
+	" AggregatedListSslPoliciesRequest\x12\x1f\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
+	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
+	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
+	"maxResults\x88\x01\x01\x12!\n" +
+	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
+	"\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
+	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
+	"\a_filterB\x15\n" +
+	"\x13_include_all_scopesB\x0e\n" +
+	"\f_max_resultsB\v\n" +
+	"\t_order_byB\r\n" +
+	"\v_page_tokenB\x19\n" +
+	"\x17_service_project_number\"\xbd\x03\n" +
+	"%AggregatedListStoragePoolTypesRequest\x12\x1f\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
+	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
+	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
+	"maxResults\x88\x01\x01\x12!\n" +
+	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
+	"\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
+	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
+	"\a_filterB\x15\n" +
+	"\x13_include_all_scopesB\x0e\n" +
+	"\f_max_resultsB\v\n" +
+	"\t_order_byB\r\n" +
+	"\v_page_tokenB\x19\n" +
+	"\x17_service_project_number\"\xb9\x03\n" +
 	"!AggregatedListStoragePoolsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
 	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
@@ -230575,15 +230568,15 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
 	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
 	"\a_filterB\x15\n" +
 	"\x13_include_all_scopesB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
 	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xa7\x04\n" +
+	"\x17_service_project_number\"\xa8\x04\n" +
 	" AggregatedListSubnetworksRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
 	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
@@ -230591,8 +230584,8 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
 	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01\x12\x1c\n" +
 	"\x05views\x18\xee\xb4\xc05 \x01(\tH\x06R\x05views\x88\x01\x01\"F\n" +
 	"\x05Views\x12\x13\n" +
@@ -230605,7 +230598,7 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\t_order_byB\r\n" +
 	"\v_page_tokenB\x19\n" +
 	"\x17_service_project_numberB\b\n" +
-	"\x06_views\"\xbd\x03\n" +
+	"\x06_views\"\xbe\x03\n" +
 	"&AggregatedListTargetHttpProxiesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
 	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
@@ -230613,15 +230606,15 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
 	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
 	"\a_filterB\x15\n" +
 	"\x13_include_all_scopesB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
 	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xbe\x03\n" +
+	"\x17_service_project_number\"\xbf\x03\n" +
 	"'AggregatedListTargetHttpsProxiesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
 	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
@@ -230629,40 +230622,8 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
-	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
-	"\a_filterB\x15\n" +
-	"\x13_include_all_scopesB\x0e\n" +
-	"\f_max_resultsB\v\n" +
-	"\t_order_byB\r\n" +
-	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xbb\x03\n" +
-	"$AggregatedListTargetInstancesRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
-	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
-	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
-	"maxResults\x88\x01\x01\x12!\n" +
-	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
-	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
-	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
-	"\a_filterB\x15\n" +
-	"\x13_include_all_scopesB\x0e\n" +
-	"\f_max_resultsB\v\n" +
-	"\t_order_byB\r\n" +
-	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xb7\x03\n" +
-	" AggregatedListTargetPoolsRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
-	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
-	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
-	"maxResults\x88\x01\x01\x12!\n" +
-	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
-	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
 	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
 	"\a_filterB\x15\n" +
 	"\x13_include_all_scopesB\x0e\n" +
@@ -230670,15 +230631,31 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\t_order_byB\r\n" +
 	"\v_page_tokenB\x19\n" +
 	"\x17_service_project_number\"\xbc\x03\n" +
-	"%AggregatedListTargetTcpProxiesRequest\x12\x1f\n" +
+	"$AggregatedListTargetInstancesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
 	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
+	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
+	"\a_filterB\x15\n" +
+	"\x13_include_all_scopesB\x0e\n" +
+	"\f_max_resultsB\v\n" +
+	"\t_order_byB\r\n" +
+	"\v_page_tokenB\x19\n" +
+	"\x17_service_project_number\"\xb8\x03\n" +
+	" AggregatedListTargetPoolsRequest\x12\x1f\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
+	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
+	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
+	"maxResults\x88\x01\x01\x12!\n" +
+	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
+	"\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
 	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
 	"\a_filterB\x15\n" +
 	"\x13_include_all_scopesB\x0e\n" +
@@ -230686,6 +230663,22 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\t_order_byB\r\n" +
 	"\v_page_tokenB\x19\n" +
 	"\x17_service_project_number\"\xbd\x03\n" +
+	"%AggregatedListTargetTcpProxiesRequest\x12\x1f\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
+	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
+	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
+	"maxResults\x88\x01\x01\x12!\n" +
+	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
+	"\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
+	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
+	"\a_filterB\x15\n" +
+	"\x13_include_all_scopesB\x0e\n" +
+	"\f_max_resultsB\v\n" +
+	"\t_order_byB\r\n" +
+	"\v_page_tokenB\x19\n" +
+	"\x17_service_project_number\"\xbe\x03\n" +
 	"&AggregatedListTargetVpnGatewaysRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
 	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
@@ -230693,15 +230686,15 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
 	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
 	"\a_filterB\x15\n" +
 	"\x13_include_all_scopesB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
 	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xb3\x03\n" +
+	"\x17_service_project_number\"\xb4\x03\n" +
 	"\x1cAggregatedListUrlMapsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
 	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
@@ -230709,15 +230702,15 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
 	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
 	"\a_filterB\x15\n" +
 	"\x13_include_all_scopesB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
 	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xb7\x03\n" +
+	"\x17_service_project_number\"\xb8\x03\n" +
 	" AggregatedListVpnGatewaysRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
 	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
@@ -230725,15 +230718,15 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
 	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
 	"\a_filterB\x15\n" +
 	"\x13_include_all_scopesB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
 	"\v_page_tokenB\x19\n" +
-	"\x17_service_project_number\"\xb6\x03\n" +
+	"\x17_service_project_number\"\xb7\x03\n" +
 	"\x1fAggregatedListVpnTunnelsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x125\n" +
 	"\x12include_all_scopes\x18\xf4\xe1̺\x01 \x01(\bH\x01R\x10includeAllScopes\x88\x01\x01\x12'\n" +
@@ -230741,8 +230734,8 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12=\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12=\n" +
 	"\x16service_project_number\x18\xf9\xab\x85\x97\x01 \x01(\x03H\x05R\x14serviceProjectNumber\x88\x01\x01B\t\n" +
 	"\a_filterB\x15\n" +
 	"\x13_include_all_scopesB\x0e\n" +
@@ -230860,63 +230853,60 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\fI_p_protocol\x18\xbd\xf6\xde\xe8\x01 \x01(\tH\x00R\n" +
 	"IPProtocol\x88\x01\x01\x12\x17\n" +
 	"\x05ports\x18\x92\xf0\xf92 \x03(\tR\x05portsB\x0f\n" +
-	"\r_I_p_protocol\"\xcc\x01\n" +
-	"&AnnouncePublicAdvertisedPrefixeRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12@\n" +
-	"\x18public_advertised_prefix\x18\x9e\xf7\xc90 \x01(\tB\x03\xe0A\x02R\x16publicAdvertisedPrefix\x12%\n" +
+	"\r_I_p_protocol\"\xce\x01\n" +
+	"&AnnouncePublicAdvertisedPrefixeRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12A\n" +
+	"\x18public_advertised_prefix\x18\x9e\xf7\xc90 \x01(\tB\x04\xe2A\x01\x02R\x16publicAdvertisedPrefix\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xf2\x01\n" +
-	"%AnnouncePublicDelegatedPrefixeRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12>\n" +
-	"\x17public_delegated_prefix\x18\xe8ܱa \x01(\tB\x03\xe0A\x02R\x15publicDelegatedPrefix\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\xf5\x01\n" +
+	"%AnnouncePublicDelegatedPrefixeRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12?\n" +
+	"\x17public_delegated_prefix\x18\xe8ܱa \x01(\tB\x04\xe2A\x01\x02R\x15publicDelegatedPrefix\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xff\x02\n" +
-	"2ApplyUpdatesToInstancesInstanceGroupManagerRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12\xbb\x01\n" +
-	"6instance_group_managers_apply_updates_request_resource\x18\xd3\xf6\xce{ \x01(\v2A.google.cloud.compute.v1.InstanceGroupManagersApplyUpdatesRequestB\x03\xe0A\x02R0instanceGroupManagersApplyUpdatesRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zone\"\x9e\x03\n" +
-	"8ApplyUpdatesToInstancesRegionInstanceGroupManagerRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12\xce\x01\n" +
-	"=region_instance_group_managers_apply_updates_request_resource\x18\xfe\xe9\xad$ \x01(\v2G.google.cloud.compute.v1.RegionInstanceGroupManagersApplyUpdatesRequestB\x03\xe0A\x02R6regionInstanceGroupManagersApplyUpdatesRequestResource\"\xe5\x02\n" +
-	"\x19AttachDiskInstanceRequest\x12c\n" +
-	"\x16attached_disk_resource\x18\x95\x92\x9a+ \x01(\v2%.google.cloud.compute.v1.AttachedDiskB\x03\xe0A\x02R\x14attachedDiskResource\x12)\n" +
-	"\fforce_attach\x18\x99\xa4\x89D \x01(\bH\x00R\vforceAttach\x88\x01\x01\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\x83\x03\n" +
+	"2ApplyUpdatesToInstancesInstanceGroupManagerRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12\xbc\x01\n" +
+	"6instance_group_managers_apply_updates_request_resource\x18\xd3\xf6\xce{ \x01(\v2A.google.cloud.compute.v1.InstanceGroupManagersApplyUpdatesRequestB\x04\xe2A\x01\x02R0instanceGroupManagersApplyUpdatesRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zone\"\xa2\x03\n" +
+	"8ApplyUpdatesToInstancesRegionInstanceGroupManagerRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12\xcf\x01\n" +
+	"=region_instance_group_managers_apply_updates_request_resource\x18\xfe\xe9\xad$ \x01(\v2G.google.cloud.compute.v1.RegionInstanceGroupManagersApplyUpdatesRequestB\x04\xe2A\x01\x02R6regionInstanceGroupManagersApplyUpdatesRequestResource\"\xe9\x02\n" +
+	"\x19AttachDiskInstanceRequest\x12d\n" +
+	"\x16attached_disk_resource\x18\x95\x92\x9a+ \x01(\v2%.google.cloud.compute.v1.AttachedDiskB\x04\xe2A\x01\x02R\x14attachedDiskResource\x12)\n" +
+	"\fforce_attach\x18\x99\xa4\x89D \x01(\bH\x00R\vforceAttach\x88\x01\x01\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\x0f\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\x0f\n" +
 	"\r_force_attachB\r\n" +
-	"\v_request_id\"\xb4\x03\n" +
-	"7AttachNetworkEndpointsGlobalNetworkEndpointGroupRequest\x12\xd7\x01\n" +
-	"@global_network_endpoint_groups_attach_endpoints_request_resource\x18\xeb\xa1\xd1\x0e \x01(\v2J.google.cloud.compute.v1.GlobalNetworkEndpointGroupsAttachEndpointsRequestB\x03\xe0A\x02R9globalNetworkEndpointGroupsAttachEndpointsRequestResource\x12=\n" +
-	"\x16network_endpoint_group\x18\x86\xcb\xf3\xce\x01 \x01(\tB\x03\xe0A\x02R\x14networkEndpointGroup\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\xb7\x03\n" +
+	"7AttachNetworkEndpointsGlobalNetworkEndpointGroupRequest\x12\xd8\x01\n" +
+	"@global_network_endpoint_groups_attach_endpoints_request_resource\x18\xeb\xa1\xd1\x0e \x01(\v2J.google.cloud.compute.v1.GlobalNetworkEndpointGroupsAttachEndpointsRequestB\x04\xe2A\x01\x02R9globalNetworkEndpointGroupsAttachEndpointsRequestResource\x12>\n" +
+	"\x16network_endpoint_group\x18\x86\xcb\xf3\xce\x01 \x01(\tB\x04\xe2A\x01\x02R\x14networkEndpointGroup\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xbd\x03\n" +
-	"1AttachNetworkEndpointsNetworkEndpointGroupRequest\x12=\n" +
-	"\x16network_endpoint_group\x18\x86\xcb\xf3\xce\x01 \x01(\tB\x03\xe0A\x02R\x14networkEndpointGroup\x12\xc3\x01\n" +
-	"9network_endpoint_groups_attach_endpoints_request_resource\x18\x87\xb5  \x01(\v2D.google.cloud.compute.v1.NetworkEndpointGroupsAttachEndpointsRequestB\x03\xe0A\x02R3networkEndpointGroupsAttachEndpointsRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\xc1\x03\n" +
+	"1AttachNetworkEndpointsNetworkEndpointGroupRequest\x12>\n" +
+	"\x16network_endpoint_group\x18\x86\xcb\xf3\xce\x01 \x01(\tB\x04\xe2A\x01\x02R\x14networkEndpointGroup\x12\xc4\x01\n" +
+	"9network_endpoint_groups_attach_endpoints_request_resource\x18\x87\xb5  \x01(\v2D.google.cloud.compute.v1.NetworkEndpointGroupsAttachEndpointsRequestB\x04\xe2A\x01\x02R3networkEndpointGroupsAttachEndpointsRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xde\x03\n" +
-	"7AttachNetworkEndpointsRegionNetworkEndpointGroupRequest\x12=\n" +
-	"\x16network_endpoint_group\x18\x86\xcb\xf3\xce\x01 \x01(\tB\x03\xe0A\x02R\x14networkEndpointGroup\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12\xd8\x01\n" +
-	"@region_network_endpoint_groups_attach_endpoints_request_resource\x18\xfc\xf9ݟ\x01 \x01(\v2J.google.cloud.compute.v1.RegionNetworkEndpointGroupsAttachEndpointsRequestB\x03\xe0A\x02R9regionNetworkEndpointGroupsAttachEndpointsRequestResource\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xe2\x03\n" +
+	"7AttachNetworkEndpointsRegionNetworkEndpointGroupRequest\x12>\n" +
+	"\x16network_endpoint_group\x18\x86\xcb\xf3\xce\x01 \x01(\tB\x04\xe2A\x01\x02R\x14networkEndpointGroup\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12\xd9\x01\n" +
+	"@region_network_endpoint_groups_attach_endpoints_request_resource\x18\xfc\xf9ݟ\x01 \x01(\v2J.google.cloud.compute.v1.RegionNetworkEndpointGroupsAttachEndpointsRequestB\x04\xe2A\x01\x02R9regionNetworkEndpointGroupsAttachEndpointsRequestResource\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
 	"\v_request_id\"\xb7\f\n" +
@@ -232036,14 +232026,13 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\x04role\x18\xf6\x80\xd6\x01 \x01(\tH\x01R\x04role\x88\x01\x01B\f\n" +
 	"\n" +
 	"_conditionB\a\n" +
-	"\x05_role\"\xa3\x02\n" +
-	"\x15BulkInsertDiskRequest\x12\x84\x01\n" +
-	"\"bulk_insert_disk_resource_resource\x18\xd6\xf9\x97\x8a\x01 \x01(\v2/.google.cloud.compute.v1.BulkInsertDiskResourceB\x03\xe0A\x02R\x1ebulkInsertDiskResourceResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\x05_role\"\xa6\x02\n" +
+	"\x15BulkInsertDiskRequest\x12\x85\x01\n" +
+	"\"bulk_insert_disk_resource_resource\x18\xd6\xf9\x97\x8a\x01 \x01(\v2/.google.cloud.compute.v1.BulkInsertDiskResourceB\x04\xe2A\x01\x02R\x1ebulkInsertDiskResourceResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
 	"\v_request_id\"\xd2\x03\n" +
 	"\x16BulkInsertDiskResource\x12\x8a\x01\n" +
 	"!instant_snapshot_group_parameters\x18\xe7ߐ\b \x01(\v27.google.cloud.compute.v1.InstantSnapshotGroupParametersH\x00R\x1einstantSnapshotGroupParameters\x88\x01\x01\x12t\n" +
@@ -232051,14 +232040,13 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\x1fsource_consistency_group_policy\x18ݢ\xad\t \x01(\tH\x02R\x1csourceConsistencyGroupPolicy\x88\x01\x01B$\n" +
 	"\"_instant_snapshot_group_parametersB\x1c\n" +
 	"\x1a_snapshot_group_parametersB\"\n" +
-	" _source_consistency_group_policy\"\xb2\x02\n" +
-	"\x19BulkInsertInstanceRequest\x12\x8f\x01\n" +
-	"&bulk_insert_instance_resource_resource\x18\xce\xc2\xe0\x13 \x01(\v23.google.cloud.compute.v1.BulkInsertInstanceResourceB\x03\xe0A\x02R\"bulkInsertInstanceResourceResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	" _source_consistency_group_policy\"\xb5\x02\n" +
+	"\x19BulkInsertInstanceRequest\x12\x90\x01\n" +
+	"&bulk_insert_instance_resource_resource\x18\xce\xc2\xe0\x13 \x01(\v23.google.cloud.compute.v1.BulkInsertInstanceResourceB\x04\xe2A\x01\x02R\"bulkInsertInstanceResourceResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
 	"\v_request_id\"\xbf\a\n" +
 	"\x1aBulkInsertInstanceResource\x12\x1c\n" +
 	"\x05count\x18\x8f\xa2\x9d- \x01(\x03H\x00R\x05count\x88\x01\x01\x12z\n" +
@@ -232101,29 +232089,28 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\x11_deleted_vm_countB\x1c\n" +
 	"\x1a_failed_to_create_vm_countB\t\n" +
 	"\a_statusB\x12\n" +
-	"\x10_target_vm_count\"\xaf\x02\n" +
-	"\x1bBulkInsertRegionDiskRequest\x12\x84\x01\n" +
-	"\"bulk_insert_disk_resource_resource\x18\xd6\xf9\x97\x8a\x01 \x01(\v2/.google.cloud.compute.v1.BulkInsertDiskResourceB\x03\xe0A\x02R\x1ebulkInsertDiskResourceResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\x10_target_vm_count\"\xb2\x02\n" +
+	"\x1bBulkInsertRegionDiskRequest\x12\x85\x01\n" +
+	"\"bulk_insert_disk_resource_resource\x18\xd6\xf9\x97\x8a\x01 \x01(\v2/.google.cloud.compute.v1.BulkInsertDiskResourceB\x04\xe2A\x01\x02R\x1ebulkInsertDiskResourceResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xbe\x02\n" +
-	"\x1fBulkInsertRegionInstanceRequest\x12\x8f\x01\n" +
-	"&bulk_insert_instance_resource_resource\x18\xce\xc2\xe0\x13 \x01(\v23.google.cloud.compute.v1.BulkInsertInstanceResourceB\x03\xe0A\x02R\"bulkInsertInstanceResourceResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\xc1\x02\n" +
+	"\x1fBulkInsertRegionInstanceRequest\x12\x90\x01\n" +
+	"&bulk_insert_instance_resource_resource\x18\xce\xc2\xe0\x13 \x01(\v23.google.cloud.compute.v1.BulkInsertInstanceResourceB\x04\xe2A\x01\x02R\"bulkInsertInstanceResourceResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xde\x02\n" +
-	"\x18BulkSetLabelsDiskRequest\x12\x8b\x01\n" +
-	"%bulk_zone_set_labels_request_resource\x18\x9b\xa5\xac\xfd\x01 \x01(\v21.google.cloud.compute.v1.BulkZoneSetLabelsRequestB\x03\xe0A\x02R bulkZoneSetLabelsRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\xe1\x02\n" +
+	"\x18BulkSetLabelsDiskRequest\x12\x8c\x01\n" +
+	"%bulk_zone_set_labels_request_resource\x18\x9b\xa5\xac\xfd\x01 \x01(\v21.google.cloud.compute.v1.BulkZoneSetLabelsRequestB\x04\xe2A\x01\x02R bulkZoneSetLabelsRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tH\x01R\bresource\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tH\x01R\bresource\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
 	"\v_request_idB\v\n" +
 	"\t_resource\"\xf3\x01\n" +
 	"\x14BulkSetLabelsRequest\x123\n" +
@@ -232208,54 +232195,52 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12B\n" +
 	"\x05value\x18\x02 \x01(\v2,.google.cloud.compute.v1.FutureResourcesSpecR\x05value:\x028\x01\"\x7f\n" +
 	"\x1aCalendarModeAdviceResponse\x12a\n" +
-	"\x0frecommendations\x18\xda\xefޚ\x01 \x03(\v23.google.cloud.compute.v1.CalendarModeRecommendationR\x0frecommendations\"\xef\x01\n" +
-	"\x1cCalendarModeAdviceRpcRequest\x12\x8c\x01\n" +
-	"%calendar_mode_advice_request_resource\x18\xeaݥM \x01(\v22.google.cloud.compute.v1.CalendarModeAdviceRequestB\x03\xe0A\x02R!calendarModeAdviceRequestResource\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\"\xaf\x02\n" +
+	"\x0frecommendations\x18\xda\xefޚ\x01 \x03(\v23.google.cloud.compute.v1.CalendarModeRecommendationR\x0frecommendations\"\xf2\x01\n" +
+	"\x1cCalendarModeAdviceRpcRequest\x12\x8d\x01\n" +
+	"%calendar_mode_advice_request_resource\x18\xeaݥM \x01(\v22.google.cloud.compute.v1.CalendarModeAdviceRequestB\x04\xe2A\x01\x02R!calendarModeAdviceRequestResource\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\"\xaf\x02\n" +
 	"\x1aCalendarModeRecommendation\x12\x8c\x01\n" +
 	"\x18recommendations_per_spec\x18Ⱏ\x1d \x03(\v2O.google.cloud.compute.v1.CalendarModeRecommendation.RecommendationsPerSpecEntryR\x16recommendationsPerSpec\x1a\x81\x01\n" +
 	"\x1bRecommendationsPerSpecEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12L\n" +
-	"\x05value\x18\x02 \x01(\v26.google.cloud.compute.v1.FutureResourcesRecommendationR\x05value:\x028\x01\"\xdc\x01\n" +
-	"\x1eCancelFutureReservationRequest\x125\n" +
-	"\x12future_reservation\x18\xd0\xc6\xe6\x1a \x01(\tB\x03\xe0A\x02R\x11futureReservation\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\x05value\x18\x02 \x01(\v26.google.cloud.compute.v1.FutureResourcesRecommendationR\x05value:\x028\x01\"\xdf\x01\n" +
+	"\x1eCancelFutureReservationRequest\x126\n" +
+	"\x12future_reservation\x18\xd0\xc6\xe6\x1a \x01(\tB\x04\xe2A\x01\x02R\x11futureReservation\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xa2\x02\n" +
-	".CancelInstanceGroupManagerResizeRequestRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xa6\x02\n" +
+	".CancelInstanceGroupManagerResizeRequestRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12-\n" +
-	"\x0eresize_request\x18\x84\x84\xb9g \x01(\tB\x03\xe0A\x02R\rresizeRequest\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xae\x02\n" +
-	"4CancelRegionInstanceGroupManagerResizeRequestRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12.\n" +
+	"\x0eresize_request\x18\x84\x84\xb9g \x01(\tB\x04\xe2A\x01\x02R\rresizeRequest\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xb2\x02\n" +
+	"4CancelRegionInstanceGroupManagerResizeRequestRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12-\n" +
-	"\x0eresize_request\x18\x84\x84\xb9g \x01(\tB\x03\xe0A\x02R\rresizeRequestB\r\n" +
-	"\v_request_id\"\xef\x02\n" +
-	"(CancelRequestRemovePeeringNetworkRequest\x12 \n" +
-	"\anetwork\x18\xae\xb4\x85o \x01(\tB\x03\xe0A\x02R\anetwork\x12\xbe\x01\n" +
-	"7networks_cancel_request_remove_peering_request_resource\x18\xbd\x96\xc7T \x01(\v2B.google.cloud.compute.v1.NetworksCancelRequestRemovePeeringRequestB\x03\xe0A\x02R1networksCancelRequestRemovePeeringRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12.\n" +
+	"\x0eresize_request\x18\x84\x84\xb9g \x01(\tB\x04\xe2A\x01\x02R\rresizeRequestB\r\n" +
+	"\v_request_id\"\xf2\x02\n" +
+	"(CancelRequestRemovePeeringNetworkRequest\x12!\n" +
+	"\anetwork\x18\xae\xb4\x85o \x01(\tB\x04\xe2A\x01\x02R\anetwork\x12\xbf\x01\n" +
+	"7networks_cancel_request_remove_peering_request_resource\x18\xbd\x96\xc7T \x01(\v2B.google.cloud.compute.v1.NetworksCancelRequestRemovePeeringRequestB\x04\xe2A\x01\x02R1networksCancelRequestRemovePeeringRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xcd\x01\n" +
-	"\x14CancelRolloutRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\xcf\x01\n" +
+	"\x14CancelRolloutRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12#\n" +
-	"\brollback\x18\xe4\xfd\x93\x84\x01 \x01(\bH\x01R\brollback\x88\x01\x01\x12!\n" +
-	"\arollout\x18\xb1\x83Ԑ\x01 \x01(\tB\x03\xe0A\x02R\arolloutB\r\n" +
+	"\brollback\x18\xe4\xfd\x93\x84\x01 \x01(\bH\x01R\brollback\x88\x01\x01\x12\"\n" +
+	"\arollout\x18\xb1\x83Ԑ\x01 \x01(\tB\x04\xe2A\x01\x02R\arolloutB\r\n" +
 	"\v_request_idB\v\n" +
 	"\t_rollback\"\x95\x04\n" +
 	"\x15CapacityAdviceRequest\x12z\n" +
@@ -232340,15 +232325,15 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\x0f_instance_countB\x0f\n" +
 	"\r_machine_typeB\x15\n" +
 	"\x13_provisioning_modelB\a\n" +
-	"\x05_zone\"\xdd\x01\n" +
-	"\x18CapacityAdviceRpcRequest\x12\x7f\n" +
-	" capacity_advice_request_resource\x18\xa0\xe7\x8bT \x01(\v2..google.cloud.compute.v1.CapacityAdviceRequestB\x03\xe0A\x02R\x1dcapacityAdviceRequestResource\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\"\xe5\x01\n" +
-	"\x1cCapacityHistoryAdviceRequest\x12\x82\x01\n" +
-	"!capacity_history_request_resource\x18\xee\x9f\xe6V \x01(\v2/.google.cloud.compute.v1.CapacityHistoryRequestB\x03\xe0A\x02R\x1ecapacityHistoryRequestResource\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\"\xab\x03\n" +
+	"\x05_zone\"\xe1\x01\n" +
+	"\x18CapacityAdviceRpcRequest\x12\x80\x01\n" +
+	" capacity_advice_request_resource\x18\xa0\xe7\x8bT \x01(\v2..google.cloud.compute.v1.CapacityAdviceRequestB\x04\xe2A\x01\x02R\x1dcapacityAdviceRequestResource\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\"\xe8\x01\n" +
+	"\x1cCapacityHistoryAdviceRequest\x12\x83\x01\n" +
+	"!capacity_history_request_resource\x18\xee\x9f\xe6V \x01(\v2/.google.cloud.compute.v1.CapacityHistoryRequestB\x04\xe2A\x01\x02R\x1ecapacityHistoryRequestResource\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\"\xab\x03\n" +
 	"\x16CapacityHistoryRequest\x12z\n" +
 	"\x13instance_properties\x18\x9d\x9e\xd8f \x01(\v2A.google.cloud.compute.v1.CapacityHistoryRequestInstancePropertiesH\x00R\x12instanceProperties\x88\x01\x01\x12o\n" +
 	"\x0flocation_policy\x18\xfc\xb9\x87\xde\x01 \x01(\v2=.google.cloud.compute.v1.CapacityHistoryRequestLocationPolicyH\x01R\x0elocationPolicy\x88\x01\x01\x12\x17\n" +
@@ -232419,26 +232404,26 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\x15_max_pending_requestsB\x0f\n" +
 	"\r_max_requestsB\x1e\n" +
 	"\x1c_max_requests_per_connectionB\x0e\n" +
-	"\f_max_retries\"\xe2\x01\n" +
-	"\x1fCloneRulesFirewallPolicyRequest\x120\n" +
-	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x03\xe0A\x02R\x0efirewallPolicy\x12%\n" +
+	"\f_max_retries\"\xe3\x01\n" +
+	"\x1fCloneRulesFirewallPolicyRequest\x121\n" +
+	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x04\xe2A\x01\x02R\x0efirewallPolicy\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12<\n" +
 	"\x16source_firewall_policy\x18\xad\xda\xf6\v \x01(\tH\x01R\x14sourceFirewallPolicy\x88\x01\x01B\r\n" +
 	"\v_request_idB\x19\n" +
-	"\x17_source_firewall_policy\"\x95\x02\n" +
-	"&CloneRulesNetworkFirewallPolicyRequest\x120\n" +
-	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x03\xe0A\x02R\x0efirewallPolicy\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\x17_source_firewall_policy\"\x97\x02\n" +
+	"&CloneRulesNetworkFirewallPolicyRequest\x121\n" +
+	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x04\xe2A\x01\x02R\x0efirewallPolicy\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12<\n" +
 	"\x16source_firewall_policy\x18\xad\xda\xf6\v \x01(\tH\x01R\x14sourceFirewallPolicy\x88\x01\x01B\r\n" +
 	"\v_request_idB\x19\n" +
-	"\x17_source_firewall_policy\"\xc4\x02\n" +
-	",CloneRulesRegionNetworkFirewallPolicyRequest\x120\n" +
-	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x03\xe0A\x02R\x0efirewallPolicy\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\x17_source_firewall_policy\"\xc7\x02\n" +
+	",CloneRulesRegionNetworkFirewallPolicyRequest\x121\n" +
+	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x04\xe2A\x01\x02R\x0efirewallPolicy\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12<\n" +
 	"\x16source_firewall_policy\x18\xad\xda\xf6\v \x01(\tH\x01R\x14sourceFirewallPolicy\x88\x01\x01B\r\n" +
@@ -232720,11 +232705,11 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\x03ttl\x18\xec\x83\a \x01(\v2!.google.cloud.compute.v1.DurationH\x02R\x03ttl\x88\x01\x01B\a\n" +
 	"\x05_nameB\a\n" +
 	"\x05_pathB\x06\n" +
-	"\x04_ttl\"\xec\x01\n" +
+	"\x04_ttl\"\xed\x01\n" +
 	"*CopyRulesOrganizationSecurityPolicyRequest\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12/\n" +
-	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x03\xe0A\x02R\x0esecurityPolicy\x12<\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x120\n" +
+	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x04\xe2A\x01\x02R\x0esecurityPolicy\x12<\n" +
 	"\x16source_security_policy\x18\xed\xd5\xfao \x01(\tH\x01R\x14sourceSecurityPolicy\x88\x01\x01B\r\n" +
 	"\v_request_idB\x19\n" +
 	"\x17_source_security_policy\"\x8f\x03\n" +
@@ -232741,47 +232726,45 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\x12_allow_credentialsB\v\n" +
 	"\t_disabledB\n" +
 	"\n" +
-	"\b_max_age\"\xb6\x03\n" +
-	"*CreateInstancesInstanceGroupManagerRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12\xc4\x01\n" +
-	"9instance_group_managers_create_instances_request_resource\x18\x93\xfa\xda\v \x01(\v2D.google.cloud.compute.v1.InstanceGroupManagersCreateInstancesRequestB\x03\xe0A\x02R3instanceGroupManagersCreateInstancesRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\b_max_age\"\xba\x03\n" +
+	"*CreateInstancesInstanceGroupManagerRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12\xc5\x01\n" +
+	"9instance_group_managers_create_instances_request_resource\x18\x93\xfa\xda\v \x01(\v2D.google.cloud.compute.v1.InstanceGroupManagersCreateInstancesRequestB\x04\xe2A\x01\x02R3instanceGroupManagersCreateInstancesRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xd6\x03\n" +
-	"0CreateInstancesRegionInstanceGroupManagerRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12\xd8\x01\n" +
-	"@region_instance_group_managers_create_instances_request_resource\x18\x88\xbf\x98\xab\x01 \x01(\v2J.google.cloud.compute.v1.RegionInstanceGroupManagersCreateInstancesRequestB\x03\xe0A\x02R9regionInstanceGroupManagersCreateInstancesRequestResource\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xda\x03\n" +
+	"0CreateInstancesRegionInstanceGroupManagerRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12\xd9\x01\n" +
+	"@region_instance_group_managers_create_instances_request_resource\x18\x88\xbf\x98\xab\x01 \x01(\v2J.google.cloud.compute.v1.RegionInstanceGroupManagersCreateInstancesRequestB\x04\xe2A\x01\x02R9regionInstanceGroupManagersCreateInstancesRequestResource\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xc3\x02\n" +
-	"%CreateMembersInterconnectGroupRequest\x126\n" +
-	"\x12interconnect_group\x18\x8e\xb7\xa9\xb9\x01 \x01(\tB\x03\xe0A\x02R\x11interconnectGroup\x12\xb5\x01\n" +
-	"3interconnect_groups_create_members_request_resource\x18\xed\xfc\x8b\xa6\x01 \x01(\v2?.google.cloud.compute.v1.InterconnectGroupsCreateMembersRequestB\x03\xe0A\x02R.interconnectGroupsCreateMembersRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\"\xcf\x02\n" +
-	"\x19CreateSnapshotDiskRequest\x12\x1a\n" +
-	"\x04disk\x18\x9d\x9b\xbc\x01 \x01(\tB\x03\xe0A\x02R\x04disk\x12(\n" +
+	"\v_request_id\"\xc6\x02\n" +
+	"%CreateMembersInterconnectGroupRequest\x127\n" +
+	"\x12interconnect_group\x18\x8e\xb7\xa9\xb9\x01 \x01(\tB\x04\xe2A\x01\x02R\x11interconnectGroup\x12\xb6\x01\n" +
+	"3interconnect_groups_create_members_request_resource\x18\xed\xfc\x8b\xa6\x01 \x01(\v2?.google.cloud.compute.v1.InterconnectGroupsCreateMembersRequestB\x04\xe2A\x01\x02R.interconnectGroupsCreateMembersRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\"\xd3\x02\n" +
+	"\x19CreateSnapshotDiskRequest\x12\x1b\n" +
+	"\x04disk\x18\x9d\x9b\xbc\x01 \x01(\tB\x04\xe2A\x01\x02R\x04disk\x12(\n" +
 	"\vguest_flush\x18ݓ\xec\xb7\x01 \x01(\bH\x00R\n" +
-	"guestFlush\x88\x01\x01\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"guestFlush\x88\x01\x01\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12W\n" +
-	"\x11snapshot_resource\x18\xa9\xb8\xc1\xe5\x01 \x01(\v2!.google.cloud.compute.v1.SnapshotB\x03\xe0A\x02R\x10snapshotResource\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\x0e\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12X\n" +
+	"\x11snapshot_resource\x18\xa9\xb8\xc1\xe5\x01 \x01(\v2!.google.cloud.compute.v1.SnapshotB\x04\xe2A\x01\x02R\x10snapshotResource\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\x0e\n" +
 	"\f_guest_flushB\r\n" +
-	"\v_request_id\"\xa1\x02\n" +
-	"\x1fCreateSnapshotRegionDiskRequest\x12\x1a\n" +
-	"\x04disk\x18\x9d\x9b\xbc\x01 \x01(\tB\x03\xe0A\x02R\x04disk\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\xa5\x02\n" +
+	"\x1fCreateSnapshotRegionDiskRequest\x12\x1b\n" +
+	"\x04disk\x18\x9d\x9b\xbc\x01 \x01(\tB\x04\xe2A\x01\x02R\x04disk\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12W\n" +
-	"\x11snapshot_resource\x18\xa9\xb8\xc1\xe5\x01 \x01(\v2!.google.cloud.compute.v1.SnapshotB\x03\xe0A\x02R\x10snapshotResourceB\r\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12X\n" +
+	"\x11snapshot_resource\x18\xa9\xb8\xc1\xe5\x01 \x01(\v2!.google.cloud.compute.v1.SnapshotB\x04\xe2A\x01\x02R\x10snapshotResourceB\r\n" +
 	"\v_request_id\"\xb6\x02\n" +
 	"\x10CrossSiteNetwork\x125\n" +
 	"\x12creation_timestamp\x18\xb6\x8f\xc7\x0e \x01(\tH\x00R\x11creationTimestamp\x88\x01\x01\x12)\n" +
@@ -232876,781 +232859,761 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\n" +
 	"_time_zoneB\r\n" +
 	"\v_utc_offsetB\a\n" +
-	"\x05_year\"\xaf\x02\n" +
-	"!DeleteAccessConfigInstanceRequest\x12+\n" +
-	"\raccess_config\x18\xfd\xe4\xde\" \x01(\tB\x03\xe0A\x02R\faccessConfig\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x124\n" +
-	"\x11network_interface\x18\xe8\xc0\x9d\xae\x01 \x01(\tB\x03\xe0A\x02R\x10networkInterface\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\x05_year\"\xb4\x02\n" +
+	"!DeleteAccessConfigInstanceRequest\x12,\n" +
+	"\raccess_config\x18\xfd\xe4\xde\" \x01(\tB\x04\xe2A\x01\x02R\faccessConfig\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x125\n" +
+	"\x11network_interface\x18\xe8\xc0\x9d\xae\x01 \x01(\tB\x04\xe2A\x01\x02R\x10networkInterface\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xc4\x01\n" +
-	"\x14DeleteAddressRequest\x12!\n" +
-	"\aaddress\x18\xf4\xb7\xde\xdc\x01 \x01(\tB\x03\xe0A\x02R\aaddress\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
 	"\v_request_id\"\xc7\x01\n" +
-	"\x17DeleteAutoscalerRequest\x12'\n" +
-	"\n" +
-	"autoscaler\x18\xd7\xfd\xd2\xf6\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"autoscaler\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xad\x01\n" +
-	"\x1aDeleteBackendBucketRequest\x12-\n" +
-	"\x0ebackend_bucket\x18\xf5\xe3\xdd+ \x01(\tB\x03\xe0A\x02R\rbackendBucket\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xb1\x01\n" +
-	"\x1bDeleteBackendServiceRequest\x120\n" +
-	"\x0fbackend_service\x18\x8a\xc0\xae\x92\x01 \x01(\tB\x03\xe0A\x02R\x0ebackendService\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xb7\x01\n" +
-	"\x1dDeleteCrossSiteNetworkRequest\x124\n" +
-	"\x12cross_site_network\x18\xd5\xc5\xcb3 \x01(\tB\x03\xe0A\x02R\x10crossSiteNetwork\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xb4\x01\n" +
-	"\x11DeleteDiskRequest\x12\x1a\n" +
-	"\x04disk\x18\x9d\x9b\xbc\x01 \x01(\tB\x03\xe0A\x02R\x04disk\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xbd\x01\n" +
-	"\x1fDeleteExternalVpnGatewayRequest\x128\n" +
-	"\x14external_vpn_gateway\x18\x85׳4 \x01(\tB\x03\xe0A\x02R\x12externalVpnGateway\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\x85\x01\n" +
-	"\x1bDeleteFirewallPolicyRequest\x120\n" +
-	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x03\xe0A\x02R\x0efirewallPolicy\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\x9e\x01\n" +
-	"\x15DeleteFirewallRequest\x12#\n" +
-	"\bfirewall\x18\x80\xfa\xd5\xf3\x01 \x01(\tB\x03\xe0A\x02R\bfirewall\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xda\x01\n" +
-	"\x1bDeleteForwardingRuleRequest\x120\n" +
-	"\x0fforwarding_rule\x18\xfe\xa5݀\x01 \x01(\tB\x03\xe0A\x02R\x0eforwardingRule\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xdc\x01\n" +
-	"\x1eDeleteFutureReservationRequest\x125\n" +
-	"\x12future_reservation\x18\xd0\xc6\xe6\x1a \x01(\tB\x03\xe0A\x02R\x11futureReservation\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xa1\x01\n" +
-	"\x1aDeleteGlobalAddressRequest\x12!\n" +
-	"\aaddress\x18\xf4\xb7\xde\xdc\x01 \x01(\tB\x03\xe0A\x02R\aaddress\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xb7\x01\n" +
-	"!DeleteGlobalForwardingRuleRequest\x120\n" +
-	"\x0fforwarding_rule\x18\xfe\xa5݀\x01 \x01(\tB\x03\xe0A\x02R\x0eforwardingRule\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\x14DeleteAddressRequest\x12\"\n" +
+	"\aaddress\x18\xf4\xb7\xde\xdc\x01 \x01(\tB\x04\xe2A\x01\x02R\aaddress\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
 	"\v_request_id\"\xca\x01\n" +
-	"'DeleteGlobalNetworkEndpointGroupRequest\x12=\n" +
-	"\x16network_endpoint_group\x18\x86\xcb\xf3\xce\x01 \x01(\tB\x03\xe0A\x02R\x14networkEndpointGroup\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\x17DeleteAutoscalerRequest\x12(\n" +
+	"\n" +
+	"autoscaler\x18\xd7\xfd\xd2\xf6\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"autoscaler\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xaf\x01\n" +
+	"\x1aDeleteBackendBucketRequest\x12.\n" +
+	"\x0ebackend_bucket\x18\xf5\xe3\xdd+ \x01(\tB\x04\xe2A\x01\x02R\rbackendBucket\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"f\n" +
-	"\x1cDeleteGlobalOperationRequest\x12$\n" +
-	"\toperation\x18\xe7\xaa\xeb\x18 \x01(\tB\x03\xe0A\x02R\toperation\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\"\x1f\n" +
-	"\x1dDeleteGlobalOperationResponse\"\x84\x01\n" +
-	"(DeleteGlobalOrganizationOperationRequest\x12$\n" +
-	"\toperation\x18\xe7\xaa\xeb\x18 \x01(\tB\x03\xe0A\x02R\toperation\x12$\n" +
-	"\tparent_id\x18\xd0\xe1\x9a\xdb\x01 \x01(\tH\x00R\bparentId\x88\x01\x01B\f\n" +
-	"\n" +
-	"_parent_id\"+\n" +
-	")DeleteGlobalOrganizationOperationResponse\"\xcd\x01\n" +
-	")DeleteGlobalPublicDelegatedPrefixeRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12>\n" +
-	"\x17public_delegated_prefix\x18\xe8ܱa \x01(\tB\x03\xe0A\x02R\x15publicDelegatedPrefix\x12%\n" +
+	"\v_request_id\"\xb3\x01\n" +
+	"\x1bDeleteBackendServiceRequest\x121\n" +
+	"\x0fbackend_service\x18\x8a\xc0\xae\x92\x01 \x01(\tB\x04\xe2A\x01\x02R\x0ebackendService\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xae\x03\n" +
-	"$DeleteGlobalVmExtensionPolicyRequest\x12C\n" +
-	"\x1aglobal_vm_extension_policy\x18\x9e\xd6\xfc\x03 \x01(\tB\x03\xe0A\x02R\x17globalVmExtensionPolicy\x12\xde\x01\n" +
-	"Cglobal_vm_extension_policy_rollout_operation_rollout_input_resource\x18\xd8\xf7\x98F \x01(\v2L.google.cloud.compute.v1.GlobalVmExtensionPolicyRolloutOperationRolloutInputB\x03\xe0A\x02R;globalVmExtensionPolicyRolloutOperationRolloutInputResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\xb9\x01\n" +
+	"\x1dDeleteCrossSiteNetworkRequest\x125\n" +
+	"\x12cross_site_network\x18\xd5\xc5\xcb3 \x01(\tB\x04\xe2A\x01\x02R\x10crossSiteNetwork\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xa8\x01\n" +
-	"\x18DeleteHealthCheckRequest\x12*\n" +
-	"\fhealth_check\x18媤\x93\x01 \x01(\tB\x03\xe0A\x02R\vhealthCheck\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\x94\x01\n" +
-	"\x12DeleteImageRequest\x12\x1c\n" +
-	"\x05image\x18\xdb\xd2\xea/ \x01(\tB\x03\xe0A\x02R\x05image\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xba\x02\n" +
-	"!DeleteInstanceGroupManagerRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x129\n" +
-	"\x14no_graceful_shutdown\x18\x92\xb7\xab\xa0\x01 \x01(\bH\x00R\x12noGracefulShutdown\x88\x01\x01\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\x17\n" +
-	"\x15_no_graceful_shutdownB\r\n" +
-	"\v_request_id\"\xa2\x02\n" +
-	".DeleteInstanceGroupManagerResizeRequestRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12-\n" +
-	"\x0eresize_request\x18\x84\x84\xb9g \x01(\tB\x03\xe0A\x02R\rresizeRequest\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xd0\x01\n" +
-	"\x1aDeleteInstanceGroupRequest\x12-\n" +
-	"\x0einstance_group\x18\xd5\xd4\xd5& \x01(\tB\x03\xe0A\x02R\rinstanceGroup\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\x94\x02\n" +
-	"\x15DeleteInstanceRequest\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x129\n" +
-	"\x14no_graceful_shutdown\x18\x92\xb7\xab\xa0\x01 \x01(\bH\x00R\x12noGracefulShutdown\x88\x01\x01\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\x17\n" +
-	"\x15_no_graceful_shutdownB\r\n" +
 	"\v_request_id\"\xb7\x01\n" +
-	"\x1dDeleteInstanceTemplateRequest\x124\n" +
-	"\x11instance_template\x18䁻\x93\x01 \x01(\tB\x03\xe0A\x02R\x10instanceTemplate\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\x11DeleteDiskRequest\x12\x1b\n" +
+	"\x04disk\x18\x9d\x9b\xbc\x01 \x01(\tB\x04\xe2A\x01\x02R\x04disk\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\x8a\x04\n" +
-	"*DeleteInstancesInstanceGroupManagerRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12\xc4\x01\n" +
-	"9instance_group_managers_delete_instances_request_resource\x18\x84ƭO \x01(\v2D.google.cloud.compute.v1.InstanceGroupManagersDeleteInstancesRequestB\x03\xe0A\x02R3instanceGroupManagersDeleteInstancesRequestResource\x129\n" +
-	"\x14no_graceful_shutdown\x18\x92\xb7\xab\xa0\x01 \x01(\bH\x00R\x12noGracefulShutdown\x88\x01\x01\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\x17\n" +
-	"\x15_no_graceful_shutdownB\r\n" +
-	"\v_request_id\"\xaa\x04\n" +
-	"0DeleteInstancesRegionInstanceGroupManagerRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x129\n" +
-	"\x14no_graceful_shutdown\x18\x92\xb7\xab\xa0\x01 \x01(\bH\x00R\x12noGracefulShutdown\x88\x01\x01\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12\xd8\x01\n" +
-	"@region_instance_group_managers_delete_instances_request_resource\x18\xf9\x8a\xeb\xee\x01 \x01(\v2J.google.cloud.compute.v1.RegionInstanceGroupManagersDeleteInstancesRequestB\x03\xe0A\x02R9regionInstanceGroupManagersDeleteInstancesRequestResource\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01B\x17\n" +
-	"\x15_no_graceful_shutdownB\r\n" +
-	"\v_request_id\"\xe6\x01\n" +
-	"!DeleteInstantSnapshotGroupRequest\x12<\n" +
-	"\x16instant_snapshot_group\x18\xe2\xec\xb5j \x01(\tB\x03\xe0A\x02R\x14instantSnapshotGroup\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xd7\x01\n" +
-	"\x1cDeleteInstantSnapshotRequest\x122\n" +
-	"\x10instant_snapshot\x18\xe2\xdcߺ\x01 \x01(\tB\x03\xe0A\x02R\x0finstantSnapshot\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xd8\x01\n" +
-	"(DeleteInterconnectAttachmentGroupRequest\x12J\n" +
-	"\x1dinterconnect_attachment_group\x18\xf4\xef\x98$ \x01(\tB\x03\xe0A\x02R\x1binterconnectAttachmentGroup\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xf2\x01\n" +
-	"#DeleteInterconnectAttachmentRequest\x12@\n" +
-	"\x17interconnect_attachment\x18\xf4\x8a\xf7\x92\x01 \x01(\tB\x03\xe0A\x02R\x16interconnectAttachment\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xba\x01\n" +
-	"\x1eDeleteInterconnectGroupRequest\x126\n" +
-	"\x12interconnect_group\x18\x8e\xb7\xa9\xb9\x01 \x01(\tB\x03\xe0A\x02R\x11interconnectGroup\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xa9\x01\n" +
-	"\x19DeleteInterconnectRequest\x12*\n" +
-	"\finterconnect\x18\x8eɌk \x01(\tB\x03\xe0A\x02R\finterconnect\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\x9a\x01\n" +
-	"\x14DeleteLicenseRequest\x12 \n" +
-	"\alicense\x18\xc1\x88\xc2O \x01(\tB\x03\xe0A\x02R\alicense\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xaa\x01\n" +
-	"\x19DeleteMachineImageRequest\x12+\n" +
-	"\rmachine_image\x18\xe3\xfe\xfe  \x01(\tB\x03\xe0A\x02R\fmachineImage\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xfb\x01\n" +
-	"\x1bDeleteNamedSetRouterRequest\x12#\n" +
-	"\tnamed_set\x18\xdc\xfc\xa1N \x01(\tH\x00R\bnamedSet\x88\x01\x01\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12\x1e\n" +
-	"\x06router\x18ɮ\xeeF \x01(\tB\x03\xe0A\x02R\x06routerB\f\n" +
-	"\n" +
-	"_named_setB\r\n" +
-	"\v_request_id\"\xe2\x01\n" +
-	"\x1eDeleteNetworkAttachmentRequest\x125\n" +
-	"\x12network_attachment\x18ԗ\x8fk \x01(\tB\x03\xe0A\x02R\x11networkAttachment\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xff\x01\n" +
-	"'DeleteNetworkEdgeSecurityServiceRequest\x12I\n" +
-	"\x1dnetwork_edge_security_service\x18\xa7\x9f\xefJ \x01(\tB\x03\xe0A\x02R\x1anetworkEdgeSecurityService\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xe7\x01\n" +
-	"!DeleteNetworkEndpointGroupRequest\x12=\n" +
-	"\x16network_endpoint_group\x18\x86\xcb\xf3\xce\x01 \x01(\tB\x03\xe0A\x02R\x14networkEndpointGroup\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xb8\x01\n" +
-	"\"DeleteNetworkFirewallPolicyRequest\x120\n" +
-	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x03\xe0A\x02R\x0efirewallPolicy\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\x8f\x02\n" +
-	"%DeleteNetworkInterfaceInstanceRequest\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x12=\n" +
-	"\x16network_interface_name\x18\x82\xa8\xeb\xb5\x01 \x01(\tB\x03\xe0A\x02R\x14networkInterfaceName\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\x9a\x01\n" +
-	"\x14DeleteNetworkRequest\x12 \n" +
-	"\anetwork\x18\xae\xb4\x85o \x01(\tB\x03\xe0A\x02R\anetwork\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xc5\x01\n" +
-	"\x16DeleteNodeGroupRequest\x12&\n" +
-	"\n" +
-	"node_group\x18\x82\xfc\x8b\xe0\x01 \x01(\tB\x03\xe0A\x02R\tnodeGroup\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xd4\x01\n" +
-	"\x19DeleteNodeTemplateRequest\x12,\n" +
-	"\rnode_template\x18\x97䋚\x01 \x01(\tB\x03\xe0A\x02R\fnodeTemplate\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xe3\x02\n" +
-	"\x1bDeleteNodesNodeGroupRequest\x12&\n" +
-	"\n" +
-	"node_group\x18\x82\xfc\x8b\xe0\x01 \x01(\tB\x03\xe0A\x02R\tnodeGroup\x12\x96\x01\n" +
-	")node_groups_delete_nodes_request_resource\x18\x92׳W \x01(\v25.google.cloud.compute.v1.NodeGroupsDeleteNodesRequestB\x03\xe0A\x02R$nodeGroupsDeleteNodesRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\x90\x01\n" +
-	"'DeleteOrganizationSecurityPolicyRequest\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12/\n" +
-	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x03\xe0A\x02R\x0esecurityPolicyB\r\n" +
-	"\v_request_id\"\xdc\x01\n" +
-	"\x1cDeletePacketMirroringRequest\x121\n" +
-	"\x10packet_mirroring\x18̹\xd1\n" +
-	" \x01(\tB\x03\xe0A\x02R\x0fpacketMirroring\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\x9b\x03\n" +
-	"3DeletePerInstanceConfigsInstanceGroupManagerRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12\xd6\x01\n" +
-	"@instance_group_managers_delete_per_instance_configs_req_resource\x18\xa0\xea\xe8\xac\x01 \x01(\v2I.google.cloud.compute.v1.InstanceGroupManagersDeletePerInstanceConfigsReqB\x03\xe0A\x02R8instanceGroupManagersDeletePerInstanceConfigsReqResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zone\"\xa8\x03\n" +
-	"9DeletePerInstanceConfigsRegionInstanceGroupManagerRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12\xd7\x01\n" +
-	"Aregion_instance_group_manager_delete_instance_config_req_resource\x18\x85\x9b- \x01(\v2J.google.cloud.compute.v1.RegionInstanceGroupManagerDeleteInstanceConfigReqB\x03\xe0A\x02R9regionInstanceGroupManagerDeleteInstanceConfigReqResource\"\xca\x01\n" +
-	"$DeletePublicAdvertisedPrefixeRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12@\n" +
-	"\x18public_advertised_prefix\x18\x9e\xf7\xc90 \x01(\tB\x03\xe0A\x02R\x16publicAdvertisedPrefix\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xf0\x01\n" +
-	"#DeletePublicDelegatedPrefixeRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12>\n" +
-	"\x17public_delegated_prefix\x18\xe8ܱa \x01(\tB\x03\xe0A\x02R\x15publicDelegatedPrefix\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xd3\x01\n" +
-	"\x1dDeleteRegionAutoscalerRequest\x12'\n" +
-	"\n" +
-	"autoscaler\x18\xd7\xfd\xd2\xf6\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"autoscaler\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xdc\x01\n" +
-	" DeleteRegionBackendBucketRequest\x12-\n" +
-	"\x0ebackend_bucket\x18\xf5\xe3\xdd+ \x01(\tB\x03\xe0A\x02R\rbackendBucket\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xe0\x01\n" +
-	"!DeleteRegionBackendServiceRequest\x120\n" +
-	"\x0fbackend_service\x18\x8a\xc0\xae\x92\x01 \x01(\tB\x03\xe0A\x02R\x0ebackendService\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xf3\x01\n" +
-	"'DeleteRegionCompositeHealthCheckRequest\x12=\n" +
-	"\x16composite_health_check\x18\x9d\xc0\xd6\xde\x01 \x01(\tB\x03\xe0A\x02R\x14compositeHealthCheck\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xc0\x01\n" +
-	"\x17DeleteRegionDiskRequest\x12\x1a\n" +
-	"\x04disk\x18\x9d\x9b\xbc\x01 \x01(\tB\x03\xe0A\x02R\x04disk\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xfb\x01\n" +
-	"*DeleteRegionHealthAggregationPolicyRequest\x12B\n" +
-	"\x19health_aggregation_policy\x18\xf2\xcf\xcbr \x01(\tB\x03\xe0A\x02R\x17healthAggregationPolicy\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xd7\x01\n" +
-	"\x1eDeleteRegionHealthCheckRequest\x12*\n" +
-	"\fhealth_check\x18媤\x93\x01 \x01(\tB\x03\xe0A\x02R\vhealthCheck\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xed\x01\n" +
-	"%DeleteRegionHealthCheckServiceRequest\x129\n" +
-	"\x14health_check_service\x18ۛ\xdd\xc2\x01 \x01(\tB\x03\xe0A\x02R\x12healthCheckService\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xda\x01\n" +
-	"\x1fDeleteRegionHealthSourceRequest\x12,\n" +
-	"\rhealth_source\x18ކų\x01 \x01(\tB\x03\xe0A\x02R\fhealthSource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xc6\x02\n" +
-	"'DeleteRegionInstanceGroupManagerRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x129\n" +
-	"\x14no_graceful_shutdown\x18\x92\xb7\xab\xa0\x01 \x01(\bH\x00R\x12noGracefulShutdown\x88\x01\x01\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01B\x17\n" +
-	"\x15_no_graceful_shutdownB\r\n" +
-	"\v_request_id\"\xae\x02\n" +
-	"4DeleteRegionInstanceGroupManagerResizeRequestRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12-\n" +
-	"\x0eresize_request\x18\x84\x84\xb9g \x01(\tB\x03\xe0A\x02R\rresizeRequestB\r\n" +
-	"\v_request_id\"\xe6\x01\n" +
-	"#DeleteRegionInstanceTemplateRequest\x124\n" +
-	"\x11instance_template\x18䁻\x93\x01 \x01(\tB\x03\xe0A\x02R\x10instanceTemplate\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xf2\x01\n" +
-	"'DeleteRegionInstantSnapshotGroupRequest\x12<\n" +
-	"\x16instant_snapshot_group\x18\xe2\xec\xb5j \x01(\tB\x03\xe0A\x02R\x14instantSnapshotGroup\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xe3\x01\n" +
-	"\"DeleteRegionInstantSnapshotRequest\x122\n" +
-	"\x10instant_snapshot\x18\xe2\xdcߺ\x01 \x01(\tB\x03\xe0A\x02R\x0finstantSnapshot\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xf3\x01\n" +
-	"'DeleteRegionNetworkEndpointGroupRequest\x12=\n" +
-	"\x16network_endpoint_group\x18\x86\xcb\xf3\xce\x01 \x01(\tB\x03\xe0A\x02R\x14networkEndpointGroup\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xe7\x01\n" +
-	"(DeleteRegionNetworkFirewallPolicyRequest\x120\n" +
-	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x03\xe0A\x02R\x0efirewallPolicy\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xf2\x01\n" +
-	"'DeleteRegionNotificationEndpointRequest\x12<\n" +
-	"\x15notification_endpoint\x18\xe9\xbcֳ\x01 \x01(\tB\x03\xe0A\x02R\x14notificationEndpoint\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xbf\x01\n" +
+	"\x1fDeleteExternalVpnGatewayRequest\x129\n" +
+	"\x14external_vpn_gateway\x18\x85׳4 \x01(\tB\x04\xe2A\x01\x02R\x12externalVpnGateway\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
 	"\v_request_id\"\x86\x01\n" +
-	"\x1cDeleteRegionOperationRequest\x12$\n" +
-	"\toperation\x18\xe7\xaa\xeb\x18 \x01(\tB\x03\xe0A\x02R\toperation\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\"\x1f\n" +
-	"\x1dDeleteRegionOperationResponse\"\xdf\x01\n" +
-	"!DeleteRegionSecurityPolicyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\x1bDeleteFirewallPolicyRequest\x121\n" +
+	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x04\xe2A\x01\x02R\x0efirewallPolicy\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12/\n" +
-	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x03\xe0A\x02R\x0esecurityPolicyB\r\n" +
-	"\v_request_id\"\xcd\x01\n" +
-	"\x1bDeleteRegionSnapshotRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xa0\x01\n" +
+	"\x15DeleteFirewallRequest\x12$\n" +
+	"\bfirewall\x18\x80\xfa\xd5\xf3\x01 \x01(\tB\x04\xe2A\x01\x02R\bfirewall\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12#\n" +
-	"\bsnapshot\x18ī\xeb\x87\x01 \x01(\tB\x03\xe0A\x02R\bsnapshotB\r\n" +
-	"\v_request_id\"\xdf\x01\n" +
-	"!DeleteRegionSslCertificateRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12/\n" +
-	"\x0fssl_certificate\x18\xe4ג\x16 \x01(\tB\x03\xe0A\x02R\x0esslCertificateB\r\n" +
-	"\v_request_id\"\xd1\x01\n" +
-	"\x1cDeleteRegionSslPolicyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12&\n" +
-	"\n" +
-	"ssl_policy\x18\xc5\xfd\xe0\x8c\x01 \x01(\tB\x03\xe0A\x02R\tsslPolicyB\r\n" +
-	"\v_request_id\"\xe3\x01\n" +
-	"\"DeleteRegionTargetHttpProxyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x122\n" +
-	"\x11target_http_proxy\x18\xe5\xbe\xd2b \x01(\tB\x03\xe0A\x02R\x0ftargetHttpProxyB\r\n" +
-	"\v_request_id\"\xe6\x01\n" +
-	"#DeleteRegionTargetHttpsProxyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x124\n" +
-	"\x12target_https_proxy\x18\xec\xb0\xfa\x18 \x01(\tB\x03\xe0A\x02R\x10targetHttpsProxyB\r\n" +
-	"\v_request_id\"\xe1\x01\n" +
-	"!DeleteRegionTargetTcpProxyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x121\n" +
-	"\x10target_tcp_proxy\x18\xe2\xd6\xf0\xef\x01 \x01(\tB\x03\xe0A\x02R\x0etargetTcpProxyB\r\n" +
-	"\v_request_id\"\xc8\x01\n" +
-	"\x19DeleteRegionUrlMapRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12 \n" +
-	"\aurl_map\x18\x8c\x95\x81\xaf\x01 \x01(\tB\x03\xe0A\x02R\x06urlMapB\r\n" +
-	"\v_request_id\"\xc9\x01\n" +
-	"\x18DeleteReservationRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12(\n" +
-	"\vreservation\x18̇\xd5\x16 \x01(\tB\x03\xe0A\x02R\vreservation\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xd9\x01\n" +
-	"\x1bDeleteResourcePolicyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12/\n" +
-	"\x0fresource_policy\x18\x83\xa5\xf7K \x01(\tB\x03\xe0A\x02R\x0eresourcePolicyB\r\n" +
-	"\v_request_id\"\xa8\x01\n" +
-	"\x18DeleteRolloutPlanRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12*\n" +
-	"\frollout_plan\x18\xf7\xd1\xf2\xda\x01 \x01(\tB\x03\xe0A\x02R\vrolloutPlanB\r\n" +
-	"\v_request_id\"\x9b\x01\n" +
-	"\x14DeleteRolloutRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\arollout\x18\xb1\x83Ԑ\x01 \x01(\tB\x03\xe0A\x02R\arolloutB\r\n" +
-	"\v_request_id\"\xf6\x01\n" +
-	"\x1eDeleteRoutePolicyRouterRequest\x12\x1e\n" +
-	"\x06policy\x18\xb2ʶ+ \x01(\tH\x00R\x06policy\x88\x01\x01\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12\x1e\n" +
-	"\x06router\x18ɮ\xeeF \x01(\tB\x03\xe0A\x02R\x06routerB\t\n" +
-	"\a_policyB\r\n" +
-	"\v_request_id\"\x94\x01\n" +
-	"\x12DeleteRouteRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\x1c\n" +
-	"\x05route\x18\xc9\xe4\xea3 \x01(\tB\x03\xe0A\x02R\x05routeB\r\n" +
-	"\v_request_id\"\xc0\x01\n" +
-	"\x13DeleteRouterRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\x1e\n" +
-	"\x06router\x18ɮ\xeeF \x01(\tB\x03\xe0A\x02R\x06routerB\r\n" +
-	"\v_request_id\"\xb0\x01\n" +
-	"\x1bDeleteSecurityPolicyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12/\n" +
-	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x03\xe0A\x02R\x0esecurityPolicyB\r\n" +
-	"\v_request_id\"\xe3\x01\n" +
-	"\x1eDeleteServiceAttachmentRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x126\n" +
-	"\x12service_attachment\x18\xed\xa9С\x01 \x01(\tB\x03\xe0A\x02R\x11serviceAttachmentB\r\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
 	"\v_request_id\"\xdd\x01\n" +
-	"&DeleteSignedUrlKeyBackendBucketRequest\x12-\n" +
-	"\x0ebackend_bucket\x18\xf5\xe3\xdd+ \x01(\tB\x03\xe0A\x02R\rbackendBucket\x12\"\n" +
-	"\bkey_name\x18\xeb\xf0\xee\xee\x01 \x01(\tB\x03\xe0A\x02R\akeyName\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\x1bDeleteForwardingRuleRequest\x121\n" +
+	"\x0fforwarding_rule\x18\xfe\xa5݀\x01 \x01(\tB\x04\xe2A\x01\x02R\x0eforwardingRule\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xe1\x01\n" +
-	"'DeleteSignedUrlKeyBackendServiceRequest\x120\n" +
-	"\x0fbackend_service\x18\x8a\xc0\xae\x92\x01 \x01(\tB\x03\xe0A\x02R\x0ebackendService\x12\"\n" +
-	"\bkey_name\x18\xeb\xf0\xee\xee\x01 \x01(\tB\x03\xe0A\x02R\akeyName\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\xdf\x01\n" +
+	"\x1eDeleteFutureReservationRequest\x126\n" +
+	"\x12future_reservation\x18\xd0\xc6\xe6\x1a \x01(\tB\x04\xe2A\x01\x02R\x11futureReservation\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xa3\x01\n" +
+	"\x1aDeleteGlobalAddressRequest\x12\"\n" +
+	"\aaddress\x18\xf4\xb7\xde\xdc\x01 \x01(\tB\x04\xe2A\x01\x02R\aaddress\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\x9e\x01\n" +
-	"\x15DeleteSnapshotRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\xb9\x01\n" +
+	"!DeleteGlobalForwardingRuleRequest\x121\n" +
+	"\x0fforwarding_rule\x18\xfe\xa5݀\x01 \x01(\tB\x04\xe2A\x01\x02R\x0eforwardingRule\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12#\n" +
-	"\bsnapshot\x18ī\xeb\x87\x01 \x01(\tB\x03\xe0A\x02R\bsnapshotB\r\n" +
-	"\v_request_id\"\xb0\x01\n" +
-	"\x1bDeleteSslCertificateRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xcc\x01\n" +
+	"'DeleteGlobalNetworkEndpointGroupRequest\x12>\n" +
+	"\x16network_endpoint_group\x18\x86\xcb\xf3\xce\x01 \x01(\tB\x04\xe2A\x01\x02R\x14networkEndpointGroup\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12/\n" +
-	"\x0fssl_certificate\x18\xe4ג\x16 \x01(\tB\x03\xe0A\x02R\x0esslCertificateB\r\n" +
-	"\v_request_id\"\xa2\x01\n" +
-	"\x16DeleteSslPolicyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"h\n" +
+	"\x1cDeleteGlobalOperationRequest\x12%\n" +
+	"\toperation\x18\xe7\xaa\xeb\x18 \x01(\tB\x04\xe2A\x01\x02R\toperation\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\"\x1f\n" +
+	"\x1dDeleteGlobalOperationResponse\"\x85\x01\n" +
+	"(DeleteGlobalOrganizationOperationRequest\x12%\n" +
+	"\toperation\x18\xe7\xaa\xeb\x18 \x01(\tB\x04\xe2A\x01\x02R\toperation\x12$\n" +
+	"\tparent_id\x18\xd0\xe1\x9a\xdb\x01 \x01(\tH\x00R\bparentId\x88\x01\x01B\f\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12&\n" +
+	"_parent_id\"+\n" +
+	")DeleteGlobalOrganizationOperationResponse\"\xcf\x01\n" +
+	")DeleteGlobalPublicDelegatedPrefixeRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12?\n" +
+	"\x17public_delegated_prefix\x18\xe8ܱa \x01(\tB\x04\xe2A\x01\x02R\x15publicDelegatedPrefix\x12%\n" +
 	"\n" +
-	"ssl_policy\x18\xc5\xfd\xe0\x8c\x01 \x01(\tB\x03\xe0A\x02R\tsslPolicyB\r\n" +
-	"\v_request_id\"\xcb\x01\n" +
-	"\x18DeleteStoragePoolRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xb1\x03\n" +
+	"$DeleteGlobalVmExtensionPolicyRequest\x12D\n" +
+	"\x1aglobal_vm_extension_policy\x18\x9e\xd6\xfc\x03 \x01(\tB\x04\xe2A\x01\x02R\x17globalVmExtensionPolicy\x12\xdf\x01\n" +
+	"Cglobal_vm_extension_policy_rollout_operation_rollout_input_resource\x18\xd8\xf7\x98F \x01(\v2L.google.cloud.compute.v1.GlobalVmExtensionPolicyRolloutOperationRolloutInputB\x04\xe2A\x01\x02R;globalVmExtensionPolicyRolloutOperationRolloutInputResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12*\n" +
-	"\fstorage_pool\x18\xe0\xc6\xf1\xab\x01 \x01(\tB\x03\xe0A\x02R\vstoragePool\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xcd\x01\n" +
-	"\x17DeleteSubnetworkRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xaa\x01\n" +
+	"\x18DeleteHealthCheckRequest\x12+\n" +
+	"\fhealth_check\x18媤\x93\x01 \x01(\tB\x04\xe2A\x01\x02R\vhealthCheck\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12'\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\x96\x01\n" +
+	"\x12DeleteImageRequest\x12\x1d\n" +
+	"\x05image\x18\xdb\xd2\xea/ \x01(\tB\x04\xe2A\x01\x02R\x05image\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"subnetwork\x18\xee\xa7\xe4\x92\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"subnetworkB\r\n" +
-	"\v_request_id\"\xb4\x01\n" +
-	"\x1cDeleteTargetGrpcProxyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xbd\x02\n" +
+	"!DeleteInstanceGroupManagerRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x129\n" +
+	"\x14no_graceful_shutdown\x18\x92\xb7\xab\xa0\x01 \x01(\bH\x00R\x12noGracefulShutdown\x88\x01\x01\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x122\n" +
-	"\x11target_grpc_proxy\x18\xfb\xb4\xb2\x02 \x01(\tB\x03\xe0A\x02R\x0ftargetGrpcProxyB\r\n" +
-	"\v_request_id\"\xb4\x01\n" +
-	"\x1cDeleteTargetHttpProxyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\x17\n" +
+	"\x15_no_graceful_shutdownB\r\n" +
+	"\v_request_id\"\xa6\x02\n" +
+	".DeleteInstanceGroupManagerResizeRequestRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x122\n" +
-	"\x11target_http_proxy\x18\xe5\xbe\xd2b \x01(\tB\x03\xe0A\x02R\x0ftargetHttpProxyB\r\n" +
-	"\v_request_id\"\xb7\x01\n" +
-	"\x1dDeleteTargetHttpsProxyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12.\n" +
+	"\x0eresize_request\x18\x84\x84\xb9g \x01(\tB\x04\xe2A\x01\x02R\rresizeRequest\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xd3\x01\n" +
+	"\x1aDeleteInstanceGroupRequest\x12.\n" +
+	"\x0einstance_group\x18\xd5\xd4\xd5& \x01(\tB\x04\xe2A\x01\x02R\rinstanceGroup\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x124\n" +
-	"\x12target_https_proxy\x18\xec\xb0\xfa\x18 \x01(\tB\x03\xe0A\x02R\x10targetHttpsProxyB\r\n" +
-	"\v_request_id\"\xd4\x01\n" +
-	"\x1bDeleteTargetInstanceRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\x97\x02\n" +
+	"\x15DeleteInstanceRequest\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x129\n" +
+	"\x14no_graceful_shutdown\x18\x92\xb7\xab\xa0\x01 \x01(\bH\x00R\x12noGracefulShutdown\x88\x01\x01\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\x17\n" +
+	"\x15_no_graceful_shutdownB\r\n" +
+	"\v_request_id\"\xb9\x01\n" +
+	"\x1dDeleteInstanceTemplateRequest\x125\n" +
+	"\x11instance_template\x18䁻\x93\x01 \x01(\tB\x04\xe2A\x01\x02R\x10instanceTemplate\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\x8e\x04\n" +
+	"*DeleteInstancesInstanceGroupManagerRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12\xc5\x01\n" +
+	"9instance_group_managers_delete_instances_request_resource\x18\x84ƭO \x01(\v2D.google.cloud.compute.v1.InstanceGroupManagersDeleteInstancesRequestB\x04\xe2A\x01\x02R3instanceGroupManagersDeleteInstancesRequestResource\x129\n" +
+	"\x14no_graceful_shutdown\x18\x92\xb7\xab\xa0\x01 \x01(\bH\x00R\x12noGracefulShutdown\x88\x01\x01\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\x17\n" +
+	"\x15_no_graceful_shutdownB\r\n" +
+	"\v_request_id\"\xae\x04\n" +
+	"0DeleteInstancesRegionInstanceGroupManagerRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x129\n" +
+	"\x14no_graceful_shutdown\x18\x92\xb7\xab\xa0\x01 \x01(\bH\x00R\x12noGracefulShutdown\x88\x01\x01\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12\xd9\x01\n" +
+	"@region_instance_group_managers_delete_instances_request_resource\x18\xf9\x8a\xeb\xee\x01 \x01(\v2J.google.cloud.compute.v1.RegionInstanceGroupManagersDeleteInstancesRequestB\x04\xe2A\x01\x02R9regionInstanceGroupManagersDeleteInstancesRequestResource\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01B\x17\n" +
+	"\x15_no_graceful_shutdownB\r\n" +
+	"\v_request_id\"\xe9\x01\n" +
+	"!DeleteInstantSnapshotGroupRequest\x12=\n" +
+	"\x16instant_snapshot_group\x18\xe2\xec\xb5j \x01(\tB\x04\xe2A\x01\x02R\x14instantSnapshotGroup\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xda\x01\n" +
+	"\x1cDeleteInstantSnapshotRequest\x123\n" +
+	"\x10instant_snapshot\x18\xe2\xdcߺ\x01 \x01(\tB\x04\xe2A\x01\x02R\x0finstantSnapshot\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xda\x01\n" +
+	"(DeleteInterconnectAttachmentGroupRequest\x12K\n" +
+	"\x1dinterconnect_attachment_group\x18\xf4\xef\x98$ \x01(\tB\x04\xe2A\x01\x02R\x1binterconnectAttachmentGroup\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xf5\x01\n" +
+	"#DeleteInterconnectAttachmentRequest\x12A\n" +
+	"\x17interconnect_attachment\x18\xf4\x8a\xf7\x92\x01 \x01(\tB\x04\xe2A\x01\x02R\x16interconnectAttachment\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xbc\x01\n" +
+	"\x1eDeleteInterconnectGroupRequest\x127\n" +
+	"\x12interconnect_group\x18\x8e\xb7\xa9\xb9\x01 \x01(\tB\x04\xe2A\x01\x02R\x11interconnectGroup\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xab\x01\n" +
+	"\x19DeleteInterconnectRequest\x12+\n" +
+	"\finterconnect\x18\x8eɌk \x01(\tB\x04\xe2A\x01\x02R\finterconnect\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\x9c\x01\n" +
+	"\x14DeleteLicenseRequest\x12!\n" +
+	"\alicense\x18\xc1\x88\xc2O \x01(\tB\x04\xe2A\x01\x02R\alicense\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xac\x01\n" +
+	"\x19DeleteMachineImageRequest\x12,\n" +
+	"\rmachine_image\x18\xe3\xfe\xfe  \x01(\tB\x04\xe2A\x01\x02R\fmachineImage\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xfe\x01\n" +
+	"\x1bDeleteNamedSetRouterRequest\x12#\n" +
+	"\tnamed_set\x18\xdc\xfc\xa1N \x01(\tH\x00R\bnamedSet\x88\x01\x01\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12\x1f\n" +
+	"\x06router\x18ɮ\xeeF \x01(\tB\x04\xe2A\x01\x02R\x06routerB\f\n" +
+	"\n" +
+	"_named_setB\r\n" +
+	"\v_request_id\"\xe5\x01\n" +
+	"\x1eDeleteNetworkAttachmentRequest\x126\n" +
+	"\x12network_attachment\x18ԗ\x8fk \x01(\tB\x04\xe2A\x01\x02R\x11networkAttachment\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\x82\x02\n" +
+	"'DeleteNetworkEdgeSecurityServiceRequest\x12J\n" +
+	"\x1dnetwork_edge_security_service\x18\xa7\x9f\xefJ \x01(\tB\x04\xe2A\x01\x02R\x1anetworkEdgeSecurityService\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xea\x01\n" +
+	"!DeleteNetworkEndpointGroupRequest\x12>\n" +
+	"\x16network_endpoint_group\x18\x86\xcb\xf3\xce\x01 \x01(\tB\x04\xe2A\x01\x02R\x14networkEndpointGroup\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xba\x01\n" +
+	"\"DeleteNetworkFirewallPolicyRequest\x121\n" +
+	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x04\xe2A\x01\x02R\x0efirewallPolicy\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\x93\x02\n" +
+	"%DeleteNetworkInterfaceInstanceRequest\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x12>\n" +
+	"\x16network_interface_name\x18\x82\xa8\xeb\xb5\x01 \x01(\tB\x04\xe2A\x01\x02R\x14networkInterfaceName\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\x9c\x01\n" +
+	"\x14DeleteNetworkRequest\x12!\n" +
+	"\anetwork\x18\xae\xb4\x85o \x01(\tB\x04\xe2A\x01\x02R\anetwork\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xc8\x01\n" +
+	"\x16DeleteNodeGroupRequest\x12'\n" +
+	"\n" +
+	"node_group\x18\x82\xfc\x8b\xe0\x01 \x01(\tB\x04\xe2A\x01\x02R\tnodeGroup\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xd7\x01\n" +
+	"\x19DeleteNodeTemplateRequest\x12-\n" +
+	"\rnode_template\x18\x97䋚\x01 \x01(\tB\x04\xe2A\x01\x02R\fnodeTemplate\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xe7\x02\n" +
+	"\x1bDeleteNodesNodeGroupRequest\x12'\n" +
+	"\n" +
+	"node_group\x18\x82\xfc\x8b\xe0\x01 \x01(\tB\x04\xe2A\x01\x02R\tnodeGroup\x12\x97\x01\n" +
+	")node_groups_delete_nodes_request_resource\x18\x92׳W \x01(\v25.google.cloud.compute.v1.NodeGroupsDeleteNodesRequestB\x04\xe2A\x01\x02R$nodeGroupsDeleteNodesRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\x91\x01\n" +
+	"'DeleteOrganizationSecurityPolicyRequest\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x120\n" +
-	"\x0ftarget_instance\x18\x83\x8f\x96\x8a\x01 \x01(\tB\x03\xe0A\x02R\x0etargetInstance\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xcd\x01\n" +
-	"\x17DeleteTargetPoolRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x04\xe2A\x01\x02R\x0esecurityPolicyB\r\n" +
+	"\v_request_id\"\xdf\x01\n" +
+	"\x1cDeletePacketMirroringRequest\x122\n" +
+	"\x10packet_mirroring\x18̹\xd1\n" +
+	" \x01(\tB\x04\xe2A\x01\x02R\x0fpacketMirroring\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\x9f\x03\n" +
+	"3DeletePerInstanceConfigsInstanceGroupManagerRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12\xd7\x01\n" +
+	"@instance_group_managers_delete_per_instance_configs_req_resource\x18\xa0\xea\xe8\xac\x01 \x01(\v2I.google.cloud.compute.v1.InstanceGroupManagersDeletePerInstanceConfigsReqB\x04\xe2A\x01\x02R8instanceGroupManagersDeletePerInstanceConfigsReqResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zone\"\xac\x03\n" +
+	"9DeletePerInstanceConfigsRegionInstanceGroupManagerRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12\xd8\x01\n" +
+	"Aregion_instance_group_manager_delete_instance_config_req_resource\x18\x85\x9b- \x01(\v2J.google.cloud.compute.v1.RegionInstanceGroupManagerDeleteInstanceConfigReqB\x04\xe2A\x01\x02R9regionInstanceGroupManagerDeleteInstanceConfigReqResource\"\xcc\x01\n" +
+	"$DeletePublicAdvertisedPrefixeRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12A\n" +
+	"\x18public_advertised_prefix\x18\x9e\xf7\xc90 \x01(\tB\x04\xe2A\x01\x02R\x16publicAdvertisedPrefix\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xf3\x01\n" +
+	"#DeletePublicDelegatedPrefixeRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12?\n" +
+	"\x17public_delegated_prefix\x18\xe8ܱa \x01(\tB\x04\xe2A\x01\x02R\x15publicDelegatedPrefix\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xd6\x01\n" +
+	"\x1dDeleteRegionAutoscalerRequest\x12(\n" +
+	"\n" +
+	"autoscaler\x18\xd7\xfd\xd2\xf6\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"autoscaler\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xdf\x01\n" +
+	" DeleteRegionBackendBucketRequest\x12.\n" +
+	"\x0ebackend_bucket\x18\xf5\xe3\xdd+ \x01(\tB\x04\xe2A\x01\x02R\rbackendBucket\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xe3\x01\n" +
+	"!DeleteRegionBackendServiceRequest\x121\n" +
+	"\x0fbackend_service\x18\x8a\xc0\xae\x92\x01 \x01(\tB\x04\xe2A\x01\x02R\x0ebackendService\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xf6\x01\n" +
+	"'DeleteRegionCompositeHealthCheckRequest\x12>\n" +
+	"\x16composite_health_check\x18\x9d\xc0\xd6\xde\x01 \x01(\tB\x04\xe2A\x01\x02R\x14compositeHealthCheck\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xc3\x01\n" +
+	"\x17DeleteRegionDiskRequest\x12\x1b\n" +
+	"\x04disk\x18\x9d\x9b\xbc\x01 \x01(\tB\x04\xe2A\x01\x02R\x04disk\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xfe\x01\n" +
+	"*DeleteRegionHealthAggregationPolicyRequest\x12C\n" +
+	"\x19health_aggregation_policy\x18\xf2\xcf\xcbr \x01(\tB\x04\xe2A\x01\x02R\x17healthAggregationPolicy\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xda\x01\n" +
+	"\x1eDeleteRegionHealthCheckRequest\x12+\n" +
+	"\fhealth_check\x18媤\x93\x01 \x01(\tB\x04\xe2A\x01\x02R\vhealthCheck\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xf0\x01\n" +
+	"%DeleteRegionHealthCheckServiceRequest\x12:\n" +
+	"\x14health_check_service\x18ۛ\xdd\xc2\x01 \x01(\tB\x04\xe2A\x01\x02R\x12healthCheckService\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xdd\x01\n" +
+	"\x1fDeleteRegionHealthSourceRequest\x12-\n" +
+	"\rhealth_source\x18ކų\x01 \x01(\tB\x04\xe2A\x01\x02R\fhealthSource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xc9\x02\n" +
+	"'DeleteRegionInstanceGroupManagerRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x129\n" +
+	"\x14no_graceful_shutdown\x18\x92\xb7\xab\xa0\x01 \x01(\bH\x00R\x12noGracefulShutdown\x88\x01\x01\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01B\x17\n" +
+	"\x15_no_graceful_shutdownB\r\n" +
+	"\v_request_id\"\xb2\x02\n" +
+	"4DeleteRegionInstanceGroupManagerResizeRequestRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12.\n" +
+	"\x0eresize_request\x18\x84\x84\xb9g \x01(\tB\x04\xe2A\x01\x02R\rresizeRequestB\r\n" +
+	"\v_request_id\"\xe9\x01\n" +
+	"#DeleteRegionInstanceTemplateRequest\x125\n" +
+	"\x11instance_template\x18䁻\x93\x01 \x01(\tB\x04\xe2A\x01\x02R\x10instanceTemplate\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xf5\x01\n" +
+	"'DeleteRegionInstantSnapshotGroupRequest\x12=\n" +
+	"\x16instant_snapshot_group\x18\xe2\xec\xb5j \x01(\tB\x04\xe2A\x01\x02R\x14instantSnapshotGroup\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xe6\x01\n" +
+	"\"DeleteRegionInstantSnapshotRequest\x123\n" +
+	"\x10instant_snapshot\x18\xe2\xdcߺ\x01 \x01(\tB\x04\xe2A\x01\x02R\x0finstantSnapshot\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xf6\x01\n" +
+	"'DeleteRegionNetworkEndpointGroupRequest\x12>\n" +
+	"\x16network_endpoint_group\x18\x86\xcb\xf3\xce\x01 \x01(\tB\x04\xe2A\x01\x02R\x14networkEndpointGroup\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xea\x01\n" +
+	"(DeleteRegionNetworkFirewallPolicyRequest\x121\n" +
+	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x04\xe2A\x01\x02R\x0efirewallPolicy\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xf5\x01\n" +
+	"'DeleteRegionNotificationEndpointRequest\x12=\n" +
+	"\x15notification_endpoint\x18\xe9\xbcֳ\x01 \x01(\tB\x04\xe2A\x01\x02R\x14notificationEndpoint\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\x89\x01\n" +
+	"\x1cDeleteRegionOperationRequest\x12%\n" +
+	"\toperation\x18\xe7\xaa\xeb\x18 \x01(\tB\x04\xe2A\x01\x02R\toperation\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\"\x1f\n" +
+	"\x1dDeleteRegionOperationResponse\"\xe2\x01\n" +
+	"!DeleteRegionSecurityPolicyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x120\n" +
+	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x04\xe2A\x01\x02R\x0esecurityPolicyB\r\n" +
+	"\v_request_id\"\xd0\x01\n" +
+	"\x1bDeleteRegionSnapshotRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12$\n" +
+	"\bsnapshot\x18ī\xeb\x87\x01 \x01(\tB\x04\xe2A\x01\x02R\bsnapshotB\r\n" +
+	"\v_request_id\"\xe2\x01\n" +
+	"!DeleteRegionSslCertificateRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x120\n" +
+	"\x0fssl_certificate\x18\xe4ג\x16 \x01(\tB\x04\xe2A\x01\x02R\x0esslCertificateB\r\n" +
+	"\v_request_id\"\xd4\x01\n" +
+	"\x1cDeleteRegionSslPolicyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12'\n" +
-	"\vtarget_pool\x18\x8a\xe4\xf8\x1d \x01(\tB\x03\xe0A\x02R\n" +
-	"targetPoolB\r\n" +
-	"\v_request_id\"\xb2\x01\n" +
-	"\x1bDeleteTargetSslProxyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x121\n" +
-	"\x10target_ssl_proxy\x18ͺơ\x01 \x01(\tB\x03\xe0A\x02R\x0etargetSslProxyB\r\n" +
-	"\v_request_id\"\xb2\x01\n" +
-	"\x1bDeleteTargetTcpProxyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"ssl_policy\x18\xc5\xfd\xe0\x8c\x01 \x01(\tB\x04\xe2A\x01\x02R\tsslPolicyB\r\n" +
+	"\v_request_id\"\xe6\x01\n" +
+	"\"DeleteRegionTargetHttpProxyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x121\n" +
-	"\x10target_tcp_proxy\x18\xe2\xd6\xf0\xef\x01 \x01(\tB\x03\xe0A\x02R\x0etargetTcpProxyB\r\n" +
-	"\v_request_id\"\xe1\x01\n" +
-	"\x1dDeleteTargetVpnGatewayRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x123\n" +
+	"\x11target_http_proxy\x18\xe5\xbe\xd2b \x01(\tB\x04\xe2A\x01\x02R\x0ftargetHttpProxyB\r\n" +
+	"\v_request_id\"\xe9\x01\n" +
+	"#DeleteRegionTargetHttpsProxyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x125\n" +
-	"\x12target_vpn_gateway\x18ˀ\xf6\xfd\x01 \x01(\tB\x03\xe0A\x02R\x10targetVpnGatewayB\r\n" +
-	"\v_request_id\"\x99\x01\n" +
-	"\x13DeleteUrlMapRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\x12target_https_proxy\x18\xec\xb0\xfa\x18 \x01(\tB\x04\xe2A\x01\x02R\x10targetHttpsProxyB\r\n" +
+	"\v_request_id\"\xe4\x01\n" +
+	"!DeleteRegionTargetTcpProxyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12 \n" +
-	"\aurl_map\x18\x8c\x95\x81\xaf\x01 \x01(\tB\x03\xe0A\x02R\x06urlMapB\r\n" +
-	"\v_request_id\"\xce\x01\n" +
-	"\x17DeleteVpnGatewayRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x122\n" +
+	"\x10target_tcp_proxy\x18\xe2\xd6\xf0\xef\x01 \x01(\tB\x04\xe2A\x01\x02R\x0etargetTcpProxyB\r\n" +
+	"\v_request_id\"\xcb\x01\n" +
+	"\x19DeleteRegionUrlMapRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12(\n" +
-	"\vvpn_gateway\x18\xf9\x83\xf6\xc1\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"vpnGatewayB\r\n" +
-	"\v_request_id\"\xca\x01\n" +
-	"\x16DeleteVpnTunnelRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
+	"\aurl_map\x18\x8c\x95\x81\xaf\x01 \x01(\tB\x04\xe2A\x01\x02R\x06urlMapB\r\n" +
+	"\v_request_id\"\xcc\x01\n" +
+	"\x18DeleteReservationRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12)\n" +
+	"\vreservation\x18̇\xd5\x16 \x01(\tB\x04\xe2A\x01\x02R\vreservation\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xdc\x01\n" +
+	"\x1bDeleteResourcePolicyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
-	"vpn_tunnel\x18\x93\x94\xcaD \x01(\tB\x03\xe0A\x02R\tvpnTunnelB\r\n" +
-	"\v_request_id\"\xd7\x01\n" +
-	"\x16DeleteWireGroupRequest\x124\n" +
-	"\x12cross_site_network\x18\xd5\xc5\xcb3 \x01(\tB\x03\xe0A\x02R\x10crossSiteNetwork\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x120\n" +
+	"\x0fresource_policy\x18\x83\xa5\xf7K \x01(\tB\x04\xe2A\x01\x02R\x0eresourcePolicyB\r\n" +
+	"\v_request_id\"\xaa\x01\n" +
+	"\x18DeleteRolloutPlanRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12+\n" +
+	"\frollout_plan\x18\xf7\xd1\xf2\xda\x01 \x01(\tB\x04\xe2A\x01\x02R\vrolloutPlanB\r\n" +
+	"\v_request_id\"\x9d\x01\n" +
+	"\x14DeleteRolloutRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"wire_group\x18Ť\xb7: \x01(\tB\x03\xe0A\x02R\twireGroupB\r\n" +
-	"\v_request_id\"\x80\x01\n" +
-	"\x1aDeleteZoneOperationRequest\x12$\n" +
-	"\toperation\x18\xe7\xaa\xeb\x18 \x01(\tB\x03\xe0A\x02R\toperation\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"\x1d\n" +
-	"\x1bDeleteZoneOperationResponse\"\xe2\x01\n" +
-	"\"DeleteZoneVmExtensionPolicyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\arollout\x18\xb1\x83Ԑ\x01 \x01(\tB\x04\xe2A\x01\x02R\arolloutB\r\n" +
+	"\v_request_id\"\xf9\x01\n" +
+	"\x1eDeleteRoutePolicyRouterRequest\x12\x1e\n" +
+	"\x06policy\x18\xb2ʶ+ \x01(\tH\x00R\x06policy\x88\x01\x01\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12\x1f\n" +
+	"\x06router\x18ɮ\xeeF \x01(\tB\x04\xe2A\x01\x02R\x06routerB\t\n" +
+	"\a_policyB\r\n" +
+	"\v_request_id\"\x96\x01\n" +
+	"\x12DeleteRouteRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\x1d\n" +
+	"\x05route\x18\xc9\xe4\xea3 \x01(\tB\x04\xe2A\x01\x02R\x05routeB\r\n" +
+	"\v_request_id\"\xc3\x01\n" +
+	"\x13DeleteRouterRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\x1f\n" +
+	"\x06router\x18ɮ\xeeF \x01(\tB\x04\xe2A\x01\x02R\x06routerB\r\n" +
+	"\v_request_id\"\xb2\x01\n" +
+	"\x1bDeleteSecurityPolicyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x120\n" +
+	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x04\xe2A\x01\x02R\x0esecurityPolicyB\r\n" +
+	"\v_request_id\"\xe6\x01\n" +
+	"\x1eDeleteServiceAttachmentRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x127\n" +
-	"\x13vm_extension_policy\x18\xba\x93\x8b\x9e\x01 \x01(\tB\x03\xe0A\x02R\x11vmExtensionPolicy\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\x12service_attachment\x18\xed\xa9С\x01 \x01(\tB\x04\xe2A\x01\x02R\x11serviceAttachmentB\r\n" +
+	"\v_request_id\"\xe0\x01\n" +
+	"&DeleteSignedUrlKeyBackendBucketRequest\x12.\n" +
+	"\x0ebackend_bucket\x18\xf5\xe3\xdd+ \x01(\tB\x04\xe2A\x01\x02R\rbackendBucket\x12#\n" +
+	"\bkey_name\x18\xeb\xf0\xee\xee\x01 \x01(\tB\x04\xe2A\x01\x02R\akeyName\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xe4\x01\n" +
+	"'DeleteSignedUrlKeyBackendServiceRequest\x121\n" +
+	"\x0fbackend_service\x18\x8a\xc0\xae\x92\x01 \x01(\tB\x04\xe2A\x01\x02R\x0ebackendService\x12#\n" +
+	"\bkey_name\x18\xeb\xf0\xee\xee\x01 \x01(\tB\x04\xe2A\x01\x02R\akeyName\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xa0\x01\n" +
+	"\x15DeleteSnapshotRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12$\n" +
+	"\bsnapshot\x18ī\xeb\x87\x01 \x01(\tB\x04\xe2A\x01\x02R\bsnapshotB\r\n" +
+	"\v_request_id\"\xb2\x01\n" +
+	"\x1bDeleteSslCertificateRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x120\n" +
+	"\x0fssl_certificate\x18\xe4ג\x16 \x01(\tB\x04\xe2A\x01\x02R\x0esslCertificateB\r\n" +
+	"\v_request_id\"\xa4\x01\n" +
+	"\x16DeleteSslPolicyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12'\n" +
+	"\n" +
+	"ssl_policy\x18\xc5\xfd\xe0\x8c\x01 \x01(\tB\x04\xe2A\x01\x02R\tsslPolicyB\r\n" +
+	"\v_request_id\"\xce\x01\n" +
+	"\x18DeleteStoragePoolRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12+\n" +
+	"\fstorage_pool\x18\xe0\xc6\xf1\xab\x01 \x01(\tB\x04\xe2A\x01\x02R\vstoragePool\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xd0\x01\n" +
+	"\x17DeleteSubnetworkRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12(\n" +
+	"\n" +
+	"subnetwork\x18\xee\xa7\xe4\x92\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"subnetworkB\r\n" +
+	"\v_request_id\"\xb6\x01\n" +
+	"\x1cDeleteTargetGrpcProxyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x123\n" +
+	"\x11target_grpc_proxy\x18\xfb\xb4\xb2\x02 \x01(\tB\x04\xe2A\x01\x02R\x0ftargetGrpcProxyB\r\n" +
+	"\v_request_id\"\xb6\x01\n" +
+	"\x1cDeleteTargetHttpProxyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x123\n" +
+	"\x11target_http_proxy\x18\xe5\xbe\xd2b \x01(\tB\x04\xe2A\x01\x02R\x0ftargetHttpProxyB\r\n" +
+	"\v_request_id\"\xb9\x01\n" +
+	"\x1dDeleteTargetHttpsProxyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x125\n" +
+	"\x12target_https_proxy\x18\xec\xb0\xfa\x18 \x01(\tB\x04\xe2A\x01\x02R\x10targetHttpsProxyB\r\n" +
+	"\v_request_id\"\xd7\x01\n" +
+	"\x1bDeleteTargetInstanceRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x121\n" +
+	"\x0ftarget_instance\x18\x83\x8f\x96\x8a\x01 \x01(\tB\x04\xe2A\x01\x02R\x0etargetInstance\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xd0\x01\n" +
+	"\x17DeleteTargetPoolRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12(\n" +
+	"\vtarget_pool\x18\x8a\xe4\xf8\x1d \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"targetPoolB\r\n" +
+	"\v_request_id\"\xb4\x01\n" +
+	"\x1bDeleteTargetSslProxyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x122\n" +
+	"\x10target_ssl_proxy\x18ͺơ\x01 \x01(\tB\x04\xe2A\x01\x02R\x0etargetSslProxyB\r\n" +
+	"\v_request_id\"\xb4\x01\n" +
+	"\x1bDeleteTargetTcpProxyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x122\n" +
+	"\x10target_tcp_proxy\x18\xe2\xd6\xf0\xef\x01 \x01(\tB\x04\xe2A\x01\x02R\x0etargetTcpProxyB\r\n" +
+	"\v_request_id\"\xe4\x01\n" +
+	"\x1dDeleteTargetVpnGatewayRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x126\n" +
+	"\x12target_vpn_gateway\x18ˀ\xf6\xfd\x01 \x01(\tB\x04\xe2A\x01\x02R\x10targetVpnGatewayB\r\n" +
+	"\v_request_id\"\x9b\x01\n" +
+	"\x13DeleteUrlMapRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
+	"\aurl_map\x18\x8c\x95\x81\xaf\x01 \x01(\tB\x04\xe2A\x01\x02R\x06urlMapB\r\n" +
+	"\v_request_id\"\xd1\x01\n" +
+	"\x17DeleteVpnGatewayRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12)\n" +
+	"\vvpn_gateway\x18\xf9\x83\xf6\xc1\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"vpnGatewayB\r\n" +
+	"\v_request_id\"\xcd\x01\n" +
+	"\x16DeleteVpnTunnelRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12&\n" +
+	"\n" +
+	"vpn_tunnel\x18\x93\x94\xcaD \x01(\tB\x04\xe2A\x01\x02R\tvpnTunnelB\r\n" +
+	"\v_request_id\"\xda\x01\n" +
+	"\x16DeleteWireGroupRequest\x125\n" +
+	"\x12cross_site_network\x18\xd5\xc5\xcb3 \x01(\tB\x04\xe2A\x01\x02R\x10crossSiteNetwork\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12&\n" +
+	"\n" +
+	"wire_group\x18Ť\xb7: \x01(\tB\x04\xe2A\x01\x02R\twireGroupB\r\n" +
+	"\v_request_id\"\x83\x01\n" +
+	"\x1aDeleteZoneOperationRequest\x12%\n" +
+	"\toperation\x18\xe7\xaa\xeb\x18 \x01(\tB\x04\xe2A\x01\x02R\toperation\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"\x1d\n" +
+	"\x1bDeleteZoneOperationResponse\"\xe5\x01\n" +
+	"\"DeleteZoneVmExtensionPolicyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x128\n" +
+	"\x13vm_extension_policy\x18\xba\x93\x8b\x9e\x01 \x01(\tB\x04\xe2A\x01\x02R\x11vmExtensionPolicy\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
 	"\v_request_id\"]\n" +
 	"\x06Denied\x12)\n" +
 	"\fI_p_protocol\x18\xbd\xf6\xde\xe8\x01 \x01(\tH\x00R\n" +
 	"IPProtocol\x88\x01\x01\x12\x17\n" +
 	"\x05ports\x18\x92\xf0\xf92 \x03(\tR\x05portsB\x0f\n" +
-	"\r_I_p_protocol\"\x8c\x02\n" +
-	"\x15DeprecateImageRequest\x12s\n" +
-	"\x1bdeprecation_status_resource\x18\xf0\x89\xe5\x9e\x01 \x01(\v2*.google.cloud.compute.v1.DeprecationStatusB\x03\xe0A\x02R\x19deprecationStatusResource\x12\x1c\n" +
-	"\x05image\x18\xdb\xd2\xea/ \x01(\tB\x03\xe0A\x02R\x05image\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\r_I_p_protocol\"\x8f\x02\n" +
+	"\x15DeprecateImageRequest\x12t\n" +
+	"\x1bdeprecation_status_resource\x18\xf0\x89\xe5\x9e\x01 \x01(\v2*.google.cloud.compute.v1.DeprecationStatusB\x04\xe2A\x01\x02R\x19deprecationStatusResource\x12\x1d\n" +
+	"\x05image\x18\xdb\xd2\xea/ \x01(\tB\x04\xe2A\x01\x02R\x05image\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
 	"\v_request_id\"\xf2\x02\n" +
@@ -233674,49 +233637,47 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\v_deprecatedB\v\n" +
 	"\t_obsoleteB\x0e\n" +
 	"\f_replacementB\b\n" +
-	"\x06_state\"\xed\x01\n" +
-	"\x19DetachDiskInstanceRequest\x12'\n" +
-	"\vdevice_name\x18Ե\x9a  \x01(\tB\x03\xe0A\x02R\n" +
-	"deviceName\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\x06_state\"\xf1\x01\n" +
+	"\x19DetachDiskInstanceRequest\x12(\n" +
+	"\vdevice_name\x18Ե\x9a  \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"deviceName\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xb4\x03\n" +
-	"7DetachNetworkEndpointsGlobalNetworkEndpointGroupRequest\x12\xd7\x01\n" +
-	"@global_network_endpoint_groups_detach_endpoints_request_resource\x18ݍ\x9f\x04 \x01(\v2J.google.cloud.compute.v1.GlobalNetworkEndpointGroupsDetachEndpointsRequestB\x03\xe0A\x02R9globalNetworkEndpointGroupsDetachEndpointsRequestResource\x12=\n" +
-	"\x16network_endpoint_group\x18\x86\xcb\xf3\xce\x01 \x01(\tB\x03\xe0A\x02R\x14networkEndpointGroup\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xbf\x03\n" +
-	"1DetachNetworkEndpointsNetworkEndpointGroupRequest\x12=\n" +
-	"\x16network_endpoint_group\x18\x86\xcb\xf3\xce\x01 \x01(\tB\x03\xe0A\x02R\x14networkEndpointGroup\x12\xc5\x01\n" +
-	"9network_endpoint_groups_detach_endpoints_request_resource\x18\xf9\xa0\xee\xf5\x01 \x01(\v2D.google.cloud.compute.v1.NetworkEndpointGroupsDetachEndpointsRequestB\x03\xe0A\x02R3networkEndpointGroupsDetachEndpointsRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xde\x03\n" +
-	"7DetachNetworkEndpointsRegionNetworkEndpointGroupRequest\x12=\n" +
-	"\x16network_endpoint_group\x18\x86\xcb\xf3\xce\x01 \x01(\tB\x03\xe0A\x02R\x14networkEndpointGroup\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12\xd8\x01\n" +
-	"@region_network_endpoint_groups_detach_endpoints_request_resource\x18\xee嫕\x01 \x01(\v2J.google.cloud.compute.v1.RegionNetworkEndpointGroupsDetachEndpointsRequestB\x03\xe0A\x02R9regionNetworkEndpointGroupsDetachEndpointsRequestResource\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xb7\x03\n" +
+	"7DetachNetworkEndpointsGlobalNetworkEndpointGroupRequest\x12\xd8\x01\n" +
+	"@global_network_endpoint_groups_detach_endpoints_request_resource\x18ݍ\x9f\x04 \x01(\v2J.google.cloud.compute.v1.GlobalNetworkEndpointGroupsDetachEndpointsRequestB\x04\xe2A\x01\x02R9globalNetworkEndpointGroupsDetachEndpointsRequestResource\x12>\n" +
+	"\x16network_endpoint_group\x18\x86\xcb\xf3\xce\x01 \x01(\tB\x04\xe2A\x01\x02R\x14networkEndpointGroup\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\x80\x01\n" +
-	"\x1cDisableXpnHostProjectRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\xc3\x03\n" +
+	"1DetachNetworkEndpointsNetworkEndpointGroupRequest\x12>\n" +
+	"\x16network_endpoint_group\x18\x86\xcb\xf3\xce\x01 \x01(\tB\x04\xe2A\x01\x02R\x14networkEndpointGroup\x12\xc6\x01\n" +
+	"9network_endpoint_groups_detach_endpoints_request_resource\x18\xf9\xa0\xee\xf5\x01 \x01(\v2D.google.cloud.compute.v1.NetworkEndpointGroupsDetachEndpointsRequestB\x04\xe2A\x01\x02R3networkEndpointGroupsDetachEndpointsRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xe2\x03\n" +
+	"7DetachNetworkEndpointsRegionNetworkEndpointGroupRequest\x12>\n" +
+	"\x16network_endpoint_group\x18\x86\xcb\xf3\xce\x01 \x01(\tB\x04\xe2A\x01\x02R\x14networkEndpointGroup\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12\xd9\x01\n" +
+	"@region_network_endpoint_groups_detach_endpoints_request_resource\x18\xee嫕\x01 \x01(\v2J.google.cloud.compute.v1.RegionNetworkEndpointGroupsDetachEndpointsRequestB\x04\xe2A\x01\x02R9regionNetworkEndpointGroupsDetachEndpointsRequestResource\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xac\x02\n" +
-	" DisableXpnResourceProjectRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12\xa5\x01\n" +
-	".projects_disable_xpn_resource_request_resource\x18\xaa\xd4\xdcc \x01(\v2:.google.cloud.compute.v1.ProjectsDisableXpnResourceRequestB\x03\xe0A\x02R)projectsDisableXpnResourceRequestResource\x12%\n" +
+	"\v_request_id\"\x81\x01\n" +
+	"\x1cDisableXpnHostProjectRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xae\x02\n" +
+	" DisableXpnResourceProjectRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12\xa6\x01\n" +
+	".projects_disable_xpn_resource_request_resource\x18\xaa\xd4\xdcc \x01(\v2:.google.cloud.compute.v1.ProjectsDisableXpnResourceRequestB\x04\xe2A\x01\x02R)projectsDisableXpnResourceRequestResource\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
 	"\v_request_id\"\xf2 \n" +
@@ -234053,15 +234014,15 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\aseconds\x18\xff\x94\xb5\xab\x01 \x01(\x03H\x01R\aseconds\x88\x01\x01B\b\n" +
 	"\x06_nanosB\n" +
 	"\n" +
-	"\b_seconds\"\x7f\n" +
-	"\x1bEnableXpnHostProjectRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\b_seconds\"\x80\x01\n" +
+	"\x1bEnableXpnHostProjectRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xa9\x02\n" +
-	"\x1fEnableXpnResourceProjectRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12\xa3\x01\n" +
-	"-projects_enable_xpn_resource_request_resource\x18\xafЛ\xc9\x01 \x01(\v29.google.cloud.compute.v1.ProjectsEnableXpnResourceRequestB\x03\xe0A\x02R(projectsEnableXpnResourceRequestResource\x12%\n" +
+	"\v_request_id\"\xab\x02\n" +
+	"\x1fEnableXpnResourceProjectRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12\xa4\x01\n" +
+	"-projects_enable_xpn_resource_request_resource\x18\xafЛ\xc9\x01 \x01(\v29.google.cloud.compute.v1.ProjectsEnableXpnResourceRequestB\x04\xe2A\x01\x02R(projectsEnableXpnResourceRequestResource\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
 	"\v_request_id\"D\n" +
@@ -234126,16 +234087,16 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\n" +
 	"_self_linkB\n" +
 	"\n" +
-	"\b_warning\"\x88\x03\n" +
-	"\"ExpandIpCidrRangeSubnetworkRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\b_warning\"\x8c\x03\n" +
+	"\"ExpandIpCidrRangeSubnetworkRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12'\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12(\n" +
 	"\n" +
-	"subnetwork\x18\xee\xa7\xe4\x92\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"subnetwork\x12\xad\x01\n" +
-	"1subnetworks_expand_ip_cidr_range_request_resource\x18\xdeк\xe3\x01 \x01(\v2<.google.cloud.compute.v1.SubnetworksExpandIpCidrRangeRequestB\x03\xe0A\x02R+subnetworksExpandIpCidrRangeRequestResourceB\r\n" +
+	"subnetwork\x18\xee\xa7\xe4\x92\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"subnetwork\x12\xae\x01\n" +
+	"1subnetworks_expand_ip_cidr_range_request_resource\x18\xdeк\xe3\x01 \x01(\v2<.google.cloud.compute.v1.SubnetworksExpandIpCidrRangeRequestB\x04\xe2A\x01\x02R+subnetworksExpandIpCidrRangeRequestResourceB\r\n" +
 	"\v_request_id\"\xd3\x01\n" +
 	"\x04Expr\x12)\n" +
 	"\vdescription\x18\xfc\x87\xd6\xc9\x01 \x01(\tH\x00R\vdescription\x88\x01\x01\x12'\n" +
@@ -235069,150 +235030,148 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\x10USE_SERVING_PORT\x10\xcc\xd1\xf5\xac\x01B\x14\n" +
 	"\x12_grpc_service_nameB\a\n" +
 	"\x05_portB\x15\n" +
-	"\x13_port_specification\"\x8c\x01\n" +
-	"\x19GetAcceleratorTypeRequest\x121\n" +
-	"\x10accelerator_type\x18\x8e\xe1\xe8A \x01(\tB\x03\xe0A\x02R\x0facceleratorType\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"x\n" +
-	"\x11GetAddressRequest\x12!\n" +
-	"\aaddress\x18\xf4\xb7\xde\xdc\x01 \x01(\tB\x03\xe0A\x02R\aaddress\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\"|\n" +
-	"#GetAssociationFirewallPolicyRequest\x120\n" +
-	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x03\xe0A\x02R\x0efirewallPolicy\x12\x1a\n" +
+	"\x13_port_specification\"\x8f\x01\n" +
+	"\x19GetAcceleratorTypeRequest\x122\n" +
+	"\x10accelerator_type\x18\x8e\xe1\xe8A \x01(\tB\x04\xe2A\x01\x02R\x0facceleratorType\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"{\n" +
+	"\x11GetAddressRequest\x12\"\n" +
+	"\aaddress\x18\xf4\xb7\xde\xdc\x01 \x01(\tB\x04\xe2A\x01\x02R\aaddress\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\"}\n" +
+	"#GetAssociationFirewallPolicyRequest\x121\n" +
+	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x04\xe2A\x01\x02R\x0efirewallPolicy\x12\x1a\n" +
 	"\x04name\x18\x8b\xf5\xcd\x01 \x01(\tH\x00R\x04name\x88\x01\x01B\a\n" +
-	"\x05_name\"\xa5\x01\n" +
-	"*GetAssociationNetworkFirewallPolicyRequest\x120\n" +
-	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x03\xe0A\x02R\x0efirewallPolicy\x12\x1a\n" +
-	"\x04name\x18\x8b\xf5\xcd\x01 \x01(\tH\x00R\x04name\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\a\n" +
-	"\x05_name\"\x87\x01\n" +
+	"\x05_name\"\xa7\x01\n" +
+	"*GetAssociationNetworkFirewallPolicyRequest\x121\n" +
+	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x04\xe2A\x01\x02R\x0efirewallPolicy\x12\x1a\n" +
+	"\x04name\x18\x8b\xf5\xcd\x01 \x01(\tH\x00R\x04name\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\a\n" +
+	"\x05_name\"\x88\x01\n" +
 	"/GetAssociationOrganizationSecurityPolicyRequest\x12\x1a\n" +
-	"\x04name\x18\x8b\xf5\xcd\x01 \x01(\tH\x00R\x04name\x88\x01\x01\x12/\n" +
-	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x03\xe0A\x02R\x0esecurityPolicyB\a\n" +
-	"\x05_name\"\xcb\x01\n" +
-	"0GetAssociationRegionNetworkFirewallPolicyRequest\x120\n" +
-	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x03\xe0A\x02R\x0efirewallPolicy\x12\x1a\n" +
-	"\x04name\x18\x8b\xf5\xcd\x01 \x01(\tH\x00R\x04name\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\a\n" +
-	"\x05_name\"}\n" +
-	"\x14GetAutoscalerRequest\x12'\n" +
+	"\x04name\x18\x8b\xf5\xcd\x01 \x01(\tH\x00R\x04name\x88\x01\x01\x120\n" +
+	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x04\xe2A\x01\x02R\x0esecurityPolicyB\a\n" +
+	"\x05_name\"\xce\x01\n" +
+	"0GetAssociationRegionNetworkFirewallPolicyRequest\x121\n" +
+	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x04\xe2A\x01\x02R\x0efirewallPolicy\x12\x1a\n" +
+	"\x04name\x18\x8b\xf5\xcd\x01 \x01(\tH\x00R\x04name\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\a\n" +
+	"\x05_name\"\x80\x01\n" +
+	"\x14GetAutoscalerRequest\x12(\n" +
 	"\n" +
-	"autoscaler\x18\xd7\xfd\xd2\xf6\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"autoscaler\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"j\n" +
-	"\x17GetBackendBucketRequest\x12-\n" +
-	"\x0ebackend_bucket\x18\xf5\xe3\xdd+ \x01(\tB\x03\xe0A\x02R\rbackendBucket\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\"n\n" +
-	"\x18GetBackendServiceRequest\x120\n" +
-	"\x0fbackend_service\x18\x8a\xc0\xae\x92\x01 \x01(\tB\x03\xe0A\x02R\x0ebackendService\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\"t\n" +
-	"\x1aGetCrossSiteNetworkRequest\x124\n" +
-	"\x12cross_site_network\x18\xd5\xc5\xcb3 \x01(\tB\x03\xe0A\x02R\x10crossSiteNetwork\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\"q\n" +
-	"!GetDiagnosticsInterconnectRequest\x12*\n" +
-	"\finterconnect\x18\x8eɌk \x01(\tB\x03\xe0A\x02R\finterconnect\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\"j\n" +
-	"\x0eGetDiskRequest\x12\x1a\n" +
-	"\x04disk\x18\x9d\x9b\xbc\x01 \x01(\tB\x03\xe0A\x02R\x04disk\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"w\n" +
-	"\x12GetDiskTypeRequest\x12#\n" +
-	"\tdisk_type\x18\x9c\xe9\xac, \x01(\tB\x03\xe0A\x02R\bdiskType\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"\xbe\x01\n" +
-	"$GetEffectiveFirewallsInstanceRequest\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x124\n" +
-	"\x11network_interface\x18\xe8\xc0\x9d\xae\x01 \x01(\tB\x03\xe0A\x02R\x10networkInterface\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"i\n" +
-	"#GetEffectiveFirewallsNetworkRequest\x12 \n" +
-	"\anetwork\x18\xae\xb4\x85o \x01(\tB\x03\xe0A\x02R\anetwork\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\"\x9d\x01\n" +
-	"7GetEffectiveFirewallsRegionNetworkFirewallPolicyRequest\x12 \n" +
-	"\anetwork\x18\xae\xb4\x85o \x01(\tB\x03\xe0A\x02R\anetwork\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\"\x87\x01\n" +
-	"1GetEffectiveSecurityPoliciesBackendServiceRequest\x120\n" +
-	"\x0fbackend_service\x18\x8a\xc0\xae\x92\x01 \x01(\tB\x03\xe0A\x02R\x0ebackendService\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\"4\n" +
-	"2GetEffectiveSecurityPoliciesBackendServiceResponse\"z\n" +
-	"\x1cGetExternalVpnGatewayRequest\x128\n" +
-	"\x14external_vpn_gateway\x18\x85׳4 \x01(\tB\x03\xe0A\x02R\x12externalVpnGateway\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\"L\n" +
-	"\x18GetFirewallPolicyRequest\x120\n" +
-	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x03\xe0A\x02R\x0efirewallPolicy\"[\n" +
-	"\x12GetFirewallRequest\x12#\n" +
-	"\bfirewall\x18\x80\xfa\xd5\xf3\x01 \x01(\tB\x03\xe0A\x02R\bfirewall\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\"\xea\x01\n" +
-	"\x18GetForwardingRuleRequest\x120\n" +
-	"\x0fforwarding_rule\x18\xfe\xa5݀\x01 \x01(\tB\x03\xe0A\x02R\x0eforwardingRule\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\x1a\n" +
+	"autoscaler\x18\xd7\xfd\xd2\xf6\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"autoscaler\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"l\n" +
+	"\x17GetBackendBucketRequest\x12.\n" +
+	"\x0ebackend_bucket\x18\xf5\xe3\xdd+ \x01(\tB\x04\xe2A\x01\x02R\rbackendBucket\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\"p\n" +
+	"\x18GetBackendServiceRequest\x121\n" +
+	"\x0fbackend_service\x18\x8a\xc0\xae\x92\x01 \x01(\tB\x04\xe2A\x01\x02R\x0ebackendService\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\"v\n" +
+	"\x1aGetCrossSiteNetworkRequest\x125\n" +
+	"\x12cross_site_network\x18\xd5\xc5\xcb3 \x01(\tB\x04\xe2A\x01\x02R\x10crossSiteNetwork\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\"s\n" +
+	"!GetDiagnosticsInterconnectRequest\x12+\n" +
+	"\finterconnect\x18\x8eɌk \x01(\tB\x04\xe2A\x01\x02R\finterconnect\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\"m\n" +
+	"\x0eGetDiskRequest\x12\x1b\n" +
+	"\x04disk\x18\x9d\x9b\xbc\x01 \x01(\tB\x04\xe2A\x01\x02R\x04disk\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"z\n" +
+	"\x12GetDiskTypeRequest\x12$\n" +
+	"\tdisk_type\x18\x9c\xe9\xac, \x01(\tB\x04\xe2A\x01\x02R\bdiskType\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"\xc2\x01\n" +
+	"$GetEffectiveFirewallsInstanceRequest\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x125\n" +
+	"\x11network_interface\x18\xe8\xc0\x9d\xae\x01 \x01(\tB\x04\xe2A\x01\x02R\x10networkInterface\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"k\n" +
+	"#GetEffectiveFirewallsNetworkRequest\x12!\n" +
+	"\anetwork\x18\xae\xb4\x85o \x01(\tB\x04\xe2A\x01\x02R\anetwork\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\"\xa0\x01\n" +
+	"7GetEffectiveFirewallsRegionNetworkFirewallPolicyRequest\x12!\n" +
+	"\anetwork\x18\xae\xb4\x85o \x01(\tB\x04\xe2A\x01\x02R\anetwork\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\"\x89\x01\n" +
+	"1GetEffectiveSecurityPoliciesBackendServiceRequest\x121\n" +
+	"\x0fbackend_service\x18\x8a\xc0\xae\x92\x01 \x01(\tB\x04\xe2A\x01\x02R\x0ebackendService\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\"4\n" +
+	"2GetEffectiveSecurityPoliciesBackendServiceResponse\"|\n" +
+	"\x1cGetExternalVpnGatewayRequest\x129\n" +
+	"\x14external_vpn_gateway\x18\x85׳4 \x01(\tB\x04\xe2A\x01\x02R\x12externalVpnGateway\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\"M\n" +
+	"\x18GetFirewallPolicyRequest\x121\n" +
+	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x04\xe2A\x01\x02R\x0efirewallPolicy\"]\n" +
+	"\x12GetFirewallRequest\x12$\n" +
+	"\bfirewall\x18\x80\xfa\xd5\xf3\x01 \x01(\tB\x04\xe2A\x01\x02R\bfirewall\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\"\xed\x01\n" +
+	"\x18GetForwardingRuleRequest\x121\n" +
+	"\x0fforwarding_rule\x18\xfe\xa5݀\x01 \x01(\tB\x04\xe2A\x01\x02R\x0eforwardingRule\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12\x1a\n" +
 	"\x04view\x18\xa5\xf5\xdc\x01 \x01(\tH\x00R\x04view\x88\x01\x01\"5\n" +
 	"\x04View\x12\x12\n" +
 	"\x0eUNDEFINED_VIEW\x10\x00\x12\f\n" +
 	"\x05BASIC\x10\x8e\xb8\x83\x1e\x12\v\n" +
 	"\x04FULL\x10\x8f\xb5\x84\x01B\a\n" +
-	"\x05_view\"^\n" +
-	"\x19GetFromFamilyImageRequest\x12\x1f\n" +
-	"\x06family\x18\xe4\xb6\xe1\x9c\x01 \x01(\tB\x03\xe0A\x02R\x06family\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\"\x92\x01\n" +
-	"\x1bGetFutureReservationRequest\x125\n" +
-	"\x12future_reservation\x18\xd0\xc6\xe6\x1a \x01(\tB\x03\xe0A\x02R\x11futureReservation\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"^\n" +
-	"\x17GetGlobalAddressRequest\x12!\n" +
-	"\aaddress\x18\xf4\xb7\xde\xdc\x01 \x01(\tB\x03\xe0A\x02R\aaddress\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\"\xd0\x01\n" +
-	"\x1eGetGlobalForwardingRuleRequest\x120\n" +
-	"\x0fforwarding_rule\x18\xfe\xa5݀\x01 \x01(\tB\x03\xe0A\x02R\x0eforwardingRule\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
+	"\x05_view\"`\n" +
+	"\x19GetFromFamilyImageRequest\x12 \n" +
+	"\x06family\x18\xe4\xb6\xe1\x9c\x01 \x01(\tB\x04\xe2A\x01\x02R\x06family\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\"\x95\x01\n" +
+	"\x1bGetFutureReservationRequest\x126\n" +
+	"\x12future_reservation\x18\xd0\xc6\xe6\x1a \x01(\tB\x04\xe2A\x01\x02R\x11futureReservation\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"`\n" +
+	"\x17GetGlobalAddressRequest\x12\"\n" +
+	"\aaddress\x18\xf4\xb7\xde\xdc\x01 \x01(\tB\x04\xe2A\x01\x02R\aaddress\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\"\xd2\x01\n" +
+	"\x1eGetGlobalForwardingRuleRequest\x121\n" +
+	"\x0fforwarding_rule\x18\xfe\xa5݀\x01 \x01(\tB\x04\xe2A\x01\x02R\x0eforwardingRule\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1a\n" +
 	"\x04view\x18\xa5\xf5\xdc\x01 \x01(\tH\x00R\x04view\x88\x01\x01\"5\n" +
 	"\x04View\x12\x12\n" +
 	"\x0eUNDEFINED_VIEW\x10\x00\x12\f\n" +
 	"\x05BASIC\x10\x8e\xb8\x83\x1e\x12\v\n" +
 	"\x04FULL\x10\x8f\xb5\x84\x01B\a\n" +
-	"\x05_view\"C\n" +
-	"\x1fGetGlobalFrontendSettingRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\"\x87\x01\n" +
-	"$GetGlobalNetworkEndpointGroupRequest\x12=\n" +
-	"\x16network_endpoint_group\x18\x86\xcb\xf3\xce\x01 \x01(\tB\x03\xe0A\x02R\x14networkEndpointGroup\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\"j\n" +
-	"\x19GetGlobalOperationRequest\x12+\n" +
-	"\toperation\x18\xe7\xaa\xeb\x18 \x01(\tB\n" +
-	"\xe0A\x02\xfaG\x04nameR\toperation\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\"\x88\x01\n" +
-	"%GetGlobalOrganizationOperationRequest\x12+\n" +
-	"\toperation\x18\xe7\xaa\xeb\x18 \x01(\tB\n" +
-	"\xe0A\x02\xfaG\x04nameR\toperation\x12$\n" +
+	"\x05_view\"D\n" +
+	"\x1fGetGlobalFrontendSettingRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\"\x89\x01\n" +
+	"$GetGlobalNetworkEndpointGroupRequest\x12>\n" +
+	"\x16network_endpoint_group\x18\x86\xcb\xf3\xce\x01 \x01(\tB\x04\xe2A\x01\x02R\x14networkEndpointGroup\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\"l\n" +
+	"\x19GetGlobalOperationRequest\x12,\n" +
+	"\toperation\x18\xe7\xaa\xeb\x18 \x01(\tB\v\xe2A\x01\x02\xfaG\x04nameR\toperation\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\"\x89\x01\n" +
+	"%GetGlobalOrganizationOperationRequest\x12,\n" +
+	"\toperation\x18\xe7\xaa\xeb\x18 \x01(\tB\v\xe2A\x01\x02\xfaG\x04nameR\toperation\x12$\n" +
 	"\tparent_id\x18\xd0\xe1\x9a\xdb\x01 \x01(\tH\x00R\bparentId\x88\x01\x01B\f\n" +
 	"\n" +
-	"_parent_id\"\x8a\x01\n" +
-	"&GetGlobalPublicDelegatedPrefixeRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12>\n" +
-	"\x17public_delegated_prefix\x18\xe8ܱa \x01(\tB\x03\xe0A\x02R\x15publicDelegatedPrefix\"\x8a\x01\n" +
-	"!GetGlobalVmExtensionPolicyRequest\x12C\n" +
-	"\x1aglobal_vm_extension_policy\x18\x9e\xd6\xfc\x03 \x01(\tB\x03\xe0A\x02R\x17globalVmExtensionPolicy\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\"\xf8\x01\n" +
-	"!GetGuestAttributesInstanceRequest\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12&\n" +
+	"_parent_id\"\x8c\x01\n" +
+	"&GetGlobalPublicDelegatedPrefixeRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12?\n" +
+	"\x17public_delegated_prefix\x18\xe8ܱa \x01(\tB\x04\xe2A\x01\x02R\x15publicDelegatedPrefix\"\x8c\x01\n" +
+	"!GetGlobalVmExtensionPolicyRequest\x12D\n" +
+	"\x1aglobal_vm_extension_policy\x18\x9e\xd6\xfc\x03 \x01(\tB\x04\xe2A\x01\x02R\x17globalVmExtensionPolicy\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\"\xfb\x01\n" +
+	"!GetGuestAttributesInstanceRequest\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12&\n" +
 	"\n" +
 	"query_path\x18\xbc\x82\xe1\xaf\x01 \x01(\tH\x00R\tqueryPath\x88\x01\x01\x12)\n" +
-	"\fvariable_key\x18\x9c\x84\xb0N \x01(\tH\x01R\vvariableKey\x88\x01\x01\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB\r\n" +
+	"\fvariable_key\x18\x9c\x84\xb0N \x01(\tH\x01R\vvariableKey\x88\x01\x01\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB\r\n" +
 	"\v_query_pathB\x0f\n" +
-	"\r_variable_key\"\xf9\x01\n" +
-	"\x1eGetHealthBackendServiceRequest\x120\n" +
-	"\x0fbackend_service\x18\x8a\xc0\xae\x92\x01 \x01(\tB\x03\xe0A\x02R\x0ebackendService\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x82\x01\n" +
-	"!resource_group_reference_resource\x18\xd3\xfe\xed5 \x01(\v2/.google.cloud.compute.v1.ResourceGroupReferenceB\x03\xe0A\x02R\x1eresourceGroupReferenceResource\"e\n" +
-	"\x15GetHealthCheckRequest\x12*\n" +
-	"\fhealth_check\x18媤\x93\x01 \x01(\tB\x03\xe0A\x02R\vhealthCheck\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\"\x94\x01\n" +
+	"\r_variable_key\"\xfc\x01\n" +
+	"\x1eGetHealthBackendServiceRequest\x121\n" +
+	"\x0fbackend_service\x18\x8a\xc0\xae\x92\x01 \x01(\tB\x04\xe2A\x01\x02R\x0ebackendService\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x83\x01\n" +
+	"!resource_group_reference_resource\x18\xd3\xfe\xed5 \x01(\v2/.google.cloud.compute.v1.ResourceGroupReferenceB\x04\xe2A\x01\x02R\x1eresourceGroupReferenceResource\"g\n" +
+	"\x15GetHealthCheckRequest\x12+\n" +
+	"\fhealth_check\x18媤\x93\x01 \x01(\tB\x04\xe2A\x01\x02R\vhealthCheck\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\"\x94\x01\n" +
 	"\x1aGetHealthOperationMetadata\x12f\n" +
 	"\vhealth_info\x18\xb1\xe9\x98p \x01(\v2=.google.cloud.compute.v1.GetHealthOperationMetadataHealthInfoH\x00R\n" +
 	"healthInfo\x88\x01\x01B\x0e\n" +
@@ -235252,322 +235211,321 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\x0e_health_statusB\x12\n" +
 	"\x10_repair_categoryB\x13\n" +
 	"\x11_unhealthy_reasonB\x0e\n" +
-	"\f_update_time\"\x9f\x02\n" +
-	"$GetHealthRegionBackendServiceRequest\x120\n" +
-	"\x0fbackend_service\x18\x8a\xc0\xae\x92\x01 \x01(\tB\x03\xe0A\x02R\x0ebackendService\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\x82\x01\n" +
-	"!resource_group_reference_resource\x18\xd3\xfe\xed5 \x01(\v2/.google.cloud.compute.v1.ResourceGroupReferenceB\x03\xe0A\x02R\x1eresourceGroupReferenceResource\"\xad\x01\n" +
-	"*GetHealthRegionCompositeHealthCheckRequest\x12=\n" +
-	"\x16composite_health_check\x18\x9d\xc0\xd6\xde\x01 \x01(\tB\x03\xe0A\x02R\x14compositeHealthCheck\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\"\x94\x01\n" +
-	"\"GetHealthRegionHealthSourceRequest\x12,\n" +
-	"\rhealth_source\x18ކų\x01 \x01(\tB\x03\xe0A\x02R\fhealthSource\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\"\x84\x02\n" +
-	"\x1fGetHealthReservationSlotRequest\x12(\n" +
-	"\vparent_name\x18\x80\x8a\x80\xe4\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"parentName\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\f_update_time\"\xa3\x02\n" +
+	"$GetHealthRegionBackendServiceRequest\x121\n" +
+	"\x0fbackend_service\x18\x8a\xc0\xae\x92\x01 \x01(\tB\x04\xe2A\x01\x02R\x0ebackendService\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12\x83\x01\n" +
+	"!resource_group_reference_resource\x18\xd3\xfe\xed5 \x01(\v2/.google.cloud.compute.v1.ResourceGroupReferenceB\x04\xe2A\x01\x02R\x1eresourceGroupReferenceResource\"\xb0\x01\n" +
+	"*GetHealthRegionCompositeHealthCheckRequest\x12>\n" +
+	"\x16composite_health_check\x18\x9d\xc0\xd6\xde\x01 \x01(\tB\x04\xe2A\x01\x02R\x14compositeHealthCheck\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\"\x97\x01\n" +
+	"\"GetHealthRegionHealthSourceRequest\x12-\n" +
+	"\rhealth_source\x18ކų\x01 \x01(\tB\x04\xe2A\x01\x02R\fhealthSource\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\"\x88\x02\n" +
+	"\x1fGetHealthReservationSlotRequest\x12)\n" +
+	"\vparent_name\x18\x80\x8a\x80\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"parentName\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x122\n" +
-	"\x10reservation_slot\x18\x91\xbd\xa7\x84\x01 \x01(\tB\x03\xe0A\x02R\x0freservationSlot\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xfc\x01\n" +
-	"\x1aGetHealthTargetPoolRequest\x12s\n" +
-	"\x1binstance_reference_resource\x18\xec\xe4\u058b\x01 \x01(\v2*.google.cloud.compute.v1.InstanceReferenceB\x03\xe0A\x02R\x19instanceReferenceResource\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12'\n" +
-	"\vtarget_pool\x18\x8a\xe4\xf8\x1d \x01(\tB\x03\xe0A\x02R\n" +
-	"targetPool\"\x95\x01\n" +
-	"\x0eGetHostRequest\x12)\n" +
-	"\vassociation\x18\x81\xb9\xa3\xd6\x01 \x01(\tB\x03\xe0A\x02R\vassociation\x12\x1a\n" +
-	"\x04host\x18\xa8\xeb\xc3\x01 \x01(\tB\x03\xe0A\x02R\x04host\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"\xdf\x01\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x123\n" +
+	"\x10reservation_slot\x18\x91\xbd\xa7\x84\x01 \x01(\tB\x04\xe2A\x01\x02R\x0freservationSlot\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\x80\x02\n" +
+	"\x1aGetHealthTargetPoolRequest\x12t\n" +
+	"\x1binstance_reference_resource\x18\xec\xe4\u058b\x01 \x01(\v2*.google.cloud.compute.v1.InstanceReferenceB\x04\xe2A\x01\x02R\x19instanceReferenceResource\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12(\n" +
+	"\vtarget_pool\x18\x8a\xe4\xf8\x1d \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"targetPool\"\x99\x01\n" +
+	"\x0eGetHostRequest\x12*\n" +
+	"\vassociation\x18\x81\xb9\xa3\xd6\x01 \x01(\tB\x04\xe2A\x01\x02R\vassociation\x12\x1b\n" +
+	"\x04host\x18\xa8\xeb\xc3\x01 \x01(\tB\x04\xe2A\x01\x02R\x04host\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"\xe1\x01\n" +
 	" GetIamPolicyBackendBucketRequest\x12P\n" +
-	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresourceB#\n" +
-	"!_options_requested_policy_version\"\xe0\x01\n" +
-	"!GetIamPolicyBackendServiceRequest\x12P\n" +
-	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresourceB#\n" +
-	"!_options_requested_policy_version\"\xf2\x01\n" +
-	"\x17GetIamPolicyDiskRequest\x12P\n" +
-	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB#\n" +
-	"!_options_requested_policy_version\"\xbe\x01\n" +
-	"!GetIamPolicyFirewallPolicyRequest\x12P\n" +
-	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresourceB#\n" +
-	"!_options_requested_policy_version\"\xd7\x01\n" +
-	"\x18GetIamPolicyImageRequest\x12P\n" +
-	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresourceB#\n" +
-	"!_options_requested_policy_version\"\xf6\x01\n" +
-	"\x1bGetIamPolicyInstanceRequest\x12P\n" +
-	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB#\n" +
+	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresourceB#\n" +
 	"!_options_requested_policy_version\"\xe2\x01\n" +
-	"#GetIamPolicyInstanceTemplateRequest\x12P\n" +
-	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresourceB#\n" +
-	"!_options_requested_policy_version\"\x82\x02\n" +
-	"'GetIamPolicyInstantSnapshotGroupRequest\x12P\n" +
-	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB#\n" +
-	"!_options_requested_policy_version\"\xfd\x01\n" +
-	"\"GetIamPolicyInstantSnapshotRequest\x12P\n" +
-	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB#\n" +
-	"!_options_requested_policy_version\"\xed\x01\n" +
-	".GetIamPolicyInterconnectAttachmentGroupRequest\x12P\n" +
-	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresourceB#\n" +
-	"!_options_requested_policy_version\"\xe3\x01\n" +
-	"$GetIamPolicyInterconnectGroupRequest\x12P\n" +
-	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresourceB#\n" +
-	"!_options_requested_policy_version\"\xdd\x01\n" +
-	"\x1eGetIamPolicyLicenseCodeRequest\x12P\n" +
-	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresourceB#\n" +
+	"!GetIamPolicyBackendServiceRequest\x12P\n" +
+	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresourceB#\n" +
+	"!_options_requested_policy_version\"\xf5\x01\n" +
+	"\x17GetIamPolicyDiskRequest\x12P\n" +
+	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB#\n" +
+	"!_options_requested_policy_version\"\xbf\x01\n" +
+	"!GetIamPolicyFirewallPolicyRequest\x12P\n" +
+	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresourceB#\n" +
 	"!_options_requested_policy_version\"\xd9\x01\n" +
-	"\x1aGetIamPolicyLicenseRequest\x12P\n" +
-	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresourceB#\n" +
-	"!_options_requested_policy_version\"\xde\x01\n" +
-	"\x1fGetIamPolicyMachineImageRequest\x12P\n" +
-	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresourceB#\n" +
-	"!_options_requested_policy_version\"\x83\x02\n" +
-	"$GetIamPolicyNetworkAttachmentRequest\x12P\n" +
-	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresourceB#\n" +
-	"!_options_requested_policy_version\"\xe7\x01\n" +
-	"(GetIamPolicyNetworkFirewallPolicyRequest\x12P\n" +
-	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresourceB#\n" +
-	"!_options_requested_policy_version\"\xf7\x01\n" +
-	"\x1cGetIamPolicyNodeGroupRequest\x12P\n" +
-	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB#\n" +
-	"!_options_requested_policy_version\"\xfe\x01\n" +
-	"\x1fGetIamPolicyNodeTemplateRequest\x12P\n" +
-	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresourceB#\n" +
+	"\x18GetIamPolicyImageRequest\x12P\n" +
+	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresourceB#\n" +
+	"!_options_requested_policy_version\"\xf9\x01\n" +
+	"\x1bGetIamPolicyInstanceRequest\x12P\n" +
+	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB#\n" +
+	"!_options_requested_policy_version\"\xe4\x01\n" +
+	"#GetIamPolicyInstanceTemplateRequest\x12P\n" +
+	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresourceB#\n" +
 	"!_options_requested_policy_version\"\x85\x02\n" +
-	"&GetIamPolicyRegionBackendBucketRequest\x12P\n" +
-	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresourceB#\n" +
+	"'GetIamPolicyInstantSnapshotGroupRequest\x12P\n" +
+	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB#\n" +
+	"!_options_requested_policy_version\"\x80\x02\n" +
+	"\"GetIamPolicyInstantSnapshotRequest\x12P\n" +
+	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB#\n" +
+	"!_options_requested_policy_version\"\xef\x01\n" +
+	".GetIamPolicyInterconnectAttachmentGroupRequest\x12P\n" +
+	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresourceB#\n" +
+	"!_options_requested_policy_version\"\xe5\x01\n" +
+	"$GetIamPolicyInterconnectGroupRequest\x12P\n" +
+	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresourceB#\n" +
+	"!_options_requested_policy_version\"\xdf\x01\n" +
+	"\x1eGetIamPolicyLicenseCodeRequest\x12P\n" +
+	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresourceB#\n" +
+	"!_options_requested_policy_version\"\xdb\x01\n" +
+	"\x1aGetIamPolicyLicenseRequest\x12P\n" +
+	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresourceB#\n" +
+	"!_options_requested_policy_version\"\xe0\x01\n" +
+	"\x1fGetIamPolicyMachineImageRequest\x12P\n" +
+	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresourceB#\n" +
 	"!_options_requested_policy_version\"\x86\x02\n" +
+	"$GetIamPolicyNetworkAttachmentRequest\x12P\n" +
+	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresourceB#\n" +
+	"!_options_requested_policy_version\"\xe9\x01\n" +
+	"(GetIamPolicyNetworkFirewallPolicyRequest\x12P\n" +
+	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresourceB#\n" +
+	"!_options_requested_policy_version\"\xfa\x01\n" +
+	"\x1cGetIamPolicyNodeGroupRequest\x12P\n" +
+	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB#\n" +
+	"!_options_requested_policy_version\"\x81\x02\n" +
+	"\x1fGetIamPolicyNodeTemplateRequest\x12P\n" +
+	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresourceB#\n" +
+	"!_options_requested_policy_version\"\x88\x02\n" +
+	"&GetIamPolicyRegionBackendBucketRequest\x12P\n" +
+	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresourceB#\n" +
+	"!_options_requested_policy_version\"\x89\x02\n" +
 	"'GetIamPolicyRegionBackendServiceRequest\x12P\n" +
-	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresourceB#\n" +
-	"!_options_requested_policy_version\"\xfc\x01\n" +
+	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresourceB#\n" +
+	"!_options_requested_policy_version\"\xff\x01\n" +
 	"\x1dGetIamPolicyRegionDiskRequest\x12P\n" +
-	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresourceB#\n" +
-	"!_options_requested_policy_version\"\x8c\x02\n" +
+	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresourceB#\n" +
+	"!_options_requested_policy_version\"\x8f\x02\n" +
 	"-GetIamPolicyRegionInstantSnapshotGroupRequest\x12P\n" +
-	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresourceB#\n" +
-	"!_options_requested_policy_version\"\x87\x02\n" +
+	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresourceB#\n" +
+	"!_options_requested_policy_version\"\x8a\x02\n" +
 	"(GetIamPolicyRegionInstantSnapshotRequest\x12P\n" +
-	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresourceB#\n" +
-	"!_options_requested_policy_version\"\x8d\x02\n" +
+	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresourceB#\n" +
+	"!_options_requested_policy_version\"\x90\x02\n" +
 	".GetIamPolicyRegionNetworkFirewallPolicyRequest\x12P\n" +
-	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresourceB#\n" +
-	"!_options_requested_policy_version\"\x80\x02\n" +
-	"!GetIamPolicyRegionSnapshotRequest\x12P\n" +
-	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresourceB#\n" +
-	"!_options_requested_policy_version\"\xaf\x02\n" +
-	"#GetIamPolicyReservationBlockRequest\x12P\n" +
-	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12/\n" +
-	"\x0fparent_resource\x18\x83\x98\xd0\b \x01(\tB\x03\xe0A\x02R\x0eparentResource\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB#\n" +
-	"!_options_requested_policy_version\"\xf9\x01\n" +
-	"\x1eGetIamPolicyReservationRequest\x12P\n" +
-	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB#\n" +
-	"!_options_requested_policy_version\"\xb2\x02\n" +
-	"&GetIamPolicyReservationSubBlockRequest\x12P\n" +
-	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12/\n" +
-	"\x0fparent_resource\x18\x83\x98\xd0\b \x01(\tB\x03\xe0A\x02R\x0eparentResource\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB#\n" +
-	"!_options_requested_policy_version\"\x80\x02\n" +
-	"!GetIamPolicyResourcePolicyRequest\x12P\n" +
-	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresourceB#\n" +
+	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresourceB#\n" +
 	"!_options_requested_policy_version\"\x83\x02\n" +
-	"$GetIamPolicyServiceAttachmentRequest\x12P\n" +
-	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresourceB#\n" +
-	"!_options_requested_policy_version\"\xda\x01\n" +
-	"\x1bGetIamPolicySnapshotRequest\x12P\n" +
-	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresourceB#\n" +
-	"!_options_requested_policy_version\"\xf9\x01\n" +
-	"\x1eGetIamPolicyStoragePoolRequest\x12P\n" +
-	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB#\n" +
+	"!GetIamPolicyRegionSnapshotRequest\x12P\n" +
+	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresourceB#\n" +
+	"!_options_requested_policy_version\"\xb3\x02\n" +
+	"#GetIamPolicyReservationBlockRequest\x12P\n" +
+	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x120\n" +
+	"\x0fparent_resource\x18\x83\x98\xd0\b \x01(\tB\x04\xe2A\x01\x02R\x0eparentResource\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB#\n" +
 	"!_options_requested_policy_version\"\xfc\x01\n" +
+	"\x1eGetIamPolicyReservationRequest\x12P\n" +
+	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB#\n" +
+	"!_options_requested_policy_version\"\xb6\x02\n" +
+	"&GetIamPolicyReservationSubBlockRequest\x12P\n" +
+	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x120\n" +
+	"\x0fparent_resource\x18\x83\x98\xd0\b \x01(\tB\x04\xe2A\x01\x02R\x0eparentResource\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB#\n" +
+	"!_options_requested_policy_version\"\x83\x02\n" +
+	"!GetIamPolicyResourcePolicyRequest\x12P\n" +
+	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresourceB#\n" +
+	"!_options_requested_policy_version\"\x86\x02\n" +
+	"$GetIamPolicyServiceAttachmentRequest\x12P\n" +
+	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresourceB#\n" +
+	"!_options_requested_policy_version\"\xdc\x01\n" +
+	"\x1bGetIamPolicySnapshotRequest\x12P\n" +
+	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresourceB#\n" +
+	"!_options_requested_policy_version\"\xfc\x01\n" +
+	"\x1eGetIamPolicyStoragePoolRequest\x12P\n" +
+	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB#\n" +
+	"!_options_requested_policy_version\"\xff\x01\n" +
 	"\x1dGetIamPolicySubnetworkRequest\x12P\n" +
-	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresourceB#\n" +
-	"!_options_requested_policy_version\"z\n" +
-	"\x19GetImageFamilyViewRequest\x12\x1f\n" +
-	"\x06family\x18\xe4\xb6\xe1\x9c\x01 \x01(\tB\x03\xe0A\x02R\x06family\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"Q\n" +
-	"\x0fGetImageRequest\x12\x1c\n" +
-	"\x05image\x18\xdb\xd2\xea/ \x01(\tB\x03\xe0A\x02R\x05image\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\"\x80\x01\n" +
-	"\x13GetImageViewRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12'\n" +
-	"\vresource_id\x18\xec\x95\xd6L \x01(\tB\x03\xe0A\x02R\n" +
-	"resourceId\"\x9c\x01\n" +
-	"\x1eGetInstanceGroupManagerRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"\xd8\x01\n" +
-	"+GetInstanceGroupManagerResizeRequestRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12-\n" +
-	"\x0eresize_request\x18\x84\x84\xb9g \x01(\tB\x03\xe0A\x02R\rresizeRequest\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"\x86\x01\n" +
-	"\x17GetInstanceGroupRequest\x12-\n" +
-	"\x0einstance_group\x18\xd5\xd4\xd5& \x01(\tB\x03\xe0A\x02R\rinstanceGroup\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"v\n" +
-	"\x12GetInstanceRequest\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"Y\n" +
-	"\x19GetInstanceSettingRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"t\n" +
-	"\x1aGetInstanceTemplateRequest\x124\n" +
-	"\x11instance_template\x18䁻\x93\x01 \x01(\tB\x03\xe0A\x02R\x10instanceTemplate\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\"\x9c\x01\n" +
-	"\x1eGetInstantSnapshotGroupRequest\x12<\n" +
-	"\x16instant_snapshot_group\x18\xe2\xec\xb5j \x01(\tB\x03\xe0A\x02R\x14instantSnapshotGroup\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"\x8d\x01\n" +
-	"\x19GetInstantSnapshotRequest\x122\n" +
-	"\x10instant_snapshot\x18\xe2\xdcߺ\x01 \x01(\tB\x03\xe0A\x02R\x0finstantSnapshot\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"\x95\x01\n" +
-	"%GetInterconnectAttachmentGroupRequest\x12J\n" +
-	"\x1dinterconnect_attachment_group\x18\xf4\xef\x98$ \x01(\tB\x03\xe0A\x02R\x1binterconnectAttachmentGroup\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\"\xa6\x01\n" +
-	" GetInterconnectAttachmentRequest\x12@\n" +
-	"\x17interconnect_attachment\x18\xf4\x8a\xf7\x92\x01 \x01(\tB\x03\xe0A\x02R\x16interconnectAttachment\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\"w\n" +
-	"\x1bGetInterconnectGroupRequest\x126\n" +
-	"\x12interconnect_group\x18\x8e\xb7\xa9\xb9\x01 \x01(\tB\x03\xe0A\x02R\x11interconnectGroup\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\"\x80\x01\n" +
-	"\x1eGetInterconnectLocationRequest\x12<\n" +
-	"\x15interconnect_location\x18\xc6\xd8\xdb\xea\x01 \x01(\tB\x03\xe0A\x02R\x14interconnectLocation\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\"\x93\x01\n" +
-	"$GetInterconnectRemoteLocationRequest\x12I\n" +
-	"\x1cinterconnect_remote_location\x18\xdd˭\x8a\x01 \x01(\tB\x03\xe0A\x02R\x1ainterconnectRemoteLocation\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\"f\n" +
-	"\x16GetInterconnectRequest\x12*\n" +
-	"\finterconnect\x18\x8eɌk \x01(\tB\x03\xe0A\x02R\finterconnect\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\"c\n" +
-	"\x15GetLicenseCodeRequest\x12(\n" +
-	"\flicense_code\x18\xab\xc6Y \x01(\tB\x03\xe0A\x02R\vlicenseCode\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\"W\n" +
-	"\x11GetLicenseRequest\x12 \n" +
-	"\alicense\x18\xc1\x88\xc2O \x01(\tB\x03\xe0A\x02R\alicense\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\"g\n" +
-	"\x16GetMachineImageRequest\x12+\n" +
-	"\rmachine_image\x18\xe3\xfe\xfe  \x01(\tB\x03\xe0A\x02R\fmachineImage\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\"\x80\x01\n" +
-	"\x15GetMachineTypeRequest\x12)\n" +
-	"\fmachine_type\x18\xb2\xb0\xcal \x01(\tB\x03\xe0A\x02R\vmachineType\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"r\n" +
-	"\"GetMacsecConfigInterconnectRequest\x12*\n" +
-	"\finterconnect\x18\x8eɌk \x01(\tB\x03\xe0A\x02R\finterconnect\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\"n\n" +
-	"\x18GetManagedRulesetRequest\x120\n" +
-	"\x0fmanaged_ruleset\x18ƶ\xa6\xd5\x01 \x01(\tB\x03\xe0A\x02R\x0emanagedRuleset\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\"\xaf\x01\n" +
+	" options_requested_policy_version\x18\xbd\xfc\x85\xee\x01 \x01(\x05H\x00R\x1doptionsRequestedPolicyVersion\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresourceB#\n" +
+	"!_options_requested_policy_version\"}\n" +
+	"\x19GetImageFamilyViewRequest\x12 \n" +
+	"\x06family\x18\xe4\xb6\xe1\x9c\x01 \x01(\tB\x04\xe2A\x01\x02R\x06family\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"S\n" +
+	"\x0fGetImageRequest\x12\x1d\n" +
+	"\x05image\x18\xdb\xd2\xea/ \x01(\tB\x04\xe2A\x01\x02R\x05image\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\"\x83\x01\n" +
+	"\x13GetImageViewRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12(\n" +
+	"\vresource_id\x18\xec\x95\xd6L \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"resourceId\"\x9f\x01\n" +
+	"\x1eGetInstanceGroupManagerRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"\xdc\x01\n" +
+	"+GetInstanceGroupManagerResizeRequestRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12.\n" +
+	"\x0eresize_request\x18\x84\x84\xb9g \x01(\tB\x04\xe2A\x01\x02R\rresizeRequest\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"\x89\x01\n" +
+	"\x17GetInstanceGroupRequest\x12.\n" +
+	"\x0einstance_group\x18\xd5\xd4\xd5& \x01(\tB\x04\xe2A\x01\x02R\rinstanceGroup\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"y\n" +
+	"\x12GetInstanceRequest\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"[\n" +
+	"\x19GetInstanceSettingRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"v\n" +
+	"\x1aGetInstanceTemplateRequest\x125\n" +
+	"\x11instance_template\x18䁻\x93\x01 \x01(\tB\x04\xe2A\x01\x02R\x10instanceTemplate\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\"\x9f\x01\n" +
+	"\x1eGetInstantSnapshotGroupRequest\x12=\n" +
+	"\x16instant_snapshot_group\x18\xe2\xec\xb5j \x01(\tB\x04\xe2A\x01\x02R\x14instantSnapshotGroup\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"\x90\x01\n" +
+	"\x19GetInstantSnapshotRequest\x123\n" +
+	"\x10instant_snapshot\x18\xe2\xdcߺ\x01 \x01(\tB\x04\xe2A\x01\x02R\x0finstantSnapshot\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"\x97\x01\n" +
+	"%GetInterconnectAttachmentGroupRequest\x12K\n" +
+	"\x1dinterconnect_attachment_group\x18\xf4\xef\x98$ \x01(\tB\x04\xe2A\x01\x02R\x1binterconnectAttachmentGroup\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\"\xa9\x01\n" +
+	" GetInterconnectAttachmentRequest\x12A\n" +
+	"\x17interconnect_attachment\x18\xf4\x8a\xf7\x92\x01 \x01(\tB\x04\xe2A\x01\x02R\x16interconnectAttachment\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\"y\n" +
+	"\x1bGetInterconnectGroupRequest\x127\n" +
+	"\x12interconnect_group\x18\x8e\xb7\xa9\xb9\x01 \x01(\tB\x04\xe2A\x01\x02R\x11interconnectGroup\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\"\x82\x01\n" +
+	"\x1eGetInterconnectLocationRequest\x12=\n" +
+	"\x15interconnect_location\x18\xc6\xd8\xdb\xea\x01 \x01(\tB\x04\xe2A\x01\x02R\x14interconnectLocation\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\"\x95\x01\n" +
+	"$GetInterconnectRemoteLocationRequest\x12J\n" +
+	"\x1cinterconnect_remote_location\x18\xdd˭\x8a\x01 \x01(\tB\x04\xe2A\x01\x02R\x1ainterconnectRemoteLocation\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\"h\n" +
+	"\x16GetInterconnectRequest\x12+\n" +
+	"\finterconnect\x18\x8eɌk \x01(\tB\x04\xe2A\x01\x02R\finterconnect\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\"e\n" +
+	"\x15GetLicenseCodeRequest\x12)\n" +
+	"\flicense_code\x18\xab\xc6Y \x01(\tB\x04\xe2A\x01\x02R\vlicenseCode\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\"Y\n" +
+	"\x11GetLicenseRequest\x12!\n" +
+	"\alicense\x18\xc1\x88\xc2O \x01(\tB\x04\xe2A\x01\x02R\alicense\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\"i\n" +
+	"\x16GetMachineImageRequest\x12,\n" +
+	"\rmachine_image\x18\xe3\xfe\xfe  \x01(\tB\x04\xe2A\x01\x02R\fmachineImage\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\"\x83\x01\n" +
+	"\x15GetMachineTypeRequest\x12*\n" +
+	"\fmachine_type\x18\xb2\xb0\xcal \x01(\tB\x04\xe2A\x01\x02R\vmachineType\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"t\n" +
+	"\"GetMacsecConfigInterconnectRequest\x12+\n" +
+	"\finterconnect\x18\x8eɌk \x01(\tB\x04\xe2A\x01\x02R\finterconnect\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\"p\n" +
+	"\x18GetManagedRulesetRequest\x121\n" +
+	"\x0fmanaged_ruleset\x18ƶ\xa6\xd5\x01 \x01(\tB\x04\xe2A\x01\x02R\x0emanagedRuleset\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\"\xb2\x01\n" +
 	"\x18GetNamedSetRouterRequest\x12#\n" +
-	"\tnamed_set\x18\xdc\xfc\xa1N \x01(\tH\x00R\bnamedSet\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\x1e\n" +
-	"\x06router\x18ɮ\xeeF \x01(\tB\x03\xe0A\x02R\x06routerB\f\n" +
+	"\tnamed_set\x18\xdc\xfc\xa1N \x01(\tH\x00R\bnamedSet\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12\x1f\n" +
+	"\x06router\x18ɮ\xeeF \x01(\tB\x04\xe2A\x01\x02R\x06routerB\f\n" +
 	"\n" +
-	"_named_set\"\xae\x01\n" +
+	"_named_set\"\xb1\x01\n" +
 	"\x19GetNatIpInfoRouterRequest\x12\"\n" +
-	"\bnat_name\x18\xe9\xad\xf8\xca\x01 \x01(\tH\x00R\anatName\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\x1e\n" +
-	"\x06router\x18ɮ\xeeF \x01(\tB\x03\xe0A\x02R\x06routerB\v\n" +
-	"\t_nat_name\"\xff\x02\n" +
+	"\bnat_name\x18\xe9\xad\xf8\xca\x01 \x01(\tH\x00R\anatName\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12\x1f\n" +
+	"\x06router\x18ɮ\xeeF \x01(\tB\x04\xe2A\x01\x02R\x06routerB\v\n" +
+	"\t_nat_name\"\x82\x03\n" +
 	"\x1fGetNatMappingInfoRoutersRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
@@ -235575,410 +235533,408 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\bnat_name\x18\xe9\xad\xf8\xca\x01 \x01(\tH\x02R\anatName\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\x1e\n" +
-	"\x06router\x18ɮ\xeeF \x01(\tB\x03\xe0A\x02R\x06routerB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12\x1f\n" +
+	"\x06router\x18ɮ\xeeF \x01(\tB\x04\xe2A\x01\x02R\x06routerB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_nat_nameB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x96\x01\n" +
-	"\x1bGetNetworkAttachmentRequest\x125\n" +
-	"\x12network_attachment\x18ԗ\x8fk \x01(\tB\x03\xe0A\x02R\x11networkAttachment\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\"\xb3\x01\n" +
-	"$GetNetworkEdgeSecurityServiceRequest\x12I\n" +
-	"\x1dnetwork_edge_security_service\x18\xa7\x9f\xefJ \x01(\tB\x03\xe0A\x02R\x1anetworkEdgeSecurityService\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\"\x9d\x01\n" +
-	"\x1eGetNetworkEndpointGroupRequest\x12=\n" +
-	"\x16network_endpoint_group\x18\x86\xcb\xf3\xce\x01 \x01(\tB\x03\xe0A\x02R\x14networkEndpointGroup\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"u\n" +
-	"\x1fGetNetworkFirewallPolicyRequest\x120\n" +
-	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x03\xe0A\x02R\x0efirewallPolicy\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\"m\n" +
-	"\x18GetNetworkProfileRequest\x12/\n" +
-	"\x0fnetwork_profile\x18\x98\xf9\xc5R \x01(\tB\x03\xe0A\x02R\x0enetworkProfile\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\"W\n" +
-	"\x11GetNetworkRequest\x12 \n" +
-	"\anetwork\x18\xae\xb4\x85o \x01(\tB\x03\xe0A\x02R\anetwork\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\"{\n" +
-	"\x13GetNodeGroupRequest\x12&\n" +
+	"\v_page_token\"\x99\x01\n" +
+	"\x1bGetNetworkAttachmentRequest\x126\n" +
+	"\x12network_attachment\x18ԗ\x8fk \x01(\tB\x04\xe2A\x01\x02R\x11networkAttachment\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\"\xb6\x01\n" +
+	"$GetNetworkEdgeSecurityServiceRequest\x12J\n" +
+	"\x1dnetwork_edge_security_service\x18\xa7\x9f\xefJ \x01(\tB\x04\xe2A\x01\x02R\x1anetworkEdgeSecurityService\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\"\xa0\x01\n" +
+	"\x1eGetNetworkEndpointGroupRequest\x12>\n" +
+	"\x16network_endpoint_group\x18\x86\xcb\xf3\xce\x01 \x01(\tB\x04\xe2A\x01\x02R\x14networkEndpointGroup\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"w\n" +
+	"\x1fGetNetworkFirewallPolicyRequest\x121\n" +
+	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x04\xe2A\x01\x02R\x0efirewallPolicy\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\"o\n" +
+	"\x18GetNetworkProfileRequest\x120\n" +
+	"\x0fnetwork_profile\x18\x98\xf9\xc5R \x01(\tB\x04\xe2A\x01\x02R\x0enetworkProfile\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\"Y\n" +
+	"\x11GetNetworkRequest\x12!\n" +
+	"\anetwork\x18\xae\xb4\x85o \x01(\tB\x04\xe2A\x01\x02R\anetwork\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\"~\n" +
+	"\x13GetNodeGroupRequest\x12'\n" +
 	"\n" +
-	"node_group\x18\x82\xfc\x8b\xe0\x01 \x01(\tB\x03\xe0A\x02R\tnodeGroup\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"\x88\x01\n" +
-	"\x16GetNodeTemplateRequest\x12,\n" +
-	"\rnode_template\x18\x97䋚\x01 \x01(\tB\x03\xe0A\x02R\fnodeTemplate\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\"x\n" +
-	"\x12GetNodeTypeRequest\x12$\n" +
-	"\tnode_type\x18ז\x90\xde\x01 \x01(\tB\x03\xe0A\x02R\bnodeType\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"\xa6\x01\n" +
-	"6GetOperationalStatusInterconnectAttachmentGroupRequest\x12J\n" +
-	"\x1dinterconnect_attachment_group\x18\xf4\xef\x98$ \x01(\tB\x03\xe0A\x02R\x1binterconnectAttachmentGroup\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\"\x88\x01\n" +
-	",GetOperationalStatusInterconnectGroupRequest\x126\n" +
-	"\x12interconnect_group\x18\x8e\xb7\xa9\xb9\x01 \x01(\tB\x03\xe0A\x02R\x11interconnectGroup\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\"W\n" +
-	"$GetOrganizationSecurityPolicyRequest\x12/\n" +
-	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x03\xe0A\x02R\x0esecurityPolicy\"\x90\x01\n" +
-	"\x19GetPacketMirroringRequest\x121\n" +
+	"node_group\x18\x82\xfc\x8b\xe0\x01 \x01(\tB\x04\xe2A\x01\x02R\tnodeGroup\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"\x8b\x01\n" +
+	"\x16GetNodeTemplateRequest\x12-\n" +
+	"\rnode_template\x18\x97䋚\x01 \x01(\tB\x04\xe2A\x01\x02R\fnodeTemplate\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\"{\n" +
+	"\x12GetNodeTypeRequest\x12%\n" +
+	"\tnode_type\x18ז\x90\xde\x01 \x01(\tB\x04\xe2A\x01\x02R\bnodeType\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"\xa8\x01\n" +
+	"6GetOperationalStatusInterconnectAttachmentGroupRequest\x12K\n" +
+	"\x1dinterconnect_attachment_group\x18\xf4\xef\x98$ \x01(\tB\x04\xe2A\x01\x02R\x1binterconnectAttachmentGroup\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\"\x8a\x01\n" +
+	",GetOperationalStatusInterconnectGroupRequest\x127\n" +
+	"\x12interconnect_group\x18\x8e\xb7\xa9\xb9\x01 \x01(\tB\x04\xe2A\x01\x02R\x11interconnectGroup\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\"X\n" +
+	"$GetOrganizationSecurityPolicyRequest\x120\n" +
+	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x04\xe2A\x01\x02R\x0esecurityPolicy\"\x93\x01\n" +
+	"\x19GetPacketMirroringRequest\x122\n" +
 	"\x10packet_mirroring\x18̹\xd1\n" +
-	" \x01(\tB\x03\xe0A\x02R\x0fpacketMirroring\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\"\xba\x01\n" +
-	"2GetPacketMirroringRuleNetworkFirewallPolicyRequest\x120\n" +
-	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x03\xe0A\x02R\x0efirewallPolicy\x12#\n" +
-	"\bpriority\x18\xa4\xf3\xa1\xd4\x01 \x01(\x05H\x00R\bpriority\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\v\n" +
-	"\t_priority\"n\n" +
-	"\x18GetPreviewFeatureRequest\x120\n" +
-	"\x0fpreview_feature\x18\xff\xfa\xfa\xd8\x01 \x01(\tB\x03\xe0A\x02R\x0epreviewFeature\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\"5\n" +
-	"\x11GetProjectRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\"Y\n" +
-	"\x15GetProjectViewRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\"\x87\x01\n" +
-	"!GetPublicAdvertisedPrefixeRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12@\n" +
-	"\x18public_advertised_prefix\x18\x9e\xf7\xc90 \x01(\tB\x03\xe0A\x02R\x16publicAdvertisedPrefix\"\xa4\x01\n" +
-	" GetPublicDelegatedPrefixeRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12>\n" +
-	"\x17public_delegated_prefix\x18\xe8ܱa \x01(\tB\x03\xe0A\x02R\x15publicDelegatedPrefix\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\"\x87\x01\n" +
-	"\x1aGetRegionAutoscalerRequest\x12'\n" +
+	" \x01(\tB\x04\xe2A\x01\x02R\x0fpacketMirroring\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\"\xbc\x01\n" +
+	"2GetPacketMirroringRuleNetworkFirewallPolicyRequest\x121\n" +
+	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x04\xe2A\x01\x02R\x0efirewallPolicy\x12#\n" +
+	"\bpriority\x18\xa4\xf3\xa1\xd4\x01 \x01(\x05H\x00R\bpriority\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\v\n" +
+	"\t_priority\"p\n" +
+	"\x18GetPreviewFeatureRequest\x121\n" +
+	"\x0fpreview_feature\x18\xff\xfa\xfa\xd8\x01 \x01(\tB\x04\xe2A\x01\x02R\x0epreviewFeature\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\"6\n" +
+	"\x11GetProjectRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\"[\n" +
+	"\x15GetProjectViewRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\"\x89\x01\n" +
+	"!GetPublicAdvertisedPrefixeRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12A\n" +
+	"\x18public_advertised_prefix\x18\x9e\xf7\xc90 \x01(\tB\x04\xe2A\x01\x02R\x16publicAdvertisedPrefix\"\xa7\x01\n" +
+	" GetPublicDelegatedPrefixeRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12?\n" +
+	"\x17public_delegated_prefix\x18\xe8ܱa \x01(\tB\x04\xe2A\x01\x02R\x15publicDelegatedPrefix\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\"\x8a\x01\n" +
+	"\x1aGetRegionAutoscalerRequest\x12(\n" +
 	"\n" +
-	"autoscaler\x18\xd7\xfd\xd2\xf6\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"autoscaler\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\"\x90\x01\n" +
-	"\x1dGetRegionBackendBucketRequest\x12-\n" +
-	"\x0ebackend_bucket\x18\xf5\xe3\xdd+ \x01(\tB\x03\xe0A\x02R\rbackendBucket\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\"\x94\x01\n" +
-	"\x1eGetRegionBackendServiceRequest\x120\n" +
-	"\x0fbackend_service\x18\x8a\xc0\xae\x92\x01 \x01(\tB\x03\xe0A\x02R\x0ebackendService\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\"\x87\x01\n" +
-	"\x1aGetRegionCommitmentRequest\x12'\n" +
+	"autoscaler\x18\xd7\xfd\xd2\xf6\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"autoscaler\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\"\x93\x01\n" +
+	"\x1dGetRegionBackendBucketRequest\x12.\n" +
+	"\x0ebackend_bucket\x18\xf5\xe3\xdd+ \x01(\tB\x04\xe2A\x01\x02R\rbackendBucket\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\"\x97\x01\n" +
+	"\x1eGetRegionBackendServiceRequest\x121\n" +
+	"\x0fbackend_service\x18\x8a\xc0\xae\x92\x01 \x01(\tB\x04\xe2A\x01\x02R\x0ebackendService\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\"\x8a\x01\n" +
+	"\x1aGetRegionCommitmentRequest\x12(\n" +
 	"\n" +
-	"commitment\x18\x95\x96\xf3\xe5\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"commitment\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\"\xa7\x01\n" +
-	"$GetRegionCompositeHealthCheckRequest\x12=\n" +
-	"\x16composite_health_check\x18\x9d\xc0\xd6\xde\x01 \x01(\tB\x03\xe0A\x02R\x14compositeHealthCheck\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\"t\n" +
-	"\x14GetRegionDiskRequest\x12\x1a\n" +
-	"\x04disk\x18\x9d\x9b\xbc\x01 \x01(\tB\x03\xe0A\x02R\x04disk\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\"\x81\x01\n" +
-	"\x18GetRegionDiskTypeRequest\x12#\n" +
-	"\tdisk_type\x18\x9c\xe9\xac, \x01(\tB\x03\xe0A\x02R\bdiskType\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\"\xaf\x01\n" +
-	"'GetRegionHealthAggregationPolicyRequest\x12B\n" +
-	"\x19health_aggregation_policy\x18\xf2\xcf\xcbr \x01(\tB\x03\xe0A\x02R\x17healthAggregationPolicy\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\"\x8b\x01\n" +
-	"\x1bGetRegionHealthCheckRequest\x12*\n" +
-	"\fhealth_check\x18媤\x93\x01 \x01(\tB\x03\xe0A\x02R\vhealthCheck\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\"\xa1\x01\n" +
-	"\"GetRegionHealthCheckServiceRequest\x129\n" +
-	"\x14health_check_service\x18ۛ\xdd\xc2\x01 \x01(\tB\x03\xe0A\x02R\x12healthCheckService\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\"\x8e\x01\n" +
-	"\x1cGetRegionHealthSourceRequest\x12,\n" +
-	"\rhealth_source\x18ކų\x01 \x01(\tB\x03\xe0A\x02R\fhealthSource\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\"\xa6\x01\n" +
-	"$GetRegionInstanceGroupManagerRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\"\xe2\x01\n" +
-	"1GetRegionInstanceGroupManagerResizeRequestRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12-\n" +
-	"\x0eresize_request\x18\x84\x84\xb9g \x01(\tB\x03\xe0A\x02R\rresizeRequest\"\x90\x01\n" +
-	"\x1dGetRegionInstanceGroupRequest\x12-\n" +
-	"\x0einstance_group\x18\xd5\xd4\xd5& \x01(\tB\x03\xe0A\x02R\rinstanceGroup\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\"\x9a\x01\n" +
-	" GetRegionInstanceTemplateRequest\x124\n" +
-	"\x11instance_template\x18䁻\x93\x01 \x01(\tB\x03\xe0A\x02R\x10instanceTemplate\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\"\xa6\x01\n" +
-	"$GetRegionInstantSnapshotGroupRequest\x12<\n" +
-	"\x16instant_snapshot_group\x18\xe2\xec\xb5j \x01(\tB\x03\xe0A\x02R\x14instantSnapshotGroup\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\"\x97\x01\n" +
-	"\x1fGetRegionInstantSnapshotRequest\x122\n" +
-	"\x10instant_snapshot\x18\xe2\xdcߺ\x01 \x01(\tB\x03\xe0A\x02R\x0finstantSnapshot\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\"\xa7\x01\n" +
-	"$GetRegionNetworkEndpointGroupRequest\x12=\n" +
-	"\x16network_endpoint_group\x18\x86\xcb\xf3\xce\x01 \x01(\tB\x03\xe0A\x02R\x14networkEndpointGroup\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\"\x9b\x01\n" +
-	"%GetRegionNetworkFirewallPolicyRequest\x120\n" +
-	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x03\xe0A\x02R\x0efirewallPolicy\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\"\xa6\x01\n" +
-	"$GetRegionNotificationEndpointRequest\x12<\n" +
-	"\x15notification_endpoint\x18\xe9\xbcֳ\x01 \x01(\tB\x03\xe0A\x02R\x14notificationEndpoint\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\"\x8a\x01\n" +
-	"\x19GetRegionOperationRequest\x12+\n" +
-	"\toperation\x18\xe7\xaa\xeb\x18 \x01(\tB\n" +
-	"\xe0A\x02\xfaG\x04nameR\toperation\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\"T\n" +
-	"\x10GetRegionRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\"\x93\x01\n" +
-	"\x1eGetRegionSecurityPolicyRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12/\n" +
-	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x03\xe0A\x02R\x0esecurityPolicy\"\x81\x01\n" +
-	"\x18GetRegionSnapshotRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12#\n" +
-	"\bsnapshot\x18ī\xeb\x87\x01 \x01(\tB\x03\xe0A\x02R\bsnapshot\"c\n" +
-	"\x1fGetRegionSnapshotSettingRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\"\x93\x01\n" +
-	"\x1eGetRegionSslCertificateRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12/\n" +
-	"\x0fssl_certificate\x18\xe4ג\x16 \x01(\tB\x03\xe0A\x02R\x0esslCertificate\"\x85\x01\n" +
-	"\x19GetRegionSslPolicyRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12&\n" +
+	"commitment\x18\x95\x96\xf3\xe5\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"commitment\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\"\xaa\x01\n" +
+	"$GetRegionCompositeHealthCheckRequest\x12>\n" +
+	"\x16composite_health_check\x18\x9d\xc0\xd6\xde\x01 \x01(\tB\x04\xe2A\x01\x02R\x14compositeHealthCheck\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\"w\n" +
+	"\x14GetRegionDiskRequest\x12\x1b\n" +
+	"\x04disk\x18\x9d\x9b\xbc\x01 \x01(\tB\x04\xe2A\x01\x02R\x04disk\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\"\x84\x01\n" +
+	"\x18GetRegionDiskTypeRequest\x12$\n" +
+	"\tdisk_type\x18\x9c\xe9\xac, \x01(\tB\x04\xe2A\x01\x02R\bdiskType\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\"\xb2\x01\n" +
+	"'GetRegionHealthAggregationPolicyRequest\x12C\n" +
+	"\x19health_aggregation_policy\x18\xf2\xcf\xcbr \x01(\tB\x04\xe2A\x01\x02R\x17healthAggregationPolicy\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\"\x8e\x01\n" +
+	"\x1bGetRegionHealthCheckRequest\x12+\n" +
+	"\fhealth_check\x18媤\x93\x01 \x01(\tB\x04\xe2A\x01\x02R\vhealthCheck\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\"\xa4\x01\n" +
+	"\"GetRegionHealthCheckServiceRequest\x12:\n" +
+	"\x14health_check_service\x18ۛ\xdd\xc2\x01 \x01(\tB\x04\xe2A\x01\x02R\x12healthCheckService\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\"\x91\x01\n" +
+	"\x1cGetRegionHealthSourceRequest\x12-\n" +
+	"\rhealth_source\x18ކų\x01 \x01(\tB\x04\xe2A\x01\x02R\fhealthSource\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\"\xa9\x01\n" +
+	"$GetRegionInstanceGroupManagerRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\"\xe6\x01\n" +
+	"1GetRegionInstanceGroupManagerResizeRequestRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12.\n" +
+	"\x0eresize_request\x18\x84\x84\xb9g \x01(\tB\x04\xe2A\x01\x02R\rresizeRequest\"\x93\x01\n" +
+	"\x1dGetRegionInstanceGroupRequest\x12.\n" +
+	"\x0einstance_group\x18\xd5\xd4\xd5& \x01(\tB\x04\xe2A\x01\x02R\rinstanceGroup\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\"\x9d\x01\n" +
+	" GetRegionInstanceTemplateRequest\x125\n" +
+	"\x11instance_template\x18䁻\x93\x01 \x01(\tB\x04\xe2A\x01\x02R\x10instanceTemplate\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\"\xa9\x01\n" +
+	"$GetRegionInstantSnapshotGroupRequest\x12=\n" +
+	"\x16instant_snapshot_group\x18\xe2\xec\xb5j \x01(\tB\x04\xe2A\x01\x02R\x14instantSnapshotGroup\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\"\x9a\x01\n" +
+	"\x1fGetRegionInstantSnapshotRequest\x123\n" +
+	"\x10instant_snapshot\x18\xe2\xdcߺ\x01 \x01(\tB\x04\xe2A\x01\x02R\x0finstantSnapshot\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\"\xaa\x01\n" +
+	"$GetRegionNetworkEndpointGroupRequest\x12>\n" +
+	"\x16network_endpoint_group\x18\x86\xcb\xf3\xce\x01 \x01(\tB\x04\xe2A\x01\x02R\x14networkEndpointGroup\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\"\x9e\x01\n" +
+	"%GetRegionNetworkFirewallPolicyRequest\x121\n" +
+	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x04\xe2A\x01\x02R\x0efirewallPolicy\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\"\xa9\x01\n" +
+	"$GetRegionNotificationEndpointRequest\x12=\n" +
+	"\x15notification_endpoint\x18\xe9\xbcֳ\x01 \x01(\tB\x04\xe2A\x01\x02R\x14notificationEndpoint\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\"\x8d\x01\n" +
+	"\x19GetRegionOperationRequest\x12,\n" +
+	"\toperation\x18\xe7\xaa\xeb\x18 \x01(\tB\v\xe2A\x01\x02\xfaG\x04nameR\toperation\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\"V\n" +
+	"\x10GetRegionRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\"\x96\x01\n" +
+	"\x1eGetRegionSecurityPolicyRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x120\n" +
+	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x04\xe2A\x01\x02R\x0esecurityPolicy\"\x84\x01\n" +
+	"\x18GetRegionSnapshotRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12$\n" +
+	"\bsnapshot\x18ī\xeb\x87\x01 \x01(\tB\x04\xe2A\x01\x02R\bsnapshot\"e\n" +
+	"\x1fGetRegionSnapshotSettingRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\"\x96\x01\n" +
+	"\x1eGetRegionSslCertificateRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x120\n" +
+	"\x0fssl_certificate\x18\xe4ג\x16 \x01(\tB\x04\xe2A\x01\x02R\x0esslCertificate\"\x88\x01\n" +
+	"\x19GetRegionSslPolicyRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12'\n" +
 	"\n" +
-	"ssl_policy\x18\xc5\xfd\xe0\x8c\x01 \x01(\tB\x03\xe0A\x02R\tsslPolicy\"\x97\x01\n" +
-	"\x1fGetRegionTargetHttpProxyRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x122\n" +
-	"\x11target_http_proxy\x18\xe5\xbe\xd2b \x01(\tB\x03\xe0A\x02R\x0ftargetHttpProxy\"\x9a\x01\n" +
-	" GetRegionTargetHttpsProxyRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x124\n" +
-	"\x12target_https_proxy\x18\xec\xb0\xfa\x18 \x01(\tB\x03\xe0A\x02R\x10targetHttpsProxy\"\x95\x01\n" +
-	"\x1eGetRegionTargetTcpProxyRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x121\n" +
-	"\x10target_tcp_proxy\x18\xe2\xd6\xf0\xef\x01 \x01(\tB\x03\xe0A\x02R\x0etargetTcpProxy\"|\n" +
-	"\x16GetRegionUrlMapRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12 \n" +
-	"\aurl_map\x18\x8c\x95\x81\xaf\x01 \x01(\tB\x03\xe0A\x02R\x06urlMap\"q\n" +
-	"\x19GetReliabilityRiskRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x122\n" +
-	"\x10reliability_risk\x18\xb4\x97\x9e\xa2\x01 \x01(\tB\x03\xe0A\x02R\x0freliabilityRisk\"\xb6\x02\n" +
-	"\x1aGetReservationBlockRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12(\n" +
-	"\vreservation\x18̇\xd5\x16 \x01(\tB\x03\xe0A\x02R\vreservation\x124\n" +
-	"\x11reservation_block\x18\xdaĉ\xfe\x01 \x01(\tB\x03\xe0A\x02R\x10reservationBlock\x12\x1a\n" +
-	"\x04view\x18\xa5\xf5\xdc\x01 \x01(\tH\x00R\x04view\x88\x01\x01\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"U\n" +
+	"ssl_policy\x18\xc5\xfd\xe0\x8c\x01 \x01(\tB\x04\xe2A\x01\x02R\tsslPolicy\"\x9a\x01\n" +
+	"\x1fGetRegionTargetHttpProxyRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x123\n" +
+	"\x11target_http_proxy\x18\xe5\xbe\xd2b \x01(\tB\x04\xe2A\x01\x02R\x0ftargetHttpProxy\"\x9d\x01\n" +
+	" GetRegionTargetHttpsProxyRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x125\n" +
+	"\x12target_https_proxy\x18\xec\xb0\xfa\x18 \x01(\tB\x04\xe2A\x01\x02R\x10targetHttpsProxy\"\x98\x01\n" +
+	"\x1eGetRegionTargetTcpProxyRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x122\n" +
+	"\x10target_tcp_proxy\x18\xe2\xd6\xf0\xef\x01 \x01(\tB\x04\xe2A\x01\x02R\x0etargetTcpProxy\"\x7f\n" +
+	"\x16GetRegionUrlMapRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12!\n" +
+	"\aurl_map\x18\x8c\x95\x81\xaf\x01 \x01(\tB\x04\xe2A\x01\x02R\x06urlMap\"s\n" +
+	"\x19GetReliabilityRiskRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x123\n" +
+	"\x10reliability_risk\x18\xb4\x97\x9e\xa2\x01 \x01(\tB\x04\xe2A\x01\x02R\x0freliabilityRisk\"\xba\x02\n" +
+	"\x1aGetReservationBlockRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12)\n" +
+	"\vreservation\x18̇\xd5\x16 \x01(\tB\x04\xe2A\x01\x02R\vreservation\x125\n" +
+	"\x11reservation_block\x18\xdaĉ\xfe\x01 \x01(\tB\x04\xe2A\x01\x02R\x10reservationBlock\x12\x1a\n" +
+	"\x04view\x18\xa5\xf5\xdc\x01 \x01(\tH\x00R\x04view\x88\x01\x01\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"U\n" +
 	"\x04View\x12\x12\n" +
 	"\x0eUNDEFINED_VIEW\x10\x00\x12\f\n" +
 	"\x05BASIC\x10\x8e\xb8\x83\x1e\x12\x1e\n" +
 	"\x16BLOCK_VIEW_UNSPECIFIED\x10\x8f\xfc\x94\x83\x01\x12\v\n" +
 	"\x04FULL\x10\x8f\xb5\x84\x01B\a\n" +
-	"\x05_view\"\x7f\n" +
-	"\x15GetReservationRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12(\n" +
-	"\vreservation\x18̇\xd5\x16 \x01(\tB\x03\xe0A\x02R\vreservation\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"\xb7\x01\n" +
-	"\x19GetReservationSlotRequest\x12(\n" +
-	"\vparent_name\x18\x80\x8a\x80\xe4\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"parentName\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x122\n" +
-	"\x10reservation_slot\x18\x91\xbd\xa7\x84\x01 \x01(\tB\x03\xe0A\x02R\x0freservationSlot\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"\xe1\x02\n" +
-	"\x1dGetReservationSubBlockRequest\x12(\n" +
-	"\vparent_name\x18\x80\x8a\x80\xe4\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"parentName\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12:\n" +
+	"\x05_view\"\x82\x01\n" +
+	"\x15GetReservationRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12)\n" +
+	"\vreservation\x18̇\xd5\x16 \x01(\tB\x04\xe2A\x01\x02R\vreservation\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"\xbb\x01\n" +
+	"\x19GetReservationSlotRequest\x12)\n" +
+	"\vparent_name\x18\x80\x8a\x80\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"parentName\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x123\n" +
+	"\x10reservation_slot\x18\x91\xbd\xa7\x84\x01 \x01(\tB\x04\xe2A\x01\x02R\x0freservationSlot\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"\xe5\x02\n" +
+	"\x1dGetReservationSubBlockRequest\x12)\n" +
+	"\vparent_name\x18\x80\x8a\x80\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"parentName\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12;\n" +
 	"\x15reservation_sub_block\x18\x9b\xca\xec\n" +
-	" \x01(\tB\x03\xe0A\x02R\x13reservationSubBlock\x12\x1a\n" +
-	"\x04view\x18\xa5\xf5\xdc\x01 \x01(\tH\x00R\x04view\x88\x01\x01\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"w\n" +
+	" \x01(\tB\x04\xe2A\x01\x02R\x13reservationSubBlock\x12\x1a\n" +
+	"\x04view\x18\xa5\xf5\xdc\x01 \x01(\tH\x00R\x04view\x88\x01\x01\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"w\n" +
 	"\x04View\x12\x12\n" +
 	"\x0eUNDEFINED_VIEW\x10\x00\x12\x1b\n" +
 	"\x14SUB_BLOCK_VIEW_BASIC\x10\xc5\xf2\xc4p\x12\x1b\n" +
 	"\x13SUB_BLOCK_VIEW_FULL\x10\xf8\xf4\x92\xd2\x01\x12!\n" +
 	"\x1aSUB_BLOCK_VIEW_UNSPECIFIED\x10\x8e\xee\xcduB\a\n" +
-	"\x05_view\"\x8d\x01\n" +
-	"\x18GetResourcePolicyRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12/\n" +
-	"\x0fresource_policy\x18\x83\xa5\xf7K \x01(\tB\x03\xe0A\x02R\x0eresourcePolicy\"e\n" +
-	"\x15GetRolloutPlanRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12*\n" +
-	"\frollout_plan\x18\xf7\xd1\xf2\xda\x01 \x01(\tB\x03\xe0A\x02R\vrolloutPlan\"X\n" +
-	"\x11GetRolloutRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12!\n" +
-	"\arollout\x18\xb1\x83Ԑ\x01 \x01(\tB\x03\xe0A\x02R\arollout\"\xaa\x01\n" +
+	"\x05_view\"\x90\x01\n" +
+	"\x18GetResourcePolicyRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x120\n" +
+	"\x0fresource_policy\x18\x83\xa5\xf7K \x01(\tB\x04\xe2A\x01\x02R\x0eresourcePolicy\"g\n" +
+	"\x15GetRolloutPlanRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12+\n" +
+	"\frollout_plan\x18\xf7\xd1\xf2\xda\x01 \x01(\tB\x04\xe2A\x01\x02R\vrolloutPlan\"Z\n" +
+	"\x11GetRolloutRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\"\n" +
+	"\arollout\x18\xb1\x83Ԑ\x01 \x01(\tB\x04\xe2A\x01\x02R\arollout\"\xad\x01\n" +
 	"\x1bGetRoutePolicyRouterRequest\x12\x1e\n" +
-	"\x06policy\x18\xb2ʶ+ \x01(\tH\x00R\x06policy\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\x1e\n" +
-	"\x06router\x18ɮ\xeeF \x01(\tB\x03\xe0A\x02R\x06routerB\t\n" +
-	"\a_policy\"Q\n" +
-	"\x0fGetRouteRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1c\n" +
-	"\x05route\x18\xc9\xe4\xea3 \x01(\tB\x03\xe0A\x02R\x05route\"t\n" +
-	"\x10GetRouterRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\x1e\n" +
-	"\x06router\x18ɮ\xeeF \x01(\tB\x03\xe0A\x02R\x06router\"\x80\x01\n" +
-	"\x1cGetRouterStatusRouterRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\x1e\n" +
-	"\x06router\x18ɮ\xeeF \x01(\tB\x03\xe0A\x02R\x06router\"\x82\x01\n" +
-	"\x1cGetRuleFirewallPolicyRequest\x120\n" +
-	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x03\xe0A\x02R\x0efirewallPolicy\x12#\n" +
+	"\x06policy\x18\xb2ʶ+ \x01(\tH\x00R\x06policy\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12\x1f\n" +
+	"\x06router\x18ɮ\xeeF \x01(\tB\x04\xe2A\x01\x02R\x06routerB\t\n" +
+	"\a_policy\"S\n" +
+	"\x0fGetRouteRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1d\n" +
+	"\x05route\x18\xc9\xe4\xea3 \x01(\tB\x04\xe2A\x01\x02R\x05route\"w\n" +
+	"\x10GetRouterRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12\x1f\n" +
+	"\x06router\x18ɮ\xeeF \x01(\tB\x04\xe2A\x01\x02R\x06router\"\x83\x01\n" +
+	"\x1cGetRouterStatusRouterRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12\x1f\n" +
+	"\x06router\x18ɮ\xeeF \x01(\tB\x04\xe2A\x01\x02R\x06router\"\x83\x01\n" +
+	"\x1cGetRuleFirewallPolicyRequest\x121\n" +
+	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x04\xe2A\x01\x02R\x0efirewallPolicy\x12#\n" +
 	"\bpriority\x18\xa4\xf3\xa1\xd4\x01 \x01(\x05H\x00R\bpriority\x88\x01\x01B\v\n" +
-	"\t_priority\"\xab\x01\n" +
-	"#GetRuleNetworkFirewallPolicyRequest\x120\n" +
-	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x03\xe0A\x02R\x0efirewallPolicy\x12#\n" +
-	"\bpriority\x18\xa4\xf3\xa1\xd4\x01 \x01(\x05H\x00R\bpriority\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\v\n" +
-	"\t_priority\"\x8d\x01\n" +
+	"\t_priority\"\xad\x01\n" +
+	"#GetRuleNetworkFirewallPolicyRequest\x121\n" +
+	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x04\xe2A\x01\x02R\x0efirewallPolicy\x12#\n" +
+	"\bpriority\x18\xa4\xf3\xa1\xd4\x01 \x01(\x05H\x00R\bpriority\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\v\n" +
+	"\t_priority\"\x8e\x01\n" +
 	"(GetRuleOrganizationSecurityPolicyRequest\x12#\n" +
-	"\bpriority\x18\xa4\xf3\xa1\xd4\x01 \x01(\x05H\x00R\bpriority\x88\x01\x01\x12/\n" +
-	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x03\xe0A\x02R\x0esecurityPolicyB\v\n" +
-	"\t_priority\"\xd1\x01\n" +
-	")GetRuleRegionNetworkFirewallPolicyRequest\x120\n" +
-	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x03\xe0A\x02R\x0efirewallPolicy\x12#\n" +
-	"\bpriority\x18\xa4\xf3\xa1\xd4\x01 \x01(\x05H\x00R\bpriority\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\v\n" +
-	"\t_priority\"\xc9\x01\n" +
+	"\bpriority\x18\xa4\xf3\xa1\xd4\x01 \x01(\x05H\x00R\bpriority\x88\x01\x01\x120\n" +
+	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x04\xe2A\x01\x02R\x0esecurityPolicyB\v\n" +
+	"\t_priority\"\xd4\x01\n" +
+	")GetRuleRegionNetworkFirewallPolicyRequest\x121\n" +
+	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x04\xe2A\x01\x02R\x0efirewallPolicy\x12#\n" +
+	"\bpriority\x18\xa4\xf3\xa1\xd4\x01 \x01(\x05H\x00R\bpriority\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\v\n" +
+	"\t_priority\"\xcc\x01\n" +
 	"\"GetRuleRegionSecurityPolicyRequest\x12#\n" +
-	"\bpriority\x18\xa4\xf3\xa1\xd4\x01 \x01(\x05H\x00R\bpriority\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12/\n" +
-	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x03\xe0A\x02R\x0esecurityPolicyB\v\n" +
-	"\t_priority\"\xa3\x01\n" +
+	"\bpriority\x18\xa4\xf3\xa1\xd4\x01 \x01(\x05H\x00R\bpriority\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x120\n" +
+	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x04\xe2A\x01\x02R\x0esecurityPolicyB\v\n" +
+	"\t_priority\"\xa5\x01\n" +
 	"\x1cGetRuleSecurityPolicyRequest\x12#\n" +
-	"\bpriority\x18\xa4\xf3\xa1\xd4\x01 \x01(\x05H\x00R\bpriority\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12/\n" +
-	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x03\xe0A\x02R\x0esecurityPolicyB\v\n" +
-	"\t_priority\"\x80\x01\n" +
-	"\x1cGetScreenshotInstanceRequest\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"m\n" +
-	"\x18GetSecurityPolicyRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12/\n" +
-	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x03\xe0A\x02R\x0esecurityPolicy\"\xd3\x01\n" +
-	"\"GetSerialPortOutputInstanceRequest\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x12\x1a\n" +
-	"\x04port\x18\x81\xb1\xd2\x01 \x01(\x05H\x00R\x04port\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1c\n" +
-	"\x05start\x18∫4 \x01(\x03H\x01R\x05start\x88\x01\x01\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB\a\n" +
+	"\bpriority\x18\xa4\xf3\xa1\xd4\x01 \x01(\x05H\x00R\bpriority\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x120\n" +
+	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x04\xe2A\x01\x02R\x0esecurityPolicyB\v\n" +
+	"\t_priority\"\x83\x01\n" +
+	"\x1cGetScreenshotInstanceRequest\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"o\n" +
+	"\x18GetSecurityPolicyRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x120\n" +
+	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x04\xe2A\x01\x02R\x0esecurityPolicy\"\xd6\x01\n" +
+	"\"GetSerialPortOutputInstanceRequest\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x12\x1a\n" +
+	"\x04port\x18\x81\xb1\xd2\x01 \x01(\x05H\x00R\x04port\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1c\n" +
+	"\x05start\x18∫4 \x01(\x03H\x01R\x05start\x88\x01\x01\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB\a\n" +
 	"\x05_portB\b\n" +
-	"\x06_start\"\xd3\x01\n" +
-	"\x1bGetServiceAttachmentRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x126\n" +
-	"\x12service_attachment\x18\xed\xa9С\x01 \x01(\tB\x03\xe0A\x02R\x11serviceAttachment\x12)\n" +
+	"\x06_start\"\xd6\x01\n" +
+	"\x1bGetServiceAttachmentRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x127\n" +
+	"\x12service_attachment\x18\xed\xa9С\x01 \x01(\tB\x04\xe2A\x01\x02R\x11serviceAttachment\x12)\n" +
 	"\fshow_nat_ips\x18\xcc\xd9\xc0\xe7\x01 \x01(\bH\x00R\n" +
 	"showNatIps\x88\x01\x01B\x0f\n" +
-	"\r_show_nat_ips\"\x8e\x01\n" +
-	"*GetShieldedInstanceIdentityInstanceRequest\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"[\n" +
-	"\x12GetSnapshotRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12#\n" +
-	"\bsnapshot\x18ī\xeb\x87\x01 \x01(\tB\x03\xe0A\x02R\bsnapshot\"=\n" +
-	"\x19GetSnapshotSettingRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\"m\n" +
-	"\x18GetSslCertificateRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12/\n" +
-	"\x0fssl_certificate\x18\xe4ג\x16 \x01(\tB\x03\xe0A\x02R\x0esslCertificate\"_\n" +
-	"\x13GetSslPolicyRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12&\n" +
+	"\r_show_nat_ips\"\x91\x01\n" +
+	"*GetShieldedInstanceIdentityInstanceRequest\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"]\n" +
+	"\x12GetSnapshotRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12$\n" +
+	"\bsnapshot\x18ī\xeb\x87\x01 \x01(\tB\x04\xe2A\x01\x02R\bsnapshot\">\n" +
+	"\x19GetSnapshotSettingRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\"o\n" +
+	"\x18GetSslCertificateRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x120\n" +
+	"\x0fssl_certificate\x18\xe4ג\x16 \x01(\tB\x04\xe2A\x01\x02R\x0esslCertificate\"a\n" +
+	"\x13GetSslPolicyRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12'\n" +
 	"\n" +
-	"ssl_policy\x18\xc5\xfd\xe0\x8c\x01 \x01(\tB\x03\xe0A\x02R\tsslPolicy\"\x88\x01\n" +
-	"\x1aGetStatusVpnGatewayRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12(\n" +
-	"\vvpn_gateway\x18\xf9\x83\xf6\xc1\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"vpnGateway\"\x81\x01\n" +
-	"\x15GetStoragePoolRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12*\n" +
-	"\fstorage_pool\x18\xe0\xc6\xf1\xab\x01 \x01(\tB\x03\xe0A\x02R\vstoragePool\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"\x8e\x01\n" +
-	"\x19GetStoragePoolTypeRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x123\n" +
-	"\x11storage_pool_type\x18\xb9\x81\xb0\x88\x01 \x01(\tB\x03\xe0A\x02R\x0fstoragePoolType\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"\xf1\x01\n" +
-	"\x14GetSubnetworkRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12'\n" +
+	"ssl_policy\x18\xc5\xfd\xe0\x8c\x01 \x01(\tB\x04\xe2A\x01\x02R\tsslPolicy\"\x8b\x01\n" +
+	"\x1aGetStatusVpnGatewayRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12)\n" +
+	"\vvpn_gateway\x18\xf9\x83\xf6\xc1\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"vpnGateway\"\x84\x01\n" +
+	"\x15GetStoragePoolRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12+\n" +
+	"\fstorage_pool\x18\xe0\xc6\xf1\xab\x01 \x01(\tB\x04\xe2A\x01\x02R\vstoragePool\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"\x91\x01\n" +
+	"\x19GetStoragePoolTypeRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x124\n" +
+	"\x11storage_pool_type\x18\xb9\x81\xb0\x88\x01 \x01(\tB\x04\xe2A\x01\x02R\x0fstoragePoolType\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"\xf4\x01\n" +
+	"\x14GetSubnetworkRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12(\n" +
 	"\n" +
-	"subnetwork\x18\xee\xa7\xe4\x92\x01 \x01(\tB\x03\xe0A\x02R\n" +
+	"subnetwork\x18\xee\xa7\xe4\x92\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
 	"subnetwork\x12\x1c\n" +
 	"\x05views\x18\xee\xb4\xc05 \x01(\tH\x00R\x05views\x88\x01\x01\"F\n" +
 	"\x05Views\x12\x13\n" +
 	"\x0fUNDEFINED_VIEWS\x10\x00\x12\x0e\n" +
 	"\aDEFAULT\x10\xa1\xc4\xfd6\x12\x18\n" +
 	"\x10WITH_UTILIZATION\x10\x89\xa0\xaf\xf0\x01B\b\n" +
-	"\x06_views\"q\n" +
-	"\x19GetTargetGrpcProxyRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x122\n" +
-	"\x11target_grpc_proxy\x18\xfb\xb4\xb2\x02 \x01(\tB\x03\xe0A\x02R\x0ftargetGrpcProxy\"q\n" +
-	"\x19GetTargetHttpProxyRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x122\n" +
-	"\x11target_http_proxy\x18\xe5\xbe\xd2b \x01(\tB\x03\xe0A\x02R\x0ftargetHttpProxy\"t\n" +
-	"\x1aGetTargetHttpsProxyRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x124\n" +
-	"\x12target_https_proxy\x18\xec\xb0\xfa\x18 \x01(\tB\x03\xe0A\x02R\x10targetHttpsProxy\"\x8a\x01\n" +
-	"\x18GetTargetInstanceRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x120\n" +
-	"\x0ftarget_instance\x18\x83\x8f\x96\x8a\x01 \x01(\tB\x03\xe0A\x02R\x0etargetInstance\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"\x81\x01\n" +
-	"\x14GetTargetPoolRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12'\n" +
-	"\vtarget_pool\x18\x8a\xe4\xf8\x1d \x01(\tB\x03\xe0A\x02R\n" +
-	"targetPool\"o\n" +
-	"\x18GetTargetSslProxyRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x121\n" +
-	"\x10target_ssl_proxy\x18ͺơ\x01 \x01(\tB\x03\xe0A\x02R\x0etargetSslProxy\"o\n" +
-	"\x18GetTargetTcpProxyRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x121\n" +
-	"\x10target_tcp_proxy\x18\xe2\xd6\xf0\xef\x01 \x01(\tB\x03\xe0A\x02R\x0etargetTcpProxy\"\x95\x01\n" +
-	"\x1aGetTargetVpnGatewayRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x125\n" +
-	"\x12target_vpn_gateway\x18ˀ\xf6\xfd\x01 \x01(\tB\x03\xe0A\x02R\x10targetVpnGateway\"V\n" +
-	"\x10GetUrlMapRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12 \n" +
-	"\aurl_map\x18\x8c\x95\x81\xaf\x01 \x01(\tB\x03\xe0A\x02R\x06urlMap\"\xea\x02\n" +
-	"\x15GetVersionHostRequest\x12)\n" +
-	"\vassociation\x18\x81\xb9\xa3\xd6\x01 \x01(\tB\x03\xe0A\x02R\vassociation\x12\x1a\n" +
-	"\x04host\x18\xa8\xeb\xc3\x01 \x01(\tB\x03\xe0A\x02R\x04host\x12\x84\x01\n" +
-	"\"hosts_get_version_request_resource\x18\x82\xb2\xad\x82\x01 \x01(\v2/.google.cloud.compute.v1.HostsGetVersionRequestB\x03\xe0A\x02R\x1ehostsGetVersionRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\x06_views\"s\n" +
+	"\x19GetTargetGrpcProxyRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x123\n" +
+	"\x11target_grpc_proxy\x18\xfb\xb4\xb2\x02 \x01(\tB\x04\xe2A\x01\x02R\x0ftargetGrpcProxy\"s\n" +
+	"\x19GetTargetHttpProxyRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x123\n" +
+	"\x11target_http_proxy\x18\xe5\xbe\xd2b \x01(\tB\x04\xe2A\x01\x02R\x0ftargetHttpProxy\"v\n" +
+	"\x1aGetTargetHttpsProxyRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x125\n" +
+	"\x12target_https_proxy\x18\xec\xb0\xfa\x18 \x01(\tB\x04\xe2A\x01\x02R\x10targetHttpsProxy\"\x8d\x01\n" +
+	"\x18GetTargetInstanceRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x121\n" +
+	"\x0ftarget_instance\x18\x83\x8f\x96\x8a\x01 \x01(\tB\x04\xe2A\x01\x02R\x0etargetInstance\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"\x84\x01\n" +
+	"\x14GetTargetPoolRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12(\n" +
+	"\vtarget_pool\x18\x8a\xe4\xf8\x1d \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"targetPool\"q\n" +
+	"\x18GetTargetSslProxyRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x122\n" +
+	"\x10target_ssl_proxy\x18ͺơ\x01 \x01(\tB\x04\xe2A\x01\x02R\x0etargetSslProxy\"q\n" +
+	"\x18GetTargetTcpProxyRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x122\n" +
+	"\x10target_tcp_proxy\x18\xe2\xd6\xf0\xef\x01 \x01(\tB\x04\xe2A\x01\x02R\x0etargetTcpProxy\"\x98\x01\n" +
+	"\x1aGetTargetVpnGatewayRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x126\n" +
+	"\x12target_vpn_gateway\x18ˀ\xf6\xfd\x01 \x01(\tB\x04\xe2A\x01\x02R\x10targetVpnGateway\"X\n" +
+	"\x10GetUrlMapRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12!\n" +
+	"\aurl_map\x18\x8c\x95\x81\xaf\x01 \x01(\tB\x04\xe2A\x01\x02R\x06urlMap\"\xef\x02\n" +
+	"\x15GetVersionHostRequest\x12*\n" +
+	"\vassociation\x18\x81\xb9\xa3\xd6\x01 \x01(\tB\x04\xe2A\x01\x02R\vassociation\x12\x1b\n" +
+	"\x04host\x18\xa8\xeb\xc3\x01 \x01(\tB\x04\xe2A\x01\x02R\x04host\x12\x85\x01\n" +
+	"\"hosts_get_version_request_resource\x18\x82\xb2\xad\x82\x01 \x01(\v2/.google.cloud.compute.v1.HostsGetVersionRequestB\x04\xe2A\x01\x02R\x1ehostsGetVersionRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
 	"\v_request_id\"\xa2\x01\n" +
 	"\x1bGetVersionOperationMetadata\x12n\n" +
 	"\x10inline_sbom_info\x18\x9a\x8e\xb0\x03 \x01(\v2<.google.cloud.compute.v1.GetVersionOperationMetadataSbomInfoH\x00R\x0einlineSbomInfo\x88\x01\x01B\x13\n" +
@@ -235991,71 +235947,68 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1aJ\n" +
 	"\x1cTargetComponentVersionsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xae\x03\n" +
-	" GetVersionReservationSlotRequest\x12(\n" +
-	"\vparent_name\x18\x80\x8a\x80\xe4\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"parentName\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xb3\x03\n" +
+	" GetVersionReservationSlotRequest\x12)\n" +
+	"\vparent_name\x18\x80\x8a\x80\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"parentName\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x122\n" +
-	"\x10reservation_slot\x18\x91\xbd\xa7\x84\x01 \x01(\tB\x03\xe0A\x02R\x0freservationSlot\x12\xa6\x01\n" +
-	".reservation_slots_get_version_request_resource\x18\xab\x88\xf2\x9f\x01 \x01(\v2:.google.cloud.compute.v1.ReservationSlotsGetVersionRequestB\x03\xe0A\x02R)reservationSlotsGetVersionRequestResource\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xc6\x03\n" +
-	"$GetVersionReservationSubBlockRequest\x12(\n" +
-	"\vparent_name\x18\x80\x8a\x80\xe4\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"parentName\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x123\n" +
+	"\x10reservation_slot\x18\x91\xbd\xa7\x84\x01 \x01(\tB\x04\xe2A\x01\x02R\x0freservationSlot\x12\xa7\x01\n" +
+	".reservation_slots_get_version_request_resource\x18\xab\x88\xf2\x9f\x01 \x01(\v2:.google.cloud.compute.v1.ReservationSlotsGetVersionRequestB\x04\xe2A\x01\x02R)reservationSlotsGetVersionRequestResource\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xcb\x03\n" +
+	"$GetVersionReservationSubBlockRequest\x12)\n" +
+	"\vparent_name\x18\x80\x8a\x80\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"parentName\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12:\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12;\n" +
 	"\x15reservation_sub_block\x18\x9b\xca\xec\n" +
-	" \x01(\tB\x03\xe0A\x02R\x13reservationSubBlock\x12\xb2\x01\n" +
-	"3reservation_sub_blocks_get_version_request_resource\x18\xb5\xfa\xacj \x01(\v2>.google.cloud.compute.v1.ReservationSubBlocksGetVersionRequestB\x03\xe0A\x02R-reservationSubBlocksGetVersionRequestResource\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\x82\x01\n" +
-	"\x14GetVpnGatewayRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12(\n" +
-	"\vvpn_gateway\x18\xf9\x83\xf6\xc1\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"vpnGateway\"~\n" +
-	"\x13GetVpnTunnelRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12%\n" +
+	" \x01(\tB\x04\xe2A\x01\x02R\x13reservationSubBlock\x12\xb3\x01\n" +
+	"3reservation_sub_blocks_get_version_request_resource\x18\xb5\xfa\xacj \x01(\v2>.google.cloud.compute.v1.ReservationSubBlocksGetVersionRequestB\x04\xe2A\x01\x02R-reservationSubBlocksGetVersionRequestResource\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\x85\x01\n" +
+	"\x14GetVpnGatewayRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12)\n" +
+	"\vvpn_gateway\x18\xf9\x83\xf6\xc1\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"vpnGateway\"\x81\x01\n" +
+	"\x13GetVpnTunnelRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12&\n" +
 	"\n" +
-	"vpn_tunnel\x18\x93\x94\xcaD \x01(\tB\x03\xe0A\x02R\tvpnTunnel\"\x94\x01\n" +
-	"\x13GetWireGroupRequest\x124\n" +
-	"\x12cross_site_network\x18\xd5\xc5\xcb3 \x01(\tB\x03\xe0A\x02R\x10crossSiteNetwork\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12%\n" +
+	"vpn_tunnel\x18\x93\x94\xcaD \x01(\tB\x04\xe2A\x01\x02R\tvpnTunnel\"\x97\x01\n" +
+	"\x13GetWireGroupRequest\x125\n" +
+	"\x12cross_site_network\x18\xd5\xc5\xcb3 \x01(\tB\x04\xe2A\x01\x02R\x10crossSiteNetwork\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12&\n" +
 	"\n" +
-	"wire_group\x18Ť\xb7: \x01(\tB\x03\xe0A\x02R\twireGroup\"<\n" +
-	"\x18GetXpnHostProjectRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\"\x8d\x02\n" +
+	"wire_group\x18Ť\xb7: \x01(\tB\x04\xe2A\x01\x02R\twireGroup\"=\n" +
+	"\x18GetXpnHostProjectRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\"\x8e\x02\n" +
 	"\x1eGetXpnResourcesProjectsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x84\x01\n" +
-	"\x17GetZoneOperationRequest\x12+\n" +
-	"\toperation\x18\xe7\xaa\xeb\x18 \x01(\tB\n" +
-	"\xe0A\x02\xfaG\x04nameR\toperation\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"N\n" +
-	"\x0eGetZoneRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"\x98\x01\n" +
-	"\x1fGetZoneVmExtensionPolicyRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x127\n" +
-	"\x13vm_extension_policy\x18\xba\x93\x8b\x9e\x01 \x01(\tB\x03\xe0A\x02R\x11vmExtensionPolicy\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"\xa9\x01\n" +
+	"\v_page_token\"\x87\x01\n" +
+	"\x17GetZoneOperationRequest\x12,\n" +
+	"\toperation\x18\xe7\xaa\xeb\x18 \x01(\tB\v\xe2A\x01\x02\xfaG\x04nameR\toperation\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"P\n" +
+	"\x0eGetZoneRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"\x9b\x01\n" +
+	"\x1fGetZoneVmExtensionPolicyRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x128\n" +
+	"\x13vm_extension_policy\x18\xba\x93\x8b\x9e\x01 \x01(\tB\x04\xe2A\x01\x02R\x11vmExtensionPolicy\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"\xa9\x01\n" +
 	"\x1aGlobalAddressesMoveRequest\x12)\n" +
 	"\vdescription\x18\xfc\x87\xd6\xc9\x01 \x01(\tH\x00R\vdescription\x88\x01\x01\x128\n" +
 	"\x13destination_address\x18ñ\x9e\xb1\x01 \x01(\tH\x01R\x12destinationAddress\x88\x01\x01B\x0e\n" +
@@ -237140,673 +237093,658 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\x04dbxs\x18\xf9\xe7\xbb\x01 \x03(\v2*.google.cloud.compute.v1.FileContentBufferR\x04dbxs\x12A\n" +
 	"\x04keks\x18\xc2\xd8\xc8\x01 \x03(\v2*.google.cloud.compute.v1.FileContentBufferR\x04keks\x12@\n" +
 	"\x02pk\x18\xfb\x1b \x01(\v2*.google.cloud.compute.v1.FileContentBufferH\x00R\x02pk\x88\x01\x01B\x05\n" +
-	"\x03_pk\"\xf7\x01\n" +
-	"\x14InsertAddressRequest\x12T\n" +
-	"\x10address_resource\x18\xf9\x97\xde\xe6\x01 \x01(\v2 .google.cloud.compute.v1.AddressB\x03\xe0A\x02R\x0faddressResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\x03_pk\"\xfa\x01\n" +
+	"\x14InsertAddressRequest\x12U\n" +
+	"\x10address_resource\x18\xf9\x97\xde\xe6\x01 \x01(\v2 .google.cloud.compute.v1.AddressB\x04\xe2A\x01\x02R\x0faddressResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xfc\x01\n" +
-	"\x17InsertAutoscalerRequest\x12\\\n" +
-	"\x13autoscaler_resource\x18\xf6\xf0\xffb \x01(\v2#.google.cloud.compute.v1.AutoscalerB\x03\xe0A\x02R\x12autoscalerResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\xff\x01\n" +
+	"\x17InsertAutoscalerRequest\x12]\n" +
+	"\x13autoscaler_resource\x18\xf6\xf0\xffb \x01(\v2#.google.cloud.compute.v1.AutoscalerB\x04\xe2A\x01\x02R\x12autoscalerResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xe7\x01\n" +
-	"\x1aInsertBackendBucketRequest\x12g\n" +
-	"\x17backend_bucket_resource\x18\x98\xceǵ\x01 \x01(\v2&.google.cloud.compute.v1.BackendBucketB\x03\xe0A\x02R\x15backendBucketResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xeb\x01\n" +
-	"\x1bInsertBackendServiceRequest\x12j\n" +
-	"\x18backend_service_resource\x18\xa3\x81ߥ\x01 \x01(\v2'.google.cloud.compute.v1.BackendServiceB\x03\xe0A\x02R\x16backendServiceResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xe9\x01\n" +
+	"\x1aInsertBackendBucketRequest\x12h\n" +
+	"\x17backend_bucket_resource\x18\x98\xceǵ\x01 \x01(\v2&.google.cloud.compute.v1.BackendBucketB\x04\xe2A\x01\x02R\x15backendBucketResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xb2\x02\n" +
-	"\x1dInsertCrossSiteNetworkRequest\x12p\n" +
-	"\x1bcross_site_network_resource\x18\xb8\xe4\xdd\x0e \x01(\v2).google.cloud.compute.v1.CrossSiteNetworkB\x03\xe0A\x02R\x18crossSiteNetworkResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\xed\x01\n" +
+	"\x1bInsertBackendServiceRequest\x12k\n" +
+	"\x18backend_service_resource\x18\xa3\x81ߥ\x01 \x01(\v2'.google.cloud.compute.v1.BackendServiceB\x04\xe2A\x01\x02R\x16backendServiceResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xb4\x02\n" +
+	"\x1dInsertCrossSiteNetworkRequest\x12q\n" +
+	"\x1bcross_site_network_resource\x18\xb8\xe4\xdd\x0e \x01(\v2).google.cloud.compute.v1.CrossSiteNetworkB\x04\xe2A\x01\x02R\x18crossSiteNetworkResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12+\n" +
 	"\rvalidate_only\x18\xb5\xfa\xdfs \x01(\bH\x01R\fvalidateOnly\x88\x01\x01B\r\n" +
 	"\v_request_idB\x10\n" +
-	"\x0e_validate_only\"\xa0\x02\n" +
-	"\x11InsertDiskRequest\x12J\n" +
-	"\rdisk_resource\x18\xf0Ы\f \x01(\v2\x1d.google.cloud.compute.v1.DiskB\x03\xe0A\x02R\fdiskResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\x0e_validate_only\"\xa3\x02\n" +
+	"\x11InsertDiskRequest\x12K\n" +
+	"\rdisk_resource\x18\xf0Ы\f \x01(\v2\x1d.google.cloud.compute.v1.DiskB\x04\xe2A\x01\x02R\fdiskResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12)\n" +
-	"\fsource_image\x18\xb7\xe8\x86\x18 \x01(\tH\x01R\vsourceImage\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\fsource_image\x18\xb7\xe8\x86\x18 \x01(\tH\x01R\vsourceImage\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
 	"\v_request_idB\x0f\n" +
-	"\r_source_image\"\xfc\x01\n" +
-	"\x1fInsertExternalVpnGatewayRequest\x12w\n" +
-	"\x1dexternal_vpn_gateway_resource\x18\x88ߐ\xe8\x01 \x01(\v2+.google.cloud.compute.v1.ExternalVpnGatewayB\x03\xe0A\x02R\x1aexternalVpnGatewayResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\r_source_image\"\xfe\x01\n" +
+	"\x1fInsertExternalVpnGatewayRequest\x12x\n" +
+	"\x1dexternal_vpn_gateway_resource\x18\x88ߐ\xe8\x01 \x01(\v2+.google.cloud.compute.v1.ExternalVpnGatewayB\x04\xe2A\x01\x02R\x1aexternalVpnGatewayResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\x81\x02\n" +
-	"\x1bInsertFirewallPolicyRequest\x12j\n" +
-	"\x18firewall_policy_resource\x18\xbc\xb6\x87\xec\x01 \x01(\v2'.google.cloud.compute.v1.FirewallPolicyB\x03\xe0A\x02R\x16firewallPolicyResource\x122\n" +
+	"\v_request_id\"\x82\x02\n" +
+	"\x1bInsertFirewallPolicyRequest\x12k\n" +
+	"\x18firewall_policy_resource\x18\xbc\xb6\x87\xec\x01 \x01(\v2'.google.cloud.compute.v1.FirewallPolicyB\x04\xe2A\x01\x02R\x16firewallPolicyResource\x122\n" +
 	"\tparent_id\x18\xd0\xe1\x9a\xdb\x01 \x01(\tB\f\xf2G\tparent_idH\x00R\bparentId\x88\x01\x01\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01B\f\n" +
 	"\n" +
 	"_parent_idB\r\n" +
-	"\v_request_id\"\xd1\x01\n" +
-	"\x15InsertFirewallRequest\x12V\n" +
-	"\x11firewall_resource\x18\xed\xb0\xe0\x13 \x01(\v2!.google.cloud.compute.v1.FirewallB\x03\xe0A\x02R\x10firewallResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\xd3\x01\n" +
+	"\x15InsertFirewallRequest\x12W\n" +
+	"\x11firewall_resource\x18\xed\xb0\xe0\x13 \x01(\v2!.google.cloud.compute.v1.FirewallB\x04\xe2A\x01\x02R\x10firewallResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\x94\x02\n" +
-	"\x1bInsertForwardingRuleRequest\x12j\n" +
-	"\x18forwarding_rule_resource\x18\xaf\xc0Џ\x01 \x01(\v2'.google.cloud.compute.v1.ForwardingRuleB\x03\xe0A\x02R\x16forwardingRuleResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\x97\x02\n" +
+	"\x1bInsertForwardingRuleRequest\x12k\n" +
+	"\x18forwarding_rule_resource\x18\xaf\xc0Џ\x01 \x01(\v2'.google.cloud.compute.v1.ForwardingRuleB\x04\xe2A\x01\x02R\x16forwardingRuleResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\x9a\x02\n" +
-	"\x1eInsertFutureReservationRequest\x12s\n" +
-	"\x1bfuture_reservation_resource\x18\x9d\x98\xc8\xde\x01 \x01(\v2*.google.cloud.compute.v1.FutureReservationB\x03\xe0A\x02R\x19futureReservationResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\x9d\x02\n" +
+	"\x1eInsertFutureReservationRequest\x12t\n" +
+	"\x1bfuture_reservation_resource\x18\x9d\x98\xc8\xde\x01 \x01(\v2*.google.cloud.compute.v1.FutureReservationB\x04\xe2A\x01\x02R\x19futureReservationResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xd4\x01\n" +
-	"\x1aInsertGlobalAddressRequest\x12T\n" +
-	"\x10address_resource\x18\xf9\x97\xde\xe6\x01 \x01(\v2 .google.cloud.compute.v1.AddressB\x03\xe0A\x02R\x0faddressResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xf1\x01\n" +
-	"!InsertGlobalForwardingRuleRequest\x12j\n" +
-	"\x18forwarding_rule_resource\x18\xaf\xc0Џ\x01 \x01(\v2'.google.cloud.compute.v1.ForwardingRuleB\x03\xe0A\x02R\x16forwardingRuleResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xd6\x01\n" +
+	"\x1aInsertGlobalAddressRequest\x12U\n" +
+	"\x10address_resource\x18\xf9\x97\xde\xe6\x01 \x01(\v2 .google.cloud.compute.v1.AddressB\x04\xe2A\x01\x02R\x0faddressResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\x8a\x02\n" +
-	"'InsertGlobalNetworkEndpointGroupRequest\x12}\n" +
-	"\x1fnetwork_endpoint_group_resource\x18\xa7\xcd\xdb\xfa\x01 \x01(\v2-.google.cloud.compute.v1.NetworkEndpointGroupB\x03\xe0A\x02R\x1cnetworkEndpointGroupResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\xf3\x01\n" +
+	"!InsertGlobalForwardingRuleRequest\x12k\n" +
+	"\x18forwarding_rule_resource\x18\xaf\xc0Џ\x01 \x01(\v2'.google.cloud.compute.v1.ForwardingRuleB\x04\xe2A\x01\x02R\x16forwardingRuleResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\x8e\x02\n" +
-	")InsertGlobalPublicDelegatedPrefixeRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12\x7f\n" +
-	" public_delegated_prefix_resource\x18\x85\xf8\xd8\x16 \x01(\v2..google.cloud.compute.v1.PublicDelegatedPrefixB\x03\xe0A\x02R\x1dpublicDelegatedPrefixResource\x12%\n" +
+	"\v_request_id\"\x8c\x02\n" +
+	"'InsertGlobalNetworkEndpointGroupRequest\x12~\n" +
+	"\x1fnetwork_endpoint_group_resource\x18\xa7\xcd\xdb\xfa\x01 \x01(\v2-.google.cloud.compute.v1.NetworkEndpointGroupB\x04\xe2A\x01\x02R\x1cnetworkEndpointGroupResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
 	"\v_request_id\"\x91\x02\n" +
-	"$InsertGlobalVmExtensionPolicyRequest\x12\x86\x01\n" +
-	"#global_vm_extension_policy_resource\x18\x8fص0 \x01(\v20.google.cloud.compute.v1.GlobalVmExtensionPolicyB\x03\xe0A\x02R\x1fglobalVmExtensionPolicyResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	")InsertGlobalPublicDelegatedPrefixeRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12\x80\x01\n" +
+	" public_delegated_prefix_resource\x18\x85\xf8\xd8\x16 \x01(\v2..google.cloud.compute.v1.PublicDelegatedPrefixB\x04\xe2A\x01\x02R\x1dpublicDelegatedPrefixResource\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xde\x01\n" +
-	"\x18InsertHealthCheckRequest\x12`\n" +
-	"\x15health_check_resource\x18\xa8ä` \x01(\v2$.google.cloud.compute.v1.HealthCheckB\x03\xe0A\x02R\x13healthCheckResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\x93\x02\n" +
+	"$InsertGlobalVmExtensionPolicyRequest\x12\x87\x01\n" +
+	"#global_vm_extension_policy_resource\x18\x8fص0 \x01(\v20.google.cloud.compute.v1.GlobalVmExtensionPolicyB\x04\xe2A\x01\x02R\x1fglobalVmExtensionPolicyResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\x82\x02\n" +
+	"\v_request_id\"\xe0\x01\n" +
+	"\x18InsertHealthCheckRequest\x12a\n" +
+	"\x15health_check_resource\x18\xa8ä` \x01(\v2$.google.cloud.compute.v1.HealthCheckB\x04\xe2A\x01\x02R\x13healthCheckResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\x84\x02\n" +
 	"\x12InsertImageRequest\x12)\n" +
-	"\fforce_create\x18Љ\xa4^ \x01(\bH\x00R\vforceCreate\x88\x01\x01\x12N\n" +
-	"\x0eimage_resource\x18\xf2\xc4\xfe\xb0\x01 \x01(\v2\x1e.google.cloud.compute.v1.ImageB\x03\xe0A\x02R\rimageResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\fforce_create\x18Љ\xa4^ \x01(\bH\x00R\vforceCreate\x88\x01\x01\x12O\n" +
+	"\x0eimage_resource\x18\xf2\xc4\xfe\xb0\x01 \x01(\v2\x1e.google.cloud.compute.v1.ImageB\x04\xe2A\x01\x02R\rimageResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01B\x0f\n" +
 	"\r_force_createB\r\n" +
-	"\v_request_id\"\xa6\x02\n" +
-	"!InsertInstanceGroupManagerRequest\x12|\n" +
-	"\x1finstance_group_manager_resource\x18\x8a\x8a\xbe| \x01(\v2-.google.cloud.compute.v1.InstanceGroupManagerB\x03\xe0A\x02R\x1cinstanceGroupManagerResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\xa9\x02\n" +
+	"!InsertInstanceGroupManagerRequest\x12}\n" +
+	"\x1finstance_group_manager_resource\x18\x8a\x8a\xbe| \x01(\v2-.google.cloud.compute.v1.InstanceGroupManagerB\x04\xe2A\x01\x02R\x1cinstanceGroupManagerResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\x9c\x03\n" +
-	".InsertInstanceGroupManagerResizeRequestRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12\xa6\x01\n" +
-	".instance_group_manager_resize_request_resource\x18\xed\xbe\xb5\xdf\x01 \x01(\v2:.google.cloud.compute.v1.InstanceGroupManagerResizeRequestB\x03\xe0A\x02R)instanceGroupManagerResizeRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xa0\x03\n" +
+	".InsertInstanceGroupManagerResizeRequestRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12\xa7\x01\n" +
+	".instance_group_manager_resize_request_resource\x18\xed\xbe\xb5\xdf\x01 \x01(\v2:.google.cloud.compute.v1.InstanceGroupManagerResizeRequestB\x04\xe2A\x01\x02R)instanceGroupManagerResizeRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\x8a\x02\n" +
-	"\x1aInsertInstanceGroupRequest\x12g\n" +
-	"\x17instance_group_resource\x18\xb8\xb5Ո\x01 \x01(\v2&.google.cloud.compute.v1.InstanceGroupB\x03\xe0A\x02R\x15instanceGroupResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\x8d\x02\n" +
+	"\x1aInsertInstanceGroupRequest\x12h\n" +
+	"\x17instance_group_resource\x18\xb8\xb5Ո\x01 \x01(\v2&.google.cloud.compute.v1.InstanceGroupB\x04\xe2A\x01\x02R\x15instanceGroupResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xa7\x03\n" +
-	"\x15InsertInstanceRequest\x12V\n" +
-	"\x11instance_resource\x18\xf8\xf0\xfef \x01(\v2!.google.cloud.compute.v1.InstanceB\x03\xe0A\x02R\x10instanceResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xaa\x03\n" +
+	"\x15InsertInstanceRequest\x12W\n" +
+	"\x11instance_resource\x18\xf8\xf0\xfef \x01(\v2!.google.cloud.compute.v1.InstanceB\x04\xe2A\x01\x02R\x10instanceResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12A\n" +
 	"\x18source_instance_template\x18\xc0\xc3\xc1\x9e\x01 \x01(\tH\x01R\x16sourceInstanceTemplate\x88\x01\x01\x128\n" +
 	"\x14source_machine_image\x18\xbfܰ\n" +
-	" \x01(\tH\x02R\x12sourceMachineImage\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	" \x01(\tH\x02R\x12sourceMachineImage\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
 	"\v_request_idB\x1b\n" +
 	"\x19_source_instance_templateB\x17\n" +
-	"\x15_source_machine_image\"\xf2\x01\n" +
-	"\x1dInsertInstanceTemplateRequest\x12o\n" +
-	"\x1ainstance_template_resource\x18\x89\xea\x8b\x05 \x01(\v2).google.cloud.compute.v1.InstanceTemplateB\x03\xe0A\x02R\x18instanceTemplateResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\x15_source_machine_image\"\xf4\x01\n" +
+	"\x1dInsertInstanceTemplateRequest\x12p\n" +
+	"\x1ainstance_template_resource\x18\x89\xea\x8b\x05 \x01(\v2).google.cloud.compute.v1.InstanceTemplateB\x04\xe2A\x01\x02R\x18instanceTemplateResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\x86\x03\n" +
-	"!InsertInstantSnapshotGroupRequest\x12|\n" +
-	"\x1finstant_snapshot_group_resource\x18˚\x96E \x01(\v2-.google.cloud.compute.v1.InstantSnapshotGroupB\x03\xe0A\x02R\x1cinstantSnapshotGroupResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\x89\x03\n" +
+	"!InsertInstantSnapshotGroupRequest\x12}\n" +
+	"\x1finstant_snapshot_group_resource\x18˚\x96E \x01(\v2-.google.cloud.compute.v1.InstantSnapshotGroupB\x04\xe2A\x01\x02R\x1cinstantSnapshotGroupResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12A\n" +
-	"\x18source_consistency_group\x18\xf4̯\xfd\x01 \x01(\tH\x01R\x16sourceConsistencyGroup\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\x18source_consistency_group\x18\xf4̯\xfd\x01 \x01(\tH\x01R\x16sourceConsistencyGroup\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
 	"\v_request_idB\x1b\n" +
-	"\x19_source_consistency_group\"\x92\x02\n" +
-	"\x1cInsertInstantSnapshotRequest\x12m\n" +
-	"\x19instant_snapshot_resource\x18˪\x88\xb7\x01 \x01(\v2(.google.cloud.compute.v1.InstantSnapshotB\x03\xe0A\x02R\x17instantSnapshotResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\x19_source_consistency_group\"\x95\x02\n" +
+	"\x1cInsertInstantSnapshotRequest\x12n\n" +
+	"\x19instant_snapshot_resource\x18˪\x88\xb7\x01 \x01(\v2(.google.cloud.compute.v1.InstantSnapshotB\x04\xe2A\x01\x02R\x17instantSnapshotResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xa0\x02\n" +
-	"(InsertInterconnectAttachmentGroupRequest\x12\x91\x01\n" +
-	"&interconnect_attachment_group_resource\x18\xf9\xdf\xe1\x04 \x01(\v24.google.cloud.compute.v1.InterconnectAttachmentGroupB\x03\xe0A\x02R#interconnectAttachmentGroupResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xa2\x02\n" +
+	"(InsertInterconnectAttachmentGroupRequest\x12\x92\x01\n" +
+	"&interconnect_attachment_group_resource\x18\xf9\xdf\xe1\x04 \x01(\v24.google.cloud.compute.v1.InterconnectAttachmentGroupB\x04\xe2A\x01\x02R#interconnectAttachmentGroupResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xf3\x02\n" +
-	"#InsertInterconnectAttachmentRequest\x12\x81\x01\n" +
-	" interconnect_attachment_resource\x18\xf9\xa4\xa0e \x01(\v2/.google.cloud.compute.v1.InterconnectAttachmentB\x03\xe0A\x02R\x1einterconnectAttachmentResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\xf6\x02\n" +
+	"#InsertInterconnectAttachmentRequest\x12\x82\x01\n" +
+	" interconnect_attachment_resource\x18\xf9\xa4\xa0e \x01(\v2/.google.cloud.compute.v1.InterconnectAttachmentB\x04\xe2A\x01\x02R\x1einterconnectAttachmentResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12+\n" +
 	"\rvalidate_only\x18\xb5\xfa\xdfs \x01(\bH\x01R\fvalidateOnly\x88\x01\x01B\r\n" +
 	"\v_request_idB\x10\n" +
-	"\x0e_validate_only\"\xf6\x01\n" +
-	"\x1eInsertInterconnectGroupRequest\x12r\n" +
-	"\x1binterconnect_group_resource\x18\x9f\xf3\xe6( \x01(\v2*.google.cloud.compute.v1.InterconnectGroupB\x03\xe0A\x02R\x19interconnectGroupResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\x0e_validate_only\"\xf8\x01\n" +
+	"\x1eInsertInterconnectGroupRequest\x12s\n" +
+	"\x1binterconnect_group_resource\x18\x9f\xf3\xe6( \x01(\v2*.google.cloud.compute.v1.InterconnectGroupB\x04\xe2A\x01\x02R\x19interconnectGroupResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xe2\x01\n" +
-	"\x19InsertInterconnectRequest\x12c\n" +
-	"\x15interconnect_resource\x18\x9f\xa1̽\x01 \x01(\v2%.google.cloud.compute.v1.InterconnectB\x03\xe0A\x02R\x14interconnectResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\xe4\x01\n" +
+	"\x19InsertInterconnectRequest\x12d\n" +
+	"\x15interconnect_resource\x18\x9f\xa1̽\x01 \x01(\v2%.google.cloud.compute.v1.InterconnectB\x04\xe2A\x01\x02R\x14interconnectResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xce\x01\n" +
-	"\x14InsertLicenseRequest\x12T\n" +
-	"\x10license_resource\x18\xcc\xd4\xea\xd0\x01 \x01(\v2 .google.cloud.compute.v1.LicenseB\x03\xe0A\x02R\x0flicenseResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\xd0\x01\n" +
+	"\x14InsertLicenseRequest\x12U\n" +
+	"\x10license_resource\x18\xcc\xd4\xea\xd0\x01 \x01(\v2 .google.cloud.compute.v1.LicenseB\x04\xe2A\x01\x02R\x0flicenseResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xa8\x02\n" +
-	"\x19InsertMachineImageRequest\x12c\n" +
-	"\x16machine_image_resource\x18\xea\xaa\xfb\x1c \x01(\v2%.google.cloud.compute.v1.MachineImageB\x03\xe0A\x02R\x14machineImageResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\xaa\x02\n" +
+	"\x19InsertMachineImageRequest\x12d\n" +
+	"\x16machine_image_resource\x18\xea\xaa\xfb\x1c \x01(\v2%.google.cloud.compute.v1.MachineImageB\x04\xe2A\x01\x02R\x14machineImageResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x120\n" +
 	"\x0fsource_instance\x18\xb9\x98\xfd\xbc\x01 \x01(\tH\x01R\x0esourceInstance\x88\x01\x01B\r\n" +
 	"\v_request_idB\x12\n" +
-	"\x10_source_instance\"\x9f\x02\n" +
-	"\x1eInsertNetworkAttachmentRequest\x12r\n" +
-	"\x1bnetwork_attachment_resource\x18\x99\xf0\xccd \x01(\v2*.google.cloud.compute.v1.NetworkAttachmentB\x03\xe0A\x02R\x19networkAttachmentResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\x10_source_instance\"\xa2\x02\n" +
+	"\x1eInsertNetworkAttachmentRequest\x12s\n" +
+	"\x1bnetwork_attachment_resource\x18\x99\xf0\xccd \x01(\v2*.google.cloud.compute.v1.NetworkAttachmentB\x04\xe2A\x01\x02R\x19networkAttachmentResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\x86\x03\n" +
-	"'InsertNetworkEdgeSecurityServiceRequest\x12\x90\x01\n" +
-	"&network_edge_security_service_resource\x18\xa6\xa3\xdb\xe3\x01 \x01(\v23.google.cloud.compute.v1.NetworkEdgeSecurityServiceB\x03\xe0A\x02R\"networkEdgeSecurityServiceResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\x89\x03\n" +
+	"'InsertNetworkEdgeSecurityServiceRequest\x12\x91\x01\n" +
+	"&network_edge_security_service_resource\x18\xa6\xa3\xdb\xe3\x01 \x01(\v23.google.cloud.compute.v1.NetworkEdgeSecurityServiceB\x04\xe2A\x01\x02R\"networkEdgeSecurityServiceResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12+\n" +
 	"\rvalidate_only\x18\xb5\xfa\xdfs \x01(\bH\x01R\fvalidateOnly\x88\x01\x01B\r\n" +
 	"\v_request_idB\x10\n" +
-	"\x0e_validate_only\"\xa7\x02\n" +
-	"!InsertNetworkEndpointGroupRequest\x12}\n" +
-	"\x1fnetwork_endpoint_group_resource\x18\xa7\xcd\xdb\xfa\x01 \x01(\v2-.google.cloud.compute.v1.NetworkEndpointGroupB\x03\xe0A\x02R\x1cnetworkEndpointGroupResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\x0e_validate_only\"\xaa\x02\n" +
+	"!InsertNetworkEndpointGroupRequest\x12~\n" +
+	"\x1fnetwork_endpoint_group_resource\x18\xa7\xcd\xdb\xfa\x01 \x01(\v2-.google.cloud.compute.v1.NetworkEndpointGroupB\x04\xe2A\x01\x02R\x1cnetworkEndpointGroupResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xf2\x01\n" +
-	"\"InsertNetworkFirewallPolicyRequest\x12j\n" +
-	"\x18firewall_policy_resource\x18\xbc\xb6\x87\xec\x01 \x01(\v2'.google.cloud.compute.v1.FirewallPolicyB\x03\xe0A\x02R\x16firewallPolicyResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xcd\x01\n" +
-	"\x14InsertNetworkRequest\x12S\n" +
-	"\x10network_resource\x18\xffݜ: \x01(\v2 .google.cloud.compute.v1.NetworkB\x03\xe0A\x02R\x0fnetworkResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xf4\x01\n" +
+	"\"InsertNetworkFirewallPolicyRequest\x12k\n" +
+	"\x18firewall_policy_resource\x18\xbc\xb6\x87\xec\x01 \x01(\v2'.google.cloud.compute.v1.FirewallPolicyB\x04\xe2A\x01\x02R\x16firewallPolicyResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xb0\x02\n" +
-	"\x16InsertNodeGroupRequest\x124\n" +
-	"\x12initial_node_count\x18\xedȧ\" \x01(\x05B\x03\xe0A\x02R\x10initialNodeCount\x12[\n" +
-	"\x13node_group_resource\x18\xab\xb3\xfa\xf0\x01 \x01(\v2\".google.cloud.compute.v1.NodeGroupB\x03\xe0A\x02R\x11nodeGroupResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\x8b\x02\n" +
-	"\x19InsertNodeTemplateRequest\x12c\n" +
-	"\x16node_template_resource\x18\xb6\xda\xdd< \x01(\v2%.google.cloud.compute.v1.NodeTemplateB\x03\xe0A\x02R\x14nodeTemplateResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\xcf\x01\n" +
+	"\x14InsertNetworkRequest\x12T\n" +
+	"\x10network_resource\x18\xffݜ: \x01(\v2 .google.cloud.compute.v1.NetworkB\x04\xe2A\x01\x02R\x0fnetworkResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\x8c\x02\n" +
-	"'InsertOrganizationSecurityPolicyRequest\x122\n" +
-	"\tparent_id\x18\xd0\xe1\x9a\xdb\x01 \x01(\tB\f\xf2G\tparent_idH\x00R\bparentId\x88\x01\x01\x12%\n" +
+	"\v_request_id\"\xb4\x02\n" +
+	"\x16InsertNodeGroupRequest\x125\n" +
+	"\x12initial_node_count\x18\xedȧ\" \x01(\x05B\x04\xe2A\x01\x02R\x10initialNodeCount\x12\\\n" +
+	"\x13node_group_resource\x18\xab\xb3\xfa\xf0\x01 \x01(\v2\".google.cloud.compute.v1.NodeGroupB\x04\xe2A\x01\x02R\x11nodeGroupResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12i\n" +
-	"\x18security_policy_resource\x18\xfc\xaa\x89g \x01(\v2'.google.cloud.compute.v1.SecurityPolicyB\x03\xe0A\x02R\x16securityPolicyResourceB\f\n" +
-	"\n" +
-	"_parent_idB\r\n" +
-	"\v_request_id\"\x98\x02\n" +
-	"\x1cInsertPacketMirroringRequest\x12m\n" +
-	"\x19packet_mirroring_resource\x18\xa1\xfc\xa8\xeb\x01 \x01(\v2(.google.cloud.compute.v1.PacketMirroringB\x03\xe0A\x02R\x17packetMirroringResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\x8e\x02\n" +
+	"\x19InsertNodeTemplateRequest\x12d\n" +
+	"\x16node_template_resource\x18\xb6\xda\xdd< \x01(\v2%.google.cloud.compute.v1.NodeTemplateB\x04\xe2A\x01\x02R\x14nodeTemplateResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
 	"\v_request_id\"\x8d\x02\n" +
-	"$InsertPublicAdvertisedPrefixeRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12\x82\x01\n" +
-	"!public_advertised_prefix_resource\x18\x8fײo \x01(\v2/.google.cloud.compute.v1.PublicAdvertisedPrefixB\x03\xe0A\x02R\x1epublicAdvertisedPrefixResource\x12%\n" +
+	"'InsertOrganizationSecurityPolicyRequest\x122\n" +
+	"\tparent_id\x18\xd0\xe1\x9a\xdb\x01 \x01(\tB\f\xf2G\tparent_idH\x00R\bparentId\x88\x01\x01\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12j\n" +
+	"\x18security_policy_resource\x18\xfc\xaa\x89g \x01(\v2'.google.cloud.compute.v1.SecurityPolicyB\x04\xe2A\x01\x02R\x16securityPolicyResourceB\f\n" +
+	"\n" +
+	"_parent_idB\r\n" +
+	"\v_request_id\"\x9b\x02\n" +
+	"\x1cInsertPacketMirroringRequest\x12n\n" +
+	"\x19packet_mirroring_resource\x18\xa1\xfc\xa8\xeb\x01 \x01(\v2(.google.cloud.compute.v1.PacketMirroringB\x04\xe2A\x01\x02R\x17packetMirroringResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xb1\x02\n" +
-	"#InsertPublicDelegatedPrefixeRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12\x7f\n" +
-	" public_delegated_prefix_resource\x18\x85\xf8\xd8\x16 \x01(\v2..google.cloud.compute.v1.PublicDelegatedPrefixB\x03\xe0A\x02R\x1dpublicDelegatedPrefixResource\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\x8f\x02\n" +
+	"$InsertPublicAdvertisedPrefixeRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12\x83\x01\n" +
+	"!public_advertised_prefix_resource\x18\x8fײo \x01(\v2/.google.cloud.compute.v1.PublicAdvertisedPrefixB\x04\xe2A\x01\x02R\x1epublicAdvertisedPrefixResource\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\x88\x02\n" +
-	"\x1dInsertRegionAutoscalerRequest\x12\\\n" +
-	"\x13autoscaler_resource\x18\xf6\xf0\xffb \x01(\v2#.google.cloud.compute.v1.AutoscalerB\x03\xe0A\x02R\x12autoscalerResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\xb5\x02\n" +
+	"#InsertPublicDelegatedPrefixeRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12\x80\x01\n" +
+	" public_delegated_prefix_resource\x18\x85\xf8\xd8\x16 \x01(\v2..google.cloud.compute.v1.PublicDelegatedPrefixB\x04\xe2A\x01\x02R\x1dpublicDelegatedPrefixResource\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\x96\x02\n" +
-	" InsertRegionBackendBucketRequest\x12g\n" +
-	"\x17backend_bucket_resource\x18\x98\xceǵ\x01 \x01(\v2&.google.cloud.compute.v1.BackendBucketB\x03\xe0A\x02R\x15backendBucketResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\x8b\x02\n" +
+	"\x1dInsertRegionAutoscalerRequest\x12]\n" +
+	"\x13autoscaler_resource\x18\xf6\xf0\xffb \x01(\v2#.google.cloud.compute.v1.AutoscalerB\x04\xe2A\x01\x02R\x12autoscalerResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\x9a\x02\n" +
-	"!InsertRegionBackendServiceRequest\x12j\n" +
-	"\x18backend_service_resource\x18\xa3\x81ߥ\x01 \x01(\v2'.google.cloud.compute.v1.BackendServiceB\x03\xe0A\x02R\x16backendServiceResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\x99\x02\n" +
+	" InsertRegionBackendBucketRequest\x12h\n" +
+	"\x17backend_bucket_resource\x18\x98\xceǵ\x01 \x01(\v2&.google.cloud.compute.v1.BackendBucketB\x04\xe2A\x01\x02R\x15backendBucketResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\x88\x02\n" +
-	"\x1dInsertRegionCommitmentRequest\x12\\\n" +
-	"\x13commitment_resource\x18\xf8\xa3\xbbt \x01(\v2#.google.cloud.compute.v1.CommitmentB\x03\xe0A\x02R\x12commitmentResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\x9d\x02\n" +
+	"!InsertRegionBackendServiceRequest\x12k\n" +
+	"\x18backend_service_resource\x18\xa3\x81ߥ\x01 \x01(\v2'.google.cloud.compute.v1.BackendServiceB\x04\xe2A\x01\x02R\x16backendServiceResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xb2\x02\n" +
-	"'InsertRegionCompositeHealthCheckRequest\x12|\n" +
-	"\x1fcomposite_health_check_resource\x18\xf0˄? \x01(\v2-.google.cloud.compute.v1.CompositeHealthCheckB\x03\xe0A\x02R\x1ccompositeHealthCheckResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\x8b\x02\n" +
+	"\x1dInsertRegionCommitmentRequest\x12]\n" +
+	"\x13commitment_resource\x18\xf8\xa3\xbbt \x01(\v2#.google.cloud.compute.v1.CommitmentB\x04\xe2A\x01\x02R\x12commitmentResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xac\x02\n" +
-	"\x17InsertRegionDiskRequest\x12J\n" +
-	"\rdisk_resource\x18\xf0Ы\f \x01(\v2\x1d.google.cloud.compute.v1.DiskB\x03\xe0A\x02R\fdiskResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\xb5\x02\n" +
+	"'InsertRegionCompositeHealthCheckRequest\x12}\n" +
+	"\x1fcomposite_health_check_resource\x18\xf0˄? \x01(\v2-.google.cloud.compute.v1.CompositeHealthCheckB\x04\xe2A\x01\x02R\x1ccompositeHealthCheckResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xaf\x02\n" +
+	"\x17InsertRegionDiskRequest\x12K\n" +
+	"\rdisk_resource\x18\xf0Ы\f \x01(\v2\x1d.google.cloud.compute.v1.DiskB\x04\xe2A\x01\x02R\fdiskResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12)\n" +
 	"\fsource_image\x18\xb7\xe8\x86\x18 \x01(\tH\x01R\vsourceImage\x88\x01\x01B\r\n" +
 	"\v_request_idB\x0f\n" +
-	"\r_source_image\"\xc0\x02\n" +
-	"*InsertRegionHealthAggregationPolicyRequest\x12\x86\x01\n" +
-	"\"health_aggregation_policy_resource\x18\xbb\xbb\xfb\x8b\x01 \x01(\v20.google.cloud.compute.v1.HealthAggregationPolicyB\x03\xe0A\x02R\x1fhealthAggregationPolicyResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\r_source_image\"\xc3\x02\n" +
+	"*InsertRegionHealthAggregationPolicyRequest\x12\x87\x01\n" +
+	"\"health_aggregation_policy_resource\x18\xbb\xbb\xfb\x8b\x01 \x01(\v20.google.cloud.compute.v1.HealthAggregationPolicyB\x04\xe2A\x01\x02R\x1fhealthAggregationPolicyResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\x8d\x02\n" +
-	"\x1eInsertRegionHealthCheckRequest\x12`\n" +
-	"\x15health_check_resource\x18\xa8ä` \x01(\v2$.google.cloud.compute.v1.HealthCheckB\x03\xe0A\x02R\x13healthCheckResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\x90\x02\n" +
+	"\x1eInsertRegionHealthCheckRequest\x12a\n" +
+	"\x15health_check_resource\x18\xa8ä` \x01(\v2$.google.cloud.compute.v1.HealthCheckB\x04\xe2A\x01\x02R\x13healthCheckResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xab\x02\n" +
-	"%InsertRegionHealthCheckServiceRequest\x12w\n" +
-	"\x1dhealth_check_service_resource\x18\xf2\x9b\xd0\xe3\x01 \x01(\v2+.google.cloud.compute.v1.HealthCheckServiceB\x03\xe0A\x02R\x1ahealthCheckServiceResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\xae\x02\n" +
+	"%InsertRegionHealthCheckServiceRequest\x12x\n" +
+	"\x1dhealth_check_service_resource\x18\xf2\x9b\xd0\xe3\x01 \x01(\v2+.google.cloud.compute.v1.HealthCheckServiceB\x04\xe2A\x01\x02R\x1ahealthCheckServiceResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\x92\x02\n" +
-	"\x1fInsertRegionHealthSourceRequest\x12d\n" +
-	"\x16health_source_resource\x18Ϸʪ\x01 \x01(\v2%.google.cloud.compute.v1.HealthSourceB\x03\xe0A\x02R\x14healthSourceResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\x95\x02\n" +
+	"\x1fInsertRegionHealthSourceRequest\x12e\n" +
+	"\x16health_source_resource\x18Ϸʪ\x01 \x01(\v2%.google.cloud.compute.v1.HealthSourceB\x04\xe2A\x01\x02R\x14healthSourceResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xb2\x02\n" +
-	"'InsertRegionInstanceGroupManagerRequest\x12|\n" +
-	"\x1finstance_group_manager_resource\x18\x8a\x8a\xbe| \x01(\v2-.google.cloud.compute.v1.InstanceGroupManagerB\x03\xe0A\x02R\x1cinstanceGroupManagerResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\xb5\x02\n" +
+	"'InsertRegionInstanceGroupManagerRequest\x12}\n" +
+	"\x1finstance_group_manager_resource\x18\x8a\x8a\xbe| \x01(\v2-.google.cloud.compute.v1.InstanceGroupManagerB\x04\xe2A\x01\x02R\x1cinstanceGroupManagerResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xa8\x03\n" +
-	"4InsertRegionInstanceGroupManagerResizeRequestRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12\xa6\x01\n" +
-	".instance_group_manager_resize_request_resource\x18\xed\xbe\xb5\xdf\x01 \x01(\v2:.google.cloud.compute.v1.InstanceGroupManagerResizeRequestB\x03\xe0A\x02R)instanceGroupManagerResizeRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\xac\x03\n" +
+	"4InsertRegionInstanceGroupManagerResizeRequestRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12\xa7\x01\n" +
+	".instance_group_manager_resize_request_resource\x18\xed\xbe\xb5\xdf\x01 \x01(\v2:.google.cloud.compute.v1.InstanceGroupManagerResizeRequestB\x04\xe2A\x01\x02R)instanceGroupManagerResizeRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xa1\x02\n" +
-	"#InsertRegionInstanceTemplateRequest\x12o\n" +
-	"\x1ainstance_template_resource\x18\x89\xea\x8b\x05 \x01(\v2).google.cloud.compute.v1.InstanceTemplateB\x03\xe0A\x02R\x18instanceTemplateResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\xa4\x02\n" +
+	"#InsertRegionInstanceTemplateRequest\x12p\n" +
+	"\x1ainstance_template_resource\x18\x89\xea\x8b\x05 \x01(\v2).google.cloud.compute.v1.InstanceTemplateB\x04\xe2A\x01\x02R\x18instanceTemplateResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\x92\x03\n" +
-	"'InsertRegionInstantSnapshotGroupRequest\x12|\n" +
-	"\x1finstant_snapshot_group_resource\x18˚\x96E \x01(\v2-.google.cloud.compute.v1.InstantSnapshotGroupB\x03\xe0A\x02R\x1cinstantSnapshotGroupResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\x95\x03\n" +
+	"'InsertRegionInstantSnapshotGroupRequest\x12}\n" +
+	"\x1finstant_snapshot_group_resource\x18˚\x96E \x01(\v2-.google.cloud.compute.v1.InstantSnapshotGroupB\x04\xe2A\x01\x02R\x1cinstantSnapshotGroupResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12A\n" +
 	"\x18source_consistency_group\x18\xf4̯\xfd\x01 \x01(\tH\x01R\x16sourceConsistencyGroup\x88\x01\x01B\r\n" +
 	"\v_request_idB\x1b\n" +
-	"\x19_source_consistency_group\"\x9e\x02\n" +
-	"\"InsertRegionInstantSnapshotRequest\x12m\n" +
-	"\x19instant_snapshot_resource\x18˪\x88\xb7\x01 \x01(\v2(.google.cloud.compute.v1.InstantSnapshotB\x03\xe0A\x02R\x17instantSnapshotResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\x19_source_consistency_group\"\xa1\x02\n" +
+	"\"InsertRegionInstantSnapshotRequest\x12n\n" +
+	"\x19instant_snapshot_resource\x18˪\x88\xb7\x01 \x01(\v2(.google.cloud.compute.v1.InstantSnapshotB\x04\xe2A\x01\x02R\x17instantSnapshotResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xb3\x02\n" +
-	"'InsertRegionNetworkEndpointGroupRequest\x12}\n" +
-	"\x1fnetwork_endpoint_group_resource\x18\xa7\xcd\xdb\xfa\x01 \x01(\v2-.google.cloud.compute.v1.NetworkEndpointGroupB\x03\xe0A\x02R\x1cnetworkEndpointGroupResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\xb6\x02\n" +
+	"'InsertRegionNetworkEndpointGroupRequest\x12~\n" +
+	"\x1fnetwork_endpoint_group_resource\x18\xa7\xcd\xdb\xfa\x01 \x01(\v2-.google.cloud.compute.v1.NetworkEndpointGroupB\x04\xe2A\x01\x02R\x1cnetworkEndpointGroupResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xa1\x02\n" +
-	"(InsertRegionNetworkFirewallPolicyRequest\x12j\n" +
-	"\x18firewall_policy_resource\x18\xbc\xb6\x87\xec\x01 \x01(\v2'.google.cloud.compute.v1.FirewallPolicyB\x03\xe0A\x02R\x16firewallPolicyResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\xa4\x02\n" +
+	"(InsertRegionNetworkFirewallPolicyRequest\x12k\n" +
+	"\x18firewall_policy_resource\x18\xbc\xb6\x87\xec\x01 \x01(\v2'.google.cloud.compute.v1.FirewallPolicyB\x04\xe2A\x01\x02R\x16firewallPolicyResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xb2\x02\n" +
-	"'InsertRegionNotificationEndpointRequest\x12|\n" +
-	"\x1enotification_endpoint_resource\x18\xa4\xfa\xb1\xa1\x01 \x01(\v2-.google.cloud.compute.v1.NotificationEndpointB\x03\xe0A\x02R\x1cnotificationEndpointResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\xb5\x02\n" +
+	"'InsertRegionNotificationEndpointRequest\x12}\n" +
+	"\x1enotification_endpoint_resource\x18\xa4\xfa\xb1\xa1\x01 \x01(\v2-.google.cloud.compute.v1.NotificationEndpointB\x04\xe2A\x01\x02R\x1cnotificationEndpointResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xd8\x02\n" +
-	"!InsertRegionSecurityPolicyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12i\n" +
-	"\x18security_policy_resource\x18\xfc\xaa\x89g \x01(\v2'.google.cloud.compute.v1.SecurityPolicyB\x03\xe0A\x02R\x16securityPolicyResource\x12+\n" +
-	"\rvalidate_only\x18\xb5\xfa\xdfs \x01(\bH\x01R\fvalidateOnly\x88\x01\x01B\r\n" +
-	"\v_request_idB\x10\n" +
-	"\x0e_validate_only\"\x81\x02\n" +
-	"\x1bInsertRegionSnapshotRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12W\n" +
-	"\x11snapshot_resource\x18\xa9\xb8\xc1\xe5\x01 \x01(\v2!.google.cloud.compute.v1.SnapshotB\x03\xe0A\x02R\x10snapshotResourceB\r\n" +
-	"\v_request_id\"\x99\x02\n" +
-	"!InsertRegionSslCertificateRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12i\n" +
-	"\x18ssl_certificate_resource\x18\x89ԕV \x01(\v2'.google.cloud.compute.v1.SslCertificateB\x03\xe0A\x02R\x16sslCertificateResourceB\r\n" +
-	"\v_request_id\"\x86\x02\n" +
-	"\x1cInsertRegionSslPolicyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12[\n" +
-	"\x13ssl_policy_resource\x18Ȉ\x8a\x83\x01 \x01(\v2\".google.cloud.compute.v1.SslPolicyB\x03\xe0A\x02R\x11sslPolicyResourceB\r\n" +
-	"\v_request_id\"\x9e\x02\n" +
-	"\"InsertRegionTargetHttpProxyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12m\n" +
-	"\x1atarget_http_proxy_resource\x18\xa8\xaf\xe3\v \x01(\v2(.google.cloud.compute.v1.TargetHttpProxyB\x03\xe0A\x02R\x17targetHttpProxyResourceB\r\n" +
-	"\v_request_id\"\xa3\x02\n" +
-	"#InsertRegionTargetHttpsProxyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12q\n" +
-	"\x1btarget_https_proxy_resource\x18\x81\xad\xe4\xce\x01 \x01(\v2).google.cloud.compute.v1.TargetHttpsProxyB\x03\xe0A\x02R\x18targetHttpsProxyResourceB\r\n" +
-	"\v_request_id\"\x9a\x02\n" +
-	"!InsertRegionTargetTcpProxyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\xdb\x02\n" +
+	"!InsertRegionSecurityPolicyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12j\n" +
-	"\x19target_tcp_proxy_resource\x18\xcb\xf0\xc9E \x01(\v2'.google.cloud.compute.v1.TargetTcpProxyB\x03\xe0A\x02R\x16targetTcpProxyResourceB\r\n" +
-	"\v_request_id\"\xf9\x01\n" +
-	"\x19InsertRegionUrlMapRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12Q\n" +
-	"\x10url_map_resource\x18ᐷP \x01(\v2\x1f.google.cloud.compute.v1.UrlMapB\x03\xe0A\x02R\x0eurlMapResourceB\r\n" +
-	"\v_request_id\"\x81\x02\n" +
-	"\x18InsertReservationRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12`\n" +
-	"\x14reservation_resource\x18\xa1\xee\xf4\x87\x01 \x01(\v2$.google.cloud.compute.v1.ReservationB\x03\xe0A\x02R\x13reservationResource\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\x93\x02\n" +
-	"\x1bInsertResourcePolicyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12i\n" +
-	"\x18resource_policy_resource\x18ʌ\xd1$ \x01(\v2'.google.cloud.compute.v1.ResourcePolicyB\x03\xe0A\x02R\x16resourcePolicyResourceB\r\n" +
-	"\v_request_id\"\xde\x01\n" +
-	"\x18InsertRolloutPlanRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12`\n" +
-	"\x15rollout_plan_resource\x18\xd6\xe4\xb5\x12 \x01(\v2$.google.cloud.compute.v1.RolloutPlanB\x03\xe0A\x02R\x13rolloutPlanResourceB\r\n" +
-	"\v_request_id\"\xc5\x01\n" +
-	"\x12InsertRouteRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12M\n" +
-	"\x0eroute_resource\x18Ċ\xbfk \x01(\v2\x1e.google.cloud.compute.v1.RouteB\x03\xe0A\x02R\rrouteResourceB\r\n" +
-	"\v_request_id\"\xf2\x01\n" +
-	"\x13InsertRouterRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12P\n" +
-	"\x0frouter_resource\x18Ā\x82J \x01(\v2\x1f.google.cloud.compute.v1.RouterB\x03\xe0A\x02R\x0erouterResourceB\r\n" +
-	"\v_request_id\"\xa9\x02\n" +
-	"\x1bInsertSecurityPolicyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12i\n" +
-	"\x18security_policy_resource\x18\xfc\xaa\x89g \x01(\v2'.google.cloud.compute.v1.SecurityPolicyB\x03\xe0A\x02R\x16securityPolicyResource\x12+\n" +
+	"\x18security_policy_resource\x18\xfc\xaa\x89g \x01(\v2'.google.cloud.compute.v1.SecurityPolicyB\x04\xe2A\x01\x02R\x16securityPolicyResource\x12+\n" +
 	"\rvalidate_only\x18\xb5\xfa\xdfs \x01(\bH\x01R\fvalidateOnly\x88\x01\x01B\r\n" +
 	"\v_request_idB\x10\n" +
-	"\x0e_validate_only\"\xa0\x02\n" +
-	"\x1eInsertServiceAttachmentRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\x0e_validate_only\"\x84\x02\n" +
+	"\x1bInsertRegionSnapshotRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12s\n" +
-	"\x1bservice_attachment_resource\x18\xa0\xb6\xc4\xe1\x01 \x01(\v2*.google.cloud.compute.v1.ServiceAttachmentB\x03\xe0A\x02R\x19serviceAttachmentResourceB\r\n" +
-	"\v_request_id\"\xd2\x01\n" +
-	"\x15InsertSnapshotRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12X\n" +
+	"\x11snapshot_resource\x18\xa9\xb8\xc1\xe5\x01 \x01(\v2!.google.cloud.compute.v1.SnapshotB\x04\xe2A\x01\x02R\x10snapshotResourceB\r\n" +
+	"\v_request_id\"\x9c\x02\n" +
+	"!InsertRegionSslCertificateRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12W\n" +
-	"\x11snapshot_resource\x18\xa9\xb8\xc1\xe5\x01 \x01(\v2!.google.cloud.compute.v1.SnapshotB\x03\xe0A\x02R\x10snapshotResourceB\r\n" +
-	"\v_request_id\"\xea\x01\n" +
-	"\x1bInsertSslCertificateRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12i\n" +
-	"\x18ssl_certificate_resource\x18\x89ԕV \x01(\v2'.google.cloud.compute.v1.SslCertificateB\x03\xe0A\x02R\x16sslCertificateResourceB\r\n" +
-	"\v_request_id\"\xd7\x01\n" +
-	"\x16InsertSslPolicyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12[\n" +
-	"\x13ssl_policy_resource\x18Ȉ\x8a\x83\x01 \x01(\v2\".google.cloud.compute.v1.SslPolicyB\x03\xe0A\x02R\x11sslPolicyResourceB\r\n" +
-	"\v_request_id\"\x81\x02\n" +
-	"\x18InsertStoragePoolRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12`\n" +
-	"\x15storage_pool_resource\x18\x8d\xbc\xf9J \x01(\v2$.google.cloud.compute.v1.StoragePoolB\x03\xe0A\x02R\x13storagePoolResource\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\x82\x02\n" +
-	"\x17InsertSubnetworkRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12j\n" +
+	"\x18ssl_certificate_resource\x18\x89ԕV \x01(\v2'.google.cloud.compute.v1.SslCertificateB\x04\xe2A\x01\x02R\x16sslCertificateResourceB\r\n" +
+	"\v_request_id\"\x89\x02\n" +
+	"\x1cInsertRegionSslPolicyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\\\n" +
-	"\x13subnetwork_resource\x18\xbfڑ\x14 \x01(\v2#.google.cloud.compute.v1.SubnetworkB\x03\xe0A\x02R\x12subnetworkResourceB\r\n" +
-	"\v_request_id\"\xf0\x01\n" +
-	"\x1cInsertTargetGrpcProxyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\x13ssl_policy_resource\x18Ȉ\x8a\x83\x01 \x01(\v2\".google.cloud.compute.v1.SslPolicyB\x04\xe2A\x01\x02R\x11sslPolicyResourceB\r\n" +
+	"\v_request_id\"\xa1\x02\n" +
+	"\"InsertRegionTargetHttpProxyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12n\n" +
-	"\x1atarget_grpc_proxy_resource\x18\xd2\xea\xeb\x9c\x01 \x01(\v2(.google.cloud.compute.v1.TargetGrpcProxyB\x03\xe0A\x02R\x17targetGrpcProxyResourceB\r\n" +
-	"\v_request_id\"\xef\x01\n" +
-	"\x1cInsertTargetHttpProxyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\x1atarget_http_proxy_resource\x18\xa8\xaf\xe3\v \x01(\v2(.google.cloud.compute.v1.TargetHttpProxyB\x04\xe2A\x01\x02R\x17targetHttpProxyResourceB\r\n" +
+	"\v_request_id\"\xa6\x02\n" +
+	"#InsertRegionTargetHttpsProxyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12m\n" +
-	"\x1atarget_http_proxy_resource\x18\xa8\xaf\xe3\v \x01(\v2(.google.cloud.compute.v1.TargetHttpProxyB\x03\xe0A\x02R\x17targetHttpProxyResourceB\r\n" +
-	"\v_request_id\"\xf4\x01\n" +
-	"\x1dInsertTargetHttpsProxyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12r\n" +
+	"\x1btarget_https_proxy_resource\x18\x81\xad\xe4\xce\x01 \x01(\v2).google.cloud.compute.v1.TargetHttpsProxyB\x04\xe2A\x01\x02R\x18targetHttpsProxyResourceB\r\n" +
+	"\v_request_id\"\x9d\x02\n" +
+	"!InsertRegionTargetTcpProxyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12q\n" +
-	"\x1btarget_https_proxy_resource\x18\x81\xad\xe4\xce\x01 \x01(\v2).google.cloud.compute.v1.TargetHttpsProxyB\x03\xe0A\x02R\x18targetHttpsProxyResourceB\r\n" +
-	"\v_request_id\"\x8e\x02\n" +
-	"\x1bInsertTargetInstanceRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12k\n" +
+	"\x19target_tcp_proxy_resource\x18\xcb\xf0\xc9E \x01(\v2'.google.cloud.compute.v1.TargetTcpProxyB\x04\xe2A\x01\x02R\x16targetTcpProxyResourceB\r\n" +
+	"\v_request_id\"\xfc\x01\n" +
+	"\x19InsertRegionUrlMapRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12j\n" +
-	"\x18target_instance_resource\x18\xca\xe2\xa0\xcd\x01 \x01(\v2'.google.cloud.compute.v1.TargetInstanceB\x03\xe0A\x02R\x16targetInstanceResource\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\x83\x02\n" +
-	"\x17InsertTargetPoolRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12R\n" +
+	"\x10url_map_resource\x18ᐷP \x01(\v2\x1f.google.cloud.compute.v1.UrlMapB\x04\xe2A\x01\x02R\x0eurlMapResourceB\r\n" +
+	"\v_request_id\"\x84\x02\n" +
+	"\x18InsertReservationRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12]\n" +
-	"\x14target_pool_resource\x18\xa3ݥ0 \x01(\v2#.google.cloud.compute.v1.TargetPoolB\x03\xe0A\x02R\x12targetPoolResourceB\r\n" +
-	"\v_request_id\"\xeb\x01\n" +
-	"\x1bInsertTargetSslProxyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12j\n" +
-	"\x19target_ssl_proxy_resource\x18\xc0\xfd\xdbC \x01(\v2'.google.cloud.compute.v1.TargetSslProxyB\x03\xe0A\x02R\x16targetSslProxyResourceB\r\n" +
-	"\v_request_id\"\xeb\x01\n" +
-	"\x1bInsertTargetTcpProxyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12a\n" +
+	"\x14reservation_resource\x18\xa1\xee\xf4\x87\x01 \x01(\v2$.google.cloud.compute.v1.ReservationB\x04\xe2A\x01\x02R\x13reservationResource\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\x96\x02\n" +
+	"\x1bInsertResourcePolicyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12j\n" +
-	"\x19target_tcp_proxy_resource\x18\xcb\xf0\xc9E \x01(\v2'.google.cloud.compute.v1.TargetTcpProxyB\x03\xe0A\x02R\x16targetTcpProxyResourceB\r\n" +
-	"\v_request_id\"\x9b\x02\n" +
-	"\x1dInsertTargetVpnGatewayRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\x18resource_policy_resource\x18ʌ\xd1$ \x01(\v2'.google.cloud.compute.v1.ResourcePolicyB\x04\xe2A\x01\x02R\x16resourcePolicyResourceB\r\n" +
+	"\v_request_id\"\xe0\x01\n" +
+	"\x18InsertRolloutPlanRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12o\n" +
-	"\x1btarget_vpn_gateway_resource\x18\x82\xb3\x1e \x01(\v2).google.cloud.compute.v1.TargetVpnGatewayB\x03\xe0A\x02R\x18targetVpnGatewayResourceB\r\n" +
-	"\v_request_id\"\xca\x01\n" +
-	"\x13InsertUrlMapRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12a\n" +
+	"\x15rollout_plan_resource\x18\xd6\xe4\xb5\x12 \x01(\v2$.google.cloud.compute.v1.RolloutPlanB\x04\xe2A\x01\x02R\x13rolloutPlanResourceB\r\n" +
+	"\v_request_id\"\xc7\x01\n" +
+	"\x12InsertRouteRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12N\n" +
+	"\x0eroute_resource\x18Ċ\xbfk \x01(\v2\x1e.google.cloud.compute.v1.RouteB\x04\xe2A\x01\x02R\rrouteResourceB\r\n" +
+	"\v_request_id\"\xf5\x01\n" +
+	"\x13InsertRouterRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12Q\n" +
-	"\x10url_map_resource\x18ᐷP \x01(\v2\x1f.google.cloud.compute.v1.UrlMapB\x03\xe0A\x02R\x0eurlMapResourceB\r\n" +
-	"\v_request_id\"\x83\x02\n" +
-	"\x17InsertVpnGatewayRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\x0frouter_resource\x18Ā\x82J \x01(\v2\x1f.google.cloud.compute.v1.RouterB\x04\xe2A\x01\x02R\x0erouterResourceB\r\n" +
+	"\v_request_id\"\xab\x02\n" +
+	"\x1bInsertSecurityPolicyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12]\n" +
-	"\x14vpn_gateway_resource\x18\x94\xb7\x8eW \x01(\v2#.google.cloud.compute.v1.VpnGatewayB\x03\xe0A\x02R\x12vpnGatewayResourceB\r\n" +
-	"\v_request_id\"\xff\x01\n" +
-	"\x16InsertVpnTunnelRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12Z\n" +
-	"\x13vpn_tunnel_resource\x18\xba\xa1\xb4) \x01(\v2\".google.cloud.compute.v1.VpnTunnelB\x03\xe0A\x02R\x11vpnTunnelResourceB\r\n" +
-	"\v_request_id\"\xcb\x02\n" +
-	"\x16InsertWireGroupRequest\x124\n" +
-	"\x12cross_site_network\x18\xd5\xc5\xcb3 \x01(\tB\x03\xe0A\x02R\x10crossSiteNetwork\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12+\n" +
-	"\rvalidate_only\x18\xb5\xfa\xdfs \x01(\bH\x01R\fvalidateOnly\x88\x01\x01\x12Z\n" +
-	"\x13wire_group_resource\x18\xc8\xc1\xeb7 \x01(\v2\".google.cloud.compute.v1.WireGroupB\x03\xe0A\x02R\x11wireGroupResourceB\r\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12j\n" +
+	"\x18security_policy_resource\x18\xfc\xaa\x89g \x01(\v2'.google.cloud.compute.v1.SecurityPolicyB\x04\xe2A\x01\x02R\x16securityPolicyResource\x12+\n" +
+	"\rvalidate_only\x18\xb5\xfa\xdfs \x01(\bH\x01R\fvalidateOnly\x88\x01\x01B\r\n" +
 	"\v_request_idB\x10\n" +
-	"\x0e_validate_only\"\x9f\x02\n" +
-	"\"InsertZoneVmExtensionPolicyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\x0e_validate_only\"\xa3\x02\n" +
+	"\x1eInsertServiceAttachmentRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12t\n" +
-	"\x1cvm_extension_policy_resource\x18\xf3\xf9\xf1\xf5\x01 \x01(\v2*.google.cloud.compute.v1.VmExtensionPolicyB\x03\xe0A\x02R\x19vmExtensionPolicyResource\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\x1bservice_attachment_resource\x18\xa0\xb6\xc4\xe1\x01 \x01(\v2*.google.cloud.compute.v1.ServiceAttachmentB\x04\xe2A\x01\x02R\x19serviceAttachmentResourceB\r\n" +
+	"\v_request_id\"\xd4\x01\n" +
+	"\x15InsertSnapshotRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12X\n" +
+	"\x11snapshot_resource\x18\xa9\xb8\xc1\xe5\x01 \x01(\v2!.google.cloud.compute.v1.SnapshotB\x04\xe2A\x01\x02R\x10snapshotResourceB\r\n" +
+	"\v_request_id\"\xec\x01\n" +
+	"\x1bInsertSslCertificateRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12j\n" +
+	"\x18ssl_certificate_resource\x18\x89ԕV \x01(\v2'.google.cloud.compute.v1.SslCertificateB\x04\xe2A\x01\x02R\x16sslCertificateResourceB\r\n" +
+	"\v_request_id\"\xd9\x01\n" +
+	"\x16InsertSslPolicyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\\\n" +
+	"\x13ssl_policy_resource\x18Ȉ\x8a\x83\x01 \x01(\v2\".google.cloud.compute.v1.SslPolicyB\x04\xe2A\x01\x02R\x11sslPolicyResourceB\r\n" +
+	"\v_request_id\"\x84\x02\n" +
+	"\x18InsertStoragePoolRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12a\n" +
+	"\x15storage_pool_resource\x18\x8d\xbc\xf9J \x01(\v2$.google.cloud.compute.v1.StoragePoolB\x04\xe2A\x01\x02R\x13storagePoolResource\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\x85\x02\n" +
+	"\x17InsertSubnetworkRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12]\n" +
+	"\x13subnetwork_resource\x18\xbfڑ\x14 \x01(\v2#.google.cloud.compute.v1.SubnetworkB\x04\xe2A\x01\x02R\x12subnetworkResourceB\r\n" +
+	"\v_request_id\"\xf2\x01\n" +
+	"\x1cInsertTargetGrpcProxyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12o\n" +
+	"\x1atarget_grpc_proxy_resource\x18\xd2\xea\xeb\x9c\x01 \x01(\v2(.google.cloud.compute.v1.TargetGrpcProxyB\x04\xe2A\x01\x02R\x17targetGrpcProxyResourceB\r\n" +
+	"\v_request_id\"\xf1\x01\n" +
+	"\x1cInsertTargetHttpProxyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12n\n" +
+	"\x1atarget_http_proxy_resource\x18\xa8\xaf\xe3\v \x01(\v2(.google.cloud.compute.v1.TargetHttpProxyB\x04\xe2A\x01\x02R\x17targetHttpProxyResourceB\r\n" +
+	"\v_request_id\"\xf6\x01\n" +
+	"\x1dInsertTargetHttpsProxyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12r\n" +
+	"\x1btarget_https_proxy_resource\x18\x81\xad\xe4\xce\x01 \x01(\v2).google.cloud.compute.v1.TargetHttpsProxyB\x04\xe2A\x01\x02R\x18targetHttpsProxyResourceB\r\n" +
+	"\v_request_id\"\x91\x02\n" +
+	"\x1bInsertTargetInstanceRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12k\n" +
+	"\x18target_instance_resource\x18\xca\xe2\xa0\xcd\x01 \x01(\v2'.google.cloud.compute.v1.TargetInstanceB\x04\xe2A\x01\x02R\x16targetInstanceResource\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\x86\x02\n" +
+	"\x17InsertTargetPoolRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12^\n" +
+	"\x14target_pool_resource\x18\xa3ݥ0 \x01(\v2#.google.cloud.compute.v1.TargetPoolB\x04\xe2A\x01\x02R\x12targetPoolResourceB\r\n" +
+	"\v_request_id\"\xed\x01\n" +
+	"\x1bInsertTargetSslProxyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12k\n" +
+	"\x19target_ssl_proxy_resource\x18\xc0\xfd\xdbC \x01(\v2'.google.cloud.compute.v1.TargetSslProxyB\x04\xe2A\x01\x02R\x16targetSslProxyResourceB\r\n" +
+	"\v_request_id\"\xed\x01\n" +
+	"\x1bInsertTargetTcpProxyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12k\n" +
+	"\x19target_tcp_proxy_resource\x18\xcb\xf0\xc9E \x01(\v2'.google.cloud.compute.v1.TargetTcpProxyB\x04\xe2A\x01\x02R\x16targetTcpProxyResourceB\r\n" +
+	"\v_request_id\"\x9e\x02\n" +
+	"\x1dInsertTargetVpnGatewayRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12p\n" +
+	"\x1btarget_vpn_gateway_resource\x18\x82\xb3\x1e \x01(\v2).google.cloud.compute.v1.TargetVpnGatewayB\x04\xe2A\x01\x02R\x18targetVpnGatewayResourceB\r\n" +
+	"\v_request_id\"\xcc\x01\n" +
+	"\x13InsertUrlMapRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12R\n" +
+	"\x10url_map_resource\x18ᐷP \x01(\v2\x1f.google.cloud.compute.v1.UrlMapB\x04\xe2A\x01\x02R\x0eurlMapResourceB\r\n" +
+	"\v_request_id\"\x86\x02\n" +
+	"\x17InsertVpnGatewayRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12^\n" +
+	"\x14vpn_gateway_resource\x18\x94\xb7\x8eW \x01(\v2#.google.cloud.compute.v1.VpnGatewayB\x04\xe2A\x01\x02R\x12vpnGatewayResourceB\r\n" +
+	"\v_request_id\"\x82\x02\n" +
+	"\x16InsertVpnTunnelRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12[\n" +
+	"\x13vpn_tunnel_resource\x18\xba\xa1\xb4) \x01(\v2\".google.cloud.compute.v1.VpnTunnelB\x04\xe2A\x01\x02R\x11vpnTunnelResourceB\r\n" +
+	"\v_request_id\"\xce\x02\n" +
+	"\x16InsertWireGroupRequest\x125\n" +
+	"\x12cross_site_network\x18\xd5\xc5\xcb3 \x01(\tB\x04\xe2A\x01\x02R\x10crossSiteNetwork\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12+\n" +
+	"\rvalidate_only\x18\xb5\xfa\xdfs \x01(\bH\x01R\fvalidateOnly\x88\x01\x01\x12[\n" +
+	"\x13wire_group_resource\x18\xc8\xc1\xeb7 \x01(\v2\".google.cloud.compute.v1.WireGroupB\x04\xe2A\x01\x02R\x11wireGroupResourceB\r\n" +
+	"\v_request_idB\x10\n" +
+	"\x0e_validate_only\"\xa2\x02\n" +
+	"\"InsertZoneVmExtensionPolicyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12u\n" +
+	"\x1cvm_extension_policy_resource\x18\xf3\xf9\xf1\xf5\x01 \x01(\v2*.google.cloud.compute.v1.VmExtensionPolicyB\x04\xe2A\x01\x02R\x19vmExtensionPolicyResource\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
 	"\v_request_id\"\xad'\n" +
 	"\bInstance\x12u\n" +
 	"\x19advanced_machine_features\x18\xb2\xe7\xaa\xc3\x01 \x01(\v20.google.cloud.compute.v1.AdvancedMachineFeaturesH\x00R\x17advancedMachineFeatures\x88\x01\x01\x12-\n" +
@@ -240238,13 +240176,13 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\n" +
 	"start_time\x18\x8a\xe9\xee\x11 \x01(\tH\x01R\tstartTime\x88\x01\x01B\v\n" +
 	"\t_end_timeB\r\n" +
-	"\v_start_time\"\xa5\x02\n" +
-	"\x1cInvalidateCacheUrlMapRequest\x12\x80\x01\n" +
-	" cache_invalidation_rule_resource\x18\xadÓ\x95\x01 \x01(\v2..google.cloud.compute.v1.CacheInvalidationRuleB\x03\xe0A\x02R\x1dcacheInvalidationRuleResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_start_time\"\xa8\x02\n" +
+	"\x1cInvalidateCacheUrlMapRequest\x12\x81\x01\n" +
+	" cache_invalidation_rule_resource\x18\xadÓ\x95\x01 \x01(\v2..google.cloud.compute.v1.CacheInvalidationRuleB\x04\xe2A\x01\x02R\x1dcacheInvalidationRuleResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12 \n" +
-	"\aurl_map\x18\x8c\x95\x81\xaf\x01 \x01(\tB\x03\xe0A\x02R\x06urlMapB\r\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
+	"\aurl_map\x18\x8c\x95\x81\xaf\x01 \x01(\tB\x04\xe2A\x01\x02R\x06urlMapB\r\n" +
 	"\v_request_id\"P\n" +
 	"\x05Items\x12\x17\n" +
 	"\x03key\x18\u07fc\x06 \x01(\tH\x00R\x03key\x88\x01\x01\x12\x1c\n" +
@@ -240379,29 +240317,29 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\n" +
 	"_self_linkB\n" +
 	"\n" +
-	"\b_warning\"\xa6\x02\n" +
+	"\b_warning\"\xa8\x02\n" +
 	"\x1bListAcceleratorTypesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xa3\x02\n" +
+	"\v_page_token\"\xa5\x02\n" +
 	"\x14ListAddressesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
@@ -240413,69 +240351,69 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\x10_target_resource\"y\n" +
 	"1ListAssociationsOrganizationSecurityPolicyRequest\x120\n" +
 	"\x0ftarget_resource\x18\xfc\xed\xea\xde\x01 \x01(\tH\x00R\x0etargetResource\x88\x01\x01B\x12\n" +
-	"\x10_target_resource\"\xa1\x02\n" +
+	"\x10_target_resource\"\xa3\x02\n" +
 	"\x16ListAutoscalersRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xbc\x02\n" +
+	"\v_page_token\"\xbe\x02\n" +
 	"-ListAvailableFeaturesRegionSslPoliciesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x96\x02\n" +
+	"\v_page_token\"\x97\x02\n" +
 	"'ListAvailableFeaturesSslPoliciesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x88\x02\n" +
+	"\v_page_token\"\x89\x02\n" +
 	"\x19ListBackendBucketsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x89\x02\n" +
+	"\v_page_token\"\x8a\x02\n" +
 	"\x1aListBackendServicesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xca\x06\n" +
+	"\v_page_token\"\xcd\x06\n" +
 	"\x1bListBgpRoutesRoutersRequest\x12-\n" +
 	"\x0eaddress_family\x18\x8f\xc4\xecR \x01(\tH\x00R\raddressFamily\x88\x01\x01\x125\n" +
 	"\x12destination_prefix\x18\xe3\xbf\xe9} \x01(\tH\x01R\x11destinationPrefix\x88\x01\x01\x12\x1f\n" +
@@ -240486,12 +240424,12 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\n" +
 	"page_token\x18ɰ\xc4\t \x01(\tH\x05R\tpageToken\x88\x01\x01\x12\x1a\n" +
 	"\x04peer\x18\xe2\xe2\xd1\x01 \x01(\tH\x06R\x04peer\x88\x01\x01\x12.\n" +
-	"\x0epolicy_applied\x18\xf0\xd4\xf8\xb4\x01 \x01(\bH\aR\rpolicyApplied\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12&\n" +
+	"\x0epolicy_applied\x18\xf0\xd4\xf8\xb4\x01 \x01(\bH\aR\rpolicyApplied\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12&\n" +
 	"\n" +
-	"route_type\x18\U000367b3\x01 \x01(\tH\bR\trouteType\x88\x01\x01\x12\x1e\n" +
-	"\x06router\x18ɮ\xeeF \x01(\tB\x03\xe0A\x02R\x06router\"f\n" +
+	"route_type\x18\U000367b3\x01 \x01(\tH\bR\trouteType\x88\x01\x01\x12\x1f\n" +
+	"\x06router\x18ɮ\xeeF \x01(\tB\x04\xe2A\x01\x02R\x06router\"f\n" +
 	"\rAddressFamily\x12\x1c\n" +
 	"\x18UNDEFINED_ADDRESS_FAMILY\x10\x00\x12\v\n" +
 	"\x04IPV4\x10\x85̉\x01\x12\v\n" +
@@ -240511,95 +240449,95 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\v_page_tokenB\a\n" +
 	"\x05_peerB\x11\n" +
 	"\x0f_policy_appliedB\r\n" +
-	"\v_route_type\"\x8b\x02\n" +
+	"\v_route_type\"\x8c\x02\n" +
 	"\x1cListCrossSiteNetworksRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x9f\x02\n" +
+	"\v_page_token\"\xa1\x02\n" +
 	"\x14ListDiskTypesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x9b\x02\n" +
+	"\v_page_token\"\x9d\x02\n" +
 	"\x10ListDisksRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xd3\x02\n" +
+	"\v_page_token\"\xd6\x02\n" +
 	"\x1cListDisksStoragePoolsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12*\n" +
-	"\fstorage_pool\x18\xe0\xc6\xf1\xab\x01 \x01(\tB\x03\xe0A\x02R\vstoragePool\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12+\n" +
+	"\fstorage_pool\x18\xe0\xc6\xf1\xab\x01 \x01(\tB\x04\xe2A\x01\x02R\vstoragePool\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xef\x02\n" +
+	"\v_page_token\"\xf2\x02\n" +
 	"&ListErrorsInstanceGroupManagersRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12'\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xf9\x02\n" +
+	"\v_page_token\"\xfc\x02\n" +
 	",ListErrorsRegionInstanceGroupManagersRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12'\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x8d\x02\n" +
+	"\v_page_token\"\x8e\x02\n" +
 	"\x1eListExternalVpnGatewaysRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
@@ -240617,89 +240555,89 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\t_order_byB\r\n" +
 	"\v_page_tokenB\f\n" +
 	"\n" +
-	"_parent_id\"\x83\x02\n" +
+	"_parent_id\"\x84\x02\n" +
 	"\x14ListFirewallsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xa9\x02\n" +
+	"\v_page_token\"\xab\x02\n" +
 	"\x1aListForwardingRulesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xa8\x02\n" +
+	"\v_page_token\"\xaa\x02\n" +
 	"\x1dListFutureReservationsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x89\x02\n" +
+	"\v_page_token\"\x8a\x02\n" +
 	"\x1aListGlobalAddressesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x8f\x02\n" +
+	"\v_page_token\"\x90\x02\n" +
 	" ListGlobalForwardingRulesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x95\x02\n" +
+	"\v_page_token\"\x96\x02\n" +
 	"&ListGlobalNetworkEndpointGroupsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x8a\x02\n" +
+	"\v_page_token\"\x8b\x02\n" +
 	"\x1bListGlobalOperationsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
@@ -240717,173 +240655,173 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\t_order_byB\r\n" +
 	"\v_page_tokenB\f\n" +
 	"\n" +
-	"_parent_id\"\x97\x02\n" +
+	"_parent_id\"\x98\x02\n" +
 	"(ListGlobalPublicDelegatedPrefixesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x93\x02\n" +
+	"\v_page_token\"\x94\x02\n" +
 	"$ListGlobalVmExtensionPoliciesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x86\x02\n" +
+	"\v_page_token\"\x87\x02\n" +
 	"\x17ListHealthChecksRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xc6\x02\n" +
-	"\x10ListHostsRequest\x12)\n" +
-	"\vassociation\x18\x81\xb9\xa3\xd6\x01 \x01(\tB\x03\xe0A\x02R\vassociation\x12\x1f\n" +
+	"\v_page_token\"\xc9\x02\n" +
+	"\x10ListHostsRequest\x12*\n" +
+	"\vassociation\x18\x81\xb9\xa3\xd6\x01 \x01(\tB\x04\xe2A\x01\x02R\vassociation\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xa4\x02\n" +
+	"\v_page_token\"\xa6\x02\n" +
 	"\x15ListImageViewsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x80\x02\n" +
+	"\v_page_token\"\x81\x02\n" +
 	"\x11ListImagesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xf6\x02\n" +
+	"\v_page_token\"\xf9\x02\n" +
 	"-ListInstanceGroupManagerResizeRequestsRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12'\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xab\x02\n" +
+	"\v_page_token\"\xad\x02\n" +
 	" ListInstanceGroupManagersRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xa4\x02\n" +
+	"\v_page_token\"\xa6\x02\n" +
 	"\x19ListInstanceGroupsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x8b\x02\n" +
+	"\v_page_token\"\x8c\x02\n" +
 	"\x1cListInstanceTemplatesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x88\x04\n" +
+	"\v_page_token\"\x8c\x04\n" +
 	"\"ListInstancesInstanceGroupsRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12-\n" +
-	"\x0einstance_group\x18\xd5\xd4\xd5& \x01(\tB\x03\xe0A\x02R\rinstanceGroup\x12\xa9\x01\n" +
-	"/instance_groups_list_instances_request_resource\x18\x9f\xa8\x8c\xe3\x01 \x01(\v2;.google.cloud.compute.v1.InstanceGroupsListInstancesRequestB\x03\xe0A\x02R*instanceGroupsListInstancesRequestResource\x12'\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12.\n" +
+	"\x0einstance_group\x18\xd5\xd4\xd5& \x01(\tB\x04\xe2A\x01\x02R\rinstanceGroup\x12\xaa\x01\n" +
+	"/instance_groups_list_instances_request_resource\x18\x9f\xa8\x8c\xe3\x01 \x01(\v2;.google.cloud.compute.v1.InstanceGroupsListInstancesRequestB\x04\xe2A\x01\x02R*instanceGroupsListInstancesRequestResource\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xa4\x04\n" +
+	"\v_page_token\"\xa8\x04\n" +
 	"(ListInstancesRegionInstanceGroupsRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12-\n" +
-	"\x0einstance_group\x18\xd5\xd4\xd5& \x01(\tB\x03\xe0A\x02R\rinstanceGroup\x12'\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12.\n" +
+	"\x0einstance_group\x18\xd5\xd4\xd5& \x01(\tB\x04\xe2A\x01\x02R\rinstanceGroup\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\xbb\x01\n" +
-	"6region_instance_groups_list_instances_request_resource\x18ԩ\x80\x17 \x01(\v2A.google.cloud.compute.v1.RegionInstanceGroupsListInstancesRequestB\x03\xe0A\x02R0regionInstanceGroupsListInstancesRequestResourceB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12\xbc\x01\n" +
+	"6region_instance_groups_list_instances_request_resource\x18ԩ\x80\x17 \x01(\v2A.google.cloud.compute.v1.RegionInstanceGroupsListInstancesRequestB\x04\xe2A\x01\x02R0regionInstanceGroupsListInstancesRequestResourceB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x9f\x02\n" +
+	"\v_page_token\"\xa1\x02\n" +
 	"\x14ListInstancesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
@@ -240904,351 +240842,351 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\n" +
 	"_self_linkB\n" +
 	"\n" +
-	"\b_warning\"\xab\x02\n" +
+	"\b_warning\"\xad\x02\n" +
 	" ListInstantSnapshotGroupsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xa6\x02\n" +
+	"\v_page_token\"\xa8\x02\n" +
 	"\x1bListInstantSnapshotsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x96\x02\n" +
+	"\v_page_token\"\x97\x02\n" +
 	"'ListInterconnectAttachmentGroupsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xb1\x02\n" +
+	"\v_page_token\"\xb3\x02\n" +
 	"\"ListInterconnectAttachmentsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x8c\x02\n" +
+	"\v_page_token\"\x8d\x02\n" +
 	"\x1dListInterconnectGroupsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x8f\x02\n" +
+	"\v_page_token\"\x90\x02\n" +
 	" ListInterconnectLocationsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x95\x02\n" +
+	"\v_page_token\"\x96\x02\n" +
 	"&ListInterconnectRemoteLocationsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x87\x02\n" +
+	"\v_page_token\"\x88\x02\n" +
 	"\x18ListInterconnectsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x82\x02\n" +
+	"\v_page_token\"\x83\x02\n" +
 	"\x13ListLicensesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x87\x02\n" +
+	"\v_page_token\"\x88\x02\n" +
 	"\x18ListMachineImagesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xa2\x02\n" +
+	"\v_page_token\"\xa4\x02\n" +
 	"\x17ListMachineTypesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xf9\x02\n" +
+	"\v_page_token\"\xfc\x02\n" +
 	"0ListManagedInstancesInstanceGroupManagersRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12'\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x83\x03\n" +
+	"\v_page_token\"\x86\x03\n" +
 	"6ListManagedInstancesRegionInstanceGroupManagersRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12'\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x89\x02\n" +
+	"\v_page_token\"\x8a\x02\n" +
 	"\x1aListManagedRulesetsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xca\x02\n" +
+	"\v_page_token\"\xcd\x02\n" +
 	"\x1bListNamedSetsRoutersRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\x1e\n" +
-	"\x06router\x18ɮ\xeeF \x01(\tB\x03\xe0A\x02R\x06routerB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12\x1f\n" +
+	"\x06router\x18ɮ\xeeF \x01(\tB\x04\xe2A\x01\x02R\x06routerB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xac\x02\n" +
+	"\v_page_token\"\xae\x02\n" +
 	"\x1dListNetworkAttachmentsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xab\x02\n" +
+	"\v_page_token\"\xad\x02\n" +
 	" ListNetworkEndpointGroupsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xe4\x02\n" +
+	"\v_page_token\"\xe6\x02\n" +
 	"6ListNetworkEndpointsGlobalNetworkEndpointGroupsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
-	"maxResults\x88\x01\x01\x12=\n" +
-	"\x16network_endpoint_group\x18\x86\xcb\xf3\xce\x01 \x01(\tB\x03\xe0A\x02R\x14networkEndpointGroup\x12!\n" +
+	"maxResults\x88\x01\x01\x12>\n" +
+	"\x16network_endpoint_group\x18\x86\xcb\xf3\xce\x01 \x01(\tB\x04\xe2A\x01\x02R\x14networkEndpointGroup\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xbb\x04\n" +
+	"\v_page_token\"\xbf\x04\n" +
 	"0ListNetworkEndpointsNetworkEndpointGroupsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
-	"maxResults\x88\x01\x01\x12=\n" +
-	"\x16network_endpoint_group\x18\x86\xcb\xf3\xce\x01 \x01(\tB\x03\xe0A\x02R\x14networkEndpointGroup\x12\xbe\x01\n" +
-	"7network_endpoint_groups_list_endpoints_request_resource\x18\x8e\x98\xaf\x1c \x01(\v2B.google.cloud.compute.v1.NetworkEndpointGroupsListEndpointsRequestB\x03\xe0A\x02R1networkEndpointGroupsListEndpointsRequestResource\x12!\n" +
+	"maxResults\x88\x01\x01\x12>\n" +
+	"\x16network_endpoint_group\x18\x86\xcb\xf3\xce\x01 \x01(\tB\x04\xe2A\x01\x02R\x14networkEndpointGroup\x12\xbf\x01\n" +
+	"7network_endpoint_groups_list_endpoints_request_resource\x18\x8e\x98\xaf\x1c \x01(\v2B.google.cloud.compute.v1.NetworkEndpointGroupsListEndpointsRequestB\x04\xe2A\x01\x02R1networkEndpointGroupsListEndpointsRequestResource\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x84\x03\n" +
+	"\v_page_token\"\x87\x03\n" +
 	"6ListNetworkEndpointsRegionNetworkEndpointGroupsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
-	"maxResults\x88\x01\x01\x12=\n" +
-	"\x16network_endpoint_group\x18\x86\xcb\xf3\xce\x01 \x01(\tB\x03\xe0A\x02R\x14networkEndpointGroup\x12!\n" +
+	"maxResults\x88\x01\x01\x12>\n" +
+	"\x16network_endpoint_group\x18\x86\xcb\xf3\xce\x01 \x01(\tB\x04\xe2A\x01\x02R\x14networkEndpointGroup\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x91\x02\n" +
+	"\v_page_token\"\x92\x02\n" +
 	"\"ListNetworkFirewallPoliciesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x89\x02\n" +
+	"\v_page_token\"\x8a\x02\n" +
 	"\x1aListNetworkProfilesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x82\x02\n" +
+	"\v_page_token\"\x83\x02\n" +
 	"\x13ListNetworksRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xa0\x02\n" +
+	"\v_page_token\"\xa2\x02\n" +
 	"\x15ListNodeGroupsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xa7\x02\n" +
+	"\v_page_token\"\xa9\x02\n" +
 	"\x18ListNodeTemplatesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x9f\x02\n" +
+	"\v_page_token\"\xa1\x02\n" +
 	"\x14ListNodeTypesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xcd\x02\n" +
+	"\v_page_token\"\xd0\x02\n" +
 	"\x1aListNodesNodeGroupsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
-	"maxResults\x88\x01\x01\x12&\n" +
+	"maxResults\x88\x01\x01\x12'\n" +
 	"\n" +
-	"node_group\x18\x82\xfc\x8b\xe0\x01 \x01(\tB\x03\xe0A\x02R\tnodeGroup\x12!\n" +
+	"node_group\x18\x82\xfc\x8b\xe0\x01 \x01(\tB\x04\xe2A\x01\x02R\tnodeGroup\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
@@ -241266,31 +241204,31 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\t_order_byB\r\n" +
 	"\v_page_tokenB\f\n" +
 	"\n" +
-	"_parent_id\"\xaa\x02\n" +
+	"_parent_id\"\xac\x02\n" +
 	"\x1bListPacketMirroringsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x96\x04\n" +
+	"\v_page_token\"\x98\x04\n" +
 	" ListPeeringRoutesNetworksRequest\x12$\n" +
 	"\tdirection\x18\xff\x8e\x805 \x01(\tH\x00R\tdirection\x88\x01\x01\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x01R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x02R\n" +
-	"maxResults\x88\x01\x01\x12 \n" +
-	"\anetwork\x18\xae\xb4\x85o \x01(\tB\x03\xe0A\x02R\anetwork\x12!\n" +
+	"maxResults\x88\x01\x01\x12!\n" +
+	"\anetwork\x18\xae\xb4\x85o \x01(\tB\x04\xe2A\x01\x02R\anetwork\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x03R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
 	"page_token\x18ɰ\xc4\t \x01(\tH\x04R\tpageToken\x88\x01\x01\x12)\n" +
-	"\fpeering_name\x18\xaaЀw \x01(\tH\x05R\vpeeringName\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
+	"\fpeering_name\x18\xaaЀw \x01(\tH\x05R\vpeeringName\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1e\n" +
 	"\x06region\x18\xf4͠B \x01(\tH\x06R\x06region\x88\x01\x01\"H\n" +
 	"\tDirection\x12\x17\n" +
 	"\x13UNDEFINED_DIRECTION\x10\x00\x12\x10\n" +
@@ -241303,31 +241241,31 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\t_order_byB\r\n" +
 	"\v_page_tokenB\x0f\n" +
 	"\r_peering_nameB\t\n" +
-	"\a_region\"\xfb\x02\n" +
+	"\a_region\"\xfe\x02\n" +
 	"2ListPerInstanceConfigsInstanceGroupManagersRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12'\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x85\x03\n" +
+	"\v_page_token\"\x88\x03\n" +
 	"8ListPerInstanceConfigsRegionInstanceGroupManagersRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12'\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
@@ -241345,714 +241283,714 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\t_order_byB\r\n" +
 	"\v_page_tokenB\f\n" +
 	"\n" +
-	"_parent_id\"\xa5\x02\n" +
+	"_parent_id\"\xa6\x02\n" +
 	"6ListPreconfiguredExpressionSetsSecurityPoliciesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x89\x02\n" +
+	"\v_page_token\"\x8a\x02\n" +
 	"\x1aListPreviewFeaturesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x92\x02\n" +
+	"\v_page_token\"\x93\x02\n" +
 	"#ListPublicAdvertisedPrefixesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xb1\x02\n" +
+	"\v_page_token\"\xb3\x02\n" +
 	"\"ListPublicDelegatedPrefixesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xcc\x02\n" +
+	"\v_page_token\"\xcf\x02\n" +
 	"\x1dListReferrersInstancesRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x12'\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xab\x02\n" +
+	"\v_page_token\"\xad\x02\n" +
 	"\x1cListRegionAutoscalersRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xae\x02\n" +
+	"\v_page_token\"\xb0\x02\n" +
 	"\x1fListRegionBackendBucketsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xaf\x02\n" +
+	"\v_page_token\"\xb1\x02\n" +
 	" ListRegionBackendServicesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xab\x02\n" +
+	"\v_page_token\"\xad\x02\n" +
 	"\x1cListRegionCommitmentsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xb5\x02\n" +
+	"\v_page_token\"\xb7\x02\n" +
 	"&ListRegionCompositeHealthChecksRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xa9\x02\n" +
+	"\v_page_token\"\xab\x02\n" +
 	"\x1aListRegionDiskTypesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xa5\x02\n" +
+	"\v_page_token\"\xa7\x02\n" +
 	"\x16ListRegionDisksRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xb9\x02\n" +
+	"\v_page_token\"\xbb\x02\n" +
 	"*ListRegionHealthAggregationPoliciesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xb3\x02\n" +
+	"\v_page_token\"\xb5\x02\n" +
 	"$ListRegionHealthCheckServicesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xac\x02\n" +
+	"\v_page_token\"\xae\x02\n" +
 	"\x1dListRegionHealthChecksRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xad\x02\n" +
+	"\v_page_token\"\xaf\x02\n" +
 	"\x1eListRegionHealthSourcesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x80\x03\n" +
+	"\v_page_token\"\x83\x03\n" +
 	"3ListRegionInstanceGroupManagerResizeRequestsRequest\x12\x1f\n" +
-	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12'\n" +
+	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xb5\x02\n" +
+	"\v_page_token\"\xb7\x02\n" +
 	"&ListRegionInstanceGroupManagersRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xae\x02\n" +
+	"\v_page_token\"\xb0\x02\n" +
 	"\x1fListRegionInstanceGroupsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xb1\x02\n" +
+	"\v_page_token\"\xb3\x02\n" +
 	"\"ListRegionInstanceTemplatesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xb5\x02\n" +
+	"\v_page_token\"\xb7\x02\n" +
 	"&ListRegionInstantSnapshotGroupsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xb0\x02\n" +
+	"\v_page_token\"\xb2\x02\n" +
 	"!ListRegionInstantSnapshotsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xb5\x02\n" +
+	"\v_page_token\"\xb7\x02\n" +
 	"&ListRegionNetworkEndpointGroupsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xb7\x02\n" +
+	"\v_page_token\"\xb9\x02\n" +
 	"(ListRegionNetworkFirewallPoliciesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xb5\x02\n" +
+	"\v_page_token\"\xb7\x02\n" +
 	"&ListRegionNotificationEndpointsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xaa\x02\n" +
+	"\v_page_token\"\xac\x02\n" +
 	"\x1bListRegionOperationsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xb0\x02\n" +
+	"\v_page_token\"\xb2\x02\n" +
 	"!ListRegionSecurityPoliciesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xa9\x02\n" +
+	"\v_page_token\"\xab\x02\n" +
 	"\x1aListRegionSnapshotsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xaf\x02\n" +
+	"\v_page_token\"\xb1\x02\n" +
 	" ListRegionSslCertificatesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xab\x02\n" +
+	"\v_page_token\"\xad\x02\n" +
 	"\x1cListRegionSslPoliciesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xb1\x02\n" +
+	"\v_page_token\"\xb3\x02\n" +
 	"\"ListRegionTargetHttpProxiesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xb2\x02\n" +
+	"\v_page_token\"\xb4\x02\n" +
 	"#ListRegionTargetHttpsProxiesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xb0\x02\n" +
+	"\v_page_token\"\xb2\x02\n" +
 	"!ListRegionTargetTcpProxiesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xa7\x02\n" +
+	"\v_page_token\"\xa9\x02\n" +
 	"\x18ListRegionUrlMapsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xa5\x02\n" +
+	"\v_page_token\"\xa7\x02\n" +
 	"\x16ListRegionZonesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x81\x02\n" +
+	"\v_page_token\"\x82\x02\n" +
 	"\x12ListRegionsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x8a\x02\n" +
+	"\v_page_token\"\x8b\x02\n" +
 	"\x1bListReliabilityRisksRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xd1\x02\n" +
+	"\v_page_token\"\xd4\x02\n" +
 	"\x1cListReservationBlocksRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12(\n" +
-	"\vreservation\x18̇\xd5\x16 \x01(\tB\x03\xe0A\x02R\vreservation\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12)\n" +
+	"\vreservation\x18̇\xd5\x16 \x01(\tB\x04\xe2A\x01\x02R\vreservation\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xd0\x02\n" +
+	"\v_page_token\"\xd3\x02\n" +
 	"\x1bListReservationSlotsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12(\n" +
-	"\vparent_name\x18\x80\x8a\x80\xe4\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"parentName\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12)\n" +
+	"\vparent_name\x18\x80\x8a\x80\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"parentName\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xd4\x02\n" +
+	"\v_page_token\"\xd7\x02\n" +
 	"\x1fListReservationSubBlocksRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12(\n" +
-	"\vparent_name\x18\x80\x8a\x80\xe4\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"parentName\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12)\n" +
+	"\vparent_name\x18\x80\x8a\x80\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"parentName\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xa2\x02\n" +
+	"\v_page_token\"\xa4\x02\n" +
 	"\x17ListReservationsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xaa\x02\n" +
+	"\v_page_token\"\xac\x02\n" +
 	"\x1bListResourcePoliciesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x86\x02\n" +
+	"\v_page_token\"\x87\x02\n" +
 	"\x17ListRolloutPlansRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x82\x02\n" +
+	"\v_page_token\"\x83\x02\n" +
 	"\x13ListRolloutsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xce\x02\n" +
+	"\v_page_token\"\xd1\x02\n" +
 	"\x1fListRoutePoliciesRoutersRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\x1e\n" +
-	"\x06router\x18ɮ\xeeF \x01(\tB\x03\xe0A\x02R\x06routerB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12\x1f\n" +
+	"\x06router\x18ɮ\xeeF \x01(\tB\x04\xe2A\x01\x02R\x06routerB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xa1\x02\n" +
+	"\v_page_token\"\xa3\x02\n" +
 	"\x12ListRoutersRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x80\x02\n" +
+	"\v_page_token\"\x81\x02\n" +
 	"\x11ListRoutesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x8a\x02\n" +
+	"\v_page_token\"\x8b\x02\n" +
 	"\x1bListSecurityPoliciesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xac\x02\n" +
+	"\v_page_token\"\xae\x02\n" +
 	"\x1dListServiceAttachmentsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x83\x02\n" +
+	"\v_page_token\"\x84\x02\n" +
 	"\x14ListSnapshotsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x89\x02\n" +
+	"\v_page_token\"\x8a\x02\n" +
 	"\x1aListSslCertificatesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x85\x02\n" +
+	"\v_page_token\"\x86\x02\n" +
 	"\x16ListSslPoliciesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xa6\x02\n" +
+	"\v_page_token\"\xa8\x02\n" +
 	"\x1bListStoragePoolTypesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xa2\x02\n" +
+	"\v_page_token\"\xa4\x02\n" +
 	"\x17ListStoragePoolsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x95\x03\n" +
+	"\v_page_token\"\x97\x03\n" +
 	"\x16ListSubnetworksRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\x1c\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12\x1c\n" +
 	"\x05views\x18\xee\xb4\xc05 \x01(\tH\x04R\x05views\x88\x01\x01\"F\n" +
 	"\x05Views\x12\x13\n" +
 	"\x0fUNDEFINED_VIEWS\x10\x00\x12\x0e\n" +
@@ -242062,268 +242000,268 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
 	"\v_page_tokenB\b\n" +
-	"\x06_views\"\x8b\x02\n" +
+	"\x06_views\"\x8c\x02\n" +
 	"\x1cListTargetGrpcProxiesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x8b\x02\n" +
+	"\v_page_token\"\x8c\x02\n" +
 	"\x1cListTargetHttpProxiesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x8c\x02\n" +
+	"\v_page_token\"\x8d\x02\n" +
 	"\x1dListTargetHttpsProxiesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xa5\x02\n" +
+	"\v_page_token\"\xa7\x02\n" +
 	"\x1aListTargetInstancesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xa5\x02\n" +
+	"\v_page_token\"\xa7\x02\n" +
 	"\x16ListTargetPoolsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x8a\x02\n" +
+	"\v_page_token\"\x8b\x02\n" +
 	"\x1bListTargetSslProxiesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x8a\x02\n" +
+	"\v_page_token\"\x8b\x02\n" +
 	"\x1bListTargetTcpProxiesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xab\x02\n" +
+	"\v_page_token\"\xad\x02\n" +
 	"\x1cListTargetVpnGatewaysRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x81\x02\n" +
+	"\v_page_token\"\x82\x02\n" +
 	"\x12ListUrlMapsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x8e\x02\n" +
+	"\v_page_token\"\x8f\x02\n" +
 	"\x1fListUsableBackendBucketsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\x8f\x02\n" +
+	"\v_page_token\"\x90\x02\n" +
 	" ListUsableBackendServicesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xb4\x02\n" +
+	"\v_page_token\"\xb6\x02\n" +
 	"%ListUsableRegionBackendBucketsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xb5\x02\n" +
+	"\v_page_token\"\xb7\x02\n" +
 	"&ListUsableRegionBackendServicesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xd1\x02\n" +
+	"\v_page_token\"\xd2\x02\n" +
 	"\x1cListUsableSubnetworksRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x120\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x120\n" +
 	"\x0fservice_project\x18\x8f\xe7\x80\xfd\x01 \x01(\tH\x04R\x0eserviceProject\x88\x01\x01B\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
 	"\v_page_tokenB\x12\n" +
-	"\x10_service_project\"\xa5\x02\n" +
+	"\x10_service_project\"\xa7\x02\n" +
 	"\x16ListVpnGatewaysRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xa4\x02\n" +
+	"\v_page_token\"\xa6\x02\n" +
 	"\x15ListVpnTunnelsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06regionB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06regionB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xba\x02\n" +
-	"\x15ListWireGroupsRequest\x124\n" +
-	"\x12cross_site_network\x18\xd5\xc5\xcb3 \x01(\tB\x03\xe0A\x02R\x10crossSiteNetwork\x12\x1f\n" +
+	"\v_page_token\"\xbc\x02\n" +
+	"\x15ListWireGroupsRequest\x125\n" +
+	"\x12cross_site_network\x18\xd5\xc5\xcb3 \x01(\tB\x04\xe2A\x01\x02R\x10crossSiteNetwork\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xa0\x03\n" +
+	"\v_page_token\"\xa2\x03\n" +
 	"\x1bListXpnHostsProjectsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x93\x01\n" +
-	"(projects_list_xpn_hosts_request_resource\x18\x97\xd0\xceq \x01(\v24.google.cloud.compute.v1.ProjectsListXpnHostsRequestB\x03\xe0A\x02R#projectsListXpnHostsRequestResourceB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x94\x01\n" +
+	"(projects_list_xpn_hosts_request_resource\x18\x97\xd0\xceq \x01(\v24.google.cloud.compute.v1.ProjectsListXpnHostsRequestB\x04\xe2A\x01\x02R#projectsListXpnHostsRequestResourceB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xa4\x02\n" +
+	"\v_page_token\"\xa6\x02\n" +
 	"\x19ListZoneOperationsRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xad\x02\n" +
+	"\v_page_token\"\xaf\x02\n" +
 	"\"ListZoneVmExtensionPoliciesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zoneB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zoneB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
-	"\v_page_token\"\xff\x01\n" +
+	"\v_page_token\"\x80\x02\n" +
 	"\x10ListZonesRequest\x12\x1f\n" +
 	"\x06filter\x18\xf8\x96\xa3\xa0\x01 \x01(\tH\x00R\x06filter\x88\x01\x01\x12'\n" +
 	"\vmax_results\x18\x9bȋ\x1a \x01(\rH\x01R\n" +
 	"maxResults\x88\x01\x01\x12!\n" +
 	"\border_by\x18\xe8\xfd\xc7L \x01(\tH\x02R\aorderBy\x88\x01\x01\x12%\n" +
 	"\n" +
-	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aprojectB\t\n" +
+	"page_token\x18ɰ\xc4\t \x01(\tH\x03R\tpageToken\x88\x01\x01\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aprojectB\t\n" +
 	"\a_filterB\x0e\n" +
 	"\f_max_resultsB\v\n" +
 	"\t_order_byB\r\n" +
@@ -242695,47 +242633,47 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\x05units\x18ﮑ5 \x01(\x03H\x02R\x05units\x88\x01\x01B\x10\n" +
 	"\x0e_currency_codeB\b\n" +
 	"\x06_nanosB\b\n" +
-	"\x06_units\"\xd5\x02\n" +
-	"\x12MoveAddressRequest\x12!\n" +
-	"\aaddress\x18\xf4\xb7\xde\xdc\x01 \x01(\tB\x03\xe0A\x02R\aaddress\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12\x90\x01\n" +
-	"&region_addresses_move_request_resource\x18İ\x88\xc3\x01 \x01(\v23.google.cloud.compute.v1.RegionAddressesMoveRequestB\x03\xe0A\x02R\"regionAddressesMoveRequestResource\x12%\n" +
+	"\x06_units\"\xd9\x02\n" +
+	"\x12MoveAddressRequest\x12\"\n" +
+	"\aaddress\x18\xf4\xb7\xde\xdc\x01 \x01(\tB\x04\xe2A\x01\x02R\aaddress\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12\x91\x01\n" +
+	"&region_addresses_move_request_resource\x18İ\x88\xc3\x01 \x01(\v23.google.cloud.compute.v1.RegionAddressesMoveRequestB\x04\xe2A\x01\x02R\"regionAddressesMoveRequestResource\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xea\x01\n" +
-	"\x16MoveDiskProjectRequest\x12n\n" +
-	"\x1adisk_move_request_resource\x18\xca\u00a0\x95\x01 \x01(\v2(.google.cloud.compute.v1.DiskMoveRequestB\x03\xe0A\x02R\x17diskMoveRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\xec\x01\n" +
+	"\x16MoveDiskProjectRequest\x12o\n" +
+	"\x1adisk_move_request_resource\x18\xca\u00a0\x95\x01 \x01(\v2(.google.cloud.compute.v1.DiskMoveRequestB\x04\xe2A\x01\x02R\x17diskMoveRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xc5\x01\n" +
-	"\x19MoveFirewallPolicyRequest\x120\n" +
-	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x03\xe0A\x02R\x0efirewallPolicy\x122\n" +
+	"\v_request_id\"\xc6\x01\n" +
+	"\x19MoveFirewallPolicyRequest\x121\n" +
+	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x04\xe2A\x01\x02R\x0efirewallPolicy\x122\n" +
 	"\tparent_id\x18\xd0\xe1\x9a\xdb\x01 \x01(\tB\f\xf2G\tparent_idH\x00R\bparentId\x88\x01\x01\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01B\f\n" +
 	"\n" +
 	"_parent_idB\r\n" +
-	"\v_request_id\"\xb2\x02\n" +
-	"\x18MoveGlobalAddressRequest\x12!\n" +
-	"\aaddress\x18\xf4\xb7\xde\xdc\x01 \x01(\tB\x03\xe0A\x02R\aaddress\x12\x90\x01\n" +
-	"&global_addresses_move_request_resource\x18\xf3\xf1\xb1\x90\x01 \x01(\v23.google.cloud.compute.v1.GlobalAddressesMoveRequestB\x03\xe0A\x02R\"globalAddressesMoveRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\xb5\x02\n" +
+	"\x18MoveGlobalAddressRequest\x12\"\n" +
+	"\aaddress\x18\xf4\xb7\xde\xdc\x01 \x01(\tB\x04\xe2A\x01\x02R\aaddress\x12\x91\x01\n" +
+	"&global_addresses_move_request_resource\x18\xf3\xf1\xb1\x90\x01 \x01(\v23.google.cloud.compute.v1.GlobalAddressesMoveRequestB\x04\xe2A\x01\x02R\"globalAddressesMoveRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xfa\x01\n" +
-	"\x1aMoveInstanceProjectRequest\x12z\n" +
-	"\x1einstance_move_request_resource\x18¼Δ\x01 \x01(\v2,.google.cloud.compute.v1.InstanceMoveRequestB\x03\xe0A\x02R\x1binstanceMoveRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\xfc\x01\n" +
+	"\x1aMoveInstanceProjectRequest\x12{\n" +
+	"\x1einstance_move_request_resource\x18¼Δ\x01 \x01(\v2,.google.cloud.compute.v1.InstanceMoveRequestB\x04\xe2A\x01\x02R\x1binstanceMoveRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xd0\x01\n" +
+	"\v_request_id\"\xd1\x01\n" +
 	"%MoveOrganizationSecurityPolicyRequest\x122\n" +
 	"\tparent_id\x18\xd0\xe1\x9a\xdb\x01 \x01(\tB\f\xf2G\tparent_idH\x00R\bparentId\x88\x01\x01\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12/\n" +
-	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x03\xe0A\x02R\x0esecurityPolicyB\f\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x120\n" +
+	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x04\xe2A\x01\x02R\x0esecurityPolicyB\f\n" +
 	"\n" +
 	"_parent_idB\r\n" +
 	"\v_request_id\"U\n" +
@@ -244455,45 +244393,44 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\x11packet_mirrorings\x18\xa7\xfa\xdcI \x03(\v2(.google.cloud.compute.v1.PacketMirroringR\x10packetMirrorings\x12B\n" +
 	"\awarning\x18\x9cߖ\x18 \x01(\v2 .google.cloud.compute.v1.WarningH\x00R\awarning\x88\x01\x01B\n" +
 	"\n" +
-	"\b_warning\"\xff\x02\n" +
-	"2PatchAssociationRegionNetworkFirewallPolicyRequest\x120\n" +
-	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x03\xe0A\x02R\x0efirewallPolicy\x12\x8b\x01\n" +
-	"$firewall_policy_association_resource\x18\xba\xb8\xe1{ \x01(\v22.google.cloud.compute.v1.FirewallPolicyAssociationB\x03\xe0A\x02R!firewallPolicyAssociationResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\b_warning\"\x83\x03\n" +
+	"2PatchAssociationRegionNetworkFirewallPolicyRequest\x121\n" +
+	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x04\xe2A\x01\x02R\x0efirewallPolicy\x12\x8c\x01\n" +
+	"$firewall_policy_association_resource\x18\xba\xb8\xe1{ \x01(\v22.google.cloud.compute.v1.FirewallPolicyAssociationB\x04\xe2A\x01\x02R!firewallPolicyAssociationResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xb3\x02\n" +
+	"\v_request_id\"\xb6\x02\n" +
 	"\x16PatchAutoscalerRequest\x12'\n" +
 	"\n" +
 	"autoscaler\x18\xd7\xfd\xd2\xf6\x01 \x01(\tH\x00R\n" +
-	"autoscaler\x88\x01\x01\x12\\\n" +
-	"\x13autoscaler_resource\x18\xf6\xf0\xffb \x01(\v2#.google.cloud.compute.v1.AutoscalerB\x03\xe0A\x02R\x12autoscalerResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"autoscaler\x88\x01\x01\x12]\n" +
+	"\x13autoscaler_resource\x18\xf6\xf0\xffb \x01(\v2#.google.cloud.compute.v1.AutoscalerB\x04\xe2A\x01\x02R\x12autoscalerResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
 	"\v_autoscalerB\r\n" +
-	"\v_request_id\"\x95\x02\n" +
-	"\x19PatchBackendBucketRequest\x12-\n" +
-	"\x0ebackend_bucket\x18\xf5\xe3\xdd+ \x01(\tB\x03\xe0A\x02R\rbackendBucket\x12g\n" +
-	"\x17backend_bucket_resource\x18\x98\xceǵ\x01 \x01(\v2&.google.cloud.compute.v1.BackendBucketB\x03\xe0A\x02R\x15backendBucketResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\x98\x02\n" +
+	"\x19PatchBackendBucketRequest\x12.\n" +
+	"\x0ebackend_bucket\x18\xf5\xe3\xdd+ \x01(\tB\x04\xe2A\x01\x02R\rbackendBucket\x12h\n" +
+	"\x17backend_bucket_resource\x18\x98\xceǵ\x01 \x01(\v2&.google.cloud.compute.v1.BackendBucketB\x04\xe2A\x01\x02R\x15backendBucketResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\x9c\x02\n" +
-	"\x1aPatchBackendServiceRequest\x120\n" +
-	"\x0fbackend_service\x18\x8a\xc0\xae\x92\x01 \x01(\tB\x03\xe0A\x02R\x0ebackendService\x12j\n" +
-	"\x18backend_service_resource\x18\xa3\x81ߥ\x01 \x01(\v2'.google.cloud.compute.v1.BackendServiceB\x03\xe0A\x02R\x16backendServiceResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\x9f\x02\n" +
+	"\x1aPatchBackendServiceRequest\x121\n" +
+	"\x0fbackend_service\x18\x8a\xc0\xae\x92\x01 \x01(\tB\x04\xe2A\x01\x02R\x0ebackendService\x12k\n" +
+	"\x18backend_service_resource\x18\xa3\x81ߥ\x01 \x01(\v2'.google.cloud.compute.v1.BackendServiceB\x04\xe2A\x01\x02R\x16backendServiceResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xa1\x03\n" +
-	"\x1cPatchCrossSiteNetworkRequest\x124\n" +
-	"\x12cross_site_network\x18\xd5\xc5\xcb3 \x01(\tB\x03\xe0A\x02R\x10crossSiteNetwork\x12p\n" +
-	"\x1bcross_site_network_resource\x18\xb8\xe4\xdd\x0e \x01(\v2).google.cloud.compute.v1.CrossSiteNetworkB\x03\xe0A\x02R\x18crossSiteNetworkResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\xa4\x03\n" +
+	"\x1cPatchCrossSiteNetworkRequest\x125\n" +
+	"\x12cross_site_network\x18\xd5\xc5\xcb3 \x01(\tB\x04\xe2A\x01\x02R\x10crossSiteNetwork\x12q\n" +
+	"\x1bcross_site_network_resource\x18\xb8\xe4\xdd\x0e \x01(\v2).google.cloud.compute.v1.CrossSiteNetworkB\x04\xe2A\x01\x02R\x18crossSiteNetworkResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12(\n" +
 	"\vupdate_mask\x18\xa2\xb9\xba\xee\x01 \x01(\tH\x01R\n" +
@@ -244501,529 +244438,525 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\rvalidate_only\x18\xb5\xfa\xdfs \x01(\bH\x02R\fvalidateOnly\x88\x01\x01B\r\n" +
 	"\v_request_idB\x0e\n" +
 	"\f_update_maskB\x10\n" +
-	"\x0e_validate_only\"\xf0\x01\n" +
-	"\x1aPatchFirewallPolicyRequest\x120\n" +
-	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x03\xe0A\x02R\x0efirewallPolicy\x12j\n" +
-	"\x18firewall_policy_resource\x18\xbc\xb6\x87\xec\x01 \x01(\v2'.google.cloud.compute.v1.FirewallPolicyB\x03\xe0A\x02R\x16firewallPolicyResource\x12%\n" +
+	"\x0e_validate_only\"\xf2\x01\n" +
+	"\x1aPatchFirewallPolicyRequest\x121\n" +
+	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x04\xe2A\x01\x02R\x0efirewallPolicy\x12k\n" +
+	"\x18firewall_policy_resource\x18\xbc\xb6\x87\xec\x01 \x01(\v2'.google.cloud.compute.v1.FirewallPolicyB\x04\xe2A\x01\x02R\x16firewallPolicyResource\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xf5\x01\n" +
-	"\x14PatchFirewallRequest\x12#\n" +
-	"\bfirewall\x18\x80\xfa\xd5\xf3\x01 \x01(\tB\x03\xe0A\x02R\bfirewall\x12V\n" +
-	"\x11firewall_resource\x18\xed\xb0\xe0\x13 \x01(\v2!.google.cloud.compute.v1.FirewallB\x03\xe0A\x02R\x10firewallResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\xf8\x01\n" +
+	"\x14PatchFirewallRequest\x12$\n" +
+	"\bfirewall\x18\x80\xfa\xd5\xf3\x01 \x01(\tB\x04\xe2A\x01\x02R\bfirewall\x12W\n" +
+	"\x11firewall_resource\x18\xed\xb0\xe0\x13 \x01(\v2!.google.cloud.compute.v1.FirewallB\x04\xe2A\x01\x02R\x10firewallResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xc5\x02\n" +
-	"\x1aPatchForwardingRuleRequest\x120\n" +
-	"\x0fforwarding_rule\x18\xfe\xa5݀\x01 \x01(\tB\x03\xe0A\x02R\x0eforwardingRule\x12j\n" +
-	"\x18forwarding_rule_resource\x18\xaf\xc0Џ\x01 \x01(\v2'.google.cloud.compute.v1.ForwardingRuleB\x03\xe0A\x02R\x16forwardingRuleResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\xc9\x02\n" +
+	"\x1aPatchForwardingRuleRequest\x121\n" +
+	"\x0fforwarding_rule\x18\xfe\xa5݀\x01 \x01(\tB\x04\xe2A\x01\x02R\x0eforwardingRule\x12k\n" +
+	"\x18forwarding_rule_resource\x18\xaf\xc0Џ\x01 \x01(\v2'.google.cloud.compute.v1.ForwardingRuleB\x04\xe2A\x01\x02R\x16forwardingRuleResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xa2\x02\n" +
-	" PatchGlobalForwardingRuleRequest\x120\n" +
-	"\x0fforwarding_rule\x18\xfe\xa5݀\x01 \x01(\tB\x03\xe0A\x02R\x0eforwardingRule\x12j\n" +
-	"\x18forwarding_rule_resource\x18\xaf\xc0Џ\x01 \x01(\v2'.google.cloud.compute.v1.ForwardingRuleB\x03\xe0A\x02R\x16forwardingRuleResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\xa5\x02\n" +
+	" PatchGlobalForwardingRuleRequest\x121\n" +
+	"\x0fforwarding_rule\x18\xfe\xa5݀\x01 \x01(\tB\x04\xe2A\x01\x02R\x0eforwardingRule\x12k\n" +
+	"\x18forwarding_rule_resource\x18\xaf\xc0Џ\x01 \x01(\v2'.google.cloud.compute.v1.ForwardingRuleB\x04\xe2A\x01\x02R\x16forwardingRuleResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xba\x02\n" +
-	"!PatchGlobalFrontendSettingRequest\x12\x82\x01\n" +
-	"!global_frontend_settings_resource\x18ٛ\xa4o \x01(\v2/.google.cloud.compute.v1.GlobalFrontendSettingsB\x03\xe0A\x02R\x1eglobalFrontendSettingsResource\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12%\n" +
+	"\v_request_id\"\xbc\x02\n" +
+	"!PatchGlobalFrontendSettingRequest\x12\x83\x01\n" +
+	"!global_frontend_settings_resource\x18ٛ\xa4o \x01(\v2/.google.cloud.compute.v1.GlobalFrontendSettingsB\x04\xe2A\x01\x02R\x1eglobalFrontendSettingsResource\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12(\n" +
 	"\vupdate_mask\x18\xa2\xb9\xba\xee\x01 \x01(\tH\x01R\n" +
 	"updateMask\x88\x01\x01B\r\n" +
 	"\v_request_idB\x0e\n" +
-	"\f_update_mask\"\xcd\x02\n" +
-	"(PatchGlobalPublicDelegatedPrefixeRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12>\n" +
-	"\x17public_delegated_prefix\x18\xe8ܱa \x01(\tB\x03\xe0A\x02R\x15publicDelegatedPrefix\x12\x7f\n" +
-	" public_delegated_prefix_resource\x18\x85\xf8\xd8\x16 \x01(\v2..google.cloud.compute.v1.PublicDelegatedPrefixB\x03\xe0A\x02R\x1dpublicDelegatedPrefixResource\x12%\n" +
+	"\f_update_mask\"\xd1\x02\n" +
+	"(PatchGlobalPublicDelegatedPrefixeRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12?\n" +
+	"\x17public_delegated_prefix\x18\xe8ܱa \x01(\tB\x04\xe2A\x01\x02R\x15publicDelegatedPrefix\x12\x80\x01\n" +
+	" public_delegated_prefix_resource\x18\x85\xf8\xd8\x16 \x01(\v2..google.cloud.compute.v1.PublicDelegatedPrefixB\x04\xe2A\x01\x02R\x1dpublicDelegatedPrefixResource\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\x89\x02\n" +
-	"\x17PatchHealthCheckRequest\x12*\n" +
-	"\fhealth_check\x18媤\x93\x01 \x01(\tB\x03\xe0A\x02R\vhealthCheck\x12`\n" +
-	"\x15health_check_resource\x18\xa8ä` \x01(\v2$.google.cloud.compute.v1.HealthCheckB\x03\xe0A\x02R\x13healthCheckResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\x8c\x02\n" +
+	"\x17PatchHealthCheckRequest\x12+\n" +
+	"\fhealth_check\x18媤\x93\x01 \x01(\tB\x04\xe2A\x01\x02R\vhealthCheck\x12a\n" +
+	"\x15health_check_resource\x18\xa8ä` \x01(\v2$.google.cloud.compute.v1.HealthCheckB\x04\xe2A\x01\x02R\x13healthCheckResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xe3\x01\n" +
-	"\x11PatchImageRequest\x12\x1c\n" +
-	"\x05image\x18\xdb\xd2\xea/ \x01(\tB\x03\xe0A\x02R\x05image\x12N\n" +
-	"\x0eimage_resource\x18\xf2\xc4\xfe\xb0\x01 \x01(\v2\x1e.google.cloud.compute.v1.ImageB\x03\xe0A\x02R\rimageResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xe3\x02\n" +
-	" PatchInstanceGroupManagerRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12|\n" +
-	"\x1finstance_group_manager_resource\x18\x8a\x8a\xbe| \x01(\v2-.google.cloud.compute.v1.InstanceGroupManagerB\x03\xe0A\x02R\x1cinstanceGroupManagerResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xce\x02\n" +
-	"\x1bPatchInstanceSettingRequest\x12p\n" +
-	"\x1ainstance_settings_resource\x18\x80\xa7Ί\x01 \x01(\v2).google.cloud.compute.v1.InstanceSettingsB\x03\xe0A\x02R\x18instanceSettingsResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12(\n" +
-	"\vupdate_mask\x18\xa2\xb9\xba\xee\x01 \x01(\tH\x01R\n" +
-	"updateMask\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_idB\x0e\n" +
-	"\f_update_mask\"\xa5\x03\n" +
-	"'PatchInterconnectAttachmentGroupRequest\x12J\n" +
-	"\x1dinterconnect_attachment_group\x18\xf4\xef\x98$ \x01(\tB\x03\xe0A\x02R\x1binterconnectAttachmentGroup\x12\x91\x01\n" +
-	"&interconnect_attachment_group_resource\x18\xf9\xdf\xe1\x04 \x01(\v24.google.cloud.compute.v1.InterconnectAttachmentGroupB\x03\xe0A\x02R#interconnectAttachmentGroupResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12(\n" +
-	"\vupdate_mask\x18\xa2\xb9\xba\xee\x01 \x01(\tH\x01R\n" +
-	"updateMask\x88\x01\x01B\r\n" +
-	"\v_request_idB\x0e\n" +
-	"\f_update_mask\"\xf5\x02\n" +
-	"\"PatchInterconnectAttachmentRequest\x12@\n" +
-	"\x17interconnect_attachment\x18\xf4\x8a\xf7\x92\x01 \x01(\tB\x03\xe0A\x02R\x16interconnectAttachment\x12\x81\x01\n" +
-	" interconnect_attachment_resource\x18\xf9\xa4\xa0e \x01(\v2/.google.cloud.compute.v1.InterconnectAttachmentB\x03\xe0A\x02R\x1einterconnectAttachmentResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\xe6\x01\n" +
+	"\x11PatchImageRequest\x12\x1d\n" +
+	"\x05image\x18\xdb\xd2\xea/ \x01(\tB\x04\xe2A\x01\x02R\x05image\x12O\n" +
+	"\x0eimage_resource\x18\xf2\xc4\xfe\xb0\x01 \x01(\v2\x1e.google.cloud.compute.v1.ImageB\x04\xe2A\x01\x02R\rimageResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
 	"\v_request_id\"\xe7\x02\n" +
-	"\x1dPatchInterconnectGroupRequest\x126\n" +
-	"\x12interconnect_group\x18\x8e\xb7\xa9\xb9\x01 \x01(\tB\x03\xe0A\x02R\x11interconnectGroup\x12r\n" +
-	"\x1binterconnect_group_resource\x18\x9f\xf3\xe6( \x01(\v2*.google.cloud.compute.v1.InterconnectGroupB\x03\xe0A\x02R\x19interconnectGroupResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	" PatchInstanceGroupManagerRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12}\n" +
+	"\x1finstance_group_manager_resource\x18\x8a\x8a\xbe| \x01(\v2-.google.cloud.compute.v1.InstanceGroupManagerB\x04\xe2A\x01\x02R\x1cinstanceGroupManagerResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xd1\x02\n" +
+	"\x1bPatchInstanceSettingRequest\x12q\n" +
+	"\x1ainstance_settings_resource\x18\x80\xa7Ί\x01 \x01(\v2).google.cloud.compute.v1.InstanceSettingsB\x04\xe2A\x01\x02R\x18instanceSettingsResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12(\n" +
+	"\vupdate_mask\x18\xa2\xb9\xba\xee\x01 \x01(\tH\x01R\n" +
+	"updateMask\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_idB\x0e\n" +
+	"\f_update_mask\"\xa8\x03\n" +
+	"'PatchInterconnectAttachmentGroupRequest\x12K\n" +
+	"\x1dinterconnect_attachment_group\x18\xf4\xef\x98$ \x01(\tB\x04\xe2A\x01\x02R\x1binterconnectAttachmentGroup\x12\x92\x01\n" +
+	"&interconnect_attachment_group_resource\x18\xf9\xdf\xe1\x04 \x01(\v24.google.cloud.compute.v1.InterconnectAttachmentGroupB\x04\xe2A\x01\x02R#interconnectAttachmentGroupResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12(\n" +
 	"\vupdate_mask\x18\xa2\xb9\xba\xee\x01 \x01(\tH\x01R\n" +
 	"updateMask\x88\x01\x01B\r\n" +
 	"\v_request_idB\x0e\n" +
-	"\f_update_mask\"\x8d\x02\n" +
-	"\x18PatchInterconnectRequest\x12*\n" +
-	"\finterconnect\x18\x8eɌk \x01(\tB\x03\xe0A\x02R\finterconnect\x12c\n" +
-	"\x15interconnect_resource\x18\x9f\xa1̽\x01 \x01(\v2%.google.cloud.compute.v1.InterconnectB\x03\xe0A\x02R\x14interconnectResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\f_update_mask\"\xf9\x02\n" +
+	"\"PatchInterconnectAttachmentRequest\x12A\n" +
+	"\x17interconnect_attachment\x18\xf4\x8a\xf7\x92\x01 \x01(\tB\x04\xe2A\x01\x02R\x16interconnectAttachment\x12\x82\x01\n" +
+	" interconnect_attachment_resource\x18\xf9\xa4\xa0e \x01(\v2/.google.cloud.compute.v1.InterconnectAttachmentB\x04\xe2A\x01\x02R\x1einterconnectAttachmentResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xa1\x02\n" +
-	"\x1aPatchNamedSetRouterRequest\x12X\n" +
-	"\x12named_set_resource\x18\x91\xbd\xeb\xc2\x01 \x01(\v2!.google.cloud.compute.v1.NamedSetB\x03\xe0A\x02R\x10namedSetResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\xea\x02\n" +
+	"\x1dPatchInterconnectGroupRequest\x127\n" +
+	"\x12interconnect_group\x18\x8e\xb7\xa9\xb9\x01 \x01(\tB\x04\xe2A\x01\x02R\x11interconnectGroup\x12s\n" +
+	"\x1binterconnect_group_resource\x18\x9f\xf3\xe6( \x01(\v2*.google.cloud.compute.v1.InterconnectGroupB\x04\xe2A\x01\x02R\x19interconnectGroupResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\x1e\n" +
-	"\x06router\x18ɮ\xeeF \x01(\tB\x03\xe0A\x02R\x06routerB\r\n" +
-	"\v_request_id\"\xd5\x02\n" +
-	"\x1dPatchNetworkAttachmentRequest\x125\n" +
-	"\x12network_attachment\x18ԗ\x8fk \x01(\tB\x03\xe0A\x02R\x11networkAttachment\x12r\n" +
-	"\x1bnetwork_attachment_resource\x18\x99\xf0\xccd \x01(\v2*.google.cloud.compute.v1.NetworkAttachmentB\x03\xe0A\x02R\x19networkAttachmentResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12(\n" +
+	"\vupdate_mask\x18\xa2\xb9\xba\xee\x01 \x01(\tH\x01R\n" +
+	"updateMask\x88\x01\x01B\r\n" +
+	"\v_request_idB\x0e\n" +
+	"\f_update_mask\"\x90\x02\n" +
+	"\x18PatchInterconnectRequest\x12+\n" +
+	"\finterconnect\x18\x8eɌk \x01(\tB\x04\xe2A\x01\x02R\finterconnect\x12d\n" +
+	"\x15interconnect_resource\x18\x9f\xa1̽\x01 \x01(\v2%.google.cloud.compute.v1.InterconnectB\x04\xe2A\x01\x02R\x14interconnectResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xf3\x03\n" +
-	"&PatchNetworkEdgeSecurityServiceRequest\x12I\n" +
-	"\x1dnetwork_edge_security_service\x18\xa7\x9f\xefJ \x01(\tB\x03\xe0A\x02R\x1anetworkEdgeSecurityService\x12\x90\x01\n" +
-	"&network_edge_security_service_resource\x18\xa6\xa3\xdb\xe3\x01 \x01(\v23.google.cloud.compute.v1.NetworkEdgeSecurityServiceB\x03\xe0A\x02R\"networkEdgeSecurityServiceResource\x12\x1c\n" +
-	"\x05paths\x18\xee\xc1\xe02 \x01(\tH\x00R\x05paths\x88\x01\x01\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\xa5\x02\n" +
+	"\x1aPatchNamedSetRouterRequest\x12Y\n" +
+	"\x12named_set_resource\x18\x91\xbd\xeb\xc2\x01 \x01(\v2!.google.cloud.compute.v1.NamedSetB\x04\xe2A\x01\x02R\x10namedSetResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\x1f\n" +
+	"\x06router\x18ɮ\xeeF \x01(\tB\x04\xe2A\x01\x02R\x06routerB\r\n" +
+	"\v_request_id\"\xd9\x02\n" +
+	"\x1dPatchNetworkAttachmentRequest\x126\n" +
+	"\x12network_attachment\x18ԗ\x8fk \x01(\tB\x04\xe2A\x01\x02R\x11networkAttachment\x12s\n" +
+	"\x1bnetwork_attachment_resource\x18\x99\xf0\xccd \x01(\v2*.google.cloud.compute.v1.NetworkAttachmentB\x04\xe2A\x01\x02R\x19networkAttachmentResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xf7\x03\n" +
+	"&PatchNetworkEdgeSecurityServiceRequest\x12J\n" +
+	"\x1dnetwork_edge_security_service\x18\xa7\x9f\xefJ \x01(\tB\x04\xe2A\x01\x02R\x1anetworkEdgeSecurityService\x12\x91\x01\n" +
+	"&network_edge_security_service_resource\x18\xa6\xa3\xdb\xe3\x01 \x01(\v23.google.cloud.compute.v1.NetworkEdgeSecurityServiceB\x04\xe2A\x01\x02R\"networkEdgeSecurityServiceResource\x12\x1c\n" +
+	"\x05paths\x18\xee\xc1\xe02 \x01(\tH\x00R\x05paths\x88\x01\x01\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12(\n" +
 	"\vupdate_mask\x18\xa2\xb9\xba\xee\x01 \x01(\tH\x02R\n" +
 	"updateMask\x88\x01\x01B\b\n" +
 	"\x06_pathsB\r\n" +
 	"\v_request_idB\x0e\n" +
-	"\f_update_mask\"\xa3\x02\n" +
-	"!PatchNetworkFirewallPolicyRequest\x120\n" +
-	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x03\xe0A\x02R\x0efirewallPolicy\x12j\n" +
-	"\x18firewall_policy_resource\x18\xbc\xb6\x87\xec\x01 \x01(\v2'.google.cloud.compute.v1.FirewallPolicyB\x03\xe0A\x02R\x16firewallPolicyResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\f_update_mask\"\xa6\x02\n" +
+	"!PatchNetworkFirewallPolicyRequest\x121\n" +
+	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x04\xe2A\x01\x02R\x0efirewallPolicy\x12k\n" +
+	"\x18firewall_policy_resource\x18\xbc\xb6\x87\xec\x01 \x01(\v2'.google.cloud.compute.v1.FirewallPolicyB\x04\xe2A\x01\x02R\x16firewallPolicyResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xee\x01\n" +
-	"\x13PatchNetworkRequest\x12 \n" +
-	"\anetwork\x18\xae\xb4\x85o \x01(\tB\x03\xe0A\x02R\anetwork\x12S\n" +
-	"\x10network_resource\x18\xffݜ: \x01(\v2 .google.cloud.compute.v1.NetworkB\x03\xe0A\x02R\x0fnetworkResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\xf1\x01\n" +
+	"\x13PatchNetworkRequest\x12!\n" +
+	"\anetwork\x18\xae\xb4\x85o \x01(\tB\x04\xe2A\x01\x02R\anetwork\x12T\n" +
+	"\x10network_resource\x18\xffݜ: \x01(\v2 .google.cloud.compute.v1.NetworkB\x04\xe2A\x01\x02R\x0fnetworkResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xa1\x02\n" +
-	"\x15PatchNodeGroupRequest\x12&\n" +
+	"\v_request_id\"\xa5\x02\n" +
+	"\x15PatchNodeGroupRequest\x12'\n" +
 	"\n" +
-	"node_group\x18\x82\xfc\x8b\xe0\x01 \x01(\tB\x03\xe0A\x02R\tnodeGroup\x12[\n" +
-	"\x13node_group_resource\x18\xab\xb3\xfa\xf0\x01 \x01(\v2\".google.cloud.compute.v1.NodeGroupB\x03\xe0A\x02R\x11nodeGroupResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"node_group\x18\x82\xfc\x8b\xe0\x01 \x01(\tB\x04\xe2A\x01\x02R\tnodeGroup\x12\\\n" +
+	"\x13node_group_resource\x18\xab\xb3\xfa\xf0\x01 \x01(\v2\".google.cloud.compute.v1.NodeGroupB\x04\xe2A\x01\x02R\x11nodeGroupResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xfa\x01\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xfc\x01\n" +
 	"&PatchOrganizationSecurityPolicyRequest\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12/\n" +
-	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x03\xe0A\x02R\x0esecurityPolicy\x12i\n" +
-	"\x18security_policy_resource\x18\xfc\xaa\x89g \x01(\v2'.google.cloud.compute.v1.SecurityPolicyB\x03\xe0A\x02R\x16securityPolicyResourceB\r\n" +
-	"\v_request_id\"\xca\x02\n" +
-	"\x1bPatchPacketMirroringRequest\x121\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x120\n" +
+	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x04\xe2A\x01\x02R\x0esecurityPolicy\x12j\n" +
+	"\x18security_policy_resource\x18\xfc\xaa\x89g \x01(\v2'.google.cloud.compute.v1.SecurityPolicyB\x04\xe2A\x01\x02R\x16securityPolicyResourceB\r\n" +
+	"\v_request_id\"\xce\x02\n" +
+	"\x1bPatchPacketMirroringRequest\x122\n" +
 	"\x10packet_mirroring\x18̹\xd1\n" +
-	" \x01(\tB\x03\xe0A\x02R\x0fpacketMirroring\x12m\n" +
-	"\x19packet_mirroring_resource\x18\xa1\xfc\xa8\xeb\x01 \x01(\v2(.google.cloud.compute.v1.PacketMirroringB\x03\xe0A\x02R\x17packetMirroringResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	" \x01(\tB\x04\xe2A\x01\x02R\x0fpacketMirroring\x12n\n" +
+	"\x19packet_mirroring_resource\x18\xa1\xfc\xa8\xeb\x01 \x01(\v2(.google.cloud.compute.v1.PacketMirroringB\x04\xe2A\x01\x02R\x17packetMirroringResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xf4\x02\n" +
-	"4PatchPacketMirroringRuleNetworkFirewallPolicyRequest\x120\n" +
-	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x03\xe0A\x02R\x0efirewallPolicy\x12v\n" +
-	"\x1dfirewall_policy_rule_resource\x18\x83ߺw \x01(\v2+.google.cloud.compute.v1.FirewallPolicyRuleB\x03\xe0A\x02R\x1afirewallPolicyRuleResource\x12#\n" +
-	"\bpriority\x18\xa4\xf3\xa1\xd4\x01 \x01(\x05H\x00R\bpriority\x88\x01\x01\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\xf7\x02\n" +
+	"4PatchPacketMirroringRuleNetworkFirewallPolicyRequest\x121\n" +
+	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x04\xe2A\x01\x02R\x0efirewallPolicy\x12w\n" +
+	"\x1dfirewall_policy_rule_resource\x18\x83ߺw \x01(\v2+.google.cloud.compute.v1.FirewallPolicyRuleB\x04\xe2A\x01\x02R\x1afirewallPolicyRuleResource\x12#\n" +
+	"\bpriority\x18\xa4\xf3\xa1\xd4\x01 \x01(\x05H\x00R\bpriority\x88\x01\x01\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01B\v\n" +
 	"\t_priorityB\r\n" +
-	"\v_request_id\"\xcd\x03\n" +
-	"2PatchPerInstanceConfigsInstanceGroupManagerRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12\xd3\x01\n" +
-	"?instance_group_managers_patch_per_instance_configs_req_resource\x18\xff\x9b\x88\xaa\x01 \x01(\v2H.google.cloud.compute.v1.InstanceGroupManagersPatchPerInstanceConfigsReqB\x03\xe0A\x02R7instanceGroupManagersPatchPerInstanceConfigsReqResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\xd1\x03\n" +
+	"2PatchPerInstanceConfigsInstanceGroupManagerRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12\xd4\x01\n" +
+	"?instance_group_managers_patch_per_instance_configs_req_resource\x18\xff\x9b\x88\xaa\x01 \x01(\v2H.google.cloud.compute.v1.InstanceGroupManagersPatchPerInstanceConfigsReqB\x04\xe2A\x01\x02R7instanceGroupManagersPatchPerInstanceConfigsReqResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xdb\x03\n" +
-	"8PatchPerInstanceConfigsRegionInstanceGroupManagerRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12\xd5\x01\n" +
-	"@region_instance_group_manager_patch_instance_config_req_resource\x18\xca͡^ \x01(\v2I.google.cloud.compute.v1.RegionInstanceGroupManagerPatchInstanceConfigReqB\x03\xe0A\x02R8regionInstanceGroupManagerPatchInstanceConfigReqResource\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xce\x02\n" +
-	"#PatchPublicAdvertisedPrefixeRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12@\n" +
-	"\x18public_advertised_prefix\x18\x9e\xf7\xc90 \x01(\tB\x03\xe0A\x02R\x16publicAdvertisedPrefix\x12\x82\x01\n" +
-	"!public_advertised_prefix_resource\x18\x8fײo \x01(\v2/.google.cloud.compute.v1.PublicAdvertisedPrefixB\x03\xe0A\x02R\x1epublicAdvertisedPrefixResource\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xdf\x03\n" +
+	"8PatchPerInstanceConfigsRegionInstanceGroupManagerRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12\xd6\x01\n" +
+	"@region_instance_group_manager_patch_instance_config_req_resource\x18\xca͡^ \x01(\v2I.google.cloud.compute.v1.RegionInstanceGroupManagerPatchInstanceConfigReqB\x04\xe2A\x01\x02R8regionInstanceGroupManagerPatchInstanceConfigReqResource\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xf0\x02\n" +
-	"\"PatchPublicDelegatedPrefixeRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12>\n" +
-	"\x17public_delegated_prefix\x18\xe8ܱa \x01(\tB\x03\xe0A\x02R\x15publicDelegatedPrefix\x12\x7f\n" +
-	" public_delegated_prefix_resource\x18\x85\xf8\xd8\x16 \x01(\v2..google.cloud.compute.v1.PublicDelegatedPrefixB\x03\xe0A\x02R\x1dpublicDelegatedPrefixResource\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\xd1\x02\n" +
+	"#PatchPublicAdvertisedPrefixeRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12A\n" +
+	"\x18public_advertised_prefix\x18\x9e\xf7\xc90 \x01(\tB\x04\xe2A\x01\x02R\x16publicAdvertisedPrefix\x12\x83\x01\n" +
+	"!public_advertised_prefix_resource\x18\x8fײo \x01(\v2/.google.cloud.compute.v1.PublicAdvertisedPrefixB\x04\xe2A\x01\x02R\x1epublicAdvertisedPrefixResource\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xbf\x02\n" +
+	"\v_request_id\"\xf5\x02\n" +
+	"\"PatchPublicDelegatedPrefixeRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12?\n" +
+	"\x17public_delegated_prefix\x18\xe8ܱa \x01(\tB\x04\xe2A\x01\x02R\x15publicDelegatedPrefix\x12\x80\x01\n" +
+	" public_delegated_prefix_resource\x18\x85\xf8\xd8\x16 \x01(\v2..google.cloud.compute.v1.PublicDelegatedPrefixB\x04\xe2A\x01\x02R\x1dpublicDelegatedPrefixResource\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xc2\x02\n" +
 	"\x1cPatchRegionAutoscalerRequest\x12'\n" +
 	"\n" +
 	"autoscaler\x18\xd7\xfd\xd2\xf6\x01 \x01(\tH\x00R\n" +
-	"autoscaler\x88\x01\x01\x12\\\n" +
-	"\x13autoscaler_resource\x18\xf6\xf0\xffb \x01(\v2#.google.cloud.compute.v1.AutoscalerB\x03\xe0A\x02R\x12autoscalerResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"autoscaler\x88\x01\x01\x12]\n" +
+	"\x13autoscaler_resource\x18\xf6\xf0\xffb \x01(\v2#.google.cloud.compute.v1.AutoscalerB\x04\xe2A\x01\x02R\x12autoscalerResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01B\r\n" +
 	"\v_autoscalerB\r\n" +
-	"\v_request_id\"\xc4\x02\n" +
-	"\x1fPatchRegionBackendBucketRequest\x12-\n" +
-	"\x0ebackend_bucket\x18\xf5\xe3\xdd+ \x01(\tB\x03\xe0A\x02R\rbackendBucket\x12g\n" +
-	"\x17backend_bucket_resource\x18\x98\xceǵ\x01 \x01(\v2&.google.cloud.compute.v1.BackendBucketB\x03\xe0A\x02R\x15backendBucketResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\xc8\x02\n" +
+	"\x1fPatchRegionBackendBucketRequest\x12.\n" +
+	"\x0ebackend_bucket\x18\xf5\xe3\xdd+ \x01(\tB\x04\xe2A\x01\x02R\rbackendBucket\x12h\n" +
+	"\x17backend_bucket_resource\x18\x98\xceǵ\x01 \x01(\v2&.google.cloud.compute.v1.BackendBucketB\x04\xe2A\x01\x02R\x15backendBucketResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xcb\x02\n" +
-	" PatchRegionBackendServiceRequest\x120\n" +
-	"\x0fbackend_service\x18\x8a\xc0\xae\x92\x01 \x01(\tB\x03\xe0A\x02R\x0ebackendService\x12j\n" +
-	"\x18backend_service_resource\x18\xa3\x81ߥ\x01 \x01(\v2'.google.cloud.compute.v1.BackendServiceB\x03\xe0A\x02R\x16backendServiceResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\xcf\x02\n" +
+	" PatchRegionBackendServiceRequest\x121\n" +
+	"\x0fbackend_service\x18\x8a\xc0\xae\x92\x01 \x01(\tB\x04\xe2A\x01\x02R\x0ebackendService\x12k\n" +
+	"\x18backend_service_resource\x18\xa3\x81ߥ\x01 \x01(\v2'.google.cloud.compute.v1.BackendServiceB\x04\xe2A\x01\x02R\x16backendServiceResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xf0\x02\n" +
-	"&PatchRegionCompositeHealthCheckRequest\x12=\n" +
-	"\x16composite_health_check\x18\x9d\xc0\xd6\xde\x01 \x01(\tB\x03\xe0A\x02R\x14compositeHealthCheck\x12|\n" +
-	"\x1fcomposite_health_check_resource\x18\xf0˄? \x01(\v2-.google.cloud.compute.v1.CompositeHealthCheckB\x03\xe0A\x02R\x1ccompositeHealthCheckResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\xf4\x02\n" +
+	"&PatchRegionCompositeHealthCheckRequest\x12>\n" +
+	"\x16composite_health_check\x18\x9d\xc0\xd6\xde\x01 \x01(\tB\x04\xe2A\x01\x02R\x14compositeHealthCheck\x12}\n" +
+	"\x1fcomposite_health_check_resource\x18\xf0˄? \x01(\v2-.google.cloud.compute.v1.CompositeHealthCheckB\x04\xe2A\x01\x02R\x1ccompositeHealthCheckResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\x83\x03\n" +
-	")PatchRegionHealthAggregationPolicyRequest\x12B\n" +
-	"\x19health_aggregation_policy\x18\xf2\xcf\xcbr \x01(\tB\x03\xe0A\x02R\x17healthAggregationPolicy\x12\x86\x01\n" +
-	"\"health_aggregation_policy_resource\x18\xbb\xbb\xfb\x8b\x01 \x01(\v20.google.cloud.compute.v1.HealthAggregationPolicyB\x03\xe0A\x02R\x1fhealthAggregationPolicyResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\x87\x03\n" +
+	")PatchRegionHealthAggregationPolicyRequest\x12C\n" +
+	"\x19health_aggregation_policy\x18\xf2\xcf\xcbr \x01(\tB\x04\xe2A\x01\x02R\x17healthAggregationPolicy\x12\x87\x01\n" +
+	"\"health_aggregation_policy_resource\x18\xbb\xbb\xfb\x8b\x01 \x01(\v20.google.cloud.compute.v1.HealthAggregationPolicyB\x04\xe2A\x01\x02R\x1fhealthAggregationPolicyResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xb8\x02\n" +
-	"\x1dPatchRegionHealthCheckRequest\x12*\n" +
-	"\fhealth_check\x18媤\x93\x01 \x01(\tB\x03\xe0A\x02R\vhealthCheck\x12`\n" +
-	"\x15health_check_resource\x18\xa8ä` \x01(\v2$.google.cloud.compute.v1.HealthCheckB\x03\xe0A\x02R\x13healthCheckResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\xbc\x02\n" +
+	"\x1dPatchRegionHealthCheckRequest\x12+\n" +
+	"\fhealth_check\x18媤\x93\x01 \x01(\tB\x04\xe2A\x01\x02R\vhealthCheck\x12a\n" +
+	"\x15health_check_resource\x18\xa8ä` \x01(\v2$.google.cloud.compute.v1.HealthCheckB\x04\xe2A\x01\x02R\x13healthCheckResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xe5\x02\n" +
-	"$PatchRegionHealthCheckServiceRequest\x129\n" +
-	"\x14health_check_service\x18ۛ\xdd\xc2\x01 \x01(\tB\x03\xe0A\x02R\x12healthCheckService\x12w\n" +
-	"\x1dhealth_check_service_resource\x18\xf2\x9b\xd0\xe3\x01 \x01(\v2+.google.cloud.compute.v1.HealthCheckServiceB\x03\xe0A\x02R\x1ahealthCheckServiceResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\xe9\x02\n" +
+	"$PatchRegionHealthCheckServiceRequest\x12:\n" +
+	"\x14health_check_service\x18ۛ\xdd\xc2\x01 \x01(\tB\x04\xe2A\x01\x02R\x12healthCheckService\x12x\n" +
+	"\x1dhealth_check_service_resource\x18\xf2\x9b\xd0\xe3\x01 \x01(\v2+.google.cloud.compute.v1.HealthCheckServiceB\x04\xe2A\x01\x02R\x1ahealthCheckServiceResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xbf\x02\n" +
-	"\x1ePatchRegionHealthSourceRequest\x12,\n" +
-	"\rhealth_source\x18ކų\x01 \x01(\tB\x03\xe0A\x02R\fhealthSource\x12d\n" +
-	"\x16health_source_resource\x18Ϸʪ\x01 \x01(\v2%.google.cloud.compute.v1.HealthSourceB\x03\xe0A\x02R\x14healthSourceResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\xc3\x02\n" +
+	"\x1ePatchRegionHealthSourceRequest\x12-\n" +
+	"\rhealth_source\x18ކų\x01 \x01(\tB\x04\xe2A\x01\x02R\fhealthSource\x12e\n" +
+	"\x16health_source_resource\x18Ϸʪ\x01 \x01(\v2%.google.cloud.compute.v1.HealthSourceB\x04\xe2A\x01\x02R\x14healthSourceResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xef\x02\n" +
-	"&PatchRegionInstanceGroupManagerRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12|\n" +
-	"\x1finstance_group_manager_resource\x18\x8a\x8a\xbe| \x01(\v2-.google.cloud.compute.v1.InstanceGroupManagerB\x03\xe0A\x02R\x1cinstanceGroupManagerResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\xf3\x02\n" +
+	"&PatchRegionInstanceGroupManagerRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12}\n" +
+	"\x1finstance_group_manager_resource\x18\x8a\x8a\xbe| \x01(\v2-.google.cloud.compute.v1.InstanceGroupManagerB\x04\xe2A\x01\x02R\x1cinstanceGroupManagerResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xd2\x02\n" +
-	"'PatchRegionNetworkFirewallPolicyRequest\x120\n" +
-	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x03\xe0A\x02R\x0efirewallPolicy\x12j\n" +
-	"\x18firewall_policy_resource\x18\xbc\xb6\x87\xec\x01 \x01(\v2'.google.cloud.compute.v1.FirewallPolicyB\x03\xe0A\x02R\x16firewallPolicyResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\xd6\x02\n" +
+	"'PatchRegionNetworkFirewallPolicyRequest\x121\n" +
+	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x04\xe2A\x01\x02R\x0efirewallPolicy\x12k\n" +
+	"\x18firewall_policy_resource\x18\xbc\xb6\x87\xec\x01 \x01(\v2'.google.cloud.compute.v1.FirewallPolicyB\x04\xe2A\x01\x02R\x16firewallPolicyResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\x83\x03\n" +
-	" PatchRegionSecurityPolicyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\x87\x03\n" +
+	" PatchRegionSecurityPolicyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12/\n" +
-	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x03\xe0A\x02R\x0esecurityPolicy\x12i\n" +
-	"\x18security_policy_resource\x18\xfc\xaa\x89g \x01(\v2'.google.cloud.compute.v1.SecurityPolicyB\x03\xe0A\x02R\x16securityPolicyResource\x12(\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x120\n" +
+	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x04\xe2A\x01\x02R\x0esecurityPolicy\x12j\n" +
+	"\x18security_policy_resource\x18\xfc\xaa\x89g \x01(\v2'.google.cloud.compute.v1.SecurityPolicyB\x04\xe2A\x01\x02R\x16securityPolicyResource\x12(\n" +
 	"\vupdate_mask\x18\xa2\xb9\xba\xee\x01 \x01(\tH\x01R\n" +
 	"updateMask\x88\x01\x01B\r\n" +
 	"\v_request_idB\x0e\n" +
-	"\f_update_mask\"\xda\x02\n" +
-	"!PatchRegionSnapshotSettingRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\f_update_mask\"\xdd\x02\n" +
+	"!PatchRegionSnapshotSettingRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12p\n" +
-	"\x1asnapshot_settings_resource\x18\xef\x8dƪ\x01 \x01(\v2).google.cloud.compute.v1.SnapshotSettingsB\x03\xe0A\x02R\x18snapshotSettingsResource\x12(\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12q\n" +
+	"\x1asnapshot_settings_resource\x18\xef\x8dƪ\x01 \x01(\v2).google.cloud.compute.v1.SnapshotSettingsB\x04\xe2A\x01\x02R\x18snapshotSettingsResource\x12(\n" +
 	"\vupdate_mask\x18\xa2\xb9\xba\xee\x01 \x01(\tH\x01R\n" +
 	"updateMask\x88\x01\x01B\r\n" +
 	"\v_request_idB\x0e\n" +
-	"\f_update_mask\"\xad\x02\n" +
-	"\x1bPatchRegionSslPolicyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\f_update_mask\"\xb1\x02\n" +
+	"\x1bPatchRegionSslPolicyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12&\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12'\n" +
 	"\n" +
-	"ssl_policy\x18\xc5\xfd\xe0\x8c\x01 \x01(\tB\x03\xe0A\x02R\tsslPolicy\x12[\n" +
-	"\x13ssl_policy_resource\x18Ȉ\x8a\x83\x01 \x01(\v2\".google.cloud.compute.v1.SslPolicyB\x03\xe0A\x02R\x11sslPolicyResourceB\r\n" +
-	"\v_request_id\"\xd8\x02\n" +
-	"\"PatchRegionTargetHttpsProxyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"ssl_policy\x18\xc5\xfd\xe0\x8c\x01 \x01(\tB\x04\xe2A\x01\x02R\tsslPolicy\x12\\\n" +
+	"\x13ssl_policy_resource\x18Ȉ\x8a\x83\x01 \x01(\v2\".google.cloud.compute.v1.SslPolicyB\x04\xe2A\x01\x02R\x11sslPolicyResourceB\r\n" +
+	"\v_request_id\"\xdc\x02\n" +
+	"\"PatchRegionTargetHttpsProxyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x124\n" +
-	"\x12target_https_proxy\x18\xec\xb0\xfa\x18 \x01(\tB\x03\xe0A\x02R\x10targetHttpsProxy\x12q\n" +
-	"\x1btarget_https_proxy_resource\x18\x81\xad\xe4\xce\x01 \x01(\v2).google.cloud.compute.v1.TargetHttpsProxyB\x03\xe0A\x02R\x18targetHttpsProxyResourceB\r\n" +
-	"\v_request_id\"\x9a\x02\n" +
-	"\x18PatchRegionUrlMapRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x125\n" +
+	"\x12target_https_proxy\x18\xec\xb0\xfa\x18 \x01(\tB\x04\xe2A\x01\x02R\x10targetHttpsProxy\x12r\n" +
+	"\x1btarget_https_proxy_resource\x18\x81\xad\xe4\xce\x01 \x01(\v2).google.cloud.compute.v1.TargetHttpsProxyB\x04\xe2A\x01\x02R\x18targetHttpsProxyResourceB\r\n" +
+	"\v_request_id\"\x9e\x02\n" +
+	"\x18PatchRegionUrlMapRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12 \n" +
-	"\aurl_map\x18\x8c\x95\x81\xaf\x01 \x01(\tB\x03\xe0A\x02R\x06urlMap\x12Q\n" +
-	"\x10url_map_resource\x18ᐷP \x01(\v2\x1f.google.cloud.compute.v1.UrlMapB\x03\xe0A\x02R\x0eurlMapResourceB\r\n" +
-	"\v_request_id\"\xfd\x02\n" +
-	"\x1aPatchResourcePolicyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
+	"\aurl_map\x18\x8c\x95\x81\xaf\x01 \x01(\tB\x04\xe2A\x01\x02R\x06urlMap\x12R\n" +
+	"\x10url_map_resource\x18ᐷP \x01(\v2\x1f.google.cloud.compute.v1.UrlMapB\x04\xe2A\x01\x02R\x0eurlMapResourceB\r\n" +
+	"\v_request_id\"\x81\x03\n" +
+	"\x1aPatchResourcePolicyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12/\n" +
-	"\x0fresource_policy\x18\x83\xa5\xf7K \x01(\tB\x03\xe0A\x02R\x0eresourcePolicy\x12i\n" +
-	"\x18resource_policy_resource\x18ʌ\xd1$ \x01(\v2'.google.cloud.compute.v1.ResourcePolicyB\x03\xe0A\x02R\x16resourcePolicyResource\x12(\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x120\n" +
+	"\x0fresource_policy\x18\x83\xa5\xf7K \x01(\tB\x04\xe2A\x01\x02R\x0eresourcePolicy\x12j\n" +
+	"\x18resource_policy_resource\x18ʌ\xd1$ \x01(\v2'.google.cloud.compute.v1.ResourcePolicyB\x04\xe2A\x01\x02R\x16resourcePolicyResource\x12(\n" +
 	"\vupdate_mask\x18\xa2\xb9\xba\xee\x01 \x01(\tH\x01R\n" +
 	"updateMask\x88\x01\x01B\r\n" +
 	"\v_request_idB\x0e\n" +
-	"\f_update_mask\"\xac\x02\n" +
-	"\x1dPatchRoutePolicyRouterRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\f_update_mask\"\xb0\x02\n" +
+	"\x1dPatchRoutePolicyRouterRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12`\n" +
-	"\x15route_policy_resource\x18\x85\xbd\xb57 \x01(\v2$.google.cloud.compute.v1.RoutePolicyB\x03\xe0A\x02R\x13routePolicyResource\x12\x1e\n" +
-	"\x06router\x18ɮ\xeeF \x01(\tB\x03\xe0A\x02R\x06routerB\r\n" +
-	"\v_request_id\"\x91\x02\n" +
-	"\x12PatchRouterRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12a\n" +
+	"\x15route_policy_resource\x18\x85\xbd\xb57 \x01(\v2$.google.cloud.compute.v1.RoutePolicyB\x04\xe2A\x01\x02R\x13routePolicyResource\x12\x1f\n" +
+	"\x06router\x18ɮ\xeeF \x01(\tB\x04\xe2A\x01\x02R\x06routerB\r\n" +
+	"\v_request_id\"\x95\x02\n" +
+	"\x12PatchRouterRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\x1e\n" +
-	"\x06router\x18ɮ\xeeF \x01(\tB\x03\xe0A\x02R\x06router\x12P\n" +
-	"\x0frouter_resource\x18Ā\x82J \x01(\v2\x1f.google.cloud.compute.v1.RouterB\x03\xe0A\x02R\x0erouterResourceB\r\n" +
-	"\v_request_id\"\xb2\x02\n" +
-	"\x1ePatchRuleFirewallPolicyRequest\x120\n" +
-	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x03\xe0A\x02R\x0efirewallPolicy\x12v\n" +
-	"\x1dfirewall_policy_rule_resource\x18\x83ߺw \x01(\v2+.google.cloud.compute.v1.FirewallPolicyRuleB\x03\xe0A\x02R\x1afirewallPolicyRuleResource\x12#\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\x1f\n" +
+	"\x06router\x18ɮ\xeeF \x01(\tB\x04\xe2A\x01\x02R\x06router\x12Q\n" +
+	"\x0frouter_resource\x18Ā\x82J \x01(\v2\x1f.google.cloud.compute.v1.RouterB\x04\xe2A\x01\x02R\x0erouterResourceB\r\n" +
+	"\v_request_id\"\xb4\x02\n" +
+	"\x1ePatchRuleFirewallPolicyRequest\x121\n" +
+	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x04\xe2A\x01\x02R\x0efirewallPolicy\x12w\n" +
+	"\x1dfirewall_policy_rule_resource\x18\x83ߺw \x01(\v2+.google.cloud.compute.v1.FirewallPolicyRuleB\x04\xe2A\x01\x02R\x1afirewallPolicyRuleResource\x12#\n" +
 	"\bpriority\x18\xa4\xf3\xa1\xd4\x01 \x01(\x05H\x00R\bpriority\x88\x01\x01\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01B\v\n" +
 	"\t_priorityB\r\n" +
-	"\v_request_id\"\xe5\x02\n" +
-	"%PatchRuleNetworkFirewallPolicyRequest\x120\n" +
-	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x03\xe0A\x02R\x0efirewallPolicy\x12v\n" +
-	"\x1dfirewall_policy_rule_resource\x18\x83ߺw \x01(\v2+.google.cloud.compute.v1.FirewallPolicyRuleB\x03\xe0A\x02R\x1afirewallPolicyRuleResource\x12#\n" +
-	"\bpriority\x18\xa4\xf3\xa1\xd4\x01 \x01(\x05H\x00R\bpriority\x88\x01\x01\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\xe8\x02\n" +
+	"%PatchRuleNetworkFirewallPolicyRequest\x121\n" +
+	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x04\xe2A\x01\x02R\x0efirewallPolicy\x12w\n" +
+	"\x1dfirewall_policy_rule_resource\x18\x83ߺw \x01(\v2+.google.cloud.compute.v1.FirewallPolicyRuleB\x04\xe2A\x01\x02R\x1afirewallPolicyRuleResource\x12#\n" +
+	"\bpriority\x18\xa4\xf3\xa1\xd4\x01 \x01(\x05H\x00R\bpriority\x88\x01\x01\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01B\v\n" +
 	"\t_priorityB\r\n" +
-	"\v_request_id\"\xbe\x02\n" +
+	"\v_request_id\"\xc0\x02\n" +
 	"*PatchRuleOrganizationSecurityPolicyRequest\x12#\n" +
 	"\bpriority\x18\xa4\xf3\xa1\xd4\x01 \x01(\x05H\x00R\bpriority\x88\x01\x01\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12/\n" +
-	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x03\xe0A\x02R\x0esecurityPolicy\x12w\n" +
-	"\x1dsecurity_policy_rule_resource\x18ú\x82\xc0\x01 \x01(\v2+.google.cloud.compute.v1.SecurityPolicyRuleB\x03\xe0A\x02R\x1asecurityPolicyRuleResourceB\v\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x120\n" +
+	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x04\xe2A\x01\x02R\x0esecurityPolicy\x12x\n" +
+	"\x1dsecurity_policy_rule_resource\x18ú\x82\xc0\x01 \x01(\v2+.google.cloud.compute.v1.SecurityPolicyRuleB\x04\xe2A\x01\x02R\x1asecurityPolicyRuleResourceB\v\n" +
 	"\t_priorityB\r\n" +
-	"\v_request_id\"\x94\x03\n" +
-	"+PatchRuleRegionNetworkFirewallPolicyRequest\x120\n" +
-	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x03\xe0A\x02R\x0efirewallPolicy\x12v\n" +
-	"\x1dfirewall_policy_rule_resource\x18\x83ߺw \x01(\v2+.google.cloud.compute.v1.FirewallPolicyRuleB\x03\xe0A\x02R\x1afirewallPolicyRuleResource\x12#\n" +
-	"\bpriority\x18\xa4\xf3\xa1\xd4\x01 \x01(\x05H\x00R\bpriority\x88\x01\x01\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\x98\x03\n" +
+	"+PatchRuleRegionNetworkFirewallPolicyRequest\x121\n" +
+	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x04\xe2A\x01\x02R\x0efirewallPolicy\x12w\n" +
+	"\x1dfirewall_policy_rule_resource\x18\x83ߺw \x01(\v2+.google.cloud.compute.v1.FirewallPolicyRuleB\x04\xe2A\x01\x02R\x1afirewallPolicyRuleResource\x12#\n" +
+	"\bpriority\x18\xa4\xf3\xa1\xd4\x01 \x01(\x05H\x00R\bpriority\x88\x01\x01\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01B\v\n" +
 	"\t_priorityB\r\n" +
-	"\v_request_id\"\xd0\x03\n" +
+	"\v_request_id\"\xd4\x03\n" +
 	"$PatchRuleRegionSecurityPolicyRequest\x12#\n" +
-	"\bpriority\x18\xa4\xf3\xa1\xd4\x01 \x01(\x05H\x00R\bpriority\x88\x01\x01\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12/\n" +
-	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x03\xe0A\x02R\x0esecurityPolicy\x12w\n" +
-	"\x1dsecurity_policy_rule_resource\x18ú\x82\xc0\x01 \x01(\v2+.google.cloud.compute.v1.SecurityPolicyRuleB\x03\xe0A\x02R\x1asecurityPolicyRuleResource\x12(\n" +
+	"\bpriority\x18\xa4\xf3\xa1\xd4\x01 \x01(\x05H\x00R\bpriority\x88\x01\x01\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x120\n" +
+	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x04\xe2A\x01\x02R\x0esecurityPolicy\x12x\n" +
+	"\x1dsecurity_policy_rule_resource\x18ú\x82\xc0\x01 \x01(\v2+.google.cloud.compute.v1.SecurityPolicyRuleB\x04\xe2A\x01\x02R\x1asecurityPolicyRuleResource\x12(\n" +
 	"\vupdate_mask\x18\xa2\xb9\xba\xee\x01 \x01(\tH\x01R\n" +
 	"updateMask\x88\x01\x01\x12+\n" +
 	"\rvalidate_only\x18\xb5\xfa\xdfs \x01(\bH\x02R\fvalidateOnly\x88\x01\x01B\v\n" +
 	"\t_priorityB\x0e\n" +
 	"\f_update_maskB\x10\n" +
-	"\x0e_validate_only\"\xa1\x03\n" +
+	"\x0e_validate_only\"\xa4\x03\n" +
 	"\x1ePatchRuleSecurityPolicyRequest\x12#\n" +
-	"\bpriority\x18\xa4\xf3\xa1\xd4\x01 \x01(\x05H\x00R\bpriority\x88\x01\x01\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12/\n" +
-	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x03\xe0A\x02R\x0esecurityPolicy\x12w\n" +
-	"\x1dsecurity_policy_rule_resource\x18ú\x82\xc0\x01 \x01(\v2+.google.cloud.compute.v1.SecurityPolicyRuleB\x03\xe0A\x02R\x1asecurityPolicyRuleResource\x12(\n" +
+	"\bpriority\x18\xa4\xf3\xa1\xd4\x01 \x01(\x05H\x00R\bpriority\x88\x01\x01\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x120\n" +
+	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x04\xe2A\x01\x02R\x0esecurityPolicy\x12x\n" +
+	"\x1dsecurity_policy_rule_resource\x18ú\x82\xc0\x01 \x01(\v2+.google.cloud.compute.v1.SecurityPolicyRuleB\x04\xe2A\x01\x02R\x1asecurityPolicyRuleResource\x12(\n" +
 	"\vupdate_mask\x18\xa2\xb9\xba\xee\x01 \x01(\tH\x01R\n" +
 	"updateMask\x88\x01\x01\x12+\n" +
 	"\rvalidate_only\x18\xb5\xfa\xdfs \x01(\bH\x02R\fvalidateOnly\x88\x01\x01B\v\n" +
 	"\t_priorityB\x0e\n" +
 	"\f_update_maskB\x10\n" +
-	"\x0e_validate_only\"\xd4\x02\n" +
-	"\x1aPatchSecurityPolicyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\x0e_validate_only\"\xd7\x02\n" +
+	"\x1aPatchSecurityPolicyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12/\n" +
-	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x03\xe0A\x02R\x0esecurityPolicy\x12i\n" +
-	"\x18security_policy_resource\x18\xfc\xaa\x89g \x01(\v2'.google.cloud.compute.v1.SecurityPolicyB\x03\xe0A\x02R\x16securityPolicyResource\x12(\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x120\n" +
+	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x04\xe2A\x01\x02R\x0esecurityPolicy\x12j\n" +
+	"\x18security_policy_resource\x18\xfc\xaa\x89g \x01(\v2'.google.cloud.compute.v1.SecurityPolicyB\x04\xe2A\x01\x02R\x16securityPolicyResource\x12(\n" +
 	"\vupdate_mask\x18\xa2\xb9\xba\xee\x01 \x01(\tH\x01R\n" +
 	"updateMask\x88\x01\x01B\r\n" +
 	"\v_request_idB\x0e\n" +
-	"\f_update_mask\"\xd7\x02\n" +
-	"\x1dPatchServiceAttachmentRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\f_update_mask\"\xdb\x02\n" +
+	"\x1dPatchServiceAttachmentRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x126\n" +
-	"\x12service_attachment\x18\xed\xa9С\x01 \x01(\tB\x03\xe0A\x02R\x11serviceAttachment\x12s\n" +
-	"\x1bservice_attachment_resource\x18\xa0\xb6\xc4\xe1\x01 \x01(\v2*.google.cloud.compute.v1.ServiceAttachmentB\x03\xe0A\x02R\x19serviceAttachmentResourceB\r\n" +
-	"\v_request_id\"\xab\x02\n" +
-	"\x1bPatchSnapshotSettingRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x127\n" +
+	"\x12service_attachment\x18\xed\xa9С\x01 \x01(\tB\x04\xe2A\x01\x02R\x11serviceAttachment\x12t\n" +
+	"\x1bservice_attachment_resource\x18\xa0\xb6\xc4\xe1\x01 \x01(\v2*.google.cloud.compute.v1.ServiceAttachmentB\x04\xe2A\x01\x02R\x19serviceAttachmentResourceB\r\n" +
+	"\v_request_id\"\xad\x02\n" +
+	"\x1bPatchSnapshotSettingRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12p\n" +
-	"\x1asnapshot_settings_resource\x18\xef\x8dƪ\x01 \x01(\v2).google.cloud.compute.v1.SnapshotSettingsB\x03\xe0A\x02R\x18snapshotSettingsResource\x12(\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12q\n" +
+	"\x1asnapshot_settings_resource\x18\xef\x8dƪ\x01 \x01(\v2).google.cloud.compute.v1.SnapshotSettingsB\x04\xe2A\x01\x02R\x18snapshotSettingsResource\x12(\n" +
 	"\vupdate_mask\x18\xa2\xb9\xba\xee\x01 \x01(\tH\x01R\n" +
 	"updateMask\x88\x01\x01B\r\n" +
 	"\v_request_idB\x0e\n" +
-	"\f_update_mask\"\xfe\x01\n" +
-	"\x15PatchSslPolicyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\f_update_mask\"\x81\x02\n" +
+	"\x15PatchSslPolicyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12&\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12'\n" +
 	"\n" +
-	"ssl_policy\x18\xc5\xfd\xe0\x8c\x01 \x01(\tB\x03\xe0A\x02R\tsslPolicy\x12[\n" +
-	"\x13ssl_policy_resource\x18Ȉ\x8a\x83\x01 \x01(\v2\".google.cloud.compute.v1.SslPolicyB\x03\xe0A\x02R\x11sslPolicyResourceB\r\n" +
-	"\v_request_id\"\x81\x03\n" +
+	"ssl_policy\x18\xc5\xfd\xe0\x8c\x01 \x01(\tB\x04\xe2A\x01\x02R\tsslPolicy\x12\\\n" +
+	"\x13ssl_policy_resource\x18Ȉ\x8a\x83\x01 \x01(\v2\".google.cloud.compute.v1.SslPolicyB\x04\xe2A\x01\x02R\x11sslPolicyResourceB\r\n" +
+	"\v_request_id\"\x85\x03\n" +
 	"\x16PatchSubnetworkRequest\x12;\n" +
-	"\x15drain_timeout_seconds\x18\xda\xdaȪ\x01 \x01(\x05H\x00R\x13drainTimeoutSeconds\x88\x01\x01\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\x15drain_timeout_seconds\x18\xda\xdaȪ\x01 \x01(\x05H\x00R\x13drainTimeoutSeconds\x88\x01\x01\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12'\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12(\n" +
 	"\n" +
-	"subnetwork\x18\xee\xa7\xe4\x92\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"subnetwork\x12\\\n" +
-	"\x13subnetwork_resource\x18\xbfڑ\x14 \x01(\v2#.google.cloud.compute.v1.SubnetworkB\x03\xe0A\x02R\x12subnetworkResourceB\x18\n" +
+	"subnetwork\x18\xee\xa7\xe4\x92\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"subnetwork\x12]\n" +
+	"\x13subnetwork_resource\x18\xbfڑ\x14 \x01(\v2#.google.cloud.compute.v1.SubnetworkB\x04\xe2A\x01\x02R\x12subnetworkResourceB\x18\n" +
 	"\x16_drain_timeout_secondsB\r\n" +
-	"\v_request_id\"\xa3\x02\n" +
-	"\x1bPatchTargetGrpcProxyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\xa6\x02\n" +
+	"\x1bPatchTargetGrpcProxyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x122\n" +
-	"\x11target_grpc_proxy\x18\xfb\xb4\xb2\x02 \x01(\tB\x03\xe0A\x02R\x0ftargetGrpcProxy\x12n\n" +
-	"\x1atarget_grpc_proxy_resource\x18\xd2\xea\xeb\x9c\x01 \x01(\v2(.google.cloud.compute.v1.TargetGrpcProxyB\x03\xe0A\x02R\x17targetGrpcProxyResourceB\r\n" +
-	"\v_request_id\"\xa2\x02\n" +
-	"\x1bPatchTargetHttpProxyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x123\n" +
+	"\x11target_grpc_proxy\x18\xfb\xb4\xb2\x02 \x01(\tB\x04\xe2A\x01\x02R\x0ftargetGrpcProxy\x12o\n" +
+	"\x1atarget_grpc_proxy_resource\x18\xd2\xea\xeb\x9c\x01 \x01(\v2(.google.cloud.compute.v1.TargetGrpcProxyB\x04\xe2A\x01\x02R\x17targetGrpcProxyResourceB\r\n" +
+	"\v_request_id\"\xa5\x02\n" +
+	"\x1bPatchTargetHttpProxyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x122\n" +
-	"\x11target_http_proxy\x18\xe5\xbe\xd2b \x01(\tB\x03\xe0A\x02R\x0ftargetHttpProxy\x12m\n" +
-	"\x1atarget_http_proxy_resource\x18\xa8\xaf\xe3\v \x01(\v2(.google.cloud.compute.v1.TargetHttpProxyB\x03\xe0A\x02R\x17targetHttpProxyResourceB\r\n" +
-	"\v_request_id\"\xa9\x02\n" +
-	"\x1cPatchTargetHttpsProxyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x123\n" +
+	"\x11target_http_proxy\x18\xe5\xbe\xd2b \x01(\tB\x04\xe2A\x01\x02R\x0ftargetHttpProxy\x12n\n" +
+	"\x1atarget_http_proxy_resource\x18\xa8\xaf\xe3\v \x01(\v2(.google.cloud.compute.v1.TargetHttpProxyB\x04\xe2A\x01\x02R\x17targetHttpProxyResourceB\r\n" +
+	"\v_request_id\"\xac\x02\n" +
+	"\x1cPatchTargetHttpsProxyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x124\n" +
-	"\x12target_https_proxy\x18\xec\xb0\xfa\x18 \x01(\tB\x03\xe0A\x02R\x10targetHttpsProxy\x12q\n" +
-	"\x1btarget_https_proxy_resource\x18\x81\xad\xe4\xce\x01 \x01(\v2).google.cloud.compute.v1.TargetHttpsProxyB\x03\xe0A\x02R\x18targetHttpsProxyResourceB\r\n" +
-	"\v_request_id\"\xeb\x01\n" +
-	"\x12PatchUrlMapRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x125\n" +
+	"\x12target_https_proxy\x18\xec\xb0\xfa\x18 \x01(\tB\x04\xe2A\x01\x02R\x10targetHttpsProxy\x12r\n" +
+	"\x1btarget_https_proxy_resource\x18\x81\xad\xe4\xce\x01 \x01(\v2).google.cloud.compute.v1.TargetHttpsProxyB\x04\xe2A\x01\x02R\x18targetHttpsProxyResourceB\r\n" +
+	"\v_request_id\"\xee\x01\n" +
+	"\x12PatchUrlMapRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12 \n" +
-	"\aurl_map\x18\x8c\x95\x81\xaf\x01 \x01(\tB\x03\xe0A\x02R\x06urlMap\x12Q\n" +
-	"\x10url_map_resource\x18ᐷP \x01(\v2\x1f.google.cloud.compute.v1.UrlMapB\x03\xe0A\x02R\x0eurlMapResourceB\r\n" +
-	"\v_request_id\"\xab\x03\n" +
-	"\x15PatchWireGroupRequest\x124\n" +
-	"\x12cross_site_network\x18\xd5\xc5\xcb3 \x01(\tB\x03\xe0A\x02R\x10crossSiteNetwork\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
+	"\aurl_map\x18\x8c\x95\x81\xaf\x01 \x01(\tB\x04\xe2A\x01\x02R\x06urlMap\x12R\n" +
+	"\x10url_map_resource\x18ᐷP \x01(\v2\x1f.google.cloud.compute.v1.UrlMapB\x04\xe2A\x01\x02R\x0eurlMapResourceB\r\n" +
+	"\v_request_id\"\xaf\x03\n" +
+	"\x15PatchWireGroupRequest\x125\n" +
+	"\x12cross_site_network\x18\xd5\xc5\xcb3 \x01(\tB\x04\xe2A\x01\x02R\x10crossSiteNetwork\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12(\n" +
 	"\vupdate_mask\x18\xa2\xb9\xba\xee\x01 \x01(\tH\x01R\n" +
 	"updateMask\x88\x01\x01\x12+\n" +
-	"\rvalidate_only\x18\xb5\xfa\xdfs \x01(\bH\x02R\fvalidateOnly\x88\x01\x01\x12%\n" +
+	"\rvalidate_only\x18\xb5\xfa\xdfs \x01(\bH\x02R\fvalidateOnly\x88\x01\x01\x12&\n" +
 	"\n" +
-	"wire_group\x18Ť\xb7: \x01(\tB\x03\xe0A\x02R\twireGroup\x12Z\n" +
-	"\x13wire_group_resource\x18\xc8\xc1\xeb7 \x01(\v2\".google.cloud.compute.v1.WireGroupB\x03\xe0A\x02R\x11wireGroupResourceB\r\n" +
+	"wire_group\x18Ť\xb7: \x01(\tB\x04\xe2A\x01\x02R\twireGroup\x12[\n" +
+	"\x13wire_group_resource\x18\xc8\xc1\xeb7 \x01(\v2\".google.cloud.compute.v1.WireGroupB\x04\xe2A\x01\x02R\x11wireGroupResourceB\r\n" +
 	"\v_request_idB\x0e\n" +
 	"\f_update_maskB\x10\n" +
 	"\x0e_validate_only\"\xe5\x06\n" +
@@ -245056,13 +244989,13 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\r_route_actionB\n" +
 	"\n" +
 	"\b_serviceB\x0f\n" +
-	"\r_url_redirect\"\xbf\x01\n" +
+	"\r_url_redirect\"\xc1\x01\n" +
 	"\x13PauseRolloutRequest\x12\x1a\n" +
-	"\x04etag\x18\x95Ҿ\x01 \x01(\tH\x00R\x04etag\x88\x01\x01\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\x04etag\x18\x95Ҿ\x01 \x01(\tH\x00R\x04etag\x88\x01\x01\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12!\n" +
-	"\arollout\x18\xb1\x83Ԑ\x01 \x01(\tB\x03\xe0A\x02R\arolloutB\a\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12\"\n" +
+	"\arollout\x18\xb1\x83Ԑ\x01 \x01(\tB\x04\xe2A\x01\x02R\arolloutB\a\n" +
 	"\x05_etagB\r\n" +
 	"\v_request_id\"\x9e\x03\n" +
 	"\x11PerInstanceConfig\x12(\n" +
@@ -245081,54 +245014,49 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\f_fingerprintB\a\n" +
 	"\x05_nameB\x12\n" +
 	"\x10_preserved_stateB\t\n" +
-	"\a_status\"\xcc\x01\n" +
-	"!PerformMaintenanceInstanceRequest\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\a_status\"\xcf\x01\n" +
+	"!PerformMaintenanceInstanceRequest\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xff\x02\n" +
-	"\"PerformMaintenanceNodeGroupRequest\x12&\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\x83\x03\n" +
+	"\"PerformMaintenanceNodeGroupRequest\x12'\n" +
 	"\n" +
-	"node_group\x18\x82\xfc\x8b\xe0\x01 \x01(\tB\x03\xe0A\x02R\tnodeGroup\x12\xab\x01\n" +
-	"0node_groups_perform_maintenance_request_resource\x18ָ\xaeX \x01(\v2<.google.cloud.compute.v1.NodeGroupsPerformMaintenanceRequestB\x03\xe0A\x02R+nodeGroupsPerformMaintenanceRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"node_group\x18\x82\xfc\x8b\xe0\x01 \x01(\tB\x04\xe2A\x01\x02R\tnodeGroup\x12\xac\x01\n" +
+	"0node_groups_perform_maintenance_request_resource\x18ָ\xaeX \x01(\v2<.google.cloud.compute.v1.NodeGroupsPerformMaintenanceRequestB\x04\xe2A\x01\x02R+nodeGroupsPerformMaintenanceRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xd7\x03\n" +
-	")PerformMaintenanceReservationBlockRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xdc\x03\n" +
+	")PerformMaintenanceReservationBlockRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12(\n" +
-	"\vreservation\x18̇\xd5\x16 \x01(\tB\x03\xe0A\x02R\vreservation\x124\n" +
-	"\x11reservation_block\x18\xdaĉ\xfe\x01 \x01(\tB\x03\xe0A\x02R\x10reservationBlock\x12\xc4\x01\n" +
-	"8reservations_blocks_perform_maintenance_request_resource\x18\x89\xa9\xd4\xe7\x01 \x01(\v2D.google.cloud.compute.v1.ReservationsBlocksPerformMaintenanceRequestB\x03\xe0A\x02R3reservationsBlocksPerformMaintenanceRequestResource\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\x88\x03\n" +
-	"$PerformMaintenanceReservationRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12)\n" +
+	"\vreservation\x18̇\xd5\x16 \x01(\tB\x04\xe2A\x01\x02R\vreservation\x125\n" +
+	"\x11reservation_block\x18\xdaĉ\xfe\x01 \x01(\tB\x04\xe2A\x01\x02R\x10reservationBlock\x12\xc5\x01\n" +
+	"8reservations_blocks_perform_maintenance_request_resource\x18\x89\xa9\xd4\xe7\x01 \x01(\v2D.google.cloud.compute.v1.ReservationsBlocksPerformMaintenanceRequestB\x04\xe2A\x01\x02R3reservationsBlocksPerformMaintenanceRequestResource\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\x8c\x03\n" +
+	"$PerformMaintenanceReservationRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12(\n" +
-	"\vreservation\x18̇\xd5\x16 \x01(\tB\x03\xe0A\x02R\vreservation\x12\xb0\x01\n" +
-	"1reservations_perform_maintenance_request_resource\x18\xa0\xf5\x94\x0e \x01(\v2>.google.cloud.compute.v1.ReservationsPerformMaintenanceRequestB\x03\xe0A\x02R-reservationsPerformMaintenanceRequestResource\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\x99\x02\n" +
-	",PerformMaintenanceReservationSubBlockRequest\x12(\n" +
-	"\vparent_name\x18\x80\x8a\x80\xe4\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"parentName\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12)\n" +
+	"\vreservation\x18̇\xd5\x16 \x01(\tB\x04\xe2A\x01\x02R\vreservation\x12\xb1\x01\n" +
+	"1reservations_perform_maintenance_request_resource\x18\xa0\xf5\x94\x0e \x01(\v2>.google.cloud.compute.v1.ReservationsPerformMaintenanceRequestB\x04\xe2A\x01\x02R-reservationsPerformMaintenanceRequestResource\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\x9d\x02\n" +
+	",PerformMaintenanceReservationSubBlockRequest\x12)\n" +
+	"\vparent_name\x18\x80\x8a\x80\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"parentName\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12:\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12;\n" +
 	"\x15reservation_sub_block\x18\x9b\xca\xec\n" +
-	" \x01(\tB\x03\xe0A\x02R\x13reservationSubBlock\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	" \x01(\tB\x04\xe2A\x01\x02R\x13reservationSubBlock\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
 	"\v_request_id\"\xe6\x05\n" +
 	"\"PeriodicPartialMaintenanceSchedule\x12!\n" +
 	"\bsub_type\x18\xd9\xe3\xb1  \x01(\tH\x00R\asubType\x88\x01\x01\x120\n" +
@@ -245290,12 +245218,12 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\aPREVIEW\x10\xa8\xdfѾ\x01\x12\x18\n" +
 	"\x11STAGE_UNSPECIFIED\x10\xb6֯\x1eB\b\n" +
 	"\x06_stageB\x0e\n" +
-	"\f_update_date\"\xca\x01\n" +
-	"\x14PreviewRouterRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\x1e\n" +
-	"\x06router\x18ɮ\xeeF \x01(\tB\x03\xe0A\x02R\x06router\x12P\n" +
-	"\x0frouter_resource\x18Ā\x82J \x01(\v2\x1f.google.cloud.compute.v1.RouterB\x03\xe0A\x02R\x0erouterResource\"\xc5\f\n" +
+	"\f_update_date\"\xce\x01\n" +
+	"\x14PreviewRouterRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12\x1f\n" +
+	"\x06router\x18ɮ\xeeF \x01(\tB\x04\xe2A\x01\x02R\x06router\x12Q\n" +
+	"\x0frouter_resource\x18Ā\x82J \x01(\v2\x1f.google.cloud.compute.v1.RouterB\x04\xe2A\x01\x02R\x0erouterResource\"\xc5\f\n" +
 	"\aProject\x120\n" +
 	"\x10cloud_armor_tier\x18\xac\x9a\x8e\x02 \x01(\tH\x00R\x0ecloudArmorTier\x88\x01\x01\x12c\n" +
 	"\x18common_instance_metadata\x18\xc5\xfc\xcbX \x01(\v2!.google.cloud.compute.v1.MetadataH\x01R\x16commonInstanceMetadata\x88\x01\x01\x125\n" +
@@ -245855,25 +245783,24 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\x03TAR\x10\x85\x87\x05B\x11\n" +
 	"\x0f_container_typeB\x10\n" +
 	"\x0e_sha1_checksumB\t\n" +
-	"\a_source\"\x92\x04\n" +
-	",RecreateInstancesInstanceGroupManagerRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12\xca\x01\n" +
+	"\a_source\"\x96\x04\n" +
+	",RecreateInstancesInstanceGroupManagerRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12\xcb\x01\n" +
 	";instance_group_managers_recreate_instances_request_resource\x18\x80\u009a\n" +
-	" \x01(\v2F.google.cloud.compute.v1.InstanceGroupManagersRecreateInstancesRequestB\x03\xe0A\x02R5instanceGroupManagersRecreateInstancesRequestResource\x129\n" +
-	"\x14no_graceful_shutdown\x18\x92\xb7\xab\xa0\x01 \x01(\bH\x00R\x12noGracefulShutdown\x88\x01\x01\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	" \x01(\v2F.google.cloud.compute.v1.InstanceGroupManagersRecreateInstancesRequestB\x04\xe2A\x01\x02R5instanceGroupManagersRecreateInstancesRequestResource\x129\n" +
+	"\x14no_graceful_shutdown\x18\x92\xb7\xab\xa0\x01 \x01(\bH\x00R\x12noGracefulShutdown\x88\x01\x01\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\x17\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\x17\n" +
 	"\x15_no_graceful_shutdownB\r\n" +
-	"\v_request_id\"\x95\x04\n" +
-	"2RecreateInstancesRegionInstanceGroupManagerRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x129\n" +
-	"\x14no_graceful_shutdown\x18\x92\xb7\xab\xa0\x01 \x01(\bH\x00R\x12noGracefulShutdown\x88\x01\x01\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12\xc1\x01\n" +
-	"8region_instance_group_managers_recreate_request_resource\x18\x94\xfc\xc4Q \x01(\v2C.google.cloud.compute.v1.RegionInstanceGroupManagersRecreateRequestB\x03\xe0A\x02R2regionInstanceGroupManagersRecreateRequestResource\x12%\n" +
+	"\v_request_id\"\x99\x04\n" +
+	"2RecreateInstancesRegionInstanceGroupManagerRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x129\n" +
+	"\x14no_graceful_shutdown\x18\x92\xb7\xab\xa0\x01 \x01(\bH\x00R\x12noGracefulShutdown\x88\x01\x01\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12\xc2\x01\n" +
+	"8region_instance_group_managers_recreate_request_resource\x18\x94\xfc\xc4Q \x01(\v2C.google.cloud.compute.v1.RegionInstanceGroupManagersRecreateRequestB\x04\xe2A\x01\x02R2regionInstanceGroupManagersRecreateRequestResource\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01B\x17\n" +
 	"\x15_no_graceful_shutdownB\r\n" +
@@ -246207,178 +246134,173 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\n" +
 	"_self_linkB\n" +
 	"\n" +
-	"\b_warning\"\xb5\x01\n" +
-	"&RemoveAssociationFirewallPolicyRequest\x120\n" +
-	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x03\xe0A\x02R\x0efirewallPolicy\x12\x1a\n" +
+	"\b_warning\"\xb6\x01\n" +
+	"&RemoveAssociationFirewallPolicyRequest\x121\n" +
+	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x04\xe2A\x01\x02R\x0efirewallPolicy\x12\x1a\n" +
 	"\x04name\x18\x8b\xf5\xcd\x01 \x01(\tH\x00R\x04name\x88\x01\x01\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01B\a\n" +
 	"\x05_nameB\r\n" +
-	"\v_request_id\"\xe8\x01\n" +
-	"-RemoveAssociationNetworkFirewallPolicyRequest\x120\n" +
-	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x03\xe0A\x02R\x0efirewallPolicy\x12\x1a\n" +
-	"\x04name\x18\x8b\xf5\xcd\x01 \x01(\tH\x00R\x04name\x88\x01\x01\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\xea\x01\n" +
+	"-RemoveAssociationNetworkFirewallPolicyRequest\x121\n" +
+	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x04\xe2A\x01\x02R\x0efirewallPolicy\x12\x1a\n" +
+	"\x04name\x18\x8b\xf5\xcd\x01 \x01(\tH\x00R\x04name\x88\x01\x01\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01B\a\n" +
 	"\x05_nameB\r\n" +
-	"\v_request_id\"\xc0\x01\n" +
+	"\v_request_id\"\xc1\x01\n" +
 	"2RemoveAssociationOrganizationSecurityPolicyRequest\x12\x1a\n" +
 	"\x04name\x18\x8b\xf5\xcd\x01 \x01(\tH\x00R\x04name\x88\x01\x01\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12/\n" +
-	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x03\xe0A\x02R\x0esecurityPolicyB\a\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x120\n" +
+	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x04\xe2A\x01\x02R\x0esecurityPolicyB\a\n" +
 	"\x05_nameB\r\n" +
-	"\v_request_id\"\x97\x02\n" +
-	"3RemoveAssociationRegionNetworkFirewallPolicyRequest\x120\n" +
-	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x03\xe0A\x02R\x0efirewallPolicy\x12\x1a\n" +
-	"\x04name\x18\x8b\xf5\xcd\x01 \x01(\tH\x00R\x04name\x88\x01\x01\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\x9a\x02\n" +
+	"3RemoveAssociationRegionNetworkFirewallPolicyRequest\x121\n" +
+	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x04\xe2A\x01\x02R\x0efirewallPolicy\x12\x1a\n" +
+	"\x04name\x18\x8b\xf5\xcd\x01 \x01(\tH\x00R\x04name\x88\x01\x01\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01B\a\n" +
 	"\x05_nameB\r\n" +
-	"\v_request_id\"\x88\x03\n" +
-	"\"RemoveHealthCheckTargetPoolRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\x8c\x03\n" +
+	"\"RemoveHealthCheckTargetPoolRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12'\n" +
-	"\vtarget_pool\x18\x8a\xe4\xf8\x1d \x01(\tB\x03\xe0A\x02R\n" +
-	"targetPool\x12\xad\x01\n" +
-	"1target_pools_remove_health_check_request_resource\x18\xb3綑\x01 \x01(\v2<.google.cloud.compute.v1.TargetPoolsRemoveHealthCheckRequestB\x03\xe0A\x02R+targetPoolsRemoveHealthCheckRequestResourceB\r\n" +
-	"\v_request_id\"\xfa\x02\n" +
-	"\x1fRemoveInstanceTargetPoolRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12(\n" +
+	"\vtarget_pool\x18\x8a\xe4\xf8\x1d \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"targetPool\x12\xae\x01\n" +
+	"1target_pools_remove_health_check_request_resource\x18\xb3綑\x01 \x01(\v2<.google.cloud.compute.v1.TargetPoolsRemoveHealthCheckRequestB\x04\xe2A\x01\x02R+targetPoolsRemoveHealthCheckRequestResourceB\r\n" +
+	"\v_request_id\"\xfe\x02\n" +
+	"\x1fRemoveInstanceTargetPoolRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12'\n" +
-	"\vtarget_pool\x18\x8a\xe4\xf8\x1d \x01(\tB\x03\xe0A\x02R\n" +
-	"targetPool\x12\xa2\x01\n" +
-	"-target_pools_remove_instance_request_resource\x18\x83\xc0\x8b\x0e \x01(\v29.google.cloud.compute.v1.TargetPoolsRemoveInstanceRequestB\x03\xe0A\x02R(targetPoolsRemoveInstanceRequestResourceB\r\n" +
-	"\v_request_id\"\x8b\x03\n" +
-	"#RemoveInstancesInstanceGroupRequest\x12-\n" +
-	"\x0einstance_group\x18\xd5\xd4\xd5& \x01(\tB\x03\xe0A\x02R\rinstanceGroup\x12\xaf\x01\n" +
-	"1instance_groups_remove_instances_request_resource\x18\xb9ѷ\xba\x01 \x01(\v2=.google.cloud.compute.v1.InstanceGroupsRemoveInstancesRequestB\x03\xe0A\x02R,instanceGroupsRemoveInstancesRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12(\n" +
+	"\vtarget_pool\x18\x8a\xe4\xf8\x1d \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"targetPool\x12\xa3\x01\n" +
+	"-target_pools_remove_instance_request_resource\x18\x83\xc0\x8b\x0e \x01(\v29.google.cloud.compute.v1.TargetPoolsRemoveInstanceRequestB\x04\xe2A\x01\x02R(targetPoolsRemoveInstanceRequestResourceB\r\n" +
+	"\v_request_id\"\x8f\x03\n" +
+	"#RemoveInstancesInstanceGroupRequest\x12.\n" +
+	"\x0einstance_group\x18\xd5\xd4\xd5& \x01(\tB\x04\xe2A\x01\x02R\rinstanceGroup\x12\xb0\x01\n" +
+	"1instance_groups_remove_instances_request_resource\x18\xb9ѷ\xba\x01 \x01(\v2=.google.cloud.compute.v1.InstanceGroupsRemoveInstancesRequestB\x04\xe2A\x01\x02R,instanceGroupsRemoveInstancesRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xfd\x01\n" +
-	"5RemovePacketMirroringRuleNetworkFirewallPolicyRequest\x120\n" +
-	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x03\xe0A\x02R\x0efirewallPolicy\x12#\n" +
-	"\bpriority\x18\xa4\xf3\xa1\xd4\x01 \x01(\x05H\x00R\bpriority\x88\x01\x01\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xff\x01\n" +
+	"5RemovePacketMirroringRuleNetworkFirewallPolicyRequest\x121\n" +
+	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x04\xe2A\x01\x02R\x0efirewallPolicy\x12#\n" +
+	"\bpriority\x18\xa4\xf3\xa1\xd4\x01 \x01(\x05H\x00R\bpriority\x88\x01\x01\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01B\v\n" +
 	"\t_priorityB\r\n" +
-	"\v_request_id\"\xba\x02\n" +
-	"\x1bRemovePeeringNetworkRequest\x12 \n" +
-	"\anetwork\x18\xae\xb4\x85o \x01(\tB\x03\xe0A\x02R\anetwork\x12\x96\x01\n" +
-	"(networks_remove_peering_request_resource\x18\xfe\xdb\xe9\xc8\x01 \x01(\v25.google.cloud.compute.v1.NetworksRemovePeeringRequestB\x03\xe0A\x02R$networksRemovePeeringRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\xbd\x02\n" +
+	"\x1bRemovePeeringNetworkRequest\x12!\n" +
+	"\anetwork\x18\xae\xb4\x85o \x01(\tB\x04\xe2A\x01\x02R\anetwork\x12\x97\x01\n" +
+	"(networks_remove_peering_request_resource\x18\xfe\xdb\xe9\xc8\x01 \x01(\v25.google.cloud.compute.v1.NetworksRemovePeeringRequestB\x04\xe2A\x01\x02R$networksRemovePeeringRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xf0\x02\n" +
-	"!RemoveResourcePoliciesDiskRequest\x12\x1a\n" +
-	"\x04disk\x18\x9d\x9b\xbc\x01 \x01(\tB\x03\xe0A\x02R\x04disk\x12\xa9\x01\n" +
-	"/disks_remove_resource_policies_request_resource\x18\xee\xc1\xa1\xd0\x01 \x01(\v2;.google.cloud.compute.v1.DisksRemoveResourcePoliciesRequestB\x03\xe0A\x02R*disksRemoveResourcePoliciesRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\xf4\x02\n" +
+	"!RemoveResourcePoliciesDiskRequest\x12\x1b\n" +
+	"\x04disk\x18\x9d\x9b\xbc\x01 \x01(\tB\x04\xe2A\x01\x02R\x04disk\x12\xaa\x01\n" +
+	"/disks_remove_resource_policies_request_resource\x18\xee\xc1\xa1\xd0\x01 \x01(\v2;.google.cloud.compute.v1.DisksRemoveResourcePoliciesRequestB\x04\xe2A\x01\x02R*disksRemoveResourcePoliciesRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\x87\x03\n" +
-	"%RemoveResourcePoliciesInstanceRequest\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x12\xb4\x01\n" +
-	"3instances_remove_resource_policies_request_resource\x18\xf6ݼ\x17 \x01(\v2?.google.cloud.compute.v1.InstancesRemoveResourcePoliciesRequestB\x03\xe0A\x02R.instancesRemoveResourcePoliciesRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\x8b\x03\n" +
+	"%RemoveResourcePoliciesInstanceRequest\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x12\xb5\x01\n" +
+	"3instances_remove_resource_policies_request_resource\x18\xf6ݼ\x17 \x01(\v2?.google.cloud.compute.v1.InstancesRemoveResourcePoliciesRequestB\x04\xe2A\x01\x02R.instancesRemoveResourcePoliciesRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\x8e\x03\n" +
-	"'RemoveResourcePoliciesRegionDiskRequest\x12\x1a\n" +
-	"\x04disk\x18\x9d\x9b\xbc\x01 \x01(\tB\x03\xe0A\x02R\x04disk\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12\xbb\x01\n" +
-	"6region_disks_remove_resource_policies_request_resource\x18\xa3Õ\x04 \x01(\v2A.google.cloud.compute.v1.RegionDisksRemoveResourcePoliciesRequestB\x03\xe0A\x02R0regionDisksRemoveResourcePoliciesRequestResource\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\x92\x03\n" +
+	"'RemoveResourcePoliciesRegionDiskRequest\x12\x1b\n" +
+	"\x04disk\x18\x9d\x9b\xbc\x01 \x01(\tB\x04\xe2A\x01\x02R\x04disk\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12\xbc\x01\n" +
+	"6region_disks_remove_resource_policies_request_resource\x18\xa3Õ\x04 \x01(\v2A.google.cloud.compute.v1.RegionDisksRemoveResourcePoliciesRequestB\x04\xe2A\x01\x02R0regionDisksRemoveResourcePoliciesRequestResource\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xbb\x01\n" +
-	"\x1fRemoveRuleFirewallPolicyRequest\x120\n" +
-	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x03\xe0A\x02R\x0efirewallPolicy\x12#\n" +
+	"\v_request_id\"\xbc\x01\n" +
+	"\x1fRemoveRuleFirewallPolicyRequest\x121\n" +
+	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x04\xe2A\x01\x02R\x0efirewallPolicy\x12#\n" +
 	"\bpriority\x18\xa4\xf3\xa1\xd4\x01 \x01(\x05H\x00R\bpriority\x88\x01\x01\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01B\v\n" +
 	"\t_priorityB\r\n" +
-	"\v_request_id\"\xee\x01\n" +
-	"&RemoveRuleNetworkFirewallPolicyRequest\x120\n" +
-	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x03\xe0A\x02R\x0efirewallPolicy\x12#\n" +
-	"\bpriority\x18\xa4\xf3\xa1\xd4\x01 \x01(\x05H\x00R\bpriority\x88\x01\x01\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\xf0\x01\n" +
+	"&RemoveRuleNetworkFirewallPolicyRequest\x121\n" +
+	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x04\xe2A\x01\x02R\x0efirewallPolicy\x12#\n" +
+	"\bpriority\x18\xa4\xf3\xa1\xd4\x01 \x01(\x05H\x00R\bpriority\x88\x01\x01\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01B\v\n" +
 	"\t_priorityB\r\n" +
-	"\v_request_id\"\xc6\x01\n" +
+	"\v_request_id\"\xc7\x01\n" +
 	"+RemoveRuleOrganizationSecurityPolicyRequest\x12#\n" +
 	"\bpriority\x18\xa4\xf3\xa1\xd4\x01 \x01(\x05H\x00R\bpriority\x88\x01\x01\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12/\n" +
-	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x03\xe0A\x02R\x0esecurityPolicyB\v\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x120\n" +
+	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x04\xe2A\x01\x02R\x0esecurityPolicyB\v\n" +
 	"\t_priorityB\r\n" +
-	"\v_request_id\"\x9d\x02\n" +
-	",RemoveRuleRegionNetworkFirewallPolicyRequest\x120\n" +
-	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x03\xe0A\x02R\x0efirewallPolicy\x12#\n" +
-	"\bpriority\x18\xa4\xf3\xa1\xd4\x01 \x01(\x05H\x00R\bpriority\x88\x01\x01\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\xa0\x02\n" +
+	",RemoveRuleRegionNetworkFirewallPolicyRequest\x121\n" +
+	"\x0ffirewall_policy\x18ъ\xc6\xed\x01 \x01(\tB\x04\xe2A\x01\x02R\x0efirewallPolicy\x12#\n" +
+	"\bpriority\x18\xa4\xf3\xa1\xd4\x01 \x01(\x05H\x00R\bpriority\x88\x01\x01\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01B\v\n" +
 	"\t_priorityB\r\n" +
-	"\v_request_id\"\xdf\x01\n" +
+	"\v_request_id\"\xe2\x01\n" +
 	"%RemoveRuleRegionSecurityPolicyRequest\x12#\n" +
-	"\bpriority\x18\xa4\xf3\xa1\xd4\x01 \x01(\x05H\x00R\bpriority\x88\x01\x01\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12/\n" +
-	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x03\xe0A\x02R\x0esecurityPolicyB\v\n" +
-	"\t_priority\"\xb0\x01\n" +
+	"\bpriority\x18\xa4\xf3\xa1\xd4\x01 \x01(\x05H\x00R\bpriority\x88\x01\x01\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x120\n" +
+	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x04\xe2A\x01\x02R\x0esecurityPolicyB\v\n" +
+	"\t_priority\"\xb2\x01\n" +
 	"\x1fRemoveRuleSecurityPolicyRequest\x12#\n" +
-	"\bpriority\x18\xa4\xf3\xa1\xd4\x01 \x01(\x05H\x00R\bpriority\x88\x01\x01\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12/\n" +
-	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x03\xe0A\x02R\x0esecurityPolicyB\v\n" +
-	"\t_priority\"\xcf\x03\n" +
-	"&ReportFaultyReservationSubBlockRequest\x12(\n" +
-	"\vparent_name\x18\x80\x8a\x80\xe4\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"parentName\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\bpriority\x18\xa4\xf3\xa1\xd4\x01 \x01(\x05H\x00R\bpriority\x88\x01\x01\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x120\n" +
+	"\x0fsecurity_policy\x18\x91\x86\xcaQ \x01(\tB\x04\xe2A\x01\x02R\x0esecurityPolicyB\v\n" +
+	"\t_priority\"\xd4\x03\n" +
+	"&ReportFaultyReservationSubBlockRequest\x12)\n" +
+	"\vparent_name\x18\x80\x8a\x80\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"parentName\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12:\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12;\n" +
 	"\x15reservation_sub_block\x18\x9b\xca\xec\n" +
-	" \x01(\tB\x03\xe0A\x02R\x13reservationSubBlock\x12\xb9\x01\n" +
-	"5reservation_sub_blocks_report_faulty_request_resource\x18\xc2\xc9\xfd\xd6\x01 \x01(\v2@.google.cloud.compute.v1.ReservationSubBlocksReportFaultyRequestB\x03\xe0A\x02R/reservationSubBlocksReportFaultyRequestResource\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xf9\x02\n" +
-	"!ReportHostAsFaultyInstanceRequest\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x12\xaa\x01\n" +
-	"0instances_report_host_as_faulty_request_resource\x18\xa6\x94\xcd\xeb\x01 \x01(\v2;.google.cloud.compute.v1.InstancesReportHostAsFaultyRequestB\x03\xe0A\x02R*instancesReportHostAsFaultyRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	" \x01(\tB\x04\xe2A\x01\x02R\x13reservationSubBlock\x12\xba\x01\n" +
+	"5reservation_sub_blocks_report_faulty_request_resource\x18\xc2\xc9\xfd\xd6\x01 \x01(\v2@.google.cloud.compute.v1.ReservationSubBlocksReportFaultyRequestB\x04\xe2A\x01\x02R/reservationSubBlocksReportFaultyRequestResource\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xfd\x02\n" +
+	"!ReportHostAsFaultyInstanceRequest\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x12\xab\x01\n" +
+	"0instances_report_host_as_faulty_request_resource\x18\xa6\x94\xcd\xeb\x01 \x01(\v2;.google.cloud.compute.v1.InstancesReportHostAsFaultyRequestB\x04\xe2A\x01\x02R*instancesReportHostAsFaultyRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
 	"\v_request_id\"\x9e\x01\n" +
 	"\x13RequestMirrorPolicy\x120\n" +
 	"\x0fbackend_service\x18\x8a\xc0\xae\x92\x01 \x01(\tH\x00R\x0ebackendService\x88\x01\x01\x12.\n" +
 	"\x0emirror_percent\x18ŏ\xa5\x84\x01 \x01(\x01H\x01R\rmirrorPercent\x88\x01\x01B\x12\n" +
 	"\x10_backend_serviceB\x11\n" +
-	"\x0f_mirror_percent\"\xd6\x02\n" +
-	"\"RequestRemovePeeringNetworkRequest\x12 \n" +
-	"\anetwork\x18\xae\xb4\x85o \x01(\tB\x03\xe0A\x02R\anetwork\x12\xab\x01\n" +
-	"0networks_request_remove_peering_request_resource\x18\xce\xe4\xf7G \x01(\v2<.google.cloud.compute.v1.NetworksRequestRemovePeeringRequestB\x03\xe0A\x02R+networksRequestRemovePeeringRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\x0f_mirror_percent\"\xd9\x02\n" +
+	"\"RequestRemovePeeringNetworkRequest\x12!\n" +
+	"\anetwork\x18\xae\xb4\x85o \x01(\tB\x04\xe2A\x01\x02R\anetwork\x12\xac\x01\n" +
+	"0networks_request_remove_peering_request_resource\x18\xce\xe4\xf7G \x01(\v2<.google.cloud.compute.v1.NetworksRequestRemovePeeringRequestB\x04\xe2A\x01\x02R+networksRequestRemovePeeringRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
 	"\v_request_id\"\xb5\x1a\n" +
@@ -246848,57 +246770,53 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\freservations\x18\xa7\xec̾\x01 \x03(\v2$.google.cloud.compute.v1.ReservationR\freservations\x12B\n" +
 	"\awarning\x18\x9cߖ\x18 \x01(\v2 .google.cloud.compute.v1.WarningH\x00R\awarning\x88\x01\x01B\n" +
 	"\n" +
-	"\b_warning\"\xbf\x01\n" +
-	"\x14ResetInstanceRequest\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\b_warning\"\xc2\x01\n" +
+	"\x14ResetInstanceRequest\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xac\x02\n" +
-	"\x11ResizeDiskRequest\x12\x1a\n" +
-	"\x04disk\x18\x9d\x9b\xbc\x01 \x01(\tB\x03\xe0A\x02R\x04disk\x12v\n" +
-	"\x1ddisks_resize_request_resource\x18\xa0«% \x01(\v2+.google.cloud.compute.v1.DisksResizeRequestB\x03\xe0A\x02R\x1adisksResizeRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xb0\x02\n" +
+	"\x11ResizeDiskRequest\x12\x1b\n" +
+	"\x04disk\x18\x9d\x9b\xbc\x01 \x01(\tB\x04\xe2A\x01\x02R\x04disk\x12w\n" +
+	"\x1ddisks_resize_request_resource\x18\xa0«% \x01(\v2+.google.cloud.compute.v1.DisksResizeRequestB\x04\xe2A\x01\x02R\x1adisksResizeRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\x82\x02\n" +
-	"!ResizeInstanceGroupManagerRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\x86\x02\n" +
+	"!ResizeInstanceGroupManagerRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\x1a\n" +
-	"\x04size\x18\x81\xc0\xd7\x01 \x01(\x05B\x03\xe0A\x02R\x04size\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xcd\x02\n" +
-	"\x17ResizeRegionDiskRequest\x12\x1a\n" +
-	"\x04disk\x18\x9d\x9b\xbc\x01 \x01(\tB\x03\xe0A\x02R\x04disk\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12\x8a\x01\n" +
-	"$region_disks_resize_request_resource\x18\x95\xaa\xfc\xd4\x01 \x01(\v21.google.cloud.compute.v1.RegionDisksResizeRequestB\x03\xe0A\x02R regionDisksResizeRequestResource\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\x1b\n" +
+	"\x04size\x18\x81\xc0\xd7\x01 \x01(\x05B\x04\xe2A\x01\x02R\x04size\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xd1\x02\n" +
+	"\x17ResizeRegionDiskRequest\x12\x1b\n" +
+	"\x04disk\x18\x9d\x9b\xbc\x01 \x01(\tB\x04\xe2A\x01\x02R\x04disk\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12\x8b\x01\n" +
+	"$region_disks_resize_request_resource\x18\x95\xaa\xfc\xd4\x01 \x01(\v21.google.cloud.compute.v1.RegionDisksResizeRequestB\x04\xe2A\x01\x02R regionDisksResizeRequestResource\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\x8e\x02\n" +
-	"'ResizeRegionInstanceGroupManagerRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\x92\x02\n" +
+	"'ResizeRegionInstanceGroupManagerRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\x1a\n" +
-	"\x04size\x18\x81\xc0\xd7\x01 \x01(\x05B\x03\xe0A\x02R\x04sizeB\r\n" +
-	"\v_request_id\"\xd8\x02\n" +
-	"\x18ResizeReservationRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\x1b\n" +
+	"\x04size\x18\x81\xc0\xd7\x01 \x01(\x05B\x04\xe2A\x01\x02R\x04sizeB\r\n" +
+	"\v_request_id\"\xdc\x02\n" +
+	"\x18ResizeReservationRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12(\n" +
-	"\vreservation\x18̇\xd5\x16 \x01(\tB\x03\xe0A\x02R\vreservation\x12\x8c\x01\n" +
-	"$reservations_resize_request_resource\x18\xd1\xdbι\x01 \x01(\v22.google.cloud.compute.v1.ReservationsResizeRequestB\x03\xe0A\x02R!reservationsResizeRequestResource\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12)\n" +
+	"\vreservation\x18̇\xd5\x16 \x01(\tB\x04\xe2A\x01\x02R\vreservation\x12\x8d\x01\n" +
+	"$reservations_resize_request_resource\x18\xd1\xdbι\x01 \x01(\v22.google.cloud.compute.v1.ReservationsResizeRequestB\x04\xe2A\x01\x02R!reservationsResizeRequestResource\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
 	"\v_request_id\"\xa1\x02\n" +
 	"\x12ResourceCommitment\x121\n" +
 	"\x10accelerator_type\x18\x8e\xe1\xe8A \x01(\tH\x00R\x0facceleratorType\x88\x01\x01\x12\x1e\n" +
@@ -247229,38 +247147,36 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\r_max_durationB\x14\n" +
 	"\x12_request_timestampB\r\n" +
 	"\v_stop_stateB\x0f\n" +
-	"\r_target_state\"\xc0\x01\n" +
-	"\x15ResumeInstanceRequest\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\r_target_state\"\xc3\x01\n" +
+	"\x15ResumeInstanceRequest\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xb6\x03\n" +
-	"*ResumeInstancesInstanceGroupManagerRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12\xc4\x01\n" +
-	"9instance_group_managers_resume_instances_request_resource\x18¾\xc2= \x01(\v2D.google.cloud.compute.v1.InstanceGroupManagersResumeInstancesRequestB\x03\xe0A\x02R3instanceGroupManagersResumeInstancesRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xba\x03\n" +
+	"*ResumeInstancesInstanceGroupManagerRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12\xc5\x01\n" +
+	"9instance_group_managers_resume_instances_request_resource\x18¾\xc2= \x01(\v2D.google.cloud.compute.v1.InstanceGroupManagersResumeInstancesRequestB\x04\xe2A\x01\x02R3instanceGroupManagersResumeInstancesRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xd6\x03\n" +
-	"0ResumeInstancesRegionInstanceGroupManagerRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12\xd8\x01\n" +
-	"@region_instance_group_managers_resume_instances_request_resource\x18\xb7\x83\x80\xdd\x01 \x01(\v2J.google.cloud.compute.v1.RegionInstanceGroupManagersResumeInstancesRequestB\x03\xe0A\x02R9regionInstanceGroupManagersResumeInstancesRequestResource\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xda\x03\n" +
+	"0ResumeInstancesRegionInstanceGroupManagerRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12\xd9\x01\n" +
+	"@region_instance_group_managers_resume_instances_request_resource\x18\xb7\x83\x80\xdd\x01 \x01(\v2J.google.cloud.compute.v1.RegionInstanceGroupManagersResumeInstancesRequestB\x04\xe2A\x01\x02R9regionInstanceGroupManagersResumeInstancesRequestResource\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xc0\x01\n" +
+	"\v_request_id\"\xc2\x01\n" +
 	"\x14ResumeRolloutRequest\x12\x1a\n" +
-	"\x04etag\x18\x95Ҿ\x01 \x01(\tH\x00R\x04etag\x88\x01\x01\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\x04etag\x18\x95Ҿ\x01 \x01(\tH\x00R\x04etag\x88\x01\x01\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12!\n" +
-	"\arollout\x18\xb1\x83Ԑ\x01 \x01(\tB\x03\xe0A\x02R\arolloutB\a\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12\"\n" +
+	"\arollout\x18\xb1\x83Ԑ\x01 \x01(\tB\x04\xe2A\x01\x02R\arolloutB\a\n" +
 	"\x05_etagB\r\n" +
 	"\v_request_id\"\xb6\x04\n" +
 	"\vRiskDetails\x12\"\n" +
@@ -248704,11 +248620,11 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\x11client_tls_policy\x18ꋺ\xdc\x01 \x01(\tH\x01R\x0fclientTlsPolicy\x88\x01\x01\x12.\n" +
 	"\x11subject_alt_names\x18߳\xaf\x9d\x01 \x03(\tR\x0fsubjectAltNamesB\x18\n" +
 	"\x16_aws_v4_authenticationB\x14\n" +
-	"\x12_client_tls_policy\"\x8a\x01\n" +
-	"&SendDiagnosticInterruptInstanceRequest\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\")\n" +
+	"\x12_client_tls_policy\"\x8d\x01\n" +
+	"&SendDiagnosticInterruptInstanceRequest\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\")\n" +
 	"'SendDiagnosticInterruptInstanceResponse\"\xea\x01\n" +
 	"\x10SerialPortOutput\x12#\n" +
 	"\bcontents\x18\x9a\xb6\xbd\xf1\x01 \x01(\tH\x00R\bcontents\x88\x01\x01\x12\x1a\n" +
@@ -248853,49 +248769,49 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\x13service_attachments\x18\xa6\x92\xba\x92\x01 \x03(\v2*.google.cloud.compute.v1.ServiceAttachmentR\x12serviceAttachments\x12B\n" +
 	"\awarning\x18\x9cߖ\x18 \x01(\v2 .google.cloud.compute.v1.WarningH\x00R\awarning\x88\x01\x01B\n" +
 	"\n" +
-	"\b_warning\"\xfc\x02\n" +
-	"&SetBackendServiceTargetSslProxyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\xbc\x01\n" +
-	"7target_ssl_proxies_set_backend_service_request_resource\x18\xa4\xe9\xa8B \x01(\v2A.google.cloud.compute.v1.TargetSslProxiesSetBackendServiceRequestB\x03\xe0A\x02R0targetSslProxiesSetBackendServiceRequestResource\x121\n" +
-	"\x10target_ssl_proxy\x18ͺơ\x01 \x01(\tB\x03\xe0A\x02R\x0etargetSslProxyB\r\n" +
-	"\v_request_id\"\xfd\x02\n" +
-	"&SetBackendServiceTargetTcpProxyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\b_warning\"\xff\x02\n" +
+	"&SetBackendServiceTargetSslProxyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\xbd\x01\n" +
-	"7target_tcp_proxies_set_backend_service_request_resource\x18\xef\xd1\u0082\x01 \x01(\v2A.google.cloud.compute.v1.TargetTcpProxiesSetBackendServiceRequestB\x03\xe0A\x02R0targetTcpProxiesSetBackendServiceRequestResource\x121\n" +
-	"\x10target_tcp_proxy\x18\xe2\xd6\xf0\xef\x01 \x01(\tB\x03\xe0A\x02R\x0etargetTcpProxyB\r\n" +
-	"\v_request_id\"\x81\x03\n" +
+	"7target_ssl_proxies_set_backend_service_request_resource\x18\xa4\xe9\xa8B \x01(\v2A.google.cloud.compute.v1.TargetSslProxiesSetBackendServiceRequestB\x04\xe2A\x01\x02R0targetSslProxiesSetBackendServiceRequestResource\x122\n" +
+	"\x10target_ssl_proxy\x18ͺơ\x01 \x01(\tB\x04\xe2A\x01\x02R\x0etargetSslProxyB\r\n" +
+	"\v_request_id\"\x80\x03\n" +
+	"&SetBackendServiceTargetTcpProxyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\xbe\x01\n" +
+	"7target_tcp_proxies_set_backend_service_request_resource\x18\xef\xd1\u0082\x01 \x01(\v2A.google.cloud.compute.v1.TargetTcpProxiesSetBackendServiceRequestB\x04\xe2A\x01\x02R0targetTcpProxiesSetBackendServiceRequestResource\x122\n" +
+	"\x10target_tcp_proxy\x18\xe2\xd6\xf0\xef\x01 \x01(\tB\x04\xe2A\x01\x02R\x0etargetTcpProxyB\r\n" +
+	"\v_request_id\"\x85\x03\n" +
 	"\x1aSetBackupTargetPoolRequest\x12-\n" +
-	"\x0efailover_ratio\x18\xfe\x94\xb4e \x01(\x02H\x00R\rfailoverRatio\x88\x01\x01\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\x0efailover_ratio\x18\xfe\x94\xb4e \x01(\x02H\x00R\rfailoverRatio\x88\x01\x01\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12'\n" +
-	"\vtarget_pool\x18\x8a\xe4\xf8\x1d \x01(\tB\x03\xe0A\x02R\n" +
-	"targetPool\x12m\n" +
-	"\x19target_reference_resource\x18\xf0\xb7\xdd\xf9\x01 \x01(\v2(.google.cloud.compute.v1.TargetReferenceB\x03\xe0A\x02R\x17targetReferenceResourceB\x11\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12(\n" +
+	"\vtarget_pool\x18\x8a\xe4\xf8\x1d \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"targetPool\x12n\n" +
+	"\x19target_reference_resource\x18\xf0\xb7\xdd\xf9\x01 \x01(\v2(.google.cloud.compute.v1.TargetReferenceB\x04\xe2A\x01\x02R\x17targetReferenceResourceB\x11\n" +
 	"\x0f_failover_ratioB\r\n" +
-	"\v_request_id\"\x88\x03\n" +
-	"(SetCertificateMapTargetHttpsProxyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\x8b\x03\n" +
+	"(SetCertificateMapTargetHttpsProxyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\xc3\x01\n" +
-	"9target_https_proxies_set_certificate_map_request_resource\x18\xbb\xb6\xfe\xde\x01 \x01(\v2C.google.cloud.compute.v1.TargetHttpsProxiesSetCertificateMapRequestB\x03\xe0A\x02R2targetHttpsProxiesSetCertificateMapRequestResource\x124\n" +
-	"\x12target_https_proxy\x18\xec\xb0\xfa\x18 \x01(\tB\x03\xe0A\x02R\x10targetHttpsProxyB\r\n" +
-	"\v_request_id\"\xfd\x02\n" +
-	"&SetCertificateMapTargetSslProxyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\xc4\x01\n" +
+	"9target_https_proxies_set_certificate_map_request_resource\x18\xbb\xb6\xfe\xde\x01 \x01(\v2C.google.cloud.compute.v1.TargetHttpsProxiesSetCertificateMapRequestB\x04\xe2A\x01\x02R2targetHttpsProxiesSetCertificateMapRequestResource\x125\n" +
+	"\x12target_https_proxy\x18\xec\xb0\xfa\x18 \x01(\tB\x04\xe2A\x01\x02R\x10targetHttpsProxyB\r\n" +
+	"\v_request_id\"\x80\x03\n" +
+	"&SetCertificateMapTargetSslProxyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\xbd\x01\n" +
-	"7target_ssl_proxies_set_certificate_map_request_resource\x18\xba\x96\x83\xa4\x01 \x01(\v2A.google.cloud.compute.v1.TargetSslProxiesSetCertificateMapRequestB\x03\xe0A\x02R0targetSslProxiesSetCertificateMapRequestResource\x121\n" +
-	"\x10target_ssl_proxy\x18ͺơ\x01 \x01(\tB\x03\xe0A\x02R\x0etargetSslProxyB\r\n" +
-	"\v_request_id\"\xa9\x02\n" +
-	"\x1fSetCloudArmorTierProjectRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12\xa3\x01\n" +
-	".projects_set_cloud_armor_tier_request_resource\x18\xcf\xfb\xde$ \x01(\v29.google.cloud.compute.v1.ProjectsSetCloudArmorTierRequestB\x03\xe0A\x02R(projectsSetCloudArmorTierRequestResource\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\xbe\x01\n" +
+	"7target_ssl_proxies_set_certificate_map_request_resource\x18\xba\x96\x83\xa4\x01 \x01(\v2A.google.cloud.compute.v1.TargetSslProxiesSetCertificateMapRequestB\x04\xe2A\x01\x02R0targetSslProxiesSetCertificateMapRequestResource\x122\n" +
+	"\x10target_ssl_proxy\x18ͺơ\x01 \x01(\tB\x04\xe2A\x01\x02R\x0etargetSslProxyB\r\n" +
+	"\v_request_id\"\xab\x02\n" +
+	"\x1fSetCloudArmorTierProjectRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12\xa4\x01\n" +
+	".projects_set_cloud_armor_tier_request_resource\x18\xcf\xfb\xde$ \x01(\v29.google.cloud.compute.v1.ProjectsSetCloudArmorTierRequestB\x04\xe2A\x01\x02R(projectsSetCloudArmorTierRequestResource\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
 	"\v_request_id\"\xc2\x03\n" +
@@ -248919,656 +248835,636 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\vPROPAGATING\x10\x86\x83\xcbN\x12\x13\n" +
 	"\vUNSPECIFIED\x10\x97\xbe\x98\xfb\x01B\b\n" +
 	"\x06_errorB\b\n" +
-	"\x06_state\"\xe4\x01\n" +
-	"'SetCommonInstanceMetadataProjectRequest\x12W\n" +
-	"\x11metadata_resource\x18\x9e\xbe\xe6\x8a\x01 \x01(\v2!.google.cloud.compute.v1.MetadataB\x03\xe0A\x02R\x10metadataResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\x06_state\"\xe6\x01\n" +
+	"'SetCommonInstanceMetadataProjectRequest\x12X\n" +
+	"\x11metadata_resource\x18\x9e\xbe\xe6\x8a\x01 \x01(\v2!.google.cloud.compute.v1.MetadataB\x04\xe2A\x01\x02R\x10metadataResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xb9\x02\n" +
-	"#SetDefaultNetworkTierProjectRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12\xaf\x01\n" +
-	"2projects_set_default_network_tier_request_resource\x18\x8a\xc0\xa3< \x01(\v2=.google.cloud.compute.v1.ProjectsSetDefaultNetworkTierRequestB\x03\xe0A\x02R,projectsSetDefaultNetworkTierRequestResource\x12%\n" +
+	"\v_request_id\"\xbb\x02\n" +
+	"#SetDefaultNetworkTierProjectRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12\xb0\x01\n" +
+	"2projects_set_default_network_tier_request_resource\x18\x8a\xc0\xa3< \x01(\v2=.google.cloud.compute.v1.ProjectsSetDefaultNetworkTierRequestB\x04\xe2A\x01\x02R,projectsSetDefaultNetworkTierRequestResource\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xa1\x02\n" +
+	"\v_request_id\"\xa4\x02\n" +
 	"$SetDeletionProtectionInstanceRequest\x128\n" +
-	"\x13deletion_protection\x18\xea\xff\xb2\xda\x01 \x01(\bH\x00R\x12deletionProtection\x88\x01\x01\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\x13deletion_protection\x18\xea\xff\xb2\xda\x01 \x01(\bH\x00R\x12deletionProtection\x88\x01\x01\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\x16\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\x16\n" +
 	"\x14_deletion_protectionB\r\n" +
-	"\v_request_id\"\x9e\x02\n" +
-	" SetDiskAutoDeleteInstanceRequest\x12(\n" +
-	"\vauto_delete\x18\xbb\xe4\xce\xdd\x01 \x01(\bB\x03\xe0A\x02R\n" +
-	"autoDelete\x12'\n" +
-	"\vdevice_name\x18Ե\x9a  \x01(\tB\x03\xe0A\x02R\n" +
-	"deviceName\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xc4\x02\n" +
-	")SetEdgeSecurityPolicyBackendBucketRequest\x12-\n" +
-	"\x0ebackend_bucket\x18\xf5\xe3\xdd+ \x01(\tB\x03\xe0A\x02R\rbackendBucket\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\x85\x01\n" +
-	"\"security_policy_reference_resource\x18\xf0\xb4\xaba \x01(\v20.google.cloud.compute.v1.SecurityPolicyReferenceB\x03\xe0A\x02R\x1fsecurityPolicyReferenceResourceB\r\n" +
-	"\v_request_id\"\xc8\x02\n" +
-	"*SetEdgeSecurityPolicyBackendServiceRequest\x120\n" +
-	"\x0fbackend_service\x18\x8a\xc0\xae\x92\x01 \x01(\tB\x03\xe0A\x02R\x0ebackendService\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\x85\x01\n" +
-	"\"security_policy_reference_resource\x18\xf0\xb4\xaba \x01(\v20.google.cloud.compute.v1.SecurityPolicyReferenceB\x03\xe0A\x02R\x1fsecurityPolicyReferenceResourceB\r\n" +
-	"\v_request_id\"\xef\x01\n" +
-	" SetIamPolicyBackendBucketRequest\x12\x84\x01\n" +
-	"\"global_set_policy_request_resource\x18\xb2\xe7۠\x01 \x01(\v2/.google.cloud.compute.v1.GlobalSetPolicyRequestB\x03\xe0A\x02R\x1eglobalSetPolicyRequestResource\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\"\xf0\x01\n" +
-	"!SetIamPolicyBackendServiceRequest\x12\x84\x01\n" +
-	"\"global_set_policy_request_resource\x18\xb2\xe7۠\x01 \x01(\v2/.google.cloud.compute.v1.GlobalSetPolicyRequestB\x03\xe0A\x02R\x1eglobalSetPolicyRequestResource\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\"\xfb\x01\n" +
-	"\x17SetIamPolicyDiskRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\x12~\n" +
-	" zone_set_policy_request_resource\x18\xbb\xb8\x98\xb6\x01 \x01(\v2-.google.cloud.compute.v1.ZoneSetPolicyRequestB\x03\xe0A\x02R\x1czoneSetPolicyRequestResource\"\xf2\x01\n" +
-	"!SetIamPolicyFirewallPolicyRequest\x12\xa8\x01\n" +
-	"/global_organization_set_policy_request_resource\x18ޔ\xccT \x01(\v2;.google.cloud.compute.v1.GlobalOrganizationSetPolicyRequestB\x03\xe0A\x02R*globalOrganizationSetPolicyRequestResource\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\"\xe7\x01\n" +
-	"\x18SetIamPolicyImageRequest\x12\x84\x01\n" +
-	"\"global_set_policy_request_resource\x18\xb2\xe7۠\x01 \x01(\v2/.google.cloud.compute.v1.GlobalSetPolicyRequestB\x03\xe0A\x02R\x1eglobalSetPolicyRequestResource\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\"\xff\x01\n" +
-	"\x1bSetIamPolicyInstanceRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\x12~\n" +
-	" zone_set_policy_request_resource\x18\xbb\xb8\x98\xb6\x01 \x01(\v2-.google.cloud.compute.v1.ZoneSetPolicyRequestB\x03\xe0A\x02R\x1czoneSetPolicyRequestResource\"\xf2\x01\n" +
-	"#SetIamPolicyInstanceTemplateRequest\x12\x84\x01\n" +
-	"\"global_set_policy_request_resource\x18\xb2\xe7۠\x01 \x01(\v2/.google.cloud.compute.v1.GlobalSetPolicyRequestB\x03\xe0A\x02R\x1eglobalSetPolicyRequestResource\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\"\x8b\x02\n" +
-	"'SetIamPolicyInstantSnapshotGroupRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\x12~\n" +
-	" zone_set_policy_request_resource\x18\xbb\xb8\x98\xb6\x01 \x01(\v2-.google.cloud.compute.v1.ZoneSetPolicyRequestB\x03\xe0A\x02R\x1czoneSetPolicyRequestResource\"\x86\x02\n" +
-	"\"SetIamPolicyInstantSnapshotRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\x12~\n" +
-	" zone_set_policy_request_resource\x18\xbb\xb8\x98\xb6\x01 \x01(\v2-.google.cloud.compute.v1.ZoneSetPolicyRequestB\x03\xe0A\x02R\x1czoneSetPolicyRequestResource\"\xfd\x01\n" +
-	".SetIamPolicyInterconnectAttachmentGroupRequest\x12\x84\x01\n" +
-	"\"global_set_policy_request_resource\x18\xb2\xe7۠\x01 \x01(\v2/.google.cloud.compute.v1.GlobalSetPolicyRequestB\x03\xe0A\x02R\x1eglobalSetPolicyRequestResource\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\"\xf3\x01\n" +
-	"$SetIamPolicyInterconnectGroupRequest\x12\x84\x01\n" +
-	"\"global_set_policy_request_resource\x18\xb2\xe7۠\x01 \x01(\v2/.google.cloud.compute.v1.GlobalSetPolicyRequestB\x03\xe0A\x02R\x1eglobalSetPolicyRequestResource\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\"\xed\x01\n" +
-	"\x1eSetIamPolicyLicenseCodeRequest\x12\x84\x01\n" +
-	"\"global_set_policy_request_resource\x18\xb2\xe7۠\x01 \x01(\v2/.google.cloud.compute.v1.GlobalSetPolicyRequestB\x03\xe0A\x02R\x1eglobalSetPolicyRequestResource\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\"\xe9\x01\n" +
-	"\x1aSetIamPolicyLicenseRequest\x12\x84\x01\n" +
-	"\"global_set_policy_request_resource\x18\xb2\xe7۠\x01 \x01(\v2/.google.cloud.compute.v1.GlobalSetPolicyRequestB\x03\xe0A\x02R\x1eglobalSetPolicyRequestResource\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\"\xee\x01\n" +
-	"\x1fSetIamPolicyMachineImageRequest\x12\x84\x01\n" +
-	"\"global_set_policy_request_resource\x18\xb2\xe7۠\x01 \x01(\v2/.google.cloud.compute.v1.GlobalSetPolicyRequestB\x03\xe0A\x02R\x1eglobalSetPolicyRequestResource\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\"\x93\x02\n" +
-	"$SetIamPolicyNetworkAttachmentRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\x84\x01\n" +
-	"\"region_set_policy_request_resource\x18\x83\xc7\xeb\x83\x01 \x01(\v2/.google.cloud.compute.v1.RegionSetPolicyRequestB\x03\xe0A\x02R\x1eregionSetPolicyRequestResource\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\"\xf7\x01\n" +
-	"(SetIamPolicyNetworkFirewallPolicyRequest\x12\x84\x01\n" +
-	"\"global_set_policy_request_resource\x18\xb2\xe7۠\x01 \x01(\v2/.google.cloud.compute.v1.GlobalSetPolicyRequestB\x03\xe0A\x02R\x1eglobalSetPolicyRequestResource\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\"\x80\x02\n" +
-	"\x1cSetIamPolicyNodeGroupRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\x12~\n" +
-	" zone_set_policy_request_resource\x18\xbb\xb8\x98\xb6\x01 \x01(\v2-.google.cloud.compute.v1.ZoneSetPolicyRequestB\x03\xe0A\x02R\x1czoneSetPolicyRequestResource\"\x8e\x02\n" +
-	"\x1fSetIamPolicyNodeTemplateRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\x84\x01\n" +
-	"\"region_set_policy_request_resource\x18\x83\xc7\xeb\x83\x01 \x01(\v2/.google.cloud.compute.v1.RegionSetPolicyRequestB\x03\xe0A\x02R\x1eregionSetPolicyRequestResource\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\"\x95\x02\n" +
-	"&SetIamPolicyRegionBackendBucketRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\x84\x01\n" +
-	"\"region_set_policy_request_resource\x18\x83\xc7\xeb\x83\x01 \x01(\v2/.google.cloud.compute.v1.RegionSetPolicyRequestB\x03\xe0A\x02R\x1eregionSetPolicyRequestResource\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\"\x96\x02\n" +
-	"'SetIamPolicyRegionBackendServiceRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\x84\x01\n" +
-	"\"region_set_policy_request_resource\x18\x83\xc7\xeb\x83\x01 \x01(\v2/.google.cloud.compute.v1.RegionSetPolicyRequestB\x03\xe0A\x02R\x1eregionSetPolicyRequestResource\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\"\x8c\x02\n" +
-	"\x1dSetIamPolicyRegionDiskRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\x84\x01\n" +
-	"\"region_set_policy_request_resource\x18\x83\xc7\xeb\x83\x01 \x01(\v2/.google.cloud.compute.v1.RegionSetPolicyRequestB\x03\xe0A\x02R\x1eregionSetPolicyRequestResource\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\"\x9c\x02\n" +
-	"-SetIamPolicyRegionInstantSnapshotGroupRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\x84\x01\n" +
-	"\"region_set_policy_request_resource\x18\x83\xc7\xeb\x83\x01 \x01(\v2/.google.cloud.compute.v1.RegionSetPolicyRequestB\x03\xe0A\x02R\x1eregionSetPolicyRequestResource\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\"\x97\x02\n" +
-	"(SetIamPolicyRegionInstantSnapshotRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\x84\x01\n" +
-	"\"region_set_policy_request_resource\x18\x83\xc7\xeb\x83\x01 \x01(\v2/.google.cloud.compute.v1.RegionSetPolicyRequestB\x03\xe0A\x02R\x1eregionSetPolicyRequestResource\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\"\x9d\x02\n" +
-	".SetIamPolicyRegionNetworkFirewallPolicyRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\x84\x01\n" +
-	"\"region_set_policy_request_resource\x18\x83\xc7\xeb\x83\x01 \x01(\v2/.google.cloud.compute.v1.RegionSetPolicyRequestB\x03\xe0A\x02R\x1eregionSetPolicyRequestResource\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\"\x90\x02\n" +
-	"!SetIamPolicyRegionSnapshotRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\x84\x01\n" +
-	"\"region_set_policy_request_resource\x18\x83\xc7\xeb\x83\x01 \x01(\v2/.google.cloud.compute.v1.RegionSetPolicyRequestB\x03\xe0A\x02R\x1eregionSetPolicyRequestResource\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\"\xcb\x02\n" +
-	"#SetIamPolicyReservationBlockRequest\x12/\n" +
-	"\x0fparent_resource\x18\x83\x98\xd0\b \x01(\tB\x03\xe0A\x02R\x0eparentResource\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\x12\x90\x01\n" +
-	"'zone_set_nested_policy_request_resource\x18\xd3\xf1\x80\x7f \x01(\v23.google.cloud.compute.v1.ZoneSetNestedPolicyRequestB\x03\xe0A\x02R\"zoneSetNestedPolicyRequestResource\"\x82\x02\n" +
-	"\x1eSetIamPolicyReservationRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\x12~\n" +
-	" zone_set_policy_request_resource\x18\xbb\xb8\x98\xb6\x01 \x01(\v2-.google.cloud.compute.v1.ZoneSetPolicyRequestB\x03\xe0A\x02R\x1czoneSetPolicyRequestResource\"\xce\x02\n" +
-	"&SetIamPolicyReservationSubBlockRequest\x12/\n" +
-	"\x0fparent_resource\x18\x83\x98\xd0\b \x01(\tB\x03\xe0A\x02R\x0eparentResource\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\x12\x90\x01\n" +
-	"'zone_set_nested_policy_request_resource\x18\xd3\xf1\x80\x7f \x01(\v23.google.cloud.compute.v1.ZoneSetNestedPolicyRequestB\x03\xe0A\x02R\"zoneSetNestedPolicyRequestResource\"\x90\x02\n" +
-	"!SetIamPolicyResourcePolicyRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\x84\x01\n" +
-	"\"region_set_policy_request_resource\x18\x83\xc7\xeb\x83\x01 \x01(\v2/.google.cloud.compute.v1.RegionSetPolicyRequestB\x03\xe0A\x02R\x1eregionSetPolicyRequestResource\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\"\x93\x02\n" +
-	"$SetIamPolicyServiceAttachmentRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\x84\x01\n" +
-	"\"region_set_policy_request_resource\x18\x83\xc7\xeb\x83\x01 \x01(\v2/.google.cloud.compute.v1.RegionSetPolicyRequestB\x03\xe0A\x02R\x1eregionSetPolicyRequestResource\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\"\xea\x01\n" +
-	"\x1bSetIamPolicySnapshotRequest\x12\x84\x01\n" +
-	"\"global_set_policy_request_resource\x18\xb2\xe7۠\x01 \x01(\v2/.google.cloud.compute.v1.GlobalSetPolicyRequestB\x03\xe0A\x02R\x1eglobalSetPolicyRequestResource\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\"\x82\x02\n" +
-	"\x1eSetIamPolicyStoragePoolRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\x12~\n" +
-	" zone_set_policy_request_resource\x18\xbb\xb8\x98\xb6\x01 \x01(\v2-.google.cloud.compute.v1.ZoneSetPolicyRequestB\x03\xe0A\x02R\x1czoneSetPolicyRequestResource\"\x8c\x02\n" +
-	"\x1dSetIamPolicySubnetworkRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\x84\x01\n" +
-	"\"region_set_policy_request_resource\x18\x83\xc7\xeb\x83\x01 \x01(\v2/.google.cloud.compute.v1.RegionSetPolicyRequestB\x03\xe0A\x02R\x1eregionSetPolicyRequestResource\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\"\xc7\x03\n" +
-	".SetInstanceTemplateInstanceGroupManagerRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12\xd1\x01\n" +
-	">instance_group_managers_set_instance_template_request_resource\x18\xc5\xd9\xd6\x04 \x01(\v2H.google.cloud.compute.v1.InstanceGroupManagersSetInstanceTemplateRequestB\x03\xe0A\x02R7instanceGroupManagersSetInstanceTemplateRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xcd\x03\n" +
-	"4SetInstanceTemplateRegionInstanceGroupManagerRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12\xcb\x01\n" +
-	"<region_instance_group_managers_set_template_request_resource\x18\xcc¨Y \x01(\v2F.google.cloud.compute.v1.RegionInstanceGroupManagersSetTemplateRequestB\x03\xe0A\x02R5regionInstanceGroupManagersSetTemplateRequestResource\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xce\x02\n" +
-	"\x17SetLabelsAddressRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12\x83\x01\n" +
-	"\"region_set_labels_request_resource\x18\xd6\xf8\xd5{ \x01(\v2/.google.cloud.compute.v1.RegionSetLabelsRequestB\x03\xe0A\x02R\x1eregionSetLabelsRequestResource\x12%\n" +
+	"\v_request_id\"\xa3\x02\n" +
+	" SetDiskAutoDeleteInstanceRequest\x12)\n" +
+	"\vauto_delete\x18\xbb\xe4\xce\xdd\x01 \x01(\bB\x04\xe2A\x01\x02R\n" +
+	"autoDelete\x12(\n" +
+	"\vdevice_name\x18Ե\x9a  \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"deviceName\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresourceB\r\n" +
-	"\v_request_id\"\xbf\x02\n" +
-	"\x14SetLabelsDiskRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xc7\x02\n" +
+	")SetEdgeSecurityPolicyBackendBucketRequest\x12.\n" +
+	"\x0ebackend_bucket\x18\xf5\xe3\xdd+ \x01(\tB\x04\xe2A\x01\x02R\rbackendBucket\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zone\x12~\n" +
-	" zone_set_labels_request_resource\x18\x8eꂮ\x01 \x01(\v2-.google.cloud.compute.v1.ZoneSetLabelsRequestB\x03\xe0A\x02R\x1czoneSetLabelsRequestResourceB\r\n" +
-	"\v_request_id\"\xfb\x01\n" +
-	"\"SetLabelsExternalVpnGatewayRequest\x12\x84\x01\n" +
-	"\"global_set_labels_request_resource\x18\x85\x99Ƙ\x01 \x01(\v2/.google.cloud.compute.v1.GlobalSetLabelsRequestB\x03\xe0A\x02R\x1eglobalSetLabelsRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\"\xd5\x02\n" +
-	"\x1eSetLabelsForwardingRuleRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12\x83\x01\n" +
-	"\"region_set_labels_request_resource\x18\xd6\xf8\xd5{ \x01(\v2/.google.cloud.compute.v1.RegionSetLabelsRequestB\x03\xe0A\x02R\x1eregionSetLabelsRequestResource\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresourceB\r\n" +
-	"\v_request_id\"\xf6\x01\n" +
-	"\x1dSetLabelsGlobalAddressRequest\x12\x84\x01\n" +
-	"\"global_set_labels_request_resource\x18\x85\x99Ƙ\x01 \x01(\v2/.google.cloud.compute.v1.GlobalSetLabelsRequestB\x03\xe0A\x02R\x1eglobalSetLabelsRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\"\xfd\x01\n" +
-	"$SetLabelsGlobalForwardingRuleRequest\x12\x84\x01\n" +
-	"\"global_set_labels_request_resource\x18\x85\x99Ƙ\x01 \x01(\v2/.google.cloud.compute.v1.GlobalSetLabelsRequestB\x03\xe0A\x02R\x1eglobalSetLabelsRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\"\xee\x01\n" +
-	"\x15SetLabelsImageRequest\x12\x84\x01\n" +
-	"\"global_set_labels_request_resource\x18\x85\x99Ƙ\x01 \x01(\v2/.google.cloud.compute.v1.GlobalSetLabelsRequestB\x03\xe0A\x02R\x1eglobalSetLabelsRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\"\xd2\x02\n" +
-	"\x18SetLabelsInstanceRequest\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x12\x8c\x01\n" +
-	"%instances_set_labels_request_resource\x18\xe0\x81\x88c \x01(\v22.google.cloud.compute.v1.InstancesSetLabelsRequestB\x03\xe0A\x02R!instancesSetLabelsRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xca\x02\n" +
-	"\x1fSetLabelsInstantSnapshotRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zone\x12~\n" +
-	" zone_set_labels_request_resource\x18\x8eꂮ\x01 \x01(\v2-.google.cloud.compute.v1.ZoneSetLabelsRequestB\x03\xe0A\x02R\x1czoneSetLabelsRequestResourceB\r\n" +
-	"\v_request_id\"\xdd\x02\n" +
-	"&SetLabelsInterconnectAttachmentRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12\x83\x01\n" +
-	"\"region_set_labels_request_resource\x18\xd6\xf8\xd5{ \x01(\v2/.google.cloud.compute.v1.RegionSetLabelsRequestB\x03\xe0A\x02R\x1eregionSetLabelsRequestResource\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresourceB\r\n" +
-	"\v_request_id\"\xf5\x01\n" +
-	"\x1cSetLabelsInterconnectRequest\x12\x84\x01\n" +
-	"\"global_set_labels_request_resource\x18\x85\x99Ƙ\x01 \x01(\v2/.google.cloud.compute.v1.GlobalSetLabelsRequestB\x03\xe0A\x02R\x1eglobalSetLabelsRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\"\xf5\x01\n" +
-	"\x1cSetLabelsMachineImageRequest\x12\x84\x01\n" +
-	"\"global_set_labels_request_resource\x18\x85\x99Ƙ\x01 \x01(\v2/.google.cloud.compute.v1.GlobalSetLabelsRequestB\x03\xe0A\x02R\x1eglobalSetLabelsRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\"\xd1\x02\n" +
-	"\x1aSetLabelsRegionDiskRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12\x83\x01\n" +
-	"\"region_set_labels_request_resource\x18\xd6\xf8\xd5{ \x01(\v2/.google.cloud.compute.v1.RegionSetLabelsRequestB\x03\xe0A\x02R\x1eregionSetLabelsRequestResource\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresourceB\r\n" +
-	"\v_request_id\"\xdc\x02\n" +
-	"%SetLabelsRegionInstantSnapshotRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12\x83\x01\n" +
-	"\"region_set_labels_request_resource\x18\xd6\xf8\xd5{ \x01(\v2/.google.cloud.compute.v1.RegionSetLabelsRequestB\x03\xe0A\x02R\x1eregionSetLabelsRequestResource\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresourceB\r\n" +
-	"\v_request_id\"\xdb\x02\n" +
-	"$SetLabelsRegionSecurityPolicyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12\x83\x01\n" +
-	"\"region_set_labels_request_resource\x18\xd6\xf8\xd5{ \x01(\v2/.google.cloud.compute.v1.RegionSetLabelsRequestB\x03\xe0A\x02R\x1eregionSetLabelsRequestResource\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresourceB\r\n" +
-	"\v_request_id\"\xd5\x02\n" +
-	"\x1eSetLabelsRegionSnapshotRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12\x83\x01\n" +
-	"\"region_set_labels_request_resource\x18\xd6\xf8\xd5{ \x01(\v2/.google.cloud.compute.v1.RegionSetLabelsRequestB\x03\xe0A\x02R\x1eregionSetLabelsRequestResource\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresourceB\r\n" +
-	"\v_request_id\"\xf7\x01\n" +
-	"\x1eSetLabelsSecurityPolicyRequest\x12\x84\x01\n" +
-	"\"global_set_labels_request_resource\x18\x85\x99Ƙ\x01 \x01(\v2/.google.cloud.compute.v1.GlobalSetLabelsRequestB\x03\xe0A\x02R\x1eglobalSetLabelsRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\"\xf1\x01\n" +
-	"\x18SetLabelsSnapshotRequest\x12\x84\x01\n" +
-	"\"global_set_labels_request_resource\x18\x85\x99Ƙ\x01 \x01(\v2/.google.cloud.compute.v1.GlobalSetLabelsRequestB\x03\xe0A\x02R\x1eglobalSetLabelsRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\"\xd7\x02\n" +
-	" SetLabelsTargetVpnGatewayRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12\x83\x01\n" +
-	"\"region_set_labels_request_resource\x18\xd6\xf8\xd5{ \x01(\v2/.google.cloud.compute.v1.RegionSetLabelsRequestB\x03\xe0A\x02R\x1eregionSetLabelsRequestResource\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresourceB\r\n" +
-	"\v_request_id\"\xd1\x02\n" +
-	"\x1aSetLabelsVpnGatewayRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12\x83\x01\n" +
-	"\"region_set_labels_request_resource\x18\xd6\xf8\xd5{ \x01(\v2/.google.cloud.compute.v1.RegionSetLabelsRequestB\x03\xe0A\x02R\x1eregionSetLabelsRequestResource\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresourceB\r\n" +
-	"\v_request_id\"\xd0\x02\n" +
-	"\x19SetLabelsVpnTunnelRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12\x83\x01\n" +
-	"\"region_set_labels_request_resource\x18\xd6\xf8\xd5{ \x01(\v2/.google.cloud.compute.v1.RegionSetLabelsRequestB\x03\xe0A\x02R\x1eregionSetLabelsRequestResource\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresourceB\r\n" +
-	"\v_request_id\"\xfb\x02\n" +
-	"\"SetMachineResourcesInstanceRequest\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x12\xab\x01\n" +
-	"0instances_set_machine_resources_request_resource\x18\xee\xae\xcc] \x01(\v2<.google.cloud.compute.v1.InstancesSetMachineResourcesRequestB\x03\xe0A\x02R+instancesSetMachineResourcesRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xe7\x02\n" +
-	"\x1dSetMachineTypeInstanceRequest\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x12\x9c\x01\n" +
-	"+instances_set_machine_type_request_resource\x18\x8dǘy \x01(\v27.google.cloud.compute.v1.InstancesSetMachineTypeRequestB\x03\xe0A\x02R&instancesSetMachineTypeRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\x9e\x02\n" +
-	"\x1aSetMetadataInstanceRequest\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x12W\n" +
-	"\x11metadata_resource\x18\x9e\xbe\xe6\x8a\x01 \x01(\v2!.google.cloud.compute.v1.MetadataB\x03\xe0A\x02R\x10metadataResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xf4\x02\n" +
-	" SetMinCpuPlatformInstanceRequest\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x12\xa6\x01\n" +
-	"/instances_set_min_cpu_platform_request_resource\x18\xe8\x9e\xe5F \x01(\v2:.google.cloud.compute.v1.InstancesSetMinCpuPlatformRequestB\x03\xe0A\x02R)instancesSetMinCpuPlatformRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\x86\x01\n" +
+	"\"security_policy_reference_resource\x18\xf0\xb4\xaba \x01(\v20.google.cloud.compute.v1.SecurityPolicyReferenceB\x04\xe2A\x01\x02R\x1fsecurityPolicyReferenceResourceB\r\n" +
 	"\v_request_id\"\xcb\x02\n" +
-	"\x16SetNameInstanceRequest\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x12\x87\x01\n" +
-	"#instances_set_name_request_resource\x18\xd4\xc0ށ\x01 \x01(\v20.google.cloud.compute.v1.InstancesSetNameRequestB\x03\xe0A\x02R\x1finstancesSetNameRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"*SetEdgeSecurityPolicyBackendServiceRequest\x121\n" +
+	"\x0fbackend_service\x18\x8a\xc0\xae\x92\x01 \x01(\tB\x04\xe2A\x01\x02R\x0ebackendService\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xc0\x02\n" +
-	"\x1aSetNameInterconnectRequest\x12*\n" +
-	"\finterconnect\x18\x8eɌk \x01(\tB\x03\xe0A\x02R\finterconnect\x12\x93\x01\n" +
-	"'interconnects_set_name_request_resource\x18\xbb\xb9\xe7\x96\x01 \x01(\v24.google.cloud.compute.v1.InterconnectsSetNameRequestB\x03\xe0A\x02R#interconnectsSetNameRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\x86\x01\n" +
+	"\"security_policy_reference_resource\x18\xf0\xb4\xaba \x01(\v20.google.cloud.compute.v1.SecurityPolicyReferenceB\x04\xe2A\x01\x02R\x1fsecurityPolicyReferenceResourceB\r\n" +
+	"\v_request_id\"\xf2\x01\n" +
+	" SetIamPolicyBackendBucketRequest\x12\x85\x01\n" +
+	"\"global_set_policy_request_resource\x18\xb2\xe7۠\x01 \x01(\v2/.google.cloud.compute.v1.GlobalSetPolicyRequestB\x04\xe2A\x01\x02R\x1eglobalSetPolicyRequestResource\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\"\xf3\x01\n" +
+	"!SetIamPolicyBackendServiceRequest\x12\x85\x01\n" +
+	"\"global_set_policy_request_resource\x18\xb2\xe7۠\x01 \x01(\v2/.google.cloud.compute.v1.GlobalSetPolicyRequestB\x04\xe2A\x01\x02R\x1eglobalSetPolicyRequestResource\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\"\xff\x01\n" +
+	"\x17SetIamPolicyDiskRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\x12\x7f\n" +
+	" zone_set_policy_request_resource\x18\xbb\xb8\x98\xb6\x01 \x01(\v2-.google.cloud.compute.v1.ZoneSetPolicyRequestB\x04\xe2A\x01\x02R\x1czoneSetPolicyRequestResource\"\xf4\x01\n" +
+	"!SetIamPolicyFirewallPolicyRequest\x12\xa9\x01\n" +
+	"/global_organization_set_policy_request_resource\x18ޔ\xccT \x01(\v2;.google.cloud.compute.v1.GlobalOrganizationSetPolicyRequestB\x04\xe2A\x01\x02R*globalOrganizationSetPolicyRequestResource\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\"\xea\x01\n" +
+	"\x18SetIamPolicyImageRequest\x12\x85\x01\n" +
+	"\"global_set_policy_request_resource\x18\xb2\xe7۠\x01 \x01(\v2/.google.cloud.compute.v1.GlobalSetPolicyRequestB\x04\xe2A\x01\x02R\x1eglobalSetPolicyRequestResource\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\"\x83\x02\n" +
+	"\x1bSetIamPolicyInstanceRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\x12\x7f\n" +
+	" zone_set_policy_request_resource\x18\xbb\xb8\x98\xb6\x01 \x01(\v2-.google.cloud.compute.v1.ZoneSetPolicyRequestB\x04\xe2A\x01\x02R\x1czoneSetPolicyRequestResource\"\xf5\x01\n" +
+	"#SetIamPolicyInstanceTemplateRequest\x12\x85\x01\n" +
+	"\"global_set_policy_request_resource\x18\xb2\xe7۠\x01 \x01(\v2/.google.cloud.compute.v1.GlobalSetPolicyRequestB\x04\xe2A\x01\x02R\x1eglobalSetPolicyRequestResource\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\"\x8f\x02\n" +
+	"'SetIamPolicyInstantSnapshotGroupRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\x12\x7f\n" +
+	" zone_set_policy_request_resource\x18\xbb\xb8\x98\xb6\x01 \x01(\v2-.google.cloud.compute.v1.ZoneSetPolicyRequestB\x04\xe2A\x01\x02R\x1czoneSetPolicyRequestResource\"\x8a\x02\n" +
+	"\"SetIamPolicyInstantSnapshotRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\x12\x7f\n" +
+	" zone_set_policy_request_resource\x18\xbb\xb8\x98\xb6\x01 \x01(\v2-.google.cloud.compute.v1.ZoneSetPolicyRequestB\x04\xe2A\x01\x02R\x1czoneSetPolicyRequestResource\"\x80\x02\n" +
+	".SetIamPolicyInterconnectAttachmentGroupRequest\x12\x85\x01\n" +
+	"\"global_set_policy_request_resource\x18\xb2\xe7۠\x01 \x01(\v2/.google.cloud.compute.v1.GlobalSetPolicyRequestB\x04\xe2A\x01\x02R\x1eglobalSetPolicyRequestResource\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\"\xf6\x01\n" +
+	"$SetIamPolicyInterconnectGroupRequest\x12\x85\x01\n" +
+	"\"global_set_policy_request_resource\x18\xb2\xe7۠\x01 \x01(\v2/.google.cloud.compute.v1.GlobalSetPolicyRequestB\x04\xe2A\x01\x02R\x1eglobalSetPolicyRequestResource\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\"\xf0\x01\n" +
+	"\x1eSetIamPolicyLicenseCodeRequest\x12\x85\x01\n" +
+	"\"global_set_policy_request_resource\x18\xb2\xe7۠\x01 \x01(\v2/.google.cloud.compute.v1.GlobalSetPolicyRequestB\x04\xe2A\x01\x02R\x1eglobalSetPolicyRequestResource\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\"\xec\x01\n" +
+	"\x1aSetIamPolicyLicenseRequest\x12\x85\x01\n" +
+	"\"global_set_policy_request_resource\x18\xb2\xe7۠\x01 \x01(\v2/.google.cloud.compute.v1.GlobalSetPolicyRequestB\x04\xe2A\x01\x02R\x1eglobalSetPolicyRequestResource\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\"\xf1\x01\n" +
+	"\x1fSetIamPolicyMachineImageRequest\x12\x85\x01\n" +
+	"\"global_set_policy_request_resource\x18\xb2\xe7۠\x01 \x01(\v2/.google.cloud.compute.v1.GlobalSetPolicyRequestB\x04\xe2A\x01\x02R\x1eglobalSetPolicyRequestResource\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\"\x97\x02\n" +
+	"$SetIamPolicyNetworkAttachmentRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12\x85\x01\n" +
+	"\"region_set_policy_request_resource\x18\x83\xc7\xeb\x83\x01 \x01(\v2/.google.cloud.compute.v1.RegionSetPolicyRequestB\x04\xe2A\x01\x02R\x1eregionSetPolicyRequestResource\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\"\xfa\x01\n" +
+	"(SetIamPolicyNetworkFirewallPolicyRequest\x12\x85\x01\n" +
+	"\"global_set_policy_request_resource\x18\xb2\xe7۠\x01 \x01(\v2/.google.cloud.compute.v1.GlobalSetPolicyRequestB\x04\xe2A\x01\x02R\x1eglobalSetPolicyRequestResource\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\"\x84\x02\n" +
+	"\x1cSetIamPolicyNodeGroupRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\x12\x7f\n" +
+	" zone_set_policy_request_resource\x18\xbb\xb8\x98\xb6\x01 \x01(\v2-.google.cloud.compute.v1.ZoneSetPolicyRequestB\x04\xe2A\x01\x02R\x1czoneSetPolicyRequestResource\"\x92\x02\n" +
+	"\x1fSetIamPolicyNodeTemplateRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12\x85\x01\n" +
+	"\"region_set_policy_request_resource\x18\x83\xc7\xeb\x83\x01 \x01(\v2/.google.cloud.compute.v1.RegionSetPolicyRequestB\x04\xe2A\x01\x02R\x1eregionSetPolicyRequestResource\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\"\x99\x02\n" +
+	"&SetIamPolicyRegionBackendBucketRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12\x85\x01\n" +
+	"\"region_set_policy_request_resource\x18\x83\xc7\xeb\x83\x01 \x01(\v2/.google.cloud.compute.v1.RegionSetPolicyRequestB\x04\xe2A\x01\x02R\x1eregionSetPolicyRequestResource\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\"\x9a\x02\n" +
+	"'SetIamPolicyRegionBackendServiceRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12\x85\x01\n" +
+	"\"region_set_policy_request_resource\x18\x83\xc7\xeb\x83\x01 \x01(\v2/.google.cloud.compute.v1.RegionSetPolicyRequestB\x04\xe2A\x01\x02R\x1eregionSetPolicyRequestResource\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\"\x90\x02\n" +
+	"\x1dSetIamPolicyRegionDiskRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12\x85\x01\n" +
+	"\"region_set_policy_request_resource\x18\x83\xc7\xeb\x83\x01 \x01(\v2/.google.cloud.compute.v1.RegionSetPolicyRequestB\x04\xe2A\x01\x02R\x1eregionSetPolicyRequestResource\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\"\xa0\x02\n" +
+	"-SetIamPolicyRegionInstantSnapshotGroupRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12\x85\x01\n" +
+	"\"region_set_policy_request_resource\x18\x83\xc7\xeb\x83\x01 \x01(\v2/.google.cloud.compute.v1.RegionSetPolicyRequestB\x04\xe2A\x01\x02R\x1eregionSetPolicyRequestResource\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\"\x9b\x02\n" +
+	"(SetIamPolicyRegionInstantSnapshotRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12\x85\x01\n" +
+	"\"region_set_policy_request_resource\x18\x83\xc7\xeb\x83\x01 \x01(\v2/.google.cloud.compute.v1.RegionSetPolicyRequestB\x04\xe2A\x01\x02R\x1eregionSetPolicyRequestResource\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\"\xa1\x02\n" +
+	".SetIamPolicyRegionNetworkFirewallPolicyRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12\x85\x01\n" +
+	"\"region_set_policy_request_resource\x18\x83\xc7\xeb\x83\x01 \x01(\v2/.google.cloud.compute.v1.RegionSetPolicyRequestB\x04\xe2A\x01\x02R\x1eregionSetPolicyRequestResource\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\"\x94\x02\n" +
+	"!SetIamPolicyRegionSnapshotRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12\x85\x01\n" +
+	"\"region_set_policy_request_resource\x18\x83\xc7\xeb\x83\x01 \x01(\v2/.google.cloud.compute.v1.RegionSetPolicyRequestB\x04\xe2A\x01\x02R\x1eregionSetPolicyRequestResource\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\"\xd0\x02\n" +
+	"#SetIamPolicyReservationBlockRequest\x120\n" +
+	"\x0fparent_resource\x18\x83\x98\xd0\b \x01(\tB\x04\xe2A\x01\x02R\x0eparentResource\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\x12\x91\x01\n" +
+	"'zone_set_nested_policy_request_resource\x18\xd3\xf1\x80\x7f \x01(\v23.google.cloud.compute.v1.ZoneSetNestedPolicyRequestB\x04\xe2A\x01\x02R\"zoneSetNestedPolicyRequestResource\"\x86\x02\n" +
+	"\x1eSetIamPolicyReservationRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\x12\x7f\n" +
+	" zone_set_policy_request_resource\x18\xbb\xb8\x98\xb6\x01 \x01(\v2-.google.cloud.compute.v1.ZoneSetPolicyRequestB\x04\xe2A\x01\x02R\x1czoneSetPolicyRequestResource\"\xd3\x02\n" +
+	"&SetIamPolicyReservationSubBlockRequest\x120\n" +
+	"\x0fparent_resource\x18\x83\x98\xd0\b \x01(\tB\x04\xe2A\x01\x02R\x0eparentResource\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\x12\x91\x01\n" +
+	"'zone_set_nested_policy_request_resource\x18\xd3\xf1\x80\x7f \x01(\v23.google.cloud.compute.v1.ZoneSetNestedPolicyRequestB\x04\xe2A\x01\x02R\"zoneSetNestedPolicyRequestResource\"\x94\x02\n" +
+	"!SetIamPolicyResourcePolicyRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12\x85\x01\n" +
+	"\"region_set_policy_request_resource\x18\x83\xc7\xeb\x83\x01 \x01(\v2/.google.cloud.compute.v1.RegionSetPolicyRequestB\x04\xe2A\x01\x02R\x1eregionSetPolicyRequestResource\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\"\x97\x02\n" +
+	"$SetIamPolicyServiceAttachmentRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12\x85\x01\n" +
+	"\"region_set_policy_request_resource\x18\x83\xc7\xeb\x83\x01 \x01(\v2/.google.cloud.compute.v1.RegionSetPolicyRequestB\x04\xe2A\x01\x02R\x1eregionSetPolicyRequestResource\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\"\xed\x01\n" +
+	"\x1bSetIamPolicySnapshotRequest\x12\x85\x01\n" +
+	"\"global_set_policy_request_resource\x18\xb2\xe7۠\x01 \x01(\v2/.google.cloud.compute.v1.GlobalSetPolicyRequestB\x04\xe2A\x01\x02R\x1eglobalSetPolicyRequestResource\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\"\x86\x02\n" +
+	"\x1eSetIamPolicyStoragePoolRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\x12\x7f\n" +
+	" zone_set_policy_request_resource\x18\xbb\xb8\x98\xb6\x01 \x01(\v2-.google.cloud.compute.v1.ZoneSetPolicyRequestB\x04\xe2A\x01\x02R\x1czoneSetPolicyRequestResource\"\x90\x02\n" +
+	"\x1dSetIamPolicySubnetworkRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12\x85\x01\n" +
+	"\"region_set_policy_request_resource\x18\x83\xc7\xeb\x83\x01 \x01(\v2/.google.cloud.compute.v1.RegionSetPolicyRequestB\x04\xe2A\x01\x02R\x1eregionSetPolicyRequestResource\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\"\xcb\x03\n" +
+	".SetInstanceTemplateInstanceGroupManagerRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12\xd2\x01\n" +
+	">instance_group_managers_set_instance_template_request_resource\x18\xc5\xd9\xd6\x04 \x01(\v2H.google.cloud.compute.v1.InstanceGroupManagersSetInstanceTemplateRequestB\x04\xe2A\x01\x02R7instanceGroupManagersSetInstanceTemplateRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xd1\x03\n" +
+	"4SetInstanceTemplateRegionInstanceGroupManagerRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12\xcc\x01\n" +
+	"<region_instance_group_managers_set_template_request_resource\x18\xcc¨Y \x01(\v2F.google.cloud.compute.v1.RegionInstanceGroupManagersSetTemplateRequestB\x04\xe2A\x01\x02R5regionInstanceGroupManagersSetTemplateRequestResource\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\x84\x03\n" +
-	"!SetNamedPortsInstanceGroupRequest\x12-\n" +
-	"\x0einstance_group\x18\xd5\xd4\xd5& \x01(\tB\x03\xe0A\x02R\rinstanceGroup\x12\xaa\x01\n" +
-	"0instance_groups_set_named_ports_request_resource\x18\xaf\xe4ӷ\x01 \x01(\v2;.google.cloud.compute.v1.InstanceGroupsSetNamedPortsRequestB\x03\xe0A\x02R*instanceGroupsSetNamedPortsRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\xd2\x02\n" +
+	"\x17SetLabelsAddressRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12\x84\x01\n" +
+	"\"region_set_labels_request_resource\x18\xd6\xf8\xd5{ \x01(\v2/.google.cloud.compute.v1.RegionSetLabelsRequestB\x04\xe2A\x01\x02R\x1eregionSetLabelsRequestResource\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xa1\x03\n" +
-	"'SetNamedPortsRegionInstanceGroupRequest\x12-\n" +
-	"\x0einstance_group\x18\xd5\xd4\xd5& \x01(\tB\x03\xe0A\x02R\rinstanceGroup\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12\xbb\x01\n" +
-	"7region_instance_groups_set_named_ports_request_resource\x18\x9a\x90` \x01(\v2A.google.cloud.compute.v1.RegionInstanceGroupsSetNamedPortsRequestB\x03\xe0A\x02R0regionInstanceGroupsSetNamedPortsRequestResource\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresourceB\r\n" +
+	"\v_request_id\"\xc3\x02\n" +
+	"\x14SetLabelsDiskRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xf4\x02\n" +
-	"\x1fSetNodeTemplateNodeGroupRequest\x12&\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zone\x12\x7f\n" +
+	" zone_set_labels_request_resource\x18\x8eꂮ\x01 \x01(\v2-.google.cloud.compute.v1.ZoneSetLabelsRequestB\x04\xe2A\x01\x02R\x1czoneSetLabelsRequestResourceB\r\n" +
+	"\v_request_id\"\xfe\x01\n" +
+	"\"SetLabelsExternalVpnGatewayRequest\x12\x85\x01\n" +
+	"\"global_set_labels_request_resource\x18\x85\x99Ƙ\x01 \x01(\v2/.google.cloud.compute.v1.GlobalSetLabelsRequestB\x04\xe2A\x01\x02R\x1eglobalSetLabelsRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\"\xd9\x02\n" +
+	"\x1eSetLabelsForwardingRuleRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12\x84\x01\n" +
+	"\"region_set_labels_request_resource\x18\xd6\xf8\xd5{ \x01(\v2/.google.cloud.compute.v1.RegionSetLabelsRequestB\x04\xe2A\x01\x02R\x1eregionSetLabelsRequestResource\x12%\n" +
 	"\n" +
-	"node_group\x18\x82\xfc\x8b\xe0\x01 \x01(\tB\x03\xe0A\x02R\tnodeGroup\x12\xa3\x01\n" +
-	".node_groups_set_node_template_request_resource\x18\xb1\xb9\xfc7 \x01(\v29.google.cloud.compute.v1.NodeGroupsSetNodeTemplateRequestB\x03\xe0A\x02R(nodeGroupsSetNodeTemplateRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresourceB\r\n" +
+	"\v_request_id\"\xf9\x01\n" +
+	"\x1dSetLabelsGlobalAddressRequest\x12\x85\x01\n" +
+	"\"global_set_labels_request_resource\x18\x85\x99Ƙ\x01 \x01(\v2/.google.cloud.compute.v1.GlobalSetLabelsRequestB\x04\xe2A\x01\x02R\x1eglobalSetLabelsRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\"\x80\x02\n" +
+	"$SetLabelsGlobalForwardingRuleRequest\x12\x85\x01\n" +
+	"\"global_set_labels_request_resource\x18\x85\x99Ƙ\x01 \x01(\v2/.google.cloud.compute.v1.GlobalSetLabelsRequestB\x04\xe2A\x01\x02R\x1eglobalSetLabelsRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\"\xf1\x01\n" +
+	"\x15SetLabelsImageRequest\x12\x85\x01\n" +
+	"\"global_set_labels_request_resource\x18\x85\x99Ƙ\x01 \x01(\v2/.google.cloud.compute.v1.GlobalSetLabelsRequestB\x04\xe2A\x01\x02R\x1eglobalSetLabelsRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\"\xd6\x02\n" +
+	"\x18SetLabelsInstanceRequest\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x12\x8d\x01\n" +
+	"%instances_set_labels_request_resource\x18\xe0\x81\x88c \x01(\v22.google.cloud.compute.v1.InstancesSetLabelsRequestB\x04\xe2A\x01\x02R!instancesSetLabelsRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xa5\x03\n" +
-	")SetPrivateIpGoogleAccessSubnetworkRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xce\x02\n" +
+	"\x1fSetLabelsInstantSnapshotRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12'\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zone\x12\x7f\n" +
+	" zone_set_labels_request_resource\x18\x8eꂮ\x01 \x01(\v2-.google.cloud.compute.v1.ZoneSetLabelsRequestB\x04\xe2A\x01\x02R\x1czoneSetLabelsRequestResourceB\r\n" +
+	"\v_request_id\"\xe1\x02\n" +
+	"&SetLabelsInterconnectAttachmentRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12\x84\x01\n" +
+	"\"region_set_labels_request_resource\x18\xd6\xf8\xd5{ \x01(\v2/.google.cloud.compute.v1.RegionSetLabelsRequestB\x04\xe2A\x01\x02R\x1eregionSetLabelsRequestResource\x12%\n" +
 	"\n" +
-	"subnetwork\x18\xee\xa7\xe4\x92\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"subnetwork\x12\xc3\x01\n" +
-	"9subnetworks_set_private_ip_google_access_request_resource\x18\xf8Ν\x80\x01 \x01(\v2C.google.cloud.compute.v1.SubnetworksSetPrivateIpGoogleAccessRequestB\x03\xe0A\x02R2subnetworksSetPrivateIpGoogleAccessRequestResourceB\r\n" +
-	"\v_request_id\"\xf0\x02\n" +
-	"#SetProxyHeaderTargetSslProxyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresourceB\r\n" +
+	"\v_request_id\"\xf8\x01\n" +
+	"\x1cSetLabelsInterconnectRequest\x12\x85\x01\n" +
+	"\"global_set_labels_request_resource\x18\x85\x99Ƙ\x01 \x01(\v2/.google.cloud.compute.v1.GlobalSetLabelsRequestB\x04\xe2A\x01\x02R\x1eglobalSetLabelsRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\"\xf8\x01\n" +
+	"\x1cSetLabelsMachineImageRequest\x12\x85\x01\n" +
+	"\"global_set_labels_request_resource\x18\x85\x99Ƙ\x01 \x01(\v2/.google.cloud.compute.v1.GlobalSetLabelsRequestB\x04\xe2A\x01\x02R\x1eglobalSetLabelsRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\"\xd5\x02\n" +
+	"\x1aSetLabelsRegionDiskRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12\x84\x01\n" +
+	"\"region_set_labels_request_resource\x18\xd6\xf8\xd5{ \x01(\v2/.google.cloud.compute.v1.RegionSetLabelsRequestB\x04\xe2A\x01\x02R\x1eregionSetLabelsRequestResource\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\xb3\x01\n" +
-	"4target_ssl_proxies_set_proxy_header_request_resource\x18\xae\xc9\xf1a \x01(\v2>.google.cloud.compute.v1.TargetSslProxiesSetProxyHeaderRequestB\x03\xe0A\x02R-targetSslProxiesSetProxyHeaderRequestResource\x121\n" +
-	"\x10target_ssl_proxy\x18ͺơ\x01 \x01(\tB\x03\xe0A\x02R\x0etargetSslProxyB\r\n" +
-	"\v_request_id\"\xf0\x02\n" +
-	"#SetProxyHeaderTargetTcpProxyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\xb3\x01\n" +
-	"4target_tcp_proxies_set_proxy_header_request_resource\x18Ø\xf1h \x01(\v2>.google.cloud.compute.v1.TargetTcpProxiesSetProxyHeaderRequestB\x03\xe0A\x02R-targetTcpProxiesSetProxyHeaderRequestResource\x121\n" +
-	"\x10target_tcp_proxy\x18\xe2\xd6\xf0\xef\x01 \x01(\tB\x03\xe0A\x02R\x0etargetTcpProxyB\r\n" +
-	"\v_request_id\"\xff\x02\n" +
-	"&SetQuicOverrideTargetHttpsProxyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\xbc\x01\n" +
-	"7target_https_proxies_set_quic_override_request_resource\x18\xe2\xf5\xe3\" \x01(\v2A.google.cloud.compute.v1.TargetHttpsProxiesSetQuicOverrideRequestB\x03\xe0A\x02R0targetHttpsProxiesSetQuicOverrideRequestResource\x124\n" +
-	"\x12target_https_proxy\x18\xec\xb0\xfa\x18 \x01(\tB\x03\xe0A\x02R\x10targetHttpsProxyB\r\n" +
-	"\v_request_id\"\xa6\x02\n" +
-	"\x1cSetSchedulingInstanceRequest\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12]\n" +
-	"\x13scheduling_resource\x18٬\xee\xdc\x01 \x01(\v2#.google.cloud.compute.v1.SchedulingB\x03\xe0A\x02R\x12schedulingResource\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xc4\x02\n" +
-	"&SetSecurityPolicyBackendServiceRequest\x120\n" +
-	"\x0fbackend_service\x18\x8a\xc0\xae\x92\x01 \x01(\tB\x03\xe0A\x02R\x0ebackendService\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\x85\x01\n" +
-	"\"security_policy_reference_resource\x18\xf0\xb4\xaba \x01(\v20.google.cloud.compute.v1.SecurityPolicyReferenceB\x03\xe0A\x02R\x1fsecurityPolicyReferenceResourceB\r\n" +
-	"\v_request_id\"\xf3\x02\n" +
-	" SetSecurityPolicyInstanceRequest\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x12\xa5\x01\n" +
-	".instances_set_security_policy_request_resource\x18\x8aѺv \x01(\v2:.google.cloud.compute.v1.InstancesSetSecurityPolicyRequestB\x03\xe0A\x02R)instancesSetSecurityPolicyRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xf3\x02\n" +
-	",SetSecurityPolicyRegionBackendServiceRequest\x120\n" +
-	"\x0fbackend_service\x18\x8a\xc0\xae\x92\x01 \x01(\tB\x03\xe0A\x02R\x0ebackendService\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\x85\x01\n" +
-	"\"security_policy_reference_resource\x18\xf0\xb4\xaba \x01(\v20.google.cloud.compute.v1.SecurityPolicyReferenceB\x03\xe0A\x02R\x1fsecurityPolicyReferenceResourceB\r\n" +
-	"\v_request_id\"\xe7\x02\n" +
-	"&SetSecurityPolicyTargetInstanceRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\x85\x01\n" +
-	"\"security_policy_reference_resource\x18\xf0\xb4\xaba \x01(\v20.google.cloud.compute.v1.SecurityPolicyReferenceB\x03\xe0A\x02R\x1fsecurityPolicyReferenceResource\x120\n" +
-	"\x0ftarget_instance\x18\x83\x8f\x96\x8a\x01 \x01(\tB\x03\xe0A\x02R\x0etargetInstance\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresourceB\r\n" +
 	"\v_request_id\"\xe0\x02\n" +
-	"\"SetSecurityPolicyTargetPoolRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"%SetLabelsRegionInstantSnapshotRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12\x84\x01\n" +
+	"\"region_set_labels_request_resource\x18\xd6\xf8\xd5{ \x01(\v2/.google.cloud.compute.v1.RegionSetLabelsRequestB\x04\xe2A\x01\x02R\x1eregionSetLabelsRequestResource\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\x85\x01\n" +
-	"\"security_policy_reference_resource\x18\xf0\xb4\xaba \x01(\v20.google.cloud.compute.v1.SecurityPolicyReferenceB\x03\xe0A\x02R\x1fsecurityPolicyReferenceResource\x12'\n" +
-	"\vtarget_pool\x18\x8a\xe4\xf8\x1d \x01(\tB\x03\xe0A\x02R\n" +
-	"targetPoolB\r\n" +
-	"\v_request_id\"\xf4\x02\n" +
-	" SetServiceAccountInstanceRequest\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x12\xa6\x01\n" +
-	".instances_set_service_account_request_resource\x18\xb8\x9e\xb2\x83\x01 \x01(\v2:.google.cloud.compute.v1.InstancesSetServiceAccountRequestB\x03\xe0A\x02R)instancesSetServiceAccountRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresourceB\r\n" +
+	"\v_request_id\"\xdf\x02\n" +
+	"$SetLabelsRegionSecurityPolicyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12\x84\x01\n" +
+	"\"region_set_labels_request_resource\x18\xd6\xf8\xd5{ \x01(\v2/.google.cloud.compute.v1.RegionSetLabelsRequestB\x04\xe2A\x01\x02R\x1eregionSetLabelsRequestResource\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xfe\x02\n" +
-	"1SetShieldedInstanceIntegrityPolicyInstanceRequest\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresourceB\r\n" +
+	"\v_request_id\"\xd9\x02\n" +
+	"\x1eSetLabelsRegionSnapshotRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12\x84\x01\n" +
+	"\"region_set_labels_request_resource\x18\xd6\xf8\xd5{ \x01(\v2/.google.cloud.compute.v1.RegionSetLabelsRequestB\x04\xe2A\x01\x02R\x1eregionSetLabelsRequestResource\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\x9f\x01\n" +
-	"+shielded_instance_integrity_policy_resource\x18\xb6܍\xc3\x01 \x01(\v28.google.cloud.compute.v1.ShieldedInstanceIntegrityPolicyB\x03\xe0A\x02R'shieldedInstanceIntegrityPolicyResource\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xce\x03\n" +
-	"/SetSslCertificatesRegionTargetHttpsProxyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12\xd9\x01\n" +
-	"Aregion_target_https_proxies_set_ssl_certificates_request_resource\x18\x87\x84\xa6\xba\x01 \x01(\v2J.google.cloud.compute.v1.RegionTargetHttpsProxiesSetSslCertificatesRequestB\x03\xe0A\x02R9regionTargetHttpsProxiesSetSslCertificatesRequestResource\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresourceB\r\n" +
+	"\v_request_id\"\xfa\x01\n" +
+	"\x1eSetLabelsSecurityPolicyRequest\x12\x85\x01\n" +
+	"\"global_set_labels_request_resource\x18\x85\x99Ƙ\x01 \x01(\v2/.google.cloud.compute.v1.GlobalSetLabelsRequestB\x04\xe2A\x01\x02R\x1eglobalSetLabelsRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\"\xf4\x01\n" +
+	"\x18SetLabelsSnapshotRequest\x12\x85\x01\n" +
+	"\"global_set_labels_request_resource\x18\x85\x99Ƙ\x01 \x01(\v2/.google.cloud.compute.v1.GlobalSetLabelsRequestB\x04\xe2A\x01\x02R\x1eglobalSetLabelsRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\"\xdb\x02\n" +
+	" SetLabelsTargetVpnGatewayRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12\x84\x01\n" +
+	"\"region_set_labels_request_resource\x18\xd6\xf8\xd5{ \x01(\v2/.google.cloud.compute.v1.RegionSetLabelsRequestB\x04\xe2A\x01\x02R\x1eregionSetLabelsRequestResource\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x124\n" +
-	"\x12target_https_proxy\x18\xec\xb0\xfa\x18 \x01(\tB\x03\xe0A\x02R\x10targetHttpsProxyB\r\n" +
-	"\v_request_id\"\x8b\x03\n" +
-	")SetSslCertificatesTargetHttpsProxyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresourceB\r\n" +
+	"\v_request_id\"\xd5\x02\n" +
+	"\x1aSetLabelsVpnGatewayRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12\x84\x01\n" +
+	"\"region_set_labels_request_resource\x18\xd6\xf8\xd5{ \x01(\v2/.google.cloud.compute.v1.RegionSetLabelsRequestB\x04\xe2A\x01\x02R\x1eregionSetLabelsRequestResource\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\xc5\x01\n" +
-	":target_https_proxies_set_ssl_certificates_request_resource\x18ܫ\xb2j \x01(\v2D.google.cloud.compute.v1.TargetHttpsProxiesSetSslCertificatesRequestB\x03\xe0A\x02R3targetHttpsProxiesSetSslCertificatesRequestResource\x124\n" +
-	"\x12target_https_proxy\x18\xec\xb0\xfa\x18 \x01(\tB\x03\xe0A\x02R\x10targetHttpsProxyB\r\n" +
-	"\v_request_id\"\x80\x03\n" +
-	"'SetSslCertificatesTargetSslProxyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresourceB\r\n" +
+	"\v_request_id\"\xd4\x02\n" +
+	"\x19SetLabelsVpnTunnelRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12\x84\x01\n" +
+	"\"region_set_labels_request_resource\x18\xd6\xf8\xd5{ \x01(\v2/.google.cloud.compute.v1.RegionSetLabelsRequestB\x04\xe2A\x01\x02R\x1eregionSetLabelsRequestResource\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\xbf\x01\n" +
-	"8target_ssl_proxies_set_ssl_certificates_request_resource\x18\xbd\xcb\xc5F \x01(\v2B.google.cloud.compute.v1.TargetSslProxiesSetSslCertificatesRequestB\x03\xe0A\x02R1targetSslProxiesSetSslCertificatesRequestResource\x121\n" +
-	"\x10target_ssl_proxy\x18ͺơ\x01 \x01(\tB\x03\xe0A\x02R\x0etargetSslProxyB\r\n" +
-	"\v_request_id\"\xb5\x02\n" +
-	"#SetSslPolicyTargetHttpsProxyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresourceB\r\n" +
+	"\v_request_id\"\xff\x02\n" +
+	"\"SetMachineResourcesInstanceRequest\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x12\xac\x01\n" +
+	"0instances_set_machine_resources_request_resource\x18\xee\xae\xcc] \x01(\v2<.google.cloud.compute.v1.InstancesSetMachineResourcesRequestB\x04\xe2A\x01\x02R+instancesSetMachineResourcesRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12v\n" +
-	"\x1dssl_policy_reference_resource\x18\xbc\xf4\x9fp \x01(\v2+.google.cloud.compute.v1.SslPolicyReferenceB\x03\xe0A\x02R\x1asslPolicyReferenceResource\x124\n" +
-	"\x12target_https_proxy\x18\xec\xb0\xfa\x18 \x01(\tB\x03\xe0A\x02R\x10targetHttpsProxyB\r\n" +
-	"\v_request_id\"\xb0\x02\n" +
-	"!SetSslPolicyTargetSslProxyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xeb\x02\n" +
+	"\x1dSetMachineTypeInstanceRequest\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x12\x9d\x01\n" +
+	"+instances_set_machine_type_request_resource\x18\x8dǘy \x01(\v27.google.cloud.compute.v1.InstancesSetMachineTypeRequestB\x04\xe2A\x01\x02R&instancesSetMachineTypeRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12v\n" +
-	"\x1dssl_policy_reference_resource\x18\xbc\xf4\x9fp \x01(\v2+.google.cloud.compute.v1.SslPolicyReferenceB\x03\xe0A\x02R\x1asslPolicyReferenceResource\x121\n" +
-	"\x10target_ssl_proxy\x18ͺơ\x01 \x01(\tB\x03\xe0A\x02R\x0etargetSslProxyB\r\n" +
-	"\v_request_id\"\x8e\x02\n" +
-	"\x16SetTagsInstanceRequest\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xa2\x02\n" +
+	"\x1aSetMetadataInstanceRequest\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x12X\n" +
+	"\x11metadata_resource\x18\x9e\xbe\xe6\x8a\x01 \x01(\v2!.google.cloud.compute.v1.MetadataB\x04\xe2A\x01\x02R\x10metadataResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12K\n" +
-	"\rtags_resource\x18\xf4\x9a\x85\x9e\x01 \x01(\v2\x1d.google.cloud.compute.v1.TagsB\x03\xe0A\x02R\ftagsResource\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xcc\x02\n" +
-	"\x1eSetTargetForwardingRuleRequest\x120\n" +
-	"\x0fforwarding_rule\x18\xfe\xa5݀\x01 \x01(\tB\x03\xe0A\x02R\x0eforwardingRule\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xf8\x02\n" +
+	" SetMinCpuPlatformInstanceRequest\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x12\xa7\x01\n" +
+	"/instances_set_min_cpu_platform_request_resource\x18\xe8\x9e\xe5F \x01(\v2:.google.cloud.compute.v1.InstancesSetMinCpuPlatformRequestB\x04\xe2A\x01\x02R)instancesSetMinCpuPlatformRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12m\n" +
-	"\x19target_reference_resource\x18\xf0\xb7\xdd\xf9\x01 \x01(\v2(.google.cloud.compute.v1.TargetReferenceB\x03\xe0A\x02R\x17targetReferenceResourceB\r\n" +
-	"\v_request_id\"\xa9\x02\n" +
-	"$SetTargetGlobalForwardingRuleRequest\x120\n" +
-	"\x0fforwarding_rule\x18\xfe\xa5݀\x01 \x01(\tB\x03\xe0A\x02R\x0eforwardingRule\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xcf\x02\n" +
+	"\x16SetNameInstanceRequest\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x12\x88\x01\n" +
+	"#instances_set_name_request_resource\x18\xd4\xc0ށ\x01 \x01(\v20.google.cloud.compute.v1.InstancesSetNameRequestB\x04\xe2A\x01\x02R\x1finstancesSetNameRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12m\n" +
-	"\x19target_reference_resource\x18\xf0\xb7\xdd\xf9\x01 \x01(\v2(.google.cloud.compute.v1.TargetReferenceB\x03\xe0A\x02R\x17targetReferenceResourceB\r\n" +
-	"\v_request_id\"\xb4\x03\n" +
-	")SetTargetPoolsInstanceGroupManagerRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12\xc3\x01\n" +
-	"9instance_group_managers_set_target_pools_request_resource\x18\x88\x86\x88\x86\x01 \x01(\v2C.google.cloud.compute.v1.InstanceGroupManagersSetTargetPoolsRequestB\x03\xe0A\x02R2instanceGroupManagersSetTargetPoolsRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xd2\x03\n" +
-	"/SetTargetPoolsRegionInstanceGroupManagerRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12\xd5\x01\n" +
-	"@region_instance_group_managers_set_target_pools_request_resource\x18\xfd\xca\xc5% \x01(\v2I.google.cloud.compute.v1.RegionInstanceGroupManagersSetTargetPoolsRequestB\x03\xe0A\x02R8regionInstanceGroupManagersSetTargetPoolsRequestResource\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xc3\x02\n" +
+	"\x1aSetNameInterconnectRequest\x12+\n" +
+	"\finterconnect\x18\x8eɌk \x01(\tB\x04\xe2A\x01\x02R\finterconnect\x12\x94\x01\n" +
+	"'interconnects_set_name_request_resource\x18\xbb\xb9\xe7\x96\x01 \x01(\v24.google.cloud.compute.v1.InterconnectsSetNameRequestB\x04\xe2A\x01\x02R#interconnectsSetNameRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xd6\x02\n" +
-	"%SetUrlMapRegionTargetHttpProxyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\x88\x03\n" +
+	"!SetNamedPortsInstanceGroupRequest\x12.\n" +
+	"\x0einstance_group\x18\xd5\xd4\xd5& \x01(\tB\x04\xe2A\x01\x02R\rinstanceGroup\x12\xab\x01\n" +
+	"0instance_groups_set_named_ports_request_resource\x18\xaf\xe4ӷ\x01 \x01(\v2;.google.cloud.compute.v1.InstanceGroupsSetNamedPortsRequestB\x04\xe2A\x01\x02R*instanceGroupsSetNamedPortsRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x122\n" +
-	"\x11target_http_proxy\x18\xe5\xbe\xd2b \x01(\tB\x03\xe0A\x02R\x0ftargetHttpProxy\x12n\n" +
-	"\x1aurl_map_reference_resource\x18\x95掾\x01 \x01(\v2(.google.cloud.compute.v1.UrlMapReferenceB\x03\xe0A\x02R\x17urlMapReferenceResourceB\r\n" +
-	"\v_request_id\"\xd9\x02\n" +
-	"&SetUrlMapRegionTargetHttpsProxyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xa5\x03\n" +
+	"'SetNamedPortsRegionInstanceGroupRequest\x12.\n" +
+	"\x0einstance_group\x18\xd5\xd4\xd5& \x01(\tB\x04\xe2A\x01\x02R\rinstanceGroup\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12\xbc\x01\n" +
+	"7region_instance_groups_set_named_ports_request_resource\x18\x9a\x90` \x01(\v2A.google.cloud.compute.v1.RegionInstanceGroupsSetNamedPortsRequestB\x04\xe2A\x01\x02R0regionInstanceGroupsSetNamedPortsRequestResource\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x124\n" +
-	"\x12target_https_proxy\x18\xec\xb0\xfa\x18 \x01(\tB\x03\xe0A\x02R\x10targetHttpsProxy\x12n\n" +
-	"\x1aurl_map_reference_resource\x18\x95掾\x01 \x01(\v2(.google.cloud.compute.v1.UrlMapReferenceB\x03\xe0A\x02R\x17urlMapReferenceResourceB\r\n" +
-	"\v_request_id\"\xa7\x02\n" +
-	"\x1fSetUrlMapTargetHttpProxyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xf8\x02\n" +
+	"\x1fSetNodeTemplateNodeGroupRequest\x12'\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x122\n" +
-	"\x11target_http_proxy\x18\xe5\xbe\xd2b \x01(\tB\x03\xe0A\x02R\x0ftargetHttpProxy\x12n\n" +
-	"\x1aurl_map_reference_resource\x18\x95掾\x01 \x01(\v2(.google.cloud.compute.v1.UrlMapReferenceB\x03\xe0A\x02R\x17urlMapReferenceResourceB\r\n" +
+	"node_group\x18\x82\xfc\x8b\xe0\x01 \x01(\tB\x04\xe2A\x01\x02R\tnodeGroup\x12\xa4\x01\n" +
+	".node_groups_set_node_template_request_resource\x18\xb1\xb9\xfc7 \x01(\v29.google.cloud.compute.v1.NodeGroupsSetNodeTemplateRequestB\x04\xe2A\x01\x02R(nodeGroupsSetNodeTemplateRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xa9\x03\n" +
+	")SetPrivateIpGoogleAccessSubnetworkRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12(\n" +
+	"\n" +
+	"subnetwork\x18\xee\xa7\xe4\x92\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"subnetwork\x12\xc4\x01\n" +
+	"9subnetworks_set_private_ip_google_access_request_resource\x18\xf8Ν\x80\x01 \x01(\v2C.google.cloud.compute.v1.SubnetworksSetPrivateIpGoogleAccessRequestB\x04\xe2A\x01\x02R2subnetworksSetPrivateIpGoogleAccessRequestResourceB\r\n" +
+	"\v_request_id\"\xf3\x02\n" +
+	"#SetProxyHeaderTargetSslProxyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\xb4\x01\n" +
+	"4target_ssl_proxies_set_proxy_header_request_resource\x18\xae\xc9\xf1a \x01(\v2>.google.cloud.compute.v1.TargetSslProxiesSetProxyHeaderRequestB\x04\xe2A\x01\x02R-targetSslProxiesSetProxyHeaderRequestResource\x122\n" +
+	"\x10target_ssl_proxy\x18ͺơ\x01 \x01(\tB\x04\xe2A\x01\x02R\x0etargetSslProxyB\r\n" +
+	"\v_request_id\"\xf3\x02\n" +
+	"#SetProxyHeaderTargetTcpProxyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\xb4\x01\n" +
+	"4target_tcp_proxies_set_proxy_header_request_resource\x18Ø\xf1h \x01(\v2>.google.cloud.compute.v1.TargetTcpProxiesSetProxyHeaderRequestB\x04\xe2A\x01\x02R-targetTcpProxiesSetProxyHeaderRequestResource\x122\n" +
+	"\x10target_tcp_proxy\x18\xe2\xd6\xf0\xef\x01 \x01(\tB\x04\xe2A\x01\x02R\x0etargetTcpProxyB\r\n" +
+	"\v_request_id\"\x82\x03\n" +
+	"&SetQuicOverrideTargetHttpsProxyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\xbd\x01\n" +
+	"7target_https_proxies_set_quic_override_request_resource\x18\xe2\xf5\xe3\" \x01(\v2A.google.cloud.compute.v1.TargetHttpsProxiesSetQuicOverrideRequestB\x04\xe2A\x01\x02R0targetHttpsProxiesSetQuicOverrideRequestResource\x125\n" +
+	"\x12target_https_proxy\x18\xec\xb0\xfa\x18 \x01(\tB\x04\xe2A\x01\x02R\x10targetHttpsProxyB\r\n" +
 	"\v_request_id\"\xaa\x02\n" +
-	" SetUrlMapTargetHttpsProxyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\x1cSetSchedulingInstanceRequest\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x124\n" +
-	"\x12target_https_proxy\x18\xec\xb0\xfa\x18 \x01(\tB\x03\xe0A\x02R\x10targetHttpsProxy\x12n\n" +
-	"\x1aurl_map_reference_resource\x18\x95掾\x01 \x01(\v2(.google.cloud.compute.v1.UrlMapReferenceB\x03\xe0A\x02R\x17urlMapReferenceResourceB\r\n" +
-	"\v_request_id\"\x81\x02\n" +
-	"\"SetUsageExportBucketProjectRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12^\n" +
+	"\x13scheduling_resource\x18٬\xee\xdc\x01 \x01(\v2#.google.cloud.compute.v1.SchedulingB\x04\xe2A\x01\x02R\x12schedulingResource\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xc7\x02\n" +
+	"&SetSecurityPolicyBackendServiceRequest\x121\n" +
+	"\x0fbackend_service\x18\x8a\xc0\xae\x92\x01 \x01(\tB\x04\xe2A\x01\x02R\x0ebackendService\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12y\n" +
-	"\x1eusage_export_location_resource\x18\xeb\xcc\xd4\t \x01(\v2,.google.cloud.compute.v1.UsageExportLocationB\x03\xe0A\x02R\x1busageExportLocationResourceB\r\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\x86\x01\n" +
+	"\"security_policy_reference_resource\x18\xf0\xb4\xaba \x01(\v20.google.cloud.compute.v1.SecurityPolicyReferenceB\x04\xe2A\x01\x02R\x1fsecurityPolicyReferenceResourceB\r\n" +
+	"\v_request_id\"\xf7\x02\n" +
+	" SetSecurityPolicyInstanceRequest\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x12\xa6\x01\n" +
+	".instances_set_security_policy_request_resource\x18\x8aѺv \x01(\v2:.google.cloud.compute.v1.InstancesSetSecurityPolicyRequestB\x04\xe2A\x01\x02R)instancesSetSecurityPolicyRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xf7\x02\n" +
+	",SetSecurityPolicyRegionBackendServiceRequest\x121\n" +
+	"\x0fbackend_service\x18\x8a\xc0\xae\x92\x01 \x01(\tB\x04\xe2A\x01\x02R\x0ebackendService\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\x86\x01\n" +
+	"\"security_policy_reference_resource\x18\xf0\xb4\xaba \x01(\v20.google.cloud.compute.v1.SecurityPolicyReferenceB\x04\xe2A\x01\x02R\x1fsecurityPolicyReferenceResourceB\r\n" +
+	"\v_request_id\"\xeb\x02\n" +
+	"&SetSecurityPolicyTargetInstanceRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\x86\x01\n" +
+	"\"security_policy_reference_resource\x18\xf0\xb4\xaba \x01(\v20.google.cloud.compute.v1.SecurityPolicyReferenceB\x04\xe2A\x01\x02R\x1fsecurityPolicyReferenceResource\x121\n" +
+	"\x0ftarget_instance\x18\x83\x8f\x96\x8a\x01 \x01(\tB\x04\xe2A\x01\x02R\x0etargetInstance\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xe4\x02\n" +
+	"\"SetSecurityPolicyTargetPoolRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\x86\x01\n" +
+	"\"security_policy_reference_resource\x18\xf0\xb4\xaba \x01(\v20.google.cloud.compute.v1.SecurityPolicyReferenceB\x04\xe2A\x01\x02R\x1fsecurityPolicyReferenceResource\x12(\n" +
+	"\vtarget_pool\x18\x8a\xe4\xf8\x1d \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"targetPoolB\r\n" +
+	"\v_request_id\"\xf8\x02\n" +
+	" SetServiceAccountInstanceRequest\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x12\xa7\x01\n" +
+	".instances_set_service_account_request_resource\x18\xb8\x9e\xb2\x83\x01 \x01(\v2:.google.cloud.compute.v1.InstancesSetServiceAccountRequestB\x04\xe2A\x01\x02R)instancesSetServiceAccountRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\x82\x03\n" +
+	"1SetShieldedInstanceIntegrityPolicyInstanceRequest\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\xa0\x01\n" +
+	"+shielded_instance_integrity_policy_resource\x18\xb6܍\xc3\x01 \x01(\v28.google.cloud.compute.v1.ShieldedInstanceIntegrityPolicyB\x04\xe2A\x01\x02R'shieldedInstanceIntegrityPolicyResource\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xd2\x03\n" +
+	"/SetSslCertificatesRegionTargetHttpsProxyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12\xda\x01\n" +
+	"Aregion_target_https_proxies_set_ssl_certificates_request_resource\x18\x87\x84\xa6\xba\x01 \x01(\v2J.google.cloud.compute.v1.RegionTargetHttpsProxiesSetSslCertificatesRequestB\x04\xe2A\x01\x02R9regionTargetHttpsProxiesSetSslCertificatesRequestResource\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x125\n" +
+	"\x12target_https_proxy\x18\xec\xb0\xfa\x18 \x01(\tB\x04\xe2A\x01\x02R\x10targetHttpsProxyB\r\n" +
+	"\v_request_id\"\x8e\x03\n" +
+	")SetSslCertificatesTargetHttpsProxyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\xc6\x01\n" +
+	":target_https_proxies_set_ssl_certificates_request_resource\x18ܫ\xb2j \x01(\v2D.google.cloud.compute.v1.TargetHttpsProxiesSetSslCertificatesRequestB\x04\xe2A\x01\x02R3targetHttpsProxiesSetSslCertificatesRequestResource\x125\n" +
+	"\x12target_https_proxy\x18\xec\xb0\xfa\x18 \x01(\tB\x04\xe2A\x01\x02R\x10targetHttpsProxyB\r\n" +
+	"\v_request_id\"\x83\x03\n" +
+	"'SetSslCertificatesTargetSslProxyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\xc0\x01\n" +
+	"8target_ssl_proxies_set_ssl_certificates_request_resource\x18\xbd\xcb\xc5F \x01(\v2B.google.cloud.compute.v1.TargetSslProxiesSetSslCertificatesRequestB\x04\xe2A\x01\x02R1targetSslProxiesSetSslCertificatesRequestResource\x122\n" +
+	"\x10target_ssl_proxy\x18ͺơ\x01 \x01(\tB\x04\xe2A\x01\x02R\x0etargetSslProxyB\r\n" +
+	"\v_request_id\"\xb8\x02\n" +
+	"#SetSslPolicyTargetHttpsProxyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12w\n" +
+	"\x1dssl_policy_reference_resource\x18\xbc\xf4\x9fp \x01(\v2+.google.cloud.compute.v1.SslPolicyReferenceB\x04\xe2A\x01\x02R\x1asslPolicyReferenceResource\x125\n" +
+	"\x12target_https_proxy\x18\xec\xb0\xfa\x18 \x01(\tB\x04\xe2A\x01\x02R\x10targetHttpsProxyB\r\n" +
+	"\v_request_id\"\xb3\x02\n" +
+	"!SetSslPolicyTargetSslProxyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12w\n" +
+	"\x1dssl_policy_reference_resource\x18\xbc\xf4\x9fp \x01(\v2+.google.cloud.compute.v1.SslPolicyReferenceB\x04\xe2A\x01\x02R\x1asslPolicyReferenceResource\x122\n" +
+	"\x10target_ssl_proxy\x18ͺơ\x01 \x01(\tB\x04\xe2A\x01\x02R\x0etargetSslProxyB\r\n" +
+	"\v_request_id\"\x92\x02\n" +
+	"\x16SetTagsInstanceRequest\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12L\n" +
+	"\rtags_resource\x18\xf4\x9a\x85\x9e\x01 \x01(\v2\x1d.google.cloud.compute.v1.TagsB\x04\xe2A\x01\x02R\ftagsResource\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xd0\x02\n" +
+	"\x1eSetTargetForwardingRuleRequest\x121\n" +
+	"\x0fforwarding_rule\x18\xfe\xa5݀\x01 \x01(\tB\x04\xe2A\x01\x02R\x0eforwardingRule\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12n\n" +
+	"\x19target_reference_resource\x18\xf0\xb7\xdd\xf9\x01 \x01(\v2(.google.cloud.compute.v1.TargetReferenceB\x04\xe2A\x01\x02R\x17targetReferenceResourceB\r\n" +
+	"\v_request_id\"\xac\x02\n" +
+	"$SetTargetGlobalForwardingRuleRequest\x121\n" +
+	"\x0fforwarding_rule\x18\xfe\xa5݀\x01 \x01(\tB\x04\xe2A\x01\x02R\x0eforwardingRule\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12n\n" +
+	"\x19target_reference_resource\x18\xf0\xb7\xdd\xf9\x01 \x01(\v2(.google.cloud.compute.v1.TargetReferenceB\x04\xe2A\x01\x02R\x17targetReferenceResourceB\r\n" +
+	"\v_request_id\"\xb8\x03\n" +
+	")SetTargetPoolsInstanceGroupManagerRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12\xc4\x01\n" +
+	"9instance_group_managers_set_target_pools_request_resource\x18\x88\x86\x88\x86\x01 \x01(\v2C.google.cloud.compute.v1.InstanceGroupManagersSetTargetPoolsRequestB\x04\xe2A\x01\x02R2instanceGroupManagersSetTargetPoolsRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xd6\x03\n" +
+	"/SetTargetPoolsRegionInstanceGroupManagerRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12\xd6\x01\n" +
+	"@region_instance_group_managers_set_target_pools_request_resource\x18\xfd\xca\xc5% \x01(\v2I.google.cloud.compute.v1.RegionInstanceGroupManagersSetTargetPoolsRequestB\x04\xe2A\x01\x02R8regionInstanceGroupManagersSetTargetPoolsRequestResource\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xda\x02\n" +
+	"%SetUrlMapRegionTargetHttpProxyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x123\n" +
+	"\x11target_http_proxy\x18\xe5\xbe\xd2b \x01(\tB\x04\xe2A\x01\x02R\x0ftargetHttpProxy\x12o\n" +
+	"\x1aurl_map_reference_resource\x18\x95掾\x01 \x01(\v2(.google.cloud.compute.v1.UrlMapReferenceB\x04\xe2A\x01\x02R\x17urlMapReferenceResourceB\r\n" +
+	"\v_request_id\"\xdd\x02\n" +
+	"&SetUrlMapRegionTargetHttpsProxyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x125\n" +
+	"\x12target_https_proxy\x18\xec\xb0\xfa\x18 \x01(\tB\x04\xe2A\x01\x02R\x10targetHttpsProxy\x12o\n" +
+	"\x1aurl_map_reference_resource\x18\x95掾\x01 \x01(\v2(.google.cloud.compute.v1.UrlMapReferenceB\x04\xe2A\x01\x02R\x17urlMapReferenceResourceB\r\n" +
+	"\v_request_id\"\xaa\x02\n" +
+	"\x1fSetUrlMapTargetHttpProxyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x123\n" +
+	"\x11target_http_proxy\x18\xe5\xbe\xd2b \x01(\tB\x04\xe2A\x01\x02R\x0ftargetHttpProxy\x12o\n" +
+	"\x1aurl_map_reference_resource\x18\x95掾\x01 \x01(\v2(.google.cloud.compute.v1.UrlMapReferenceB\x04\xe2A\x01\x02R\x17urlMapReferenceResourceB\r\n" +
+	"\v_request_id\"\xad\x02\n" +
+	" SetUrlMapTargetHttpsProxyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x125\n" +
+	"\x12target_https_proxy\x18\xec\xb0\xfa\x18 \x01(\tB\x04\xe2A\x01\x02R\x10targetHttpsProxy\x12o\n" +
+	"\x1aurl_map_reference_resource\x18\x95掾\x01 \x01(\v2(.google.cloud.compute.v1.UrlMapReferenceB\x04\xe2A\x01\x02R\x17urlMapReferenceResourceB\r\n" +
+	"\v_request_id\"\x83\x02\n" +
+	"\"SetUsageExportBucketProjectRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12z\n" +
+	"\x1eusage_export_location_resource\x18\xeb\xcc\xd4\t \x01(\v2,.google.cloud.compute.v1.UsageExportLocationB\x04\xe2A\x01\x02R\x1busageExportLocationResourceB\r\n" +
 	"\v_request_id\"\x9d\x03\n" +
 	"\rShareSettings\x12Z\n" +
 	"\vproject_map\x18\xb6\xd6\xff? \x03(\v26.google.cloud.compute.v1.ShareSettings.ProjectMapEntryR\n" +
@@ -249623,26 +249519,24 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\tkey_value\x18\x91\x9f\xb0\xf0\x01 \x01(\tH\x01R\bkeyValue\x88\x01\x01B\v\n" +
 	"\t_key_nameB\f\n" +
 	"\n" +
-	"_key_value\"\xbb\x02\n" +
-	"'SimulateMaintenanceEventInstanceRequest\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"_key_value\"\xbe\x02\n" +
+	"'SimulateMaintenanceEventInstanceRequest\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12G\n" +
-	"\x1bwith_extended_notifications\x18\xfb\xd7\xc9\xc1\x01 \x01(\bH\x01R\x19withExtendedNotifications\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\x1bwith_extended_notifications\x18\xfb\xd7\xc9\xc1\x01 \x01(\bH\x01R\x19withExtendedNotifications\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
 	"\v_request_idB\x1e\n" +
-	"\x1c_with_extended_notifications\"\x99\x03\n" +
-	"(SimulateMaintenanceEventNodeGroupRequest\x12&\n" +
+	"\x1c_with_extended_notifications\"\x9d\x03\n" +
+	"(SimulateMaintenanceEventNodeGroupRequest\x12'\n" +
 	"\n" +
-	"node_group\x18\x82\xfc\x8b\xe0\x01 \x01(\tB\x03\xe0A\x02R\tnodeGroup\x12\xbf\x01\n" +
-	"7node_groups_simulate_maintenance_event_request_resource\x18\xdc\xf9˧\x01 \x01(\v2B.google.cloud.compute.v1.NodeGroupsSimulateMaintenanceEventRequestB\x03\xe0A\x02R1nodeGroupsSimulateMaintenanceEventRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"node_group\x18\x82\xfc\x8b\xe0\x01 \x01(\tB\x04\xe2A\x01\x02R\tnodeGroup\x12\xc0\x01\n" +
+	"7node_groups_simulate_maintenance_event_request_resource\x18\xdc\xf9˧\x01 \x01(\v2B.google.cloud.compute.v1.NodeGroupsSimulateMaintenanceEventRequestB\x04\xe2A\x01\x02R1nodeGroupsSimulateMaintenanceEventRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
 	"\v_request_id\"\xdc\x1b\n" +
 	"\bSnapshot\x12+\n" +
 	"\farchitecture\x18\xd3ұ\x90\x01 \x01(\tH\x00R\farchitecture\x88\x01\x01\x12*\n" +
@@ -250058,57 +249952,53 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\x12SslPolicyReference\x12&\n" +
 	"\n" +
 	"ssl_policy\x18\xc5\xfd\xe0\x8c\x01 \x01(\tH\x00R\tsslPolicy\x88\x01\x01B\r\n" +
-	"\v_ssl_policy\"\xec\x02\n" +
-	" StartAsyncReplicationDiskRequest\x12\x1a\n" +
-	"\x04disk\x18\x9d\x9b\xbc\x01 \x01(\tB\x03\xe0A\x02R\x04disk\x12\xa6\x01\n" +
-	".disks_start_async_replication_request_resource\x18ڞ\xc0\xe0\x01 \x01(\v2:.google.cloud.compute.v1.DisksStartAsyncReplicationRequestB\x03\xe0A\x02R)disksStartAsyncReplicationRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_ssl_policy\"\xf0\x02\n" +
+	" StartAsyncReplicationDiskRequest\x12\x1b\n" +
+	"\x04disk\x18\x9d\x9b\xbc\x01 \x01(\tB\x04\xe2A\x01\x02R\x04disk\x12\xa7\x01\n" +
+	".disks_start_async_replication_request_resource\x18ڞ\xc0\xe0\x01 \x01(\v2:.google.cloud.compute.v1.DisksStartAsyncReplicationRequestB\x04\xe2A\x01\x02R)disksStartAsyncReplicationRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\x8b\x03\n" +
-	"&StartAsyncReplicationRegionDiskRequest\x12\x1a\n" +
-	"\x04disk\x18\x9d\x9b\xbc\x01 \x01(\tB\x03\xe0A\x02R\x04disk\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12\xb9\x01\n" +
-	"5region_disks_start_async_replication_request_resource\x18\x85Ȗ\xe2\x01 \x01(\v2@.google.cloud.compute.v1.RegionDisksStartAsyncReplicationRequestB\x03\xe0A\x02R/regionDisksStartAsyncReplicationRequestResource\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xbf\x01\n" +
-	"\x14StartInstanceRequest\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xb2\x03\n" +
-	")StartInstancesInstanceGroupManagerRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12\xc1\x01\n" +
-	"8instance_group_managers_start_instances_request_resource\x18\xab\xa5\xbf| \x01(\v2C.google.cloud.compute.v1.InstanceGroupManagersStartInstancesRequestB\x03\xe0A\x02R2instanceGroupManagersStartInstancesRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xd2\x03\n" +
-	"/StartInstancesRegionInstanceGroupManagerRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12\xd5\x01\n" +
-	"?region_instance_group_managers_start_instances_request_resource\x18\x96\x9b\xff\xec\x01 \x01(\v2I.google.cloud.compute.v1.RegionInstanceGroupManagersStartInstancesRequestB\x03\xe0A\x02R8regionInstanceGroupManagersStartInstancesRequestResource\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\x8f\x03\n" +
+	"&StartAsyncReplicationRegionDiskRequest\x12\x1b\n" +
+	"\x04disk\x18\x9d\x9b\xbc\x01 \x01(\tB\x04\xe2A\x01\x02R\x04disk\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12\xba\x01\n" +
+	"5region_disks_start_async_replication_request_resource\x18\x85Ȗ\xe2\x01 \x01(\v2@.google.cloud.compute.v1.RegionDisksStartAsyncReplicationRequestB\x04\xe2A\x01\x02R/regionDisksStartAsyncReplicationRequestResource\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\x89\x03\n" +
-	"%StartWithEncryptionKeyInstanceRequest\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x12\xb6\x01\n" +
-	"4instances_start_with_encryption_key_request_resource\x18\xff\xfe\xcf\xd2\x01 \x01(\v2?.google.cloud.compute.v1.InstancesStartWithEncryptionKeyRequestB\x03\xe0A\x02R.instancesStartWithEncryptionKeyRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\xc2\x01\n" +
+	"\x14StartInstanceRequest\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xb6\x03\n" +
+	")StartInstancesInstanceGroupManagerRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12\xc2\x01\n" +
+	"8instance_group_managers_start_instances_request_resource\x18\xab\xa5\xbf| \x01(\v2C.google.cloud.compute.v1.InstanceGroupManagersStartInstancesRequestB\x04\xe2A\x01\x02R2instanceGroupManagersStartInstancesRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xd6\x03\n" +
+	"/StartInstancesRegionInstanceGroupManagerRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12\xd6\x01\n" +
+	"?region_instance_group_managers_start_instances_request_resource\x18\x96\x9b\xff\xec\x01 \x01(\v2I.google.cloud.compute.v1.RegionInstanceGroupManagersStartInstancesRequestB\x04\xe2A\x01\x02R8regionInstanceGroupManagersStartInstancesRequestResource\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\x8d\x03\n" +
+	"%StartWithEncryptionKeyInstanceRequest\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x12\xb7\x01\n" +
+	"4instances_start_with_encryption_key_request_resource\x18\xff\xfe\xcf\xd2\x01 \x01(\v2?.google.cloud.compute.v1.InstancesStartWithEncryptionKeyRequestB\x04\xe2A\x01\x02R.instancesStartWithEncryptionKeyRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
 	"\v_request_id\"\x8c\x01\n" +
 	"\x0eStatefulPolicy\x12f\n" +
 	"\x0fpreserved_state\x18\xaa\xe2\xa0\x01 \x01(\v25.google.cloud.compute.v1.StatefulPolicyPreservedStateH\x00R\x0epreservedState\x88\x01\x01B\x12\n" +
@@ -250151,66 +250041,62 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\amessage\x18\x87\x80\xac\xc7\x01 \x01(\tH\x01R\amessage\x88\x01\x01B\a\n" +
 	"\x05_codeB\n" +
 	"\n" +
-	"\b_message\"\xc2\x01\n" +
-	"\x1fStopAsyncReplicationDiskRequest\x12\x1a\n" +
-	"\x04disk\x18\x9d\x9b\xbc\x01 \x01(\tB\x03\xe0A\x02R\x04disk\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\b_message\"\xc5\x01\n" +
+	"\x1fStopAsyncReplicationDiskRequest\x12\x1b\n" +
+	"\x04disk\x18\x9d\x9b\xbc\x01 \x01(\tB\x04\xe2A\x01\x02R\x04disk\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xce\x01\n" +
-	"%StopAsyncReplicationRegionDiskRequest\x12\x1a\n" +
-	"\x04disk\x18\x9d\x9b\xbc\x01 \x01(\tB\x03\xe0A\x02R\x04disk\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xe4\x02\n" +
-	"$StopGroupAsyncReplicationDiskRequest\x12\xb6\x01\n" +
-	"4disks_stop_group_async_replication_resource_resource\x18\x95\xf8\xaf\xa5\x01 \x01(\v2?.google.cloud.compute.v1.DisksStopGroupAsyncReplicationResourceB\x03\xe0A\x02R.disksStopGroupAsyncReplicationResourceResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xf0\x02\n" +
-	"*StopGroupAsyncReplicationRegionDiskRequest\x12\xb6\x01\n" +
-	"4disks_stop_group_async_replication_resource_resource\x18\x95\xf8\xaf\xa5\x01 \x01(\v2?.google.cloud.compute.v1.DisksStopGroupAsyncReplicationResourceB\x03\xe0A\x02R.disksStopGroupAsyncReplicationResourceResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xd1\x01\n" +
+	"%StopAsyncReplicationRegionDiskRequest\x12\x1b\n" +
+	"\x04disk\x18\x9d\x9b\xbc\x01 \x01(\tB\x04\xe2A\x01\x02R\x04disk\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xdd\x02\n" +
+	"\v_request_id\"\xe7\x02\n" +
+	"$StopGroupAsyncReplicationDiskRequest\x12\xb7\x01\n" +
+	"4disks_stop_group_async_replication_resource_resource\x18\x95\xf8\xaf\xa5\x01 \x01(\v2?.google.cloud.compute.v1.DisksStopGroupAsyncReplicationResourceB\x04\xe2A\x01\x02R.disksStopGroupAsyncReplicationResourceResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xf3\x02\n" +
+	"*StopGroupAsyncReplicationRegionDiskRequest\x12\xb7\x01\n" +
+	"4disks_stop_group_async_replication_resource_resource\x18\x95\xf8\xaf\xa5\x01 \x01(\v2?.google.cloud.compute.v1.DisksStopGroupAsyncReplicationResourceB\x04\xe2A\x01\x02R.disksStopGroupAsyncReplicationResourceResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xe0\x02\n" +
 	"\x13StopInstanceRequest\x123\n" +
-	"\x11discard_local_ssd\x18\xcf魘\x01 \x01(\bH\x00R\x0fdiscardLocalSsd\x88\x01\x01\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x129\n" +
-	"\x14no_graceful_shutdown\x18\x92\xb7\xab\xa0\x01 \x01(\bH\x01R\x12noGracefulShutdown\x88\x01\x01\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\x11discard_local_ssd\x18\xcf魘\x01 \x01(\bH\x00R\x0fdiscardLocalSsd\x88\x01\x01\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x129\n" +
+	"\x14no_graceful_shutdown\x18\x92\xb7\xab\xa0\x01 \x01(\bH\x01R\x12noGracefulShutdown\x88\x01\x01\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x02R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\x14\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x02R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\x14\n" +
 	"\x12_discard_local_ssdB\x17\n" +
 	"\x15_no_graceful_shutdownB\r\n" +
-	"\v_request_id\"\x82\x04\n" +
-	"(StopInstancesInstanceGroupManagerRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12\xbe\x01\n" +
-	"7instance_group_managers_stop_instances_request_resource\x18\x8d\xa5\xf4\x11 \x01(\v2B.google.cloud.compute.v1.InstanceGroupManagersStopInstancesRequestB\x03\xe0A\x02R1instanceGroupManagersStopInstancesRequestResource\x129\n" +
-	"\x14no_graceful_shutdown\x18\x92\xb7\xab\xa0\x01 \x01(\bH\x00R\x12noGracefulShutdown\x88\x01\x01\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\x86\x04\n" +
+	"(StopInstancesInstanceGroupManagerRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12\xbf\x01\n" +
+	"7instance_group_managers_stop_instances_request_resource\x18\x8d\xa5\xf4\x11 \x01(\v2B.google.cloud.compute.v1.InstanceGroupManagersStopInstancesRequestB\x04\xe2A\x01\x02R1instanceGroupManagersStopInstancesRequestResource\x129\n" +
+	"\x14no_graceful_shutdown\x18\x92\xb7\xab\xa0\x01 \x01(\bH\x00R\x12noGracefulShutdown\x88\x01\x01\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\x17\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\x17\n" +
 	"\x15_no_graceful_shutdownB\r\n" +
-	"\v_request_id\"\xa2\x04\n" +
-	".StopInstancesRegionInstanceGroupManagerRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x129\n" +
-	"\x14no_graceful_shutdown\x18\x92\xb7\xab\xa0\x01 \x01(\bH\x00R\x12noGracefulShutdown\x88\x01\x01\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12\xd2\x01\n" +
-	">region_instance_group_managers_stop_instances_request_resource\x18\u009c\xf2\x80\x01 \x01(\v2H.google.cloud.compute.v1.RegionInstanceGroupManagersStopInstancesRequestB\x03\xe0A\x02R7regionInstanceGroupManagersStopInstancesRequestResource\x12%\n" +
+	"\v_request_id\"\xa6\x04\n" +
+	".StopInstancesRegionInstanceGroupManagerRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x129\n" +
+	"\x14no_graceful_shutdown\x18\x92\xb7\xab\xa0\x01 \x01(\bH\x00R\x12noGracefulShutdown\x88\x01\x01\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12\xd3\x01\n" +
+	">region_instance_group_managers_stop_instances_request_resource\x18\u009c\xf2\x80\x01 \x01(\v2H.google.cloud.compute.v1.RegionInstanceGroupManagersStopInstancesRequestB\x04\xe2A\x01\x02R7regionInstanceGroupManagersStopInstancesRequestResource\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01B\x17\n" +
 	"\x15_no_graceful_shutdownB\r\n" +
@@ -250739,37 +250625,35 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\x10UNDEFINED_POLICY\x10\x00\x12!\n" +
 	"\x1aCONSISTENT_HASH_SUBSETTING\x10\xb4\x98\xfc3\x12\v\n" +
 	"\x04NONE\x10\xb8Β\x01B\t\n" +
-	"\a_policy\"\x8c\x02\n" +
+	"\a_policy\"\x8f\x02\n" +
 	"\x16SuspendInstanceRequest\x123\n" +
-	"\x11discard_local_ssd\x18\xcf魘\x01 \x01(\bH\x00R\x0fdiscardLocalSsd\x88\x01\x01\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\x11discard_local_ssd\x18\xcf魘\x01 \x01(\bH\x00R\x0fdiscardLocalSsd\x88\x01\x01\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\x14\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\x14\n" +
 	"\x12_discard_local_ssdB\r\n" +
-	"\v_request_id\"\xba\x03\n" +
-	"+SuspendInstancesInstanceGroupManagerRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12\xc7\x01\n" +
-	":instance_group_managers_suspend_instances_request_resource\x18э\xa1\x16 \x01(\v2E.google.cloud.compute.v1.InstanceGroupManagersSuspendInstancesRequestB\x03\xe0A\x02R4instanceGroupManagersSuspendInstancesRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\xbe\x03\n" +
+	"+SuspendInstancesInstanceGroupManagerRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12\xc8\x01\n" +
+	":instance_group_managers_suspend_instances_request_resource\x18э\xa1\x16 \x01(\v2E.google.cloud.compute.v1.InstanceGroupManagersSuspendInstancesRequestB\x04\xe2A\x01\x02R4instanceGroupManagersSuspendInstancesRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xd9\x03\n" +
-	"1SuspendInstancesRegionInstanceGroupManagerRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12\xda\x01\n" +
-	"Aregion_instance_group_managers_suspend_instances_request_resource\x18\xfc\xe5\x94f \x01(\v2K.google.cloud.compute.v1.RegionInstanceGroupManagersSuspendInstancesRequestB\x03\xe0A\x02R:regionInstanceGroupManagersSuspendInstancesRequestResource\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xdd\x03\n" +
+	"1SuspendInstancesRegionInstanceGroupManagerRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12\xdb\x01\n" +
+	"Aregion_instance_group_managers_suspend_instances_request_resource\x18\xfc\xe5\x94f \x01(\v2K.google.cloud.compute.v1.RegionInstanceGroupManagersSuspendInstancesRequestB\x04\xe2A\x01\x02R:regionInstanceGroupManagersSuspendInstancesRequestResource\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xa6\x01\n" +
-	" SwitchToCustomModeNetworkRequest\x12 \n" +
-	"\anetwork\x18\xae\xb4\x85o \x01(\tB\x03\xe0A\x02R\anetwork\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\xa8\x01\n" +
+	" SwitchToCustomModeNetworkRequest\x12!\n" +
+	"\anetwork\x18\xae\xb4\x85o \x01(\tB\x04\xe2A\x01\x02R\anetwork\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
 	"\v_request_id\"\x9b\x04\n" +
@@ -251410,273 +251294,273 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	" _expected_redirect_response_codeB\x13\n" +
 	"\x11_expected_serviceB\a\n" +
 	"\x05_hostB\a\n" +
-	"\x05_path\"\x8e\x02\n" +
-	" TestIamPermissionsAddressRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\x8d\x02\n" +
-	"#TestIamPermissionsAutoscalerRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"\xf4\x01\n" +
-	"&TestIamPermissionsBackendBucketRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\xf5\x01\n" +
-	"'TestIamPermissionsBackendServiceRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\x87\x02\n" +
-	"\x1dTestIamPermissionsDiskRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"\xf9\x01\n" +
-	"+TestIamPermissionsExternalVpnGatewayRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\xd3\x01\n" +
-	"'TestIamPermissionsFirewallPolicyRequest\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\xef\x01\n" +
-	"!TestIamPermissionsFirewallRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\xf4\x01\n" +
-	"&TestIamPermissionsGlobalAddressRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\xf2\x01\n" +
-	"$TestIamPermissionsHealthCheckRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\xec\x01\n" +
-	"\x1eTestIamPermissionsImageRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\x90\x02\n" +
-	"&TestIamPermissionsInstanceGroupRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"\x8b\x02\n" +
-	"!TestIamPermissionsInstanceRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"\xf7\x01\n" +
-	")TestIamPermissionsInstanceTemplateRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\x97\x02\n" +
-	"-TestIamPermissionsInstantSnapshotGroupRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"\x92\x02\n" +
-	"(TestIamPermissionsInstantSnapshotRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"\x82\x02\n" +
-	"4TestIamPermissionsInterconnectAttachmentGroupRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\xf8\x01\n" +
-	"*TestIamPermissionsInterconnectGroupRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\xf2\x01\n" +
-	"$TestIamPermissionsLicenseCodeRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\xee\x01\n" +
-	" TestIamPermissionsLicenseRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\xf3\x01\n" +
-	"%TestIamPermissionsMachineImageRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\x98\x02\n" +
-	"*TestIamPermissionsNetworkAttachmentRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\x97\x02\n" +
-	"-TestIamPermissionsNetworkEndpointGroupRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"\xfc\x01\n" +
-	".TestIamPermissionsNetworkFirewallPolicyRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\x8c\x02\n" +
-	"\"TestIamPermissionsNodeGroupRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"\x93\x02\n" +
-	"%TestIamPermissionsNodeTemplateRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\x96\x02\n" +
-	"(TestIamPermissionsPacketMirroringRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\x97\x02\n" +
-	")TestIamPermissionsRegionAutoscalerRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\x9a\x02\n" +
-	",TestIamPermissionsRegionBackendBucketRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\x9b\x02\n" +
-	"-TestIamPermissionsRegionBackendServiceRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\xa1\x02\n" +
-	"3TestIamPermissionsRegionCompositeHealthCheckRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\x91\x02\n" +
-	"#TestIamPermissionsRegionDiskRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\xa4\x02\n" +
-	"6TestIamPermissionsRegionHealthAggregationPolicyRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\x98\x02\n" +
-	"*TestIamPermissionsRegionHealthCheckRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\x9f\x02\n" +
-	"1TestIamPermissionsRegionHealthCheckServiceRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\x99\x02\n" +
-	"+TestIamPermissionsRegionHealthSourceRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\x9a\x02\n" +
-	",TestIamPermissionsRegionInstanceGroupRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\xa1\x02\n" +
-	"3TestIamPermissionsRegionInstantSnapshotGroupRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\x9c\x02\n" +
-	".TestIamPermissionsRegionInstantSnapshotRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\xa2\x02\n" +
-	"4TestIamPermissionsRegionNetworkFirewallPolicyRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\xa1\x02\n" +
-	"3TestIamPermissionsRegionNotificationEndpointRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\x95\x02\n" +
-	"'TestIamPermissionsRegionSnapshotRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\xc4\x02\n" +
-	")TestIamPermissionsReservationBlockRequest\x12/\n" +
-	"\x0fparent_resource\x18\x83\x98\xd0\b \x01(\tB\x03\xe0A\x02R\x0eparentResource\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"\x8e\x02\n" +
-	"$TestIamPermissionsReservationRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"\xc7\x02\n" +
-	",TestIamPermissionsReservationSubBlockRequest\x12/\n" +
-	"\x0fparent_resource\x18\x83\x98\xd0\b \x01(\tB\x03\xe0A\x02R\x0eparentResource\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"\x95\x02\n" +
-	"'TestIamPermissionsResourcePolicyRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\xec\x01\n" +
-	"\x1eTestIamPermissionsRouteRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\x98\x02\n" +
-	"*TestIamPermissionsServiceAttachmentRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\xef\x01\n" +
-	"!TestIamPermissionsSnapshotRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\x8e\x02\n" +
-	"$TestIamPermissionsStoragePoolRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"\x91\x02\n" +
-	"#TestIamPermissionsSubnetworkRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\x91\x02\n" +
-	"'TestIamPermissionsTargetInstanceRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"\x91\x02\n" +
-	"#TestIamPermissionsTargetPoolRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\xf5\x01\n" +
-	"'TestIamPermissionsTargetSslProxyRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\xf5\x01\n" +
-	"'TestIamPermissionsTargetTcpProxyRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\xed\x01\n" +
-	"\x1fTestIamPermissionsUrlMapRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"\x91\x02\n" +
-	"#TestIamPermissionsVpnGatewayRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\"\n" +
-	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x03\xe0A\x02R\bresource\x12\x83\x01\n" +
-	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x03\xe0A\x02R\x1etestPermissionsRequestResource\"=\n" +
+	"\x05_path\"\x92\x02\n" +
+	" TestIamPermissionsAddressRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\x91\x02\n" +
+	"#TestIamPermissionsAutoscalerRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"\xf7\x01\n" +
+	"&TestIamPermissionsBackendBucketRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\xf8\x01\n" +
+	"'TestIamPermissionsBackendServiceRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\x8b\x02\n" +
+	"\x1dTestIamPermissionsDiskRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"\xfc\x01\n" +
+	"+TestIamPermissionsExternalVpnGatewayRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\xd5\x01\n" +
+	"'TestIamPermissionsFirewallPolicyRequest\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\xf2\x01\n" +
+	"!TestIamPermissionsFirewallRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\xf7\x01\n" +
+	"&TestIamPermissionsGlobalAddressRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\xf5\x01\n" +
+	"$TestIamPermissionsHealthCheckRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\xef\x01\n" +
+	"\x1eTestIamPermissionsImageRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\x94\x02\n" +
+	"&TestIamPermissionsInstanceGroupRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"\x8f\x02\n" +
+	"!TestIamPermissionsInstanceRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"\xfa\x01\n" +
+	")TestIamPermissionsInstanceTemplateRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\x9b\x02\n" +
+	"-TestIamPermissionsInstantSnapshotGroupRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"\x96\x02\n" +
+	"(TestIamPermissionsInstantSnapshotRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"\x85\x02\n" +
+	"4TestIamPermissionsInterconnectAttachmentGroupRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\xfb\x01\n" +
+	"*TestIamPermissionsInterconnectGroupRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\xf5\x01\n" +
+	"$TestIamPermissionsLicenseCodeRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\xf1\x01\n" +
+	" TestIamPermissionsLicenseRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\xf6\x01\n" +
+	"%TestIamPermissionsMachineImageRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\x9c\x02\n" +
+	"*TestIamPermissionsNetworkAttachmentRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\x9b\x02\n" +
+	"-TestIamPermissionsNetworkEndpointGroupRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"\xff\x01\n" +
+	".TestIamPermissionsNetworkFirewallPolicyRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\x90\x02\n" +
+	"\"TestIamPermissionsNodeGroupRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"\x97\x02\n" +
+	"%TestIamPermissionsNodeTemplateRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\x9a\x02\n" +
+	"(TestIamPermissionsPacketMirroringRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\x9b\x02\n" +
+	")TestIamPermissionsRegionAutoscalerRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\x9e\x02\n" +
+	",TestIamPermissionsRegionBackendBucketRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\x9f\x02\n" +
+	"-TestIamPermissionsRegionBackendServiceRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\xa5\x02\n" +
+	"3TestIamPermissionsRegionCompositeHealthCheckRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\x95\x02\n" +
+	"#TestIamPermissionsRegionDiskRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\xa8\x02\n" +
+	"6TestIamPermissionsRegionHealthAggregationPolicyRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\x9c\x02\n" +
+	"*TestIamPermissionsRegionHealthCheckRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\xa3\x02\n" +
+	"1TestIamPermissionsRegionHealthCheckServiceRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\x9d\x02\n" +
+	"+TestIamPermissionsRegionHealthSourceRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\x9e\x02\n" +
+	",TestIamPermissionsRegionInstanceGroupRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\xa5\x02\n" +
+	"3TestIamPermissionsRegionInstantSnapshotGroupRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\xa0\x02\n" +
+	".TestIamPermissionsRegionInstantSnapshotRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\xa6\x02\n" +
+	"4TestIamPermissionsRegionNetworkFirewallPolicyRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\xa5\x02\n" +
+	"3TestIamPermissionsRegionNotificationEndpointRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\x99\x02\n" +
+	"'TestIamPermissionsRegionSnapshotRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\xc9\x02\n" +
+	")TestIamPermissionsReservationBlockRequest\x120\n" +
+	"\x0fparent_resource\x18\x83\x98\xd0\b \x01(\tB\x04\xe2A\x01\x02R\x0eparentResource\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"\x92\x02\n" +
+	"$TestIamPermissionsReservationRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"\xcc\x02\n" +
+	",TestIamPermissionsReservationSubBlockRequest\x120\n" +
+	"\x0fparent_resource\x18\x83\x98\xd0\b \x01(\tB\x04\xe2A\x01\x02R\x0eparentResource\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"\x99\x02\n" +
+	"'TestIamPermissionsResourcePolicyRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\xef\x01\n" +
+	"\x1eTestIamPermissionsRouteRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\x9c\x02\n" +
+	"*TestIamPermissionsServiceAttachmentRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\xf2\x01\n" +
+	"!TestIamPermissionsSnapshotRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\x92\x02\n" +
+	"$TestIamPermissionsStoragePoolRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"\x95\x02\n" +
+	"#TestIamPermissionsSubnetworkRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\x95\x02\n" +
+	"'TestIamPermissionsTargetInstanceRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"\x95\x02\n" +
+	"#TestIamPermissionsTargetPoolRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\xf8\x01\n" +
+	"'TestIamPermissionsTargetSslProxyRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\xf8\x01\n" +
+	"'TestIamPermissionsTargetTcpProxyRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\xf0\x01\n" +
+	"\x1fTestIamPermissionsUrlMapRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"\x95\x02\n" +
+	"#TestIamPermissionsVpnGatewayRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12#\n" +
+	"\bresource\x18\x8e\x88\xaf] \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x84\x01\n" +
+	"!test_permissions_request_resource\x18\xa6ŷ\xd1\x01 \x01(\v2/.google.cloud.compute.v1.TestPermissionsRequestB\x04\xe2A\x01\x02R\x1etestPermissionsRequestResource\"=\n" +
 	"\x16TestPermissionsRequest\x12#\n" +
 	"\vpermissions\x18\x84\xe9\xcb\x1c \x03(\tR\vpermissions\">\n" +
 	"\x17TestPermissionsResponse\x12#\n" +
@@ -251738,110 +251622,104 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\x13_maintenance_statusB\a\n" +
 	"\x05_typeB\x12\n" +
 	"\x10_window_end_timeB\x14\n" +
-	"\x12_window_start_time\"\xe8\x02\n" +
-	"!UpdateAccessConfigInstanceRequest\x12d\n" +
-	"\x16access_config_resource\x18\x90\xff\xf6\xb8\x01 \x01(\v2%.google.cloud.compute.v1.AccessConfigB\x03\xe0A\x02R\x14accessConfigResource\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x124\n" +
-	"\x11network_interface\x18\xe8\xc0\x9d\xae\x01 \x01(\tB\x03\xe0A\x02R\x10networkInterface\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\x12_window_start_time\"\xed\x02\n" +
+	"!UpdateAccessConfigInstanceRequest\x12e\n" +
+	"\x16access_config_resource\x18\x90\xff\xf6\xb8\x01 \x01(\v2%.google.cloud.compute.v1.AccessConfigB\x04\xe2A\x01\x02R\x14accessConfigResource\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x125\n" +
+	"\x11network_interface\x18\xe8\xc0\x9d\xae\x01 \x01(\tB\x04\xe2A\x01\x02R\x10networkInterface\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xb4\x02\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xb7\x02\n" +
 	"\x17UpdateAutoscalerRequest\x12'\n" +
 	"\n" +
 	"autoscaler\x18\xd7\xfd\xd2\xf6\x01 \x01(\tH\x00R\n" +
-	"autoscaler\x88\x01\x01\x12\\\n" +
-	"\x13autoscaler_resource\x18\xf6\xf0\xffb \x01(\v2#.google.cloud.compute.v1.AutoscalerB\x03\xe0A\x02R\x12autoscalerResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"autoscaler\x88\x01\x01\x12]\n" +
+	"\x13autoscaler_resource\x18\xf6\xf0\xffb \x01(\v2#.google.cloud.compute.v1.AutoscalerB\x04\xe2A\x01\x02R\x12autoscalerResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
 	"\v_autoscalerB\r\n" +
-	"\v_request_id\"\x96\x02\n" +
-	"\x1aUpdateBackendBucketRequest\x12-\n" +
-	"\x0ebackend_bucket\x18\xf5\xe3\xdd+ \x01(\tB\x03\xe0A\x02R\rbackendBucket\x12g\n" +
-	"\x17backend_bucket_resource\x18\x98\xceǵ\x01 \x01(\v2&.google.cloud.compute.v1.BackendBucketB\x03\xe0A\x02R\x15backendBucketResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\x99\x02\n" +
+	"\x1aUpdateBackendBucketRequest\x12.\n" +
+	"\x0ebackend_bucket\x18\xf5\xe3\xdd+ \x01(\tB\x04\xe2A\x01\x02R\rbackendBucket\x12h\n" +
+	"\x17backend_bucket_resource\x18\x98\xceǵ\x01 \x01(\v2&.google.cloud.compute.v1.BackendBucketB\x04\xe2A\x01\x02R\x15backendBucketResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\x9d\x02\n" +
-	"\x1bUpdateBackendServiceRequest\x120\n" +
-	"\x0fbackend_service\x18\x8a\xc0\xae\x92\x01 \x01(\tB\x03\xe0A\x02R\x0ebackendService\x12j\n" +
-	"\x18backend_service_resource\x18\xa3\x81ߥ\x01 \x01(\v2'.google.cloud.compute.v1.BackendServiceB\x03\xe0A\x02R\x16backendServiceResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\xa0\x02\n" +
+	"\x1bUpdateBackendServiceRequest\x121\n" +
+	"\x0fbackend_service\x18\x8a\xc0\xae\x92\x01 \x01(\tB\x04\xe2A\x01\x02R\x0ebackendService\x12k\n" +
+	"\x18backend_service_resource\x18\xa3\x81ߥ\x01 \x01(\v2'.google.cloud.compute.v1.BackendServiceB\x04\xe2A\x01\x02R\x16backendServiceResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xe2\x02\n" +
-	"\x11UpdateDiskRequest\x12\x1a\n" +
-	"\x04disk\x18\x9d\x9b\xbc\x01 \x01(\tB\x03\xe0A\x02R\x04disk\x12J\n" +
-	"\rdisk_resource\x18\xf0Ы\f \x01(\v2\x1d.google.cloud.compute.v1.DiskB\x03\xe0A\x02R\fdiskResource\x12\x1c\n" +
-	"\x05paths\x18\xee\xc1\xe02 \x01(\tH\x00R\x05paths\x88\x01\x01\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\xe6\x02\n" +
+	"\x11UpdateDiskRequest\x12\x1b\n" +
+	"\x04disk\x18\x9d\x9b\xbc\x01 \x01(\tB\x04\xe2A\x01\x02R\x04disk\x12K\n" +
+	"\rdisk_resource\x18\xf0Ы\f \x01(\v2\x1d.google.cloud.compute.v1.DiskB\x04\xe2A\x01\x02R\fdiskResource\x12\x1c\n" +
+	"\x05paths\x18\xee\xc1\xe02 \x01(\tH\x00R\x05paths\x88\x01\x01\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12(\n" +
 	"\vupdate_mask\x18\xa2\xb9\xba\xee\x01 \x01(\tH\x02R\n" +
-	"updateMask\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\b\n" +
+	"updateMask\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\b\n" +
 	"\x06_pathsB\r\n" +
 	"\v_request_idB\x0e\n" +
-	"\f_update_mask\"\xb6\x02\n" +
-	"\"UpdateDisplayDeviceInstanceRequest\x12g\n" +
-	"\x17display_device_resource\x18ڄ\x91\x8a\x01 \x01(\v2&.google.cloud.compute.v1.DisplayDeviceB\x03\xe0A\x02R\x15displayDeviceResource\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\f_update_mask\"\xba\x02\n" +
+	"\"UpdateDisplayDeviceInstanceRequest\x12h\n" +
+	"\x17display_device_resource\x18ڄ\x91\x8a\x01 \x01(\v2&.google.cloud.compute.v1.DisplayDeviceB\x04\xe2A\x01\x02R\x15displayDeviceResource\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xf6\x01\n" +
-	"\x15UpdateFirewallRequest\x12#\n" +
-	"\bfirewall\x18\x80\xfa\xd5\xf3\x01 \x01(\tB\x03\xe0A\x02R\bfirewall\x12V\n" +
-	"\x11firewall_resource\x18\xed\xb0\xe0\x13 \x01(\v2!.google.cloud.compute.v1.FirewallB\x03\xe0A\x02R\x10firewallResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xf9\x01\n" +
+	"\x15UpdateFirewallRequest\x12$\n" +
+	"\bfirewall\x18\x80\xfa\xd5\xf3\x01 \x01(\tB\x04\xe2A\x01\x02R\bfirewall\x12W\n" +
+	"\x11firewall_resource\x18\xed\xb0\xe0\x13 \x01(\v2!.google.cloud.compute.v1.FirewallB\x04\xe2A\x01\x02R\x10firewallResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\x8b\x03\n" +
-	"\x1eUpdateFutureReservationRequest\x125\n" +
-	"\x12future_reservation\x18\xd0\xc6\xe6\x1a \x01(\tB\x03\xe0A\x02R\x11futureReservation\x12s\n" +
-	"\x1bfuture_reservation_resource\x18\x9d\x98\xc8\xde\x01 \x01(\v2*.google.cloud.compute.v1.FutureReservationB\x03\xe0A\x02R\x19futureReservationResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\x8f\x03\n" +
+	"\x1eUpdateFutureReservationRequest\x126\n" +
+	"\x12future_reservation\x18\xd0\xc6\xe6\x1a \x01(\tB\x04\xe2A\x01\x02R\x11futureReservation\x12t\n" +
+	"\x1bfuture_reservation_resource\x18\x9d\x98\xc8\xde\x01 \x01(\v2*.google.cloud.compute.v1.FutureReservationB\x04\xe2A\x01\x02R\x19futureReservationResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12(\n" +
 	"\vupdate_mask\x18\xa2\xb9\xba\xee\x01 \x01(\tH\x01R\n" +
-	"updateMask\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"updateMask\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
 	"\v_request_idB\x0e\n" +
-	"\f_update_mask\"\xd6\x02\n" +
-	"$UpdateGlobalVmExtensionPolicyRequest\x12C\n" +
-	"\x1aglobal_vm_extension_policy\x18\x9e\xd6\xfc\x03 \x01(\tB\x03\xe0A\x02R\x17globalVmExtensionPolicy\x12\x86\x01\n" +
-	"#global_vm_extension_policy_resource\x18\x8fص0 \x01(\v20.google.cloud.compute.v1.GlobalVmExtensionPolicyB\x03\xe0A\x02R\x1fglobalVmExtensionPolicyResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\f_update_mask\"\xd9\x02\n" +
+	"$UpdateGlobalVmExtensionPolicyRequest\x12D\n" +
+	"\x1aglobal_vm_extension_policy\x18\x9e\xd6\xfc\x03 \x01(\tB\x04\xe2A\x01\x02R\x17globalVmExtensionPolicy\x12\x87\x01\n" +
+	"#global_vm_extension_policy_resource\x18\x8fص0 \x01(\v20.google.cloud.compute.v1.GlobalVmExtensionPolicyB\x04\xe2A\x01\x02R\x1fglobalVmExtensionPolicyResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\x8a\x02\n" +
-	"\x18UpdateHealthCheckRequest\x12*\n" +
-	"\fhealth_check\x18媤\x93\x01 \x01(\tB\x03\xe0A\x02R\vhealthCheck\x12`\n" +
-	"\x15health_check_resource\x18\xa8ä` \x01(\v2$.google.cloud.compute.v1.HealthCheckB\x03\xe0A\x02R\x13healthCheckResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\x8d\x02\n" +
+	"\x18UpdateHealthCheckRequest\x12+\n" +
+	"\fhealth_check\x18媤\x93\x01 \x01(\tB\x04\xe2A\x01\x02R\vhealthCheck\x12a\n" +
+	"\x15health_check_resource\x18\xa8ä` \x01(\v2$.google.cloud.compute.v1.HealthCheckB\x04\xe2A\x01\x02R\x13healthCheckResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\x92\x05\n" +
+	"\v_request_id\"\x96\x05\n" +
 	"\x15UpdateInstanceRequest\x123\n" +
-	"\x11discard_local_ssd\x18\xcf魘\x01 \x01(\bH\x00R\x0fdiscardLocalSsd\x88\x01\x01\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x12V\n" +
-	"\x11instance_resource\x18\xf8\xf0\xfef \x01(\v2!.google.cloud.compute.v1.InstanceB\x03\xe0A\x02R\x10instanceResource\x12.\n" +
+	"\x11discard_local_ssd\x18\xcf魘\x01 \x01(\bH\x00R\x0fdiscardLocalSsd\x88\x01\x01\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x12W\n" +
+	"\x11instance_resource\x18\xf8\xf0\xfef \x01(\v2!.google.cloud.compute.v1.InstanceB\x04\xe2A\x01\x02R\x10instanceResource\x12.\n" +
 	"\x0eminimal_action\x18\x94\x8d\x82\x81\x01 \x01(\tH\x01R\rminimalAction\x88\x01\x01\x12K\n" +
-	"\x1emost_disruptive_allowed_action\x18\x8d\xce\xc2\x1f \x01(\tH\x02R\x1bmostDisruptiveAllowedAction\x88\x01\x01\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\x1emost_disruptive_allowed_action\x18\x8d\xce\xc2\x1f \x01(\tH\x02R\x1bmostDisruptiveAllowedAction\x88\x01\x01\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x03R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zone\"-\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x03R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zone\"-\n" +
 	"\rMinimalAction\x12\x1c\n" +
 	"\x18UNDEFINED_MINIMAL_ACTION\x10\x00\"K\n" +
 	"\x1bMostDisruptiveAllowedAction\x12,\n" +
@@ -251849,238 +251727,230 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\x12_discard_local_ssdB\x11\n" +
 	"\x0f_minimal_actionB!\n" +
 	"\x1f_most_disruptive_allowed_actionB\r\n" +
-	"\v_request_id\"\xc4\x02\n" +
-	"\x17UpdateKmsKeyDiskRequest\x12\x1a\n" +
-	"\x04disk\x18\x9d\x9b\xbc\x01 \x01(\tB\x03\xe0A\x02R\x04disk\x12\x87\x01\n" +
-	"$disk_update_kms_key_request_resource\x18\xe0\xeb\xf1T \x01(\v20.google.cloud.compute.v1.DiskUpdateKmsKeyRequestB\x03\xe0A\x02R\x1fdiskUpdateKmsKeyRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\xc8\x02\n" +
+	"\x17UpdateKmsKeyDiskRequest\x12\x1b\n" +
+	"\x04disk\x18\x9d\x9b\xbc\x01 \x01(\tB\x04\xe2A\x01\x02R\x04disk\x12\x88\x01\n" +
+	"$disk_update_kms_key_request_resource\x18\xe0\xeb\xf1T \x01(\v20.google.cloud.compute.v1.DiskUpdateKmsKeyRequestB\x04\xe2A\x01\x02R\x1fdiskUpdateKmsKeyRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xe3\x02\n" +
-	"\x1dUpdateKmsKeyRegionDiskRequest\x12\x1a\n" +
-	"\x04disk\x18\x9d\x9b\xbc\x01 \x01(\tB\x03\xe0A\x02R\x04disk\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12\x9a\x01\n" +
-	"+region_disk_update_kms_key_request_resource\x18˨\xe3\x04 \x01(\v26.google.cloud.compute.v1.RegionDiskUpdateKmsKeyRequestB\x03\xe0A\x02R%regionDiskUpdateKmsKeyRequestResource\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xe7\x02\n" +
+	"\x1dUpdateKmsKeyRegionDiskRequest\x12\x1b\n" +
+	"\x04disk\x18\x9d\x9b\xbc\x01 \x01(\tB\x04\xe2A\x01\x02R\x04disk\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12\x9b\x01\n" +
+	"+region_disk_update_kms_key_request_resource\x18˨\xe3\x04 \x01(\v26.google.cloud.compute.v1.RegionDiskUpdateKmsKeyRequestB\x04\xe2A\x01\x02R%regionDiskUpdateKmsKeyRequestResource\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xfd\x02\n" +
-	"!UpdateKmsKeyRegionSnapshotRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12\xa7\x01\n" +
-	"/region_snapshot_update_kms_key_request_resource\x18\U000a5705\x01 \x01(\v2:.google.cloud.compute.v1.RegionSnapshotUpdateKmsKeyRequestB\x03\xe0A\x02R)regionSnapshotUpdateKmsKeyRequestResource\x12%\n" +
+	"\v_request_id\"\x81\x03\n" +
+	"!UpdateKmsKeyRegionSnapshotRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12\xa8\x01\n" +
+	"/region_snapshot_update_kms_key_request_resource\x18\U000a5705\x01 \x01(\v2:.google.cloud.compute.v1.RegionSnapshotUpdateKmsKeyRequestB\x04\xe2A\x01\x02R)regionSnapshotUpdateKmsKeyRequestResource\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12#\n" +
-	"\bsnapshot\x18ī\xeb\x87\x01 \x01(\tB\x03\xe0A\x02R\bsnapshotB\r\n" +
-	"\v_request_id\"\xba\x02\n" +
-	"\x1bUpdateKmsKeySnapshotRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12$\n" +
+	"\bsnapshot\x18ī\xeb\x87\x01 \x01(\tB\x04\xe2A\x01\x02R\bsnapshotB\r\n" +
+	"\v_request_id\"\xbd\x02\n" +
+	"\x1bUpdateKmsKeySnapshotRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12#\n" +
-	"\bsnapshot\x18ī\xeb\x87\x01 \x01(\tB\x03\xe0A\x02R\bsnapshot\x12\x93\x01\n" +
-	"(snapshot_update_kms_key_request_resource\x18\x87ė1 \x01(\v24.google.cloud.compute.v1.SnapshotUpdateKmsKeyRequestB\x03\xe0A\x02R#snapshotUpdateKmsKeyRequestResourceB\r\n" +
-	"\v_request_id\"\xaa\x02\n" +
-	"\x14UpdateLicenseRequest\x12 \n" +
-	"\alicense\x18\xc1\x88\xc2O \x01(\tB\x03\xe0A\x02R\alicense\x12T\n" +
-	"\x10license_resource\x18\xcc\xd4\xea\xd0\x01 \x01(\v2 .google.cloud.compute.v1.LicenseB\x03\xe0A\x02R\x0flicenseResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12$\n" +
+	"\bsnapshot\x18ī\xeb\x87\x01 \x01(\tB\x04\xe2A\x01\x02R\bsnapshot\x12\x94\x01\n" +
+	"(snapshot_update_kms_key_request_resource\x18\x87ė1 \x01(\v24.google.cloud.compute.v1.SnapshotUpdateKmsKeyRequestB\x04\xe2A\x01\x02R#snapshotUpdateKmsKeyRequestResourceB\r\n" +
+	"\v_request_id\"\xad\x02\n" +
+	"\x14UpdateLicenseRequest\x12!\n" +
+	"\alicense\x18\xc1\x88\xc2O \x01(\tB\x04\xe2A\x01\x02R\alicense\x12U\n" +
+	"\x10license_resource\x18\xcc\xd4\xea\xd0\x01 \x01(\v2 .google.cloud.compute.v1.LicenseB\x04\xe2A\x01\x02R\x0flicenseResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12(\n" +
 	"\vupdate_mask\x18\xa2\xb9\xba\xee\x01 \x01(\tH\x01R\n" +
 	"updateMask\x88\x01\x01B\r\n" +
 	"\v_request_idB\x0e\n" +
-	"\f_update_mask\"\xa2\x02\n" +
-	"\x1bUpdateNamedSetRouterRequest\x12X\n" +
-	"\x12named_set_resource\x18\x91\xbd\xeb\xc2\x01 \x01(\v2!.google.cloud.compute.v1.NamedSetB\x03\xe0A\x02R\x10namedSetResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\f_update_mask\"\xa6\x02\n" +
+	"\x1bUpdateNamedSetRouterRequest\x12Y\n" +
+	"\x12named_set_resource\x18\x91\xbd\xeb\xc2\x01 \x01(\v2!.google.cloud.compute.v1.NamedSetB\x04\xe2A\x01\x02R\x10namedSetResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\x1e\n" +
-	"\x06router\x18ɮ\xeeF \x01(\tB\x03\xe0A\x02R\x06routerB\r\n" +
-	"\v_request_id\"\xf8\x02\n" +
-	"%UpdateNetworkInterfaceInstanceRequest\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x124\n" +
-	"\x11network_interface\x18\xe8\xc0\x9d\xae\x01 \x01(\tB\x03\xe0A\x02R\x10networkInterface\x12p\n" +
-	"\x1anetwork_interface_resource\x18\x85\x94\xae\x9b\x01 \x01(\v2).google.cloud.compute.v1.NetworkInterfaceB\x03\xe0A\x02R\x18networkInterfaceResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\x1f\n" +
+	"\x06router\x18ɮ\xeeF \x01(\tB\x04\xe2A\x01\x02R\x06routerB\r\n" +
+	"\v_request_id\"\xfd\x02\n" +
+	"%UpdateNetworkInterfaceInstanceRequest\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x125\n" +
+	"\x11network_interface\x18\xe8\xc0\x9d\xae\x01 \x01(\tB\x04\xe2A\x01\x02R\x10networkInterface\x12q\n" +
+	"\x1anetwork_interface_resource\x18\x85\x94\xae\x9b\x01 \x01(\v2).google.cloud.compute.v1.NetworkInterfaceB\x04\xe2A\x01\x02R\x18networkInterfaceResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xb9\x02\n" +
-	"\x1bUpdatePeeringNetworkRequest\x12 \n" +
-	"\anetwork\x18\xae\xb4\x85o \x01(\tB\x03\xe0A\x02R\anetwork\x12\x95\x01\n" +
-	"(networks_update_peering_request_resource\x18٪\x82k \x01(\v25.google.cloud.compute.v1.NetworksUpdatePeeringRequestB\x03\xe0A\x02R$networksUpdatePeeringRequestResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xd0\x03\n" +
-	"3UpdatePerInstanceConfigsInstanceGroupManagerRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12\xd5\x01\n" +
-	"@instance_group_managers_update_per_instance_configs_req_resource\x18\xbe\xc1\xb6C \x01(\v2I.google.cloud.compute.v1.InstanceGroupManagersUpdatePerInstanceConfigsReqB\x03\xe0A\x02R8instanceGroupManagersUpdatePerInstanceConfigsReqResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
-	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xdf\x03\n" +
-	"9UpdatePerInstanceConfigsRegionInstanceGroupManagerRequest\x12<\n" +
-	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x03\xe0A\x02R\x14instanceGroupManager\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12\xd8\x01\n" +
-	"Aregion_instance_group_manager_update_instance_config_req_resource\x18\xa7\xae\xba* \x01(\v2J.google.cloud.compute.v1.RegionInstanceGroupManagerUpdateInstanceConfigReqB\x03\xe0A\x02R9regionInstanceGroupManagerUpdateInstanceConfigReqResource\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xbc\x02\n" +
+	"\x1bUpdatePeeringNetworkRequest\x12!\n" +
+	"\anetwork\x18\xae\xb4\x85o \x01(\tB\x04\xe2A\x01\x02R\anetwork\x12\x96\x01\n" +
+	"(networks_update_peering_request_resource\x18٪\x82k \x01(\v25.google.cloud.compute.v1.NetworksUpdatePeeringRequestB\x04\xe2A\x01\x02R$networksUpdatePeeringRequestResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\x9c\x02\n" +
-	"\x1bUpdatePreviewFeatureRequest\x120\n" +
-	"\x0fpreview_feature\x18\xff\xfa\xfa\xd8\x01 \x01(\tB\x03\xe0A\x02R\x0epreviewFeature\x12i\n" +
-	"\x18preview_feature_resource\x18\xce\xed\x97\x05 \x01(\v2'.google.cloud.compute.v1.PreviewFeatureB\x03\xe0A\x02R\x16previewFeatureResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\v_request_id\"\xd4\x03\n" +
+	"3UpdatePerInstanceConfigsInstanceGroupManagerRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12\xd6\x01\n" +
+	"@instance_group_managers_update_per_instance_configs_req_resource\x18\xbe\xc1\xb6C \x01(\v2I.google.cloud.compute.v1.InstanceGroupManagersUpdatePerInstanceConfigsReqB\x04\xe2A\x01\x02R8instanceGroupManagersUpdatePerInstanceConfigsReqResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xe3\x03\n" +
+	"9UpdatePerInstanceConfigsRegionInstanceGroupManagerRequest\x12=\n" +
+	"\x16instance_group_manager\x18\xc3\xf7\xf3v \x01(\tB\x04\xe2A\x01\x02R\x14instanceGroupManager\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12\xd9\x01\n" +
+	"Aregion_instance_group_manager_update_instance_config_req_resource\x18\xa7\xae\xba* \x01(\v2J.google.cloud.compute.v1.RegionInstanceGroupManagerUpdateInstanceConfigReqB\x04\xe2A\x01\x02R9regionInstanceGroupManagerUpdateInstanceConfigReqResource\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xc0\x02\n" +
+	"\v_request_id\"\x9f\x02\n" +
+	"\x1bUpdatePreviewFeatureRequest\x121\n" +
+	"\x0fpreview_feature\x18\xff\xfa\xfa\xd8\x01 \x01(\tB\x04\xe2A\x01\x02R\x0epreviewFeature\x12j\n" +
+	"\x18preview_feature_resource\x18\xce\xed\x97\x05 \x01(\v2'.google.cloud.compute.v1.PreviewFeatureB\x04\xe2A\x01\x02R\x16previewFeatureResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
+	"\v_request_id\"\xc3\x02\n" +
 	"\x1dUpdateRegionAutoscalerRequest\x12'\n" +
 	"\n" +
 	"autoscaler\x18\xd7\xfd\xd2\xf6\x01 \x01(\tH\x00R\n" +
-	"autoscaler\x88\x01\x01\x12\\\n" +
-	"\x13autoscaler_resource\x18\xf6\xf0\xffb \x01(\v2#.google.cloud.compute.v1.AutoscalerB\x03\xe0A\x02R\x12autoscalerResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"autoscaler\x88\x01\x01\x12]\n" +
+	"\x13autoscaler_resource\x18\xf6\xf0\xffb \x01(\v2#.google.cloud.compute.v1.AutoscalerB\x04\xe2A\x01\x02R\x12autoscalerResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01B\r\n" +
 	"\v_autoscalerB\r\n" +
-	"\v_request_id\"\xcc\x02\n" +
-	"!UpdateRegionBackendServiceRequest\x120\n" +
-	"\x0fbackend_service\x18\x8a\xc0\xae\x92\x01 \x01(\tB\x03\xe0A\x02R\x0ebackendService\x12j\n" +
-	"\x18backend_service_resource\x18\xa3\x81ߥ\x01 \x01(\v2'.google.cloud.compute.v1.BackendServiceB\x03\xe0A\x02R\x16backendServiceResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\xd0\x02\n" +
+	"!UpdateRegionBackendServiceRequest\x121\n" +
+	"\x0fbackend_service\x18\x8a\xc0\xae\x92\x01 \x01(\tB\x04\xe2A\x01\x02R\x0ebackendService\x12k\n" +
+	"\x18backend_service_resource\x18\xa3\x81ߥ\x01 \x01(\v2'.google.cloud.compute.v1.BackendServiceB\x04\xe2A\x01\x02R\x16backendServiceResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\x93\x03\n" +
-	"\x1dUpdateRegionCommitmentRequest\x12'\n" +
+	"\v_request_id\"\x97\x03\n" +
+	"\x1dUpdateRegionCommitmentRequest\x12(\n" +
 	"\n" +
-	"commitment\x18\x95\x96\xf3\xe5\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"commitment\x12\\\n" +
-	"\x13commitment_resource\x18\xf8\xa3\xbbt \x01(\v2#.google.cloud.compute.v1.CommitmentB\x03\xe0A\x02R\x12commitmentResource\x12\x1c\n" +
-	"\x05paths\x18\xee\xc1\xe02 \x01(\tH\x00R\x05paths\x88\x01\x01\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"commitment\x18\x95\x96\xf3\xe5\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"commitment\x12]\n" +
+	"\x13commitment_resource\x18\xf8\xa3\xbbt \x01(\v2#.google.cloud.compute.v1.CommitmentB\x04\xe2A\x01\x02R\x12commitmentResource\x12\x1c\n" +
+	"\x05paths\x18\xee\xc1\xe02 \x01(\tH\x00R\x05paths\x88\x01\x01\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12(\n" +
 	"\vupdate_mask\x18\xa2\xb9\xba\xee\x01 \x01(\tH\x02R\n" +
 	"updateMask\x88\x01\x01B\b\n" +
 	"\x06_pathsB\r\n" +
 	"\v_request_idB\x0e\n" +
-	"\f_update_mask\"\xee\x02\n" +
-	"\x17UpdateRegionDiskRequest\x12\x1a\n" +
-	"\x04disk\x18\x9d\x9b\xbc\x01 \x01(\tB\x03\xe0A\x02R\x04disk\x12J\n" +
-	"\rdisk_resource\x18\xf0Ы\f \x01(\v2\x1d.google.cloud.compute.v1.DiskB\x03\xe0A\x02R\fdiskResource\x12\x1c\n" +
-	"\x05paths\x18\xee\xc1\xe02 \x01(\tH\x00R\x05paths\x88\x01\x01\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\f_update_mask\"\xf2\x02\n" +
+	"\x17UpdateRegionDiskRequest\x12\x1b\n" +
+	"\x04disk\x18\x9d\x9b\xbc\x01 \x01(\tB\x04\xe2A\x01\x02R\x04disk\x12K\n" +
+	"\rdisk_resource\x18\xf0Ы\f \x01(\v2\x1d.google.cloud.compute.v1.DiskB\x04\xe2A\x01\x02R\fdiskResource\x12\x1c\n" +
+	"\x05paths\x18\xee\xc1\xe02 \x01(\tH\x00R\x05paths\x88\x01\x01\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12(\n" +
 	"\vupdate_mask\x18\xa2\xb9\xba\xee\x01 \x01(\tH\x02R\n" +
 	"updateMask\x88\x01\x01B\b\n" +
 	"\x06_pathsB\r\n" +
 	"\v_request_idB\x0e\n" +
-	"\f_update_mask\"\xb9\x02\n" +
-	"\x1eUpdateRegionHealthCheckRequest\x12*\n" +
-	"\fhealth_check\x18媤\x93\x01 \x01(\tB\x03\xe0A\x02R\vhealthCheck\x12`\n" +
-	"\x15health_check_resource\x18\xa8ä` \x01(\v2$.google.cloud.compute.v1.HealthCheckB\x03\xe0A\x02R\x13healthCheckResource\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\f_update_mask\"\xbd\x02\n" +
+	"\x1eUpdateRegionHealthCheckRequest\x12+\n" +
+	"\fhealth_check\x18媤\x93\x01 \x01(\tB\x04\xe2A\x01\x02R\vhealthCheck\x12a\n" +
+	"\x15health_check_resource\x18\xa8ä` \x01(\v2$.google.cloud.compute.v1.HealthCheckB\x04\xe2A\x01\x02R\x13healthCheckResource\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\x9b\x02\n" +
-	"\x19UpdateRegionUrlMapRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\x9f\x02\n" +
+	"\x19UpdateRegionUrlMapRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12 \n" +
-	"\aurl_map\x18\x8c\x95\x81\xaf\x01 \x01(\tB\x03\xe0A\x02R\x06urlMap\x12Q\n" +
-	"\x10url_map_resource\x18ᐷP \x01(\v2\x1f.google.cloud.compute.v1.UrlMapB\x03\xe0A\x02R\x0eurlMapResourceB\r\n" +
-	"\v_request_id\"\x8d\x03\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
+	"\aurl_map\x18\x8c\x95\x81\xaf\x01 \x01(\tB\x04\xe2A\x01\x02R\x06urlMap\x12R\n" +
+	"\x10url_map_resource\x18ᐷP \x01(\v2\x1f.google.cloud.compute.v1.UrlMapB\x04\xe2A\x01\x02R\x0eurlMapResourceB\r\n" +
+	"\v_request_id\"\x91\x03\n" +
 	"\x18UpdateReservationRequest\x12\x1c\n" +
-	"\x05paths\x18\xee\xc1\xe02 \x01(\tH\x00R\x05paths\x88\x01\x01\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\x05paths\x18\xee\xc1\xe02 \x01(\tH\x00R\x05paths\x88\x01\x01\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12(\n" +
-	"\vreservation\x18̇\xd5\x16 \x01(\tB\x03\xe0A\x02R\vreservation\x12`\n" +
-	"\x14reservation_resource\x18\xa1\xee\xf4\x87\x01 \x01(\v2$.google.cloud.compute.v1.ReservationB\x03\xe0A\x02R\x13reservationResource\x12(\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x01R\trequestId\x88\x01\x01\x12)\n" +
+	"\vreservation\x18̇\xd5\x16 \x01(\tB\x04\xe2A\x01\x02R\vreservation\x12a\n" +
+	"\x14reservation_resource\x18\xa1\xee\xf4\x87\x01 \x01(\v2$.google.cloud.compute.v1.ReservationB\x04\xe2A\x01\x02R\x13reservationResource\x12(\n" +
 	"\vupdate_mask\x18\xa2\xb9\xba\xee\x01 \x01(\tH\x02R\n" +
-	"updateMask\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\b\n" +
+	"updateMask\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\b\n" +
 	"\x06_pathsB\r\n" +
 	"\v_request_idB\x0e\n" +
-	"\f_update_mask\"\xf4\x02\n" +
-	"\x1cUpdateReservationSlotRequest\x12(\n" +
-	"\vparent_name\x18\x80\x8a\x80\xe4\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"parentName\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x122\n" +
-	"\x10reservation_slot\x18\x91\xbd\xa7\x84\x01 \x01(\tB\x03\xe0A\x02R\x0freservationSlot\x12m\n" +
-	"\x19reservation_slot_resource\x18\xfc\xd3\xe7\xc2\x01 \x01(\v2(.google.cloud.compute.v1.ReservationSlotB\x03\xe0A\x02R\x17reservationSlotResource\x12(\n" +
+	"\f_update_mask\"\xf9\x02\n" +
+	"\x1cUpdateReservationSlotRequest\x12)\n" +
+	"\vparent_name\x18\x80\x8a\x80\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"parentName\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x123\n" +
+	"\x10reservation_slot\x18\x91\xbd\xa7\x84\x01 \x01(\tB\x04\xe2A\x01\x02R\x0freservationSlot\x12n\n" +
+	"\x19reservation_slot_resource\x18\xfc\xd3\xe7\xc2\x01 \x01(\v2(.google.cloud.compute.v1.ReservationSlotB\x04\xe2A\x01\x02R\x17reservationSlotResource\x12(\n" +
 	"\vupdate_mask\x18\xa2\xb9\xba\xee\x01 \x01(\tH\x00R\n" +
-	"updateMask\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\x0e\n" +
-	"\f_update_mask\"\xad\x02\n" +
-	"\x1eUpdateRoutePolicyRouterRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"updateMask\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\x0e\n" +
+	"\f_update_mask\"\xb1\x02\n" +
+	"\x1eUpdateRoutePolicyRouterRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12`\n" +
-	"\x15route_policy_resource\x18\x85\xbd\xb57 \x01(\v2$.google.cloud.compute.v1.RoutePolicyB\x03\xe0A\x02R\x13routePolicyResource\x12\x1e\n" +
-	"\x06router\x18ɮ\xeeF \x01(\tB\x03\xe0A\x02R\x06routerB\r\n" +
-	"\v_request_id\"\x92\x02\n" +
-	"\x13UpdateRouterRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12a\n" +
+	"\x15route_policy_resource\x18\x85\xbd\xb57 \x01(\v2$.google.cloud.compute.v1.RoutePolicyB\x04\xe2A\x01\x02R\x13routePolicyResource\x12\x1f\n" +
+	"\x06router\x18ɮ\xeeF \x01(\tB\x04\xe2A\x01\x02R\x06routerB\r\n" +
+	"\v_request_id\"\x96\x02\n" +
+	"\x13UpdateRouterRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\x1e\n" +
-	"\x06router\x18ɮ\xeeF \x01(\tB\x03\xe0A\x02R\x06router\x12P\n" +
-	"\x0frouter_resource\x18Ā\x82J \x01(\v2\x1f.google.cloud.compute.v1.RouterB\x03\xe0A\x02R\x0erouterResourceB\r\n" +
-	"\v_request_id\"\xdc\x02\n" +
-	"+UpdateShieldedInstanceConfigInstanceRequest\x12\"\n" +
-	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x03\xe0A\x02R\binstance\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\x1f\n" +
+	"\x06router\x18ɮ\xeeF \x01(\tB\x04\xe2A\x01\x02R\x06router\x12Q\n" +
+	"\x0frouter_resource\x18Ā\x82J \x01(\v2\x1f.google.cloud.compute.v1.RouterB\x04\xe2A\x01\x02R\x0erouterResourceB\r\n" +
+	"\v_request_id\"\xe0\x02\n" +
+	"+UpdateShieldedInstanceConfigInstanceRequest\x12#\n" +
+	"\binstance\x18\x95\xa9\xda\b \x01(\tB\x04\xe2A\x01\x02R\binstance\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\x83\x01\n" +
-	"!shielded_instance_config_resource\x18ؖ݁\x01 \x01(\v2/.google.cloud.compute.v1.ShieldedInstanceConfigB\x03\xe0A\x02R\x1eshieldedInstanceConfigResource\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
-	"\v_request_id\"\xe7\x02\n" +
-	"\x18UpdateStoragePoolRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12\x84\x01\n" +
+	"!shielded_instance_config_resource\x18ؖ݁\x01 \x01(\v2/.google.cloud.compute.v1.ShieldedInstanceConfigB\x04\xe2A\x01\x02R\x1eshieldedInstanceConfigResource\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"\v_request_id\"\xeb\x02\n" +
+	"\x18UpdateStoragePoolRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12*\n" +
-	"\fstorage_pool\x18\xe0\xc6\xf1\xab\x01 \x01(\tB\x03\xe0A\x02R\vstoragePool\x12`\n" +
-	"\x15storage_pool_resource\x18\x8d\xbc\xf9J \x01(\v2$.google.cloud.compute.v1.StoragePoolB\x03\xe0A\x02R\x13storagePoolResource\x12(\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12+\n" +
+	"\fstorage_pool\x18\xe0\xc6\xf1\xab\x01 \x01(\tB\x04\xe2A\x01\x02R\vstoragePool\x12a\n" +
+	"\x15storage_pool_resource\x18\x8d\xbc\xf9J \x01(\v2$.google.cloud.compute.v1.StoragePoolB\x04\xe2A\x01\x02R\x13storagePoolResource\x12(\n" +
 	"\vupdate_mask\x18\xa2\xb9\xba\xee\x01 \x01(\tH\x01R\n" +
-	"updateMask\x88\x01\x01\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"updateMask\x88\x01\x01\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
 	"\v_request_idB\x0e\n" +
-	"\f_update_mask\"\xec\x01\n" +
-	"\x13UpdateUrlMapRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"\f_update_mask\"\xef\x01\n" +
+	"\x13UpdateUrlMapRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12 \n" +
-	"\aurl_map\x18\x8c\x95\x81\xaf\x01 \x01(\tB\x03\xe0A\x02R\x06urlMap\x12Q\n" +
-	"\x10url_map_resource\x18ᐷP \x01(\v2\x1f.google.cloud.compute.v1.UrlMapB\x03\xe0A\x02R\x0eurlMapResourceB\r\n" +
-	"\v_request_id\"\xd8\x02\n" +
-	"\"UpdateZoneVmExtensionPolicyRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12%\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x12!\n" +
+	"\aurl_map\x18\x8c\x95\x81\xaf\x01 \x01(\tB\x04\xe2A\x01\x02R\x06urlMap\x12R\n" +
+	"\x10url_map_resource\x18ᐷP \x01(\v2\x1f.google.cloud.compute.v1.UrlMapB\x04\xe2A\x01\x02R\x0eurlMapResourceB\r\n" +
+	"\v_request_id\"\xdc\x02\n" +
+	"\"UpdateZoneVmExtensionPolicyRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12%\n" +
 	"\n" +
-	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x127\n" +
-	"\x13vm_extension_policy\x18\xba\x93\x8b\x9e\x01 \x01(\tB\x03\xe0A\x02R\x11vmExtensionPolicy\x12t\n" +
-	"\x1cvm_extension_policy_resource\x18\xf3\xf9\xf1\xf5\x01 \x01(\v2*.google.cloud.compute.v1.VmExtensionPolicyB\x03\xe0A\x02R\x19vmExtensionPolicyResource\x12!\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\n" +
-	"\xe0A\x02\xf2G\x04zoneR\x04zoneB\r\n" +
+	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01\x128\n" +
+	"\x13vm_extension_policy\x18\xba\x93\x8b\x9e\x01 \x01(\tB\x04\xe2A\x01\x02R\x11vmExtensionPolicy\x12u\n" +
+	"\x1cvm_extension_policy_resource\x18\xf3\xf9\xf1\xf5\x01 \x01(\v2*.google.cloud.compute.v1.VmExtensionPolicyB\x04\xe2A\x01\x02R\x19vmExtensionPolicyResource\x12\"\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\v\xe2A\x01\x02\xf2G\x04zoneR\x04zoneB\r\n" +
 	"\v_request_id\"\xca\t\n" +
 	"\x06UrlMap\x125\n" +
 	"\x12creation_timestamp\x18\xb6\x8f\xc7\x0e \x01(\tH\x00R\x11creationTimestamp\x88\x01\x01\x12\x8a\x01\n" +
@@ -252287,16 +252157,16 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"bucketName\x88\x01\x01\x125\n" +
 	"\x12report_name_prefix\x18\xbb\xb0ט\x01 \x01(\tH\x01R\x10reportNamePrefix\x88\x01\x01B\x0e\n" +
 	"\f_bucket_nameB\x15\n" +
-	"\x13_report_name_prefix\"\x9a\x02\n" +
-	"\x1bValidateRegionUrlMapRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\x12\x96\x01\n" +
-	")region_url_maps_validate_request_resource\x18\x9à\x1b \x01(\v25.google.cloud.compute.v1.RegionUrlMapsValidateRequestB\x03\xe0A\x02R$regionUrlMapsValidateRequestResource\x12 \n" +
-	"\aurl_map\x18\x8c\x95\x81\xaf\x01 \x01(\tB\x03\xe0A\x02R\x06urlMap\"\xe2\x01\n" +
-	"\x15ValidateUrlMapRequest\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12 \n" +
-	"\aurl_map\x18\x8c\x95\x81\xaf\x01 \x01(\tB\x03\xe0A\x02R\x06urlMap\x12\x84\x01\n" +
-	"\"url_maps_validate_request_resource\x18\xef\xd1\xe4\xbc\x01 \x01(\v2/.google.cloud.compute.v1.UrlMapsValidateRequestB\x03\xe0A\x02R\x1eurlMapsValidateRequestResource\"\xd3\x01\n" +
+	"\x13_report_name_prefix\"\x9e\x02\n" +
+	"\x1bValidateRegionUrlMapRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\x12\x97\x01\n" +
+	")region_url_maps_validate_request_resource\x18\x9à\x1b \x01(\v25.google.cloud.compute.v1.RegionUrlMapsValidateRequestB\x04\xe2A\x01\x02R$regionUrlMapsValidateRequestResource\x12!\n" +
+	"\aurl_map\x18\x8c\x95\x81\xaf\x01 \x01(\tB\x04\xe2A\x01\x02R\x06urlMap\"\xe5\x01\n" +
+	"\x15ValidateUrlMapRequest\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12!\n" +
+	"\aurl_map\x18\x8c\x95\x81\xaf\x01 \x01(\tB\x04\xe2A\x01\x02R\x06urlMap\x12\x85\x01\n" +
+	"\"url_maps_validate_request_resource\x18\xef\xd1\xe4\xbc\x01 \x01(\v2/.google.cloud.compute.v1.UrlMapsValidateRequestB\x04\xe2A\x01\x02R\x1eurlMapsValidateRequestResource\"\xd3\x01\n" +
 	"\x15VmEndpointNatMappings\x12+\n" +
 	"\rinstance_name\x18\xf5\xe7\xd8l \x01(\tH\x00R\finstanceName\x88\x01\x01\x12{\n" +
 	"\x16interface_nat_mappings\x18\x89\x80\x95z \x03(\v2B.google.cloud.compute.v1.VmEndpointNatMappingsInterfaceNatMappingsR\x14interfaceNatMappingsB\x10\n" +
@@ -252706,18 +252576,18 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\x02id\x18\x9b\x1a \x01(\tH\x00R\x02id\x88\x01\x01\x12(\n" +
 	"\vsensitivity\x18\x9f\xbd\x90\r \x01(\x05H\x01R\vsensitivity\x88\x01\x01B\x05\n" +
 	"\x03_idB\x0e\n" +
-	"\f_sensitivity\"d\n" +
-	"\x1aWaitGlobalOperationRequest\x12$\n" +
-	"\toperation\x18\xe7\xaa\xeb\x18 \x01(\tB\x03\xe0A\x02R\toperation\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\"\x84\x01\n" +
-	"\x1aWaitRegionOperationRequest\x12$\n" +
-	"\toperation\x18\xe7\xaa\xeb\x18 \x01(\tB\x03\xe0A\x02R\toperation\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1e\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\x03\xe0A\x02R\x06region\"~\n" +
-	"\x18WaitZoneOperationRequest\x12$\n" +
-	"\toperation\x18\xe7\xaa\xeb\x18 \x01(\tB\x03\xe0A\x02R\toperation\x12 \n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\x03\xe0A\x02R\aproject\x12\x1a\n" +
-	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x03\xe0A\x02R\x04zone\"\x92\t\n" +
+	"\f_sensitivity\"f\n" +
+	"\x1aWaitGlobalOperationRequest\x12%\n" +
+	"\toperation\x18\xe7\xaa\xeb\x18 \x01(\tB\x04\xe2A\x01\x02R\toperation\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\"\x87\x01\n" +
+	"\x1aWaitRegionOperationRequest\x12%\n" +
+	"\toperation\x18\xe7\xaa\xeb\x18 \x01(\tB\x04\xe2A\x01\x02R\toperation\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1f\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\x04\xe2A\x01\x02R\x06region\"\x81\x01\n" +
+	"\x18WaitZoneOperationRequest\x12%\n" +
+	"\toperation\x18\xe7\xaa\xeb\x18 \x01(\tB\x04\xe2A\x01\x02R\toperation\x12!\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1b\n" +
+	"\x04zone\x18\xac\xc7\xe4\x01 \x01(\tB\x04\xe2A\x01\x02R\x04zone\"\x92\t\n" +
 	"\aWarning\x12\x1a\n" +
 	"\x04code\x18\xedۺ\x01 \x01(\tH\x00R\x04code\x88\x01\x01\x124\n" +
 	"\x04data\x18\xaa\u07fb\x01 \x03(\v2\x1d.google.cloud.compute.v1.DataR\x04data\x12!\n" +
@@ -252888,17 +252758,17 @@ const file_google_cloud_compute_v1_compute_proto_rawDesc = "" +
 	"\x04NONE\x10\xb8Β\x01B\x17\n" +
 	"\x15_bandwidth_allocationB\x16\n" +
 	"\x14_bandwidth_unmeteredB\x11\n" +
-	"\x0f_fault_response\"\xcc\x01\n" +
-	"&WithdrawPublicAdvertisedPrefixeRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12@\n" +
-	"\x18public_advertised_prefix\x18\x9e\xf7\xc90 \x01(\tB\x03\xe0A\x02R\x16publicAdvertisedPrefix\x12%\n" +
+	"\x0f_fault_response\"\xce\x01\n" +
+	"&WithdrawPublicAdvertisedPrefixeRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12A\n" +
+	"\x18public_advertised_prefix\x18\x9e\xf7\xc90 \x01(\tB\x04\xe2A\x01\x02R\x16publicAdvertisedPrefix\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
-	"\v_request_id\"\xf2\x01\n" +
-	"%WithdrawPublicDelegatedPrefixeRequest\x12*\n" +
-	"\aproject\x18\x99\x96\xc1l \x01(\tB\r\xe0A\x02\xf2G\aprojectR\aproject\x12>\n" +
-	"\x17public_delegated_prefix\x18\xe8ܱa \x01(\tB\x03\xe0A\x02R\x15publicDelegatedPrefix\x12'\n" +
-	"\x06region\x18\xf4͠B \x01(\tB\f\xe0A\x02\xf2G\x06regionR\x06region\x12%\n" +
+	"\v_request_id\"\xf5\x01\n" +
+	"%WithdrawPublicDelegatedPrefixeRequest\x12+\n" +
+	"\aproject\x18\x99\x96\xc1l \x01(\tB\x0e\xe2A\x01\x02\xf2G\aprojectR\aproject\x12?\n" +
+	"\x17public_delegated_prefix\x18\xe8ܱa \x01(\tB\x04\xe2A\x01\x02R\x15publicDelegatedPrefix\x12(\n" +
+	"\x06region\x18\xf4͠B \x01(\tB\r\xe2A\x01\x02\xf2G\x06regionR\x06region\x12%\n" +
 	"\n" +
 	"request_id\x18ˁ\xd9\x11 \x01(\tH\x00R\trequestId\x88\x01\x01B\r\n" +
 	"\v_request_id\"\xb6\x01\n" +

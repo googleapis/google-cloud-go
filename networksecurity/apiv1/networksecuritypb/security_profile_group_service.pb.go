@@ -757,53 +757,53 @@ var File_google_cloud_networksecurity_v1_security_profile_group_service_proto pr
 
 const file_google_cloud_networksecurity_v1_security_profile_group_service_proto_rawDesc = "" +
 	"\n" +
-	"Dgoogle/cloud/networksecurity/v1/security_profile_group_service.proto\x12\x1fgoogle.cloud.networksecurity.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/networksecurity/v1/common.proto\x1a<google/cloud/networksecurity/v1/security_profile_group.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xbd\x01\n" +
-	" ListSecurityProfileGroupsRequest\x12S\n" +
-	"\x06parent\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\x123networksecurity.googleapis.com/SecurityProfileGroupR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"Dgoogle/cloud/networksecurity/v1/security_profile_group_service.proto\x12\x1fgoogle.cloud.networksecurity.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/networksecurity/v1/common.proto\x1a<google/cloud/networksecurity/v1/security_profile_group.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xc0\x01\n" +
+	" ListSecurityProfileGroupsRequest\x12T\n" +
+	"\x06parent\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\x123networksecurity.googleapis.com/SecurityProfileGroupR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xba\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xba\x01\n" +
 	"!ListSecurityProfileGroupsResponse\x12m\n" +
 	"\x17security_profile_groups\x18\x01 \x03(\v25.google.cloud.networksecurity.v1.SecurityProfileGroupR\x15securityProfileGroups\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"q\n" +
-	"\x1eGetSecurityProfileGroupRequest\x12O\n" +
-	"\x04name\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\n" +
-	"3networksecurity.googleapis.com/SecurityProfileGroupR\x04name\"\xaa\x02\n" +
-	"!CreateSecurityProfileGroupRequest\x12S\n" +
-	"\x06parent\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\x123networksecurity.googleapis.com/SecurityProfileGroupR\x06parent\x12>\n" +
-	"\x19security_profile_group_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x16securityProfileGroupId\x12p\n" +
-	"\x16security_profile_group\x18\x03 \x01(\v25.google.cloud.networksecurity.v1.SecurityProfileGroupB\x03\xe0A\x02R\x14securityProfileGroup\"\xd7\x01\n" +
-	"!UpdateSecurityProfileGroupRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12p\n" +
-	"\x16security_profile_group\x18\x02 \x01(\v25.google.cloud.networksecurity.v1.SecurityProfileGroupB\x03\xe0A\x02R\x14securityProfileGroup\"\x8d\x01\n" +
-	"!DeleteSecurityProfileGroupRequest\x12O\n" +
-	"\x04name\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\n" +
-	"3networksecurity.googleapis.com/SecurityProfileGroupR\x04name\x12\x17\n" +
-	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x01R\x04etag\"\xb3\x01\n" +
-	"\x1bListSecurityProfilesRequest\x12N\n" +
-	"\x06parent\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\x12.networksecurity.googleapis.com/SecurityProfileR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"r\n" +
+	"\x1eGetSecurityProfileGroupRequest\x12P\n" +
+	"\x04name\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\n" +
+	"3networksecurity.googleapis.com/SecurityProfileGroupR\x04name\"\xad\x02\n" +
+	"!CreateSecurityProfileGroupRequest\x12T\n" +
+	"\x06parent\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\x123networksecurity.googleapis.com/SecurityProfileGroupR\x06parent\x12?\n" +
+	"\x19security_profile_group_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x16securityProfileGroupId\x12q\n" +
+	"\x16security_profile_group\x18\x03 \x01(\v25.google.cloud.networksecurity.v1.SecurityProfileGroupB\x04\xe2A\x01\x02R\x14securityProfileGroup\"\xd9\x01\n" +
+	"!UpdateSecurityProfileGroupRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12q\n" +
+	"\x16security_profile_group\x18\x02 \x01(\v25.google.cloud.networksecurity.v1.SecurityProfileGroupB\x04\xe2A\x01\x02R\x14securityProfileGroup\"\x8f\x01\n" +
+	"!DeleteSecurityProfileGroupRequest\x12P\n" +
+	"\x04name\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\n" +
+	"3networksecurity.googleapis.com/SecurityProfileGroupR\x04name\x12\x18\n" +
+	"\x04etag\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"\xb6\x01\n" +
+	"\x1bListSecurityProfilesRequest\x12O\n" +
+	"\x06parent\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\x12.networksecurity.googleapis.com/SecurityProfileR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xa5\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xa5\x01\n" +
 	"\x1cListSecurityProfilesResponse\x12]\n" +
 	"\x11security_profiles\x18\x01 \x03(\v20.google.cloud.networksecurity.v1.SecurityProfileR\x10securityProfiles\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"g\n" +
-	"\x19GetSecurityProfileRequest\x12J\n" +
-	"\x04name\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".networksecurity.googleapis.com/SecurityProfileR\x04name\"\x85\x02\n" +
-	"\x1cCreateSecurityProfileRequest\x12N\n" +
-	"\x06parent\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\x12.networksecurity.googleapis.com/SecurityProfileR\x06parent\x123\n" +
-	"\x13security_profile_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x11securityProfileId\x12`\n" +
-	"\x10security_profile\x18\x03 \x01(\v20.google.cloud.networksecurity.v1.SecurityProfileB\x03\xe0A\x02R\x0fsecurityProfile\"\xc2\x01\n" +
-	"\x1cUpdateSecurityProfileRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12`\n" +
-	"\x10security_profile\x18\x02 \x01(\v20.google.cloud.networksecurity.v1.SecurityProfileB\x03\xe0A\x02R\x0fsecurityProfile\"\x83\x01\n" +
-	"\x1cDeleteSecurityProfileRequest\x12J\n" +
-	"\x04name\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".networksecurity.googleapis.com/SecurityProfileR\x04name\x12\x17\n" +
-	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x01R\x04etag2\xd4\x16\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"h\n" +
+	"\x19GetSecurityProfileRequest\x12K\n" +
+	"\x04name\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".networksecurity.googleapis.com/SecurityProfileR\x04name\"\x88\x02\n" +
+	"\x1cCreateSecurityProfileRequest\x12O\n" +
+	"\x06parent\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\x12.networksecurity.googleapis.com/SecurityProfileR\x06parent\x124\n" +
+	"\x13security_profile_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x11securityProfileId\x12a\n" +
+	"\x10security_profile\x18\x03 \x01(\v20.google.cloud.networksecurity.v1.SecurityProfileB\x04\xe2A\x01\x02R\x0fsecurityProfile\"\xc4\x01\n" +
+	"\x1cUpdateSecurityProfileRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12a\n" +
+	"\x10security_profile\x18\x02 \x01(\v20.google.cloud.networksecurity.v1.SecurityProfileB\x04\xe2A\x01\x02R\x0fsecurityProfile\"\x85\x01\n" +
+	"\x1cDeleteSecurityProfileRequest\x12K\n" +
+	"\x04name\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".networksecurity.googleapis.com/SecurityProfileR\x04name\x12\x18\n" +
+	"\x04etag\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04etag2\xd4\x16\n" +
 	"\x1bSecurityProfileGroupService\x12\xee\x01\n" +
 	"\x19ListSecurityProfileGroups\x12A.google.cloud.networksecurity.v1.ListSecurityProfileGroupsRequest\x1aB.google.cloud.networksecurity.v1.ListSecurityProfileGroupsResponse\"J\xdaA\x06parent\x82\xd3\xe4\x93\x02;\x129/v1/{parent=projects/*/locations/*}/securityProfileGroups\x12\xdb\x01\n" +
 	"\x17GetSecurityProfileGroup\x12?.google.cloud.networksecurity.v1.GetSecurityProfileGroupRequest\x1a5.google.cloud.networksecurity.v1.SecurityProfileGroup\"H\xdaA\x04name\x82\xd3\xe4\x93\x02;\x129/v1/{name=projects/*/locations/*/securityProfileGroups/*}\x12\xe1\x02\n" +

@@ -1801,18 +1801,18 @@ var File_google_cloud_notebooks_v1_runtime_proto protoreflect.FileDescriptor
 
 const file_google_cloud_notebooks_v1_runtime_proto_rawDesc = "" +
 	"\n" +
-	"'google/cloud/notebooks/v1/runtime.proto\x12\x19google.cloud.notebooks.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a+google/cloud/notebooks/v1/environment.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x96\b\n" +
-	"\aRuntime\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12T\n" +
-	"\x0fvirtual_machine\x18\x02 \x01(\v2).google.cloud.notebooks.v1.VirtualMachineH\x00R\x0evirtualMachine\x12C\n" +
-	"\x05state\x18\x03 \x01(\x0e2(.google.cloud.notebooks.v1.Runtime.StateB\x03\xe0A\x03R\x05state\x12V\n" +
-	"\fhealth_state\x18\x04 \x01(\x0e2..google.cloud.notebooks.v1.Runtime.HealthStateB\x03\xe0A\x03R\vhealthState\x12S\n" +
+	"'google/cloud/notebooks/v1/runtime.proto\x12\x19google.cloud.notebooks.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a+google/cloud/notebooks/v1/environment.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x9c\b\n" +
+	"\aRuntime\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12T\n" +
+	"\x0fvirtual_machine\x18\x02 \x01(\v2).google.cloud.notebooks.v1.VirtualMachineH\x00R\x0evirtualMachine\x12D\n" +
+	"\x05state\x18\x03 \x01(\x0e2(.google.cloud.notebooks.v1.Runtime.StateB\x04\xe2A\x01\x03R\x05state\x12W\n" +
+	"\fhealth_state\x18\x04 \x01(\x0e2..google.cloud.notebooks.v1.Runtime.HealthStateB\x04\xe2A\x01\x03R\vhealthState\x12S\n" +
 	"\raccess_config\x18\x05 \x01(\v2..google.cloud.notebooks.v1.RuntimeAccessConfigR\faccessConfig\x12Y\n" +
-	"\x0fsoftware_config\x18\x06 \x01(\v20.google.cloud.notebooks.v1.RuntimeSoftwareConfigR\x0esoftwareConfig\x12H\n" +
-	"\ametrics\x18\a \x01(\v2).google.cloud.notebooks.v1.RuntimeMetricsB\x03\xe0A\x03R\ametrics\x12@\n" +
-	"\vcreate_time\x18\x14 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x15 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x0fsoftware_config\x18\x06 \x01(\v20.google.cloud.notebooks.v1.RuntimeSoftwareConfigR\x0esoftwareConfig\x12I\n" +
+	"\ametrics\x18\a \x01(\v2).google.cloud.notebooks.v1.RuntimeMetricsB\x04\xe2A\x01\x03R\ametrics\x12A\n" +
+	"\vcreate_time\x18\x14 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x15 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\"\x94\x01\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
@@ -1854,32 +1854,32 @@ const file_google_cloud_notebooks_v1_runtime_proto_rawDesc = "" +
 	"\x12\x17\n" +
 	"\x13NVIDIA_TESLA_P4_VWS\x10\v\"+\n" +
 	"\x10EncryptionConfig\x12\x17\n" +
-	"\akms_key\x18\x01 \x01(\tR\x06kmsKey\"\xa5\x04\n" +
-	"\tLocalDisk\x12$\n" +
-	"\vauto_delete\x18\x01 \x01(\bB\x03\xe0A\x03R\n" +
-	"autoDelete\x12\x17\n" +
-	"\x04boot\x18\x02 \x01(\bB\x03\xe0A\x03R\x04boot\x12$\n" +
-	"\vdevice_name\x18\x03 \x01(\tB\x03\xe0A\x03R\n" +
-	"deviceName\x12k\n" +
-	"\x11guest_os_features\x18\x04 \x03(\v2:.google.cloud.notebooks.v1.LocalDisk.RuntimeGuestOsFeatureB\x03\xe0A\x03R\x0fguestOsFeatures\x12\x19\n" +
-	"\x05index\x18\x05 \x01(\x05B\x03\xe0A\x03R\x05index\x12f\n" +
-	"\x11initialize_params\x18\x06 \x01(\v24.google.cloud.notebooks.v1.LocalDiskInitializeParamsB\x03\xe0A\x04R\x10initializeParams\x12\x1c\n" +
-	"\tinterface\x18\a \x01(\tR\tinterface\x12\x17\n" +
-	"\x04kind\x18\b \x01(\tB\x03\xe0A\x03R\x04kind\x12\x1f\n" +
-	"\blicenses\x18\t \x03(\tB\x03\xe0A\x03R\blicenses\x12\x12\n" +
+	"\akms_key\x18\x01 \x01(\tR\x06kmsKey\"\xad\x04\n" +
+	"\tLocalDisk\x12%\n" +
+	"\vauto_delete\x18\x01 \x01(\bB\x04\xe2A\x01\x03R\n" +
+	"autoDelete\x12\x18\n" +
+	"\x04boot\x18\x02 \x01(\bB\x04\xe2A\x01\x03R\x04boot\x12%\n" +
+	"\vdevice_name\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"deviceName\x12l\n" +
+	"\x11guest_os_features\x18\x04 \x03(\v2:.google.cloud.notebooks.v1.LocalDisk.RuntimeGuestOsFeatureB\x04\xe2A\x01\x03R\x0fguestOsFeatures\x12\x1a\n" +
+	"\x05index\x18\x05 \x01(\x05B\x04\xe2A\x01\x03R\x05index\x12g\n" +
+	"\x11initialize_params\x18\x06 \x01(\v24.google.cloud.notebooks.v1.LocalDiskInitializeParamsB\x04\xe2A\x01\x04R\x10initializeParams\x12\x1c\n" +
+	"\tinterface\x18\a \x01(\tR\tinterface\x12\x18\n" +
+	"\x04kind\x18\b \x01(\tB\x04\xe2A\x01\x03R\x04kind\x12 \n" +
+	"\blicenses\x18\t \x03(\tB\x04\xe2A\x01\x03R\blicenses\x12\x12\n" +
 	"\x04mode\x18\n" +
 	" \x01(\tR\x04mode\x12\x16\n" +
 	"\x06source\x18\v \x01(\tR\x06source\x12\x12\n" +
 	"\x04type\x18\f \x01(\tR\x04type\x1a+\n" +
 	"\x15RuntimeGuestOsFeature\x12\x12\n" +
-	"\x04type\x18\x01 \x01(\tR\x04type\"\xeb\x03\n" +
-	"\x19LocalDiskInitializeParams\x12%\n" +
-	"\vdescription\x18\x01 \x01(\tB\x03\xe0A\x01R\vdescription\x12 \n" +
-	"\tdisk_name\x18\x02 \x01(\tB\x03\xe0A\x01R\bdiskName\x12%\n" +
-	"\fdisk_size_gb\x18\x03 \x01(\x03B\x03\xe0A\x01R\n" +
-	"diskSizeGb\x12_\n" +
-	"\tdisk_type\x18\x04 \x01(\x0e2=.google.cloud.notebooks.v1.LocalDiskInitializeParams.DiskTypeB\x03\xe0A\x04R\bdiskType\x12]\n" +
-	"\x06labels\x18\x05 \x03(\v2@.google.cloud.notebooks.v1.LocalDiskInitializeParams.LabelsEntryB\x03\xe0A\x01R\x06labels\x1a9\n" +
+	"\x04type\x18\x01 \x01(\tR\x04type\"\xf0\x03\n" +
+	"\x19LocalDiskInitializeParams\x12&\n" +
+	"\vdescription\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12!\n" +
+	"\tdisk_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\bdiskName\x12&\n" +
+	"\fdisk_size_gb\x18\x03 \x01(\x03B\x04\xe2A\x01\x01R\n" +
+	"diskSizeGb\x12`\n" +
+	"\tdisk_type\x18\x04 \x01(\x0e2=.google.cloud.notebooks.v1.LocalDiskInitializeParams.DiskTypeB\x04\xe2A\x01\x04R\bdiskType\x12^\n" +
+	"\x06labels\x18\x05 \x03(\v2@.google.cloud.notebooks.v1.LocalDiskInitializeParams.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"c\n" +
@@ -1890,16 +1890,16 @@ const file_google_cloud_notebooks_v1_runtime_proto_rawDesc = "" +
 	"\x06PD_SSD\x10\x02\x12\x0f\n" +
 	"\vPD_BALANCED\x10\x03\x12\x0e\n" +
 	"\n" +
-	"PD_EXTREME\x10\x04\"\x9f\x02\n" +
+	"PD_EXTREME\x10\x04\"\xa0\x02\n" +
 	"\x13RuntimeAccessConfig\x12a\n" +
 	"\vaccess_type\x18\x01 \x01(\x0e2@.google.cloud.notebooks.v1.RuntimeAccessConfig.RuntimeAccessTypeR\n" +
 	"accessType\x12#\n" +
-	"\rruntime_owner\x18\x02 \x01(\tR\fruntimeOwner\x12 \n" +
-	"\tproxy_uri\x18\x03 \x01(\tB\x03\xe0A\x03R\bproxyUri\"^\n" +
+	"\rruntime_owner\x18\x02 \x01(\tR\fruntimeOwner\x12!\n" +
+	"\tproxy_uri\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\bproxyUri\"^\n" +
 	"\x11RuntimeAccessType\x12#\n" +
 	"\x1fRUNTIME_ACCESS_TYPE_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vSINGLE_USER\x10\x01\x12\x13\n" +
-	"\x0fSERVICE_ACCOUNT\x10\x02\"\xbe\a\n" +
+	"\x0fSERVICE_ACCOUNT\x10\x02\"\xc1\a\n" +
 	"\x15RuntimeSoftwareConfig\x12:\n" +
 	"\x19notebook_upgrade_schedule\x18\x01 \x01(\tR\x17notebookUpgradeSchedule\x12=\n" +
 	"\x18enable_health_monitoring\x18\x02 \x01(\bH\x00R\x16enableHealthMonitoring\x88\x01\x01\x12(\n" +
@@ -1907,13 +1907,13 @@ const file_google_cloud_notebooks_v1_runtime_proto_rawDesc = "" +
 	"\x15idle_shutdown_timeout\x18\x04 \x01(\x05R\x13idleShutdownTimeout\x12,\n" +
 	"\x12install_gpu_driver\x18\x05 \x01(\bR\x10installGpuDriver\x123\n" +
 	"\x16custom_gpu_driver_path\x18\x06 \x01(\tR\x13customGpuDriverPath\x12.\n" +
-	"\x13post_startup_script\x18\a \x01(\tR\x11postStartupScript\x12H\n" +
-	"\akernels\x18\b \x03(\v2).google.cloud.notebooks.v1.ContainerImageB\x03\xe0A\x01R\akernels\x12*\n" +
-	"\vupgradeable\x18\t \x01(\bB\x03\xe0A\x03H\x02R\vupgradeable\x88\x01\x01\x12\x8b\x01\n" +
+	"\x13post_startup_script\x18\a \x01(\tR\x11postStartupScript\x12I\n" +
+	"\akernels\x18\b \x03(\v2).google.cloud.notebooks.v1.ContainerImageB\x04\xe2A\x01\x01R\akernels\x12+\n" +
+	"\vupgradeable\x18\t \x01(\bB\x04\xe2A\x01\x03H\x02R\vupgradeable\x88\x01\x01\x12\x8b\x01\n" +
 	"\x1cpost_startup_script_behavior\x18\n" +
 	" \x01(\x0e2J.google.cloud.notebooks.v1.RuntimeSoftwareConfig.PostStartupScriptBehaviorR\x19postStartupScriptBehavior\x12.\n" +
-	"\x10disable_terminal\x18\v \x01(\bH\x03R\x0fdisableTerminal\x88\x01\x01\x12\"\n" +
-	"\aversion\x18\f \x01(\tB\x03\xe0A\x03H\x04R\aversion\x88\x01\x01\"\x80\x01\n" +
+	"\x10disable_terminal\x18\v \x01(\bH\x03R\x0fdisableTerminal\x88\x01\x01\x12#\n" +
+	"\aversion\x18\f \x01(\tB\x04\xe2A\x01\x03H\x04R\aversion\x88\x01\x01\"\x80\x01\n" +
 	"\x19PostStartupScriptBehavior\x12,\n" +
 	"(POST_STARTUP_SCRIPT_BEHAVIOR_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fRUN_EVERY_START\x10\x01\x12 \n" +
@@ -1923,9 +1923,9 @@ const file_google_cloud_notebooks_v1_runtime_proto_rawDesc = "" +
 	"\f_upgradeableB\x13\n" +
 	"\x11_disable_terminalB\n" +
 	"\n" +
-	"\b_version\"\xbc\x01\n" +
-	"\x0eRuntimeMetrics\x12h\n" +
-	"\x0esystem_metrics\x18\x01 \x03(\v2<.google.cloud.notebooks.v1.RuntimeMetrics.SystemMetricsEntryB\x03\xe0A\x03R\rsystemMetrics\x1a@\n" +
+	"\b_version\"\xbd\x01\n" +
+	"\x0eRuntimeMetrics\x12i\n" +
+	"\x0esystem_metrics\x18\x01 \x03(\v2<.google.cloud.notebooks.v1.RuntimeMetrics.SystemMetricsEntryB\x04\xe2A\x01\x03R\rsystemMetrics\x1a@\n" +
 	"\x12SystemMetricsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xae\x01\n" +
@@ -1933,32 +1933,32 @@ const file_google_cloud_notebooks_v1_runtime_proto_rawDesc = "" +
 	"\x12enable_secure_boot\x18\x01 \x01(\bR\x10enableSecureBoot\x12\x1f\n" +
 	"\venable_vtpm\x18\x02 \x01(\bR\n" +
 	"enableVtpm\x12>\n" +
-	"\x1benable_integrity_monitoring\x18\x03 \x01(\bR\x19enableIntegrityMonitoring\"\xc7\x01\n" +
-	"\x0eVirtualMachine\x12(\n" +
-	"\rinstance_name\x18\x01 \x01(\tB\x03\xe0A\x03R\finstanceName\x12$\n" +
-	"\vinstance_id\x18\x02 \x01(\tB\x03\xe0A\x03R\n" +
+	"\x1benable_integrity_monitoring\x18\x03 \x01(\bR\x19enableIntegrityMonitoring\"\xc9\x01\n" +
+	"\x0eVirtualMachine\x12)\n" +
+	"\rinstance_name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\finstanceName\x12%\n" +
+	"\vinstance_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\n" +
 	"instanceId\x12e\n" +
-	"\x16virtual_machine_config\x18\x03 \x01(\v2/.google.cloud.notebooks.v1.VirtualMachineConfigR\x14virtualMachineConfig\"\xe1\v\n" +
-	"\x14VirtualMachineConfig\x12\x17\n" +
-	"\x04zone\x18\x01 \x01(\tB\x03\xe0A\x03R\x04zone\x12&\n" +
-	"\fmachine_type\x18\x02 \x01(\tB\x03\xe0A\x02R\vmachineType\x12Y\n" +
-	"\x10container_images\x18\x03 \x03(\v2).google.cloud.notebooks.v1.ContainerImageB\x03\xe0A\x01R\x0fcontainerImages\x12F\n" +
-	"\tdata_disk\x18\x04 \x01(\v2$.google.cloud.notebooks.v1.LocalDiskB\x03\xe0A\x02R\bdataDisk\x12]\n" +
-	"\x11encryption_config\x18\x05 \x01(\v2+.google.cloud.notebooks.v1.EncryptionConfigB\x03\xe0A\x01R\x10encryptionConfig\x12w\n" +
-	"\x18shielded_instance_config\x18\x06 \x01(\v28.google.cloud.notebooks.v1.RuntimeShieldedInstanceConfigB\x03\xe0A\x01R\x16shieldedInstanceConfig\x12g\n" +
-	"\x12accelerator_config\x18\a \x01(\v23.google.cloud.notebooks.v1.RuntimeAcceleratorConfigB\x03\xe0A\x01R\x11acceleratorConfig\x12\x1d\n" +
-	"\anetwork\x18\b \x01(\tB\x03\xe0A\x01R\anetwork\x12\x1b\n" +
-	"\x06subnet\x18\t \x01(\tB\x03\xe0A\x01R\x06subnet\x12-\n" +
+	"\x16virtual_machine_config\x18\x03 \x01(\v2/.google.cloud.notebooks.v1.VirtualMachineConfigR\x14virtualMachineConfig\"\xf2\v\n" +
+	"\x14VirtualMachineConfig\x12\x18\n" +
+	"\x04zone\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04zone\x12'\n" +
+	"\fmachine_type\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vmachineType\x12Z\n" +
+	"\x10container_images\x18\x03 \x03(\v2).google.cloud.notebooks.v1.ContainerImageB\x04\xe2A\x01\x01R\x0fcontainerImages\x12G\n" +
+	"\tdata_disk\x18\x04 \x01(\v2$.google.cloud.notebooks.v1.LocalDiskB\x04\xe2A\x01\x02R\bdataDisk\x12^\n" +
+	"\x11encryption_config\x18\x05 \x01(\v2+.google.cloud.notebooks.v1.EncryptionConfigB\x04\xe2A\x01\x01R\x10encryptionConfig\x12x\n" +
+	"\x18shielded_instance_config\x18\x06 \x01(\v28.google.cloud.notebooks.v1.RuntimeShieldedInstanceConfigB\x04\xe2A\x01\x01R\x16shieldedInstanceConfig\x12h\n" +
+	"\x12accelerator_config\x18\a \x01(\v23.google.cloud.notebooks.v1.RuntimeAcceleratorConfigB\x04\xe2A\x01\x01R\x11acceleratorConfig\x12\x1e\n" +
+	"\anetwork\x18\b \x01(\tB\x04\xe2A\x01\x01R\anetwork\x12\x1c\n" +
+	"\x06subnet\x18\t \x01(\tB\x04\xe2A\x01\x01R\x06subnet\x12.\n" +
 	"\x10internal_ip_only\x18\n" +
-	" \x01(\bB\x03\xe0A\x01R\x0einternalIpOnly\x12\x17\n" +
-	"\x04tags\x18\r \x03(\tB\x03\xe0A\x01R\x04tags\x12t\n" +
-	"\x10guest_attributes\x18\x0e \x03(\v2D.google.cloud.notebooks.v1.VirtualMachineConfig.GuestAttributesEntryB\x03\xe0A\x03R\x0fguestAttributes\x12^\n" +
-	"\bmetadata\x18\x0f \x03(\v2=.google.cloud.notebooks.v1.VirtualMachineConfig.MetadataEntryB\x03\xe0A\x01R\bmetadata\x12X\n" +
-	"\x06labels\x18\x10 \x03(\v2;.google.cloud.notebooks.v1.VirtualMachineConfig.LabelsEntryB\x03\xe0A\x01R\x06labels\x12W\n" +
-	"\bnic_type\x18\x11 \x01(\x0e27.google.cloud.notebooks.v1.VirtualMachineConfig.NicTypeB\x03\xe0A\x01R\anicType\x12/\n" +
-	"\x11reserved_ip_range\x18\x12 \x01(\tB\x03\xe0A\x01R\x0freservedIpRange\x12]\n" +
+	" \x01(\bB\x04\xe2A\x01\x01R\x0einternalIpOnly\x12\x18\n" +
+	"\x04tags\x18\r \x03(\tB\x04\xe2A\x01\x01R\x04tags\x12u\n" +
+	"\x10guest_attributes\x18\x0e \x03(\v2D.google.cloud.notebooks.v1.VirtualMachineConfig.GuestAttributesEntryB\x04\xe2A\x01\x03R\x0fguestAttributes\x12_\n" +
+	"\bmetadata\x18\x0f \x03(\v2=.google.cloud.notebooks.v1.VirtualMachineConfig.MetadataEntryB\x04\xe2A\x01\x01R\bmetadata\x12Y\n" +
+	"\x06labels\x18\x10 \x03(\v2;.google.cloud.notebooks.v1.VirtualMachineConfig.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12X\n" +
+	"\bnic_type\x18\x11 \x01(\x0e27.google.cloud.notebooks.v1.VirtualMachineConfig.NicTypeB\x04\xe2A\x01\x01R\anicType\x120\n" +
+	"\x11reserved_ip_range\x18\x12 \x01(\tB\x04\xe2A\x01\x01R\x0freservedIpRange\x12^\n" +
 	"\n" +
-	"boot_image\x18\x13 \x01(\v29.google.cloud.notebooks.v1.VirtualMachineConfig.BootImageB\x03\xe0A\x01R\tbootImage\x1a\v\n" +
+	"boot_image\x18\x13 \x01(\v29.google.cloud.notebooks.v1.VirtualMachineConfig.BootImageB\x04\xe2A\x01\x01R\tbootImage\x1a\v\n" +
 	"\tBootImage\x1aB\n" +
 	"\x14GuestAttributesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +

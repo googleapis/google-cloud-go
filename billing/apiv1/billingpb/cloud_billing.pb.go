@@ -857,63 +857,63 @@ var File_google_cloud_billing_v1_cloud_billing_proto protoreflect.FileDescriptor
 
 const file_google_cloud_billing_v1_cloud_billing_proto_rawDesc = "" +
 	"\n" +
-	"+google/cloud/billing/v1/cloud_billing.proto\x12\x17google.cloud.billing.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a google/protobuf/field_mask.proto\"\xc8\x03\n" +
-	"\x0eBillingAccount\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x03\xfaA,\n" +
-	"*cloudbilling.googleapis.com/BillingAccountR\x04name\x12\x17\n" +
-	"\x04open\x18\x02 \x01(\bB\x03\xe0A\x03R\x04open\x12!\n" +
+	"+google/cloud/billing/v1/cloud_billing.proto\x12\x17google.cloud.billing.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a google/protobuf/field_mask.proto\"\xcc\x03\n" +
+	"\x0eBillingAccount\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x03\xfaA,\n" +
+	"*cloudbilling.googleapis.com/BillingAccountR\x04name\x12\x18\n" +
+	"\x04open\x18\x02 \x01(\bB\x04\xe2A\x01\x03R\x04open\x12!\n" +
 	"\fdisplay_name\x18\x03 \x01(\tR\vdisplayName\x124\n" +
-	"\x16master_billing_account\x18\x04 \x01(\tR\x14masterBillingAccount\x12\x1b\n" +
-	"\x06parent\x18\x06 \x01(\tB\x03\xe0A\x03R\x06parent\x12(\n" +
-	"\rcurrency_code\x18\a \x01(\tB\x03\xe0A\x01R\fcurrencyCode:\xb4\x01\xeaA\xb0\x01\n" +
-	"*cloudbilling.googleapis.com/BillingAccount\x12!billingAccounts/{billing_account}\x12>organizations/{organization}/billingAccounts/{billing_account}*\x0fbillingAccounts2\x0ebillingAccount\"\x86\x02\n" +
-	"\x12ProjectBillingInfo\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\"\n" +
+	"\x16master_billing_account\x18\x04 \x01(\tR\x14masterBillingAccount\x12\x1c\n" +
+	"\x06parent\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x06parent\x12)\n" +
+	"\rcurrency_code\x18\a \x01(\tB\x04\xe2A\x01\x01R\fcurrencyCode:\xb4\x01\xeaA\xb0\x01\n" +
+	"*cloudbilling.googleapis.com/BillingAccount\x12!billingAccounts/{billing_account}\x12>organizations/{organization}/billingAccounts/{billing_account}*\x0fbillingAccounts2\x0ebillingAccount\"\x89\x02\n" +
+	"\x12ProjectBillingInfo\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12#\n" +
 	"\n" +
-	"project_id\x18\x02 \x01(\tB\x03\xe0A\x03R\tprojectId\x120\n" +
-	"\x14billing_account_name\x18\x03 \x01(\tR\x12billingAccountName\x12,\n" +
-	"\x0fbilling_enabled\x18\x04 \x01(\bB\x03\xe0A\x03R\x0ebillingEnabled:S\xeaAP\n" +
-	".cloudbilling.googleapis.com/ProjectBillingInfo\x12\x1eprojects/{project}/billingInfo\"b\n" +
-	"\x18GetBillingAccountRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*cloudbilling.googleapis.com/BillingAccountR\x04name\"\x8d\x01\n" +
+	"project_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\tprojectId\x120\n" +
+	"\x14billing_account_name\x18\x03 \x01(\tR\x12billingAccountName\x12-\n" +
+	"\x0fbilling_enabled\x18\x04 \x01(\bB\x04\xe2A\x01\x03R\x0ebillingEnabled:S\xeaAP\n" +
+	".cloudbilling.googleapis.com/ProjectBillingInfo\x12\x1eprojects/{project}/billingInfo\"c\n" +
+	"\x18GetBillingAccountRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*cloudbilling.googleapis.com/BillingAccountR\x04name\"\x8e\x01\n" +
 	"\x1aListBillingAccountsRequest\x12\x1b\n" +
 	"\tpage_size\x18\x01 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x02 \x01(\tR\tpageToken\x12\x16\n" +
-	"\x06filter\x18\x03 \x01(\tR\x06filter\x12\x1b\n" +
-	"\x06parent\x18\x04 \x01(\tB\x03\xe0A\x01R\x06parent\"\x99\x01\n" +
+	"\x06filter\x18\x03 \x01(\tR\x06filter\x12\x1c\n" +
+	"\x06parent\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06parent\"\x99\x01\n" +
 	"\x1bListBillingAccountsResponse\x12R\n" +
 	"\x10billing_accounts\x18\x01 \x03(\v2'.google.cloud.billing.v1.BillingAccountR\x0fbillingAccounts\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x91\x01\n" +
-	"\x1bCreateBillingAccountRequest\x12U\n" +
-	"\x0fbilling_account\x18\x01 \x01(\v2'.google.cloud.billing.v1.BillingAccountB\x03\xe0A\x02R\x0ebillingAccount\x12\x1b\n" +
-	"\x06parent\x18\x02 \x01(\tB\x03\xe0A\x01R\x06parent\"\xea\x01\n" +
-	"\x1bUpdateBillingAccountRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*cloudbilling.googleapis.com/BillingAccountR\x04name\x12F\n" +
-	"\aaccount\x18\x02 \x01(\v2'.google.cloud.billing.v1.BillingAccountB\x03\xe0A\x02R\aaccount\x12;\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x93\x01\n" +
+	"\x1bCreateBillingAccountRequest\x12V\n" +
+	"\x0fbilling_account\x18\x01 \x01(\v2'.google.cloud.billing.v1.BillingAccountB\x04\xe2A\x01\x02R\x0ebillingAccount\x12\x1c\n" +
+	"\x06parent\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06parent\"\xec\x01\n" +
+	"\x1bUpdateBillingAccountRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*cloudbilling.googleapis.com/BillingAccountR\x04name\x12G\n" +
+	"\aaccount\x18\x02 \x01(\v2'.google.cloud.billing.v1.BillingAccountB\x04\xe2A\x01\x02R\aaccount\x12;\n" +
 	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"\xa3\x01\n" +
-	"\x1dListProjectBillingInfoRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
+	"updateMask\"\xa4\x01\n" +
+	"\x1dListProjectBillingInfoRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
 	"*cloudbilling.googleapis.com/BillingAccountR\x04name\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xa7\x01\n" +
 	"\x1eListProjectBillingInfoResponse\x12]\n" +
 	"\x14project_billing_info\x18\x01 \x03(\v2+.google.cloud.billing.v1.ProjectBillingInfoR\x12projectBillingInfo\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"g\n" +
-	"\x1cGetProjectBillingInfoRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x04name\"\x99\x01\n" +
-	"\x1fUpdateProjectBillingInfoRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12]\n" +
-	"\x14project_billing_info\x18\x02 \x01(\v2+.google.cloud.billing.v1.ProjectBillingInfoR\x12projectBillingInfo\"\xcc\x01\n" +
-	"\x19MoveBillingAccountRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*cloudbilling.googleapis.com/BillingAccountR\x04name\x12g\n" +
-	"\x12destination_parent\x18\x02 \x01(\tB8\xe0A\x02\xfaA2\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"h\n" +
+	"\x1cGetProjectBillingInfoRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x04name\"\x9a\x01\n" +
+	"\x1fUpdateProjectBillingInfoRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12]\n" +
+	"\x14project_billing_info\x18\x02 \x01(\v2+.google.cloud.billing.v1.ProjectBillingInfoR\x12projectBillingInfo\"\xce\x01\n" +
+	"\x19MoveBillingAccountRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*cloudbilling.googleapis.com/BillingAccountR\x04name\x12h\n" +
+	"\x12destination_parent\x18\x02 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
 	"0cloudresourcemanager.googleapis.com/OrganizationR\x11destinationParent2\xa1\x13\n" +
 	"\fCloudBilling\x12\x9c\x01\n" +
 	"\x11GetBillingAccount\x121.google.cloud.billing.v1.GetBillingAccountRequest\x1a'.google.cloud.billing.v1.BillingAccount\"+\xdaA\x04name\x82\xd3\xe4\x93\x02\x1e\x12\x1c/v1/{name=billingAccounts/*}\x12\x88\x02\n" +

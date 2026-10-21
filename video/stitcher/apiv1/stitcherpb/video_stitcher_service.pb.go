@@ -2360,14 +2360,14 @@ var File_google_cloud_video_stitcher_v1_video_stitcher_service_proto protoreflec
 
 const file_google_cloud_video_stitcher_v1_video_stitcher_service_proto_rawDesc = "" +
 	"\n" +
-	";google/cloud/video/stitcher/v1/video_stitcher_service.proto\x12\x1egoogle.cloud.video.stitcher.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a3google/cloud/video/stitcher/v1/ad_tag_details.proto\x1a-google/cloud/video/stitcher/v1/cdn_keys.proto\x1a1google/cloud/video/stitcher/v1/live_configs.proto\x1a-google/cloud/video/stitcher/v1/sessions.proto\x1a+google/cloud/video/stitcher/v1/slates.proto\x1a3google/cloud/video/stitcher/v1/stitch_details.proto\x1a0google/cloud/video/stitcher/v1/vod_configs.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc3\x01\n" +
-	"\x13CreateCdnKeyRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\x12#videostitcher.googleapis.com/CdnKeyR\x06parent\x12D\n" +
-	"\acdn_key\x18\x02 \x01(\v2&.google.cloud.video.stitcher.v1.CdnKeyB\x03\xe0A\x02R\x06cdnKey\x12!\n" +
+	";google/cloud/video/stitcher/v1/video_stitcher_service.proto\x12\x1egoogle.cloud.video.stitcher.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a3google/cloud/video/stitcher/v1/ad_tag_details.proto\x1a-google/cloud/video/stitcher/v1/cdn_keys.proto\x1a1google/cloud/video/stitcher/v1/live_configs.proto\x1a-google/cloud/video/stitcher/v1/sessions.proto\x1a+google/cloud/video/stitcher/v1/slates.proto\x1a3google/cloud/video/stitcher/v1/stitch_details.proto\x1a0google/cloud/video/stitcher/v1/vod_configs.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc6\x01\n" +
+	"\x13CreateCdnKeyRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\x12#videostitcher.googleapis.com/CdnKeyR\x06parent\x12E\n" +
+	"\acdn_key\x18\x02 \x01(\v2&.google.cloud.video.stitcher.v1.CdnKeyB\x04\xe2A\x01\x02R\x06cdnKey\x12\"\n" +
 	"\n" +
-	"cdn_key_id\x18\x03 \x01(\tB\x03\xe0A\x02R\bcdnKeyId\"\xc8\x01\n" +
-	"\x12ListCdnKeysRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\x12#videostitcher.googleapis.com/CdnKeyR\x06parent\x12\x1b\n" +
+	"cdn_key_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\bcdnKeyId\"\xc9\x01\n" +
+	"\x12ListCdnKeysRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\x12#videostitcher.googleapis.com/CdnKeyR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -2376,68 +2376,68 @@ const file_google_cloud_video_stitcher_v1_video_stitcher_service_proto_rawDesc =
 	"\x13ListCdnKeysResponse\x12A\n" +
 	"\bcdn_keys\x18\x01 \x03(\v2&.google.cloud.video.stitcher.v1.CdnKeyR\acdnKeys\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"S\n" +
-	"\x10GetCdnKeyRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#videostitcher.googleapis.com/CdnKeyR\x04name\"V\n" +
-	"\x13DeleteCdnKeyRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#videostitcher.googleapis.com/CdnKeyR\x04name\"\x9d\x01\n" +
-	"\x13UpdateCdnKeyRequest\x12D\n" +
-	"\acdn_key\x18\x01 \x01(\v2&.google.cloud.video.stitcher.v1.CdnKeyB\x03\xe0A\x02R\x06cdnKey\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\xb4\x01\n" +
-	"\x17CreateVodSessionRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\x12'videostitcher.googleapis.com/VodSessionR\x06parent\x12P\n" +
-	"\vvod_session\x18\x02 \x01(\v2*.google.cloud.video.stitcher.v1.VodSessionB\x03\xe0A\x02R\n" +
-	"vodSession\"[\n" +
-	"\x14GetVodSessionRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'videostitcher.googleapis.com/VodSessionR\x04name\"\xa7\x01\n" +
-	"\x1bListVodStitchDetailsRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,videostitcher.googleapis.com/VodStitchDetailR\x06parent\x12\x1b\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"T\n" +
+	"\x10GetCdnKeyRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#videostitcher.googleapis.com/CdnKeyR\x04name\"W\n" +
+	"\x13DeleteCdnKeyRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#videostitcher.googleapis.com/CdnKeyR\x04name\"\x9f\x01\n" +
+	"\x13UpdateCdnKeyRequest\x12E\n" +
+	"\acdn_key\x18\x01 \x01(\v2&.google.cloud.video.stitcher.v1.CdnKeyB\x04\xe2A\x01\x02R\x06cdnKey\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\xb6\x01\n" +
+	"\x17CreateVodSessionRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\x12'videostitcher.googleapis.com/VodSessionR\x06parent\x12Q\n" +
+	"\vvod_session\x18\x02 \x01(\v2*.google.cloud.video.stitcher.v1.VodSessionB\x04\xe2A\x01\x02R\n" +
+	"vodSession\"\\\n" +
+	"\x14GetVodSessionRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'videostitcher.googleapis.com/VodSessionR\x04name\"\xa8\x01\n" +
+	"\x1bListVodStitchDetailsRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,videostitcher.googleapis.com/VodStitchDetailR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xa5\x01\n" +
 	"\x1cListVodStitchDetailsResponse\x12]\n" +
 	"\x12vod_stitch_details\x18\x01 \x03(\v2/.google.cloud.video.stitcher.v1.VodStitchDetailR\x10vodStitchDetails\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"e\n" +
-	"\x19GetVodStitchDetailRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",videostitcher.googleapis.com/VodStitchDetailR\x04name\"\xa5\x01\n" +
-	"\x1aListVodAdTagDetailsRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+videostitcher.googleapis.com/VodAdTagDetailR\x06parent\x12\x1b\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"f\n" +
+	"\x19GetVodStitchDetailRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",videostitcher.googleapis.com/VodStitchDetailR\x04name\"\xa6\x01\n" +
+	"\x1aListVodAdTagDetailsRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+videostitcher.googleapis.com/VodAdTagDetailR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xa2\x01\n" +
 	"\x1bListVodAdTagDetailsResponse\x12[\n" +
 	"\x12vod_ad_tag_details\x18\x01 \x03(\v2..google.cloud.video.stitcher.v1.VodAdTagDetailR\x0fvodAdTagDetails\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"c\n" +
-	"\x18GetVodAdTagDetailRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+videostitcher.googleapis.com/VodAdTagDetailR\x04name\"\xa7\x01\n" +
-	"\x1bListLiveAdTagDetailsRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,videostitcher.googleapis.com/LiveAdTagDetailR\x06parent\x12\x1b\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"d\n" +
+	"\x18GetVodAdTagDetailRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+videostitcher.googleapis.com/VodAdTagDetailR\x04name\"\xa8\x01\n" +
+	"\x1bListLiveAdTagDetailsRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,videostitcher.googleapis.com/LiveAdTagDetailR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xa6\x01\n" +
 	"\x1cListLiveAdTagDetailsResponse\x12^\n" +
 	"\x13live_ad_tag_details\x18\x01 \x03(\v2/.google.cloud.video.stitcher.v1.LiveAdTagDetailR\x10liveAdTagDetails\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"e\n" +
-	"\x19GetLiveAdTagDetailRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",videostitcher.googleapis.com/LiveAdTagDetailR\x04name\"\xd9\x01\n" +
-	"\x12CreateSlateRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"videostitcher.googleapis.com/SlateR\x06parent\x12\x1e\n" +
-	"\bslate_id\x18\x02 \x01(\tB\x03\xe0A\x02R\aslateId\x12@\n" +
-	"\x05slate\x18\x03 \x01(\v2%.google.cloud.video.stitcher.v1.SlateB\x03\xe0A\x02R\x05slate\x12\x1d\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"f\n" +
+	"\x19GetLiveAdTagDetailRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",videostitcher.googleapis.com/LiveAdTagDetailR\x04name\"\xdc\x01\n" +
+	"\x12CreateSlateRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"videostitcher.googleapis.com/SlateR\x06parent\x12\x1f\n" +
+	"\bslate_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\aslateId\x12A\n" +
+	"\x05slate\x18\x03 \x01(\v2%.google.cloud.video.stitcher.v1.SlateB\x04\xe2A\x01\x02R\x05slate\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tR\trequestId\"Q\n" +
-	"\x0fGetSlateRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"videostitcher.googleapis.com/SlateR\x04name\"\xc6\x01\n" +
-	"\x11ListSlatesRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"videostitcher.googleapis.com/SlateR\x06parent\x12\x1b\n" +
+	"request_id\x18\x04 \x01(\tR\trequestId\"R\n" +
+	"\x0fGetSlateRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"videostitcher.googleapis.com/SlateR\x04name\"\xc7\x01\n" +
+	"\x11ListSlatesRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"videostitcher.googleapis.com/SlateR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -2446,78 +2446,78 @@ const file_google_cloud_video_stitcher_v1_video_stitcher_service_proto_rawDesc =
 	"\x12ListSlatesResponse\x12=\n" +
 	"\x06slates\x18\x01 \x03(\v2%.google.cloud.video.stitcher.v1.SlateR\x06slates\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\x98\x01\n" +
-	"\x12UpdateSlateRequest\x12@\n" +
-	"\x05slate\x18\x01 \x01(\v2%.google.cloud.video.stitcher.v1.SlateB\x03\xe0A\x02R\x05slate\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"T\n" +
-	"\x12DeleteSlateRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"videostitcher.googleapis.com/SlateR\x04name\"\xb9\x01\n" +
-	"\x18CreateLiveSessionRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(videostitcher.googleapis.com/LiveSessionR\x06parent\x12S\n" +
-	"\flive_session\x18\x02 \x01(\v2+.google.cloud.video.stitcher.v1.LiveSessionB\x03\xe0A\x02R\vliveSession\"]\n" +
-	"\x15GetLiveSessionRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(videostitcher.googleapis.com/LiveSessionR\x04name\"\xfe\x01\n" +
-	"\x17CreateLiveConfigRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\x12'videostitcher.googleapis.com/LiveConfigR\x06parent\x12)\n" +
-	"\x0elive_config_id\x18\x02 \x01(\tB\x03\xe0A\x02R\fliveConfigId\x12P\n" +
-	"\vlive_config\x18\x03 \x01(\v2*.google.cloud.video.stitcher.v1.LiveConfigB\x03\xe0A\x02R\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\x9a\x01\n" +
+	"\x12UpdateSlateRequest\x12A\n" +
+	"\x05slate\x18\x01 \x01(\v2%.google.cloud.video.stitcher.v1.SlateB\x04\xe2A\x01\x02R\x05slate\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"U\n" +
+	"\x12DeleteSlateRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"videostitcher.googleapis.com/SlateR\x04name\"\xbb\x01\n" +
+	"\x18CreateLiveSessionRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(videostitcher.googleapis.com/LiveSessionR\x06parent\x12T\n" +
+	"\flive_session\x18\x02 \x01(\v2+.google.cloud.video.stitcher.v1.LiveSessionB\x04\xe2A\x01\x02R\vliveSession\"^\n" +
+	"\x15GetLiveSessionRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(videostitcher.googleapis.com/LiveSessionR\x04name\"\x81\x02\n" +
+	"\x17CreateLiveConfigRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\x12'videostitcher.googleapis.com/LiveConfigR\x06parent\x12*\n" +
+	"\x0elive_config_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\fliveConfigId\x12Q\n" +
+	"\vlive_config\x18\x03 \x01(\v2*.google.cloud.video.stitcher.v1.LiveConfigB\x04\xe2A\x01\x02R\n" +
 	"liveConfig\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tR\trequestId\"\xda\x01\n" +
-	"\x16ListLiveConfigsRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\x12'videostitcher.googleapis.com/LiveConfigR\x06parent\x12\x1b\n" +
+	"request_id\x18\x04 \x01(\tR\trequestId\"\xdd\x01\n" +
+	"\x16ListLiveConfigsRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\x12'videostitcher.googleapis.com/LiveConfigR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xb2\x01\n" +
+	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xb2\x01\n" +
 	"\x17ListLiveConfigsResponse\x12M\n" +
 	"\flive_configs\x18\x01 \x03(\v2*.google.cloud.video.stitcher.v1.LiveConfigR\vliveConfigs\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"[\n" +
-	"\x14GetLiveConfigRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'videostitcher.googleapis.com/LiveConfigR\x04name\"^\n" +
-	"\x17DeleteLiveConfigRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'videostitcher.googleapis.com/LiveConfigR\x04name\"\xad\x01\n" +
-	"\x17UpdateLiveConfigRequest\x12P\n" +
-	"\vlive_config\x18\x01 \x01(\v2*.google.cloud.video.stitcher.v1.LiveConfigB\x03\xe0A\x02R\n" +
-	"liveConfig\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\xfc\x01\n" +
-	"\x16CreateVodConfigRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&videostitcher.googleapis.com/VodConfigR\x06parent\x12'\n" +
-	"\rvod_config_id\x18\x02 \x01(\tB\x03\xe0A\x02R\vvodConfigId\x12M\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\\\n" +
+	"\x14GetLiveConfigRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'videostitcher.googleapis.com/LiveConfigR\x04name\"_\n" +
+	"\x17DeleteLiveConfigRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'videostitcher.googleapis.com/LiveConfigR\x04name\"\xaf\x01\n" +
+	"\x17UpdateLiveConfigRequest\x12Q\n" +
+	"\vlive_config\x18\x01 \x01(\v2*.google.cloud.video.stitcher.v1.LiveConfigB\x04\xe2A\x01\x02R\n" +
+	"liveConfig\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\x80\x02\n" +
+	"\x16CreateVodConfigRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\x12&videostitcher.googleapis.com/VodConfigR\x06parent\x12(\n" +
+	"\rvod_config_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vvodConfigId\x12N\n" +
 	"\n" +
-	"vod_config\x18\x03 \x01(\v2).google.cloud.video.stitcher.v1.VodConfigB\x03\xe0A\x02R\tvodConfig\x12\"\n" +
+	"vod_config\x18\x03 \x01(\v2).google.cloud.video.stitcher.v1.VodConfigB\x04\xe2A\x01\x02R\tvodConfig\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xe2\x01\n" +
-	"\x15ListVodConfigsRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&videostitcher.googleapis.com/VodConfigR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xe7\x01\n" +
+	"\x15ListVodConfigsRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\x12&videostitcher.googleapis.com/VodConfigR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xae\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xae\x01\n" +
 	"\x16ListVodConfigsResponse\x12J\n" +
 	"\vvod_configs\x18\x01 \x03(\v2).google.cloud.video.stitcher.v1.VodConfigR\n" +
 	"vodConfigs\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"Y\n" +
-	"\x13GetVodConfigRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&videostitcher.googleapis.com/VodConfigR\x04name\"\\\n" +
-	"\x16DeleteVodConfigRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&videostitcher.googleapis.com/VodConfigR\x04name\"\xa9\x01\n" +
-	"\x16UpdateVodConfigRequest\x12M\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"Z\n" +
+	"\x13GetVodConfigRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&videostitcher.googleapis.com/VodConfigR\x04name\"]\n" +
+	"\x16DeleteVodConfigRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&videostitcher.googleapis.com/VodConfigR\x04name\"\xab\x01\n" +
+	"\x16UpdateVodConfigRequest\x12N\n" +
 	"\n" +
-	"vod_config\x18\x01 \x01(\v2).google.cloud.video.stitcher.v1.VodConfigB\x03\xe0A\x02R\tvodConfig\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
+	"vod_config\x18\x01 \x01(\v2).google.cloud.video.stitcher.v1.VodConfigB\x04\xe2A\x01\x02R\tvodConfig\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
 	"updateMask\"\xb3\x01\n" +
 	"\x11OperationMetadata\x12;\n" +
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +

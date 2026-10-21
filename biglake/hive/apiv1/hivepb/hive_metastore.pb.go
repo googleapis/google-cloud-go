@@ -2922,262 +2922,262 @@ var File_google_cloud_biglake_hive_v1_hive_metastore_proto protoreflect.FileDesc
 
 const file_google_cloud_biglake_hive_v1_hive_metastore_proto_rawDesc = "" +
 	"\n" +
-	"1google/cloud/biglake/hive/v1/hive_metastore.proto\x12\x1cgoogle.cloud.biglake.hive.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb3\x05\n" +
-	"\vHiveCatalog\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\b\xfaA \n" +
-	"\x1ebiglake.googleapis.com/CatalogR\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12&\n" +
-	"\flocation_uri\x18\x03 \x01(\tB\x03\xe0A\x02R\vlocationUri\x12R\n" +
-	"\breplicas\x18\x04 \x03(\v21.google.cloud.biglake.hive.v1.HiveCatalog.ReplicaB\x03\xe0A\x03R\breplicas\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x1a\xe1\x01\n" +
-	"\aReplica\x12\x1b\n" +
-	"\x06region\x18\x01 \x01(\tB\x03\xe0A\x03R\x06region\x12R\n" +
-	"\x05state\x18\x02 \x01(\x0e27.google.cloud.biglake.hive.v1.HiveCatalog.Replica.StateB\x03\xe0A\x03R\x05state\"e\n" +
+	"1google/cloud/biglake/hive/v1/hive_metastore.proto\x12\x1cgoogle.cloud.biglake.hive.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbb\x05\n" +
+	"\vHiveCatalog\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\b\xfaA \n" +
+	"\x1ebiglake.googleapis.com/CatalogR\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12'\n" +
+	"\flocation_uri\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\vlocationUri\x12S\n" +
+	"\breplicas\x18\x04 \x03(\v21.google.cloud.biglake.hive.v1.HiveCatalog.ReplicaB\x04\xe2A\x01\x03R\breplicas\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x1a\xe3\x01\n" +
+	"\aReplica\x12\x1c\n" +
+	"\x06region\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x06region\x12S\n" +
+	"\x05state\x18\x02 \x01(\x0e27.google.cloud.biglake.hive.v1.HiveCatalog.Replica.StateB\x04\xe2A\x01\x03R\x05state\"e\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\x11\n" +
 	"\rSTATE_PRIMARY\x10\x01\x12\x1d\n" +
 	"\x19STATE_PRIMARY_IN_PROGRESS\x10\x02\x12\x13\n" +
 	"\x0fSTATE_SECONDARY\x10\x03:]\xeaAZ\n" +
-	"\x1ebiglake.googleapis.com/Catalog\x12%projects/{project}/catalogs/{catalog}*\bcatalogs2\acatalog\"\x98\x02\n" +
-	"\x18CreateHiveCatalogRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12Q\n" +
-	"\fhive_catalog\x18\x02 \x01(\v2).google.cloud.biglake.hive.v1.HiveCatalogB\x03\xe0A\x02R\vhiveCatalog\x12+\n" +
-	"\x0fhive_catalog_id\x18\x03 \x01(\tB\x03\xe0A\x02R\rhiveCatalogId\x12/\n" +
-	"\x10primary_location\x18\x04 \x01(\tB\x03\xe0A\x02R\x10primary_location\"S\n" +
-	"\x15GetHiveCatalogRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1ebiglake.googleapis.com/CatalogR\x04name\"\xac\x01\n" +
-	"\x17ListHiveCatalogsRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x1ebiglake.googleapis.com/Catalog\x12%projects/{project}/catalogs/{catalog}*\bcatalogs2\acatalog\"\x9c\x02\n" +
+	"\x18CreateHiveCatalogRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12R\n" +
+	"\fhive_catalog\x18\x02 \x01(\v2).google.cloud.biglake.hive.v1.HiveCatalogB\x04\xe2A\x01\x02R\vhiveCatalog\x12,\n" +
+	"\x0fhive_catalog_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\rhiveCatalogId\x120\n" +
+	"\x10primary_location\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\x10primary_location\"T\n" +
+	"\x15GetHiveCatalogRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1ebiglake.googleapis.com/CatalogR\x04name\"\xaf\x01\n" +
+	"\x17ListHiveCatalogsRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xba\x01\n" +
-	"\x18ListHiveCatalogsResponse\x12J\n" +
-	"\bcatalogs\x18\x01 \x03(\v2).google.cloud.biglake.hive.v1.HiveCatalogB\x03\xe0A\x03R\bcatalogs\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x03R\vunreachable\"\xaf\x01\n" +
-	"\x18UpdateHiveCatalogRequest\x12Q\n" +
-	"\fhive_catalog\x18\x01 \x01(\v2).google.cloud.biglake.hive.v1.HiveCatalogB\x03\xe0A\x02R\vhiveCatalog\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"V\n" +
-	"\x18DeleteHiveCatalogRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1ebiglake.googleapis.com/CatalogR\x04name\"\xb9\x04\n" +
-	"\fHiveDatabase\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\b\xfaA\"\n" +
-	" biglake.googleapis.com/NamespaceR\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12&\n" +
-	"\flocation_uri\x18\x03 \x01(\tB\x03\xe0A\x01R\vlocationUri\x12_\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xbd\x01\n" +
+	"\x18ListHiveCatalogsResponse\x12K\n" +
+	"\bcatalogs\x18\x01 \x03(\v2).google.cloud.biglake.hive.v1.HiveCatalogB\x04\xe2A\x01\x03R\bcatalogs\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x03R\vunreachable\"\xb1\x01\n" +
+	"\x18UpdateHiveCatalogRequest\x12R\n" +
+	"\fhive_catalog\x18\x01 \x01(\v2).google.cloud.biglake.hive.v1.HiveCatalogB\x04\xe2A\x01\x02R\vhiveCatalog\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"W\n" +
+	"\x18DeleteHiveCatalogRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1ebiglake.googleapis.com/CatalogR\x04name\"\xbf\x04\n" +
+	"\fHiveDatabase\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\b\xfaA\"\n" +
+	" biglake.googleapis.com/NamespaceR\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12'\n" +
+	"\flocation_uri\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vlocationUri\x12`\n" +
 	"\n" +
-	"parameters\x18\x04 \x03(\v2:.google.cloud.biglake.hive.v1.HiveDatabase.ParametersEntryB\x03\xe0A\x01R\n" +
-	"parameters\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"parameters\x18\x04 \x03(\v2:.google.cloud.biglake.hive.v1.HiveDatabase.ParametersEntryB\x04\xe2A\x01\x01R\n" +
+	"parameters\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x1a=\n" +
 	"\x0fParametersEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:x\xeaAu\n" +
 	" biglake.googleapis.com/Namespace\x12:projects/{project}/catalogs/{catalog}/databases/{database}*\n" +
-	"namespaces2\tnamespace\"\xe0\x01\n" +
-	"\x19CreateHiveDatabaseRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1ebiglake.googleapis.com/CatalogR\x06parent\x12T\n" +
-	"\rhive_database\x18\x02 \x01(\v2*.google.cloud.biglake.hive.v1.HiveDatabaseB\x03\xe0A\x02R\fhiveDatabase\x12-\n" +
-	"\x10hive_database_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x0ehiveDatabaseId\"V\n" +
-	"\x16GetHiveDatabaseRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" biglake.googleapis.com/NamespaceR\x04name\"\xa0\x01\n" +
-	"\x18ListHiveDatabasesRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1ebiglake.googleapis.com/CatalogR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"namespaces2\tnamespace\"\xe3\x01\n" +
+	"\x19CreateHiveDatabaseRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1ebiglake.googleapis.com/CatalogR\x06parent\x12U\n" +
+	"\rhive_database\x18\x02 \x01(\v2*.google.cloud.biglake.hive.v1.HiveDatabaseB\x04\xe2A\x01\x02R\fhiveDatabase\x12.\n" +
+	"\x10hive_database_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x0ehiveDatabaseId\"W\n" +
+	"\x16GetHiveDatabaseRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" biglake.googleapis.com/NamespaceR\x04name\"\xa3\x01\n" +
+	"\x18ListHiveDatabasesRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1ebiglake.googleapis.com/CatalogR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x97\x01\n" +
-	"\x19ListHiveDatabasesResponse\x12M\n" +
-	"\tdatabases\x18\x01 \x03(\v2*.google.cloud.biglake.hive.v1.HiveDatabaseB\x03\xe0A\x03R\tdatabases\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageToken\"\xb3\x01\n" +
-	"\x19UpdateHiveDatabaseRequest\x12T\n" +
-	"\rhive_database\x18\x01 \x01(\v2*.google.cloud.biglake.hive.v1.HiveDatabaseB\x03\xe0A\x02R\fhiveDatabase\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"Y\n" +
-	"\x19DeleteHiveDatabaseRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" biglake.googleapis.com/NamespaceR\x04name\"\xd0\x06\n" +
-	"\tHiveTable\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\b\xfaA\x1e\n" +
-	"\x1cbiglake.googleapis.com/TableR\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12c\n" +
-	"\x12storage_descriptor\x18\x03 \x01(\v2/.google.cloud.biglake.hive.v1.StorageDescriptorB\x03\xe0A\x02R\x11storageDescriptor\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12U\n" +
-	"\x0epartition_keys\x18\a \x03(\v2).google.cloud.biglake.hive.v1.FieldSchemaB\x03\xe0A\x01R\rpartitionKeys\x12\\\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x99\x01\n" +
+	"\x19ListHiveDatabasesResponse\x12N\n" +
+	"\tdatabases\x18\x01 \x03(\v2*.google.cloud.biglake.hive.v1.HiveDatabaseB\x04\xe2A\x01\x03R\tdatabases\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\"\xb5\x01\n" +
+	"\x19UpdateHiveDatabaseRequest\x12U\n" +
+	"\rhive_database\x18\x01 \x01(\v2*.google.cloud.biglake.hive.v1.HiveDatabaseB\x04\xe2A\x01\x02R\fhiveDatabase\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"Z\n" +
+	"\x19DeleteHiveDatabaseRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" biglake.googleapis.com/NamespaceR\x04name\"\xda\x06\n" +
+	"\tHiveTable\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\b\xfaA\x1e\n" +
+	"\x1cbiglake.googleapis.com/TableR\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12d\n" +
+	"\x12storage_descriptor\x18\x03 \x01(\v2/.google.cloud.biglake.hive.v1.StorageDescriptorB\x04\xe2A\x01\x02R\x11storageDescriptor\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12V\n" +
+	"\x0epartition_keys\x18\a \x03(\v2).google.cloud.biglake.hive.v1.FieldSchemaB\x04\xe2A\x01\x01R\rpartitionKeys\x12]\n" +
 	"\n" +
-	"parameters\x18\b \x03(\v27.google.cloud.biglake.hive.v1.HiveTable.ParametersEntryB\x03\xe0A\x01R\n" +
-	"parameters\x121\n" +
-	"\x12view_original_text\x18\t \x01(\tB\x03\xe0A\x01R\x10viewOriginalText\x121\n" +
+	"parameters\x18\b \x03(\v27.google.cloud.biglake.hive.v1.HiveTable.ParametersEntryB\x04\xe2A\x01\x01R\n" +
+	"parameters\x122\n" +
+	"\x12view_original_text\x18\t \x01(\tB\x04\xe2A\x01\x01R\x10viewOriginalText\x122\n" +
 	"\x12view_expanded_text\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\x10viewExpandedText\x12\"\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\x10viewExpandedText\x12#\n" +
 	"\n" +
-	"table_type\x18\v \x01(\tB\x03\xe0A\x03R\ttableType\x12@\n" +
-	"\vupdate_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"table_type\x18\v \x01(\tB\x04\xe2A\x01\x03R\ttableType\x12A\n" +
+	"\vupdate_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x1a=\n" +
 	"\x0fParametersEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:{\xeaAx\n" +
-	"\x1cbiglake.googleapis.com/Table\x12Iprojects/{project}/catalogs/{catalog}/databases/{database}/tables/{table}*\x06tables2\x05table\"^\n" +
-	"\vFieldSchema\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x17\n" +
-	"\x04type\x18\x02 \x01(\tB\x03\xe0A\x02R\x04type\x12\x1d\n" +
-	"\acomment\x18\x03 \x01(\tB\x03\xe0A\x01R\acomment\"\x88\v\n" +
-	"\x11StorageDescriptor\x12H\n" +
-	"\acolumns\x18\x01 \x03(\v2).google.cloud.biglake.hive.v1.FieldSchemaB\x03\xe0A\x02R\acolumns\x12&\n" +
-	"\flocation_uri\x18\x02 \x01(\tB\x03\xe0A\x01R\vlocationUri\x12&\n" +
-	"\finput_format\x18\x03 \x01(\tB\x03\xe0A\x01R\vinputFormat\x12(\n" +
-	"\routput_format\x18\x04 \x01(\tB\x03\xe0A\x01R\foutputFormat\x12(\n" +
+	"\x1cbiglake.googleapis.com/Table\x12Iprojects/{project}/catalogs/{catalog}/databases/{database}/tables/{table}*\x06tables2\x05table\"a\n" +
+	"\vFieldSchema\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12\x18\n" +
+	"\x04type\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04type\x12\x1e\n" +
+	"\acomment\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\acomment\"\x9c\v\n" +
+	"\x11StorageDescriptor\x12I\n" +
+	"\acolumns\x18\x01 \x03(\v2).google.cloud.biglake.hive.v1.FieldSchemaB\x04\xe2A\x01\x02R\acolumns\x12'\n" +
+	"\flocation_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vlocationUri\x12'\n" +
+	"\finput_format\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vinputFormat\x12)\n" +
+	"\routput_format\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\foutputFormat\x12)\n" +
 	"\n" +
-	"compressed\x18\x05 \x01(\bB\x03\xe0A\x01H\x00R\n" +
-	"compressed\x88\x01\x01\x12)\n" +
-	"\vnum_buckets\x18\x06 \x01(\x05B\x03\xe0A\x01H\x01R\n" +
-	"numBuckets\x88\x01\x01\x12K\n" +
+	"compressed\x18\x05 \x01(\bB\x04\xe2A\x01\x01H\x00R\n" +
+	"compressed\x88\x01\x01\x12*\n" +
+	"\vnum_buckets\x18\x06 \x01(\x05B\x04\xe2A\x01\x01H\x01R\n" +
+	"numBuckets\x88\x01\x01\x12L\n" +
 	"\n" +
-	"serde_info\x18\a \x01(\v2'.google.cloud.biglake.hive.v1.SerdeInfoB\x03\xe0A\x01R\tserdeInfo\x12$\n" +
-	"\vbucket_cols\x18\b \x03(\tB\x03\xe0A\x01R\n" +
-	"bucketCols\x12W\n" +
-	"\tsort_cols\x18\t \x03(\v25.google.cloud.biglake.hive.v1.StorageDescriptor.OrderB\x03\xe0A\x01R\bsortCols\x12d\n" +
+	"serde_info\x18\a \x01(\v2'.google.cloud.biglake.hive.v1.SerdeInfoB\x04\xe2A\x01\x01R\tserdeInfo\x12%\n" +
+	"\vbucket_cols\x18\b \x03(\tB\x04\xe2A\x01\x01R\n" +
+	"bucketCols\x12X\n" +
+	"\tsort_cols\x18\t \x03(\v25.google.cloud.biglake.hive.v1.StorageDescriptor.OrderB\x04\xe2A\x01\x01R\bsortCols\x12e\n" +
 	"\n" +
 	"parameters\x18\n" +
-	" \x03(\v2?.google.cloud.biglake.hive.v1.StorageDescriptor.ParametersEntryB\x03\xe0A\x01R\n" +
-	"parameters\x12`\n" +
-	"\vskewed_info\x18\v \x01(\v2:.google.cloud.biglake.hive.v1.StorageDescriptor.SkewedInfoB\x03\xe0A\x01R\n" +
-	"skewedInfo\x125\n" +
-	"\x12stored_as_sub_dirs\x18\f \x01(\bB\x03\xe0A\x01H\x02R\x0fstoredAsSubDirs\x88\x01\x01\x1a9\n" +
-	"\x05Order\x12\x15\n" +
-	"\x03col\x18\x01 \x01(\tB\x03\xe0A\x02R\x03col\x12\x19\n" +
-	"\x05order\x18\x02 \x01(\x05B\x03\xe0A\x02R\x05order\x1a\xde\x03\n" +
+	" \x03(\v2?.google.cloud.biglake.hive.v1.StorageDescriptor.ParametersEntryB\x04\xe2A\x01\x01R\n" +
+	"parameters\x12a\n" +
+	"\vskewed_info\x18\v \x01(\v2:.google.cloud.biglake.hive.v1.StorageDescriptor.SkewedInfoB\x04\xe2A\x01\x01R\n" +
+	"skewedInfo\x126\n" +
+	"\x12stored_as_sub_dirs\x18\f \x01(\bB\x04\xe2A\x01\x01H\x02R\x0fstoredAsSubDirs\x88\x01\x01\x1a;\n" +
+	"\x05Order\x12\x16\n" +
+	"\x03col\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03col\x12\x1a\n" +
+	"\x05order\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\x05order\x1a\xe4\x03\n" +
 	"\n" +
-	"SkewedInfo\x12-\n" +
-	"\x10skewed_col_names\x18\x01 \x03(\tB\x03\xe0A\x02R\x0eskewedColNames\x12}\n" +
-	"\x11skewed_col_values\x18\x02 \x03(\v2L.google.cloud.biglake.hive.v1.StorageDescriptor.SkewedInfo.SkewedColumnValueB\x03\xe0A\x02R\x0fskewedColValues\x12\x96\x01\n" +
-	"\x1bskewed_key_values_locations\x18\x03 \x03(\v2R.google.cloud.biglake.hive.v1.StorageDescriptor.SkewedInfo.SkewedKeyValuesLocationB\x03\xe0A\x02R\x18skewedKeyValuesLocations\x1a0\n" +
-	"\x11SkewedColumnValue\x12\x1b\n" +
-	"\x06values\x18\x01 \x03(\tB\x03\xe0A\x02R\x06values\x1aW\n" +
-	"\x17SkewedKeyValuesLocation\x12\x1b\n" +
-	"\x06values\x18\x01 \x03(\tB\x03\xe0A\x02R\x06values\x12\x1f\n" +
-	"\blocation\x18\x02 \x01(\tB\x03\xe0A\x02R\blocation\x1a=\n" +
+	"SkewedInfo\x12.\n" +
+	"\x10skewed_col_names\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\x0eskewedColNames\x12~\n" +
+	"\x11skewed_col_values\x18\x02 \x03(\v2L.google.cloud.biglake.hive.v1.StorageDescriptor.SkewedInfo.SkewedColumnValueB\x04\xe2A\x01\x02R\x0fskewedColValues\x12\x97\x01\n" +
+	"\x1bskewed_key_values_locations\x18\x03 \x03(\v2R.google.cloud.biglake.hive.v1.StorageDescriptor.SkewedInfo.SkewedKeyValuesLocationB\x04\xe2A\x01\x02R\x18skewedKeyValuesLocations\x1a1\n" +
+	"\x11SkewedColumnValue\x12\x1c\n" +
+	"\x06values\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\x06values\x1aY\n" +
+	"\x17SkewedKeyValuesLocation\x12\x1c\n" +
+	"\x06values\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\x06values\x12 \n" +
+	"\blocation\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\blocation\x1a=\n" +
 	"\x0fParametersEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\r\n" +
 	"\v_compressedB\x0e\n" +
 	"\f_num_bucketsB\x15\n" +
-	"\x13_stored_as_sub_dirs\"\x9d\x04\n" +
-	"\tSerdeInfo\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x120\n" +
-	"\x11serialization_lib\x18\x02 \x01(\tB\x03\xe0A\x02R\x10serializationLib\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12\\\n" +
+	"\x13_stored_as_sub_dirs\"\xa4\x04\n" +
+	"\tSerdeInfo\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x121\n" +
+	"\x11serialization_lib\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x10serializationLib\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12]\n" +
 	"\n" +
-	"parameters\x18\x04 \x03(\v27.google.cloud.biglake.hive.v1.SerdeInfo.ParametersEntryB\x03\xe0A\x01R\n" +
-	"parameters\x12.\n" +
-	"\x10serializer_class\x18\x05 \x01(\tB\x03\xe0A\x01R\x0fserializerClass\x122\n" +
-	"\x12deserializer_class\x18\x06 \x01(\tB\x03\xe0A\x01R\x11deserializerClass\x12U\n" +
+	"parameters\x18\x04 \x03(\v27.google.cloud.biglake.hive.v1.SerdeInfo.ParametersEntryB\x04\xe2A\x01\x01R\n" +
+	"parameters\x12/\n" +
+	"\x10serializer_class\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x0fserializerClass\x123\n" +
+	"\x12deserializer_class\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x11deserializerClass\x12V\n" +
 	"\n" +
-	"serde_type\x18\a \x01(\x0e21.google.cloud.biglake.hive.v1.SerdeInfo.SerdeTypeB\x03\xe0A\x01R\tserdeType\x1a=\n" +
+	"serde_type\x18\a \x01(\x0e21.google.cloud.biglake.hive.v1.SerdeInfo.SerdeTypeB\x04\xe2A\x01\x01R\tserdeType\x1a=\n" +
 	"\x0fParametersEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"F\n" +
 	"\tSerdeType\x12\x1a\n" +
 	"\x16SERDE_TYPE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04HIVE\x10\x01\x12\x13\n" +
-	"\x0fSCHEMA_REGISTRY\x10\x02\"\xd0\x01\n" +
-	"\x16CreateHiveTableRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" biglake.googleapis.com/NamespaceR\x06parent\x12K\n" +
+	"\x0fSCHEMA_REGISTRY\x10\x02\"\xd3\x01\n" +
+	"\x16CreateHiveTableRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" biglake.googleapis.com/NamespaceR\x06parent\x12L\n" +
 	"\n" +
-	"hive_table\x18\x02 \x01(\v2'.google.cloud.biglake.hive.v1.HiveTableB\x03\xe0A\x02R\thiveTable\x12'\n" +
-	"\rhive_table_id\x18\x03 \x01(\tB\x03\xe0A\x02R\vhiveTableId\"O\n" +
-	"\x13GetHiveTableRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cbiglake.googleapis.com/TableR\x04name\"\x9f\x01\n" +
-	"\x15ListHiveTablesRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" biglake.googleapis.com/NamespaceR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"hive_table\x18\x02 \x01(\v2'.google.cloud.biglake.hive.v1.HiveTableB\x04\xe2A\x01\x02R\thiveTable\x12(\n" +
+	"\rhive_table_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\vhiveTableId\"P\n" +
+	"\x13GetHiveTableRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cbiglake.googleapis.com/TableR\x04name\"\xa2\x01\n" +
+	"\x15ListHiveTablesRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" biglake.googleapis.com/NamespaceR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x8b\x01\n" +
-	"\x16ListHiveTablesResponse\x12D\n" +
-	"\x06tables\x18\x01 \x03(\v2'.google.cloud.biglake.hive.v1.HiveTableB\x03\xe0A\x03R\x06tables\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageToken\"\xa7\x01\n" +
-	"\x16UpdateHiveTableRequest\x12K\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x8d\x01\n" +
+	"\x16ListHiveTablesResponse\x12E\n" +
+	"\x06tables\x18\x01 \x03(\v2'.google.cloud.biglake.hive.v1.HiveTableB\x04\xe2A\x01\x03R\x06tables\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\"\xa9\x01\n" +
+	"\x16UpdateHiveTableRequest\x12L\n" +
 	"\n" +
-	"hive_table\x18\x01 \x01(\v2'.google.cloud.biglake.hive.v1.HiveTableB\x03\xe0A\x02R\thiveTable\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"R\n" +
-	"\x16DeleteHiveTableRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cbiglake.googleapis.com/TableR\x04name\"\xb4\x03\n" +
-	"\tPartition\x12\x1b\n" +
-	"\x06values\x18\x01 \x03(\tB\x03\xe0A\x02R\x06values\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12c\n" +
-	"\x12storage_descriptor\x18\x03 \x01(\v2/.google.cloud.biglake.hive.v1.StorageDescriptorB\x03\xe0A\x01R\x11storageDescriptor\x12\\\n" +
+	"hive_table\x18\x01 \x01(\v2'.google.cloud.biglake.hive.v1.HiveTableB\x04\xe2A\x01\x02R\thiveTable\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"S\n" +
+	"\x16DeleteHiveTableRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cbiglake.googleapis.com/TableR\x04name\"\xb9\x03\n" +
+	"\tPartition\x12\x1c\n" +
+	"\x06values\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\x06values\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12d\n" +
+	"\x12storage_descriptor\x18\x03 \x01(\v2/.google.cloud.biglake.hive.v1.StorageDescriptorB\x04\xe2A\x01\x01R\x11storageDescriptor\x12]\n" +
 	"\n" +
-	"parameters\x18\x04 \x03(\v27.google.cloud.biglake.hive.v1.Partition.ParametersEntryB\x03\xe0A\x01R\n" +
-	"parameters\x12F\n" +
-	"\x06fields\x18\x05 \x03(\v2).google.cloud.biglake.hive.v1.FieldSchemaB\x03\xe0A\x01R\x06fields\x1a=\n" +
+	"parameters\x18\x04 \x03(\v27.google.cloud.biglake.hive.v1.Partition.ParametersEntryB\x04\xe2A\x01\x01R\n" +
+	"parameters\x12G\n" +
+	"\x06fields\x18\x05 \x03(\v2).google.cloud.biglake.hive.v1.FieldSchemaB\x04\xe2A\x01\x01R\x06fields\x1a=\n" +
 	"\x0fParametersEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\".\n" +
-	"\x0fPartitionValues\x12\x1b\n" +
-	"\x06values\x18\x01 \x03(\tB\x03\xe0A\x02R\x06values\"\xa2\x01\n" +
-	"\x16CreatePartitionRequest\x12<\n" +
-	"\x06parent\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cbiglake.googleapis.com/TableR\x06parent\x12J\n" +
-	"\tpartition\x18\x02 \x01(\v2'.google.cloud.biglake.hive.v1.PartitionB\x03\xe0A\x02R\tpartition\"\xf2\x01\n" +
-	"\x1cBatchCreatePartitionsRequest\x12<\n" +
-	"\x06parent\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cbiglake.googleapis.com/TableR\x06parent\x12U\n" +
-	"\brequests\x18\x02 \x03(\v24.google.cloud.biglake.hive.v1.CreatePartitionRequestB\x03\xe0A\x02R\brequests\x12=\n" +
-	"\x18skip_existing_partitions\x18\x03 \x01(\bB\x03\xe0A\x01R\x16skipExistingPartitions\"h\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"/\n" +
+	"\x0fPartitionValues\x12\x1c\n" +
+	"\x06values\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\x06values\"\xa4\x01\n" +
+	"\x16CreatePartitionRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cbiglake.googleapis.com/TableR\x06parent\x12K\n" +
+	"\tpartition\x18\x02 \x01(\v2'.google.cloud.biglake.hive.v1.PartitionB\x04\xe2A\x01\x02R\tpartition\"\xf5\x01\n" +
+	"\x1cBatchCreatePartitionsRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cbiglake.googleapis.com/TableR\x06parent\x12V\n" +
+	"\brequests\x18\x02 \x03(\v24.google.cloud.biglake.hive.v1.CreatePartitionRequestB\x04\xe2A\x01\x02R\brequests\x12>\n" +
+	"\x18skip_existing_partitions\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x16skipExistingPartitions\"h\n" +
 	"\x1dBatchCreatePartitionsResponse\x12G\n" +
 	"\n" +
 	"partitions\x18\x01 \x03(\v2'.google.cloud.biglake.hive.v1.PartitionR\n" +
-	"partitions\"\xbb\x01\n" +
-	"\x1cBatchDeletePartitionsRequest\x12<\n" +
-	"\x06parent\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cbiglake.googleapis.com/TableR\x06parent\x12]\n" +
-	"\x10partition_values\x18\x02 \x03(\v2-.google.cloud.biglake.hive.v1.PartitionValuesB\x03\xe0A\x02R\x0fpartitionValues\"\xa6\x01\n" +
-	"\x16UpdatePartitionRequest\x12J\n" +
-	"\tpartition\x18\x01 \x01(\v2'.google.cloud.biglake.hive.v1.PartitionB\x03\xe0A\x02R\tpartition\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"\xb3\x01\n" +
-	"\x1cBatchUpdatePartitionsRequest\x12<\n" +
-	"\x06parent\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cbiglake.googleapis.com/TableR\x06parent\x12U\n" +
-	"\brequests\x18\x02 \x03(\v24.google.cloud.biglake.hive.v1.UpdatePartitionRequestB\x03\xe0A\x02R\brequests\"h\n" +
+	"partitions\"\xbd\x01\n" +
+	"\x1cBatchDeletePartitionsRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cbiglake.googleapis.com/TableR\x06parent\x12^\n" +
+	"\x10partition_values\x18\x02 \x03(\v2-.google.cloud.biglake.hive.v1.PartitionValuesB\x04\xe2A\x01\x02R\x0fpartitionValues\"\xa8\x01\n" +
+	"\x16UpdatePartitionRequest\x12K\n" +
+	"\tpartition\x18\x01 \x01(\v2'.google.cloud.biglake.hive.v1.PartitionB\x04\xe2A\x01\x02R\tpartition\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"\xb5\x01\n" +
+	"\x1cBatchUpdatePartitionsRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cbiglake.googleapis.com/TableR\x06parent\x12V\n" +
+	"\brequests\x18\x02 \x03(\v24.google.cloud.biglake.hive.v1.UpdatePartitionRequestB\x04\xe2A\x01\x02R\brequests\"h\n" +
 	"\x1dBatchUpdatePartitionsResponse\x12G\n" +
 	"\n" +
 	"partitions\x18\x01 \x03(\v2'.google.cloud.biglake.hive.v1.PartitionR\n" +
-	"partitions\"r\n" +
-	"\x15ListPartitionsRequest\x12<\n" +
-	"\x06parent\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cbiglake.googleapis.com/TableR\x06parent\x12\x1b\n" +
-	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x01R\x06filter\"f\n" +
-	"\x16ListPartitionsResponse\x12L\n" +
+	"partitions\"t\n" +
+	"\x15ListPartitionsRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cbiglake.googleapis.com/TableR\x06parent\x12\x1c\n" +
+	"\x06filter\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"g\n" +
+	"\x16ListPartitionsResponse\x12M\n" +
 	"\n" +
-	"partitions\x18\x01 \x03(\v2'.google.cloud.biglake.hive.v1.PartitionB\x03\xe0A\x03R\n" +
-	"partitions\"\x81\x02\n" +
-	"\x1aFailoverHiveCatalogRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12,\n" +
-	"\x0fprimary_replica\x18\x02 \x01(\tB\x03\xe0A\x02R\x0eprimaryReplica\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12r\n" +
-	"%conditional_failover_replication_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\"conditionalFailoverReplicationTime\"i\n" +
-	"\x1bFailoverHiveCatalogResponse\x12J\n" +
-	"\x10replication_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0freplicationTime2\xda!\n" +
+	"partitions\x18\x01 \x03(\v2'.google.cloud.biglake.hive.v1.PartitionB\x04\xe2A\x01\x03R\n" +
+	"partitions\"\x85\x02\n" +
+	"\x1aFailoverHiveCatalogRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12-\n" +
+	"\x0fprimary_replica\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0eprimaryReplica\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12s\n" +
+	"%conditional_failover_replication_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\"conditionalFailoverReplicationTime\"j\n" +
+	"\x1bFailoverHiveCatalogResponse\x12K\n" +
+	"\x10replication_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x0freplicationTime2\xda!\n" +
 	"\x14HiveMetastoreService\x12\xd9\x01\n" +
 	"\x11CreateHiveCatalog\x126.google.cloud.biglake.hive.v1.CreateHiveCatalogRequest\x1a).google.cloud.biglake.hive.v1.HiveCatalog\"a\xdaA#parent,hive_catalog,hive_catalog_id\x82\xd3\xe4\x93\x025:\fhive_catalog\"%/hive/v1/{parent=projects/*}/catalogs\x12\xa6\x01\n" +
 	"\x0eGetHiveCatalog\x123.google.cloud.biglake.hive.v1.GetHiveCatalogRequest\x1a).google.cloud.biglake.hive.v1.HiveCatalog\"4\xdaA\x04name\x82\xd3\xe4\x93\x02'\x12%/hive/v1/{name=projects/*/catalogs/*}\x12\xb9\x01\n" +

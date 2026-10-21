@@ -494,28 +494,28 @@ var File_google_analytics_admin_v1alpha_event_create_and_edit_proto protoreflect
 
 const file_google_analytics_admin_v1alpha_event_create_and_edit_proto_rawDesc = "" +
 	"\n" +
-	":google/analytics/admin/v1alpha/event_create_and_edit.proto\x12\x1egoogle.analytics.admin.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"d\n" +
-	"\x11ParameterMutation\x12!\n" +
-	"\tparameter\x18\x01 \x01(\tB\x03\xe0A\x02R\tparameter\x12,\n" +
-	"\x0fparameter_value\x18\x02 \x01(\tB\x03\xe0A\x02R\x0eparameterValue\"\xe5\x03\n" +
-	"\x0fEventCreateRule\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x120\n" +
-	"\x11destination_event\x18\x02 \x01(\tB\x03\xe0A\x02R\x10destinationEvent\x12a\n" +
-	"\x10event_conditions\x18\x03 \x03(\v21.google.analytics.admin.v1alpha.MatchingConditionB\x03\xe0A\x02R\x0feventConditions\x124\n" +
+	":google/analytics/admin/v1alpha/event_create_and_edit.proto\x12\x1egoogle.analytics.admin.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"f\n" +
+	"\x11ParameterMutation\x12\"\n" +
+	"\tparameter\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tparameter\x12-\n" +
+	"\x0fparameter_value\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0eparameterValue\"\xe8\x03\n" +
+	"\x0fEventCreateRule\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x121\n" +
+	"\x11destination_event\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x10destinationEvent\x12b\n" +
+	"\x10event_conditions\x18\x03 \x03(\v21.google.analytics.admin.v1alpha.MatchingConditionB\x04\xe2A\x01\x02R\x0feventConditions\x124\n" +
 	"\x16source_copy_parameters\x18\x04 \x01(\bR\x14sourceCopyParameters\x12b\n" +
 	"\x13parameter_mutations\x18\x05 \x03(\v21.google.analytics.admin.v1alpha.ParameterMutationR\x12parameterMutations:\x89\x01\xeaA\x85\x01\n" +
-	"-analyticsadmin.googleapis.com/EventCreateRule\x12Tproperties/{property}/dataStreams/{data_stream}/eventCreateRules/{event_create_rule}\"\xf1\x03\n" +
-	"\rEventEditRule\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12a\n" +
-	"\x10event_conditions\x18\x03 \x03(\v21.google.analytics.admin.v1alpha.MatchingConditionB\x03\xe0A\x02R\x0feventConditions\x12g\n" +
-	"\x13parameter_mutations\x18\x04 \x03(\v21.google.analytics.admin.v1alpha.ParameterMutationB\x03\xe0A\x02R\x12parameterMutations\x12.\n" +
-	"\x10processing_order\x18\x05 \x01(\x03B\x03\xe0A\x03R\x0fprocessingOrder:\xa2\x01\xeaA\x9e\x01\n" +
-	"+analyticsadmin.googleapis.com/EventEditRule\x12Pproperties/{property}/dataStreams/{data_stream}/eventEditRules/{event_edit_rule}*\x0eeventEditRules2\reventEditRule\"\xd4\x04\n" +
-	"\x11MatchingCondition\x12\x19\n" +
-	"\x05field\x18\x01 \x01(\tB\x03\xe0A\x02R\x05field\x12n\n" +
-	"\x0fcomparison_type\x18\x02 \x01(\x0e2@.google.analytics.admin.v1alpha.MatchingCondition.ComparisonTypeB\x03\xe0A\x02R\x0ecomparisonType\x12\x19\n" +
-	"\x05value\x18\x03 \x01(\tB\x03\xe0A\x02R\x05value\x12\x18\n" +
+	"-analyticsadmin.googleapis.com/EventCreateRule\x12Tproperties/{property}/dataStreams/{data_stream}/eventCreateRules/{event_create_rule}\"\xf6\x03\n" +
+	"\rEventEditRule\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12b\n" +
+	"\x10event_conditions\x18\x03 \x03(\v21.google.analytics.admin.v1alpha.MatchingConditionB\x04\xe2A\x01\x02R\x0feventConditions\x12h\n" +
+	"\x13parameter_mutations\x18\x04 \x03(\v21.google.analytics.admin.v1alpha.ParameterMutationB\x04\xe2A\x01\x02R\x12parameterMutations\x12/\n" +
+	"\x10processing_order\x18\x05 \x01(\x03B\x04\xe2A\x01\x03R\x0fprocessingOrder:\xa2\x01\xeaA\x9e\x01\n" +
+	"+analyticsadmin.googleapis.com/EventEditRule\x12Pproperties/{property}/dataStreams/{data_stream}/eventEditRules/{event_edit_rule}*\x0eeventEditRules2\reventEditRule\"\xd7\x04\n" +
+	"\x11MatchingCondition\x12\x1a\n" +
+	"\x05field\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05field\x12o\n" +
+	"\x0fcomparison_type\x18\x02 \x01(\x0e2@.google.analytics.admin.v1alpha.MatchingCondition.ComparisonTypeB\x04\xe2A\x01\x02R\x0ecomparisonType\x12\x1a\n" +
+	"\x05value\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x05value\x12\x18\n" +
 	"\anegated\x18\x04 \x01(\bR\anegated\"\xfe\x02\n" +
 	"\x0eComparisonType\x12\x1f\n" +
 	"\x1bCOMPARISON_TYPE_UNSPECIFIED\x10\x00\x12\n" +

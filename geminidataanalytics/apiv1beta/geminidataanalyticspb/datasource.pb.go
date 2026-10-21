@@ -2305,74 +2305,74 @@ const file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDesc = ""
 	"\x12bigtable_reference\x18\v \x01(\v2:.google.cloud.geminidataanalytics.v1beta.BigtableReferenceH\x00R\x11bigtableReference\x12n\n" +
 	"\x13firestore_reference\x18\r \x01(\v2;.google.cloud.geminidataanalytics.v1beta.FirestoreReferenceH\x00R\x12firestoreReferenceB\f\n" +
 	"\n" +
-	"references\"\x92\x03\n" +
-	"\x17BigQueryTableReferences\x12o\n" +
-	"\x10table_references\x18\x01 \x03(\v2?.google.cloud.geminidataanalytics.v1beta.BigQueryTableReferenceB\x03\xe0A\x01R\x0ftableReferences\x12\x88\x01\n" +
-	"\x19property_graph_references\x18\x02 \x03(\v2G.google.cloud.geminidataanalytics.v1beta.BigQueryPropertyGraphReferenceB\x03\xe0A\x01R\x17propertyGraphReferences\x12{\n" +
-	"\x17agent_context_reference\x18\x04 \x01(\v2>.google.cloud.geminidataanalytics.v1beta.AgentContextReferenceB\x03\xe0A\x01R\x15agentContextReference\"\xce\x01\n" +
-	"\x16BigQueryTableReference\x12\"\n" +
+	"references\"\x95\x03\n" +
+	"\x17BigQueryTableReferences\x12p\n" +
+	"\x10table_references\x18\x01 \x03(\v2?.google.cloud.geminidataanalytics.v1beta.BigQueryTableReferenceB\x04\xe2A\x01\x01R\x0ftableReferences\x12\x89\x01\n" +
+	"\x19property_graph_references\x18\x02 \x03(\v2G.google.cloud.geminidataanalytics.v1beta.BigQueryPropertyGraphReferenceB\x04\xe2A\x01\x01R\x17propertyGraphReferences\x12|\n" +
+	"\x17agent_context_reference\x18\x04 \x01(\v2>.google.cloud.geminidataanalytics.v1beta.AgentContextReferenceB\x04\xe2A\x01\x01R\x15agentContextReference\"\xd2\x01\n" +
+	"\x16BigQueryTableReference\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12#\n" +
 	"\n" +
-	"dataset_id\x18\x03 \x01(\tB\x03\xe0A\x02R\tdatasetId\x12\x1e\n" +
-	"\btable_id\x18\x04 \x01(\tB\x03\xe0A\x02R\atableId\x12L\n" +
-	"\x06schema\x18\x06 \x01(\v2/.google.cloud.geminidataanalytics.v1beta.SchemaB\x03\xe0A\x01R\x06schema\"\x92\x01\n" +
-	"\x1aStudioDatasourceReferences\x12t\n" +
-	"\x11studio_references\x18\x02 \x03(\v2B.google.cloud.geminidataanalytics.v1beta.StudioDatasourceReferenceB\x03\xe0A\x01R\x10studioReferences\"E\n" +
-	"\x19StudioDatasourceReference\x12(\n" +
-	"\rdatasource_id\x18\x01 \x01(\tB\x03\xe0A\x02R\fdatasourceId\"\x86\x02\n" +
-	"\x10AlloyDbReference\x12u\n" +
-	"\x12database_reference\x18\x01 \x01(\v2A.google.cloud.geminidataanalytics.v1beta.AlloyDbDatabaseReferenceB\x03\xe0A\x02R\x11databaseReference\x12{\n" +
-	"\x17agent_context_reference\x18\x03 \x01(\v2>.google.cloud.geminidataanalytics.v1beta.AgentContextReferenceB\x03\xe0A\x01R\x15agentContextReference\"\x86\x01\n" +
-	"\x16DatabaseTableReference\x12\x1e\n" +
-	"\btable_id\x18\x01 \x01(\tB\x03\xe0A\x02R\atableId\x12L\n" +
-	"\x06schema\x18\x02 \x01(\v2/.google.cloud.geminidataanalytics.v1beta.SchemaB\x03\xe0A\x01R\x06schema\"\xf0\x02\n" +
-	"\x18AlloyDbDatabaseReference\x12\"\n" +
+	"dataset_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\tdatasetId\x12\x1f\n" +
+	"\btable_id\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\atableId\x12M\n" +
+	"\x06schema\x18\x06 \x01(\v2/.google.cloud.geminidataanalytics.v1beta.SchemaB\x04\xe2A\x01\x01R\x06schema\"\x93\x01\n" +
+	"\x1aStudioDatasourceReferences\x12u\n" +
+	"\x11studio_references\x18\x02 \x03(\v2B.google.cloud.geminidataanalytics.v1beta.StudioDatasourceReferenceB\x04\xe2A\x01\x01R\x10studioReferences\"F\n" +
+	"\x19StudioDatasourceReference\x12)\n" +
+	"\rdatasource_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\fdatasourceId\"\x88\x02\n" +
+	"\x10AlloyDbReference\x12v\n" +
+	"\x12database_reference\x18\x01 \x01(\v2A.google.cloud.geminidataanalytics.v1beta.AlloyDbDatabaseReferenceB\x04\xe2A\x01\x02R\x11databaseReference\x12|\n" +
+	"\x17agent_context_reference\x18\x03 \x01(\v2>.google.cloud.geminidataanalytics.v1beta.AgentContextReferenceB\x04\xe2A\x01\x01R\x15agentContextReference\"\x88\x01\n" +
+	"\x16DatabaseTableReference\x12\x1f\n" +
+	"\btable_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\atableId\x12M\n" +
+	"\x06schema\x18\x02 \x01(\v2/.google.cloud.geminidataanalytics.v1beta.SchemaB\x04\xe2A\x01\x01R\x06schema\"\xf7\x02\n" +
+	"\x18AlloyDbDatabaseReference\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x1b\n" +
-	"\x06region\x18\x02 \x01(\tB\x03\xe0A\x02R\x06region\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12\x1c\n" +
+	"\x06region\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06region\x12#\n" +
 	"\n" +
-	"cluster_id\x18\x03 \x01(\tB\x03\xe0A\x02R\tclusterId\x12$\n" +
-	"\vinstance_id\x18\x04 \x01(\tB\x03\xe0A\x02R\n" +
-	"instanceId\x12$\n" +
-	"\vdatabase_id\x18\x05 \x01(\tB\x03\xe0A\x02R\n" +
-	"databaseId\x12 \n" +
-	"\ttable_ids\x18\x06 \x03(\tB\x03\xe0A\x01R\btableIds\x12\x80\x01\n" +
-	"\x19database_table_references\x18\a \x03(\v2?.google.cloud.geminidataanalytics.v1beta.DatabaseTableReferenceB\x03\xe0A\x01R\x17databaseTableReferences\"\x88\x02\n" +
-	"\x11BigtableReference\x12v\n" +
-	"\x12database_reference\x18\x01 \x01(\v2B.google.cloud.geminidataanalytics.v1beta.BigtableDatabaseReferenceB\x03\xe0A\x02R\x11databaseReference\x12{\n" +
-	"\x17agent_context_reference\x18\x02 \x01(\v2>.google.cloud.geminidataanalytics.v1beta.AgentContextReferenceB\x03\xe0A\x01R\x15agentContextReference\"\x8a\x02\n" +
-	"\x19BigtableDatabaseReference\x12\"\n" +
+	"cluster_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\tclusterId\x12%\n" +
+	"\vinstance_id\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"instanceId\x12%\n" +
+	"\vdatabase_id\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"databaseId\x12!\n" +
+	"\ttable_ids\x18\x06 \x03(\tB\x04\xe2A\x01\x01R\btableIds\x12\x81\x01\n" +
+	"\x19database_table_references\x18\a \x03(\v2?.google.cloud.geminidataanalytics.v1beta.DatabaseTableReferenceB\x04\xe2A\x01\x01R\x17databaseTableReferences\"\x8a\x02\n" +
+	"\x11BigtableReference\x12w\n" +
+	"\x12database_reference\x18\x01 \x01(\v2B.google.cloud.geminidataanalytics.v1beta.BigtableDatabaseReferenceB\x04\xe2A\x01\x02R\x11databaseReference\x12|\n" +
+	"\x17agent_context_reference\x18\x02 \x01(\v2>.google.cloud.geminidataanalytics.v1beta.AgentContextReferenceB\x04\xe2A\x01\x01R\x15agentContextReference\"\x8e\x02\n" +
+	"\x19BigtableDatabaseReference\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12$\n" +
-	"\vinstance_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"instanceId\x12 \n" +
-	"\ttable_ids\x18\x03 \x03(\tB\x03\xe0A\x01R\btableIds\x12\x80\x01\n" +
-	"\x19database_table_references\x18\x04 \x03(\v2?.google.cloud.geminidataanalytics.v1beta.DatabaseTableReferenceB\x03\xe0A\x01R\x17databaseTableReferences\"\x8a\x02\n" +
-	"\x12FirestoreReference\x12w\n" +
-	"\x12database_reference\x18\x01 \x01(\v2C.google.cloud.geminidataanalytics.v1beta.FirestoreDatabaseReferenceB\x03\xe0A\x02R\x11databaseReference\x12{\n" +
-	"\x17agent_context_reference\x18\x02 \x01(\v2>.google.cloud.geminidataanalytics.v1beta.AgentContextReferenceB\x03\xe0A\x01R\x15agentContextReference\"\x95\x02\n" +
-	"\x1aFirestoreDatabaseReference\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12%\n" +
+	"\vinstance_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"instanceId\x12!\n" +
+	"\ttable_ids\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\btableIds\x12\x81\x01\n" +
+	"\x19database_table_references\x18\x04 \x03(\v2?.google.cloud.geminidataanalytics.v1beta.DatabaseTableReferenceB\x04\xe2A\x01\x01R\x17databaseTableReferences\"\x8c\x02\n" +
+	"\x12FirestoreReference\x12x\n" +
+	"\x12database_reference\x18\x01 \x01(\v2C.google.cloud.geminidataanalytics.v1beta.FirestoreDatabaseReferenceB\x04\xe2A\x01\x02R\x11databaseReference\x12|\n" +
+	"\x17agent_context_reference\x18\x02 \x01(\v2>.google.cloud.geminidataanalytics.v1beta.AgentContextReferenceB\x04\xe2A\x01\x01R\x15agentContextReference\"\x99\x02\n" +
+	"\x1aFirestoreDatabaseReference\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12$\n" +
-	"\vdatabase_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"databaseId\x12*\n" +
-	"\x0ecollection_ids\x18\x03 \x03(\tB\x03\xe0A\x01R\rcollectionIds\x12\x80\x01\n" +
-	"\x19database_table_references\x18\x04 \x03(\v2?.google.cloud.geminidataanalytics.v1beta.DatabaseTableReferenceB\x03\xe0A\x01R\x17databaseTableReferences\"\x86\x02\n" +
-	"\x10SpannerReference\x12u\n" +
-	"\x12database_reference\x18\x01 \x01(\v2A.google.cloud.geminidataanalytics.v1beta.SpannerDatabaseReferenceB\x03\xe0A\x02R\x11databaseReference\x12{\n" +
-	"\x17agent_context_reference\x18\x02 \x01(\v2>.google.cloud.geminidataanalytics.v1beta.AgentContextReferenceB\x03\xe0A\x01R\x15agentContextReference\"\x9a\x04\n" +
-	"\x18SpannerDatabaseReference\x12e\n" +
-	"\x06engine\x18\x06 \x01(\x0e2H.google.cloud.geminidataanalytics.v1beta.SpannerDatabaseReference.EngineB\x03\xe0A\x02R\x06engine\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12%\n" +
+	"\vdatabase_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"databaseId\x12+\n" +
+	"\x0ecollection_ids\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\rcollectionIds\x12\x81\x01\n" +
+	"\x19database_table_references\x18\x04 \x03(\v2?.google.cloud.geminidataanalytics.v1beta.DatabaseTableReferenceB\x04\xe2A\x01\x01R\x17databaseTableReferences\"\x88\x02\n" +
+	"\x10SpannerReference\x12v\n" +
+	"\x12database_reference\x18\x01 \x01(\v2A.google.cloud.geminidataanalytics.v1beta.SpannerDatabaseReferenceB\x04\xe2A\x01\x02R\x11databaseReference\x12|\n" +
+	"\x17agent_context_reference\x18\x02 \x01(\v2>.google.cloud.geminidataanalytics.v1beta.AgentContextReferenceB\x04\xe2A\x01\x01R\x15agentContextReference\"\xa1\x04\n" +
+	"\x18SpannerDatabaseReference\x12f\n" +
+	"\x06engine\x18\x06 \x01(\x0e2H.google.cloud.geminidataanalytics.v1beta.SpannerDatabaseReference.EngineB\x04\xe2A\x01\x02R\x06engine\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12$\n" +
-	"\vinstance_id\x18\x03 \x01(\tB\x03\xe0A\x02R\n" +
-	"instanceId\x12$\n" +
-	"\vdatabase_id\x18\x04 \x01(\tB\x03\xe0A\x02R\n" +
-	"databaseId\x12 \n" +
-	"\ttable_ids\x18\x05 \x03(\tB\x03\xe0A\x01R\btableIds\x12\x80\x01\n" +
-	"\x19database_table_references\x18\a \x03(\v2?.google.cloud.geminidataanalytics.v1beta.DatabaseTableReferenceB\x03\xe0A\x01R\x17databaseTableReferences\x12\x1f\n" +
-	"\bpriority\x18\b \x01(\tB\x03\xe0A\x01R\bpriority\x12\x1f\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12%\n" +
+	"\vinstance_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"instanceId\x12%\n" +
+	"\vdatabase_id\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"databaseId\x12!\n" +
+	"\ttable_ids\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\btableIds\x12\x81\x01\n" +
+	"\x19database_table_references\x18\a \x03(\v2?.google.cloud.geminidataanalytics.v1beta.DatabaseTableReferenceB\x04\xe2A\x01\x01R\x17databaseTableReferences\x12 \n" +
+	"\bpriority\x18\b \x01(\tB\x04\xe2A\x01\x01R\bpriority\x12\x1f\n" +
 	"\vrequest_tag\x18\t \x01(\tR\n" +
 	"requestTag\"@\n" +
 	"\x06Engine\x12\x16\n" +
@@ -2380,47 +2380,47 @@ const file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDesc = ""
 	"\n" +
 	"GOOGLE_SQL\x10\x01\x12\x0e\n" +
 	"\n" +
-	"POSTGRESQL\x10\x02\"\x88\x02\n" +
-	"\x11CloudSqlReference\x12v\n" +
-	"\x12database_reference\x18\x01 \x01(\v2B.google.cloud.geminidataanalytics.v1beta.CloudSqlDatabaseReferenceB\x03\xe0A\x02R\x11databaseReference\x12{\n" +
-	"\x17agent_context_reference\x18\x02 \x01(\v2>.google.cloud.geminidataanalytics.v1beta.AgentContextReferenceB\x03\xe0A\x01R\x15agentContextReference\"\xf2\x03\n" +
-	"\x19CloudSqlDatabaseReference\x12f\n" +
-	"\x06engine\x18\x01 \x01(\x0e2I.google.cloud.geminidataanalytics.v1beta.CloudSqlDatabaseReference.EngineB\x03\xe0A\x02R\x06engine\x12\"\n" +
+	"POSTGRESQL\x10\x02\"\x8a\x02\n" +
+	"\x11CloudSqlReference\x12w\n" +
+	"\x12database_reference\x18\x01 \x01(\v2B.google.cloud.geminidataanalytics.v1beta.CloudSqlDatabaseReferenceB\x04\xe2A\x01\x02R\x11databaseReference\x12|\n" +
+	"\x17agent_context_reference\x18\x02 \x01(\v2>.google.cloud.geminidataanalytics.v1beta.AgentContextReferenceB\x04\xe2A\x01\x01R\x15agentContextReference\"\xf9\x03\n" +
+	"\x19CloudSqlDatabaseReference\x12g\n" +
+	"\x06engine\x18\x01 \x01(\x0e2I.google.cloud.geminidataanalytics.v1beta.CloudSqlDatabaseReference.EngineB\x04\xe2A\x01\x02R\x06engine\x12#\n" +
 	"\n" +
-	"project_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x1b\n" +
-	"\x06region\x18\x03 \x01(\tB\x03\xe0A\x02R\x06region\x12$\n" +
-	"\vinstance_id\x18\x04 \x01(\tB\x03\xe0A\x02R\n" +
-	"instanceId\x12$\n" +
-	"\vdatabase_id\x18\x05 \x01(\tB\x03\xe0A\x02R\n" +
-	"databaseId\x12 \n" +
-	"\ttable_ids\x18\a \x03(\tB\x03\xe0A\x01R\btableIds\x12\x80\x01\n" +
-	"\x19database_table_references\x18\b \x03(\v2?.google.cloud.geminidataanalytics.v1beta.DatabaseTableReferenceB\x03\xe0A\x01R\x17databaseTableReferences\";\n" +
+	"project_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12\x1c\n" +
+	"\x06region\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x06region\x12%\n" +
+	"\vinstance_id\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"instanceId\x12%\n" +
+	"\vdatabase_id\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"databaseId\x12!\n" +
+	"\ttable_ids\x18\a \x03(\tB\x04\xe2A\x01\x01R\btableIds\x12\x81\x01\n" +
+	"\x19database_table_references\x18\b \x03(\v2?.google.cloud.geminidataanalytics.v1beta.DatabaseTableReferenceB\x04\xe2A\x01\x01R\x17databaseTableReferences\";\n" +
 	"\x06Engine\x12\x16\n" +
 	"\x12ENGINE_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +
 	"POSTGRESQL\x10\x01\x12\t\n" +
-	"\x05MYSQL\x10\x02\"\xed\x01\n" +
-	"\x17LookerExploreReferences\x12s\n" +
-	"\x12explore_references\x18\x01 \x03(\v2?.google.cloud.geminidataanalytics.v1beta.LookerExploreReferenceB\x03\xe0A\x02R\x11exploreReferences\x12]\n" +
-	"\vcredentials\x18\x02 \x01(\v24.google.cloud.geminidataanalytics.v1beta.CredentialsB\x05\xe0A\x01\x18\x01R\vcredentials\"\xf3\x02\n" +
+	"\x05MYSQL\x10\x02\"\xef\x01\n" +
+	"\x17LookerExploreReferences\x12t\n" +
+	"\x12explore_references\x18\x01 \x03(\v2?.google.cloud.geminidataanalytics.v1beta.LookerExploreReferenceB\x04\xe2A\x01\x02R\x11exploreReferences\x12^\n" +
+	"\vcredentials\x18\x02 \x01(\v24.google.cloud.geminidataanalytics.v1beta.CredentialsB\x06\xe2A\x01\x01\x18\x01R\vcredentials\"\xf6\x02\n" +
 	"\x16LookerExploreReference\x120\n" +
 	"\x13looker_instance_uri\x18\t \x01(\tH\x00R\x11lookerInstanceUri\x12\x85\x01\n" +
 	"\x1cprivate_looker_instance_info\x18\n" +
-	" \x01(\v2B.google.cloud.geminidataanalytics.v1beta.PrivateLookerInstanceInfoH\x00R\x19privateLookerInstanceInfo\x12&\n" +
-	"\flookml_model\x18\x04 \x01(\tB\x03\xe0A\x02R\vlookmlModel\x12\x1d\n" +
-	"\aexplore\x18\x05 \x01(\tB\x03\xe0A\x02R\aexplore\x12L\n" +
-	"\x06schema\x18\b \x01(\v2/.google.cloud.geminidataanalytics.v1beta.SchemaB\x03\xe0A\x01R\x06schemaB\n" +
+	" \x01(\v2B.google.cloud.geminidataanalytics.v1beta.PrivateLookerInstanceInfoH\x00R\x19privateLookerInstanceInfo\x12'\n" +
+	"\flookml_model\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\vlookmlModel\x12\x1e\n" +
+	"\aexplore\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\aexplore\x12M\n" +
+	"\x06schema\x18\b \x01(\v2/.google.cloud.geminidataanalytics.v1beta.SchemaB\x04\xe2A\x01\x01R\x06schemaB\n" +
 	"\n" +
-	"\binstance\"\x99\x01\n" +
-	"\x1eBigQueryPropertyGraphReference\x12\"\n" +
+	"\binstance\"\x9c\x01\n" +
+	"\x1eBigQueryPropertyGraphReference\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12#\n" +
 	"\n" +
-	"dataset_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tdatasetId\x12/\n" +
-	"\x11property_graph_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x0fpropertyGraphId\"\x7f\n" +
+	"dataset_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tdatasetId\x120\n" +
+	"\x11property_graph_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x0fpropertyGraphId\"\x7f\n" +
 	"\x19PrivateLookerInstanceInfo\x12,\n" +
 	"\x12looker_instance_id\x18\x01 \x01(\tR\x10lookerInstanceId\x124\n" +
-	"\x16service_directory_name\x18\x02 \x01(\tR\x14serviceDirectoryName\"\x8f\t\n" +
+	"\x16service_directory_name\x18\x02 \x01(\tR\x14serviceDirectoryName\"\x91\t\n" +
 	"\n" +
 	"Datasource\x12{\n" +
 	"\x18bigquery_table_reference\x18\x01 \x01(\v2?.google.cloud.geminidataanalytics.v1beta.BigQueryTableReferenceH\x00R\x16bigqueryTableReference\x122\n" +
@@ -2431,35 +2431,35 @@ const file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDesc = ""
 	"\x13cloud_sql_reference\x18\x0e \x01(\v2:.google.cloud.geminidataanalytics.v1beta.CloudSqlReferenceH\x00R\x11cloudSqlReference\x12k\n" +
 	"\x12bigtable_reference\x18\x0f \x01(\v2:.google.cloud.geminidataanalytics.v1beta.BigtableReferenceH\x00R\x11bigtableReference\x12\x94\x01\n" +
 	"!bigquery_property_graph_reference\x18\x10 \x01(\v2G.google.cloud.geminidataanalytics.v1beta.BigQueryPropertyGraphReferenceH\x00R\x1ebigqueryPropertyGraphReference\x12n\n" +
-	"\x13firestore_reference\x18\x11 \x01(\v2;.google.cloud.geminidataanalytics.v1beta.FirestoreReferenceH\x00R\x12firestoreReference\x12L\n" +
-	"\x06schema\x18\a \x01(\v2/.google.cloud.geminidataanalytics.v1beta.SchemaB\x03\xe0A\x01R\x06schema\x12A\n" +
+	"\x13firestore_reference\x18\x11 \x01(\v2;.google.cloud.geminidataanalytics.v1beta.FirestoreReferenceH\x00R\x12firestoreReference\x12M\n" +
+	"\x06schema\x18\a \x01(\v2/.google.cloud.geminidataanalytics.v1beta.SchemaB\x04\xe2A\x01\x01R\x06schema\x12B\n" +
 	"\rstruct_schema\x18\n" +
-	" \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\fstructSchemaB\v\n" +
-	"\treference\"\xb2\x02\n" +
-	"\x06Schema\x12K\n" +
-	"\x06fields\x18\x01 \x03(\v2..google.cloud.geminidataanalytics.v1beta.FieldB\x03\xe0A\x01R\x06fields\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12\x1f\n" +
-	"\bsynonyms\x18\x03 \x03(\tB\x03\xe0A\x01R\bsynonyms\x12\x17\n" +
-	"\x04tags\x18\x04 \x03(\tB\x03\xe0A\x01R\x04tags\x12&\n" +
-	"\fdisplay_name\x18\x05 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12R\n" +
-	"\afilters\x18\x06 \x03(\v23.google.cloud.geminidataanalytics.v1beta.DataFilterB\x03\xe0A\x01R\afilters\"\xf7\x02\n" +
-	"\x05Field\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x01R\x04name\x12\x17\n" +
-	"\x04type\x18\x02 \x01(\tB\x03\xe0A\x01R\x04type\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12\x17\n" +
-	"\x04mode\x18\x04 \x01(\tB\x03\xe0A\x01R\x04mode\x12\x1f\n" +
-	"\bsynonyms\x18\x06 \x03(\tB\x03\xe0A\x01R\bsynonyms\x12\x17\n" +
-	"\x04tags\x18\a \x03(\tB\x03\xe0A\x01R\x04tags\x12&\n" +
-	"\fdisplay_name\x18\b \x01(\tB\x03\xe0A\x01R\vdisplayName\x12Q\n" +
-	"\tsubfields\x18\t \x03(\v2..google.cloud.geminidataanalytics.v1beta.FieldB\x03\xe0A\x01R\tsubfields\x12\x1f\n" +
+	" \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\fstructSchemaB\v\n" +
+	"\treference\"\xb8\x02\n" +
+	"\x06Schema\x12L\n" +
+	"\x06fields\x18\x01 \x03(\v2..google.cloud.geminidataanalytics.v1beta.FieldB\x04\xe2A\x01\x01R\x06fields\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12 \n" +
+	"\bsynonyms\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\bsynonyms\x12\x18\n" +
+	"\x04tags\x18\x04 \x03(\tB\x04\xe2A\x01\x01R\x04tags\x12'\n" +
+	"\fdisplay_name\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12S\n" +
+	"\afilters\x18\x06 \x03(\v23.google.cloud.geminidataanalytics.v1beta.DataFilterB\x04\xe2A\x01\x01R\afilters\"\x81\x03\n" +
+	"\x05Field\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04name\x12\x18\n" +
+	"\x04type\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04type\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\x18\n" +
+	"\x04mode\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x04mode\x12 \n" +
+	"\bsynonyms\x18\x06 \x03(\tB\x04\xe2A\x01\x01R\bsynonyms\x12\x18\n" +
+	"\x04tags\x18\a \x03(\tB\x04\xe2A\x01\x01R\x04tags\x12'\n" +
+	"\fdisplay_name\x18\b \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12R\n" +
+	"\tsubfields\x18\t \x03(\v2..google.cloud.geminidataanalytics.v1beta.FieldB\x04\xe2A\x01\x01R\tsubfields\x12 \n" +
 	"\bcategory\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\bcategory\x12&\n" +
-	"\fvalue_format\x18\v \x01(\tB\x03\xe0A\x01R\vvalueFormat\"\x94\x01\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\bcategory\x12'\n" +
+	"\fvalue_format\x18\v \x01(\tB\x04\xe2A\x01\x01R\vvalueFormat\"\x97\x01\n" +
 	"\n" +
-	"DataFilter\x12\x19\n" +
-	"\x05field\x18\x01 \x01(\tB\x03\xe0A\x01R\x05field\x12\x19\n" +
-	"\x05value\x18\x02 \x01(\tB\x03\xe0A\x01R\x05value\x12P\n" +
-	"\x04type\x18\x03 \x01(\x0e27.google.cloud.geminidataanalytics.v1beta.DataFilterTypeB\x03\xe0A\x01R\x04type*E\n" +
+	"DataFilter\x12\x1a\n" +
+	"\x05field\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x05field\x12\x1a\n" +
+	"\x05value\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x05value\x12Q\n" +
+	"\x04type\x18\x03 \x01(\x0e27.google.cloud.geminidataanalytics.v1beta.DataFilterTypeB\x04\xe2A\x01\x01R\x04type*E\n" +
 	"\x0eDataFilterType\x12 \n" +
 	"\x1cDATA_FILTER_TYPE_UNSPECIFIED\x10\x00\x12\x11\n" +
 	"\rALWAYS_FILTER\x10\x01B\xa0\x02\n" +

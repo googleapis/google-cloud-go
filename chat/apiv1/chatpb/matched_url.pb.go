@@ -89,10 +89,10 @@ var File_google_chat_v1_matched_url_proto protoreflect.FileDescriptor
 
 const file_google_chat_v1_matched_url_proto_rawDesc = "" +
 	"\n" +
-	" google/chat/v1/matched_url.proto\x12\x0egoogle.chat.v1\x1a\x1fgoogle/api/field_behavior.proto\"#\n" +
+	" google/chat/v1/matched_url.proto\x12\x0egoogle.chat.v1\x1a\x1fgoogle/api/field_behavior.proto\"$\n" +
 	"\n" +
-	"MatchedUrl\x12\x15\n" +
-	"\x03url\x18\x02 \x01(\tB\x03\xe0A\x03R\x03urlB\xa8\x01\n" +
+	"MatchedUrl\x12\x16\n" +
+	"\x03url\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x03urlB\xa8\x01\n" +
 	"\x12com.google.chat.v1B\x0fMatchedUrlProtoP\x01Z,cloud.google.com/go/chat/apiv1/chatpb;chatpb\xa2\x02\vDYNAPIProto\xaa\x02\x13Google.Apps.Chat.V1\xca\x02\x13Google\\Apps\\Chat\\V1\xea\x02\x16Google::Apps::Chat::V1b\x06proto3"
 
 var (

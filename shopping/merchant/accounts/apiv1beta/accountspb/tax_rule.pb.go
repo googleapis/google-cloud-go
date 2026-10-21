@@ -284,7 +284,7 @@ var File_google_shopping_merchant_accounts_v1beta_tax_rule_proto protoreflect.Fi
 
 const file_google_shopping_merchant_accounts_v1beta_tax_rule_proto_rawDesc = "" +
 	"\n" +
-	"7google/shopping/merchant/accounts/v1beta/tax_rule.proto\x12(google.shopping.merchant.accounts.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1agoogle/type/interval.proto\"\x80\x04\n" +
+	"7google/shopping/merchant/accounts/v1beta/tax_rule.proto\x12(google.shopping.merchant.accounts.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1agoogle/type/interval.proto\"\x82\x04\n" +
 	"\aTaxRule\x12!\n" +
 	"\vlocation_id\x18\x02 \x01(\x03H\x00R\n" +
 	"locationId\x12n\n" +
@@ -293,10 +293,10 @@ const file_google_shopping_merchant_accounts_v1beta_tax_rule_proto_rawDesc = "" 
 	"\x1aself_specified_rate_micros\x18\x05 \x01(\x03H\x01R\x17selfSpecifiedRateMicros\x12\x1f\n" +
 	"\vregion_code\x18\x01 \x01(\tR\n" +
 	"regionCode\x12%\n" +
-	"\x0eshipping_taxed\x18\x06 \x01(\bR\rshippingTaxed\x12N\n" +
-	"\x15effective_time_period\x18\a \x01(\v2\x15.google.type.IntervalB\x03\xe0A\x02R\x13effectiveTimePeriod\x1aA\n" +
-	"\x12TaxPostalCodeRange\x12\x19\n" +
-	"\x05start\x18\x01 \x01(\tB\x03\xe0A\x02R\x05start\x12\x10\n" +
+	"\x0eshipping_taxed\x18\x06 \x01(\bR\rshippingTaxed\x12O\n" +
+	"\x15effective_time_period\x18\a \x01(\v2\x15.google.type.IntervalB\x04\xe2A\x01\x02R\x13effectiveTimePeriod\x1aB\n" +
+	"\x12TaxPostalCodeRange\x12\x1a\n" +
+	"\x05start\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05start\x12\x10\n" +
 	"\x03end\x18\x02 \x01(\tR\x03endB\n" +
 	"\n" +
 	"\blocationB\x12\n" +

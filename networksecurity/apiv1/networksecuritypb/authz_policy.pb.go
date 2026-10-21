@@ -2180,30 +2180,30 @@ var File_google_cloud_networksecurity_v1_authz_policy_proto protoreflect.FileDes
 
 const file_google_cloud_networksecurity_v1_authz_policy_proto_rawDesc = "" +
 	"\n" +
-	"2google/cloud/networksecurity/v1/authz_policy.proto\x12\x1fgoogle.cloud.networksecurity.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc7(\n" +
-	"\vAuthzPolicy\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12%\n" +
-	"\vdescription\x18\x04 \x01(\tB\x03\xe0A\x01R\vdescription\x12U\n" +
-	"\x06labels\x18\x05 \x03(\v28.google.cloud.networksecurity.v1.AuthzPolicy.LabelsEntryB\x03\xe0A\x01R\x06labels\x12P\n" +
-	"\x06target\x18\x06 \x01(\v23.google.cloud.networksecurity.v1.AuthzPolicy.TargetB\x03\xe0A\x02R\x06target\x12Z\n" +
+	"2google/cloud/networksecurity/v1/authz_policy.proto\x12\x1fgoogle.cloud.networksecurity.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf1(\n" +
+	"\vAuthzPolicy\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x02\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12&\n" +
+	"\vdescription\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12V\n" +
+	"\x06labels\x18\x05 \x03(\v28.google.cloud.networksecurity.v1.AuthzPolicy.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12Q\n" +
+	"\x06target\x18\x06 \x01(\v23.google.cloud.networksecurity.v1.AuthzPolicy.TargetB\x04\xe2A\x01\x02R\x06target\x12[\n" +
 	"\n" +
-	"http_rules\x18\a \x03(\v26.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRuleB\x03\xe0A\x01R\thttpRules\x12`\n" +
-	"\rnetwork_rules\x18\f \x03(\v26.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRuleB\x03\xe0A\x01R\fnetworkRules\x12U\n" +
-	"\x06action\x18\b \x01(\x0e28.google.cloud.networksecurity.v1.AuthzPolicy.AuthzActionB\x03\xe0A\x02R\x06action\x12i\n" +
+	"http_rules\x18\a \x03(\v26.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRuleB\x04\xe2A\x01\x01R\thttpRules\x12a\n" +
+	"\rnetwork_rules\x18\f \x03(\v26.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRuleB\x04\xe2A\x01\x01R\fnetworkRules\x12V\n" +
+	"\x06action\x18\b \x01(\x0e28.google.cloud.networksecurity.v1.AuthzPolicy.AuthzActionB\x04\xe2A\x01\x02R\x06action\x12j\n" +
 	"\x0fcustom_provider\x18\n" +
-	" \x01(\v2;.google.cloud.networksecurity.v1.AuthzPolicy.CustomProviderB\x03\xe0A\x01R\x0ecustomProvider\x12i\n" +
-	"\x0epolicy_profile\x18\v \x01(\x0e2:.google.cloud.networksecurity.v1.AuthzPolicy.PolicyProfileB\x06\xe0A\x01\xe0A\x05R\rpolicyProfile\x1a\xa6\x01\n" +
-	"\x06Target\x12y\n" +
-	"\x15load_balancing_scheme\x18\b \x01(\x0e2@.google.cloud.networksecurity.v1.AuthzPolicy.LoadBalancingSchemeB\x03\xe0A\x01R\x13loadBalancingScheme\x12!\n" +
-	"\tresources\x18\x01 \x03(\tB\x03\xe0A\x02R\tresources\x1a\x82\x1a\n" +
-	"\tAuthzRule\x12T\n" +
-	"\x04from\x18\x01 \x01(\v2;.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.FromB\x03\xe0A\x01R\x04from\x12N\n" +
-	"\x02to\x18\x02 \x01(\v29.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.ToB\x03\xe0A\x01R\x02to\x12\x17\n" +
-	"\x04when\x18\x03 \x01(\tB\x03\xe0A\x01R\x04when\x1a\xa9\x01\n" +
+	" \x01(\v2;.google.cloud.networksecurity.v1.AuthzPolicy.CustomProviderB\x04\xe2A\x01\x01R\x0ecustomProvider\x12h\n" +
+	"\x0epolicy_profile\x18\v \x01(\x0e2:.google.cloud.networksecurity.v1.AuthzPolicy.PolicyProfileB\x05\xe2A\x02\x01\x05R\rpolicyProfile\x1a\xa8\x01\n" +
+	"\x06Target\x12z\n" +
+	"\x15load_balancing_scheme\x18\b \x01(\x0e2@.google.cloud.networksecurity.v1.AuthzPolicy.LoadBalancingSchemeB\x04\xe2A\x01\x01R\x13loadBalancingScheme\x12\"\n" +
+	"\tresources\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\tresources\x1a\xa0\x1a\n" +
+	"\tAuthzRule\x12U\n" +
+	"\x04from\x18\x01 \x01(\v2;.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.FromB\x04\xe2A\x01\x01R\x04from\x12O\n" +
+	"\x02to\x18\x02 \x01(\v29.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.ToB\x04\xe2A\x01\x01R\x02to\x12\x18\n" +
+	"\x04when\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04when\x1a\xa9\x01\n" +
 	"\vStringMatch\x12\x16\n" +
 	"\x05exact\x18\x01 \x01(\tH\x00R\x05exact\x12\x18\n" +
 	"\x06prefix\x18\x02 \x01(\tH\x00R\x06prefix\x12\x18\n" +
@@ -2211,68 +2211,68 @@ const file_google_cloud_networksecurity_v1_authz_policy_proto_rawDesc = "" +
 	"\bcontains\x18\x04 \x01(\tH\x00R\bcontains\x12\x1f\n" +
 	"\vignore_case\x18\x05 \x01(\bR\n" +
 	"ignoreCaseB\x0f\n" +
-	"\rmatch_pattern\x1aC\n" +
-	"\aIpBlock\x12\x1b\n" +
-	"\x06prefix\x18\x01 \x01(\tB\x03\xe0A\x02R\x06prefix\x12\x1b\n" +
-	"\x06length\x18\x02 \x01(\x05B\x03\xe0A\x02R\x06length\x1a\xb7\x02\n" +
-	"\x0fRequestResource\x12\x82\x01\n" +
-	"\x10tag_value_id_set\x18\x01 \x01(\v2T.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.RequestResource.TagValueIdSetB\x03\xe0A\x01R\rtagValueIdSet\x12w\n" +
-	"\x13iam_service_account\x18\x02 \x01(\v2B.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.StringMatchB\x03\xe0A\x01R\x11iamServiceAccount\x1a&\n" +
-	"\rTagValueIdSet\x12\x15\n" +
-	"\x03ids\x18\x01 \x03(\x03B\x03\xe0A\x02R\x03ids\x1a\x85\x01\n" +
-	"\vHeaderMatch\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x01R\x04name\x12]\n" +
-	"\x05value\x18\x02 \x01(\v2B.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.StringMatchB\x03\xe0A\x01R\x05value\x1a\x89\x03\n" +
-	"\tPrincipal\x12\x86\x01\n" +
-	"\x12principal_selector\x18\x01 \x01(\x0e2R.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.Principal.PrincipalSelectorB\x03\xe0A\x01R\x11principalSelector\x12e\n" +
-	"\tprincipal\x18\x02 \x01(\v2B.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.StringMatchB\x03\xe0A\x02R\tprincipal\"\x8b\x01\n" +
+	"\rmatch_pattern\x1aE\n" +
+	"\aIpBlock\x12\x1c\n" +
+	"\x06prefix\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06prefix\x12\x1c\n" +
+	"\x06length\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\x06length\x1a\xba\x02\n" +
+	"\x0fRequestResource\x12\x83\x01\n" +
+	"\x10tag_value_id_set\x18\x01 \x01(\v2T.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.RequestResource.TagValueIdSetB\x04\xe2A\x01\x01R\rtagValueIdSet\x12x\n" +
+	"\x13iam_service_account\x18\x02 \x01(\v2B.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.StringMatchB\x04\xe2A\x01\x01R\x11iamServiceAccount\x1a'\n" +
+	"\rTagValueIdSet\x12\x16\n" +
+	"\x03ids\x18\x01 \x03(\x03B\x04\xe2A\x01\x02R\x03ids\x1a\x87\x01\n" +
+	"\vHeaderMatch\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04name\x12^\n" +
+	"\x05value\x18\x02 \x01(\v2B.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.StringMatchB\x04\xe2A\x01\x01R\x05value\x1a\x8b\x03\n" +
+	"\tPrincipal\x12\x87\x01\n" +
+	"\x12principal_selector\x18\x01 \x01(\x0e2R.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.Principal.PrincipalSelectorB\x04\xe2A\x01\x01R\x11principalSelector\x12f\n" +
+	"\tprincipal\x18\x02 \x01(\v2B.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.StringMatchB\x04\xe2A\x01\x02R\tprincipal\"\x8b\x01\n" +
 	"\x11PrincipalSelector\x12\"\n" +
 	"\x1ePRINCIPAL_SELECTOR_UNSPECIFIED\x10\x00\x12\x17\n" +
 	"\x13CLIENT_CERT_URI_SAN\x10\x01\x12\x1c\n" +
 	"\x18CLIENT_CERT_DNS_NAME_SAN\x10\x02\x12\x1b\n" +
-	"\x17CLIENT_CERT_COMMON_NAME\x10\x03\x1a\xa7\x04\n" +
-	"\x04From\x12h\n" +
-	"\asources\x18\x01 \x03(\v2I.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.From.RequestSourceB\x03\xe0A\x01R\asources\x12o\n" +
-	"\vnot_sources\x18\x02 \x03(\v2I.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.From.RequestSourceB\x03\xe0A\x01R\n" +
-	"notSources\x1a\xc3\x02\n" +
-	"\rRequestSource\x12e\n" +
+	"\x17CLIENT_CERT_COMMON_NAME\x10\x03\x1a\xac\x04\n" +
+	"\x04From\x12i\n" +
+	"\asources\x18\x01 \x03(\v2I.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.From.RequestSourceB\x04\xe2A\x01\x01R\asources\x12p\n" +
+	"\vnot_sources\x18\x02 \x03(\v2I.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.From.RequestSourceB\x04\xe2A\x01\x01R\n" +
+	"notSources\x1a\xc6\x02\n" +
+	"\rRequestSource\x12f\n" +
 	"\n" +
-	"principals\x18\x01 \x03(\v2@.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.PrincipalB\x03\xe0A\x01R\n" +
-	"principals\x12`\n" +
-	"\tip_blocks\x18\x02 \x03(\v2>.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.IpBlockB\x03\xe0A\x01R\bipBlocks\x12i\n" +
-	"\tresources\x18\x03 \x03(\v2F.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.RequestResourceB\x03\xe0A\x01R\tresources\x1a\xcc\v\n" +
-	"\x02To\x12o\n" +
+	"principals\x18\x01 \x03(\v2@.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.PrincipalB\x04\xe2A\x01\x01R\n" +
+	"principals\x12a\n" +
+	"\tip_blocks\x18\x02 \x03(\v2>.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.IpBlockB\x04\xe2A\x01\x01R\bipBlocks\x12j\n" +
+	"\tresources\x18\x03 \x03(\v2F.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.RequestResourceB\x04\xe2A\x01\x01R\tresources\x1a\xd9\v\n" +
+	"\x02To\x12p\n" +
 	"\n" +
-	"operations\x18\x01 \x03(\v2J.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.To.RequestOperationB\x03\xe0A\x01R\n" +
-	"operations\x12v\n" +
-	"\x0enot_operations\x18\x02 \x03(\v2J.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.To.RequestOperationB\x03\xe0A\x01R\rnotOperations\x1a\xdc\t\n" +
-	"\x10RequestOperation\x12x\n" +
+	"operations\x18\x01 \x03(\v2J.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.To.RequestOperationB\x04\xe2A\x01\x01R\n" +
+	"operations\x12w\n" +
+	"\x0enot_operations\x18\x02 \x03(\v2J.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.To.RequestOperationB\x04\xe2A\x01\x01R\rnotOperations\x1a\xe7\t\n" +
+	"\x10RequestOperation\x12y\n" +
 	"\n" +
-	"header_set\x18\x01 \x01(\v2T.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.To.RequestOperation.HeaderSetB\x03\xe0A\x01R\theaderSet\x12]\n" +
-	"\x05hosts\x18\x02 \x03(\v2B.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.StringMatchB\x03\xe0A\x01R\x05hosts\x12]\n" +
-	"\x05paths\x18\x03 \x03(\v2B.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.StringMatchB\x03\xe0A\x01R\x05paths\x12\x1d\n" +
-	"\amethods\x18\x04 \x03(\tB\x03\xe0A\x01R\amethods\x12e\n" +
-	"\x03mcp\x18\x05 \x01(\v2N.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.To.RequestOperation.MCPB\x03\xe0A\x01R\x03mcp\x12[\n" +
-	"\x04snis\x18\a \x03(\v2B.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.StringMatchB\x03\xe0A\x01R\x04snis\x1an\n" +
-	"\tHeaderSet\x12a\n" +
-	"\aheaders\x18\x01 \x03(\v2B.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.HeaderMatchB\x03\xe0A\x02R\aheaders\x1a\x85\x01\n" +
-	"\tMCPMethod\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12_\n" +
-	"\x06params\x18\x02 \x03(\v2B.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.StringMatchB\x03\xe0A\x01R\x06params\x1a\xa7\x02\n" +
-	"\x03MCP\x12\xaa\x01\n" +
-	"\x1cbase_protocol_methods_option\x18\x01 \x01(\x0e2d.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.To.RequestOperation.BaseProtocolMethodsOptionB\x03\xe0A\x01R\x19baseProtocolMethodsOption\x12s\n" +
-	"\amethods\x18\x02 \x03(\v2T.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.To.RequestOperation.MCPMethodB\x03\xe0A\x01R\amethods\"\x8a\x01\n" +
+	"header_set\x18\x01 \x01(\v2T.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.To.RequestOperation.HeaderSetB\x04\xe2A\x01\x01R\theaderSet\x12^\n" +
+	"\x05hosts\x18\x02 \x03(\v2B.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.StringMatchB\x04\xe2A\x01\x01R\x05hosts\x12^\n" +
+	"\x05paths\x18\x03 \x03(\v2B.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.StringMatchB\x04\xe2A\x01\x01R\x05paths\x12\x1e\n" +
+	"\amethods\x18\x04 \x03(\tB\x04\xe2A\x01\x01R\amethods\x12f\n" +
+	"\x03mcp\x18\x05 \x01(\v2N.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.To.RequestOperation.MCPB\x04\xe2A\x01\x01R\x03mcp\x12\\\n" +
+	"\x04snis\x18\a \x03(\v2B.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.StringMatchB\x04\xe2A\x01\x01R\x04snis\x1ao\n" +
+	"\tHeaderSet\x12b\n" +
+	"\aheaders\x18\x01 \x03(\v2B.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.HeaderMatchB\x04\xe2A\x01\x02R\aheaders\x1a\x87\x01\n" +
+	"\tMCPMethod\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12`\n" +
+	"\x06params\x18\x02 \x03(\v2B.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.StringMatchB\x04\xe2A\x01\x01R\x06params\x1a\xa9\x02\n" +
+	"\x03MCP\x12\xab\x01\n" +
+	"\x1cbase_protocol_methods_option\x18\x01 \x01(\x0e2d.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.To.RequestOperation.BaseProtocolMethodsOptionB\x04\xe2A\x01\x01R\x19baseProtocolMethodsOption\x12t\n" +
+	"\amethods\x18\x02 \x03(\v2T.google.cloud.networksecurity.v1.AuthzPolicy.AuthzRule.To.RequestOperation.MCPMethodB\x04\xe2A\x01\x01R\amethods\"\x8a\x01\n" +
 	"\x19BaseProtocolMethodsOption\x12,\n" +
 	"(BASE_PROTOCOL_METHODS_OPTION_UNSPECIFIED\x10\x00\x12\x1e\n" +
 	"\x1aSKIP_BASE_PROTOCOL_METHODS\x10\x01\x12\x1f\n" +
-	"\x1bMATCH_BASE_PROTOCOL_METHODS\x10\x02\x1a\xb3\x02\n" +
-	"\x0eCustomProvider\x12f\n" +
-	"\tcloud_iap\x18\x01 \x01(\v2D.google.cloud.networksecurity.v1.AuthzPolicy.CustomProvider.CloudIapB\x03\xe0A\x01R\bcloudIap\x12x\n" +
-	"\x0fauthz_extension\x18\x02 \x01(\v2J.google.cloud.networksecurity.v1.AuthzPolicy.CustomProvider.AuthzExtensionB\x03\xe0A\x01R\x0eauthzExtension\x1a\n" +
+	"\x1bMATCH_BASE_PROTOCOL_METHODS\x10\x02\x1a\xb6\x02\n" +
+	"\x0eCustomProvider\x12g\n" +
+	"\tcloud_iap\x18\x01 \x01(\v2D.google.cloud.networksecurity.v1.AuthzPolicy.CustomProvider.CloudIapB\x04\xe2A\x01\x01R\bcloudIap\x12y\n" +
+	"\x0fauthz_extension\x18\x02 \x01(\v2J.google.cloud.networksecurity.v1.AuthzPolicy.CustomProvider.AuthzExtensionB\x04\xe2A\x01\x01R\x0eauthzExtension\x1a\n" +
 	"\n" +
-	"\bCloudIap\x1a3\n" +
-	"\x0eAuthzExtension\x12!\n" +
-	"\tresources\x18\x01 \x03(\tB\x03\xe0A\x02R\tresources\x1a9\n" +
+	"\bCloudIap\x1a4\n" +
+	"\x0eAuthzExtension\x12\"\n" +
+	"\tresources\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\tresources\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x83\x01\n" +
@@ -2291,38 +2291,38 @@ const file_google_cloud_networksecurity_v1_authz_policy_proto_rawDesc = "" +
 	"\x1aPOLICY_PROFILE_UNSPECIFIED\x10\x00\x12\x11\n" +
 	"\rREQUEST_AUTHZ\x10\x01\x12\x11\n" +
 	"\rCONTENT_AUTHZ\x10\x02:\x92\x01\xeaA\x8e\x01\n" +
-	"*networksecurity.googleapis.com/AuthzPolicy\x12Dprojects/{project}/locations/{location}/authzPolicies/{authz_policy}*\rauthzPolicies2\vauthzPolicy\"\x95\x02\n" +
-	"\x18CreateAuthzPolicyRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*networksecurity.googleapis.com/AuthzPolicyR\x06parent\x12+\n" +
-	"\x0fauthz_policy_id\x18\x02 \x01(\tB\x03\xe0A\x02R\rauthzPolicyId\x12T\n" +
-	"\fauthz_policy\x18\x03 \x01(\v2,.google.cloud.networksecurity.v1.AuthzPolicyB\x03\xe0A\x02R\vauthzPolicy\x12*\n" +
+	"*networksecurity.googleapis.com/AuthzPolicy\x12Dprojects/{project}/locations/{location}/authzPolicies/{authz_policy}*\rauthzPolicies2\vauthzPolicy\"\x99\x02\n" +
+	"\x18CreateAuthzPolicyRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*networksecurity.googleapis.com/AuthzPolicyR\x06parent\x12,\n" +
+	"\x0fauthz_policy_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\rauthzPolicyId\x12U\n" +
+	"\fauthz_policy\x18\x03 \x01(\v2,.google.cloud.networksecurity.v1.AuthzPolicyB\x04\xe2A\x01\x02R\vauthzPolicy\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xe9\x01\n" +
-	"\x18ListAuthzPoliciesRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*networksecurity.googleapis.com/AuthzPolicyR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xee\x01\n" +
+	"\x18ListAuthzPoliciesRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*networksecurity.googleapis.com/AuthzPolicyR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xba\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xba\x01\n" +
 	"\x19ListAuthzPoliciesResponse\x12S\n" +
 	"\x0eauthz_policies\x18\x01 \x03(\v2,.google.cloud.networksecurity.v1.AuthzPolicyR\rauthzPolicies\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"_\n" +
-	"\x15GetAuthzPolicyRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*networksecurity.googleapis.com/AuthzPolicyR\x04name\"\xde\x01\n" +
-	"\x18UpdateAuthzPolicyRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12T\n" +
-	"\fauthz_policy\x18\x02 \x01(\v2,.google.cloud.networksecurity.v1.AuthzPolicyB\x03\xe0A\x02R\vauthzPolicy\x12*\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"`\n" +
+	"\x15GetAuthzPolicyRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*networksecurity.googleapis.com/AuthzPolicyR\x04name\"\xe1\x01\n" +
+	"\x18UpdateAuthzPolicyRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12U\n" +
+	"\fauthz_policy\x18\x02 \x01(\v2,.google.cloud.networksecurity.v1.AuthzPolicyB\x04\xe2A\x01\x02R\vauthzPolicy\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x8e\x01\n" +
-	"\x18DeleteAuthzPolicyRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*networksecurity.googleapis.com/AuthzPolicyR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x90\x01\n" +
+	"\x18DeleteAuthzPolicyRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*networksecurity.googleapis.com/AuthzPolicyR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestIdB\xf1\x01\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestIdB\xf1\x01\n" +
 	"#com.google.cloud.networksecurity.v1B\x10AuthzPolicyProtoP\x01ZMcloud.google.com/go/networksecurity/apiv1/networksecuritypb;networksecuritypb\xaa\x02\x1fGoogle.Cloud.NetworkSecurity.V1\xca\x02\x1fGoogle\\Cloud\\NetworkSecurity\\V1\xea\x02\"Google::Cloud::NetworkSecurity::V1b\x06proto3"
 
 var (

@@ -1351,10 +1351,10 @@ var File_google_cloud_recommender_v1_recommendation_proto protoreflect.FileDescr
 
 const file_google_cloud_recommender_v1_recommendation_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/recommender/v1/recommendation.proto\x12\x1bgoogle.cloud.recommender.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/type/money.proto\"\xf8\n" +
+	"0google/cloud/recommender/v1/recommendation.proto\x12\x1bgoogle.cloud.recommender.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/type/money.proto\"\xf9\n" +
 	"\n" +
-	"\x0eRecommendation\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12 \n" +
+	"\x0eRecommendation\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12/\n" +
 	"\x13recommender_subtype\x18\f \x01(\tR\x12recommenderSubtype\x12F\n" +
 	"\x11last_refresh_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\x0flastRefreshTime\x12J\n" +

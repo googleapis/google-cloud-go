@@ -338,22 +338,22 @@ var File_google_cloud_discoveryengine_v1alpha_project_service_proto protoreflect
 
 const file_google_cloud_discoveryengine_v1alpha_project_service_proto_rawDesc = "" +
 	"\n" +
-	":google/cloud/discoveryengine/v1alpha/project_service.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a2google/cloud/discoveryengine/v1alpha/project.proto\x1a#google/longrunning/operations.proto\"W\n" +
-	"\x11GetProjectRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&discoveryengine.googleapis.com/ProjectR\x04name\"\xcf\x01\n" +
-	"\x17ProvisionProjectRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&discoveryengine.googleapis.com/ProjectR\x04name\x126\n" +
-	"\x15accept_data_use_terms\x18\x02 \x01(\bB\x03\xe0A\x02R\x12acceptDataUseTerms\x128\n" +
-	"\x16data_use_terms_version\x18\x03 \x01(\tB\x03\xe0A\x02R\x13dataUseTermsVersion\"\x1a\n" +
-	"\x18ProvisionProjectMetadata\"\xa4\x03\n" +
-	"\x1aReportConsentChangeRequest\x12\x8d\x01\n" +
-	"\x15consent_change_action\x18\x01 \x01(\x0e2T.google.cloud.discoveryengine.v1alpha.ReportConsentChangeRequest.ConsentChangeActionB\x03\xe0A\x02R\x13consentChangeAction\x12H\n" +
-	"\aproject\x18\x02 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&discoveryengine.googleapis.com/ProjectR\aproject\x12+\n" +
-	"\x0fservice_term_id\x18\x03 \x01(\tB\x03\xe0A\x02R\rserviceTermId\x125\n" +
-	"\x14service_term_version\x18\x04 \x01(\tB\x03\xe0A\x02R\x12serviceTermVersion\"H\n" +
+	":google/cloud/discoveryengine/v1alpha/project_service.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a2google/cloud/discoveryengine/v1alpha/project.proto\x1a#google/longrunning/operations.proto\"X\n" +
+	"\x11GetProjectRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&discoveryengine.googleapis.com/ProjectR\x04name\"\xd2\x01\n" +
+	"\x17ProvisionProjectRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&discoveryengine.googleapis.com/ProjectR\x04name\x127\n" +
+	"\x15accept_data_use_terms\x18\x02 \x01(\bB\x04\xe2A\x01\x02R\x12acceptDataUseTerms\x129\n" +
+	"\x16data_use_terms_version\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x13dataUseTermsVersion\"\x1a\n" +
+	"\x18ProvisionProjectMetadata\"\xa8\x03\n" +
+	"\x1aReportConsentChangeRequest\x12\x8e\x01\n" +
+	"\x15consent_change_action\x18\x01 \x01(\x0e2T.google.cloud.discoveryengine.v1alpha.ReportConsentChangeRequest.ConsentChangeActionB\x04\xe2A\x01\x02R\x13consentChangeAction\x12I\n" +
+	"\aproject\x18\x02 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&discoveryengine.googleapis.com/ProjectR\aproject\x12,\n" +
+	"\x0fservice_term_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\rserviceTermId\x126\n" +
+	"\x14service_term_version\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\x12serviceTermVersion\"H\n" +
 	"\x13ConsentChangeAction\x12%\n" +
 	"!CONSENT_CHANGE_ACTION_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +

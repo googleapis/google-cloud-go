@@ -11772,31 +11772,31 @@ var File_google_cloud_visionai_v1_warehouse_proto protoreflect.FileDescriptor
 
 const file_google_cloud_visionai_v1_warehouse_proto_rawDesc = "" +
 	"\n" +
-	"(google/cloud/visionai/v1/warehouse.proto\x12\x18google.cloud.visionai.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a%google/cloud/visionai/v1/common.proto\x1a#google/longrunning/operations.proto\x1a\x19google/protobuf/any.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\x1a\x1agoogle/type/datetime.proto\"\xc2\x01\n" +
-	"\x12CreateAssetRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1evisionai.googleapis.com/CorpusR\x06parent\x12:\n" +
-	"\x05asset\x18\x02 \x01(\v2\x1f.google.cloud.visionai.v1.AssetB\x03\xe0A\x02R\x05asset\x12#\n" +
-	"\basset_id\x18\x03 \x01(\tB\x03\xe0A\x01H\x00R\aassetId\x88\x01\x01B\v\n" +
-	"\t_asset_id\"L\n" +
-	"\x0fGetAssetRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dvisionai.googleapis.com/AssetR\x04name\"\xa6\x01\n" +
-	"\x11ListAssetsRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\x12\x1dvisionai.googleapis.com/AssetR\x06parent\x12\x1b\n" +
+	"(google/cloud/visionai/v1/warehouse.proto\x12\x18google.cloud.visionai.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a%google/cloud/visionai/v1/common.proto\x1a#google/longrunning/operations.proto\x1a\x19google/protobuf/any.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\x1a\x1agoogle/type/datetime.proto\"\xc5\x01\n" +
+	"\x12CreateAssetRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1evisionai.googleapis.com/CorpusR\x06parent\x12;\n" +
+	"\x05asset\x18\x02 \x01(\v2\x1f.google.cloud.visionai.v1.AssetB\x04\xe2A\x01\x02R\x05asset\x12$\n" +
+	"\basset_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01H\x00R\aassetId\x88\x01\x01B\v\n" +
+	"\t_asset_id\"M\n" +
+	"\x0fGetAssetRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dvisionai.googleapis.com/AssetR\x04name\"\xa7\x01\n" +
+	"\x11ListAssetsRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\x12\x1dvisionai.googleapis.com/AssetR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
 	"\x06filter\x18\x05 \x01(\tR\x06filter\"u\n" +
 	"\x12ListAssetsResponse\x127\n" +
 	"\x06assets\x18\x01 \x03(\v2\x1f.google.cloud.visionai.v1.AssetR\x06assets\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x8d\x01\n" +
-	"\x12UpdateAssetRequest\x12:\n" +
-	"\x05asset\x18\x01 \x01(\v2\x1f.google.cloud.visionai.v1.AssetB\x03\xe0A\x02R\x05asset\x12;\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x8e\x01\n" +
+	"\x12UpdateAssetRequest\x12;\n" +
+	"\x05asset\x18\x01 \x01(\v2\x1f.google.cloud.visionai.v1.AssetB\x04\xe2A\x01\x02R\x05asset\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"O\n" +
-	"\x12DeleteAssetRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
+	"updateMask\"P\n" +
+	"\x12DeleteAssetRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
 	"\x1dvisionai.googleapis.com/AssetR\x04name\"\xd3\x02\n" +
 	"\vAssetSource\x12`\n" +
 	"\x10asset_gcs_source\x18\x01 \x01(\v24.google.cloud.visionai.v1.AssetSource.AssetGcsSourceH\x00R\x0eassetGcsSource\x12f\n" +
@@ -11805,9 +11805,9 @@ const file_google_cloud_visionai_v1_warehouse_proto_rawDesc = "" +
 	"\agcs_uri\x18\x01 \x01(\tR\x06gcsUri\x1a@\n" +
 	"\x10AssetContentData\x12,\n" +
 	"\x12asset_content_data\x18\x01 \x01(\fR\x10assetContentDataB\r\n" +
-	"\vsource_form\"\x99\x01\n" +
-	"\x12UploadAssetRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
+	"\vsource_form\"\x9a\x01\n" +
+	"\x12UploadAssetRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
 	"\x1dvisionai.googleapis.com/AssetR\x04name\x12H\n" +
 	"\fasset_source\x18\x02 \x01(\v2%.google.cloud.visionai.v1.AssetSourceR\vassetSource\"\x15\n" +
 	"\x13UploadAssetResponse\"\x8d\x01\n" +
@@ -11815,20 +11815,20 @@ const file_google_cloud_visionai_v1_warehouse_proto_rawDesc = "" +
 	"\n" +
 	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x12;\n" +
 	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"updateTime\"X\n" +
-	"\x1bGenerateRetrievalUrlRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
+	"updateTime\"Y\n" +
+	"\x1bGenerateRetrievalUrlRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
 	"\x1dvisionai.googleapis.com/AssetR\x04name\"=\n" +
 	"\x1cGenerateRetrievalUrlResponse\x12\x1d\n" +
 	"\n" +
-	"signed_uri\x18\x01 \x01(\tR\tsignedUri\"\xa1\x02\n" +
+	"signed_uri\x18\x01 \x01(\tR\tsignedUri\"\xa2\x02\n" +
 	"\x05Asset\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12+\n" +
-	"\x03ttl\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\x03ttl\x12c\n" +
-	"\x10asset_gcs_source\x18\x04 \x01(\v24.google.cloud.visionai.v1.AssetSource.AssetGcsSourceB\x03\xe0A\x03R\x0eassetGcsSource:r\xeaAo\n" +
-	"\x1dvisionai.googleapis.com/Asset\x12Nprojects/{project_number}/locations/{location}/corpora/{corpus}/assets/{asset}\"P\n" +
-	"\x13AnalyzeAssetRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
+	"\x03ttl\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\x03ttl\x12d\n" +
+	"\x10asset_gcs_source\x18\x04 \x01(\v24.google.cloud.visionai.v1.AssetSource.AssetGcsSourceB\x04\xe2A\x01\x03R\x0eassetGcsSource:r\xeaAo\n" +
+	"\x1dvisionai.googleapis.com/Asset\x12Nprojects/{project_number}/locations/{location}/corpora/{corpus}/assets/{asset}\"Q\n" +
+	"\x13AnalyzeAssetRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
 	"\x1dvisionai.googleapis.com/AssetR\x04name\"\xb0\x04\n" +
 	"\x14AnalyzeAssetMetadata\x12f\n" +
 	"\x0fanalysis_status\x18\x01 \x03(\v2=.google.cloud.visionai.v1.AnalyzeAssetMetadata.AnalysisStatusR\x0eanalysisStatus\x129\n" +
@@ -11846,20 +11846,20 @@ const file_google_cloud_visionai_v1_warehouse_proto_rawDesc = "" +
 	"\tSUCCEEDED\x10\x02\x12\n" +
 	"\n" +
 	"\x06FAILED\x10\x03\"\x16\n" +
-	"\x14AnalyzeAssetResponse\"\xce\x01\n" +
-	"\x0eIndexingStatus\x12I\n" +
-	"\x05state\x18\x02 \x01(\x0e2..google.cloud.visionai.v1.IndexingStatus.StateB\x03\xe0A\x03R\x05state\x12%\n" +
+	"\x14AnalyzeAssetResponse\"\xcf\x01\n" +
+	"\x0eIndexingStatus\x12J\n" +
+	"\x05state\x18\x02 \x01(\x0e2..google.cloud.visionai.v1.IndexingStatus.StateB\x04\xe2A\x01\x03R\x05state\x12%\n" +
 	"\x0estatus_message\x18\x03 \x01(\tR\rstatusMessage\"J\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vIN_PROGRESS\x10\x01\x12\r\n" +
 	"\tSUCCEEDED\x10\x02\x12\n" +
 	"\n" +
-	"\x06FAILED\x10\x03\"\x8b\x01\n" +
-	"\x11IndexAssetRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dvisionai.googleapis.com/AssetR\x04name\x12;\n" +
-	"\x05index\x18\x02 \x01(\tB%\xe0A\x01\xfaA\x1f\n" +
+	"\x06FAILED\x10\x03\"\x8d\x01\n" +
+	"\x11IndexAssetRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dvisionai.googleapis.com/AssetR\x04name\x12<\n" +
+	"\x05index\x18\x02 \x01(\tB&\xe2A\x01\x01\xfaA\x1f\n" +
 	"\x1dvisionai.googleapis.com/IndexR\x05index\"\xce\x01\n" +
 	"\x12IndexAssetMetadata\x12@\n" +
 	"\x06status\x18\x04 \x01(\v2(.google.cloud.visionai.v1.IndexingStatusR\x06status\x129\n" +
@@ -11867,11 +11867,11 @@ const file_google_cloud_visionai_v1_warehouse_proto_rawDesc = "" +
 	"start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x12;\n" +
 	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"updateTime\"\x14\n" +
-	"\x12IndexAssetResponse\"\x91\x01\n" +
-	"\x17RemoveIndexAssetRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dvisionai.googleapis.com/AssetR\x04name\x12;\n" +
-	"\x05index\x18\x02 \x01(\tB%\xe0A\x01\xfaA\x1f\n" +
+	"\x12IndexAssetResponse\"\x93\x01\n" +
+	"\x17RemoveIndexAssetRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dvisionai.googleapis.com/AssetR\x04name\x12<\n" +
+	"\x05index\x18\x02 \x01(\tB&\xe2A\x01\x01\xfaA\x1f\n" +
 	"\x1dvisionai.googleapis.com/IndexR\x05index\"\xe5\x01\n" +
 	"\x18RemoveIndexAssetMetadata\x12Q\n" +
 	"\x0findexing_status\x18\x01 \x01(\v2(.google.cloud.visionai.v1.IndexingStatusR\x0eindexingStatus\x129\n" +
@@ -11879,18 +11879,18 @@ const file_google_cloud_visionai_v1_warehouse_proto_rawDesc = "" +
 	"start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x12;\n" +
 	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"updateTime\"\x1a\n" +
-	"\x18RemoveIndexAssetResponse\"\x8c\x02\n" +
-	"\fIndexedAsset\x12;\n" +
-	"\x05index\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dvisionai.googleapis.com/IndexR\x05index\x12;\n" +
-	"\x05asset\x18\x02 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dvisionai.googleapis.com/AssetR\x05asset\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\"\xab\x01\n" +
-	"\x18ViewIndexedAssetsRequest\x12;\n" +
-	"\x05index\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
+	"\x18RemoveIndexAssetResponse\"\x90\x02\n" +
+	"\fIndexedAsset\x12<\n" +
+	"\x05index\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dvisionai.googleapis.com/IndexR\x05index\x12<\n" +
+	"\x05asset\x18\x02 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dvisionai.googleapis.com/AssetR\x05asset\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\"\xac\x01\n" +
+	"\x18ViewIndexedAssetsRequest\x12<\n" +
+	"\x05index\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
 	"\x1dvisionai.googleapis.com/IndexR\x05index\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -11898,10 +11898,10 @@ const file_google_cloud_visionai_v1_warehouse_proto_rawDesc = "" +
 	"\x06filter\x18\x04 \x01(\tR\x06filter\"\x92\x01\n" +
 	"\x19ViewIndexedAssetsResponse\x12M\n" +
 	"\x0eindexed_assets\x18\x01 \x03(\v2&.google.cloud.visionai.v1.IndexedAssetR\rindexedAssets\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"q\n" +
-	"\x13CreateCorpusRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12=\n" +
-	"\x06corpus\x18\x02 \x01(\v2 .google.cloud.visionai.v1.CorpusB\x03\xe0A\x02R\x06corpus\"\x90\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"s\n" +
+	"\x13CreateCorpusRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12>\n" +
+	"\x06corpus\x18\x02 \x01(\v2 .google.cloud.visionai.v1.CorpusB\x04\xe2A\x01\x02R\x06corpus\"\x90\x01\n" +
 	"\x14CreateCorpusMetadata\x12;\n" +
 	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12;\n" +
@@ -11915,48 +11915,48 @@ const file_google_cloud_visionai_v1_warehouse_proto_rawDesc = "" +
 	"\x17SearchCapabilitySetting\x12[\n" +
 	"\x13search_capabilities\x18\x01 \x03(\v2*.google.cloud.visionai.v1.SearchCapabilityR\x12searchCapabilities\"v\n" +
 	"\x18CreateCollectionMetadata\x12Z\n" +
-	"\x12operation_metadata\x18\x01 \x01(\v2+.google.cloud.visionai.v1.OperationMetadataR\x11operationMetadata\"\xe5\x01\n" +
-	"\x17CreateCollectionRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1evisionai.googleapis.com/CorpusR\x06parent\x12I\n" +
+	"\x12operation_metadata\x18\x01 \x01(\v2+.google.cloud.visionai.v1.OperationMetadataR\x11operationMetadata\"\xe8\x01\n" +
+	"\x17CreateCollectionRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1evisionai.googleapis.com/CorpusR\x06parent\x12J\n" +
 	"\n" +
-	"collection\x18\x02 \x01(\v2$.google.cloud.visionai.v1.CollectionB\x03\xe0A\x02R\n" +
-	"collection\x12-\n" +
-	"\rcollection_id\x18\x03 \x01(\tB\x03\xe0A\x01H\x00R\fcollectionId\x88\x01\x01B\x10\n" +
+	"collection\x18\x02 \x01(\v2$.google.cloud.visionai.v1.CollectionB\x04\xe2A\x01\x02R\n" +
+	"collection\x12.\n" +
+	"\rcollection_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01H\x00R\fcollectionId\x88\x01\x01B\x10\n" +
 	"\x0e_collection_id\"v\n" +
 	"\x18DeleteCollectionMetadata\x12Z\n" +
-	"\x12operation_metadata\x18\x01 \x01(\v2+.google.cloud.visionai.v1.OperationMetadataR\x11operationMetadata\"Y\n" +
-	"\x17DeleteCollectionRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"visionai.googleapis.com/CollectionR\x04name\"V\n" +
-	"\x14GetCollectionRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"visionai.googleapis.com/CollectionR\x04name\"\xa1\x01\n" +
-	"\x17UpdateCollectionRequest\x12I\n" +
+	"\x12operation_metadata\x18\x01 \x01(\v2+.google.cloud.visionai.v1.OperationMetadataR\x11operationMetadata\"Z\n" +
+	"\x17DeleteCollectionRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"visionai.googleapis.com/CollectionR\x04name\"W\n" +
+	"\x14GetCollectionRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"visionai.googleapis.com/CollectionR\x04name\"\xa2\x01\n" +
+	"\x17UpdateCollectionRequest\x12J\n" +
 	"\n" +
-	"collection\x18\x01 \x01(\v2$.google.cloud.visionai.v1.CollectionB\x03\xe0A\x02R\n" +
+	"collection\x18\x01 \x01(\v2$.google.cloud.visionai.v1.CollectionB\x04\xe2A\x01\x02R\n" +
 	"collection\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"\x98\x01\n" +
-	"\x16ListCollectionsRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"visionai.googleapis.com/CollectionR\x06parent\x12\x1b\n" +
+	"updateMask\"\x99\x01\n" +
+	"\x16ListCollectionsRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"visionai.googleapis.com/CollectionR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x89\x01\n" +
 	"\x17ListCollectionsResponse\x12F\n" +
 	"\vcollections\x18\x01 \x03(\v2$.google.cloud.visionai.v1.CollectionR\vcollections\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"]\n" +
-	"\x18AddCollectionItemRequest\x12A\n" +
-	"\x04item\x18\x01 \x01(\v2(.google.cloud.visionai.v1.CollectionItemB\x03\xe0A\x02R\x04item\"Y\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"^\n" +
+	"\x18AddCollectionItemRequest\x12B\n" +
+	"\x04item\x18\x01 \x01(\v2(.google.cloud.visionai.v1.CollectionItemB\x04\xe2A\x01\x02R\x04item\"Y\n" +
 	"\x19AddCollectionItemResponse\x12<\n" +
-	"\x04item\x18\x01 \x01(\v2(.google.cloud.visionai.v1.CollectionItemR\x04item\"`\n" +
-	"\x1bRemoveCollectionItemRequest\x12A\n" +
-	"\x04item\x18\x01 \x01(\v2(.google.cloud.visionai.v1.CollectionItemB\x03\xe0A\x02R\x04item\"\\\n" +
+	"\x04item\x18\x01 \x01(\v2(.google.cloud.visionai.v1.CollectionItemR\x04item\"a\n" +
+	"\x1bRemoveCollectionItemRequest\x12B\n" +
+	"\x04item\x18\x01 \x01(\v2(.google.cloud.visionai.v1.CollectionItemB\x04\xe2A\x01\x02R\x04item\"\\\n" +
 	"\x1cRemoveCollectionItemResponse\x12<\n" +
-	"\x04item\x18\x01 \x01(\v2(.google.cloud.visionai.v1.CollectionItemR\x04item\"\xa4\x01\n" +
-	"\x1aViewCollectionItemsRequest\x12J\n" +
+	"\x04item\x18\x01 \x01(\v2(.google.cloud.visionai.v1.CollectionItemR\x04item\"\xa5\x01\n" +
+	"\x1aViewCollectionItemsRequest\x12K\n" +
 	"\n" +
-	"collection\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
+	"collection\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
 	"\"visionai.googleapis.com/CollectionR\n" +
 	"collection\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
@@ -11964,64 +11964,64 @@ const file_google_cloud_visionai_v1_warehouse_proto_rawDesc = "" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x85\x01\n" +
 	"\x1bViewCollectionItemsResponse\x12>\n" +
 	"\x05items\x18\x01 \x03(\v2(.google.cloud.visionai.v1.CollectionItemR\x05items\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xf8\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xfb\x01\n" +
 	"\n" +
-	"Collection\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription:\x81\x01\xeaA~\n" +
-	"\"visionai.googleapis.com/Collection\x12Xprojects/{project_number}/locations/{location}/corpora/{corpus}/collections/{collection}\"\xf7\x01\n" +
-	"\x0eCollectionItem\x12J\n" +
+	"Collection\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription:\x81\x01\xeaA~\n" +
+	"\"visionai.googleapis.com/Collection\x12Xprojects/{project_number}/locations/{location}/corpora/{corpus}/collections/{collection}\"\xfa\x01\n" +
+	"\x0eCollectionItem\x12K\n" +
 	"\n" +
-	"collection\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
+	"collection\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
 	"\"visionai.googleapis.com/CollectionR\n" +
-	"collection\x12F\n" +
-	"\x04type\x18\x02 \x01(\x0e2-.google.cloud.visionai.v1.CollectionItem.TypeB\x03\xe0A\x02R\x04type\x12(\n" +
-	"\ritem_resource\x18\x03 \x01(\tB\x03\xe0A\x02R\fitemResource\"'\n" +
+	"collection\x12G\n" +
+	"\x04type\x18\x02 \x01(\x0e2-.google.cloud.visionai.v1.CollectionItem.TypeB\x04\xe2A\x01\x02R\x04type\x12)\n" +
+	"\ritem_resource\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\fitemResource\"'\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\t\n" +
-	"\x05ASSET\x10\x01\"\xb0\x01\n" +
-	"\x12CreateIndexRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1evisionai.googleapis.com/CorpusR\x06parent\x12\x1e\n" +
-	"\bindex_id\x18\x02 \x01(\tB\x03\xe0A\x01R\aindexId\x12:\n" +
-	"\x05index\x18\x03 \x01(\v2\x1f.google.cloud.visionai.v1.IndexB\x03\xe0A\x02R\x05index\"q\n" +
+	"\x05ASSET\x10\x01\"\xb3\x01\n" +
+	"\x12CreateIndexRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1evisionai.googleapis.com/CorpusR\x06parent\x12\x1f\n" +
+	"\bindex_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\aindexId\x12;\n" +
+	"\x05index\x18\x03 \x01(\v2\x1f.google.cloud.visionai.v1.IndexB\x04\xe2A\x01\x02R\x05index\"q\n" +
 	"\x13CreateIndexMetadata\x12Z\n" +
-	"\x12operation_metadata\x18\x01 \x01(\v2+.google.cloud.visionai.v1.OperationMetadataR\x11operationMetadata\"\x92\x01\n" +
-	"\x12UpdateIndexRequest\x12:\n" +
-	"\x05index\x18\x01 \x01(\v2\x1f.google.cloud.visionai.v1.IndexB\x03\xe0A\x02R\x05index\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
+	"\x12operation_metadata\x18\x01 \x01(\v2+.google.cloud.visionai.v1.OperationMetadataR\x11operationMetadata\"\x94\x01\n" +
+	"\x12UpdateIndexRequest\x12;\n" +
+	"\x05index\x18\x01 \x01(\v2\x1f.google.cloud.visionai.v1.IndexB\x04\xe2A\x01\x02R\x05index\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
 	"updateMask\"q\n" +
 	"\x13UpdateIndexMetadata\x12Z\n" +
-	"\x12operation_metadata\x18\x01 \x01(\v2+.google.cloud.visionai.v1.OperationMetadataR\x11operationMetadata\"L\n" +
-	"\x0fGetIndexRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dvisionai.googleapis.com/IndexR\x04name\"\x8f\x01\n" +
-	"\x12ListIndexesRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\x12\x1dvisionai.googleapis.com/IndexR\x06parent\x12\x1b\n" +
+	"\x12operation_metadata\x18\x01 \x01(\v2+.google.cloud.visionai.v1.OperationMetadataR\x11operationMetadata\"M\n" +
+	"\x0fGetIndexRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dvisionai.googleapis.com/IndexR\x04name\"\x90\x01\n" +
+	"\x12ListIndexesRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\x12\x1dvisionai.googleapis.com/IndexR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"x\n" +
 	"\x13ListIndexesResponse\x129\n" +
 	"\aindexes\x18\x01 \x03(\v2\x1f.google.cloud.visionai.v1.IndexR\aindexes\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"O\n" +
-	"\x12DeleteIndexRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"P\n" +
+	"\x12DeleteIndexRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
 	"\x1dvisionai.googleapis.com/IndexR\x04name\"\x15\n" +
-	"\x13DeleteIndexMetadata\"\x8e\x06\n" +
+	"\x13DeleteIndexMetadata\"\x97\x06\n" +
 	"\x05Index\x12%\n" +
-	"\rentire_corpus\x18\t \x01(\bH\x00R\fentireCorpus\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12@\n" +
-	"\x05state\x18\x04 \x01(\x0e2%.google.cloud.visionai.v1.Index.StateB\x03\xe0A\x03R\x05state\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12`\n" +
-	"\x10deployed_indexes\x18\b \x03(\v20.google.cloud.visionai.v1.DeployedIndexReferenceB\x03\xe0A\x03R\x0fdeployedIndexes\x12-\n" +
-	"\rsatisfies_pzs\x18\v \x01(\bB\x03\xe0A\x03H\x01R\fsatisfiesPzs\x88\x01\x01\x12-\n" +
-	"\rsatisfies_pzi\x18\f \x01(\bB\x03\xe0A\x03H\x02R\fsatisfiesPzi\x88\x01\x01\"G\n" +
+	"\rentire_corpus\x18\t \x01(\bH\x00R\fentireCorpus\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12A\n" +
+	"\x05state\x18\x04 \x01(\x0e2%.google.cloud.visionai.v1.Index.StateB\x04\xe2A\x01\x03R\x05state\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12a\n" +
+	"\x10deployed_indexes\x18\b \x03(\v20.google.cloud.visionai.v1.DeployedIndexReferenceB\x04\xe2A\x01\x03R\x0fdeployedIndexes\x12.\n" +
+	"\rsatisfies_pzs\x18\v \x01(\bB\x04\xe2A\x01\x03H\x01R\fsatisfiesPzs\x88\x01\x01\x12.\n" +
+	"\rsatisfies_pzi\x18\f \x01(\bB\x04\xe2A\x01\x03H\x02R\fsatisfiesPzi\x88\x01\x01\"G\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bCREATING\x10\x01\x12\v\n" +
@@ -12030,20 +12030,20 @@ const file_google_cloud_visionai_v1_warehouse_proto_rawDesc = "" +
 	"\x1dvisionai.googleapis.com/Index\x12Oprojects/{project_number}/locations/{location}/corpora/{corpus}/indexes/{index}B\x0e\n" +
 	"\fasset_filterB\x10\n" +
 	"\x0e_satisfies_pzsB\x10\n" +
-	"\x0e_satisfies_pzi\"n\n" +
-	"\x16DeployedIndexReference\x12T\n" +
-	"\x0eindex_endpoint\x18\x01 \x01(\tB-\xe0A\x05\xfaA'\n" +
-	"%visionai.googleapis.com/IndexEndpointR\rindexEndpoint\"\x93\x05\n" +
+	"\x0e_satisfies_pzi\"o\n" +
+	"\x16DeployedIndexReference\x12U\n" +
+	"\x0eindex_endpoint\x18\x01 \x01(\tB.\xe2A\x01\x05\xfaA'\n" +
+	"%visionai.googleapis.com/IndexEndpointR\rindexEndpoint\"\x99\x05\n" +
 	"\x06Corpus\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12?\n" +
-	"\vdefault_ttl\x18\x05 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\n" +
-	"defaultTtl\x12>\n" +
-	"\x04type\x18\a \x01(\x0e2%.google.cloud.visionai.v1.Corpus.TypeB\x03\xe0A\x01R\x04type\x12m\n" +
-	"\x19search_capability_setting\x18\b \x01(\v21.google.cloud.visionai.v1.SearchCapabilitySettingR\x17searchCapabilitySetting\x12-\n" +
-	"\rsatisfies_pzs\x18\v \x01(\bB\x03\xe0A\x03H\x00R\fsatisfiesPzs\x88\x01\x01\x12-\n" +
-	"\rsatisfies_pzi\x18\f \x01(\bB\x03\xe0A\x03H\x01R\fsatisfiesPzi\x88\x01\x01\"N\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12@\n" +
+	"\vdefault_ttl\x18\x05 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\n" +
+	"defaultTtl\x12?\n" +
+	"\x04type\x18\a \x01(\x0e2%.google.cloud.visionai.v1.Corpus.TypeB\x04\xe2A\x01\x01R\x04type\x12m\n" +
+	"\x19search_capability_setting\x18\b \x01(\v21.google.cloud.visionai.v1.SearchCapabilitySettingR\x17searchCapabilitySetting\x12.\n" +
+	"\rsatisfies_pzs\x18\v \x01(\bB\x04\xe2A\x01\x03H\x00R\fsatisfiesPzs\x88\x01\x01\x12.\n" +
+	"\rsatisfies_pzi\x18\f \x01(\bB\x04\xe2A\x01\x03H\x01R\fsatisfiesPzi\x88\x01\x01\"N\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x10\n" +
 	"\fSTREAM_VIDEO\x10\x01\x12\t\n" +
@@ -12051,43 +12051,43 @@ const file_google_cloud_visionai_v1_warehouse_proto_rawDesc = "" +
 	"\x0fVIDEO_ON_DEMAND\x10\x03:d\xeaAa\n" +
 	"\x1evisionai.googleapis.com/Corpus\x12?projects/{project_number}/locations/{location}/corpora/{corpus}B\x10\n" +
 	"\x0e_satisfies_pzsB\x10\n" +
-	"\x0e_satisfies_pzi\"N\n" +
-	"\x10GetCorpusRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1evisionai.googleapis.com/CorpusR\x04name\"\x91\x01\n" +
-	"\x13UpdateCorpusRequest\x12=\n" +
-	"\x06corpus\x18\x01 \x01(\v2 .google.cloud.visionai.v1.CorpusB\x03\xe0A\x02R\x06corpus\x12;\n" +
+	"\x0e_satisfies_pzi\"O\n" +
+	"\x10GetCorpusRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1evisionai.googleapis.com/CorpusR\x04name\"\x92\x01\n" +
+	"\x13UpdateCorpusRequest\x12>\n" +
+	"\x06corpus\x18\x01 \x01(\v2 .google.cloud.visionai.v1.CorpusB\x04\xe2A\x01\x02R\x06corpus\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"\x85\x01\n" +
-	"\x12ListCorporaRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12\x1b\n" +
+	"updateMask\"\x86\x01\n" +
+	"\x12ListCorporaRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
 	"\x06filter\x18\x05 \x01(\tR\x06filter\"y\n" +
 	"\x13ListCorporaResponse\x12:\n" +
 	"\acorpora\x18\x01 \x03(\v2 .google.cloud.visionai.v1.CorpusR\acorpora\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"Q\n" +
-	"\x13DeleteCorpusRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1evisionai.googleapis.com/CorpusR\x04name\"R\n" +
-	"\x14AnalyzeCorpusRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"R\n" +
+	"\x13DeleteCorpusRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1evisionai.googleapis.com/CorpusR\x04name\"S\n" +
+	"\x14AnalyzeCorpusRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
 	"\x1evisionai.googleapis.com/CorpusR\x04name\"`\n" +
 	"\x15AnalyzeCorpusMetadata\x12G\n" +
 	"\bmetadata\x18\x01 \x01(\v2+.google.cloud.visionai.v1.OperationMetadataR\bmetadata\"\x17\n" +
-	"\x15AnalyzeCorpusResponse\"\xa5\x01\n" +
-	"\x17CreateDataSchemaRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1evisionai.googleapis.com/CorpusR\x06parent\x12J\n" +
-	"\vdata_schema\x18\x02 \x01(\v2$.google.cloud.visionai.v1.DataSchemaB\x03\xe0A\x02R\n" +
-	"dataSchema\"\x90\x02\n" +
+	"\x15AnalyzeCorpusResponse\"\xa7\x01\n" +
+	"\x17CreateDataSchemaRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1evisionai.googleapis.com/CorpusR\x06parent\x12K\n" +
+	"\vdata_schema\x18\x02 \x01(\v2$.google.cloud.visionai.v1.DataSchemaB\x04\xe2A\x01\x02R\n" +
+	"dataSchema\"\x91\x02\n" +
 	"\n" +
 	"DataSchema\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12\x15\n" +
-	"\x03key\x18\x02 \x01(\tB\x03\xe0A\x02R\x03key\x12R\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x16\n" +
+	"\x03key\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x03key\x12R\n" +
 	"\x0eschema_details\x18\x03 \x01(\v2+.google.cloud.visionai.v1.DataSchemaDetailsR\rschemaDetails:\x82\x01\xeaA\x7f\n" +
-	"\"visionai.googleapis.com/DataSchema\x12Yprojects/{project_number}/locations/{location}/corpora/{corpus}/dataSchemas/{data_schema}\"\xa2\x0e\n" +
+	"\"visionai.googleapis.com/DataSchema\x12Yprojects/{project_number}/locations/{location}/corpora/{corpus}/dataSchemas/{data_schema}\"\xa5\x0e\n" +
 	"\x11DataSchemaDetails\x12M\n" +
 	"\x04type\x18\x01 \x01(\x0e24.google.cloud.visionai.v1.DataSchemaDetails.DataTypeH\x00R\x04type\x88\x01\x01\x12d\n" +
 	"\x10proto_any_config\x18\x06 \x01(\v2:.google.cloud.visionai.v1.DataSchemaDetails.ProtoAnyConfigR\x0eprotoAnyConfig\x12W\n" +
@@ -12105,14 +12105,14 @@ const file_google_cloud_visionai_v1_warehouse_proto_rawDesc = "" +
 	"\rfield_schemas\x18\x01 \x03(\v2T.google.cloud.visionai.v1.DataSchemaDetails.CustomizedStructConfig.FieldSchemasEntryR\ffieldSchemas\x1al\n" +
 	"\x11FieldSchemasEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12A\n" +
-	"\x05value\x18\x02 \x01(\v2+.google.cloud.visionai.v1.DataSchemaDetailsR\x05value:\x028\x01\x1a\xfe\x03\n" +
+	"\x05value\x18\x02 \x01(\v2+.google.cloud.visionai.v1.DataSchemaDetailsR\x05value:\x028\x01\x1a\x81\x04\n" +
 	"\x0eSearchStrategy\x12\x84\x01\n" +
-	"\x14search_strategy_type\x18\x01 \x01(\x0e2M.google.cloud.visionai.v1.DataSchemaDetails.SearchStrategy.SearchStrategyTypeH\x00R\x12searchStrategyType\x88\x01\x01\x12\x9d\x01\n" +
-	"\x1dconfidence_score_index_config\x18\x02 \x01(\v2U.google.cloud.visionai.v1.DataSchemaDetails.SearchStrategy.ConfidenceScoreIndexConfigB\x03\xe0A\x01R\x1aconfidenceScoreIndexConfig\x1ac\n" +
-	"\x1aConfidenceScoreIndexConfig\x12\"\n" +
+	"\x14search_strategy_type\x18\x01 \x01(\x0e2M.google.cloud.visionai.v1.DataSchemaDetails.SearchStrategy.SearchStrategyTypeH\x00R\x12searchStrategyType\x88\x01\x01\x12\x9e\x01\n" +
+	"\x1dconfidence_score_index_config\x18\x02 \x01(\v2U.google.cloud.visionai.v1.DataSchemaDetails.SearchStrategy.ConfidenceScoreIndexConfigB\x04\xe2A\x01\x01R\x1aconfidenceScoreIndexConfig\x1ae\n" +
+	"\x1aConfidenceScoreIndexConfig\x12#\n" +
 	"\n" +
-	"field_path\x18\x01 \x01(\tB\x03\xe0A\x02R\tfieldPath\x12!\n" +
-	"\tthreshold\x18\x02 \x01(\x02B\x03\xe0A\x02R\tthreshold\"G\n" +
+	"field_path\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tfieldPath\x12\"\n" +
+	"\tthreshold\x18\x02 \x01(\x02B\x04\xe2A\x01\x02R\tthreshold\"G\n" +
 	"\x12SearchStrategyType\x12\r\n" +
 	"\tNO_SEARCH\x10\x00\x12\x10\n" +
 	"\fEXACT_SEARCH\x10\x01\x12\x10\n" +
@@ -12136,41 +12136,41 @@ const file_google_cloud_visionai_v1_warehouse_proto_rawDesc = "" +
 	"\x17GRANULARITY_ASSET_LEVEL\x10\x01\x12\x1f\n" +
 	"\x1bGRANULARITY_PARTITION_LEVEL\x10\x02B\a\n" +
 	"\x05_typeB\x0e\n" +
-	"\f_granularity\"\xa2\x01\n" +
-	"\x17UpdateDataSchemaRequest\x12J\n" +
-	"\vdata_schema\x18\x01 \x01(\v2$.google.cloud.visionai.v1.DataSchemaB\x03\xe0A\x02R\n" +
+	"\f_granularity\"\xa3\x01\n" +
+	"\x17UpdateDataSchemaRequest\x12K\n" +
+	"\vdata_schema\x18\x01 \x01(\v2$.google.cloud.visionai.v1.DataSchemaB\x04\xe2A\x01\x02R\n" +
 	"dataSchema\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"V\n" +
-	"\x14GetDataSchemaRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"visionai.googleapis.com/DataSchemaR\x04name\"Y\n" +
-	"\x17DeleteDataSchemaRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"visionai.googleapis.com/DataSchemaR\x04name\"\x98\x01\n" +
-	"\x16ListDataSchemasRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"visionai.googleapis.com/DataSchemaR\x06parent\x12\x1b\n" +
+	"updateMask\"W\n" +
+	"\x14GetDataSchemaRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"visionai.googleapis.com/DataSchemaR\x04name\"Z\n" +
+	"\x17DeleteDataSchemaRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"visionai.googleapis.com/DataSchemaR\x04name\"\x99\x01\n" +
+	"\x16ListDataSchemasRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"visionai.googleapis.com/DataSchemaR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x8a\x01\n" +
 	"\x17ListDataSchemasResponse\x12G\n" +
 	"\fdata_schemas\x18\x01 \x03(\v2$.google.cloud.visionai.v1.DataSchemaR\vdataSchemas\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xe4\x01\n" +
-	"\x17CreateAnnotationRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dvisionai.googleapis.com/AssetR\x06parent\x12I\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xe7\x01\n" +
+	"\x17CreateAnnotationRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dvisionai.googleapis.com/AssetR\x06parent\x12J\n" +
 	"\n" +
-	"annotation\x18\x02 \x01(\v2$.google.cloud.visionai.v1.AnnotationB\x03\xe0A\x02R\n" +
-	"annotation\x12-\n" +
-	"\rannotation_id\x18\x03 \x01(\tB\x03\xe0A\x01H\x00R\fannotationId\x88\x01\x01B\x10\n" +
+	"annotation\x18\x02 \x01(\v2$.google.cloud.visionai.v1.AnnotationB\x04\xe2A\x01\x02R\n" +
+	"annotation\x12.\n" +
+	"\rannotation_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01H\x00R\fannotationId\x88\x01\x01B\x10\n" +
 	"\x0e_annotation_id\"\xa3\x02\n" +
 	"\n" +
 	"Annotation\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12m\n" +
 	"\x19user_specified_annotation\x18\x02 \x01(\v21.google.cloud.visionai.v1.UserSpecifiedAnnotationR\x17userSpecifiedAnnotation:\x91\x01\xeaA\x8d\x01\n" +
-	"\"visionai.googleapis.com/Annotation\x12gprojects/{project_number}/locations/{location}/corpora/{corpus}/assets/{asset}/annotations/{annotation}\"\xb4\x01\n" +
-	"\x17UserSpecifiedAnnotation\x12\x15\n" +
-	"\x03key\x18\x01 \x01(\tB\x03\xe0A\x02R\x03key\x12?\n" +
+	"\"visionai.googleapis.com/Annotation\x12gprojects/{project_number}/locations/{location}/corpora/{corpus}/assets/{asset}/annotations/{annotation}\"\xb5\x01\n" +
+	"\x17UserSpecifiedAnnotation\x12\x16\n" +
+	"\x03key\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03key\x12?\n" +
 	"\x05value\x18\x02 \x01(\v2).google.cloud.visionai.v1.AnnotationValueR\x05value\x12A\n" +
 	"\tpartition\x18\x03 \x01(\v2#.google.cloud.visionai.v1.PartitionR\tpartition\"I\n" +
 	"\rGeoCoordinate\x12\x1a\n" +
@@ -12208,22 +12208,22 @@ const file_google_cloud_visionai_v1_warehouse_proto_rawDesc = "" +
 	"\x06filter\x18\x04 \x01(\tR\x06filter\"\x89\x01\n" +
 	"\x17ListAnnotationsResponse\x12F\n" +
 	"\vannotations\x18\x01 \x03(\v2$.google.cloud.visionai.v1.AnnotationR\vannotations\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"V\n" +
-	"\x14GetAnnotationRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"visionai.googleapis.com/AnnotationR\x04name\"\xa1\x01\n" +
-	"\x17UpdateAnnotationRequest\x12I\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"W\n" +
+	"\x14GetAnnotationRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"visionai.googleapis.com/AnnotationR\x04name\"\xa2\x01\n" +
+	"\x17UpdateAnnotationRequest\x12J\n" +
 	"\n" +
-	"annotation\x18\x01 \x01(\v2$.google.cloud.visionai.v1.AnnotationB\x03\xe0A\x02R\n" +
+	"annotation\x18\x01 \x01(\v2$.google.cloud.visionai.v1.AnnotationB\x04\xe2A\x01\x02R\n" +
 	"annotation\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"Y\n" +
-	"\x17DeleteAnnotationRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"visionai.googleapis.com/AnnotationR\x04name\"\x87\x01\n" +
+	"updateMask\"Z\n" +
+	"\x17DeleteAnnotationRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"visionai.googleapis.com/AnnotationR\x04name\"\x88\x01\n" +
 	"\x13ImportAssetsRequest\x12&\n" +
-	"\x0eassets_gcs_uri\x18\x02 \x01(\tH\x00R\fassetsGcsUri\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
+	"\x0eassets_gcs_uri\x18\x02 \x01(\tH\x00R\fassetsGcsUri\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
 	"\x1evisionai.googleapis.com/CorpusR\x06parentB\b\n" +
 	"\x06source\"\xa7\x01\n" +
 	"\x14ImportAssetsMetadata\x12G\n" +
@@ -12232,23 +12232,23 @@ const file_google_cloud_visionai_v1_warehouse_proto_rawDesc = "" +
 	"\x14BatchOperationStatus\x12#\n" +
 	"\rsuccess_count\x18\x01 \x01(\x05R\fsuccessCount\x12#\n" +
 	"\rfailure_count\x18\x02 \x01(\x05R\ffailureCount\"\x16\n" +
-	"\x14ImportAssetsResponse\"\xe2\x01\n" +
-	"\x19CreateSearchConfigRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$visionai.googleapis.com/SearchConfigR\x06parent\x12P\n" +
-	"\rsearch_config\x18\x02 \x01(\v2&.google.cloud.visionai.v1.SearchConfigB\x03\xe0A\x02R\fsearchConfig\x12-\n" +
-	"\x10search_config_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x0esearchConfigId\"\xaa\x01\n" +
-	"\x19UpdateSearchConfigRequest\x12P\n" +
-	"\rsearch_config\x18\x01 \x01(\v2&.google.cloud.visionai.v1.SearchConfigB\x03\xe0A\x02R\fsearchConfig\x12;\n" +
+	"\x14ImportAssetsResponse\"\xe5\x01\n" +
+	"\x19CreateSearchConfigRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$visionai.googleapis.com/SearchConfigR\x06parent\x12Q\n" +
+	"\rsearch_config\x18\x02 \x01(\v2&.google.cloud.visionai.v1.SearchConfigB\x04\xe2A\x01\x02R\fsearchConfig\x12.\n" +
+	"\x10search_config_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x0esearchConfigId\"\xab\x01\n" +
+	"\x19UpdateSearchConfigRequest\x12Q\n" +
+	"\rsearch_config\x18\x01 \x01(\v2&.google.cloud.visionai.v1.SearchConfigB\x04\xe2A\x01\x02R\fsearchConfig\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"Z\n" +
-	"\x16GetSearchConfigRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$visionai.googleapis.com/SearchConfigR\x04name\"]\n" +
-	"\x19DeleteSearchConfigRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$visionai.googleapis.com/SearchConfigR\x04name\"\x9c\x01\n" +
-	"\x18ListSearchConfigsRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$visionai.googleapis.com/SearchConfigR\x06parent\x12\x1b\n" +
+	"updateMask\"[\n" +
+	"\x16GetSearchConfigRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$visionai.googleapis.com/SearchConfigR\x04name\"^\n" +
+	"\x19DeleteSearchConfigRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$visionai.googleapis.com/SearchConfigR\x04name\"\x9d\x01\n" +
+	"\x18ListSearchConfigsRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$visionai.googleapis.com/SearchConfigR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x92\x01\n" +
@@ -12259,21 +12259,21 @@ const file_google_cloud_visionai_v1_warehouse_proto_rawDesc = "" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12N\n" +
 	"\x0efacet_property\x18\x02 \x01(\v2'.google.cloud.visionai.v1.FacetPropertyR\rfacetProperty\x12j\n" +
 	"\x18search_criteria_property\x18\x03 \x01(\v20.google.cloud.visionai.v1.SearchCriteriaPropertyR\x16searchCriteriaProperty:\x89\x01\xeaA\x85\x01\n" +
-	"$visionai.googleapis.com/SearchConfig\x12]projects/{project_number}/locations/{location}/corpora/{corpus}/searchConfigs/{search_config}\"\xf3\x06\n" +
-	"\rIndexEndpoint\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12S\n" +
-	"\x0edeployed_index\x18\t \x01(\v2'.google.cloud.visionai.v1.DeployedIndexB\x03\xe0A\x03R\rdeployedIndex\x12H\n" +
-	"\x05state\x18\x05 \x01(\x0e2-.google.cloud.visionai.v1.IndexEndpoint.StateB\x03\xe0A\x03R\x05state\x12P\n" +
-	"\x06labels\x18\x06 \x03(\v23.google.cloud.visionai.v1.IndexEndpoint.LabelsEntryB\x03\xe0A\x01R\x06labels\x12@\n" +
-	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12-\n" +
+	"$visionai.googleapis.com/SearchConfig\x12]projects/{project_number}/locations/{location}/corpora/{corpus}/searchConfigs/{search_config}\"\xfd\x06\n" +
+	"\rIndexEndpoint\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12T\n" +
+	"\x0edeployed_index\x18\t \x01(\v2'.google.cloud.visionai.v1.DeployedIndexB\x04\xe2A\x01\x03R\rdeployedIndex\x12I\n" +
+	"\x05state\x18\x05 \x01(\x0e2-.google.cloud.visionai.v1.IndexEndpoint.StateB\x04\xe2A\x01\x03R\x05state\x12Q\n" +
+	"\x06labels\x18\x06 \x03(\v23.google.cloud.visionai.v1.IndexEndpoint.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12A\n" +
+	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12.\n" +
 	"\rsatisfies_pzs\x18\n" +
-	" \x01(\bB\x03\xe0A\x03H\x00R\fsatisfiesPzs\x88\x01\x01\x12-\n" +
-	"\rsatisfies_pzi\x18\v \x01(\bB\x03\xe0A\x03H\x01R\fsatisfiesPzi\x88\x01\x01\x1a9\n" +
+	" \x01(\bB\x04\xe2A\x01\x03H\x00R\fsatisfiesPzs\x88\x01\x01\x12.\n" +
+	"\rsatisfies_pzi\x18\v \x01(\bB\x04\xe2A\x01\x03H\x01R\fsatisfiesPzi\x88\x01\x01\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"S\n" +
@@ -12286,57 +12286,57 @@ const file_google_cloud_visionai_v1_warehouse_proto_rawDesc = "" +
 	"\x06FAILED\x10\x04:s\xeaAp\n" +
 	"%visionai.googleapis.com/IndexEndpoint\x12Gprojects/{project}/locations/{location}/indexEndpoints/{index_endpoint}B\x10\n" +
 	"\x0e_satisfies_pzsB\x10\n" +
-	"\x0e_satisfies_pzi\"\xe5\x01\n" +
-	"\x1aCreateIndexEndpointRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12/\n" +
-	"\x11index_endpoint_id\x18\x02 \x01(\tB\x03\xe0A\x01R\x0findexEndpointId\x12S\n" +
-	"\x0eindex_endpoint\x18\x03 \x01(\v2'.google.cloud.visionai.v1.IndexEndpointB\x03\xe0A\x02R\rindexEndpoint\"y\n" +
+	"\x0e_satisfies_pzi\"\xe8\x01\n" +
+	"\x1aCreateIndexEndpointRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x120\n" +
+	"\x11index_endpoint_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x0findexEndpointId\x12T\n" +
+	"\x0eindex_endpoint\x18\x03 \x01(\v2'.google.cloud.visionai.v1.IndexEndpointB\x04\xe2A\x01\x02R\rindexEndpoint\"y\n" +
 	"\x1bCreateIndexEndpointMetadata\x12Z\n" +
-	"\x12operation_metadata\x18\x01 \x01(\v2+.google.cloud.visionai.v1.OperationMetadataR\x11operationMetadata\"\\\n" +
-	"\x17GetIndexEndpointRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%visionai.googleapis.com/IndexEndpointR\x04name\"\xc1\x01\n" +
-	"\x19ListIndexEndpointsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x12operation_metadata\x18\x01 \x01(\v2+.google.cloud.visionai.v1.OperationMetadataR\x11operationMetadata\"]\n" +
+	"\x17GetIndexEndpointRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%visionai.googleapis.com/IndexEndpointR\x04name\"\xc5\x01\n" +
+	"\x19ListIndexEndpointsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\x96\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x96\x01\n" +
 	"\x1aListIndexEndpointsResponse\x12P\n" +
 	"\x0findex_endpoints\x18\x01 \x03(\v2'.google.cloud.visionai.v1.IndexEndpointR\x0eindexEndpoints\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb3\x01\n" +
-	"\x1aUpdateIndexEndpointRequest\x12S\n" +
-	"\x0eindex_endpoint\x18\x01 \x01(\v2'.google.cloud.visionai.v1.IndexEndpointB\x03\xe0A\x02R\rindexEndpoint\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb5\x01\n" +
+	"\x1aUpdateIndexEndpointRequest\x12T\n" +
+	"\x0eindex_endpoint\x18\x01 \x01(\v2'.google.cloud.visionai.v1.IndexEndpointB\x04\xe2A\x01\x02R\rindexEndpoint\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
 	"updateMask\"y\n" +
 	"\x1bUpdateIndexEndpointMetadata\x12Z\n" +
-	"\x12operation_metadata\x18\x01 \x01(\v2+.google.cloud.visionai.v1.OperationMetadataR\x11operationMetadata\"_\n" +
-	"\x1aDeleteIndexEndpointRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
+	"\x12operation_metadata\x18\x01 \x01(\v2+.google.cloud.visionai.v1.OperationMetadataR\x11operationMetadata\"`\n" +
+	"\x1aDeleteIndexEndpointRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
 	"%visionai.googleapis.com/IndexEndpointR\x04name\"y\n" +
 	"\x1bDeleteIndexEndpointMetadata\x12Z\n" +
-	"\x12operation_metadata\x18\x01 \x01(\v2+.google.cloud.visionai.v1.OperationMetadataR\x11operationMetadata\"\xbf\x01\n" +
-	"\x12DeployIndexRequest\x12T\n" +
-	"\x0eindex_endpoint\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%visionai.googleapis.com/IndexEndpointR\rindexEndpoint\x12S\n" +
-	"\x0edeployed_index\x18\x03 \x01(\v2'.google.cloud.visionai.v1.DeployedIndexB\x03\xe0A\x02R\rdeployedIndex\"\x15\n" +
-	"\x13DeployIndexResponse\"\xbf\x01\n" +
+	"\x12operation_metadata\x18\x01 \x01(\v2+.google.cloud.visionai.v1.OperationMetadataR\x11operationMetadata\"\xc1\x01\n" +
+	"\x12DeployIndexRequest\x12U\n" +
+	"\x0eindex_endpoint\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%visionai.googleapis.com/IndexEndpointR\rindexEndpoint\x12T\n" +
+	"\x0edeployed_index\x18\x03 \x01(\v2'.google.cloud.visionai.v1.DeployedIndexB\x04\xe2A\x01\x02R\rdeployedIndex\"\x15\n" +
+	"\x13DeployIndexResponse\"\xc0\x01\n" +
 	"\x13DeployIndexMetadata\x12Z\n" +
-	"\x12operation_metadata\x18\x01 \x01(\v2+.google.cloud.visionai.v1.OperationMetadataR\x11operationMetadata\x12L\n" +
-	"\x0edeployed_index\x18\x02 \x01(\tB%\xe0A\x03\xfaA\x1f\n" +
-	"\x1dvisionai.googleapis.com/IndexR\rdeployedIndex\"\xc1\x01\n" +
+	"\x12operation_metadata\x18\x01 \x01(\v2+.google.cloud.visionai.v1.OperationMetadataR\x11operationMetadata\x12M\n" +
+	"\x0edeployed_index\x18\x02 \x01(\tB&\xe2A\x01\x03\xfaA\x1f\n" +
+	"\x1dvisionai.googleapis.com/IndexR\rdeployedIndex\"\xc2\x01\n" +
 	"\x15UndeployIndexMetadata\x12Z\n" +
-	"\x12operation_metadata\x18\x01 \x01(\v2+.google.cloud.visionai.v1.OperationMetadataR\x11operationMetadata\x12L\n" +
-	"\x0edeployed_index\x18\x02 \x01(\tB%\xe0A\x03\xfaA\x1f\n" +
-	"\x1dvisionai.googleapis.com/IndexR\rdeployedIndex\"l\n" +
-	"\x14UndeployIndexRequest\x12T\n" +
-	"\x0eindex_endpoint\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
+	"\x12operation_metadata\x18\x01 \x01(\v2+.google.cloud.visionai.v1.OperationMetadataR\x11operationMetadata\x12M\n" +
+	"\x0edeployed_index\x18\x02 \x01(\tB&\xe2A\x01\x03\xfaA\x1f\n" +
+	"\x1dvisionai.googleapis.com/IndexR\rdeployedIndex\"m\n" +
+	"\x14UndeployIndexRequest\x12U\n" +
+	"\x0eindex_endpoint\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
 	"%visionai.googleapis.com/IndexEndpointR\rindexEndpoint\"\x17\n" +
-	"\x15UndeployIndexResponse\"L\n" +
-	"\rDeployedIndex\x12;\n" +
-	"\x05index\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
+	"\x15UndeployIndexResponse\"M\n" +
+	"\rDeployedIndex\x12<\n" +
+	"\x05index\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
 	"\x1dvisionai.googleapis.com/IndexR\x05index\"\xbd\b\n" +
 	"\rFacetProperty\x12u\n" +
 	"\x17fixed_range_bucket_spec\x18\x05 \x01(\v2<.google.cloud.visionai.v1.FacetProperty.FixedRangeBucketSpecH\x00R\x14fixedRangeBucketSpec\x12x\n" +
@@ -12361,30 +12361,30 @@ const file_google_cloud_visionai_v1_warehouse_proto_rawDesc = "" +
 	"\x04YEAR\x10\x01\x12\t\n" +
 	"\x05MONTH\x10\x02\x12\a\n" +
 	"\x03DAY\x10\x03B\x14\n" +
-	"\x12range_facet_config\"\xf8\x01\n" +
+	"\x12range_facet_config\"\xfa\x01\n" +
 	"\x0eSearchHypernym\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1f\n" +
-	"\bhypernym\x18\x02 \x01(\tB\x03\xe0A\x01R\bhypernym\x12\x1f\n" +
-	"\bhyponyms\x18\x03 \x03(\tB\x03\xe0A\x01R\bhyponyms:\x8f\x01\xeaA\x8b\x01\n" +
-	"&visionai.googleapis.com/SearchHypernym\x12aprojects/{project_number}/locations/{location}/corpora/{corpus}/searchHypernyms/{search_hypernym}\"\x84\x02\n" +
-	"\x1bCreateSearchHypernymRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1evisionai.googleapis.com/CorpusR\x06parent\x12V\n" +
-	"\x0fsearch_hypernym\x18\x02 \x01(\v2(.google.cloud.visionai.v1.SearchHypernymB\x03\xe0A\x02R\x0esearchHypernym\x126\n" +
-	"\x12search_hypernym_id\x18\x03 \x01(\tB\x03\xe0A\x01H\x00R\x10searchHypernymId\x88\x01\x01B\x15\n" +
-	"\x13_search_hypernym_id\"\xb2\x01\n" +
-	"\x1bUpdateSearchHypernymRequest\x12V\n" +
-	"\x0fsearch_hypernym\x18\x01 \x01(\v2(.google.cloud.visionai.v1.SearchHypernymB\x03\xe0A\x02R\x0esearchHypernym\x12;\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
+	"\bhypernym\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\bhypernym\x12 \n" +
+	"\bhyponyms\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\bhyponyms:\x8f\x01\xeaA\x8b\x01\n" +
+	"&visionai.googleapis.com/SearchHypernym\x12aprojects/{project_number}/locations/{location}/corpora/{corpus}/searchHypernyms/{search_hypernym}\"\x87\x02\n" +
+	"\x1bCreateSearchHypernymRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1evisionai.googleapis.com/CorpusR\x06parent\x12W\n" +
+	"\x0fsearch_hypernym\x18\x02 \x01(\v2(.google.cloud.visionai.v1.SearchHypernymB\x04\xe2A\x01\x02R\x0esearchHypernym\x127\n" +
+	"\x12search_hypernym_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01H\x00R\x10searchHypernymId\x88\x01\x01B\x15\n" +
+	"\x13_search_hypernym_id\"\xb3\x01\n" +
+	"\x1bUpdateSearchHypernymRequest\x12W\n" +
+	"\x0fsearch_hypernym\x18\x01 \x01(\v2(.google.cloud.visionai.v1.SearchHypernymB\x04\xe2A\x01\x02R\x0esearchHypernym\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"^\n" +
-	"\x18GetSearchHypernymRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&visionai.googleapis.com/SearchHypernymR\x04name\"a\n" +
-	"\x1bDeleteSearchHypernymRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&visionai.googleapis.com/SearchHypernymR\x04name\"\xa0\x01\n" +
-	"\x1aListSearchHypernymsRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&visionai.googleapis.com/SearchHypernymR\x06parent\x12\x1b\n" +
+	"updateMask\"_\n" +
+	"\x18GetSearchHypernymRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&visionai.googleapis.com/SearchHypernymR\x04name\"b\n" +
+	"\x1bDeleteSearchHypernymRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&visionai.googleapis.com/SearchHypernymR\x04name\"\xa1\x01\n" +
+	"\x1aListSearchHypernymsRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\x12&visionai.googleapis.com/SearchHypernymR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x9a\x01\n" +
@@ -12414,14 +12414,14 @@ const file_google_cloud_visionai_v1_warehouse_proto_rawDesc = "" +
 	"\abuckets\x18\x03 \x03(\v2%.google.cloud.visionai.v1.FacetBucketR\abuckets\x12J\n" +
 	"\vbucket_type\x18\x04 \x01(\x0e2).google.cloud.visionai.v1.FacetBucketTypeR\n" +
 	"bucketType\x12:\n" +
-	"\x19fetch_matched_annotations\x18\x05 \x01(\bR\x17fetchMatchedAnnotations\"\xfe\x05\n" +
+	"\x19fetch_matched_annotations\x18\x05 \x01(\bR\x17fetchMatchedAnnotations\"\xff\x05\n" +
 	"\x12IngestAssetRequest\x12M\n" +
 	"\x06config\x18\x01 \x01(\v23.google.cloud.visionai.v1.IngestAssetRequest.ConfigH\x00R\x06config\x12j\n" +
-	"\x11time_indexed_data\x18\x02 \x01(\v2<.google.cloud.visionai.v1.IngestAssetRequest.TimeIndexedDataH\x00R\x0ftimeIndexedData\x1a\x89\x03\n" +
+	"\x11time_indexed_data\x18\x02 \x01(\v2<.google.cloud.visionai.v1.IngestAssetRequest.TimeIndexedDataH\x00R\x0ftimeIndexedData\x1a\x8a\x03\n" +
 	"\x06Config\x12^\n" +
 	"\n" +
-	"video_type\x18\x02 \x01(\v2=.google.cloud.visionai.v1.IngestAssetRequest.Config.VideoTypeH\x00R\tvideoType\x12;\n" +
-	"\x05asset\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
+	"video_type\x18\x02 \x01(\v2=.google.cloud.visionai.v1.IngestAssetRequest.Config.VideoTypeH\x00R\tvideoType\x12<\n" +
+	"\x05asset\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
 	"\x1dvisionai.googleapis.com/AssetR\x05asset\x1a\xd4\x01\n" +
 	"\tVideoType\x12x\n" +
 	"\x10container_format\x18\x01 \x01(\x0e2M.google.cloud.visionai.v1.IngestAssetRequest.Config.VideoType.ContainerFormatR\x0fcontainerFormat\"M\n" +
@@ -12434,27 +12434,27 @@ const file_google_cloud_visionai_v1_warehouse_proto_rawDesc = "" +
 	"\x12temporal_partition\x18\x02 \x01(\v25.google.cloud.visionai.v1.Partition.TemporalPartitionR\x11temporalPartitionB\x13\n" +
 	"\x11streaming_request\"\x94\x01\n" +
 	"\x13IngestAssetResponse\x12}\n" +
-	"\x1fsuccessfully_ingested_partition\x18\x01 \x01(\v25.google.cloud.visionai.v1.Partition.TemporalPartitionR\x1dsuccessfullyIngestedPartition\"\xb8\x01\n" +
-	"\x10ClipAssetRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dvisionai.googleapis.com/AssetR\x04name\x12i\n" +
-	"\x12temporal_partition\x18\x02 \x01(\v25.google.cloud.visionai.v1.Partition.TemporalPartitionB\x03\xe0A\x02R\x11temporalPartition\"\x86\x02\n" +
+	"\x1fsuccessfully_ingested_partition\x18\x01 \x01(\v25.google.cloud.visionai.v1.Partition.TemporalPartitionR\x1dsuccessfullyIngestedPartition\"\xba\x01\n" +
+	"\x10ClipAssetRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dvisionai.googleapis.com/AssetR\x04name\x12j\n" +
+	"\x12temporal_partition\x18\x02 \x01(\v25.google.cloud.visionai.v1.Partition.TemporalPartitionB\x04\xe2A\x01\x02R\x11temporalPartition\"\x86\x02\n" +
 	"\x11ClipAssetResponse\x12f\n" +
 	"\x11time_indexed_uris\x18\x01 \x03(\v2:.google.cloud.visionai.v1.ClipAssetResponse.TimeIndexedUriR\x0ftimeIndexedUris\x1a\x88\x01\n" +
 	"\x0eTimeIndexedUri\x12d\n" +
 	"\x12temporal_partition\x18\x01 \x01(\v25.google.cloud.visionai.v1.Partition.TemporalPartitionR\x11temporalPartition\x12\x10\n" +
-	"\x03uri\x18\x02 \x01(\tR\x03uri\"\xe6\x01\n" +
-	"\x15GenerateHlsUriRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
+	"\x03uri\x18\x02 \x01(\tR\x03uri\"\xe7\x01\n" +
+	"\x15GenerateHlsUriRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
 	"\x1dvisionai.googleapis.com/AssetR\x04name\x12f\n" +
 	"\x13temporal_partitions\x18\x02 \x03(\v25.google.cloud.visionai.v1.Partition.TemporalPartitionR\x12temporalPartitions\x12*\n" +
 	"\x11live_view_enabled\x18\x03 \x01(\bR\x0fliveViewEnabled\"\x92\x01\n" +
 	"\x16GenerateHlsUriResponse\x12\x10\n" +
 	"\x03uri\x18\x01 \x01(\tR\x03uri\x12f\n" +
-	"\x13temporal_partitions\x18\x02 \x03(\v25.google.cloud.visionai.v1.Partition.TemporalPartitionR\x12temporalPartitions\"\xdb\x04\n" +
+	"\x13temporal_partitions\x18\x02 \x03(\v25.google.cloud.visionai.v1.Partition.TemporalPartitionR\x12temporalPartitions\"\xdc\x04\n" +
 	"\x13SearchAssetsRequest\x12s\n" +
-	"\x1bschema_key_sorting_strategy\x18\t \x01(\v22.google.cloud.visionai.v1.SchemaKeySortingStrategyH\x00R\x18schemaKeySortingStrategy\x12>\n" +
-	"\x06corpus\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
+	"\x1bschema_key_sorting_strategy\x18\t \x01(\v22.google.cloud.visionai.v1.SchemaKeySortingStrategyH\x00R\x18schemaKeySortingStrategy\x12?\n" +
+	"\x06corpus\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
 	"\x1evisionai.googleapis.com/CorpusR\x06corpus\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -12465,13 +12465,13 @@ const file_google_cloud_visionai_v1_warehouse_proto_rawDesc = "" +
 	"\x16result_annotation_keys\x18\b \x03(\tR\x14resultAnnotationKeys\x12!\n" +
 	"\fsearch_query\x18\n" +
 	" \x01(\tR\vsearchQueryB\v\n" +
-	"\tsort_spec\"\xb4\x03\n" +
+	"\tsort_spec\"\xb5\x03\n" +
 	"\x1aSearchIndexEndpointRequest\x12G\n" +
 	"\vimage_query\x18\x02 \x01(\v2$.google.cloud.visionai.v1.ImageQueryH\x00R\n" +
 	"imageQuery\x12\x1f\n" +
 	"\n" +
-	"text_query\x18\x03 \x01(\tH\x00R\ttextQuery\x12T\n" +
-	"\x0eindex_endpoint\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
+	"text_query\x18\x03 \x01(\tH\x00R\ttextQuery\x12U\n" +
+	"\x0eindex_endpoint\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
 	"%visionai.googleapis.com/IndexEndpointR\rindexEndpoint\x12>\n" +
 	"\bcriteria\x18\x04 \x03(\v2\".google.cloud.visionai.v1.CriteriaR\bcriteria\x12Q\n" +
 	"\x12exclusion_criteria\x18\a \x03(\v2\".google.cloud.visionai.v1.CriteriaR\x11exclusionCriteria\x12\x1b\n" +

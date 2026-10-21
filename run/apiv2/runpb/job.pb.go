@@ -1178,86 +1178,86 @@ var File_google_cloud_run_v2_job_proto protoreflect.FileDescriptor
 
 const file_google_cloud_run_v2_job_proto_rawDesc = "" +
 	"\n" +
-	"\x1dgoogle/cloud/run/v2/job.proto\x12\x13google.cloud.run.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1dgoogle/api/launch_stage.proto\x1a\x19google/api/resource.proto\x1a\x18google/api/routing.proto\x1a#google/cloud/run/v2/condition.proto\x1a#google/cloud/run/v2/execution.proto\x1a,google/cloud/run/v2/execution_template.proto\x1a!google/cloud/run/v2/k8s.min.proto\x1a)google/cloud/run/v2/vendor_settings.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbc\x01\n" +
-	"\x10CreateJobRequest\x126\n" +
-	"\x06parent\x18\x01 \x01(\tB\x1e\xe0A\x02\xfaA\x18\x12\x16run.googleapis.com/JobR\x06parent\x12/\n" +
-	"\x03job\x18\x02 \x01(\v2\x18.google.cloud.run.v2.JobB\x03\xe0A\x02R\x03job\x12\x1a\n" +
-	"\x06job_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x05jobId\x12#\n" +
-	"\rvalidate_only\x18\x04 \x01(\bR\fvalidateOnly\"C\n" +
-	"\rGetJobRequest\x122\n" +
-	"\x04name\x18\x01 \x01(\tB\x1e\xe0A\x02\xfaA\x18\n" +
-	"\x16run.googleapis.com/JobR\x04name\"\x92\x01\n" +
-	"\x10UpdateJobRequest\x12/\n" +
-	"\x03job\x18\x01 \x01(\v2\x18.google.cloud.run.v2.JobB\x03\xe0A\x02R\x03job\x12#\n" +
-	"\rvalidate_only\x18\x03 \x01(\bR\fvalidateOnly\x12(\n" +
-	"\rallow_missing\x18\x04 \x01(\bB\x03\xe0A\x01R\fallowMissing\"\xa8\x01\n" +
-	"\x0fListJobsRequest\x126\n" +
-	"\x06parent\x18\x01 \x01(\tB\x1e\xe0A\x02\xfaA\x18\x12\x16run.googleapis.com/JobR\x06parent\x12\x1b\n" +
+	"\x1dgoogle/cloud/run/v2/job.proto\x12\x13google.cloud.run.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1dgoogle/api/launch_stage.proto\x1a\x19google/api/resource.proto\x1a\x18google/api/routing.proto\x1a#google/cloud/run/v2/condition.proto\x1a#google/cloud/run/v2/execution.proto\x1a,google/cloud/run/v2/execution_template.proto\x1a!google/cloud/run/v2/k8s.min.proto\x1a)google/cloud/run/v2/vendor_settings.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbf\x01\n" +
+	"\x10CreateJobRequest\x127\n" +
+	"\x06parent\x18\x01 \x01(\tB\x1f\xe2A\x01\x02\xfaA\x18\x12\x16run.googleapis.com/JobR\x06parent\x120\n" +
+	"\x03job\x18\x02 \x01(\v2\x18.google.cloud.run.v2.JobB\x04\xe2A\x01\x02R\x03job\x12\x1b\n" +
+	"\x06job_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x05jobId\x12#\n" +
+	"\rvalidate_only\x18\x04 \x01(\bR\fvalidateOnly\"D\n" +
+	"\rGetJobRequest\x123\n" +
+	"\x04name\x18\x01 \x01(\tB\x1f\xe2A\x01\x02\xfaA\x18\n" +
+	"\x16run.googleapis.com/JobR\x04name\"\x94\x01\n" +
+	"\x10UpdateJobRequest\x120\n" +
+	"\x03job\x18\x01 \x01(\v2\x18.google.cloud.run.v2.JobB\x04\xe2A\x01\x02R\x03job\x12#\n" +
+	"\rvalidate_only\x18\x03 \x01(\bR\fvalidateOnly\x12)\n" +
+	"\rallow_missing\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fallowMissing\"\xa9\x01\n" +
+	"\x0fListJobsRequest\x127\n" +
+	"\x06parent\x18\x01 \x01(\tB\x1f\xe2A\x01\x02\xfaA\x18\x12\x16run.googleapis.com/JobR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12!\n" +
 	"\fshow_deleted\x18\x04 \x01(\bR\vshowDeleted\"h\n" +
 	"\x10ListJobsResponse\x12,\n" +
 	"\x04jobs\x18\x01 \x03(\v2\x18.google.cloud.run.v2.JobR\x04jobs\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x7f\n" +
-	"\x10DeleteJobRequest\x122\n" +
-	"\x04name\x18\x01 \x01(\tB\x1e\xe0A\x02\xfaA\x18\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x80\x01\n" +
+	"\x10DeleteJobRequest\x123\n" +
+	"\x04name\x18\x01 \x01(\tB\x1f\xe2A\x01\x02\xfaA\x18\n" +
 	"\x16run.googleapis.com/JobR\x04name\x12#\n" +
 	"\rvalidate_only\x18\x03 \x01(\bR\fvalidateOnly\x12\x12\n" +
-	"\x04etag\x18\x04 \x01(\tR\x04etag\"\xb6\x04\n" +
-	"\rRunJobRequest\x122\n" +
-	"\x04name\x18\x01 \x01(\tB\x1e\xe0A\x02\xfaA\x18\n" +
+	"\x04etag\x18\x04 \x01(\tR\x04etag\"\xba\x04\n" +
+	"\rRunJobRequest\x123\n" +
+	"\x04name\x18\x01 \x01(\tB\x1f\xe2A\x01\x02\xfaA\x18\n" +
 	"\x16run.googleapis.com/JobR\x04name\x12#\n" +
 	"\rvalidate_only\x18\x02 \x01(\bR\fvalidateOnly\x12\x12\n" +
 	"\x04etag\x18\x03 \x01(\tR\x04etag\x12J\n" +
-	"\toverrides\x18\x04 \x01(\v2,.google.cloud.run.v2.RunJobRequest.OverridesR\toverrides\x1a\xeb\x02\n" +
+	"\toverrides\x18\x04 \x01(\v2,.google.cloud.run.v2.RunJobRequest.OverridesR\toverrides\x1a\xee\x02\n" +
 	"\tOverrides\x12o\n" +
-	"\x13container_overrides\x18\x01 \x03(\v2>.google.cloud.run.v2.RunJobRequest.Overrides.ContainerOverrideR\x12containerOverrides\x12\"\n" +
+	"\x13container_overrides\x18\x01 \x03(\v2>.google.cloud.run.v2.RunJobRequest.Overrides.ContainerOverrideR\x12containerOverrides\x12#\n" +
 	"\n" +
-	"task_count\x18\x02 \x01(\x05B\x03\xe0A\x01R\ttaskCount\x123\n" +
-	"\atimeout\x18\x04 \x01(\v2\x19.google.protobuf.DurationR\atimeout\x1a\x93\x01\n" +
+	"task_count\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\ttaskCount\x123\n" +
+	"\atimeout\x18\x04 \x01(\v2\x19.google.protobuf.DurationR\atimeout\x1a\x95\x01\n" +
 	"\x11ContainerOverride\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12\x17\n" +
-	"\x04args\x18\x02 \x03(\tB\x03\xe0A\x01R\x04args\x12-\n" +
-	"\x03env\x18\x03 \x03(\v2\x1b.google.cloud.run.v2.EnvVarR\x03env\x12\"\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x18\n" +
+	"\x04args\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x04args\x12-\n" +
+	"\x03env\x18\x03 \x03(\v2\x1b.google.cloud.run.v2.EnvVarR\x03env\x12#\n" +
 	"\n" +
-	"clear_args\x18\x04 \x01(\bB\x03\xe0A\x01R\tclearArgs\"\xec\f\n" +
+	"clear_args\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\tclearArgs\"\xfd\f\n" +
 	"\x03Job\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12\x15\n" +
-	"\x03uid\x18\x02 \x01(\tB\x03\xe0A\x03R\x03uid\x12#\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x16\n" +
+	"\x03uid\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12$\n" +
 	"\n" +
-	"generation\x18\x03 \x01(\x03B\x03\xe0A\x03R\n" +
+	"generation\x18\x03 \x01(\x03B\x04\xe2A\x01\x03R\n" +
 	"generation\x12<\n" +
 	"\x06labels\x18\x04 \x03(\v2$.google.cloud.run.v2.Job.LabelsEntryR\x06labels\x12K\n" +
-	"\vannotations\x18\x05 \x03(\v2).google.cloud.run.v2.Job.AnnotationsEntryR\vannotations\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12@\n" +
-	"\vdelete_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"deleteTime\x12@\n" +
-	"\vexpire_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"expireTime\x12\x1d\n" +
+	"\vannotations\x18\x05 \x03(\v2).google.cloud.run.v2.Job.AnnotationsEntryR\vannotations\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12A\n" +
+	"\vdelete_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"deleteTime\x12A\n" +
+	"\vexpire_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"expireTime\x12\x1e\n" +
 	"\acreator\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R\acreator\x12(\n" +
-	"\rlast_modifier\x18\v \x01(\tB\x03\xe0A\x03R\flastModifier\x12\x16\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R\acreator\x12)\n" +
+	"\rlast_modifier\x18\v \x01(\tB\x04\xe2A\x01\x03R\flastModifier\x12\x16\n" +
 	"\x06client\x18\f \x01(\tR\x06client\x12%\n" +
 	"\x0eclient_version\x18\r \x01(\tR\rclientVersion\x12:\n" +
 	"\flaunch_stage\x18\x0e \x01(\x0e2\x17.google.api.LaunchStageR\vlaunchStage\x12[\n" +
-	"\x14binary_authorization\x18\x0f \x01(\v2(.google.cloud.run.v2.BinaryAuthorizationR\x13binaryAuthorization\x12G\n" +
-	"\btemplate\x18\x10 \x01(\v2&.google.cloud.run.v2.ExecutionTemplateB\x03\xe0A\x02R\btemplate\x124\n" +
-	"\x13observed_generation\x18\x11 \x01(\x03B\x03\xe0A\x03R\x12observedGeneration\x12R\n" +
-	"\x12terminal_condition\x18\x12 \x01(\v2\x1e.google.cloud.run.v2.ConditionB\x03\xe0A\x03R\x11terminalCondition\x12C\n" +
+	"\x14binary_authorization\x18\x0f \x01(\v2(.google.cloud.run.v2.BinaryAuthorizationR\x13binaryAuthorization\x12H\n" +
+	"\btemplate\x18\x10 \x01(\v2&.google.cloud.run.v2.ExecutionTemplateB\x04\xe2A\x01\x02R\btemplate\x125\n" +
+	"\x13observed_generation\x18\x11 \x01(\x03B\x04\xe2A\x01\x03R\x12observedGeneration\x12S\n" +
+	"\x12terminal_condition\x18\x12 \x01(\v2\x1e.google.cloud.run.v2.ConditionB\x04\xe2A\x01\x03R\x11terminalCondition\x12D\n" +
 	"\n" +
-	"conditions\x18\x13 \x03(\v2\x1e.google.cloud.run.v2.ConditionB\x03\xe0A\x03R\n" +
-	"conditions\x12,\n" +
-	"\x0fexecution_count\x18\x14 \x01(\x05B\x03\xe0A\x03R\x0eexecutionCount\x12f\n" +
-	"\x18latest_created_execution\x18\x16 \x01(\v2'.google.cloud.run.v2.ExecutionReferenceB\x03\xe0A\x03R\x16latestCreatedExecution\x12%\n" +
-	"\vreconciling\x18\x17 \x01(\bB\x03\xe0A\x03R\vreconciling\x12(\n" +
-	"\rsatisfies_pzs\x18\x19 \x01(\bB\x03\xe0A\x03R\fsatisfiesPzs\x124\n" +
+	"conditions\x18\x13 \x03(\v2\x1e.google.cloud.run.v2.ConditionB\x04\xe2A\x01\x03R\n" +
+	"conditions\x12-\n" +
+	"\x0fexecution_count\x18\x14 \x01(\x05B\x04\xe2A\x01\x03R\x0eexecutionCount\x12g\n" +
+	"\x18latest_created_execution\x18\x16 \x01(\v2'.google.cloud.run.v2.ExecutionReferenceB\x04\xe2A\x01\x03R\x16latestCreatedExecution\x12&\n" +
+	"\vreconciling\x18\x17 \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12)\n" +
+	"\rsatisfies_pzs\x18\x19 \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzs\x124\n" +
 	"\x15start_execution_token\x18\x1a \x01(\tH\x00R\x13startExecutionToken\x120\n" +
-	"\x13run_execution_token\x18\x1b \x01(\tH\x00R\x11runExecutionToken\x12\x17\n" +
-	"\x04etag\x18c \x01(\tB\x03\xe0A\x01R\x04etag\x1a9\n" +
+	"\x13run_execution_token\x18\x1b \x01(\tH\x00R\x11runExecutionToken\x12\x18\n" +
+	"\x04etag\x18c \x01(\tB\x04\xe2A\x01\x01R\x04etag\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a>\n" +

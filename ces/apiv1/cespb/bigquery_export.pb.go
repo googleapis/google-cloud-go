@@ -109,11 +109,11 @@ var File_google_cloud_ces_v1_bigquery_export_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1_bigquery_export_proto_rawDesc = "" +
 	"\n" +
-	")google/cloud/ces/v1/bigquery_export.proto\x12\x13google.cloud.ces.v1\x1a\x1fgoogle/api/field_behavior.proto\"u\n" +
-	"\x16BigQueryExportSettings\x12\x1d\n" +
-	"\aenabled\x18\x01 \x01(\bB\x03\xe0A\x01R\aenabled\x12\x1d\n" +
-	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x01R\aproject\x12\x1d\n" +
-	"\adataset\x18\x03 \x01(\tB\x03\xe0A\x01R\adatasetB[\n" +
+	")google/cloud/ces/v1/bigquery_export.proto\x12\x13google.cloud.ces.v1\x1a\x1fgoogle/api/field_behavior.proto\"x\n" +
+	"\x16BigQueryExportSettings\x12\x1e\n" +
+	"\aenabled\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\aenabled\x12\x1e\n" +
+	"\aproject\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\aproject\x12\x1e\n" +
+	"\adataset\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\adatasetB[\n" +
 	"\x17com.google.cloud.ces.v1B\x13BigQueryExportProtoP\x01Z)cloud.google.com/go/ces/apiv1/cespb;cespbb\x06proto3"
 
 var (

@@ -249,17 +249,17 @@ var File_google_cloud_securitycenter_v2_notification_config_proto protoreflect.F
 
 const file_google_cloud_securitycenter_v2_notification_config_proto_rawDesc = "" +
 	"\n" +
-	"8google/cloud/securitycenter/v2/notification_config.proto\x12\x1egoogle.cloud.securitycenter.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdf\x06\n" +
-	"\x12NotificationConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12 \n" +
+	"8google/cloud/securitycenter/v2/notification_config.proto\x12\x1egoogle.cloud.securitycenter.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe3\x06\n" +
+	"\x12NotificationConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12C\n" +
 	"\fpubsub_topic\x18\x03 \x01(\tB \xfaA\x1d\n" +
-	"\x1bpubsub.googleapis.com/TopicR\vpubsubTopic\x12,\n" +
-	"\x0fservice_account\x18\x04 \x01(\tB\x03\xe0A\x03R\x0eserviceAccount\x12o\n" +
-	"\x10streaming_config\x18\x05 \x01(\v2B.google.cloud.securitycenter.v2.NotificationConfig.StreamingConfigH\x00R\x0fstreamingConfig\x12@\n" +
-	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12I\n" +
-	"\x1edeletion_notifications_enabled\x18\t \x01(\bB\x03\xe0A\x01R\x1cdeletionNotificationsEnabled\x1a)\n" +
+	"\x1bpubsub.googleapis.com/TopicR\vpubsubTopic\x12-\n" +
+	"\x0fservice_account\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x0eserviceAccount\x12o\n" +
+	"\x10streaming_config\x18\x05 \x01(\v2B.google.cloud.securitycenter.v2.NotificationConfig.StreamingConfigH\x00R\x0fstreamingConfig\x12A\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12J\n" +
+	"\x1edeletion_notifications_enabled\x18\t \x01(\bB\x04\xe2A\x01\x01R\x1cdeletionNotificationsEnabled\x1a)\n" +
 	"\x0fStreamingConfig\x12\x16\n" +
 	"\x06filter\x18\x01 \x01(\tR\x06filter:\xe0\x02\xeaA\xdc\x02\n" +
 	"0securitycenter.googleapis.com/NotificationConfig\x12[organizations/{organization}/locations/{location}/notificationConfigs/{notification_config}\x12Ofolders/{folder}/locations/{location}/notificationConfigs/{notification_config}\x12Qprojects/{project}/locations/{location}/notificationConfigs/{notification_config}*\x13notificationConfigs2\x12notificationConfigB\x0f\n" +

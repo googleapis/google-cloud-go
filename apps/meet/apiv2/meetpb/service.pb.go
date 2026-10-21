@@ -1978,87 +1978,87 @@ const file_google_apps_meet_v2_service_proto_rawDesc = "" +
 	"\n" +
 	"!google/apps/meet/v2/service.proto\x12\x13google.apps.meet.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\"google/apps/meet/v2/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"F\n" +
 	"\x12CreateSpaceRequest\x120\n" +
-	"\x05space\x18\x01 \x01(\v2\x1a.google.apps.meet.v2.SpaceR\x05space\"H\n" +
-	"\x0fGetSpaceRequest\x125\n" +
-	"\x04name\x18\x01 \x01(\tB!\xe0A\x02\xfaA\x1b\n" +
+	"\x05space\x18\x01 \x01(\v2\x1a.google.apps.meet.v2.SpaceR\x05space\"I\n" +
+	"\x0fGetSpaceRequest\x126\n" +
+	"\x04name\x18\x01 \x01(\tB\"\xe2A\x01\x02\xfaA\x1b\n" +
+	"\x19meet.googleapis.com/SpaceR\x04name\"\x8f\x01\n" +
+	"\x12UpdateSpaceRequest\x126\n" +
+	"\x05space\x18\x01 \x01(\v2\x1a.google.apps.meet.v2.SpaceB\x04\xe2A\x01\x02R\x05space\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"T\n" +
+	"\x1aEndActiveConferenceRequest\x126\n" +
+	"\x04name\x18\x01 \x01(\tB\"\xe2A\x01\x02\xfaA\x1b\n" +
 	"\x19meet.googleapis.com/SpaceR\x04name\"\x8d\x01\n" +
-	"\x12UpdateSpaceRequest\x125\n" +
-	"\x05space\x18\x01 \x01(\v2\x1a.google.apps.meet.v2.SpaceB\x03\xe0A\x02R\x05space\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"S\n" +
-	"\x1aEndActiveConferenceRequest\x125\n" +
-	"\x04name\x18\x01 \x01(\tB!\xe0A\x02\xfaA\x1b\n" +
-	"\x19meet.googleapis.com/SpaceR\x04name\"\x8b\x01\n" +
-	"\x13CreateMemberRequest\x12:\n" +
-	"\x06parent\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\x12\x1ameet.googleapis.com/MemberR\x06parent\x128\n" +
-	"\x06member\x18\x02 \x01(\v2\x1b.google.apps.meet.v2.MemberB\x03\xe0A\x02R\x06member\"J\n" +
-	"\x10GetMemberRequest\x126\n" +
-	"\x04name\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
-	"\x1ameet.googleapis.com/MemberR\x04name\"\x96\x01\n" +
-	"\x12ListMembersRequest\x12:\n" +
-	"\x06parent\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\x12\x1ameet.googleapis.com/MemberR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x13CreateMemberRequest\x12;\n" +
+	"\x06parent\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\x12\x1ameet.googleapis.com/MemberR\x06parent\x129\n" +
+	"\x06member\x18\x02 \x01(\v2\x1b.google.apps.meet.v2.MemberB\x04\xe2A\x01\x02R\x06member\"K\n" +
+	"\x10GetMemberRequest\x127\n" +
+	"\x04name\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\n" +
+	"\x1ameet.googleapis.com/MemberR\x04name\"\x99\x01\n" +
+	"\x12ListMembersRequest\x12;\n" +
+	"\x06parent\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\x12\x1ameet.googleapis.com/MemberR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"t\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"t\n" +
 	"\x13ListMembersResponse\x125\n" +
 	"\amembers\x18\x01 \x03(\v2\x1b.google.apps.meet.v2.MemberR\amembers\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"M\n" +
-	"\x13DeleteMemberRequest\x126\n" +
-	"\x04name\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
-	"\x1ameet.googleapis.com/MemberR\x04name\"\x91\x01\n" +
-	"\x13UpdateMemberRequest\x128\n" +
-	"\x06member\x18\x01 \x01(\v2\x1b.google.apps.meet.v2.MemberB\x03\xe0A\x02R\x06member\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"\xe4\x01\n" +
-	"\x19BatchUpdateMembersRequest\x12:\n" +
-	"\x06parent\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\x12\x1ameet.googleapis.com/MemberR\x06parent\x12I\n" +
-	"\brequests\x18\x02 \x03(\v2(.google.apps.meet.v2.UpdateMemberRequestB\x03\xe0A\x02R\brequests\x12@\n" +
-	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"N\n" +
+	"\x13DeleteMemberRequest\x127\n" +
+	"\x04name\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\n" +
+	"\x1ameet.googleapis.com/MemberR\x04name\"\x93\x01\n" +
+	"\x13UpdateMemberRequest\x129\n" +
+	"\x06member\x18\x01 \x01(\v2\x1b.google.apps.meet.v2.MemberB\x04\xe2A\x01\x02R\x06member\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"\xe7\x01\n" +
+	"\x19BatchUpdateMembersRequest\x12;\n" +
+	"\x06parent\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\x12\x1ameet.googleapis.com/MemberR\x06parent\x12J\n" +
+	"\brequests\x18\x02 \x03(\v2(.google.apps.meet.v2.UpdateMemberRequestB\x04\xe2A\x01\x02R\brequests\x12A\n" +
+	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
 	"updateMask\"S\n" +
 	"\x1aBatchUpdateMembersResponse\x125\n" +
-	"\amembers\x18\x01 \x03(\v2\x1b.google.apps.meet.v2.MemberR\amembers\"^\n" +
-	"\x1aGetConferenceRecordRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$meet.googleapis.com/ConferenceRecordR\x04name\"\x81\x01\n" +
-	"\x1cListConferenceRecordsRequest\x12 \n" +
-	"\tpage_size\x18\x01 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\amembers\x18\x01 \x03(\v2\x1b.google.apps.meet.v2.MemberR\amembers\"_\n" +
+	"\x1aGetConferenceRecordRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$meet.googleapis.com/ConferenceRecordR\x04name\"\x84\x01\n" +
+	"\x1cListConferenceRecordsRequest\x12!\n" +
+	"\tpage_size\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x03 \x01(\tB\x03\xe0A\x01R\x06filter\"\x9d\x01\n" +
+	"page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x9d\x01\n" +
 	"\x1dListConferenceRecordsResponse\x12T\n" +
 	"\x12conference_records\x18\x01 \x03(\v2%.google.apps.meet.v2.ConferenceRecordR\x11conferenceRecords\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"T\n" +
-	"\x15GetParticipantRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fmeet.googleapis.com/ParticipantR\x04name\"\xb3\x01\n" +
-	"\x17ListParticipantsRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1fmeet.googleapis.com/ParticipantR\x06parent\x12\x1b\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"U\n" +
+	"\x15GetParticipantRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fmeet.googleapis.com/ParticipantR\x04name\"\xb5\x01\n" +
+	"\x17ListParticipantsRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1fmeet.googleapis.com/ParticipantR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\xa7\x01\n" +
+	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xa7\x01\n" +
 	"\x18ListParticipantsResponse\x12D\n" +
 	"\fparticipants\x18\x01 \x03(\v2 .google.apps.meet.v2.ParticipantR\fparticipants\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12\x1d\n" +
 	"\n" +
-	"total_size\x18\x03 \x01(\x05R\ttotalSize\"b\n" +
-	"\x1cGetParticipantSessionRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&meet.googleapis.com/ParticipantSessionR\x04name\"\xcb\x01\n" +
-	"\x1eListParticipantSessionsRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&meet.googleapis.com/ParticipantSessionR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"total_size\x18\x03 \x01(\x05R\ttotalSize\"c\n" +
+	"\x1cGetParticipantSessionRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&meet.googleapis.com/ParticipantSessionR\x04name\"\xcf\x01\n" +
+	"\x1eListParticipantSessionsRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\x12&meet.googleapis.com/ParticipantSessionR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\xa5\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xa5\x01\n" +
 	"\x1fListParticipantSessionsResponse\x12Z\n" +
 	"\x14participant_sessions\x18\x01 \x03(\v2'.google.apps.meet.v2.ParticipantSessionR\x13participantSessions\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"P\n" +
-	"\x13GetRecordingRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dmeet.googleapis.com/RecordingR\x04name\"\x92\x01\n" +
-	"\x15ListRecordingsRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\x12\x1dmeet.googleapis.com/RecordingR\x06parent\x12\x1b\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"Q\n" +
+	"\x13GetRecordingRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dmeet.googleapis.com/RecordingR\x04name\"\x93\x01\n" +
+	"\x15ListRecordingsRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\x12\x1dmeet.googleapis.com/RecordingR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x80\x01\n" +
@@ -2066,37 +2066,37 @@ const file_google_apps_meet_v2_service_proto_rawDesc = "" +
 	"\n" +
 	"recordings\x18\x01 \x03(\v2\x1e.google.apps.meet.v2.RecordingR\n" +
 	"recordings\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"R\n" +
-	"\x14GetTranscriptRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1emeet.googleapis.com/TranscriptR\x04name\"\x94\x01\n" +
-	"\x16ListTranscriptsRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \x12\x1emeet.googleapis.com/TranscriptR\x06parent\x12\x1b\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"S\n" +
+	"\x14GetTranscriptRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1emeet.googleapis.com/TranscriptR\x04name\"\x95\x01\n" +
+	"\x16ListTranscriptsRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \x12\x1emeet.googleapis.com/TranscriptR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x84\x01\n" +
 	"\x17ListTranscriptsResponse\x12A\n" +
 	"\vtranscripts\x18\x01 \x03(\v2\x1f.google.apps.meet.v2.TranscriptR\vtranscripts\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\\\n" +
-	"\x19GetTranscriptEntryRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#meet.googleapis.com/TranscriptEntryR\x04name\"\x9f\x01\n" +
-	"\x1cListTranscriptEntriesRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\x12#meet.googleapis.com/TranscriptEntryR\x06parent\x12\x1b\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"]\n" +
+	"\x19GetTranscriptEntryRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#meet.googleapis.com/TranscriptEntryR\x04name\"\xa0\x01\n" +
+	"\x1cListTranscriptEntriesRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\x12#meet.googleapis.com/TranscriptEntryR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x9c\x01\n" +
 	"\x1dListTranscriptEntriesResponse\x12S\n" +
 	"\x12transcript_entries\x18\x01 \x03(\v2$.google.apps.meet.v2.TranscriptEntryR\x11transcriptEntries\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"P\n" +
-	"\x13GetSmartNoteRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dmeet.googleapis.com/SmartNoteR\x04name\"\x9c\x01\n" +
-	"\x15ListSmartNotesRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\x12\x1dmeet.googleapis.com/SmartNoteR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"Q\n" +
+	"\x13GetSmartNoteRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dmeet.googleapis.com/SmartNoteR\x04name\"\x9f\x01\n" +
+	"\x15ListSmartNotesRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\x12\x1dmeet.googleapis.com/SmartNoteR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x81\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x81\x01\n" +
 	"\x16ListSmartNotesResponse\x12?\n" +
 	"\vsmart_notes\x18\x01 \x03(\v2\x1e.google.apps.meet.v2.SmartNoteR\n" +
 	"smartNotes\x12&\n" +

@@ -11329,7 +11329,7 @@ var File_google_analytics_admin_v1alpha_analytics_admin_proto protoreflect.FileD
 
 const file_google_analytics_admin_v1alpha_analytics_admin_proto_rawDesc = "" +
 	"\n" +
-	"4google/analytics/admin/v1alpha/analytics_admin.proto\x12\x1egoogle.analytics.admin.v1alpha\x1a2google/analytics/admin/v1alpha/access_report.proto\x1a-google/analytics/admin/v1alpha/audience.proto\x1a2google/analytics/admin/v1alpha/channel_group.proto\x1a:google/analytics/admin/v1alpha/event_create_and_edit.proto\x1a6google/analytics/admin/v1alpha/expanded_data_set.proto\x1a.google/analytics/admin/v1alpha/resources.proto\x1a=google/analytics/admin/v1alpha/subproperty_event_filter.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfd\x05\n" +
+	"4google/analytics/admin/v1alpha/analytics_admin.proto\x12\x1egoogle.analytics.admin.v1alpha\x1a2google/analytics/admin/v1alpha/access_report.proto\x1a-google/analytics/admin/v1alpha/audience.proto\x1a2google/analytics/admin/v1alpha/channel_group.proto\x1a:google/analytics/admin/v1alpha/event_create_and_edit.proto\x1a6google/analytics/admin/v1alpha/expanded_data_set.proto\x1a.google/analytics/admin/v1alpha/resources.proto\x1a=google/analytics/admin/v1alpha/subproperty_event_filter.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xff\x05\n" +
 	"\x16RunAccessReportRequest\x12\x16\n" +
 	"\x06entity\x18\x01 \x01(\tR\x06entity\x12O\n" +
 	"\n" +
@@ -11345,692 +11345,692 @@ const file_google_analytics_admin_v1alpha_analytics_admin_proto_rawDesc = "" +
 	"\ttime_zone\x18\t \x01(\tR\btimeZone\x12J\n" +
 	"\torder_bys\x18\n" +
 	" \x03(\v2-.google.analytics.admin.v1alpha.AccessOrderByR\borderBys\x12.\n" +
-	"\x13return_entity_quota\x18\v \x01(\bR\x11returnEntityQuota\x12/\n" +
-	"\x11include_all_users\x18\f \x01(\bB\x03\xe0A\x01R\x0fincludeAllUsers\x12(\n" +
-	"\rexpand_groups\x18\r \x01(\bB\x03\xe0A\x01R\fexpandGroups\"\xf7\x02\n" +
+	"\x13return_entity_quota\x18\v \x01(\bR\x11returnEntityQuota\x120\n" +
+	"\x11include_all_users\x18\f \x01(\bB\x04\xe2A\x01\x01R\x0fincludeAllUsers\x12)\n" +
+	"\rexpand_groups\x18\r \x01(\bB\x04\xe2A\x01\x01R\fexpandGroups\"\xf7\x02\n" +
 	"\x17RunAccessReportResponse\x12b\n" +
 	"\x11dimension_headers\x18\x01 \x03(\v25.google.analytics.admin.v1alpha.AccessDimensionHeaderR\x10dimensionHeaders\x12Y\n" +
 	"\x0emetric_headers\x18\x02 \x03(\v22.google.analytics.admin.v1alpha.AccessMetricHeaderR\rmetricHeaders\x12=\n" +
 	"\x04rows\x18\x03 \x03(\v2).google.analytics.admin.v1alpha.AccessRowR\x04rows\x12\x1b\n" +
 	"\trow_count\x18\x04 \x01(\x05R\browCount\x12A\n" +
-	"\x05quota\x18\x05 \x01(\v2+.google.analytics.admin.v1alpha.AccessQuotaR\x05quota\"V\n" +
-	"\x11GetAccountRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%analyticsadmin.googleapis.com/AccountR\x04name\"~\n" +
-	"\x13ListAccountsRequest\x12 \n" +
-	"\tpage_size\x18\x01 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x05quota\x18\x05 \x01(\v2+.google.analytics.admin.v1alpha.AccessQuotaR\x05quota\"W\n" +
+	"\x11GetAccountRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%analyticsadmin.googleapis.com/AccountR\x04name\"\x80\x01\n" +
+	"\x13ListAccountsRequest\x12!\n" +
+	"\tpage_size\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\tpageToken\x12!\n" +
+	"page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12!\n" +
 	"\fshow_deleted\x18\x03 \x01(\bR\vshowDeleted\"\x83\x01\n" +
 	"\x14ListAccountsResponse\x12C\n" +
 	"\baccounts\x18\x01 \x03(\v2'.google.analytics.admin.v1alpha.AccountR\baccounts\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"Y\n" +
-	"\x14DeleteAccountRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%analyticsadmin.googleapis.com/AccountR\x04name\"\xa0\x01\n" +
-	"\x14UpdateAccountRequest\x12F\n" +
-	"\aaccount\x18\x01 \x01(\v2'.google.analytics.admin.v1alpha.AccountB\x03\xe0A\x02R\aaccount\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"Z\n" +
+	"\x14DeleteAccountRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%analyticsadmin.googleapis.com/AccountR\x04name\"\xa2\x01\n" +
+	"\x14UpdateAccountRequest\x12G\n" +
+	"\aaccount\x18\x01 \x01(\v2'.google.analytics.admin.v1alpha.AccountB\x04\xe2A\x01\x02R\aaccount\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
 	"updateMask\"\x85\x01\n" +
 	"\x1dProvisionAccountTicketRequest\x12A\n" +
 	"\aaccount\x18\x01 \x01(\v2'.google.analytics.admin.v1alpha.AccountR\aaccount\x12!\n" +
 	"\fredirect_uri\x18\x02 \x01(\tR\vredirectUri\"L\n" +
 	"\x1eProvisionAccountTicketResponse\x12*\n" +
-	"\x11account_ticket_id\x18\x01 \x01(\tR\x0faccountTicketId\"X\n" +
-	"\x12GetPropertyRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&analyticsadmin.googleapis.com/PropertyR\x04name\"\x9d\x01\n" +
-	"\x15ListPropertiesRequest\x12\x1b\n" +
-	"\x06filter\x18\x01 \x01(\tB\x03\xe0A\x02R\x06filter\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x11account_ticket_id\x18\x01 \x01(\tR\x0faccountTicketId\"Y\n" +
+	"\x12GetPropertyRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&analyticsadmin.googleapis.com/PropertyR\x04name\"\xa0\x01\n" +
+	"\x15ListPropertiesRequest\x12\x1c\n" +
+	"\x06filter\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06filter\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12!\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12!\n" +
 	"\fshow_deleted\x18\x04 \x01(\bR\vshowDeleted\"\x8a\x01\n" +
 	"\x16ListPropertiesResponse\x12H\n" +
 	"\n" +
 	"properties\x18\x01 \x03(\v2(.google.analytics.admin.v1alpha.PropertyR\n" +
 	"properties\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa4\x01\n" +
-	"\x15UpdatePropertyRequest\x12I\n" +
-	"\bproperty\x18\x01 \x01(\v2(.google.analytics.admin.v1alpha.PropertyB\x03\xe0A\x02R\bproperty\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"b\n" +
-	"\x15CreatePropertyRequest\x12I\n" +
-	"\bproperty\x18\x01 \x01(\v2(.google.analytics.admin.v1alpha.PropertyB\x03\xe0A\x02R\bproperty\"[\n" +
-	"\x15DeletePropertyRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&analyticsadmin.googleapis.com/PropertyR\x04name\"\xbf\x01\n" +
-	"\x19CreateFirebaseLinkRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*analyticsadmin.googleapis.com/FirebaseLinkR\x06parent\x12V\n" +
-	"\rfirebase_link\x18\x02 \x01(\v2,.google.analytics.admin.v1alpha.FirebaseLinkB\x03\xe0A\x02R\ffirebaseLink\"c\n" +
-	"\x19DeleteFirebaseLinkRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*analyticsadmin.googleapis.com/FirebaseLinkR\x04name\"\xac\x01\n" +
-	"\x18ListFirebaseLinksRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*analyticsadmin.googleapis.com/FirebaseLinkR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa6\x01\n" +
+	"\x15UpdatePropertyRequest\x12J\n" +
+	"\bproperty\x18\x01 \x01(\v2(.google.analytics.admin.v1alpha.PropertyB\x04\xe2A\x01\x02R\bproperty\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"c\n" +
+	"\x15CreatePropertyRequest\x12J\n" +
+	"\bproperty\x18\x01 \x01(\v2(.google.analytics.admin.v1alpha.PropertyB\x04\xe2A\x01\x02R\bproperty\"\\\n" +
+	"\x15DeletePropertyRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&analyticsadmin.googleapis.com/PropertyR\x04name\"\xc1\x01\n" +
+	"\x19CreateFirebaseLinkRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*analyticsadmin.googleapis.com/FirebaseLinkR\x06parent\x12W\n" +
+	"\rfirebase_link\x18\x02 \x01(\v2,.google.analytics.admin.v1alpha.FirebaseLinkB\x04\xe2A\x01\x02R\ffirebaseLink\"d\n" +
+	"\x19DeleteFirebaseLinkRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*analyticsadmin.googleapis.com/FirebaseLinkR\x04name\"\xaf\x01\n" +
+	"\x18ListFirebaseLinksRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*analyticsadmin.googleapis.com/FirebaseLinkR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x98\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x98\x01\n" +
 	"\x19ListFirebaseLinksResponse\x12S\n" +
 	"\x0efirebase_links\x18\x01 \x03(\v2,.google.analytics.admin.v1alpha.FirebaseLinkR\rfirebaseLinks\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"b\n" +
-	"\x17GetGlobalSiteTagRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+analyticsadmin.googleapis.com/GlobalSiteTagR\x04name\"\xc5\x01\n" +
-	"\x1aCreateGoogleAdsLinkRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+analyticsadmin.googleapis.com/GoogleAdsLinkR\x06parent\x12Z\n" +
-	"\x0fgoogle_ads_link\x18\x02 \x01(\v2-.google.analytics.admin.v1alpha.GoogleAdsLinkB\x03\xe0A\x02R\rgoogleAdsLink\"\xb5\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"c\n" +
+	"\x17GetGlobalSiteTagRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+analyticsadmin.googleapis.com/GlobalSiteTagR\x04name\"\xc7\x01\n" +
+	"\x1aCreateGoogleAdsLinkRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+analyticsadmin.googleapis.com/GoogleAdsLinkR\x06parent\x12[\n" +
+	"\x0fgoogle_ads_link\x18\x02 \x01(\v2-.google.analytics.admin.v1alpha.GoogleAdsLinkB\x04\xe2A\x01\x02R\rgoogleAdsLink\"\xb6\x01\n" +
 	"\x1aUpdateGoogleAdsLinkRequest\x12U\n" +
-	"\x0fgoogle_ads_link\x18\x01 \x01(\v2-.google.analytics.admin.v1alpha.GoogleAdsLinkR\rgoogleAdsLink\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"e\n" +
-	"\x1aDeleteGoogleAdsLinkRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+analyticsadmin.googleapis.com/GoogleAdsLinkR\x04name\"\xae\x01\n" +
-	"\x19ListGoogleAdsLinksRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+analyticsadmin.googleapis.com/GoogleAdsLinkR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fgoogle_ads_link\x18\x01 \x01(\v2-.google.analytics.admin.v1alpha.GoogleAdsLinkR\rgoogleAdsLink\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"f\n" +
+	"\x1aDeleteGoogleAdsLinkRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+analyticsadmin.googleapis.com/GoogleAdsLinkR\x04name\"\xb1\x01\n" +
+	"\x19ListGoogleAdsLinksRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+analyticsadmin.googleapis.com/GoogleAdsLinkR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x9d\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x9d\x01\n" +
 	"\x1aListGoogleAdsLinksResponse\x12W\n" +
 	"\x10google_ads_links\x18\x01 \x03(\v2-.google.analytics.admin.v1alpha.GoogleAdsLinkR\x0egoogleAdsLinks\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"n\n" +
-	"\x1dGetDataSharingSettingsRequest\x12M\n" +
-	"\x04name\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
-	"1analyticsadmin.googleapis.com/DataSharingSettingsR\x04name\"c\n" +
-	"\x1bListAccountSummariesRequest\x12 \n" +
-	"\tpage_size\x18\x01 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"o\n" +
+	"\x1dGetDataSharingSettingsRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1analyticsadmin.googleapis.com/DataSharingSettingsR\x04name\"e\n" +
+	"\x1bListAccountSummariesRequest\x12!\n" +
+	"\tpage_size\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xa3\x01\n" +
+	"page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xa3\x01\n" +
 	"\x1cListAccountSummariesResponse\x12[\n" +
 	"\x11account_summaries\x18\x01 \x03(\v2..google.analytics.admin.v1alpha.AccountSummaryR\x10accountSummaries\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa1\x01\n" +
-	"$AcknowledgeUserDataCollectionRequest\x12J\n" +
-	"\bproperty\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&analyticsadmin.googleapis.com/PropertyR\bproperty\x12-\n" +
-	"\x0facknowledgement\x18\x02 \x01(\tB\x03\xe0A\x02R\x0facknowledgement\"'\n" +
-	"%AcknowledgeUserDataCollectionResponse\"\xf3\x04\n" +
-	" SearchChangeHistoryEventsRequest\x12G\n" +
-	"\aaccount\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%analyticsadmin.googleapis.com/AccountR\aaccount\x12J\n" +
-	"\bproperty\x18\x02 \x01(\tB.\xe0A\x01\xfaA(\n" +
-	"&analyticsadmin.googleapis.com/PropertyR\bproperty\x12c\n" +
-	"\rresource_type\x18\x03 \x03(\x0e29.google.analytics.admin.v1alpha.ChangeHistoryResourceTypeB\x03\xe0A\x01R\fresourceType\x12G\n" +
-	"\x06action\x18\x04 \x03(\x0e2*.google.analytics.admin.v1alpha.ActionTypeB\x03\xe0A\x01R\x06action\x12$\n" +
-	"\vactor_email\x18\x05 \x03(\tB\x03\xe0A\x01R\n" +
-	"actorEmail\x12Q\n" +
-	"\x14earliest_change_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\x12earliestChangeTime\x12M\n" +
-	"\x12latest_change_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\x10latestChangeTime\x12 \n" +
-	"\tpage_size\x18\b \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa3\x01\n" +
+	"$AcknowledgeUserDataCollectionRequest\x12K\n" +
+	"\bproperty\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&analyticsadmin.googleapis.com/PropertyR\bproperty\x12.\n" +
+	"\x0facknowledgement\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0facknowledgement\"'\n" +
+	"%AcknowledgeUserDataCollectionResponse\"\xfc\x04\n" +
+	" SearchChangeHistoryEventsRequest\x12H\n" +
+	"\aaccount\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%analyticsadmin.googleapis.com/AccountR\aaccount\x12K\n" +
+	"\bproperty\x18\x02 \x01(\tB/\xe2A\x01\x01\xfaA(\n" +
+	"&analyticsadmin.googleapis.com/PropertyR\bproperty\x12d\n" +
+	"\rresource_type\x18\x03 \x03(\x0e29.google.analytics.admin.v1alpha.ChangeHistoryResourceTypeB\x04\xe2A\x01\x01R\fresourceType\x12H\n" +
+	"\x06action\x18\x04 \x03(\x0e2*.google.analytics.admin.v1alpha.ActionTypeB\x04\xe2A\x01\x01R\x06action\x12%\n" +
+	"\vactor_email\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\n" +
+	"actorEmail\x12R\n" +
+	"\x14earliest_change_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\x12earliestChangeTime\x12N\n" +
+	"\x12latest_change_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\x10latestChangeTime\x12!\n" +
+	"\tpage_size\x18\b \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\t \x01(\tB\x03\xe0A\x01R\tpageToken\"\xb3\x01\n" +
+	"page_token\x18\t \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xb3\x01\n" +
 	"!SearchChangeHistoryEventsResponse\x12f\n" +
 	"\x15change_history_events\x18\x01 \x03(\v22.google.analytics.admin.v1alpha.ChangeHistoryEventR\x13changeHistoryEvents\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"z\n" +
-	"#GetMeasurementProtocolSecretRequest\x12S\n" +
-	"\x04name\x18\x01 \x01(\tB?\xe0A\x02\xfaA9\n" +
-	"7analyticsadmin.googleapis.com/MeasurementProtocolSecretR\x04name\"\x81\x02\n" +
-	"&CreateMeasurementProtocolSecretRequest\x12W\n" +
-	"\x06parent\x18\x01 \x01(\tB?\xe0A\x02\xfaA9\x127analyticsadmin.googleapis.com/MeasurementProtocolSecretR\x06parent\x12~\n" +
-	"\x1bmeasurement_protocol_secret\x18\x02 \x01(\v29.google.analytics.admin.v1alpha.MeasurementProtocolSecretB\x03\xe0A\x02R\x19measurementProtocolSecret\"}\n" +
-	"&DeleteMeasurementProtocolSecretRequest\x12S\n" +
-	"\x04name\x18\x01 \x01(\tB?\xe0A\x02\xfaA9\n" +
-	"7analyticsadmin.googleapis.com/MeasurementProtocolSecretR\x04name\"\xea\x01\n" +
-	"&UpdateMeasurementProtocolSecretRequest\x12~\n" +
-	"\x1bmeasurement_protocol_secret\x18\x01 \x01(\v29.google.analytics.admin.v1alpha.MeasurementProtocolSecretB\x03\xe0A\x02R\x19measurementProtocolSecret\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\xc6\x01\n" +
-	"%ListMeasurementProtocolSecretsRequest\x12W\n" +
-	"\x06parent\x18\x01 \x01(\tB?\xe0A\x02\xfaA9\x127analyticsadmin.googleapis.com/MeasurementProtocolSecretR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"{\n" +
+	"#GetMeasurementProtocolSecretRequest\x12T\n" +
+	"\x04name\x18\x01 \x01(\tB@\xe2A\x01\x02\xfaA9\n" +
+	"7analyticsadmin.googleapis.com/MeasurementProtocolSecretR\x04name\"\x83\x02\n" +
+	"&CreateMeasurementProtocolSecretRequest\x12X\n" +
+	"\x06parent\x18\x01 \x01(\tB@\xe2A\x01\x02\xfaA9\x127analyticsadmin.googleapis.com/MeasurementProtocolSecretR\x06parent\x12\x7f\n" +
+	"\x1bmeasurement_protocol_secret\x18\x02 \x01(\v29.google.analytics.admin.v1alpha.MeasurementProtocolSecretB\x04\xe2A\x01\x02R\x19measurementProtocolSecret\"~\n" +
+	"&DeleteMeasurementProtocolSecretRequest\x12T\n" +
+	"\x04name\x18\x01 \x01(\tB@\xe2A\x01\x02\xfaA9\n" +
+	"7analyticsadmin.googleapis.com/MeasurementProtocolSecretR\x04name\"\xec\x01\n" +
+	"&UpdateMeasurementProtocolSecretRequest\x12\x7f\n" +
+	"\x1bmeasurement_protocol_secret\x18\x01 \x01(\v29.google.analytics.admin.v1alpha.MeasurementProtocolSecretB\x04\xe2A\x01\x02R\x19measurementProtocolSecret\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\xc9\x01\n" +
+	"%ListMeasurementProtocolSecretsRequest\x12X\n" +
+	"\x06parent\x18\x01 \x01(\tB@\xe2A\x01\x02\xfaA9\x127analyticsadmin.googleapis.com/MeasurementProtocolSecretR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xcd\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xcd\x01\n" +
 	"&ListMeasurementProtocolSecretsResponse\x12{\n" +
 	"\x1cmeasurement_protocol_secrets\x18\x01 \x03(\v29.google.analytics.admin.v1alpha.MeasurementProtocolSecretR\x1ameasurementProtocolSecrets\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x88\x01\n" +
-	"*GetSKAdNetworkConversionValueSchemaRequest\x12Z\n" +
-	"\x04name\x18\x01 \x01(\tBF\xe0A\x02\xfaA@\n" +
-	">analyticsadmin.googleapis.com/SKAdNetworkConversionValueSchemaR\x04name\"\xa6\x02\n" +
-	"-CreateSKAdNetworkConversionValueSchemaRequest\x12^\n" +
-	"\x06parent\x18\x01 \x01(\tBF\xe0A\x02\xfaA@\x12>analyticsadmin.googleapis.com/SKAdNetworkConversionValueSchemaR\x06parent\x12\x94\x01\n" +
-	"#skadnetwork_conversion_value_schema\x18\x02 \x01(\v2@.google.analytics.admin.v1alpha.SKAdNetworkConversionValueSchemaB\x03\xe0A\x02R skadnetworkConversionValueSchema\"\x8b\x01\n" +
-	"-DeleteSKAdNetworkConversionValueSchemaRequest\x12Z\n" +
-	"\x04name\x18\x01 \x01(\tBF\xe0A\x02\xfaA@\n" +
-	">analyticsadmin.googleapis.com/SKAdNetworkConversionValueSchemaR\x04name\"\x88\x02\n" +
-	"-UpdateSKAdNetworkConversionValueSchemaRequest\x12\x94\x01\n" +
-	"#skadnetwork_conversion_value_schema\x18\x01 \x01(\v2@.google.analytics.admin.v1alpha.SKAdNetworkConversionValueSchemaB\x03\xe0A\x02R skadnetworkConversionValueSchema\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\xd4\x01\n" +
-	",ListSKAdNetworkConversionValueSchemasRequest\x12^\n" +
-	"\x06parent\x18\x01 \x01(\tBF\xe0A\x02\xfaA@\x12>analyticsadmin.googleapis.com/SKAdNetworkConversionValueSchemaR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x89\x01\n" +
+	"*GetSKAdNetworkConversionValueSchemaRequest\x12[\n" +
+	"\x04name\x18\x01 \x01(\tBG\xe2A\x01\x02\xfaA@\n" +
+	">analyticsadmin.googleapis.com/SKAdNetworkConversionValueSchemaR\x04name\"\xa8\x02\n" +
+	"-CreateSKAdNetworkConversionValueSchemaRequest\x12_\n" +
+	"\x06parent\x18\x01 \x01(\tBG\xe2A\x01\x02\xfaA@\x12>analyticsadmin.googleapis.com/SKAdNetworkConversionValueSchemaR\x06parent\x12\x95\x01\n" +
+	"#skadnetwork_conversion_value_schema\x18\x02 \x01(\v2@.google.analytics.admin.v1alpha.SKAdNetworkConversionValueSchemaB\x04\xe2A\x01\x02R skadnetworkConversionValueSchema\"\x8c\x01\n" +
+	"-DeleteSKAdNetworkConversionValueSchemaRequest\x12[\n" +
+	"\x04name\x18\x01 \x01(\tBG\xe2A\x01\x02\xfaA@\n" +
+	">analyticsadmin.googleapis.com/SKAdNetworkConversionValueSchemaR\x04name\"\x8a\x02\n" +
+	"-UpdateSKAdNetworkConversionValueSchemaRequest\x12\x95\x01\n" +
+	"#skadnetwork_conversion_value_schema\x18\x01 \x01(\v2@.google.analytics.admin.v1alpha.SKAdNetworkConversionValueSchemaB\x04\xe2A\x01\x02R skadnetworkConversionValueSchema\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\xd7\x01\n" +
+	",ListSKAdNetworkConversionValueSchemasRequest\x12_\n" +
+	"\x06parent\x18\x01 \x01(\tBG\xe2A\x01\x02\xfaA@\x12>analyticsadmin.googleapis.com/SKAdNetworkConversionValueSchemaR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xeb\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xeb\x01\n" +
 	"-ListSKAdNetworkConversionValueSchemasResponse\x12\x91\x01\n" +
 	"$skadnetwork_conversion_value_schemas\x18\x01 \x03(\v2@.google.analytics.admin.v1alpha.SKAdNetworkConversionValueSchemaR!skadnetworkConversionValueSchemas\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"r\n" +
-	"\x1fGetGoogleSignalsSettingsRequest\x12O\n" +
-	"\x04name\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\n" +
-	"3analyticsadmin.googleapis.com/GoogleSignalsSettingsR\x04name\"\xda\x01\n" +
-	"\"UpdateGoogleSignalsSettingsRequest\x12r\n" +
-	"\x17google_signals_settings\x18\x01 \x01(\v25.google.analytics.admin.v1alpha.GoogleSignalsSettingsB\x03\xe0A\x02R\x15googleSignalsSettings\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\xce\x01\n" +
-	"\x1cCreateConversionEventRequest\x12_\n" +
-	"\x10conversion_event\x18\x01 \x01(\v2/.google.analytics.admin.v1alpha.ConversionEventB\x03\xe0A\x02R\x0fconversionEvent\x12M\n" +
-	"\x06parent\x18\x02 \x01(\tB5\xe0A\x02\xfaA/\x12-analyticsadmin.googleapis.com/ConversionEventR\x06parent\"\xc1\x01\n" +
-	"\x1cUpdateConversionEventRequest\x12_\n" +
-	"\x10conversion_event\x18\x01 \x01(\v2/.google.analytics.admin.v1alpha.ConversionEventB\x03\xe0A\x02R\x0fconversionEvent\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"f\n" +
-	"\x19GetConversionEventRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-analyticsadmin.googleapis.com/ConversionEventR\x04name\"i\n" +
-	"\x1cDeleteConversionEventRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-analyticsadmin.googleapis.com/ConversionEventR\x04name\"\xb2\x01\n" +
-	"\x1bListConversionEventsRequest\x12M\n" +
-	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\x12-analyticsadmin.googleapis.com/ConversionEventR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"s\n" +
+	"\x1fGetGoogleSignalsSettingsRequest\x12P\n" +
+	"\x04name\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\n" +
+	"3analyticsadmin.googleapis.com/GoogleSignalsSettingsR\x04name\"\xdc\x01\n" +
+	"\"UpdateGoogleSignalsSettingsRequest\x12s\n" +
+	"\x17google_signals_settings\x18\x01 \x01(\v25.google.analytics.admin.v1alpha.GoogleSignalsSettingsB\x04\xe2A\x01\x02R\x15googleSignalsSettings\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\xd0\x01\n" +
+	"\x1cCreateConversionEventRequest\x12`\n" +
+	"\x10conversion_event\x18\x01 \x01(\v2/.google.analytics.admin.v1alpha.ConversionEventB\x04\xe2A\x01\x02R\x0fconversionEvent\x12N\n" +
+	"\x06parent\x18\x02 \x01(\tB6\xe2A\x01\x02\xfaA/\x12-analyticsadmin.googleapis.com/ConversionEventR\x06parent\"\xc3\x01\n" +
+	"\x1cUpdateConversionEventRequest\x12`\n" +
+	"\x10conversion_event\x18\x01 \x01(\v2/.google.analytics.admin.v1alpha.ConversionEventB\x04\xe2A\x01\x02R\x0fconversionEvent\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"g\n" +
+	"\x19GetConversionEventRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-analyticsadmin.googleapis.com/ConversionEventR\x04name\"j\n" +
+	"\x1cDeleteConversionEventRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-analyticsadmin.googleapis.com/ConversionEventR\x04name\"\xb5\x01\n" +
+	"\x1bListConversionEventsRequest\x12N\n" +
+	"\x06parent\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\x12-analyticsadmin.googleapis.com/ConversionEventR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xa4\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xa4\x01\n" +
 	"\x1cListConversionEventsResponse\x12\\\n" +
 	"\x11conversion_events\x18\x01 \x03(\v2/.google.analytics.admin.v1alpha.ConversionEventR\x10conversionEvents\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xab\x01\n" +
-	"\x15CreateKeyEventRequest\x12J\n" +
-	"\tkey_event\x18\x01 \x01(\v2(.google.analytics.admin.v1alpha.KeyEventB\x03\xe0A\x02R\bkeyEvent\x12F\n" +
-	"\x06parent\x18\x02 \x01(\tB.\xe0A\x02\xfaA(\x12&analyticsadmin.googleapis.com/KeyEventR\x06parent\"\xa5\x01\n" +
-	"\x15UpdateKeyEventRequest\x12J\n" +
-	"\tkey_event\x18\x01 \x01(\v2(.google.analytics.admin.v1alpha.KeyEventB\x03\xe0A\x02R\bkeyEvent\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"X\n" +
-	"\x12GetKeyEventRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&analyticsadmin.googleapis.com/KeyEventR\x04name\"[\n" +
-	"\x15DeleteKeyEventRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&analyticsadmin.googleapis.com/KeyEventR\x04name\"\xa4\x01\n" +
-	"\x14ListKeyEventsRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&analyticsadmin.googleapis.com/KeyEventR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xad\x01\n" +
+	"\x15CreateKeyEventRequest\x12K\n" +
+	"\tkey_event\x18\x01 \x01(\v2(.google.analytics.admin.v1alpha.KeyEventB\x04\xe2A\x01\x02R\bkeyEvent\x12G\n" +
+	"\x06parent\x18\x02 \x01(\tB/\xe2A\x01\x02\xfaA(\x12&analyticsadmin.googleapis.com/KeyEventR\x06parent\"\xa7\x01\n" +
+	"\x15UpdateKeyEventRequest\x12K\n" +
+	"\tkey_event\x18\x01 \x01(\v2(.google.analytics.admin.v1alpha.KeyEventB\x04\xe2A\x01\x02R\bkeyEvent\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"Y\n" +
+	"\x12GetKeyEventRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&analyticsadmin.googleapis.com/KeyEventR\x04name\"\\\n" +
+	"\x15DeleteKeyEventRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&analyticsadmin.googleapis.com/KeyEventR\x04name\"\xa7\x01\n" +
+	"\x14ListKeyEventsRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\x12&analyticsadmin.googleapis.com/KeyEventR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x88\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x88\x01\n" +
 	"\x15ListKeyEventsResponse\x12G\n" +
 	"\n" +
 	"key_events\x18\x01 \x03(\v2(.google.analytics.admin.v1alpha.KeyEventR\tkeyEvents\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x82\x01\n" +
-	"'GetDisplayVideo360AdvertiserLinkRequest\x12W\n" +
-	"\x04name\x18\x01 \x01(\tBC\xe0A\x02\xfaA=\n" +
-	";analyticsadmin.googleapis.com/DisplayVideo360AdvertiserLinkR\x04name\"\xc4\x01\n" +
-	")ListDisplayVideo360AdvertiserLinksRequest\x12[\n" +
-	"\x06parent\x18\x01 \x01(\tBC\xe0A\x02\xfaA=\x12;analyticsadmin.googleapis.com/DisplayVideo360AdvertiserLinkR\x06parent\x12\x1b\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x83\x01\n" +
+	"'GetDisplayVideo360AdvertiserLinkRequest\x12X\n" +
+	"\x04name\x18\x01 \x01(\tBD\xe2A\x01\x02\xfaA=\n" +
+	";analyticsadmin.googleapis.com/DisplayVideo360AdvertiserLinkR\x04name\"\xc5\x01\n" +
+	")ListDisplayVideo360AdvertiserLinksRequest\x12\\\n" +
+	"\x06parent\x18\x01 \x01(\tBD\xe2A\x01\x02\xfaA=\x12;analyticsadmin.googleapis.com/DisplayVideo360AdvertiserLinkR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xe0\x01\n" +
 	"*ListDisplayVideo360AdvertiserLinksResponse\x12\x89\x01\n" +
 	"\"display_video_360_advertiser_links\x18\x01 \x03(\v2=.google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLinkR\x1edisplayVideo360AdvertiserLinks\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x98\x02\n" +
-	"*CreateDisplayVideo360AdvertiserLinkRequest\x12[\n" +
-	"\x06parent\x18\x01 \x01(\tBC\xe0A\x02\xfaA=\x12;analyticsadmin.googleapis.com/DisplayVideo360AdvertiserLinkR\x06parent\x12\x8c\x01\n" +
-	"!display_video_360_advertiser_link\x18\x02 \x01(\v2=.google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLinkB\x03\xe0A\x02R\x1ddisplayVideo360AdvertiserLink\"\x85\x01\n" +
-	"*DeleteDisplayVideo360AdvertiserLinkRequest\x12W\n" +
-	"\x04name\x18\x01 \x01(\tBC\xe0A\x02\xfaA=\n" +
-	";analyticsadmin.googleapis.com/DisplayVideo360AdvertiserLinkR\x04name\"\xf8\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x9a\x02\n" +
+	"*CreateDisplayVideo360AdvertiserLinkRequest\x12\\\n" +
+	"\x06parent\x18\x01 \x01(\tBD\xe2A\x01\x02\xfaA=\x12;analyticsadmin.googleapis.com/DisplayVideo360AdvertiserLinkR\x06parent\x12\x8d\x01\n" +
+	"!display_video_360_advertiser_link\x18\x02 \x01(\v2=.google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLinkB\x04\xe2A\x01\x02R\x1ddisplayVideo360AdvertiserLink\"\x86\x01\n" +
+	"*DeleteDisplayVideo360AdvertiserLinkRequest\x12X\n" +
+	"\x04name\x18\x01 \x01(\tBD\xe2A\x01\x02\xfaA=\n" +
+	";analyticsadmin.googleapis.com/DisplayVideo360AdvertiserLinkR\x04name\"\xf9\x01\n" +
 	"*UpdateDisplayVideo360AdvertiserLinkRequest\x12\x87\x01\n" +
-	"!display_video_360_advertiser_link\x18\x01 \x01(\v2=.google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLinkR\x1ddisplayVideo360AdvertiserLink\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\x92\x01\n" +
-	"/GetDisplayVideo360AdvertiserLinkProposalRequest\x12_\n" +
-	"\x04name\x18\x01 \x01(\tBK\xe0A\x02\xfaAE\n" +
-	"Canalyticsadmin.googleapis.com/DisplayVideo360AdvertiserLinkProposalR\x04name\"\xd4\x01\n" +
-	"1ListDisplayVideo360AdvertiserLinkProposalsRequest\x12c\n" +
-	"\x06parent\x18\x01 \x01(\tBK\xe0A\x02\xfaAE\x12Canalyticsadmin.googleapis.com/DisplayVideo360AdvertiserLinkProposalR\x06parent\x12\x1b\n" +
+	"!display_video_360_advertiser_link\x18\x01 \x01(\v2=.google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLinkR\x1ddisplayVideo360AdvertiserLink\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\x93\x01\n" +
+	"/GetDisplayVideo360AdvertiserLinkProposalRequest\x12`\n" +
+	"\x04name\x18\x01 \x01(\tBL\xe2A\x01\x02\xfaAE\n" +
+	"Canalyticsadmin.googleapis.com/DisplayVideo360AdvertiserLinkProposalR\x04name\"\xd5\x01\n" +
+	"1ListDisplayVideo360AdvertiserLinkProposalsRequest\x12d\n" +
+	"\x06parent\x18\x01 \x01(\tBL\xe2A\x01\x02\xfaAE\x12Canalyticsadmin.googleapis.com/DisplayVideo360AdvertiserLinkProposalR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x81\x02\n" +
 	"2ListDisplayVideo360AdvertiserLinkProposalsResponse\x12\xa2\x01\n" +
 	"+display_video_360_advertiser_link_proposals\x18\x01 \x03(\v2E.google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLinkProposalR&displayVideo360AdvertiserLinkProposals\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xc1\x02\n" +
-	"2CreateDisplayVideo360AdvertiserLinkProposalRequest\x12c\n" +
-	"\x06parent\x18\x01 \x01(\tBK\xe0A\x02\xfaAE\x12Canalyticsadmin.googleapis.com/DisplayVideo360AdvertiserLinkProposalR\x06parent\x12\xa5\x01\n" +
-	"*display_video_360_advertiser_link_proposal\x18\x02 \x01(\v2E.google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLinkProposalB\x03\xe0A\x02R%displayVideo360AdvertiserLinkProposal\"\x95\x01\n" +
-	"2DeleteDisplayVideo360AdvertiserLinkProposalRequest\x12_\n" +
-	"\x04name\x18\x01 \x01(\tBK\xe0A\x02\xfaAE\n" +
-	"Canalyticsadmin.googleapis.com/DisplayVideo360AdvertiserLinkProposalR\x04name\"\x96\x01\n" +
-	"3ApproveDisplayVideo360AdvertiserLinkProposalRequest\x12_\n" +
-	"\x04name\x18\x01 \x01(\tBK\xe0A\x02\xfaAE\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xc3\x02\n" +
+	"2CreateDisplayVideo360AdvertiserLinkProposalRequest\x12d\n" +
+	"\x06parent\x18\x01 \x01(\tBL\xe2A\x01\x02\xfaAE\x12Canalyticsadmin.googleapis.com/DisplayVideo360AdvertiserLinkProposalR\x06parent\x12\xa6\x01\n" +
+	"*display_video_360_advertiser_link_proposal\x18\x02 \x01(\v2E.google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLinkProposalB\x04\xe2A\x01\x02R%displayVideo360AdvertiserLinkProposal\"\x96\x01\n" +
+	"2DeleteDisplayVideo360AdvertiserLinkProposalRequest\x12`\n" +
+	"\x04name\x18\x01 \x01(\tBL\xe2A\x01\x02\xfaAE\n" +
+	"Canalyticsadmin.googleapis.com/DisplayVideo360AdvertiserLinkProposalR\x04name\"\x97\x01\n" +
+	"3ApproveDisplayVideo360AdvertiserLinkProposalRequest\x12`\n" +
+	"\x04name\x18\x01 \x01(\tBL\xe2A\x01\x02\xfaAE\n" +
 	"Canalyticsadmin.googleapis.com/DisplayVideo360AdvertiserLinkProposalR\x04name\"\xc0\x01\n" +
 	"4ApproveDisplayVideo360AdvertiserLinkProposalResponse\x12\x87\x01\n" +
-	"!display_video_360_advertiser_link\x18\x01 \x01(\v2=.google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLinkR\x1ddisplayVideo360AdvertiserLink\"\x95\x01\n" +
-	"2CancelDisplayVideo360AdvertiserLinkProposalRequest\x12_\n" +
-	"\x04name\x18\x01 \x01(\tBK\xe0A\x02\xfaAE\n" +
-	"Canalyticsadmin.googleapis.com/DisplayVideo360AdvertiserLinkProposalR\x04name\"h\n" +
-	"\x1aGetSearchAds360LinkRequest\x12J\n" +
-	"\x04name\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".analyticsadmin.googleapis.com/SearchAds360LinkR\x04name\"\xaa\x01\n" +
-	"\x1cListSearchAds360LinksRequest\x12N\n" +
-	"\x06parent\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\x12.analyticsadmin.googleapis.com/SearchAds360LinkR\x06parent\x12\x1b\n" +
+	"!display_video_360_advertiser_link\x18\x01 \x01(\v2=.google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLinkR\x1ddisplayVideo360AdvertiserLink\"\x96\x01\n" +
+	"2CancelDisplayVideo360AdvertiserLinkProposalRequest\x12`\n" +
+	"\x04name\x18\x01 \x01(\tBL\xe2A\x01\x02\xfaAE\n" +
+	"Canalyticsadmin.googleapis.com/DisplayVideo360AdvertiserLinkProposalR\x04name\"i\n" +
+	"\x1aGetSearchAds360LinkRequest\x12K\n" +
+	"\x04name\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".analyticsadmin.googleapis.com/SearchAds360LinkR\x04name\"\xab\x01\n" +
+	"\x1cListSearchAds360LinksRequest\x12O\n" +
+	"\x06parent\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\x12.analyticsadmin.googleapis.com/SearchAds360LinkR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xaa\x01\n" +
 	"\x1dListSearchAds360LinksResponse\x12a\n" +
 	"\x14search_ads_360_links\x18\x01 \x03(\v20.google.analytics.admin.v1alpha.SearchAds360LinkR\x11searchAds360Links\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xd5\x01\n" +
-	"\x1dCreateSearchAds360LinkRequest\x12N\n" +
-	"\x06parent\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\x12.analyticsadmin.googleapis.com/SearchAds360LinkR\x06parent\x12d\n" +
-	"\x13search_ads_360_link\x18\x02 \x01(\v20.google.analytics.admin.v1alpha.SearchAds360LinkB\x03\xe0A\x02R\x10searchAds360Link\"k\n" +
-	"\x1dDeleteSearchAds360LinkRequest\x12J\n" +
-	"\x04name\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".analyticsadmin.googleapis.com/SearchAds360LinkR\x04name\"\xc2\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xd7\x01\n" +
+	"\x1dCreateSearchAds360LinkRequest\x12O\n" +
+	"\x06parent\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\x12.analyticsadmin.googleapis.com/SearchAds360LinkR\x06parent\x12e\n" +
+	"\x13search_ads_360_link\x18\x02 \x01(\v20.google.analytics.admin.v1alpha.SearchAds360LinkB\x04\xe2A\x01\x02R\x10searchAds360Link\"l\n" +
+	"\x1dDeleteSearchAds360LinkRequest\x12K\n" +
+	"\x04name\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".analyticsadmin.googleapis.com/SearchAds360LinkR\x04name\"\xc3\x01\n" +
 	"\x1dUpdateSearchAds360LinkRequest\x12_\n" +
-	"\x13search_ads_360_link\x18\x01 \x01(\v20.google.analytics.admin.v1alpha.SearchAds360LinkR\x10searchAds360Link\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\xce\x01\n" +
-	"\x1cCreateCustomDimensionRequest\x12M\n" +
-	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\x12-analyticsadmin.googleapis.com/CustomDimensionR\x06parent\x12_\n" +
-	"\x10custom_dimension\x18\x02 \x01(\v2/.google.analytics.admin.v1alpha.CustomDimensionB\x03\xe0A\x02R\x0fcustomDimension\"\xbc\x01\n" +
+	"\x13search_ads_360_link\x18\x01 \x01(\v20.google.analytics.admin.v1alpha.SearchAds360LinkR\x10searchAds360Link\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\xd0\x01\n" +
+	"\x1cCreateCustomDimensionRequest\x12N\n" +
+	"\x06parent\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\x12-analyticsadmin.googleapis.com/CustomDimensionR\x06parent\x12`\n" +
+	"\x10custom_dimension\x18\x02 \x01(\v2/.google.analytics.admin.v1alpha.CustomDimensionB\x04\xe2A\x01\x02R\x0fcustomDimension\"\xbd\x01\n" +
 	"\x1cUpdateCustomDimensionRequest\x12Z\n" +
-	"\x10custom_dimension\x18\x01 \x01(\v2/.google.analytics.admin.v1alpha.CustomDimensionR\x0fcustomDimension\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\xb2\x01\n" +
-	"\x1bListCustomDimensionsRequest\x12M\n" +
-	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\x12-analyticsadmin.googleapis.com/CustomDimensionR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x10custom_dimension\x18\x01 \x01(\v2/.google.analytics.admin.v1alpha.CustomDimensionR\x0fcustomDimension\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\xb5\x01\n" +
+	"\x1bListCustomDimensionsRequest\x12N\n" +
+	"\x06parent\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\x12-analyticsadmin.googleapis.com/CustomDimensionR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xa4\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xa4\x01\n" +
 	"\x1cListCustomDimensionsResponse\x12\\\n" +
 	"\x11custom_dimensions\x18\x01 \x03(\v2/.google.analytics.admin.v1alpha.CustomDimensionR\x10customDimensions\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"j\n" +
-	"\x1dArchiveCustomDimensionRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-analyticsadmin.googleapis.com/CustomDimensionR\x04name\"f\n" +
-	"\x19GetCustomDimensionRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-analyticsadmin.googleapis.com/CustomDimensionR\x04name\"\xbf\x01\n" +
-	"\x19CreateCustomMetricRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*analyticsadmin.googleapis.com/CustomMetricR\x06parent\x12V\n" +
-	"\rcustom_metric\x18\x02 \x01(\v2,.google.analytics.admin.v1alpha.CustomMetricB\x03\xe0A\x02R\fcustomMetric\"\xb0\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"k\n" +
+	"\x1dArchiveCustomDimensionRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-analyticsadmin.googleapis.com/CustomDimensionR\x04name\"g\n" +
+	"\x19GetCustomDimensionRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-analyticsadmin.googleapis.com/CustomDimensionR\x04name\"\xc1\x01\n" +
+	"\x19CreateCustomMetricRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*analyticsadmin.googleapis.com/CustomMetricR\x06parent\x12W\n" +
+	"\rcustom_metric\x18\x02 \x01(\v2,.google.analytics.admin.v1alpha.CustomMetricB\x04\xe2A\x01\x02R\fcustomMetric\"\xb1\x01\n" +
 	"\x19UpdateCustomMetricRequest\x12Q\n" +
-	"\rcustom_metric\x18\x01 \x01(\v2,.google.analytics.admin.v1alpha.CustomMetricR\fcustomMetric\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\xa2\x01\n" +
-	"\x18ListCustomMetricsRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*analyticsadmin.googleapis.com/CustomMetricR\x06parent\x12\x1b\n" +
+	"\rcustom_metric\x18\x01 \x01(\v2,.google.analytics.admin.v1alpha.CustomMetricR\fcustomMetric\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\xa3\x01\n" +
+	"\x18ListCustomMetricsRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*analyticsadmin.googleapis.com/CustomMetricR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x98\x01\n" +
 	"\x19ListCustomMetricsResponse\x12S\n" +
 	"\x0ecustom_metrics\x18\x01 \x03(\v2,.google.analytics.admin.v1alpha.CustomMetricR\rcustomMetrics\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"d\n" +
-	"\x1aArchiveCustomMetricRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*analyticsadmin.googleapis.com/CustomMetricR\x04name\"`\n" +
-	"\x16GetCustomMetricRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*analyticsadmin.googleapis.com/CustomMetricR\x04name\"\x8a\x02\n" +
-	"\x1dCreateCalculatedMetricRequest\x12N\n" +
-	"\x06parent\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\x12.analyticsadmin.googleapis.com/CalculatedMetricR\x06parent\x125\n" +
-	"\x14calculated_metric_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x12calculatedMetricId\x12b\n" +
-	"\x11calculated_metric\x18\x03 \x01(\v20.google.analytics.admin.v1alpha.CalculatedMetricB\x03\xe0A\x02R\x10calculatedMetric\"\xc5\x01\n" +
-	"\x1dUpdateCalculatedMetricRequest\x12b\n" +
-	"\x11calculated_metric\x18\x01 \x01(\v20.google.analytics.admin.v1alpha.CalculatedMetricB\x03\xe0A\x02R\x10calculatedMetric\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"k\n" +
-	"\x1dDeleteCalculatedMetricRequest\x12J\n" +
-	"\x04name\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".analyticsadmin.googleapis.com/CalculatedMetricR\x04name\"\xb4\x01\n" +
-	"\x1cListCalculatedMetricsRequest\x12N\n" +
-	"\x06parent\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\x12.analyticsadmin.googleapis.com/CalculatedMetricR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"e\n" +
+	"\x1aArchiveCustomMetricRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*analyticsadmin.googleapis.com/CustomMetricR\x04name\"a\n" +
+	"\x16GetCustomMetricRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*analyticsadmin.googleapis.com/CustomMetricR\x04name\"\x8d\x02\n" +
+	"\x1dCreateCalculatedMetricRequest\x12O\n" +
+	"\x06parent\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\x12.analyticsadmin.googleapis.com/CalculatedMetricR\x06parent\x126\n" +
+	"\x14calculated_metric_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x12calculatedMetricId\x12c\n" +
+	"\x11calculated_metric\x18\x03 \x01(\v20.google.analytics.admin.v1alpha.CalculatedMetricB\x04\xe2A\x01\x02R\x10calculatedMetric\"\xc7\x01\n" +
+	"\x1dUpdateCalculatedMetricRequest\x12c\n" +
+	"\x11calculated_metric\x18\x01 \x01(\v20.google.analytics.admin.v1alpha.CalculatedMetricB\x04\xe2A\x01\x02R\x10calculatedMetric\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"l\n" +
+	"\x1dDeleteCalculatedMetricRequest\x12K\n" +
+	"\x04name\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".analyticsadmin.googleapis.com/CalculatedMetricR\x04name\"\xb7\x01\n" +
+	"\x1cListCalculatedMetricsRequest\x12O\n" +
+	"\x06parent\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\x12.analyticsadmin.googleapis.com/CalculatedMetricR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xa8\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xa8\x01\n" +
 	"\x1dListCalculatedMetricsResponse\x12_\n" +
 	"\x12calculated_metrics\x18\x01 \x03(\v20.google.analytics.admin.v1alpha.CalculatedMetricR\x11calculatedMetrics\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"h\n" +
-	"\x1aGetCalculatedMetricRequest\x12J\n" +
-	"\x04name\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".analyticsadmin.googleapis.com/CalculatedMetricR\x04name\"r\n" +
-	"\x1fGetDataRetentionSettingsRequest\x12O\n" +
-	"\x04name\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\n" +
-	"3analyticsadmin.googleapis.com/DataRetentionSettingsR\x04name\"\xda\x01\n" +
-	"\"UpdateDataRetentionSettingsRequest\x12r\n" +
-	"\x17data_retention_settings\x18\x01 \x01(\v25.google.analytics.admin.v1alpha.DataRetentionSettingsB\x03\xe0A\x02R\x15dataRetentionSettings\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\xb5\x01\n" +
-	"\x17CreateDataStreamRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(analyticsadmin.googleapis.com/DataStreamR\x06parent\x12P\n" +
-	"\vdata_stream\x18\x02 \x01(\v2*.google.analytics.admin.v1alpha.DataStreamB\x03\xe0A\x02R\n" +
-	"dataStream\"_\n" +
-	"\x17DeleteDataStreamRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(analyticsadmin.googleapis.com/DataStreamR\x04name\"\xa8\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"i\n" +
+	"\x1aGetCalculatedMetricRequest\x12K\n" +
+	"\x04name\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".analyticsadmin.googleapis.com/CalculatedMetricR\x04name\"s\n" +
+	"\x1fGetDataRetentionSettingsRequest\x12P\n" +
+	"\x04name\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\n" +
+	"3analyticsadmin.googleapis.com/DataRetentionSettingsR\x04name\"\xdc\x01\n" +
+	"\"UpdateDataRetentionSettingsRequest\x12s\n" +
+	"\x17data_retention_settings\x18\x01 \x01(\v25.google.analytics.admin.v1alpha.DataRetentionSettingsB\x04\xe2A\x01\x02R\x15dataRetentionSettings\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\xb7\x01\n" +
+	"\x17CreateDataStreamRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(analyticsadmin.googleapis.com/DataStreamR\x06parent\x12Q\n" +
+	"\vdata_stream\x18\x02 \x01(\v2*.google.analytics.admin.v1alpha.DataStreamB\x04\xe2A\x01\x02R\n" +
+	"dataStream\"`\n" +
+	"\x17DeleteDataStreamRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(analyticsadmin.googleapis.com/DataStreamR\x04name\"\xa9\x01\n" +
 	"\x17UpdateDataStreamRequest\x12K\n" +
 	"\vdata_stream\x18\x01 \x01(\v2*.google.analytics.admin.v1alpha.DataStreamR\n" +
-	"dataStream\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\x9e\x01\n" +
-	"\x16ListDataStreamsRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(analyticsadmin.googleapis.com/DataStreamR\x06parent\x12\x1b\n" +
+	"dataStream\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\x9f\x01\n" +
+	"\x16ListDataStreamsRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(analyticsadmin.googleapis.com/DataStreamR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x90\x01\n" +
 	"\x17ListDataStreamsResponse\x12M\n" +
 	"\fdata_streams\x18\x01 \x03(\v2*.google.analytics.admin.v1alpha.DataStreamR\vdataStreams\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\\\n" +
-	"\x14GetDataStreamRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(analyticsadmin.googleapis.com/DataStreamR\x04name\"X\n" +
-	"\x12GetAudienceRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&analyticsadmin.googleapis.com/AudienceR\x04name\"\x9a\x01\n" +
-	"\x14ListAudiencesRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&analyticsadmin.googleapis.com/AudienceR\x06parent\x12\x1b\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"]\n" +
+	"\x14GetDataStreamRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(analyticsadmin.googleapis.com/DataStreamR\x04name\"Y\n" +
+	"\x12GetAudienceRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&analyticsadmin.googleapis.com/AudienceR\x04name\"\x9b\x01\n" +
+	"\x14ListAudiencesRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\x12&analyticsadmin.googleapis.com/AudienceR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x87\x01\n" +
 	"\x15ListAudiencesResponse\x12F\n" +
 	"\taudiences\x18\x01 \x03(\v2(.google.analytics.admin.v1alpha.AudienceR\taudiences\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xaa\x01\n" +
-	"\x15CreateAudienceRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&analyticsadmin.googleapis.com/AudienceR\x06parent\x12I\n" +
-	"\baudience\x18\x02 \x01(\v2(.google.analytics.admin.v1alpha.AudienceB\x03\xe0A\x02R\baudience\"\xa4\x01\n" +
-	"\x15UpdateAudienceRequest\x12I\n" +
-	"\baudience\x18\x01 \x01(\v2(.google.analytics.admin.v1alpha.AudienceB\x03\xe0A\x02R\baudience\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\\\n" +
-	"\x16ArchiveAudienceRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&analyticsadmin.googleapis.com/AudienceR\x04name\"n\n" +
-	"\x1dGetAttributionSettingsRequest\x12M\n" +
-	"\x04name\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
-	"1analyticsadmin.googleapis.com/AttributionSettingsR\x04name\"\xd1\x01\n" +
-	" UpdateAttributionSettingsRequest\x12k\n" +
-	"\x14attribution_settings\x18\x01 \x01(\v23.google.analytics.admin.v1alpha.AttributionSettingsB\x03\xe0A\x02R\x13attributionSettings\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"b\n" +
-	"\x17GetAccessBindingRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+analyticsadmin.googleapis.com/AccessBindingR\x04name\"\xb7\x01\n" +
-	"\x1dBatchGetAccessBindingsRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+analyticsadmin.googleapis.com/AccessBindingR\x06parent\x12I\n" +
-	"\x05names\x18\x02 \x03(\tB3\xe0A\x02\xfaA-\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xac\x01\n" +
+	"\x15CreateAudienceRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\x12&analyticsadmin.googleapis.com/AudienceR\x06parent\x12J\n" +
+	"\baudience\x18\x02 \x01(\v2(.google.analytics.admin.v1alpha.AudienceB\x04\xe2A\x01\x02R\baudience\"\xa6\x01\n" +
+	"\x15UpdateAudienceRequest\x12J\n" +
+	"\baudience\x18\x01 \x01(\v2(.google.analytics.admin.v1alpha.AudienceB\x04\xe2A\x01\x02R\baudience\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"]\n" +
+	"\x16ArchiveAudienceRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\x12&analyticsadmin.googleapis.com/AudienceR\x04name\"o\n" +
+	"\x1dGetAttributionSettingsRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1analyticsadmin.googleapis.com/AttributionSettingsR\x04name\"\xd3\x01\n" +
+	" UpdateAttributionSettingsRequest\x12l\n" +
+	"\x14attribution_settings\x18\x01 \x01(\v23.google.analytics.admin.v1alpha.AttributionSettingsB\x04\xe2A\x01\x02R\x13attributionSettings\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"c\n" +
+	"\x17GetAccessBindingRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+analyticsadmin.googleapis.com/AccessBindingR\x04name\"\xb9\x01\n" +
+	"\x1dBatchGetAccessBindingsRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+analyticsadmin.googleapis.com/AccessBindingR\x06parent\x12J\n" +
+	"\x05names\x18\x02 \x03(\tB4\xe2A\x01\x02\xfaA-\n" +
 	"+analyticsadmin.googleapis.com/AccessBindingR\x05names\"x\n" +
 	"\x1eBatchGetAccessBindingsResponse\x12V\n" +
-	"\x0faccess_bindings\x18\x01 \x03(\v2-.google.analytics.admin.v1alpha.AccessBindingR\x0eaccessBindings\"\xa4\x01\n" +
-	"\x19ListAccessBindingsRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+analyticsadmin.googleapis.com/AccessBindingR\x06parent\x12\x1b\n" +
+	"\x0faccess_bindings\x18\x01 \x03(\v2-.google.analytics.admin.v1alpha.AccessBindingR\x0eaccessBindings\"\xa5\x01\n" +
+	"\x19ListAccessBindingsRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+analyticsadmin.googleapis.com/AccessBindingR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x9c\x01\n" +
 	"\x1aListAccessBindingsResponse\x12V\n" +
 	"\x0faccess_bindings\x18\x01 \x03(\v2-.google.analytics.admin.v1alpha.AccessBindingR\x0eaccessBindings\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xc4\x01\n" +
-	"\x1aCreateAccessBindingRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+analyticsadmin.googleapis.com/AccessBindingR\x06parent\x12Y\n" +
-	"\x0eaccess_binding\x18\x02 \x01(\v2-.google.analytics.admin.v1alpha.AccessBindingB\x03\xe0A\x02R\raccessBinding\"\xcc\x01\n" +
-	" BatchCreateAccessBindingsRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+analyticsadmin.googleapis.com/AccessBindingR\x06parent\x12[\n" +
-	"\brequests\x18\x03 \x03(\v2:.google.analytics.admin.v1alpha.CreateAccessBindingRequestB\x03\xe0A\x02R\brequests\"{\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xc6\x01\n" +
+	"\x1aCreateAccessBindingRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+analyticsadmin.googleapis.com/AccessBindingR\x06parent\x12Z\n" +
+	"\x0eaccess_binding\x18\x02 \x01(\v2-.google.analytics.admin.v1alpha.AccessBindingB\x04\xe2A\x01\x02R\raccessBinding\"\xce\x01\n" +
+	" BatchCreateAccessBindingsRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+analyticsadmin.googleapis.com/AccessBindingR\x06parent\x12\\\n" +
+	"\brequests\x18\x03 \x03(\v2:.google.analytics.admin.v1alpha.CreateAccessBindingRequestB\x04\xe2A\x01\x02R\brequests\"{\n" +
 	"!BatchCreateAccessBindingsResponse\x12V\n" +
-	"\x0faccess_bindings\x18\x01 \x03(\v2-.google.analytics.admin.v1alpha.AccessBindingR\x0eaccessBindings\"w\n" +
-	"\x1aUpdateAccessBindingRequest\x12Y\n" +
-	"\x0eaccess_binding\x18\x01 \x01(\v2-.google.analytics.admin.v1alpha.AccessBindingB\x03\xe0A\x02R\raccessBinding\"\xcc\x01\n" +
-	" BatchUpdateAccessBindingsRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+analyticsadmin.googleapis.com/AccessBindingR\x06parent\x12[\n" +
-	"\brequests\x18\x02 \x03(\v2:.google.analytics.admin.v1alpha.UpdateAccessBindingRequestB\x03\xe0A\x02R\brequests\"{\n" +
+	"\x0faccess_bindings\x18\x01 \x03(\v2-.google.analytics.admin.v1alpha.AccessBindingR\x0eaccessBindings\"x\n" +
+	"\x1aUpdateAccessBindingRequest\x12Z\n" +
+	"\x0eaccess_binding\x18\x01 \x01(\v2-.google.analytics.admin.v1alpha.AccessBindingB\x04\xe2A\x01\x02R\raccessBinding\"\xce\x01\n" +
+	" BatchUpdateAccessBindingsRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+analyticsadmin.googleapis.com/AccessBindingR\x06parent\x12\\\n" +
+	"\brequests\x18\x02 \x03(\v2:.google.analytics.admin.v1alpha.UpdateAccessBindingRequestB\x04\xe2A\x01\x02R\brequests\"{\n" +
 	"!BatchUpdateAccessBindingsResponse\x12V\n" +
-	"\x0faccess_bindings\x18\x01 \x03(\v2-.google.analytics.admin.v1alpha.AccessBindingR\x0eaccessBindings\"e\n" +
-	"\x1aDeleteAccessBindingRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+analyticsadmin.googleapis.com/AccessBindingR\x04name\"\xcc\x01\n" +
-	" BatchDeleteAccessBindingsRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+analyticsadmin.googleapis.com/AccessBindingR\x06parent\x12[\n" +
-	"\brequests\x18\x02 \x03(\v2:.google.analytics.admin.v1alpha.DeleteAccessBindingRequestB\x03\xe0A\x02R\brequests\"\xcf\x01\n" +
-	"\x1cCreateExpandedDataSetRequest\x12M\n" +
-	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\x12-analyticsadmin.googleapis.com/ExpandedDataSetR\x06parent\x12`\n" +
-	"\x11expanded_data_set\x18\x02 \x01(\v2/.google.analytics.admin.v1alpha.ExpandedDataSetB\x03\xe0A\x02R\x0fexpandedDataSet\"\xc2\x01\n" +
-	"\x1cUpdateExpandedDataSetRequest\x12`\n" +
-	"\x11expanded_data_set\x18\x01 \x01(\v2/.google.analytics.admin.v1alpha.ExpandedDataSetB\x03\xe0A\x02R\x0fexpandedDataSet\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"i\n" +
-	"\x1cDeleteExpandedDataSetRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-analyticsadmin.googleapis.com/ExpandedDataSetR\x04name\"f\n" +
-	"\x19GetExpandedDataSetRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-analyticsadmin.googleapis.com/ExpandedDataSetR\x04name\"\xa8\x01\n" +
-	"\x1bListExpandedDataSetsRequest\x12M\n" +
-	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\x12-analyticsadmin.googleapis.com/ExpandedDataSetR\x06parent\x12\x1b\n" +
+	"\x0faccess_bindings\x18\x01 \x03(\v2-.google.analytics.admin.v1alpha.AccessBindingR\x0eaccessBindings\"f\n" +
+	"\x1aDeleteAccessBindingRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+analyticsadmin.googleapis.com/AccessBindingR\x04name\"\xce\x01\n" +
+	" BatchDeleteAccessBindingsRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+analyticsadmin.googleapis.com/AccessBindingR\x06parent\x12\\\n" +
+	"\brequests\x18\x02 \x03(\v2:.google.analytics.admin.v1alpha.DeleteAccessBindingRequestB\x04\xe2A\x01\x02R\brequests\"\xd1\x01\n" +
+	"\x1cCreateExpandedDataSetRequest\x12N\n" +
+	"\x06parent\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\x12-analyticsadmin.googleapis.com/ExpandedDataSetR\x06parent\x12a\n" +
+	"\x11expanded_data_set\x18\x02 \x01(\v2/.google.analytics.admin.v1alpha.ExpandedDataSetB\x04\xe2A\x01\x02R\x0fexpandedDataSet\"\xc4\x01\n" +
+	"\x1cUpdateExpandedDataSetRequest\x12a\n" +
+	"\x11expanded_data_set\x18\x01 \x01(\v2/.google.analytics.admin.v1alpha.ExpandedDataSetB\x04\xe2A\x01\x02R\x0fexpandedDataSet\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"j\n" +
+	"\x1cDeleteExpandedDataSetRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-analyticsadmin.googleapis.com/ExpandedDataSetR\x04name\"g\n" +
+	"\x19GetExpandedDataSetRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-analyticsadmin.googleapis.com/ExpandedDataSetR\x04name\"\xa9\x01\n" +
+	"\x1bListExpandedDataSetsRequest\x12N\n" +
+	"\x06parent\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\x12-analyticsadmin.googleapis.com/ExpandedDataSetR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xa5\x01\n" +
 	"\x1cListExpandedDataSetsResponse\x12]\n" +
 	"\x12expanded_data_sets\x18\x01 \x03(\v2/.google.analytics.admin.v1alpha.ExpandedDataSetR\x10expandedDataSets\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xbf\x01\n" +
-	"\x19CreateChannelGroupRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*analyticsadmin.googleapis.com/ChannelGroupR\x06parent\x12V\n" +
-	"\rchannel_group\x18\x02 \x01(\v2,.google.analytics.admin.v1alpha.ChannelGroupB\x03\xe0A\x02R\fchannelGroup\"\xb5\x01\n" +
-	"\x19UpdateChannelGroupRequest\x12V\n" +
-	"\rchannel_group\x18\x01 \x01(\v2,.google.analytics.admin.v1alpha.ChannelGroupB\x03\xe0A\x02R\fchannelGroup\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"c\n" +
-	"\x19DeleteChannelGroupRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*analyticsadmin.googleapis.com/ChannelGroupR\x04name\"`\n" +
-	"\x16GetChannelGroupRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*analyticsadmin.googleapis.com/ChannelGroupR\x04name\"\xa2\x01\n" +
-	"\x18ListChannelGroupsRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*analyticsadmin.googleapis.com/ChannelGroupR\x06parent\x12\x1b\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xc1\x01\n" +
+	"\x19CreateChannelGroupRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*analyticsadmin.googleapis.com/ChannelGroupR\x06parent\x12W\n" +
+	"\rchannel_group\x18\x02 \x01(\v2,.google.analytics.admin.v1alpha.ChannelGroupB\x04\xe2A\x01\x02R\fchannelGroup\"\xb7\x01\n" +
+	"\x19UpdateChannelGroupRequest\x12W\n" +
+	"\rchannel_group\x18\x01 \x01(\v2,.google.analytics.admin.v1alpha.ChannelGroupB\x04\xe2A\x01\x02R\fchannelGroup\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"d\n" +
+	"\x19DeleteChannelGroupRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*analyticsadmin.googleapis.com/ChannelGroupR\x04name\"a\n" +
+	"\x16GetChannelGroupRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*analyticsadmin.googleapis.com/ChannelGroupR\x04name\"\xa3\x01\n" +
+	"\x18ListChannelGroupsRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*analyticsadmin.googleapis.com/ChannelGroupR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x98\x01\n" +
 	"\x19ListChannelGroupsResponse\x12S\n" +
 	"\x0echannel_groups\x18\x01 \x03(\v2,.google.analytics.admin.v1alpha.ChannelGroupR\rchannelGroups\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xbf\x01\n" +
-	"\x19CreateBigQueryLinkRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*analyticsadmin.googleapis.com/BigQueryLinkR\x06parent\x12V\n" +
-	"\rbigquery_link\x18\x02 \x01(\v2,.google.analytics.admin.v1alpha.BigQueryLinkB\x03\xe0A\x02R\fbigqueryLink\"`\n" +
-	"\x16GetBigQueryLinkRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*analyticsadmin.googleapis.com/BigQueryLinkR\x04name\"\xa2\x01\n" +
-	"\x18ListBigQueryLinksRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*analyticsadmin.googleapis.com/BigQueryLinkR\x06parent\x12\x1b\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xc1\x01\n" +
+	"\x19CreateBigQueryLinkRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*analyticsadmin.googleapis.com/BigQueryLinkR\x06parent\x12W\n" +
+	"\rbigquery_link\x18\x02 \x01(\v2,.google.analytics.admin.v1alpha.BigQueryLinkB\x04\xe2A\x01\x02R\fbigqueryLink\"a\n" +
+	"\x16GetBigQueryLinkRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*analyticsadmin.googleapis.com/BigQueryLinkR\x04name\"\xa3\x01\n" +
+	"\x18ListBigQueryLinksRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*analyticsadmin.googleapis.com/BigQueryLinkR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x98\x01\n" +
 	"\x19ListBigQueryLinksResponse\x12S\n" +
 	"\x0ebigquery_links\x18\x01 \x03(\v2,.google.analytics.admin.v1alpha.BigQueryLinkR\rbigqueryLinks\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb5\x01\n" +
-	"\x19UpdateBigQueryLinkRequest\x12V\n" +
-	"\rbigquery_link\x18\x01 \x01(\v2,.google.analytics.admin.v1alpha.BigQueryLinkB\x03\xe0A\x02R\fbigqueryLink\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"c\n" +
-	"\x19DeleteBigQueryLinkRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*analyticsadmin.googleapis.com/BigQueryLinkR\x04name\"~\n" +
-	"%GetEnhancedMeasurementSettingsRequest\x12U\n" +
-	"\x04name\x18\x01 \x01(\tBA\xe0A\x02\xfaA;\n" +
-	"9analyticsadmin.googleapis.com/EnhancedMeasurementSettingsR\x04name\"\xf3\x01\n" +
-	"(UpdateEnhancedMeasurementSettingsRequest\x12\x84\x01\n" +
-	"\x1denhanced_measurement_settings\x18\x01 \x01(\v2;.google.analytics.admin.v1alpha.EnhancedMeasurementSettingsB\x03\xe0A\x02R\x1benhancedMeasurementSettings\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"r\n" +
-	"\x1fGetDataRedactionSettingsRequest\x12O\n" +
-	"\x04name\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\n" +
-	"3analyticsadmin.googleapis.com/DataRedactionSettingsR\x04name\"\xda\x01\n" +
-	"\"UpdateDataRedactionSettingsRequest\x12r\n" +
-	"\x17data_redaction_settings\x18\x01 \x01(\v25.google.analytics.admin.v1alpha.DataRedactionSettingsB\x03\xe0A\x02R\x15dataRedactionSettings\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\xba\x01\n" +
-	"\x18CreateAdSenseLinkRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\x12)analyticsadmin.googleapis.com/AdSenseLinkR\x06parent\x12S\n" +
-	"\fadsense_link\x18\x02 \x01(\v2+.google.analytics.admin.v1alpha.AdSenseLinkB\x03\xe0A\x02R\vadsenseLink\"^\n" +
-	"\x15GetAdSenseLinkRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")analyticsadmin.googleapis.com/AdSenseLinkR\x04name\"a\n" +
-	"\x18DeleteAdSenseLinkRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")analyticsadmin.googleapis.com/AdSenseLinkR\x04name\"\xa0\x01\n" +
-	"\x17ListAdSenseLinksRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\x12)analyticsadmin.googleapis.com/AdSenseLinkR\x06parent\x12\x1b\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb7\x01\n" +
+	"\x19UpdateBigQueryLinkRequest\x12W\n" +
+	"\rbigquery_link\x18\x01 \x01(\v2,.google.analytics.admin.v1alpha.BigQueryLinkB\x04\xe2A\x01\x02R\fbigqueryLink\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"d\n" +
+	"\x19DeleteBigQueryLinkRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*analyticsadmin.googleapis.com/BigQueryLinkR\x04name\"\x7f\n" +
+	"%GetEnhancedMeasurementSettingsRequest\x12V\n" +
+	"\x04name\x18\x01 \x01(\tBB\xe2A\x01\x02\xfaA;\n" +
+	"9analyticsadmin.googleapis.com/EnhancedMeasurementSettingsR\x04name\"\xf5\x01\n" +
+	"(UpdateEnhancedMeasurementSettingsRequest\x12\x85\x01\n" +
+	"\x1denhanced_measurement_settings\x18\x01 \x01(\v2;.google.analytics.admin.v1alpha.EnhancedMeasurementSettingsB\x04\xe2A\x01\x02R\x1benhancedMeasurementSettings\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"s\n" +
+	"\x1fGetDataRedactionSettingsRequest\x12P\n" +
+	"\x04name\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\n" +
+	"3analyticsadmin.googleapis.com/DataRedactionSettingsR\x04name\"\xdc\x01\n" +
+	"\"UpdateDataRedactionSettingsRequest\x12s\n" +
+	"\x17data_redaction_settings\x18\x01 \x01(\v25.google.analytics.admin.v1alpha.DataRedactionSettingsB\x04\xe2A\x01\x02R\x15dataRedactionSettings\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\xbc\x01\n" +
+	"\x18CreateAdSenseLinkRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\x12)analyticsadmin.googleapis.com/AdSenseLinkR\x06parent\x12T\n" +
+	"\fadsense_link\x18\x02 \x01(\v2+.google.analytics.admin.v1alpha.AdSenseLinkB\x04\xe2A\x01\x02R\vadsenseLink\"_\n" +
+	"\x15GetAdSenseLinkRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")analyticsadmin.googleapis.com/AdSenseLinkR\x04name\"b\n" +
+	"\x18DeleteAdSenseLinkRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")analyticsadmin.googleapis.com/AdSenseLinkR\x04name\"\xa1\x01\n" +
+	"\x17ListAdSenseLinksRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\x12)analyticsadmin.googleapis.com/AdSenseLinkR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x94\x01\n" +
 	"\x18ListAdSenseLinksResponse\x12P\n" +
 	"\radsense_links\x18\x01 \x03(\v2+.google.analytics.admin.v1alpha.AdSenseLinkR\fadsenseLinks\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xcf\x01\n" +
-	"\x1cCreateEventCreateRuleRequest\x12M\n" +
-	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\x12-analyticsadmin.googleapis.com/EventCreateRuleR\x06parent\x12`\n" +
-	"\x11event_create_rule\x18\x02 \x01(\v2/.google.analytics.admin.v1alpha.EventCreateRuleB\x03\xe0A\x02R\x0feventCreateRule\"\xc2\x01\n" +
-	"\x1cUpdateEventCreateRuleRequest\x12`\n" +
-	"\x11event_create_rule\x18\x01 \x01(\v2/.google.analytics.admin.v1alpha.EventCreateRuleB\x03\xe0A\x02R\x0feventCreateRule\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"i\n" +
-	"\x1cDeleteEventCreateRuleRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-analyticsadmin.googleapis.com/EventCreateRuleR\x04name\"f\n" +
-	"\x19GetEventCreateRuleRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-analyticsadmin.googleapis.com/EventCreateRuleR\x04name\"\xa8\x01\n" +
-	"\x1bListEventCreateRulesRequest\x12M\n" +
-	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\x12-analyticsadmin.googleapis.com/EventCreateRuleR\x06parent\x12\x1b\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xd1\x01\n" +
+	"\x1cCreateEventCreateRuleRequest\x12N\n" +
+	"\x06parent\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\x12-analyticsadmin.googleapis.com/EventCreateRuleR\x06parent\x12a\n" +
+	"\x11event_create_rule\x18\x02 \x01(\v2/.google.analytics.admin.v1alpha.EventCreateRuleB\x04\xe2A\x01\x02R\x0feventCreateRule\"\xc4\x01\n" +
+	"\x1cUpdateEventCreateRuleRequest\x12a\n" +
+	"\x11event_create_rule\x18\x01 \x01(\v2/.google.analytics.admin.v1alpha.EventCreateRuleB\x04\xe2A\x01\x02R\x0feventCreateRule\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"j\n" +
+	"\x1cDeleteEventCreateRuleRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-analyticsadmin.googleapis.com/EventCreateRuleR\x04name\"g\n" +
+	"\x19GetEventCreateRuleRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-analyticsadmin.googleapis.com/EventCreateRuleR\x04name\"\xa9\x01\n" +
+	"\x1bListEventCreateRulesRequest\x12N\n" +
+	"\x06parent\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\x12-analyticsadmin.googleapis.com/EventCreateRuleR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xa5\x01\n" +
 	"\x1cListEventCreateRulesResponse\x12]\n" +
 	"\x12event_create_rules\x18\x01 \x03(\v2/.google.analytics.admin.v1alpha.EventCreateRuleR\x10eventCreateRules\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xc5\x01\n" +
-	"\x1aCreateEventEditRuleRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+analyticsadmin.googleapis.com/EventEditRuleR\x06parent\x12Z\n" +
-	"\x0fevent_edit_rule\x18\x02 \x01(\v2-.google.analytics.admin.v1alpha.EventEditRuleB\x03\xe0A\x02R\reventEditRule\"\xba\x01\n" +
-	"\x1aUpdateEventEditRuleRequest\x12Z\n" +
-	"\x0fevent_edit_rule\x18\x01 \x01(\v2-.google.analytics.admin.v1alpha.EventEditRuleB\x03\xe0A\x02R\reventEditRule\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"e\n" +
-	"\x1aDeleteEventEditRuleRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+analyticsadmin.googleapis.com/EventEditRuleR\x04name\"b\n" +
-	"\x17GetEventEditRuleRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+analyticsadmin.googleapis.com/EventEditRuleR\x04name\"\xae\x01\n" +
-	"\x19ListEventEditRulesRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+analyticsadmin.googleapis.com/EventEditRuleR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xc7\x01\n" +
+	"\x1aCreateEventEditRuleRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+analyticsadmin.googleapis.com/EventEditRuleR\x06parent\x12[\n" +
+	"\x0fevent_edit_rule\x18\x02 \x01(\v2-.google.analytics.admin.v1alpha.EventEditRuleB\x04\xe2A\x01\x02R\reventEditRule\"\xbc\x01\n" +
+	"\x1aUpdateEventEditRuleRequest\x12[\n" +
+	"\x0fevent_edit_rule\x18\x01 \x01(\v2-.google.analytics.admin.v1alpha.EventEditRuleB\x04\xe2A\x01\x02R\reventEditRule\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"f\n" +
+	"\x1aDeleteEventEditRuleRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+analyticsadmin.googleapis.com/EventEditRuleR\x04name\"c\n" +
+	"\x17GetEventEditRuleRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+analyticsadmin.googleapis.com/EventEditRuleR\x04name\"\xb1\x01\n" +
+	"\x19ListEventEditRulesRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+analyticsadmin.googleapis.com/EventEditRuleR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x9d\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x9d\x01\n" +
 	"\x1aListEventEditRulesResponse\x12W\n" +
 	"\x10event_edit_rules\x18\x01 \x03(\v2-.google.analytics.admin.v1alpha.EventEditRuleR\x0eeventEditRules\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x9a\x01\n" +
-	"\x1cReorderEventEditRulesRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+analyticsadmin.googleapis.com/EventEditRuleR\x06parent\x12-\n" +
-	"\x10event_edit_rules\x18\x02 \x03(\tB\x03\xe0A\x02R\x0eeventEditRules\"\xa7\x01\n" +
-	"\x1bCreateRollupPropertyRequest\x12V\n" +
-	"\x0frollup_property\x18\x01 \x01(\v2(.google.analytics.admin.v1alpha.PropertyB\x03\xe0A\x02R\x0erollupProperty\x120\n" +
-	"\x11source_properties\x18\x02 \x03(\tB\x03\xe0A\x01R\x10sourceProperties\"\xec\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x9c\x01\n" +
+	"\x1cReorderEventEditRulesRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+analyticsadmin.googleapis.com/EventEditRuleR\x06parent\x12.\n" +
+	"\x10event_edit_rules\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\x0eeventEditRules\"\xa9\x01\n" +
+	"\x1bCreateRollupPropertyRequest\x12W\n" +
+	"\x0frollup_property\x18\x01 \x01(\v2(.google.analytics.admin.v1alpha.PropertyB\x04\xe2A\x01\x02R\x0erollupProperty\x121\n" +
+	"\x11source_properties\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x10sourceProperties\"\xec\x01\n" +
 	"\x1cCreateRollupPropertyResponse\x12Q\n" +
 	"\x0frollup_property\x18\x01 \x01(\v2(.google.analytics.admin.v1alpha.PropertyR\x0erollupProperty\x12y\n" +
-	"\x1crollup_property_source_links\x18\x02 \x03(\v28.google.analytics.admin.v1alpha.RollupPropertySourceLinkR\x19rollupPropertySourceLinks\"x\n" +
-	"\"GetRollupPropertySourceLinkRequest\x12R\n" +
-	"\x04name\x18\x01 \x01(\tB>\xe0A\x02\xfaA8\n" +
-	"6analyticsadmin.googleapis.com/RollupPropertySourceLinkR\x04name\"\xc4\x01\n" +
-	"$ListRollupPropertySourceLinksRequest\x12V\n" +
-	"\x06parent\x18\x01 \x01(\tB>\xe0A\x02\xfaA8\x126analyticsadmin.googleapis.com/RollupPropertySourceLinkR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x1crollup_property_source_links\x18\x02 \x03(\v28.google.analytics.admin.v1alpha.RollupPropertySourceLinkR\x19rollupPropertySourceLinks\"y\n" +
+	"\"GetRollupPropertySourceLinkRequest\x12S\n" +
+	"\x04name\x18\x01 \x01(\tB?\xe2A\x01\x02\xfaA8\n" +
+	"6analyticsadmin.googleapis.com/RollupPropertySourceLinkR\x04name\"\xc7\x01\n" +
+	"$ListRollupPropertySourceLinksRequest\x12W\n" +
+	"\x06parent\x18\x01 \x01(\tB?\xe2A\x01\x02\xfaA8\x126analyticsadmin.googleapis.com/RollupPropertySourceLinkR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xca\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xca\x01\n" +
 	"%ListRollupPropertySourceLinksResponse\x12y\n" +
 	"\x1crollup_property_source_links\x18\x01 \x03(\v28.google.analytics.admin.v1alpha.RollupPropertySourceLinkR\x19rollupPropertySourceLinks\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xfd\x01\n" +
-	"%CreateRollupPropertySourceLinkRequest\x12V\n" +
-	"\x06parent\x18\x01 \x01(\tB>\xe0A\x02\xfaA8\x126analyticsadmin.googleapis.com/RollupPropertySourceLinkR\x06parent\x12|\n" +
-	"\x1brollup_property_source_link\x18\x02 \x01(\v28.google.analytics.admin.v1alpha.RollupPropertySourceLinkB\x03\xe0A\x02R\x18rollupPropertySourceLink\"{\n" +
-	"%DeleteRollupPropertySourceLinkRequest\x12R\n" +
-	"\x04name\x18\x01 \x01(\tB>\xe0A\x02\xfaA8\n" +
-	"6analyticsadmin.googleapis.com/RollupPropertySourceLinkR\x04name\"\x9d\x03\n" +
-	"\x1bProvisionSubpropertyRequest\x12O\n" +
-	"\vsubproperty\x18\x02 \x01(\v2(.google.analytics.admin.v1alpha.PropertyB\x03\xe0A\x02R\vsubproperty\x12u\n" +
-	"\x18subproperty_event_filter\x18\x03 \x01(\v26.google.analytics.admin.v1alpha.SubpropertyEventFilterB\x03\xe0A\x01R\x16subpropertyEventFilter\x12\xb5\x01\n" +
-	"0custom_dimension_and_metric_synchronization_mode\x18\x04 \x01(\x0e2I.google.analytics.admin.v1alpha.SubpropertySyncConfig.SynchronizationModeB\x03\xe0A\x01R+customDimensionAndMetricSynchronizationMode\"\xdc\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xff\x01\n" +
+	"%CreateRollupPropertySourceLinkRequest\x12W\n" +
+	"\x06parent\x18\x01 \x01(\tB?\xe2A\x01\x02\xfaA8\x126analyticsadmin.googleapis.com/RollupPropertySourceLinkR\x06parent\x12}\n" +
+	"\x1brollup_property_source_link\x18\x02 \x01(\v28.google.analytics.admin.v1alpha.RollupPropertySourceLinkB\x04\xe2A\x01\x02R\x18rollupPropertySourceLink\"|\n" +
+	"%DeleteRollupPropertySourceLinkRequest\x12S\n" +
+	"\x04name\x18\x01 \x01(\tB?\xe2A\x01\x02\xfaA8\n" +
+	"6analyticsadmin.googleapis.com/RollupPropertySourceLinkR\x04name\"\xa0\x03\n" +
+	"\x1bProvisionSubpropertyRequest\x12P\n" +
+	"\vsubproperty\x18\x02 \x01(\v2(.google.analytics.admin.v1alpha.PropertyB\x04\xe2A\x01\x02R\vsubproperty\x12v\n" +
+	"\x18subproperty_event_filter\x18\x03 \x01(\v26.google.analytics.admin.v1alpha.SubpropertyEventFilterB\x04\xe2A\x01\x01R\x16subpropertyEventFilter\x12\xb6\x01\n" +
+	"0custom_dimension_and_metric_synchronization_mode\x18\x04 \x01(\x0e2I.google.analytics.admin.v1alpha.SubpropertySyncConfig.SynchronizationModeB\x04\xe2A\x01\x01R+customDimensionAndMetricSynchronizationMode\"\xdc\x01\n" +
 	"\x1cProvisionSubpropertyResponse\x12J\n" +
 	"\vsubproperty\x18\x01 \x01(\v2(.google.analytics.admin.v1alpha.PropertyR\vsubproperty\x12p\n" +
-	"\x18subproperty_event_filter\x18\x02 \x01(\v26.google.analytics.admin.v1alpha.SubpropertyEventFilterR\x16subpropertyEventFilter\"\xf2\x01\n" +
-	"#CreateSubpropertyEventFilterRequest\x12T\n" +
-	"\x06parent\x18\x01 \x01(\tB<\xe0A\x02\xfaA6\x124analyticsadmin.googleapis.com/SubpropertyEventFilterR\x06parent\x12u\n" +
-	"\x18subproperty_event_filter\x18\x02 \x01(\v26.google.analytics.admin.v1alpha.SubpropertyEventFilterB\x03\xe0A\x02R\x16subpropertyEventFilter\"t\n" +
-	" GetSubpropertyEventFilterRequest\x12P\n" +
-	"\x04name\x18\x01 \x01(\tB<\xe0A\x02\xfaA6\n" +
-	"4analyticsadmin.googleapis.com/SubpropertyEventFilterR\x04name\"\xc0\x01\n" +
-	"\"ListSubpropertyEventFiltersRequest\x12T\n" +
-	"\x06parent\x18\x01 \x01(\tB<\xe0A\x02\xfaA6\x124analyticsadmin.googleapis.com/SubpropertyEventFilterR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x18subproperty_event_filter\x18\x02 \x01(\v26.google.analytics.admin.v1alpha.SubpropertyEventFilterR\x16subpropertyEventFilter\"\xf4\x01\n" +
+	"#CreateSubpropertyEventFilterRequest\x12U\n" +
+	"\x06parent\x18\x01 \x01(\tB=\xe2A\x01\x02\xfaA6\x124analyticsadmin.googleapis.com/SubpropertyEventFilterR\x06parent\x12v\n" +
+	"\x18subproperty_event_filter\x18\x02 \x01(\v26.google.analytics.admin.v1alpha.SubpropertyEventFilterB\x04\xe2A\x01\x02R\x16subpropertyEventFilter\"u\n" +
+	" GetSubpropertyEventFilterRequest\x12Q\n" +
+	"\x04name\x18\x01 \x01(\tB=\xe2A\x01\x02\xfaA6\n" +
+	"4analyticsadmin.googleapis.com/SubpropertyEventFilterR\x04name\"\xc3\x01\n" +
+	"\"ListSubpropertyEventFiltersRequest\x12U\n" +
+	"\x06parent\x18\x01 \x01(\tB=\xe2A\x01\x02\xfaA6\x124analyticsadmin.googleapis.com/SubpropertyEventFilterR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xc1\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xc1\x01\n" +
 	"#ListSubpropertyEventFiltersResponse\x12r\n" +
 	"\x19subproperty_event_filters\x18\x01 \x03(\v26.google.analytics.admin.v1alpha.SubpropertyEventFilterR\x17subpropertyEventFilters\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xde\x01\n" +
-	"#UpdateSubpropertyEventFilterRequest\x12u\n" +
-	"\x18subproperty_event_filter\x18\x01 \x01(\v26.google.analytics.admin.v1alpha.SubpropertyEventFilterB\x03\xe0A\x02R\x16subpropertyEventFilter\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"w\n" +
-	"#DeleteSubpropertyEventFilterRequest\x12P\n" +
-	"\x04name\x18\x01 \x01(\tB<\xe0A\x02\xfaA6\n" +
-	"4analyticsadmin.googleapis.com/SubpropertyEventFilterR\x04name\"\xf7\x01\n" +
-	"$CreateReportingDataAnnotationRequest\x12U\n" +
-	"\x06parent\x18\x01 \x01(\tB=\xe0A\x02\xfaA7\x125analyticsadmin.googleapis.com/ReportingDataAnnotationR\x06parent\x12x\n" +
-	"\x19reporting_data_annotation\x18\x02 \x01(\v27.google.analytics.admin.v1alpha.ReportingDataAnnotationB\x03\xe0A\x02R\x17reportingDataAnnotation\"v\n" +
-	"!GetReportingDataAnnotationRequest\x12Q\n" +
-	"\x04name\x18\x01 \x01(\tB=\xe0A\x02\xfaA7\n" +
-	"5analyticsadmin.googleapis.com/ReportingDataAnnotationR\x04name\"\xdf\x01\n" +
-	"#ListReportingDataAnnotationsRequest\x12U\n" +
-	"\x06parent\x18\x01 \x01(\tB=\xe0A\x02\xfaA7\x125analyticsadmin.googleapis.com/ReportingDataAnnotationR\x06parent\x12\x1b\n" +
-	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x01R\x06filter\x12 \n" +
-	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xe0\x01\n" +
+	"#UpdateSubpropertyEventFilterRequest\x12v\n" +
+	"\x18subproperty_event_filter\x18\x01 \x01(\v26.google.analytics.admin.v1alpha.SubpropertyEventFilterB\x04\xe2A\x01\x02R\x16subpropertyEventFilter\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"x\n" +
+	"#DeleteSubpropertyEventFilterRequest\x12Q\n" +
+	"\x04name\x18\x01 \x01(\tB=\xe2A\x01\x02\xfaA6\n" +
+	"4analyticsadmin.googleapis.com/SubpropertyEventFilterR\x04name\"\xf9\x01\n" +
+	"$CreateReportingDataAnnotationRequest\x12V\n" +
+	"\x06parent\x18\x01 \x01(\tB>\xe2A\x01\x02\xfaA7\x125analyticsadmin.googleapis.com/ReportingDataAnnotationR\x06parent\x12y\n" +
+	"\x19reporting_data_annotation\x18\x02 \x01(\v27.google.analytics.admin.v1alpha.ReportingDataAnnotationB\x04\xe2A\x01\x02R\x17reportingDataAnnotation\"w\n" +
+	"!GetReportingDataAnnotationRequest\x12R\n" +
+	"\x04name\x18\x01 \x01(\tB>\xe2A\x01\x02\xfaA7\n" +
+	"5analyticsadmin.googleapis.com/ReportingDataAnnotationR\x04name\"\xe3\x01\n" +
+	"#ListReportingDataAnnotationsRequest\x12V\n" +
+	"\x06parent\x18\x01 \x01(\tB>\xe2A\x01\x02\xfaA7\x125analyticsadmin.googleapis.com/ReportingDataAnnotationR\x06parent\x12\x1c\n" +
+	"\x06filter\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12!\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xc5\x01\n" +
+	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xc5\x01\n" +
 	"$ListReportingDataAnnotationsResponse\x12u\n" +
 	"\x1areporting_data_annotations\x18\x01 \x03(\v27.google.analytics.admin.v1alpha.ReportingDataAnnotationR\x18reportingDataAnnotations\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xe2\x01\n" +
-	"$UpdateReportingDataAnnotationRequest\x12x\n" +
-	"\x19reporting_data_annotation\x18\x01 \x01(\v27.google.analytics.admin.v1alpha.ReportingDataAnnotationB\x03\xe0A\x02R\x17reportingDataAnnotation\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"y\n" +
-	"$DeleteReportingDataAnnotationRequest\x12Q\n" +
-	"\x04name\x18\x01 \x01(\tB=\xe0A\x02\xfaA7\n" +
-	"5analyticsadmin.googleapis.com/ReportingDataAnnotationR\x04name\"\xfb\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xe4\x01\n" +
+	"$UpdateReportingDataAnnotationRequest\x12y\n" +
+	"\x19reporting_data_annotation\x18\x01 \x01(\v27.google.analytics.admin.v1alpha.ReportingDataAnnotationB\x04\xe2A\x01\x02R\x17reportingDataAnnotation\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"z\n" +
+	"$DeleteReportingDataAnnotationRequest\x12R\n" +
+	"\x04name\x18\x01 \x01(\tB>\xe2A\x01\x02\xfaA7\n" +
+	"5analyticsadmin.googleapis.com/ReportingDataAnnotationR\x04name\"\xfc\x01\n" +
 	"\x19SubmitUserDeletionRequest\x12\x19\n" +
 	"\auser_id\x18\x02 \x01(\tH\x00R\x06userId\x12\x1d\n" +
 	"\tclient_id\x18\x03 \x01(\tH\x00R\bclientId\x12(\n" +
 	"\x0fapp_instance_id\x18\x04 \x01(\tH\x00R\rappInstanceId\x12.\n" +
-	"\x12user_provided_data\x18\x05 \x01(\tH\x00R\x10userProvidedData\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
+	"\x12user_provided_data\x18\x05 \x01(\tH\x00R\x10userProvidedData\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
 	"&analyticsadmin.googleapis.com/PropertyR\x04nameB\x06\n" +
 	"\x04user\"l\n" +
 	"\x1aSubmitUserDeletionResponse\x12N\n" +
-	"\x15deletion_request_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\x13deletionRequestTime\"r\n" +
-	"\x1fGetSubpropertySyncConfigRequest\x12O\n" +
-	"\x04name\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\n" +
-	"3analyticsadmin.googleapis.com/SubpropertySyncConfigR\x04name\"\xbe\x01\n" +
-	"!ListSubpropertySyncConfigsRequest\x12S\n" +
-	"\x06parent\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\x123analyticsadmin.googleapis.com/SubpropertySyncConfigR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x15deletion_request_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\x13deletionRequestTime\"s\n" +
+	"\x1fGetSubpropertySyncConfigRequest\x12P\n" +
+	"\x04name\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\n" +
+	"3analyticsadmin.googleapis.com/SubpropertySyncConfigR\x04name\"\xc1\x01\n" +
+	"!ListSubpropertySyncConfigsRequest\x12T\n" +
+	"\x06parent\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\x123analyticsadmin.googleapis.com/SubpropertySyncConfigR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xbd\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xbd\x01\n" +
 	"\"ListSubpropertySyncConfigsResponse\x12o\n" +
 	"\x18subproperty_sync_configs\x18\x01 \x03(\v25.google.analytics.admin.v1alpha.SubpropertySyncConfigR\x16subpropertySyncConfigs\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xda\x01\n" +
-	"\"UpdateSubpropertySyncConfigRequest\x12r\n" +
-	"\x17subproperty_sync_config\x18\x01 \x01(\v25.google.analytics.admin.v1alpha.SubpropertySyncConfigB\x03\xe0A\x02R\x15subpropertySyncConfig\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"z\n" +
-	"#GetReportingIdentitySettingsRequest\x12S\n" +
-	"\x04name\x18\x01 \x01(\tB?\xe0A\x02\xfaA9\n" +
-	"7analyticsadmin.googleapis.com/ReportingIdentitySettingsR\x04name\"\xea\x01\n" +
-	"&UpdateReportingIdentitySettingsRequest\x12~\n" +
-	"\x1breporting_identity_settings\x18\x01 \x01(\v29.google.analytics.admin.v1alpha.ReportingIdentitySettingsB\x03\xe0A\x02R\x19reportingIdentitySettings\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"x\n" +
-	"\"GetUserProvidedDataSettingsRequest\x12R\n" +
-	"\x04name\x18\x01 \x01(\tB>\xe0A\x02\xfaA8\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xdc\x01\n" +
+	"\"UpdateSubpropertySyncConfigRequest\x12s\n" +
+	"\x17subproperty_sync_config\x18\x01 \x01(\v25.google.analytics.admin.v1alpha.SubpropertySyncConfigB\x04\xe2A\x01\x02R\x15subpropertySyncConfig\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"{\n" +
+	"#GetReportingIdentitySettingsRequest\x12T\n" +
+	"\x04name\x18\x01 \x01(\tB@\xe2A\x01\x02\xfaA9\n" +
+	"7analyticsadmin.googleapis.com/ReportingIdentitySettingsR\x04name\"\xec\x01\n" +
+	"&UpdateReportingIdentitySettingsRequest\x12\x7f\n" +
+	"\x1breporting_identity_settings\x18\x01 \x01(\v29.google.analytics.admin.v1alpha.ReportingIdentitySettingsB\x04\xe2A\x01\x02R\x19reportingIdentitySettings\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"y\n" +
+	"\"GetUserProvidedDataSettingsRequest\x12S\n" +
+	"\x04name\x18\x01 \x01(\tB?\xe2A\x01\x02\xfaA8\n" +
 	"6analyticsadmin.googleapis.com/UserProvidedDataSettingsR\x04name2ӛ\x02\n" +
 	"\x15AnalyticsAdminService\x12\x93\x01\n" +
 	"\n" +

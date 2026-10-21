@@ -271,13 +271,13 @@ var File_google_cloud_discoveryengine_v1_project_proto protoreflect.FileDescript
 
 const file_google_cloud_discoveryengine_v1_project_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/discoveryengine/v1/project.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd2\x06\n" +
-	"\aProject\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12[\n" +
-	"\x19provision_completion_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x17provisionCompletionTime\x12n\n" +
-	"\x11service_terms_map\x18\x04 \x03(\v2=.google.cloud.discoveryengine.v1.Project.ServiceTermsMapEntryB\x03\xe0A\x03R\x0fserviceTermsMap\x1a\xe2\x02\n" +
+	"-google/cloud/discoveryengine/v1/project.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd6\x06\n" +
+	"\aProject\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12\\\n" +
+	"\x19provision_completion_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x17provisionCompletionTime\x12o\n" +
+	"\x11service_terms_map\x18\x04 \x03(\v2=.google.cloud.discoveryengine.v1.Project.ServiceTermsMapEntryB\x04\xe2A\x01\x03R\x0fserviceTermsMap\x1a\xe2\x02\n" +
 	"\fServiceTerms\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x18\n" +
 	"\aversion\x18\x02 \x01(\tR\aversion\x12Q\n" +

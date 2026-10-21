@@ -1272,25 +1272,25 @@ var File_google_cloud_networkconnectivity_v1alpha1_hub_proto protoreflect.FileDe
 
 const file_google_cloud_networkconnectivity_v1alpha1_hub_proto_rawDesc = "" +
 	"\n" +
-	"3google/cloud/networkconnectivity/v1alpha1/hub.proto\x12)google.cloud.networkconnectivity.v1alpha1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdf\x04\n" +
-	"\x03Hub\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12;\n" +
+	"3google/cloud/networkconnectivity/v1alpha1/hub.proto\x12)google.cloud.networkconnectivity.v1alpha1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe3\x04\n" +
+	"\x03Hub\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12;\n" +
 	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12;\n" +
 	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"updateTime\x12R\n" +
 	"\x06labels\x18\x04 \x03(\v2:.google.cloud.networkconnectivity.v1alpha1.Hub.LabelsEntryR\x06labels\x12 \n" +
-	"\vdescription\x18\x05 \x01(\tR\vdescription\x12H\n" +
-	"\x06spokes\x18\x06 \x03(\tB0\xe0A\x03\xfaA*\n" +
-	"(networkconnectivity.googleapis.com/SpokeR\x06spokes\x12 \n" +
-	"\tunique_id\x18\b \x01(\tB\x03\xe0A\x03R\buniqueId\x12K\n" +
-	"\x05state\x18\t \x01(\x0e20.google.cloud.networkconnectivity.v1alpha1.StateB\x03\xe0A\x03R\x05state\x1a9\n" +
+	"\vdescription\x18\x05 \x01(\tR\vdescription\x12I\n" +
+	"\x06spokes\x18\x06 \x03(\tB1\xe2A\x01\x03\xfaA*\n" +
+	"(networkconnectivity.googleapis.com/SpokeR\x06spokes\x12!\n" +
+	"\tunique_id\x18\b \x01(\tB\x04\xe2A\x01\x03R\buniqueId\x12L\n" +
+	"\x05state\x18\t \x01(\x0e20.google.cloud.networkconnectivity.v1alpha1.StateB\x04\xe2A\x01\x03R\x05state\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:[\xeaAX\n" +
-	"&networkconnectivity.googleapis.com/Hub\x12.projects/{project}/locations/global/hubs/{hub}\"\xc3\a\n" +
-	"\x05Spoke\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12;\n" +
+	"&networkconnectivity.googleapis.com/Hub\x12.projects/{project}/locations/global/hubs/{hub}\"\xc6\a\n" +
+	"\x05Spoke\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12;\n" +
 	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12;\n" +
 	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
@@ -1303,15 +1303,15 @@ const file_google_cloud_networkconnectivity_v1alpha1_hub_proto_rawDesc = "" +
 	" compute.googleapis.com/VpnTunnelR\x10linkedVpnTunnels\x12z\n" +
 	"\x1flinked_interconnect_attachments\x18\r \x03(\tB2\xfaA/\n" +
 	"-compute.googleapis.com/InterconnectAttachmentR\x1dlinkedInterconnectAttachments\x12\x8d\x01\n" +
-	"!linked_router_appliance_instances\x18\x0e \x03(\v2B.google.cloud.networkconnectivity.v1alpha1.RouterApplianceInstanceR\x1elinkedRouterApplianceInstances\x12 \n" +
-	"\tunique_id\x18\v \x01(\tB\x03\xe0A\x03R\buniqueId\x12K\n" +
-	"\x05state\x18\x0f \x01(\x0e20.google.cloud.networkconnectivity.v1alpha1.StateB\x03\xe0A\x03R\x05state\x1a9\n" +
+	"!linked_router_appliance_instances\x18\x0e \x03(\v2B.google.cloud.networkconnectivity.v1alpha1.RouterApplianceInstanceR\x1elinkedRouterApplianceInstances\x12!\n" +
+	"\tunique_id\x18\v \x01(\tB\x04\xe2A\x01\x03R\buniqueId\x12L\n" +
+	"\x05state\x18\x0f \x01(\x0e20.google.cloud.networkconnectivity.v1alpha1.StateB\x04\xe2A\x01\x03R\x05state\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:e\xeaAb\n" +
-	"(networkconnectivity.googleapis.com/Spoke\x126projects/{project}/locations/{location}/spokes/{spoke}\"\xc3\x01\n" +
-	"\x0fListHubsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"(networkconnectivity.googleapis.com/Spoke\x126projects/{project}/locations/{location}/spokes/{spoke}\"\xc4\x01\n" +
+	"\x0fListHubsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -1321,30 +1321,30 @@ const file_google_cloud_networkconnectivity_v1alpha1_hub_proto_rawDesc = "" +
 	"\x10ListHubsResponse\x12B\n" +
 	"\x04hubs\x18\x01 \x03(\v2..google.cloud.networkconnectivity.v1alpha1.HubR\x04hubs\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"S\n" +
-	"\rGetHubRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&networkconnectivity.googleapis.com/HubR\x04name\"\xdc\x01\n" +
-	"\x10CreateHubRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12\x1a\n" +
-	"\x06hub_id\x18\x02 \x01(\tB\x03\xe0A\x01R\x05hubId\x12E\n" +
-	"\x03hub\x18\x03 \x01(\v2..google.cloud.networkconnectivity.v1alpha1.HubB\x03\xe0A\x02R\x03hub\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"T\n" +
+	"\rGetHubRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&networkconnectivity.googleapis.com/HubR\x04name\"\xe0\x01\n" +
+	"\x10CreateHubRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
+	"\x06hub_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x05hubId\x12F\n" +
+	"\x03hub\x18\x03 \x01(\v2..google.cloud.networkconnectivity.v1alpha1.HubB\x04\xe2A\x01\x02R\x03hub\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xbf\x01\n" +
-	"\x10UpdateHubRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12E\n" +
-	"\x03hub\x18\x02 \x01(\v2..google.cloud.networkconnectivity.v1alpha1.HubB\x03\xe0A\x02R\x03hub\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xc2\x01\n" +
+	"\x10UpdateHubRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12F\n" +
+	"\x03hub\x18\x02 \x01(\v2..google.cloud.networkconnectivity.v1alpha1.HubB\x04\xe2A\x01\x02R\x03hub\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"z\n" +
-	"\x10DeleteHubRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&networkconnectivity.googleapis.com/HubR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"|\n" +
+	"\x10DeleteHubRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&networkconnectivity.googleapis.com/HubR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\xc5\x01\n" +
-	"\x11ListSpokesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xc6\x01\n" +
+	"\x11ListSpokesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -1354,28 +1354,28 @@ const file_google_cloud_networkconnectivity_v1alpha1_hub_proto_rawDesc = "" +
 	"\x12ListSpokesResponse\x12H\n" +
 	"\x06spokes\x18\x01 \x03(\v20.google.cloud.networkconnectivity.v1alpha1.SpokeR\x06spokes\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"W\n" +
-	"\x0fGetSpokeRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(networkconnectivity.googleapis.com/SpokeR\x04name\"\xe8\x01\n" +
-	"\x12CreateSpokeRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12\x1e\n" +
-	"\bspoke_id\x18\x02 \x01(\tB\x03\xe0A\x01R\aspokeId\x12K\n" +
-	"\x05spoke\x18\x03 \x01(\v20.google.cloud.networkconnectivity.v1alpha1.SpokeB\x03\xe0A\x02R\x05spoke\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"X\n" +
+	"\x0fGetSpokeRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(networkconnectivity.googleapis.com/SpokeR\x04name\"\xec\x01\n" +
+	"\x12CreateSpokeRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12\x1f\n" +
+	"\bspoke_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\aspokeId\x12L\n" +
+	"\x05spoke\x18\x03 \x01(\v20.google.cloud.networkconnectivity.v1alpha1.SpokeB\x04\xe2A\x01\x02R\x05spoke\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xc7\x01\n" +
-	"\x12UpdateSpokeRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12K\n" +
-	"\x05spoke\x18\x02 \x01(\v20.google.cloud.networkconnectivity.v1alpha1.SpokeB\x03\xe0A\x02R\x05spoke\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xca\x01\n" +
+	"\x12UpdateSpokeRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12L\n" +
+	"\x05spoke\x18\x02 \x01(\v20.google.cloud.networkconnectivity.v1alpha1.SpokeB\x04\xe2A\x01\x02R\x05spoke\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"~\n" +
-	"\x12DeleteSpokeRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(networkconnectivity.googleapis.com/SpokeR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x80\x01\n" +
+	"\x12DeleteSpokeRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(networkconnectivity.googleapis.com/SpokeR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\xb8\x01\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xb8\x01\n" +
 	"\x17RouterApplianceInstance\x12M\n" +
 	"\x0fvirtual_machine\x18\x01 \x01(\tB$\xfaA!\n" +
 	"\x1fcompute.googleapis.com/InstanceR\x0evirtualMachine\x12\x1d\n" +
