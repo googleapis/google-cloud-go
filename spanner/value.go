@@ -2795,6 +2795,26 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...DecodeO
 			return errBadEncoding(v, err)
 		}
 		*p = NullInterval{interval, true}
+	case **Interval:
+		if p == nil {
+			return errNilDst(p)
+		}
+		if code != sppb.TypeCode_INTERVAL {
+			return errTypeMismatch(code, acode, ptr)
+		}
+		if isNull {
+			*p = nil
+			break
+		}
+		x, err := getStringValue(v)
+		if err != nil {
+			return err
+		}
+		interval, err := ParseInterval(x)
+		if err != nil {
+			return errBadEncoding(v, err)
+		}
+		*p = &interval
 	case *[]Interval:
 		if p == nil {
 			return errNilDst(p)
@@ -3112,7 +3132,7 @@ const (
 // Spanner.
 func (d decodableSpannerType) supportsNull() bool {
 	switch d {
-	case spannerTypeNonNullString, spannerTypeNonNullInt64, spannerTypeNonNullBool, spannerTypeNonNullFloat64, spannerTypeNonNullFloat32, spannerTypeNonNullTime, spannerTypeNonNullDate, spannerTypeNonNullNumeric, spannerTypeNonNullUUID:
+	case spannerTypeNonNullString, spannerTypeNonNullInt64, spannerTypeNonNullBool, spannerTypeNonNullFloat64, spannerTypeNonNullFloat32, spannerTypeNonNullTime, spannerTypeNonNullDate, spannerTypeNonNullNumeric, spannerTypeNonNullUUID, spannerTypeNonNullInterval:
 		return false
 	default:
 		return true
@@ -3279,6 +3299,9 @@ func getDecodableSpannerType(ptr interface{}, isPtr bool) decodableSpannerType {
 			if t.ConvertibleTo(typeOfNonNullDate) {
 				return spannerTypeArrayOfNonNullDate
 			}
+			if t.ConvertibleTo(typeOfNonNullInterval) {
+				return spannerTypeArrayOfNonNullInterval
+			}
 			if t.ConvertibleTo(typeOfNullString) {
 				return spannerTypeArrayOfNullString
 			}
@@ -3314,6 +3337,9 @@ func getDecodableSpannerType(ptr interface{}, isPtr bool) decodableSpannerType {
 			}
 			if t.ConvertibleTo(typeOfNullUUID) {
 				return spannerTypeArrayOfNullUUID
+			}
+			if t.ConvertibleTo(typeOfNullInterval) {
+				return spannerTypeArrayOfNullInterval
 			}
 		case reflect.Slice:
 			// The only array-of-array type that is supported is [][]byte.
@@ -3558,6 +3584,27 @@ func (dsc decodableSpannerType) decodeValueToCustomType(v *proto3.Value, t *sppb
 		} else {
 			result = &NullUUID{x, !isNull}
 		}
+	case spannerTypeNonNullInterval, spannerTypeNullInterval:
+		if code != sppb.TypeCode_INTERVAL {
+			return errTypeMismatch(code, acode, ptr)
+		}
+		if isNull {
+			result = &NullInterval{}
+			break
+		}
+		x, err := getStringValue(v)
+		if err != nil {
+			return err
+		}
+		y, err := ParseInterval(x)
+		if err != nil {
+			return errBadEncoding(v, err)
+		}
+		if dsc == spannerTypeNonNullInterval {
+			result = &y
+		} else {
+			result = &NullInterval{y, !isNull}
+		}
 	case spannerTypeArrayOfNonNullString, spannerTypeArrayOfNullString:
 		if acode != sppb.TypeCode_STRING {
 			return errTypeMismatch(code, acode, ptr)
@@ -3775,6 +3822,23 @@ func (dsc decodableSpannerType) decodeValueToCustomType(v *proto3.Value, t *sppb
 			return err
 		}
 		y, err := decodeGenericArray(reflect.TypeOf(ptr).Elem(), x, uuidType(), "UUID")
+		if err != nil {
+			return err
+		}
+		result = y
+	case spannerTypeArrayOfNonNullInterval, spannerTypeArrayOfNullInterval:
+		if acode != sppb.TypeCode_INTERVAL {
+			return errTypeMismatch(code, acode, ptr)
+		}
+		if isNull {
+			ptr = nil
+			return nil
+		}
+		x, err := getListValue(v)
+		if err != nil {
+			return err
+		}
+		y, err := decodeGenericArray(reflect.TypeOf(ptr).Elem(), x, intervalType(), "INTERVAL")
 		if err != nil {
 			return err
 		}
@@ -4808,6 +4872,24 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 			}
 		}
 		pt = listType(intervalType())
+	case *Interval:
+		if v != nil {
+			return encodeValue(*v)
+		}
+		pt = intervalType()
+	case []*Interval:
+		if v != nil {
+			pb, err = encodeArray(len(v), func(i int) interface{} { return v[i] })
+			if err != nil {
+				return nil, nil, err
+			}
+		}
+		pt = listType(intervalType())
+	case *NullInterval:
+		if v != nil {
+			return encodeValue(*v)
+		}
+		pt = intervalType()
 	case string:
 		pb.Kind = stringKind(v)
 		pt = stringType()
@@ -5413,6 +5495,10 @@ func convertCustomTypeValue(sourceType decodableSpannerType, v interface{}) (int
 		destination = reflect.Indirect(reflect.New(reflect.TypeOf(uuid.UUID{})))
 	case spannerTypeNullUUID:
 		destination = reflect.Indirect(reflect.New(reflect.TypeOf(NullUUID{})))
+	case spannerTypeNonNullInterval:
+		destination = reflect.Indirect(reflect.New(reflect.TypeOf(Interval{})))
+	case spannerTypeNullInterval:
+		destination = reflect.Indirect(reflect.New(reflect.TypeOf(NullInterval{})))
 	case spannerTypeArrayOfNonNullString:
 		if reflect.ValueOf(v).IsNil() {
 			return []string(nil), nil
