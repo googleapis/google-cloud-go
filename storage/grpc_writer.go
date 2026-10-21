@@ -1594,6 +1594,7 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 			return
 		}
 		s.upid = upres.GetUploadId()
+		setUploadIDAttribute(ctx, s.upid)
 		s.startWriteRequest = nil
 	} else {
 		q, err := s.raw.QueryWriteStatus(ctx, &storagepb.QueryWriteStatusRequest{UploadId: s.upid}, opts...)
