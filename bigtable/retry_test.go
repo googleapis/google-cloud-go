@@ -278,6 +278,178 @@ func TestRetryApplyBulk_FailuresAndRetriesInOneRequest(t *testing.T) {
 	}
 }
 
+// TestRetryApplyBulk_MidStreamErrorNarrowsRetrySkipsServerTime verifies
+// that when the MutateRows stream fails mid-way, the retry attempt
+// re-sends only the entries that (a) did not already commit and
+// (b) carry only retryable (idempotent) mutations. In particular an
+// entry whose mutations include a SetCell at Timestamp=ServerTime must
+// NOT be re-sent -- we cannot distinguish "server committed, response
+// lost" from "server never processed", so a blind retry risks a
+// duplicate cell at a new server timestamp. That entry instead surfaces
+// to the caller with its per-entry stream error.
+func TestRetryApplyBulk_MidStreamErrorNarrowsRetrySkipsServerTime(t *testing.T) {
+	ctx := context.Background()
+
+	attempts := 0
+	var attempt2RowKeys []string
+	errInjector := func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+		if !strings.HasSuffix(info.FullMethod, "MutateRows") {
+			return handler(srv, ss)
+		}
+		req := new(btpb.MutateRowsRequest)
+		must(ss.RecvMsg(req))
+		attempts++
+		switch attempts {
+		case 1:
+			if got, want := len(req.Entries), 3; got != want {
+				t.Errorf("attempt 1: req.Entries len = %d, want %d", got, want)
+			}
+			// Commit row1 (index 0), then fail mid-stream.
+			must(writeMutateRowsResponse(ss, codes.OK))
+			return status.Errorf(codes.Unavailable, "injected mid-stream failure")
+		case 2:
+			for _, e := range req.Entries {
+				attempt2RowKeys = append(attempt2RowKeys, string(e.RowKey))
+			}
+			if got, want := len(req.Entries), 1; got != want {
+				t.Fatalf("attempt 2: req.Entries len = %d, want %d; got rowKeys=%v (row1 committed, row2 is ServerTime)", got, want, attempt2RowKeys)
+			}
+			return writeMutateRowsResponse(ss, codes.OK)
+		}
+		t.Fatalf("unexpected extra attempt %d", attempts)
+		return nil
+	}
+
+	tbl, cleanup, err := setupDefaultFakeServer(grpc.StreamInterceptor(errInjector))
+	defer cleanup()
+	if err != nil {
+		t.Fatalf("fake server setup: %v", err)
+	}
+
+	m1 := NewMutation()
+	m1.Set("cf", "c1", 1000, []byte("v1"))
+	m2 := NewMutation()
+	m2.Set("cf", "c2", ServerTime, []byte("v2")) // non-idempotent -- must not be retried
+	m3 := NewMutation()
+	m3.Set("cf", "c3", 3000, []byte("v3"))
+
+	errs, topErr := tbl.ApplyBulk(ctx, []string{"row1", "row2", "row3"}, []*Mutation{m1, m2, m3})
+	if topErr != nil {
+		t.Fatalf("ApplyBulk returned top-level err: %v", topErr)
+	}
+	if len(errs) != 3 {
+		t.Fatalf("errs len = %d, want 3 (errs=%v)", len(errs), errs)
+	}
+	if errs[0] != nil {
+		t.Errorf("errs[0] = %v, want nil (committed on attempt 1)", errs[0])
+	}
+	if errs[1] == nil || status.Code(errs[1]) != codes.Unavailable {
+		t.Errorf("errs[1] = %v, want Unavailable (ServerTime must not be retried; stream error surfaces per-entry)", errs[1])
+	}
+	if errs[2] != nil {
+		t.Errorf("errs[2] = %v, want nil (retried on attempt 2)", errs[2])
+	}
+	if attempts != 2 {
+		t.Errorf("attempts = %d, want 2", attempts)
+	}
+	if want, got := []string{"row3"}, attempt2RowKeys; !equalStrings(want, got) {
+		t.Errorf("attempt 2 rowKeys = %v, want %v", got, want)
+	}
+}
+
+// TestRetryApplyBulk_MidStreamErrorNarrowsRetryIdempotent verifies that
+// an all-idempotent batch still retries after a mid-stream failure, but
+// the retry is narrowed to just the uncommitted entries -- committed
+// entries are not re-sent (the server would otherwise be asked to
+// re-write them for no benefit).
+func TestRetryApplyBulk_MidStreamErrorNarrowsRetryIdempotent(t *testing.T) {
+	ctx := context.Background()
+
+	attempts := 0
+	errInjector := func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+		if !strings.HasSuffix(info.FullMethod, "MutateRows") {
+			return handler(srv, ss)
+		}
+		req := new(btpb.MutateRowsRequest)
+		must(ss.RecvMsg(req))
+		attempts++
+		switch attempts {
+		case 1:
+			must(writeMutateRowsResponse(ss, codes.OK))
+			return status.Errorf(codes.Unavailable, "injected mid-stream failure")
+		case 2:
+			if got, want := len(req.Entries), 2; got != want {
+				t.Errorf("attempt 2: req.Entries len = %d, want %d (row1 already committed, only row2+row3 should re-send)", got, want)
+			}
+			return writeMutateRowsResponse(ss, codes.OK, codes.OK)
+		}
+		t.Fatalf("unexpected extra attempt %d", attempts)
+		return nil
+	}
+
+	tbl, cleanup, err := setupDefaultFakeServer(grpc.StreamInterceptor(errInjector))
+	defer cleanup()
+	if err != nil {
+		t.Fatalf("fake server setup: %v", err)
+	}
+
+	m1 := NewMutation()
+	m1.Set("cf", "c1", 1000, []byte("v1"))
+	m2 := NewMutation()
+	m2.Set("cf", "c2", 2000, []byte("v2"))
+	m3 := NewMutation()
+	m3.Set("cf", "c3", 3000, []byte("v3"))
+
+	errs, topErr := tbl.ApplyBulk(ctx, []string{"row1", "row2", "row3"}, []*Mutation{m1, m2, m3})
+	if topErr != nil {
+		t.Fatalf("ApplyBulk returned top-level err: %v (errs=%v)", topErr, errs)
+	}
+	if errs != nil {
+		t.Errorf("errs = %v, want nil (all entries OK after narrowed retry)", errs)
+	}
+	if attempts != 2 {
+		t.Errorf("attempts = %d, want 2 (idempotent batch retries, narrowed)", attempts)
+	}
+}
+
+// TestRetryApplyBulk_PreservesContextError guards against masking a
+// caller's context cancellation / deadline. Callers that drive graceful
+// shutdown off ctx cancellation need to see Canceled, not any synthetic
+// retry error.
+func TestRetryApplyBulk_PreservesContextError(t *testing.T) {
+	tbl, cleanup, err := setupDefaultFakeServer()
+	defer cleanup()
+	if err != nil {
+		t.Fatalf("fake server setup: %v", err)
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel() // pre-cancel so the RPC fails with Canceled immediately
+
+	m := NewMutation()
+	m.Set("cf", "c1", ServerTime, []byte("v"))
+
+	_, topErr := tbl.ApplyBulk(ctx, []string{"row1"}, []*Mutation{m})
+	if topErr == nil {
+		t.Fatalf("ApplyBulk returned nil top-level err; want Canceled")
+	}
+	if got, want := status.Code(topErr), codes.Canceled; got != want {
+		t.Errorf("ApplyBulk top-level err code = %v, want %v (must not mask ctx cancellation)", got, want)
+	}
+}
+
+func equalStrings(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
+}
+
 func TestRetryApplyBulk_UnretryableErrors(t *testing.T) {
 	ctx := context.Background()
 

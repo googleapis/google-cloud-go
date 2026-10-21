@@ -105,8 +105,33 @@ func (t *Table) applyGroup(ctx context.Context, group []*entryErr, opts ...Apply
 		trace.TracePrintf(ctx, attrMap, "Row count in ApplyBulk")
 		err := t.doApplyBulk(ctx, group, headerMD, trailerMD, opts...)
 		if err != nil {
-			// We want to retry the entire request with the current group
-			return err
+			// Preserve context errors (Canceled / DeadlineExceeded) as-is
+			// so callers that drive graceful shutdown or timeout logic off
+			// the status code still see the right signal.
+			if ctx.Err() != nil {
+				return err
+			}
+			// Mid-stream RPC failure: doApplyBulk has already stamped the
+			// stream error onto each entry that did not receive a per-entry
+			// response, leaving committed entries (Err=nil) alone. Narrow
+			// the retry group via getApplyBulkRetries so that:
+			//   - committed entries are not re-sent (avoids a duplicate
+			//     cell when a SetCell at ServerTime committed on the
+			//     failed attempt), and
+			//   - entries carrying a non-idempotent mutation are kept out
+			//     of the retry set and surface to the caller with their
+			//     per-entry stream error.
+			// An initial-stream failure (MutateRows itself returned before
+			// any entries were sent) leaves every Err nil, so retries is
+			// empty and we fall through to returning the raw err -- gax
+			// will retry the full group if the code is retryable, which is
+			// safe because nothing committed.
+			retries := t.getApplyBulkRetries(group)
+			if len(retries) == 0 {
+				return err
+			}
+			group = retries
+			return status.Errorf(idempotentRetryCodes[0], "Synthetic error: partial failure of ApplyBulk after RPC error")
 		}
 		// Get the entries that need to be retried
 		group = t.getApplyBulkRetries(group)
@@ -186,7 +211,20 @@ func (t *Table) doApplyBulk(ctx context.Context, entryErrs []*entryErr, headerMD
 		}
 		if err != nil {
 			*trailerMD = stream.Trailer()
-			_, topLevelErr = metrics.ConvertToGrpcStatusErr(err)
+			// Attribute the stream error to each entry that did not
+			// receive a per-entry response. Entries that already received
+			// a response (seen=true) keep whatever Err the server set --
+			// including nil for OK, which marks them as committed and
+			// lets applyGroup's narrowing step exclude them from retry.
+			// topLevelErr intentionally stays nil here so the deferred
+			// populateTopLevelError does not stamp err onto committed
+			// entries, which ApplyBulk's final collator would otherwise
+			// misreport as failures.
+			for i, s := range seen {
+				if !s {
+					entryErrs[i].Err = err
+				}
+			}
 			return err
 		}
 
