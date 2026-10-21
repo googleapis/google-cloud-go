@@ -1030,6 +1030,11 @@ libraries:
       - path: google/cloud/notebooks/v2
       - path: google/cloud/notebooks/v1
       - path: google/cloud/notebooks/v1beta1
+  - name: observability
+    version: 0.0.0
+    apis:
+      - path: google/cloud/observability/v1
+    copyright_year: "2026"
   - name: optimization
     version: 1.13.0
     apis:

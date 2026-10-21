@@ -128,6 +128,7 @@
   "networksecurity": "0.20.0",
   "networkservices": "1.7.0",
   "notebooks": "1.19.0",
+  "observability": "0.0.0",
   "optimization": "1.13.0",
   "oracledatabase": "1.6.0",
   "orchestration": "1.18.0",
