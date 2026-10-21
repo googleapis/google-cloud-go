@@ -24,6 +24,7 @@ import (
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/pretty"
+	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -1166,9 +1167,28 @@ func TestQueryGetAll(t *testing.T) {
 		&pb.RunQueryResponse{Document: wantPBDocs[0], ReadTime: aTimestamp},
 		&pb.RunQueryResponse{Document: wantPBDocs[1], ReadTime: aTimestamp2},
 	})
+	te := testutil.NewOpenTelemetryTestExporter()
+	defer te.Unregister(ctx)
+
 	gotDocs, err := c.Collection("C").Documents(ctx).GetAll()
 	if err != nil {
 		t.Fatal(err)
+	}
+	spans := te.Spans()
+	var foundGetAllSpan, foundRunQuerySpan bool
+	for _, s := range spans {
+		switch s.Name {
+		case "cloud.google.com/go/firestore.DocumentIterator.GetAll":
+			foundGetAllSpan = true
+		case "cloud.google.com/go/firestore.Query.RunQuery":
+			foundRunQuerySpan = true
+		}
+	}
+	if !foundGetAllSpan {
+		t.Errorf("expected span cloud.google.com/go/firestore.DocumentIterator.GetAll, got spans: %+v", spans)
+	}
+	if !foundRunQuerySpan {
+		t.Errorf("expected span cloud.google.com/go/firestore.Query.RunQuery, got spans: %+v", spans)
 	}
 	fmt.Printf("gotDocs: %+v\n", gotDocs)
 	if got, want := len(gotDocs), len(wantPBDocs); got != want {
