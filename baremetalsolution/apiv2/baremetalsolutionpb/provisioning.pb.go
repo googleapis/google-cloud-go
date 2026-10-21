@@ -2184,24 +2184,24 @@ var File_google_cloud_baremetalsolution_v2_provisioning_proto protoreflect.FileD
 
 const file_google_cloud_baremetalsolution_v2_provisioning_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/baremetalsolution/v2/provisioning.proto\x12!google.cloud.baremetalsolution.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a.google/cloud/baremetalsolution/v2/common.proto\x1a/google/cloud/baremetalsolution/v2/network.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfa\a\n" +
-	"\x12ProvisioningConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12O\n" +
+	"4google/cloud/baremetalsolution/v2/provisioning.proto\x12!google.cloud.baremetalsolution.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a.google/cloud/baremetalsolution/v2/common.proto\x1a/google/cloud/baremetalsolution/v2/network.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x80\b\n" +
+	"\x12ProvisioningConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12O\n" +
 	"\tinstances\x18\x02 \x03(\v21.google.cloud.baremetalsolution.v2.InstanceConfigR\tinstances\x12L\n" +
 	"\bnetworks\x18\x03 \x03(\v20.google.cloud.baremetalsolution.v2.NetworkConfigR\bnetworks\x12I\n" +
 	"\avolumes\x18\x04 \x03(\v2/.google.cloud.baremetalsolution.v2.VolumeConfigR\avolumes\x12\x1b\n" +
 	"\tticket_id\x18\x05 \x01(\tR\bticketId\x128\n" +
 	"\x18handover_service_account\x18\x06 \x01(\tR\x16handoverServiceAccount\x12\x18\n" +
-	"\x05email\x18\a \x01(\tB\x02\x18\x01R\x05email\x12V\n" +
-	"\x05state\x18\b \x01(\x0e2;.google.cloud.baremetalsolution.v2.ProvisioningConfig.StateB\x03\xe0A\x03R\x05state\x12\x1f\n" +
-	"\blocation\x18\t \x01(\tB\x03\xe0A\x01R\blocation\x12@\n" +
+	"\x05email\x18\a \x01(\tB\x02\x18\x01R\x05email\x12W\n" +
+	"\x05state\x18\b \x01(\x0e2;.google.cloud.baremetalsolution.v2.ProvisioningConfig.StateB\x04\xe2A\x01\x03R\x05state\x12 \n" +
+	"\blocation\x18\t \x01(\tB\x04\xe2A\x01\x01R\blocation\x12A\n" +
 	"\vupdate_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12/\n" +
-	"\x11cloud_console_uri\x18\v \x01(\tB\x03\xe0A\x03R\x0fcloudConsoleUri\x12$\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x120\n" +
+	"\x11cloud_console_uri\x18\v \x01(\tB\x04\xe2A\x01\x03R\x0fcloudConsoleUri\x12$\n" +
 	"\x0evpc_sc_enabled\x18\f \x01(\bR\fvpcScEnabled\x12%\n" +
-	"\x0estatus_message\x18\r \x01(\tR\rstatusMessage\x12 \n" +
-	"\tcustom_id\x18\x0e \x01(\tB\x03\xe0A\x01R\bcustomId\"\x85\x01\n" +
+	"\x0estatus_message\x18\r \x01(\tR\rstatusMessage\x12!\n" +
+	"\tcustom_id\x18\x0e \x01(\tB\x04\xe2A\x01\x01R\bcustomId\"\x85\x01\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05DRAFT\x10\x01\x12\r\n" +
@@ -2212,16 +2212,16 @@ const file_google_cloud_baremetalsolution_v2_provisioning_proto_rawDesc = "" +
 	"\tCANCELLED\x10\x06\x12\n" +
 	"\n" +
 	"\x06FAILED\x10\a:\x8c\x01\xeaA\x88\x01\n" +
-	"3baremetalsolution.googleapis.com/ProvisioningConfig\x12Qprojects/{project}/locations/{location}/provisioningConfigs/{provisioning_config}\"\xec\x01\n" +
-	"\x1fSubmitProvisioningConfigRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12k\n" +
-	"\x13provisioning_config\x18\x02 \x01(\v25.google.cloud.baremetalsolution.v2.ProvisioningConfigB\x03\xe0A\x02R\x12provisioningConfig\x12\x19\n" +
-	"\x05email\x18\x03 \x01(\tB\x03\xe0A\x01R\x05email\"\x8a\x01\n" +
+	"3baremetalsolution.googleapis.com/ProvisioningConfig\x12Qprojects/{project}/locations/{location}/provisioningConfigs/{provisioning_config}\"\xef\x01\n" +
+	"\x1fSubmitProvisioningConfigRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12l\n" +
+	"\x13provisioning_config\x18\x02 \x01(\v25.google.cloud.baremetalsolution.v2.ProvisioningConfigB\x04\xe2A\x01\x02R\x12provisioningConfig\x12\x1a\n" +
+	"\x05email\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x05email\"\x8a\x01\n" +
 	" SubmitProvisioningConfigResponse\x12f\n" +
-	"\x13provisioning_config\x18\x01 \x01(\v25.google.cloud.baremetalsolution.v2.ProvisioningConfigR\x12provisioningConfig\"\xd8\x05\n" +
-	"\x11ProvisioningQuota\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12]\n" +
+	"\x13provisioning_config\x18\x01 \x01(\v25.google.cloud.baremetalsolution.v2.ProvisioningConfigR\x12provisioningConfig\"\xd9\x05\n" +
+	"\x11ProvisioningQuota\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12]\n" +
 	"\n" +
 	"asset_type\x18\x02 \x01(\x0e2>.google.cloud.baremetalsolution.v2.ProvisioningQuota.AssetTypeR\tassetType\x12\x1f\n" +
 	"\vgcp_service\x18\x03 \x01(\tR\n" +
@@ -2240,18 +2240,18 @@ const file_google_cloud_baremetalsolution_v2_provisioning_proto_rawDesc = "" +
 	"\x12ASSET_TYPE_NETWORK\x10\x03:\x89\x01\xeaA\x85\x01\n" +
 	"2baremetalsolution.googleapis.com/ProvisioningQuota\x12Oprojects/{project}/locations/{location}/provisioningQuotas/{provisioning_quota}B\a\n" +
 	"\x05quotaB\x0e\n" +
-	"\favailability\"\x9e\x01\n" +
-	"\x1dListProvisioningQuotasRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\favailability\"\x9f\x01\n" +
+	"\x1dListProvisioningQuotasRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xaf\x01\n" +
 	"\x1eListProvisioningQuotasResponse\x12e\n" +
 	"\x13provisioning_quotas\x18\x01 \x03(\v24.google.cloud.baremetalsolution.v2.ProvisioningQuotaR\x12provisioningQuotas\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xbc\b\n" +
-	"\x0eInstanceConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x0e\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xbd\b\n" +
+	"\x0eInstanceConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x0e\n" +
 	"\x02id\x18\x02 \x01(\tR\x02id\x12#\n" +
 	"\rinstance_type\x18\x03 \x01(\tR\finstanceType\x12&\n" +
 	"\x0ehyperthreading\x18\x04 \x01(\bR\x0ehyperthreading\x12\x19\n" +
@@ -2275,10 +2275,10 @@ const file_google_cloud_baremetalsolution_v2_provisioning_proto_rawDesc = "" +
 	"\vSINGLE_VLAN\x10\x01\x12\x0e\n" +
 	"\n" +
 	"MULTI_VLAN\x10\x02:\x7f\xeaA|\n" +
-	"/baremetalsolution.googleapis.com/InstanceConfig\x12Iprojects/{project}/locations/{location}/instanceConfigs/{instance_config}\"\xd2\n" +
+	"/baremetalsolution.googleapis.com/InstanceConfig\x12Iprojects/{project}/locations/{location}/instanceConfigs/{instance_config}\"\xd3\n" +
 	"\n" +
-	"\fVolumeConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x0e\n" +
+	"\fVolumeConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x0e\n" +
 	"\x02id\x18\x02 \x01(\tR\x02id\x12+\n" +
 	"\x11snapshots_enabled\x18\x03 \x01(\bR\x10snapshotsEnabled\x12H\n" +
 	"\x04type\x18\x04 \x01(\x0e24.google.cloud.baremetalsolution.v2.VolumeConfig.TypeR\x04type\x12T\n" +
@@ -2323,9 +2323,9 @@ const file_google_cloud_baremetalsolution_v2_provisioning_proto_rawDesc = "" +
 	"\x14PROTOCOL_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vPROTOCOL_FC\x10\x01\x12\x10\n" +
 	"\fPROTOCOL_NFS\x10\x02:y\xeaAv\n" +
-	"-baremetalsolution.googleapis.com/VolumeConfig\x12Eprojects/{project}/locations/{location}/volumeConfigs/{volume_config}\"\xa5\b\n" +
-	"\rNetworkConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x0e\n" +
+	"-baremetalsolution.googleapis.com/VolumeConfig\x12Eprojects/{project}/locations/{location}/volumeConfigs/{volume_config}\"\xa6\b\n" +
+	"\rNetworkConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x0e\n" +
 	"\x02id\x18\x02 \x01(\tR\x02id\x12I\n" +
 	"\x04type\x18\x03 \x01(\x0e25.google.cloud.baremetalsolution.v2.NetworkConfig.TypeR\x04type\x12X\n" +
 	"\tbandwidth\x18\x04 \x01(\x0e2:.google.cloud.baremetalsolution.v2.NetworkConfig.BandwidthR\tbandwidth\x12p\n" +
@@ -2360,28 +2360,28 @@ const file_google_cloud_baremetalsolution_v2_provisioning_proto_rawDesc = "" +
 	"\aHIGH_26\x10\x02\x12\v\n" +
 	"\aHIGH_27\x10\x03\x12\v\n" +
 	"\aHIGH_28\x10\x04:|\xeaAy\n" +
-	".baremetalsolution.googleapis.com/NetworkConfig\x12Gprojects/{project}/locations/{location}/networkConfigs/{network_config}\"\xc4\x02\n" +
-	"\rInstanceQuota\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12'\n" +
+	".baremetalsolution.googleapis.com/NetworkConfig\x12Gprojects/{project}/locations/{location}/networkConfigs/{network_config}\"\xc5\x02\n" +
+	"\rInstanceQuota\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12'\n" +
 	"\rinstance_type\x18\x02 \x01(\tB\x02\x18\x01R\finstanceType\x12\x1f\n" +
 	"\vgcp_service\x18\x05 \x01(\tR\n" +
 	"gcpService\x12\x1a\n" +
 	"\blocation\x18\x03 \x01(\tR\blocation\x126\n" +
 	"\x17available_machine_count\x18\x04 \x01(\x05R\x15availableMachineCount:|\xeaAy\n" +
-	".baremetalsolution.googleapis.com/InstanceQuota\x12Gprojects/{project}/locations/{location}/instanceQuotas/{instance_quota}\"o\n" +
-	"\x1cGetProvisioningConfigRequest\x12O\n" +
-	"\x04name\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\n" +
-	"3baremetalsolution.googleapis.com/ProvisioningConfigR\x04name\"\xec\x01\n" +
-	"\x1fCreateProvisioningConfigRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12k\n" +
-	"\x13provisioning_config\x18\x02 \x01(\v25.google.cloud.baremetalsolution.v2.ProvisioningConfigB\x03\xe0A\x02R\x12provisioningConfig\x12\x19\n" +
-	"\x05email\x18\x03 \x01(\tB\x03\xe0A\x01R\x05email\"\xeb\x01\n" +
-	"\x1fUpdateProvisioningConfigRequest\x12k\n" +
-	"\x13provisioning_config\x18\x01 \x01(\v25.google.cloud.baremetalsolution.v2.ProvisioningConfigB\x03\xe0A\x02R\x12provisioningConfig\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12\x19\n" +
-	"\x05email\x18\x03 \x01(\tB\x03\xe0A\x01R\x05emailB\x80\x02\n" +
+	".baremetalsolution.googleapis.com/InstanceQuota\x12Gprojects/{project}/locations/{location}/instanceQuotas/{instance_quota}\"p\n" +
+	"\x1cGetProvisioningConfigRequest\x12P\n" +
+	"\x04name\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\n" +
+	"3baremetalsolution.googleapis.com/ProvisioningConfigR\x04name\"\xef\x01\n" +
+	"\x1fCreateProvisioningConfigRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12l\n" +
+	"\x13provisioning_config\x18\x02 \x01(\v25.google.cloud.baremetalsolution.v2.ProvisioningConfigB\x04\xe2A\x01\x02R\x12provisioningConfig\x12\x1a\n" +
+	"\x05email\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x05email\"\xee\x01\n" +
+	"\x1fUpdateProvisioningConfigRequest\x12l\n" +
+	"\x13provisioning_config\x18\x01 \x01(\v25.google.cloud.baremetalsolution.v2.ProvisioningConfigB\x04\xe2A\x01\x02R\x12provisioningConfig\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12\x1a\n" +
+	"\x05email\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x05emailB\x80\x02\n" +
 	"%com.google.cloud.baremetalsolution.v2B\x11ProvisioningProtoP\x01ZScloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb;baremetalsolutionpb\xaa\x02!Google.Cloud.BareMetalSolution.V2\xca\x02!Google\\Cloud\\BareMetalSolution\\V2\xea\x02$Google::Cloud::BareMetalSolution::V2b\x06proto3"
 
 var (

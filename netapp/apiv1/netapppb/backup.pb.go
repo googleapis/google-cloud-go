@@ -814,32 +814,31 @@ var File_google_cloud_netapp_v1_backup_proto protoreflect.FileDescriptor
 
 const file_google_cloud_netapp_v1_backup_proto_rawDesc = "" +
 	"\n" +
-	"#google/cloud/netapp/v1/backup.proto\x12\x16google.cloud.netapp.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfc\n" +
-	"\n" +
-	"\x06Backup\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12?\n" +
-	"\x05state\x18\x02 \x01(\x0e2$.google.cloud.netapp.v1.Backup.StateB\x03\xe0A\x03R\x05state\x12 \n" +
-	"\vdescription\x18\x03 \x01(\tR\vdescription\x121\n" +
-	"\x12volume_usage_bytes\x18\x04 \x01(\x03B\x03\xe0A\x03R\x10volumeUsageBytes\x12I\n" +
-	"\vbackup_type\x18\x05 \x01(\x0e2#.google.cloud.netapp.v1.Backup.TypeB\x03\xe0A\x03R\n" +
+	"#google/cloud/netapp/v1/backup.proto\x12\x16google.cloud.netapp.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x88\v\n" +
+	"\x06Backup\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12@\n" +
+	"\x05state\x18\x02 \x01(\x0e2$.google.cloud.netapp.v1.Backup.StateB\x04\xe2A\x01\x03R\x05state\x12 \n" +
+	"\vdescription\x18\x03 \x01(\tR\vdescription\x122\n" +
+	"\x12volume_usage_bytes\x18\x04 \x01(\x03B\x04\xe2A\x01\x03R\x10volumeUsageBytes\x12J\n" +
+	"\vbackup_type\x18\x05 \x01(\x0e2#.google.cloud.netapp.v1.Backup.TypeB\x04\xe2A\x01\x03R\n" +
 	"backupType\x12F\n" +
 	"\rsource_volume\x18\x06 \x01(\tB!\xfaA\x1e\n" +
 	"\x1cnetapp.googleapis.com/VolumeR\fsourceVolume\x12Q\n" +
 	"\x0fsource_snapshot\x18\a \x01(\tB#\xfaA \n" +
-	"\x1enetapp.googleapis.com/SnapshotH\x00R\x0esourceSnapshot\x88\x01\x01\x12@\n" +
-	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x1enetapp.googleapis.com/SnapshotH\x00R\x0esourceSnapshot\x88\x01\x01\x12A\n" +
+	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"createTime\x12B\n" +
-	"\x06labels\x18\t \x03(\v2*.google.cloud.netapp.v1.Backup.LabelsEntryR\x06labels\x123\n" +
+	"\x06labels\x18\t \x03(\v2*.google.cloud.netapp.v1.Backup.LabelsEntryR\x06labels\x124\n" +
 	"\x13chain_storage_bytes\x18\n" +
-	" \x01(\x03B\x03\xe0A\x03R\x11chainStorageBytes\x12(\n" +
-	"\rsatisfies_pzs\x18\v \x01(\bB\x03\xe0A\x03R\fsatisfiesPzs\x12(\n" +
-	"\rsatisfies_pzi\x18\f \x01(\bB\x03\xe0A\x03R\fsatisfiesPzi\x12N\n" +
-	"\rvolume_region\x18\r \x01(\tB)\xe0A\x03\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\fvolumeRegion\x12N\n" +
-	"\rbackup_region\x18\x0e \x01(\tB)\xe0A\x03\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\fbackupRegion\x12^\n" +
-	"\x1benforced_retention_end_time\x18\x0f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x18enforcedRetentionEndTime\x12K\n" +
-	"\fontap_source\x18\x10 \x01(\v2#.google.cloud.netapp.v1.OntapSourceB\x03\xe0A\x01R\vontapSource\x1a9\n" +
+	" \x01(\x03B\x04\xe2A\x01\x03R\x11chainStorageBytes\x12)\n" +
+	"\rsatisfies_pzs\x18\v \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzs\x12)\n" +
+	"\rsatisfies_pzi\x18\f \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzi\x12O\n" +
+	"\rvolume_region\x18\r \x01(\tB*\xe2A\x01\x03\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\fvolumeRegion\x12O\n" +
+	"\rbackup_region\x18\x0e \x01(\tB*\xe2A\x01\x03\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\fbackupRegion\x12_\n" +
+	"\x1benforced_retention_end_time\x18\x0f \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x18enforcedRetentionEndTime\x12L\n" +
+	"\fontap_source\x18\x10 \x01(\v2#.google.cloud.netapp.v1.OntapSourceB\x04\xe2A\x01\x01R\vontapSource\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"m\n" +
@@ -857,9 +856,9 @@ const file_google_cloud_netapp_v1_backup_proto_rawDesc = "" +
 	"\x06MANUAL\x10\x01\x12\r\n" +
 	"\tSCHEDULED\x10\x02:\x89\x01\xeaA\x85\x01\n" +
 	"\x1cnetapp.googleapis.com/Backup\x12Tprojects/{project}/locations/{location}/backupVaults/{backup_vault}/backups/{backup}*\abackups2\x06backupB\x12\n" +
-	"\x10_source_snapshot\"\xc1\x01\n" +
-	"\x12ListBackupsRequest\x12<\n" +
-	"\x06parent\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\x12\x1cnetapp.googleapis.com/BackupR\x06parent\x12\x1b\n" +
+	"\x10_source_snapshot\"\xc2\x01\n" +
+	"\x12ListBackupsRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\x12\x1cnetapp.googleapis.com/BackupR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x19\n" +
@@ -868,27 +867,27 @@ const file_google_cloud_netapp_v1_backup_proto_rawDesc = "" +
 	"\x13ListBackupsResponse\x128\n" +
 	"\abackups\x18\x01 \x03(\v2\x1e.google.cloud.netapp.v1.BackupR\abackups\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"L\n" +
-	"\x10GetBackupRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cnetapp.googleapis.com/BackupR\x04name\"\xb2\x01\n" +
-	"\x13CreateBackupRequest\x12<\n" +
-	"\x06parent\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\x12\x1cnetapp.googleapis.com/BackupR\x06parent\x12 \n" +
-	"\tbackup_id\x18\x02 \x01(\tB\x03\xe0A\x02R\bbackupId\x12;\n" +
-	"\x06backup\x18\x03 \x01(\v2\x1e.google.cloud.netapp.v1.BackupB\x03\xe0A\x02R\x06backup\"O\n" +
-	"\x13DeleteBackupRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cnetapp.googleapis.com/BackupR\x04name\"\x94\x01\n" +
-	"\x13UpdateBackupRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12;\n" +
-	"\x06backup\x18\x02 \x01(\v2\x1e.google.cloud.netapp.v1.BackupB\x03\xe0A\x02R\x06backup\"\xc1\x01\n" +
-	"\vOntapSource\x12Q\n" +
-	"\fstorage_pool\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!netapp.googleapis.com/StoragePoolH\x00R\vstoragePool\x88\x01\x01\x12$\n" +
-	"\vvolume_uuid\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"volumeUuid\x12(\n" +
-	"\rsnapshot_uuid\x18\x03 \x01(\tB\x03\xe0A\x01R\fsnapshotUuidB\x0f\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"M\n" +
+	"\x10GetBackupRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cnetapp.googleapis.com/BackupR\x04name\"\xb5\x01\n" +
+	"\x13CreateBackupRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\x12\x1cnetapp.googleapis.com/BackupR\x06parent\x12!\n" +
+	"\tbackup_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\bbackupId\x12<\n" +
+	"\x06backup\x18\x03 \x01(\v2\x1e.google.cloud.netapp.v1.BackupB\x04\xe2A\x01\x02R\x06backup\"P\n" +
+	"\x13DeleteBackupRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cnetapp.googleapis.com/BackupR\x04name\"\x96\x01\n" +
+	"\x13UpdateBackupRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12<\n" +
+	"\x06backup\x18\x02 \x01(\v2\x1e.google.cloud.netapp.v1.BackupB\x04\xe2A\x01\x02R\x06backup\"\xc4\x01\n" +
+	"\vOntapSource\x12R\n" +
+	"\fstorage_pool\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!netapp.googleapis.com/StoragePoolH\x00R\vstoragePool\x88\x01\x01\x12%\n" +
+	"\vvolume_uuid\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"volumeUuid\x12)\n" +
+	"\rsnapshot_uuid\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\fsnapshotUuidB\x0f\n" +
 	"\r_storage_poolB\xad\x01\n" +
 	"\x1acom.google.cloud.netapp.v1B\vBackupProtoP\x01Z2cloud.google.com/go/netapp/apiv1/netapppb;netapppb\xaa\x02\x16Google.Cloud.NetApp.V1\xca\x02\x16Google\\Cloud\\NetApp\\V1\xea\x02\x19Google::Cloud::NetApp::V1b\x06proto3"
 

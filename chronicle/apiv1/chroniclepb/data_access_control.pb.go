@@ -1256,98 +1256,98 @@ var File_google_cloud_chronicle_v1_data_access_control_proto protoreflect.FileDe
 
 const file_google_cloud_chronicle_v1_data_access_control_proto_rawDesc = "" +
 	"\n" +
-	"3google/cloud/chronicle/v1/data_access_control.proto\x12\x19google.cloud.chronicle.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfb\x01\n" +
-	"\x1cCreateDataAccessLabelRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(chronicle.googleapis.com/DataAccessLabelR\x06parent\x12[\n" +
-	"\x11data_access_label\x18\x02 \x01(\v2*.google.cloud.chronicle.v1.DataAccessLabelB\x03\xe0A\x02R\x0fdataAccessLabel\x124\n" +
-	"\x14data_access_label_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x11dataAccessLabelId\"a\n" +
-	"\x19GetDataAccessLabelRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(chronicle.googleapis.com/DataAccessLabelR\x04name\"\xc0\x01\n" +
-	"\x1bListDataAccessLabelsRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(chronicle.googleapis.com/DataAccessLabelR\x06parent\x12\x1b\n" +
+	"3google/cloud/chronicle/v1/data_access_control.proto\x12\x19google.cloud.chronicle.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfe\x01\n" +
+	"\x1cCreateDataAccessLabelRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(chronicle.googleapis.com/DataAccessLabelR\x06parent\x12\\\n" +
+	"\x11data_access_label\x18\x02 \x01(\v2*.google.cloud.chronicle.v1.DataAccessLabelB\x04\xe2A\x01\x02R\x0fdataAccessLabel\x125\n" +
+	"\x14data_access_label_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x11dataAccessLabelId\"b\n" +
+	"\x19GetDataAccessLabelRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(chronicle.googleapis.com/DataAccessLabelR\x04name\"\xc2\x01\n" +
+	"\x1bListDataAccessLabelsRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(chronicle.googleapis.com/DataAccessLabelR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\xa0\x01\n" +
+	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xa0\x01\n" +
 	"\x1cListDataAccessLabelsResponse\x12X\n" +
 	"\x12data_access_labels\x18\x01 \x03(\v2*.google.cloud.chronicle.v1.DataAccessLabelR\x10dataAccessLabels\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb8\x01\n" +
-	"\x1cUpdateDataAccessLabelRequest\x12[\n" +
-	"\x11data_access_label\x18\x01 \x01(\v2*.google.cloud.chronicle.v1.DataAccessLabelB\x03\xe0A\x02R\x0fdataAccessLabel\x12;\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb9\x01\n" +
+	"\x1cUpdateDataAccessLabelRequest\x12\\\n" +
+	"\x11data_access_label\x18\x01 \x01(\v2*.google.cloud.chronicle.v1.DataAccessLabelB\x04\xe2A\x01\x02R\x0fdataAccessLabel\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"d\n" +
-	"\x1cDeleteDataAccessLabelRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(chronicle.googleapis.com/DataAccessLabelR\x04name\"\xfb\x01\n" +
-	"\x1cCreateDataAccessScopeRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(chronicle.googleapis.com/DataAccessScopeR\x06parent\x12[\n" +
-	"\x11data_access_scope\x18\x02 \x01(\v2*.google.cloud.chronicle.v1.DataAccessScopeB\x03\xe0A\x02R\x0fdataAccessScope\x124\n" +
-	"\x14data_access_scope_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x11dataAccessScopeId\"a\n" +
-	"\x19GetDataAccessScopeRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(chronicle.googleapis.com/DataAccessScopeR\x04name\"\xc0\x01\n" +
-	"\x1bListDataAccessScopesRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(chronicle.googleapis.com/DataAccessScopeR\x06parent\x12\x1b\n" +
+	"updateMask\"e\n" +
+	"\x1cDeleteDataAccessLabelRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(chronicle.googleapis.com/DataAccessLabelR\x04name\"\xfe\x01\n" +
+	"\x1cCreateDataAccessScopeRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(chronicle.googleapis.com/DataAccessScopeR\x06parent\x12\\\n" +
+	"\x11data_access_scope\x18\x02 \x01(\v2*.google.cloud.chronicle.v1.DataAccessScopeB\x04\xe2A\x01\x02R\x0fdataAccessScope\x125\n" +
+	"\x14data_access_scope_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x11dataAccessScopeId\"b\n" +
+	"\x19GetDataAccessScopeRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(chronicle.googleapis.com/DataAccessScopeR\x04name\"\xc2\x01\n" +
+	"\x1bListDataAccessScopesRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(chronicle.googleapis.com/DataAccessScopeR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\x92\x02\n" +
+	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x92\x02\n" +
 	"\x1cListDataAccessScopesResponse\x12X\n" +
 	"\x12data_access_scopes\x18\x01 \x03(\v2*.google.cloud.chronicle.v1.DataAccessScopeR\x10dataAccessScopes\x12K\n" +
 	" global_data_access_scope_granted\x18\x03 \x01(\bH\x00R\x1cglobalDataAccessScopeGranted\x88\x01\x01\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageTokenB#\n" +
-	"!_global_data_access_scope_granted\"\xb8\x01\n" +
-	"\x1cUpdateDataAccessScopeRequest\x12[\n" +
-	"\x11data_access_scope\x18\x01 \x01(\v2*.google.cloud.chronicle.v1.DataAccessScopeB\x03\xe0A\x02R\x0fdataAccessScope\x12;\n" +
+	"!_global_data_access_scope_granted\"\xb9\x01\n" +
+	"\x1cUpdateDataAccessScopeRequest\x12\\\n" +
+	"\x11data_access_scope\x18\x01 \x01(\v2*.google.cloud.chronicle.v1.DataAccessScopeB\x04\xe2A\x01\x02R\x0fdataAccessScope\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"d\n" +
-	"\x1cDeleteDataAccessScopeRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(chronicle.googleapis.com/DataAccessScopeR\x04name\"\xab\x04\n" +
+	"updateMask\"e\n" +
+	"\x1cDeleteDataAccessScopeRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(chronicle.googleapis.com/DataAccessScopeR\x04name\"\xb1\x04\n" +
 	"\x0fDataAccessLabel\x12\x1d\n" +
 	"\tudm_query\x18\x03 \x01(\tH\x00R\budmQuery\x12A\n" +
 	"\x04name\x18\x01 \x01(\tB-\xfaA*\n" +
-	"(chronicle.googleapis.com/DataAccessLabelR\x04name\x12&\n" +
-	"\fdisplay_name\x18\b \x01(\tB\x03\xe0A\x03R\vdisplayName\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x1b\n" +
-	"\x06author\x18\x06 \x01(\tB\x03\xe0A\x03R\x06author\x12$\n" +
-	"\vlast_editor\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"lastEditor\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription:\x91\x01\xeaA\x8d\x01\n" +
+	"(chronicle.googleapis.com/DataAccessLabelR\x04name\x12'\n" +
+	"\fdisplay_name\x18\b \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x1c\n" +
+	"\x06author\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x06author\x12%\n" +
+	"\vlast_editor\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"lastEditor\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription:\x91\x01\xeaA\x8d\x01\n" +
 	"(chronicle.googleapis.com/DataAccessLabel\x12aprojects/{project}/locations/{location}/instances/{instance}/dataAccessLabels/{data_access_label}B\f\n" +
 	"\n" +
-	"definition\"\x8f\x06\n" +
-	"\x0fDataAccessScope\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(chronicle.googleapis.com/DataAccessScopeR\x04name\x12u\n" +
-	"\x1aallowed_data_access_labels\x18\x02 \x03(\v23.google.cloud.chronicle.v1.DataAccessLabelReferenceB\x03\xe0A\x01R\x17allowedDataAccessLabels\x12s\n" +
-	"\x19denied_data_access_labels\x18\x03 \x03(\v23.google.cloud.chronicle.v1.DataAccessLabelReferenceB\x03\xe0A\x01R\x16deniedDataAccessLabels\x12&\n" +
-	"\fdisplay_name\x18\x04 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x1b\n" +
-	"\x06author\x18\a \x01(\tB\x03\xe0A\x03R\x06author\x12$\n" +
-	"\vlast_editor\x18\b \x01(\tB\x03\xe0A\x03R\n" +
-	"lastEditor\x12%\n" +
-	"\vdescription\x18\t \x01(\tB\x03\xe0A\x01R\vdescription\x12 \n" +
+	"definition\"\x99\x06\n" +
+	"\x0fDataAccessScope\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(chronicle.googleapis.com/DataAccessScopeR\x04name\x12v\n" +
+	"\x1aallowed_data_access_labels\x18\x02 \x03(\v23.google.cloud.chronicle.v1.DataAccessLabelReferenceB\x04\xe2A\x01\x01R\x17allowedDataAccessLabels\x12t\n" +
+	"\x19denied_data_access_labels\x18\x03 \x03(\v23.google.cloud.chronicle.v1.DataAccessLabelReferenceB\x04\xe2A\x01\x01R\x16deniedDataAccessLabels\x12'\n" +
+	"\fdisplay_name\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x1c\n" +
+	"\x06author\x18\a \x01(\tB\x04\xe2A\x01\x03R\x06author\x12%\n" +
+	"\vlast_editor\x18\b \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"lastEditor\x12&\n" +
+	"\vdescription\x18\t \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12!\n" +
 	"\tallow_all\x18\n" +
-	" \x01(\bB\x03\xe0A\x01R\ballowAll:\x91\x01\xeaA\x8d\x01\n" +
-	"(chronicle.googleapis.com/DataAccessScope\x12aprojects/{project}/locations/{location}/instances/{instance}/dataAccessScopes/{data_access_scope}\"\x97\x02\n" +
+	" \x01(\bB\x04\xe2A\x01\x01R\ballowAll:\x91\x01\xeaA\x8d\x01\n" +
+	"(chronicle.googleapis.com/DataAccessScope\x12aprojects/{project}/locations/{location}/instances/{instance}/dataAccessScopes/{data_access_scope}\"\x98\x02\n" +
 	"\x18DataAccessLabelReference\x12,\n" +
 	"\x11data_access_label\x18\x01 \x01(\tH\x00R\x0fdataAccessLabel\x12\x1b\n" +
 	"\blog_type\x18\x02 \x01(\tH\x00R\alogType\x12)\n" +
 	"\x0fasset_namespace\x18\x03 \x01(\tH\x00R\x0eassetNamespace\x12T\n" +
-	"\x0fingestion_label\x18\x04 \x01(\v2).google.cloud.chronicle.v1.IngestionLabelH\x00R\x0eingestionLabel\x12&\n" +
-	"\fdisplay_name\x18\x05 \x01(\tB\x03\xe0A\x03R\vdisplayNameB\a\n" +
-	"\x05label\"~\n" +
-	"\x0eIngestionLabel\x123\n" +
-	"\x13ingestion_label_key\x18\x01 \x01(\tB\x03\xe0A\x02R\x11ingestionLabelKey\x127\n" +
-	"\x15ingestion_label_value\x18\x02 \x01(\tB\x03\xe0A\x01R\x13ingestionLabelValue2\xe6\x12\n" +
+	"\x0fingestion_label\x18\x04 \x01(\v2).google.cloud.chronicle.v1.IngestionLabelH\x00R\x0eingestionLabel\x12'\n" +
+	"\fdisplay_name\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\vdisplayNameB\a\n" +
+	"\x05label\"\x80\x01\n" +
+	"\x0eIngestionLabel\x124\n" +
+	"\x13ingestion_label_key\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x11ingestionLabelKey\x128\n" +
+	"\x15ingestion_label_value\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x13ingestionLabelValue2\xe6\x12\n" +
 	"\x18DataAccessControlService\x12\x8a\x02\n" +
 	"\x15CreateDataAccessLabel\x127.google.cloud.chronicle.v1.CreateDataAccessLabelRequest\x1a*.google.cloud.chronicle.v1.DataAccessLabel\"\x8b\x01\xdaA-parent,data_access_label,data_access_label_id\x82\xd3\xe4\x93\x02U:\x11data_access_label\"@/v1/{parent=projects/*/locations/*/instances/*}/dataAccessLabels\x12\xc7\x01\n" +
 	"\x12GetDataAccessLabel\x124.google.cloud.chronicle.v1.GetDataAccessLabelRequest\x1a*.google.cloud.chronicle.v1.DataAccessLabel\"O\xdaA\x04name\x82\xd3\xe4\x93\x02B\x12@/v1/{name=projects/*/locations/*/instances/*/dataAccessLabels/*}\x12\xda\x01\n" +

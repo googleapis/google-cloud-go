@@ -515,14 +515,14 @@ const file_google_firestore_v1_common_proto_rawDesc = "" +
 	"\x06exists\x18\x01 \x01(\bH\x00R\x06exists\x12=\n" +
 	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\n" +
 	"updateTimeB\x10\n" +
-	"\x0econdition_type\"\x9a\x04\n" +
+	"\x0econdition_type\"\x9b\x04\n" +
 	"\x12TransactionOptions\x12O\n" +
 	"\tread_only\x18\x02 \x01(\v20.google.firestore.v1.TransactionOptions.ReadOnlyH\x00R\breadOnly\x12R\n" +
 	"\n" +
-	"read_write\x18\x03 \x01(\v21.google.firestore.v1.TransactionOptions.ReadWriteH\x00R\treadWrite\x1a\xa1\x01\n" +
+	"read_write\x18\x03 \x01(\v21.google.firestore.v1.TransactionOptions.ReadWriteH\x00R\treadWrite\x1a\xa2\x01\n" +
 	"\tReadWrite\x12+\n" +
-	"\x11retry_transaction\x18\x01 \x01(\fR\x10retryTransaction\x12g\n" +
-	"\x10concurrency_mode\x18\x02 \x01(\x0e27.google.firestore.v1.TransactionOptions.ConcurrencyModeB\x03\xe0A\x01R\x0fconcurrencyMode\x1a]\n" +
+	"\x11retry_transaction\x18\x01 \x01(\fR\x10retryTransaction\x12h\n" +
+	"\x10concurrency_mode\x18\x02 \x01(\x0e27.google.firestore.v1.TransactionOptions.ConcurrencyModeB\x04\xe2A\x01\x01R\x0fconcurrencyMode\x1a]\n" +
 	"\bReadOnly\x129\n" +
 	"\tread_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\breadTimeB\x16\n" +
 	"\x14consistency_selector\"T\n" +
@@ -531,9 +531,9 @@ const file_google_firestore_v1_common_proto_rawDesc = "" +
 	"\n" +
 	"OPTIMISTIC\x10\x01\x12\x0f\n" +
 	"\vPESSIMISTIC\x10\x02B\x06\n" +
-	"\x04mode\"8\n" +
-	"\x0eRequestOptions\x12&\n" +
-	"\frequest_tags\x18\x01 \x03(\tB\x03\xe0A\x01R\vrequestTagsB\xc3\x01\n" +
+	"\x04mode\"9\n" +
+	"\x0eRequestOptions\x12'\n" +
+	"\frequest_tags\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\vrequestTagsB\xc3\x01\n" +
 	"\x17com.google.firestore.v1B\vCommonProtoP\x01Z;cloud.google.com/go/firestore/apiv1/firestorepb;firestorepb\xa2\x02\x04GCFS\xaa\x02\x19Google.Cloud.Firestore.V1\xca\x02\x19Google\\Cloud\\Firestore\\V1\xea\x02\x1cGoogle::Cloud::Firestore::V1b\x06proto3"
 
 var (

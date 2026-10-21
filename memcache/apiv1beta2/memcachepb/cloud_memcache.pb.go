@@ -1891,47 +1891,47 @@ var File_google_cloud_memcache_v1beta2_cloud_memcache_proto protoreflect.FileDes
 
 const file_google_cloud_memcache_v1beta2_cloud_memcache_proto_rawDesc = "" +
 	"\n" +
-	"2google/cloud/memcache/v1beta2/cloud_memcache.proto\x12\x1dgoogle.cloud.memcache.v1beta2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bgoogle/type/dayofweek.proto\x1a\x1bgoogle/type/timeofday.proto\"\xc1\x11\n" +
-	"\bInstance\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12!\n" +
+	"2google/cloud/memcache/v1beta2/cloud_memcache.proto\x12\x1dgoogle.cloud.memcache.v1beta2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bgoogle/type/dayofweek.proto\x1a\x1bgoogle/type/timeofday.proto\"\xd4\x11\n" +
+	"\bInstance\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12K\n" +
 	"\x06labels\x18\x03 \x03(\v23.google.cloud.memcache.v1beta2.Instance.LabelsEntryR\x06labels\x12-\n" +
 	"\x12authorized_network\x18\x04 \x01(\tR\x11authorizedNetwork\x12\x14\n" +
-	"\x05zones\x18\x05 \x03(\tR\x05zones\x12\"\n" +
+	"\x05zones\x18\x05 \x03(\tR\x05zones\x12#\n" +
 	"\n" +
-	"node_count\x18\x06 \x01(\x05B\x03\xe0A\x02R\tnodeCount\x12X\n" +
-	"\vnode_config\x18\a \x01(\v22.google.cloud.memcache.v1beta2.Instance.NodeConfigB\x03\xe0A\x02R\n" +
+	"node_count\x18\x06 \x01(\x05B\x04\xe2A\x01\x02R\tnodeCount\x12Y\n" +
+	"\vnode_config\x18\a \x01(\v22.google.cloud.memcache.v1beta2.Instance.NodeConfigB\x04\xe2A\x01\x02R\n" +
 	"nodeConfig\x12Y\n" +
 	"\x10memcache_version\x18\t \x01(\x0e2..google.cloud.memcache.v1beta2.MemcacheVersionR\x0fmemcacheVersion\x12Q\n" +
 	"\n" +
 	"parameters\x18\v \x01(\v21.google.cloud.memcache.v1beta2.MemcacheParametersR\n" +
-	"parameters\x12X\n" +
-	"\x0ememcache_nodes\x18\f \x03(\v2,.google.cloud.memcache.v1beta2.Instance.NodeB\x03\xe0A\x03R\rmemcacheNodes\x12@\n" +
-	"\vcreate_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x0e \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12H\n" +
-	"\x05state\x18\x0f \x01(\x0e2-.google.cloud.memcache.v1beta2.Instance.StateB\x03\xe0A\x03R\x05state\x127\n" +
-	"\x15memcache_full_version\x18\x12 \x01(\tB\x03\xe0A\x03R\x13memcacheFullVersion\x12d\n" +
-	"\x11instance_messages\x18\x13 \x03(\v27.google.cloud.memcache.v1beta2.Instance.InstanceMessageR\x10instanceMessages\x122\n" +
-	"\x12discovery_endpoint\x18\x14 \x01(\tB\x03\xe0A\x03R\x11discoveryEndpoint\x12.\n" +
-	"\x10update_available\x18\x15 \x01(\bB\x03\xe0A\x03R\x0fupdateAvailable\x12_\n" +
-	"\x12maintenance_policy\x18\x16 \x01(\v20.google.cloud.memcache.v1beta2.MaintenancePolicyR\x11maintenancePolicy\x12j\n" +
-	"\x14maintenance_schedule\x18\x17 \x01(\v22.google.cloud.memcache.v1beta2.MaintenanceScheduleB\x03\xe0A\x03R\x13maintenanceSchedule\x1aY\n" +
+	"parameters\x12Y\n" +
+	"\x0ememcache_nodes\x18\f \x03(\v2,.google.cloud.memcache.v1beta2.Instance.NodeB\x04\xe2A\x01\x03R\rmemcacheNodes\x12A\n" +
+	"\vcreate_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x0e \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12I\n" +
+	"\x05state\x18\x0f \x01(\x0e2-.google.cloud.memcache.v1beta2.Instance.StateB\x04\xe2A\x01\x03R\x05state\x128\n" +
+	"\x15memcache_full_version\x18\x12 \x01(\tB\x04\xe2A\x01\x03R\x13memcacheFullVersion\x12d\n" +
+	"\x11instance_messages\x18\x13 \x03(\v27.google.cloud.memcache.v1beta2.Instance.InstanceMessageR\x10instanceMessages\x123\n" +
+	"\x12discovery_endpoint\x18\x14 \x01(\tB\x04\xe2A\x01\x03R\x11discoveryEndpoint\x12/\n" +
+	"\x10update_available\x18\x15 \x01(\bB\x04\xe2A\x01\x03R\x0fupdateAvailable\x12_\n" +
+	"\x12maintenance_policy\x18\x16 \x01(\v20.google.cloud.memcache.v1beta2.MaintenancePolicyR\x11maintenancePolicy\x12k\n" +
+	"\x14maintenance_schedule\x18\x17 \x01(\v22.google.cloud.memcache.v1beta2.MaintenanceScheduleB\x04\xe2A\x01\x03R\x13maintenanceSchedule\x1a[\n" +
 	"\n" +
-	"NodeConfig\x12 \n" +
-	"\tcpu_count\x18\x01 \x01(\x05B\x03\xe0A\x02R\bcpuCount\x12)\n" +
-	"\x0ememory_size_mb\x18\x02 \x01(\x05B\x03\xe0A\x02R\fmemorySizeMb\x1a\x96\x03\n" +
-	"\x04Node\x12\x1c\n" +
-	"\anode_id\x18\x01 \x01(\tB\x03\xe0A\x03R\x06nodeId\x12\x17\n" +
-	"\x04zone\x18\x02 \x01(\tB\x03\xe0A\x03R\x04zone\x12M\n" +
-	"\x05state\x18\x03 \x01(\x0e22.google.cloud.memcache.v1beta2.Instance.Node.StateB\x03\xe0A\x03R\x05state\x12\x17\n" +
-	"\x04host\x18\x04 \x01(\tB\x03\xe0A\x03R\x04host\x12\x17\n" +
-	"\x04port\x18\x05 \x01(\x05B\x03\xe0A\x03R\x04port\x12Q\n" +
+	"NodeConfig\x12!\n" +
+	"\tcpu_count\x18\x01 \x01(\x05B\x04\xe2A\x01\x02R\bcpuCount\x12*\n" +
+	"\x0ememory_size_mb\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\fmemorySizeMb\x1a\x9c\x03\n" +
+	"\x04Node\x12\x1d\n" +
+	"\anode_id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x06nodeId\x12\x18\n" +
+	"\x04zone\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x04zone\x12N\n" +
+	"\x05state\x18\x03 \x01(\x0e22.google.cloud.memcache.v1beta2.Instance.Node.StateB\x04\xe2A\x01\x03R\x05state\x12\x18\n" +
+	"\x04host\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04host\x12\x18\n" +
+	"\x04port\x18\x05 \x01(\x05B\x04\xe2A\x01\x03R\x04port\x12Q\n" +
 	"\n" +
 	"parameters\x18\x06 \x01(\v21.google.cloud.memcache.v1beta2.MemcacheParametersR\n" +
-	"parameters\x12.\n" +
-	"\x10update_available\x18\a \x01(\bB\x03\xe0A\x03R\x0fupdateAvailable\"S\n" +
+	"parameters\x12/\n" +
+	"\x10update_available\x18\a \x01(\bB\x04\xe2A\x01\x03R\x0fupdateAvailable\"S\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bCREATING\x10\x01\x12\t\n" +
@@ -1954,26 +1954,26 @@ const file_google_cloud_memcache_v1beta2_cloud_memcache_proto_rawDesc = "" +
 	"\bUPDATING\x10\x03\x12\f\n" +
 	"\bDELETING\x10\x04\x12\x1a\n" +
 	"\x16PERFORMING_MAINTENANCE\x10\x05:c\xeaA`\n" +
-	" memcache.googleapis.com/Instance\x12<projects/{project}/locations/{location}/instances/{instance}\"\xb2\x02\n" +
-	"\x11MaintenancePolicy\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	" memcache.googleapis.com/Instance\x12<projects/{project}/locations/{location}/instances/{instance}\"\xb5\x02\n" +
+	"\x11MaintenancePolicy\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12 \n" +
-	"\vdescription\x18\x03 \x01(\tR\vdescription\x12w\n" +
-	"\x19weekly_maintenance_window\x18\x04 \x03(\v26.google.cloud.memcache.v1beta2.WeeklyMaintenanceWindowB\x03\xe0A\x02R\x17weeklyMaintenanceWindow\"\xc0\x01\n" +
-	"\x17WeeklyMaintenanceWindow\x12-\n" +
-	"\x03day\x18\x01 \x01(\x0e2\x16.google.type.DayOfWeekB\x03\xe0A\x02R\x03day\x12:\n" +
+	"\vdescription\x18\x03 \x01(\tR\vdescription\x12x\n" +
+	"\x19weekly_maintenance_window\x18\x04 \x03(\v26.google.cloud.memcache.v1beta2.WeeklyMaintenanceWindowB\x04\xe2A\x01\x02R\x17weeklyMaintenanceWindow\"\xc3\x01\n" +
+	"\x17WeeklyMaintenanceWindow\x12.\n" +
+	"\x03day\x18\x01 \x01(\x0e2\x16.google.type.DayOfWeekB\x04\xe2A\x01\x02R\x03day\x12;\n" +
 	"\n" +
-	"start_time\x18\x02 \x01(\v2\x16.google.type.TimeOfDayB\x03\xe0A\x02R\tstartTime\x12:\n" +
-	"\bduration\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x02R\bduration\"\xe8\x01\n" +
-	"\x13MaintenanceSchedule\x12>\n" +
+	"start_time\x18\x02 \x01(\v2\x16.google.type.TimeOfDayB\x04\xe2A\x01\x02R\tstartTime\x12;\n" +
+	"\bduration\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x02R\bduration\"\xeb\x01\n" +
+	"\x13MaintenanceSchedule\x12?\n" +
 	"\n" +
-	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12U\n" +
-	"\x16schedule_deadline_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x14scheduleDeadlineTime\"\xc8\x01\n" +
-	"\x14ListInstancesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12V\n" +
+	"\x16schedule_deadline_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x14scheduleDeadlineTime\"\xc9\x01\n" +
+	"\x14ListInstancesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -1983,69 +1983,69 @@ const file_google_cloud_memcache_v1beta2_cloud_memcache_proto_rawDesc = "" +
 	"\x15ListInstancesResponse\x12E\n" +
 	"\tresources\x18\x01 \x03(\v2'.google.cloud.memcache.v1beta2.InstanceR\tresources\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"R\n" +
-	"\x12GetInstanceRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" memcache.googleapis.com/InstanceR\x04name\"\xca\x01\n" +
-	"\x15CreateInstanceRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12$\n" +
-	"\vinstance_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"instanceId\x12H\n" +
-	"\bresource\x18\x03 \x01(\v2'.google.cloud.memcache.v1beta2.InstanceB\x03\xe0A\x02R\bresource\"\xa3\x01\n" +
-	"\x15UpdateInstanceRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12H\n" +
-	"\bresource\x18\x02 \x01(\v2'.google.cloud.memcache.v1beta2.InstanceB\x03\xe0A\x02R\bresource\"U\n" +
-	"\x15DeleteInstanceRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" memcache.googleapis.com/InstanceR\x04name\"\x8f\x03\n" +
-	"\x1cRescheduleMaintenanceRequest\x12D\n" +
-	"\binstance\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" memcache.googleapis.com/InstanceR\binstance\x12x\n" +
-	"\x0freschedule_type\x18\x02 \x01(\x0e2J.google.cloud.memcache.v1beta2.RescheduleMaintenanceRequest.RescheduleTypeB\x03\xe0A\x02R\x0erescheduleType\x12?\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"S\n" +
+	"\x12GetInstanceRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" memcache.googleapis.com/InstanceR\x04name\"\xcd\x01\n" +
+	"\x15CreateInstanceRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12%\n" +
+	"\vinstance_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"instanceId\x12I\n" +
+	"\bresource\x18\x03 \x01(\v2'.google.cloud.memcache.v1beta2.InstanceB\x04\xe2A\x01\x02R\bresource\"\xa5\x01\n" +
+	"\x15UpdateInstanceRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12I\n" +
+	"\bresource\x18\x02 \x01(\v2'.google.cloud.memcache.v1beta2.InstanceB\x04\xe2A\x01\x02R\bresource\"V\n" +
+	"\x15DeleteInstanceRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" memcache.googleapis.com/InstanceR\x04name\"\x91\x03\n" +
+	"\x1cRescheduleMaintenanceRequest\x12E\n" +
+	"\binstance\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" memcache.googleapis.com/InstanceR\binstance\x12y\n" +
+	"\x0freschedule_type\x18\x02 \x01(\x0e2J.google.cloud.memcache.v1beta2.RescheduleMaintenanceRequest.RescheduleTypeB\x04\xe2A\x01\x02R\x0erescheduleType\x12?\n" +
 	"\rschedule_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\fscheduleTime\"n\n" +
 	"\x0eRescheduleType\x12\x1f\n" +
 	"\x1bRESCHEDULE_TYPE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tIMMEDIATE\x10\x01\x12\x19\n" +
 	"\x15NEXT_AVAILABLE_WINDOW\x10\x02\x12\x11\n" +
-	"\rSPECIFIC_TIME\x10\x03\"\x8e\x01\n" +
-	"\x16ApplyParametersRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
+	"\rSPECIFIC_TIME\x10\x03\"\x8f\x01\n" +
+	"\x16ApplyParametersRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
 	" memcache.googleapis.com/InstanceR\x04name\x12\x19\n" +
 	"\bnode_ids\x18\x02 \x03(\tR\anodeIds\x12\x1b\n" +
-	"\tapply_all\x18\x03 \x01(\bR\bapplyAll\"\xec\x01\n" +
-	"\x17UpdateParametersRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" memcache.googleapis.com/InstanceR\x04name\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
+	"\tapply_all\x18\x03 \x01(\bR\bapplyAll\"\xee\x01\n" +
+	"\x17UpdateParametersRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" memcache.googleapis.com/InstanceR\x04name\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
 	"updateMask\x12Q\n" +
 	"\n" +
 	"parameters\x18\x03 \x01(\v21.google.cloud.memcache.v1beta2.MemcacheParametersR\n" +
-	"parameters\"\x9a\x01\n" +
-	"\x1aApplySoftwareUpdateRequest\x12D\n" +
-	"\binstance\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
+	"parameters\"\x9b\x01\n" +
+	"\x1aApplySoftwareUpdateRequest\x12E\n" +
+	"\binstance\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
 	" memcache.googleapis.com/InstanceR\binstance\x12\x19\n" +
 	"\bnode_ids\x18\x02 \x03(\tR\anodeIds\x12\x1b\n" +
-	"\tapply_all\x18\x03 \x01(\bR\bapplyAll\"\xbb\x01\n" +
-	"\x12MemcacheParameters\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x03R\x02id\x12U\n" +
+	"\tapply_all\x18\x03 \x01(\bR\bapplyAll\"\xbc\x01\n" +
+	"\x12MemcacheParameters\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x02id\x12U\n" +
 	"\x06params\x18\x03 \x03(\v2=.google.cloud.memcache.v1beta2.MemcacheParameters.ParamsEntryR\x06params\x1a9\n" +
 	"\vParamsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xc7\x02\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12(\n" +
-	"\rstatus_detail\x18\x05 \x01(\tB\x03\xe0A\x03R\fstatusDetail\x12.\n" +
-	"\x10cancel_requested\x18\x06 \x01(\bB\x03\xe0A\x03R\x0fcancelRequested\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion\"\xf5\x01\n" +
-	"\x10LocationMetadata\x12q\n" +
-	"\x0favailable_zones\x18\x01 \x03(\v2C.google.cloud.memcache.v1beta2.LocationMetadata.AvailableZonesEntryB\x03\xe0A\x03R\x0eavailableZones\x1an\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xce\x02\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12)\n" +
+	"\rstatus_detail\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\fstatusDetail\x12/\n" +
+	"\x10cancel_requested\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x0fcancelRequested\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"apiVersion\"\xf6\x01\n" +
+	"\x10LocationMetadata\x12r\n" +
+	"\x0favailable_zones\x18\x01 \x03(\v2C.google.cloud.memcache.v1beta2.LocationMetadata.AvailableZonesEntryB\x04\xe2A\x01\x03R\x0eavailableZones\x1an\n" +
 	"\x13AvailableZonesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12A\n" +
 	"\x05value\x18\x02 \x01(\v2+.google.cloud.memcache.v1beta2.ZoneMetadataR\x05value:\x028\x01\"\x0e\n" +

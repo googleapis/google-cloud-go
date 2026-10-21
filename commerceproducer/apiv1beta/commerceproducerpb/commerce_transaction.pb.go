@@ -2001,26 +2001,26 @@ var File_google_cloud_commerceproducer_v1beta_commerce_transaction_proto protore
 
 const file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDesc = "" +
 	"\n" +
-	"?google/cloud/commerceproducer/v1beta/commerce_transaction.proto\x12$google.cloud.commerceproducer.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a8google/cloud/commerceproducer/v1beta/private_offer.proto\x1a2google/cloud/commerceproducer/v1beta/service.proto\x1a.google/cloud/commerceproducer/v1beta/sku.proto\x1a4google/cloud/commerceproducer/v1beta/sku_group.proto\x1a9google/cloud/commerceproducer/v1beta/standard_offer.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xeb\x01\n" +
-	"\x18ListPrivateOffersRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,commerceproducer.googleapis.com/PrivateOfferR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"?google/cloud/commerceproducer/v1beta/commerce_transaction.proto\x12$google.cloud.commerceproducer.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a8google/cloud/commerceproducer/v1beta/private_offer.proto\x1a2google/cloud/commerceproducer/v1beta/service.proto\x1a.google/cloud/commerceproducer/v1beta/sku.proto\x1a4google/cloud/commerceproducer/v1beta/sku_group.proto\x1a9google/cloud/commerceproducer/v1beta/standard_offer.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xf0\x01\n" +
+	"\x18ListPrivateOffersRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,commerceproducer.googleapis.com/PrivateOfferR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\x9e\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\x9e\x01\n" +
 	"\x19ListPrivateOffersResponse\x12Y\n" +
 	"\x0eprivate_offers\x18\x01 \x03(\v22.google.cloud.commerceproducer.v1beta.PrivateOfferR\rprivateOffers\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb3\x01\n" +
-	"\x16GetPrivateOfferRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",commerceproducer.googleapis.com/PrivateOfferR\x04name\x12O\n" +
-	"\x04view\x18\x02 \x01(\x0e26.google.cloud.commerceproducer.v1beta.PrivateOfferViewB\x03\xe0A\x01R\x04view\"\xbe\x02\n" +
-	"\x1dResolveAmendmentTargetRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,commerceproducer.googleapis.com/PrivateOfferR\x06parent\x12h\n" +
-	"\x16target_billing_account\x18\x02 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*cloudbilling.googleapis.com/BillingAccountR\x14targetBillingAccount\x12e\n" +
-	"\x13base_standard_offer\x18\x03 \x01(\tB5\xe0A\x02\xfaA/\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb5\x01\n" +
+	"\x16GetPrivateOfferRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",commerceproducer.googleapis.com/PrivateOfferR\x04name\x12P\n" +
+	"\x04view\x18\x02 \x01(\x0e26.google.cloud.commerceproducer.v1beta.PrivateOfferViewB\x04\xe2A\x01\x01R\x04view\"\xc1\x02\n" +
+	"\x1dResolveAmendmentTargetRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,commerceproducer.googleapis.com/PrivateOfferR\x06parent\x12i\n" +
+	"\x16target_billing_account\x18\x02 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*cloudbilling.googleapis.com/BillingAccountR\x14targetBillingAccount\x12f\n" +
+	"\x13base_standard_offer\x18\x03 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
 	"-commerceproducer.googleapis.com/StandardOfferR\x11baseStandardOffer\"\xfe\x03\n" +
 	"\x1eResolveAmendmentTargetResponse\x12i\n" +
 	"\x16required_private_offer\x18\x01 \x01(\tB1\xfaA.\n" +
@@ -2031,92 +2031,92 @@ const file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDe
 	"\x0eOptionalOffers\x12X\n" +
 	"\x0eprivate_offers\x18\x01 \x03(\tB1\xfaA.\n" +
 	",commerceproducer.googleapis.com/PrivateOfferR\rprivateOffersB\x17\n" +
-	"\x15amendment_requirement\"\xc7\x01\n" +
-	"\x19CreatePrivateOfferRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,commerceproducer.googleapis.com/PrivateOfferR\x06parent\x12\\\n" +
-	"\rprivate_offer\x18\x03 \x01(\v22.google.cloud.commerceproducer.v1beta.PrivateOfferB\x03\xe0A\x02R\fprivateOffer\"\xbb\x01\n" +
-	"\x19UpdatePrivateOfferRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12\\\n" +
-	"\rprivate_offer\x18\x02 \x01(\v22.google.cloud.commerceproducer.v1beta.PrivateOfferB\x03\xe0A\x02R\fprivateOffer\"\x90\x01\n" +
-	"\x1aPublishPrivateOfferRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",commerceproducer.googleapis.com/PrivateOfferR\x04name\x12(\n" +
-	"\rvalidate_only\x18\x02 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\x97\x01\n" +
-	"\x19CancelPrivateOfferRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",commerceproducer.googleapis.com/PrivateOfferR\x04name\x120\n" +
-	"\x11cancellation_note\x18\x02 \x01(\tB\x03\xe0A\x01R\x10cancellationNote\"\x80\x01\n" +
-	"\x19DeletePrivateOfferRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",commerceproducer.googleapis.com/PrivateOfferR\x04name\x12\x19\n" +
-	"\x05force\x18\x02 \x01(\bB\x03\xe0A\x01R\x05force\"\xbe\x01\n" +
-	" ListPrivateOfferDocumentsRequest\x12T\n" +
-	"\x06parent\x18\x01 \x01(\tB<\xe0A\x02\xfaA6\x124commerceproducer.googleapis.com/PrivateOfferDocumentR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x15amendment_requirement\"\xc9\x01\n" +
+	"\x19CreatePrivateOfferRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,commerceproducer.googleapis.com/PrivateOfferR\x06parent\x12]\n" +
+	"\rprivate_offer\x18\x03 \x01(\v22.google.cloud.commerceproducer.v1beta.PrivateOfferB\x04\xe2A\x01\x02R\fprivateOffer\"\xbd\x01\n" +
+	"\x19UpdatePrivateOfferRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12]\n" +
+	"\rprivate_offer\x18\x02 \x01(\v22.google.cloud.commerceproducer.v1beta.PrivateOfferB\x04\xe2A\x01\x02R\fprivateOffer\"\x92\x01\n" +
+	"\x1aPublishPrivateOfferRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",commerceproducer.googleapis.com/PrivateOfferR\x04name\x12)\n" +
+	"\rvalidate_only\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\x99\x01\n" +
+	"\x19CancelPrivateOfferRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",commerceproducer.googleapis.com/PrivateOfferR\x04name\x121\n" +
+	"\x11cancellation_note\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x10cancellationNote\"\x82\x01\n" +
+	"\x19DeletePrivateOfferRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",commerceproducer.googleapis.com/PrivateOfferR\x04name\x12\x1a\n" +
+	"\x05force\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x05force\"\xc1\x01\n" +
+	" ListPrivateOfferDocumentsRequest\x12U\n" +
+	"\x06parent\x18\x01 \x01(\tB=\xe2A\x01\x02\xfaA6\x124commerceproducer.googleapis.com/PrivateOfferDocumentR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xbf\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xbf\x01\n" +
 	"!ListPrivateOfferDocumentsResponse\x12r\n" +
 	"\x17private_offer_documents\x18\x01 \x03(\v2:.google.cloud.commerceproducer.v1beta.PrivateOfferDocumentR\x15privateOfferDocuments\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"r\n" +
-	"\x1eGetPrivateOfferDocumentRequest\x12P\n" +
-	"\x04name\x18\x01 \x01(\tB<\xe0A\x02\xfaA6\n" +
-	"4commerceproducer.googleapis.com/PrivateOfferDocumentR\x04name\"\xf0\x01\n" +
-	"!CreatePrivateOfferDocumentRequest\x12T\n" +
-	"\x06parent\x18\x01 \x01(\tB<\xe0A\x02\xfaA6\x124commerceproducer.googleapis.com/PrivateOfferDocumentR\x06parent\x12u\n" +
-	"\x16private_offer_document\x18\x03 \x01(\v2:.google.cloud.commerceproducer.v1beta.PrivateOfferDocumentB\x03\xe0A\x02R\x14privateOfferDocument\"\xdc\x01\n" +
-	"!UpdatePrivateOfferDocumentRequest\x12u\n" +
-	"\x16private_offer_document\x18\x01 \x01(\v2:.google.cloud.commerceproducer.v1beta.PrivateOfferDocumentB\x03\xe0A\x02R\x14privateOfferDocument\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"u\n" +
-	"!DeletePrivateOfferDocumentRequest\x12P\n" +
-	"\x04name\x18\x01 \x01(\tB<\xe0A\x02\xfaA6\n" +
-	"4commerceproducer.googleapis.com/PrivateOfferDocumentR\x04name\"\xa4\x01\n" +
-	"\x13ListServicesRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\x12'commerceproducer.googleapis.com/ServiceR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"s\n" +
+	"\x1eGetPrivateOfferDocumentRequest\x12Q\n" +
+	"\x04name\x18\x01 \x01(\tB=\xe2A\x01\x02\xfaA6\n" +
+	"4commerceproducer.googleapis.com/PrivateOfferDocumentR\x04name\"\xf2\x01\n" +
+	"!CreatePrivateOfferDocumentRequest\x12U\n" +
+	"\x06parent\x18\x01 \x01(\tB=\xe2A\x01\x02\xfaA6\x124commerceproducer.googleapis.com/PrivateOfferDocumentR\x06parent\x12v\n" +
+	"\x16private_offer_document\x18\x03 \x01(\v2:.google.cloud.commerceproducer.v1beta.PrivateOfferDocumentB\x04\xe2A\x01\x02R\x14privateOfferDocument\"\xde\x01\n" +
+	"!UpdatePrivateOfferDocumentRequest\x12v\n" +
+	"\x16private_offer_document\x18\x01 \x01(\v2:.google.cloud.commerceproducer.v1beta.PrivateOfferDocumentB\x04\xe2A\x01\x02R\x14privateOfferDocument\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"v\n" +
+	"!DeletePrivateOfferDocumentRequest\x12Q\n" +
+	"\x04name\x18\x01 \x01(\tB=\xe2A\x01\x02\xfaA6\n" +
+	"4commerceproducer.googleapis.com/PrivateOfferDocumentR\x04name\"\xa7\x01\n" +
+	"\x13ListServicesRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\x12'commerceproducer.googleapis.com/ServiceR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x89\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x89\x01\n" +
 	"\x14ListServicesResponse\x12I\n" +
 	"\bservices\x18\x01 \x03(\v2-.google.cloud.commerceproducer.v1beta.ServiceR\bservices\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa4\x01\n" +
-	"\x11GetServiceRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'commerceproducer.googleapis.com/ServiceR\x04name\x12J\n" +
-	"\x04view\x18\x02 \x01(\x0e21.google.cloud.commerceproducer.v1beta.ServiceViewB\x03\xe0A\x01R\x04view\"\xed\x01\n" +
-	"\x19ListStandardOffersRequest\x12M\n" +
-	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\x12-commerceproducer.googleapis.com/StandardOfferR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa6\x01\n" +
+	"\x11GetServiceRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'commerceproducer.googleapis.com/ServiceR\x04name\x12K\n" +
+	"\x04view\x18\x02 \x01(\x0e21.google.cloud.commerceproducer.v1beta.ServiceViewB\x04\xe2A\x01\x01R\x04view\"\xf2\x01\n" +
+	"\x19ListStandardOffersRequest\x12N\n" +
+	"\x06parent\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\x12-commerceproducer.googleapis.com/StandardOfferR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xa2\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xa2\x01\n" +
 	"\x1aListStandardOffersResponse\x12\\\n" +
 	"\x0fstandard_offers\x18\x01 \x03(\v23.google.cloud.commerceproducer.v1beta.StandardOfferR\x0estandardOffers\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb6\x01\n" +
-	"\x17GetStandardOfferRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-commerceproducer.googleapis.com/StandardOfferR\x04name\x12P\n" +
-	"\x04view\x18\x02 \x01(\x0e27.google.cloud.commerceproducer.v1beta.StandardOfferViewB\x03\xe0A\x01R\x04view\"\x9c\x01\n" +
-	"\x0fListSkusRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\x12#commerceproducer.googleapis.com/SkuR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb8\x01\n" +
+	"\x17GetStandardOfferRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-commerceproducer.googleapis.com/StandardOfferR\x04name\x12Q\n" +
+	"\x04view\x18\x02 \x01(\x0e27.google.cloud.commerceproducer.v1beta.StandardOfferViewB\x04\xe2A\x01\x01R\x04view\"\x9f\x01\n" +
+	"\x0fListSkusRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\x12#commerceproducer.googleapis.com/SkuR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"y\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"y\n" +
 	"\x10ListSkusResponse\x12=\n" +
 	"\x04skus\x18\x01 \x03(\v2).google.cloud.commerceproducer.v1beta.SkuR\x04skus\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"P\n" +
-	"\rGetSkuRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#commerceproducer.googleapis.com/SkuR\x04name\"Z\n" +
-	"\x12GetSkuGroupRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(commerceproducer.googleapis.com/SkuGroupR\x04name\"\xa6\x01\n" +
-	"\x14ListSkuGroupsRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(commerceproducer.googleapis.com/SkuGroupR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"Q\n" +
+	"\rGetSkuRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#commerceproducer.googleapis.com/SkuR\x04name\"[\n" +
+	"\x12GetSkuGroupRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(commerceproducer.googleapis.com/SkuGroupR\x04name\"\xa9\x01\n" +
+	"\x14ListSkuGroupsRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(commerceproducer.googleapis.com/SkuGroupR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x8e\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x8e\x01\n" +
 	"\x15ListSkuGroupsResponse\x12M\n" +
 	"\n" +
 	"sku_groups\x18\x01 \x03(\v2..google.cloud.commerceproducer.v1beta.SkuGroupR\tskuGroups\x12&\n" +

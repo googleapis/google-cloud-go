@@ -318,27 +318,27 @@ var File_google_cloud_sql_v1_cloud_sql_operations_proto protoreflect.FileDescrip
 
 const file_google_cloud_sql_v1_cloud_sql_operations_proto_rawDesc = "" +
 	"\n" +
-	".google/cloud/sql/v1/cloud_sql_operations.proto\x12\x13google.cloud.sql.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a-google/cloud/sql/v1/cloud_sql_resources.proto\x1a\x1bgoogle/protobuf/empty.proto\"|\n" +
-	"\x17SqlOperationsGetRequest\x12!\n" +
-	"\toperation\x18\x01 \x01(\tB\x03\xe0A\x02R\toperation\x12\x1d\n" +
-	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\x12\x1f\n" +
-	"\blocation\x18\x04 \x01(\tB\x03\xe0A\x01R\blocation\"\xb1\x01\n" +
+	".google/cloud/sql/v1/cloud_sql_operations.proto\x12\x13google.cloud.sql.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a-google/cloud/sql/v1/cloud_sql_resources.proto\x1a\x1bgoogle/protobuf/empty.proto\"\x7f\n" +
+	"\x17SqlOperationsGetRequest\x12\"\n" +
+	"\toperation\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\toperation\x12\x1e\n" +
+	"\aproject\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\aproject\x12 \n" +
+	"\blocation\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\blocation\"\xb2\x01\n" +
 	"\x18SqlOperationsListRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x1f\n" +
 	"\vmax_results\x18\x02 \x01(\rR\n" +
 	"maxResults\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x18\n" +
-	"\aproject\x18\x04 \x01(\tR\aproject\x12\x1f\n" +
-	"\blocation\x18\x06 \x01(\tB\x03\xe0A\x01R\blocation\"\x8a\x01\n" +
+	"\aproject\x18\x04 \x01(\tR\aproject\x12 \n" +
+	"\blocation\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\blocation\"\x8a\x01\n" +
 	"\x16OperationsListResponse\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x124\n" +
 	"\x05items\x18\x02 \x03(\v2\x1e.google.cloud.sql.v1.OperationR\x05items\x12&\n" +
-	"\x0fnext_page_token\x18\x03 \x01(\tR\rnextPageToken\"u\n" +
+	"\x0fnext_page_token\x18\x03 \x01(\tR\rnextPageToken\"v\n" +
 	"\x1aSqlOperationsCancelRequest\x12\x1c\n" +
 	"\toperation\x18\x01 \x01(\tR\toperation\x12\x18\n" +
-	"\aproject\x18\x02 \x01(\tR\aproject\x12\x1f\n" +
-	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation2\xc3\x04\n" +
+	"\aproject\x18\x02 \x01(\tR\aproject\x12 \n" +
+	"\blocation\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\blocation2\xc3\x04\n" +
 	"\x14SqlOperationsService\x12\x8a\x01\n" +
 	"\x03Get\x12,.google.cloud.sql.v1.SqlOperationsGetRequest\x1a\x1e.google.cloud.sql.v1.Operation\"5\x82\xd3\xe4\x93\x02/\x12-/v1/projects/{project}/operations/{operation}\x12\x8d\x01\n" +
 	"\x04List\x12-.google.cloud.sql.v1.SqlOperationsListRequest\x1a+.google.cloud.sql.v1.OperationsListResponse\")\x82\xd3\xe4\x93\x02#\x12!/v1/projects/{project}/operations\x12\x8f\x01\n" +

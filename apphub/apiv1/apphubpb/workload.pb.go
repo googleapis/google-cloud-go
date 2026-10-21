@@ -461,24 +461,24 @@ var File_google_cloud_apphub_v1_workload_proto protoreflect.FileDescriptor
 
 const file_google_cloud_apphub_v1_workload_proto_rawDesc = "" +
 	"\n" +
-	"%google/cloud/apphub/v1/workload.proto\x12\x16google.cloud.apphub.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/apphub/v1/attributes.proto\x1a'google/cloud/apphub/v1/properties.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb3\a\n" +
-	"\bWorkload\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12]\n" +
-	"\x12workload_reference\x18\x04 \x01(\v2).google.cloud.apphub.v1.WorkloadReferenceB\x03\xe0A\x03R\x11workloadReference\x12`\n" +
-	"\x13workload_properties\x18\x05 \x01(\v2*.google.cloud.apphub.v1.WorkloadPropertiesB\x03\xe0A\x03R\x12workloadProperties\x12d\n" +
-	"\x13discovered_workload\x18\x06 \x01(\tB3\xe0A\x02\xe0A\x05\xfaA*\x12(apphub.googleapis.com/DiscoveredWorkloadR\x12discoveredWorkload\x12G\n" +
+	"%google/cloud/apphub/v1/workload.proto\x12\x16google.cloud.apphub.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/apphub/v1/attributes.proto\x1a'google/cloud/apphub/v1/properties.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbc\a\n" +
+	"\bWorkload\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12^\n" +
+	"\x12workload_reference\x18\x04 \x01(\v2).google.cloud.apphub.v1.WorkloadReferenceB\x04\xe2A\x01\x03R\x11workloadReference\x12a\n" +
+	"\x13workload_properties\x18\x05 \x01(\v2*.google.cloud.apphub.v1.WorkloadPropertiesB\x04\xe2A\x01\x03R\x12workloadProperties\x12c\n" +
+	"\x13discovered_workload\x18\x06 \x01(\tB2\xe2A\x02\x02\x05\xfaA*\x12(apphub.googleapis.com/DiscoveredWorkloadR\x12discoveredWorkload\x12H\n" +
 	"\n" +
-	"attributes\x18\a \x01(\v2\".google.cloud.apphub.v1.AttributesB\x03\xe0A\x01R\n" +
-	"attributes\x12@\n" +
-	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x1d\n" +
+	"attributes\x18\a \x01(\v2\".google.cloud.apphub.v1.AttributesB\x04\xe2A\x01\x01R\n" +
+	"attributes\x12A\n" +
+	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x1e\n" +
 	"\x03uid\x18\n" +
-	" \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12A\n" +
-	"\x05state\x18\v \x01(\x0e2&.google.cloud.apphub.v1.Workload.StateB\x03\xe0A\x03R\x05state\"T\n" +
+	" \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12B\n" +
+	"\x05state\x18\v \x01(\x0e2&.google.cloud.apphub.v1.Workload.StateB\x04\xe2A\x01\x03R\x05state\"T\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bCREATING\x10\x01\x12\n" +
@@ -486,24 +486,24 @@ const file_google_cloud_apphub_v1_workload_proto_rawDesc = "" +
 	"\x06ACTIVE\x10\x02\x12\f\n" +
 	"\bDELETING\x10\x03\x12\f\n" +
 	"\bDETACHED\x10\x04:\x92\x01\xeaA\x8e\x01\n" +
-	"\x1eapphub.googleapis.com/Workload\x12Wprojects/{project}/locations/{location}/applications/{application}/workloads/{workload}*\tworkloads2\bworkload\"*\n" +
-	"\x11WorkloadReference\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x03R\x03uri\"\xf0\x03\n" +
-	"\x12WorkloadProperties\x12$\n" +
-	"\vgcp_project\x18\x01 \x01(\tB\x03\xe0A\x03R\n" +
-	"gcpProject\x12\x1f\n" +
-	"\blocation\x18\x02 \x01(\tB\x03\xe0A\x03R\blocation\x12\x17\n" +
-	"\x04zone\x18\x03 \x01(\tB\x03\xe0A\x03R\x04zone\x12T\n" +
-	"\x0ffunctional_type\x18\x04 \x01(\v2&.google.cloud.apphub.v1.FunctionalTypeB\x03\xe0A\x03R\x0efunctionalType\x12r\n" +
-	"\x11extended_metadata\x18\x05 \x03(\v2@.google.cloud.apphub.v1.WorkloadProperties.ExtendedMetadataEntryB\x03\xe0A\x03R\x10extendedMetadata\x12A\n" +
-	"\bidentity\x18\x06 \x01(\v2 .google.cloud.apphub.v1.IdentityB\x03\xe0A\x03R\bidentity\x1am\n" +
+	"\x1eapphub.googleapis.com/Workload\x12Wprojects/{project}/locations/{location}/applications/{application}/workloads/{workload}*\tworkloads2\bworkload\"+\n" +
+	"\x11WorkloadReference\x12\x16\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x03uri\"\xf6\x03\n" +
+	"\x12WorkloadProperties\x12%\n" +
+	"\vgcp_project\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"gcpProject\x12 \n" +
+	"\blocation\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\blocation\x12\x18\n" +
+	"\x04zone\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x04zone\x12U\n" +
+	"\x0ffunctional_type\x18\x04 \x01(\v2&.google.cloud.apphub.v1.FunctionalTypeB\x04\xe2A\x01\x03R\x0efunctionalType\x12s\n" +
+	"\x11extended_metadata\x18\x05 \x03(\v2@.google.cloud.apphub.v1.WorkloadProperties.ExtendedMetadataEntryB\x04\xe2A\x01\x03R\x10extendedMetadata\x12B\n" +
+	"\bidentity\x18\x06 \x01(\v2 .google.cloud.apphub.v1.IdentityB\x04\xe2A\x01\x03R\bidentity\x1am\n" +
 	"\x15ExtendedMetadataEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12>\n" +
-	"\x05value\x18\x02 \x01(\v2(.google.cloud.apphub.v1.ExtendedMetadataR\x05value:\x028\x01\"\x9b\x03\n" +
-	"\x12DiscoveredWorkload\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12]\n" +
-	"\x12workload_reference\x18\x02 \x01(\v2).google.cloud.apphub.v1.WorkloadReferenceB\x03\xe0A\x03R\x11workloadReference\x12`\n" +
-	"\x13workload_properties\x18\x03 \x01(\v2*.google.cloud.apphub.v1.WorkloadPropertiesB\x03\xe0A\x03R\x12workloadProperties:\xaa\x01\xeaA\xa6\x01\n" +
+	"\x05value\x18\x02 \x01(\v2(.google.cloud.apphub.v1.ExtendedMetadataR\x05value:\x028\x01\"\x9e\x03\n" +
+	"\x12DiscoveredWorkload\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12^\n" +
+	"\x12workload_reference\x18\x02 \x01(\v2).google.cloud.apphub.v1.WorkloadReferenceB\x04\xe2A\x01\x03R\x11workloadReference\x12a\n" +
+	"\x13workload_properties\x18\x03 \x01(\v2*.google.cloud.apphub.v1.WorkloadPropertiesB\x04\xe2A\x01\x03R\x12workloadProperties:\xaa\x01\xeaA\xa6\x01\n" +
 	"(apphub.googleapis.com/DiscoveredWorkload\x12Qprojects/{project}/locations/{location}/discoveredWorkloads/{discovered_workload}*\x13discoveredWorkloads2\x12discoveredWorkloadB\xaf\x01\n" +
 	"\x1acom.google.cloud.apphub.v1B\rWorkloadProtoP\x01Z2cloud.google.com/go/apphub/apiv1/apphubpb;apphubpb\xaa\x02\x16Google.Cloud.AppHub.V1\xca\x02\x16Google\\Cloud\\AppHub\\V1\xea\x02\x19Google::Cloud::AppHub::V1b\x06proto3"
 

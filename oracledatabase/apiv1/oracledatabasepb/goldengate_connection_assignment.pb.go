@@ -953,29 +953,29 @@ var File_google_cloud_oracledatabase_v1_goldengate_connection_assignment_proto p
 
 const file_google_cloud_oracledatabase_v1_goldengate_connection_assignment_proto_rawDesc = "" +
 	"\n" +
-	"Egoogle/cloud/oracledatabase/v1/goldengate_connection_assignment.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd4\x05\n" +
-	"\x1eGoldengateConnectionAssignment\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12m\n" +
+	"Egoogle/cloud/oracledatabase/v1/goldengate_connection_assignment.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xda\x05\n" +
+	"\x1eGoldengateConnectionAssignment\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12n\n" +
 	"\n" +
-	"properties\x18\x02 \x01(\v2H.google.cloud.oracledatabase.v1.GoldengateConnectionAssignmentPropertiesB\x03\xe0A\x02R\n" +
-	"properties\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12g\n" +
-	"\x06labels\x18\x04 \x03(\v2J.google.cloud.oracledatabase.v1.GoldengateConnectionAssignment.LabelsEntryB\x03\xe0A\x01R\x06labels\x12&\n" +
-	"\fdisplay_name\x18\x05 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12*\n" +
-	"\x0eentitlement_id\x18\x06 \x01(\tB\x03\xe0A\x03R\rentitlementId\x1a9\n" +
+	"properties\x18\x02 \x01(\v2H.google.cloud.oracledatabase.v1.GoldengateConnectionAssignmentPropertiesB\x04\xe2A\x01\x02R\n" +
+	"properties\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12h\n" +
+	"\x06labels\x18\x04 \x03(\v2J.google.cloud.oracledatabase.v1.GoldengateConnectionAssignment.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12'\n" +
+	"\fdisplay_name\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12+\n" +
+	"\x0eentitlement_id\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\rentitlementId\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\xef\x01\xeaA\xeb\x01\n" +
-	"<oracledatabase.googleapis.com/GoldengateConnectionAssignment\x12jprojects/{project}/locations/{location}/goldengateConnectionAssignments/{goldengate_connection_assignment}*\x1fgoldengateConnectionAssignments2\x1egoldengateConnectionAssignment\"\x8d\x04\n" +
-	"(GoldengateConnectionAssignmentProperties\x12\x17\n" +
-	"\x04ocid\x18\x01 \x01(\tB\x03\xe0A\x03R\x04ocid\x12o\n" +
-	"\x15goldengate_connection\x18\x02 \x01(\tB:\xe0A\x02\xfaA4\n" +
-	"2oracledatabase.googleapis.com/GoldengateConnectionR\x14goldengateConnection\x12o\n" +
-	"\x15goldengate_deployment\x18\x03 \x01(\tB:\xe0A\x02\xfaA4\n" +
-	"2oracledatabase.googleapis.com/GoldengateDeploymentR\x14goldengateDeployment\x12\x19\n" +
-	"\x05alias\x18\x04 \x01(\tB\x03\xe0A\x03R\x05alias\x12i\n" +
-	"\x05state\x18\x05 \x01(\x0e2N.google.cloud.oracledatabase.v1.GoldengateConnectionAssignmentProperties.StateB\x03\xe0A\x03R\x05state\"`\n" +
+	"<oracledatabase.googleapis.com/GoldengateConnectionAssignment\x12jprojects/{project}/locations/{location}/goldengateConnectionAssignments/{goldengate_connection_assignment}*\x1fgoldengateConnectionAssignments2\x1egoldengateConnectionAssignment\"\x92\x04\n" +
+	"(GoldengateConnectionAssignmentProperties\x12\x18\n" +
+	"\x04ocid\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04ocid\x12p\n" +
+	"\x15goldengate_connection\x18\x02 \x01(\tB;\xe2A\x01\x02\xfaA4\n" +
+	"2oracledatabase.googleapis.com/GoldengateConnectionR\x14goldengateConnection\x12p\n" +
+	"\x15goldengate_deployment\x18\x03 \x01(\tB;\xe2A\x01\x02\xfaA4\n" +
+	"2oracledatabase.googleapis.com/GoldengateDeploymentR\x14goldengateDeployment\x12\x1a\n" +
+	"\x05alias\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x05alias\x12j\n" +
+	"\x05state\x18\x05 \x01(\x0e2N.google.cloud.oracledatabase.v1.GoldengateConnectionAssignmentProperties.StateB\x04\xe2A\x01\x03R\x05state\"`\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bCREATING\x10\x01\x12\n" +
@@ -984,31 +984,31 @@ const file_google_cloud_oracledatabase_v1_goldengate_connection_assignment_proto
 	"\n" +
 	"\x06FAILED\x10\x03\x12\f\n" +
 	"\bUPDATING\x10\x04\x12\f\n" +
-	"\bDELETING\x10\x05\"\x8d\x02\n" +
-	"*ListGoldengateConnectionAssignmentsRequest\x12\\\n" +
-	"\x06parent\x18\x01 \x01(\tBD\xe0A\x02\xfaA>\x12<oracledatabase.googleapis.com/GoldengateConnectionAssignmentR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\bDELETING\x10\x05\"\x92\x02\n" +
+	"*ListGoldengateConnectionAssignmentsRequest\x12]\n" +
+	"\x06parent\x18\x01 \x01(\tBE\xe2A\x01\x02\xfaA>\x12<oracledatabase.googleapis.com/GoldengateConnectionAssignmentR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\x84\x02\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\x84\x02\n" +
 	"+ListGoldengateConnectionAssignmentsResponse\x12\x8a\x01\n" +
 	"!goldengate_connection_assignments\x18\x01 \x03(\v2>.google.cloud.oracledatabase.v1.GoldengateConnectionAssignmentR\x1fgoldengateConnectionAssignments\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\x84\x01\n" +
-	"(GetGoldengateConnectionAssignmentRequest\x12X\n" +
-	"\x04name\x18\x01 \x01(\tBD\xe0A\x02\xfaA>\n" +
-	"<oracledatabase.googleapis.com/GoldengateConnectionAssignmentR\x04name\"\x9b\x03\n" +
-	"+CreateGoldengateConnectionAssignmentRequest\x12\\\n" +
-	"\x06parent\x18\x01 \x01(\tBD\xe0A\x02\xfaA>\x12<oracledatabase.googleapis.com/GoldengateConnectionAssignmentR\x06parent\x12R\n" +
-	"#goldengate_connection_assignment_id\x18\x02 \x01(\tB\x03\xe0A\x02R goldengateConnectionAssignmentId\x12\x8d\x01\n" +
-	" goldengate_connection_assignment\x18\x03 \x01(\v2>.google.cloud.oracledatabase.v1.GoldengateConnectionAssignmentB\x03\xe0A\x02R\x1egoldengateConnectionAssignment\x12*\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\x85\x01\n" +
+	"(GetGoldengateConnectionAssignmentRequest\x12Y\n" +
+	"\x04name\x18\x01 \x01(\tBE\xe2A\x01\x02\xfaA>\n" +
+	"<oracledatabase.googleapis.com/GoldengateConnectionAssignmentR\x04name\"\x9f\x03\n" +
+	"+CreateGoldengateConnectionAssignmentRequest\x12]\n" +
+	"\x06parent\x18\x01 \x01(\tBE\xe2A\x01\x02\xfaA>\x12<oracledatabase.googleapis.com/GoldengateConnectionAssignmentR\x06parent\x12S\n" +
+	"#goldengate_connection_assignment_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R goldengateConnectionAssignmentId\x12\x8e\x01\n" +
+	" goldengate_connection_assignment\x18\x03 \x01(\v2>.google.cloud.oracledatabase.v1.GoldengateConnectionAssignmentB\x04\xe2A\x01\x02R\x1egoldengateConnectionAssignment\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xa6\x02\n" +
-	")TestGoldengateConnectionAssignmentRequest\x12X\n" +
-	"\x04name\x18\x01 \x01(\tBD\xe0A\x02\xfaA>\n" +
-	"<oracledatabase.googleapis.com/GoldengateConnectionAssignmentR\x04name\x12k\n" +
-	"\x04type\x18\x02 \x01(\x0e2R.google.cloud.oracledatabase.v1.TestGoldengateConnectionAssignmentRequest.TestTypeB\x03\xe0A\x01R\x04type\"2\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xa8\x02\n" +
+	")TestGoldengateConnectionAssignmentRequest\x12Y\n" +
+	"\x04name\x18\x01 \x01(\tBE\xe2A\x01\x02\xfaA>\n" +
+	"<oracledatabase.googleapis.com/GoldengateConnectionAssignmentR\x04name\x12l\n" +
+	"\x04type\x18\x02 \x01(\x0e2R.google.cloud.oracledatabase.v1.TestGoldengateConnectionAssignmentRequest.TestTypeB\x04\xe2A\x01\x01R\x04type\"2\n" +
 	"\bTestType\x12\x19\n" +
 	"\x15TEST_TYPE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aDEFAULT\x10\x01\"{\n" +
@@ -1028,12 +1028,12 @@ const file_google_cloud_oracledatabase_v1_goldengate_connection_assignment_proto
 	"\tSUCCEEDED\x10\x01\x12\n" +
 	"\n" +
 	"\x06FAILED\x10\x02\x12\r\n" +
-	"\tTIMED_OUT\x10\x03\"\xb3\x01\n" +
-	"+DeleteGoldengateConnectionAssignmentRequest\x12X\n" +
-	"\x04name\x18\x01 \x01(\tBD\xe0A\x02\xfaA>\n" +
-	"<oracledatabase.googleapis.com/GoldengateConnectionAssignmentR\x04name\x12*\n" +
+	"\tTIMED_OUT\x10\x03\"\xb5\x01\n" +
+	"+DeleteGoldengateConnectionAssignmentRequest\x12Y\n" +
+	"\x04name\x18\x01 \x01(\tBE\xe2A\x01\x02\xfaA>\n" +
+	"<oracledatabase.googleapis.com/GoldengateConnectionAssignmentR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestIdB\xfd\x01\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestIdB\xfd\x01\n" +
 	"\"com.google.cloud.oracledatabase.v1B#GoldengateConnectionAssignmentProtoP\x01ZJcloud.google.com/go/oracledatabase/apiv1/oracledatabasepb;oracledatabasepb\xaa\x02\x1eGoogle.Cloud.OracleDatabase.V1\xca\x02\x1eGoogle\\Cloud\\OracleDatabase\\V1\xea\x02!Google::Cloud::OracleDatabase::V1b\x06proto3"
 
 var (

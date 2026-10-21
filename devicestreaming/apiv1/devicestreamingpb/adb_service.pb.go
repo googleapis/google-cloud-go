@@ -785,13 +785,13 @@ const file_google_cloud_devicestreaming_v1_adb_service_proto_rawDesc = "" +
 	"\tstream_id\x18\x01 \x01(\x05R\bstreamId\x12;\n" +
 	"\x04okay\x18\x02 \x01(\v2%.google.cloud.devicestreaming.v1.OkayH\x00R\x04okay\x12;\n" +
 	"\x04fail\x18\x03 \x01(\v2%.google.cloud.devicestreaming.v1.FailH\x00R\x04failB\b\n" +
-	"\x06status\"G\n" +
-	"\x04Open\x12 \n" +
-	"\tstream_id\x18\x01 \x01(\x05B\x03\xe0A\x02R\bstreamId\x12\x1d\n" +
-	"\aservice\x18\x02 \x01(\tB\x03\xe0A\x01R\aservice\"\x90\x01\n" +
+	"\x06status\"I\n" +
+	"\x04Open\x12!\n" +
+	"\tstream_id\x18\x01 \x01(\x05B\x04\xe2A\x01\x02R\bstreamId\x12\x1e\n" +
+	"\aservice\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\aservice\"\x91\x01\n" +
 	"\n" +
-	"StreamData\x12 \n" +
-	"\tstream_id\x18\x01 \x01(\x05B\x03\xe0A\x02R\bstreamId\x12\x14\n" +
+	"StreamData\x12!\n" +
+	"\tstream_id\x18\x01 \x01(\x05B\x04\xe2A\x01\x02R\bstreamId\x12\x14\n" +
 	"\x04data\x18\x02 \x01(\fH\x00R\x04data\x12>\n" +
 	"\x05close\x18\x03 \x01(\v2&.google.cloud.devicestreaming.v1.CloseH\x00R\x05closeB\n" +
 	"\n" +

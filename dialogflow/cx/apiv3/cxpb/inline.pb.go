@@ -136,9 +136,9 @@ var File_google_cloud_dialogflow_cx_v3_inline_proto protoreflect.FileDescriptor
 
 const file_google_cloud_dialogflow_cx_v3_inline_proto_rawDesc = "" +
 	"\n" +
-	"*google/cloud/dialogflow/cx/v3/inline.proto\x12\x1dgoogle.cloud.dialogflow.cx.v3\x1a\x1fgoogle/api/field_behavior.proto\"2\n" +
-	"\x11InlineDestination\x12\x1d\n" +
-	"\acontent\x18\x01 \x01(\fB\x03\xe0A\x03R\acontent\"(\n" +
+	"*google/cloud/dialogflow/cx/v3/inline.proto\x12\x1dgoogle.cloud.dialogflow.cx.v3\x1a\x1fgoogle/api/field_behavior.proto\"3\n" +
+	"\x11InlineDestination\x12\x1e\n" +
+	"\acontent\x18\x01 \x01(\fB\x04\xe2A\x01\x03R\acontent\"(\n" +
 	"\fInlineSource\x12\x18\n" +
 	"\acontent\x18\x01 \x01(\fR\acontentB\xae\x01\n" +
 	"!com.google.cloud.dialogflow.cx.v3B\vInlineProtoP\x01Z1cloud.google.com/go/dialogflow/cx/apiv3/cxpb;cxpb\xa2\x02\x02DF\xaa\x02\x1dGoogle.Cloud.Dialogflow.Cx.V3\xea\x02!Google::Cloud::Dialogflow::CX::V3b\x06proto3"

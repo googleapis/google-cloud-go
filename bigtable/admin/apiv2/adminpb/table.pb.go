@@ -2403,36 +2403,36 @@ const file_google_bigtable_admin_v2_table_proto_rawDesc = "" +
 	"backupInfoB\r\n" +
 	"\vsource_info\"Z\n" +
 	"\x12ChangeStreamConfig\x12D\n" +
-	"\x10retention_period\x18\x01 \x01(\v2\x19.google.protobuf.DurationR\x0fretentionPeriod\"\x9f\x11\n" +
+	"\x10retention_period\x18\x01 \x01(\v2\x19.google.protobuf.DurationR\x0fretentionPeriod\"\xa9\x11\n" +
 	"\x05Table\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12^\n" +
-	"\x0ecluster_states\x18\x02 \x03(\v22.google.bigtable.admin.v2.Table.ClusterStatesEntryB\x03\xe0A\x03R\rclusterStates\x12\\\n" +
-	"\x0fcolumn_families\x18\x03 \x03(\v23.google.bigtable.admin.v2.Table.ColumnFamiliesEntryR\x0ecolumnFamilies\x12[\n" +
-	"\vgranularity\x18\x04 \x01(\x0e24.google.bigtable.admin.v2.Table.TimestampGranularityB\x03\xe0A\x05R\vgranularity\x12M\n" +
-	"\frestore_info\x18\x06 \x01(\v2%.google.bigtable.admin.v2.RestoreInfoB\x03\xe0A\x03R\vrestoreInfo\x12^\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12_\n" +
+	"\x0ecluster_states\x18\x02 \x03(\v22.google.bigtable.admin.v2.Table.ClusterStatesEntryB\x04\xe2A\x01\x03R\rclusterStates\x12\\\n" +
+	"\x0fcolumn_families\x18\x03 \x03(\v23.google.bigtable.admin.v2.Table.ColumnFamiliesEntryR\x0ecolumnFamilies\x12\\\n" +
+	"\vgranularity\x18\x04 \x01(\x0e24.google.bigtable.admin.v2.Table.TimestampGranularityB\x04\xe2A\x01\x05R\vgranularity\x12N\n" +
+	"\frestore_info\x18\x06 \x01(\v2%.google.bigtable.admin.v2.RestoreInfoB\x04\xe2A\x01\x03R\vrestoreInfo\x12^\n" +
 	"\x14change_stream_config\x18\b \x01(\v2,.google.bigtable.admin.v2.ChangeStreamConfigR\x12changeStreamConfig\x12/\n" +
 	"\x13deletion_protection\x18\t \x01(\bR\x12deletionProtection\x12o\n" +
-	"\x17automated_backup_policy\x18\r \x01(\v25.google.bigtable.admin.v2.Table.AutomatedBackupPolicyH\x00R\x15automatedBackupPolicy\x12\x85\x01\n" +
-	"!effective_automated_backup_policy\x18\x13 \x01(\v25.google.bigtable.admin.v2.Table.AutomatedBackupPolicyB\x03\xe0A\x03R\x1eeffectiveAutomatedBackupPolicy\x12a\n" +
+	"\x17automated_backup_policy\x18\r \x01(\v25.google.bigtable.admin.v2.Table.AutomatedBackupPolicyH\x00R\x15automatedBackupPolicy\x12\x86\x01\n" +
+	"!effective_automated_backup_policy\x18\x13 \x01(\v25.google.bigtable.admin.v2.Table.AutomatedBackupPolicyB\x04\xe2A\x01\x03R\x1eeffectiveAutomatedBackupPolicy\x12a\n" +
 	"\x15tiered_storage_config\x18\x0e \x01(\v2-.google.bigtable.admin.v2.TieredStorageConfigR\x13tieredStorageConfig\x12K\n" +
-	"\x0erow_key_schema\x18\x0f \x01(\v2%.google.bigtable.admin.v2.Type.StructR\frowKeySchema\x1a\xe8\x02\n" +
-	"\fClusterState\x12o\n" +
-	"\x11replication_state\x18\x01 \x01(\x0e2=.google.bigtable.admin.v2.Table.ClusterState.ReplicationStateB\x03\xe0A\x03R\x10replicationState\x12V\n" +
-	"\x0fencryption_info\x18\x02 \x03(\v2(.google.bigtable.admin.v2.EncryptionInfoB\x03\xe0A\x03R\x0eencryptionInfo\"\x8e\x01\n" +
+	"\x0erow_key_schema\x18\x0f \x01(\v2%.google.bigtable.admin.v2.Type.StructR\frowKeySchema\x1a\xea\x02\n" +
+	"\fClusterState\x12p\n" +
+	"\x11replication_state\x18\x01 \x01(\x0e2=.google.bigtable.admin.v2.Table.ClusterState.ReplicationStateB\x04\xe2A\x01\x03R\x10replicationState\x12W\n" +
+	"\x0fencryption_info\x18\x02 \x03(\v2(.google.bigtable.admin.v2.EncryptionInfoB\x04\xe2A\x01\x03R\x0eencryptionInfo\"\x8e\x01\n" +
 	"\x10ReplicationState\x12\x13\n" +
 	"\x0fSTATE_NOT_KNOWN\x10\x00\x12\x10\n" +
 	"\fINITIALIZING\x10\x01\x12\x17\n" +
 	"\x13PLANNED_MAINTENANCE\x10\x02\x12\x19\n" +
 	"\x15UNPLANNED_MAINTENANCE\x10\x03\x12\t\n" +
 	"\x05READY\x10\x04\x12\x14\n" +
-	"\x10READY_OPTIMIZING\x10\x05\x1a\xd1\x02\n" +
-	"\x15AutomatedBackupPolicy\x12I\n" +
-	"\x10retention_period\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x02R\x0fretentionPeriod\x127\n" +
-	"\tfrequency\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\tfrequency\x12G\n" +
-	"\tlocations\x18\x03 \x03(\tB)\xe0A\x01\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\tlocations\x12J\n" +
-	"\x11keep_hot_duration\x18\x04 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x0fkeepHotDuration\x12\x1f\n" +
-	"\bdisabled\x18\x05 \x01(\bB\x03\xe0A\x01R\bdisabled\x1an\n" +
+	"\x10READY_OPTIMIZING\x10\x05\x1a\xd5\x02\n" +
+	"\x15AutomatedBackupPolicy\x12J\n" +
+	"\x10retention_period\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x02R\x0fretentionPeriod\x127\n" +
+	"\tfrequency\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\tfrequency\x12H\n" +
+	"\tlocations\x18\x03 \x03(\tB*\xe2A\x01\x01\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\tlocations\x12K\n" +
+	"\x11keep_hot_duration\x18\x04 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x0fkeepHotDuration\x12 \n" +
+	"\bdisabled\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\bdisabled\x1an\n" +
 	"\x12ClusterStatesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12B\n" +
 	"\x05value\x18\x02 \x01(\v2,.google.bigtable.admin.v2.Table.ClusterStateR\x05value:\x028\x01\x1ai\n" +
@@ -2453,9 +2453,9 @@ const file_google_bigtable_admin_v2_table_proto_rawDesc = "" +
 	"\x0fENCRYPTION_VIEW\x10\x05\x12\b\n" +
 	"\x04FULL\x10\x04:_\xeaA\\\n" +
 	"\"bigtableadmin.googleapis.com/Table\x126projects/{project}/instances/{instance}/tables/{table}B\x19\n" +
-	"\x17automated_backup_config\"\xd6\x06\n" +
-	"\x0eAuthorizedView\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12V\n" +
+	"\x17automated_backup_config\"\xd7\x06\n" +
+	"\x0eAuthorizedView\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12V\n" +
 	"\vsubset_view\x18\x02 \x01(\v23.google.bigtable.admin.v2.AuthorizedView.SubsetViewH\x00R\n" +
 	"subsetView\x12\x12\n" +
 	"\x04etag\x18\x03 \x01(\tR\x04etag\x12/\n" +
@@ -2492,45 +2492,45 @@ const file_google_bigtable_admin_v2_table_proto_rawDesc = "" +
 	"\x05rules\x18\x01 \x03(\v2 .google.bigtable.admin.v2.GcRuleR\x05rules\x1a?\n" +
 	"\x05Union\x126\n" +
 	"\x05rules\x18\x01 \x03(\v2 .google.bigtable.admin.v2.GcRuleR\x05rulesB\x06\n" +
-	"\x04rule\"\x8a\x03\n" +
-	"\x0eEncryptionInfo\x12e\n" +
-	"\x0fencryption_type\x18\x03 \x01(\x0e27.google.bigtable.admin.v2.EncryptionInfo.EncryptionTypeB\x03\xe0A\x03R\x0eencryptionType\x12D\n" +
-	"\x11encryption_status\x18\x04 \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x10encryptionStatus\x12X\n" +
-	"\x0fkms_key_version\x18\x02 \x01(\tB0\xe0A\x03\xfaA*\n" +
+	"\x04rule\"\x8d\x03\n" +
+	"\x0eEncryptionInfo\x12f\n" +
+	"\x0fencryption_type\x18\x03 \x01(\x0e27.google.bigtable.admin.v2.EncryptionInfo.EncryptionTypeB\x04\xe2A\x01\x03R\x0eencryptionType\x12E\n" +
+	"\x11encryption_status\x18\x04 \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\x10encryptionStatus\x12Y\n" +
+	"\x0fkms_key_version\x18\x02 \x01(\tB1\xe2A\x01\x03\xfaA*\n" +
 	"(cloudkms.googleapis.com/CryptoKeyVersionR\rkmsKeyVersion\"q\n" +
 	"\x0eEncryptionType\x12\x1f\n" +
 	"\x1bENCRYPTION_TYPE_UNSPECIFIED\x10\x00\x12\x1d\n" +
 	"\x19GOOGLE_DEFAULT_ENCRYPTION\x10\x01\x12\x1f\n" +
-	"\x1bCUSTOMER_MANAGED_ENCRYPTION\x10\x02\"\xae\x04\n" +
+	"\x1bCUSTOMER_MANAGED_ENCRYPTION\x10\x02\"\xb2\x04\n" +
 	"\bSnapshot\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12G\n" +
-	"\fsource_table\x18\x02 \x01(\v2\x1f.google.bigtable.admin.v2.TableB\x03\xe0A\x03R\vsourceTable\x12+\n" +
-	"\x0fdata_size_bytes\x18\x03 \x01(\x03B\x03\xe0A\x03R\rdataSizeBytes\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12H\n" +
+	"\fsource_table\x18\x02 \x01(\v2\x1f.google.bigtable.admin.v2.TableB\x04\xe2A\x01\x03R\vsourceTable\x12,\n" +
+	"\x0fdata_size_bytes\x18\x03 \x01(\x03B\x04\xe2A\x01\x03R\rdataSizeBytes\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"createTime\x12;\n" +
 	"\vdelete_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"deleteTime\x12C\n" +
-	"\x05state\x18\x06 \x01(\x0e2(.google.bigtable.admin.v2.Snapshot.StateB\x03\xe0A\x03R\x05state\x12 \n" +
+	"deleteTime\x12D\n" +
+	"\x05state\x18\x06 \x01(\x0e2(.google.bigtable.admin.v2.Snapshot.StateB\x04\xe2A\x01\x03R\x05state\x12 \n" +
 	"\vdescription\x18\a \x01(\tR\vdescription\"5\n" +
 	"\x05State\x12\x13\n" +
 	"\x0fSTATE_NOT_KNOWN\x10\x00\x12\t\n" +
 	"\x05READY\x10\x01\x12\f\n" +
 	"\bCREATING\x10\x02:{\xeaAx\n" +
-	"%bigtableadmin.googleapis.com/Snapshot\x12Oprojects/{project}/instances/{instance}/clusters/{cluster}/snapshots/{snapshot}\"\xfb\x06\n" +
+	"%bigtableadmin.googleapis.com/Snapshot\x12Oprojects/{project}/instances/{instance}/clusters/{cluster}/snapshots/{snapshot}\"\x81\a\n" +
 	"\x06Backup\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12)\n" +
-	"\fsource_table\x18\x02 \x01(\tB\x06\xe0A\x05\xe0A\x02R\vsourceTable\x12(\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12(\n" +
+	"\fsource_table\x18\x02 \x01(\tB\x05\xe2A\x02\x05\x02R\vsourceTable\x12)\n" +
 	"\rsource_backup\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R\fsourceBackup\x12@\n" +
-	"\vexpire_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\n" +
-	"expireTime\x12>\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R\fsourceBackup\x12A\n" +
+	"\vexpire_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\n" +
+	"expireTime\x12?\n" +
 	"\n" +
-	"start_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\"\n" +
+	"start_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12#\n" +
 	"\n" +
-	"size_bytes\x18\x06 \x01(\x03B\x03\xe0A\x03R\tsizeBytes\x12A\n" +
-	"\x05state\x18\a \x01(\x0e2&.google.bigtable.admin.v2.Backup.StateB\x03\xe0A\x03R\x05state\x12V\n" +
-	"\x0fencryption_info\x18\t \x01(\v2(.google.bigtable.admin.v2.EncryptionInfoB\x03\xe0A\x03R\x0eencryptionInfo\x12L\n" +
+	"size_bytes\x18\x06 \x01(\x03B\x04\xe2A\x01\x03R\tsizeBytes\x12B\n" +
+	"\x05state\x18\a \x01(\x0e2&.google.bigtable.admin.v2.Backup.StateB\x04\xe2A\x01\x03R\x05state\x12W\n" +
+	"\x0fencryption_info\x18\t \x01(\v2(.google.bigtable.admin.v2.EncryptionInfoB\x04\xe2A\x01\x03R\x0eencryptionInfo\x12L\n" +
 	"\vbackup_type\x18\v \x01(\x0e2+.google.bigtable.admin.v2.Backup.BackupTypeR\n" +
 	"backupType\x12K\n" +
 	"\x14hot_to_standard_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampR\x11hotToStandardTime\"7\n" +
@@ -2543,32 +2543,32 @@ const file_google_bigtable_admin_v2_table_proto_rawDesc = "" +
 	"\x17BACKUP_TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bSTANDARD\x10\x01\x12\a\n" +
 	"\x03HOT\x10\x02:u\xeaAr\n" +
-	"#bigtableadmin.googleapis.com/Backup\x12Kprojects/{project}/instances/{instance}/clusters/{cluster}/backups/{backup}\"\xf7\x01\n" +
+	"#bigtableadmin.googleapis.com/Backup\x12Kprojects/{project}/instances/{instance}/clusters/{cluster}/backups/{backup}\"\xfc\x01\n" +
 	"\n" +
-	"BackupInfo\x12\x1b\n" +
-	"\x06backup\x18\x01 \x01(\tB\x03\xe0A\x03R\x06backup\x12>\n" +
+	"BackupInfo\x12\x1c\n" +
+	"\x06backup\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x06backup\x12?\n" +
 	"\n" +
-	"start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12&\n" +
-	"\fsource_table\x18\x04 \x01(\tB\x03\xe0A\x03R\vsourceTable\x12(\n" +
+	"start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12'\n" +
+	"\fsource_table\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\vsourceTable\x12)\n" +
 	"\rsource_backup\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R\fsourceBackup\"o\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R\fsourceBackup\"o\n" +
 	"\x13TieredStorageConfig\x12X\n" +
 	"\x11infrequent_access\x18\x01 \x01(\v2+.google.bigtable.admin.v2.TieredStorageRuleR\x10infrequentAccess\"k\n" +
 	"\x11TieredStorageRule\x12N\n" +
 	"\x15include_if_older_than\x18\x01 \x01(\v2\x19.google.protobuf.DurationH\x00R\x12includeIfOlderThanB\x06\n" +
-	"\x04rule\"?\n" +
-	"\vProtoSchema\x120\n" +
-	"\x11proto_descriptors\x18\x02 \x01(\fB\x03\xe0A\x02R\x10protoDescriptors\"4\n" +
+	"\x04rule\"@\n" +
+	"\vProtoSchema\x121\n" +
+	"\x11proto_descriptors\x18\x02 \x01(\fB\x04\xe2A\x01\x02R\x10protoDescriptors\"5\n" +
 	"\n" +
-	"AvroSchema\x12&\n" +
-	"\fjson_schemas\x18\x01 \x03(\tB\x03\xe0A\x02R\vjsonSchemas\"\x87\x03\n" +
-	"\fSchemaBundle\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12J\n" +
-	"\fproto_schema\x18\x02 \x01(\v2%.google.bigtable.admin.v2.ProtoSchemaH\x00R\vprotoSchema\x12L\n" +
-	"\vavro_schema\x18\x06 \x01(\v2$.google.bigtable.admin.v2.AvroSchemaB\x03\xe0A\x01H\x00R\n" +
-	"avroSchema\x12\x17\n" +
-	"\x04etag\x18\x03 \x01(\tB\x03\xe0A\x01R\x04etag:\xa2\x01\xeaA\x9e\x01\n" +
+	"AvroSchema\x12'\n" +
+	"\fjson_schemas\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\vjsonSchemas\"\x8a\x03\n" +
+	"\fSchemaBundle\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12J\n" +
+	"\fproto_schema\x18\x02 \x01(\v2%.google.bigtable.admin.v2.ProtoSchemaH\x00R\vprotoSchema\x12M\n" +
+	"\vavro_schema\x18\x06 \x01(\v2$.google.bigtable.admin.v2.AvroSchemaB\x04\xe2A\x01\x01H\x00R\n" +
+	"avroSchema\x12\x18\n" +
+	"\x04etag\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04etag:\xa2\x01\xeaA\x9e\x01\n" +
 	")bigtableadmin.googleapis.com/SchemaBundle\x12Tprojects/{project}/instances/{instance}/tables/{table}/schemaBundles/{schema_bundle}*\rschemaBundles2\fschemaBundleB\x06\n" +
 	"\x04type*D\n" +
 	"\x11RestoreSourceType\x12#\n" +

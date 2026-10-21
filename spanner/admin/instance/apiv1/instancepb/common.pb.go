@@ -215,9 +215,9 @@ const file_google_spanner_admin_instance_v1_common_proto_rawDesc = "" +
 	"\x10progress_percent\x18\x01 \x01(\x05R\x0fprogressPercent\x129\n" +
 	"\n" +
 	"start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x125\n" +
-	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\"3\n" +
-	"\x10ReplicaSelection\x12\x1f\n" +
-	"\blocation\x18\x01 \x01(\tB\x03\xe0A\x02R\blocation*w\n" +
+	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\"4\n" +
+	"\x10ReplicaSelection\x12 \n" +
+	"\blocation\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\blocation*w\n" +
 	"\x11FulfillmentPeriod\x12\"\n" +
 	"\x1eFULFILLMENT_PERIOD_UNSPECIFIED\x10\x00\x12\x1d\n" +
 	"\x19FULFILLMENT_PERIOD_NORMAL\x10\x01\x12\x1f\n" +

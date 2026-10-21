@@ -703,50 +703,50 @@ var File_google_cloud_essentialcontacts_v1_service_proto protoreflect.FileDescri
 
 const file_google_cloud_essentialcontacts_v1_service_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/essentialcontacts/v1/service.proto\x12!google.cloud.essentialcontacts.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/essentialcontacts/v1/enums.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc7\x04\n" +
-	"\aContact\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x19\n" +
-	"\x05email\x18\x02 \x01(\tB\x03\xe0A\x02R\x05email\x12\x8c\x01\n" +
-	"#notification_category_subscriptions\x18\x03 \x03(\x0e27.google.cloud.essentialcontacts.v1.NotificationCategoryB\x03\xe0A\x02R!notificationCategorySubscriptions\x12&\n" +
-	"\flanguage_tag\x18\x04 \x01(\tB\x03\xe0A\x02R\vlanguageTag\x12b\n" +
-	"\x10validation_state\x18\b \x01(\x0e22.google.cloud.essentialcontacts.v1.ValidationStateB\x03\xe0A\x03R\x0fvalidationState\x12?\n" +
+	"/google/cloud/essentialcontacts/v1/service.proto\x12!google.cloud.essentialcontacts.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/essentialcontacts/v1/enums.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcc\x04\n" +
+	"\aContact\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x1a\n" +
+	"\x05email\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05email\x12\x8d\x01\n" +
+	"#notification_category_subscriptions\x18\x03 \x03(\x0e27.google.cloud.essentialcontacts.v1.NotificationCategoryB\x04\xe2A\x01\x02R!notificationCategorySubscriptions\x12'\n" +
+	"\flanguage_tag\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\vlanguageTag\x12c\n" +
+	"\x10validation_state\x18\b \x01(\x0e22.google.cloud.essentialcontacts.v1.ValidationStateB\x04\xe2A\x01\x03R\x0fvalidationState\x12?\n" +
 	"\rvalidate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\fvalidateTime:\xab\x01\xeaA\xa7\x01\n" +
-	"(essentialcontacts.googleapis.com/Contact\x12%projects/{project}/contacts/{contact}\x12#folders/{folder}/contacts/{contact}\x12/organizations/{organization}/contacts/{contact}\"\xa5\x01\n" +
-	"\x13ListContactsRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(essentialcontacts.googleapis.com/ContactR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"(essentialcontacts.googleapis.com/Contact\x12%projects/{project}/contacts/{contact}\x12#folders/{folder}/contacts/{contact}\x12/organizations/{organization}/contacts/{contact}\"\xa8\x01\n" +
+	"\x13ListContactsRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(essentialcontacts.googleapis.com/ContactR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x86\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x86\x01\n" +
 	"\x14ListContactsResponse\x12F\n" +
 	"\bcontacts\x18\x01 \x03(\v2*.google.cloud.essentialcontacts.v1.ContactR\bcontacts\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"Y\n" +
-	"\x11GetContactRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(essentialcontacts.googleapis.com/ContactR\x04name\"\\\n" +
-	"\x14DeleteContactRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(essentialcontacts.googleapis.com/ContactR\x04name\"\xab\x01\n" +
-	"\x14CreateContactRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(essentialcontacts.googleapis.com/ContactR\x06parent\x12I\n" +
-	"\acontact\x18\x02 \x01(\v2*.google.cloud.essentialcontacts.v1.ContactB\x03\xe0A\x02R\acontact\"\xa3\x01\n" +
-	"\x14UpdateContactRequest\x12I\n" +
-	"\acontact\x18\x02 \x01(\v2*.google.cloud.essentialcontacts.v1.ContactB\x03\xe0A\x02R\acontact\x12@\n" +
-	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"\x9a\x02\n" +
-	"\x16ComputeContactsRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(essentialcontacts.googleapis.com/ContactR\x06parent\x12p\n" +
-	"\x17notification_categories\x18\x06 \x03(\x0e27.google.cloud.essentialcontacts.v1.NotificationCategoryR\x16notificationCategories\x12 \n" +
-	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"Z\n" +
+	"\x11GetContactRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(essentialcontacts.googleapis.com/ContactR\x04name\"]\n" +
+	"\x14DeleteContactRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(essentialcontacts.googleapis.com/ContactR\x04name\"\xad\x01\n" +
+	"\x14CreateContactRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(essentialcontacts.googleapis.com/ContactR\x06parent\x12J\n" +
+	"\acontact\x18\x02 \x01(\v2*.google.cloud.essentialcontacts.v1.ContactB\x04\xe2A\x01\x02R\acontact\"\xa5\x01\n" +
+	"\x14UpdateContactRequest\x12J\n" +
+	"\acontact\x18\x02 \x01(\v2*.google.cloud.essentialcontacts.v1.ContactB\x04\xe2A\x01\x02R\acontact\x12A\n" +
+	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"\x9d\x02\n" +
+	"\x16ComputeContactsRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(essentialcontacts.googleapis.com/ContactR\x06parent\x12p\n" +
+	"\x17notification_categories\x18\x06 \x03(\x0e27.google.cloud.essentialcontacts.v1.NotificationCategoryR\x16notificationCategories\x12!\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x89\x01\n" +
+	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x89\x01\n" +
 	"\x17ComputeContactsResponse\x12F\n" +
 	"\bcontacts\x18\x01 \x03(\v2*.google.cloud.essentialcontacts.v1.ContactR\bcontacts\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa7\x02\n" +
-	"\x16SendTestMessageRequest\x12L\n" +
-	"\bcontacts\x18\x01 \x03(\tB0\xe0A\x02\xfaA*\n" +
-	"(essentialcontacts.googleapis.com/ContactR\bcontacts\x12L\n" +
-	"\bresource\x18\x02 \x01(\tB0\xe0A\x02\xfaA*\x12(essentialcontacts.googleapis.com/ContactR\bresource\x12q\n" +
-	"\x15notification_category\x18\x03 \x01(\x0e27.google.cloud.essentialcontacts.v1.NotificationCategoryB\x03\xe0A\x02R\x14notificationCategory2\xcb\x0f\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xaa\x02\n" +
+	"\x16SendTestMessageRequest\x12M\n" +
+	"\bcontacts\x18\x01 \x03(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(essentialcontacts.googleapis.com/ContactR\bcontacts\x12M\n" +
+	"\bresource\x18\x02 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(essentialcontacts.googleapis.com/ContactR\bresource\x12r\n" +
+	"\x15notification_category\x18\x03 \x01(\x0e27.google.cloud.essentialcontacts.v1.NotificationCategoryB\x04\xe2A\x01\x02R\x14notificationCategory2\xcb\x0f\n" +
 	"\x18EssentialContactsService\x12\x98\x02\n" +
 	"\rCreateContact\x127.google.cloud.essentialcontacts.v1.CreateContactRequest\x1a*.google.cloud.essentialcontacts.v1.Contact\"\xa1\x01\xdaA\x0eparent,contact\x82\xd3\xe4\x93\x02\x89\x01:\acontactZ*:\acontact\"\x1f/v1/{parent=folders/*}/contactsZ0:\acontact\"%/v1/{parent=organizations/*}/contacts\" /v1/{parent=projects/*}/contacts\x12\xb5\x02\n" +
 	"\rUpdateContact\x127.google.cloud.essentialcontacts.v1.UpdateContactRequest\x1a*.google.cloud.essentialcontacts.v1.Contact\"\xbe\x01\xdaA\x13contact,update_mask\x82\xd3\xe4\x93\x02\xa1\x01:\acontactZ2:\acontact2'/v1/{contact.name=folders/*/contacts/*}Z8:\acontact2-/v1/{contact.name=organizations/*/contacts/*}2(/v1/{contact.name=projects/*/contacts/*}\x12\xfe\x01\n" +

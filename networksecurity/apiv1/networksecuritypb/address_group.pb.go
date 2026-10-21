@@ -1133,21 +1133,21 @@ var File_google_cloud_networksecurity_v1_address_group_proto protoreflect.FileDe
 
 const file_google_cloud_networksecurity_v1_address_group_proto_rawDesc = "" +
 	"\n" +
-	"3google/cloud/networksecurity/v1/address_group.proto\x12\x1fgoogle.cloud.networksecurity.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/networksecurity/v1/common.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa6\a\n" +
-	"\fAddressGroup\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12V\n" +
-	"\x06labels\x18\x05 \x03(\v29.google.cloud.networksecurity.v1.AddressGroup.LabelsEntryB\x03\xe0A\x01R\x06labels\x12K\n" +
-	"\x04type\x18\x06 \x01(\x0e22.google.cloud.networksecurity.v1.AddressGroup.TypeB\x03\xe0A\x02R\x04type\x12\x19\n" +
-	"\x05items\x18\a \x03(\tB\x03\xe0A\x01R\x05items\x12\x1f\n" +
-	"\bcapacity\x18\b \x01(\x05B\x03\xe0A\x02R\bcapacity\x12 \n" +
-	"\tself_link\x18\t \x01(\tB\x03\xe0A\x03R\bselfLink\x12T\n" +
+	"3google/cloud/networksecurity/v1/address_group.proto\x12\x1fgoogle.cloud.networksecurity.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/networksecurity/v1/common.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb0\a\n" +
+	"\fAddressGroup\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12W\n" +
+	"\x06labels\x18\x05 \x03(\v29.google.cloud.networksecurity.v1.AddressGroup.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12L\n" +
+	"\x04type\x18\x06 \x01(\x0e22.google.cloud.networksecurity.v1.AddressGroup.TypeB\x04\xe2A\x01\x02R\x04type\x12\x1a\n" +
+	"\x05items\x18\a \x03(\tB\x04\xe2A\x01\x01R\x05items\x12 \n" +
+	"\bcapacity\x18\b \x01(\x05B\x04\xe2A\x01\x02R\bcapacity\x12!\n" +
+	"\tself_link\x18\t \x01(\tB\x04\xe2A\x01\x03R\bselfLink\x12U\n" +
 	"\apurpose\x18\n" +
-	" \x03(\x0e25.google.cloud.networksecurity.v1.AddressGroup.PurposeB\x03\xe0A\x01R\apurpose\x1a9\n" +
+	" \x03(\x0e25.google.cloud.networksecurity.v1.AddressGroup.PurposeB\x04\xe2A\x01\x01R\apurpose\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"0\n" +
@@ -1159,59 +1159,59 @@ const file_google_cloud_networksecurity_v1_address_group_proto_rawDesc = "" +
 	"\x13PURPOSE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aDEFAULT\x10\x01\x12\x0f\n" +
 	"\vCLOUD_ARMOR\x10\x02:\xc9\x01\xeaA\xc5\x01\n" +
-	"+networksecurity.googleapis.com/AddressGroup\x12Eprojects/{project}/locations/{location}/addressGroups/{address_group}\x12Oorganizations/{organization}/locations/{location}/addressGroups/{address_group}\"\xd4\x01\n" +
-	"\x18ListAddressGroupsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"+networksecurity.googleapis.com/AddressGroup\x12Eprojects/{project}/locations/{location}/addressGroups/{address_group}\x12Oorganizations/{organization}/locations/{location}/addressGroups/{address_group}\"\xd6\x01\n" +
+	"\x18ListAddressGroupsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\x129\n" +
-	"\x16return_partial_success\x18\x04 \x01(\bB\x03\xe0A\x01R\x14returnPartialSuccess\"\xbb\x01\n" +
+	"page_token\x18\x03 \x01(\tR\tpageToken\x12:\n" +
+	"\x16return_partial_success\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x14returnPartialSuccess\"\xbb\x01\n" +
 	"\x19ListAddressGroupsResponse\x12T\n" +
 	"\x0eaddress_groups\x18\x01 \x03(\v2-.google.cloud.networksecurity.v1.AddressGroupR\raddressGroups\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"a\n" +
-	"\x16GetAddressGroupRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+networksecurity.googleapis.com/AddressGroupR\x04name\"\x94\x02\n" +
-	"\x19CreateAddressGroupRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+networksecurity.googleapis.com/AddressGroupR\x06parent\x12-\n" +
-	"\x10address_group_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x0eaddressGroupId\x12W\n" +
-	"\raddress_group\x18\x03 \x01(\v2-.google.cloud.networksecurity.v1.AddressGroupB\x03\xe0A\x02R\faddressGroup\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"b\n" +
+	"\x16GetAddressGroupRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+networksecurity.googleapis.com/AddressGroupR\x04name\"\x98\x02\n" +
+	"\x19CreateAddressGroupRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+networksecurity.googleapis.com/AddressGroupR\x06parent\x12.\n" +
+	"\x10address_group_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0eaddressGroupId\x12X\n" +
+	"\raddress_group\x18\x03 \x01(\v2-.google.cloud.networksecurity.v1.AddressGroupB\x04\xe2A\x01\x02R\faddressGroup\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xda\x01\n" +
-	"\x19UpdateAddressGroupRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12W\n" +
-	"\raddress_group\x18\x02 \x01(\v2-.google.cloud.networksecurity.v1.AddressGroupB\x03\xe0A\x02R\faddressGroup\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xdd\x01\n" +
+	"\x19UpdateAddressGroupRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12X\n" +
+	"\raddress_group\x18\x02 \x01(\v2-.google.cloud.networksecurity.v1.AddressGroupB\x04\xe2A\x01\x02R\faddressGroup\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"\x88\x01\n" +
-	"\x19DeleteAddressGroupRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+networksecurity.googleapis.com/AddressGroupR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x8a\x01\n" +
+	"\x19DeleteAddressGroupRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+networksecurity.googleapis.com/AddressGroupR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\xb6\x01\n" +
-	"\x1bAddAddressGroupItemsRequest\x12X\n" +
-	"\raddress_group\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+networksecurity.googleapis.com/AddressGroupR\faddressGroup\x12\x19\n" +
-	"\x05items\x18\x02 \x03(\tB\x03\xe0A\x02R\x05items\x12\"\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xb9\x01\n" +
+	"\x1bAddAddressGroupItemsRequest\x12Y\n" +
+	"\raddress_group\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+networksecurity.googleapis.com/AddressGroupR\faddressGroup\x12\x1a\n" +
+	"\x05items\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\x05items\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"\xb9\x01\n" +
-	"\x1eRemoveAddressGroupItemsRequest\x12X\n" +
-	"\raddress_group\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+networksecurity.googleapis.com/AddressGroupR\faddressGroup\x12\x19\n" +
-	"\x05items\x18\x02 \x03(\tB\x03\xe0A\x02R\x05items\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xbc\x01\n" +
+	"\x1eRemoveAddressGroupItemsRequest\x12Y\n" +
+	"\raddress_group\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+networksecurity.googleapis.com/AddressGroupR\faddressGroup\x12\x1a\n" +
+	"\x05items\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\x05items\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"\x84\x02\n" +
-	"\x1dCloneAddressGroupItemsRequest\x12X\n" +
-	"\raddress_group\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+networksecurity.googleapis.com/AddressGroupR\faddressGroup\x12e\n" +
-	"\x14source_address_group\x18\x02 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+networksecurity.googleapis.com/AddressGroupR\x12sourceAddressGroup\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x87\x02\n" +
+	"\x1dCloneAddressGroupItemsRequest\x12Y\n" +
+	"\raddress_group\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+networksecurity.googleapis.com/AddressGroupR\faddressGroup\x12f\n" +
+	"\x14source_address_group\x18\x02 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+networksecurity.googleapis.com/AddressGroupR\x12sourceAddressGroup\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"\xb9\x01\n" +
-	"!ListAddressGroupReferencesRequest\x12X\n" +
-	"\raddress_group\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xba\x01\n" +
+	"!ListAddressGroupReferencesRequest\x12Y\n" +
+	"\raddress_group\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
 	"+networksecurity.googleapis.com/AddressGroupR\faddressGroup\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +

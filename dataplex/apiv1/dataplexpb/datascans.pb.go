@@ -2231,146 +2231,146 @@ var File_google_cloud_dataplex_v1_datascans_proto protoreflect.FileDescriptor
 
 const file_google_cloud_dataplex_v1_datascans_proto_rawDesc = "" +
 	"\n" +
-	"(google/cloud/dataplex/v1/datascans.proto\x12\x18google.cloud.dataplex.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/dataplex/v1/data_discovery.proto\x1a1google/cloud/dataplex/v1/data_documentation.proto\x1a+google/cloud/dataplex/v1/data_profile.proto\x1a+google/cloud/dataplex/v1/data_quality.proto\x1a)google/cloud/dataplex/v1/processing.proto\x1a(google/cloud/dataplex/v1/resources.proto\x1a&google/cloud/dataplex/v1/service.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf1\x01\n" +
-	"\x15CreateDataScanRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12D\n" +
-	"\tdata_scan\x18\x02 \x01(\v2\".google.cloud.dataplex.v1.DataScanB\x03\xe0A\x02R\bdataScan\x12%\n" +
-	"\fdata_scan_id\x18\x03 \x01(\tB\x03\xe0A\x01R\n" +
-	"dataScanId\x12(\n" +
-	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xc9\x01\n" +
-	"\x15UpdateDataScanRequest\x12D\n" +
-	"\tdata_scan\x18\x01 \x01(\v2\".google.cloud.dataplex.v1.DataScanB\x03\xe0A\x02R\bdataScan\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"p\n" +
-	"\x15DeleteDataScanRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" dataplex.googleapis.com/DataScanR\x04name\x12\x19\n" +
-	"\x05force\x18\x02 \x01(\bB\x03\xe0A\x01R\x05force\"\xeb\x01\n" +
-	"\x12GetDataScanRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" dataplex.googleapis.com/DataScanR\x04name\x12R\n" +
-	"\x04view\x18\x02 \x01(\x0e29.google.cloud.dataplex.v1.GetDataScanRequest.DataScanViewB\x03\xe0A\x01R\x04view\"C\n" +
+	"(google/cloud/dataplex/v1/datascans.proto\x12\x18google.cloud.dataplex.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/dataplex/v1/data_discovery.proto\x1a1google/cloud/dataplex/v1/data_documentation.proto\x1a+google/cloud/dataplex/v1/data_profile.proto\x1a+google/cloud/dataplex/v1/data_quality.proto\x1a)google/cloud/dataplex/v1/processing.proto\x1a(google/cloud/dataplex/v1/resources.proto\x1a&google/cloud/dataplex/v1/service.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf5\x01\n" +
+	"\x15CreateDataScanRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12E\n" +
+	"\tdata_scan\x18\x02 \x01(\v2\".google.cloud.dataplex.v1.DataScanB\x04\xe2A\x01\x02R\bdataScan\x12&\n" +
+	"\fdata_scan_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"dataScanId\x12)\n" +
+	"\rvalidate_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xcc\x01\n" +
+	"\x15UpdateDataScanRequest\x12E\n" +
+	"\tdata_scan\x18\x01 \x01(\v2\".google.cloud.dataplex.v1.DataScanB\x04\xe2A\x01\x02R\bdataScan\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"r\n" +
+	"\x15DeleteDataScanRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" dataplex.googleapis.com/DataScanR\x04name\x12\x1a\n" +
+	"\x05force\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x05force\"\xed\x01\n" +
+	"\x12GetDataScanRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" dataplex.googleapis.com/DataScanR\x04name\x12S\n" +
+	"\x04view\x18\x02 \x01(\x0e29.google.cloud.dataplex.v1.GetDataScanRequest.DataScanViewB\x04\xe2A\x01\x01R\x04view\"C\n" +
 	"\fDataScanView\x12\x1e\n" +
 	"\x1aDATA_SCAN_VIEW_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05BASIC\x10\x01\x12\b\n" +
 	"\x04FULL\x10\n" +
-	"\"\xdc\x01\n" +
-	"\x14ListDataScansRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\"\xe1\x01\n" +
+	"\x14ListDataScansRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xa4\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xa4\x01\n" +
 	"\x15ListDataScansResponse\x12A\n" +
 	"\n" +
 	"data_scans\x18\x01 \x03(\v2\".google.cloud.dataplex.v1.DataScanR\tdataScans\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"R\n" +
-	"\x12RunDataScanRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"S\n" +
+	"\x12RunDataScanRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
 	" dataplex.googleapis.com/DataScanR\x04name\"N\n" +
 	"\x13RunDataScanResponse\x127\n" +
-	"\x03job\x18\x01 \x01(\v2%.google.cloud.dataplex.v1.DataScanJobR\x03job\"\xfe\x01\n" +
-	"\x15GetDataScanJobRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#dataplex.googleapis.com/DataScanJobR\x04name\x12X\n" +
-	"\x04view\x18\x02 \x01(\x0e2?.google.cloud.dataplex.v1.GetDataScanJobRequest.DataScanJobViewB\x03\xe0A\x01R\x04view\"J\n" +
+	"\x03job\x18\x01 \x01(\v2%.google.cloud.dataplex.v1.DataScanJobR\x03job\"\x80\x02\n" +
+	"\x15GetDataScanJobRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#dataplex.googleapis.com/DataScanJobR\x04name\x12Y\n" +
+	"\x04view\x18\x02 \x01(\x0e2?.google.cloud.dataplex.v1.GetDataScanJobRequest.DataScanJobViewB\x04\xe2A\x01\x01R\x04view\"J\n" +
 	"\x0fDataScanJobView\x12\"\n" +
 	"\x1eDATA_SCAN_JOB_VIEW_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05BASIC\x10\x01\x12\b\n" +
 	"\x04FULL\x10\n" +
-	"\"\xbe\x01\n" +
-	"\x17ListDataScanJobsRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" dataplex.googleapis.com/DataScanR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\"\xc2\x01\n" +
+	"\x17ListDataScanJobsRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" dataplex.googleapis.com/DataScanR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\x8f\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x8f\x01\n" +
 	"\x18ListDataScanJobsResponse\x12K\n" +
 	"\x0edata_scan_jobs\x18\x01 \x03(\v2%.google.cloud.dataplex.v1.DataScanJobR\fdataScanJobs\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"[\n" +
-	"\x18CancelDataScanJobRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\\\n" +
+	"\x18CancelDataScanJobRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
 	"#dataplex.googleapis.com/DataScanJobR\x04name\"\x1b\n" +
-	"\x19CancelDataScanJobResponse\":\n" +
-	"\x1fGenerateDataQualityRulesRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\"a\n" +
+	"\x19CancelDataScanJobResponse\";\n" +
+	"\x1fGenerateDataQualityRulesRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\"a\n" +
 	" GenerateDataQualityRulesResponse\x12=\n" +
-	"\x04rule\x18\x01 \x03(\v2).google.cloud.dataplex.v1.DataQualityRuleR\x04rule\"\xaf\x11\n" +
-	"\bDataScan\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x12\x1d\n" +
-	"\x03uid\x18\x02 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12&\n" +
-	"\fdisplay_name\x18\x04 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12K\n" +
-	"\x06labels\x18\x05 \x03(\v2..google.cloud.dataplex.v1.DataScan.LabelsEntryB\x03\xe0A\x01R\x06labels\x12:\n" +
-	"\x05state\x18\x06 \x01(\x0e2\x1f.google.cloud.dataplex.v1.StateB\x03\xe0A\x03R\x05state\x12@\n" +
-	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12=\n" +
-	"\x04data\x18\t \x01(\v2$.google.cloud.dataplex.v1.DataSourceB\x03\xe0A\x02R\x04data\x12\\\n" +
+	"\x04rule\x18\x01 \x03(\v2).google.cloud.dataplex.v1.DataQualityRuleR\x04rule\"\xc1\x11\n" +
+	"\bDataScan\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\bR\x04name\x12\x1e\n" +
+	"\x03uid\x18\x02 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12'\n" +
+	"\fdisplay_name\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12L\n" +
+	"\x06labels\x18\x05 \x03(\v2..google.cloud.dataplex.v1.DataScan.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12;\n" +
+	"\x05state\x18\x06 \x01(\x0e2\x1f.google.cloud.dataplex.v1.StateB\x04\xe2A\x01\x03R\x05state\x12A\n" +
+	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12>\n" +
+	"\x04data\x18\t \x01(\v2$.google.cloud.dataplex.v1.DataSourceB\x04\xe2A\x01\x02R\x04data\x12]\n" +
 	"\x0eexecution_spec\x18\n" +
-	" \x01(\v20.google.cloud.dataplex.v1.DataScan.ExecutionSpecB\x03\xe0A\x01R\rexecutionSpec\x12b\n" +
-	"\x10execution_status\x18\v \x01(\v22.google.cloud.dataplex.v1.DataScan.ExecutionStatusB\x03\xe0A\x03R\x0fexecutionStatus\x12?\n" +
-	"\x04type\x18\f \x01(\x0e2&.google.cloud.dataplex.v1.DataScanTypeB\x03\xe0A\x03R\x04type\x12W\n" +
+	" \x01(\v20.google.cloud.dataplex.v1.DataScan.ExecutionSpecB\x04\xe2A\x01\x01R\rexecutionSpec\x12c\n" +
+	"\x10execution_status\x18\v \x01(\v22.google.cloud.dataplex.v1.DataScan.ExecutionStatusB\x04\xe2A\x01\x03R\x0fexecutionStatus\x12@\n" +
+	"\x04type\x18\f \x01(\x0e2&.google.cloud.dataplex.v1.DataScanTypeB\x04\xe2A\x01\x03R\x04type\x12W\n" +
 	"\x11data_quality_spec\x18d \x01(\v2).google.cloud.dataplex.v1.DataQualitySpecH\x00R\x0fdataQualitySpec\x12W\n" +
 	"\x11data_profile_spec\x18e \x01(\v2).google.cloud.dataplex.v1.DataProfileSpecH\x00R\x0fdataProfileSpec\x12]\n" +
 	"\x13data_discovery_spec\x18f \x01(\v2+.google.cloud.dataplex.v1.DataDiscoverySpecH\x00R\x11dataDiscoverySpec\x12i\n" +
-	"\x17data_documentation_spec\x18g \x01(\v2/.google.cloud.dataplex.v1.DataDocumentationSpecH\x00R\x15dataDocumentationSpec\x12c\n" +
-	"\x13data_quality_result\x18\xc8\x01 \x01(\v2+.google.cloud.dataplex.v1.DataQualityResultB\x03\xe0A\x03H\x01R\x11dataQualityResult\x12c\n" +
-	"\x13data_profile_result\x18\xc9\x01 \x01(\v2+.google.cloud.dataplex.v1.DataProfileResultB\x03\xe0A\x03H\x01R\x11dataProfileResult\x12i\n" +
-	"\x15data_discovery_result\x18\xca\x01 \x01(\v2-.google.cloud.dataplex.v1.DataDiscoveryResultB\x03\xe0A\x03H\x01R\x13dataDiscoveryResult\x12u\n" +
-	"\x19data_documentation_result\x18\xcb\x01 \x01(\v21.google.cloud.dataplex.v1.DataDocumentationResultB\x03\xe0A\x03H\x01R\x17dataDocumentationResult\x12c\n" +
-	"\x12execution_identity\x18\xac\x02 \x01(\v2+.google.cloud.dataplex.v1.ExecutionIdentityB\x06\xe0A\x01\xe0A\x05R\x11executionIdentity\x1a}\n" +
-	"\rExecutionSpec\x12@\n" +
-	"\atrigger\x18\x01 \x01(\v2!.google.cloud.dataplex.v1.TriggerB\x03\xe0A\x01R\atrigger\x12\x1b\n" +
-	"\x05field\x18d \x01(\tB\x03\xe0A\x05H\x00R\x05fieldB\r\n" +
-	"\vincremental\x1a\x8b\x02\n" +
-	"\x0fExecutionStatus\x12R\n" +
-	"\x15latest_job_start_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\x12latestJobStartTime\x12N\n" +
-	"\x13latest_job_end_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\x10latestJobEndTime\x12T\n" +
-	"\x16latest_job_create_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\x13latestJobCreateTime\x1a9\n" +
+	"\x17data_documentation_spec\x18g \x01(\v2/.google.cloud.dataplex.v1.DataDocumentationSpecH\x00R\x15dataDocumentationSpec\x12d\n" +
+	"\x13data_quality_result\x18\xc8\x01 \x01(\v2+.google.cloud.dataplex.v1.DataQualityResultB\x04\xe2A\x01\x03H\x01R\x11dataQualityResult\x12d\n" +
+	"\x13data_profile_result\x18\xc9\x01 \x01(\v2+.google.cloud.dataplex.v1.DataProfileResultB\x04\xe2A\x01\x03H\x01R\x11dataProfileResult\x12j\n" +
+	"\x15data_discovery_result\x18\xca\x01 \x01(\v2-.google.cloud.dataplex.v1.DataDiscoveryResultB\x04\xe2A\x01\x03H\x01R\x13dataDiscoveryResult\x12v\n" +
+	"\x19data_documentation_result\x18\xcb\x01 \x01(\v21.google.cloud.dataplex.v1.DataDocumentationResultB\x04\xe2A\x01\x03H\x01R\x17dataDocumentationResult\x12b\n" +
+	"\x12execution_identity\x18\xac\x02 \x01(\v2+.google.cloud.dataplex.v1.ExecutionIdentityB\x05\xe2A\x02\x01\x05R\x11executionIdentity\x1a\x7f\n" +
+	"\rExecutionSpec\x12A\n" +
+	"\atrigger\x18\x01 \x01(\v2!.google.cloud.dataplex.v1.TriggerB\x04\xe2A\x01\x01R\atrigger\x12\x1c\n" +
+	"\x05field\x18d \x01(\tB\x04\xe2A\x01\x05H\x00R\x05fieldB\r\n" +
+	"\vincremental\x1a\x8e\x02\n" +
+	"\x0fExecutionStatus\x12S\n" +
+	"\x15latest_job_start_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\x12latestJobStartTime\x12O\n" +
+	"\x13latest_job_end_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\x10latestJobEndTime\x12U\n" +
+	"\x16latest_job_create_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\x13latestJobCreateTime\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:c\xeaA`\n" +
 	" dataplex.googleapis.com/DataScan\x12<projects/{project}/locations/{location}/dataScans/{dataScan}B\x06\n" +
 	"\x04specB\b\n" +
-	"\x06result\"\xcd\x03\n" +
-	"\x11ExecutionIdentity\x12}\n" +
-	"\x16dataplex_service_agent\x18\x01 \x01(\v2@.google.cloud.dataplex.v1.ExecutionIdentity.DataplexServiceAgentB\x03\xe0A\x01H\x00R\x14dataplexServiceAgent\x12j\n" +
-	"\x0fuser_credential\x18\x02 \x01(\v2:.google.cloud.dataplex.v1.ExecutionIdentity.UserCredentialB\x03\xe0A\x01H\x00R\x0euserCredential\x12j\n" +
-	"\x0fservice_account\x18\x03 \x01(\v2:.google.cloud.dataplex.v1.ExecutionIdentity.ServiceAccountB\x03\xe0A\x01H\x00R\x0eserviceAccount\x1a\x16\n" +
+	"\x06result\"\xd1\x03\n" +
+	"\x11ExecutionIdentity\x12~\n" +
+	"\x16dataplex_service_agent\x18\x01 \x01(\v2@.google.cloud.dataplex.v1.ExecutionIdentity.DataplexServiceAgentB\x04\xe2A\x01\x01H\x00R\x14dataplexServiceAgent\x12k\n" +
+	"\x0fuser_credential\x18\x02 \x01(\v2:.google.cloud.dataplex.v1.ExecutionIdentity.UserCredentialB\x04\xe2A\x01\x01H\x00R\x0euserCredential\x12k\n" +
+	"\x0fservice_account\x18\x03 \x01(\v2:.google.cloud.dataplex.v1.ExecutionIdentity.ServiceAccountB\x04\xe2A\x01\x01H\x00R\x0eserviceAccount\x1a\x16\n" +
 	"\x14DataplexServiceAgent\x1a\x10\n" +
-	"\x0eUserCredential\x1a+\n" +
-	"\x0eServiceAccount\x12\x19\n" +
-	"\x05email\x18\x01 \x01(\tB\x03\xe0A\x02R\x05emailB\n" +
+	"\x0eUserCredential\x1a,\n" +
+	"\x0eServiceAccount\x12\x1a\n" +
+	"\x05email\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05emailB\n" +
 	"\n" +
-	"\bidentity\"\xbb\f\n" +
-	"\vDataScanJob\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x12\x1d\n" +
-	"\x03uid\x18\x02 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12@\n" +
-	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12;\n" +
-	"\x17partial_failure_message\x18\t \x01(\tB\x03\xe0A\x03R\x15partialFailureMessage\x12>\n" +
+	"\bidentity\"\xca\f\n" +
+	"\vDataScanJob\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\bR\x04name\x12\x1e\n" +
+	"\x03uid\x18\x02 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12A\n" +
+	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12<\n" +
+	"\x17partial_failure_message\x18\t \x01(\tB\x04\xe2A\x01\x03R\x15partialFailureMessage\x12?\n" +
 	"\n" +
-	"start_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12F\n" +
-	"\x05state\x18\x05 \x01(\x0e2+.google.cloud.dataplex.v1.DataScanJob.StateB\x03\xe0A\x03R\x05state\x12\x1d\n" +
-	"\amessage\x18\x06 \x01(\tB\x03\xe0A\x03R\amessage\x12?\n" +
-	"\x04type\x18\a \x01(\x0e2&.google.cloud.dataplex.v1.DataScanTypeB\x03\xe0A\x03R\x04type\x12\\\n" +
-	"\x11data_quality_spec\x18d \x01(\v2).google.cloud.dataplex.v1.DataQualitySpecB\x03\xe0A\x03H\x00R\x0fdataQualitySpec\x12\\\n" +
-	"\x11data_profile_spec\x18e \x01(\v2).google.cloud.dataplex.v1.DataProfileSpecB\x03\xe0A\x03H\x00R\x0fdataProfileSpec\x12b\n" +
-	"\x13data_discovery_spec\x18f \x01(\v2+.google.cloud.dataplex.v1.DataDiscoverySpecB\x03\xe0A\x03H\x00R\x11dataDiscoverySpec\x12n\n" +
-	"\x17data_documentation_spec\x18g \x01(\v2/.google.cloud.dataplex.v1.DataDocumentationSpecB\x03\xe0A\x03H\x00R\x15dataDocumentationSpec\x12c\n" +
-	"\x13data_quality_result\x18\xc8\x01 \x01(\v2+.google.cloud.dataplex.v1.DataQualityResultB\x03\xe0A\x03H\x01R\x11dataQualityResult\x12c\n" +
-	"\x13data_profile_result\x18\xc9\x01 \x01(\v2+.google.cloud.dataplex.v1.DataProfileResultB\x03\xe0A\x03H\x01R\x11dataProfileResult\x12i\n" +
-	"\x15data_discovery_result\x18\xca\x01 \x01(\v2-.google.cloud.dataplex.v1.DataDiscoveryResultB\x03\xe0A\x03H\x01R\x13dataDiscoveryResult\x12u\n" +
-	"\x19data_documentation_result\x18\xcb\x01 \x01(\v21.google.cloud.dataplex.v1.DataDocumentationResultB\x03\xe0A\x03H\x01R\x17dataDocumentationResult\"\x8c\x01\n" +
+	"start_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12G\n" +
+	"\x05state\x18\x05 \x01(\x0e2+.google.cloud.dataplex.v1.DataScanJob.StateB\x04\xe2A\x01\x03R\x05state\x12\x1e\n" +
+	"\amessage\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\amessage\x12@\n" +
+	"\x04type\x18\a \x01(\x0e2&.google.cloud.dataplex.v1.DataScanTypeB\x04\xe2A\x01\x03R\x04type\x12]\n" +
+	"\x11data_quality_spec\x18d \x01(\v2).google.cloud.dataplex.v1.DataQualitySpecB\x04\xe2A\x01\x03H\x00R\x0fdataQualitySpec\x12]\n" +
+	"\x11data_profile_spec\x18e \x01(\v2).google.cloud.dataplex.v1.DataProfileSpecB\x04\xe2A\x01\x03H\x00R\x0fdataProfileSpec\x12c\n" +
+	"\x13data_discovery_spec\x18f \x01(\v2+.google.cloud.dataplex.v1.DataDiscoverySpecB\x04\xe2A\x01\x03H\x00R\x11dataDiscoverySpec\x12o\n" +
+	"\x17data_documentation_spec\x18g \x01(\v2/.google.cloud.dataplex.v1.DataDocumentationSpecB\x04\xe2A\x01\x03H\x00R\x15dataDocumentationSpec\x12d\n" +
+	"\x13data_quality_result\x18\xc8\x01 \x01(\v2+.google.cloud.dataplex.v1.DataQualityResultB\x04\xe2A\x01\x03H\x01R\x11dataQualityResult\x12d\n" +
+	"\x13data_profile_result\x18\xc9\x01 \x01(\v2+.google.cloud.dataplex.v1.DataProfileResultB\x04\xe2A\x01\x03H\x01R\x11dataProfileResult\x12j\n" +
+	"\x15data_discovery_result\x18\xca\x01 \x01(\v2-.google.cloud.dataplex.v1.DataDiscoveryResultB\x04\xe2A\x01\x03H\x01R\x13dataDiscoveryResult\x12v\n" +
+	"\x19data_documentation_result\x18\xcb\x01 \x01(\v21.google.cloud.dataplex.v1.DataDocumentationResultB\x04\xe2A\x01\x03H\x01R\x17dataDocumentationResult\"\x8c\x01\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aRUNNING\x10\x01\x12\r\n" +

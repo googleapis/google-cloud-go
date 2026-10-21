@@ -285,20 +285,20 @@ var File_google_cloud_support_v2beta_support_event_subscription_proto protorefle
 
 const file_google_cloud_support_v2beta_support_event_subscription_proto_rawDesc = "" +
 	"\n" +
-	"<google/cloud/support/v2beta/support_event_subscription.proto\x12\x1bgoogle.cloud.support.v2beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa1\a\n" +
-	"\x18SupportEventSubscription\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12'\n" +
-	"\rpub_sub_topic\x18\x02 \x01(\tB\x03\xe0A\x02R\vpubSubTopic\x12V\n" +
-	"\x05state\x18\x03 \x01(\x0e2;.google.cloud.support.v2beta.SupportEventSubscription.StateB\x03\xe0A\x03R\x05state\x12o\n" +
-	"\x0efailure_reason\x18\x04 \x01(\x0e2C.google.cloud.support.v2beta.SupportEventSubscription.FailureReasonB\x03\xe0A\x03R\rfailureReason\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12@\n" +
-	"\vdelete_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"deleteTime\x12>\n" +
+	"<google/cloud/support/v2beta/support_event_subscription.proto\x12\x1bgoogle.cloud.support.v2beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa9\a\n" +
+	"\x18SupportEventSubscription\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12(\n" +
+	"\rpub_sub_topic\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vpubSubTopic\x12W\n" +
+	"\x05state\x18\x03 \x01(\x0e2;.google.cloud.support.v2beta.SupportEventSubscription.StateB\x04\xe2A\x01\x03R\x05state\x12p\n" +
+	"\x0efailure_reason\x18\x04 \x01(\x0e2C.google.cloud.support.v2beta.SupportEventSubscription.FailureReasonB\x04\xe2A\x01\x03R\rfailureReason\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12A\n" +
+	"\vdelete_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"deleteTime\x12?\n" +
 	"\n" +
-	"purge_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tpurgeTime\"E\n" +
+	"purge_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tpurgeTime\"E\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aWORKING\x10\x01\x12\v\n" +

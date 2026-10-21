@@ -726,53 +726,53 @@ var File_google_maps_fleetengine_v1_trips_proto protoreflect.FileDescriptor
 
 const file_google_maps_fleetengine_v1_trips_proto_rawDesc = "" +
 	"\n" +
-	"&google/maps/fleetengine/v1/trips.proto\x12\x13maps.fleetengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/maps/fleetengine/v1/fleetengine.proto\x1a(google/maps/fleetengine/v1/traffic.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x18google/type/latlng.proto\"\xbc\x16\n" +
-	"\x04Trip\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x1d\n" +
+	"&google/maps/fleetengine/v1/trips.proto\x12\x13maps.fleetengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/maps/fleetengine/v1/fleetengine.proto\x1a(google/maps/fleetengine/v1/traffic.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x18google/type/latlng.proto\"\xd3\x16\n" +
+	"\x04Trip\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x1d\n" +
 	"\n" +
 	"vehicle_id\x18\x02 \x01(\tR\tvehicleId\x12@\n" +
 	"\vtrip_status\x18\x03 \x01(\x0e2\x1f.maps.fleetengine.v1.TripStatusR\n" +
 	"tripStatus\x12:\n" +
 	"\ttrip_type\x18\x04 \x01(\x0e2\x1d.maps.fleetengine.v1.TripTypeR\btripType\x12H\n" +
-	"\fpickup_point\x18\x05 \x01(\v2%.maps.fleetengine.v1.TerminalLocationR\vpickupPoint\x12V\n" +
-	"\x13actual_pickup_point\x18\x16 \x01(\v2!.maps.fleetengine.v1.StopLocationB\x03\xe0A\x04R\x11actualPickupPoint\x12e\n" +
-	"\x1bactual_pickup_arrival_point\x18  \x01(\v2!.maps.fleetengine.v1.StopLocationB\x03\xe0A\x04R\x18actualPickupArrivalPoint\x12@\n" +
-	"\vpickup_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\fpickup_point\x18\x05 \x01(\v2%.maps.fleetengine.v1.TerminalLocationR\vpickupPoint\x12W\n" +
+	"\x13actual_pickup_point\x18\x16 \x01(\v2!.maps.fleetengine.v1.StopLocationB\x04\xe2A\x01\x04R\x11actualPickupPoint\x12f\n" +
+	"\x1bactual_pickup_arrival_point\x18  \x01(\v2!.maps.fleetengine.v1.StopLocationB\x04\xe2A\x01\x04R\x18actualPickupArrivalPoint\x12A\n" +
+	"\vpickup_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"pickupTime\x12b\n" +
 	"\x19intermediate_destinations\x18\x0e \x03(\v2%.maps.fleetengine.v1.TerminalLocationR\x18intermediateDestinations\x12f\n" +
 	"!intermediate_destinations_version\x18\x19 \x01(\v2\x1a.google.protobuf.TimestampR\x1fintermediateDestinationsVersion\x12D\n" +
-	"\x1eintermediate_destination_index\x18\x0f \x01(\x05R\x1cintermediateDestinationIndex\x12\x8a\x01\n" +
-	".actual_intermediate_destination_arrival_points\x18! \x03(\v2!.maps.fleetengine.v1.StopLocationB\x03\xe0A\x04R*actualIntermediateDestinationArrivalPoints\x12p\n" +
-	" actual_intermediate_destinations\x18\" \x03(\v2!.maps.fleetengine.v1.StopLocationB\x03\xe0A\x04R\x1eactualIntermediateDestinations\x12J\n" +
-	"\rdropoff_point\x18\a \x01(\v2%.maps.fleetengine.v1.TerminalLocationR\fdropoffPoint\x12X\n" +
-	"\x14actual_dropoff_point\x18\x17 \x01(\v2!.maps.fleetengine.v1.StopLocationB\x03\xe0A\x04R\x12actualDropoffPoint\x12B\n" +
-	"\fdropoff_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\vdropoffTime\x12W\n" +
-	"\x13remaining_waypoints\x18\x10 \x03(\v2!.maps.fleetengine.v1.TripWaypointB\x03\xe0A\x03R\x12remainingWaypoints\x12N\n" +
-	"\x11vehicle_waypoints\x18\x14 \x03(\v2!.maps.fleetengine.v1.TripWaypointR\x10vehicleWaypoints\x12.\n" +
-	"\x05route\x18\t \x03(\v2\x13.google.type.LatLngB\x03\xe0A\x03R\x05route\x127\n" +
-	"\x15current_route_segment\x18\x15 \x01(\tB\x03\xe0A\x03R\x13currentRouteSegment\x12b\n" +
-	"\x1dcurrent_route_segment_version\x18\x11 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x1acurrentRouteSegmentVersion\x12v\n" +
-	"\x1dcurrent_route_segment_traffic\x18\x1c \x01(\v2..maps.fleetengine.v1.ConsumableTrafficPolylineB\x03\xe0A\x03R\x1acurrentRouteSegmentTraffic\x12q\n" +
-	"%current_route_segment_traffic_version\x18\x1e \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R!currentRouteSegmentTrafficVersion\x12l\n" +
-	"\x1fcurrent_route_segment_end_point\x18\x18 \x01(\v2!.maps.fleetengine.v1.TripWaypointB\x03\xe0A\x03R\x1bcurrentRouteSegmentEndPoint\x12\\\n" +
-	"\x19remaining_distance_meters\x18\f \x01(\v2\x1b.google.protobuf.Int32ValueB\x03\xe0A\x03R\x17remainingDistanceMeters\x12R\n" +
-	"\x15eta_to_first_waypoint\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x12etaToFirstWaypoint\x12f\n" +
-	" remaining_time_to_first_waypoint\x18\x1b \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x03R\x1cremainingTimeToFirstWaypoint\x12_\n" +
-	"\x1bremaining_waypoints_version\x18\x13 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x19remainingWaypointsVersion\x12j\n" +
-	"!remaining_waypoints_route_version\x18\x1d \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x1eremainingWaypointsRouteVersion\x125\n" +
+	"\x1eintermediate_destination_index\x18\x0f \x01(\x05R\x1cintermediateDestinationIndex\x12\x8b\x01\n" +
+	".actual_intermediate_destination_arrival_points\x18! \x03(\v2!.maps.fleetengine.v1.StopLocationB\x04\xe2A\x01\x04R*actualIntermediateDestinationArrivalPoints\x12q\n" +
+	" actual_intermediate_destinations\x18\" \x03(\v2!.maps.fleetengine.v1.StopLocationB\x04\xe2A\x01\x04R\x1eactualIntermediateDestinations\x12J\n" +
+	"\rdropoff_point\x18\a \x01(\v2%.maps.fleetengine.v1.TerminalLocationR\fdropoffPoint\x12Y\n" +
+	"\x14actual_dropoff_point\x18\x17 \x01(\v2!.maps.fleetengine.v1.StopLocationB\x04\xe2A\x01\x04R\x12actualDropoffPoint\x12C\n" +
+	"\fdropoff_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\vdropoffTime\x12X\n" +
+	"\x13remaining_waypoints\x18\x10 \x03(\v2!.maps.fleetengine.v1.TripWaypointB\x04\xe2A\x01\x03R\x12remainingWaypoints\x12N\n" +
+	"\x11vehicle_waypoints\x18\x14 \x03(\v2!.maps.fleetengine.v1.TripWaypointR\x10vehicleWaypoints\x12/\n" +
+	"\x05route\x18\t \x03(\v2\x13.google.type.LatLngB\x04\xe2A\x01\x03R\x05route\x128\n" +
+	"\x15current_route_segment\x18\x15 \x01(\tB\x04\xe2A\x01\x03R\x13currentRouteSegment\x12c\n" +
+	"\x1dcurrent_route_segment_version\x18\x11 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x1acurrentRouteSegmentVersion\x12w\n" +
+	"\x1dcurrent_route_segment_traffic\x18\x1c \x01(\v2..maps.fleetengine.v1.ConsumableTrafficPolylineB\x04\xe2A\x01\x03R\x1acurrentRouteSegmentTraffic\x12r\n" +
+	"%current_route_segment_traffic_version\x18\x1e \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R!currentRouteSegmentTrafficVersion\x12m\n" +
+	"\x1fcurrent_route_segment_end_point\x18\x18 \x01(\v2!.maps.fleetengine.v1.TripWaypointB\x04\xe2A\x01\x03R\x1bcurrentRouteSegmentEndPoint\x12]\n" +
+	"\x19remaining_distance_meters\x18\f \x01(\v2\x1b.google.protobuf.Int32ValueB\x04\xe2A\x01\x03R\x17remainingDistanceMeters\x12S\n" +
+	"\x15eta_to_first_waypoint\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x12etaToFirstWaypoint\x12g\n" +
+	" remaining_time_to_first_waypoint\x18\x1b \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x03R\x1cremainingTimeToFirstWaypoint\x12`\n" +
+	"\x1bremaining_waypoints_version\x18\x13 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x19remainingWaypointsVersion\x12k\n" +
+	"!remaining_waypoints_route_version\x18\x1d \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x1eremainingWaypointsRouteVersion\x126\n" +
 	"\x14number_of_passengers\x18\n" +
-	" \x01(\x05B\x03\xe0A\x05R\x12numberOfPassengers\x12N\n" +
-	"\rlast_location\x18\v \x01(\v2$.maps.fleetengine.v1.VehicleLocationB\x03\xe0A\x03R\flastLocation\x12;\n" +
-	"\x17last_location_snappable\x18\x1a \x01(\bB\x03\xe0A\x03R\x15lastLocationSnappable\x121\n" +
+	" \x01(\x05B\x04\xe2A\x01\x05R\x12numberOfPassengers\x12O\n" +
+	"\rlast_location\x18\v \x01(\v2$.maps.fleetengine.v1.VehicleLocationB\x04\xe2A\x01\x03R\flastLocation\x12<\n" +
+	"\x17last_location_snappable\x18\x1a \x01(\bB\x04\xe2A\x01\x03R\x15lastLocationSnappable\x121\n" +
 	"\x04view\x18\x1f \x01(\x0e2\x1d.maps.fleetengine.v1.TripViewR\x04view\x12B\n" +
 	"\n" +
 	"attributes\x18# \x03(\v2\".maps.fleetengine.v1.TripAttributeR\n" +
 	"attributes:G\xeaAD\n" +
-	"\x1ffleetengine.googleapis.com/Trip\x12!providers/{provider}/trips/{trip}\"\xb8\x01\n" +
-	"\fStopLocation\x12.\n" +
-	"\x05point\x18\x01 \x01(\v2\x13.google.type.LatLngB\x03\xe0A\x02R\x05point\x128\n" +
-	"\ttimestamp\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\ttimestamp\x12>\n" +
-	"\tstop_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x05\xe0A\x04\x18\x01R\bstopTime*\xe2\x01\n" +
+	"\x1ffleetengine.googleapis.com/Trip\x12!providers/{provider}/trips/{trip}\"\xba\x01\n" +
+	"\fStopLocation\x12/\n" +
+	"\x05point\x18\x01 \x01(\v2\x13.google.type.LatLngB\x04\xe2A\x01\x02R\x05point\x128\n" +
+	"\ttimestamp\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\ttimestamp\x12?\n" +
+	"\tstop_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x06\xe2A\x01\x04\x18\x01R\bstopTime*\xe2\x01\n" +
 	"\n" +
 	"TripStatus\x12\x17\n" +
 	"\x13UNKNOWN_TRIP_STATUS\x10\x00\x12\a\n" +

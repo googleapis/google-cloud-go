@@ -2202,7 +2202,7 @@ var File_google_bigtable_v2_types_proto protoreflect.FileDescriptor
 
 const file_google_bigtable_v2_types_proto_rawDesc = "" +
 	"\n" +
-	"\x1egoogle/bigtable/v2/types.proto\x12\x12google.bigtable.v2\x1a\x1fgoogle/api/field_behavior.proto\"\xb1\x1c\n" +
+	"\x1egoogle/bigtable/v2/types.proto\x12\x12google.bigtable.v2\x1a\x1fgoogle/api/field_behavior.proto\"\xb2\x1c\n" +
 	"\x04Type\x12?\n" +
 	"\n" +
 	"bytes_type\x18\x01 \x01(\v2\x1e.google.bigtable.v2.Type.BytesH\x00R\tbytesType\x12B\n" +
@@ -2293,12 +2293,12 @@ const file_google_bigtable_v2_types_proto_rawDesc = "" +
 	"\x03Map\x123\n" +
 	"\bkey_type\x18\x01 \x01(\v2\x18.google.bigtable.v2.TypeR\akeyType\x127\n" +
 	"\n" +
-	"value_type\x18\x02 \x01(\v2\x18.google.bigtable.v2.TypeR\tvalueType\x1a\xee\x03\n" +
+	"value_type\x18\x02 \x01(\v2\x18.google.bigtable.v2.TypeR\tvalueType\x1a\xef\x03\n" +
 	"\tAggregate\x127\n" +
 	"\n" +
-	"input_type\x18\x01 \x01(\v2\x18.google.bigtable.v2.TypeR\tinputType\x12<\n" +
+	"input_type\x18\x01 \x01(\v2\x18.google.bigtable.v2.TypeR\tinputType\x12=\n" +
 	"\n" +
-	"state_type\x18\x02 \x01(\v2\x18.google.bigtable.v2.TypeB\x03\xe0A\x03R\tstateType\x12:\n" +
+	"state_type\x18\x02 \x01(\v2\x18.google.bigtable.v2.TypeB\x04\xe2A\x01\x03R\tstateType\x12:\n" +
 	"\x03sum\x18\x04 \x01(\v2&.google.bigtable.v2.Type.Aggregate.SumH\x00R\x03sum\x12q\n" +
 	"\x12hllpp_unique_count\x18\x05 \x01(\v2A.google.bigtable.v2.Type.Aggregate.HyperLogLogPlusPlusUniqueCountH\x00R\x10hllppUniqueCount\x12:\n" +
 	"\x03max\x18\x06 \x01(\v2&.google.bigtable.v2.Type.Aggregate.MaxH\x00R\x03max\x12:\n" +

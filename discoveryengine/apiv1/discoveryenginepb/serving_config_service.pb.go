@@ -103,9 +103,9 @@ var File_google_cloud_discoveryengine_v1_serving_config_service_proto protorefle
 
 const file_google_cloud_discoveryengine_v1_serving_config_service_proto_rawDesc = "" +
 	"\n" +
-	"<google/cloud/discoveryengine/v1/serving_config_service.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/discoveryengine/v1/serving_config.proto\x1a google/protobuf/field_mask.proto\"\xb5\x01\n" +
-	"\x1aUpdateServingConfigRequest\x12Z\n" +
-	"\x0eserving_config\x18\x01 \x01(\v2..google.cloud.discoveryengine.v1.ServingConfigB\x03\xe0A\x02R\rservingConfig\x12;\n" +
+	"<google/cloud/discoveryengine/v1/serving_config_service.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/discoveryengine/v1/serving_config.proto\x1a google/protobuf/field_mask.proto\"\xb6\x01\n" +
+	"\x1aUpdateServingConfigRequest\x12[\n" +
+	"\x0eserving_config\x18\x01 \x01(\v2..google.cloud.discoveryengine.v1.ServingConfigB\x04\xe2A\x01\x02R\rservingConfig\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"updateMask2\xd3\x04\n" +
 	"\x14ServingConfigService\x12\xe6\x03\n" +

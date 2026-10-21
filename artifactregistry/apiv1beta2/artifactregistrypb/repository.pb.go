@@ -735,20 +735,20 @@ const file_google_devtools_artifactregistry_v1beta2_repository_proto_rawDesc = "
 	"\n" +
 	"\x06PYTHON\x10\b:r\xeaAo\n" +
 	"*artifactregistry.googleapis.com/Repository\x12Aprojects/{project}/locations/{location}/repositories/{repository}B\x0f\n" +
-	"\rformat_config\"\xa1\x01\n" +
-	"\x17ListRepositoriesRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*artifactregistry.googleapis.com/RepositoryR\x06parent\x12\x1b\n" +
+	"\rformat_config\"\xa2\x01\n" +
+	"\x17ListRepositoriesRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*artifactregistry.googleapis.com/RepositoryR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x9c\x01\n" +
 	"\x18ListRepositoriesResponse\x12X\n" +
 	"\frepositories\x18\x01 \x03(\v24.google.devtools.artifactregistry.v1beta2.RepositoryR\frepositories\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"^\n" +
-	"\x14GetRepositoryRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*artifactregistry.googleapis.com/RepositoryR\x04name\"\xe0\x01\n" +
-	"\x17CreateRepositoryRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*artifactregistry.googleapis.com/RepositoryR\x06parent\x12#\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"_\n" +
+	"\x14GetRepositoryRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*artifactregistry.googleapis.com/RepositoryR\x04name\"\xe1\x01\n" +
+	"\x17CreateRepositoryRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*artifactregistry.googleapis.com/RepositoryR\x06parent\x12#\n" +
 	"\rrepository_id\x18\x02 \x01(\tR\frepositoryId\x12T\n" +
 	"\n" +
 	"repository\x18\x03 \x01(\v24.google.devtools.artifactregistry.v1beta2.RepositoryR\n" +
@@ -758,9 +758,9 @@ const file_google_devtools_artifactregistry_v1beta2_repository_proto_rawDesc = "
 	"repository\x18\x01 \x01(\v24.google.devtools.artifactregistry.v1beta2.RepositoryR\n" +
 	"repository\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"a\n" +
-	"\x17DeleteRepositoryRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
+	"updateMask\"b\n" +
+	"\x17DeleteRepositoryRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
 	"*artifactregistry.googleapis.com/RepositoryR\x04nameB\x93\x02\n" +
 	",com.google.devtools.artifactregistry.v1beta2B\x0fRepositoryProtoP\x01ZUcloud.google.com/go/artifactregistry/apiv1beta2/artifactregistrypb;artifactregistrypb\xaa\x02%Google.Cloud.ArtifactRegistry.V1Beta2\xca\x02%Google\\Cloud\\ArtifactRegistry\\V1beta2\xea\x02(Google::Cloud::ArtifactRegistry::V1beta2b\x06proto3"
 

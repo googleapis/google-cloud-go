@@ -866,36 +866,36 @@ var File_google_cloud_datacatalog_v1beta1_tags_proto protoreflect.FileDescriptor
 
 const file_google_cloud_datacatalog_v1beta1_tags_proto_rawDesc = "" +
 	"\n" +
-	"+google/cloud/datacatalog/v1beta1/tags.proto\x12 google.cloud.datacatalog.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd6\x03\n" +
-	"\x03Tag\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1f\n" +
-	"\btemplate\x18\x02 \x01(\tB\x03\xe0A\x02R\btemplate\x127\n" +
-	"\x15template_display_name\x18\x05 \x01(\tB\x03\xe0A\x03R\x13templateDisplayName\x12\x18\n" +
-	"\x06column\x18\x04 \x01(\tH\x00R\x06column\x12N\n" +
-	"\x06fields\x18\x03 \x03(\v21.google.cloud.datacatalog.v1beta1.Tag.FieldsEntryB\x03\xe0A\x02R\x06fields\x1ae\n" +
+	"+google/cloud/datacatalog/v1beta1/tags.proto\x12 google.cloud.datacatalog.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xda\x03\n" +
+	"\x03Tag\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12 \n" +
+	"\btemplate\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\btemplate\x128\n" +
+	"\x15template_display_name\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x13templateDisplayName\x12\x18\n" +
+	"\x06column\x18\x04 \x01(\tH\x00R\x06column\x12O\n" +
+	"\x06fields\x18\x03 \x03(\v21.google.cloud.datacatalog.v1beta1.Tag.FieldsEntryB\x04\xe2A\x01\x02R\x06fields\x1ae\n" +
 	"\vFieldsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12@\n" +
 	"\x05value\x18\x02 \x01(\v2*.google.cloud.datacatalog.v1beta1.TagFieldR\x05value:\x028\x01:\x81\x01\xeaA~\n" +
 	"\x1edatacatalog.googleapis.com/Tag\x12\\projects/{project}/locations/{location}/entryGroups/{entry_group}/entries/{entry}/tags/{tag}B\a\n" +
-	"\x05scope\"\x8e\x03\n" +
-	"\bTagField\x12&\n" +
-	"\fdisplay_name\x18\x01 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12#\n" +
+	"\x05scope\"\x90\x03\n" +
+	"\bTagField\x12'\n" +
+	"\fdisplay_name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12#\n" +
 	"\fdouble_value\x18\x02 \x01(\x01H\x00R\vdoubleValue\x12#\n" +
 	"\fstring_value\x18\x03 \x01(\tH\x00R\vstringValue\x12\x1f\n" +
 	"\n" +
 	"bool_value\x18\x04 \x01(\bH\x00R\tboolValue\x12E\n" +
 	"\x0ftimestamp_value\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\x0etimestampValue\x12U\n" +
 	"\n" +
-	"enum_value\x18\x06 \x01(\v24.google.cloud.datacatalog.v1beta1.TagField.EnumValueH\x00R\tenumValue\x12\x19\n" +
-	"\x05order\x18\a \x01(\x05B\x03\xe0A\x03R\x05order\x1a.\n" +
+	"enum_value\x18\x06 \x01(\v24.google.cloud.datacatalog.v1beta1.TagField.EnumValueH\x00R\tenumValue\x12\x1a\n" +
+	"\x05order\x18\a \x01(\x05B\x04\xe2A\x01\x03R\x05order\x1a.\n" +
 	"\tEnumValue\x12!\n" +
 	"\fdisplay_name\x18\x01 \x01(\tR\vdisplayNameB\x06\n" +
-	"\x04kind\"\xde\x04\n" +
-	"\vTagTemplate\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12!\n" +
-	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12V\n" +
-	"\x06fields\x18\x03 \x03(\v29.google.cloud.datacatalog.v1beta1.TagTemplate.FieldsEntryB\x03\xe0A\x02R\x06fields\x12\x83\x01\n" +
-	"\x18dataplex_transfer_status\x18\a \x01(\x0e2D.google.cloud.datacatalog.v1beta1.TagTemplate.DataplexTransferStatusB\x03\xe0A\x03R\x16dataplexTransferStatus\x1am\n" +
+	"\x04kind\"\xe1\x04\n" +
+	"\vTagTemplate\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12!\n" +
+	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12W\n" +
+	"\x06fields\x18\x03 \x03(\v29.google.cloud.datacatalog.v1beta1.TagTemplate.FieldsEntryB\x04\xe2A\x01\x02R\x06fields\x12\x84\x01\n" +
+	"\x18dataplex_transfer_status\x18\a \x01(\x0e2D.google.cloud.datacatalog.v1beta1.TagTemplate.DataplexTransferStatusB\x04\xe2A\x01\x03R\x16dataplexTransferStatus\x1am\n" +
 	"\vFieldsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12H\n" +
 	"\x05value\x18\x02 \x01(\v22.google.cloud.datacatalog.v1beta1.TagTemplateFieldR\x05value:\x028\x01\"T\n" +
@@ -903,22 +903,22 @@ const file_google_cloud_datacatalog_v1beta1_tags_proto_rawDesc = "" +
 	"$DATAPLEX_TRANSFER_STATUS_UNSPECIFIED\x10\x00\x12\x10\n" +
 	"\bMIGRATED\x10\x01\x1a\x02\b\x01:p\xeaAm\n" +
 	"&datacatalog.googleapis.com/TagTemplate\x12Cprojects/{project}/locations/{location}/tagTemplates/{tag_template}\"\xf8\x02\n" +
-	"\x10TagTemplateField\x12\x1a\n" +
-	"\x04name\x18\x06 \x01(\tB\x06\xe0A\b\xe0A\x03R\x04name\x12!\n" +
-	"\fdisplay_name\x18\x01 \x01(\tR\vdisplayName\x12D\n" +
-	"\x04type\x18\x02 \x01(\v2+.google.cloud.datacatalog.v1beta1.FieldTypeB\x03\xe0A\x02R\x04type\x12\x1f\n" +
+	"\x10TagTemplateField\x12\x19\n" +
+	"\x04name\x18\x06 \x01(\tB\x05\xe2A\x02\b\x03R\x04name\x12!\n" +
+	"\fdisplay_name\x18\x01 \x01(\tR\vdisplayName\x12E\n" +
+	"\x04type\x18\x02 \x01(\v2+.google.cloud.datacatalog.v1beta1.FieldTypeB\x04\xe2A\x01\x02R\x04type\x12\x1f\n" +
 	"\vis_required\x18\x03 \x01(\bR\n" +
 	"isRequired\x12 \n" +
 	"\vdescription\x18\x04 \x01(\tR\vdescription\x12\x14\n" +
 	"\x05order\x18\x05 \x01(\x05R\x05order:\x85\x01\xeaA\x81\x01\n" +
-	"+datacatalog.googleapis.com/TagTemplateField\x12Rprojects/{project}/locations/{location}/tagTemplates/{tag_template}/fields/{field}\"\xdc\x03\n" +
+	"+datacatalog.googleapis.com/TagTemplateField\x12Rprojects/{project}/locations/{location}/tagTemplates/{tag_template}/fields/{field}\"\xdd\x03\n" +
 	"\tFieldType\x12b\n" +
 	"\x0eprimitive_type\x18\x01 \x01(\x0e29.google.cloud.datacatalog.v1beta1.FieldType.PrimitiveTypeH\x00R\rprimitiveType\x12S\n" +
-	"\tenum_type\x18\x02 \x01(\v24.google.cloud.datacatalog.v1beta1.FieldType.EnumTypeH\x00R\benumType\x1a\xa6\x01\n" +
+	"\tenum_type\x18\x02 \x01(\v24.google.cloud.datacatalog.v1beta1.FieldType.EnumTypeH\x00R\benumType\x1a\xa7\x01\n" +
 	"\bEnumType\x12e\n" +
-	"\x0eallowed_values\x18\x01 \x03(\v2>.google.cloud.datacatalog.v1beta1.FieldType.EnumType.EnumValueR\rallowedValues\x1a3\n" +
-	"\tEnumValue\x12&\n" +
-	"\fdisplay_name\x18\x01 \x01(\tB\x03\xe0A\x02R\vdisplayName\"`\n" +
+	"\x0eallowed_values\x18\x01 \x03(\v2>.google.cloud.datacatalog.v1beta1.FieldType.EnumType.EnumValueR\rallowedValues\x1a4\n" +
+	"\tEnumValue\x12'\n" +
+	"\fdisplay_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\"`\n" +
 	"\rPrimitiveType\x12\x1e\n" +
 	"\x1aPRIMITIVE_TYPE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +

@@ -547,32 +547,32 @@ var File_google_ads_datamanager_v1_user_list_global_license_service_proto protor
 
 const file_google_ads_datamanager_v1_user_list_global_license_service_proto_rawDesc = "" +
 	"\n" +
-	"@google/ads/datamanager/v1/user_list_global_license_service.proto\x12\x19google.ads.datamanager.v1\x1a8google/ads/datamanager/v1/user_list_global_license.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\"\xe6\x01\n" +
-	"\"CreateUserListGlobalLicenseRequest\x12P\n" +
-	"\x06parent\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\x120datamanager.googleapis.com/UserListGlobalLicenseR\x06parent\x12n\n" +
-	"\x18user_list_global_license\x18\x02 \x01(\v20.google.ads.datamanager.v1.UserListGlobalLicenseB\x03\xe0A\x02R\x15userListGlobalLicense\"\xd6\x01\n" +
-	"\"UpdateUserListGlobalLicenseRequest\x12n\n" +
-	"\x18user_list_global_license\x18\x01 \x01(\v20.google.ads.datamanager.v1.UserListGlobalLicenseB\x03\xe0A\x02R\x15userListGlobalLicense\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"o\n" +
-	"\x1fGetUserListGlobalLicenseRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0datamanager.googleapis.com/UserListGlobalLicenseR\x04name\"\xd8\x01\n" +
-	"!ListUserListGlobalLicensesRequest\x12P\n" +
-	"\x06parent\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\x120datamanager.googleapis.com/UserListGlobalLicenseR\x06parent\x12\x1b\n" +
-	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x01R\x06filter\x12 \n" +
-	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"@google/ads/datamanager/v1/user_list_global_license_service.proto\x12\x19google.ads.datamanager.v1\x1a8google/ads/datamanager/v1/user_list_global_license.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\"\xe8\x01\n" +
+	"\"CreateUserListGlobalLicenseRequest\x12Q\n" +
+	"\x06parent\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\x120datamanager.googleapis.com/UserListGlobalLicenseR\x06parent\x12o\n" +
+	"\x18user_list_global_license\x18\x02 \x01(\v20.google.ads.datamanager.v1.UserListGlobalLicenseB\x04\xe2A\x01\x02R\x15userListGlobalLicense\"\xd8\x01\n" +
+	"\"UpdateUserListGlobalLicenseRequest\x12o\n" +
+	"\x18user_list_global_license\x18\x01 \x01(\v20.google.ads.datamanager.v1.UserListGlobalLicenseB\x04\xe2A\x01\x02R\x15userListGlobalLicense\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"p\n" +
+	"\x1fGetUserListGlobalLicenseRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0datamanager.googleapis.com/UserListGlobalLicenseR\x04name\"\xdc\x01\n" +
+	"!ListUserListGlobalLicensesRequest\x12Q\n" +
+	"\x06parent\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\x120datamanager.googleapis.com/UserListGlobalLicenseR\x06parent\x12\x1c\n" +
+	"\x06filter\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12!\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xb9\x01\n" +
+	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xb9\x01\n" +
 	"\"ListUserListGlobalLicensesResponse\x12k\n" +
 	"\x19user_list_global_licenses\x18\x01 \x03(\v20.google.ads.datamanager.v1.UserListGlobalLicenseR\x16userListGlobalLicenses\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xf0\x01\n" +
-	"-ListUserListGlobalLicenseCustomerInfosRequest\x12\\\n" +
-	"\x06parent\x18\x01 \x01(\tBD\xe0A\x02\xfaA>\x12<datamanager.googleapis.com/UserListGlobalLicenseCustomerInfoR\x06parent\x12\x1b\n" +
-	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x01R\x06filter\x12 \n" +
-	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xf4\x01\n" +
+	"-ListUserListGlobalLicenseCustomerInfosRequest\x12]\n" +
+	"\x06parent\x18\x01 \x01(\tBE\xe2A\x01\x02\xfaA>\x12<datamanager.googleapis.com/UserListGlobalLicenseCustomerInfoR\x06parent\x12\x1c\n" +
+	"\x06filter\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12!\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xec\x01\n" +
+	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xec\x01\n" +
 	".ListUserListGlobalLicenseCustomerInfosResponse\x12\x91\x01\n" +
 	"'user_list_global_license_customer_infos\x18\x01 \x03(\v2<.google.ads.datamanager.v1.UserListGlobalLicenseCustomerInfoR\"userListGlobalLicenseCustomerInfos\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken2\xad\v\n" +

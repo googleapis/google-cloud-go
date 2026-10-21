@@ -657,45 +657,45 @@ var File_google_cloud_discoveryengine_v1beta_license_config_service_proto protor
 
 const file_google_cloud_discoveryengine_v1beta_license_config_service_proto_rawDesc = "" +
 	"\n" +
-	"@google/cloud/discoveryengine/v1beta/license_config_service.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a8google/cloud/discoveryengine/v1beta/license_config.proto\x1a google/protobuf/field_mask.proto\"\xf6\x01\n" +
-	"\x1aCreateLicenseConfigRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'discoveryengine.googleapis.com/LocationR\x06parent\x12^\n" +
-	"\x0elicense_config\x18\x02 \x01(\v22.google.cloud.discoveryengine.v1beta.LicenseConfigB\x03\xe0A\x02R\rlicenseConfig\x12/\n" +
-	"\x11license_config_id\x18\x03 \x01(\tB\x03\xe0A\x01R\x0flicenseConfigId\"\xbe\x01\n" +
-	"\x1aUpdateLicenseConfigRequest\x12^\n" +
-	"\x0elicense_config\x18\x01 \x01(\v22.google.cloud.discoveryengine.v1beta.LicenseConfigB\x03\xe0A\x02R\rlicenseConfig\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"c\n" +
-	"\x17GetLicenseConfigRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",discoveryengine.googleapis.com/LicenseConfigR\x04name\"\xc7\x01\n" +
-	"\x19ListLicenseConfigsRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'discoveryengine.googleapis.com/LocationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"@google/cloud/discoveryengine/v1beta/license_config_service.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a8google/cloud/discoveryengine/v1beta/license_config.proto\x1a google/protobuf/field_mask.proto\"\xf9\x01\n" +
+	"\x1aCreateLicenseConfigRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'discoveryengine.googleapis.com/LocationR\x06parent\x12_\n" +
+	"\x0elicense_config\x18\x02 \x01(\v22.google.cloud.discoveryengine.v1beta.LicenseConfigB\x04\xe2A\x01\x02R\rlicenseConfig\x120\n" +
+	"\x11license_config_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x0flicenseConfigId\"\xc0\x01\n" +
+	"\x1aUpdateLicenseConfigRequest\x12_\n" +
+	"\x0elicense_config\x18\x01 \x01(\v22.google.cloud.discoveryengine.v1beta.LicenseConfigB\x04\xe2A\x01\x02R\rlicenseConfig\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"d\n" +
+	"\x17GetLicenseConfigRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",discoveryengine.googleapis.com/LicenseConfigR\x04name\"\xcb\x01\n" +
+	"\x19ListLicenseConfigsRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'discoveryengine.googleapis.com/LocationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\xa1\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xa1\x01\n" +
 	"\x1aListLicenseConfigsResponse\x12[\n" +
 	"\x0flicense_configs\x18\x01 \x03(\v22.google.cloud.discoveryengine.v1beta.LicenseConfigR\x0elicenseConfigs\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xd2\x02\n" +
-	"\x1eDistributeLicenseConfigRequest\x12\x87\x01\n" +
-	"\x1ebilling_account_license_config\x18\x01 \x01(\tBB\xe0A\x02\xfaA<\n" +
-	":discoveryengine.googleapis.com/BillingAccountLicenseConfigR\x1bbillingAccountLicenseConfig\x12*\n" +
-	"\x0eproject_number\x18\x02 \x01(\x03B\x03\xe0A\x02R\rprojectNumber\x12\x1f\n" +
-	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x02R\blocation\x12(\n" +
-	"\rlicense_count\x18\x04 \x01(\x03B\x03\xe0A\x02R\flicenseCount\x12/\n" +
-	"\x11license_config_id\x18\x05 \x01(\tB\x03\xe0A\x01R\x0flicenseConfigId\"|\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xd7\x02\n" +
+	"\x1eDistributeLicenseConfigRequest\x12\x88\x01\n" +
+	"\x1ebilling_account_license_config\x18\x01 \x01(\tBC\xe2A\x01\x02\xfaA<\n" +
+	":discoveryengine.googleapis.com/BillingAccountLicenseConfigR\x1bbillingAccountLicenseConfig\x12+\n" +
+	"\x0eproject_number\x18\x02 \x01(\x03B\x04\xe2A\x01\x02R\rprojectNumber\x12 \n" +
+	"\blocation\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\blocation\x12)\n" +
+	"\rlicense_count\x18\x04 \x01(\x03B\x04\xe2A\x01\x02R\flicenseCount\x120\n" +
+	"\x11license_config_id\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x0flicenseConfigId\"|\n" +
 	"\x1fDistributeLicenseConfigResponse\x12Y\n" +
-	"\x0elicense_config\x18\x01 \x01(\v22.google.cloud.discoveryengine.v1beta.LicenseConfigR\rlicenseConfig\"\xd6\x02\n" +
-	"\x1bRetractLicenseConfigRequest\x12\x87\x01\n" +
-	"\x1ebilling_account_license_config\x18\x01 \x01(\tBB\xe0A\x02\xfaA<\n" +
-	":discoveryengine.googleapis.com/BillingAccountLicenseConfigR\x1bbillingAccountLicenseConfig\x12[\n" +
-	"\x0elicense_config\x18\x02 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",discoveryengine.googleapis.com/LicenseConfigR\rlicenseConfig\x12&\n" +
-	"\ffull_retract\x18\x03 \x01(\bB\x03\xe0A\x01R\vfullRetract\x12(\n" +
-	"\rlicense_count\x18\x04 \x01(\x03B\x03\xe0A\x01R\flicenseCount\"y\n" +
+	"\x0elicense_config\x18\x01 \x01(\v22.google.cloud.discoveryengine.v1beta.LicenseConfigR\rlicenseConfig\"\xda\x02\n" +
+	"\x1bRetractLicenseConfigRequest\x12\x88\x01\n" +
+	"\x1ebilling_account_license_config\x18\x01 \x01(\tBC\xe2A\x01\x02\xfaA<\n" +
+	":discoveryengine.googleapis.com/BillingAccountLicenseConfigR\x1bbillingAccountLicenseConfig\x12\\\n" +
+	"\x0elicense_config\x18\x02 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",discoveryengine.googleapis.com/LicenseConfigR\rlicenseConfig\x12'\n" +
+	"\ffull_retract\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\vfullRetract\x12)\n" +
+	"\rlicense_count\x18\x04 \x01(\x03B\x04\xe2A\x01\x01R\flicenseCount\"y\n" +
 	"\x1cRetractLicenseConfigResponse\x12Y\n" +
 	"\x0elicense_config\x18\x01 \x01(\v22.google.cloud.discoveryengine.v1beta.LicenseConfigR\rlicenseConfig2\x8b\x0f\n" +
 	"\x14LicenseConfigService\x12\x84\x02\n" +

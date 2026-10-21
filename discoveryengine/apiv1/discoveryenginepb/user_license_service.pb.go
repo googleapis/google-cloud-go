@@ -484,25 +484,25 @@ var File_google_cloud_discoveryengine_v1_user_license_service_proto protoreflect
 
 const file_google_cloud_discoveryengine_v1_user_license_service_proto_rawDesc = "" +
 	"\n" +
-	":google/cloud/discoveryengine/v1/user_license_service.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a2google/cloud/discoveryengine/v1/user_license.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xc6\x01\n" +
-	"\x17ListUserLicensesRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(discoveryengine.googleapis.com/UserStoreR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	":google/cloud/discoveryengine/v1/user_license_service.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a2google/cloud/discoveryengine/v1/user_license.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xca\x01\n" +
+	"\x17ListUserLicensesRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(discoveryengine.googleapis.com/UserStoreR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\x95\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x95\x01\n" +
 	"\x18ListUserLicensesResponse\x12Q\n" +
 	"\ruser_licenses\x18\x01 \x03(\v2,.google.cloud.discoveryengine.v1.UserLicenseR\fuserLicenses\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xe0\x03\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xe4\x03\n" +
 	"\x1eBatchUpdateUserLicensesRequest\x12s\n" +
-	"\rinline_source\x18\x02 \x01(\v2L.google.cloud.discoveryengine.v1.BatchUpdateUserLicensesRequest.InlineSourceH\x00R\finlineSource\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(discoveryengine.googleapis.com/UserStoreR\x06parent\x12J\n" +
-	"\x1fdelete_unassigned_user_licenses\x18\x04 \x01(\bB\x03\xe0A\x01R\x1cdeleteUnassignedUserLicenses\x1a\xa8\x01\n" +
-	"\fInlineSource\x12V\n" +
-	"\ruser_licenses\x18\x01 \x03(\v2,.google.cloud.discoveryengine.v1.UserLicenseB\x03\xe0A\x02R\fuserLicenses\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
+	"\rinline_source\x18\x02 \x01(\v2L.google.cloud.discoveryengine.v1.BatchUpdateUserLicensesRequest.InlineSourceH\x00R\finlineSource\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(discoveryengine.googleapis.com/UserStoreR\x06parent\x12K\n" +
+	"\x1fdelete_unassigned_user_licenses\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x1cdeleteUnassignedUserLicenses\x1a\xaa\x01\n" +
+	"\fInlineSource\x12W\n" +
+	"\ruser_licenses\x18\x01 \x03(\v2,.google.cloud.discoveryengine.v1.UserLicenseB\x04\xe2A\x01\x02R\fuserLicenses\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
 	"updateMaskB\b\n" +
 	"\x06source\"\xe5\x01\n" +
 	"\x1fBatchUpdateUserLicensesMetadata\x12;\n" +
