@@ -1,5 +1,12 @@
 # Changes
 
+## [1.28.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.27.0...firestore/v1.28.0) (2026-10-21)
+
+
+### Features
+
+* **firestore:** Add x-goog-is-transaction routing header ([#20701](https://github.com/googleapis/google-cloud-go/issues/20701)) ([d80b4e8](https://github.com/googleapis/google-cloud-go/commit/d80b4e88367bf3ad8ec9dbd49b3cb135b05ebf47))
+
 ## [1.27.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.26.0...firestore/v1.27.0) (2026-10-20)
 
 
