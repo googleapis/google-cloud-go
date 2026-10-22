@@ -16,6 +16,7 @@ package storage
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"testing"
@@ -24,12 +25,16 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/storage/internal"
 	"github.com/google/go-cmp/cmp"
+	"github.com/googleapis/gax-go/v2/apierror"
 	"go.opentelemetry.io/otel/attribute"
 	otcodes "go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/sdk/instrumentation"
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/googleapi"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func TestStorageTraceStartEndSpan(t *testing.T) {
@@ -132,6 +137,132 @@ func TestStorageTraceEndSpanRecordError(t *testing.T) {
 	}
 	if want := otcodes.Error; gotSpan.Status.Code != want {
 		t.Errorf("got %v, want %v", gotSpan.Status.Code, want)
+	}
+}
+
+// spanAttr returns the string value of the attribute key on s.
+func spanAttr(s tracetest.SpanStub, key attribute.Key) (string, bool) {
+	for _, kv := range s.Attributes {
+		if kv.Key == key {
+			return kv.Value.AsString(), true
+		}
+	}
+	return "", false
+}
+
+func TestStorageTraceErrorMessage(t *testing.T) {
+	ctx := context.Background()
+	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+	apiErrGRPC, ok := apierror.FromError(status.Error(codes.FailedPrecondition, "This bucket requires appendable objects."))
+	if !ok {
+		t.Fatal("apierror.FromError failed for gRPC status")
+	}
+	apiErrHTTP, ok := apierror.FromError(&googleapi.Error{Code: http.StatusPreconditionFailed, Message: "Precondition Failed"})
+	if !ok {
+		t.Fatal("apierror.FromError failed for googleapi.Error")
+	}
+
+	tests := []struct {
+		name    string
+		err     error
+		wantMsg string // "" means the attribute must not be set.
+	}{
+		{
+			name:    "nil error does not set error.message",
+			err:     nil,
+			wantMsg: "",
+		},
+		{
+			name:    "googleapi.Error extracts Message",
+			err:     &googleapi.Error{Code: http.StatusBadRequest, Message: "This bucket requires appendable objects."},
+			wantMsg: "This bucket requires appendable objects.",
+		},
+		{
+			name:    "gRPC status.Error extracts Message",
+			err:     status.Error(codes.FailedPrecondition, "This bucket requires appendable objects."),
+			wantMsg: "This bucket requires appendable objects.",
+		},
+		{
+			name:    "apierror.APIError wrapping gRPC status",
+			err:     apiErrGRPC,
+			wantMsg: "This bucket requires appendable objects.",
+		},
+		{
+			name:    "apierror.APIError wrapping googleapi.Error",
+			err:     apiErrHTTP,
+			wantMsg: "Precondition Failed",
+		},
+		{
+			name:    "wrapped gRPC status.Error preserves inner message",
+			err:     fmt.Errorf("%w: %w", ErrObjectNotExist, status.Error(codes.NotFound, "No such object: bucket/obj")),
+			wantMsg: "No such object: bucket/obj",
+		},
+		{
+			name:    "sentinel error falls back to Error()",
+			err:     ErrBucketNotExist,
+			wantMsg: ErrBucketNotExist.Error(),
+		},
+		{
+			name:    "plain error falls back to Error()",
+			err:     errors.New("storage: bucket name is empty"),
+			wantMsg: "storage: bucket name is empty",
+		},
+		{
+			name: "XML API error body extracts Message element",
+			err: &googleapi.Error{
+				Code: http.StatusRequestedRangeNotSatisfiable,
+				Body: "<?xml version='1.0' encoding='UTF-8'?><Error><Code>InvalidRange</Code><Message>The requested range cannot be satisfied.</Message><Details>bytes=104857600-104857727</Details></Error>",
+			},
+			wantMsg: "The requested range cannot be satisfied.",
+		},
+		{
+			name: "wrapped XML API error body extracts Message element",
+			err: fmt.Errorf("storage: read failed: %w", &googleapi.Error{
+				Code: http.StatusPreconditionFailed,
+				Body: "<?xml version='1.0' encoding='UTF-8'?><Error><Code>ConditionNotMet</Code><Message>At least one of the pre-conditions you specified did not hold.</Message></Error>",
+			}),
+			wantMsg: "At least one of the pre-conditions you specified did not hold.",
+		},
+		{
+			name:    "googleapi.Error with non-XML body falls back to status text",
+			err:     &googleapi.Error{Code: http.StatusServiceUnavailable, Body: "upstream connect error"},
+			wantMsg: "Service Unavailable",
+		},
+		{
+			name:    "googleapi.Error with empty body falls back to status text",
+			err:     &googleapi.Error{Code: http.StatusNotFound},
+			wantMsg: "Not Found",
+		},
+		{
+			name:    "googleapi.Error with unknown status code does not embed body",
+			err:     &googleapi.Error{Code: 499, Body: "client closed request"},
+			wantMsg: "HTTP 499",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() {
+				te.Unregister(ctx)
+			})
+
+			spanCtx, _ := startSpan(ctx, "Object.Attrs")
+			endSpan(spanCtx, tc.err)
+
+			spans := te.Spans()
+			if len(spans) != 1 {
+				t.Fatalf("expected 1 span, got %d", len(spans))
+			}
+			gotMsg, hasAttr := spanAttr(spans[0], "error.message")
+			if wantHasAttr := tc.wantMsg != ""; hasAttr != wantHasAttr {
+				t.Fatalf("got hasAttr=%v, want %v (attrs=%v)", hasAttr, wantHasAttr, spans[0].Attributes)
+			}
+			if gotMsg != tc.wantMsg {
+				t.Errorf("got error.message %q, want %q", gotMsg, tc.wantMsg)
+			}
+		})
 	}
 }
 
@@ -346,6 +477,115 @@ func TestEndSpanEviction(t *testing.T) {
 			}
 			if !tc.wantEvict && !found {
 				t.Errorf("expected bucket to remain in cache")
+			}
+		})
+	}
+}
+
+func TestStorageTraceErrorDomain(t *testing.T) {
+	ctx := context.Background()
+	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+	grpcWithErrorInfo, err := status.New(codes.PermissionDenied, "Permission denied.").WithDetails(&errdetails.ErrorInfo{
+		Reason: "SERVICE_DISABLED",
+		Domain: "storage.googleapis.com",
+	})
+	if err != nil {
+		t.Fatalf("WithDetails: %v", err)
+	}
+	apiErrGRPC, ok := apierror.FromError(grpcWithErrorInfo.Err())
+	if !ok {
+		t.Fatal("apierror.FromError failed for gRPC status")
+	}
+
+	tests := []struct {
+		name       string
+		err        error
+		wantDomain string // "" means the attribute must not be set.
+	}{
+		{
+			name:       "nil error",
+			err:        nil,
+			wantDomain: "",
+		},
+		{
+			name:       "gRPC status with ErrorInfo",
+			err:        grpcWithErrorInfo.Err(),
+			wantDomain: "storage.googleapis.com",
+		},
+		{
+			name:       "wrapped gRPC status with ErrorInfo",
+			err:        fmt.Errorf("storage: retry failed: %w", grpcWithErrorInfo.Err()),
+			wantDomain: "storage.googleapis.com",
+		},
+		{
+			name:       "apierror.APIError with ErrorInfo",
+			err:        apiErrGRPC,
+			wantDomain: "storage.googleapis.com",
+		},
+		{
+			name: "HTTP JSON error with ErrorInfo details",
+			err: &googleapi.Error{
+				Code:    http.StatusForbidden,
+				Message: "Permission denied.",
+				Body:    `{"error":{"code":403,"message":"Permission denied.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"storage.googleapis.com"}]}}`,
+			},
+			wantDomain: "storage.googleapis.com",
+		},
+		{
+			name: "HTTP JSON error with legacy errors[].domain is not used",
+			err: &googleapi.Error{
+				Code:    http.StatusNotFound,
+				Message: "The specified bucket does not exist.",
+				Body:    `{"error":{"code":404,"message":"The specified bucket does not exist.","errors":[{"message":"The specified bucket does not exist.","domain":"global","reason":"notFound"}]}}`,
+			},
+			wantDomain: "",
+		},
+		{
+			name:       "gRPC status without ErrorInfo",
+			err:        status.Error(codes.NotFound, "No such object: bucket/obj"),
+			wantDomain: "",
+		},
+		{
+			name: "HTTP XML error",
+			err: &googleapi.Error{
+				Code: http.StatusRequestedRangeNotSatisfiable,
+				Body: "<?xml version='1.0' encoding='UTF-8'?><Error><Code>InvalidRange</Code><Message>The requested range cannot be satisfied.</Message></Error>",
+			},
+			wantDomain: "",
+		},
+		{
+			name:       "client-side context error",
+			err:        context.Canceled,
+			wantDomain: "",
+		},
+		{
+			name:       "sentinel error",
+			err:        ErrObjectNotExist,
+			wantDomain: "",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() {
+				te.Unregister(ctx)
+			})
+
+			spanCtx, _ := startSpan(ctx, "Object.Attrs")
+			endSpan(spanCtx, tc.err)
+
+			spans := te.Spans()
+			if len(spans) != 1 {
+				t.Fatalf("expected 1 span, got %d", len(spans))
+			}
+			gotDomain, hasAttr := spanAttr(spans[0], "gcp.errors.domain")
+			if wantHasAttr := tc.wantDomain != ""; hasAttr != wantHasAttr {
+				t.Fatalf("got hasAttr=%v, want %v (attrs=%v)", hasAttr, wantHasAttr, spans[0].Attributes)
+			}
+			if gotDomain != tc.wantDomain {
+				t.Errorf("got gcp.errors.domain %q, want %q", gotDomain, tc.wantDomain)
 			}
 		})
 	}
