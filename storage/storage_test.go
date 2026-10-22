@@ -2781,3 +2781,51 @@ func isZeroValue(v reflect.Value) (bool, error) {
 		return false, fmt.Errorf("unable to check kind %s", v.Kind())
 	}
 }
+
+func TestNewClient_ValidationHappensOnce(t *testing.T) {
+	ctx := context.Background()
+	// Passing incompatible options should be caught in the first pass.
+	_, err := NewClient(ctx, option.WithoutAuthentication(), option.WithAPIKey("fake-api-key"))
+	if err == nil {
+		t.Error("expected error for WithoutAuthentication + WithAPIKey, got nil")
+	}
+	if !strings.Contains(err.Error(), "options.WithoutAuthentication is incompatible with any option that provides credentials") {
+		t.Errorf("expected error about incompatible options, got: %v", err)
+	}
+}
+
+func TestNewClient_TransportOptionsRegression(t *testing.T) {
+	ctx := context.Background()
+	// QuotaProject and RequestReason are transport-level options.
+	// They should be accepted by NewClient and passed through to the raw service.
+	client, err := NewClient(ctx,
+		option.WithQuotaProject("test-project"),
+		option.WithRequestReason("test-reason"),
+	)
+	if err != nil {
+		t.Fatalf("NewClient failed with transport options: %v", err)
+	}
+	defer client.Close()
+
+	if client.raw == nil {
+		t.Fatal("client.raw was not initialized")
+	}
+}
+
+func TestNewClient_EndpointPropagation(t *testing.T) {
+	ctx := context.Background()
+	customEndpoint := "https://my-custom-endpoint.com/storage/v1/"
+
+	client, err := NewClient(ctx,
+		option.WithEndpoint(customEndpoint),
+	)
+	if err != nil {
+		t.Fatalf("NewClient failed: %v", err)
+	}
+	defer client.Close()
+
+	// Verify the raw service is using the custom endpoint
+	if client.raw.BasePath != customEndpoint {
+		t.Errorf("expected BasePath %q, got %q", customEndpoint, client.raw.BasePath)
+	}
+}
