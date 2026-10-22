@@ -27,6 +27,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"runtime"
 	"slices"
 	"strconv"
 	"strings"
@@ -3690,6 +3691,13 @@ func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
 			},
 		}
 
+		// Populate metadata exceeding net/http's 4 KiB bufio.Reader buffer so
+		// that the final 200 OK JSON object response body is not buffered in
+		// memory during header parsing and must be read from the connection
+		// after (*ResumableUpload).transferChunk returns.
+		metadataPadding := strings.Repeat("x", 8192)
+		buffer := bytes.Repeat([]byte("A"), fileSize)
+
 		for _, tc := range tests {
 			t.Run(tc.name, func(t *testing.T) {
 				testID := createRetryTest(t, client, tc.instructions)
@@ -3703,9 +3711,13 @@ func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
 					Bucket:     bucket,
 					Name:       fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond()),
 					Generation: defaultGen,
+					Metadata: map[string]string{
+						"padding": metadataPadding,
+					},
 				}
 
 				var gotAttrs *ObjectAttrs
+				var gotErr error
 				params := &openWriterParams{
 					attrs:                want,
 					bucket:               bucket,
@@ -3713,17 +3725,20 @@ func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
 					chunkTransferTimeout: tc.chunkTransferTimeout,
 					ctx:                  rCtx,
 					donec:                make(chan struct{}),
-					setError:             func(_ error) {}, // no-op
-					progress:             func(_ int64) {}, // no-op
-					setObj:               func(o *ObjectAttrs) { gotAttrs = o },
-					setSize:              func(int64) {},
+					setError:             func(err error) { gotErr = err },
+					// progress is called right after transferChunk returns and before
+					// DecodeResponse reads the HTTP response body. Yielding here gives
+					// any premature context-cancellation goroutine a chance to run and
+					// close the underlying connection before the response body is read.
+					progress: func(_ int64) { runtime.Gosched() },
+					setObj:   func(o *ObjectAttrs) { gotAttrs = o },
+					setSize:  func(int64) {},
 				}
 
 				pw, err := client.OpenWriter(params)
 				if err != nil {
 					t.Fatalf("failed to open writer: %v", err)
 				}
-				buffer := bytes.Repeat([]byte("A"), fileSize)
 				_, err = pw.Write(buffer)
 				if tc.expectedSuccess {
 					if err != nil {
@@ -3734,6 +3749,9 @@ func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
 					}
 					select {
 					case <-params.donec:
+					}
+					if gotErr != nil {
+						t.Fatalf("Writer failed: %v", gotErr)
 					}
 					if gotAttrs == nil {
 						t.Fatalf("Writer finished, but resulting object wasn't set")
