@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.35.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.34.0...video/v1.35.0) (2026-10-22)
+
+
+### Features
+
+* Update API sources and regenerate ([#20728](https://github.com/googleapis/google-cloud-go/issues/20728)) ([ab1da9d](https://github.com/googleapis/google-cloud-go/commit/ab1da9d200416594ae18fa7a2944961f1c92c928))
+
 ## [1.34.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.33.0...video/v1.34.0) (2026-09-23)
 
 
