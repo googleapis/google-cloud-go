@@ -350,3 +350,102 @@ func TestEndSpanEviction(t *testing.T) {
 		})
 	}
 }
+
+func TestStorageTraceRPCSystemNameAttribute(t *testing.T) {
+	ctx := context.Background()
+	t.Setenv(storageOtelTracingDevVar, "true")
+
+	canceledCtx, cancel := context.WithCancel(ctx)
+	cancel()
+	rangeParams := &newRangeReaderParams{
+		bucket: "my-bucket",
+		object: "my-object",
+	}
+
+	tests := []struct {
+		name string
+		emit func()
+		want string
+	}{
+		{
+			name: "HTTP operation span",
+			emit: func() {
+				c := &Client{rpcSystem: "http"}
+				sCtx, _ := startSpanWithBucket(ctx, c, "my-bucket", "Bucket.Attrs")
+				endSpan(sCtx, nil)
+			},
+			want: "http",
+		},
+		{
+			name: "gRPC operation span",
+			emit: func() {
+				c := &Client{rpcSystem: "grpc"}
+				sCtx, _ := startSpanWithBucket(ctx, c, "my-bucket", "Bucket.Attrs")
+				endSpan(sCtx, nil)
+			},
+			want: "grpc",
+		},
+		{
+			name: "httpStorageClient.NewRangeReader",
+			emit: func() {
+				hc := &httpStorageClient{
+					settings: &settings{},
+					config:   &storageConfig{},
+				}
+				_, _ = hc.NewRangeReader(canceledCtx, rangeParams)
+			},
+			want: "http",
+		},
+		{
+			name: "grpcStorageClient.NewRangeReader",
+			emit: func() {
+				gc := &grpcStorageClient{
+					settings: &settings{},
+					config:   &storageConfig{grpcBidiReads: true},
+				}
+				_, _ = gc.NewRangeReader(canceledCtx, rangeParams)
+			},
+			want: "grpc",
+		},
+		{
+			name: "grpcStorageClient.NewRangeReaderReadObject",
+			emit: func() {
+				gc := &grpcStorageClient{
+					settings: &settings{},
+					config:   &storageConfig{grpcBidiReads: false},
+				}
+				_, _ = gc.NewRangeReader(canceledCtx, rangeParams)
+			},
+			want: "grpc",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() {
+				te.Unregister(ctx)
+			})
+
+			tc.emit()
+
+			spans := te.Spans()
+			if len(spans) != 1 {
+				t.Fatalf("expected 1 span, got %d", len(spans))
+			}
+
+			if got := spanStringAttribute(spans[0], "rpc.system.name"); got != tc.want {
+				t.Errorf("rpc.system.name = %q, want %q", got, tc.want)
+			}
+		})
+	}
+}
+
+func spanStringAttribute(span tracetest.SpanStub, key attribute.Key) string {
+	for _, attr := range span.Attributes {
+		if attr.Key == key {
+			return attr.Value.AsString()
+		}
+	}
+	return ""
+}
