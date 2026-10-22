@@ -621,12 +621,18 @@ func TestPrepareDirectPathMetadata_OwnsFeatureHeader(t *testing.T) {
 	tests := []struct {
 		desc           string
 		configFeatures uint32
+		ctxFeatures    []trackedFeature
 		incomingMD     []string
 		want           []string
 	}{
 		{
 			desc: "no features, no header: untouched",
 			want: nil,
+		},
+		{
+			desc:       "no features, zero mask header: dropped",
+			incomingMD: []string{encodeFeatureMask(0)},
+			want:       nil,
 		},
 		{
 			desc:       "no features, foreign value: dropped",
@@ -640,9 +646,11 @@ func TestPrepareDirectPathMetadata_OwnsFeatureHeader(t *testing.T) {
 			want:           []string{encodeFeatureMask(uint32(1 << featurePCU))},
 		},
 		{
-			desc:       "legacy standard-alphabet value is merged and re-encoded",
-			incomingMD: []string{"AAAA+w=="}, // 0xFB in standard base64.
-			want:       []string{encodeFeatureMask(0xFB)},
+			desc:           "legacy standard-alphabet value is merged and re-encoded",
+			configFeatures: uint32(1 << featurePCU),
+			ctxFeatures:    []trackedFeature{featureMultistreamInMRD},
+			incomingMD:     []string{"AAAA+A=="}, // 0xF8 in standard base64 (bits 0 and 1 unset).
+			want:           []string{encodeFeatureMask(0xF8 | uint32(1<<featurePCU) | uint32(1<<featureMultistreamInMRD))},
 		},
 		{
 			desc:       "multiple values collapse to one",
@@ -657,10 +665,14 @@ func TestPrepareDirectPathMetadata_OwnsFeatureHeader(t *testing.T) {
 				configFeatureAttributes: tc.configFeatures,
 			}
 			ctx := context.Background()
+			if len(tc.ctxFeatures) > 0 {
+				ctx = addFeatureAttributes(ctx, tc.ctxFeatures...)
+			}
+			var callerMD metadata.MD
 			if len(tc.incomingMD) > 0 {
-				md := metadata.MD{}
-				md.Set(featureTrackerHeaderName, tc.incomingMD...)
-				ctx = metadata.NewOutgoingContext(ctx, md)
+				callerMD = metadata.MD{}
+				callerMD.Set(featureTrackerHeaderName, tc.incomingMD...)
+				ctx = metadata.NewOutgoingContext(ctx, callerMD)
 			}
 
 			newCtx, err := c.prepareDirectPathMetadata(ctx, directPathEndpointPrefix)
@@ -671,6 +683,9 @@ func TestPrepareDirectPathMetadata_OwnsFeatureHeader(t *testing.T) {
 			got := md.Get(featureTrackerHeaderName)
 			if diff := cmp.Diff(tc.want, got, cmpopts.EquateEmpty()); diff != "" {
 				t.Errorf("metadata %s mismatch (-want +got):\n%s", featureTrackerHeaderName, diff)
+			}
+			if diff := cmp.Diff(tc.incomingMD, callerMD.Get(featureTrackerHeaderName), cmpopts.EquateEmpty()); diff != "" {
+				t.Errorf("caller metadata %s modified (-want +got):\n%s", featureTrackerHeaderName, diff)
 			}
 		})
 	}

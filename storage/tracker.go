@@ -83,16 +83,16 @@ func encodeFeatureMask(mask uint32) string {
 // padding, so that values produced by older versions of this package are
 // still merged correctly.
 func decodeFeatureMask(s string) (uint32, error) {
-	trimmed := strings.TrimRight(s, "=")
+	trimmed := strings.TrimSuffix(s, "==")
+	if len(trimmed) != 6 {
+		return 0, fmt.Errorf("storage: %q does not encode a 32-bit feature mask", s)
+	}
 	d, err := base64.RawURLEncoding.DecodeString(trimmed)
 	if err != nil {
 		d, err = base64.RawStdEncoding.DecodeString(trimmed)
 		if err != nil {
 			return 0, err
 		}
-	}
-	if len(d) != 4 {
-		return 0, fmt.Errorf("storage: %q does not encode a 32-bit feature mask", s)
 	}
 	return binary.BigEndian.Uint32(d), nil
 }

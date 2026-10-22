@@ -292,6 +292,11 @@ func TestTrackingTransport_OwnsHeader(t *testing.T) {
 			wantHeader: nil,
 		},
 		{
+			desc:       "no features, zero mask header: dropped",
+			reqHeader:  []string{encodeFeatureMask(0)},
+			wantHeader: nil,
+		},
+		{
 			desc:       "no features, foreign value: dropped",
 			reqHeader:  []string{foreign},
 			wantHeader: nil,
@@ -305,8 +310,8 @@ func TestTrackingTransport_OwnsHeader(t *testing.T) {
 		{
 			desc:        "legacy standard-alphabet value is merged and re-encoded",
 			ctxFeatures: []trackedFeature{featureMultistreamInMRD},
-			reqHeader:   []string{"AAAA+w=="}, // 0xFB in standard base64.
-			wantHeader:  []string{encodeFeatureMask(0xFB | uint32(1<<featureMultistreamInMRD))},
+			reqHeader:   []string{"AAAA+A=="}, // 0xF8 in standard base64 (bits 0 and 1 unset).
+			wantHeader:  []string{encodeFeatureMask(0xF8 | uint32(1<<featureMultistreamInMRD))},
 		},
 		{
 			desc:       "multiple values collapse to one",
@@ -335,6 +340,9 @@ func TestTrackingTransport_OwnsHeader(t *testing.T) {
 			got := mock.gotReq.Header.Values(featureTrackerHeaderName)
 			if diff := cmp.Diff(tc.wantHeader, got, cmpopts.EquateEmpty()); diff != "" {
 				t.Errorf("header %s mismatch (-want +got):\n%s", featureTrackerHeaderName, diff)
+			}
+			if diff := cmp.Diff(tc.reqHeader, req.Header.Values(featureTrackerHeaderName), cmpopts.EquateEmpty()); diff != "" {
+				t.Errorf("caller request header %s modified (-want +got):\n%s", featureTrackerHeaderName, diff)
 			}
 		})
 	}

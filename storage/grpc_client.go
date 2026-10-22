@@ -323,7 +323,9 @@ func (c *grpcStorageClient) routingInterceptors() (grpc.UnaryClientInterceptor, 
 
 func (c *grpcStorageClient) prepareDirectPathMetadata(ctx context.Context, target string) (context.Context, error) {
 	md, ok := metadata.FromOutgoingContext(ctx)
-	if !ok {
+	if ok {
+		md = md.Copy()
+	} else {
 		md = metadata.MD{}
 	}
 
@@ -363,7 +365,7 @@ func (c *grpcStorageClient) prepareDirectPathMetadata(ctx context.Context, targe
 	features := featureAttributes(ctx)
 	features |= c.configFeatureAttributes
 	// Merge all existing headers for this key from metadata.
-	features |= mergeFeatureAttributes(md[featureTrackerHeaderName])
+	features |= mergeFeatureAttributes(md.Get(featureTrackerHeaderName))
 
 	if features > 0 {
 		md.Set(featureTrackerHeaderName, encodeFeatureMask(features))
