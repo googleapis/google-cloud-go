@@ -2277,6 +2277,11 @@
         },
         {
           "jsonpath": "$.clientLibrary.version",
+          "path": "examples/merchant/reviews/apiv1/snippet_metadata.google.shopping.merchant.reviews.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
           "path": "examples/merchant/reviews/apiv1beta/snippet_metadata.google.shopping.merchant.reviews.v1beta.json",
           "type": "json"
         }
