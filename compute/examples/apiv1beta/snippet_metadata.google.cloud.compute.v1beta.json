@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/compute/apiv1beta",
-    "version": "1.73.0"
+    "version": "1.74.0"
   },
   "snippets": [
     {
