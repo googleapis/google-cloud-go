@@ -590,6 +590,11 @@ func TestPrepareDirectPathMetadata_OwnsFeatureHeader(t *testing.T) {
 			want: nil,
 		},
 		{
+			desc:       "no features, zero mask header: dropped",
+			incomingMD: []string{encodeFeatureMask(0)},
+			want:       nil,
+		},
+		{
 			desc:       "no features, foreign value: dropped",
 			incomingMD: []string{foreign},
 			want:       nil,
@@ -601,9 +606,10 @@ func TestPrepareDirectPathMetadata_OwnsFeatureHeader(t *testing.T) {
 			want:           []string{encodeFeatureMask(uint32(1 << featurePCU))},
 		},
 		{
-			desc:       "legacy standard-alphabet value is merged and re-encoded",
-			incomingMD: []string{"AAAA+w=="}, // 0xFB in standard base64.
-			want:       []string{encodeFeatureMask(0xFB)},
+			desc:           "legacy standard-alphabet value is merged and re-encoded",
+			configFeatures: uint32(1 << featurePCU),
+			incomingMD:     []string{"AAAA+A=="}, // 0xF8 in standard base64 (bits 0 and 1 unset).
+			want:           []string{encodeFeatureMask(0xF8 | uint32(1<<featurePCU))},
 		},
 		{
 			desc:       "multiple values collapse to one",

@@ -102,10 +102,11 @@ func TestEncodeFeatureMaskIsWebSafe(t *testing.T) {
 		}
 		decoded, err := decodeFeatureMask(got)
 		if err != nil {
-			t.Fatalf("decodeFeatureMask(%q) error: %v", got, err)
+			t.Errorf("decodeFeatureMask(%q) unexpected error: %v", got, err)
+			continue
 		}
 		if decoded != m {
-			t.Errorf("round trip of %#x = %#x", m, decoded)
+			t.Errorf("decodeFeatureMask(%q) = %#x; want %#x", got, decoded, m)
 		}
 	}
 }
@@ -117,10 +118,12 @@ func TestDecodeFeatureMask(t *testing.T) {
 		want    uint32
 		wantErr bool
 	}{
+		{name: "zero mask", in: "AAAAAA==", want: 0},
 		{name: "url-safe padded", in: "AAAA-w==", want: 0xFB},
 		{name: "url-safe unpadded", in: "AAAA-w", want: 0xFB},
 		{name: "standard padded (legacy)", in: "AAAA+w==", want: 0xFB},
 		{name: "standard unpadded (legacy)", in: "AAAA+w", want: 0xFB},
+		{name: "empty", in: "", wantErr: true},
 		{name: "not base64", in: "invalid!", wantErr: true},
 		{name: "wrong length", in: "AQID", wantErr: true},
 		{name: "oversized payload", in: strings.Repeat("A", 520), wantErr: true},
