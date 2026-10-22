@@ -17,6 +17,7 @@ package storage
 import (
 	"context"
 	"errors"
+	"math"
 	"sync"
 	"testing"
 	"time"
@@ -77,8 +78,8 @@ func tryGetEventually(t *testing.T, p *defaultBufferPool, maxSize int) []byte {
 func TestDefaultBufferPoolDefaults(t *testing.T) {
 	p := newDefaultBufferPool()
 	defer p.close()
-	if p.blockSize != 8<<20 {
-		t.Errorf("blockSize = %d, want %d", p.blockSize, 8<<20)
+	if p.blockSize != 32<<20 {
+		t.Errorf("blockSize = %d, want %d", p.blockSize, 32<<20)
 	}
 	if p.cleanInterval != 15*time.Second {
 		t.Errorf("cleanInterval = %v, want 15s", p.cleanInterval)
@@ -182,6 +183,86 @@ func TestDefaultBufferPoolTryGetEmptyAfterClose(t *testing.T) {
 	}
 	if _, err := p.Get(testBlockSize); err != nil {
 		t.Errorf("Get after close: %v", err)
+	}
+}
+
+func TestDefaultBufferPoolBlocksFor(t *testing.T) {
+	p, _ := newTestBufferPool(t)
+	for _, tc := range []struct {
+		size int
+		want int
+	}{
+		{1, 1},
+		{testBlockSize - 1, 1},
+		{testBlockSize, 1},
+		{testBlockSize + 1, 2},
+		{3 * testBlockSize, 3},
+		// Must not overflow for very large sizes.
+		{math.MaxInt, 1 + (math.MaxInt-1)/testBlockSize},
+	} {
+		if got := p.blocksFor(tc.size); got != tc.want {
+			t.Errorf("blocksFor(%d) = %d, want %d", tc.size, got, tc.want)
+		}
+	}
+}
+
+// A huge maxSize must not make background pre-allocation grow without bound.
+func TestDefaultBufferPoolRefillCap(t *testing.T) {
+	p, _ := newTestBufferPool(t)
+	b, err := p.Get(math.MaxInt)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(b) != testBlockSize {
+		t.Errorf("Get(math.MaxInt) len = %d, want %d", len(b), testBlockSize)
+	}
+	waitFor(t, "pre-allocation", func() bool { return p.cached() >= defaultBufferPoolMaxRefillBlocks })
+	waitIdle(t, p)
+	if got := p.cached(); got != defaultBufferPoolMaxRefillBlocks {
+		t.Errorf("cached = %d, want %d", got, defaultBufferPoolMaxRefillBlocks)
+	}
+	if _, ok, err := p.TryGet(math.MaxInt); !ok || err != nil {
+		t.Errorf("TryGet(math.MaxInt) = %v, %v; want true, nil", ok, err)
+	}
+}
+
+// Put racing with close must never leave a block cached in a closed pool.
+func TestDefaultBufferPoolPutCloseRace(t *testing.T) {
+	const (
+		rounds  = 50
+		workers = 16
+	)
+	for r := 0; r < rounds; r++ {
+		p := newDefaultBufferPoolWithConfig(testBlockSize, time.Hour, time.Hour)
+		held := make([][]byte, workers)
+		for i := range held {
+			held[i], _ = p.Get(testBlockSize)
+		}
+		start := make(chan struct{})
+		var wg sync.WaitGroup
+		for _, b := range held {
+			wg.Add(1)
+			go func(b []byte) {
+				defer wg.Done()
+				<-start
+				p.Put(b)
+			}(b)
+		}
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			<-start
+			p.close()
+		}()
+		close(start)
+		wg.Wait()
+
+		if got := p.cached(); got != 0 {
+			t.Fatalf("round %d: %d blocks cached in closed pool", r, got)
+		}
+		if got := p.live.Load(); got != 0 {
+			t.Fatalf("round %d: live = %d after close and all Puts, want 0", r, got)
+		}
 	}
 }
 
@@ -421,7 +502,8 @@ func TestDefaultBufferPoolConcurrency(t *testing.T) {
 func BenchmarkDefaultBufferPoolSteadyState(b *testing.B) {
 	p := newDefaultBufferPool()
 	defer p.close()
-	const partSize = 32 << 20
+	// A multi-block part so that TryGet and background refills are exercised.
+	const partSize = 4 * defaultBufferPoolBlockSize
 	held := make([][]byte, 0, partSize/defaultBufferPoolBlockSize)
 	// assemble mimics part assembly: one guaranteed Get followed by TryGet
 	// until the part is full, then releases every block.

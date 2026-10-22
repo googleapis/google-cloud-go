@@ -25,10 +25,17 @@ import (
 
 const (
 	// defaultBufferPoolBlockSize is the size of every block vended by the
-	// default buffer pool. 8 MiB is a divisor of all common GCS part sizes
-	// (8, 16, 32, 64, 128 MiB), so a part can be assembled from a whole
-	// number of blocks.
-	defaultBufferPoolBlockSize = 8 << 20
+	// default buffer pool. The minimum GCS parallel upload part size is
+	// 32 MiB and valid part sizes are multiples of 32 MiB, so a 32 MiB block
+	// backs each minimum-sized part with a single contiguous buffer while
+	// still dividing larger part sizes (64 MiB, 128 MiB).
+	defaultBufferPoolBlockSize = 32 << 20
+
+	// defaultBufferPoolMaxRefillBlocks caps how many cached blocks a single
+	// background pre-allocation aims for (128 MiB with 32 MiB blocks). It
+	// keeps a very large maxSize from pre-allocating unbounded memory; it
+	// does not limit Get, which always succeeds.
+	defaultBufferPoolMaxRefillBlocks = 4
 
 	// defaultBufferPoolCleanInterval is how often the background cleaner
 	// checks whether the pool has been idle.
@@ -48,7 +55,7 @@ var _ experimental.BufferPool = (*defaultBufferPool)(nil)
 // defaultBufferPool is the BufferPool used for parallel uploads when the
 // application does not provide one through experimental.WithBufferPool.
 //
-// It manages uniform 8 MiB blocks that are shared across all writers of a
+// It manages uniform 32 MiB blocks that are shared across all writers of a
 // client. The pool has no memory limit; the memory in use is bounded by the
 // writers' PartSize and Concurrency settings. It provides:
 //
@@ -58,7 +65,8 @@ var _ experimental.BufferPool = (*defaultBufferPool)(nil)
 //     and never allocates inline. When the cache is empty it returns false,
 //     and the uploader continues with the segments it already holds.
 //   - Async pre-allocation: when the number of cached blocks falls below what
-//     a request needs, replacement blocks are allocated in the background,
+//     a request needs (capped at defaultBufferPoolMaxRefillBlocks),
+//     replacement blocks are allocated in the background,
 //     overlapping allocation with network I/O. This is how the cache, and
 //     therefore TryGet concurrency, ramps up on a cold pool.
 //   - Staged idle eviction: after idleTimeout without activity, half of the
@@ -183,12 +191,19 @@ func (p *defaultBufferPool) pop() ([]byte, bool) {
 
 // push caches b, or drops it if the pool has been closed. It (re)starts the
 // cleaner so that cached memory is eventually reclaimed.
+//
+// shut is checked while holding freeMu so that the check and the append are
+// atomic with respect to close, which sets shut before draining free under
+// the same lock. A push therefore either lands before the drain (and is
+// drained) or observes shut and drops the block; it can never leave a block
+// cached in a closed pool.
 func (p *defaultBufferPool) push(b []byte) {
+	p.freeMu.Lock()
 	if p.shut.Load() {
+		p.freeMu.Unlock()
 		p.live.Add(-1)
 		return
 	}
-	p.freeMu.Lock()
 	p.free = append(p.free, b)
 	p.freeMu.Unlock()
 	p.ensureCleaner()
@@ -217,17 +232,20 @@ func (p *defaultBufferPool) allocate() []byte {
 	return make([]byte, p.blockSize)
 }
 
-// blocksFor returns the number of blocks needed to hold size bytes.
+// blocksFor returns the number of blocks needed to hold size bytes, which
+// must be positive. It is written as 1 + (size-1)/blockSize rather than
+// (size+blockSize-1)/blockSize so that it cannot overflow for large sizes.
 func (p *defaultBufferPool) blocksFor(size int) int {
-	return max(1, (size+p.blockSize-1)/p.blockSize)
+	return 1 + (size-1)/p.blockSize
 }
 
 // maybeRefill starts a background goroutine that pre-allocates blocks when
-// fewer blocks are cached than a request of maxSize bytes would need. At most
+// fewer blocks are cached than a request of maxSize bytes would need, capped
+// at defaultBufferPoolMaxRefillBlocks. At most
 // one refill runs at a time; requests that arrive while one is running are
 // served by it or trigger a new refill on their next call.
 func (p *defaultBufferPool) maybeRefill(maxSize int) {
-	want := p.blocksFor(maxSize)
+	want := min(p.blocksFor(maxSize), defaultBufferPoolMaxRefillBlocks)
 	if p.cached() >= want {
 		return
 	}
@@ -323,5 +341,13 @@ func (p *defaultBufferPool) close() {
 	close(p.stop)
 	p.mu.Unlock()
 	p.wg.Wait()
-	p.evict(p.cached())
+
+	// Drain under a single freeMu critical section. shut is already set, so
+	// any push that acquires freeMu after this drops its block.
+	p.freeMu.Lock()
+	n := len(p.free)
+	clear(p.free)
+	p.free = nil
+	p.freeMu.Unlock()
+	p.live.Add(-int64(n))
 }
