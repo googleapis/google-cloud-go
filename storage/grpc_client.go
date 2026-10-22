@@ -134,11 +134,9 @@ type grpcStorageClient struct {
 	metricsCleanup func()
 
 	// bufferPool allocates memory for parallel uploads. It is the pool set
-	// through experimental.WithBufferPool or, if none was set, defaultPool.
+	// through experimental.WithBufferPool or, if none was set, the SDK's
+	// defaultBufferPool, which is closed when the client is closed.
 	bufferPool experimental.BufferPool
-	// defaultPool is the SDK-owned pool, non-nil only when the application
-	// did not provide its own. It is closed when the client is closed.
-	defaultPool *defaultBufferPool
 
 	// configFeatureAttributes tracks client-level features that are enabled for this
 	// client instance.
@@ -244,10 +242,6 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 		readStallMgr:   bd,
 		bufferPool:     config.bufferPool,
 	}
-	if c.bufferPool == nil {
-		c.defaultPool = newDefaultBufferPool()
-		c.bufferPool = c.defaultPool
-	}
 	// Add routing interceptors to inject headers.
 	ui, si := c.routingInterceptors()
 	s.clientOption = append(s.clientOption,
@@ -261,6 +255,9 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 	}
 	configureStreamingTimeouts(g)
 	c.raw = g
+	if c.bufferPool == nil {
+		c.bufferPool = newDefaultBufferPool()
+	}
 	return c, nil
 }
 
@@ -372,8 +369,10 @@ func (c *grpcStorageClient) Close() error {
 	if c.metricsCleanup != nil {
 		c.metricsCleanup()
 	}
-	if c.defaultPool != nil {
-		c.defaultPool.close()
+	// Only the SDK's own pool is closed; a pool provided through
+	// experimental.WithBufferPool is owned by the application.
+	if pool, ok := c.bufferPool.(*defaultBufferPool); ok {
+		pool.close()
 	}
 	return c.raw.Close()
 }

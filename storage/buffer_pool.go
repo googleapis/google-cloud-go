@@ -16,6 +16,7 @@ package storage
 
 import (
 	"errors"
+	"math"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -70,9 +71,9 @@ var _ experimental.BufferPool = (*defaultBufferPool)(nil)
 //     overlapping allocation with network I/O. This is how the cache, and
 //     therefore TryGet concurrency, ramps up on a cold pool.
 //   - Staged idle eviction: after idleTimeout without activity, half of the
-//     cached blocks are released to the GC; this repeats every idleTimeout
-//     until the pool is empty, at which point the cleaner goroutine exits
-//     until blocks are cached again.
+//     cached blocks are released to the garbage collector; this repeats
+//     every idleTimeout until the pool is empty, at which point the cleaner
+//     goroutine exits until blocks are cached again.
 //
 // All methods are safe for concurrent use.
 type defaultBufferPool struct {
@@ -88,7 +89,7 @@ type defaultBufferPool struct {
 	free [][]byte
 
 	// live is the number of blocks currently owned by the pool, either cached
-	// in free or handed out to callers. It is used for tests and diagnostics.
+	// in free or handed out to callers. It is used by tests to detect leaks.
 	live atomic.Int64
 
 	// lastActive is the UnixNano timestamp of the last Get/TryGet/Put.
@@ -97,16 +98,17 @@ type defaultBufferPool struct {
 	// refilling is set while a background pre-allocation goroutine is running.
 	refilling atomic.Bool
 
-	// shut is set once close has been called; checked lock-free on hot paths.
-	shut atomic.Bool
+	// closed is set once close has been called.
+	closed atomic.Bool
 
+	// cleanerRunning reports whether the cleaner goroutine is active. It is
+	// read without mu on the Put path and only modified while holding mu.
+	cleanerRunning atomic.Bool
+
+	// mu serializes starting and stopping background goroutines with close.
 	mu sync.Mutex
-	// cleanerRunning reports whether the cleaner goroutine is active.
-	cleanerRunning bool
 	// lastEvict is when the cleaner last evicted blocks.
 	lastEvict time.Time
-	// closed is set once close has been called.
-	closed bool
 	// stop is closed to terminate the cleaner goroutine.
 	stop chan struct{}
 	// wg tracks background goroutines; used by close and tests.
@@ -119,6 +121,8 @@ func newDefaultBufferPool() *defaultBufferPool {
 		defaultBufferPoolCleanInterval, defaultBufferPoolIdleTimeout)
 }
 
+// newDefaultBufferPoolWithConfig returns a defaultBufferPool with the given
+// block size and eviction timings. Tests use it to shrink blocks and timers.
 func newDefaultBufferPoolWithConfig(blockSize int, cleanInterval, idleTimeout time.Duration) *defaultBufferPool {
 	p := &defaultBufferPool{
 		blockSize:     blockSize,
@@ -139,12 +143,12 @@ func (p *defaultBufferPool) Get(maxSize int) ([]byte, error) {
 		return nil, errInvalidBufferSize
 	}
 	p.touch()
-	b, ok := p.pop()
+	b, ok, cached := p.pop()
 	if !ok {
 		p.live.Add(1)
 		b = p.allocate()
 	}
-	p.maybeRefill(maxSize)
+	p.maybeRefill(maxSize, cached)
 	return b[:min(maxSize, p.blockSize)], nil
 }
 
@@ -157,8 +161,8 @@ func (p *defaultBufferPool) TryGet(maxSize int) ([]byte, bool, error) {
 		return nil, false, errInvalidBufferSize
 	}
 	p.touch()
-	b, ok := p.pop()
-	p.maybeRefill(maxSize)
+	b, ok, cached := p.pop()
+	p.maybeRefill(maxSize, cached)
 	if !ok {
 		return nil, false, nil
 	}
@@ -167,6 +171,10 @@ func (p *defaultBufferPool) TryGet(maxSize int) ([]byte, bool, error) {
 
 // Put returns a buffer obtained from Get or TryGet to the pool. Buffers that
 // were not vended by this pool (wrong capacity) are ignored.
+//
+// Put must be called exactly once per buffer. Returning the same buffer twice
+// caches it twice, so two later callers would share, and corrupt, the same
+// memory.
 func (p *defaultBufferPool) Put(buf []byte) {
 	if cap(buf) != p.blockSize {
 		return
@@ -175,31 +183,32 @@ func (p *defaultBufferPool) Put(buf []byte) {
 	p.push(buf[:p.blockSize])
 }
 
-// pop removes and returns the most recently cached block, if any.
-func (p *defaultBufferPool) pop() ([]byte, bool) {
+// pop removes and returns the most recently cached block, if any, along with
+// the number of blocks that remain cached.
+func (p *defaultBufferPool) pop() (b []byte, ok bool, remaining int) {
 	p.freeMu.Lock()
 	defer p.freeMu.Unlock()
 	n := len(p.free)
 	if n == 0 {
-		return nil, false
+		return nil, false, 0
 	}
-	b := p.free[n-1]
+	b = p.free[n-1]
 	p.free[n-1] = nil // Do not retain the block via the backing array.
 	p.free = p.free[:n-1]
-	return b, true
+	return b, true, n - 1
 }
 
 // push caches b, or drops it if the pool has been closed. It (re)starts the
 // cleaner so that cached memory is eventually reclaimed.
 //
-// shut is checked while holding freeMu so that the check and the append are
-// atomic with respect to close, which sets shut before draining free under
+// closed is checked while holding freeMu so that the check and the append are
+// atomic with respect to close, which sets closed before draining free under
 // the same lock. A push therefore either lands before the drain (and is
-// drained) or observes shut and drops the block; it can never leave a block
+// drained) or observes closed and drops the block; it can never leave a block
 // cached in a closed pool.
 func (p *defaultBufferPool) push(b []byte) {
 	p.freeMu.Lock()
-	if p.shut.Load() {
+	if p.closed.Load() {
 		p.freeMu.Unlock()
 		p.live.Add(-1)
 		return
@@ -216,8 +225,8 @@ func (p *defaultBufferPool) cached() int {
 	return len(p.free)
 }
 
-// evict drops up to n cached blocks and returns how many were dropped.
-func (p *defaultBufferPool) evict(n int) int {
+// evict drops up to n cached blocks in a single critical section.
+func (p *defaultBufferPool) evict(n int) {
 	p.freeMu.Lock()
 	defer p.freeMu.Unlock()
 	n = min(n, len(p.free))
@@ -225,9 +234,9 @@ func (p *defaultBufferPool) evict(n int) int {
 	clear(p.free[keep:])
 	p.free = p.free[:keep]
 	p.live.Add(-int64(n))
-	return n
 }
 
+// allocate returns a new zeroed block.
 func (p *defaultBufferPool) allocate() []byte {
 	return make([]byte, p.blockSize)
 }
@@ -240,20 +249,20 @@ func (p *defaultBufferPool) blocksFor(size int) int {
 }
 
 // maybeRefill starts a background goroutine that pre-allocates blocks when
-// fewer blocks are cached than a request of maxSize bytes would need, capped
-// at defaultBufferPoolMaxRefillBlocks. At most
-// one refill runs at a time; requests that arrive while one is running are
-// served by it or trigger a new refill on their next call.
-func (p *defaultBufferPool) maybeRefill(maxSize int) {
+// cached, the number of cached blocks, is below what a request of maxSize
+// bytes would need, capped at defaultBufferPoolMaxRefillBlocks. At most one
+// refill runs at a time; requests that arrive while one is running are served
+// by it or trigger a new refill on their next call.
+func (p *defaultBufferPool) maybeRefill(maxSize, cached int) {
 	want := min(p.blocksFor(maxSize), defaultBufferPoolMaxRefillBlocks)
-	if p.cached() >= want {
+	if cached >= want {
 		return
 	}
 	if !p.refilling.CompareAndSwap(false, true) {
 		return
 	}
 	p.mu.Lock()
-	if p.closed {
+	if p.closed.Load() {
 		p.mu.Unlock()
 		p.refilling.Store(false)
 		return
@@ -263,7 +272,7 @@ func (p *defaultBufferPool) maybeRefill(maxSize int) {
 	go func() {
 		defer p.wg.Done()
 		defer p.refilling.Store(false)
-		for p.cached() < want && !p.shut.Load() {
+		for p.cached() < want && !p.closed.Load() {
 			p.live.Add(1)
 			p.push(p.allocate())
 		}
@@ -275,19 +284,25 @@ func (p *defaultBufferPool) touch() {
 	p.lastActive.Store(p.now().UnixNano())
 }
 
-// ensureCleaner starts the cleaner goroutine if it is not running.
+// ensureCleaner starts the cleaner goroutine if it is not running. The common
+// case, a running cleaner, is detected without taking mu.
 func (p *defaultBufferPool) ensureCleaner() {
-	p.mu.Lock()
-	defer p.mu.Unlock()
-	if p.cleanerRunning || p.closed {
+	if p.cleanerRunning.Load() {
 		return
 	}
-	p.cleanerRunning = true
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	if p.cleanerRunning.Load() || p.closed.Load() {
+		return
+	}
+	p.cleanerRunning.Store(true)
 	p.lastEvict = time.Time{}
 	p.wg.Add(1)
 	go p.runCleaner()
 }
 
+// runCleaner calls evictIfIdle every cleanInterval until the cache is empty
+// or the pool is closed.
 func (p *defaultBufferPool) runCleaner() {
 	defer p.wg.Done()
 	t := time.NewTicker(p.cleanInterval)
@@ -308,6 +323,11 @@ func (p *defaultBufferPool) runCleaner() {
 // at least idleTimeout and no eviction has happened in the last idleTimeout.
 // It returns true, after marking the cleaner as stopped, once the cache is
 // empty; the cleaner is restarted by the next push.
+//
+// The cleaner clears cleanerRunning before re-checking the cache. A concurrent
+// push appends before reading cleanerRunning, so either this re-check sees the
+// new block and the cleaner keeps running, or the push sees the cleared flag
+// and starts a new cleaner.
 func (p *defaultBufferPool) evictIfIdle() (stopped bool) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
@@ -321,33 +341,28 @@ func (p *defaultBufferPool) evictIfIdle() (stopped bool) {
 		p.lastEvict = now
 	}
 
-	if p.cached() == 0 {
-		p.cleanerRunning = false
-		return true
+	p.cleanerRunning.Store(false)
+	if p.cached() > 0 {
+		p.cleanerRunning.Store(true)
+		return false
 	}
-	return false
+	return true
 }
 
 // close stops all background goroutines and releases cached blocks. Buffers
 // that are still held by callers may be Put afterwards; they are dropped.
 func (p *defaultBufferPool) close() {
 	p.mu.Lock()
-	if p.closed {
+	if p.closed.Load() {
 		p.mu.Unlock()
 		return
 	}
-	p.closed = true
-	p.shut.Store(true)
+	p.closed.Store(true)
 	close(p.stop)
 	p.mu.Unlock()
 	p.wg.Wait()
 
-	// Drain under a single freeMu critical section. shut is already set, so
-	// any push that acquires freeMu after this drops its block.
-	p.freeMu.Lock()
-	n := len(p.free)
-	clear(p.free)
-	p.free = nil
-	p.freeMu.Unlock()
-	p.live.Add(-int64(n))
+	// closed is already set, so any push that acquires freeMu after this
+	// drain drops its block.
+	p.evict(math.MaxInt)
 }

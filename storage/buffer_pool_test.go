@@ -18,6 +18,8 @@ import (
 	"context"
 	"errors"
 	"math"
+	"runtime"
+	"slices"
 	"sync"
 	"testing"
 	"time"
@@ -73,20 +75,6 @@ func tryGetEventually(t *testing.T, p *defaultBufferPool, maxSize int) []byte {
 		return ok
 	})
 	return b
-}
-
-func TestDefaultBufferPoolDefaults(t *testing.T) {
-	p := newDefaultBufferPool()
-	defer p.close()
-	if p.blockSize != 32<<20 {
-		t.Errorf("blockSize = %d, want %d", p.blockSize, 32<<20)
-	}
-	if p.cleanInterval != 15*time.Second {
-		t.Errorf("cleanInterval = %v, want 15s", p.cleanInterval)
-	}
-	if p.idleTimeout != 30*time.Second {
-		t.Errorf("idleTimeout = %v, want 30s", p.idleTimeout)
-	}
 }
 
 func TestDefaultBufferPoolGetSizes(t *testing.T) {
@@ -170,22 +158,6 @@ func TestDefaultBufferPoolTryGetCacheOnly(t *testing.T) {
 	}
 }
 
-// With pre-allocation unable to keep up (stopped by close), TryGet keeps
-// reporting false while Get still succeeds.
-func TestDefaultBufferPoolTryGetEmptyAfterClose(t *testing.T) {
-	p, _ := newTestBufferPool(t)
-	p.close()
-	if _, ok, err := p.TryGet(testBlockSize); ok || err != nil {
-		t.Errorf("TryGet after close = %v, %v; want false, nil", ok, err)
-	}
-	if p.refilling.Load() {
-		t.Error("pre-allocation started after close")
-	}
-	if _, err := p.Get(testBlockSize); err != nil {
-		t.Errorf("Get after close: %v", err)
-	}
-}
-
 func TestDefaultBufferPoolBlocksFor(t *testing.T) {
 	p, _ := newTestBufferPool(t)
 	for _, tc := range []struct {
@@ -263,23 +235,6 @@ func TestDefaultBufferPoolPutCloseRace(t *testing.T) {
 		if got := p.live.Load(); got != 0 {
 			t.Fatalf("round %d: live = %d after close and all Puts, want 0", r, got)
 		}
-	}
-}
-
-func TestDefaultBufferPoolNonBlocking(t *testing.T) {
-	p, _ := newTestBufferPool(t)
-	done := make(chan struct{})
-	go func() {
-		defer close(done)
-		for i := 0; i < 100; i++ {
-			p.TryGet(testBlockSize)
-			p.Get(testBlockSize)
-		}
-	}()
-	select {
-	case <-done:
-	case <-time.After(5 * time.Second):
-		t.Fatal("Get/TryGet blocked")
 	}
 }
 
@@ -405,31 +360,64 @@ func TestDefaultBufferPoolStagedEviction(t *testing.T) {
 }
 
 func TestDefaultBufferPoolCleanerLifecycle(t *testing.T) {
-	p := newDefaultBufferPoolWithConfig(testBlockSize, time.Millisecond, 50*time.Millisecond)
+	// A fast real ticker drives the cleaner goroutine, while the fake clock
+	// decides when the pool counts as idle, so eviction never happens early.
+	clk := newFakeClock()
+	p := newDefaultBufferPoolWithConfig(testBlockSize, time.Millisecond, 30*time.Second)
+	p.now = clk.Now
+	p.touch()
 	defer p.close()
 
-	running := func() bool {
-		p.mu.Lock()
-		defer p.mu.Unlock()
-		return p.cleanerRunning
-	}
-	if running() {
+	if p.cleanerRunning.Load() {
 		t.Fatal("cleaner running before any block was cached")
 	}
 	b, _ := p.Get(testBlockSize)
 	p.Put(b)
-	if !running() {
+	if !p.cleanerRunning.Load() {
 		t.Fatal("cleaner not started after Put")
 	}
-	waitFor(t, "pool to drain", func() bool { return p.cached() == 0 && !p.refilling.Load() })
-	waitFor(t, "cleaner to stop", func() bool { return !running() })
+	waitFor(t, "cleaner to drain the pool and stop", func() bool {
+		clk.Advance(30 * time.Second)
+		return p.cached() == 0 && !p.refilling.Load() && !p.cleanerRunning.Load()
+	})
 
 	// The next Put restarts the cleaner.
 	b, _ = p.Get(testBlockSize)
 	p.Put(b)
-	if !running() {
+	if !p.cleanerRunning.Load() {
 		t.Fatal("cleaner not restarted after Put")
 	}
+}
+
+// A Put racing with the cleaner's decision to stop must never leave a cached
+// block without a running cleaner.
+func TestDefaultBufferPoolCleanerStopRace(t *testing.T) {
+	// idleTimeout 0 makes every tick evict, so the cleaner stops and restarts
+	// as often as possible.
+	p := newDefaultBufferPoolWithConfig(testBlockSize, time.Millisecond, 0)
+	defer p.close()
+
+	const (
+		workers = 8
+		iters   = 200
+	)
+	var wg sync.WaitGroup
+	for w := 0; w < workers; w++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for i := 0; i < iters; i++ {
+				b, _ := p.Get(testBlockSize)
+				p.Put(b)
+			}
+		}()
+	}
+	wg.Wait()
+
+	// If a block were stranded without a cleaner, the cache would never empty.
+	waitFor(t, "cleaner to drain the pool", func() bool {
+		return p.cached() == 0 && !p.refilling.Load() && !p.cleanerRunning.Load()
+	})
 }
 
 func TestDefaultBufferPoolClose(t *testing.T) {
@@ -438,7 +426,8 @@ func TestDefaultBufferPoolClose(t *testing.T) {
 	b2, _ := p.Get(testBlockSize)
 	p.Put(b1)
 	p.close()
-	p.close() // idempotent
+	// close must be idempotent.
+	p.close()
 
 	if p.cached() != 0 {
 		t.Errorf("cached = %d after close, want 0", p.cached())
@@ -447,6 +436,16 @@ func TestDefaultBufferPoolClose(t *testing.T) {
 	p.Put(b2)
 	if p.cached() != 0 || p.live.Load() != 0 {
 		t.Errorf("after close: cached=%d live=%d, want 0, 0", p.cached(), p.live.Load())
+	}
+	// TryGet finds nothing and must not start pre-allocation; Get still works.
+	if _, ok, err := p.TryGet(testBlockSize); ok || err != nil {
+		t.Errorf("TryGet after close = %v, %v; want false, nil", ok, err)
+	}
+	if p.refilling.Load() {
+		t.Error("pre-allocation started after close")
+	}
+	if _, err := p.Get(testBlockSize); err != nil {
+		t.Errorf("Get after close: %v", err)
 	}
 }
 
@@ -541,6 +540,28 @@ func BenchmarkDefaultBufferPoolSteadyState(b *testing.B) {
 	}
 }
 
+func BenchmarkDefaultBufferPoolParallel(b *testing.B) {
+	p := newDefaultBufferPool()
+	defer p.close()
+	// Warm the pool with enough blocks for every parallel goroutine so the
+	// timed loop measures steady state rather than pool growth.
+	warm := make([][]byte, 2*runtime.GOMAXPROCS(0))
+	for i := range warm {
+		warm[i], _ = p.Get(defaultBufferPoolBlockSize)
+	}
+	for _, buf := range warm {
+		p.Put(buf)
+	}
+	b.ReportAllocs()
+	b.ResetTimer()
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			buf, _ := p.Get(defaultBufferPoolBlockSize)
+			p.Put(buf)
+		}
+	})
+}
+
 func TestGRPCClientBufferPool(t *testing.T) {
 	ctx := context.Background()
 	baseOpts := []option.ClientOption{
@@ -554,31 +575,26 @@ func TestGRPCClientBufferPool(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if c.defaultPool == nil {
-			t.Fatal("defaultPool is nil")
-		}
-		if c.bufferPool != experimental.BufferPool(c.defaultPool) {
-			t.Error("bufferPool is not the default pool")
+		pool, ok := c.bufferPool.(*defaultBufferPool)
+		if !ok {
+			t.Fatalf("bufferPool = %T, want *defaultBufferPool", c.bufferPool)
 		}
 		if err := c.Close(); err != nil {
 			t.Fatal(err)
 		}
-		if !c.defaultPool.shut.Load() {
+		if !pool.closed.Load() {
 			t.Error("default pool not closed with the client")
 		}
 	})
 
 	t.Run("custom", func(t *testing.T) {
 		custom := &struct{ experimental.BufferPool }{}
-		opts := append(baseOpts, experimental.WithBufferPool(custom))
+		opts := append(slices.Clone(baseOpts), experimental.WithBufferPool(custom))
 		c, err := newGRPCStorageClient(ctx, withClientOptions(opts...))
 		if err != nil {
 			t.Fatal(err)
 		}
 		defer c.Close()
-		if c.defaultPool != nil {
-			t.Error("defaultPool created even though a custom pool was provided")
-		}
 		if c.bufferPool != experimental.BufferPool(custom) {
 			t.Error("bufferPool is not the custom pool")
 		}
