@@ -758,6 +758,13 @@ func (sc *sessionClient) createSessionPool(
 		poolName, streamFactory, openSessionRequest, md, sessionType,
 		sc.enableDebug,
 	)
+	// Wire GOAWAY/UNIMPLEMENTED channel recycling when the transport is a
+	// BigtableChannelPool. RecycleConnAtIndex is idempotent (markAsDraining
+	// CAS), so concurrent GOAWAY sessions on the same channel are safe.
+	if bp, ok := sc.channelPool.(*btransport.BigtableChannelPool); ok {
+		pool.SetChannelRecycler(bp.RecycleConnAtIndex)
+	}
+
 	mp := &managedSessionPool{id: id, key: key, pool: pool}
 	sc.sessionPools[id] = mp
 	configManager := sc.configManager
