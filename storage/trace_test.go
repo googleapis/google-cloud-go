@@ -642,3 +642,182 @@ func TestGRPCRetryAttemptNumberTracing(t *testing.T) {
 		})
 	}
 }
+
+func TestRecordRetryBackoffNoParentSpan(t *testing.T) {
+	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() {
+		te.Unregister(ctx)
+	})
+	t.Setenv(storageOtelTracingDevVar, "true")
+
+	recordRetryBackoff(ctx, time.Now())
+
+	if got := len(te.Spans()); got != 0 {
+		t.Errorf("recordRetryBackoff() without a parent span exported %d spans, want 0", got)
+	}
+}
+
+func TestRunRetryBackoffTracing(t *testing.T) {
+	fastBackoff := &gax.Backoff{Initial: time.Millisecond, Max: time.Millisecond}
+	maxAttempts := 2
+	retryableErr := &googleapi.Error{Code: http.StatusServiceUnavailable}
+	nonRetryableErr := &googleapi.Error{Code: http.StatusBadRequest}
+
+	for _, tc := range []struct {
+		name  string
+		retry *retryConfig
+		// errs[i] is returned by attempt i+1. Later attempts succeed.
+		errs []error
+		// timeout, if set, is applied to the context passed to run.
+		timeout time.Duration
+		wantErr bool
+		// wantBackoffs is the number of RetryBackoff spans expected.
+		wantBackoffs int
+	}{
+		{
+			name:  "success on first attempt",
+			retry: &retryConfig{backoff: fastBackoff},
+		},
+		{
+			name:         "one retry",
+			retry:        &retryConfig{backoff: fastBackoff},
+			errs:         []error{retryableErr},
+			wantBackoffs: 1,
+		},
+		{
+			name:         "two retries",
+			retry:        &retryConfig{backoff: fastBackoff},
+			errs:         []error{retryableErr, retryableErr},
+			wantBackoffs: 2,
+		},
+		{
+			name:    "non-retryable error",
+			retry:   &retryConfig{backoff: fastBackoff},
+			errs:    []error{nonRetryableErr},
+			wantErr: true,
+		},
+		{
+			name:         "max attempts reached",
+			retry:        &retryConfig{backoff: fastBackoff, maxAttempts: &maxAttempts},
+			errs:         []error{retryableErr, retryableErr},
+			wantErr:      true,
+			wantBackoffs: 1,
+		},
+		{
+			name: "context done during backoff",
+			// gax picks a random pause in [1ns, Initial], so a huge Initial makes
+			// a pause shorter than the timeout practically impossible.
+			retry:        &retryConfig{backoff: &gax.Backoff{Initial: 1000 * time.Hour, Max: 1000 * time.Hour}},
+			errs:         []error{retryableErr},
+			timeout:      50 * time.Millisecond,
+			wantErr:      true,
+			wantBackoffs: 1,
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := context.Background()
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() {
+				te.Unregister(ctx)
+			})
+			t.Setenv(storageOtelTracingDevVar, "true")
+
+			spanCtx, _ := startSpan(ctx, "Bucket.Attrs")
+			runCtx := spanCtx
+			if tc.timeout > 0 {
+				var cancel context.CancelFunc
+				runCtx, cancel = context.WithTimeout(spanCtx, tc.timeout)
+				defer cancel()
+			}
+			attempt := 0
+			err := run(runCtx, func(context.Context) error {
+				attempt++
+				if attempt <= len(tc.errs) {
+					return tc.errs[attempt-1]
+				}
+				return nil
+			}, tc.retry, true)
+			endSpan(spanCtx, err)
+
+			if gotErr := err != nil; gotErr != tc.wantErr {
+				t.Fatalf("run() = %v, want error: %t", err, tc.wantErr)
+			}
+			checkRetryBackoffs(t, te.Spans(), tc.wantBackoffs, tc.timeout)
+		})
+	}
+}
+
+func TestRunRetryBackoffTracingDisabled(t *testing.T) {
+	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() {
+		te.Unregister(ctx)
+	})
+	t.Setenv(storageOtelTracingDevVar, "false")
+
+	// The span is started directly so that it is recording even though dev
+	// tracing is disabled, proving that the environment gate alone prevents
+	// the backoff from being recorded.
+	spanCtx, span := tracer().Start(ctx, "Bucket.Attrs")
+	attempt := 0
+	err := run(spanCtx, func(context.Context) error {
+		attempt++
+		if attempt == 1 {
+			return &googleapi.Error{Code: http.StatusServiceUnavailable}
+		}
+		return nil
+	}, &retryConfig{backoff: &gax.Backoff{Initial: time.Millisecond, Max: time.Millisecond}}, true)
+	span.End()
+
+	if err != nil {
+		t.Fatalf("run() = %v, want nil", err)
+	}
+	spans := te.Spans()
+	if len(spans) != 1 {
+		t.Errorf("run() produced %d spans, want 1", len(spans))
+	}
+}
+
+// findSpans returns the spans in spans named with the package-qualified form
+// of name.
+func findSpans(spans tracetest.SpanStubs, name string) tracetest.SpanStubs {
+	want := appendPackageName(name)
+	var found tracetest.SpanStubs
+	for _, s := range spans {
+		if s.Name == want {
+			found = append(found, s)
+		}
+	}
+	return found
+}
+
+// checkRetryBackoffs checks that the single Bucket.Attrs span in spans has
+// wantBackoffs RetryBackoff child spans, each lying within the parent span's
+// time range and lasting at least minDuration.
+func checkRetryBackoffs(t *testing.T, spans tracetest.SpanStubs, wantBackoffs int, minDuration time.Duration) {
+	t.Helper()
+	parents := findSpans(spans, "Bucket.Attrs")
+	if len(parents) != 1 {
+		t.Fatalf("got %d Bucket.Attrs spans, want 1", len(parents))
+	}
+	parent := parents[0]
+	backoffs := findSpans(spans, "RetryBackoff")
+	if len(backoffs) != wantBackoffs {
+		t.Errorf("got %d RetryBackoff spans, want %d", len(backoffs), wantBackoffs)
+	}
+	for _, s := range backoffs {
+		if got, want := s.Parent.SpanID(), parent.SpanContext.SpanID(); got != want {
+			t.Errorf("RetryBackoff span parent ID = %v, want %v", got, want)
+		}
+		if s.StartTime.After(s.EndTime) {
+			t.Errorf("RetryBackoff span start time %v is after end time %v", s.StartTime, s.EndTime)
+		}
+		if got := s.EndTime.Sub(s.StartTime); got < minDuration {
+			t.Errorf("RetryBackoff span duration = %v, want >= %v", got, minDuration)
+		}
+		if s.StartTime.Before(parent.StartTime) || s.EndTime.After(parent.EndTime) {
+			t.Errorf("RetryBackoff span [%v, %v] is outside parent span [%v, %v]", s.StartTime, s.EndTime, parent.StartTime, parent.EndTime)
+		}
+	}
+}
