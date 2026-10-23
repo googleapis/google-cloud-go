@@ -412,6 +412,24 @@ func TestRecordWriterTraceAttributes(t *testing.T) {
 			},
 		},
 		{
+			name: "oneshot_non_aligned_chunk_size",
+			run: func(t *testing.T, ctx context.Context) {
+				w := newMockObjectHandle().NewWriter(ctx)
+				// 300 KiB rounds up to 512 KiB via gRPCChunkSize / googleapi.ChunkSize,
+				// so a 400 KiB write fits in the first chunk and runs as oneshot.
+				w.ChunkSize = 300 * 1024
+				if _, err := w.Write(make([]byte, 400*1024)); err != nil {
+					t.Fatalf("Write failed: %v", err)
+				}
+				if err := w.Close(); err != nil {
+					t.Fatalf("Close failed: %v", err)
+				}
+			},
+			wantAttrs: []attribute.KeyValue{
+				attribute.String("gcp.storage.write.mode", "oneshot"),
+			},
+		},
+		{
 			name: "oneshot_grpc_force_oneshot",
 			run: func(_ *testing.T, ctx context.Context) {
 				ctx, _ = startSpan(ctx, "Object.Writer")
@@ -504,6 +522,99 @@ func TestRecordWriterTraceAttributes(t *testing.T) {
 	}
 }
 
+func TestWriterTraceWriteModeEmulated(t *testing.T) {
+	checkEmulatorEnvironment(t)
+
+	ctx := context.Background()
+	c := &Client{tc: emulatorClients["grpc"]}
+	bucket := fmt.Sprintf("grpc-trace-bucket-%d", time.Now().UnixNano())
+	if err := c.Bucket(bucket).Create(ctx, "project", nil); err != nil {
+		t.Fatalf("Bucket.Create: %v", err)
+	}
+
+	testCases := []struct {
+		name      string
+		configure func(*Writer)
+		payload   []byte
+		wantAttrs []attribute.KeyValue
+	}{
+		{
+			name:      "oneshot",
+			configure: func(_ *Writer) {},
+			payload:   make([]byte, 1024),
+			wantAttrs: []attribute.KeyValue{
+				attribute.String("gcp.storage.write.mode", "oneshot"),
+			},
+		},
+		{
+			name: "resumable",
+			configure: func(w *Writer) {
+				w.ChunkSize = 256 * 1024
+			},
+			payload: make([]byte, 1024*1024),
+			wantAttrs: []attribute.KeyValue{
+				attribute.String("gcp.storage.write.mode", "resumable"),
+			},
+		},
+		{
+			name: "appendable",
+			configure: func(w *Writer) {
+				w.Append = true
+				w.FinalizeOnClose = true
+			},
+			payload: make([]byte, 1024),
+			wantAttrs: []attribute.KeyValue{
+				attribute.String("gcp.storage.write.mode", "appendable"),
+			},
+		},
+		{
+			name: "parallel",
+			configure: func(w *Writer) {
+				w.EnableParallelUpload = true
+				w.ParallelUploadConfig = ParallelUploadConfig{
+					PartSize:       8 * 1024 * 1024,
+					MaxConcurrency: 4,
+				}
+			},
+			payload: make([]byte, 1024),
+			wantAttrs: []attribute.KeyValue{
+				attribute.String("gcp.storage.write.mode", "parallel"),
+				attribute.Int("gcp.storage.write.parallel.part_size", 8*1024*1024),
+				attribute.Int("gcp.storage.write.parallel.concurrency", 4),
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() {
+				te.Unregister(ctx)
+			})
+			// TODO: Remove setting development env var upon launch.
+			t.Setenv(storageOtelTracingDevVar, "true")
+
+			objName := fmt.Sprintf("object-%s-%d", tc.name, time.Now().UnixNano())
+			w := c.Bucket(bucket).Object(objName).NewWriter(ctx)
+			tc.configure(w)
+			if _, err := w.Write(tc.payload); err != nil {
+				t.Fatalf("Write: %v", err)
+			}
+			if err := w.Close(); err != nil {
+				t.Fatalf("Close: %v", err)
+			}
+
+			var writerSpans tracetest.SpanStubs
+			for _, s := range te.Spans() {
+				if s.Name == appendPackageName("Object.Writer") && !s.Parent.IsValid() {
+					writerSpans = append(writerSpans, s)
+				}
+			}
+			verifySingleSpanAttributes(t, writerSpans, tc.wantAttrs)
+		})
+	}
+}
+
 // TestReaderTraceReadMode verifies the read mode recorded by NewRangeReader and
 // NewMultiRangeDownloader. The ObjectHandle has no object name, so each call
 // fails validation after the span has been started and the attribute recorded,
@@ -590,17 +701,12 @@ func TestRecordTraceAttributes_DevTracingDisabled(t *testing.T) {
 	recordWriterTraceAttributes(wCtx, &Writer{EnableParallelUpload: true})
 	endSpan(wCtx, nil)
 
-	rCtx, _ := startSpan(ctx, "Object.Reader")
-	recordReaderTraceAttributes(rCtx, "full")
-	endSpan(rCtx, nil)
-
 	for _, s := range te.Spans() {
 		for _, a := range s.Attributes {
 			switch a.Key {
 			case "gcp.storage.write.mode",
 				"gcp.storage.write.parallel.part_size",
-				"gcp.storage.write.parallel.concurrency",
-				"gcp.storage.read.mode":
+				"gcp.storage.write.parallel.concurrency":
 				t.Errorf("span %s has unexpected attribute %s when dev tracing is disabled", s.Name, a.Key)
 			}
 		}

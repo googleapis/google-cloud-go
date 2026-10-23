@@ -199,38 +199,38 @@ func appendPackageName(spanName string) string {
 	return fmt.Sprintf("%s.%s", gcpClientArtifact, spanName)
 }
 
+func recordingSpan(ctx context.Context) (trace.Span, bool) {
+	if !isOTelTracingDevEnabled() {
+		return nil, false
+	}
+	span := trace.SpanFromContext(ctx)
+	return span, span.IsRecording()
+}
+
 // recordWriterTraceAttributes attaches the upload strategy to the Object.Writer
 // span in ctx as gcp.storage.write.mode (resumable, oneshot, appendable or
 // parallel). For parallel uploads, the configured part size and concurrency are
 // also recorded.
 func recordWriterTraceAttributes(ctx context.Context, w *Writer) {
-	if !isOTelTracingDevEnabled() || w == nil {
+	span, ok := recordingSpan(ctx)
+	if !ok {
 		return
 	}
-	span := trace.SpanFromContext(ctx)
-	if !span.IsRecording() {
-		return
-	}
-
-	writeMode := "resumable"
 	if w.EnableParallelUpload {
-		writeMode = "parallel"
-	} else if w.Append {
+		span.SetAttributes(
+			attribute.String("gcp.storage.write.mode", "parallel"),
+			attribute.Int("gcp.storage.write.parallel.part_size", w.ParallelUploadConfig.PartSize),
+			attribute.Int("gcp.storage.write.parallel.concurrency", w.ParallelUploadConfig.MaxConcurrency),
+		)
+		return
+	}
+	writeMode := "resumable"
+	if w.Append {
 		writeMode = "appendable"
 	} else if isOneshotUpload(w) {
 		writeMode = "oneshot"
 	}
-
-	attrs := []attribute.KeyValue{
-		attribute.String("gcp.storage.write.mode", writeMode),
-	}
-	if w.EnableParallelUpload {
-		attrs = append(attrs,
-			attribute.Int("gcp.storage.write.parallel.part_size", w.ParallelUploadConfig.PartSize),
-			attribute.Int("gcp.storage.write.parallel.concurrency", w.ParallelUploadConfig.MaxConcurrency),
-		)
-	}
-	span.SetAttributes(attrs...)
+	span.SetAttributes(attribute.String("gcp.storage.write.mode", writeMode))
 }
 
 // isOneshotUpload reports whether a non-parallel, non-appendable Writer
@@ -238,30 +238,15 @@ func recordWriterTraceAttributes(ctx context.Context, w *Writer) {
 // When ChunkSize <= 0, chunking is disabled and the upload is always oneshot.
 // When ChunkSize > 0, an upload that has opened and closed still runs as
 // oneshot if the entire payload fit in the first chunk buffer (via forceOneShot
-// in gRPC, or a single chunk in HTTP).
+// in gRPC, or a single chunk in HTTP where googleapi.ChunkSize rounds up to a
+// 256 KiB multiple and sends payloads strictly smaller than that size in a
+// single request).
 func isOneshotUpload(w *Writer) bool {
-	if w.ChunkSize <= 0 {
-		return true
-	}
 	if gw, ok := w.iw.(*gRPCWriter); ok {
 		return gw.usesOneshotSender()
 	}
-	if w.opened && w.closed {
-		return atomic.LoadInt64(&w.bytesWritten) < int64(gRPCChunkSize(w.ChunkSize))
+	if w.ChunkSize <= 0 {
+		return true
 	}
-	return false
-}
-
-// recordReaderTraceAttributes attaches the read strategy to the Object.Reader or
-// Object.MultiRangeDownloader span in ctx as gcp.storage.read.mode (full, range
-// or multi_range).
-func recordReaderTraceAttributes(ctx context.Context, readMode string) {
-	if !isOTelTracingDevEnabled() {
-		return
-	}
-	span := trace.SpanFromContext(ctx)
-	if !span.IsRecording() {
-		return
-	}
-	span.SetAttributes(attribute.String("gcp.storage.read.mode", readMode))
+	return w.opened && w.closed && atomic.LoadInt64(&w.bytesWritten) < int64(gRPCChunkSize(w.ChunkSize))
 }
