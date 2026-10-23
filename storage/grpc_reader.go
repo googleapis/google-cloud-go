@@ -520,13 +520,12 @@ func (r *gRPCReadObjectReader) Close() error {
 
 // drainStreamOnCompletion cleanly exhausts a finished stream to allow HTTP2 connection reuse.
 func drainStreamOnCompletion(cancel context.CancelFunc, stream grpc.ClientStream) {
-	if stream == nil {
+	// Without cancel there is no way to bound the drain, so skip it.
+	if stream == nil || cancel == nil {
 		return
 	}
-	if cancel != nil {
-		timer := time.AfterFunc(defaultStreamDrainTimeout, cancel)
-		defer timer.Stop()
-	}
+	timer := time.AfterFunc(defaultStreamDrainTimeout, cancel)
+	defer timer.Stop()
 	for {
 		var drop mem.BufferSlice
 		if err := stream.RecvMsg(&drop); err != nil {

@@ -161,7 +161,6 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 
 	// Create the manager
 	manager := &multiRangeDownloaderManager{
-		rootCtx:        ctx,
 		ctx:            mCtx,
 		cancel:         cancel,
 		client:         c,
@@ -366,7 +365,6 @@ var (
 // Manages main event loop for MRD commands and processing responses.
 // Spawns bidiStreamSession to deal with actual stream management, retries, etc.
 type multiRangeDownloaderManager struct {
-	rootCtx      context.Context
 	ctx          context.Context
 	cancel       context.CancelFunc
 	client       *grpcStorageClient
@@ -625,11 +623,14 @@ func (m *multiRangeDownloaderManager) eventLoop() {
 }
 
 func (m *multiRangeDownloaderManager) cleanup() {
-	for id, stream := range m.streams {
+	// Shut down sessions before cancelling the manager context so that they
+	// can close their streams gracefully. Keep the stream entries until
+	// failAllPending() has run so that ranges already sent on a stream get
+	// their callbacks.
+	for _, stream := range m.streams {
 		if stream.session != nil {
 			stream.session.Shutdown()
 		}
-		delete(m.streams, id)
 	}
 
 	// Drain and free any remaining responses to prevent buffer leaks.
@@ -662,6 +663,12 @@ sessionDrainLoop:
 		close(waiter)
 	}
 	m.attrsOnce.Do(func() { close(m.attrsReady) })
+	for id := range m.streams {
+		delete(m.streams, id)
+	}
+	// Stop any session that is still being opened and make new calls to Add,
+	// Wait and Close return immediately.
+	m.cancel()
 	// Complete any commands leftover in cmds channel.
 cmdDrainLoop:
 	for {
@@ -801,7 +808,7 @@ func (m *multiRangeDownloaderManager) createNewSession(id int, readSpec *storage
 }
 
 func (m *multiRangeDownloaderManager) openAndInitializeSession(ctx context.Context, id int, spec *storagepb.BidiReadObjectSpec, waitForResult bool) (*bidiReadStreamSession, mrdSessionResult) {
-	session, err := newBidiReadStreamSession(m.rootCtx, id, m.sessionResps, m.client, m.settings, m.params, spec)
+	session, err := newBidiReadStreamSession(ctx, id, m.sessionResps, m.client, m.settings, m.params, spec)
 	if err != nil {
 		return nil, mrdSessionResult{err: err}
 	}
@@ -903,8 +910,9 @@ func (m *multiRangeDownloaderManager) handleCloseCmd(ctx context.Context, cmd *m
 	} else {
 		err = errClosed
 	}
+	// The manager context is cancelled at the end of cleanup(), after the
+	// sessions have been shut down.
 	m.setPermanentError(err)
-	m.cancel()
 }
 
 func (m *multiRangeDownloaderManager) handleWaitCmd(ctx context.Context, cmd *mrdWaitCmd) {

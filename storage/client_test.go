@@ -4615,9 +4615,7 @@ func TestMRDCloseWithStalledRangeEmulated(t *testing.T) {
 			t.Errorf("callback for in-flight range got nil error; want non-nil")
 		}
 	case <-time.After(500 * time.Millisecond):
-		// Known issue: cleanup() deletes m.streams before failAllPending() runs,
-		// so ranges already sent on a stream never get their callback.
-		t.Skip("callback for in-flight range was not invoked: multiRangeDownloaderManager.cleanup() clears m.streams before failAllPending()")
+		t.Errorf("callback for in-flight range was not invoked")
 	}
 }
 
