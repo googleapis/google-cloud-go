@@ -402,6 +402,43 @@ func NewPoliciesClient(ctx context.Context, opts ...option.ClientOption) (*Polic
 		client.CallOptions.DeletePolicy = append(client.CallOptions.DeletePolicy, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "iam",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/iam/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "iam.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListPolicies = append(client.CallOptions.ListPolicies, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPolicy = append(client.CallOptions.GetPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.CreatePolicy = append(client.CallOptions.CreatePolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdatePolicy = append(client.CallOptions.UpdatePolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.DeletePolicy = append(client.CallOptions.DeletePolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "iam",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/iam/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "iam.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListPolicies = append(client.CallOptions.ListPolicies, gax.WithClientLogging(logging))
+		client.CallOptions.GetPolicy = append(client.CallOptions.GetPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.CreatePolicy = append(client.CallOptions.CreatePolicy, gax.WithClientLogging(logging))
+		client.CallOptions.UpdatePolicy = append(client.CallOptions.UpdatePolicy, gax.WithClientLogging(logging))
+		client.CallOptions.DeletePolicy = append(client.CallOptions.DeletePolicy, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -513,6 +550,43 @@ func NewPoliciesRESTClient(ctx context.Context, opts ...option.ClientOption) (*P
 		callOpts.UpdatePolicy = append(callOpts.UpdatePolicy, gax.WithClientMetrics(metrics))
 		callOpts.DeletePolicy = append(callOpts.DeletePolicy, gax.WithClientMetrics(metrics))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "iam",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/iam/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "iam.googleapis.com",
+			}),
+		)
+
+		callOpts.ListPolicies = append(callOpts.ListPolicies, gax.WithClientTracing(tracing))
+		callOpts.GetPolicy = append(callOpts.GetPolicy, gax.WithClientTracing(tracing))
+		callOpts.CreatePolicy = append(callOpts.CreatePolicy, gax.WithClientTracing(tracing))
+		callOpts.UpdatePolicy = append(callOpts.UpdatePolicy, gax.WithClientTracing(tracing))
+		callOpts.DeletePolicy = append(callOpts.DeletePolicy, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "iam",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/iam/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "iam.googleapis.com",
+			}),
+		)
+
+		callOpts.ListPolicies = append(callOpts.ListPolicies, gax.WithClientLogging(logging))
+		callOpts.GetPolicy = append(callOpts.GetPolicy, gax.WithClientLogging(logging))
+		callOpts.CreatePolicy = append(callOpts.CreatePolicy, gax.WithClientLogging(logging))
+		callOpts.UpdatePolicy = append(callOpts.UpdatePolicy, gax.WithClientLogging(logging))
+		callOpts.DeletePolicy = append(callOpts.DeletePolicy, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
 	}
 
 	lroOpts := []option.ClientOption{

@@ -17,9 +17,18 @@
 package transcoder
 
 import (
+	"iter"
+
 	transcoderpb "cloud.google.com/go/video/transcoder/apiv1/transcoderpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *JobIterator) All() iter.Seq2[*transcoderpb.Job, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // JobIterator manages a stream of *transcoderpb.Job.
 type JobIterator struct {
@@ -66,6 +75,12 @@ func (it *JobIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *JobTemplateIterator) All() iter.Seq2[*transcoderpb.JobTemplate, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // JobTemplateIterator manages a stream of *transcoderpb.JobTemplate.

@@ -244,6 +244,35 @@ func NewAutofeedSettingsClient(ctx context.Context, opts ...option.ClientOption)
 		client.CallOptions.GetAutofeedSettings = append(client.CallOptions.GetAutofeedSettings, gax.WithClientMetrics(metrics))
 		client.CallOptions.UpdateAutofeedSettings = append(client.CallOptions.UpdateAutofeedSettings, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetAutofeedSettings = append(client.CallOptions.GetAutofeedSettings, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateAutofeedSettings = append(client.CallOptions.UpdateAutofeedSettings, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetAutofeedSettings = append(client.CallOptions.GetAutofeedSettings, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateAutofeedSettings = append(client.CallOptions.UpdateAutofeedSettings, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -337,6 +366,35 @@ func NewAutofeedSettingsRESTClient(ctx context.Context, opts ...option.ClientOpt
 		callOpts.GetAutofeedSettings = append(callOpts.GetAutofeedSettings, gax.WithClientMetrics(metrics))
 		callOpts.UpdateAutofeedSettings = append(callOpts.UpdateAutofeedSettings, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetAutofeedSettings = append(callOpts.GetAutofeedSettings, gax.WithClientTracing(tracing))
+		callOpts.UpdateAutofeedSettings = append(callOpts.UpdateAutofeedSettings, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetAutofeedSettings = append(callOpts.GetAutofeedSettings, gax.WithClientLogging(logging))
+		callOpts.UpdateAutofeedSettings = append(callOpts.UpdateAutofeedSettings, gax.WithClientLogging(logging))
+	}
 
 	return &AutofeedSettingsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -383,9 +441,6 @@ func (c *autofeedSettingsGRPCClient) GetAutofeedSettings(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.AutofeedSettingsService/GetAutofeedSettings")
 	}
@@ -442,9 +497,6 @@ func (c *autofeedSettingsRESTClient) GetAutofeedSettings(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.AutofeedSettingsService/GetAutofeedSettings")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1beta/{name=accounts/*/autofeedSettings}")

@@ -18,12 +18,14 @@ package appconnections
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	appconnectionspb "cloud.google.com/go/beyondcorp/appconnections/apiv1/appconnectionspb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -200,6 +202,12 @@ func (op *UpdateAppConnectionOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AppConnectionIterator) All() iter.Seq2[*appconnectionspb.AppConnection, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AppConnectionIterator manages a stream of *appconnectionspb.AppConnection.
 type AppConnectionIterator struct {
 	items    []*appconnectionspb.AppConnection
@@ -245,6 +253,12 @@ func (it *AppConnectionIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LocationIterator manages a stream of *locationpb.Location.
@@ -294,6 +308,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -339,6 +359,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ResolveAppConnectionsResponse_AppConnectionDetailsIterator) All() iter.Seq2[*appconnectionspb.ResolveAppConnectionsResponse_AppConnectionDetails, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ResolveAppConnectionsResponse_AppConnectionDetailsIterator manages a stream of *appconnectionspb.ResolveAppConnectionsResponse_AppConnectionDetails.

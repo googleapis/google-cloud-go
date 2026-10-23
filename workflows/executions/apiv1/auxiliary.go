@@ -17,9 +17,18 @@
 package executions
 
 import (
+	"iter"
+
 	executionspb "cloud.google.com/go/workflows/executions/apiv1/executionspb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ExecutionIterator) All() iter.Seq2[*executionspb.Execution, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // ExecutionIterator manages a stream of *executionspb.Execution.
 type ExecutionIterator struct {

@@ -142,6 +142,8 @@ type internalResourcePoliciesClient interface {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The ResourcePolicies API.
+//
+// This client uses ResourcePolicies version 2026-09-01.
 type ResourcePoliciesClient struct {
 	// The internal transport-dependent client.
 	internalClient internalResourcePoliciesClient
@@ -295,6 +297,49 @@ func NewResourcePoliciesRESTClient(ctx context.Context, opts ...option.ClientOpt
 		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
 		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientTracing(tracing))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientLogging(logging))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -329,6 +374,7 @@ func (c *resourcePoliciesRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-09-01",
 	}
 }
 
@@ -389,9 +435,6 @@ func (c *resourcePoliciesRESTClient) AggregatedList(ctx context.Context, req *co
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 		if req != nil && req.ServiceProjectNumber != nil {
 			params.Add("serviceProjectNumber", fmt.Sprintf("%v", req.GetServiceProjectNumber()))
@@ -473,9 +516,6 @@ func (c *resourcePoliciesRESTClient) Delete(ctx context.Context, req *computepb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/regions/%v/resourcePolicies/%v", req.GetProject(), req.GetRegion(), req.GetResourcePolicy()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.ResourcePolicies/Delete")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/resourcePolicies/{resource_policy}")
@@ -533,9 +573,6 @@ func (c *resourcePoliciesRESTClient) Get(ctx context.Context, req *computepb.Get
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/regions/%v/resourcePolicies/%v", req.GetProject(), req.GetRegion(), req.GetResourcePolicy()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.ResourcePolicies/Get")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/resourcePolicies/{resource_policy}")
@@ -593,9 +630,6 @@ func (c *resourcePoliciesRESTClient) GetIamPolicy(ctx context.Context, req *comp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/regions/%v/resourcePolicies/%v", req.GetProject(), req.GetRegion(), req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.ResourcePolicies/GetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/resourcePolicies/{resource}/getIamPolicy")
@@ -659,9 +693,6 @@ func (c *resourcePoliciesRESTClient) Insert(ctx context.Context, req *computepb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/regions/%v", req.GetProject(), req.GetRegion()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.ResourcePolicies/Insert")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/resourcePolicies")
@@ -739,9 +770,6 @@ func (c *resourcePoliciesRESTClient) List(ctx context.Context, req *computepb.Li
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -823,9 +851,6 @@ func (c *resourcePoliciesRESTClient) Patch(ctx context.Context, req *computepb.P
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/regions/%v/resourcePolicies/%v", req.GetProject(), req.GetRegion(), req.GetResourcePolicy()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.ResourcePolicies/Patch")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/resourcePolicies/{resource_policy}")
@@ -891,9 +916,6 @@ func (c *resourcePoliciesRESTClient) SetIamPolicy(ctx context.Context, req *comp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/regions/%v/resourcePolicies/%v", req.GetProject(), req.GetRegion(), req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.ResourcePolicies/SetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/resourcePolicies/{resource}/setIamPolicy")
@@ -950,9 +972,6 @@ func (c *resourcePoliciesRESTClient) TestIamPermissions(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/regions/%v/resourcePolicies/%v", req.GetProject(), req.GetRegion(), req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.ResourcePolicies/TestIamPermissions")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/resourcePolicies/{resource}/testIamPermissions")

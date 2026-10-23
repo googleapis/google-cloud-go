@@ -240,6 +240,37 @@ func NewPartnerLinkClient(ctx context.Context, opts ...option.ClientOption) (*Pa
 		client.CallOptions.DeletePartnerLink = append(client.CallOptions.DeletePartnerLink, gax.WithClientMetrics(metrics))
 		client.CallOptions.SearchPartnerLinks = append(client.CallOptions.SearchPartnerLinks, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "datamanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datamanager/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "datamanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreatePartnerLink = append(client.CallOptions.CreatePartnerLink, gax.WithClientTracing(tracing))
+		client.CallOptions.DeletePartnerLink = append(client.CallOptions.DeletePartnerLink, gax.WithClientTracing(tracing))
+		client.CallOptions.SearchPartnerLinks = append(client.CallOptions.SearchPartnerLinks, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "datamanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datamanager/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "datamanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreatePartnerLink = append(client.CallOptions.CreatePartnerLink, gax.WithClientLogging(logging))
+		client.CallOptions.DeletePartnerLink = append(client.CallOptions.DeletePartnerLink, gax.WithClientLogging(logging))
+		client.CallOptions.SearchPartnerLinks = append(client.CallOptions.SearchPartnerLinks, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -333,6 +364,37 @@ func NewPartnerLinkRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		callOpts.DeletePartnerLink = append(callOpts.DeletePartnerLink, gax.WithClientMetrics(metrics))
 		callOpts.SearchPartnerLinks = append(callOpts.SearchPartnerLinks, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "datamanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datamanager/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "datamanager.googleapis.com",
+			}),
+		)
+
+		callOpts.CreatePartnerLink = append(callOpts.CreatePartnerLink, gax.WithClientTracing(tracing))
+		callOpts.DeletePartnerLink = append(callOpts.DeletePartnerLink, gax.WithClientTracing(tracing))
+		callOpts.SearchPartnerLinks = append(callOpts.SearchPartnerLinks, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "datamanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datamanager/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "datamanager.googleapis.com",
+			}),
+		)
+
+		callOpts.CreatePartnerLink = append(callOpts.CreatePartnerLink, gax.WithClientLogging(logging))
+		callOpts.DeletePartnerLink = append(callOpts.DeletePartnerLink, gax.WithClientLogging(logging))
+		callOpts.SearchPartnerLinks = append(callOpts.SearchPartnerLinks, gax.WithClientLogging(logging))
+	}
 
 	return &PartnerLinkClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -379,9 +441,6 @@ func (c *partnerLinkGRPCClient) CreatePartnerLink(ctx context.Context, req *data
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.PartnerLinkService/CreatePartnerLink")
 	}
@@ -403,9 +462,6 @@ func (c *partnerLinkGRPCClient) DeletePartnerLink(ctx context.Context, req *data
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.PartnerLinkService/DeletePartnerLink")
 	}
@@ -423,9 +479,6 @@ func (c *partnerLinkGRPCClient) SearchPartnerLinks(ctx context.Context, req *dat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.PartnerLinkService/SearchPartnerLinks")
 	}
@@ -506,9 +559,6 @@ func (c *partnerLinkRESTClient) CreatePartnerLink(ctx context.Context, req *data
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.PartnerLinkService/CreatePartnerLink")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=accountTypes/*/accounts/*}/partnerLinks")
@@ -573,9 +623,6 @@ func (c *partnerLinkRESTClient) DeletePartnerLink(ctx context.Context, req *data
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.PartnerLinkService/DeletePartnerLink")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=accountTypes/*/accounts/*/partnerLinks/*}")

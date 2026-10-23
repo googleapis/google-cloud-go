@@ -664,6 +664,115 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "telcoautomation",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/telcoautomation/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "telcoautomation.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListOrchestrationClusters = append(client.CallOptions.ListOrchestrationClusters, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOrchestrationCluster = append(client.CallOptions.GetOrchestrationCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateOrchestrationCluster = append(client.CallOptions.CreateOrchestrationCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOrchestrationCluster = append(client.CallOptions.DeleteOrchestrationCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.ListEdgeSlms = append(client.CallOptions.ListEdgeSlms, gax.WithClientTracing(tracing))
+		client.CallOptions.GetEdgeSlm = append(client.CallOptions.GetEdgeSlm, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateEdgeSlm = append(client.CallOptions.CreateEdgeSlm, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteEdgeSlm = append(client.CallOptions.DeleteEdgeSlm, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateBlueprint = append(client.CallOptions.CreateBlueprint, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateBlueprint = append(client.CallOptions.UpdateBlueprint, gax.WithClientTracing(tracing))
+		client.CallOptions.GetBlueprint = append(client.CallOptions.GetBlueprint, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteBlueprint = append(client.CallOptions.DeleteBlueprint, gax.WithClientTracing(tracing))
+		client.CallOptions.ListBlueprints = append(client.CallOptions.ListBlueprints, gax.WithClientTracing(tracing))
+		client.CallOptions.ApproveBlueprint = append(client.CallOptions.ApproveBlueprint, gax.WithClientTracing(tracing))
+		client.CallOptions.ProposeBlueprint = append(client.CallOptions.ProposeBlueprint, gax.WithClientTracing(tracing))
+		client.CallOptions.RejectBlueprint = append(client.CallOptions.RejectBlueprint, gax.WithClientTracing(tracing))
+		client.CallOptions.ListBlueprintRevisions = append(client.CallOptions.ListBlueprintRevisions, gax.WithClientTracing(tracing))
+		client.CallOptions.SearchBlueprintRevisions = append(client.CallOptions.SearchBlueprintRevisions, gax.WithClientTracing(tracing))
+		client.CallOptions.SearchDeploymentRevisions = append(client.CallOptions.SearchDeploymentRevisions, gax.WithClientTracing(tracing))
+		client.CallOptions.DiscardBlueprintChanges = append(client.CallOptions.DiscardBlueprintChanges, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPublicBlueprints = append(client.CallOptions.ListPublicBlueprints, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPublicBlueprint = append(client.CallOptions.GetPublicBlueprint, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateDeployment = append(client.CallOptions.CreateDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateDeployment = append(client.CallOptions.UpdateDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDeployment = append(client.CallOptions.GetDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.RemoveDeployment = append(client.CallOptions.RemoveDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.ListDeployments = append(client.CallOptions.ListDeployments, gax.WithClientTracing(tracing))
+		client.CallOptions.ListDeploymentRevisions = append(client.CallOptions.ListDeploymentRevisions, gax.WithClientTracing(tracing))
+		client.CallOptions.DiscardDeploymentChanges = append(client.CallOptions.DiscardDeploymentChanges, gax.WithClientTracing(tracing))
+		client.CallOptions.ApplyDeployment = append(client.CallOptions.ApplyDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.ComputeDeploymentStatus = append(client.CallOptions.ComputeDeploymentStatus, gax.WithClientTracing(tracing))
+		client.CallOptions.RollbackDeployment = append(client.CallOptions.RollbackDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.GetHydratedDeployment = append(client.CallOptions.GetHydratedDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.ListHydratedDeployments = append(client.CallOptions.ListHydratedDeployments, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateHydratedDeployment = append(client.CallOptions.UpdateHydratedDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.ApplyHydratedDeployment = append(client.CallOptions.ApplyHydratedDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "telcoautomation",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/telcoautomation/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "telcoautomation.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListOrchestrationClusters = append(client.CallOptions.ListOrchestrationClusters, gax.WithClientLogging(logging))
+		client.CallOptions.GetOrchestrationCluster = append(client.CallOptions.GetOrchestrationCluster, gax.WithClientLogging(logging))
+		client.CallOptions.CreateOrchestrationCluster = append(client.CallOptions.CreateOrchestrationCluster, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOrchestrationCluster = append(client.CallOptions.DeleteOrchestrationCluster, gax.WithClientLogging(logging))
+		client.CallOptions.ListEdgeSlms = append(client.CallOptions.ListEdgeSlms, gax.WithClientLogging(logging))
+		client.CallOptions.GetEdgeSlm = append(client.CallOptions.GetEdgeSlm, gax.WithClientLogging(logging))
+		client.CallOptions.CreateEdgeSlm = append(client.CallOptions.CreateEdgeSlm, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteEdgeSlm = append(client.CallOptions.DeleteEdgeSlm, gax.WithClientLogging(logging))
+		client.CallOptions.CreateBlueprint = append(client.CallOptions.CreateBlueprint, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateBlueprint = append(client.CallOptions.UpdateBlueprint, gax.WithClientLogging(logging))
+		client.CallOptions.GetBlueprint = append(client.CallOptions.GetBlueprint, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteBlueprint = append(client.CallOptions.DeleteBlueprint, gax.WithClientLogging(logging))
+		client.CallOptions.ListBlueprints = append(client.CallOptions.ListBlueprints, gax.WithClientLogging(logging))
+		client.CallOptions.ApproveBlueprint = append(client.CallOptions.ApproveBlueprint, gax.WithClientLogging(logging))
+		client.CallOptions.ProposeBlueprint = append(client.CallOptions.ProposeBlueprint, gax.WithClientLogging(logging))
+		client.CallOptions.RejectBlueprint = append(client.CallOptions.RejectBlueprint, gax.WithClientLogging(logging))
+		client.CallOptions.ListBlueprintRevisions = append(client.CallOptions.ListBlueprintRevisions, gax.WithClientLogging(logging))
+		client.CallOptions.SearchBlueprintRevisions = append(client.CallOptions.SearchBlueprintRevisions, gax.WithClientLogging(logging))
+		client.CallOptions.SearchDeploymentRevisions = append(client.CallOptions.SearchDeploymentRevisions, gax.WithClientLogging(logging))
+		client.CallOptions.DiscardBlueprintChanges = append(client.CallOptions.DiscardBlueprintChanges, gax.WithClientLogging(logging))
+		client.CallOptions.ListPublicBlueprints = append(client.CallOptions.ListPublicBlueprints, gax.WithClientLogging(logging))
+		client.CallOptions.GetPublicBlueprint = append(client.CallOptions.GetPublicBlueprint, gax.WithClientLogging(logging))
+		client.CallOptions.CreateDeployment = append(client.CallOptions.CreateDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateDeployment = append(client.CallOptions.UpdateDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.GetDeployment = append(client.CallOptions.GetDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.RemoveDeployment = append(client.CallOptions.RemoveDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.ListDeployments = append(client.CallOptions.ListDeployments, gax.WithClientLogging(logging))
+		client.CallOptions.ListDeploymentRevisions = append(client.CallOptions.ListDeploymentRevisions, gax.WithClientLogging(logging))
+		client.CallOptions.DiscardDeploymentChanges = append(client.CallOptions.DiscardDeploymentChanges, gax.WithClientLogging(logging))
+		client.CallOptions.ApplyDeployment = append(client.CallOptions.ApplyDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.ComputeDeploymentStatus = append(client.CallOptions.ComputeDeploymentStatus, gax.WithClientLogging(logging))
+		client.CallOptions.RollbackDeployment = append(client.CallOptions.RollbackDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.GetHydratedDeployment = append(client.CallOptions.GetHydratedDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.ListHydratedDeployments = append(client.CallOptions.ListHydratedDeployments, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateHydratedDeployment = append(client.CallOptions.UpdateHydratedDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.ApplyHydratedDeployment = append(client.CallOptions.ApplyHydratedDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -816,6 +925,115 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "telcoautomation",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/telcoautomation/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "telcoautomation.googleapis.com",
+			}),
+		)
+
+		callOpts.ListOrchestrationClusters = append(callOpts.ListOrchestrationClusters, gax.WithClientTracing(tracing))
+		callOpts.GetOrchestrationCluster = append(callOpts.GetOrchestrationCluster, gax.WithClientTracing(tracing))
+		callOpts.CreateOrchestrationCluster = append(callOpts.CreateOrchestrationCluster, gax.WithClientTracing(tracing))
+		callOpts.DeleteOrchestrationCluster = append(callOpts.DeleteOrchestrationCluster, gax.WithClientTracing(tracing))
+		callOpts.ListEdgeSlms = append(callOpts.ListEdgeSlms, gax.WithClientTracing(tracing))
+		callOpts.GetEdgeSlm = append(callOpts.GetEdgeSlm, gax.WithClientTracing(tracing))
+		callOpts.CreateEdgeSlm = append(callOpts.CreateEdgeSlm, gax.WithClientTracing(tracing))
+		callOpts.DeleteEdgeSlm = append(callOpts.DeleteEdgeSlm, gax.WithClientTracing(tracing))
+		callOpts.CreateBlueprint = append(callOpts.CreateBlueprint, gax.WithClientTracing(tracing))
+		callOpts.UpdateBlueprint = append(callOpts.UpdateBlueprint, gax.WithClientTracing(tracing))
+		callOpts.GetBlueprint = append(callOpts.GetBlueprint, gax.WithClientTracing(tracing))
+		callOpts.DeleteBlueprint = append(callOpts.DeleteBlueprint, gax.WithClientTracing(tracing))
+		callOpts.ListBlueprints = append(callOpts.ListBlueprints, gax.WithClientTracing(tracing))
+		callOpts.ApproveBlueprint = append(callOpts.ApproveBlueprint, gax.WithClientTracing(tracing))
+		callOpts.ProposeBlueprint = append(callOpts.ProposeBlueprint, gax.WithClientTracing(tracing))
+		callOpts.RejectBlueprint = append(callOpts.RejectBlueprint, gax.WithClientTracing(tracing))
+		callOpts.ListBlueprintRevisions = append(callOpts.ListBlueprintRevisions, gax.WithClientTracing(tracing))
+		callOpts.SearchBlueprintRevisions = append(callOpts.SearchBlueprintRevisions, gax.WithClientTracing(tracing))
+		callOpts.SearchDeploymentRevisions = append(callOpts.SearchDeploymentRevisions, gax.WithClientTracing(tracing))
+		callOpts.DiscardBlueprintChanges = append(callOpts.DiscardBlueprintChanges, gax.WithClientTracing(tracing))
+		callOpts.ListPublicBlueprints = append(callOpts.ListPublicBlueprints, gax.WithClientTracing(tracing))
+		callOpts.GetPublicBlueprint = append(callOpts.GetPublicBlueprint, gax.WithClientTracing(tracing))
+		callOpts.CreateDeployment = append(callOpts.CreateDeployment, gax.WithClientTracing(tracing))
+		callOpts.UpdateDeployment = append(callOpts.UpdateDeployment, gax.WithClientTracing(tracing))
+		callOpts.GetDeployment = append(callOpts.GetDeployment, gax.WithClientTracing(tracing))
+		callOpts.RemoveDeployment = append(callOpts.RemoveDeployment, gax.WithClientTracing(tracing))
+		callOpts.ListDeployments = append(callOpts.ListDeployments, gax.WithClientTracing(tracing))
+		callOpts.ListDeploymentRevisions = append(callOpts.ListDeploymentRevisions, gax.WithClientTracing(tracing))
+		callOpts.DiscardDeploymentChanges = append(callOpts.DiscardDeploymentChanges, gax.WithClientTracing(tracing))
+		callOpts.ApplyDeployment = append(callOpts.ApplyDeployment, gax.WithClientTracing(tracing))
+		callOpts.ComputeDeploymentStatus = append(callOpts.ComputeDeploymentStatus, gax.WithClientTracing(tracing))
+		callOpts.RollbackDeployment = append(callOpts.RollbackDeployment, gax.WithClientTracing(tracing))
+		callOpts.GetHydratedDeployment = append(callOpts.GetHydratedDeployment, gax.WithClientTracing(tracing))
+		callOpts.ListHydratedDeployments = append(callOpts.ListHydratedDeployments, gax.WithClientTracing(tracing))
+		callOpts.UpdateHydratedDeployment = append(callOpts.UpdateHydratedDeployment, gax.WithClientTracing(tracing))
+		callOpts.ApplyHydratedDeployment = append(callOpts.ApplyHydratedDeployment, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "telcoautomation",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/telcoautomation/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "telcoautomation.googleapis.com",
+			}),
+		)
+
+		callOpts.ListOrchestrationClusters = append(callOpts.ListOrchestrationClusters, gax.WithClientLogging(logging))
+		callOpts.GetOrchestrationCluster = append(callOpts.GetOrchestrationCluster, gax.WithClientLogging(logging))
+		callOpts.CreateOrchestrationCluster = append(callOpts.CreateOrchestrationCluster, gax.WithClientLogging(logging))
+		callOpts.DeleteOrchestrationCluster = append(callOpts.DeleteOrchestrationCluster, gax.WithClientLogging(logging))
+		callOpts.ListEdgeSlms = append(callOpts.ListEdgeSlms, gax.WithClientLogging(logging))
+		callOpts.GetEdgeSlm = append(callOpts.GetEdgeSlm, gax.WithClientLogging(logging))
+		callOpts.CreateEdgeSlm = append(callOpts.CreateEdgeSlm, gax.WithClientLogging(logging))
+		callOpts.DeleteEdgeSlm = append(callOpts.DeleteEdgeSlm, gax.WithClientLogging(logging))
+		callOpts.CreateBlueprint = append(callOpts.CreateBlueprint, gax.WithClientLogging(logging))
+		callOpts.UpdateBlueprint = append(callOpts.UpdateBlueprint, gax.WithClientLogging(logging))
+		callOpts.GetBlueprint = append(callOpts.GetBlueprint, gax.WithClientLogging(logging))
+		callOpts.DeleteBlueprint = append(callOpts.DeleteBlueprint, gax.WithClientLogging(logging))
+		callOpts.ListBlueprints = append(callOpts.ListBlueprints, gax.WithClientLogging(logging))
+		callOpts.ApproveBlueprint = append(callOpts.ApproveBlueprint, gax.WithClientLogging(logging))
+		callOpts.ProposeBlueprint = append(callOpts.ProposeBlueprint, gax.WithClientLogging(logging))
+		callOpts.RejectBlueprint = append(callOpts.RejectBlueprint, gax.WithClientLogging(logging))
+		callOpts.ListBlueprintRevisions = append(callOpts.ListBlueprintRevisions, gax.WithClientLogging(logging))
+		callOpts.SearchBlueprintRevisions = append(callOpts.SearchBlueprintRevisions, gax.WithClientLogging(logging))
+		callOpts.SearchDeploymentRevisions = append(callOpts.SearchDeploymentRevisions, gax.WithClientLogging(logging))
+		callOpts.DiscardBlueprintChanges = append(callOpts.DiscardBlueprintChanges, gax.WithClientLogging(logging))
+		callOpts.ListPublicBlueprints = append(callOpts.ListPublicBlueprints, gax.WithClientLogging(logging))
+		callOpts.GetPublicBlueprint = append(callOpts.GetPublicBlueprint, gax.WithClientLogging(logging))
+		callOpts.CreateDeployment = append(callOpts.CreateDeployment, gax.WithClientLogging(logging))
+		callOpts.UpdateDeployment = append(callOpts.UpdateDeployment, gax.WithClientLogging(logging))
+		callOpts.GetDeployment = append(callOpts.GetDeployment, gax.WithClientLogging(logging))
+		callOpts.RemoveDeployment = append(callOpts.RemoveDeployment, gax.WithClientLogging(logging))
+		callOpts.ListDeployments = append(callOpts.ListDeployments, gax.WithClientLogging(logging))
+		callOpts.ListDeploymentRevisions = append(callOpts.ListDeploymentRevisions, gax.WithClientLogging(logging))
+		callOpts.DiscardDeploymentChanges = append(callOpts.DiscardDeploymentChanges, gax.WithClientLogging(logging))
+		callOpts.ApplyDeployment = append(callOpts.ApplyDeployment, gax.WithClientLogging(logging))
+		callOpts.ComputeDeploymentStatus = append(callOpts.ComputeDeploymentStatus, gax.WithClientLogging(logging))
+		callOpts.RollbackDeployment = append(callOpts.RollbackDeployment, gax.WithClientLogging(logging))
+		callOpts.GetHydratedDeployment = append(callOpts.GetHydratedDeployment, gax.WithClientLogging(logging))
+		callOpts.ListHydratedDeployments = append(callOpts.ListHydratedDeployments, gax.WithClientLogging(logging))
+		callOpts.UpdateHydratedDeployment = append(callOpts.UpdateHydratedDeployment, gax.WithClientLogging(logging))
+		callOpts.ApplyHydratedDeployment = append(callOpts.ApplyHydratedDeployment, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -872,9 +1090,6 @@ func (c *gRPCClient) ListOrchestrationClusters(ctx context.Context, req *telcoau
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/ListOrchestrationClusters")
 	}
@@ -924,9 +1139,6 @@ func (c *gRPCClient) GetOrchestrationCluster(ctx context.Context, req *telcoauto
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/GetOrchestrationCluster")
 	}
@@ -948,9 +1160,6 @@ func (c *gRPCClient) CreateOrchestrationCluster(ctx context.Context, req *telcoa
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/CreateOrchestrationCluster")
 	}
@@ -978,9 +1187,6 @@ func (c *gRPCClient) DeleteOrchestrationCluster(ctx context.Context, req *telcoa
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/DeleteOrchestrationCluster")
 	}
@@ -1008,9 +1214,6 @@ func (c *gRPCClient) ListEdgeSlms(ctx context.Context, req *telcoautomationpb.Li
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/ListEdgeSlms")
 	}
@@ -1060,9 +1263,6 @@ func (c *gRPCClient) GetEdgeSlm(ctx context.Context, req *telcoautomationpb.GetE
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/GetEdgeSlm")
 	}
@@ -1084,9 +1284,6 @@ func (c *gRPCClient) CreateEdgeSlm(ctx context.Context, req *telcoautomationpb.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/CreateEdgeSlm")
 	}
@@ -1114,9 +1311,6 @@ func (c *gRPCClient) DeleteEdgeSlm(ctx context.Context, req *telcoautomationpb.D
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/DeleteEdgeSlm")
 	}
@@ -1144,9 +1338,6 @@ func (c *gRPCClient) CreateBlueprint(ctx context.Context, req *telcoautomationpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/CreateBlueprint")
 	}
@@ -1189,9 +1380,6 @@ func (c *gRPCClient) GetBlueprint(ctx context.Context, req *telcoautomationpb.Ge
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/GetBlueprint")
 	}
@@ -1213,9 +1401,6 @@ func (c *gRPCClient) DeleteBlueprint(ctx context.Context, req *telcoautomationpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/DeleteBlueprint")
 	}
@@ -1233,9 +1418,6 @@ func (c *gRPCClient) ListBlueprints(ctx context.Context, req *telcoautomationpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/ListBlueprints")
 	}
@@ -1285,9 +1467,6 @@ func (c *gRPCClient) ApproveBlueprint(ctx context.Context, req *telcoautomationp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/ApproveBlueprint")
 	}
@@ -1309,9 +1488,6 @@ func (c *gRPCClient) ProposeBlueprint(ctx context.Context, req *telcoautomationp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/ProposeBlueprint")
 	}
@@ -1333,9 +1509,6 @@ func (c *gRPCClient) RejectBlueprint(ctx context.Context, req *telcoautomationpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/RejectBlueprint")
 	}
@@ -1357,9 +1530,6 @@ func (c *gRPCClient) ListBlueprintRevisions(ctx context.Context, req *telcoautom
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/ListBlueprintRevisions")
 	}
@@ -1409,9 +1579,6 @@ func (c *gRPCClient) SearchBlueprintRevisions(ctx context.Context, req *telcoaut
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/SearchBlueprintRevisions")
 	}
@@ -1461,9 +1628,6 @@ func (c *gRPCClient) SearchDeploymentRevisions(ctx context.Context, req *telcoau
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/SearchDeploymentRevisions")
 	}
@@ -1513,9 +1677,6 @@ func (c *gRPCClient) DiscardBlueprintChanges(ctx context.Context, req *telcoauto
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/DiscardBlueprintChanges")
 	}
@@ -1537,9 +1698,6 @@ func (c *gRPCClient) ListPublicBlueprints(ctx context.Context, req *telcoautomat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/ListPublicBlueprints")
 	}
@@ -1589,9 +1747,6 @@ func (c *gRPCClient) GetPublicBlueprint(ctx context.Context, req *telcoautomatio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/GetPublicBlueprint")
 	}
@@ -1613,9 +1768,6 @@ func (c *gRPCClient) CreateDeployment(ctx context.Context, req *telcoautomationp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/CreateDeployment")
 	}
@@ -1658,9 +1810,6 @@ func (c *gRPCClient) GetDeployment(ctx context.Context, req *telcoautomationpb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/GetDeployment")
 	}
@@ -1682,9 +1831,6 @@ func (c *gRPCClient) RemoveDeployment(ctx context.Context, req *telcoautomationp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/RemoveDeployment")
 	}
@@ -1702,9 +1848,6 @@ func (c *gRPCClient) ListDeployments(ctx context.Context, req *telcoautomationpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/ListDeployments")
 	}
@@ -1754,9 +1897,6 @@ func (c *gRPCClient) ListDeploymentRevisions(ctx context.Context, req *telcoauto
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/ListDeploymentRevisions")
 	}
@@ -1806,9 +1946,6 @@ func (c *gRPCClient) DiscardDeploymentChanges(ctx context.Context, req *telcoaut
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/DiscardDeploymentChanges")
 	}
@@ -1830,9 +1967,6 @@ func (c *gRPCClient) ApplyDeployment(ctx context.Context, req *telcoautomationpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/ApplyDeployment")
 	}
@@ -1854,9 +1988,6 @@ func (c *gRPCClient) ComputeDeploymentStatus(ctx context.Context, req *telcoauto
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/ComputeDeploymentStatus")
 	}
@@ -1878,9 +2009,6 @@ func (c *gRPCClient) RollbackDeployment(ctx context.Context, req *telcoautomatio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/RollbackDeployment")
 	}
@@ -1902,9 +2030,6 @@ func (c *gRPCClient) GetHydratedDeployment(ctx context.Context, req *telcoautoma
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/GetHydratedDeployment")
 	}
@@ -1926,9 +2051,6 @@ func (c *gRPCClient) ListHydratedDeployments(ctx context.Context, req *telcoauto
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/ListHydratedDeployments")
 	}
@@ -1999,9 +2121,6 @@ func (c *gRPCClient) ApplyHydratedDeployment(ctx context.Context, req *telcoauto
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/ApplyHydratedDeployment")
 	}
@@ -2295,9 +2414,6 @@ func (c *restClient) GetOrchestrationCluster(ctx context.Context, req *telcoauto
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/GetOrchestrationCluster")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/orchestrationClusters/*}")
@@ -2363,9 +2479,6 @@ func (c *restClient) CreateOrchestrationCluster(ctx context.Context, req *telcoa
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/CreateOrchestrationCluster")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/orchestrationClusters")
@@ -2430,9 +2543,6 @@ func (c *restClient) DeleteOrchestrationCluster(ctx context.Context, req *telcoa
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/DeleteOrchestrationCluster")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/orchestrationClusters/*}")
@@ -2578,9 +2688,6 @@ func (c *restClient) GetEdgeSlm(ctx context.Context, req *telcoautomationpb.GetE
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/GetEdgeSlm")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/edgeSlms/*}")
@@ -2646,9 +2753,6 @@ func (c *restClient) CreateEdgeSlm(ctx context.Context, req *telcoautomationpb.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/CreateEdgeSlm")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/edgeSlms")
@@ -2713,9 +2817,6 @@ func (c *restClient) DeleteEdgeSlm(ctx context.Context, req *telcoautomationpb.D
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/DeleteEdgeSlm")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/edgeSlms/*}")
@@ -2787,9 +2888,6 @@ func (c *restClient) CreateBlueprint(ctx context.Context, req *telcoautomationpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/CreateBlueprint")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/orchestrationClusters/*}/blueprints")
@@ -2915,9 +3013,6 @@ func (c *restClient) GetBlueprint(ctx context.Context, req *telcoautomationpb.Ge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/GetBlueprint")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/orchestrationClusters/*/blueprints/*}")
@@ -2972,9 +3067,6 @@ func (c *restClient) DeleteBlueprint(ctx context.Context, req *telcoautomationpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/DeleteBlueprint")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/orchestrationClusters/*/blueprints/*}")
@@ -3101,9 +3193,6 @@ func (c *restClient) ApproveBlueprint(ctx context.Context, req *telcoautomationp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/ApproveBlueprint")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/orchestrationClusters/*/blueprints/*}:approve")
@@ -3164,9 +3253,6 @@ func (c *restClient) ProposeBlueprint(ctx context.Context, req *telcoautomationp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/ProposeBlueprint")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/orchestrationClusters/*/blueprints/*}:propose")
@@ -3227,9 +3313,6 @@ func (c *restClient) RejectBlueprint(ctx context.Context, req *telcoautomationpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/RejectBlueprint")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/orchestrationClusters/*/blueprints/*}:reject")
@@ -3528,9 +3611,6 @@ func (c *restClient) DiscardBlueprintChanges(ctx context.Context, req *telcoauto
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/DiscardBlueprintChanges")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/orchestrationClusters/*/blueprints/*}:discard")
@@ -3664,9 +3744,6 @@ func (c *restClient) GetPublicBlueprint(ctx context.Context, req *telcoautomatio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/GetPublicBlueprint")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/publicBlueprints/*}")
@@ -3731,9 +3808,6 @@ func (c *restClient) CreateDeployment(ctx context.Context, req *telcoautomationp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/CreateDeployment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/orchestrationClusters/*}/deployments")
@@ -3859,9 +3933,6 @@ func (c *restClient) GetDeployment(ctx context.Context, req *telcoautomationpb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/GetDeployment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/orchestrationClusters/*/deployments/*}")
@@ -3923,9 +3994,6 @@ func (c *restClient) RemoveDeployment(ctx context.Context, req *telcoautomationp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/RemoveDeployment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/orchestrationClusters/*/deployments/*}:remove")
@@ -4132,9 +4200,6 @@ func (c *restClient) DiscardDeploymentChanges(ctx context.Context, req *telcoaut
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/DiscardDeploymentChanges")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/orchestrationClusters/*/deployments/*}:discard")
@@ -4195,9 +4260,6 @@ func (c *restClient) ApplyDeployment(ctx context.Context, req *telcoautomationpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/ApplyDeployment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/orchestrationClusters/*/deployments/*}:apply")
@@ -4252,9 +4314,6 @@ func (c *restClient) ComputeDeploymentStatus(ctx context.Context, req *telcoauto
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/ComputeDeploymentStatus")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/orchestrationClusters/*/deployments/*}:computeDeploymentStatus")
@@ -4316,9 +4375,6 @@ func (c *restClient) RollbackDeployment(ctx context.Context, req *telcoautomatio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/RollbackDeployment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/orchestrationClusters/*/deployments/*}:rollback")
@@ -4373,9 +4429,6 @@ func (c *restClient) GetHydratedDeployment(ctx context.Context, req *telcoautoma
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/GetHydratedDeployment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/orchestrationClusters/*/deployments/*/hydratedDeployments/*}")
@@ -4582,9 +4635,6 @@ func (c *restClient) ApplyHydratedDeployment(ctx context.Context, req *telcoauto
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//telcoautomation.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.telcoautomation.v1.TelcoAutomation/ApplyHydratedDeployment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/orchestrationClusters/*/deployments/*/hydratedDeployments/*}:apply")

@@ -248,6 +248,7 @@ type SearchPartnerLinksRequest struct {
 	// feature set, the following fields are also supported:
 	//
 	// - `partner_customer_account.account_id`
+	// - `partner_link_metadata.implicit_accounts.account_id`
 	//
 	// Example:
 	// `owning_account.account_type = "GOOGLE_ADS" AND partner_account.account_id
@@ -596,39 +597,39 @@ var File_google_ads_datamanager_v1_partner_link_service_proto protoreflect.FileD
 
 const file_google_ads_datamanager_v1_partner_link_service_proto_rawDesc = "" +
 	"\n" +
-	"4google/ads/datamanager/v1/partner_link_service.proto\x12\x19google.ads.datamanager.v1\x1a+google/ads/datamanager/v1/destination.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\"\xb2\x01\n" +
-	"\x18CreatePartnerLinkRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&datamanager.googleapis.com/PartnerLinkR\x06parent\x12N\n" +
-	"\fpartner_link\x18\x02 \x01(\v2&.google.ads.datamanager.v1.PartnerLinkB\x03\xe0A\x02R\vpartnerLink\"^\n" +
-	"\x18DeletePartnerLinkRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&datamanager.googleapis.com/PartnerLinkR\x04name\"\xbc\x01\n" +
-	"\x19SearchPartnerLinksRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&datamanager.googleapis.com/PartnerLinkR\x06parent\x12\x1b\n" +
+	"4google/ads/datamanager/v1/partner_link_service.proto\x12\x19google.ads.datamanager.v1\x1a+google/ads/datamanager/v1/destination.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\"\xb4\x01\n" +
+	"\x18CreatePartnerLinkRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\x12&datamanager.googleapis.com/PartnerLinkR\x06parent\x12O\n" +
+	"\fpartner_link\x18\x02 \x01(\v2&.google.ads.datamanager.v1.PartnerLinkB\x04\xe2A\x01\x02R\vpartnerLink\"_\n" +
+	"\x18DeletePartnerLinkRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&datamanager.googleapis.com/PartnerLinkR\x04name\"\xbe\x01\n" +
+	"\x19SearchPartnerLinksRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\x12&datamanager.googleapis.com/PartnerLinkR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\x91\x01\n" +
+	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x91\x01\n" +
 	"\x1aSearchPartnerLinksResponse\x12K\n" +
 	"\rpartner_links\x18\x01 \x03(\v2&.google.ads.datamanager.v1.PartnerLinkR\fpartnerLinks\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xc4\x05\n" +
-	"\vPartnerLink\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12+\n" +
-	"\x0fpartner_link_id\x18\x02 \x01(\tB\x03\xe0A\x03R\rpartnerLinkId\x12U\n" +
-	"\x0eowning_account\x18\x03 \x01(\v2).google.ads.datamanager.v1.ProductAccountB\x03\xe0A\x02R\rowningAccount\x12W\n" +
-	"\x0fpartner_account\x18\x04 \x01(\v2).google.ads.datamanager.v1.ProductAccountB\x03\xe0A\x02R\x0epartnerAccount\x12N\n" +
-	"\vfeature_set\x18\x05 \x01(\x0e2%.google.ads.datamanager.v1.FeatureSetB\x06\xe0A\x01\xe0A\x05R\n" +
-	"featureSet\x12p\n" +
-	"\x18partner_customer_account\x18\x06 \x01(\v21.google.ads.datamanager.v1.PartnerCustomerAccountB\x03\xe0A\x01R\x16partnerCustomerAccount\x12g\n" +
-	"\x15partner_link_metadata\x18\a \x01(\v2..google.ads.datamanager.v1.PartnerLinkMetadataB\x03\xe0A\x01R\x13partnerLinkMetadata:\x93\x01\xeaA\x8f\x01\n" +
-	"&datamanager.googleapis.com/PartnerLink\x12JaccountTypes/{account_type}/accounts/{account}/partnerLinks/{partner_link}*\fpartnerLinks2\vpartnerLink\"\x8c\x01\n" +
-	"\x16PartnerCustomerAccount\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xc9\x05\n" +
+	"\vPartnerLink\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12,\n" +
+	"\x0fpartner_link_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rpartnerLinkId\x12V\n" +
+	"\x0eowning_account\x18\x03 \x01(\v2).google.ads.datamanager.v1.ProductAccountB\x04\xe2A\x01\x02R\rowningAccount\x12X\n" +
+	"\x0fpartner_account\x18\x04 \x01(\v2).google.ads.datamanager.v1.ProductAccountB\x04\xe2A\x01\x02R\x0epartnerAccount\x12M\n" +
+	"\vfeature_set\x18\x05 \x01(\x0e2%.google.ads.datamanager.v1.FeatureSetB\x05\xe2A\x02\x01\x05R\n" +
+	"featureSet\x12q\n" +
+	"\x18partner_customer_account\x18\x06 \x01(\v21.google.ads.datamanager.v1.PartnerCustomerAccountB\x04\xe2A\x01\x01R\x16partnerCustomerAccount\x12h\n" +
+	"\x15partner_link_metadata\x18\a \x01(\v2..google.ads.datamanager.v1.PartnerLinkMetadataB\x04\xe2A\x01\x01R\x13partnerLinkMetadata:\x93\x01\xeaA\x8f\x01\n" +
+	"&datamanager.googleapis.com/PartnerLink\x12JaccountTypes/{account_type}/accounts/{account}/partnerLinks/{partner_link}*\fpartnerLinks2\vpartnerLink\"\x8f\x01\n" +
+	"\x16PartnerCustomerAccount\x12#\n" +
 	"\n" +
-	"account_id\x18\x01 \x01(\tB\x03\xe0A\x02R\taccountId\x12&\n" +
-	"\faccount_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vaccountName\x12&\n" +
-	"\faccount_type\x18\x03 \x01(\tB\x03\xe0A\x01R\vaccountType\"z\n" +
-	"\x13PartnerLinkMetadata\x12c\n" +
-	"\x11implicit_accounts\x18\x01 \x03(\v21.google.ads.datamanager.v1.PartnerCustomerAccountB\x03\xe0A\x01R\x10implicitAccounts*}\n" +
+	"account_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\taccountId\x12'\n" +
+	"\faccount_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vaccountName\x12'\n" +
+	"\faccount_type\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vaccountType\"{\n" +
+	"\x13PartnerLinkMetadata\x12d\n" +
+	"\x11implicit_accounts\x18\x01 \x03(\v21.google.ads.datamanager.v1.PartnerCustomerAccountB\x04\xe2A\x01\x01R\x10implicitAccounts*}\n" +
 	"\n" +
 	"FeatureSet\x12\x1b\n" +
 	"\x17FEATURE_SET_UNSPECIFIED\x10\x00\x12-\n" +

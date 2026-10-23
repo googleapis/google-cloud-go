@@ -2800,6 +2800,137 @@ func NewCloudChannelClient(ctx context.Context, opts ...option.ClientOption) (*C
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudchannel",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/channel/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudchannel.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListCustomers = append(client.CallOptions.ListCustomers, gax.WithClientTracing(tracing))
+		client.CallOptions.GetCustomer = append(client.CallOptions.GetCustomer, gax.WithClientTracing(tracing))
+		client.CallOptions.CheckCloudIdentityAccountsExist = append(client.CallOptions.CheckCloudIdentityAccountsExist, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateCustomer = append(client.CallOptions.CreateCustomer, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateCustomer = append(client.CallOptions.UpdateCustomer, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteCustomer = append(client.CallOptions.DeleteCustomer, gax.WithClientTracing(tracing))
+		client.CallOptions.ImportCustomer = append(client.CallOptions.ImportCustomer, gax.WithClientTracing(tracing))
+		client.CallOptions.ProvisionCloudIdentity = append(client.CallOptions.ProvisionCloudIdentity, gax.WithClientTracing(tracing))
+		client.CallOptions.ListEntitlements = append(client.CallOptions.ListEntitlements, gax.WithClientTracing(tracing))
+		client.CallOptions.ListTransferableSkus = append(client.CallOptions.ListTransferableSkus, gax.WithClientTracing(tracing))
+		client.CallOptions.ListTransferableOffers = append(client.CallOptions.ListTransferableOffers, gax.WithClientTracing(tracing))
+		client.CallOptions.GetEntitlement = append(client.CallOptions.GetEntitlement, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateEntitlement = append(client.CallOptions.CreateEntitlement, gax.WithClientTracing(tracing))
+		client.CallOptions.ChangeParameters = append(client.CallOptions.ChangeParameters, gax.WithClientTracing(tracing))
+		client.CallOptions.ChangeRenewalSettings = append(client.CallOptions.ChangeRenewalSettings, gax.WithClientTracing(tracing))
+		client.CallOptions.ChangeOffer = append(client.CallOptions.ChangeOffer, gax.WithClientTracing(tracing))
+		client.CallOptions.StartPaidService = append(client.CallOptions.StartPaidService, gax.WithClientTracing(tracing))
+		client.CallOptions.SuspendEntitlement = append(client.CallOptions.SuspendEntitlement, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelEntitlement = append(client.CallOptions.CancelEntitlement, gax.WithClientTracing(tracing))
+		client.CallOptions.ActivateEntitlement = append(client.CallOptions.ActivateEntitlement, gax.WithClientTracing(tracing))
+		client.CallOptions.TransferEntitlements = append(client.CallOptions.TransferEntitlements, gax.WithClientTracing(tracing))
+		client.CallOptions.TransferEntitlementsToGoogle = append(client.CallOptions.TransferEntitlementsToGoogle, gax.WithClientTracing(tracing))
+		client.CallOptions.ListChannelPartnerLinks = append(client.CallOptions.ListChannelPartnerLinks, gax.WithClientTracing(tracing))
+		client.CallOptions.GetChannelPartnerLink = append(client.CallOptions.GetChannelPartnerLink, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateChannelPartnerLink = append(client.CallOptions.CreateChannelPartnerLink, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateChannelPartnerLink = append(client.CallOptions.UpdateChannelPartnerLink, gax.WithClientTracing(tracing))
+		client.CallOptions.GetCustomerRepricingConfig = append(client.CallOptions.GetCustomerRepricingConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.ListCustomerRepricingConfigs = append(client.CallOptions.ListCustomerRepricingConfigs, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateCustomerRepricingConfig = append(client.CallOptions.CreateCustomerRepricingConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateCustomerRepricingConfig = append(client.CallOptions.UpdateCustomerRepricingConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteCustomerRepricingConfig = append(client.CallOptions.DeleteCustomerRepricingConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.GetChannelPartnerRepricingConfig = append(client.CallOptions.GetChannelPartnerRepricingConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.ListChannelPartnerRepricingConfigs = append(client.CallOptions.ListChannelPartnerRepricingConfigs, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateChannelPartnerRepricingConfig = append(client.CallOptions.CreateChannelPartnerRepricingConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateChannelPartnerRepricingConfig = append(client.CallOptions.UpdateChannelPartnerRepricingConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteChannelPartnerRepricingConfig = append(client.CallOptions.DeleteChannelPartnerRepricingConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.ListSkuGroups = append(client.CallOptions.ListSkuGroups, gax.WithClientTracing(tracing))
+		client.CallOptions.ListSkuGroupBillableSkus = append(client.CallOptions.ListSkuGroupBillableSkus, gax.WithClientTracing(tracing))
+		client.CallOptions.LookupOffer = append(client.CallOptions.LookupOffer, gax.WithClientTracing(tracing))
+		client.CallOptions.ListProducts = append(client.CallOptions.ListProducts, gax.WithClientTracing(tracing))
+		client.CallOptions.ListSkus = append(client.CallOptions.ListSkus, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOffers = append(client.CallOptions.ListOffers, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPurchasableSkus = append(client.CallOptions.ListPurchasableSkus, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPurchasableOffers = append(client.CallOptions.ListPurchasableOffers, gax.WithClientTracing(tracing))
+		client.CallOptions.QueryEligibleBillingAccounts = append(client.CallOptions.QueryEligibleBillingAccounts, gax.WithClientTracing(tracing))
+		client.CallOptions.RegisterSubscriber = append(client.CallOptions.RegisterSubscriber, gax.WithClientTracing(tracing))
+		client.CallOptions.UnregisterSubscriber = append(client.CallOptions.UnregisterSubscriber, gax.WithClientTracing(tracing))
+		client.CallOptions.ListSubscribers = append(client.CallOptions.ListSubscribers, gax.WithClientTracing(tracing))
+		client.CallOptions.ListEntitlementChanges = append(client.CallOptions.ListEntitlementChanges, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudchannel",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/channel/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudchannel.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListCustomers = append(client.CallOptions.ListCustomers, gax.WithClientLogging(logging))
+		client.CallOptions.GetCustomer = append(client.CallOptions.GetCustomer, gax.WithClientLogging(logging))
+		client.CallOptions.CheckCloudIdentityAccountsExist = append(client.CallOptions.CheckCloudIdentityAccountsExist, gax.WithClientLogging(logging))
+		client.CallOptions.CreateCustomer = append(client.CallOptions.CreateCustomer, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateCustomer = append(client.CallOptions.UpdateCustomer, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteCustomer = append(client.CallOptions.DeleteCustomer, gax.WithClientLogging(logging))
+		client.CallOptions.ImportCustomer = append(client.CallOptions.ImportCustomer, gax.WithClientLogging(logging))
+		client.CallOptions.ProvisionCloudIdentity = append(client.CallOptions.ProvisionCloudIdentity, gax.WithClientLogging(logging))
+		client.CallOptions.ListEntitlements = append(client.CallOptions.ListEntitlements, gax.WithClientLogging(logging))
+		client.CallOptions.ListTransferableSkus = append(client.CallOptions.ListTransferableSkus, gax.WithClientLogging(logging))
+		client.CallOptions.ListTransferableOffers = append(client.CallOptions.ListTransferableOffers, gax.WithClientLogging(logging))
+		client.CallOptions.GetEntitlement = append(client.CallOptions.GetEntitlement, gax.WithClientLogging(logging))
+		client.CallOptions.CreateEntitlement = append(client.CallOptions.CreateEntitlement, gax.WithClientLogging(logging))
+		client.CallOptions.ChangeParameters = append(client.CallOptions.ChangeParameters, gax.WithClientLogging(logging))
+		client.CallOptions.ChangeRenewalSettings = append(client.CallOptions.ChangeRenewalSettings, gax.WithClientLogging(logging))
+		client.CallOptions.ChangeOffer = append(client.CallOptions.ChangeOffer, gax.WithClientLogging(logging))
+		client.CallOptions.StartPaidService = append(client.CallOptions.StartPaidService, gax.WithClientLogging(logging))
+		client.CallOptions.SuspendEntitlement = append(client.CallOptions.SuspendEntitlement, gax.WithClientLogging(logging))
+		client.CallOptions.CancelEntitlement = append(client.CallOptions.CancelEntitlement, gax.WithClientLogging(logging))
+		client.CallOptions.ActivateEntitlement = append(client.CallOptions.ActivateEntitlement, gax.WithClientLogging(logging))
+		client.CallOptions.TransferEntitlements = append(client.CallOptions.TransferEntitlements, gax.WithClientLogging(logging))
+		client.CallOptions.TransferEntitlementsToGoogle = append(client.CallOptions.TransferEntitlementsToGoogle, gax.WithClientLogging(logging))
+		client.CallOptions.ListChannelPartnerLinks = append(client.CallOptions.ListChannelPartnerLinks, gax.WithClientLogging(logging))
+		client.CallOptions.GetChannelPartnerLink = append(client.CallOptions.GetChannelPartnerLink, gax.WithClientLogging(logging))
+		client.CallOptions.CreateChannelPartnerLink = append(client.CallOptions.CreateChannelPartnerLink, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateChannelPartnerLink = append(client.CallOptions.UpdateChannelPartnerLink, gax.WithClientLogging(logging))
+		client.CallOptions.GetCustomerRepricingConfig = append(client.CallOptions.GetCustomerRepricingConfig, gax.WithClientLogging(logging))
+		client.CallOptions.ListCustomerRepricingConfigs = append(client.CallOptions.ListCustomerRepricingConfigs, gax.WithClientLogging(logging))
+		client.CallOptions.CreateCustomerRepricingConfig = append(client.CallOptions.CreateCustomerRepricingConfig, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateCustomerRepricingConfig = append(client.CallOptions.UpdateCustomerRepricingConfig, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteCustomerRepricingConfig = append(client.CallOptions.DeleteCustomerRepricingConfig, gax.WithClientLogging(logging))
+		client.CallOptions.GetChannelPartnerRepricingConfig = append(client.CallOptions.GetChannelPartnerRepricingConfig, gax.WithClientLogging(logging))
+		client.CallOptions.ListChannelPartnerRepricingConfigs = append(client.CallOptions.ListChannelPartnerRepricingConfigs, gax.WithClientLogging(logging))
+		client.CallOptions.CreateChannelPartnerRepricingConfig = append(client.CallOptions.CreateChannelPartnerRepricingConfig, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateChannelPartnerRepricingConfig = append(client.CallOptions.UpdateChannelPartnerRepricingConfig, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteChannelPartnerRepricingConfig = append(client.CallOptions.DeleteChannelPartnerRepricingConfig, gax.WithClientLogging(logging))
+		client.CallOptions.ListSkuGroups = append(client.CallOptions.ListSkuGroups, gax.WithClientLogging(logging))
+		client.CallOptions.ListSkuGroupBillableSkus = append(client.CallOptions.ListSkuGroupBillableSkus, gax.WithClientLogging(logging))
+		client.CallOptions.LookupOffer = append(client.CallOptions.LookupOffer, gax.WithClientLogging(logging))
+		client.CallOptions.ListProducts = append(client.CallOptions.ListProducts, gax.WithClientLogging(logging))
+		client.CallOptions.ListSkus = append(client.CallOptions.ListSkus, gax.WithClientLogging(logging))
+		client.CallOptions.ListOffers = append(client.CallOptions.ListOffers, gax.WithClientLogging(logging))
+		client.CallOptions.ListPurchasableSkus = append(client.CallOptions.ListPurchasableSkus, gax.WithClientLogging(logging))
+		client.CallOptions.ListPurchasableOffers = append(client.CallOptions.ListPurchasableOffers, gax.WithClientLogging(logging))
+		client.CallOptions.QueryEligibleBillingAccounts = append(client.CallOptions.QueryEligibleBillingAccounts, gax.WithClientLogging(logging))
+		client.CallOptions.RegisterSubscriber = append(client.CallOptions.RegisterSubscriber, gax.WithClientLogging(logging))
+		client.CallOptions.UnregisterSubscriber = append(client.CallOptions.UnregisterSubscriber, gax.WithClientLogging(logging))
+		client.CallOptions.ListSubscribers = append(client.CallOptions.ListSubscribers, gax.WithClientLogging(logging))
+		client.CallOptions.ListEntitlementChanges = append(client.CallOptions.ListEntitlementChanges, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -2982,6 +3113,137 @@ func NewCloudChannelRESTClient(ctx context.Context, opts ...option.ClientOption)
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudchannel",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/channel/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudchannel.googleapis.com",
+			}),
+		)
+
+		callOpts.ListCustomers = append(callOpts.ListCustomers, gax.WithClientTracing(tracing))
+		callOpts.GetCustomer = append(callOpts.GetCustomer, gax.WithClientTracing(tracing))
+		callOpts.CheckCloudIdentityAccountsExist = append(callOpts.CheckCloudIdentityAccountsExist, gax.WithClientTracing(tracing))
+		callOpts.CreateCustomer = append(callOpts.CreateCustomer, gax.WithClientTracing(tracing))
+		callOpts.UpdateCustomer = append(callOpts.UpdateCustomer, gax.WithClientTracing(tracing))
+		callOpts.DeleteCustomer = append(callOpts.DeleteCustomer, gax.WithClientTracing(tracing))
+		callOpts.ImportCustomer = append(callOpts.ImportCustomer, gax.WithClientTracing(tracing))
+		callOpts.ProvisionCloudIdentity = append(callOpts.ProvisionCloudIdentity, gax.WithClientTracing(tracing))
+		callOpts.ListEntitlements = append(callOpts.ListEntitlements, gax.WithClientTracing(tracing))
+		callOpts.ListTransferableSkus = append(callOpts.ListTransferableSkus, gax.WithClientTracing(tracing))
+		callOpts.ListTransferableOffers = append(callOpts.ListTransferableOffers, gax.WithClientTracing(tracing))
+		callOpts.GetEntitlement = append(callOpts.GetEntitlement, gax.WithClientTracing(tracing))
+		callOpts.CreateEntitlement = append(callOpts.CreateEntitlement, gax.WithClientTracing(tracing))
+		callOpts.ChangeParameters = append(callOpts.ChangeParameters, gax.WithClientTracing(tracing))
+		callOpts.ChangeRenewalSettings = append(callOpts.ChangeRenewalSettings, gax.WithClientTracing(tracing))
+		callOpts.ChangeOffer = append(callOpts.ChangeOffer, gax.WithClientTracing(tracing))
+		callOpts.StartPaidService = append(callOpts.StartPaidService, gax.WithClientTracing(tracing))
+		callOpts.SuspendEntitlement = append(callOpts.SuspendEntitlement, gax.WithClientTracing(tracing))
+		callOpts.CancelEntitlement = append(callOpts.CancelEntitlement, gax.WithClientTracing(tracing))
+		callOpts.ActivateEntitlement = append(callOpts.ActivateEntitlement, gax.WithClientTracing(tracing))
+		callOpts.TransferEntitlements = append(callOpts.TransferEntitlements, gax.WithClientTracing(tracing))
+		callOpts.TransferEntitlementsToGoogle = append(callOpts.TransferEntitlementsToGoogle, gax.WithClientTracing(tracing))
+		callOpts.ListChannelPartnerLinks = append(callOpts.ListChannelPartnerLinks, gax.WithClientTracing(tracing))
+		callOpts.GetChannelPartnerLink = append(callOpts.GetChannelPartnerLink, gax.WithClientTracing(tracing))
+		callOpts.CreateChannelPartnerLink = append(callOpts.CreateChannelPartnerLink, gax.WithClientTracing(tracing))
+		callOpts.UpdateChannelPartnerLink = append(callOpts.UpdateChannelPartnerLink, gax.WithClientTracing(tracing))
+		callOpts.GetCustomerRepricingConfig = append(callOpts.GetCustomerRepricingConfig, gax.WithClientTracing(tracing))
+		callOpts.ListCustomerRepricingConfigs = append(callOpts.ListCustomerRepricingConfigs, gax.WithClientTracing(tracing))
+		callOpts.CreateCustomerRepricingConfig = append(callOpts.CreateCustomerRepricingConfig, gax.WithClientTracing(tracing))
+		callOpts.UpdateCustomerRepricingConfig = append(callOpts.UpdateCustomerRepricingConfig, gax.WithClientTracing(tracing))
+		callOpts.DeleteCustomerRepricingConfig = append(callOpts.DeleteCustomerRepricingConfig, gax.WithClientTracing(tracing))
+		callOpts.GetChannelPartnerRepricingConfig = append(callOpts.GetChannelPartnerRepricingConfig, gax.WithClientTracing(tracing))
+		callOpts.ListChannelPartnerRepricingConfigs = append(callOpts.ListChannelPartnerRepricingConfigs, gax.WithClientTracing(tracing))
+		callOpts.CreateChannelPartnerRepricingConfig = append(callOpts.CreateChannelPartnerRepricingConfig, gax.WithClientTracing(tracing))
+		callOpts.UpdateChannelPartnerRepricingConfig = append(callOpts.UpdateChannelPartnerRepricingConfig, gax.WithClientTracing(tracing))
+		callOpts.DeleteChannelPartnerRepricingConfig = append(callOpts.DeleteChannelPartnerRepricingConfig, gax.WithClientTracing(tracing))
+		callOpts.ListSkuGroups = append(callOpts.ListSkuGroups, gax.WithClientTracing(tracing))
+		callOpts.ListSkuGroupBillableSkus = append(callOpts.ListSkuGroupBillableSkus, gax.WithClientTracing(tracing))
+		callOpts.LookupOffer = append(callOpts.LookupOffer, gax.WithClientTracing(tracing))
+		callOpts.ListProducts = append(callOpts.ListProducts, gax.WithClientTracing(tracing))
+		callOpts.ListSkus = append(callOpts.ListSkus, gax.WithClientTracing(tracing))
+		callOpts.ListOffers = append(callOpts.ListOffers, gax.WithClientTracing(tracing))
+		callOpts.ListPurchasableSkus = append(callOpts.ListPurchasableSkus, gax.WithClientTracing(tracing))
+		callOpts.ListPurchasableOffers = append(callOpts.ListPurchasableOffers, gax.WithClientTracing(tracing))
+		callOpts.QueryEligibleBillingAccounts = append(callOpts.QueryEligibleBillingAccounts, gax.WithClientTracing(tracing))
+		callOpts.RegisterSubscriber = append(callOpts.RegisterSubscriber, gax.WithClientTracing(tracing))
+		callOpts.UnregisterSubscriber = append(callOpts.UnregisterSubscriber, gax.WithClientTracing(tracing))
+		callOpts.ListSubscribers = append(callOpts.ListSubscribers, gax.WithClientTracing(tracing))
+		callOpts.ListEntitlementChanges = append(callOpts.ListEntitlementChanges, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudchannel",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/channel/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudchannel.googleapis.com",
+			}),
+		)
+
+		callOpts.ListCustomers = append(callOpts.ListCustomers, gax.WithClientLogging(logging))
+		callOpts.GetCustomer = append(callOpts.GetCustomer, gax.WithClientLogging(logging))
+		callOpts.CheckCloudIdentityAccountsExist = append(callOpts.CheckCloudIdentityAccountsExist, gax.WithClientLogging(logging))
+		callOpts.CreateCustomer = append(callOpts.CreateCustomer, gax.WithClientLogging(logging))
+		callOpts.UpdateCustomer = append(callOpts.UpdateCustomer, gax.WithClientLogging(logging))
+		callOpts.DeleteCustomer = append(callOpts.DeleteCustomer, gax.WithClientLogging(logging))
+		callOpts.ImportCustomer = append(callOpts.ImportCustomer, gax.WithClientLogging(logging))
+		callOpts.ProvisionCloudIdentity = append(callOpts.ProvisionCloudIdentity, gax.WithClientLogging(logging))
+		callOpts.ListEntitlements = append(callOpts.ListEntitlements, gax.WithClientLogging(logging))
+		callOpts.ListTransferableSkus = append(callOpts.ListTransferableSkus, gax.WithClientLogging(logging))
+		callOpts.ListTransferableOffers = append(callOpts.ListTransferableOffers, gax.WithClientLogging(logging))
+		callOpts.GetEntitlement = append(callOpts.GetEntitlement, gax.WithClientLogging(logging))
+		callOpts.CreateEntitlement = append(callOpts.CreateEntitlement, gax.WithClientLogging(logging))
+		callOpts.ChangeParameters = append(callOpts.ChangeParameters, gax.WithClientLogging(logging))
+		callOpts.ChangeRenewalSettings = append(callOpts.ChangeRenewalSettings, gax.WithClientLogging(logging))
+		callOpts.ChangeOffer = append(callOpts.ChangeOffer, gax.WithClientLogging(logging))
+		callOpts.StartPaidService = append(callOpts.StartPaidService, gax.WithClientLogging(logging))
+		callOpts.SuspendEntitlement = append(callOpts.SuspendEntitlement, gax.WithClientLogging(logging))
+		callOpts.CancelEntitlement = append(callOpts.CancelEntitlement, gax.WithClientLogging(logging))
+		callOpts.ActivateEntitlement = append(callOpts.ActivateEntitlement, gax.WithClientLogging(logging))
+		callOpts.TransferEntitlements = append(callOpts.TransferEntitlements, gax.WithClientLogging(logging))
+		callOpts.TransferEntitlementsToGoogle = append(callOpts.TransferEntitlementsToGoogle, gax.WithClientLogging(logging))
+		callOpts.ListChannelPartnerLinks = append(callOpts.ListChannelPartnerLinks, gax.WithClientLogging(logging))
+		callOpts.GetChannelPartnerLink = append(callOpts.GetChannelPartnerLink, gax.WithClientLogging(logging))
+		callOpts.CreateChannelPartnerLink = append(callOpts.CreateChannelPartnerLink, gax.WithClientLogging(logging))
+		callOpts.UpdateChannelPartnerLink = append(callOpts.UpdateChannelPartnerLink, gax.WithClientLogging(logging))
+		callOpts.GetCustomerRepricingConfig = append(callOpts.GetCustomerRepricingConfig, gax.WithClientLogging(logging))
+		callOpts.ListCustomerRepricingConfigs = append(callOpts.ListCustomerRepricingConfigs, gax.WithClientLogging(logging))
+		callOpts.CreateCustomerRepricingConfig = append(callOpts.CreateCustomerRepricingConfig, gax.WithClientLogging(logging))
+		callOpts.UpdateCustomerRepricingConfig = append(callOpts.UpdateCustomerRepricingConfig, gax.WithClientLogging(logging))
+		callOpts.DeleteCustomerRepricingConfig = append(callOpts.DeleteCustomerRepricingConfig, gax.WithClientLogging(logging))
+		callOpts.GetChannelPartnerRepricingConfig = append(callOpts.GetChannelPartnerRepricingConfig, gax.WithClientLogging(logging))
+		callOpts.ListChannelPartnerRepricingConfigs = append(callOpts.ListChannelPartnerRepricingConfigs, gax.WithClientLogging(logging))
+		callOpts.CreateChannelPartnerRepricingConfig = append(callOpts.CreateChannelPartnerRepricingConfig, gax.WithClientLogging(logging))
+		callOpts.UpdateChannelPartnerRepricingConfig = append(callOpts.UpdateChannelPartnerRepricingConfig, gax.WithClientLogging(logging))
+		callOpts.DeleteChannelPartnerRepricingConfig = append(callOpts.DeleteChannelPartnerRepricingConfig, gax.WithClientLogging(logging))
+		callOpts.ListSkuGroups = append(callOpts.ListSkuGroups, gax.WithClientLogging(logging))
+		callOpts.ListSkuGroupBillableSkus = append(callOpts.ListSkuGroupBillableSkus, gax.WithClientLogging(logging))
+		callOpts.LookupOffer = append(callOpts.LookupOffer, gax.WithClientLogging(logging))
+		callOpts.ListProducts = append(callOpts.ListProducts, gax.WithClientLogging(logging))
+		callOpts.ListSkus = append(callOpts.ListSkus, gax.WithClientLogging(logging))
+		callOpts.ListOffers = append(callOpts.ListOffers, gax.WithClientLogging(logging))
+		callOpts.ListPurchasableSkus = append(callOpts.ListPurchasableSkus, gax.WithClientLogging(logging))
+		callOpts.ListPurchasableOffers = append(callOpts.ListPurchasableOffers, gax.WithClientLogging(logging))
+		callOpts.QueryEligibleBillingAccounts = append(callOpts.QueryEligibleBillingAccounts, gax.WithClientLogging(logging))
+		callOpts.RegisterSubscriber = append(callOpts.RegisterSubscriber, gax.WithClientLogging(logging))
+		callOpts.UnregisterSubscriber = append(callOpts.UnregisterSubscriber, gax.WithClientLogging(logging))
+		callOpts.ListSubscribers = append(callOpts.ListSubscribers, gax.WithClientLogging(logging))
+		callOpts.ListEntitlementChanges = append(callOpts.ListEntitlementChanges, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -3087,9 +3349,6 @@ func (c *cloudChannelGRPCClient) GetCustomer(ctx context.Context, req *channelpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/GetCustomer")
 	}
@@ -3174,9 +3433,6 @@ func (c *cloudChannelGRPCClient) DeleteCustomer(ctx context.Context, req *channe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/DeleteCustomer")
 	}
@@ -3194,9 +3450,6 @@ func (c *cloudChannelGRPCClient) ImportCustomer(ctx context.Context, req *channe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetCustomer()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/ImportCustomer")
 	}
@@ -3218,9 +3471,6 @@ func (c *cloudChannelGRPCClient) ProvisionCloudIdentity(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetCustomer()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/ProvisionCloudIdentity")
 	}
@@ -3248,9 +3498,6 @@ func (c *cloudChannelGRPCClient) ListEntitlements(ctx context.Context, req *chan
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/ListEntitlements")
 	}
@@ -3398,9 +3645,6 @@ func (c *cloudChannelGRPCClient) GetEntitlement(ctx context.Context, req *channe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/GetEntitlement")
 	}
@@ -3422,9 +3666,6 @@ func (c *cloudChannelGRPCClient) CreateEntitlement(ctx context.Context, req *cha
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/CreateEntitlement")
 	}
@@ -3506,9 +3747,6 @@ func (c *cloudChannelGRPCClient) ChangeOffer(ctx context.Context, req *channelpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetOffer()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/ChangeOffer")
 	}
@@ -3810,9 +4048,6 @@ func (c *cloudChannelGRPCClient) GetCustomerRepricingConfig(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/GetCustomerRepricingConfig")
 	}
@@ -3834,9 +4069,6 @@ func (c *cloudChannelGRPCClient) ListCustomerRepricingConfigs(ctx context.Contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/ListCustomerRepricingConfigs")
 	}
@@ -3886,9 +4118,6 @@ func (c *cloudChannelGRPCClient) CreateCustomerRepricingConfig(ctx context.Conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/CreateCustomerRepricingConfig")
 	}
@@ -3931,9 +4160,6 @@ func (c *cloudChannelGRPCClient) DeleteCustomerRepricingConfig(ctx context.Conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/DeleteCustomerRepricingConfig")
 	}
@@ -3951,9 +4177,6 @@ func (c *cloudChannelGRPCClient) GetChannelPartnerRepricingConfig(ctx context.Co
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/GetChannelPartnerRepricingConfig")
 	}
@@ -3975,9 +4198,6 @@ func (c *cloudChannelGRPCClient) ListChannelPartnerRepricingConfigs(ctx context.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/ListChannelPartnerRepricingConfigs")
 	}
@@ -4027,9 +4247,6 @@ func (c *cloudChannelGRPCClient) CreateChannelPartnerRepricingConfig(ctx context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/CreateChannelPartnerRepricingConfig")
 	}
@@ -4072,9 +4289,6 @@ func (c *cloudChannelGRPCClient) DeleteChannelPartnerRepricingConfig(ctx context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/DeleteChannelPartnerRepricingConfig")
 	}
@@ -4141,9 +4355,6 @@ func (c *cloudChannelGRPCClient) ListSkuGroupBillableSkus(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/ListSkuGroupBillableSkus")
 	}
@@ -4193,9 +4404,6 @@ func (c *cloudChannelGRPCClient) LookupOffer(ctx context.Context, req *channelpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetEntitlement()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/LookupOffer")
 	}
@@ -4263,9 +4471,6 @@ func (c *cloudChannelGRPCClient) ListSkus(ctx context.Context, req *channelpb.Li
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/ListSkus")
 	}
@@ -4364,9 +4569,6 @@ func (c *cloudChannelGRPCClient) ListPurchasableSkus(ctx context.Context, req *c
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetCustomer()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/ListPurchasableSkus")
 	}
@@ -4416,9 +4618,6 @@ func (c *cloudChannelGRPCClient) ListPurchasableOffers(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetCustomer()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/ListPurchasableOffers")
 	}
@@ -4468,9 +4667,6 @@ func (c *cloudChannelGRPCClient) QueryEligibleBillingAccounts(ctx context.Contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetCustomer()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/QueryEligibleBillingAccounts")
 	}
@@ -4492,9 +4688,6 @@ func (c *cloudChannelGRPCClient) RegisterSubscriber(ctx context.Context, req *ch
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetAccount()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/RegisterSubscriber")
 	}
@@ -4516,9 +4709,6 @@ func (c *cloudChannelGRPCClient) UnregisterSubscriber(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetAccount()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/UnregisterSubscriber")
 	}
@@ -4540,9 +4730,6 @@ func (c *cloudChannelGRPCClient) ListSubscribers(ctx context.Context, req *chann
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetAccount()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/ListSubscribers")
 	}
@@ -4592,9 +4779,6 @@ func (c *cloudChannelGRPCClient) ListEntitlementChanges(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/ListEntitlementChanges")
 	}
@@ -4868,9 +5052,6 @@ func (c *cloudChannelRESTClient) GetCustomer(ctx context.Context, req *channelpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/GetCustomer")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=accounts/*/customers/*}")
@@ -5180,9 +5361,6 @@ func (c *cloudChannelRESTClient) DeleteCustomer(ctx context.Context, req *channe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/DeleteCustomer")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=accounts/*/customers/*}")
@@ -5252,9 +5430,6 @@ func (c *cloudChannelRESTClient) ImportCustomer(ctx context.Context, req *channe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetCustomer()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/ImportCustomer")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=accounts/*}/customers:import")
@@ -5345,9 +5520,6 @@ func (c *cloudChannelRESTClient) ProvisionCloudIdentity(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetCustomer()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/ProvisionCloudIdentity")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{customer=accounts/*/customers/*}:provisionCloudIdentity")
@@ -5714,9 +5886,6 @@ func (c *cloudChannelRESTClient) GetEntitlement(ctx context.Context, req *channe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/GetEntitlement")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=accounts/*/customers/*/entitlements/*}")
@@ -5833,9 +6002,6 @@ func (c *cloudChannelRESTClient) CreateEntitlement(ctx context.Context, req *cha
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/CreateEntitlement")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=accounts/*/customers/*}/entitlements")
@@ -6114,9 +6280,6 @@ func (c *cloudChannelRESTClient) ChangeOffer(ctx context.Context, req *channelpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetOffer()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/ChangeOffer")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=accounts/*/customers/*/entitlements/*}:changeOffer")
@@ -7140,9 +7303,6 @@ func (c *cloudChannelRESTClient) GetCustomerRepricingConfig(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/GetCustomerRepricingConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=accounts/*/customers/*/customerRepricingConfigs/*}")
@@ -7361,9 +7521,6 @@ func (c *cloudChannelRESTClient) CreateCustomerRepricingConfig(ctx context.Conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/CreateCustomerRepricingConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=accounts/*/customers/*}/customerRepricingConfigs")
@@ -7532,9 +7689,6 @@ func (c *cloudChannelRESTClient) DeleteCustomerRepricingConfig(ctx context.Conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/DeleteCustomerRepricingConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=accounts/*/customers/*/customerRepricingConfigs/*}")
@@ -7592,9 +7746,6 @@ func (c *cloudChannelRESTClient) GetChannelPartnerRepricingConfig(ctx context.Co
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/GetChannelPartnerRepricingConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=accounts/*/channelPartnerLinks/*/channelPartnerRepricingConfigs/*}")
@@ -7812,9 +7963,6 @@ func (c *cloudChannelRESTClient) CreateChannelPartnerRepricingConfig(ctx context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/CreateChannelPartnerRepricingConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=accounts/*/channelPartnerLinks/*}/channelPartnerRepricingConfigs")
@@ -7983,9 +8131,6 @@ func (c *cloudChannelRESTClient) DeleteChannelPartnerRepricingConfig(ctx context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/DeleteChannelPartnerRepricingConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=accounts/*/channelPartnerLinks/*/channelPartnerRepricingConfigs/*}")
@@ -8230,9 +8375,6 @@ func (c *cloudChannelRESTClient) LookupOffer(ctx context.Context, req *channelpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetEntitlement()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/LookupOffer")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{entitlement=accounts/*/customers/*/entitlements/*}:lookupOffer")
@@ -8768,9 +8910,6 @@ func (c *cloudChannelRESTClient) QueryEligibleBillingAccounts(ctx context.Contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetCustomer()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/QueryEligibleBillingAccounts")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{customer=accounts/*/customers/*}:queryEligibleBillingAccounts")
@@ -8851,9 +8990,6 @@ func (c *cloudChannelRESTClient) RegisterSubscriber(ctx context.Context, req *ch
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetAccount()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/RegisterSubscriber")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{account=accounts/*}:register")
@@ -8938,9 +9074,6 @@ func (c *cloudChannelRESTClient) UnregisterSubscriber(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudchannel.googleapis.com/%v", req.GetAccount()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.channel.v1.CloudChannelService/UnregisterSubscriber")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{account=accounts/*}:unregister")

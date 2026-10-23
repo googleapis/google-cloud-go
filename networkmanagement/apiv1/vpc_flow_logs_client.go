@@ -451,6 +451,63 @@ func NewVpcFlowLogsClient(ctx context.Context, opts ...option.ClientOption) (*Vp
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "networkmanagement",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/networkmanagement/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "networkmanagement.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListVpcFlowLogsConfigs = append(client.CallOptions.ListVpcFlowLogsConfigs, gax.WithClientTracing(tracing))
+		client.CallOptions.GetVpcFlowLogsConfig = append(client.CallOptions.GetVpcFlowLogsConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateVpcFlowLogsConfig = append(client.CallOptions.CreateVpcFlowLogsConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateVpcFlowLogsConfig = append(client.CallOptions.UpdateVpcFlowLogsConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteVpcFlowLogsConfig = append(client.CallOptions.DeleteVpcFlowLogsConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.QueryOrgVpcFlowLogsConfigs = append(client.CallOptions.QueryOrgVpcFlowLogsConfigs, gax.WithClientTracing(tracing))
+		client.CallOptions.ShowEffectiveFlowLogsConfigs = append(client.CallOptions.ShowEffectiveFlowLogsConfigs, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "networkmanagement",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/networkmanagement/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "networkmanagement.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListVpcFlowLogsConfigs = append(client.CallOptions.ListVpcFlowLogsConfigs, gax.WithClientLogging(logging))
+		client.CallOptions.GetVpcFlowLogsConfig = append(client.CallOptions.GetVpcFlowLogsConfig, gax.WithClientLogging(logging))
+		client.CallOptions.CreateVpcFlowLogsConfig = append(client.CallOptions.CreateVpcFlowLogsConfig, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateVpcFlowLogsConfig = append(client.CallOptions.UpdateVpcFlowLogsConfig, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteVpcFlowLogsConfig = append(client.CallOptions.DeleteVpcFlowLogsConfig, gax.WithClientLogging(logging))
+		client.CallOptions.QueryOrgVpcFlowLogsConfigs = append(client.CallOptions.QueryOrgVpcFlowLogsConfigs, gax.WithClientLogging(logging))
+		client.CallOptions.ShowEffectiveFlowLogsConfigs = append(client.CallOptions.ShowEffectiveFlowLogsConfigs, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -575,6 +632,63 @@ func NewVpcFlowLogsRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "networkmanagement",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/networkmanagement/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "networkmanagement.googleapis.com",
+			}),
+		)
+
+		callOpts.ListVpcFlowLogsConfigs = append(callOpts.ListVpcFlowLogsConfigs, gax.WithClientTracing(tracing))
+		callOpts.GetVpcFlowLogsConfig = append(callOpts.GetVpcFlowLogsConfig, gax.WithClientTracing(tracing))
+		callOpts.CreateVpcFlowLogsConfig = append(callOpts.CreateVpcFlowLogsConfig, gax.WithClientTracing(tracing))
+		callOpts.UpdateVpcFlowLogsConfig = append(callOpts.UpdateVpcFlowLogsConfig, gax.WithClientTracing(tracing))
+		callOpts.DeleteVpcFlowLogsConfig = append(callOpts.DeleteVpcFlowLogsConfig, gax.WithClientTracing(tracing))
+		callOpts.QueryOrgVpcFlowLogsConfigs = append(callOpts.QueryOrgVpcFlowLogsConfigs, gax.WithClientTracing(tracing))
+		callOpts.ShowEffectiveFlowLogsConfigs = append(callOpts.ShowEffectiveFlowLogsConfigs, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "networkmanagement",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/networkmanagement/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "networkmanagement.googleapis.com",
+			}),
+		)
+
+		callOpts.ListVpcFlowLogsConfigs = append(callOpts.ListVpcFlowLogsConfigs, gax.WithClientLogging(logging))
+		callOpts.GetVpcFlowLogsConfig = append(callOpts.GetVpcFlowLogsConfig, gax.WithClientLogging(logging))
+		callOpts.CreateVpcFlowLogsConfig = append(callOpts.CreateVpcFlowLogsConfig, gax.WithClientLogging(logging))
+		callOpts.UpdateVpcFlowLogsConfig = append(callOpts.UpdateVpcFlowLogsConfig, gax.WithClientLogging(logging))
+		callOpts.DeleteVpcFlowLogsConfig = append(callOpts.DeleteVpcFlowLogsConfig, gax.WithClientLogging(logging))
+		callOpts.QueryOrgVpcFlowLogsConfigs = append(callOpts.QueryOrgVpcFlowLogsConfigs, gax.WithClientLogging(logging))
+		callOpts.ShowEffectiveFlowLogsConfigs = append(callOpts.ShowEffectiveFlowLogsConfigs, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -631,9 +745,6 @@ func (c *vpcFlowLogsGRPCClient) ListVpcFlowLogsConfigs(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkmanagement.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkmanagement.v1.VpcFlowLogsService/ListVpcFlowLogsConfigs")
 	}
@@ -683,9 +794,6 @@ func (c *vpcFlowLogsGRPCClient) GetVpcFlowLogsConfig(ctx context.Context, req *n
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkmanagement.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkmanagement.v1.VpcFlowLogsService/GetVpcFlowLogsConfig")
 	}
@@ -707,9 +815,6 @@ func (c *vpcFlowLogsGRPCClient) CreateVpcFlowLogsConfig(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkmanagement.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkmanagement.v1.VpcFlowLogsService/CreateVpcFlowLogsConfig")
 	}
@@ -764,9 +869,6 @@ func (c *vpcFlowLogsGRPCClient) DeleteVpcFlowLogsConfig(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkmanagement.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkmanagement.v1.VpcFlowLogsService/DeleteVpcFlowLogsConfig")
 	}
@@ -794,9 +896,6 @@ func (c *vpcFlowLogsGRPCClient) QueryOrgVpcFlowLogsConfigs(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkmanagement.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkmanagement.v1.VpcFlowLogsService/QueryOrgVpcFlowLogsConfigs")
 	}
@@ -846,9 +945,6 @@ func (c *vpcFlowLogsGRPCClient) ShowEffectiveFlowLogsConfigs(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkmanagement.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkmanagement.v1.VpcFlowLogsService/ShowEffectiveFlowLogsConfigs")
 	}
@@ -968,9 +1064,6 @@ func (c *vpcFlowLogsGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.Get
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
 	}
@@ -992,9 +1085,6 @@ func (c *vpcFlowLogsGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.Set
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
 	}
@@ -1016,9 +1106,6 @@ func (c *vpcFlowLogsGRPCClient) TestIamPermissions(ctx context.Context, req *iam
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
 	}
@@ -1242,9 +1329,6 @@ func (c *vpcFlowLogsRESTClient) GetVpcFlowLogsConfig(ctx context.Context, req *n
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkmanagement.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkmanagement.v1.VpcFlowLogsService/GetVpcFlowLogsConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/vpcFlowLogsConfigs/*}")
@@ -1327,9 +1411,6 @@ func (c *vpcFlowLogsRESTClient) CreateVpcFlowLogsConfig(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkmanagement.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkmanagement.v1.VpcFlowLogsService/CreateVpcFlowLogsConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/vpcFlowLogsConfigs")
@@ -1486,9 +1567,6 @@ func (c *vpcFlowLogsRESTClient) DeleteVpcFlowLogsConfig(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkmanagement.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkmanagement.v1.VpcFlowLogsService/DeleteVpcFlowLogsConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/vpcFlowLogsConfigs/*}")
@@ -1862,9 +1940,6 @@ func (c *vpcFlowLogsRESTClient) GetIamPolicy(ctx context.Context, req *iampb.Get
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/global/connectivityTests/*}:getIamPolicy")
@@ -1929,9 +2004,6 @@ func (c *vpcFlowLogsRESTClient) SetIamPolicy(ctx context.Context, req *iampb.Set
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/global/connectivityTests/*}:setIamPolicy")
@@ -1998,9 +2070,6 @@ func (c *vpcFlowLogsRESTClient) TestIamPermissions(ctx context.Context, req *iam
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/global/connectivityTests/*}:testIamPermissions")

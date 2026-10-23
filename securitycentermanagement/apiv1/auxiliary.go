@@ -17,10 +17,19 @@
 package securitycentermanagement
 
 import (
+	"iter"
+
 	securitycentermanagementpb "cloud.google.com/go/securitycentermanagement/apiv1/securitycentermanagementpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EffectiveEventThreatDetectionCustomModuleIterator) All() iter.Seq2[*securitycentermanagementpb.EffectiveEventThreatDetectionCustomModule, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // EffectiveEventThreatDetectionCustomModuleIterator manages a stream of *securitycentermanagementpb.EffectiveEventThreatDetectionCustomModule.
 type EffectiveEventThreatDetectionCustomModuleIterator struct {
@@ -67,6 +76,12 @@ func (it *EffectiveEventThreatDetectionCustomModuleIterator) takeBuf() interface
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EffectiveSecurityHealthAnalyticsCustomModuleIterator) All() iter.Seq2[*securitycentermanagementpb.EffectiveSecurityHealthAnalyticsCustomModule, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // EffectiveSecurityHealthAnalyticsCustomModuleIterator manages a stream of *securitycentermanagementpb.EffectiveSecurityHealthAnalyticsCustomModule.
@@ -116,6 +131,12 @@ func (it *EffectiveSecurityHealthAnalyticsCustomModuleIterator) takeBuf() interf
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EventThreatDetectionCustomModuleIterator) All() iter.Seq2[*securitycentermanagementpb.EventThreatDetectionCustomModule, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // EventThreatDetectionCustomModuleIterator manages a stream of *securitycentermanagementpb.EventThreatDetectionCustomModule.
 type EventThreatDetectionCustomModuleIterator struct {
 	items    []*securitycentermanagementpb.EventThreatDetectionCustomModule
@@ -161,6 +182,12 @@ func (it *EventThreatDetectionCustomModuleIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LocationIterator manages a stream of *locationpb.Location.
@@ -210,6 +237,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SecurityCenterServiceIterator) All() iter.Seq2[*securitycentermanagementpb.SecurityCenterService, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SecurityCenterServiceIterator manages a stream of *securitycentermanagementpb.SecurityCenterService.
 type SecurityCenterServiceIterator struct {
 	items    []*securitycentermanagementpb.SecurityCenterService
@@ -255,6 +288,12 @@ func (it *SecurityCenterServiceIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SecurityHealthAnalyticsCustomModuleIterator) All() iter.Seq2[*securitycentermanagementpb.SecurityHealthAnalyticsCustomModule, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // SecurityHealthAnalyticsCustomModuleIterator manages a stream of *securitycentermanagementpb.SecurityHealthAnalyticsCustomModule.

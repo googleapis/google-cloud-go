@@ -54,6 +54,9 @@ func getVersionClient() string {
 func DefaultAuthScopes() []string {
 	return []string{
 		"https://www.googleapis.com/auth/cloud-platform",
+		"https://www.googleapis.com/auth/discoveryengine.assist.readwrite",
+		"https://www.googleapis.com/auth/discoveryengine.readwrite",
+		"https://www.googleapis.com/auth/discoveryengine.serving.readwrite",
 	}
 }
 

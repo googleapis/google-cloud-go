@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -187,10 +187,12 @@ func (*NotificationConfig_PubsubNotification) isNotificationConfig_Config() {}
 type ImageConfig struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The initial image the remote agent will attempt to run for the control
-	// plane.
+	// plane. Format would be a gcr image path, e.g.:
+	// gcr.io/PROJECT-ID/my-image:tag1
 	TargetImage string `protobuf:"bytes,1,opt,name=target_image,json=targetImage,proto3" json:"target_image,omitempty"`
 	// The stable image that the remote agent will fallback to if the target image
-	// fails.
+	// fails. Format would be a gcr image path, e.g.:
+	// gcr.io/PROJECT-ID/my-image:tag1
 	StableImage   string `protobuf:"bytes,2,opt,name=stable_image,json=stableImage,proto3" json:"stable_image,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -290,9 +292,9 @@ var File_google_cloud_beyondcorp_appconnectors_v1_app_connector_instance_config_
 
 const file_google_cloud_beyondcorp_appconnectors_v1_app_connector_instance_config_proto_rawDesc = "" +
 	"\n" +
-	"Lgoogle/cloud/beyondcorp/appconnectors/v1/app_connector_instance_config.proto\x12(google.cloud.beyondcorp.appconnectors.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/protobuf/any.proto\"\xd2\x02\n" +
-	"\x1aAppConnectorInstanceConfig\x12,\n" +
-	"\x0fsequence_number\x18\x01 \x01(\x03B\x03\xe0A\x02R\x0esequenceNumber\x12=\n" +
+	"Lgoogle/cloud/beyondcorp/appconnectors/v1/app_connector_instance_config.proto\x12(google.cloud.beyondcorp.appconnectors.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/protobuf/any.proto\"\xd3\x02\n" +
+	"\x1aAppConnectorInstanceConfig\x12-\n" +
+	"\x0fsequence_number\x18\x01 \x01(\x03B\x04\xe2A\x01\x02R\x0esequenceNumber\x12=\n" +
 	"\x0finstance_config\x18\x02 \x01(\v2\x14.google.protobuf.AnyR\x0einstanceConfig\x12m\n" +
 	"\x13notification_config\x18\x03 \x01(\v2<.google.cloud.beyondcorp.appconnectors.v1.NotificationConfigR\x12notificationConfig\x12X\n" +
 	"\fimage_config\x18\x04 \x01(\v25.google.cloud.beyondcorp.appconnectors.v1.ImageConfigR\vimageConfig\"\x80\x02\n" +

@@ -1,5 +1,19 @@
 # Changes
 
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/apiregistry/v1.1.0...apiregistry/v1.2.0) (2026-10-22)
+
+
+### Features
+
+* Update API sources and regenerate ([#20728](https://github.com/googleapis/google-cloud-go/issues/20728)) ([ab1da9d](https://github.com/googleapis/google-cloud-go/commit/ab1da9d200416594ae18fa7a2944961f1c92c928))
+
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/apiregistry/v1.0.0...apiregistry/v1.1.0) (2026-09-23)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
 ## [1.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/apiregistry%2Fv1.0.0) (2026-05-08)
 
 ## [0.7.0](https://github.com/googleapis/google-cloud-go/releases/tag/apiregistry%2Fv0.7.0) (2026-05-07)
@@ -27,4 +41,3 @@
 ### Documentation
 
 * another bulk typo correction (#13527) ([90a4f21](https://github.com/googleapis/google-cloud-go/commit/90a4f21fc7c19aec71e92dfa9b810bad9544a7c0))
-

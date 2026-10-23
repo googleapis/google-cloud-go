@@ -669,8 +669,8 @@ type StoragePool struct {
 	// `BLOCK`) volumes. If not specified during creation, it defaults to `FILE`.
 	Type *StoragePoolType `protobuf:"varint,35,opt,name=type,proto3,enum=google.cloud.netapp.v1.StoragePoolType,oneof" json:"type,omitempty"`
 	// Optional. Mode of the storage pool. This field is used to control whether
-	// the user can perform the ONTAP operations on the storage pool using the
-	// GCNV ONTAP Mode APIs. If not specified during creation, it defaults to
+	// the user can perform ONTAP operations on the storage pool using the GCNV
+	// ONTAP Mode APIs. If not specified during creation, it defaults to
 	// `DEFAULT`.
 	Mode *Mode `protobuf:"varint,36,opt,name=mode,proto3,enum=google.cloud.netapp.v1.Mode,oneof" json:"mode,omitempty"`
 	// Optional. The scale type of the storage pool. Defaults to
@@ -1009,78 +1009,78 @@ var File_google_cloud_netapp_v1_storage_pool_proto protoreflect.FileDescriptor
 
 const file_google_cloud_netapp_v1_storage_pool_proto_rawDesc = "" +
 	"\n" +
-	")google/cloud/netapp/v1/storage_pool.proto\x12\x16google.cloud.netapp.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/cloud/netapp/v1/common.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"V\n" +
-	"\x15GetStoragePoolRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!netapp.googleapis.com/StoragePoolR\x04name\"\xdf\x01\n" +
-	"\x17ListStoragePoolsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!netapp.googleapis.com/StoragePoolR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	")google/cloud/netapp/v1/storage_pool.proto\x12\x16google.cloud.netapp.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/cloud/netapp/v1/common.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"W\n" +
+	"\x15GetStoragePoolRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!netapp.googleapis.com/StoragePoolR\x04name\"\xe4\x01\n" +
+	"\x17ListStoragePoolsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!netapp.googleapis.com/StoragePoolR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1e\n" +
-	"\border_by\x18\x04 \x01(\tB\x03\xe0A\x01R\aorderBy\x12\x1b\n" +
-	"\x06filter\x18\x05 \x01(\tB\x03\xe0A\x01R\x06filter\"\xae\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1f\n" +
+	"\border_by\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\x12\x1c\n" +
+	"\x06filter\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xae\x01\n" +
 	"\x18ListStoragePoolsResponse\x12H\n" +
 	"\rstorage_pools\x18\x01 \x03(\v2#.google.cloud.netapp.v1.StoragePoolR\fstoragePools\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xd7\x01\n" +
-	"\x18CreateStoragePoolRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!netapp.googleapis.com/StoragePoolR\x06parent\x12+\n" +
-	"\x0fstorage_pool_id\x18\x02 \x01(\tB\x03\xe0A\x02R\rstoragePoolId\x12K\n" +
-	"\fstorage_pool\x18\x03 \x01(\v2#.google.cloud.netapp.v1.StoragePoolB\x03\xe0A\x02R\vstoragePool\"\xa9\x01\n" +
-	"\x18UpdateStoragePoolRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12K\n" +
-	"\fstorage_pool\x18\x02 \x01(\v2#.google.cloud.netapp.v1.StoragePoolB\x03\xe0A\x02R\vstoragePool\"Y\n" +
-	"\x18DeleteStoragePoolRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!netapp.googleapis.com/StoragePoolR\x04name\"_\n" +
-	"\x1eSwitchActiveReplicaZoneRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!netapp.googleapis.com/StoragePoolR\x04name\"\x95\x12\n" +
-	"\vStoragePool\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12N\n" +
-	"\rservice_level\x18\x02 \x01(\x0e2$.google.cloud.netapp.v1.ServiceLevelB\x03\xe0A\x02R\fserviceLevel\x12&\n" +
-	"\fcapacity_gib\x18\x03 \x01(\x03B\x03\xe0A\x02R\vcapacityGib\x123\n" +
-	"\x13volume_capacity_gib\x18\x04 \x01(\x03B\x03\xe0A\x03R\x11volumeCapacityGib\x12&\n" +
-	"\fvolume_count\x18\x05 \x01(\x05B\x03\xe0A\x03R\vvolumeCount\x12D\n" +
-	"\x05state\x18\x06 \x01(\x0e2).google.cloud.netapp.v1.StoragePool.StateB\x03\xe0A\x03R\x05state\x12(\n" +
-	"\rstate_details\x18\a \x01(\tB\x03\xe0A\x03R\fstateDetails\x12@\n" +
-	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12%\n" +
-	"\vdescription\x18\t \x01(\tB\x03\xe0A\x01R\vdescription\x12L\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xda\x01\n" +
+	"\x18CreateStoragePoolRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!netapp.googleapis.com/StoragePoolR\x06parent\x12,\n" +
+	"\x0fstorage_pool_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\rstoragePoolId\x12L\n" +
+	"\fstorage_pool\x18\x03 \x01(\v2#.google.cloud.netapp.v1.StoragePoolB\x04\xe2A\x01\x02R\vstoragePool\"\xab\x01\n" +
+	"\x18UpdateStoragePoolRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12L\n" +
+	"\fstorage_pool\x18\x02 \x01(\v2#.google.cloud.netapp.v1.StoragePoolB\x04\xe2A\x01\x02R\vstoragePool\"Z\n" +
+	"\x18DeleteStoragePoolRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!netapp.googleapis.com/StoragePoolR\x04name\"`\n" +
+	"\x1eSwitchActiveReplicaZoneRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!netapp.googleapis.com/StoragePoolR\x04name\"\xb6\x12\n" +
+	"\vStoragePool\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12O\n" +
+	"\rservice_level\x18\x02 \x01(\x0e2$.google.cloud.netapp.v1.ServiceLevelB\x04\xe2A\x01\x02R\fserviceLevel\x12'\n" +
+	"\fcapacity_gib\x18\x03 \x01(\x03B\x04\xe2A\x01\x02R\vcapacityGib\x124\n" +
+	"\x13volume_capacity_gib\x18\x04 \x01(\x03B\x04\xe2A\x01\x03R\x11volumeCapacityGib\x12'\n" +
+	"\fvolume_count\x18\x05 \x01(\x05B\x04\xe2A\x01\x03R\vvolumeCount\x12E\n" +
+	"\x05state\x18\x06 \x01(\x0e2).google.cloud.netapp.v1.StoragePool.StateB\x04\xe2A\x01\x03R\x05state\x12)\n" +
+	"\rstate_details\x18\a \x01(\tB\x04\xe2A\x01\x03R\fstateDetails\x12A\n" +
+	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12&\n" +
+	"\vdescription\x18\t \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12M\n" +
 	"\x06labels\x18\n" +
-	" \x03(\v2/.google.cloud.netapp.v1.StoragePool.LabelsEntryB\x03\xe0A\x01R\x06labels\x12@\n" +
-	"\anetwork\x18\v \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12X\n" +
-	"\x10active_directory\x18\f \x01(\tB-\xe0A\x01\xfaA'\n" +
-	"%netapp.googleapis.com/ActiveDirectoryR\x0factiveDirectory\x12F\n" +
+	" \x03(\v2/.google.cloud.netapp.v1.StoragePool.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12A\n" +
+	"\anetwork\x18\v \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12Y\n" +
+	"\x10active_directory\x18\f \x01(\tB.\xe2A\x01\x01\xfaA'\n" +
+	"%netapp.googleapis.com/ActiveDirectoryR\x0factiveDirectory\x12G\n" +
 	"\n" +
-	"kms_config\x18\r \x01(\tB'\xe0A\x01\xfaA!\n" +
-	"\x1fnetapp.googleapis.com/KmsConfigR\tkmsConfig\x12&\n" +
-	"\fldap_enabled\x18\x0e \x01(\bB\x03\xe0A\x01R\vldapEnabled\x12 \n" +
-	"\tpsa_range\x18\x0f \x01(\tB\x03\xe0A\x01R\bpsaRange\x12T\n" +
-	"\x0fencryption_type\x18\x10 \x01(\x0e2&.google.cloud.netapp.v1.EncryptionTypeB\x03\xe0A\x03R\x0eencryptionType\x12;\n" +
-	"\x15global_access_allowed\x18\x11 \x01(\bB\x02\x18\x01H\x00R\x13globalAccessAllowed\x88\x01\x01\x121\n" +
-	"\x12allow_auto_tiering\x18\x12 \x01(\bB\x03\xe0A\x01R\x10allowAutoTiering\x12&\n" +
-	"\freplica_zone\x18\x14 \x01(\tB\x03\xe0A\x01R\vreplicaZone\x12\x17\n" +
-	"\x04zone\x18\x15 \x01(\tB\x03\xe0A\x01R\x04zone\x12(\n" +
-	"\rsatisfies_pzs\x18\x17 \x01(\bB\x03\xe0A\x03R\fsatisfiesPzs\x12(\n" +
-	"\rsatisfies_pzi\x18\x18 \x01(\bB\x03\xe0A\x03R\fsatisfiesPzi\x12A\n" +
-	"\x1acustom_performance_enabled\x18\x19 \x01(\bB\x03\xe0A\x01R\x18customPerformanceEnabled\x129\n" +
-	"\x16total_throughput_mibps\x18\x1a \x01(\x03B\x03\xe0A\x01R\x14totalThroughputMibps\x12\"\n" +
+	"kms_config\x18\r \x01(\tB(\xe2A\x01\x01\xfaA!\n" +
+	"\x1fnetapp.googleapis.com/KmsConfigR\tkmsConfig\x12'\n" +
+	"\fldap_enabled\x18\x0e \x01(\bB\x04\xe2A\x01\x01R\vldapEnabled\x12!\n" +
+	"\tpsa_range\x18\x0f \x01(\tB\x04\xe2A\x01\x01R\bpsaRange\x12U\n" +
+	"\x0fencryption_type\x18\x10 \x01(\x0e2&.google.cloud.netapp.v1.EncryptionTypeB\x04\xe2A\x01\x03R\x0eencryptionType\x12;\n" +
+	"\x15global_access_allowed\x18\x11 \x01(\bB\x02\x18\x01H\x00R\x13globalAccessAllowed\x88\x01\x01\x122\n" +
+	"\x12allow_auto_tiering\x18\x12 \x01(\bB\x04\xe2A\x01\x01R\x10allowAutoTiering\x12'\n" +
+	"\freplica_zone\x18\x14 \x01(\tB\x04\xe2A\x01\x01R\vreplicaZone\x12\x18\n" +
+	"\x04zone\x18\x15 \x01(\tB\x04\xe2A\x01\x01R\x04zone\x12)\n" +
+	"\rsatisfies_pzs\x18\x17 \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzs\x12)\n" +
+	"\rsatisfies_pzi\x18\x18 \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzi\x12B\n" +
+	"\x1acustom_performance_enabled\x18\x19 \x01(\bB\x04\xe2A\x01\x01R\x18customPerformanceEnabled\x12:\n" +
+	"\x16total_throughput_mibps\x18\x1a \x01(\x03B\x04\xe2A\x01\x01R\x14totalThroughputMibps\x12#\n" +
 	"\n" +
-	"total_iops\x18\x1b \x01(\x03B\x03\xe0A\x01R\ttotalIops\x12.\n" +
-	"\x11hot_tier_size_gib\x18\x1c \x01(\x03B\x03\xe0A\x01R\x0ehotTierSizeGib\x12F\n" +
-	"\x1benable_hot_tier_auto_resize\x18\x1d \x01(\bB\x03\xe0A\x01H\x01R\x17enableHotTierAutoResize\x88\x01\x01\x12?\n" +
-	"\bqos_type\x18\x1e \x01(\x0e2\x1f.google.cloud.netapp.v1.QosTypeB\x03\xe0A\x01R\aqosType\x12A\n" +
-	"\x1aavailable_throughput_mibps\x18\x1f \x01(\x01B\x03\xe0A\x03R\x18availableThroughputMibps\x129\n" +
-	"\x17cold_tier_size_used_gib\x18! \x01(\x03B\x03\xe0A\x03R\x13coldTierSizeUsedGib\x127\n" +
-	"\x16hot_tier_size_used_gib\x18\" \x01(\x03B\x03\xe0A\x03R\x12hotTierSizeUsedGib\x12E\n" +
-	"\x04type\x18# \x01(\x0e2'.google.cloud.netapp.v1.StoragePoolTypeB\x03\xe0A\x01H\x02R\x04type\x88\x01\x01\x12:\n" +
-	"\x04mode\x18$ \x01(\x0e2\x1c.google.cloud.netapp.v1.ModeB\x03\xe0A\x01H\x03R\x04mode\x88\x01\x01\x12E\n" +
+	"total_iops\x18\x1b \x01(\x03B\x04\xe2A\x01\x01R\ttotalIops\x12/\n" +
+	"\x11hot_tier_size_gib\x18\x1c \x01(\x03B\x04\xe2A\x01\x01R\x0ehotTierSizeGib\x12G\n" +
+	"\x1benable_hot_tier_auto_resize\x18\x1d \x01(\bB\x04\xe2A\x01\x01H\x01R\x17enableHotTierAutoResize\x88\x01\x01\x12@\n" +
+	"\bqos_type\x18\x1e \x01(\x0e2\x1f.google.cloud.netapp.v1.QosTypeB\x04\xe2A\x01\x01R\aqosType\x12B\n" +
+	"\x1aavailable_throughput_mibps\x18\x1f \x01(\x01B\x04\xe2A\x01\x03R\x18availableThroughputMibps\x12:\n" +
+	"\x17cold_tier_size_used_gib\x18! \x01(\x03B\x04\xe2A\x01\x03R\x13coldTierSizeUsedGib\x128\n" +
+	"\x16hot_tier_size_used_gib\x18\" \x01(\x03B\x04\xe2A\x01\x03R\x12hotTierSizeUsedGib\x12F\n" +
+	"\x04type\x18# \x01(\x0e2'.google.cloud.netapp.v1.StoragePoolTypeB\x04\xe2A\x01\x01H\x02R\x04type\x88\x01\x01\x12;\n" +
+	"\x04mode\x18$ \x01(\x0e2\x1c.google.cloud.netapp.v1.ModeB\x04\xe2A\x01\x01H\x03R\x04mode\x88\x01\x01\x12F\n" +
 	"\n" +
-	"scale_type\x18& \x01(\x0e2!.google.cloud.netapp.v1.ScaleTypeB\x03\xe0A\x01R\tscaleType\x1a9\n" +
+	"scale_type\x18& \x01(\x0e2!.google.cloud.netapp.v1.ScaleTypeB\x04\xe2A\x01\x01R\tscaleType\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"{\n" +
@@ -1097,9 +1097,9 @@ const file_google_cloud_netapp_v1_storage_pool_proto_rawDesc = "" +
 	"\x16_global_access_allowedB\x1e\n" +
 	"\x1c_enable_hot_tier_auto_resizeB\a\n" +
 	"\x05_typeB\a\n" +
-	"\x05_mode\"\xc4\x01\n" +
-	"\x1fValidateDirectoryServiceRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x05_mode\"\xc5\x01\n" +
+	"\x1fValidateDirectoryServiceRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!netapp.googleapis.com/StoragePoolR\x04name\x12b\n" +
 	"\x16directory_service_type\x18\x02 \x01(\x0e2,.google.cloud.netapp.v1.DirectoryServiceTypeR\x14directoryServiceType*4\n" +
 	"\x04Mode\x12\x14\n" +

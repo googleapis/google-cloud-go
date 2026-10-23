@@ -629,6 +629,59 @@ func NewConversationModelsClient(ctx context.Context, opts ...option.ClientOptio
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateConversationModel = append(client.CallOptions.CreateConversationModel, gax.WithClientTracing(tracing))
+		client.CallOptions.GetConversationModel = append(client.CallOptions.GetConversationModel, gax.WithClientTracing(tracing))
+		client.CallOptions.ListConversationModels = append(client.CallOptions.ListConversationModels, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteConversationModel = append(client.CallOptions.DeleteConversationModel, gax.WithClientTracing(tracing))
+		client.CallOptions.DeployConversationModel = append(client.CallOptions.DeployConversationModel, gax.WithClientTracing(tracing))
+		client.CallOptions.UndeployConversationModel = append(client.CallOptions.UndeployConversationModel, gax.WithClientTracing(tracing))
+		client.CallOptions.GetConversationModelEvaluation = append(client.CallOptions.GetConversationModelEvaluation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListConversationModelEvaluations = append(client.CallOptions.ListConversationModelEvaluations, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateConversationModelEvaluation = append(client.CallOptions.CreateConversationModelEvaluation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateConversationModel = append(client.CallOptions.CreateConversationModel, gax.WithClientLogging(logging))
+		client.CallOptions.GetConversationModel = append(client.CallOptions.GetConversationModel, gax.WithClientLogging(logging))
+		client.CallOptions.ListConversationModels = append(client.CallOptions.ListConversationModels, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteConversationModel = append(client.CallOptions.DeleteConversationModel, gax.WithClientLogging(logging))
+		client.CallOptions.DeployConversationModel = append(client.CallOptions.DeployConversationModel, gax.WithClientLogging(logging))
+		client.CallOptions.UndeployConversationModel = append(client.CallOptions.UndeployConversationModel, gax.WithClientLogging(logging))
+		client.CallOptions.GetConversationModelEvaluation = append(client.CallOptions.GetConversationModelEvaluation, gax.WithClientLogging(logging))
+		client.CallOptions.ListConversationModelEvaluations = append(client.CallOptions.ListConversationModelEvaluations, gax.WithClientLogging(logging))
+		client.CallOptions.CreateConversationModelEvaluation = append(client.CallOptions.CreateConversationModelEvaluation, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -748,6 +801,59 @@ func NewConversationModelsRESTClient(ctx context.Context, opts ...option.ClientO
 		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateConversationModel = append(callOpts.CreateConversationModel, gax.WithClientTracing(tracing))
+		callOpts.GetConversationModel = append(callOpts.GetConversationModel, gax.WithClientTracing(tracing))
+		callOpts.ListConversationModels = append(callOpts.ListConversationModels, gax.WithClientTracing(tracing))
+		callOpts.DeleteConversationModel = append(callOpts.DeleteConversationModel, gax.WithClientTracing(tracing))
+		callOpts.DeployConversationModel = append(callOpts.DeployConversationModel, gax.WithClientTracing(tracing))
+		callOpts.UndeployConversationModel = append(callOpts.UndeployConversationModel, gax.WithClientTracing(tracing))
+		callOpts.GetConversationModelEvaluation = append(callOpts.GetConversationModelEvaluation, gax.WithClientTracing(tracing))
+		callOpts.ListConversationModelEvaluations = append(callOpts.ListConversationModelEvaluations, gax.WithClientTracing(tracing))
+		callOpts.CreateConversationModelEvaluation = append(callOpts.CreateConversationModelEvaluation, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateConversationModel = append(callOpts.CreateConversationModel, gax.WithClientLogging(logging))
+		callOpts.GetConversationModel = append(callOpts.GetConversationModel, gax.WithClientLogging(logging))
+		callOpts.ListConversationModels = append(callOpts.ListConversationModels, gax.WithClientLogging(logging))
+		callOpts.DeleteConversationModel = append(callOpts.DeleteConversationModel, gax.WithClientLogging(logging))
+		callOpts.DeployConversationModel = append(callOpts.DeployConversationModel, gax.WithClientLogging(logging))
+		callOpts.UndeployConversationModel = append(callOpts.UndeployConversationModel, gax.WithClientLogging(logging))
+		callOpts.GetConversationModelEvaluation = append(callOpts.GetConversationModelEvaluation, gax.WithClientLogging(logging))
+		callOpts.ListConversationModelEvaluations = append(callOpts.ListConversationModelEvaluations, gax.WithClientLogging(logging))
+		callOpts.CreateConversationModelEvaluation = append(callOpts.CreateConversationModelEvaluation, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
 	}
 
 	lroOpts := []option.ClientOption{
@@ -1053,9 +1159,6 @@ func (c *conversationModelsGRPCClient) CreateConversationModelEvaluation(ctx con
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.ConversationModels/CreateConversationModelEvaluation")
 	}
@@ -1834,9 +1937,6 @@ func (c *conversationModelsRESTClient) CreateConversationModelEvaluation(ctx con
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.ConversationModels/CreateConversationModelEvaluation")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*/locations/*/conversationModels/*}/evaluations")

@@ -901,50 +901,50 @@ var File_google_cloud_gsuiteaddons_v1_gsuiteaddons_proto protoreflect.FileDescri
 
 const file_google_cloud_gsuiteaddons_v1_gsuiteaddons_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/gsuiteaddons/v1/gsuiteaddons.proto\x12\x1cgoogle.cloud.gsuiteaddons.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a>google/apps/script/type/calendar/calendar_addon_manifest.proto\x1a6google/apps/script/type/docs/docs_addon_manifest.proto\x1a8google/apps/script/type/drive/drive_addon_manifest.proto\x1a8google/apps/script/type/gmail/gmail_addon_manifest.proto\x1a-google/apps/script/type/script_manifest.proto\x1a:google/apps/script/type/sheets/sheets_addon_manifest.proto\x1a:google/apps/script/type/slides/slides_addon_manifest.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1egoogle/protobuf/wrappers.proto\"`\n" +
-	"\x17GetAuthorizationRequest\x12E\n" +
-	"\x04name\x18\x02 \x01(\tB1\xe0A\x02\xfaA+\n" +
+	"/google/cloud/gsuiteaddons/v1/gsuiteaddons.proto\x12\x1cgoogle.cloud.gsuiteaddons.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a>google/apps/script/type/calendar/calendar_addon_manifest.proto\x1a6google/apps/script/type/docs/docs_addon_manifest.proto\x1a8google/apps/script/type/drive/drive_addon_manifest.proto\x1a8google/apps/script/type/gmail/gmail_addon_manifest.proto\x1a-google/apps/script/type/script_manifest.proto\x1a:google/apps/script/type/sheets/sheets_addon_manifest.proto\x1a:google/apps/script/type/slides/slides_addon_manifest.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1egoogle/protobuf/wrappers.proto\"a\n" +
+	"\x17GetAuthorizationRequest\x12F\n" +
+	"\x04name\x18\x02 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
 	")gsuiteaddons.googleapis.com/AuthorizationR\x04name\"\xd1\x01\n" +
 	"\rAuthorization\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x122\n" +
 	"\x15service_account_email\x18\x02 \x01(\tR\x13serviceAccountEmail\x12&\n" +
 	"\x0foauth_client_id\x18\x03 \x01(\tR\roauthClientId:P\xeaAM\n" +
-	")gsuiteaddons.googleapis.com/Authorization\x12 projects/{project}/authorization\"\xdf\x01\n" +
-	"\x17CreateDeploymentRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12(\n" +
-	"\rdeployment_id\x18\x02 \x01(\tB\x03\xe0A\x02R\fdeploymentId\x12M\n" +
+	")gsuiteaddons.googleapis.com/Authorization\x12 projects/{project}/authorization\"\xe2\x01\n" +
+	"\x17CreateDeploymentRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12)\n" +
+	"\rdeployment_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\fdeploymentId\x12N\n" +
 	"\n" +
-	"deployment\x18\x03 \x01(\v2(.google.cloud.gsuiteaddons.v1.DeploymentB\x03\xe0A\x02R\n" +
-	"deployment\"i\n" +
-	"\x18ReplaceDeploymentRequest\x12M\n" +
+	"deployment\x18\x03 \x01(\v2(.google.cloud.gsuiteaddons.v1.DeploymentB\x04\xe2A\x01\x02R\n" +
+	"deployment\"j\n" +
+	"\x18ReplaceDeploymentRequest\x12N\n" +
 	"\n" +
-	"deployment\x18\x02 \x01(\v2(.google.cloud.gsuiteaddons.v1.DeploymentB\x03\xe0A\x02R\n" +
-	"deployment\"Z\n" +
-	"\x14GetDeploymentRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&gsuiteaddons.googleapis.com/DeploymentR\x04name\"\xa1\x01\n" +
-	"\x16ListDeploymentsRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
+	"deployment\x18\x02 \x01(\v2(.google.cloud.gsuiteaddons.v1.DeploymentB\x04\xe2A\x01\x02R\n" +
+	"deployment\"[\n" +
+	"\x14GetDeploymentRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&gsuiteaddons.googleapis.com/DeploymentR\x04name\"\xa2\x01\n" +
+	"\x16ListDeploymentsRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
 	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x8d\x01\n" +
 	"\x17ListDeploymentsResponse\x12J\n" +
 	"\vdeployments\x18\x01 \x03(\v2(.google.cloud.gsuiteaddons.v1.DeploymentR\vdeployments\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"q\n" +
-	"\x17DeleteDeploymentRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"r\n" +
+	"\x17DeleteDeploymentRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
 	"&gsuiteaddons.googleapis.com/DeploymentR\x04name\x12\x12\n" +
-	"\x04etag\x18\x02 \x01(\tR\x04etag\"^\n" +
-	"\x18InstallDeploymentRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&gsuiteaddons.googleapis.com/DeploymentR\x04name\"`\n" +
-	"\x1aUninstallDeploymentRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&gsuiteaddons.googleapis.com/DeploymentR\x04name\"`\n" +
-	"\x17GetInstallStatusRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
+	"\x04etag\x18\x02 \x01(\tR\x04etag\"_\n" +
+	"\x18InstallDeploymentRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&gsuiteaddons.googleapis.com/DeploymentR\x04name\"a\n" +
+	"\x1aUninstallDeploymentRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&gsuiteaddons.googleapis.com/DeploymentR\x04name\"a\n" +
+	"\x17GetInstallStatusRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
 	")gsuiteaddons.googleapis.com/InstallStatusR\x04name\"\xc8\x01\n" +
 	"\rInstallStatus\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x128\n" +

@@ -23,13 +23,16 @@ import (
 	"io"
 	"log"
 	"math/rand"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
+	"runtime"
 	"slices"
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -815,6 +818,94 @@ func TestOpenReaderEmulated(t *testing.T) {
 		}
 		if err := r.Close(); err != nil {
 			t.Errorf("closing Reader: %v", err)
+		}
+	})
+}
+
+// TestNewRangeReaderRemainEmulated verifies that range readers report the
+// correct number of remaining bytes and do not log spurious over-read warnings
+// for reads at non-zero offsets.
+func TestNewRangeReaderRemainEmulated(t *testing.T) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		if _, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{Name: bucket}, nil); err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		content := randomBytes3MiB
+		objName := fmt.Sprintf("remain-object-%d", time.Now().UnixNano())
+		w := veneerClient.Bucket(bucket).Object(objName).NewWriter(ctx)
+		if _, err := w.Write(content); err != nil {
+			t.Fatalf("failed to populate test data: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing object: %v", err)
+		}
+		size := int64(len(content))
+
+		// Cover both the ReadObject and BidiReadObject paths for gRPC.
+		type readMode struct {
+			desc  string
+			setup func(t *testing.T)
+		}
+		modes := []readMode{{desc: "default", setup: func(*testing.T) {}}}
+		if _, ok := client.(*grpcStorageClient); ok {
+			modes = append(modes, readMode{desc: "bidiReads", setup: func(t *testing.T) { setBidiReads(t, client) }})
+		}
+
+		for _, mode := range modes {
+			t.Run(mode.desc, func(t *testing.T) {
+				mode.setup(t)
+				for _, tc := range []struct {
+					desc           string
+					offset, length int64
+					wantStart      int64
+					wantLen        int64
+				}{
+					{desc: "entire object", offset: 0, length: -1, wantStart: 0, wantLen: size},
+					{desc: "prefix", offset: 0, length: MiB, wantStart: 0, wantLen: MiB},
+					{desc: "middle, offset larger than length", offset: 2 * MiB, length: 256 * 1024, wantStart: 2 * MiB, wantLen: 256 * 1024},
+					{desc: "middle, length larger than offset", offset: 1024, length: MiB, wantStart: 1024, wantLen: MiB},
+					{desc: "length past end of object", offset: 2 * MiB, length: 2 * MiB, wantStart: 2 * MiB, wantLen: size - 2*MiB},
+					{desc: "rest of object", offset: MiB, length: -1, wantStart: MiB, wantLen: size - MiB},
+					{desc: "negative offset", offset: -MiB, length: -1, wantStart: size - MiB, wantLen: MiB},
+				} {
+					t.Run(tc.desc, func(t *testing.T) {
+						var logOutput bytes.Buffer
+						oldOutput := log.Writer()
+						log.SetOutput(&logOutput)
+						t.Cleanup(func() { log.SetOutput(oldOutput) })
+
+						r, err := client.NewRangeReader(ctx, &newRangeReaderParams{
+							bucket: bucket,
+							object: objName,
+							gen:    defaultGen,
+							offset: tc.offset,
+							length: tc.length,
+						})
+						if err != nil {
+							t.Fatalf("NewRangeReader: %v", err)
+						}
+						if got := r.Remain(); got != tc.wantLen {
+							t.Errorf("Remain() before read = %d, want %d", got, tc.wantLen)
+						}
+						got, err := io.ReadAll(r)
+						if err != nil {
+							t.Fatalf("io.ReadAll: %v", err)
+						}
+						if want := content[tc.wantStart : tc.wantStart+tc.wantLen]; !bytes.Equal(got, want) {
+							t.Errorf("content mismatch: got %d bytes, want %d bytes", len(got), len(want))
+						}
+						if got := r.Remain(); got != 0 {
+							t.Errorf("Remain() after read = %d, want 0", got)
+						}
+						if err := r.Close(); err != nil {
+							t.Errorf("Close: %v", err)
+						}
+						if strings.Contains(logOutput.String(), "more bytes than requested") {
+							t.Errorf("unexpected over-read log: %q", logOutput.String())
+						}
+					})
+				}
+			})
 		}
 	})
 }
@@ -1761,7 +1852,7 @@ func TestNewRangeReaderUnfinalizedEmulated(t *testing.T) {
 			return clientStream, err
 		})
 
-	client, err := NewGRPCClient(ctx, option.WithGRPCDialOption(streamInterceptor), experimental.WithGRPCBidiReads())
+	client, err := NewGRPCClient(ctx, option.WithGRPCDialOption(streamInterceptor), WithGRPCBidiReads())
 	if err != nil {
 		t.Fatalf("NewGRPCClient: %v", err)
 	}
@@ -1952,7 +2043,7 @@ func TestReadObjectWrongChunkChecksumEmulated(t *testing.T) {
 				var clientOpts []option.ClientOption
 				clientOpts = append(clientOpts, option.WithGRPCDialOption(streamInterceptor))
 				if bidiReads {
-					clientOpts = append(clientOpts, experimental.WithGRPCBidiReads())
+					clientOpts = append(clientOpts, WithGRPCBidiReads())
 				}
 
 				client, err := NewGRPCClient(ctx, clientOpts...)
@@ -2095,7 +2186,7 @@ func TestReadObjectWrongChecksumWholeObjectSizeEmulated(t *testing.T) {
 					var clientOpts []option.ClientOption
 					clientOpts = append(clientOpts, option.WithGRPCDialOption(streamInterceptor))
 					if bidiReads {
-						clientOpts = append(clientOpts, experimental.WithGRPCBidiReads())
+						clientOpts = append(clientOpts, WithGRPCBidiReads())
 					}
 
 					client, err := NewGRPCClient(ctx, clientOpts...)
@@ -2179,7 +2270,7 @@ func TestReadObjectWrongChecksumUnfinalizedWholeObjectSizeEmulated(t *testing.T)
 			return clientStream, err
 		})
 
-	client, err := NewGRPCClient(ctx, option.WithGRPCDialOption(streamInterceptor), experimental.WithGRPCBidiReads())
+	client, err := NewGRPCClient(ctx, option.WithGRPCDialOption(streamInterceptor), WithGRPCBidiReads())
 	if err != nil {
 		t.Fatalf("NewGRPCClient: %v", err)
 	}
@@ -2237,7 +2328,7 @@ func TestMRDWrongChunkChecksumEmulated(t *testing.T) {
 					return clientStream, err
 				})
 
-			client, err := NewGRPCClient(ctx, option.WithGRPCDialOption(streamInterceptor), experimental.WithGRPCBidiReads())
+			client, err := NewGRPCClient(ctx, option.WithGRPCDialOption(streamInterceptor), WithGRPCBidiReads())
 			if err != nil {
 				t.Fatalf("NewGRPCClient: %v", err)
 			}
@@ -3298,7 +3389,7 @@ func TestRetryReadStallEmulated(t *testing.T) {
 	client, err := NewClient(ctx, experimental.WithReadStallTimeout(
 		&experimental.ReadStallTimeoutConfig{
 			TargetPercentile: 0.99,
-			Min:              10 * time.Millisecond,
+			Min:              250 * time.Millisecond,
 		}))
 	if err != nil {
 		t.Fatalf("storage.NewClient: %v", err)
@@ -3336,10 +3427,210 @@ func TestRetryReadStallEmulated(t *testing.T) {
 	if !bytes.Equal(buf.Bytes(), randomBytes3MiB) {
 		t.Errorf("content does not match, got len %v, want len %v", buf.Len(), len(randomBytes3MiB))
 	}
+	checkRetryTestCompleted(t, testID)
+}
+
+// Test validates the retry for stalled read-requests over gRPC, for both the
+// ReadObject and BidiReadObject read paths, when the client is created with
+// WithReadStallTimeout.
+func TestGRPCRetryReadStallEmulated(t *testing.T) {
+	checkEmulatorEnvironment(t)
+	for _, tc := range []struct {
+		name string
+		opts []option.ClientOption
+	}{
+		{name: "ReadObject"},
+		{name: "BidiReadObject", opts: []option.ClientOption{WithGRPCBidiReads()}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancel()
+
+			opts := append([]option.ClientOption{
+				experimental.WithReadStallTimeout(
+					&experimental.ReadStallTimeoutConfig{
+						TargetPercentile: 0.99,
+						Min:              250 * time.Millisecond,
+					}),
+			}, tc.opts...)
+
+			client, err := NewGRPCClient(ctx, opts...)
+			if err != nil {
+				t.Fatalf("storage.NewGRPCClient: %v", err)
+			}
+			defer client.Close()
+			client.SetRetry(WithBackoff(gax.Backoff{Initial: 10 * time.Millisecond}))
+
+			project := "fake-project"
+			bucket := fmt.Sprintf("grpc-bucket-%d", time.Now().UnixNano())
+			if err := client.Bucket(bucket).Create(ctx, project, nil); err != nil {
+				t.Fatalf("client.Bucket.Create: %v", err)
+			}
+
+			name, _, _, err := createObjectWithContent(ctx, bucket, randomBytes3MiB)
+			if err != nil {
+				t.Fatalf("createObject: %v", err)
+			}
+
+			// Plant stall at start for 10s. The ReadStallTimeout should cause the
+			// stalled request to be stopped and retried before hitting the 5s
+			// context deadline.
+			instructions := map[string][]string{"storage.objects.get": {"stall-for-10s-after-0K"}}
+			testID := createRetryTest(t, client.tc, instructions)
+
+			testCtx := callctx.SetHeaders(ctx, "x-retry-test-id", testID)
+
+			r, err := client.Bucket(bucket).Object(name).NewReader(testCtx)
+			if err != nil {
+				t.Fatalf("NewReader: %v", err)
+			}
+			defer r.Close()
+
+			buf := &bytes.Buffer{}
+			if _, err := io.Copy(buf, r); err != nil {
+				t.Fatalf("io.Copy: %v", err)
+			}
+			if !bytes.Equal(buf.Bytes(), randomBytes3MiB) {
+				t.Errorf("content does not match, got len %v, want len %v", buf.Len(), len(randomBytes3MiB))
+			}
+			checkRetryTestCompleted(t, testID)
+		})
+	}
+}
+
+// stallBlackholeConn wraps a net.Conn and, once armed, turns a testbench
+// server-side stall (>200ms with no bytes received) into a full transport
+// blackhole by blocking further Reads until the connection is closed. This
+// suppresses HTTP/2 PING ACKs from the local testbench transport thread so
+// that gRPC client keepalive can be tested end-to-end against testbench.
+type stallBlackholeConn struct {
+	net.Conn
+	armed     *atomic.Bool
+	triggered *atomic.Bool
+	closed    chan struct{}
+	closeOnce sync.Once
+}
+
+func (c *stallBlackholeConn) Read(b []byte) (int, error) {
+	for {
+		if c.armed.Load() && !c.triggered.Load() {
+			_ = c.Conn.SetReadDeadline(time.Now().Add(200 * time.Millisecond))
+		}
+		n, err := c.Conn.Read(b)
+		if c.armed.Load() {
+			_ = c.Conn.SetReadDeadline(time.Time{})
+			if ne, ok := err.(net.Error); ok && ne.Timeout() {
+				if c.triggered.CompareAndSwap(false, true) {
+					<-c.closed
+					return 0, net.ErrClosed
+				}
+				continue
+			}
+		}
+		return n, err
+	}
+}
+
+func (c *stallBlackholeConn) Close() error {
+	c.closeOnce.Do(func() { close(c.closed) })
+	return c.Conn.Close()
+}
+
+// TestGRPCKeepaliveEmulated verifies that experimental.WithGRPCKeepalive
+// detects a connection that stalls mid-stream against the testbench and
+// closes it so the read is retried on a new connection before the testbench
+// stall duration or context deadline expires.
+func TestGRPCKeepaliveEmulated(t *testing.T) {
+	checkEmulatorEnvironment(t)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 16*time.Second)
+	defer cancel()
+
+	var armed, triggered atomic.Bool
+	dialer := grpc.WithContextDialer(func(ctx context.Context, addr string) (net.Conn, error) {
+		var d net.Dialer
+		conn, err := d.DialContext(ctx, "tcp", addr)
+		if err != nil {
+			return nil, err
+		}
+		return &stallBlackholeConn{
+			Conn:      conn,
+			armed:     &armed,
+			triggered: &triggered,
+			closed:    make(chan struct{}),
+		}, nil
+	})
+
+	// Configure WithGRPCKeepalive with Time at the 10s gRPC minimum and a
+	// short 500ms Timeout so an unacknowledged keepalive ping closes the
+	// stalled connection in ~10.5s.
+	client, err := NewGRPCClient(ctx,
+		option.WithGRPCDialOption(dialer),
+		experimental.WithGRPCKeepalive(experimental.GRPCKeepaliveConfig{
+			Time:    10 * time.Second,
+			Timeout: 500 * time.Millisecond,
+		}),
+	)
+	if err != nil {
+		t.Fatalf("storage.NewGRPCClient: %v", err)
+	}
+	defer client.Close()
+	client.SetRetry(WithBackoff(gax.Backoff{Initial: 10 * time.Millisecond}))
+
+	project := "fake-project"
+	bucket := fmt.Sprintf("grpc-keepalive-bucket-%d", time.Now().UnixNano())
+	if err := client.Bucket(bucket).Create(ctx, project, nil); err != nil {
+		t.Fatalf("client.Bucket.Create: %v", err)
+	}
+
+	name, _, _, err := createObjectWithContent(ctx, bucket, randomBytes3MiB)
+	if err != nil {
+		t.Fatalf("createObject: %v", err)
+	}
+
+	// Inject a 25s stall mid-stream after 1024 KiB (past initial response
+	// headers, where WithReadStallTimeout does not apply). Keepalive (~10.5s)
+	// must abort the dead connection and retry the remaining range before the
+	// 16s context deadline.
+	instructions := map[string][]string{"storage.objects.get": {"stall-for-25s-after-1024K"}}
+	testID := createRetryTest(t, client.tc, instructions)
+	testCtx := callctx.SetHeaders(ctx, "x-retry-test-id", testID)
+
+	armed.Store(true)
+
+	r, err := client.Bucket(bucket).Object(name).NewReader(testCtx)
+	if err != nil {
+		t.Fatalf("NewReader: %v", err)
+	}
+	defer r.Close()
+
+	buf := &bytes.Buffer{}
+	if _, err := io.Copy(buf, r); err != nil {
+		t.Fatalf("io.Copy: %v", err)
+	}
+	if !triggered.Load() {
+		t.Fatal("expected mid-stream stall to trigger connection blackhole")
+	}
+	if !bytes.Equal(buf.Bytes(), randomBytes3MiB) {
+		t.Errorf("content does not match, got len %v, want len %v", buf.Len(), len(randomBytes3MiB))
+	}
+	checkRetryTestCompleted(t, testID)
+}
+
+// checkRetryTestCompleted verifies that the testbench consumed all instructions
+// for the given retry test, i.e. that the injected fault actually happened.
+func checkRetryTestCompleted(t *testing.T, testID string) {
+	t.Helper()
+	endpoint, err := url.Parse(os.Getenv("STORAGE_EMULATOR_HOST"))
+	if err != nil {
+		t.Fatalf("parsing endpoint: %v", err)
+	}
+	et := emulatorTest{T: t, name: t.Name(), id: testID, host: endpoint}
+	et.check()
 }
 
 func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
-	transportClientTest(skipGRPC("service is not implemented"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{}, nil)
 		if err != nil {
 			t.Fatalf("creating bucket: %v", err)
@@ -3356,7 +3647,7 @@ func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
 			{
 				name: "stall-on-first-chunk-with-chunk-transfer-timeout-zero",
 				instructions: map[string][]string{
-					"storage.objects.insert": {"stall-for-10s-after-1024K"},
+					"storage.objects.insert": {"stall-for-2s-after-1024K"},
 				},
 				chunkTransferTimeout: 0,
 				expectedSuccess:      false,
@@ -3364,7 +3655,7 @@ func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
 			{
 				name: "stall-on-first-chunk-with-chunk-transfer-timeout-nonzero",
 				instructions: map[string][]string{
-					"storage.objects.insert": {"stall-for-10s-after-1024K"},
+					"storage.objects.insert": {"stall-for-2s-after-1024K"},
 				},
 				chunkTransferTimeout: 100 * time.Millisecond,
 				expectedSuccess:      true,
@@ -3372,7 +3663,7 @@ func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
 			{
 				name: "stall-on-second-chunk-with-chunk-transfer-timeout-zero",
 				instructions: map[string][]string{
-					"storage.objects.insert": {"stall-for-10s-after-3072K"},
+					"storage.objects.insert": {"stall-for-2s-after-3072K"},
 				},
 				chunkTransferTimeout: 0,
 				expectedSuccess:      false,
@@ -3380,7 +3671,7 @@ func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
 			{
 				name: "stall-on-second-chunk-with-chunk-transfer-timeout-nonzero",
 				instructions: map[string][]string{
-					"storage.objects.insert": {"stall-for-10s-after-3072K"},
+					"storage.objects.insert": {"stall-for-2s-after-3072K"},
 				},
 				chunkTransferTimeout: 100 * time.Millisecond,
 				expectedSuccess:      true,
@@ -3388,7 +3679,7 @@ func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
 			{
 				name: "stall-on-first-chunk-twice-with-chunk-transfer-timeout-zero",
 				instructions: map[string][]string{
-					"storage.objects.insert": {"stall-for-10s-after-1024K", "stall-for-10s-after-1024K"},
+					"storage.objects.insert": {"stall-for-2s-after-1024K", "stall-for-2s-after-1024K"},
 				},
 				chunkTransferTimeout: 0,
 				expectedSuccess:      false,
@@ -3396,12 +3687,19 @@ func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
 			{
 				name: "stall-on-first-chunk-twice-with-chunk-transfer-timeout-nonzero",
 				instructions: map[string][]string{
-					"storage.objects.insert": {"stall-for-10s-after-1024K", "stall-for-10s-after-1024K"},
+					"storage.objects.insert": {"stall-for-2s-after-1024K", "stall-for-2s-after-1024K"},
 				},
 				chunkTransferTimeout: 100 * time.Millisecond,
 				expectedSuccess:      true,
 			},
 		}
+
+		// Populate metadata exceeding net/http's 4 KiB bufio.Reader buffer so
+		// that the final 200 OK JSON object response body is not buffered in
+		// memory during header parsing and must be read from the connection
+		// after (*ResumableUpload).transferChunk returns.
+		metadataPadding := strings.Repeat("x", 8192)
+		buffer := bytes.Repeat([]byte("A"), fileSize)
 
 		for _, tc := range tests {
 			t.Run(tc.name, func(t *testing.T) {
@@ -3416,9 +3714,13 @@ func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
 					Bucket:     bucket,
 					Name:       fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond()),
 					Generation: defaultGen,
+					Metadata: map[string]string{
+						"padding": metadataPadding,
+					},
 				}
 
 				var gotAttrs *ObjectAttrs
+				var gotErr error
 				params := &openWriterParams{
 					attrs:                want,
 					bucket:               bucket,
@@ -3426,17 +3728,20 @@ func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
 					chunkTransferTimeout: tc.chunkTransferTimeout,
 					ctx:                  rCtx,
 					donec:                make(chan struct{}),
-					setError:             func(_ error) {}, // no-op
-					progress:             func(_ int64) {}, // no-op
-					setObj:               func(o *ObjectAttrs) { gotAttrs = o },
-					setSize:              func(int64) {},
+					setError:             func(err error) { gotErr = err },
+					// progress is called right after transferChunk returns and before
+					// DecodeResponse reads the HTTP response body. Yielding here gives
+					// any premature context-cancellation goroutine a chance to run and
+					// close the underlying connection before the response body is read.
+					progress: func(_ int64) { runtime.Gosched() },
+					setObj:   func(o *ObjectAttrs) { gotAttrs = o },
+					setSize:  func(int64) {},
 				}
 
 				pw, err := client.OpenWriter(params)
 				if err != nil {
 					t.Fatalf("failed to open writer: %v", err)
 				}
-				buffer := bytes.Repeat([]byte("A"), fileSize)
 				_, err = pw.Write(buffer)
 				if tc.expectedSuccess {
 					if err != nil {
@@ -3447,6 +3752,9 @@ func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
 					}
 					select {
 					case <-params.donec:
+					}
+					if gotErr != nil {
+						t.Fatalf("Writer failed: %v", gotErr)
 					}
 					if gotAttrs == nil {
 						t.Fatalf("Writer finished, but resulting object wasn't set")
@@ -3578,8 +3886,8 @@ func TestWriterChunkRetryDeadlineEmulated(t *testing.T) {
 		buffer := bytes.Repeat([]byte("A"), fileSize)
 		_, err = pw.Write(buffer)
 		defer pw.Close()
-		if !errorIsStatusCode(err, errCode, codes.Unavailable) {
-			t.Errorf("expected err with status %d, got err: %v", errCode, err)
+		if !errorIsStatusCode(err, errCode, codes.Unavailable) && !strings.Contains(err.Error(), "retry deadline of") {
+			t.Errorf("expected err with status %d or retry deadline reached, got err: %v", errCode, err)
 		}
 
 		// Make sure there was more than one attempt.
@@ -3705,7 +4013,7 @@ func TestReadCodecLeaksEmulated(t *testing.T) {
 	checkEmulatorEnvironment(t)
 	ctx := context.Background()
 	var bp testBufferPool
-	client, err := NewGRPCClient(ctx, option.WithGRPCDialOption(expgrpc.WithBufferPool(&bp)), experimental.WithZonalBucketAPIs())
+	client, err := NewGRPCClient(ctx, option.WithGRPCDialOption(expgrpc.WithBufferPool(&bp)), WithGRPCBidiReads(), WithAppendableUploads())
 	if err != nil {
 		t.Fatalf("NewGRPCClient: %v", err)
 	}

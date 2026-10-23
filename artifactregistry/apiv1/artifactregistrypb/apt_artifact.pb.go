@@ -493,14 +493,14 @@ var File_google_devtools_artifactregistry_v1_apt_artifact_proto protoreflect.Fil
 
 const file_google_devtools_artifactregistry_v1_apt_artifact_proto_rawDesc = "" +
 	"\n" +
-	"6google/devtools/artifactregistry/v1/apt_artifact.proto\x12#google.devtools.artifactregistry.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x17google/rpc/status.proto\"\x80\x04\n" +
-	"\vAptArtifact\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12&\n" +
-	"\fpackage_name\x18\x02 \x01(\tB\x03\xe0A\x03R\vpackageName\x12d\n" +
-	"\fpackage_type\x18\x03 \x01(\x0e2<.google.devtools.artifactregistry.v1.AptArtifact.PackageTypeB\x03\xe0A\x03R\vpackageType\x12'\n" +
-	"\farchitecture\x18\x04 \x01(\tB\x03\xe0A\x03R\farchitecture\x12!\n" +
-	"\tcomponent\x18\x05 \x01(\tB\x03\xe0A\x03R\tcomponent\x12&\n" +
-	"\fcontrol_file\x18\x06 \x01(\fB\x03\xe0A\x03R\vcontrolFile\"C\n" +
+	"6google/devtools/artifactregistry/v1/apt_artifact.proto\x12#google.devtools.artifactregistry.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x17google/rpc/status.proto\"\x86\x04\n" +
+	"\vAptArtifact\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12'\n" +
+	"\fpackage_name\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vpackageName\x12e\n" +
+	"\fpackage_type\x18\x03 \x01(\x0e2<.google.devtools.artifactregistry.v1.AptArtifact.PackageTypeB\x04\xe2A\x01\x03R\vpackageType\x12(\n" +
+	"\farchitecture\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\farchitecture\x12\"\n" +
+	"\tcomponent\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\tcomponent\x12'\n" +
+	"\fcontrol_file\x18\x06 \x01(\fB\x04\xe2A\x01\x03R\vcontrolFile\"C\n" +
 	"\vPackageType\x12\x1c\n" +
 	"\x18PACKAGE_TYPE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +

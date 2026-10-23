@@ -627,6 +627,89 @@ func NewInterceptClient(ctx context.Context, opts ...option.ClientOption) (*Inte
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "networksecurity",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/networksecurity/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "networksecurity.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListInterceptEndpointGroups = append(client.CallOptions.ListInterceptEndpointGroups, gax.WithClientTracing(tracing))
+		client.CallOptions.GetInterceptEndpointGroup = append(client.CallOptions.GetInterceptEndpointGroup, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateInterceptEndpointGroup = append(client.CallOptions.CreateInterceptEndpointGroup, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateInterceptEndpointGroup = append(client.CallOptions.UpdateInterceptEndpointGroup, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteInterceptEndpointGroup = append(client.CallOptions.DeleteInterceptEndpointGroup, gax.WithClientTracing(tracing))
+		client.CallOptions.ListInterceptEndpointGroupAssociations = append(client.CallOptions.ListInterceptEndpointGroupAssociations, gax.WithClientTracing(tracing))
+		client.CallOptions.GetInterceptEndpointGroupAssociation = append(client.CallOptions.GetInterceptEndpointGroupAssociation, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateInterceptEndpointGroupAssociation = append(client.CallOptions.CreateInterceptEndpointGroupAssociation, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateInterceptEndpointGroupAssociation = append(client.CallOptions.UpdateInterceptEndpointGroupAssociation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteInterceptEndpointGroupAssociation = append(client.CallOptions.DeleteInterceptEndpointGroupAssociation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListInterceptDeploymentGroups = append(client.CallOptions.ListInterceptDeploymentGroups, gax.WithClientTracing(tracing))
+		client.CallOptions.GetInterceptDeploymentGroup = append(client.CallOptions.GetInterceptDeploymentGroup, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateInterceptDeploymentGroup = append(client.CallOptions.CreateInterceptDeploymentGroup, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateInterceptDeploymentGroup = append(client.CallOptions.UpdateInterceptDeploymentGroup, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteInterceptDeploymentGroup = append(client.CallOptions.DeleteInterceptDeploymentGroup, gax.WithClientTracing(tracing))
+		client.CallOptions.ListInterceptDeployments = append(client.CallOptions.ListInterceptDeployments, gax.WithClientTracing(tracing))
+		client.CallOptions.GetInterceptDeployment = append(client.CallOptions.GetInterceptDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateInterceptDeployment = append(client.CallOptions.CreateInterceptDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateInterceptDeployment = append(client.CallOptions.UpdateInterceptDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteInterceptDeployment = append(client.CallOptions.DeleteInterceptDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "networksecurity",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/networksecurity/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "networksecurity.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListInterceptEndpointGroups = append(client.CallOptions.ListInterceptEndpointGroups, gax.WithClientLogging(logging))
+		client.CallOptions.GetInterceptEndpointGroup = append(client.CallOptions.GetInterceptEndpointGroup, gax.WithClientLogging(logging))
+		client.CallOptions.CreateInterceptEndpointGroup = append(client.CallOptions.CreateInterceptEndpointGroup, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateInterceptEndpointGroup = append(client.CallOptions.UpdateInterceptEndpointGroup, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteInterceptEndpointGroup = append(client.CallOptions.DeleteInterceptEndpointGroup, gax.WithClientLogging(logging))
+		client.CallOptions.ListInterceptEndpointGroupAssociations = append(client.CallOptions.ListInterceptEndpointGroupAssociations, gax.WithClientLogging(logging))
+		client.CallOptions.GetInterceptEndpointGroupAssociation = append(client.CallOptions.GetInterceptEndpointGroupAssociation, gax.WithClientLogging(logging))
+		client.CallOptions.CreateInterceptEndpointGroupAssociation = append(client.CallOptions.CreateInterceptEndpointGroupAssociation, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateInterceptEndpointGroupAssociation = append(client.CallOptions.UpdateInterceptEndpointGroupAssociation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteInterceptEndpointGroupAssociation = append(client.CallOptions.DeleteInterceptEndpointGroupAssociation, gax.WithClientLogging(logging))
+		client.CallOptions.ListInterceptDeploymentGroups = append(client.CallOptions.ListInterceptDeploymentGroups, gax.WithClientLogging(logging))
+		client.CallOptions.GetInterceptDeploymentGroup = append(client.CallOptions.GetInterceptDeploymentGroup, gax.WithClientLogging(logging))
+		client.CallOptions.CreateInterceptDeploymentGroup = append(client.CallOptions.CreateInterceptDeploymentGroup, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateInterceptDeploymentGroup = append(client.CallOptions.UpdateInterceptDeploymentGroup, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteInterceptDeploymentGroup = append(client.CallOptions.DeleteInterceptDeploymentGroup, gax.WithClientLogging(logging))
+		client.CallOptions.ListInterceptDeployments = append(client.CallOptions.ListInterceptDeployments, gax.WithClientLogging(logging))
+		client.CallOptions.GetInterceptDeployment = append(client.CallOptions.GetInterceptDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.CreateInterceptDeployment = append(client.CallOptions.CreateInterceptDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateInterceptDeployment = append(client.CallOptions.UpdateInterceptDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteInterceptDeployment = append(client.CallOptions.DeleteInterceptDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -763,6 +846,89 @@ func NewInterceptRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "networksecurity",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/networksecurity/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "networksecurity.googleapis.com",
+			}),
+		)
+
+		callOpts.ListInterceptEndpointGroups = append(callOpts.ListInterceptEndpointGroups, gax.WithClientTracing(tracing))
+		callOpts.GetInterceptEndpointGroup = append(callOpts.GetInterceptEndpointGroup, gax.WithClientTracing(tracing))
+		callOpts.CreateInterceptEndpointGroup = append(callOpts.CreateInterceptEndpointGroup, gax.WithClientTracing(tracing))
+		callOpts.UpdateInterceptEndpointGroup = append(callOpts.UpdateInterceptEndpointGroup, gax.WithClientTracing(tracing))
+		callOpts.DeleteInterceptEndpointGroup = append(callOpts.DeleteInterceptEndpointGroup, gax.WithClientTracing(tracing))
+		callOpts.ListInterceptEndpointGroupAssociations = append(callOpts.ListInterceptEndpointGroupAssociations, gax.WithClientTracing(tracing))
+		callOpts.GetInterceptEndpointGroupAssociation = append(callOpts.GetInterceptEndpointGroupAssociation, gax.WithClientTracing(tracing))
+		callOpts.CreateInterceptEndpointGroupAssociation = append(callOpts.CreateInterceptEndpointGroupAssociation, gax.WithClientTracing(tracing))
+		callOpts.UpdateInterceptEndpointGroupAssociation = append(callOpts.UpdateInterceptEndpointGroupAssociation, gax.WithClientTracing(tracing))
+		callOpts.DeleteInterceptEndpointGroupAssociation = append(callOpts.DeleteInterceptEndpointGroupAssociation, gax.WithClientTracing(tracing))
+		callOpts.ListInterceptDeploymentGroups = append(callOpts.ListInterceptDeploymentGroups, gax.WithClientTracing(tracing))
+		callOpts.GetInterceptDeploymentGroup = append(callOpts.GetInterceptDeploymentGroup, gax.WithClientTracing(tracing))
+		callOpts.CreateInterceptDeploymentGroup = append(callOpts.CreateInterceptDeploymentGroup, gax.WithClientTracing(tracing))
+		callOpts.UpdateInterceptDeploymentGroup = append(callOpts.UpdateInterceptDeploymentGroup, gax.WithClientTracing(tracing))
+		callOpts.DeleteInterceptDeploymentGroup = append(callOpts.DeleteInterceptDeploymentGroup, gax.WithClientTracing(tracing))
+		callOpts.ListInterceptDeployments = append(callOpts.ListInterceptDeployments, gax.WithClientTracing(tracing))
+		callOpts.GetInterceptDeployment = append(callOpts.GetInterceptDeployment, gax.WithClientTracing(tracing))
+		callOpts.CreateInterceptDeployment = append(callOpts.CreateInterceptDeployment, gax.WithClientTracing(tracing))
+		callOpts.UpdateInterceptDeployment = append(callOpts.UpdateInterceptDeployment, gax.WithClientTracing(tracing))
+		callOpts.DeleteInterceptDeployment = append(callOpts.DeleteInterceptDeployment, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "networksecurity",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/networksecurity/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "networksecurity.googleapis.com",
+			}),
+		)
+
+		callOpts.ListInterceptEndpointGroups = append(callOpts.ListInterceptEndpointGroups, gax.WithClientLogging(logging))
+		callOpts.GetInterceptEndpointGroup = append(callOpts.GetInterceptEndpointGroup, gax.WithClientLogging(logging))
+		callOpts.CreateInterceptEndpointGroup = append(callOpts.CreateInterceptEndpointGroup, gax.WithClientLogging(logging))
+		callOpts.UpdateInterceptEndpointGroup = append(callOpts.UpdateInterceptEndpointGroup, gax.WithClientLogging(logging))
+		callOpts.DeleteInterceptEndpointGroup = append(callOpts.DeleteInterceptEndpointGroup, gax.WithClientLogging(logging))
+		callOpts.ListInterceptEndpointGroupAssociations = append(callOpts.ListInterceptEndpointGroupAssociations, gax.WithClientLogging(logging))
+		callOpts.GetInterceptEndpointGroupAssociation = append(callOpts.GetInterceptEndpointGroupAssociation, gax.WithClientLogging(logging))
+		callOpts.CreateInterceptEndpointGroupAssociation = append(callOpts.CreateInterceptEndpointGroupAssociation, gax.WithClientLogging(logging))
+		callOpts.UpdateInterceptEndpointGroupAssociation = append(callOpts.UpdateInterceptEndpointGroupAssociation, gax.WithClientLogging(logging))
+		callOpts.DeleteInterceptEndpointGroupAssociation = append(callOpts.DeleteInterceptEndpointGroupAssociation, gax.WithClientLogging(logging))
+		callOpts.ListInterceptDeploymentGroups = append(callOpts.ListInterceptDeploymentGroups, gax.WithClientLogging(logging))
+		callOpts.GetInterceptDeploymentGroup = append(callOpts.GetInterceptDeploymentGroup, gax.WithClientLogging(logging))
+		callOpts.CreateInterceptDeploymentGroup = append(callOpts.CreateInterceptDeploymentGroup, gax.WithClientLogging(logging))
+		callOpts.UpdateInterceptDeploymentGroup = append(callOpts.UpdateInterceptDeploymentGroup, gax.WithClientLogging(logging))
+		callOpts.DeleteInterceptDeploymentGroup = append(callOpts.DeleteInterceptDeploymentGroup, gax.WithClientLogging(logging))
+		callOpts.ListInterceptDeployments = append(callOpts.ListInterceptDeployments, gax.WithClientLogging(logging))
+		callOpts.GetInterceptDeployment = append(callOpts.GetInterceptDeployment, gax.WithClientLogging(logging))
+		callOpts.CreateInterceptDeployment = append(callOpts.CreateInterceptDeployment, gax.WithClientLogging(logging))
+		callOpts.UpdateInterceptDeployment = append(callOpts.UpdateInterceptDeployment, gax.WithClientLogging(logging))
+		callOpts.DeleteInterceptDeployment = append(callOpts.DeleteInterceptDeployment, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -819,9 +985,6 @@ func (c *interceptGRPCClient) ListInterceptEndpointGroups(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Intercept/ListInterceptEndpointGroups")
 	}
@@ -871,9 +1034,6 @@ func (c *interceptGRPCClient) GetInterceptEndpointGroup(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Intercept/GetInterceptEndpointGroup")
 	}
@@ -895,9 +1055,6 @@ func (c *interceptGRPCClient) CreateInterceptEndpointGroup(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Intercept/CreateInterceptEndpointGroup")
 	}
@@ -952,9 +1109,6 @@ func (c *interceptGRPCClient) DeleteInterceptEndpointGroup(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Intercept/DeleteInterceptEndpointGroup")
 	}
@@ -982,9 +1136,6 @@ func (c *interceptGRPCClient) ListInterceptEndpointGroupAssociations(ctx context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Intercept/ListInterceptEndpointGroupAssociations")
 	}
@@ -1034,9 +1185,6 @@ func (c *interceptGRPCClient) GetInterceptEndpointGroupAssociation(ctx context.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Intercept/GetInterceptEndpointGroupAssociation")
 	}
@@ -1058,9 +1206,6 @@ func (c *interceptGRPCClient) CreateInterceptEndpointGroupAssociation(ctx contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Intercept/CreateInterceptEndpointGroupAssociation")
 	}
@@ -1115,9 +1260,6 @@ func (c *interceptGRPCClient) DeleteInterceptEndpointGroupAssociation(ctx contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Intercept/DeleteInterceptEndpointGroupAssociation")
 	}
@@ -1145,9 +1287,6 @@ func (c *interceptGRPCClient) ListInterceptDeploymentGroups(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Intercept/ListInterceptDeploymentGroups")
 	}
@@ -1197,9 +1336,6 @@ func (c *interceptGRPCClient) GetInterceptDeploymentGroup(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Intercept/GetInterceptDeploymentGroup")
 	}
@@ -1221,9 +1357,6 @@ func (c *interceptGRPCClient) CreateInterceptDeploymentGroup(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Intercept/CreateInterceptDeploymentGroup")
 	}
@@ -1278,9 +1411,6 @@ func (c *interceptGRPCClient) DeleteInterceptDeploymentGroup(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Intercept/DeleteInterceptDeploymentGroup")
 	}
@@ -1308,9 +1438,6 @@ func (c *interceptGRPCClient) ListInterceptDeployments(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Intercept/ListInterceptDeployments")
 	}
@@ -1360,9 +1487,6 @@ func (c *interceptGRPCClient) GetInterceptDeployment(ctx context.Context, req *n
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Intercept/GetInterceptDeployment")
 	}
@@ -1384,9 +1508,6 @@ func (c *interceptGRPCClient) CreateInterceptDeployment(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Intercept/CreateInterceptDeployment")
 	}
@@ -1441,9 +1562,6 @@ func (c *interceptGRPCClient) DeleteInterceptDeployment(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Intercept/DeleteInterceptDeployment")
 	}
@@ -1541,9 +1659,6 @@ func (c *interceptGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIa
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
 	}
@@ -1565,9 +1680,6 @@ func (c *interceptGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIa
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
 	}
@@ -1589,9 +1701,6 @@ func (c *interceptGRPCClient) TestIamPermissions(ctx context.Context, req *iampb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
 	}
@@ -1817,9 +1926,6 @@ func (c *interceptRESTClient) GetInterceptEndpointGroup(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Intercept/GetInterceptEndpointGroup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/interceptEndpointGroups/*}")
@@ -1886,9 +1992,6 @@ func (c *interceptRESTClient) CreateInterceptEndpointGroup(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Intercept/CreateInterceptEndpointGroup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/interceptEndpointGroups")
@@ -2033,9 +2136,6 @@ func (c *interceptRESTClient) DeleteInterceptEndpointGroup(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Intercept/DeleteInterceptEndpointGroup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/interceptEndpointGroups/*}")
@@ -2183,9 +2283,6 @@ func (c *interceptRESTClient) GetInterceptEndpointGroupAssociation(ctx context.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Intercept/GetInterceptEndpointGroupAssociation")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/interceptEndpointGroupAssociations/*}")
@@ -2254,9 +2351,6 @@ func (c *interceptRESTClient) CreateInterceptEndpointGroupAssociation(ctx contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Intercept/CreateInterceptEndpointGroupAssociation")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/interceptEndpointGroupAssociations")
@@ -2401,9 +2495,6 @@ func (c *interceptRESTClient) DeleteInterceptEndpointGroupAssociation(ctx contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Intercept/DeleteInterceptEndpointGroupAssociation")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/interceptEndpointGroupAssociations/*}")
@@ -2551,9 +2642,6 @@ func (c *interceptRESTClient) GetInterceptDeploymentGroup(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Intercept/GetInterceptDeploymentGroup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/interceptDeploymentGroups/*}")
@@ -2620,9 +2708,6 @@ func (c *interceptRESTClient) CreateInterceptDeploymentGroup(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Intercept/CreateInterceptDeploymentGroup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/interceptDeploymentGroups")
@@ -2767,9 +2852,6 @@ func (c *interceptRESTClient) DeleteInterceptDeploymentGroup(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Intercept/DeleteInterceptDeploymentGroup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/interceptDeploymentGroups/*}")
@@ -2917,9 +2999,6 @@ func (c *interceptRESTClient) GetInterceptDeployment(ctx context.Context, req *n
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Intercept/GetInterceptDeployment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/interceptDeployments/*}")
@@ -2986,9 +3065,6 @@ func (c *interceptRESTClient) CreateInterceptDeployment(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Intercept/CreateInterceptDeployment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/interceptDeployments")
@@ -3133,9 +3209,6 @@ func (c *interceptRESTClient) DeleteInterceptDeployment(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.Intercept/DeleteInterceptDeployment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/interceptDeployments/*}")
@@ -3351,9 +3424,6 @@ func (c *interceptRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIa
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/addressGroups/*}:getIamPolicy")
@@ -3418,9 +3488,6 @@ func (c *interceptRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIa
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/addressGroups/*}:setIamPolicy")
@@ -3487,9 +3554,6 @@ func (c *interceptRESTClient) TestIamPermissions(ctx context.Context, req *iampb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/addressGroups/*}:testIamPermissions")

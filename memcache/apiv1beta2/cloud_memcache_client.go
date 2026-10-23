@@ -477,6 +477,61 @@ func NewCloudMemcacheClient(ctx context.Context, opts ...option.ClientOption) (*
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "memcache",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/memcache/apiv1beta2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "memcache.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListInstances = append(client.CallOptions.ListInstances, gax.WithClientTracing(tracing))
+		client.CallOptions.GetInstance = append(client.CallOptions.GetInstance, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateInstance = append(client.CallOptions.CreateInstance, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateInstance = append(client.CallOptions.UpdateInstance, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateParameters = append(client.CallOptions.UpdateParameters, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteInstance = append(client.CallOptions.DeleteInstance, gax.WithClientTracing(tracing))
+		client.CallOptions.ApplyParameters = append(client.CallOptions.ApplyParameters, gax.WithClientTracing(tracing))
+		client.CallOptions.ApplySoftwareUpdate = append(client.CallOptions.ApplySoftwareUpdate, gax.WithClientTracing(tracing))
+		client.CallOptions.RescheduleMaintenance = append(client.CallOptions.RescheduleMaintenance, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "memcache",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/memcache/apiv1beta2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "memcache.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListInstances = append(client.CallOptions.ListInstances, gax.WithClientLogging(logging))
+		client.CallOptions.GetInstance = append(client.CallOptions.GetInstance, gax.WithClientLogging(logging))
+		client.CallOptions.CreateInstance = append(client.CallOptions.CreateInstance, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateInstance = append(client.CallOptions.UpdateInstance, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateParameters = append(client.CallOptions.UpdateParameters, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteInstance = append(client.CallOptions.DeleteInstance, gax.WithClientLogging(logging))
+		client.CallOptions.ApplyParameters = append(client.CallOptions.ApplyParameters, gax.WithClientLogging(logging))
+		client.CallOptions.ApplySoftwareUpdate = append(client.CallOptions.ApplySoftwareUpdate, gax.WithClientLogging(logging))
+		client.CallOptions.RescheduleMaintenance = append(client.CallOptions.RescheduleMaintenance, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -616,6 +671,61 @@ func NewCloudMemcacheRESTClient(ctx context.Context, opts ...option.ClientOption
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "memcache",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/memcache/apiv1beta2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "memcache.googleapis.com",
+			}),
+		)
+
+		callOpts.ListInstances = append(callOpts.ListInstances, gax.WithClientTracing(tracing))
+		callOpts.GetInstance = append(callOpts.GetInstance, gax.WithClientTracing(tracing))
+		callOpts.CreateInstance = append(callOpts.CreateInstance, gax.WithClientTracing(tracing))
+		callOpts.UpdateInstance = append(callOpts.UpdateInstance, gax.WithClientTracing(tracing))
+		callOpts.UpdateParameters = append(callOpts.UpdateParameters, gax.WithClientTracing(tracing))
+		callOpts.DeleteInstance = append(callOpts.DeleteInstance, gax.WithClientTracing(tracing))
+		callOpts.ApplyParameters = append(callOpts.ApplyParameters, gax.WithClientTracing(tracing))
+		callOpts.ApplySoftwareUpdate = append(callOpts.ApplySoftwareUpdate, gax.WithClientTracing(tracing))
+		callOpts.RescheduleMaintenance = append(callOpts.RescheduleMaintenance, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "memcache",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/memcache/apiv1beta2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "memcache.googleapis.com",
+			}),
+		)
+
+		callOpts.ListInstances = append(callOpts.ListInstances, gax.WithClientLogging(logging))
+		callOpts.GetInstance = append(callOpts.GetInstance, gax.WithClientLogging(logging))
+		callOpts.CreateInstance = append(callOpts.CreateInstance, gax.WithClientLogging(logging))
+		callOpts.UpdateInstance = append(callOpts.UpdateInstance, gax.WithClientLogging(logging))
+		callOpts.UpdateParameters = append(callOpts.UpdateParameters, gax.WithClientLogging(logging))
+		callOpts.DeleteInstance = append(callOpts.DeleteInstance, gax.WithClientLogging(logging))
+		callOpts.ApplyParameters = append(callOpts.ApplyParameters, gax.WithClientLogging(logging))
+		callOpts.ApplySoftwareUpdate = append(callOpts.ApplySoftwareUpdate, gax.WithClientLogging(logging))
+		callOpts.RescheduleMaintenance = append(callOpts.RescheduleMaintenance, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -672,9 +782,6 @@ func (c *cloudMemcacheGRPCClient) ListInstances(ctx context.Context, req *memcac
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memcache.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memcache.v1beta2.CloudMemcache/ListInstances")
 	}
@@ -724,9 +831,6 @@ func (c *cloudMemcacheGRPCClient) GetInstance(ctx context.Context, req *memcache
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memcache.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memcache.v1beta2.CloudMemcache/GetInstance")
 	}
@@ -748,9 +852,6 @@ func (c *cloudMemcacheGRPCClient) CreateInstance(ctx context.Context, req *memca
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memcache.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memcache.v1beta2.CloudMemcache/CreateInstance")
 	}
@@ -805,9 +906,6 @@ func (c *cloudMemcacheGRPCClient) UpdateParameters(ctx context.Context, req *mem
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memcache.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memcache.v1beta2.CloudMemcache/UpdateParameters")
 	}
@@ -835,9 +933,6 @@ func (c *cloudMemcacheGRPCClient) DeleteInstance(ctx context.Context, req *memca
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memcache.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memcache.v1beta2.CloudMemcache/DeleteInstance")
 	}
@@ -865,9 +960,6 @@ func (c *cloudMemcacheGRPCClient) ApplyParameters(ctx context.Context, req *memc
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memcache.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memcache.v1beta2.CloudMemcache/ApplyParameters")
 	}
@@ -895,9 +987,6 @@ func (c *cloudMemcacheGRPCClient) ApplySoftwareUpdate(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memcache.googleapis.com/%v", req.GetInstance()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memcache.v1beta2.CloudMemcache/ApplySoftwareUpdate")
 	}
@@ -925,9 +1014,6 @@ func (c *cloudMemcacheGRPCClient) RescheduleMaintenance(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memcache.googleapis.com/%v", req.GetInstance()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memcache.v1beta2.CloudMemcache/RescheduleMaintenance")
 	}
@@ -1227,9 +1313,6 @@ func (c *cloudMemcacheRESTClient) GetInstance(ctx context.Context, req *memcache
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memcache.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memcache.v1beta2.CloudMemcache/GetInstance")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta2/{name=projects/*/locations/*/instances/*}")
@@ -1292,9 +1375,6 @@ func (c *cloudMemcacheRESTClient) CreateInstance(ctx context.Context, req *memca
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memcache.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memcache.v1beta2.CloudMemcache/CreateInstance")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta2/{parent=projects/*/locations/*}/instances")
@@ -1440,9 +1520,6 @@ func (c *cloudMemcacheRESTClient) UpdateParameters(ctx context.Context, req *mem
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memcache.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memcache.v1beta2.CloudMemcache/UpdateParameters")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta2/{name=projects/*/locations/*/instances/*}:updateParameters")
@@ -1504,9 +1581,6 @@ func (c *cloudMemcacheRESTClient) DeleteInstance(ctx context.Context, req *memca
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memcache.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memcache.v1beta2.CloudMemcache/DeleteInstance")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta2/{name=projects/*/locations/*/instances/*}")
@@ -1575,9 +1649,6 @@ func (c *cloudMemcacheRESTClient) ApplyParameters(ctx context.Context, req *memc
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memcache.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memcache.v1beta2.CloudMemcache/ApplyParameters")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta2/{name=projects/*/locations/*/instances/*}:applyParameters")
@@ -1645,9 +1716,6 @@ func (c *cloudMemcacheRESTClient) ApplySoftwareUpdate(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memcache.googleapis.com/%v", req.GetInstance()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memcache.v1beta2.CloudMemcache/ApplySoftwareUpdate")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta2/{instance=projects/*/locations/*/instances/*}:applySoftwareUpdate")
@@ -1715,9 +1783,6 @@ func (c *cloudMemcacheRESTClient) RescheduleMaintenance(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memcache.googleapis.com/%v", req.GetInstance()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memcache.v1beta2.CloudMemcache/RescheduleMaintenance")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta2/{instance=projects/*/locations/*/instances/*}:rescheduleMaintenance")

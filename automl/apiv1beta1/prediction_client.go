@@ -275,6 +275,35 @@ func NewPredictionClient(ctx context.Context, opts ...option.ClientOption) (*Pre
 		client.CallOptions.Predict = append(client.CallOptions.Predict, gax.WithClientMetrics(metrics))
 		client.CallOptions.BatchPredict = append(client.CallOptions.BatchPredict, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "automl",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/automl/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "automl.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.Predict = append(client.CallOptions.Predict, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchPredict = append(client.CallOptions.BatchPredict, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "automl",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/automl/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "automl.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.Predict = append(client.CallOptions.Predict, gax.WithClientLogging(logging))
+		client.CallOptions.BatchPredict = append(client.CallOptions.BatchPredict, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -386,6 +415,35 @@ func NewPredictionRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		callOpts.Predict = append(callOpts.Predict, gax.WithClientMetrics(metrics))
 		callOpts.BatchPredict = append(callOpts.BatchPredict, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "automl",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/automl/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "automl.googleapis.com",
+			}),
+		)
+
+		callOpts.Predict = append(callOpts.Predict, gax.WithClientTracing(tracing))
+		callOpts.BatchPredict = append(callOpts.BatchPredict, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "automl",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/automl/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "automl.googleapis.com",
+			}),
+		)
+
+		callOpts.Predict = append(callOpts.Predict, gax.WithClientLogging(logging))
+		callOpts.BatchPredict = append(callOpts.BatchPredict, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -442,9 +500,6 @@ func (c *predictionGRPCClient) Predict(ctx context.Context, req *automlpb.Predic
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.PredictionService/Predict")
 	}
@@ -466,9 +521,6 @@ func (c *predictionGRPCClient) BatchPredict(ctx context.Context, req *automlpb.B
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.PredictionService/BatchPredict")
 	}
@@ -541,9 +593,6 @@ func (c *predictionRESTClient) Predict(ctx context.Context, req *automlpb.Predic
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.PredictionService/Predict")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/models/*}:predict")
@@ -620,9 +669,6 @@ func (c *predictionRESTClient) BatchPredict(ctx context.Context, req *automlpb.B
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.PredictionService/BatchPredict")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/models/*}:batchPredict")

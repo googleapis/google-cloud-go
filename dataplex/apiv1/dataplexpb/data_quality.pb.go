@@ -2740,93 +2740,93 @@ var File_google_cloud_dataplex_v1_data_quality_proto protoreflect.FileDescriptor
 
 const file_google_cloud_dataplex_v1_data_quality_proto_rawDesc = "" +
 	"\n" +
-	"+google/cloud/dataplex/v1/data_quality.proto\x12\x18google.cloud.dataplex.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a9google/cloud/dataplex/v1/data_quality_rule_template.proto\x1a/google/cloud/dataplex/v1/datascans_common.proto\x1a)google/cloud/dataplex/v1/processing.proto\"\xa8\v\n" +
-	"\x0fDataQualitySpec\x12D\n" +
-	"\x05rules\x18\x01 \x03(\v2).google.cloud.dataplex.v1.DataQualityRuleB\x03\xe0A\x02R\x05rules\x12.\n" +
-	"\x10sampling_percent\x18\x04 \x01(\x02B\x03\xe0A\x01R\x0fsamplingPercent\x12\"\n" +
+	"+google/cloud/dataplex/v1/data_quality.proto\x12\x18google.cloud.dataplex.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a9google/cloud/dataplex/v1/data_quality_rule_template.proto\x1a/google/cloud/dataplex/v1/datascans_common.proto\x1a)google/cloud/dataplex/v1/processing.proto\"\xb8\v\n" +
+	"\x0fDataQualitySpec\x12E\n" +
+	"\x05rules\x18\x01 \x03(\v2).google.cloud.dataplex.v1.DataQualityRuleB\x04\xe2A\x01\x02R\x05rules\x12/\n" +
+	"\x10sampling_percent\x18\x04 \x01(\x02B\x04\xe2A\x01\x01R\x0fsamplingPercent\x12#\n" +
 	"\n" +
-	"row_filter\x18\x05 \x01(\tB\x03\xe0A\x01R\trowFilter\x12j\n" +
-	"\x11post_scan_actions\x18\x06 \x01(\v29.google.cloud.dataplex.v1.DataQualitySpec.PostScanActionsB\x03\xe0A\x01R\x0fpostScanActions\x12A\n" +
-	"\x1acatalog_publishing_enabled\x18\b \x01(\bB\x03\xe0A\x01R\x18catalogPublishingEnabled\x12@\n" +
+	"row_filter\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\trowFilter\x12k\n" +
+	"\x11post_scan_actions\x18\x06 \x01(\v29.google.cloud.dataplex.v1.DataQualitySpec.PostScanActionsB\x04\xe2A\x01\x01R\x0fpostScanActions\x12B\n" +
+	"\x1acatalog_publishing_enabled\x18\b \x01(\bB\x04\xe2A\x01\x01R\x18catalogPublishingEnabled\x12A\n" +
 	"\x1aenable_catalog_based_rules\x18\n" +
-	" \x01(\bB\x03\xe0A\x01R\x17enableCatalogBasedRules\x12\x1b\n" +
-	"\x06filter\x18\v \x01(\tB\x03\xe0A\x01R\x06filter\x1a\xec\a\n" +
-	"\x0fPostScanActions\x12v\n" +
-	"\x0fbigquery_export\x18\x01 \x01(\v2H.google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.BigQueryExportB\x03\xe0A\x01R\x0ebigqueryExport\x12\x82\x01\n" +
-	"\x13notification_report\x18\x02 \x01(\v2L.google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.NotificationReportB\x03\xe0A\x01R\x12notificationReport\x1a:\n" +
-	"\x0eBigQueryExport\x12(\n" +
-	"\rresults_table\x18\x01 \x01(\tB\x03\xe0A\x01R\fresultsTable\x1a)\n" +
+	" \x01(\bB\x04\xe2A\x01\x01R\x17enableCatalogBasedRules\x12\x1c\n" +
+	"\x06filter\x18\v \x01(\tB\x04\xe2A\x01\x01R\x06filter\x1a\xf5\a\n" +
+	"\x0fPostScanActions\x12w\n" +
+	"\x0fbigquery_export\x18\x01 \x01(\v2H.google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.BigQueryExportB\x04\xe2A\x01\x01R\x0ebigqueryExport\x12\x83\x01\n" +
+	"\x13notification_report\x18\x02 \x01(\v2L.google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.NotificationReportB\x04\xe2A\x01\x01R\x12notificationReport\x1a;\n" +
+	"\x0eBigQueryExport\x12)\n" +
+	"\rresults_table\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\fresultsTable\x1a*\n" +
 	"\n" +
-	"Recipients\x12\x1b\n" +
-	"\x06emails\x18\x01 \x03(\tB\x03\xe0A\x01R\x06emails\x1aE\n" +
-	"\x15ScoreThresholdTrigger\x12,\n" +
-	"\x0fscore_threshold\x18\x02 \x01(\x02B\x03\xe0A\x01R\x0escoreThreshold\x1a\x13\n" +
+	"Recipients\x12\x1c\n" +
+	"\x06emails\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\x06emails\x1aF\n" +
+	"\x15ScoreThresholdTrigger\x12-\n" +
+	"\x0fscore_threshold\x18\x02 \x01(\x02B\x04\xe2A\x01\x01R\x0escoreThreshold\x1a\x13\n" +
 	"\x11JobFailureTrigger\x1a\x0f\n" +
-	"\rJobEndTrigger\x1a\x87\x04\n" +
-	"\x12NotificationReport\x12i\n" +
+	"\rJobEndTrigger\x1a\x8b\x04\n" +
+	"\x12NotificationReport\x12j\n" +
 	"\n" +
-	"recipients\x18\x01 \x01(\v2D.google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.RecipientsB\x03\xe0A\x02R\n" +
-	"recipients\x12\x8c\x01\n" +
-	"\x17score_threshold_trigger\x18\x02 \x01(\v2O.google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.ScoreThresholdTriggerB\x03\xe0A\x01R\x15scoreThresholdTrigger\x12\x80\x01\n" +
-	"\x13job_failure_trigger\x18\x04 \x01(\v2K.google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.JobFailureTriggerB\x03\xe0A\x01R\x11jobFailureTrigger\x12t\n" +
-	"\x0fjob_end_trigger\x18\x05 \x01(\v2G.google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.JobEndTriggerB\x03\xe0A\x01R\rjobEndTrigger\"\x99\f\n" +
-	"\x11DataQualityResult\x12\x1b\n" +
-	"\x06passed\x18\x05 \x01(\bB\x03\xe0A\x03R\x06passed\x12\x1e\n" +
-	"\x05score\x18\t \x01(\x02B\x03\xe0A\x03H\x00R\x05score\x88\x01\x01\x12Y\n" +
+	"recipients\x18\x01 \x01(\v2D.google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.RecipientsB\x04\xe2A\x01\x02R\n" +
+	"recipients\x12\x8d\x01\n" +
+	"\x17score_threshold_trigger\x18\x02 \x01(\v2O.google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.ScoreThresholdTriggerB\x04\xe2A\x01\x01R\x15scoreThresholdTrigger\x12\x81\x01\n" +
+	"\x13job_failure_trigger\x18\x04 \x01(\v2K.google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.JobFailureTriggerB\x04\xe2A\x01\x01R\x11jobFailureTrigger\x12u\n" +
+	"\x0fjob_end_trigger\x18\x05 \x01(\v2G.google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.JobEndTriggerB\x04\xe2A\x01\x01R\rjobEndTrigger\"\xab\f\n" +
+	"\x11DataQualityResult\x12\x1c\n" +
+	"\x06passed\x18\x05 \x01(\bB\x04\xe2A\x01\x03R\x06passed\x12\x1f\n" +
+	"\x05score\x18\t \x01(\x02B\x04\xe2A\x01\x03H\x00R\x05score\x88\x01\x01\x12Z\n" +
 	"\n" +
-	"dimensions\x18\x02 \x03(\v24.google.cloud.dataplex.v1.DataQualityDimensionResultB\x03\xe0A\x03R\n" +
-	"dimensions\x12P\n" +
+	"dimensions\x18\x02 \x03(\v24.google.cloud.dataplex.v1.DataQualityDimensionResultB\x04\xe2A\x01\x03R\n" +
+	"dimensions\x12Q\n" +
 	"\acolumns\x18\n" +
-	" \x03(\v21.google.cloud.dataplex.v1.DataQualityColumnResultB\x03\xe0A\x03R\acolumns\x12J\n" +
-	"\x05rules\x18\x03 \x03(\v2/.google.cloud.dataplex.v1.DataQualityRuleResultB\x03\xe0A\x03R\x05rules\x12 \n" +
-	"\trow_count\x18\x04 \x01(\x03B\x03\xe0A\x03R\browCount\x12M\n" +
-	"\fscanned_data\x18\a \x01(\v2%.google.cloud.dataplex.v1.ScannedDataB\x03\xe0A\x03R\vscannedData\x12\x7f\n" +
-	"\x18post_scan_actions_result\x18\b \x01(\v2A.google.cloud.dataplex.v1.DataQualityResult.PostScanActionsResultB\x03\xe0A\x03R\x15postScanActionsResult\x12z\n" +
-	"\x19catalog_publishing_status\x18\v \x01(\v29.google.cloud.dataplex.v1.DataScanCatalogPublishingStatusB\x03\xe0A\x03R\x17catalogPublishingStatus\x12\x9d\x01\n" +
-	"\"anomaly_detection_generated_assets\x18\f \x01(\v2K.google.cloud.dataplex.v1.DataQualityResult.AnomalyDetectionGeneratedAssetsB\x03\xe0A\x03R\x1fanomalyDetectionGeneratedAssets\x1a\xa4\x03\n" +
-	"\x15PostScanActionsResult\x12\x91\x01\n" +
-	"\x16bigquery_export_result\x18\x01 \x01(\v2V.google.cloud.dataplex.v1.DataQualityResult.PostScanActionsResult.BigQueryExportResultB\x03\xe0A\x03R\x14bigqueryExportResult\x1a\xf6\x01\n" +
-	"\x14BigQueryExportResult\x12w\n" +
-	"\x05state\x18\x01 \x01(\x0e2\\.google.cloud.dataplex.v1.DataQualityResult.PostScanActionsResult.BigQueryExportResult.StateB\x03\xe0A\x03R\x05state\x12\x1d\n" +
-	"\amessage\x18\x02 \x01(\tB\x03\xe0A\x03R\amessage\"F\n" +
+	" \x03(\v21.google.cloud.dataplex.v1.DataQualityColumnResultB\x04\xe2A\x01\x03R\acolumns\x12K\n" +
+	"\x05rules\x18\x03 \x03(\v2/.google.cloud.dataplex.v1.DataQualityRuleResultB\x04\xe2A\x01\x03R\x05rules\x12!\n" +
+	"\trow_count\x18\x04 \x01(\x03B\x04\xe2A\x01\x03R\browCount\x12N\n" +
+	"\fscanned_data\x18\a \x01(\v2%.google.cloud.dataplex.v1.ScannedDataB\x04\xe2A\x01\x03R\vscannedData\x12\x80\x01\n" +
+	"\x18post_scan_actions_result\x18\b \x01(\v2A.google.cloud.dataplex.v1.DataQualityResult.PostScanActionsResultB\x04\xe2A\x01\x03R\x15postScanActionsResult\x12{\n" +
+	"\x19catalog_publishing_status\x18\v \x01(\v29.google.cloud.dataplex.v1.DataScanCatalogPublishingStatusB\x04\xe2A\x01\x03R\x17catalogPublishingStatus\x12\x9e\x01\n" +
+	"\"anomaly_detection_generated_assets\x18\f \x01(\v2K.google.cloud.dataplex.v1.DataQualityResult.AnomalyDetectionGeneratedAssetsB\x04\xe2A\x01\x03R\x1fanomalyDetectionGeneratedAssets\x1a\xa7\x03\n" +
+	"\x15PostScanActionsResult\x12\x92\x01\n" +
+	"\x16bigquery_export_result\x18\x01 \x01(\v2V.google.cloud.dataplex.v1.DataQualityResult.PostScanActionsResult.BigQueryExportResultB\x04\xe2A\x01\x03R\x14bigqueryExportResult\x1a\xf8\x01\n" +
+	"\x14BigQueryExportResult\x12x\n" +
+	"\x05state\x18\x01 \x01(\x0e2\\.google.cloud.dataplex.v1.DataQualityResult.PostScanActionsResult.BigQueryExportResult.StateB\x04\xe2A\x01\x03R\x05state\x12\x1e\n" +
+	"\amessage\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\amessage\"F\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tSUCCEEDED\x10\x01\x12\n" +
 	"\n" +
 	"\x06FAILED\x10\x02\x12\v\n" +
-	"\aSKIPPED\x10\x03\x1a\x8e\x02\n" +
-	"\x1fAnomalyDetectionGeneratedAssets\x12&\n" +
-	"\fresult_table\x18\x01 \x01(\tB\x03\xe0A\x03R\vresultTable\x12;\n" +
-	"\x17data_intermediate_table\x18\x02 \x01(\tB\x03\xe0A\x03R\x15dataIntermediateTable\x12E\n" +
-	"\x1cfreshness_intermediate_table\x18\x03 \x01(\tB\x03\xe0A\x03R\x1afreshnessIntermediateTable\x12?\n" +
-	"\x19volume_intermediate_table\x18\x04 \x01(\tB\x03\xe0A\x03R\x17volumeIntermediateTableB\b\n" +
-	"\x06_score\"\xce\x05\n" +
-	"\x15DataQualityRuleResult\x12B\n" +
-	"\x04rule\x18\x01 \x01(\v2).google.cloud.dataplex.v1.DataQualityRuleB\x03\xe0A\x03R\x04rule\x12\x1b\n" +
-	"\x06passed\x18\a \x01(\bB\x03\xe0A\x03R\x06passed\x12,\n" +
-	"\x0fevaluated_count\x18\t \x01(\x03B\x03\xe0A\x03R\x0eevaluatedCount\x12&\n" +
-	"\fpassed_count\x18\b \x01(\x03B\x03\xe0A\x03R\vpassedCount\x12\"\n" +
+	"\aSKIPPED\x10\x03\x1a\x92\x02\n" +
+	"\x1fAnomalyDetectionGeneratedAssets\x12'\n" +
+	"\fresult_table\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\vresultTable\x12<\n" +
+	"\x17data_intermediate_table\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x15dataIntermediateTable\x12F\n" +
+	"\x1cfreshness_intermediate_table\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x1afreshnessIntermediateTable\x12@\n" +
+	"\x19volume_intermediate_table\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x17volumeIntermediateTableB\b\n" +
+	"\x06_score\"\xd8\x05\n" +
+	"\x15DataQualityRuleResult\x12C\n" +
+	"\x04rule\x18\x01 \x01(\v2).google.cloud.dataplex.v1.DataQualityRuleB\x04\xe2A\x01\x03R\x04rule\x12\x1c\n" +
+	"\x06passed\x18\a \x01(\bB\x04\xe2A\x01\x03R\x06passed\x12-\n" +
+	"\x0fevaluated_count\x18\t \x01(\x03B\x04\xe2A\x01\x03R\x0eevaluatedCount\x12'\n" +
+	"\fpassed_count\x18\b \x01(\x03B\x04\xe2A\x01\x03R\vpassedCount\x12#\n" +
 	"\n" +
-	"null_count\x18\x05 \x01(\x03B\x03\xe0A\x03R\tnullCount\x12\"\n" +
+	"null_count\x18\x05 \x01(\x03B\x04\xe2A\x01\x03R\tnullCount\x12#\n" +
 	"\n" +
-	"pass_ratio\x18\x06 \x01(\x01B\x03\xe0A\x03R\tpassRatio\x121\n" +
+	"pass_ratio\x18\x06 \x01(\x01B\x04\xe2A\x01\x03R\tpassRatio\x122\n" +
 	"\x12failing_rows_query\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R\x10failingRowsQuery\x123\n" +
-	"\x13assertion_row_count\x18\v \x01(\x03B\x03\xe0A\x03R\x11assertionRowCount\x12\x83\x01\n" +
-	"\x19debug_queries_result_sets\x18\r \x03(\v2C.google.cloud.dataplex.v1.DataQualityRuleResult.DebugQueryResultSetB\x03\xe0A\x03R\x16debugQueriesResultSets\x1aP\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R\x10failingRowsQuery\x124\n" +
+	"\x13assertion_row_count\x18\v \x01(\x03B\x04\xe2A\x01\x03R\x11assertionRowCount\x12\x84\x01\n" +
+	"\x19debug_queries_result_sets\x18\r \x03(\v2C.google.cloud.dataplex.v1.DataQualityRuleResult.DebugQueryResultSetB\x04\xe2A\x01\x03R\x16debugQueriesResultSets\x1aP\n" +
 	"\x10DebugQueryResult\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x12\n" +
 	"\x04type\x18\x02 \x01(\tR\x04type\x12\x14\n" +
-	"\x05value\x18\x03 \x01(\tR\x05value\x1av\n" +
-	"\x13DebugQueryResultSet\x12_\n" +
-	"\aresults\x18\x01 \x03(\v2@.google.cloud.dataplex.v1.DataQualityRuleResult.DebugQueryResultB\x03\xe0A\x03R\aresults\"\xb6\x01\n" +
-	"\x1aDataQualityDimensionResult\x12Q\n" +
-	"\tdimension\x18\x01 \x01(\v2..google.cloud.dataplex.v1.DataQualityDimensionB\x03\xe0A\x03R\tdimension\x12\x1b\n" +
-	"\x06passed\x18\x03 \x01(\bB\x03\xe0A\x03R\x06passed\x12\x1e\n" +
-	"\x05score\x18\x04 \x01(\x02B\x03\xe0A\x03H\x00R\x05score\x88\x01\x01B\b\n" +
-	"\x06_score\"/\n" +
-	"\x14DataQualityDimension\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\"\xf1\x1e\n" +
+	"\x05value\x18\x03 \x01(\tR\x05value\x1aw\n" +
+	"\x13DebugQueryResultSet\x12`\n" +
+	"\aresults\x18\x01 \x03(\v2@.google.cloud.dataplex.v1.DataQualityRuleResult.DebugQueryResultB\x04\xe2A\x01\x03R\aresults\"\xb9\x01\n" +
+	"\x1aDataQualityDimensionResult\x12R\n" +
+	"\tdimension\x18\x01 \x01(\v2..google.cloud.dataplex.v1.DataQualityDimensionB\x04\xe2A\x01\x03R\tdimension\x12\x1c\n" +
+	"\x06passed\x18\x03 \x01(\bB\x04\xe2A\x01\x03R\x06passed\x12\x1f\n" +
+	"\x05score\x18\x04 \x01(\x02B\x04\xe2A\x01\x03H\x00R\x05score\x88\x01\x01B\b\n" +
+	"\x06_score\"0\n" +
+	"\x14DataQualityDimension\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\"\x98\x1f\n" +
 	"\x0fDataQualityRule\x12i\n" +
 	"\x11range_expectation\x18\x01 \x01(\v2:.google.cloud.dataplex.v1.DataQualityRule.RangeExpectationH\x00R\x10rangeExpectation\x12p\n" +
 	"\x14non_null_expectation\x18\x02 \x01(\v2<.google.cloud.dataplex.v1.DataQualityRule.NonNullExpectationH\x00R\x12nonNullExpectation\x12c\n" +
@@ -2837,90 +2837,90 @@ const file_google_cloud_dataplex_v1_data_quality_proto_rawDesc = "" +
 	"\x19row_condition_expectation\x18\xc8\x01 \x01(\v2A.google.cloud.dataplex.v1.DataQualityRule.RowConditionExpectationH\x00R\x17rowConditionExpectation\x12\x86\x01\n" +
 	"\x1btable_condition_expectation\x18\xc9\x01 \x01(\v2C.google.cloud.dataplex.v1.DataQualityRule.TableConditionExpectationH\x00R\x19tableConditionExpectation\x12^\n" +
 	"\rsql_assertion\x18\xca\x01 \x01(\v26.google.cloud.dataplex.v1.DataQualityRule.SqlAssertionH\x00R\fsqlAssertion\x12l\n" +
-	"\x12template_reference\x18\x05 \x01(\v2;.google.cloud.dataplex.v1.DataQualityRule.TemplateReferenceH\x00R\x11templateReference\x12\x1c\n" +
-	"\x06column\x18\xf4\x03 \x01(\tB\x03\xe0A\x01R\x06column\x12%\n" +
-	"\vignore_null\x18\xf5\x03 \x01(\bB\x03\xe0A\x01R\n" +
-	"ignoreNull\x12\"\n" +
-	"\tdimension\x18\xf6\x03 \x01(\tB\x03\xe0A\x01R\tdimension\x12\"\n" +
-	"\tthreshold\x18\xf7\x03 \x01(\x01B\x03\xe0A\x01R\tthreshold\x12\x18\n" +
-	"\x04name\x18\xf8\x03 \x01(\tB\x03\xe0A\x01R\x04name\x12&\n" +
-	"\vdescription\x18\xf9\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12\"\n" +
-	"\tsuspended\x18\xfa\x03 \x01(\bB\x03\xe0A\x01R\tsuspended\x12_\n" +
+	"\x12template_reference\x18\x05 \x01(\v2;.google.cloud.dataplex.v1.DataQualityRule.TemplateReferenceH\x00R\x11templateReference\x12\x1d\n" +
+	"\x06column\x18\xf4\x03 \x01(\tB\x04\xe2A\x01\x01R\x06column\x12&\n" +
+	"\vignore_null\x18\xf5\x03 \x01(\bB\x04\xe2A\x01\x01R\n" +
+	"ignoreNull\x12#\n" +
+	"\tdimension\x18\xf6\x03 \x01(\tB\x04\xe2A\x01\x01R\tdimension\x12#\n" +
+	"\tthreshold\x18\xf7\x03 \x01(\x01B\x04\xe2A\x01\x01R\tthreshold\x12\x19\n" +
+	"\x04name\x18\xf8\x03 \x01(\tB\x04\xe2A\x01\x01R\x04name\x12'\n" +
+	"\vdescription\x18\xf9\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12#\n" +
+	"\tsuspended\x18\xfa\x03 \x01(\bB\x04\xe2A\x01\x01R\tsuspended\x12`\n" +
 	"\n" +
-	"attributes\x18\xfb\x03 \x03(\v29.google.cloud.dataplex.v1.DataQualityRule.AttributesEntryB\x03\xe0A\x01R\n" +
-	"attributes\x12[\n" +
-	"\vrule_source\x18\xfc\x03 \x01(\v24.google.cloud.dataplex.v1.DataQualityRule.RuleSourceB\x03\xe0A\x03R\n" +
-	"ruleSource\x12_\n" +
-	"\rdebug_queries\x18\xfe\x03 \x03(\v24.google.cloud.dataplex.v1.DataQualityRule.DebugQueryB\x03\xe0A\x01R\fdebugQueries\x1a\xbc\x01\n" +
-	"\x10RangeExpectation\x12 \n" +
-	"\tmin_value\x18\x01 \x01(\tB\x03\xe0A\x01R\bminValue\x12 \n" +
-	"\tmax_value\x18\x02 \x01(\tB\x03\xe0A\x01R\bmaxValue\x121\n" +
-	"\x12strict_min_enabled\x18\x03 \x01(\bB\x03\xe0A\x01R\x10strictMinEnabled\x121\n" +
-	"\x12strict_max_enabled\x18\x04 \x01(\bB\x03\xe0A\x01R\x10strictMaxEnabled\x1a\x14\n" +
-	"\x12NonNullExpectation\x1a-\n" +
-	"\x0eSetExpectation\x12\x1b\n" +
-	"\x06values\x18\x01 \x03(\tB\x03\xe0A\x01R\x06values\x1a-\n" +
-	"\x10RegexExpectation\x12\x19\n" +
-	"\x05regex\x18\x01 \x01(\tB\x03\xe0A\x01R\x05regex\x1a\x17\n" +
-	"\x15UniquenessExpectation\x1a\x85\x03\n" +
-	"\x19StatisticRangeExpectation\x12v\n" +
-	"\tstatistic\x18\x01 \x01(\x0e2S.google.cloud.dataplex.v1.DataQualityRule.StatisticRangeExpectation.ColumnStatisticB\x03\xe0A\x01R\tstatistic\x12 \n" +
-	"\tmin_value\x18\x02 \x01(\tB\x03\xe0A\x01R\bminValue\x12 \n" +
-	"\tmax_value\x18\x03 \x01(\tB\x03\xe0A\x01R\bmaxValue\x121\n" +
-	"\x12strict_min_enabled\x18\x04 \x01(\bB\x03\xe0A\x01R\x10strictMinEnabled\x121\n" +
-	"\x12strict_max_enabled\x18\x05 \x01(\bB\x03\xe0A\x01R\x10strictMaxEnabled\"F\n" +
+	"attributes\x18\xfb\x03 \x03(\v29.google.cloud.dataplex.v1.DataQualityRule.AttributesEntryB\x04\xe2A\x01\x01R\n" +
+	"attributes\x12\\\n" +
+	"\vrule_source\x18\xfc\x03 \x01(\v24.google.cloud.dataplex.v1.DataQualityRule.RuleSourceB\x04\xe2A\x01\x03R\n" +
+	"ruleSource\x12`\n" +
+	"\rdebug_queries\x18\xfe\x03 \x03(\v24.google.cloud.dataplex.v1.DataQualityRule.DebugQueryB\x04\xe2A\x01\x01R\fdebugQueries\x1a\xc0\x01\n" +
+	"\x10RangeExpectation\x12!\n" +
+	"\tmin_value\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\bminValue\x12!\n" +
+	"\tmax_value\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\bmaxValue\x122\n" +
+	"\x12strict_min_enabled\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x10strictMinEnabled\x122\n" +
+	"\x12strict_max_enabled\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x10strictMaxEnabled\x1a\x14\n" +
+	"\x12NonNullExpectation\x1a.\n" +
+	"\x0eSetExpectation\x12\x1c\n" +
+	"\x06values\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\x06values\x1a.\n" +
+	"\x10RegexExpectation\x12\x1a\n" +
+	"\x05regex\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x05regex\x1a\x17\n" +
+	"\x15UniquenessExpectation\x1a\x8a\x03\n" +
+	"\x19StatisticRangeExpectation\x12w\n" +
+	"\tstatistic\x18\x01 \x01(\x0e2S.google.cloud.dataplex.v1.DataQualityRule.StatisticRangeExpectation.ColumnStatisticB\x04\xe2A\x01\x01R\tstatistic\x12!\n" +
+	"\tmin_value\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\bminValue\x12!\n" +
+	"\tmax_value\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\bmaxValue\x122\n" +
+	"\x12strict_min_enabled\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x10strictMinEnabled\x122\n" +
+	"\x12strict_max_enabled\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\x10strictMaxEnabled\"F\n" +
 	"\x0fColumnStatistic\x12\x17\n" +
 	"\x13STATISTIC_UNDEFINED\x10\x00\x12\b\n" +
 	"\x04MEAN\x10\x01\x12\a\n" +
 	"\x03MIN\x10\x02\x12\a\n" +
-	"\x03MAX\x10\x03\x1aE\n" +
-	"\x17RowConditionExpectation\x12*\n" +
-	"\x0esql_expression\x18\x01 \x01(\tB\x03\xe0A\x01R\rsqlExpression\x1aG\n" +
-	"\x19TableConditionExpectation\x12*\n" +
-	"\x0esql_expression\x18\x01 \x01(\tB\x03\xe0A\x01R\rsqlExpression\x1a8\n" +
-	"\fSqlAssertion\x12(\n" +
-	"\rsql_statement\x18\x01 \x01(\tB\x03\xe0A\x01R\fsqlStatement\x1a\xee\x03\n" +
-	"\x11TemplateReference\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1ddataplex.googleapis.com/EntryR\x04name\x12d\n" +
-	"\x06values\x18\x05 \x03(\v2G.google.cloud.dataplex.v1.DataQualityRule.TemplateReference.ValuesEntryB\x03\xe0A\x01R\x06values\x12&\n" +
-	"\fresolved_sql\x18\x03 \x01(\tB\x03\xe0A\x03R\vresolvedSql\x12[\n" +
-	"\rrule_template\x18\x04 \x01(\v21.google.cloud.dataplex.v1.DataQualityRuleTemplateB\x03\xe0A\x03R\fruleTemplate\x1a+\n" +
-	"\x0eParameterValue\x12\x19\n" +
-	"\x05value\x18\x01 \x01(\tB\x03\xe0A\x02R\x05value\x1a\x85\x01\n" +
+	"\x03MAX\x10\x03\x1aF\n" +
+	"\x17RowConditionExpectation\x12+\n" +
+	"\x0esql_expression\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\rsqlExpression\x1aH\n" +
+	"\x19TableConditionExpectation\x12+\n" +
+	"\x0esql_expression\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\rsqlExpression\x1a9\n" +
+	"\fSqlAssertion\x12)\n" +
+	"\rsql_statement\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\fsqlStatement\x1a\xf3\x03\n" +
+	"\x11TemplateReference\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1ddataplex.googleapis.com/EntryR\x04name\x12e\n" +
+	"\x06values\x18\x05 \x03(\v2G.google.cloud.dataplex.v1.DataQualityRule.TemplateReference.ValuesEntryB\x04\xe2A\x01\x01R\x06values\x12'\n" +
+	"\fresolved_sql\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\vresolvedSql\x12\\\n" +
+	"\rrule_template\x18\x04 \x01(\v21.google.cloud.dataplex.v1.DataQualityRuleTemplateB\x04\xe2A\x01\x03R\fruleTemplate\x1a,\n" +
+	"\x0eParameterValue\x12\x1a\n" +
+	"\x05value\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05value\x1a\x85\x01\n" +
 	"\vValuesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12`\n" +
-	"\x05value\x18\x02 \x01(\v2J.google.cloud.dataplex.v1.DataQualityRule.TemplateReference.ParameterValueR\x05value:\x028\x01\x1a\x88\x05\n" +
+	"\x05value\x18\x02 \x01(\v2J.google.cloud.dataplex.v1.DataQualityRule.TemplateReference.ParameterValueR\x05value:\x028\x01\x1a\x90\x05\n" +
 	"\n" +
-	"RuleSource\x12w\n" +
-	"\x12rule_path_elements\x18\x01 \x03(\v2D.google.cloud.dataplex.v1.DataQualityRule.RuleSource.RulePathElementB\x03\xe0A\x03R\x10rulePathElements\x1a\x80\x04\n" +
-	"\x0fRulePathElement\x12z\n" +
-	"\fentry_source\x18\x01 \x01(\v2P.google.cloud.dataplex.v1.DataQualityRule.RuleSource.RulePathElement.EntrySourceB\x03\xe0A\x03H\x00R\ventrySource\x12\x87\x01\n" +
-	"\x11entry_link_source\x18\x02 \x01(\v2T.google.cloud.dataplex.v1.DataQualityRule.RuleSource.RulePathElement.EntryLinkSourceB\x03\xe0A\x03H\x00R\x0fentryLinkSource\x1at\n" +
-	"\vEntrySource\x12\"\n" +
+	"RuleSource\x12x\n" +
+	"\x12rule_path_elements\x18\x01 \x03(\v2D.google.cloud.dataplex.v1.DataQualityRule.RuleSource.RulePathElementB\x04\xe2A\x01\x03R\x10rulePathElements\x1a\x87\x04\n" +
+	"\x0fRulePathElement\x12{\n" +
+	"\fentry_source\x18\x01 \x01(\v2P.google.cloud.dataplex.v1.DataQualityRule.RuleSource.RulePathElement.EntrySourceB\x04\xe2A\x01\x03H\x00R\ventrySource\x12\x88\x01\n" +
+	"\x11entry_link_source\x18\x02 \x01(\v2T.google.cloud.dataplex.v1.DataQualityRule.RuleSource.RulePathElement.EntryLinkSourceB\x04\xe2A\x01\x03H\x00R\x0fentryLinkSource\x1aw\n" +
+	"\vEntrySource\x12#\n" +
 	"\n" +
-	"entry_type\x18\x01 \x01(\tB\x03\xe0A\x03R\tentryType\x12\x19\n" +
-	"\x05entry\x18\x02 \x01(\tB\x03\xe0A\x03R\x05entry\x12&\n" +
-	"\fdisplay_name\x18\x03 \x01(\tB\x03\xe0A\x03R\vdisplayName\x1ab\n" +
-	"\x0fEntryLinkSource\x12+\n" +
-	"\x0fentry_link_type\x18\x01 \x01(\tB\x03\xe0A\x03R\rentryLinkType\x12\"\n" +
+	"entry_type\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\tentryType\x12\x1a\n" +
+	"\x05entry\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x05entry\x12'\n" +
+	"\fdisplay_name\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x1ad\n" +
+	"\x0fEntryLinkSource\x12,\n" +
+	"\x0fentry_link_type\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\rentryLinkType\x12#\n" +
 	"\n" +
-	"entry_link\x18\x02 \x01(\tB\x03\xe0A\x03R\tentryLinkB\r\n" +
-	"\vsource_type\x1a]\n" +
+	"entry_link\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\tentryLinkB\r\n" +
+	"\vsource_type\x1a_\n" +
 	"\n" +
-	"DebugQuery\x12%\n" +
-	"\vdescription\x18\x01 \x01(\tB\x03\xe0A\x01R\vdescription\x12(\n" +
-	"\rsql_statement\x18\x02 \x01(\tB\x03\xe0A\x02R\fsqlStatement\x1a=\n" +
+	"DebugQuery\x12&\n" +
+	"\vdescription\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12)\n" +
+	"\rsql_statement\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\fsqlStatement\x1a=\n" +
 	"\x0fAttributesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\v\n" +
-	"\trule_type\"\xd8\x01\n" +
-	"\x17DataQualityColumnResult\x12\x1b\n" +
-	"\x06column\x18\x01 \x01(\tB\x03\xe0A\x03R\x06column\x12\x1e\n" +
-	"\x05score\x18\x02 \x01(\x02B\x03\xe0A\x03H\x00R\x05score\x88\x01\x01\x12\x1b\n" +
-	"\x06passed\x18\x03 \x01(\bB\x03\xe0A\x03R\x06passed\x12Y\n" +
+	"\trule_type\"\xdc\x01\n" +
+	"\x17DataQualityColumnResult\x12\x1c\n" +
+	"\x06column\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x06column\x12\x1f\n" +
+	"\x05score\x18\x02 \x01(\x02B\x04\xe2A\x01\x03H\x00R\x05score\x88\x01\x01\x12\x1c\n" +
+	"\x06passed\x18\x03 \x01(\bB\x04\xe2A\x01\x03R\x06passed\x12Z\n" +
 	"\n" +
-	"dimensions\x18\x04 \x03(\v24.google.cloud.dataplex.v1.DataQualityDimensionResultB\x03\xe0A\x03R\n" +
+	"dimensions\x18\x04 \x03(\v24.google.cloud.dataplex.v1.DataQualityDimensionResultB\x04\xe2A\x01\x03R\n" +
 	"dimensionsB\b\n" +
 	"\x06_scoreB\xc4\x01\xeaAU\n" +
 	"\x1dbigquery.googleapis.com/Table\x124projects/{project}/datasets/{dataset}/tables/{table}\n" +

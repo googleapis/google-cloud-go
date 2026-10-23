@@ -1747,8 +1747,9 @@ func (x *StreamingRecognitionResult) GetDtmfDigits() *TelephonyDtmfEvents {
 // Represents the natural language text to be processed.
 type TextInput struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The UTF-8 encoded natural language text to be processed.
+	// Optional. The UTF-8 encoded natural language text to be processed.
 	// Text length must not exceed 256 characters for virtual agent interactions.
+	// Only one of `text` and `companion_query` should be set - not both.
 	Text string `protobuf:"bytes,1,opt,name=text,proto3" json:"text,omitempty"`
 	// Required. The language of this conversational query. See [Language
 	// Support](https://cloud.google.com/dialogflow/docs/reference/language)
@@ -2161,12 +2162,12 @@ var File_google_cloud_dialogflow_v2beta1_session_proto protoreflect.FileDescript
 
 const file_google_cloud_dialogflow_v2beta1_session_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/dialogflow/v2beta1/session.proto\x12\x1fgoogle.cloud.dialogflow.v2beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a+google/cloud/dialogflow/v2beta1/agent.proto\x1a2google/cloud/dialogflow/v2beta1/audio_config.proto\x1a-google/cloud/dialogflow/v2beta1/context.proto\x1a,google/cloud/dialogflow/v2beta1/intent.proto\x1a9google/cloud/dialogflow/v2beta1/session_entity_type.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x17google/rpc/status.proto\x1a\x18google/type/latlng.proto\"\xdc\x03\n" +
-	"\x13DetectIntentRequest\x12C\n" +
-	"\asession\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"-google/cloud/dialogflow/v2beta1/session.proto\x12\x1fgoogle.cloud.dialogflow.v2beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a+google/cloud/dialogflow/v2beta1/agent.proto\x1a2google/cloud/dialogflow/v2beta1/audio_config.proto\x1a-google/cloud/dialogflow/v2beta1/context.proto\x1a,google/cloud/dialogflow/v2beta1/intent.proto\x1a9google/cloud/dialogflow/v2beta1/session_entity_type.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x17google/rpc/status.proto\x1a\x18google/type/latlng.proto\"\xde\x03\n" +
+	"\x13DetectIntentRequest\x12D\n" +
+	"\asession\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!dialogflow.googleapis.com/SessionR\asession\x12S\n" +
-	"\fquery_params\x18\x02 \x01(\v20.google.cloud.dialogflow.v2beta1.QueryParametersR\vqueryParams\x12Q\n" +
-	"\vquery_input\x18\x03 \x01(\v2+.google.cloud.dialogflow.v2beta1.QueryInputB\x03\xe0A\x02R\n" +
+	"\fquery_params\x18\x02 \x01(\v20.google.cloud.dialogflow.v2beta1.QueryParametersR\vqueryParams\x12R\n" +
+	"\vquery_input\x18\x03 \x01(\v2+.google.cloud.dialogflow.v2beta1.QueryInputB\x04\xe2A\x01\x02R\n" +
 	"queryInput\x12b\n" +
 	"\x13output_audio_config\x18\x04 \x01(\v22.google.cloud.dialogflow.v2beta1.OutputAudioConfigR\x11outputAudioConfig\x12S\n" +
 	"\x18output_audio_config_mask\x18\a \x01(\v2\x1a.google.protobuf.FieldMaskR\x15outputAudioConfigMask\x12\x1f\n" +
@@ -2240,12 +2241,12 @@ const file_google_cloud_dialogflow_v2beta1_session_proto_rawDesc = "" +
 	"\x03LOW\x10\x01\x12\n" +
 	"\n" +
 	"\x06MEDIUM\x10\x02\x12\b\n" +
-	"\x04HIGH\x10\x03\"\xc8\x04\n" +
-	"\x1cStreamingDetectIntentRequest\x12C\n" +
-	"\asession\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x04HIGH\x10\x03\"\xca\x04\n" +
+	"\x1cStreamingDetectIntentRequest\x12D\n" +
+	"\asession\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!dialogflow.googleapis.com/SessionR\asession\x12S\n" +
-	"\fquery_params\x18\x02 \x01(\v20.google.cloud.dialogflow.v2beta1.QueryParametersR\vqueryParams\x12Q\n" +
-	"\vquery_input\x18\x03 \x01(\v2+.google.cloud.dialogflow.v2beta1.QueryInputB\x03\xe0A\x02R\n" +
+	"\fquery_params\x18\x02 \x01(\v20.google.cloud.dialogflow.v2beta1.QueryParametersR\vqueryParams\x12R\n" +
+	"\vquery_input\x18\x03 \x01(\v2+.google.cloud.dialogflow.v2beta1.QueryInputB\x04\xe2A\x01\x02R\n" +
 	"queryInput\x12-\n" +
 	"\x10single_utterance\x18\x04 \x01(\bB\x02\x18\x01R\x0fsingleUtterance\x12b\n" +
 	"\x13output_audio_config\x18\x05 \x01(\v22.google.cloud.dialogflow.v2beta1.OutputAudioConfigR\x11outputAudioConfig\x12S\n" +
@@ -2308,9 +2309,9 @@ const file_google_cloud_dialogflow_v2beta1_session_proto_rawDesc = "" +
 	"\vDTMF_DIGITS\x10\x03\x12\x17\n" +
 	"\x13PARTIAL_DTMF_DIGITS\x10\x04\x12\x19\n" +
 	"\x15SPEECH_ACTIVITY_BEGIN\x10\x05\x12\x17\n" +
-	"\x13SPEECH_ACTIVITY_END\x10\x06\"D\n" +
-	"\tTextInput\x12\x12\n" +
-	"\x04text\x18\x01 \x01(\tR\x04text\x12#\n" +
+	"\x13SPEECH_ACTIVITY_END\x10\x06\"J\n" +
+	"\tTextInput\x12\x18\n" +
+	"\x04text\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04text\x12#\n" +
 	"\rlanguage_code\x18\x02 \x01(\tR\flanguageCode\"~\n" +
 	"\n" +
 	"EventInput\x12\x12\n" +

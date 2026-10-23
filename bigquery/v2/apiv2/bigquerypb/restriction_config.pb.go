@@ -137,9 +137,9 @@ var File_google_cloud_bigquery_v2_restriction_config_proto protoreflect.FileDesc
 
 const file_google_cloud_bigquery_v2_restriction_config_proto_rawDesc = "" +
 	"\n" +
-	"1google/cloud/bigquery/v2/restriction_config.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\"\xba\x01\n" +
-	"\x11RestrictionConfig\x12T\n" +
-	"\x04type\x18\x01 \x01(\x0e2;.google.cloud.bigquery.v2.RestrictionConfig.RestrictionTypeB\x03\xe0A\x03R\x04type\"O\n" +
+	"1google/cloud/bigquery/v2/restriction_config.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\"\xbb\x01\n" +
+	"\x11RestrictionConfig\x12U\n" +
+	"\x04type\x18\x01 \x01(\x0e2;.google.cloud.bigquery.v2.RestrictionConfig.RestrictionTypeB\x04\xe2A\x01\x03R\x04type\"O\n" +
 	"\x0fRestrictionType\x12 \n" +
 	"\x1cRESTRICTION_TYPE_UNSPECIFIED\x10\x00\x12\x1a\n" +
 	"\x16RESTRICTED_DATA_EGRESS\x10\x01Bu\n" +

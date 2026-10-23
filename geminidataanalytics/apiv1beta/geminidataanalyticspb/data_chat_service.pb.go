@@ -44,7 +44,8 @@ const (
 type ChatRequest_ThinkingMode int32
 
 const (
-	// Unspecified thinking mode, agent will use THINKING mode by default.
+	// Unspecified thinking mode, agent will use THINKING mode by default except
+	// for BigQuery user defaulting to FAST mode by default.
 	ChatRequest_THINKING_MODE_UNSPECIFIED ChatRequest_ThinkingMode = 0
 	// Fast mode, answers quickly.
 	ChatRequest_FAST ChatRequest_ThinkingMode = 1
@@ -93,11 +94,11 @@ func (ChatRequest_ThinkingMode) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_geminidataanalytics_v1beta_data_chat_service_proto_rawDescGZIP(), []int{9, 0}
 }
 
-// Model selection for the agent.
+// Model selection for the agent for BigQuery users.
 type ChatRequest_Model int32
 
 const (
-	// No model specified. The default model will be used.
+	// No model specified. Either preview or non preview model can be used.
 	ChatRequest_MODEL_UNSPECIFIED ChatRequest_Model = 0
 	// Use the most up-to-date non-preview model. This may constrain certain
 	// request level settings.
@@ -490,8 +491,11 @@ type GenerationOptions struct {
 	// Optional. If true (default to false), the service may return a
 	// clarifying_question if the input query is ambiguous.
 	GenerateDisambiguationQuestion bool `protobuf:"varint,4,opt,name=generate_disambiguation_question,json=generateDisambiguationQuestion,proto3" json:"generate_disambiguation_question,omitempty"`
-	unknownFields                  protoimpl.UnknownFields
-	sizeCache                      protoimpl.SizeCache
+	// Optional. If true (default to false), returns internal debugging
+	// information.
+	GenerateDebugInfo bool `protobuf:"varint,5,opt,name=generate_debug_info,json=generateDebugInfo,proto3" json:"generate_debug_info,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *GenerationOptions) Reset() {
@@ -548,6 +552,13 @@ func (x *GenerationOptions) GetGenerateExplanation() bool {
 func (x *GenerationOptions) GetGenerateDisambiguationQuestion() bool {
 	if x != nil {
 		return x.GenerateDisambiguationQuestion
+	}
+	return false
+}
+
+func (x *GenerationOptions) GetGenerateDebugInfo() bool {
+	if x != nil {
+		return x.GenerateDebugInfo
 	}
 	return false
 }
@@ -678,8 +689,17 @@ type QueryDataResponse struct {
 	// question to the user for clarification. The returned represents the
 	// service's best effort based on the ambiguous input.
 	DisambiguationQuestion []string `protobuf:"bytes,5,rep,name=disambiguation_question,json=disambiguationQuestion,proto3" json:"disambiguation_question,omitempty"`
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	// Detailed step-by-step pipeline execution information.
+	// Populated only if generation_options.generate_debug_info was true.
+	// Provided for debugging and transparency purposes only.
+	// The structure and content of this object is not guaranteed and may
+	// change at any time without notice. Do not write production code or
+	// business logic depending on the fields in this object.
+	PipelineDebugInfo *structpb.Struct `protobuf:"bytes,9,opt,name=pipeline_debug_info,json=pipelineDebugInfo,proto3" json:"pipeline_debug_info,omitempty"`
+	// Overall token usage for the request.
+	TokenUsage    *TokenUsage `protobuf:"bytes,10,opt,name=token_usage,json=tokenUsage,proto3" json:"token_usage,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *QueryDataResponse) Reset() {
@@ -747,6 +767,20 @@ func (x *QueryDataResponse) GetDisambiguationQuestion() []string {
 	return nil
 }
 
+func (x *QueryDataResponse) GetPipelineDebugInfo() *structpb.Struct {
+	if x != nil {
+		return x.PipelineDebugInfo
+	}
+	return nil
+}
+
+func (x *QueryDataResponse) GetTokenUsage() *TokenUsage {
+	if x != nil {
+		return x.TokenUsage
+	}
+	return nil
+}
+
 // The result of a query execution. The design is generic for all dialects.
 type ExecutedQueryResult struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -756,6 +790,9 @@ type ExecutedQueryResult struct {
 	Rows []*ExecutedQueryResult_Row `protobuf:"bytes,2,rep,name=rows,proto3" json:"rows,omitempty"`
 	// The total number of rows in the full result set, if known.
 	// This may be an estimate or an exact count.
+	// Note: if an internal limit (such as LIMIT 1000) was applied during query
+	// execution to guard against excessive data transfer, this count reflects the
+	// truncated result size rather than the unrestricted table result size.
 	TotalRowCount int64 `protobuf:"varint,3,opt,name=total_row_count,json=totalRowCount,proto3" json:"total_row_count,omitempty"`
 	// Set to true if the returned rows in `query_result` are a subset of the
 	// full result. This can happen, for example, if the query execution hits a
@@ -3678,34 +3715,39 @@ var File_google_cloud_geminidataanalytics_v1beta_data_chat_service_proto protore
 
 const file_google_cloud_geminidataanalytics_v1beta_data_chat_service_proto_rawDesc = "" +
 	"\n" +
-	"?google/cloud/geminidataanalytics/v1beta/data_chat_service.proto\x12'google.cloud.geminidataanalytics.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a5google/cloud/geminidataanalytics/v1beta/context.proto\x1a:google/cloud/geminidataanalytics/v1beta/conversation.proto\x1a9google/cloud/geminidataanalytics/v1beta/credentials.proto\x1a8google/cloud/geminidataanalytics/v1beta/datasource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbc\x02\n" +
-	"\x10QueryDataRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
-	"\x06prompt\x18\x02 \x01(\tB\x03\xe0A\x02R\x06prompt\x12X\n" +
-	"\acontext\x18\x03 \x01(\v29.google.cloud.geminidataanalytics.v1beta.QueryDataContextB\x03\xe0A\x02R\acontext\x12n\n" +
-	"\x12generation_options\x18\x04 \x01(\v2:.google.cloud.geminidataanalytics.v1beta.GenerationOptionsB\x03\xe0A\x01R\x11generationOptions\"\xa1\x02\n" +
-	"\x11GenerationOptions\x127\n" +
-	"\x15generate_query_result\x18\x01 \x01(\bB\x03\xe0A\x01R\x13generateQueryResult\x12L\n" +
-	" generate_natural_language_answer\x18\x02 \x01(\bB\x03\xe0A\x01R\x1dgenerateNaturalLanguageAnswer\x126\n" +
-	"\x14generate_explanation\x18\x03 \x01(\bB\x03\xe0A\x01R\x13generateExplanation\x12M\n" +
-	" generate_disambiguation_question\x18\x04 \x01(\bB\x03\xe0A\x01R\x1egenerateDisambiguationQuestion\"\xae\x02\n" +
-	"\x10QueryDataContext\x12w\n" +
-	"\x15datasource_references\x18\x01 \x01(\v2=.google.cloud.geminidataanalytics.v1beta.DatasourceReferencesB\x03\xe0A\x02R\x14datasourceReferences\x12\xa0\x01\n" +
-	"$parameterized_secure_view_parameters\x18\x02 \x01(\v2J.google.cloud.geminidataanalytics.v1beta.ParameterizedSecureViewParametersB\x03\xe0A\x01R!parameterizedSecureViewParameters\"\xdd\x01\n" +
-	"!ParameterizedSecureViewParameters\x12y\n" +
+	"?google/cloud/geminidataanalytics/v1beta/data_chat_service.proto\x12'google.cloud.geminidataanalytics.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a5google/cloud/geminidataanalytics/v1beta/context.proto\x1a:google/cloud/geminidataanalytics/v1beta/conversation.proto\x1a9google/cloud/geminidataanalytics/v1beta/credentials.proto\x1a8google/cloud/geminidataanalytics/v1beta/datasource.proto\x1a3google/cloud/geminidataanalytics/v1beta/usage.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc0\x02\n" +
+	"\x10QueryDataRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12\x1c\n" +
+	"\x06prompt\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06prompt\x12Y\n" +
+	"\acontext\x18\x03 \x01(\v29.google.cloud.geminidataanalytics.v1beta.QueryDataContextB\x04\xe2A\x01\x02R\acontext\x12o\n" +
+	"\x12generation_options\x18\x04 \x01(\v2:.google.cloud.geminidataanalytics.v1beta.GenerationOptionsB\x04\xe2A\x01\x01R\x11generationOptions\"\xdb\x02\n" +
+	"\x11GenerationOptions\x128\n" +
+	"\x15generate_query_result\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x13generateQueryResult\x12M\n" +
+	" generate_natural_language_answer\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x1dgenerateNaturalLanguageAnswer\x127\n" +
+	"\x14generate_explanation\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x13generateExplanation\x12N\n" +
+	" generate_disambiguation_question\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x1egenerateDisambiguationQuestion\x124\n" +
+	"\x13generate_debug_info\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\x11generateDebugInfo\"\xb0\x02\n" +
+	"\x10QueryDataContext\x12x\n" +
+	"\x15datasource_references\x18\x01 \x01(\v2=.google.cloud.geminidataanalytics.v1beta.DatasourceReferencesB\x04\xe2A\x01\x02R\x14datasourceReferences\x12\xa1\x01\n" +
+	"$parameterized_secure_view_parameters\x18\x02 \x01(\v2J.google.cloud.geminidataanalytics.v1beta.ParameterizedSecureViewParametersB\x04\xe2A\x01\x01R!parameterizedSecureViewParameters\"\xe0\x01\n" +
+	"!ParameterizedSecureViewParameters\x12z\n" +
 	"\n" +
-	"parameters\x18\x01 \x03(\v2T.google.cloud.geminidataanalytics.v1beta.ParameterizedSecureViewParameters.ParameterB\x03\xe0A\x01R\n" +
-	"parameters\x1a=\n" +
-	"\tParameter\x12\x15\n" +
-	"\x03key\x18\x01 \x01(\tB\x03\xe0A\x02R\x03key\x12\x19\n" +
-	"\x05value\x18\x02 \x01(\tB\x03\xe0A\x02R\x05value\"\xbd\x02\n" +
+	"parameters\x18\x01 \x03(\v2T.google.cloud.geminidataanalytics.v1beta.ParameterizedSecureViewParameters.ParameterB\x04\xe2A\x01\x01R\n" +
+	"parameters\x1a?\n" +
+	"\tParameter\x12\x16\n" +
+	"\x03key\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03key\x12\x1a\n" +
+	"\x05value\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05value\"\xdc\x03\n" +
 	"\x11QueryDataResponse\x12'\n" +
 	"\x0fgenerated_query\x18\x01 \x01(\tR\x0egeneratedQuery\x12-\n" +
 	"\x12intent_explanation\x18\x02 \x01(\tR\x11intentExplanation\x12_\n" +
 	"\fquery_result\x18\x03 \x01(\v2<.google.cloud.geminidataanalytics.v1beta.ExecutedQueryResultR\vqueryResult\x126\n" +
 	"\x17natural_language_answer\x18\x04 \x01(\tR\x15naturalLanguageAnswer\x127\n" +
-	"\x17disambiguation_question\x18\x05 \x03(\tR\x16disambiguationQuestion\"\x81\x04\n" +
+	"\x17disambiguation_question\x18\x05 \x03(\tR\x16disambiguationQuestion\x12G\n" +
+	"\x13pipeline_debug_info\x18\t \x01(\v2\x17.google.protobuf.StructR\x11pipelineDebugInfo\x12T\n" +
+	"\vtoken_usage\x18\n" +
+	" \x01(\v23.google.cloud.geminidataanalytics.v1beta.TokenUsageR\n" +
+	"tokenUsage\"\x81\x04\n" +
 	"\x13ExecutedQueryResult\x12]\n" +
 	"\acolumns\x18\x01 \x03(\v2C.google.cloud.geminidataanalytics.v1beta.ExecutedQueryResult.ColumnR\acolumns\x12T\n" +
 	"\x04rows\x18\x02 \x03(\v2@.google.cloud.geminidataanalytics.v1beta.ExecutedQueryResult.RowR\x04rows\x12&\n" +
@@ -3718,34 +3760,34 @@ const file_google_cloud_geminidataanalytics_v1beta_data_chat_service_proto_rawDe
 	"\x05Value\x12\x14\n" +
 	"\x05value\x18\x01 \x01(\tR\x05value\x1aa\n" +
 	"\x03Row\x12Z\n" +
-	"\x06values\x18\x01 \x03(\v2B.google.cloud.geminidataanalytics.v1beta.ExecutedQueryResult.ValueR\x06values\"\xc9\x01\n" +
-	"\x13ListMessagesRequest\x12O\n" +
-	"\x06parent\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/geminidataanalytics.googleapis.com/ConversationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x06values\x18\x01 \x03(\v2B.google.cloud.geminidataanalytics.v1beta.ExecutedQueryResult.ValueR\x06values\"\xcd\x01\n" +
+	"\x13ListMessagesRequest\x12P\n" +
+	"\x06parent\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/geminidataanalytics.googleapis.com/ConversationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x05 \x01(\tB\x03\xe0A\x01R\x06filter\"\x93\x01\n" +
+	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x93\x01\n" +
 	"\x14ListMessagesResponse\x12S\n" +
 	"\bmessages\x18\x01 \x03(\v27.google.cloud.geminidataanalytics.v1beta.StorageMessageR\bmessages\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"{\n" +
 	"\x0eStorageMessage\x12\x1d\n" +
 	"\n" +
 	"message_id\x18\x01 \x01(\tR\tmessageId\x12J\n" +
-	"\amessage\x18\x02 \x01(\v20.google.cloud.geminidataanalytics.v1beta.MessageR\amessage\"\xe3\t\n" +
-	"\vChatRequest\x12^\n" +
-	"\x0einline_context\x18e \x01(\v20.google.cloud.geminidataanalytics.v1beta.ContextB\x03\xe0A\x01H\x00R\rinlineContext\x12|\n" +
-	"\x16conversation_reference\x18g \x01(\v2>.google.cloud.geminidataanalytics.v1beta.ConversationReferenceB\x03\xe0A\x01H\x00R\x15conversationReference\x12n\n" +
-	"\x12data_agent_context\x18h \x01(\v29.google.cloud.geminidataanalytics.v1beta.DataAgentContextB\x03\xe0A\x01H\x00R\x10dataAgentContext\x12\x93\x01\n" +
-	"\x1fclient_managed_resource_context\x18i \x01(\v2E.google.cloud.geminidataanalytics.v1beta.ClientManagedResourceContextB\x03\xe0A\x01H\x00R\x1cclientManagedResourceContext\x12g\n" +
-	"\x0flooker_settings\x18\r \x01(\v27.google.cloud.geminidataanalytics.v1beta.LookerSettingsB\x03\xe0A\x01H\x01R\x0elookerSettings\x12O\n" +
-	"\aproject\x18\x01 \x01(\tB5\xe0A\x01\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/Project\x18\x01R\aproject\x12\x1b\n" +
-	"\x06parent\x18\x03 \x01(\tB\x03\xe0A\x02R\x06parent\x12Q\n" +
-	"\bmessages\x18\x02 \x03(\v20.google.cloud.geminidataanalytics.v1beta.MessageB\x03\xe0A\x02R\bmessages\x12[\n" +
-	"\vcredentials\x18\a \x01(\v24.google.cloud.geminidataanalytics.v1beta.CredentialsB\x03\xe0A\x01R\vcredentials\x12k\n" +
-	"\rthinking_mode\x18\t \x01(\x0e2A.google.cloud.geminidataanalytics.v1beta.ChatRequest.ThinkingModeB\x03\xe0A\x01R\fthinkingMode\x12U\n" +
-	"\x05model\x18\v \x01(\x0e2:.google.cloud.geminidataanalytics.v1beta.ChatRequest.ModelB\x03\xe0A\x01R\x05model\"E\n" +
+	"\amessage\x18\x02 \x01(\v20.google.cloud.geminidataanalytics.v1beta.MessageR\amessage\"\xee\t\n" +
+	"\vChatRequest\x12_\n" +
+	"\x0einline_context\x18e \x01(\v20.google.cloud.geminidataanalytics.v1beta.ContextB\x04\xe2A\x01\x01H\x00R\rinlineContext\x12}\n" +
+	"\x16conversation_reference\x18g \x01(\v2>.google.cloud.geminidataanalytics.v1beta.ConversationReferenceB\x04\xe2A\x01\x01H\x00R\x15conversationReference\x12o\n" +
+	"\x12data_agent_context\x18h \x01(\v29.google.cloud.geminidataanalytics.v1beta.DataAgentContextB\x04\xe2A\x01\x01H\x00R\x10dataAgentContext\x12\x94\x01\n" +
+	"\x1fclient_managed_resource_context\x18i \x01(\v2E.google.cloud.geminidataanalytics.v1beta.ClientManagedResourceContextB\x04\xe2A\x01\x01H\x00R\x1cclientManagedResourceContext\x12h\n" +
+	"\x0flooker_settings\x18\r \x01(\v27.google.cloud.geminidataanalytics.v1beta.LookerSettingsB\x04\xe2A\x01\x01H\x01R\x0elookerSettings\x12P\n" +
+	"\aproject\x18\x01 \x01(\tB6\xe2A\x01\x01\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/Project\x18\x01R\aproject\x12\x1c\n" +
+	"\x06parent\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12R\n" +
+	"\bmessages\x18\x02 \x03(\v20.google.cloud.geminidataanalytics.v1beta.MessageB\x04\xe2A\x01\x02R\bmessages\x12\\\n" +
+	"\vcredentials\x18\a \x01(\v24.google.cloud.geminidataanalytics.v1beta.CredentialsB\x04\xe2A\x01\x01R\vcredentials\x12l\n" +
+	"\rthinking_mode\x18\t \x01(\x0e2A.google.cloud.geminidataanalytics.v1beta.ChatRequest.ThinkingModeB\x04\xe2A\x01\x01R\fthinkingMode\x12V\n" +
+	"\x05model\x18\v \x01(\x0e2:.google.cloud.geminidataanalytics.v1beta.ChatRequest.ModelB\x04\xe2A\x01\x01R\x05model\"E\n" +
 	"\fThinkingMode\x12\x1d\n" +
 	"\x19THINKING_MODE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04FAST\x10\x01\x12\f\n" +
@@ -3754,54 +3796,54 @@ const file_google_cloud_geminidataanalytics_v1beta_data_chat_service_proto_rawDe
 	"\x11MODEL_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fLATEST_GA_MODEL\x10\x01B\x12\n" +
 	"\x10context_providerB\x15\n" +
-	"\x13datasource_settings\"\x8d\x03\n" +
-	"\x10DataAgentContext\x12S\n" +
+	"\x13datasource_settings\"\x90\x03\n" +
+	"\x10DataAgentContext\x12T\n" +
 	"\n" +
-	"data_agent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",geminidataanalytics.googleapis.com/DataAgentR\tdataAgent\x12]\n" +
-	"\vcredentials\x18\x02 \x01(\v24.google.cloud.geminidataanalytics.v1beta.CredentialsB\x05\xe0A\x01\x18\x01R\vcredentials\x12v\n" +
-	"\x0fcontext_version\x18\x03 \x01(\x0e2H.google.cloud.geminidataanalytics.v1beta.DataAgentContext.ContextVersionB\x03\xe0A\x01R\x0econtextVersion\"M\n" +
+	"data_agent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",geminidataanalytics.googleapis.com/DataAgentR\tdataAgent\x12^\n" +
+	"\vcredentials\x18\x02 \x01(\v24.google.cloud.geminidataanalytics.v1beta.CredentialsB\x06\xe2A\x01\x01\x18\x01R\vcredentials\x12w\n" +
+	"\x0fcontext_version\x18\x03 \x01(\x0e2H.google.cloud.geminidataanalytics.v1beta.DataAgentContext.ContextVersionB\x04\xe2A\x01\x01R\x0econtextVersion\"M\n" +
 	"\x0eContextVersion\x12\x1f\n" +
 	"\x1bCONTEXT_VERSION_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aSTAGING\x10\x01\x12\r\n" +
-	"\tPUBLISHED\x10\x02\"\xe2\x01\n" +
-	"\x15ConversationReference\x12[\n" +
-	"\fconversation\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/geminidataanalytics.googleapis.com/ConversationR\fconversation\x12l\n" +
-	"\x12data_agent_context\x18\x03 \x01(\v29.google.cloud.geminidataanalytics.v1beta.DataAgentContextB\x03\xe0A\x02R\x10dataAgentContext\"\xca\x01\n" +
-	"\x1cClientManagedResourceContext\x12\\\n" +
-	"\x0einline_context\x18\x01 \x01(\v20.google.cloud.geminidataanalytics.v1beta.ContextB\x03\xe0A\x02R\rinlineContext\x12,\n" +
-	"\x0fconversation_id\x18\x02 \x01(\tB\x03\xe0A\x01R\x0econversationId\x12\x1e\n" +
-	"\bagent_id\x18\x03 \x01(\tB\x03\xe0A\x01R\aagentId\"\xb0\x02\n" +
+	"\tPUBLISHED\x10\x02\"\xe4\x01\n" +
+	"\x15ConversationReference\x12\\\n" +
+	"\fconversation\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/geminidataanalytics.googleapis.com/ConversationR\fconversation\x12m\n" +
+	"\x12data_agent_context\x18\x03 \x01(\v29.google.cloud.geminidataanalytics.v1beta.DataAgentContextB\x04\xe2A\x01\x02R\x10dataAgentContext\"\xcd\x01\n" +
+	"\x1cClientManagedResourceContext\x12]\n" +
+	"\x0einline_context\x18\x01 \x01(\v20.google.cloud.geminidataanalytics.v1beta.ContextB\x04\xe2A\x01\x02R\rinlineContext\x12-\n" +
+	"\x0fconversation_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x0econversationId\x12\x1f\n" +
+	"\bagent_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\aagentId\"\xb2\x02\n" +
 	"\aMessage\x12Y\n" +
 	"\fuser_message\x18\x02 \x01(\v24.google.cloud.geminidataanalytics.v1beta.UserMessageH\x00R\vuserMessage\x12_\n" +
-	"\x0esystem_message\x18\x03 \x01(\v26.google.cloud.geminidataanalytics.v1beta.SystemMessageH\x00R\rsystemMessage\x12=\n" +
-	"\ttimestamp\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\ttimestamp\x12\"\n" +
+	"\x0esystem_message\x18\x03 \x01(\v26.google.cloud.geminidataanalytics.v1beta.SystemMessageH\x00R\rsystemMessage\x12>\n" +
+	"\ttimestamp\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\ttimestamp\x12#\n" +
 	"\n" +
-	"message_id\x18\x04 \x01(\tB\x03\xe0A\x01R\tmessageIdB\x06\n" +
-	"\x04kind\"=\n" +
-	"\x0eLookerSettings\x12+\n" +
-	"\x0fenable_dev_mode\x18\x01 \x01(\bB\x03\xe0A\x01R\renableDevMode\"+\n" +
+	"message_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tmessageIdB\x06\n" +
+	"\x04kind\">\n" +
+	"\x0eLookerSettings\x12,\n" +
+	"\x0fenable_dev_mode\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\renableDevMode\"+\n" +
 	"\vUserMessage\x12\x14\n" +
 	"\x04text\x18\x01 \x01(\tH\x00R\x04textB\x06\n" +
-	"\x04kind\"\xcf\x06\n" +
+	"\x04kind\"\xd2\x06\n" +
 	"\rSystemMessage\x12J\n" +
 	"\x04text\x18\x01 \x01(\v24.google.cloud.geminidataanalytics.v1beta.TextMessageH\x00R\x04text\x12P\n" +
 	"\x06schema\x18\x02 \x01(\v26.google.cloud.geminidataanalytics.v1beta.SchemaMessageH\x00R\x06schema\x12J\n" +
 	"\x04data\x18\x03 \x01(\v24.google.cloud.geminidataanalytics.v1beta.DataMessageH\x00R\x04data\x12V\n" +
 	"\banalysis\x18\x04 \x01(\v28.google.cloud.geminidataanalytics.v1beta.AnalysisMessageH\x00R\banalysis\x12M\n" +
 	"\x05chart\x18\x05 \x01(\v25.google.cloud.geminidataanalytics.v1beta.ChartMessageH\x00R\x05chart\x12M\n" +
-	"\x05error\x18\x06 \x01(\v25.google.cloud.geminidataanalytics.v1beta.ErrorMessageH\x00R\x05error\x12g\n" +
-	"\x0fexample_queries\x18\r \x01(\v27.google.cloud.geminidataanalytics.v1beta.ExampleQueriesB\x03\xe0A\x01H\x00R\x0eexampleQueries\x12l\n" +
-	"\rclarification\x18\x0e \x01(\v2=.google.cloud.geminidataanalytics.v1beta.ClarificationMessageB\x05\xe0A\x01\x18\x01H\x00R\rclarification\x12\x1e\n" +
-	"\bgroup_id\x18\f \x01(\x05H\x01R\agroupId\x88\x01\x01\x12R\n" +
-	"\bcitation\x18\x0f \x01(\v21.google.cloud.geminidataanalytics.v1beta.CitationB\x03\xe0A\x03R\bcitationB\x06\n" +
+	"\x05error\x18\x06 \x01(\v25.google.cloud.geminidataanalytics.v1beta.ErrorMessageH\x00R\x05error\x12h\n" +
+	"\x0fexample_queries\x18\r \x01(\v27.google.cloud.geminidataanalytics.v1beta.ExampleQueriesB\x04\xe2A\x01\x01H\x00R\x0eexampleQueries\x12m\n" +
+	"\rclarification\x18\x0e \x01(\v2=.google.cloud.geminidataanalytics.v1beta.ClarificationMessageB\x06\xe2A\x01\x01\x18\x01H\x00R\rclarification\x12\x1e\n" +
+	"\bgroup_id\x18\f \x01(\x05H\x01R\agroupId\x88\x01\x01\x12S\n" +
+	"\bcitation\x18\x0f \x01(\v21.google.cloud.geminidataanalytics.v1beta.CitationB\x04\xe2A\x01\x03R\bcitationB\x06\n" +
 	"\x04kindB\v\n" +
-	"\t_group_id\"\xa9\x02\n" +
-	"\vTextMessage\x12\x19\n" +
-	"\x05parts\x18\x01 \x03(\tB\x03\xe0A\x01R\x05parts\x12_\n" +
-	"\ttext_type\x18\x02 \x01(\x0e2=.google.cloud.geminidataanalytics.v1beta.TextMessage.TextTypeB\x03\xe0A\x01R\btextType\x120\n" +
-	"\x11thought_signature\x18\x03 \x01(\fB\x03\xe0A\x01R\x10thoughtSignature\"l\n" +
+	"\t_group_id\"\xac\x02\n" +
+	"\vTextMessage\x12\x1a\n" +
+	"\x05parts\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\x05parts\x12`\n" +
+	"\ttext_type\x18\x02 \x01(\x0e2=.google.cloud.geminidataanalytics.v1beta.TextMessage.TextTypeB\x04\xe2A\x01\x01R\btextType\x121\n" +
+	"\x11thought_signature\x18\x03 \x01(\fB\x04\xe2A\x01\x01R\x10thoughtSignature\"l\n" +
 	"\bTextType\x12\x19\n" +
 	"\x15TEXT_TYPE_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eFINAL_RESPONSE\x10\x01\x12\v\n" +
@@ -3811,11 +3853,11 @@ const file_google_cloud_geminidataanalytics_v1beta_data_chat_service_proto_rawDe
 	"\rSchemaMessage\x12L\n" +
 	"\x05query\x18\x01 \x01(\v24.google.cloud.geminidataanalytics.v1beta.SchemaQueryH\x00R\x05query\x12O\n" +
 	"\x06result\x18\x02 \x01(\v25.google.cloud.geminidataanalytics.v1beta.SchemaResultH\x00R\x06resultB\x06\n" +
-	"\x04kind\".\n" +
-	"\vSchemaQuery\x12\x1f\n" +
-	"\bquestion\x18\x01 \x01(\tB\x03\xe0A\x01R\bquestion\"j\n" +
-	"\fSchemaResult\x12Z\n" +
-	"\vdatasources\x18\x01 \x03(\v23.google.cloud.geminidataanalytics.v1beta.DatasourceB\x03\xe0A\x01R\vdatasources\"\x83\x04\n" +
+	"\x04kind\"/\n" +
+	"\vSchemaQuery\x12 \n" +
+	"\bquestion\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\bquestion\"k\n" +
+	"\fSchemaResult\x12[\n" +
+	"\vdatasources\x18\x01 \x03(\v23.google.cloud.geminidataanalytics.v1beta.DatasourceB\x04\xe2A\x01\x01R\vdatasources\"\x83\x04\n" +
 	"\vDataMessage\x12J\n" +
 	"\x05query\x18\x01 \x01(\v22.google.cloud.geminidataanalytics.v1beta.DataQueryH\x00R\x05query\x12%\n" +
 	"\rgenerated_sql\x18\x02 \x01(\tH\x00R\fgeneratedSql\x12M\n" +
@@ -3823,34 +3865,34 @@ const file_google_cloud_geminidataanalytics_v1beta_data_chat_service_proto_rawDe
 	"\x16generated_looker_query\x18\x04 \x01(\v24.google.cloud.geminidataanalytics.v1beta.LookerQueryB\x02\x18\x01H\x00R\x14generatedLookerQuery\x12Z\n" +
 	"\rbig_query_job\x18\x05 \x01(\v24.google.cloud.geminidataanalytics.v1beta.BigQueryJobH\x00R\vbigQueryJob\x12\\\n" +
 	"\rmatched_query\x18\x06 \x01(\v25.google.cloud.geminidataanalytics.v1beta.MatchedQueryH\x00R\fmatchedQueryB\x06\n" +
-	"\x04kind\"\x84\x02\n" +
-	"\tDataQuery\x12S\n" +
-	"\x06looker\x18\x04 \x01(\v24.google.cloud.geminidataanalytics.v1beta.LookerQueryB\x03\xe0A\x01H\x00R\x06looker\x12\x1f\n" +
-	"\bquestion\x18\x01 \x01(\tB\x03\xe0A\x01R\bquestion\x12\x17\n" +
-	"\x04name\x18\x03 \x01(\tB\x03\xe0A\x01R\x04name\x12Z\n" +
-	"\vdatasources\x18\x02 \x03(\v23.google.cloud.geminidataanalytics.v1beta.DatasourceB\x03\xe0A\x01R\vdatasourcesB\f\n" +
+	"\x04kind\"\x88\x02\n" +
+	"\tDataQuery\x12T\n" +
+	"\x06looker\x18\x04 \x01(\v24.google.cloud.geminidataanalytics.v1beta.LookerQueryB\x04\xe2A\x01\x01H\x00R\x06looker\x12 \n" +
+	"\bquestion\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\bquestion\x12\x18\n" +
+	"\x04name\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04name\x12[\n" +
+	"\vdatasources\x18\x02 \x03(\v23.google.cloud.geminidataanalytics.v1beta.DatasourceB\x04\xe2A\x01\x01R\vdatasourcesB\f\n" +
 	"\n" +
-	"query_type\"\xea\x01\n" +
+	"query_type\"\xee\x01\n" +
 	"\n" +
-	"DataResult\x12\x17\n" +
-	"\x04name\x18\x03 \x01(\tB\x03\xe0A\x01R\x04name\x12L\n" +
-	"\x06schema\x18\x05 \x01(\v2/.google.cloud.geminidataanalytics.v1beta.SchemaB\x03\xe0A\x01R\x06schema\x120\n" +
-	"\x04data\x18\x02 \x03(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x04data\x12C\n" +
-	"\x0eformatted_data\x18\x06 \x03(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\rformattedData\"\xaf\x02\n" +
-	"\vBigQueryJob\x12\"\n" +
+	"DataResult\x12\x18\n" +
+	"\x04name\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04name\x12M\n" +
+	"\x06schema\x18\x05 \x01(\v2/.google.cloud.geminidataanalytics.v1beta.SchemaB\x04\xe2A\x01\x01R\x06schema\x121\n" +
+	"\x04data\x18\x02 \x03(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\x04data\x12D\n" +
+	"\x0eformatted_data\x18\x06 \x03(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\rformattedData\"\xb4\x02\n" +
+	"\vBigQueryJob\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x1a\n" +
-	"\x06job_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x05jobId\x12\x1f\n" +
-	"\blocation\x18\x05 \x01(\tB\x03\xe0A\x01R\blocation\x12q\n" +
-	"\x11destination_table\x18\x03 \x01(\v2?.google.cloud.geminidataanalytics.v1beta.BigQueryTableReferenceB\x03\xe0A\x01R\x10destinationTable\x12L\n" +
-	"\x06schema\x18\a \x01(\v2/.google.cloud.geminidataanalytics.v1beta.SchemaB\x03\xe0A\x01R\x06schema\"\xca\x01\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12\x1b\n" +
+	"\x06job_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05jobId\x12 \n" +
+	"\blocation\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\blocation\x12r\n" +
+	"\x11destination_table\x18\x03 \x01(\v2?.google.cloud.geminidataanalytics.v1beta.BigQueryTableReferenceB\x04\xe2A\x01\x01R\x10destinationTable\x12M\n" +
+	"\x06schema\x18\a \x01(\v2/.google.cloud.geminidataanalytics.v1beta.SchemaB\x04\xe2A\x01\x01R\x06schema\"\xca\x01\n" +
 	"\x0fAnalysisMessage\x12N\n" +
 	"\x05query\x18\x01 \x01(\v26.google.cloud.geminidataanalytics.v1beta.AnalysisQueryH\x00R\x05query\x12_\n" +
 	"\x0eprogress_event\x18\x02 \x01(\v26.google.cloud.geminidataanalytics.v1beta.AnalysisEventH\x00R\rprogressEventB\x06\n" +
-	"\x04kind\"a\n" +
-	"\rAnalysisQuery\x12\x1f\n" +
-	"\bquestion\x18\x01 \x01(\tB\x03\xe0A\x01R\bquestion\x12/\n" +
-	"\x11data_result_names\x18\x02 \x03(\tB\x03\xe0A\x01R\x0fdataResultNames\"\xcc\x03\n" +
+	"\x04kind\"c\n" +
+	"\rAnalysisQuery\x12 \n" +
+	"\bquestion\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\bquestion\x120\n" +
+	"\x11data_result_names\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x0fdataResultNames\"\xcc\x03\n" +
 	"\rAnalysisEvent\x12-\n" +
 	"\x11planner_reasoning\x18\x02 \x01(\tH\x00R\x10plannerReasoning\x12-\n" +
 	"\x11coder_instruction\x18\x03 \x01(\tH\x00R\x10coderInstruction\x12\x14\n" +
@@ -3867,22 +3909,22 @@ const file_google_cloud_geminidataanalytics_v1beta_data_chat_service_proto_rawDe
 	"\fChartMessage\x12K\n" +
 	"\x05query\x18\x01 \x01(\v23.google.cloud.geminidataanalytics.v1beta.ChartQueryH\x00R\x05query\x12N\n" +
 	"\x06result\x18\x02 \x01(\v24.google.cloud.geminidataanalytics.v1beta.ChartResultH\x00R\x06resultB\x06\n" +
-	"\x04kind\"d\n" +
+	"\x04kind\"f\n" +
 	"\n" +
-	"ChartQuery\x12'\n" +
-	"\finstructions\x18\x01 \x01(\tB\x03\xe0A\x01R\finstructions\x12-\n" +
-	"\x10data_result_name\x18\x02 \x01(\tB\x03\xe0A\x01R\x0edataResultName\"\x96\x01\n" +
-	"\vChartResult\x12=\n" +
-	"\vvega_config\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\n" +
-	"vegaConfig\x12H\n" +
-	"\x05image\x18\x03 \x01(\v2-.google.cloud.geminidataanalytics.v1beta.BlobB\x03\xe0A\x01R\x05image\"'\n" +
-	"\fErrorMessage\x12\x17\n" +
-	"\x04text\x18\x01 \x01(\tB\x03\xe0A\x03R\x04text\"\xdc\x04\n" +
-	"\x15ClarificationQuestion\x12!\n" +
-	"\bquestion\x18\x01 \x01(\tB\x05\xe0A\x02\x18\x01R\bquestion\x12z\n" +
-	"\x0eselection_mode\x18\x02 \x01(\x0e2L.google.cloud.geminidataanalytics.v1beta.ClarificationQuestion.SelectionModeB\x05\xe0A\x02\x18\x01R\rselectionMode\x12\x1f\n" +
-	"\aoptions\x18\x03 \x03(\tB\x05\xe0A\x02\x18\x01R\aoptions\x12\x9f\x01\n" +
-	"\x1bclarification_question_type\x18\x04 \x01(\x0e2X.google.cloud.geminidataanalytics.v1beta.ClarificationQuestion.ClarificationQuestionTypeB\x05\xe0A\x01\x18\x01R\x19clarificationQuestionType\"d\n" +
+	"ChartQuery\x12(\n" +
+	"\finstructions\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\finstructions\x12.\n" +
+	"\x10data_result_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x0edataResultName\"\x98\x01\n" +
+	"\vChartResult\x12>\n" +
+	"\vvega_config\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\n" +
+	"vegaConfig\x12I\n" +
+	"\x05image\x18\x03 \x01(\v2-.google.cloud.geminidataanalytics.v1beta.BlobB\x04\xe2A\x01\x01R\x05image\"(\n" +
+	"\fErrorMessage\x12\x18\n" +
+	"\x04text\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04text\"\xe0\x04\n" +
+	"\x15ClarificationQuestion\x12\"\n" +
+	"\bquestion\x18\x01 \x01(\tB\x06\xe2A\x01\x02\x18\x01R\bquestion\x12{\n" +
+	"\x0eselection_mode\x18\x02 \x01(\x0e2L.google.cloud.geminidataanalytics.v1beta.ClarificationQuestion.SelectionModeB\x06\xe2A\x01\x02\x18\x01R\rselectionMode\x12 \n" +
+	"\aoptions\x18\x03 \x03(\tB\x06\xe2A\x01\x02\x18\x01R\aoptions\x12\xa0\x01\n" +
+	"\x1bclarification_question_type\x18\x04 \x01(\x0e2X.google.cloud.geminidataanalytics.v1beta.ClarificationQuestion.ClarificationQuestionTypeB\x06\xe2A\x01\x01\x18\x01R\x19clarificationQuestionType\"d\n" +
 	"\rSelectionMode\x12\"\n" +
 	"\x1aSELECTION_MODE_UNSPECIFIED\x10\x00\x1a\x02\b\x01\x12\x15\n" +
 	"\rSINGLE_SELECT\x10\x01\x1a\x02\b\x01\x12\x14\n" +
@@ -3890,18 +3932,19 @@ const file_google_cloud_geminidataanalytics_v1beta_data_chat_service_proto_rawDe
 	"\x19ClarificationQuestionType\x12/\n" +
 	"'CLARIFICATION_QUESTION_TYPE_UNSPECIFIED\x10\x00\x1a\x02\b\x01\x12\x15\n" +
 	"\rFILTER_VALUES\x10\x01\x1a\x02\b\x01\x12\x0e\n" +
-	"\x06FIELDS\x10\x02\x1a\x02\b\x01\x1a\x02\x18\x01:\x02\x18\x01\"\x7f\n" +
-	"\x14ClarificationMessage\x12c\n" +
-	"\tquestions\x18\x01 \x03(\v2>.google.cloud.geminidataanalytics.v1beta.ClarificationQuestionB\x05\xe0A\x02\x18\x01R\tquestions:\x02\x18\x01\"u\n" +
-	"\x0eExampleQueries\x12c\n" +
-	"\x0fexample_queries\x18\x01 \x03(\v25.google.cloud.geminidataanalytics.v1beta.ExampleQueryB\x03\xe0A\x01R\x0eexampleQueries\"A\n" +
-	"\x04Blob\x12 \n" +
-	"\tmime_type\x18\x01 \x01(\tB\x03\xe0A\x02R\bmimeType\x12\x17\n" +
-	"\x04data\x18\x02 \x01(\fB\x03\xe0A\x02R\x04data2\xae\f\n" +
+	"\x06FIELDS\x10\x02\x1a\x02\b\x01\x1a\x02\x18\x01:\x02\x18\x01\"\x80\x01\n" +
+	"\x14ClarificationMessage\x12d\n" +
+	"\tquestions\x18\x01 \x03(\v2>.google.cloud.geminidataanalytics.v1beta.ClarificationQuestionB\x06\xe2A\x01\x02\x18\x01R\tquestions:\x02\x18\x01\"v\n" +
+	"\x0eExampleQueries\x12d\n" +
+	"\x0fexample_queries\x18\x01 \x03(\v25.google.cloud.geminidataanalytics.v1beta.ExampleQueryB\x04\xe2A\x01\x01R\x0eexampleQueries\"C\n" +
+	"\x04Blob\x12!\n" +
+	"\tmime_type\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bmimeType\x12\x18\n" +
+	"\x04data\x18\x02 \x01(\fB\x04\xe2A\x01\x02R\x04data2\xb5\x0e\n" +
 	"\x0fDataChatService\x12\xa9\x01\n" +
 	"\x04Chat\x124.google.cloud.geminidataanalytics.v1beta.ChatRequest\x1a0.google.cloud.geminidataanalytics.v1beta.Message\"7\x82\xd3\xe4\x93\x021:\x01*\",/v1beta/{parent=projects/*/locations/*}:chat0\x01\x12\x82\x02\n" +
 	"\x12CreateConversation\x12B.google.cloud.geminidataanalytics.v1beta.CreateConversationRequest\x1a5.google.cloud.geminidataanalytics.v1beta.Conversation\"q\xdaA#parent,conversation,conversation_id\x82\xd3\xe4\x93\x02E:\fconversation\"5/v1beta/{parent=projects/*/locations/*}/conversations\x12\xb6\x01\n" +
-	"\x12DeleteConversation\x12B.google.cloud.geminidataanalytics.v1beta.DeleteConversationRequest\x1a\x16.google.protobuf.Empty\"D\xdaA\x04name\x82\xd3\xe4\x93\x027*5/v1beta/{name=projects/*/locations/*/conversations/*}\x12\xcf\x01\n" +
+	"\x12DeleteConversation\x12B.google.cloud.geminidataanalytics.v1beta.DeleteConversationRequest\x1a\x16.google.protobuf.Empty\"D\xdaA\x04name\x82\xd3\xe4\x93\x027*5/v1beta/{name=projects/*/locations/*/conversations/*}\x12\x84\x02\n" +
+	"\x12UpdateConversation\x12B.google.cloud.geminidataanalytics.v1beta.UpdateConversationRequest\x1a5.google.cloud.geminidataanalytics.v1beta.Conversation\"s\xdaA\x18conversation,update_mask\x82\xd3\xe4\x93\x02R:\fconversation2B/v1beta/{conversation.name=projects/*/locations/*/conversations/*}\x12\xcf\x01\n" +
 	"\x0fGetConversation\x12?.google.cloud.geminidataanalytics.v1beta.GetConversationRequest\x1a5.google.cloud.geminidataanalytics.v1beta.Conversation\"D\xdaA\x04name\x82\xd3\xe4\x93\x027\x125/v1beta/{name=projects/*/locations/*/conversations/*}\x12\xe2\x01\n" +
 	"\x11ListConversations\x12A.google.cloud.geminidataanalytics.v1beta.ListConversationsRequest\x1aB.google.cloud.geminidataanalytics.v1beta.ListConversationsResponse\"F\xdaA\x06parent\x82\xd3\xe4\x93\x027\x125/v1beta/{parent=projects/*/locations/*}/conversations\x12\xde\x01\n" +
 	"\fListMessages\x12<.google.cloud.geminidataanalytics.v1beta.ListMessagesRequest\x1a=.google.cloud.geminidataanalytics.v1beta.ListMessagesResponse\"Q\xdaA\x06parent\x82\xd3\xe4\x93\x02B\x12@/v1beta/{parent=projects/*/locations/*/conversations/*}/messages\x12\xc0\x01\n" +
@@ -3970,24 +4013,26 @@ var file_google_cloud_geminidataanalytics_v1beta_data_chat_service_proto_goTypes
 	(*ExecutedQueryResult_Value)(nil),                    // 44: google.cloud.geminidataanalytics.v1beta.ExecutedQueryResult.Value
 	(*ExecutedQueryResult_Row)(nil),                      // 45: google.cloud.geminidataanalytics.v1beta.ExecutedQueryResult.Row
 	(*DatasourceReferences)(nil),                         // 46: google.cloud.geminidataanalytics.v1beta.DatasourceReferences
-	(*Context)(nil),                                      // 47: google.cloud.geminidataanalytics.v1beta.Context
-	(*Credentials)(nil),                                  // 48: google.cloud.geminidataanalytics.v1beta.Credentials
-	(*timestamppb.Timestamp)(nil),                        // 49: google.protobuf.Timestamp
-	(*Citation)(nil),                                     // 50: google.cloud.geminidataanalytics.v1beta.Citation
-	(*Datasource)(nil),                                   // 51: google.cloud.geminidataanalytics.v1beta.Datasource
-	(*LookerQuery)(nil),                                  // 52: google.cloud.geminidataanalytics.v1beta.LookerQuery
-	(*MatchedQuery)(nil),                                 // 53: google.cloud.geminidataanalytics.v1beta.MatchedQuery
-	(*Schema)(nil),                                       // 54: google.cloud.geminidataanalytics.v1beta.Schema
-	(*structpb.Struct)(nil),                              // 55: google.protobuf.Struct
-	(*BigQueryTableReference)(nil),                       // 56: google.cloud.geminidataanalytics.v1beta.BigQueryTableReference
-	(*ExampleQuery)(nil),                                 // 57: google.cloud.geminidataanalytics.v1beta.ExampleQuery
-	(*CreateConversationRequest)(nil),                    // 58: google.cloud.geminidataanalytics.v1beta.CreateConversationRequest
-	(*DeleteConversationRequest)(nil),                    // 59: google.cloud.geminidataanalytics.v1beta.DeleteConversationRequest
-	(*GetConversationRequest)(nil),                       // 60: google.cloud.geminidataanalytics.v1beta.GetConversationRequest
-	(*ListConversationsRequest)(nil),                     // 61: google.cloud.geminidataanalytics.v1beta.ListConversationsRequest
-	(*Conversation)(nil),                                 // 62: google.cloud.geminidataanalytics.v1beta.Conversation
-	(*emptypb.Empty)(nil),                                // 63: google.protobuf.Empty
-	(*ListConversationsResponse)(nil),                    // 64: google.cloud.geminidataanalytics.v1beta.ListConversationsResponse
+	(*structpb.Struct)(nil),                              // 47: google.protobuf.Struct
+	(*TokenUsage)(nil),                                   // 48: google.cloud.geminidataanalytics.v1beta.TokenUsage
+	(*Context)(nil),                                      // 49: google.cloud.geminidataanalytics.v1beta.Context
+	(*Credentials)(nil),                                  // 50: google.cloud.geminidataanalytics.v1beta.Credentials
+	(*timestamppb.Timestamp)(nil),                        // 51: google.protobuf.Timestamp
+	(*Citation)(nil),                                     // 52: google.cloud.geminidataanalytics.v1beta.Citation
+	(*Datasource)(nil),                                   // 53: google.cloud.geminidataanalytics.v1beta.Datasource
+	(*LookerQuery)(nil),                                  // 54: google.cloud.geminidataanalytics.v1beta.LookerQuery
+	(*MatchedQuery)(nil),                                 // 55: google.cloud.geminidataanalytics.v1beta.MatchedQuery
+	(*Schema)(nil),                                       // 56: google.cloud.geminidataanalytics.v1beta.Schema
+	(*BigQueryTableReference)(nil),                       // 57: google.cloud.geminidataanalytics.v1beta.BigQueryTableReference
+	(*ExampleQuery)(nil),                                 // 58: google.cloud.geminidataanalytics.v1beta.ExampleQuery
+	(*CreateConversationRequest)(nil),                    // 59: google.cloud.geminidataanalytics.v1beta.CreateConversationRequest
+	(*DeleteConversationRequest)(nil),                    // 60: google.cloud.geminidataanalytics.v1beta.DeleteConversationRequest
+	(*UpdateConversationRequest)(nil),                    // 61: google.cloud.geminidataanalytics.v1beta.UpdateConversationRequest
+	(*GetConversationRequest)(nil),                       // 62: google.cloud.geminidataanalytics.v1beta.GetConversationRequest
+	(*ListConversationsRequest)(nil),                     // 63: google.cloud.geminidataanalytics.v1beta.ListConversationsRequest
+	(*Conversation)(nil),                                 // 64: google.cloud.geminidataanalytics.v1beta.Conversation
+	(*emptypb.Empty)(nil),                                // 65: google.protobuf.Empty
+	(*ListConversationsResponse)(nil),                    // 66: google.cloud.geminidataanalytics.v1beta.ListConversationsResponse
 }
 var file_google_cloud_geminidataanalytics_v1beta_data_chat_service_proto_depIdxs = []int32{
 	8,  // 0: google.cloud.geminidataanalytics.v1beta.QueryDataRequest.context:type_name -> google.cloud.geminidataanalytics.v1beta.QueryDataContext
@@ -3996,81 +4041,85 @@ var file_google_cloud_geminidataanalytics_v1beta_data_chat_service_proto_depIdxs
 	9,  // 3: google.cloud.geminidataanalytics.v1beta.QueryDataContext.parameterized_secure_view_parameters:type_name -> google.cloud.geminidataanalytics.v1beta.ParameterizedSecureViewParameters
 	42, // 4: google.cloud.geminidataanalytics.v1beta.ParameterizedSecureViewParameters.parameters:type_name -> google.cloud.geminidataanalytics.v1beta.ParameterizedSecureViewParameters.Parameter
 	11, // 5: google.cloud.geminidataanalytics.v1beta.QueryDataResponse.query_result:type_name -> google.cloud.geminidataanalytics.v1beta.ExecutedQueryResult
-	43, // 6: google.cloud.geminidataanalytics.v1beta.ExecutedQueryResult.columns:type_name -> google.cloud.geminidataanalytics.v1beta.ExecutedQueryResult.Column
-	45, // 7: google.cloud.geminidataanalytics.v1beta.ExecutedQueryResult.rows:type_name -> google.cloud.geminidataanalytics.v1beta.ExecutedQueryResult.Row
-	14, // 8: google.cloud.geminidataanalytics.v1beta.ListMessagesResponse.messages:type_name -> google.cloud.geminidataanalytics.v1beta.StorageMessage
-	19, // 9: google.cloud.geminidataanalytics.v1beta.StorageMessage.message:type_name -> google.cloud.geminidataanalytics.v1beta.Message
-	47, // 10: google.cloud.geminidataanalytics.v1beta.ChatRequest.inline_context:type_name -> google.cloud.geminidataanalytics.v1beta.Context
-	17, // 11: google.cloud.geminidataanalytics.v1beta.ChatRequest.conversation_reference:type_name -> google.cloud.geminidataanalytics.v1beta.ConversationReference
-	16, // 12: google.cloud.geminidataanalytics.v1beta.ChatRequest.data_agent_context:type_name -> google.cloud.geminidataanalytics.v1beta.DataAgentContext
-	18, // 13: google.cloud.geminidataanalytics.v1beta.ChatRequest.client_managed_resource_context:type_name -> google.cloud.geminidataanalytics.v1beta.ClientManagedResourceContext
-	20, // 14: google.cloud.geminidataanalytics.v1beta.ChatRequest.looker_settings:type_name -> google.cloud.geminidataanalytics.v1beta.LookerSettings
-	19, // 15: google.cloud.geminidataanalytics.v1beta.ChatRequest.messages:type_name -> google.cloud.geminidataanalytics.v1beta.Message
-	48, // 16: google.cloud.geminidataanalytics.v1beta.ChatRequest.credentials:type_name -> google.cloud.geminidataanalytics.v1beta.Credentials
-	0,  // 17: google.cloud.geminidataanalytics.v1beta.ChatRequest.thinking_mode:type_name -> google.cloud.geminidataanalytics.v1beta.ChatRequest.ThinkingMode
-	1,  // 18: google.cloud.geminidataanalytics.v1beta.ChatRequest.model:type_name -> google.cloud.geminidataanalytics.v1beta.ChatRequest.Model
-	48, // 19: google.cloud.geminidataanalytics.v1beta.DataAgentContext.credentials:type_name -> google.cloud.geminidataanalytics.v1beta.Credentials
-	2,  // 20: google.cloud.geminidataanalytics.v1beta.DataAgentContext.context_version:type_name -> google.cloud.geminidataanalytics.v1beta.DataAgentContext.ContextVersion
-	16, // 21: google.cloud.geminidataanalytics.v1beta.ConversationReference.data_agent_context:type_name -> google.cloud.geminidataanalytics.v1beta.DataAgentContext
-	47, // 22: google.cloud.geminidataanalytics.v1beta.ClientManagedResourceContext.inline_context:type_name -> google.cloud.geminidataanalytics.v1beta.Context
-	21, // 23: google.cloud.geminidataanalytics.v1beta.Message.user_message:type_name -> google.cloud.geminidataanalytics.v1beta.UserMessage
-	22, // 24: google.cloud.geminidataanalytics.v1beta.Message.system_message:type_name -> google.cloud.geminidataanalytics.v1beta.SystemMessage
-	49, // 25: google.cloud.geminidataanalytics.v1beta.Message.timestamp:type_name -> google.protobuf.Timestamp
-	23, // 26: google.cloud.geminidataanalytics.v1beta.SystemMessage.text:type_name -> google.cloud.geminidataanalytics.v1beta.TextMessage
-	24, // 27: google.cloud.geminidataanalytics.v1beta.SystemMessage.schema:type_name -> google.cloud.geminidataanalytics.v1beta.SchemaMessage
-	27, // 28: google.cloud.geminidataanalytics.v1beta.SystemMessage.data:type_name -> google.cloud.geminidataanalytics.v1beta.DataMessage
-	31, // 29: google.cloud.geminidataanalytics.v1beta.SystemMessage.analysis:type_name -> google.cloud.geminidataanalytics.v1beta.AnalysisMessage
-	34, // 30: google.cloud.geminidataanalytics.v1beta.SystemMessage.chart:type_name -> google.cloud.geminidataanalytics.v1beta.ChartMessage
-	37, // 31: google.cloud.geminidataanalytics.v1beta.SystemMessage.error:type_name -> google.cloud.geminidataanalytics.v1beta.ErrorMessage
-	40, // 32: google.cloud.geminidataanalytics.v1beta.SystemMessage.example_queries:type_name -> google.cloud.geminidataanalytics.v1beta.ExampleQueries
-	39, // 33: google.cloud.geminidataanalytics.v1beta.SystemMessage.clarification:type_name -> google.cloud.geminidataanalytics.v1beta.ClarificationMessage
-	50, // 34: google.cloud.geminidataanalytics.v1beta.SystemMessage.citation:type_name -> google.cloud.geminidataanalytics.v1beta.Citation
-	3,  // 35: google.cloud.geminidataanalytics.v1beta.TextMessage.text_type:type_name -> google.cloud.geminidataanalytics.v1beta.TextMessage.TextType
-	25, // 36: google.cloud.geminidataanalytics.v1beta.SchemaMessage.query:type_name -> google.cloud.geminidataanalytics.v1beta.SchemaQuery
-	26, // 37: google.cloud.geminidataanalytics.v1beta.SchemaMessage.result:type_name -> google.cloud.geminidataanalytics.v1beta.SchemaResult
-	51, // 38: google.cloud.geminidataanalytics.v1beta.SchemaResult.datasources:type_name -> google.cloud.geminidataanalytics.v1beta.Datasource
-	28, // 39: google.cloud.geminidataanalytics.v1beta.DataMessage.query:type_name -> google.cloud.geminidataanalytics.v1beta.DataQuery
-	29, // 40: google.cloud.geminidataanalytics.v1beta.DataMessage.result:type_name -> google.cloud.geminidataanalytics.v1beta.DataResult
-	52, // 41: google.cloud.geminidataanalytics.v1beta.DataMessage.generated_looker_query:type_name -> google.cloud.geminidataanalytics.v1beta.LookerQuery
-	30, // 42: google.cloud.geminidataanalytics.v1beta.DataMessage.big_query_job:type_name -> google.cloud.geminidataanalytics.v1beta.BigQueryJob
-	53, // 43: google.cloud.geminidataanalytics.v1beta.DataMessage.matched_query:type_name -> google.cloud.geminidataanalytics.v1beta.MatchedQuery
-	52, // 44: google.cloud.geminidataanalytics.v1beta.DataQuery.looker:type_name -> google.cloud.geminidataanalytics.v1beta.LookerQuery
-	51, // 45: google.cloud.geminidataanalytics.v1beta.DataQuery.datasources:type_name -> google.cloud.geminidataanalytics.v1beta.Datasource
-	54, // 46: google.cloud.geminidataanalytics.v1beta.DataResult.schema:type_name -> google.cloud.geminidataanalytics.v1beta.Schema
-	55, // 47: google.cloud.geminidataanalytics.v1beta.DataResult.data:type_name -> google.protobuf.Struct
-	55, // 48: google.cloud.geminidataanalytics.v1beta.DataResult.formatted_data:type_name -> google.protobuf.Struct
-	56, // 49: google.cloud.geminidataanalytics.v1beta.BigQueryJob.destination_table:type_name -> google.cloud.geminidataanalytics.v1beta.BigQueryTableReference
-	54, // 50: google.cloud.geminidataanalytics.v1beta.BigQueryJob.schema:type_name -> google.cloud.geminidataanalytics.v1beta.Schema
-	32, // 51: google.cloud.geminidataanalytics.v1beta.AnalysisMessage.query:type_name -> google.cloud.geminidataanalytics.v1beta.AnalysisQuery
-	33, // 52: google.cloud.geminidataanalytics.v1beta.AnalysisMessage.progress_event:type_name -> google.cloud.geminidataanalytics.v1beta.AnalysisEvent
-	35, // 53: google.cloud.geminidataanalytics.v1beta.ChartMessage.query:type_name -> google.cloud.geminidataanalytics.v1beta.ChartQuery
-	36, // 54: google.cloud.geminidataanalytics.v1beta.ChartMessage.result:type_name -> google.cloud.geminidataanalytics.v1beta.ChartResult
-	55, // 55: google.cloud.geminidataanalytics.v1beta.ChartResult.vega_config:type_name -> google.protobuf.Struct
-	41, // 56: google.cloud.geminidataanalytics.v1beta.ChartResult.image:type_name -> google.cloud.geminidataanalytics.v1beta.Blob
-	4,  // 57: google.cloud.geminidataanalytics.v1beta.ClarificationQuestion.selection_mode:type_name -> google.cloud.geminidataanalytics.v1beta.ClarificationQuestion.SelectionMode
-	5,  // 58: google.cloud.geminidataanalytics.v1beta.ClarificationQuestion.clarification_question_type:type_name -> google.cloud.geminidataanalytics.v1beta.ClarificationQuestion.ClarificationQuestionType
-	38, // 59: google.cloud.geminidataanalytics.v1beta.ClarificationMessage.questions:type_name -> google.cloud.geminidataanalytics.v1beta.ClarificationQuestion
-	57, // 60: google.cloud.geminidataanalytics.v1beta.ExampleQueries.example_queries:type_name -> google.cloud.geminidataanalytics.v1beta.ExampleQuery
-	44, // 61: google.cloud.geminidataanalytics.v1beta.ExecutedQueryResult.Row.values:type_name -> google.cloud.geminidataanalytics.v1beta.ExecutedQueryResult.Value
-	15, // 62: google.cloud.geminidataanalytics.v1beta.DataChatService.Chat:input_type -> google.cloud.geminidataanalytics.v1beta.ChatRequest
-	58, // 63: google.cloud.geminidataanalytics.v1beta.DataChatService.CreateConversation:input_type -> google.cloud.geminidataanalytics.v1beta.CreateConversationRequest
-	59, // 64: google.cloud.geminidataanalytics.v1beta.DataChatService.DeleteConversation:input_type -> google.cloud.geminidataanalytics.v1beta.DeleteConversationRequest
-	60, // 65: google.cloud.geminidataanalytics.v1beta.DataChatService.GetConversation:input_type -> google.cloud.geminidataanalytics.v1beta.GetConversationRequest
-	61, // 66: google.cloud.geminidataanalytics.v1beta.DataChatService.ListConversations:input_type -> google.cloud.geminidataanalytics.v1beta.ListConversationsRequest
-	12, // 67: google.cloud.geminidataanalytics.v1beta.DataChatService.ListMessages:input_type -> google.cloud.geminidataanalytics.v1beta.ListMessagesRequest
-	6,  // 68: google.cloud.geminidataanalytics.v1beta.DataChatService.QueryData:input_type -> google.cloud.geminidataanalytics.v1beta.QueryDataRequest
-	19, // 69: google.cloud.geminidataanalytics.v1beta.DataChatService.Chat:output_type -> google.cloud.geminidataanalytics.v1beta.Message
-	62, // 70: google.cloud.geminidataanalytics.v1beta.DataChatService.CreateConversation:output_type -> google.cloud.geminidataanalytics.v1beta.Conversation
-	63, // 71: google.cloud.geminidataanalytics.v1beta.DataChatService.DeleteConversation:output_type -> google.protobuf.Empty
-	62, // 72: google.cloud.geminidataanalytics.v1beta.DataChatService.GetConversation:output_type -> google.cloud.geminidataanalytics.v1beta.Conversation
-	64, // 73: google.cloud.geminidataanalytics.v1beta.DataChatService.ListConversations:output_type -> google.cloud.geminidataanalytics.v1beta.ListConversationsResponse
-	13, // 74: google.cloud.geminidataanalytics.v1beta.DataChatService.ListMessages:output_type -> google.cloud.geminidataanalytics.v1beta.ListMessagesResponse
-	10, // 75: google.cloud.geminidataanalytics.v1beta.DataChatService.QueryData:output_type -> google.cloud.geminidataanalytics.v1beta.QueryDataResponse
-	69, // [69:76] is the sub-list for method output_type
-	62, // [62:69] is the sub-list for method input_type
-	62, // [62:62] is the sub-list for extension type_name
-	62, // [62:62] is the sub-list for extension extendee
-	0,  // [0:62] is the sub-list for field type_name
+	47, // 6: google.cloud.geminidataanalytics.v1beta.QueryDataResponse.pipeline_debug_info:type_name -> google.protobuf.Struct
+	48, // 7: google.cloud.geminidataanalytics.v1beta.QueryDataResponse.token_usage:type_name -> google.cloud.geminidataanalytics.v1beta.TokenUsage
+	43, // 8: google.cloud.geminidataanalytics.v1beta.ExecutedQueryResult.columns:type_name -> google.cloud.geminidataanalytics.v1beta.ExecutedQueryResult.Column
+	45, // 9: google.cloud.geminidataanalytics.v1beta.ExecutedQueryResult.rows:type_name -> google.cloud.geminidataanalytics.v1beta.ExecutedQueryResult.Row
+	14, // 10: google.cloud.geminidataanalytics.v1beta.ListMessagesResponse.messages:type_name -> google.cloud.geminidataanalytics.v1beta.StorageMessage
+	19, // 11: google.cloud.geminidataanalytics.v1beta.StorageMessage.message:type_name -> google.cloud.geminidataanalytics.v1beta.Message
+	49, // 12: google.cloud.geminidataanalytics.v1beta.ChatRequest.inline_context:type_name -> google.cloud.geminidataanalytics.v1beta.Context
+	17, // 13: google.cloud.geminidataanalytics.v1beta.ChatRequest.conversation_reference:type_name -> google.cloud.geminidataanalytics.v1beta.ConversationReference
+	16, // 14: google.cloud.geminidataanalytics.v1beta.ChatRequest.data_agent_context:type_name -> google.cloud.geminidataanalytics.v1beta.DataAgentContext
+	18, // 15: google.cloud.geminidataanalytics.v1beta.ChatRequest.client_managed_resource_context:type_name -> google.cloud.geminidataanalytics.v1beta.ClientManagedResourceContext
+	20, // 16: google.cloud.geminidataanalytics.v1beta.ChatRequest.looker_settings:type_name -> google.cloud.geminidataanalytics.v1beta.LookerSettings
+	19, // 17: google.cloud.geminidataanalytics.v1beta.ChatRequest.messages:type_name -> google.cloud.geminidataanalytics.v1beta.Message
+	50, // 18: google.cloud.geminidataanalytics.v1beta.ChatRequest.credentials:type_name -> google.cloud.geminidataanalytics.v1beta.Credentials
+	0,  // 19: google.cloud.geminidataanalytics.v1beta.ChatRequest.thinking_mode:type_name -> google.cloud.geminidataanalytics.v1beta.ChatRequest.ThinkingMode
+	1,  // 20: google.cloud.geminidataanalytics.v1beta.ChatRequest.model:type_name -> google.cloud.geminidataanalytics.v1beta.ChatRequest.Model
+	50, // 21: google.cloud.geminidataanalytics.v1beta.DataAgentContext.credentials:type_name -> google.cloud.geminidataanalytics.v1beta.Credentials
+	2,  // 22: google.cloud.geminidataanalytics.v1beta.DataAgentContext.context_version:type_name -> google.cloud.geminidataanalytics.v1beta.DataAgentContext.ContextVersion
+	16, // 23: google.cloud.geminidataanalytics.v1beta.ConversationReference.data_agent_context:type_name -> google.cloud.geminidataanalytics.v1beta.DataAgentContext
+	49, // 24: google.cloud.geminidataanalytics.v1beta.ClientManagedResourceContext.inline_context:type_name -> google.cloud.geminidataanalytics.v1beta.Context
+	21, // 25: google.cloud.geminidataanalytics.v1beta.Message.user_message:type_name -> google.cloud.geminidataanalytics.v1beta.UserMessage
+	22, // 26: google.cloud.geminidataanalytics.v1beta.Message.system_message:type_name -> google.cloud.geminidataanalytics.v1beta.SystemMessage
+	51, // 27: google.cloud.geminidataanalytics.v1beta.Message.timestamp:type_name -> google.protobuf.Timestamp
+	23, // 28: google.cloud.geminidataanalytics.v1beta.SystemMessage.text:type_name -> google.cloud.geminidataanalytics.v1beta.TextMessage
+	24, // 29: google.cloud.geminidataanalytics.v1beta.SystemMessage.schema:type_name -> google.cloud.geminidataanalytics.v1beta.SchemaMessage
+	27, // 30: google.cloud.geminidataanalytics.v1beta.SystemMessage.data:type_name -> google.cloud.geminidataanalytics.v1beta.DataMessage
+	31, // 31: google.cloud.geminidataanalytics.v1beta.SystemMessage.analysis:type_name -> google.cloud.geminidataanalytics.v1beta.AnalysisMessage
+	34, // 32: google.cloud.geminidataanalytics.v1beta.SystemMessage.chart:type_name -> google.cloud.geminidataanalytics.v1beta.ChartMessage
+	37, // 33: google.cloud.geminidataanalytics.v1beta.SystemMessage.error:type_name -> google.cloud.geminidataanalytics.v1beta.ErrorMessage
+	40, // 34: google.cloud.geminidataanalytics.v1beta.SystemMessage.example_queries:type_name -> google.cloud.geminidataanalytics.v1beta.ExampleQueries
+	39, // 35: google.cloud.geminidataanalytics.v1beta.SystemMessage.clarification:type_name -> google.cloud.geminidataanalytics.v1beta.ClarificationMessage
+	52, // 36: google.cloud.geminidataanalytics.v1beta.SystemMessage.citation:type_name -> google.cloud.geminidataanalytics.v1beta.Citation
+	3,  // 37: google.cloud.geminidataanalytics.v1beta.TextMessage.text_type:type_name -> google.cloud.geminidataanalytics.v1beta.TextMessage.TextType
+	25, // 38: google.cloud.geminidataanalytics.v1beta.SchemaMessage.query:type_name -> google.cloud.geminidataanalytics.v1beta.SchemaQuery
+	26, // 39: google.cloud.geminidataanalytics.v1beta.SchemaMessage.result:type_name -> google.cloud.geminidataanalytics.v1beta.SchemaResult
+	53, // 40: google.cloud.geminidataanalytics.v1beta.SchemaResult.datasources:type_name -> google.cloud.geminidataanalytics.v1beta.Datasource
+	28, // 41: google.cloud.geminidataanalytics.v1beta.DataMessage.query:type_name -> google.cloud.geminidataanalytics.v1beta.DataQuery
+	29, // 42: google.cloud.geminidataanalytics.v1beta.DataMessage.result:type_name -> google.cloud.geminidataanalytics.v1beta.DataResult
+	54, // 43: google.cloud.geminidataanalytics.v1beta.DataMessage.generated_looker_query:type_name -> google.cloud.geminidataanalytics.v1beta.LookerQuery
+	30, // 44: google.cloud.geminidataanalytics.v1beta.DataMessage.big_query_job:type_name -> google.cloud.geminidataanalytics.v1beta.BigQueryJob
+	55, // 45: google.cloud.geminidataanalytics.v1beta.DataMessage.matched_query:type_name -> google.cloud.geminidataanalytics.v1beta.MatchedQuery
+	54, // 46: google.cloud.geminidataanalytics.v1beta.DataQuery.looker:type_name -> google.cloud.geminidataanalytics.v1beta.LookerQuery
+	53, // 47: google.cloud.geminidataanalytics.v1beta.DataQuery.datasources:type_name -> google.cloud.geminidataanalytics.v1beta.Datasource
+	56, // 48: google.cloud.geminidataanalytics.v1beta.DataResult.schema:type_name -> google.cloud.geminidataanalytics.v1beta.Schema
+	47, // 49: google.cloud.geminidataanalytics.v1beta.DataResult.data:type_name -> google.protobuf.Struct
+	47, // 50: google.cloud.geminidataanalytics.v1beta.DataResult.formatted_data:type_name -> google.protobuf.Struct
+	57, // 51: google.cloud.geminidataanalytics.v1beta.BigQueryJob.destination_table:type_name -> google.cloud.geminidataanalytics.v1beta.BigQueryTableReference
+	56, // 52: google.cloud.geminidataanalytics.v1beta.BigQueryJob.schema:type_name -> google.cloud.geminidataanalytics.v1beta.Schema
+	32, // 53: google.cloud.geminidataanalytics.v1beta.AnalysisMessage.query:type_name -> google.cloud.geminidataanalytics.v1beta.AnalysisQuery
+	33, // 54: google.cloud.geminidataanalytics.v1beta.AnalysisMessage.progress_event:type_name -> google.cloud.geminidataanalytics.v1beta.AnalysisEvent
+	35, // 55: google.cloud.geminidataanalytics.v1beta.ChartMessage.query:type_name -> google.cloud.geminidataanalytics.v1beta.ChartQuery
+	36, // 56: google.cloud.geminidataanalytics.v1beta.ChartMessage.result:type_name -> google.cloud.geminidataanalytics.v1beta.ChartResult
+	47, // 57: google.cloud.geminidataanalytics.v1beta.ChartResult.vega_config:type_name -> google.protobuf.Struct
+	41, // 58: google.cloud.geminidataanalytics.v1beta.ChartResult.image:type_name -> google.cloud.geminidataanalytics.v1beta.Blob
+	4,  // 59: google.cloud.geminidataanalytics.v1beta.ClarificationQuestion.selection_mode:type_name -> google.cloud.geminidataanalytics.v1beta.ClarificationQuestion.SelectionMode
+	5,  // 60: google.cloud.geminidataanalytics.v1beta.ClarificationQuestion.clarification_question_type:type_name -> google.cloud.geminidataanalytics.v1beta.ClarificationQuestion.ClarificationQuestionType
+	38, // 61: google.cloud.geminidataanalytics.v1beta.ClarificationMessage.questions:type_name -> google.cloud.geminidataanalytics.v1beta.ClarificationQuestion
+	58, // 62: google.cloud.geminidataanalytics.v1beta.ExampleQueries.example_queries:type_name -> google.cloud.geminidataanalytics.v1beta.ExampleQuery
+	44, // 63: google.cloud.geminidataanalytics.v1beta.ExecutedQueryResult.Row.values:type_name -> google.cloud.geminidataanalytics.v1beta.ExecutedQueryResult.Value
+	15, // 64: google.cloud.geminidataanalytics.v1beta.DataChatService.Chat:input_type -> google.cloud.geminidataanalytics.v1beta.ChatRequest
+	59, // 65: google.cloud.geminidataanalytics.v1beta.DataChatService.CreateConversation:input_type -> google.cloud.geminidataanalytics.v1beta.CreateConversationRequest
+	60, // 66: google.cloud.geminidataanalytics.v1beta.DataChatService.DeleteConversation:input_type -> google.cloud.geminidataanalytics.v1beta.DeleteConversationRequest
+	61, // 67: google.cloud.geminidataanalytics.v1beta.DataChatService.UpdateConversation:input_type -> google.cloud.geminidataanalytics.v1beta.UpdateConversationRequest
+	62, // 68: google.cloud.geminidataanalytics.v1beta.DataChatService.GetConversation:input_type -> google.cloud.geminidataanalytics.v1beta.GetConversationRequest
+	63, // 69: google.cloud.geminidataanalytics.v1beta.DataChatService.ListConversations:input_type -> google.cloud.geminidataanalytics.v1beta.ListConversationsRequest
+	12, // 70: google.cloud.geminidataanalytics.v1beta.DataChatService.ListMessages:input_type -> google.cloud.geminidataanalytics.v1beta.ListMessagesRequest
+	6,  // 71: google.cloud.geminidataanalytics.v1beta.DataChatService.QueryData:input_type -> google.cloud.geminidataanalytics.v1beta.QueryDataRequest
+	19, // 72: google.cloud.geminidataanalytics.v1beta.DataChatService.Chat:output_type -> google.cloud.geminidataanalytics.v1beta.Message
+	64, // 73: google.cloud.geminidataanalytics.v1beta.DataChatService.CreateConversation:output_type -> google.cloud.geminidataanalytics.v1beta.Conversation
+	65, // 74: google.cloud.geminidataanalytics.v1beta.DataChatService.DeleteConversation:output_type -> google.protobuf.Empty
+	64, // 75: google.cloud.geminidataanalytics.v1beta.DataChatService.UpdateConversation:output_type -> google.cloud.geminidataanalytics.v1beta.Conversation
+	64, // 76: google.cloud.geminidataanalytics.v1beta.DataChatService.GetConversation:output_type -> google.cloud.geminidataanalytics.v1beta.Conversation
+	66, // 77: google.cloud.geminidataanalytics.v1beta.DataChatService.ListConversations:output_type -> google.cloud.geminidataanalytics.v1beta.ListConversationsResponse
+	13, // 78: google.cloud.geminidataanalytics.v1beta.DataChatService.ListMessages:output_type -> google.cloud.geminidataanalytics.v1beta.ListMessagesResponse
+	10, // 79: google.cloud.geminidataanalytics.v1beta.DataChatService.QueryData:output_type -> google.cloud.geminidataanalytics.v1beta.QueryDataResponse
+	72, // [72:80] is the sub-list for method output_type
+	64, // [64:72] is the sub-list for method input_type
+	64, // [64:64] is the sub-list for extension type_name
+	64, // [64:64] is the sub-list for extension extendee
+	0,  // [0:64] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_geminidataanalytics_v1beta_data_chat_service_proto_init() }
@@ -4082,6 +4131,7 @@ func file_google_cloud_geminidataanalytics_v1beta_data_chat_service_proto_init()
 	file_google_cloud_geminidataanalytics_v1beta_conversation_proto_init()
 	file_google_cloud_geminidataanalytics_v1beta_credentials_proto_init()
 	file_google_cloud_geminidataanalytics_v1beta_datasource_proto_init()
+	file_google_cloud_geminidataanalytics_v1beta_usage_proto_init()
 	file_google_cloud_geminidataanalytics_v1beta_data_chat_service_proto_msgTypes[9].OneofWrappers = []any{
 		(*ChatRequest_InlineContext)(nil),
 		(*ChatRequest_ConversationReference)(nil),

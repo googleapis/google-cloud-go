@@ -17,10 +17,19 @@
 package secretmanager
 
 import (
+	"iter"
+
 	secretmanagerpb "cloud.google.com/go/secretmanager/apiv1beta2/secretmanagerpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // LocationIterator manages a stream of *locationpb.Location.
 type LocationIterator struct {
@@ -69,6 +78,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SecretIterator) All() iter.Seq2[*secretmanagerpb.Secret, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SecretIterator manages a stream of *secretmanagerpb.Secret.
 type SecretIterator struct {
 	items    []*secretmanagerpb.Secret
@@ -114,6 +129,12 @@ func (it *SecretIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SecretVersionIterator) All() iter.Seq2[*secretmanagerpb.SecretVersion, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // SecretVersionIterator manages a stream of *secretmanagerpb.SecretVersion.

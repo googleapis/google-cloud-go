@@ -17,9 +17,18 @@
 package cloudcontrolspartner
 
 import (
+	"iter"
+
 	cloudcontrolspartnerpb "cloud.google.com/go/cloudcontrolspartner/apiv1beta/cloudcontrolspartnerpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AccessApprovalRequestIterator) All() iter.Seq2[*cloudcontrolspartnerpb.AccessApprovalRequest, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // AccessApprovalRequestIterator manages a stream of *cloudcontrolspartnerpb.AccessApprovalRequest.
 type AccessApprovalRequestIterator struct {
@@ -66,6 +75,12 @@ func (it *AccessApprovalRequestIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CustomerIterator) All() iter.Seq2[*cloudcontrolspartnerpb.Customer, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // CustomerIterator manages a stream of *cloudcontrolspartnerpb.Customer.
@@ -115,6 +130,12 @@ func (it *CustomerIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ViolationIterator) All() iter.Seq2[*cloudcontrolspartnerpb.Violation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ViolationIterator manages a stream of *cloudcontrolspartnerpb.Violation.
 type ViolationIterator struct {
 	items    []*cloudcontrolspartnerpb.Violation
@@ -160,6 +181,12 @@ func (it *ViolationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *WorkloadIterator) All() iter.Seq2[*cloudcontrolspartnerpb.Workload, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // WorkloadIterator manages a stream of *cloudcontrolspartnerpb.Workload.

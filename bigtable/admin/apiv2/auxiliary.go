@@ -18,11 +18,13 @@ package admin
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	adminpb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
 	"cloud.google.com/go/longrunning"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -1185,6 +1187,67 @@ func (op *UpdateMaterializedViewOperation) Name() string {
 	return op.lro.Name()
 }
 
+// UpdateMemoryLayerOperation manages a long-running operation from UpdateMemoryLayer.
+type UpdateMemoryLayerOperation struct {
+	lro *longrunning.Operation
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *UpdateMemoryLayerOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*adminpb.MemoryLayer, error) {
+	var resp adminpb.MemoryLayer
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *UpdateMemoryLayerOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*adminpb.MemoryLayer, error) {
+	var resp adminpb.MemoryLayer
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *UpdateMemoryLayerOperation) Metadata() (*adminpb.UpdateMemoryLayerMetadata, error) {
+	var meta adminpb.UpdateMemoryLayerMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *UpdateMemoryLayerOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *UpdateMemoryLayerOperation) Name() string {
+	return op.lro.Name()
+}
+
 // UpdateSchemaBundleOperation manages a long-running operation from UpdateSchemaBundle.
 type UpdateSchemaBundleOperation struct {
 	lro *longrunning.Operation
@@ -1307,6 +1370,12 @@ func (op *UpdateTableOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AppProfileIterator) All() iter.Seq2[*adminpb.AppProfile, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AppProfileIterator manages a stream of *adminpb.AppProfile.
 type AppProfileIterator struct {
 	items    []*adminpb.AppProfile
@@ -1352,6 +1421,12 @@ func (it *AppProfileIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AuthorizedViewIterator) All() iter.Seq2[*adminpb.AuthorizedView, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // AuthorizedViewIterator manages a stream of *adminpb.AuthorizedView.
@@ -1401,6 +1476,12 @@ func (it *AuthorizedViewIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BackupIterator) All() iter.Seq2[*adminpb.Backup, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // BackupIterator manages a stream of *adminpb.Backup.
 type BackupIterator struct {
 	items    []*adminpb.Backup
@@ -1446,6 +1527,12 @@ func (it *BackupIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *HotTabletIterator) All() iter.Seq2[*adminpb.HotTablet, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // HotTabletIterator manages a stream of *adminpb.HotTablet.
@@ -1495,6 +1582,12 @@ func (it *HotTabletIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LogicalViewIterator) All() iter.Seq2[*adminpb.LogicalView, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // LogicalViewIterator manages a stream of *adminpb.LogicalView.
 type LogicalViewIterator struct {
 	items    []*adminpb.LogicalView
@@ -1540,6 +1633,12 @@ func (it *LogicalViewIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *MaterializedViewIterator) All() iter.Seq2[*adminpb.MaterializedView, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // MaterializedViewIterator manages a stream of *adminpb.MaterializedView.
@@ -1589,6 +1688,65 @@ func (it *MaterializedViewIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *MemoryLayerIterator) All() iter.Seq2[*adminpb.MemoryLayer, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// MemoryLayerIterator manages a stream of *adminpb.MemoryLayer.
+type MemoryLayerIterator struct {
+	items    []*adminpb.MemoryLayer
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.MemoryLayer, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *MemoryLayerIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *MemoryLayerIterator) Next() (*adminpb.MemoryLayer, error) {
+	var item *adminpb.MemoryLayer
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *MemoryLayerIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *MemoryLayerIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SchemaBundleIterator) All() iter.Seq2[*adminpb.SchemaBundle, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SchemaBundleIterator manages a stream of *adminpb.SchemaBundle.
 type SchemaBundleIterator struct {
 	items    []*adminpb.SchemaBundle
@@ -1636,6 +1794,12 @@ func (it *SchemaBundleIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SnapshotIterator) All() iter.Seq2[*adminpb.Snapshot, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SnapshotIterator manages a stream of *adminpb.Snapshot.
 type SnapshotIterator struct {
 	items    []*adminpb.Snapshot
@@ -1681,6 +1845,12 @@ func (it *SnapshotIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TableIterator) All() iter.Seq2[*adminpb.Table, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // TableIterator manages a stream of *adminpb.Table.

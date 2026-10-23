@@ -5191,6 +5191,9 @@ type BuildTrigger struct {
 	// This field is currently only used by Webhook, Pub/Sub, Manual, and Cron
 	// triggers.
 	SourceToBuild *GitRepoSource `protobuf:"bytes,26,opt,name=source_to_build,json=sourceToBuild,proto3" json:"source_to_build,omitempty"`
+	// Configuration for manual approval to start a build invocation of this
+	// BuildTrigger.
+	ApprovalConfig *ApprovalConfig `protobuf:"bytes,28,opt,name=approval_config,json=approvalConfig,proto3" json:"approval_config,omitempty"`
 	// The service account used for all user-controlled operations including
 	// UpdateBuildTrigger, RunBuildTrigger, CreateBuild, and CancelBuild.
 	// If no service account is set and the legacy Cloud Build service account
@@ -5386,6 +5389,13 @@ func (x *BuildTrigger) GetFilter() string {
 func (x *BuildTrigger) GetSourceToBuild() *GitRepoSource {
 	if x != nil {
 		return x.SourceToBuild
+	}
+	return nil
+}
+
+func (x *BuildTrigger) GetApprovalConfig() *ApprovalConfig {
+	if x != nil {
+		return x.ApprovalConfig
 	}
 	return nil
 }
@@ -6509,8 +6519,13 @@ type BuildOptions struct {
 	//
 	// If true, JSON-formatted logs are parsed as structured logs.
 	EnableStructuredLogging bool `protobuf:"varint,23,opt,name=enable_structured_logging,json=enableStructuredLogging,proto3" json:"enable_structured_logging,omitempty"`
-	unknownFields           protoimpl.UnknownFields
-	sizeCache               protoimpl.SizeCache
+	// Optional. Option to specify which release or release channel
+	// (rapid|regular|stable) to use to run this build.
+	WorkerRelease string `protobuf:"bytes,25,opt,name=worker_release,json=workerRelease,proto3" json:"worker_release,omitempty"`
+	// Output only. Worker release resolved from the release channel.
+	ResolvedWorkerRelease string `protobuf:"bytes,26,opt,name=resolved_worker_release,json=resolvedWorkerRelease,proto3" json:"resolved_worker_release,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
 }
 
 func (x *BuildOptions) Reset() {
@@ -6654,6 +6669,20 @@ func (x *BuildOptions) GetEnableStructuredLogging() bool {
 		return x.EnableStructuredLogging
 	}
 	return false
+}
+
+func (x *BuildOptions) GetWorkerRelease() string {
+	if x != nil {
+		return x.WorkerRelease
+	}
+	return ""
+}
+
+func (x *BuildOptions) GetResolvedWorkerRelease() string {
+	if x != nil {
+		return x.ResolvedWorkerRelease
+	}
+	return ""
 }
 
 // ReceiveTriggerWebhookRequest [Experimental] is the request object accepted by
@@ -7940,7 +7969,12 @@ type Dependency_GitSourceDependency struct {
 	// for all history).
 	Depth int64 `protobuf:"varint,4,opt,name=depth,proto3" json:"depth,omitempty"`
 	// Required. Where should the files be placed on the worker.
-	DestPath      string `protobuf:"bytes,5,opt,name=dest_path,json=destPath,proto3" json:"dest_path,omitempty"`
+	DestPath string `protobuf:"bytes,5,opt,name=dest_path,json=destPath,proto3" json:"dest_path,omitempty"`
+	// Optional. True if remote tags should be fetched too (default false).
+	// Note: when depth is 1 (default), git fetch only retrieves tags pointing
+	// to commits within the shallow boundary. Set depth to -1 to fetch all
+	// historical tags.
+	FetchTags     bool `protobuf:"varint,6,opt,name=fetch_tags,json=fetchTags,proto3" json:"fetch_tags,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -8008,6 +8042,13 @@ func (x *Dependency_GitSourceDependency) GetDestPath() string {
 		return x.DestPath
 	}
 	return ""
+}
+
+func (x *Dependency_GitSourceDependency) GetFetchTags() bool {
+	if x != nil {
+		return x.FetchTags
+	}
+	return false
 }
 
 // A repository for a git source.
@@ -8555,9 +8596,17 @@ type BuildOptions_PoolOption struct {
 	// WorkerPool.
 	//
 	// Format projects/{project}/locations/{location}/workerPools/{workerPoolId}
-	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Output only. OUTPUT_ONLY. The release or release channel used to run the
+	// Build. This is set to the same value as
+	// `PrivatePoolV1Config.WorkerConfig.worker_release` for the UI to easily
+	// access.
+	WorkerRelease string `protobuf:"bytes,4,opt,name=worker_release,json=workerRelease,proto3" json:"worker_release,omitempty"`
+	// Output only. OUTPUT_ONLY. Worker release resolved from the release
+	// channel.
+	ResolvedWorkerRelease string `protobuf:"bytes,5,opt,name=resolved_worker_release,json=resolvedWorkerRelease,proto3" json:"resolved_worker_release,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
 }
 
 func (x *BuildOptions_PoolOption) Reset() {
@@ -8597,6 +8646,20 @@ func (x *BuildOptions_PoolOption) GetName() string {
 	return ""
 }
 
+func (x *BuildOptions_PoolOption) GetWorkerRelease() string {
+	if x != nil {
+		return x.WorkerRelease
+	}
+	return ""
+}
+
+func (x *BuildOptions_PoolOption) GetResolvedWorkerRelease() string {
+	if x != nil {
+		return x.ResolvedWorkerRelease
+	}
+	return ""
+}
+
 // Defines the configuration to be used for creating workers in
 // the pool.
 type PrivatePoolV1Config_WorkerConfig struct {
@@ -8615,8 +8678,11 @@ type PrivatePoolV1Config_WorkerConfig struct {
 	// Optional. Enable nested virtualization on the worker, if supported by the
 	// machine type. By default, nested virtualization is disabled.
 	EnableNestedVirtualization *bool `protobuf:"varint,3,opt,name=enable_nested_virtualization,json=enableNestedVirtualization,proto3,oneof" json:"enable_nested_virtualization,omitempty"`
-	unknownFields              protoimpl.UnknownFields
-	sizeCache                  protoimpl.SizeCache
+	// Optional. Option to specify which release or release channel
+	// (rapid|regular|stable) to use to run this build.
+	WorkerRelease string `protobuf:"bytes,4,opt,name=worker_release,json=workerRelease,proto3" json:"worker_release,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *PrivatePoolV1Config_WorkerConfig) Reset() {
@@ -8668,6 +8734,13 @@ func (x *PrivatePoolV1Config_WorkerConfig) GetEnableNestedVirtualization() bool 
 		return *x.EnableNestedVirtualization
 	}
 	return false
+}
+
+func (x *PrivatePoolV1Config_WorkerConfig) GetWorkerRelease() string {
+	if x != nil {
+		return x.WorkerRelease
+	}
+	return ""
 }
 
 // Defines the network configuration for the pool.
@@ -8834,120 +8907,120 @@ var File_google_devtools_cloudbuild_v1_cloudbuild_proto protoreflect.FileDescrip
 
 const file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDesc = "" +
 	"\n" +
-	".google/devtools/cloudbuild/v1/cloudbuild.proto\x12\x1dgoogle.devtools.cloudbuild.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/httpbody.proto\x1a\x19google/api/resource.proto\x1a\x18google/api/routing.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"n\n" +
-	"\x1fGetDefaultServiceAccountRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/cloudbuild.googleapis.com/DefaultServiceAccountR\x04name\"\x9d\x02\n" +
-	"\x15DefaultServiceAccount\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12]\n" +
-	"\x15service_account_email\x18\x02 \x01(\tB)\xe0A\x03\xfaA#\n" +
+	".google/devtools/cloudbuild/v1/cloudbuild.proto\x12\x1dgoogle.devtools.cloudbuild.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/httpbody.proto\x1a\x19google/api/resource.proto\x1a\x18google/api/routing.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"o\n" +
+	"\x1fGetDefaultServiceAccountRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/cloudbuild.googleapis.com/DefaultServiceAccountR\x04name\"\x9f\x02\n" +
+	"\x15DefaultServiceAccount\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12^\n" +
+	"\x15service_account_email\x18\x02 \x01(\tB*\xe2A\x01\x03\xfaA#\n" +
 	"!iam.googleapis.com/ServiceAccountR\x13serviceAccountEmail:\x8b\x01\xeaA\x87\x01\n" +
-	"/cloudbuild.googleapis.com/DefaultServiceAccount\x12=projects/{project}/locations/{location}/defaultServiceAccount2\x15defaultServiceAccount\"\x86\x01\n" +
+	"/cloudbuild.googleapis.com/DefaultServiceAccount\x12=projects/{project}/locations/{location}/defaultServiceAccount2\x15defaultServiceAccount\"\x88\x01\n" +
 	"\x11RetryBuildRequest\x128\n" +
 	"\x04name\x18\x03 \x01(\tB$\xfaA!\n" +
-	"\x1fcloudbuild.googleapis.com/BuildR\x04name\x12\"\n" +
+	"\x1fcloudbuild.googleapis.com/BuildR\x04name\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x13\n" +
-	"\x02id\x18\x02 \x01(\tB\x03\xe0A\x02R\x02id\"\xe4\x01\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12\x14\n" +
+	"\x02id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x02id\"\xe6\x01\n" +
 	"\x16RunBuildTriggerRequest\x12?\n" +
 	"\x04name\x18\x04 \x01(\tB+\xfaA(\n" +
-	"&cloudbuild.googleapis.com/BuildTriggerR\x04name\x12\"\n" +
+	"&cloudbuild.googleapis.com/BuildTriggerR\x04name\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12#\n" +
 	"\n" +
-	"trigger_id\x18\x02 \x01(\tB\x03\xe0A\x02R\ttriggerId\x12A\n" +
-	"\x06source\x18\x03 \x01(\v2).google.devtools.cloudbuild.v1.RepoSourceR\x06source\"\x9f\x02\n" +
+	"trigger_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\ttriggerId\x12A\n" +
+	"\x06source\x18\x03 \x01(\v2).google.devtools.cloudbuild.v1.RepoSourceR\x06source\"\xa2\x02\n" +
 	"\rStorageSource\x12\x16\n" +
-	"\x06bucket\x18\x01 \x01(\tR\x06bucket\x12\x1b\n" +
-	"\x06object\x18\x02 \x01(\tB\x03\xe0A\x02R\x06object\x12#\n" +
+	"\x06bucket\x18\x01 \x01(\tR\x06bucket\x12\x1c\n" +
+	"\x06object\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06object\x12$\n" +
 	"\n" +
-	"generation\x18\x03 \x01(\x03B\x03\xe0A\x01R\n" +
-	"generation\x12f\n" +
-	"\x0esource_fetcher\x18\x05 \x01(\x0e2:.google.devtools.cloudbuild.v1.StorageSource.SourceFetcherB\x03\xe0A\x01R\rsourceFetcher\"L\n" +
+	"generation\x18\x03 \x01(\x03B\x04\xe2A\x01\x01R\n" +
+	"generation\x12g\n" +
+	"\x0esource_fetcher\x18\x05 \x01(\x0e2:.google.devtools.cloudbuild.v1.StorageSource.SourceFetcherB\x04\xe2A\x01\x01R\rsourceFetcher\"L\n" +
 	"\rSourceFetcher\x12\x1e\n" +
 	"\x1aSOURCE_FETCHER_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06GSUTIL\x10\x01\x12\x0f\n" +
-	"\vGCS_FETCHER\x10\x02\"Z\n" +
-	"\tGitSource\x12\x15\n" +
-	"\x03url\x18\x01 \x01(\tB\x03\xe0A\x02R\x03url\x12\x15\n" +
-	"\x03dir\x18\x05 \x01(\tB\x03\xe0A\x01R\x03dir\x12\x1f\n" +
-	"\brevision\x18\x06 \x01(\tB\x03\xe0A\x01R\brevision\"\xa9\x03\n" +
+	"\vGCS_FETCHER\x10\x02\"]\n" +
+	"\tGitSource\x12\x16\n" +
+	"\x03url\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03url\x12\x16\n" +
+	"\x03dir\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x03dir\x12 \n" +
+	"\brevision\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\brevision\"\xae\x03\n" +
 	"\n" +
-	"RepoSource\x12\"\n" +
+	"RepoSource\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x01R\tprojectId\x12 \n" +
-	"\trepo_name\x18\x02 \x01(\tB\x03\xe0A\x02R\brepoName\x12!\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\tprojectId\x12!\n" +
+	"\trepo_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\brepoName\x12!\n" +
 	"\vbranch_name\x18\x03 \x01(\tH\x00R\n" +
 	"branchName\x12\x1b\n" +
 	"\btag_name\x18\x04 \x01(\tH\x00R\atagName\x12\x1f\n" +
 	"\n" +
-	"commit_sha\x18\x05 \x01(\tH\x00R\tcommitSha\x12\x15\n" +
-	"\x03dir\x18\a \x01(\tB\x03\xe0A\x01R\x03dir\x12&\n" +
-	"\finvert_regex\x18\b \x01(\bB\x03\xe0A\x01R\vinvertRegex\x12g\n" +
-	"\rsubstitutions\x18\t \x03(\v2<.google.devtools.cloudbuild.v1.RepoSource.SubstitutionsEntryB\x03\xe0A\x01R\rsubstitutions\x1a@\n" +
+	"commit_sha\x18\x05 \x01(\tH\x00R\tcommitSha\x12\x16\n" +
+	"\x03dir\x18\a \x01(\tB\x04\xe2A\x01\x01R\x03dir\x12'\n" +
+	"\finvert_regex\x18\b \x01(\bB\x04\xe2A\x01\x01R\vinvertRegex\x12h\n" +
+	"\rsubstitutions\x18\t \x03(\v2<.google.devtools.cloudbuild.v1.RepoSource.SubstitutionsEntryB\x04\xe2A\x01\x01R\rsubstitutions\x1a@\n" +
 	"\x12SubstitutionsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\n" +
 	"\n" +
-	"\brevision\"q\n" +
-	"\x15StorageSourceManifest\x12\x1b\n" +
-	"\x06bucket\x18\x01 \x01(\tB\x03\xe0A\x02R\x06bucket\x12\x1b\n" +
-	"\x06object\x18\x02 \x01(\tB\x03\xe0A\x02R\x06object\x12\x1e\n" +
+	"\brevision\"s\n" +
+	"\x15StorageSourceManifest\x12\x1c\n" +
+	"\x06bucket\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06bucket\x12\x1c\n" +
+	"\x06object\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06object\x12\x1e\n" +
 	"\n" +
 	"generation\x18\x03 \x01(\x03R\n" +
-	"generation\"\x9b\x01\n" +
-	"\x13ConnectedRepository\x12L\n" +
+	"generation\"\x9e\x01\n" +
+	"\x13ConnectedRepository\x12M\n" +
 	"\n" +
-	"repository\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
+	"repository\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
 	"$cloudbuild.googleapis.com/RepositoryR\n" +
-	"repository\x12\x15\n" +
-	"\x03dir\x18\x02 \x01(\tB\x03\xe0A\x01R\x03dir\x12\x1f\n" +
-	"\brevision\x18\x03 \x01(\tB\x03\xe0A\x02R\brevision\"\xe0\x03\n" +
+	"repository\x12\x16\n" +
+	"\x03dir\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x03dir\x12 \n" +
+	"\brevision\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\brevision\"\xe1\x03\n" +
 	"\x06Source\x12U\n" +
 	"\x0estorage_source\x18\x02 \x01(\v2,.google.devtools.cloudbuild.v1.StorageSourceH\x00R\rstorageSource\x12L\n" +
 	"\vrepo_source\x18\x03 \x01(\v2).google.devtools.cloudbuild.v1.RepoSourceH\x00R\n" +
 	"repoSource\x12I\n" +
 	"\n" +
 	"git_source\x18\x05 \x01(\v2(.google.devtools.cloudbuild.v1.GitSourceH\x00R\tgitSource\x12n\n" +
-	"\x17storage_source_manifest\x18\b \x01(\v24.google.devtools.cloudbuild.v1.StorageSourceManifestH\x00R\x15storageSourceManifest\x12l\n" +
-	"\x14connected_repository\x18\t \x01(\v22.google.devtools.cloudbuild.v1.ConnectedRepositoryB\x03\xe0A\x01H\x00R\x13connectedRepositoryB\b\n" +
-	"\x06source\"\xc8\x01\n" +
+	"\x17storage_source_manifest\x18\b \x01(\v24.google.devtools.cloudbuild.v1.StorageSourceManifestH\x00R\x15storageSourceManifest\x12m\n" +
+	"\x14connected_repository\x18\t \x01(\v22.google.devtools.cloudbuild.v1.ConnectedRepositoryB\x04\xe2A\x01\x01H\x00R\x13connectedRepositoryB\b\n" +
+	"\x06source\"\xca\x01\n" +
 	"\n" +
 	"BuiltImage\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x16\n" +
-	"\x06digest\x18\x03 \x01(\tR\x06digest\x12M\n" +
-	"\vpush_timing\x18\x04 \x01(\v2'.google.devtools.cloudbuild.v1.TimeSpanB\x03\xe0A\x03R\n" +
-	"pushTiming\x12?\n" +
-	"\x19artifact_registry_package\x18\x05 \x01(\tB\x03\xe0A\x03R\x17artifactRegistryPackage\"\x85\x02\n" +
+	"\x06digest\x18\x03 \x01(\tR\x06digest\x12N\n" +
+	"\vpush_timing\x18\x04 \x01(\v2'.google.devtools.cloudbuild.v1.TimeSpanB\x04\xe2A\x01\x03R\n" +
+	"pushTiming\x12@\n" +
+	"\x19artifact_registry_package\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x17artifactRegistryPackage\"\x87\x02\n" +
 	"\x15UploadedPythonPackage\x12\x10\n" +
 	"\x03uri\x18\x01 \x01(\tR\x03uri\x12J\n" +
 	"\vfile_hashes\x18\x02 \x01(\v2).google.devtools.cloudbuild.v1.FileHashesR\n" +
-	"fileHashes\x12M\n" +
-	"\vpush_timing\x18\x03 \x01(\v2'.google.devtools.cloudbuild.v1.TimeSpanB\x03\xe0A\x03R\n" +
-	"pushTiming\x12?\n" +
-	"\x19artifact_registry_package\x18\x04 \x01(\tB\x03\xe0A\x03R\x17artifactRegistryPackage\"\x85\x02\n" +
+	"fileHashes\x12N\n" +
+	"\vpush_timing\x18\x03 \x01(\v2'.google.devtools.cloudbuild.v1.TimeSpanB\x04\xe2A\x01\x03R\n" +
+	"pushTiming\x12@\n" +
+	"\x19artifact_registry_package\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x17artifactRegistryPackage\"\x87\x02\n" +
 	"\x15UploadedMavenArtifact\x12\x10\n" +
 	"\x03uri\x18\x01 \x01(\tR\x03uri\x12J\n" +
 	"\vfile_hashes\x18\x02 \x01(\v2).google.devtools.cloudbuild.v1.FileHashesR\n" +
-	"fileHashes\x12M\n" +
-	"\vpush_timing\x18\x03 \x01(\v2'.google.devtools.cloudbuild.v1.TimeSpanB\x03\xe0A\x03R\n" +
-	"pushTiming\x12?\n" +
-	"\x19artifact_registry_package\x18\x04 \x01(\tB\x03\xe0A\x03R\x17artifactRegistryPackage\"\x80\x02\n" +
+	"fileHashes\x12N\n" +
+	"\vpush_timing\x18\x03 \x01(\v2'.google.devtools.cloudbuild.v1.TimeSpanB\x04\xe2A\x01\x03R\n" +
+	"pushTiming\x12@\n" +
+	"\x19artifact_registry_package\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x17artifactRegistryPackage\"\x82\x02\n" +
 	"\x10UploadedGoModule\x12\x10\n" +
 	"\x03uri\x18\x01 \x01(\tR\x03uri\x12J\n" +
 	"\vfile_hashes\x18\x02 \x01(\v2).google.devtools.cloudbuild.v1.FileHashesR\n" +
-	"fileHashes\x12M\n" +
-	"\vpush_timing\x18\x03 \x01(\v2'.google.devtools.cloudbuild.v1.TimeSpanB\x03\xe0A\x03R\n" +
-	"pushTiming\x12?\n" +
-	"\x19artifact_registry_package\x18\x04 \x01(\tB\x03\xe0A\x03R\x17artifactRegistryPackage\"\x82\x02\n" +
+	"fileHashes\x12N\n" +
+	"\vpush_timing\x18\x03 \x01(\v2'.google.devtools.cloudbuild.v1.TimeSpanB\x04\xe2A\x01\x03R\n" +
+	"pushTiming\x12@\n" +
+	"\x19artifact_registry_package\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x17artifactRegistryPackage\"\x84\x02\n" +
 	"\x12UploadedNpmPackage\x12\x10\n" +
 	"\x03uri\x18\x01 \x01(\tR\x03uri\x12J\n" +
 	"\vfile_hashes\x18\x02 \x01(\v2).google.devtools.cloudbuild.v1.FileHashesR\n" +
-	"fileHashes\x12M\n" +
-	"\vpush_timing\x18\x03 \x01(\v2'.google.devtools.cloudbuild.v1.TimeSpanB\x03\xe0A\x03R\n" +
-	"pushTiming\x12?\n" +
-	"\x19artifact_registry_package\x18\a \x01(\tB\x03\xe0A\x03R\x17artifactRegistryPackage\"\xf3\x05\n" +
+	"fileHashes\x12N\n" +
+	"\vpush_timing\x18\x03 \x01(\v2'.google.devtools.cloudbuild.v1.TimeSpanB\x04\xe2A\x01\x03R\n" +
+	"pushTiming\x12@\n" +
+	"\x19artifact_registry_package\x18\a \x01(\tB\x04\xe2A\x01\x03R\x17artifactRegistryPackage\"\xf7\x05\n" +
 	"\tBuildStep\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x10\n" +
 	"\x03env\x18\x02 \x03(\tR\x03env\x12\x12\n" +
@@ -8960,22 +9033,22 @@ const file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDesc = "" +
 	"entrypoint\x12\x1d\n" +
 	"\n" +
 	"secret_env\x18\b \x03(\tR\tsecretEnv\x12?\n" +
-	"\avolumes\x18\t \x03(\v2%.google.devtools.cloudbuild.v1.VolumeR\avolumes\x12D\n" +
+	"\avolumes\x18\t \x03(\v2%.google.devtools.cloudbuild.v1.VolumeR\avolumes\x12E\n" +
 	"\x06timing\x18\n" +
-	" \x01(\v2'.google.devtools.cloudbuild.v1.TimeSpanB\x03\xe0A\x03R\x06timing\x12M\n" +
-	"\vpull_timing\x18\r \x01(\v2'.google.devtools.cloudbuild.v1.TimeSpanB\x03\xe0A\x03R\n" +
+	" \x01(\v2'.google.devtools.cloudbuild.v1.TimeSpanB\x04\xe2A\x01\x03R\x06timing\x12N\n" +
+	"\vpull_timing\x18\r \x01(\v2'.google.devtools.cloudbuild.v1.TimeSpanB\x04\xe2A\x01\x03R\n" +
 	"pullTiming\x123\n" +
-	"\atimeout\x18\v \x01(\v2\x19.google.protobuf.DurationR\atimeout\x12H\n" +
-	"\x06status\x18\f \x01(\x0e2+.google.devtools.cloudbuild.v1.Build.StatusB\x03\xe0A\x03R\x06status\x12#\n" +
-	"\rallow_failure\x18\x0e \x01(\bR\fallowFailure\x12 \n" +
-	"\texit_code\x18\x10 \x01(\x05B\x03\xe0A\x03R\bexitCode\x12(\n" +
+	"\atimeout\x18\v \x01(\v2\x19.google.protobuf.DurationR\atimeout\x12I\n" +
+	"\x06status\x18\f \x01(\x0e2+.google.devtools.cloudbuild.v1.Build.StatusB\x04\xe2A\x01\x03R\x06status\x12#\n" +
+	"\rallow_failure\x18\x0e \x01(\bR\fallowFailure\x12!\n" +
+	"\texit_code\x18\x10 \x01(\x05B\x04\xe2A\x01\x03R\bexitCode\x12(\n" +
 	"\x10allow_exit_codes\x18\x12 \x03(\x05R\x0eallowExitCodes\x12\x16\n" +
 	"\x06script\x18\x13 \x01(\tR\x06script\x128\n" +
 	"\x15automap_substitutions\x18\x14 \x01(\bH\x00R\x14automapSubstitutions\x88\x01\x01B\x18\n" +
 	"\x16_automap_substitutions\"0\n" +
 	"\x06Volume\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x12\n" +
-	"\x04path\x18\x02 \x01(\tR\x04path\"\xb3\x05\n" +
+	"\x04path\x18\x02 \x01(\tR\x04path\"\xb4\x05\n" +
 	"\aResults\x12A\n" +
 	"\x06images\x18\x02 \x03(\v2).google.devtools.cloudbuild.v1.BuiltImageR\x06images\x12*\n" +
 	"\x11build_step_images\x18\x03 \x03(\tR\x0fbuildStepImages\x12+\n" +
@@ -8984,54 +9057,54 @@ const file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDesc = "" +
 	"\x12build_step_outputs\x18\x06 \x03(\fR\x10buildStepOutputs\x12P\n" +
 	"\x0fartifact_timing\x18\a \x01(\v2'.google.devtools.cloudbuild.v1.TimeSpanR\x0eartifactTiming\x12]\n" +
 	"\x0fpython_packages\x18\b \x03(\v24.google.devtools.cloudbuild.v1.UploadedPythonPackageR\x0epythonPackages\x12]\n" +
-	"\x0fmaven_artifacts\x18\t \x03(\v24.google.devtools.cloudbuild.v1.UploadedMavenArtifactR\x0emavenArtifacts\x12S\n" +
+	"\x0fmaven_artifacts\x18\t \x03(\v24.google.devtools.cloudbuild.v1.UploadedMavenArtifactR\x0emavenArtifacts\x12T\n" +
 	"\n" +
 	"go_modules\x18\n" +
-	" \x03(\v2/.google.devtools.cloudbuild.v1.UploadedGoModuleB\x03\xe0A\x01R\tgoModules\x12T\n" +
+	" \x03(\v2/.google.devtools.cloudbuild.v1.UploadedGoModuleB\x04\xe2A\x01\x01R\tgoModules\x12T\n" +
 	"\fnpm_packages\x18\f \x03(\v21.google.devtools.cloudbuild.v1.UploadedNpmPackageR\vnpmPackages\"t\n" +
 	"\x0eArtifactResult\x12\x1a\n" +
 	"\blocation\x18\x01 \x01(\tR\blocation\x12F\n" +
-	"\tfile_hash\x18\x02 \x03(\v2).google.devtools.cloudbuild.v1.FileHashesR\bfileHash\"\xc2\x16\n" +
-	"\x05Build\x12\x17\n" +
-	"\x04name\x18- \x01(\tB\x03\xe0A\x03R\x04name\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x03R\x02id\x12\"\n" +
+	"\tfile_hash\x18\x02 \x03(\v2).google.devtools.cloudbuild.v1.FileHashesR\bfileHash\"\xd5\x16\n" +
+	"\x05Build\x12\x18\n" +
+	"\x04name\x18- \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x02id\x12#\n" +
 	"\n" +
-	"project_id\x18\x10 \x01(\tB\x03\xe0A\x03R\tprojectId\x12H\n" +
-	"\x06status\x18\x02 \x01(\x0e2+.google.devtools.cloudbuild.v1.Build.StatusB\x03\xe0A\x03R\x06status\x12(\n" +
-	"\rstatus_detail\x18\x18 \x01(\tB\x03\xe0A\x03R\fstatusDetail\x12B\n" +
-	"\x06source\x18\x03 \x01(\v2%.google.devtools.cloudbuild.v1.SourceB\x03\xe0A\x01R\x06source\x12>\n" +
-	"\x05steps\x18\v \x03(\v2(.google.devtools.cloudbuild.v1.BuildStepR\x05steps\x12E\n" +
+	"project_id\x18\x10 \x01(\tB\x04\xe2A\x01\x03R\tprojectId\x12I\n" +
+	"\x06status\x18\x02 \x01(\x0e2+.google.devtools.cloudbuild.v1.Build.StatusB\x04\xe2A\x01\x03R\x06status\x12)\n" +
+	"\rstatus_detail\x18\x18 \x01(\tB\x04\xe2A\x01\x03R\fstatusDetail\x12C\n" +
+	"\x06source\x18\x03 \x01(\v2%.google.devtools.cloudbuild.v1.SourceB\x04\xe2A\x01\x01R\x06source\x12>\n" +
+	"\x05steps\x18\v \x03(\v2(.google.devtools.cloudbuild.v1.BuildStepR\x05steps\x12F\n" +
 	"\aresults\x18\n" +
-	" \x01(\v2&.google.devtools.cloudbuild.v1.ResultsB\x03\xe0A\x03R\aresults\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12>\n" +
+	" \x01(\v2&.google.devtools.cloudbuild.v1.ResultsB\x04\xe2A\x01\x03R\aresults\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12?\n" +
 	"\n" +
-	"start_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12@\n" +
-	"\vfinish_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"start_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12A\n" +
+	"\vfinish_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"finishTime\x123\n" +
 	"\atimeout\x18\f \x01(\v2\x19.google.protobuf.DurationR\atimeout\x12\x16\n" +
 	"\x06images\x18\r \x03(\tR\x06images\x126\n" +
 	"\tqueue_ttl\x18( \x01(\v2\x19.google.protobuf.DurationR\bqueueTtl\x12F\n" +
 	"\tartifacts\x18% \x01(\v2(.google.devtools.cloudbuild.v1.ArtifactsR\tartifacts\x12\x1f\n" +
 	"\vlogs_bucket\x18\x13 \x01(\tR\n" +
-	"logsBucket\x12a\n" +
-	"\x11source_provenance\x18\x15 \x01(\v2/.google.devtools.cloudbuild.v1.SourceProvenanceB\x03\xe0A\x03R\x10sourceProvenance\x12-\n" +
-	"\x10build_trigger_id\x18\x16 \x01(\tB\x03\xe0A\x03R\x0ebuildTriggerId\x12E\n" +
-	"\aoptions\x18\x17 \x01(\v2+.google.devtools.cloudbuild.v1.BuildOptionsR\aoptions\x12\x1c\n" +
-	"\alog_url\x18\x19 \x01(\tB\x03\xe0A\x03R\x06logUrl\x12]\n" +
+	"logsBucket\x12b\n" +
+	"\x11source_provenance\x18\x15 \x01(\v2/.google.devtools.cloudbuild.v1.SourceProvenanceB\x04\xe2A\x01\x03R\x10sourceProvenance\x12.\n" +
+	"\x10build_trigger_id\x18\x16 \x01(\tB\x04\xe2A\x01\x03R\x0ebuildTriggerId\x12E\n" +
+	"\aoptions\x18\x17 \x01(\v2+.google.devtools.cloudbuild.v1.BuildOptionsR\aoptions\x12\x1d\n" +
+	"\alog_url\x18\x19 \x01(\tB\x04\xe2A\x01\x03R\x06logUrl\x12]\n" +
 	"\rsubstitutions\x18\x1d \x03(\v27.google.devtools.cloudbuild.v1.Build.SubstitutionsEntryR\rsubstitutions\x12\x12\n" +
 	"\x04tags\x18\x1f \x03(\tR\x04tags\x12?\n" +
-	"\asecrets\x18  \x03(\v2%.google.devtools.cloudbuild.v1.SecretR\asecrets\x12M\n" +
-	"\x06timing\x18! \x03(\v20.google.devtools.cloudbuild.v1.Build.TimingEntryB\x03\xe0A\x03R\x06timing\x12M\n" +
-	"\bapproval\x18, \x01(\v2,.google.devtools.cloudbuild.v1.BuildApprovalB\x03\xe0A\x03R\bapproval\x12O\n" +
+	"\asecrets\x18  \x03(\v2%.google.devtools.cloudbuild.v1.SecretR\asecrets\x12N\n" +
+	"\x06timing\x18! \x03(\v20.google.devtools.cloudbuild.v1.Build.TimingEntryB\x04\xe2A\x01\x03R\x06timing\x12N\n" +
+	"\bapproval\x18, \x01(\v2,.google.devtools.cloudbuild.v1.BuildApprovalB\x04\xe2A\x01\x03R\bapproval\x12O\n" +
 	"\x0fservice_account\x18* \x01(\tB&\xfaA#\n" +
 	"!iam.googleapis.com/ServiceAccountR\x0eserviceAccount\x12S\n" +
-	"\x11available_secrets\x18/ \x01(\v2&.google.devtools.cloudbuild.v1.SecretsR\x10availableSecrets\x12M\n" +
-	"\bwarnings\x181 \x03(\v2,.google.devtools.cloudbuild.v1.Build.WarningB\x03\xe0A\x03R\bwarnings\x12L\n" +
+	"\x11available_secrets\x18/ \x01(\v2&.google.devtools.cloudbuild.v1.SecretsR\x10availableSecrets\x12N\n" +
+	"\bwarnings\x181 \x03(\v2,.google.devtools.cloudbuild.v1.Build.WarningB\x04\xe2A\x01\x03R\bwarnings\x12M\n" +
 	"\n" +
-	"git_config\x180 \x01(\v2(.google.devtools.cloudbuild.v1.GitConfigB\x03\xe0A\x01R\tgitConfig\x12X\n" +
-	"\ffailure_info\x183 \x01(\v20.google.devtools.cloudbuild.v1.Build.FailureInfoB\x03\xe0A\x03R\vfailureInfo\x12R\n" +
-	"\fdependencies\x188 \x03(\v2).google.devtools.cloudbuild.v1.DependencyB\x03\xe0A\x01R\fdependencies\x1a\xb8\x01\n" +
+	"git_config\x180 \x01(\v2(.google.devtools.cloudbuild.v1.GitConfigB\x04\xe2A\x01\x01R\tgitConfig\x12Y\n" +
+	"\ffailure_info\x183 \x01(\v20.google.devtools.cloudbuild.v1.Build.FailureInfoB\x04\xe2A\x01\x03R\vfailureInfo\x12S\n" +
+	"\fdependencies\x188 \x03(\v2).google.devtools.cloudbuild.v1.DependencyB\x04\xe2A\x01\x01R\fdependencies\x1a\xb8\x01\n" +
 	"\aWarning\x12\x12\n" +
 	"\x04text\x18\x01 \x01(\tR\x04text\x12Q\n" +
 	"\bpriority\x18\x02 \x01(\x0e25.google.devtools.cloudbuild.v1.Build.Warning.PriorityR\bpriority\"F\n" +
@@ -9070,20 +9143,22 @@ const file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDesc = "" +
 	"\aTIMEOUT\x10\x06\x12\r\n" +
 	"\tCANCELLED\x10\a\x12\v\n" +
 	"\aEXPIRED\x10\t:\x8f\x01\xeaA\x8b\x01\n" +
-	"\x1fcloudbuild.googleapis.com/Build\x12!projects/{project}/builds/{build}\x126projects/{project}/locations/{location}/builds/{build}*\x06builds2\x05build\"\xb8\x04\n" +
+	"\x1fcloudbuild.googleapis.com/Build\x12!projects/{project}/builds/{build}\x126projects/{project}/locations/{location}/builds/{build}*\x06builds2\x05build\"\xe2\x04\n" +
 	"\n" +
 	"Dependency\x12\x16\n" +
 	"\x05empty\x18\x01 \x01(\bH\x00R\x05empty\x12^\n" +
 	"\n" +
-	"git_source\x18\x02 \x01(\v2=.google.devtools.cloudbuild.v1.Dependency.GitSourceDependencyH\x00R\tgitSource\x1a\x8b\x02\n" +
-	"\x13GitSourceDependency\x12b\n" +
+	"git_source\x18\x02 \x01(\v2=.google.devtools.cloudbuild.v1.Dependency.GitSourceDependencyH\x00R\tgitSource\x1a\xb5\x02\n" +
+	"\x13GitSourceDependency\x12c\n" +
 	"\n" +
-	"repository\x18\x01 \x01(\v2=.google.devtools.cloudbuild.v1.Dependency.GitSourceRepositoryB\x03\xe0A\x02R\n" +
-	"repository\x12\x1f\n" +
-	"\brevision\x18\x02 \x01(\tB\x03\xe0A\x02R\brevision\x122\n" +
-	"\x12recurse_submodules\x18\x03 \x01(\bB\x03\xe0A\x01R\x11recurseSubmodules\x12\x19\n" +
-	"\x05depth\x18\x04 \x01(\x03B\x03\xe0A\x01R\x05depth\x12 \n" +
-	"\tdest_path\x18\x05 \x01(\tB\x03\xe0A\x02R\bdestPath\x1a\x9c\x01\n" +
+	"repository\x18\x01 \x01(\v2=.google.devtools.cloudbuild.v1.Dependency.GitSourceRepositoryB\x04\xe2A\x01\x02R\n" +
+	"repository\x12 \n" +
+	"\brevision\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\brevision\x123\n" +
+	"\x12recurse_submodules\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x11recurseSubmodules\x12\x1a\n" +
+	"\x05depth\x18\x04 \x01(\x03B\x04\xe2A\x01\x01R\x05depth\x12!\n" +
+	"\tdest_path\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\bdestPath\x12#\n" +
+	"\n" +
+	"fetch_tags\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\tfetchTags\x1a\x9c\x01\n" +
 	"\x13GitSourceRepository\x12\x12\n" +
 	"\x03url\x18\x01 \x01(\tH\x00R\x03url\x12e\n" +
 	"\x11developer_connect\x18\x02 \x01(\tB6\xfaA3\n" +
@@ -9096,62 +9171,62 @@ const file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDesc = "" +
 	"\n" +
 	"HttpConfig\x12j\n" +
 	"\x19proxy_secret_version_name\x18\x01 \x01(\tB/\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionR\x16proxySecretVersionName\"\xd4\t\n" +
+	"*secretmanager.googleapis.com/SecretVersionR\x16proxySecretVersionName\"\xde\t\n" +
 	"\tArtifacts\x12\x16\n" +
 	"\x06images\x18\x01 \x03(\tR\x06images\x12R\n" +
 	"\aobjects\x18\x02 \x01(\v28.google.devtools.cloudbuild.v1.Artifacts.ArtifactObjectsR\aobjects\x12_\n" +
-	"\x0fmaven_artifacts\x18\x03 \x03(\v26.google.devtools.cloudbuild.v1.Artifacts.MavenArtifactR\x0emavenArtifacts\x12U\n" +
+	"\x0fmaven_artifacts\x18\x03 \x03(\v26.google.devtools.cloudbuild.v1.Artifacts.MavenArtifactR\x0emavenArtifacts\x12V\n" +
 	"\n" +
-	"go_modules\x18\x04 \x03(\v21.google.devtools.cloudbuild.v1.Artifacts.GoModuleB\x03\xe0A\x01R\tgoModules\x12_\n" +
+	"go_modules\x18\x04 \x03(\v21.google.devtools.cloudbuild.v1.Artifacts.GoModuleB\x04\xe2A\x01\x01R\tgoModules\x12_\n" +
 	"\x0fpython_packages\x18\x05 \x03(\v26.google.devtools.cloudbuild.v1.Artifacts.PythonPackageR\x0epythonPackages\x12V\n" +
-	"\fnpm_packages\x18\x06 \x03(\v23.google.devtools.cloudbuild.v1.Artifacts.NpmPackageR\vnpmPackages\x1a\x89\x01\n" +
+	"\fnpm_packages\x18\x06 \x03(\v23.google.devtools.cloudbuild.v1.Artifacts.NpmPackageR\vnpmPackages\x1a\x8a\x01\n" +
 	"\x0fArtifactObjects\x12\x1a\n" +
 	"\blocation\x18\x01 \x01(\tR\blocation\x12\x14\n" +
-	"\x05paths\x18\x02 \x03(\tR\x05paths\x12D\n" +
-	"\x06timing\x18\x03 \x01(\v2'.google.devtools.cloudbuild.v1.TimeSpanB\x03\xe0A\x03R\x06timing\x1a\x9e\x01\n" +
+	"\x05paths\x18\x02 \x03(\tR\x05paths\x12E\n" +
+	"\x06timing\x18\x03 \x01(\v2'.google.devtools.cloudbuild.v1.TimeSpanB\x04\xe2A\x01\x03R\x06timing\x1a\x9f\x01\n" +
 	"\rMavenArtifact\x12\x1e\n" +
 	"\n" +
 	"repository\x18\x01 \x01(\tR\n" +
-	"repository\x12\x17\n" +
-	"\x04path\x18\x02 \x01(\tB\x03\xe0A\x01R\x04path\x12\x1f\n" +
+	"repository\x12\x18\n" +
+	"\x04path\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04path\x12\x1f\n" +
 	"\vartifact_id\x18\x03 \x01(\tR\n" +
 	"artifactId\x12\x19\n" +
 	"\bgroup_id\x18\x04 \x01(\tR\agroupId\x12\x18\n" +
-	"\aversion\x18\x05 \x01(\tR\aversion\x1a\x9f\x02\n" +
-	"\bGoModule\x12,\n" +
-	"\x0frepository_name\x18\x01 \x01(\tB\x03\xe0A\x01R\x0erepositoryName\x124\n" +
-	"\x13repository_location\x18\x02 \x01(\tB\x03\xe0A\x01R\x12repositoryLocation\x127\n" +
-	"\x15repository_project_id\x18\x03 \x01(\tB\x03\xe0A\x01R\x13repositoryProjectId\x12$\n" +
-	"\vsource_path\x18\x04 \x01(\tB\x03\xe0A\x01R\n" +
-	"sourcePath\x12$\n" +
-	"\vmodule_path\x18\x05 \x01(\tB\x03\xe0A\x01R\n" +
-	"modulePath\x12*\n" +
-	"\x0emodule_version\x18\x06 \x01(\tB\x03\xe0A\x01R\rmoduleVersion\x1aE\n" +
+	"\aversion\x18\x05 \x01(\tR\aversion\x1a\xa5\x02\n" +
+	"\bGoModule\x12-\n" +
+	"\x0frepository_name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0erepositoryName\x125\n" +
+	"\x13repository_location\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x12repositoryLocation\x128\n" +
+	"\x15repository_project_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x13repositoryProjectId\x12%\n" +
+	"\vsource_path\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"sourcePath\x12%\n" +
+	"\vmodule_path\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"modulePath\x12+\n" +
+	"\x0emodule_version\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\rmoduleVersion\x1aE\n" +
 	"\rPythonPackage\x12\x1e\n" +
 	"\n" +
 	"repository\x18\x01 \x01(\tR\n" +
 	"repository\x12\x14\n" +
-	"\x05paths\x18\x02 \x03(\tR\x05paths\x1aT\n" +
+	"\x05paths\x18\x02 \x03(\tR\x05paths\x1aU\n" +
 	"\n" +
 	"NpmPackage\x12\x1e\n" +
 	"\n" +
 	"repository\x18\x01 \x01(\tR\n" +
-	"repository\x12&\n" +
-	"\fpackage_path\x18\x02 \x01(\tB\x03\xe0A\x01R\vpackagePath\"|\n" +
+	"repository\x12'\n" +
+	"\fpackage_path\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vpackagePath\"|\n" +
 	"\bTimeSpan\x129\n" +
 	"\n" +
 	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x125\n" +
 	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\"T\n" +
 	"\x16BuildOperationMetadata\x12:\n" +
-	"\x05build\x18\x01 \x01(\v2$.google.devtools.cloudbuild.v1.BuildR\x05build\"\x81\x06\n" +
+	"\x05build\x18\x01 \x01(\v2$.google.devtools.cloudbuild.v1.BuildR\x05build\"\x84\x06\n" +
 	"\x10SourceProvenance\x12d\n" +
 	"\x17resolved_storage_source\x18\x03 \x01(\v2,.google.devtools.cloudbuild.v1.StorageSourceR\x15resolvedStorageSource\x12[\n" +
 	"\x14resolved_repo_source\x18\x06 \x01(\v2).google.devtools.cloudbuild.v1.RepoSourceR\x12resolvedRepoSource\x12}\n" +
-	" resolved_storage_source_manifest\x18\t \x01(\v24.google.devtools.cloudbuild.v1.StorageSourceManifestR\x1dresolvedStorageSourceManifest\x12{\n" +
+	" resolved_storage_source_manifest\x18\t \x01(\v24.google.devtools.cloudbuild.v1.StorageSourceManifestR\x1dresolvedStorageSourceManifest\x12|\n" +
 	"\x1dresolved_connected_repository\x18\n" +
-	" \x01(\v22.google.devtools.cloudbuild.v1.ConnectedRepositoryB\x03\xe0A\x03R\x1bresolvedConnectedRepository\x12]\n" +
-	"\x13resolved_git_source\x18\v \x01(\v2(.google.devtools.cloudbuild.v1.GitSourceB\x03\xe0A\x03R\x11resolvedGitSource\x12e\n" +
-	"\vfile_hashes\x18\x04 \x03(\v2?.google.devtools.cloudbuild.v1.SourceProvenance.FileHashesEntryB\x03\xe0A\x03R\n" +
+	" \x01(\v22.google.devtools.cloudbuild.v1.ConnectedRepositoryB\x04\xe2A\x01\x03R\x1bresolvedConnectedRepository\x12^\n" +
+	"\x13resolved_git_source\x18\v \x01(\v2(.google.devtools.cloudbuild.v1.GitSourceB\x04\xe2A\x01\x03R\x11resolvedGitSource\x12f\n" +
+	"\vfile_hashes\x18\x04 \x03(\v2?.google.devtools.cloudbuild.v1.SourceProvenance.FileHashesEntryB\x04\xe2A\x01\x03R\n" +
 	"fileHashes\x1ah\n" +
 	"\x0fFileHashesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12?\n" +
@@ -9192,42 +9267,42 @@ const file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDesc = "" +
 	"secret_env\x18\x03 \x03(\v24.google.devtools.cloudbuild.v1.Secret.SecretEnvEntryR\tsecretEnv\x1a<\n" +
 	"\x0eSecretEnvEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\fR\x05value:\x028\x01\"\xb7\x01\n" +
+	"\x05value\x18\x02 \x01(\fR\x05value:\x028\x01\"\xb9\x01\n" +
 	"\x12CreateBuildRequest\x12<\n" +
-	"\x06parent\x18\x04 \x01(\tB$\xfaA!\x12\x1fcloudbuild.googleapis.com/BuildR\x06parent\x12\"\n" +
+	"\x06parent\x18\x04 \x01(\tB$\xfaA!\x12\x1fcloudbuild.googleapis.com/BuildR\x06parent\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12?\n" +
-	"\x05build\x18\x02 \x01(\v2$.google.devtools.cloudbuild.v1.BuildB\x03\xe0A\x02R\x05build\"\x84\x01\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12@\n" +
+	"\x05build\x18\x02 \x01(\v2$.google.devtools.cloudbuild.v1.BuildB\x04\xe2A\x01\x02R\x05build\"\x86\x01\n" +
 	"\x0fGetBuildRequest\x128\n" +
 	"\x04name\x18\x04 \x01(\tB$\xfaA!\n" +
-	"\x1fcloudbuild.googleapis.com/BuildR\x04name\x12\"\n" +
+	"\x1fcloudbuild.googleapis.com/BuildR\x04name\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x13\n" +
-	"\x02id\x18\x02 \x01(\tB\x03\xe0A\x02R\x02id\"\xc9\x01\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12\x14\n" +
+	"\x02id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x02id\"\xca\x01\n" +
 	"\x11ListBuildsRequest\x12<\n" +
-	"\x06parent\x18\t \x01(\tB$\xfaA!\x12\x1fcloudbuild.googleapis.com/BuildR\x06parent\x12\"\n" +
+	"\x06parent\x18\t \x01(\tB$\xfaA!\x12\x1fcloudbuild.googleapis.com/BuildR\x06parent\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x1b\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
 	"\x06filter\x18\b \x01(\tR\x06filter\"z\n" +
 	"\x12ListBuildsResponse\x12<\n" +
 	"\x06builds\x18\x01 \x03(\v2$.google.devtools.cloudbuild.v1.BuildR\x06builds\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x87\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x89\x01\n" +
 	"\x12CancelBuildRequest\x128\n" +
 	"\x04name\x18\x04 \x01(\tB$\xfaA!\n" +
-	"\x1fcloudbuild.googleapis.com/BuildR\x04name\x12\"\n" +
+	"\x1fcloudbuild.googleapis.com/BuildR\x04name\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x13\n" +
-	"\x02id\x18\x02 \x01(\tB\x03\xe0A\x02R\x02id\"\x86\x01\n" +
-	"\x13ApproveBuildRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12V\n" +
-	"\x0fapproval_result\x18\x02 \x01(\v2-.google.devtools.cloudbuild.v1.ApprovalResultR\x0eapprovalResult\"\xce\x02\n" +
-	"\rBuildApproval\x12M\n" +
-	"\x05state\x18\x01 \x01(\x0e22.google.devtools.cloudbuild.v1.BuildApproval.StateB\x03\xe0A\x03R\x05state\x12J\n" +
-	"\x06config\x18\x02 \x01(\v2-.google.devtools.cloudbuild.v1.ApprovalConfigB\x03\xe0A\x03R\x06config\x12J\n" +
-	"\x06result\x18\x03 \x01(\v2-.google.devtools.cloudbuild.v1.ApprovalResultB\x03\xe0A\x03R\x06result\"V\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12\x14\n" +
+	"\x02id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x02id\"\x87\x01\n" +
+	"\x13ApproveBuildRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12V\n" +
+	"\x0fapproval_result\x18\x02 \x01(\v2-.google.devtools.cloudbuild.v1.ApprovalResultR\x0eapprovalResult\"\xd1\x02\n" +
+	"\rBuildApproval\x12N\n" +
+	"\x05state\x18\x01 \x01(\x0e22.google.devtools.cloudbuild.v1.BuildApproval.StateB\x04\xe2A\x01\x03R\x05state\x12K\n" +
+	"\x06config\x18\x02 \x01(\v2-.google.devtools.cloudbuild.v1.ApprovalConfigB\x04\xe2A\x01\x03R\x06config\x12K\n" +
+	"\x06result\x18\x03 \x01(\v2-.google.devtools.cloudbuild.v1.ApprovalResultB\x04\xe2A\x01\x03R\x06result\"V\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aPENDING\x10\x01\x12\f\n" +
@@ -9235,13 +9310,13 @@ const file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDesc = "" +
 	"\bREJECTED\x10\x03\x12\r\n" +
 	"\tCANCELLED\x10\x05\"=\n" +
 	"\x0eApprovalConfig\x12+\n" +
-	"\x11approval_required\x18\x01 \x01(\bR\x10approvalRequired\"\xd7\x02\n" +
-	"\x0eApprovalResult\x12.\n" +
-	"\x10approver_account\x18\x02 \x01(\tB\x03\xe0A\x03R\x0fapproverAccount\x12D\n" +
-	"\rapproval_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\fapprovalTime\x12W\n" +
-	"\bdecision\x18\x04 \x01(\x0e26.google.devtools.cloudbuild.v1.ApprovalResult.DecisionB\x03\xe0A\x02R\bdecision\x12\x1d\n" +
-	"\acomment\x18\x05 \x01(\tB\x03\xe0A\x01R\acomment\x12\x15\n" +
-	"\x03url\x18\x06 \x01(\tB\x03\xe0A\x01R\x03url\"@\n" +
+	"\x11approval_required\x18\x01 \x01(\bR\x10approvalRequired\"\xdc\x02\n" +
+	"\x0eApprovalResult\x12/\n" +
+	"\x10approver_account\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x0fapproverAccount\x12E\n" +
+	"\rapproval_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\fapprovalTime\x12X\n" +
+	"\bdecision\x18\x04 \x01(\x0e26.google.devtools.cloudbuild.v1.ApprovalResult.DecisionB\x04\xe2A\x01\x02R\bdecision\x12\x1e\n" +
+	"\acomment\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\acomment\x12\x16\n" +
+	"\x03url\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x03url\"@\n" +
 	"\bDecision\x12\x18\n" +
 	"\x14DECISION_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bAPPROVED\x10\x01\x12\f\n" +
@@ -9278,10 +9353,10 @@ const file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDesc = "" +
 	"\n" +
 	"\x06GITLAB\x10\x04B\b\n" +
 	"\x06sourceB\x13\n" +
-	"\x11enterprise_config\"\xeb\v\n" +
+	"\x11enterprise_config\"\xc6\f\n" +
 	"\fBuildTrigger\x12#\n" +
-	"\rresource_name\x18\" \x01(\tR\fresourceName\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x03R\x02id\x12 \n" +
+	"\rresource_name\x18\" \x01(\tR\fresourceName\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x02id\x12 \n" +
 	"\vdescription\x18\n" +
 	" \x01(\tR\vdescription\x12\x12\n" +
 	"\x04name\x18\x15 \x01(\tR\x04name\x12\x12\n" +
@@ -9295,15 +9370,16 @@ const file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDesc = "" +
 	"autodetect\x12<\n" +
 	"\x05build\x18\x04 \x01(\v2$.google.devtools.cloudbuild.v1.BuildH\x00R\x05build\x12\x1c\n" +
 	"\bfilename\x18\b \x01(\tH\x00R\bfilename\x12V\n" +
-	"\x0fgit_file_source\x18\x18 \x01(\v2,.google.devtools.cloudbuild.v1.GitFileSourceH\x00R\rgitFileSource\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x0fgit_file_source\x18\x18 \x01(\v2,.google.devtools.cloudbuild.v1.GitFileSourceH\x00R\rgitFileSource\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"createTime\x12\x1a\n" +
 	"\bdisabled\x18\t \x01(\bR\bdisabled\x12d\n" +
 	"\rsubstitutions\x18\v \x03(\v2>.google.devtools.cloudbuild.v1.BuildTrigger.SubstitutionsEntryR\rsubstitutions\x12#\n" +
 	"\rignored_files\x18\x0f \x03(\tR\fignoredFiles\x12%\n" +
-	"\x0eincluded_files\x18\x10 \x03(\tR\rincludedFiles\x12\x1b\n" +
-	"\x06filter\x18\x1e \x01(\tB\x03\xe0A\x01R\x06filter\x12T\n" +
-	"\x0fsource_to_build\x18\x1a \x01(\v2,.google.devtools.cloudbuild.v1.GitRepoSourceR\rsourceToBuild\x12O\n" +
+	"\x0eincluded_files\x18\x10 \x03(\tR\rincludedFiles\x12\x1c\n" +
+	"\x06filter\x18\x1e \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12T\n" +
+	"\x0fsource_to_build\x18\x1a \x01(\v2,.google.devtools.cloudbuild.v1.GitRepoSourceR\rsourceToBuild\x12V\n" +
+	"\x0fapproval_config\x18\x1c \x01(\v2-.google.devtools.cloudbuild.v1.ApprovalConfigR\x0eapprovalConfig\x12O\n" +
 	"\x0fservice_account\x18! \x01(\tB&\xfaA#\n" +
 	"!iam.googleapis.com/ServiceAccountR\x0eserviceAccount\x12l\n" +
 	"\x17repository_event_config\x18' \x01(\v24.google.devtools.cloudbuild.v1.RepositoryEventConfigR\x15repositoryEventConfig\x1a@\n" +
@@ -9311,13 +9387,13 @@ const file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDesc = "" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\xa2\x01\xeaA\x9e\x01\n" +
 	"&cloudbuild.googleapis.com/BuildTrigger\x12%projects/{project}/triggers/{trigger}\x12:projects/{project}/locations/{location}/triggers/{trigger}*\btriggers2\atriggerB\x10\n" +
-	"\x0ebuild_template\"\xe4\x03\n" +
+	"\x0ebuild_template\"\xe5\x03\n" +
 	"\x15RepositoryEventConfig\x12I\n" +
 	"\n" +
 	"repository\x18\x01 \x01(\tB)\xfaA&\n" +
 	"$cloudbuild.googleapis.com/RepositoryR\n" +
-	"repository\x12q\n" +
-	"\x0frepository_type\x18\x02 \x01(\x0e2C.google.devtools.cloudbuild.v1.RepositoryEventConfig.RepositoryTypeB\x03\xe0A\x03R\x0erepositoryType\x12U\n" +
+	"repository\x12r\n" +
+	"\x0frepository_type\x18\x02 \x01(\x0e2C.google.devtools.cloudbuild.v1.RepositoryEventConfig.RepositoryTypeB\x04\xe2A\x01\x03R\x0erepositoryType\x12U\n" +
 	"\fpull_request\x18\x03 \x01(\v20.google.devtools.cloudbuild.v1.PullRequestFilterH\x00R\vpullRequest\x12?\n" +
 	"\x04push\x18\x04 \x01(\v2).google.devtools.cloudbuild.v1.PushFilterH\x00R\x04push\"k\n" +
 	"\x0eRepositoryType\x12\x1f\n" +
@@ -9333,11 +9409,11 @@ const file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDesc = "" +
 	"\x04name\x18\a \x01(\tR\x04name\x12U\n" +
 	"\fpull_request\x18\x04 \x01(\v20.google.devtools.cloudbuild.v1.PullRequestFilterH\x00R\vpullRequest\x12?\n" +
 	"\x04push\x18\x05 \x01(\v2).google.devtools.cloudbuild.v1.PushFilterH\x00R\x04pushB\a\n" +
-	"\x05event\"\xb3\x03\n" +
-	"\fPubsubConfig\x12N\n" +
-	"\fsubscription\x18\x01 \x01(\tB*\xe0A\x03\xfaA$\n" +
-	"\"pubsub.googleapis.com/SubscriptionR\fsubscription\x129\n" +
-	"\x05topic\x18\x02 \x01(\tB#\xe0A\x01\xfaA\x1d\n" +
+	"\x05event\"\xb5\x03\n" +
+	"\fPubsubConfig\x12O\n" +
+	"\fsubscription\x18\x01 \x01(\tB+\xe2A\x01\x03\xfaA$\n" +
+	"\"pubsub.googleapis.com/SubscriptionR\fsubscription\x12:\n" +
+	"\x05topic\x18\x02 \x01(\tB$\xe2A\x01\x01\xfaA\x1d\n" +
 	"\x1bpubsub.googleapis.com/TopicR\x05topic\x12Z\n" +
 	"\x15service_account_email\x18\x03 \x01(\tB&\xfaA#\n" +
 	"!iam.googleapis.com/ServiceAccountR\x13serviceAccountEmail\x12G\n" +
@@ -9347,9 +9423,9 @@ const file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDesc = "" +
 	"\x02OK\x10\x01\x12\x18\n" +
 	"\x14SUBSCRIPTION_DELETED\x10\x02\x12\x11\n" +
 	"\rTOPIC_DELETED\x10\x03\x12\x1e\n" +
-	"\x1aSUBSCRIPTION_MISCONFIGURED\x10\x04\"\xf2\x01\n" +
-	"\rWebhookConfig\x12L\n" +
-	"\x06secret\x18\x03 \x01(\tB2\xe0A\x02\xfaA,\n" +
+	"\x1aSUBSCRIPTION_MISCONFIGURED\x10\x04\"\xf3\x01\n" +
+	"\rWebhookConfig\x12M\n" +
+	"\x06secret\x18\x03 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
 	"*secretmanager.googleapis.com/SecretVersionH\x00R\x06secret\x12H\n" +
 	"\x05state\x18\x04 \x01(\x0e22.google.devtools.cloudbuild.v1.WebhookConfig.StateR\x05state\":\n" +
 	"\x05State\x12\x15\n" +
@@ -9371,44 +9447,44 @@ const file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDesc = "" +
 	"\x06branch\x18\x02 \x01(\tH\x00R\x06branch\x12\x12\n" +
 	"\x03tag\x18\x03 \x01(\tH\x00R\x03tag\x12!\n" +
 	"\finvert_regex\x18\x04 \x01(\bR\vinvertRegexB\t\n" +
-	"\agit_ref\"\xd0\x01\n" +
+	"\agit_ref\"\xd2\x01\n" +
 	"\x19CreateBuildTriggerRequest\x12C\n" +
-	"\x06parent\x18\x03 \x01(\tB+\xfaA(\x12&cloudbuild.googleapis.com/BuildTriggerR\x06parent\x12\"\n" +
+	"\x06parent\x18\x03 \x01(\tB+\xfaA(\x12&cloudbuild.googleapis.com/BuildTriggerR\x06parent\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12J\n" +
-	"\atrigger\x18\x02 \x01(\v2+.google.devtools.cloudbuild.v1.BuildTriggerB\x03\xe0A\x02R\atrigger\"\xa1\x01\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12K\n" +
+	"\atrigger\x18\x02 \x01(\v2+.google.devtools.cloudbuild.v1.BuildTriggerB\x04\xe2A\x01\x02R\atrigger\"\xa3\x01\n" +
 	"\x16GetBuildTriggerRequest\x12?\n" +
 	"\x04name\x18\x03 \x01(\tB+\xfaA(\n" +
-	"&cloudbuild.googleapis.com/BuildTriggerR\x04name\x12\"\n" +
+	"&cloudbuild.googleapis.com/BuildTriggerR\x04name\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12#\n" +
 	"\n" +
-	"trigger_id\x18\x02 \x01(\tB\x03\xe0A\x02R\ttriggerId\"\xbf\x01\n" +
+	"trigger_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\ttriggerId\"\xc0\x01\n" +
 	"\x18ListBuildTriggersRequest\x12C\n" +
-	"\x06parent\x18\x04 \x01(\tB+\xfaA(\x12&cloudbuild.googleapis.com/BuildTriggerR\x06parent\x12\"\n" +
+	"\x06parent\x18\x04 \x01(\tB+\xfaA(\x12&cloudbuild.googleapis.com/BuildTriggerR\x06parent\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x1b\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x8c\x01\n" +
 	"\x19ListBuildTriggersResponse\x12G\n" +
 	"\btriggers\x18\x01 \x03(\v2+.google.devtools.cloudbuild.v1.BuildTriggerR\btriggers\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa4\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa6\x01\n" +
 	"\x19DeleteBuildTriggerRequest\x12?\n" +
 	"\x04name\x18\x03 \x01(\tB+\xfaA(\n" +
-	"&cloudbuild.googleapis.com/BuildTriggerR\x04name\x12\"\n" +
+	"&cloudbuild.googleapis.com/BuildTriggerR\x04name\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12#\n" +
 	"\n" +
-	"trigger_id\x18\x02 \x01(\tB\x03\xe0A\x02R\ttriggerId\"\xec\x01\n" +
-	"\x19UpdateBuildTriggerRequest\x12\"\n" +
+	"trigger_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\ttriggerId\"\xef\x01\n" +
+	"\x19UpdateBuildTriggerRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12#\n" +
 	"\n" +
-	"trigger_id\x18\x02 \x01(\tB\x03\xe0A\x02R\ttriggerId\x12J\n" +
-	"\atrigger\x18\x03 \x01(\v2+.google.devtools.cloudbuild.v1.BuildTriggerB\x03\xe0A\x02R\atrigger\x12;\n" +
+	"trigger_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\ttriggerId\x12K\n" +
+	"\atrigger\x18\x03 \x01(\v2+.google.devtools.cloudbuild.v1.BuildTriggerB\x04\xe2A\x01\x02R\atrigger\x12;\n" +
 	"\vupdate_mask\x18\x05 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"\xc7\x0e\n" +
+	"updateMask\"\xa1\x10\n" +
 	"\fBuildOptions\x12b\n" +
 	"\x16source_provenance_hash\x18\x01 \x03(\x0e2,.google.devtools.cloudbuild.v1.Hash.HashTypeR\x14sourceProvenanceHash\x12p\n" +
 	"\x17requested_verify_option\x18\x02 \x01(\x0e28.google.devtools.cloudbuild.v1.BuildOptions.VerifyOptionR\x15requestedVerifyOption\x12Z\n" +
@@ -9420,19 +9496,23 @@ const file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDesc = "" +
 	"\x15automap_substitutions\x18\x16 \x01(\bR\x14automapSubstitutions\x12p\n" +
 	"\x14log_streaming_option\x18\x05 \x01(\x0e2>.google.devtools.cloudbuild.v1.BuildOptions.LogStreamingOptionR\x12logStreamingOption\x12#\n" +
 	"\vworker_pool\x18\a \x01(\tB\x02\x18\x01R\n" +
-	"workerPool\x12O\n" +
-	"\x04pool\x18\x13 \x01(\v26.google.devtools.cloudbuild.v1.BuildOptions.PoolOptionB\x03\xe0A\x01R\x04pool\x12Q\n" +
+	"workerPool\x12P\n" +
+	"\x04pool\x18\x13 \x01(\v26.google.devtools.cloudbuild.v1.BuildOptions.PoolOptionB\x04\xe2A\x01\x01R\x04pool\x12Q\n" +
 	"\alogging\x18\v \x01(\x0e27.google.devtools.cloudbuild.v1.BuildOptions.LoggingModeR\alogging\x12\x10\n" +
 	"\x03env\x18\f \x03(\tR\x03env\x12\x1d\n" +
 	"\n" +
 	"secret_env\x18\r \x03(\tR\tsecretEnv\x12?\n" +
-	"\avolumes\x18\x0e \x03(\v2%.google.devtools.cloudbuild.v1.VolumeR\avolumes\x12\x8b\x01\n" +
-	"\x1cdefault_logs_bucket_behavior\x18\x15 \x01(\x0e2E.google.devtools.cloudbuild.v1.BuildOptions.DefaultLogsBucketBehaviorB\x03\xe0A\x01R\x19defaultLogsBucketBehavior\x12?\n" +
-	"\x19enable_structured_logging\x18\x17 \x01(\bB\x03\xe0A\x01R\x17enableStructuredLogging\x1aK\n" +
+	"\avolumes\x18\x0e \x03(\v2%.google.devtools.cloudbuild.v1.VolumeR\avolumes\x12\x8c\x01\n" +
+	"\x1cdefault_logs_bucket_behavior\x18\x15 \x01(\x0e2E.google.devtools.cloudbuild.v1.BuildOptions.DefaultLogsBucketBehaviorB\x04\xe2A\x01\x01R\x19defaultLogsBucketBehavior\x12@\n" +
+	"\x19enable_structured_logging\x18\x17 \x01(\bB\x04\xe2A\x01\x01R\x17enableStructuredLogging\x12+\n" +
+	"\x0eworker_release\x18\x19 \x01(\tB\x04\xe2A\x01\x01R\rworkerRelease\x12<\n" +
+	"\x17resolved_worker_release\x18\x1a \x01(\tB\x04\xe2A\x01\x03R\x15resolvedWorkerRelease\x1a\xb6\x01\n" +
 	"\n" +
 	"PoolOption\x12=\n" +
 	"\x04name\x18\x01 \x01(\tB)\xfaA&\n" +
-	"$cloudbuild.googleapis.com/WorkerPoolR\x04name\".\n" +
+	"$cloudbuild.googleapis.com/WorkerPoolR\x04name\x12+\n" +
+	"\x0eworker_release\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\rworkerRelease\x12<\n" +
+	"\x17resolved_worker_release\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x15resolvedWorkerRelease\".\n" +
 	"\fVerifyOption\x12\x10\n" +
 	"\fNOT_VERIFIED\x10\x00\x12\f\n" +
 	"\bVERIFIED\x10\x01\"\x92\x01\n" +
@@ -9472,21 +9552,21 @@ const file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDesc = "" +
 	"project_id\x18\x02 \x01(\tR\tprojectId\x12\x18\n" +
 	"\atrigger\x18\x03 \x01(\tR\atrigger\x12\x16\n" +
 	"\x06secret\x18\x04 \x01(\tR\x06secret\"\x1f\n" +
-	"\x1dReceiveTriggerWebhookResponse\"\xe8\x04\n" +
+	"\x1dReceiveTriggerWebhookResponse\"\xee\x04\n" +
 	"\x16GitHubEnterpriseConfig\x12\x12\n" +
 	"\x04name\x18\a \x01(\tR\x04name\x12\x19\n" +
-	"\bhost_url\x18\x03 \x01(\tR\ahostUrl\x12\x1a\n" +
-	"\x06app_id\x18\x04 \x01(\x03B\x03\xe0A\x02R\x05appId\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\bhost_url\x18\x03 \x01(\tR\ahostUrl\x12\x1b\n" +
+	"\x06app_id\x18\x04 \x01(\x03B\x04\xe2A\x01\x02R\x05appId\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"createTime\x12\x1f\n" +
 	"\vwebhook_key\x18\b \x01(\tR\n" +
-	"webhookKey\x12M\n" +
-	"\x0epeered_network\x18\t \x01(\tB&\xe0A\x01\xfaA \n" +
-	"\x1ecompute.googleapis.com/NetworkR\rpeeredNetwork\x12U\n" +
+	"webhookKey\x12N\n" +
+	"\x0epeered_network\x18\t \x01(\tB'\xe2A\x01\x01\xfaA \n" +
+	"\x1ecompute.googleapis.com/NetworkR\rpeeredNetwork\x12V\n" +
 	"\asecrets\x18\n" +
-	" \x01(\v26.google.devtools.cloudbuild.v1.GitHubEnterpriseSecretsB\x03\xe0A\x01R\asecrets\x12&\n" +
-	"\fdisplay_name\x18\v \x01(\tB\x03\xe0A\x01R\vdisplayName\x12\x1a\n" +
-	"\x06ssl_ca\x18\f \x01(\tB\x03\xe0A\x01R\x05sslCa:\xb5\x01\xeaA\xb1\x01\n" +
+	" \x01(\v26.google.devtools.cloudbuild.v1.GitHubEnterpriseSecretsB\x04\xe2A\x01\x01R\asecrets\x12'\n" +
+	"\fdisplay_name\x18\v \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12\x1b\n" +
+	"\x06ssl_ca\x18\f \x01(\tB\x04\xe2A\x01\x01R\x05sslCa:\xb5\x01\xeaA\xb1\x01\n" +
 	"0cloudbuild.googleapis.com/GithubEnterpriseConfig\x123projects/{project}/githubEnterpriseConfigs/{config}\x12Hprojects/{project}/locations/{location}/githubEnterpriseConfigs/{config}\"\xd0\x03\n" +
 	"\x17GitHubEnterpriseSecrets\x12h\n" +
 	"\x18private_key_version_name\x18\x05 \x01(\tB/\xfaA,\n" +
@@ -9496,22 +9576,22 @@ const file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDesc = "" +
 	"\x19oauth_secret_version_name\x18\a \x01(\tB/\xfaA,\n" +
 	"*secretmanager.googleapis.com/SecretVersionR\x16oauthSecretVersionName\x12o\n" +
 	"\x1coauth_client_id_version_name\x18\b \x01(\tB/\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionR\x18oauthClientIdVersionName\"\x8d\a\n" +
+	"*secretmanager.googleapis.com/SecretVersionR\x18oauthClientIdVersionName\"\x94\a\n" +
 	"\n" +
-	"WorkerPool\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12!\n" +
-	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x15\n" +
-	"\x03uid\x18\x03 \x01(\tB\x03\xe0A\x03R\x03uid\x12\\\n" +
-	"\vannotations\x18\x04 \x03(\v2:.google.devtools.cloudbuild.v1.WorkerPool.AnnotationsEntryR\vannotations\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12@\n" +
-	"\vdelete_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"deleteTime\x12J\n" +
-	"\x05state\x18\b \x01(\x0e2/.google.devtools.cloudbuild.v1.WorkerPool.StateB\x03\xe0A\x03R\x05state\x12i\n" +
-	"\x16private_pool_v1_config\x18\f \x01(\v22.google.devtools.cloudbuild.v1.PrivatePoolV1ConfigH\x00R\x13privatePoolV1Config\x12\x17\n" +
-	"\x04etag\x18\v \x01(\tB\x03\xe0A\x03R\x04etag\x1a>\n" +
+	"WorkerPool\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12!\n" +
+	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x16\n" +
+	"\x03uid\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12\\\n" +
+	"\vannotations\x18\x04 \x03(\v2:.google.devtools.cloudbuild.v1.WorkerPool.AnnotationsEntryR\vannotations\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12A\n" +
+	"\vdelete_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"deleteTime\x12K\n" +
+	"\x05state\x18\b \x01(\x0e2/.google.devtools.cloudbuild.v1.WorkerPool.StateB\x04\xe2A\x01\x03R\x05state\x12i\n" +
+	"\x16private_pool_v1_config\x18\f \x01(\v22.google.devtools.cloudbuild.v1.PrivatePoolV1ConfigH\x00R\x13privatePoolV1Config\x12\x18\n" +
+	"\x04etag\x18\v \x01(\tB\x04\xe2A\x01\x03R\x04etag\x1a>\n" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"b\n" +
@@ -9524,55 +9604,56 @@ const file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDesc = "" +
 	"\bUPDATING\x10\x05:\x89\x01\xeaA\x85\x01\n" +
 	"$cloudbuild.googleapis.com/WorkerPool\x12Aprojects/{project}/locations/{location}/workerPools/{worker_pool}*\vworkerPools2\n" +
 	"workerPoolR\x01\x01B\b\n" +
-	"\x06config\"\x94\t\n" +
+	"\x06config\"\xc3\t\n" +
 	"\x13PrivatePoolV1Config\x12d\n" +
 	"\rworker_config\x18\x01 \x01(\v2?.google.devtools.cloudbuild.v1.PrivatePoolV1Config.WorkerConfigR\fworkerConfig\x12g\n" +
-	"\x0enetwork_config\x18\x02 \x01(\v2@.google.devtools.cloudbuild.v1.PrivatePoolV1Config.NetworkConfigR\rnetworkConfig\x12\x85\x01\n" +
-	"\x17private_service_connect\x18\x05 \x01(\v2H.google.devtools.cloudbuild.v1.PrivatePoolV1Config.PrivateServiceConnectB\x03\xe0A\x05R\x15privateServiceConnect\x1a\xc5\x01\n" +
-	"\fWorkerConfig\x12&\n" +
-	"\fmachine_type\x18\x01 \x01(\tB\x03\xe0A\x01R\vmachineType\x12 \n" +
+	"\x0enetwork_config\x18\x02 \x01(\v2@.google.devtools.cloudbuild.v1.PrivatePoolV1Config.NetworkConfigR\rnetworkConfig\x12\x86\x01\n" +
+	"\x17private_service_connect\x18\x05 \x01(\v2H.google.devtools.cloudbuild.v1.PrivatePoolV1Config.PrivateServiceConnectB\x04\xe2A\x01\x05R\x15privateServiceConnect\x1a\xf4\x01\n" +
+	"\fWorkerConfig\x12'\n" +
+	"\fmachine_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\vmachineType\x12 \n" +
 	"\fdisk_size_gb\x18\x02 \x01(\x03R\n" +
-	"diskSizeGb\x12J\n" +
-	"\x1cenable_nested_virtualization\x18\x03 \x01(\bB\x03\xe0A\x01H\x00R\x1aenableNestedVirtualization\x88\x01\x01B\x1f\n" +
+	"diskSizeGb\x12K\n" +
+	"\x1cenable_nested_virtualization\x18\x03 \x01(\bB\x04\xe2A\x01\x01H\x00R\x1aenableNestedVirtualization\x88\x01\x01\x12+\n" +
+	"\x0eworker_release\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\rworkerReleaseB\x1f\n" +
 	"\x1d_enable_nested_virtualization\x1a\xe9\x02\n" +
-	"\rNetworkConfig\x12P\n" +
-	"\x0epeered_network\x18\x01 \x01(\tB)\xe0A\x05\xe0A\x02\xfaA \n" +
+	"\rNetworkConfig\x12O\n" +
+	"\x0epeered_network\x18\x01 \x01(\tB(\xe2A\x02\x05\x02\xfaA \n" +
 	"\x1ecompute.googleapis.com/NetworkR\rpeeredNetwork\x12r\n" +
-	"\regress_option\x18\x02 \x01(\x0e2M.google.devtools.cloudbuild.v1.PrivatePoolV1Config.NetworkConfig.EgressOptionR\fegressOption\x12:\n" +
-	"\x17peered_network_ip_range\x18\x03 \x01(\tB\x03\xe0A\x05R\x14peeredNetworkIpRange\"V\n" +
+	"\regress_option\x18\x02 \x01(\x0e2M.google.devtools.cloudbuild.v1.PrivatePoolV1Config.NetworkConfig.EgressOptionR\fegressOption\x12;\n" +
+	"\x17peered_network_ip_range\x18\x03 \x01(\tB\x04\xe2A\x01\x05R\x14peeredNetworkIpRange\"V\n" +
 	"\fEgressOption\x12\x1d\n" +
 	"\x19EGRESS_OPTION_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10NO_PUBLIC_EGRESS\x10\x01\x12\x11\n" +
-	"\rPUBLIC_EGRESS\x10\x02\x1a\xf1\x01\n" +
-	"\x15PrivateServiceConnect\x12b\n" +
-	"\x12network_attachment\x18\x01 \x01(\tB3\xe0A\x05\xe0A\x02\xfaA*\n" +
-	"(compute.googleapis.com/NetworkAttachmentR\x11networkAttachment\x12C\n" +
-	"\x1apublic_ip_address_disabled\x18\x02 \x01(\bB\x06\xe0A\x02\xe0A\x05R\x17publicIpAddressDisabled\x12/\n" +
-	"\x11route_all_traffic\x18\x03 \x01(\bB\x03\xe0A\x05R\x0frouteAllTraffic\"\x80\x02\n" +
-	"\x17CreateWorkerPoolRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12O\n" +
-	"\vworker_pool\x18\x02 \x01(\v2).google.devtools.cloudbuild.v1.WorkerPoolB\x03\xe0A\x02R\n" +
-	"workerPool\x12,\n" +
-	"\x0eworker_pool_id\x18\x03 \x01(\tB\x06\xe0A\x05\xe0A\x02R\fworkerPoolId\x12#\n" +
-	"\rvalidate_only\x18\x04 \x01(\bR\fvalidateOnly\"X\n" +
-	"\x14GetWorkerPoolRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$cloudbuild.googleapis.com/WorkerPoolR\x04name\"\xbe\x01\n" +
-	"\x17DeleteWorkerPoolRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$cloudbuild.googleapis.com/WorkerPoolR\x04name\x12\x17\n" +
-	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x01R\x04etag\x12#\n" +
+	"\rPUBLIC_EGRESS\x10\x02\x1a\xf0\x01\n" +
+	"\x15PrivateServiceConnect\x12a\n" +
+	"\x12network_attachment\x18\x01 \x01(\tB2\xe2A\x02\x05\x02\xfaA*\n" +
+	"(compute.googleapis.com/NetworkAttachmentR\x11networkAttachment\x12B\n" +
+	"\x1apublic_ip_address_disabled\x18\x02 \x01(\bB\x05\xe2A\x02\x02\x05R\x17publicIpAddressDisabled\x120\n" +
+	"\x11route_all_traffic\x18\x03 \x01(\bB\x04\xe2A\x01\x05R\x0frouteAllTraffic\"\x81\x02\n" +
+	"\x17CreateWorkerPoolRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12P\n" +
+	"\vworker_pool\x18\x02 \x01(\v2).google.devtools.cloudbuild.v1.WorkerPoolB\x04\xe2A\x01\x02R\n" +
+	"workerPool\x12+\n" +
+	"\x0eworker_pool_id\x18\x03 \x01(\tB\x05\xe2A\x02\x05\x02R\fworkerPoolId\x12#\n" +
+	"\rvalidate_only\x18\x04 \x01(\bR\fvalidateOnly\"Y\n" +
+	"\x14GetWorkerPoolRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$cloudbuild.googleapis.com/WorkerPoolR\x04name\"\xc0\x01\n" +
+	"\x17DeleteWorkerPoolRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$cloudbuild.googleapis.com/WorkerPoolR\x04name\x12\x18\n" +
+	"\x04etag\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12#\n" +
 	"\rallow_missing\x18\x03 \x01(\bR\fallowMissing\x12#\n" +
-	"\rvalidate_only\x18\x04 \x01(\bR\fvalidateOnly\"\xd1\x01\n" +
-	"\x17UpdateWorkerPoolRequest\x12O\n" +
-	"\vworker_pool\x18\x01 \x01(\v2).google.devtools.cloudbuild.v1.WorkerPoolB\x03\xe0A\x02R\n" +
-	"workerPool\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
+	"\rvalidate_only\x18\x04 \x01(\bR\fvalidateOnly\"\xd3\x01\n" +
+	"\x17UpdateWorkerPoolRequest\x12P\n" +
+	"\vworker_pool\x18\x01 \x01(\v2).google.devtools.cloudbuild.v1.WorkerPoolB\x04\xe2A\x01\x02R\n" +
+	"workerPool\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
 	"updateMask\x12#\n" +
-	"\rvalidate_only\x18\x04 \x01(\bR\fvalidateOnly\"\x97\x01\n" +
-	"\x16ListWorkerPoolsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\rvalidate_only\x18\x04 \x01(\bR\fvalidateOnly\"\x98\x01\n" +
+	"\x16ListWorkerPoolsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -9894,100 +9975,101 @@ var file_google_devtools_cloudbuild_v1_cloudbuild_proto_depIdxs = []int32{
 	115, // 88: google.devtools.cloudbuild.v1.BuildTrigger.create_time:type_name -> google.protobuf.Timestamp
 	108, // 89: google.devtools.cloudbuild.v1.BuildTrigger.substitutions:type_name -> google.devtools.cloudbuild.v1.BuildTrigger.SubstitutionsEntry
 	61,  // 90: google.devtools.cloudbuild.v1.BuildTrigger.source_to_build:type_name -> google.devtools.cloudbuild.v1.GitRepoSource
-	64,  // 91: google.devtools.cloudbuild.v1.BuildTrigger.repository_event_config:type_name -> google.devtools.cloudbuild.v1.RepositoryEventConfig
-	8,   // 92: google.devtools.cloudbuild.v1.RepositoryEventConfig.repository_type:type_name -> google.devtools.cloudbuild.v1.RepositoryEventConfig.RepositoryType
-	68,  // 93: google.devtools.cloudbuild.v1.RepositoryEventConfig.pull_request:type_name -> google.devtools.cloudbuild.v1.PullRequestFilter
-	69,  // 94: google.devtools.cloudbuild.v1.RepositoryEventConfig.push:type_name -> google.devtools.cloudbuild.v1.PushFilter
-	68,  // 95: google.devtools.cloudbuild.v1.GitHubEventsConfig.pull_request:type_name -> google.devtools.cloudbuild.v1.PullRequestFilter
-	69,  // 96: google.devtools.cloudbuild.v1.GitHubEventsConfig.push:type_name -> google.devtools.cloudbuild.v1.PushFilter
-	9,   // 97: google.devtools.cloudbuild.v1.PubsubConfig.state:type_name -> google.devtools.cloudbuild.v1.PubsubConfig.State
-	10,  // 98: google.devtools.cloudbuild.v1.WebhookConfig.state:type_name -> google.devtools.cloudbuild.v1.WebhookConfig.State
-	11,  // 99: google.devtools.cloudbuild.v1.PullRequestFilter.comment_control:type_name -> google.devtools.cloudbuild.v1.PullRequestFilter.CommentControl
-	63,  // 100: google.devtools.cloudbuild.v1.CreateBuildTriggerRequest.trigger:type_name -> google.devtools.cloudbuild.v1.BuildTrigger
-	63,  // 101: google.devtools.cloudbuild.v1.ListBuildTriggersResponse.triggers:type_name -> google.devtools.cloudbuild.v1.BuildTrigger
-	63,  // 102: google.devtools.cloudbuild.v1.UpdateBuildTriggerRequest.trigger:type_name -> google.devtools.cloudbuild.v1.BuildTrigger
-	116, // 103: google.devtools.cloudbuild.v1.UpdateBuildTriggerRequest.update_mask:type_name -> google.protobuf.FieldMask
-	4,   // 104: google.devtools.cloudbuild.v1.BuildOptions.source_provenance_hash:type_name -> google.devtools.cloudbuild.v1.Hash.HashType
-	12,  // 105: google.devtools.cloudbuild.v1.BuildOptions.requested_verify_option:type_name -> google.devtools.cloudbuild.v1.BuildOptions.VerifyOption
-	13,  // 106: google.devtools.cloudbuild.v1.BuildOptions.machine_type:type_name -> google.devtools.cloudbuild.v1.BuildOptions.MachineType
-	14,  // 107: google.devtools.cloudbuild.v1.BuildOptions.substitution_option:type_name -> google.devtools.cloudbuild.v1.BuildOptions.SubstitutionOption
-	15,  // 108: google.devtools.cloudbuild.v1.BuildOptions.log_streaming_option:type_name -> google.devtools.cloudbuild.v1.BuildOptions.LogStreamingOption
-	109, // 109: google.devtools.cloudbuild.v1.BuildOptions.pool:type_name -> google.devtools.cloudbuild.v1.BuildOptions.PoolOption
-	16,  // 110: google.devtools.cloudbuild.v1.BuildOptions.logging:type_name -> google.devtools.cloudbuild.v1.BuildOptions.LoggingMode
-	36,  // 111: google.devtools.cloudbuild.v1.BuildOptions.volumes:type_name -> google.devtools.cloudbuild.v1.Volume
-	17,  // 112: google.devtools.cloudbuild.v1.BuildOptions.default_logs_bucket_behavior:type_name -> google.devtools.cloudbuild.v1.BuildOptions.DefaultLogsBucketBehavior
-	117, // 113: google.devtools.cloudbuild.v1.ReceiveTriggerWebhookRequest.body:type_name -> google.api.HttpBody
-	115, // 114: google.devtools.cloudbuild.v1.GitHubEnterpriseConfig.create_time:type_name -> google.protobuf.Timestamp
-	80,  // 115: google.devtools.cloudbuild.v1.GitHubEnterpriseConfig.secrets:type_name -> google.devtools.cloudbuild.v1.GitHubEnterpriseSecrets
-	110, // 116: google.devtools.cloudbuild.v1.WorkerPool.annotations:type_name -> google.devtools.cloudbuild.v1.WorkerPool.AnnotationsEntry
-	115, // 117: google.devtools.cloudbuild.v1.WorkerPool.create_time:type_name -> google.protobuf.Timestamp
-	115, // 118: google.devtools.cloudbuild.v1.WorkerPool.update_time:type_name -> google.protobuf.Timestamp
-	115, // 119: google.devtools.cloudbuild.v1.WorkerPool.delete_time:type_name -> google.protobuf.Timestamp
-	18,  // 120: google.devtools.cloudbuild.v1.WorkerPool.state:type_name -> google.devtools.cloudbuild.v1.WorkerPool.State
-	82,  // 121: google.devtools.cloudbuild.v1.WorkerPool.private_pool_v1_config:type_name -> google.devtools.cloudbuild.v1.PrivatePoolV1Config
-	111, // 122: google.devtools.cloudbuild.v1.PrivatePoolV1Config.worker_config:type_name -> google.devtools.cloudbuild.v1.PrivatePoolV1Config.WorkerConfig
-	112, // 123: google.devtools.cloudbuild.v1.PrivatePoolV1Config.network_config:type_name -> google.devtools.cloudbuild.v1.PrivatePoolV1Config.NetworkConfig
-	113, // 124: google.devtools.cloudbuild.v1.PrivatePoolV1Config.private_service_connect:type_name -> google.devtools.cloudbuild.v1.PrivatePoolV1Config.PrivateServiceConnect
-	81,  // 125: google.devtools.cloudbuild.v1.CreateWorkerPoolRequest.worker_pool:type_name -> google.devtools.cloudbuild.v1.WorkerPool
-	81,  // 126: google.devtools.cloudbuild.v1.UpdateWorkerPoolRequest.worker_pool:type_name -> google.devtools.cloudbuild.v1.WorkerPool
-	116, // 127: google.devtools.cloudbuild.v1.UpdateWorkerPoolRequest.update_mask:type_name -> google.protobuf.FieldMask
-	81,  // 128: google.devtools.cloudbuild.v1.ListWorkerPoolsResponse.worker_pools:type_name -> google.devtools.cloudbuild.v1.WorkerPool
-	115, // 129: google.devtools.cloudbuild.v1.CreateWorkerPoolOperationMetadata.create_time:type_name -> google.protobuf.Timestamp
-	115, // 130: google.devtools.cloudbuild.v1.CreateWorkerPoolOperationMetadata.complete_time:type_name -> google.protobuf.Timestamp
-	115, // 131: google.devtools.cloudbuild.v1.UpdateWorkerPoolOperationMetadata.create_time:type_name -> google.protobuf.Timestamp
-	115, // 132: google.devtools.cloudbuild.v1.UpdateWorkerPoolOperationMetadata.complete_time:type_name -> google.protobuf.Timestamp
-	115, // 133: google.devtools.cloudbuild.v1.DeleteWorkerPoolOperationMetadata.create_time:type_name -> google.protobuf.Timestamp
-	115, // 134: google.devtools.cloudbuild.v1.DeleteWorkerPoolOperationMetadata.complete_time:type_name -> google.protobuf.Timestamp
-	2,   // 135: google.devtools.cloudbuild.v1.Build.Warning.priority:type_name -> google.devtools.cloudbuild.v1.Build.Warning.Priority
-	3,   // 136: google.devtools.cloudbuild.v1.Build.FailureInfo.type:type_name -> google.devtools.cloudbuild.v1.Build.FailureInfo.FailureType
-	43,  // 137: google.devtools.cloudbuild.v1.Build.TimingEntry.value:type_name -> google.devtools.cloudbuild.v1.TimeSpan
-	98,  // 138: google.devtools.cloudbuild.v1.Dependency.GitSourceDependency.repository:type_name -> google.devtools.cloudbuild.v1.Dependency.GitSourceRepository
-	43,  // 139: google.devtools.cloudbuild.v1.Artifacts.ArtifactObjects.timing:type_name -> google.devtools.cloudbuild.v1.TimeSpan
-	46,  // 140: google.devtools.cloudbuild.v1.SourceProvenance.FileHashesEntry.value:type_name -> google.devtools.cloudbuild.v1.FileHashes
-	19,  // 141: google.devtools.cloudbuild.v1.PrivatePoolV1Config.NetworkConfig.egress_option:type_name -> google.devtools.cloudbuild.v1.PrivatePoolV1Config.NetworkConfig.EgressOption
-	52,  // 142: google.devtools.cloudbuild.v1.CloudBuild.CreateBuild:input_type -> google.devtools.cloudbuild.v1.CreateBuildRequest
-	53,  // 143: google.devtools.cloudbuild.v1.CloudBuild.GetBuild:input_type -> google.devtools.cloudbuild.v1.GetBuildRequest
-	54,  // 144: google.devtools.cloudbuild.v1.CloudBuild.ListBuilds:input_type -> google.devtools.cloudbuild.v1.ListBuildsRequest
-	56,  // 145: google.devtools.cloudbuild.v1.CloudBuild.CancelBuild:input_type -> google.devtools.cloudbuild.v1.CancelBuildRequest
-	22,  // 146: google.devtools.cloudbuild.v1.CloudBuild.RetryBuild:input_type -> google.devtools.cloudbuild.v1.RetryBuildRequest
-	57,  // 147: google.devtools.cloudbuild.v1.CloudBuild.ApproveBuild:input_type -> google.devtools.cloudbuild.v1.ApproveBuildRequest
-	70,  // 148: google.devtools.cloudbuild.v1.CloudBuild.CreateBuildTrigger:input_type -> google.devtools.cloudbuild.v1.CreateBuildTriggerRequest
-	71,  // 149: google.devtools.cloudbuild.v1.CloudBuild.GetBuildTrigger:input_type -> google.devtools.cloudbuild.v1.GetBuildTriggerRequest
-	72,  // 150: google.devtools.cloudbuild.v1.CloudBuild.ListBuildTriggers:input_type -> google.devtools.cloudbuild.v1.ListBuildTriggersRequest
-	74,  // 151: google.devtools.cloudbuild.v1.CloudBuild.DeleteBuildTrigger:input_type -> google.devtools.cloudbuild.v1.DeleteBuildTriggerRequest
-	75,  // 152: google.devtools.cloudbuild.v1.CloudBuild.UpdateBuildTrigger:input_type -> google.devtools.cloudbuild.v1.UpdateBuildTriggerRequest
-	23,  // 153: google.devtools.cloudbuild.v1.CloudBuild.RunBuildTrigger:input_type -> google.devtools.cloudbuild.v1.RunBuildTriggerRequest
-	77,  // 154: google.devtools.cloudbuild.v1.CloudBuild.ReceiveTriggerWebhook:input_type -> google.devtools.cloudbuild.v1.ReceiveTriggerWebhookRequest
-	83,  // 155: google.devtools.cloudbuild.v1.CloudBuild.CreateWorkerPool:input_type -> google.devtools.cloudbuild.v1.CreateWorkerPoolRequest
-	84,  // 156: google.devtools.cloudbuild.v1.CloudBuild.GetWorkerPool:input_type -> google.devtools.cloudbuild.v1.GetWorkerPoolRequest
-	85,  // 157: google.devtools.cloudbuild.v1.CloudBuild.DeleteWorkerPool:input_type -> google.devtools.cloudbuild.v1.DeleteWorkerPoolRequest
-	86,  // 158: google.devtools.cloudbuild.v1.CloudBuild.UpdateWorkerPool:input_type -> google.devtools.cloudbuild.v1.UpdateWorkerPoolRequest
-	87,  // 159: google.devtools.cloudbuild.v1.CloudBuild.ListWorkerPools:input_type -> google.devtools.cloudbuild.v1.ListWorkerPoolsRequest
-	20,  // 160: google.devtools.cloudbuild.v1.CloudBuild.GetDefaultServiceAccount:input_type -> google.devtools.cloudbuild.v1.GetDefaultServiceAccountRequest
-	118, // 161: google.devtools.cloudbuild.v1.CloudBuild.CreateBuild:output_type -> google.longrunning.Operation
-	39,  // 162: google.devtools.cloudbuild.v1.CloudBuild.GetBuild:output_type -> google.devtools.cloudbuild.v1.Build
-	55,  // 163: google.devtools.cloudbuild.v1.CloudBuild.ListBuilds:output_type -> google.devtools.cloudbuild.v1.ListBuildsResponse
-	39,  // 164: google.devtools.cloudbuild.v1.CloudBuild.CancelBuild:output_type -> google.devtools.cloudbuild.v1.Build
-	118, // 165: google.devtools.cloudbuild.v1.CloudBuild.RetryBuild:output_type -> google.longrunning.Operation
-	118, // 166: google.devtools.cloudbuild.v1.CloudBuild.ApproveBuild:output_type -> google.longrunning.Operation
-	63,  // 167: google.devtools.cloudbuild.v1.CloudBuild.CreateBuildTrigger:output_type -> google.devtools.cloudbuild.v1.BuildTrigger
-	63,  // 168: google.devtools.cloudbuild.v1.CloudBuild.GetBuildTrigger:output_type -> google.devtools.cloudbuild.v1.BuildTrigger
-	73,  // 169: google.devtools.cloudbuild.v1.CloudBuild.ListBuildTriggers:output_type -> google.devtools.cloudbuild.v1.ListBuildTriggersResponse
-	119, // 170: google.devtools.cloudbuild.v1.CloudBuild.DeleteBuildTrigger:output_type -> google.protobuf.Empty
-	63,  // 171: google.devtools.cloudbuild.v1.CloudBuild.UpdateBuildTrigger:output_type -> google.devtools.cloudbuild.v1.BuildTrigger
-	118, // 172: google.devtools.cloudbuild.v1.CloudBuild.RunBuildTrigger:output_type -> google.longrunning.Operation
-	78,  // 173: google.devtools.cloudbuild.v1.CloudBuild.ReceiveTriggerWebhook:output_type -> google.devtools.cloudbuild.v1.ReceiveTriggerWebhookResponse
-	118, // 174: google.devtools.cloudbuild.v1.CloudBuild.CreateWorkerPool:output_type -> google.longrunning.Operation
-	81,  // 175: google.devtools.cloudbuild.v1.CloudBuild.GetWorkerPool:output_type -> google.devtools.cloudbuild.v1.WorkerPool
-	118, // 176: google.devtools.cloudbuild.v1.CloudBuild.DeleteWorkerPool:output_type -> google.longrunning.Operation
-	118, // 177: google.devtools.cloudbuild.v1.CloudBuild.UpdateWorkerPool:output_type -> google.longrunning.Operation
-	88,  // 178: google.devtools.cloudbuild.v1.CloudBuild.ListWorkerPools:output_type -> google.devtools.cloudbuild.v1.ListWorkerPoolsResponse
-	21,  // 179: google.devtools.cloudbuild.v1.CloudBuild.GetDefaultServiceAccount:output_type -> google.devtools.cloudbuild.v1.DefaultServiceAccount
-	161, // [161:180] is the sub-list for method output_type
-	142, // [142:161] is the sub-list for method input_type
-	142, // [142:142] is the sub-list for extension type_name
-	142, // [142:142] is the sub-list for extension extendee
-	0,   // [0:142] is the sub-list for field type_name
+	59,  // 91: google.devtools.cloudbuild.v1.BuildTrigger.approval_config:type_name -> google.devtools.cloudbuild.v1.ApprovalConfig
+	64,  // 92: google.devtools.cloudbuild.v1.BuildTrigger.repository_event_config:type_name -> google.devtools.cloudbuild.v1.RepositoryEventConfig
+	8,   // 93: google.devtools.cloudbuild.v1.RepositoryEventConfig.repository_type:type_name -> google.devtools.cloudbuild.v1.RepositoryEventConfig.RepositoryType
+	68,  // 94: google.devtools.cloudbuild.v1.RepositoryEventConfig.pull_request:type_name -> google.devtools.cloudbuild.v1.PullRequestFilter
+	69,  // 95: google.devtools.cloudbuild.v1.RepositoryEventConfig.push:type_name -> google.devtools.cloudbuild.v1.PushFilter
+	68,  // 96: google.devtools.cloudbuild.v1.GitHubEventsConfig.pull_request:type_name -> google.devtools.cloudbuild.v1.PullRequestFilter
+	69,  // 97: google.devtools.cloudbuild.v1.GitHubEventsConfig.push:type_name -> google.devtools.cloudbuild.v1.PushFilter
+	9,   // 98: google.devtools.cloudbuild.v1.PubsubConfig.state:type_name -> google.devtools.cloudbuild.v1.PubsubConfig.State
+	10,  // 99: google.devtools.cloudbuild.v1.WebhookConfig.state:type_name -> google.devtools.cloudbuild.v1.WebhookConfig.State
+	11,  // 100: google.devtools.cloudbuild.v1.PullRequestFilter.comment_control:type_name -> google.devtools.cloudbuild.v1.PullRequestFilter.CommentControl
+	63,  // 101: google.devtools.cloudbuild.v1.CreateBuildTriggerRequest.trigger:type_name -> google.devtools.cloudbuild.v1.BuildTrigger
+	63,  // 102: google.devtools.cloudbuild.v1.ListBuildTriggersResponse.triggers:type_name -> google.devtools.cloudbuild.v1.BuildTrigger
+	63,  // 103: google.devtools.cloudbuild.v1.UpdateBuildTriggerRequest.trigger:type_name -> google.devtools.cloudbuild.v1.BuildTrigger
+	116, // 104: google.devtools.cloudbuild.v1.UpdateBuildTriggerRequest.update_mask:type_name -> google.protobuf.FieldMask
+	4,   // 105: google.devtools.cloudbuild.v1.BuildOptions.source_provenance_hash:type_name -> google.devtools.cloudbuild.v1.Hash.HashType
+	12,  // 106: google.devtools.cloudbuild.v1.BuildOptions.requested_verify_option:type_name -> google.devtools.cloudbuild.v1.BuildOptions.VerifyOption
+	13,  // 107: google.devtools.cloudbuild.v1.BuildOptions.machine_type:type_name -> google.devtools.cloudbuild.v1.BuildOptions.MachineType
+	14,  // 108: google.devtools.cloudbuild.v1.BuildOptions.substitution_option:type_name -> google.devtools.cloudbuild.v1.BuildOptions.SubstitutionOption
+	15,  // 109: google.devtools.cloudbuild.v1.BuildOptions.log_streaming_option:type_name -> google.devtools.cloudbuild.v1.BuildOptions.LogStreamingOption
+	109, // 110: google.devtools.cloudbuild.v1.BuildOptions.pool:type_name -> google.devtools.cloudbuild.v1.BuildOptions.PoolOption
+	16,  // 111: google.devtools.cloudbuild.v1.BuildOptions.logging:type_name -> google.devtools.cloudbuild.v1.BuildOptions.LoggingMode
+	36,  // 112: google.devtools.cloudbuild.v1.BuildOptions.volumes:type_name -> google.devtools.cloudbuild.v1.Volume
+	17,  // 113: google.devtools.cloudbuild.v1.BuildOptions.default_logs_bucket_behavior:type_name -> google.devtools.cloudbuild.v1.BuildOptions.DefaultLogsBucketBehavior
+	117, // 114: google.devtools.cloudbuild.v1.ReceiveTriggerWebhookRequest.body:type_name -> google.api.HttpBody
+	115, // 115: google.devtools.cloudbuild.v1.GitHubEnterpriseConfig.create_time:type_name -> google.protobuf.Timestamp
+	80,  // 116: google.devtools.cloudbuild.v1.GitHubEnterpriseConfig.secrets:type_name -> google.devtools.cloudbuild.v1.GitHubEnterpriseSecrets
+	110, // 117: google.devtools.cloudbuild.v1.WorkerPool.annotations:type_name -> google.devtools.cloudbuild.v1.WorkerPool.AnnotationsEntry
+	115, // 118: google.devtools.cloudbuild.v1.WorkerPool.create_time:type_name -> google.protobuf.Timestamp
+	115, // 119: google.devtools.cloudbuild.v1.WorkerPool.update_time:type_name -> google.protobuf.Timestamp
+	115, // 120: google.devtools.cloudbuild.v1.WorkerPool.delete_time:type_name -> google.protobuf.Timestamp
+	18,  // 121: google.devtools.cloudbuild.v1.WorkerPool.state:type_name -> google.devtools.cloudbuild.v1.WorkerPool.State
+	82,  // 122: google.devtools.cloudbuild.v1.WorkerPool.private_pool_v1_config:type_name -> google.devtools.cloudbuild.v1.PrivatePoolV1Config
+	111, // 123: google.devtools.cloudbuild.v1.PrivatePoolV1Config.worker_config:type_name -> google.devtools.cloudbuild.v1.PrivatePoolV1Config.WorkerConfig
+	112, // 124: google.devtools.cloudbuild.v1.PrivatePoolV1Config.network_config:type_name -> google.devtools.cloudbuild.v1.PrivatePoolV1Config.NetworkConfig
+	113, // 125: google.devtools.cloudbuild.v1.PrivatePoolV1Config.private_service_connect:type_name -> google.devtools.cloudbuild.v1.PrivatePoolV1Config.PrivateServiceConnect
+	81,  // 126: google.devtools.cloudbuild.v1.CreateWorkerPoolRequest.worker_pool:type_name -> google.devtools.cloudbuild.v1.WorkerPool
+	81,  // 127: google.devtools.cloudbuild.v1.UpdateWorkerPoolRequest.worker_pool:type_name -> google.devtools.cloudbuild.v1.WorkerPool
+	116, // 128: google.devtools.cloudbuild.v1.UpdateWorkerPoolRequest.update_mask:type_name -> google.protobuf.FieldMask
+	81,  // 129: google.devtools.cloudbuild.v1.ListWorkerPoolsResponse.worker_pools:type_name -> google.devtools.cloudbuild.v1.WorkerPool
+	115, // 130: google.devtools.cloudbuild.v1.CreateWorkerPoolOperationMetadata.create_time:type_name -> google.protobuf.Timestamp
+	115, // 131: google.devtools.cloudbuild.v1.CreateWorkerPoolOperationMetadata.complete_time:type_name -> google.protobuf.Timestamp
+	115, // 132: google.devtools.cloudbuild.v1.UpdateWorkerPoolOperationMetadata.create_time:type_name -> google.protobuf.Timestamp
+	115, // 133: google.devtools.cloudbuild.v1.UpdateWorkerPoolOperationMetadata.complete_time:type_name -> google.protobuf.Timestamp
+	115, // 134: google.devtools.cloudbuild.v1.DeleteWorkerPoolOperationMetadata.create_time:type_name -> google.protobuf.Timestamp
+	115, // 135: google.devtools.cloudbuild.v1.DeleteWorkerPoolOperationMetadata.complete_time:type_name -> google.protobuf.Timestamp
+	2,   // 136: google.devtools.cloudbuild.v1.Build.Warning.priority:type_name -> google.devtools.cloudbuild.v1.Build.Warning.Priority
+	3,   // 137: google.devtools.cloudbuild.v1.Build.FailureInfo.type:type_name -> google.devtools.cloudbuild.v1.Build.FailureInfo.FailureType
+	43,  // 138: google.devtools.cloudbuild.v1.Build.TimingEntry.value:type_name -> google.devtools.cloudbuild.v1.TimeSpan
+	98,  // 139: google.devtools.cloudbuild.v1.Dependency.GitSourceDependency.repository:type_name -> google.devtools.cloudbuild.v1.Dependency.GitSourceRepository
+	43,  // 140: google.devtools.cloudbuild.v1.Artifacts.ArtifactObjects.timing:type_name -> google.devtools.cloudbuild.v1.TimeSpan
+	46,  // 141: google.devtools.cloudbuild.v1.SourceProvenance.FileHashesEntry.value:type_name -> google.devtools.cloudbuild.v1.FileHashes
+	19,  // 142: google.devtools.cloudbuild.v1.PrivatePoolV1Config.NetworkConfig.egress_option:type_name -> google.devtools.cloudbuild.v1.PrivatePoolV1Config.NetworkConfig.EgressOption
+	52,  // 143: google.devtools.cloudbuild.v1.CloudBuild.CreateBuild:input_type -> google.devtools.cloudbuild.v1.CreateBuildRequest
+	53,  // 144: google.devtools.cloudbuild.v1.CloudBuild.GetBuild:input_type -> google.devtools.cloudbuild.v1.GetBuildRequest
+	54,  // 145: google.devtools.cloudbuild.v1.CloudBuild.ListBuilds:input_type -> google.devtools.cloudbuild.v1.ListBuildsRequest
+	56,  // 146: google.devtools.cloudbuild.v1.CloudBuild.CancelBuild:input_type -> google.devtools.cloudbuild.v1.CancelBuildRequest
+	22,  // 147: google.devtools.cloudbuild.v1.CloudBuild.RetryBuild:input_type -> google.devtools.cloudbuild.v1.RetryBuildRequest
+	57,  // 148: google.devtools.cloudbuild.v1.CloudBuild.ApproveBuild:input_type -> google.devtools.cloudbuild.v1.ApproveBuildRequest
+	70,  // 149: google.devtools.cloudbuild.v1.CloudBuild.CreateBuildTrigger:input_type -> google.devtools.cloudbuild.v1.CreateBuildTriggerRequest
+	71,  // 150: google.devtools.cloudbuild.v1.CloudBuild.GetBuildTrigger:input_type -> google.devtools.cloudbuild.v1.GetBuildTriggerRequest
+	72,  // 151: google.devtools.cloudbuild.v1.CloudBuild.ListBuildTriggers:input_type -> google.devtools.cloudbuild.v1.ListBuildTriggersRequest
+	74,  // 152: google.devtools.cloudbuild.v1.CloudBuild.DeleteBuildTrigger:input_type -> google.devtools.cloudbuild.v1.DeleteBuildTriggerRequest
+	75,  // 153: google.devtools.cloudbuild.v1.CloudBuild.UpdateBuildTrigger:input_type -> google.devtools.cloudbuild.v1.UpdateBuildTriggerRequest
+	23,  // 154: google.devtools.cloudbuild.v1.CloudBuild.RunBuildTrigger:input_type -> google.devtools.cloudbuild.v1.RunBuildTriggerRequest
+	77,  // 155: google.devtools.cloudbuild.v1.CloudBuild.ReceiveTriggerWebhook:input_type -> google.devtools.cloudbuild.v1.ReceiveTriggerWebhookRequest
+	83,  // 156: google.devtools.cloudbuild.v1.CloudBuild.CreateWorkerPool:input_type -> google.devtools.cloudbuild.v1.CreateWorkerPoolRequest
+	84,  // 157: google.devtools.cloudbuild.v1.CloudBuild.GetWorkerPool:input_type -> google.devtools.cloudbuild.v1.GetWorkerPoolRequest
+	85,  // 158: google.devtools.cloudbuild.v1.CloudBuild.DeleteWorkerPool:input_type -> google.devtools.cloudbuild.v1.DeleteWorkerPoolRequest
+	86,  // 159: google.devtools.cloudbuild.v1.CloudBuild.UpdateWorkerPool:input_type -> google.devtools.cloudbuild.v1.UpdateWorkerPoolRequest
+	87,  // 160: google.devtools.cloudbuild.v1.CloudBuild.ListWorkerPools:input_type -> google.devtools.cloudbuild.v1.ListWorkerPoolsRequest
+	20,  // 161: google.devtools.cloudbuild.v1.CloudBuild.GetDefaultServiceAccount:input_type -> google.devtools.cloudbuild.v1.GetDefaultServiceAccountRequest
+	118, // 162: google.devtools.cloudbuild.v1.CloudBuild.CreateBuild:output_type -> google.longrunning.Operation
+	39,  // 163: google.devtools.cloudbuild.v1.CloudBuild.GetBuild:output_type -> google.devtools.cloudbuild.v1.Build
+	55,  // 164: google.devtools.cloudbuild.v1.CloudBuild.ListBuilds:output_type -> google.devtools.cloudbuild.v1.ListBuildsResponse
+	39,  // 165: google.devtools.cloudbuild.v1.CloudBuild.CancelBuild:output_type -> google.devtools.cloudbuild.v1.Build
+	118, // 166: google.devtools.cloudbuild.v1.CloudBuild.RetryBuild:output_type -> google.longrunning.Operation
+	118, // 167: google.devtools.cloudbuild.v1.CloudBuild.ApproveBuild:output_type -> google.longrunning.Operation
+	63,  // 168: google.devtools.cloudbuild.v1.CloudBuild.CreateBuildTrigger:output_type -> google.devtools.cloudbuild.v1.BuildTrigger
+	63,  // 169: google.devtools.cloudbuild.v1.CloudBuild.GetBuildTrigger:output_type -> google.devtools.cloudbuild.v1.BuildTrigger
+	73,  // 170: google.devtools.cloudbuild.v1.CloudBuild.ListBuildTriggers:output_type -> google.devtools.cloudbuild.v1.ListBuildTriggersResponse
+	119, // 171: google.devtools.cloudbuild.v1.CloudBuild.DeleteBuildTrigger:output_type -> google.protobuf.Empty
+	63,  // 172: google.devtools.cloudbuild.v1.CloudBuild.UpdateBuildTrigger:output_type -> google.devtools.cloudbuild.v1.BuildTrigger
+	118, // 173: google.devtools.cloudbuild.v1.CloudBuild.RunBuildTrigger:output_type -> google.longrunning.Operation
+	78,  // 174: google.devtools.cloudbuild.v1.CloudBuild.ReceiveTriggerWebhook:output_type -> google.devtools.cloudbuild.v1.ReceiveTriggerWebhookResponse
+	118, // 175: google.devtools.cloudbuild.v1.CloudBuild.CreateWorkerPool:output_type -> google.longrunning.Operation
+	81,  // 176: google.devtools.cloudbuild.v1.CloudBuild.GetWorkerPool:output_type -> google.devtools.cloudbuild.v1.WorkerPool
+	118, // 177: google.devtools.cloudbuild.v1.CloudBuild.DeleteWorkerPool:output_type -> google.longrunning.Operation
+	118, // 178: google.devtools.cloudbuild.v1.CloudBuild.UpdateWorkerPool:output_type -> google.longrunning.Operation
+	88,  // 179: google.devtools.cloudbuild.v1.CloudBuild.ListWorkerPools:output_type -> google.devtools.cloudbuild.v1.ListWorkerPoolsResponse
+	21,  // 180: google.devtools.cloudbuild.v1.CloudBuild.GetDefaultServiceAccount:output_type -> google.devtools.cloudbuild.v1.DefaultServiceAccount
+	162, // [162:181] is the sub-list for method output_type
+	143, // [143:162] is the sub-list for method input_type
+	143, // [143:143] is the sub-list for extension type_name
+	143, // [143:143] is the sub-list for extension extendee
+	0,   // [0:143] is the sub-list for field type_name
 }
 
 func init() { file_google_devtools_cloudbuild_v1_cloudbuild_proto_init() }

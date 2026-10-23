@@ -30,6 +30,11 @@
                 "GetRecording"
               ]
             },
+            "GetSmartNote": {
+              "methods": [
+                "GetSmartNote"
+              ]
+            },
             "GetTranscript": {
               "methods": [
                 "GetTranscript"
@@ -58,6 +63,11 @@
             "ListRecordings": {
               "methods": [
                 "ListRecordings"
+              ]
+            },
+            "ListSmartNotes": {
+              "methods": [
+                "ListSmartNotes"
               ]
             },
             "ListTranscriptEntries": {
@@ -95,6 +105,11 @@
                 "GetRecording"
               ]
             },
+            "GetSmartNote": {
+              "methods": [
+                "GetSmartNote"
+              ]
+            },
             "GetTranscript": {
               "methods": [
                 "GetTranscript"
@@ -125,6 +140,11 @@
                 "ListRecordings"
               ]
             },
+            "ListSmartNotes": {
+              "methods": [
+                "ListSmartNotes"
+              ]
+            },
             "ListTranscriptEntries": {
               "methods": [
                 "ListTranscriptEntries"
@@ -144,6 +164,11 @@
         "grpc": {
           "libraryClient": "SpacesClient",
           "rpcs": {
+            "BatchUpdateMembers": {
+              "methods": [
+                "BatchUpdateMembers"
+              ]
+            },
             "ConnectActiveConference": {
               "methods": [
                 "ConnectActiveConference"
@@ -182,6 +207,11 @@
             "ListMembers": {
               "methods": [
                 "ListMembers"
+              ]
+            },
+            "UpdateMember": {
+              "methods": [
+                "UpdateMember"
               ]
             },
             "UpdateSpace": {
@@ -194,6 +224,11 @@
         "rest": {
           "libraryClient": "SpacesClient",
           "rpcs": {
+            "BatchUpdateMembers": {
+              "methods": [
+                "BatchUpdateMembers"
+              ]
+            },
             "ConnectActiveConference": {
               "methods": [
                 "ConnectActiveConference"
@@ -232,6 +267,11 @@
             "ListMembers": {
               "methods": [
                 "ListMembers"
+              ]
+            },
+            "UpdateMember": {
+              "methods": [
+                "UpdateMember"
               ]
             },
             "UpdateSpace": {

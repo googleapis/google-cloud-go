@@ -103,6 +103,8 @@ type internalRoutesClient interface {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The Routes API.
+//
+// This client uses Routes version 2026-10-01-preview.
 type RoutesClient struct {
 	// The internal transport-dependent client.
 	internalClient internalRoutesClient
@@ -227,6 +229,41 @@ func NewRoutesRESTClient(ctx context.Context, opts ...option.ClientOption) (*Rou
 		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
 		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -261,6 +298,7 @@ func (c *routesRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-10-01-preview",
 	}
 }
 
@@ -303,9 +341,6 @@ func (c *routesRESTClient) Delete(ctx context.Context, req *computepb.DeleteRout
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/global/routes/%v", req.GetProject(), req.GetRoute()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Routes/Delete")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/routes/{route}")
@@ -362,9 +397,6 @@ func (c *routesRESTClient) Get(ctx context.Context, req *computepb.GetRouteReque
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/global/routes/%v", req.GetProject(), req.GetRoute()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Routes/Get")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/routes/{route}")
@@ -429,9 +461,6 @@ func (c *routesRESTClient) Insert(ctx context.Context, req *computepb.InsertRout
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v", req.GetProject()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Routes/Insert")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/routes")
@@ -508,9 +537,6 @@ func (c *routesRESTClient) List(ctx context.Context, req *computepb.ListRoutesRe
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
-		}
 
 		baseUrl.RawQuery = params.Encode()
 
@@ -581,9 +607,6 @@ func (c *routesRESTClient) TestIamPermissions(ctx context.Context, req *computep
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/global/routes/%v", req.GetProject(), req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Routes/TestIamPermissions")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/routes/{resource}/testIamPermissions")

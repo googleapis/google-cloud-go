@@ -212,6 +212,33 @@ func NewQuotaClient(ctx context.Context, opts ...option.ClientOption) (*QuotaCli
 
 		client.CallOptions.ListQuotaGroups = append(client.CallOptions.ListQuotaGroups, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "css",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/css/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "css.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListQuotaGroups = append(client.CallOptions.ListQuotaGroups, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "css",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/css/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "css.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListQuotaGroups = append(client.CallOptions.ListQuotaGroups, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -303,6 +330,33 @@ func NewQuotaRESTClient(ctx context.Context, opts ...option.ClientOption) (*Quot
 
 		callOpts.ListQuotaGroups = append(callOpts.ListQuotaGroups, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "css",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/css/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "css.googleapis.com",
+			}),
+		)
+
+		callOpts.ListQuotaGroups = append(callOpts.ListQuotaGroups, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "css",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/css/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "css.googleapis.com",
+			}),
+		)
+
+		callOpts.ListQuotaGroups = append(callOpts.ListQuotaGroups, gax.WithClientLogging(logging))
+	}
 
 	return &QuotaClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -349,9 +403,6 @@ func (c *quotaGRPCClient) ListQuotaGroups(ctx context.Context, req *csspb.ListQu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//css.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.css.v1.QuotaService/ListQuotaGroups")
 	}

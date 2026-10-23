@@ -632,6 +632,67 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "bigquerydatatransfer",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/datatransfer/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "bigquerydatatransfer.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetDataSource = append(client.CallOptions.GetDataSource, gax.WithClientTracing(tracing))
+		client.CallOptions.ListDataSources = append(client.CallOptions.ListDataSources, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateTransferConfig = append(client.CallOptions.CreateTransferConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateTransferConfig = append(client.CallOptions.UpdateTransferConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteTransferConfig = append(client.CallOptions.DeleteTransferConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.GetTransferConfig = append(client.CallOptions.GetTransferConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.ListTransferConfigs = append(client.CallOptions.ListTransferConfigs, gax.WithClientTracing(tracing))
+		client.CallOptions.ScheduleTransferRuns = append(client.CallOptions.ScheduleTransferRuns, gax.WithClientTracing(tracing))
+		client.CallOptions.StartManualTransferRuns = append(client.CallOptions.StartManualTransferRuns, gax.WithClientTracing(tracing))
+		client.CallOptions.GetTransferRun = append(client.CallOptions.GetTransferRun, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteTransferRun = append(client.CallOptions.DeleteTransferRun, gax.WithClientTracing(tracing))
+		client.CallOptions.ListTransferRuns = append(client.CallOptions.ListTransferRuns, gax.WithClientTracing(tracing))
+		client.CallOptions.ListTransferLogs = append(client.CallOptions.ListTransferLogs, gax.WithClientTracing(tracing))
+		client.CallOptions.CheckValidCreds = append(client.CallOptions.CheckValidCreds, gax.WithClientTracing(tracing))
+		client.CallOptions.EnrollDataSources = append(client.CallOptions.EnrollDataSources, gax.WithClientTracing(tracing))
+		client.CallOptions.UnenrollDataSources = append(client.CallOptions.UnenrollDataSources, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "bigquerydatatransfer",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/datatransfer/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "bigquerydatatransfer.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetDataSource = append(client.CallOptions.GetDataSource, gax.WithClientLogging(logging))
+		client.CallOptions.ListDataSources = append(client.CallOptions.ListDataSources, gax.WithClientLogging(logging))
+		client.CallOptions.CreateTransferConfig = append(client.CallOptions.CreateTransferConfig, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateTransferConfig = append(client.CallOptions.UpdateTransferConfig, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteTransferConfig = append(client.CallOptions.DeleteTransferConfig, gax.WithClientLogging(logging))
+		client.CallOptions.GetTransferConfig = append(client.CallOptions.GetTransferConfig, gax.WithClientLogging(logging))
+		client.CallOptions.ListTransferConfigs = append(client.CallOptions.ListTransferConfigs, gax.WithClientLogging(logging))
+		client.CallOptions.ScheduleTransferRuns = append(client.CallOptions.ScheduleTransferRuns, gax.WithClientLogging(logging))
+		client.CallOptions.StartManualTransferRuns = append(client.CallOptions.StartManualTransferRuns, gax.WithClientLogging(logging))
+		client.CallOptions.GetTransferRun = append(client.CallOptions.GetTransferRun, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteTransferRun = append(client.CallOptions.DeleteTransferRun, gax.WithClientLogging(logging))
+		client.CallOptions.ListTransferRuns = append(client.CallOptions.ListTransferRuns, gax.WithClientLogging(logging))
+		client.CallOptions.ListTransferLogs = append(client.CallOptions.ListTransferLogs, gax.WithClientLogging(logging))
+		client.CallOptions.CheckValidCreds = append(client.CallOptions.CheckValidCreds, gax.WithClientLogging(logging))
+		client.CallOptions.EnrollDataSources = append(client.CallOptions.EnrollDataSources, gax.WithClientLogging(logging))
+		client.CallOptions.UnenrollDataSources = append(client.CallOptions.UnenrollDataSources, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -740,6 +801,67 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
 		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "bigquerydatatransfer",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/datatransfer/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "bigquerydatatransfer.googleapis.com",
+			}),
+		)
+
+		callOpts.GetDataSource = append(callOpts.GetDataSource, gax.WithClientTracing(tracing))
+		callOpts.ListDataSources = append(callOpts.ListDataSources, gax.WithClientTracing(tracing))
+		callOpts.CreateTransferConfig = append(callOpts.CreateTransferConfig, gax.WithClientTracing(tracing))
+		callOpts.UpdateTransferConfig = append(callOpts.UpdateTransferConfig, gax.WithClientTracing(tracing))
+		callOpts.DeleteTransferConfig = append(callOpts.DeleteTransferConfig, gax.WithClientTracing(tracing))
+		callOpts.GetTransferConfig = append(callOpts.GetTransferConfig, gax.WithClientTracing(tracing))
+		callOpts.ListTransferConfigs = append(callOpts.ListTransferConfigs, gax.WithClientTracing(tracing))
+		callOpts.ScheduleTransferRuns = append(callOpts.ScheduleTransferRuns, gax.WithClientTracing(tracing))
+		callOpts.StartManualTransferRuns = append(callOpts.StartManualTransferRuns, gax.WithClientTracing(tracing))
+		callOpts.GetTransferRun = append(callOpts.GetTransferRun, gax.WithClientTracing(tracing))
+		callOpts.DeleteTransferRun = append(callOpts.DeleteTransferRun, gax.WithClientTracing(tracing))
+		callOpts.ListTransferRuns = append(callOpts.ListTransferRuns, gax.WithClientTracing(tracing))
+		callOpts.ListTransferLogs = append(callOpts.ListTransferLogs, gax.WithClientTracing(tracing))
+		callOpts.CheckValidCreds = append(callOpts.CheckValidCreds, gax.WithClientTracing(tracing))
+		callOpts.EnrollDataSources = append(callOpts.EnrollDataSources, gax.WithClientTracing(tracing))
+		callOpts.UnenrollDataSources = append(callOpts.UnenrollDataSources, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "bigquerydatatransfer",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/datatransfer/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "bigquerydatatransfer.googleapis.com",
+			}),
+		)
+
+		callOpts.GetDataSource = append(callOpts.GetDataSource, gax.WithClientLogging(logging))
+		callOpts.ListDataSources = append(callOpts.ListDataSources, gax.WithClientLogging(logging))
+		callOpts.CreateTransferConfig = append(callOpts.CreateTransferConfig, gax.WithClientLogging(logging))
+		callOpts.UpdateTransferConfig = append(callOpts.UpdateTransferConfig, gax.WithClientLogging(logging))
+		callOpts.DeleteTransferConfig = append(callOpts.DeleteTransferConfig, gax.WithClientLogging(logging))
+		callOpts.GetTransferConfig = append(callOpts.GetTransferConfig, gax.WithClientLogging(logging))
+		callOpts.ListTransferConfigs = append(callOpts.ListTransferConfigs, gax.WithClientLogging(logging))
+		callOpts.ScheduleTransferRuns = append(callOpts.ScheduleTransferRuns, gax.WithClientLogging(logging))
+		callOpts.StartManualTransferRuns = append(callOpts.StartManualTransferRuns, gax.WithClientLogging(logging))
+		callOpts.GetTransferRun = append(callOpts.GetTransferRun, gax.WithClientLogging(logging))
+		callOpts.DeleteTransferRun = append(callOpts.DeleteTransferRun, gax.WithClientLogging(logging))
+		callOpts.ListTransferRuns = append(callOpts.ListTransferRuns, gax.WithClientLogging(logging))
+		callOpts.ListTransferLogs = append(callOpts.ListTransferLogs, gax.WithClientLogging(logging))
+		callOpts.CheckValidCreds = append(callOpts.CheckValidCreds, gax.WithClientLogging(logging))
+		callOpts.EnrollDataSources = append(callOpts.EnrollDataSources, gax.WithClientLogging(logging))
+		callOpts.UnenrollDataSources = append(callOpts.UnenrollDataSources, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -786,9 +908,6 @@ func (c *gRPCClient) GetDataSource(ctx context.Context, req *datatransferpb.GetD
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatatransfer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datatransfer.v1.DataTransferService/GetDataSource")
 	}
@@ -810,9 +929,6 @@ func (c *gRPCClient) ListDataSources(ctx context.Context, req *datatransferpb.Li
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatatransfer.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datatransfer.v1.DataTransferService/ListDataSources")
 	}
@@ -862,9 +978,6 @@ func (c *gRPCClient) CreateTransferConfig(ctx context.Context, req *datatransfer
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatatransfer.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datatransfer.v1.DataTransferService/CreateTransferConfig")
 	}
@@ -886,9 +999,6 @@ func (c *gRPCClient) UpdateTransferConfig(ctx context.Context, req *datatransfer
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatatransfer.googleapis.com/%v", req.GetTransferConfig().GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datatransfer.v1.DataTransferService/UpdateTransferConfig")
 	}
@@ -910,9 +1020,6 @@ func (c *gRPCClient) DeleteTransferConfig(ctx context.Context, req *datatransfer
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatatransfer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datatransfer.v1.DataTransferService/DeleteTransferConfig")
 	}
@@ -930,9 +1037,6 @@ func (c *gRPCClient) GetTransferConfig(ctx context.Context, req *datatransferpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatatransfer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datatransfer.v1.DataTransferService/GetTransferConfig")
 	}
@@ -954,9 +1058,6 @@ func (c *gRPCClient) ListTransferConfigs(ctx context.Context, req *datatransferp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatatransfer.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datatransfer.v1.DataTransferService/ListTransferConfigs")
 	}
@@ -1006,9 +1107,6 @@ func (c *gRPCClient) ScheduleTransferRuns(ctx context.Context, req *datatransfer
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatatransfer.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datatransfer.v1.DataTransferService/ScheduleTransferRuns")
 	}
@@ -1030,9 +1128,6 @@ func (c *gRPCClient) StartManualTransferRuns(ctx context.Context, req *datatrans
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatatransfer.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datatransfer.v1.DataTransferService/StartManualTransferRuns")
 	}
@@ -1054,9 +1149,6 @@ func (c *gRPCClient) GetTransferRun(ctx context.Context, req *datatransferpb.Get
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatatransfer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datatransfer.v1.DataTransferService/GetTransferRun")
 	}
@@ -1078,9 +1170,6 @@ func (c *gRPCClient) DeleteTransferRun(ctx context.Context, req *datatransferpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatatransfer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datatransfer.v1.DataTransferService/DeleteTransferRun")
 	}
@@ -1098,9 +1187,6 @@ func (c *gRPCClient) ListTransferRuns(ctx context.Context, req *datatransferpb.L
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatatransfer.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datatransfer.v1.DataTransferService/ListTransferRuns")
 	}
@@ -1150,9 +1236,6 @@ func (c *gRPCClient) ListTransferLogs(ctx context.Context, req *datatransferpb.L
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatatransfer.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datatransfer.v1.DataTransferService/ListTransferLogs")
 	}
@@ -1202,9 +1285,6 @@ func (c *gRPCClient) CheckValidCreds(ctx context.Context, req *datatransferpb.Ch
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatatransfer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datatransfer.v1.DataTransferService/CheckValidCreds")
 	}
@@ -1226,9 +1306,6 @@ func (c *gRPCClient) EnrollDataSources(ctx context.Context, req *datatransferpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatatransfer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datatransfer.v1.DataTransferService/EnrollDataSources")
 	}
@@ -1246,9 +1323,6 @@ func (c *gRPCClient) UnenrollDataSources(ctx context.Context, req *datatransferp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatatransfer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datatransfer.v1.DataTransferService/UnenrollDataSources")
 	}
@@ -1266,9 +1340,6 @@ func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloud.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
 	}
@@ -1290,9 +1361,6 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloud.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
 	}
@@ -1356,9 +1424,6 @@ func (c *restClient) GetDataSource(ctx context.Context, req *datatransferpb.GetD
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatatransfer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datatransfer.v1.DataTransferService/GetDataSource")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/dataSources/*}")
@@ -1507,9 +1572,6 @@ func (c *restClient) CreateTransferConfig(ctx context.Context, req *datatransfer
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatatransfer.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datatransfer.v1.DataTransferService/CreateTransferConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/transferConfigs")
@@ -1588,9 +1650,6 @@ func (c *restClient) UpdateTransferConfig(ctx context.Context, req *datatransfer
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatatransfer.googleapis.com/%v", req.GetTransferConfig().GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datatransfer.v1.DataTransferService/UpdateTransferConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{transfer_config.name=projects/*/locations/*/transferConfigs/*}")
@@ -1646,9 +1705,6 @@ func (c *restClient) DeleteTransferConfig(ctx context.Context, req *datatransfer
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatatransfer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datatransfer.v1.DataTransferService/DeleteTransferConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/transferConfigs/*}")
@@ -1688,9 +1744,6 @@ func (c *restClient) GetTransferConfig(ctx context.Context, req *datatransferpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatatransfer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datatransfer.v1.DataTransferService/GetTransferConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/transferConfigs/*}")
@@ -1841,9 +1894,6 @@ func (c *restClient) ScheduleTransferRuns(ctx context.Context, req *datatransfer
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatatransfer.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datatransfer.v1.DataTransferService/ScheduleTransferRuns")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/transferConfigs/*}:scheduleRuns")
@@ -1907,9 +1957,6 @@ func (c *restClient) StartManualTransferRuns(ctx context.Context, req *datatrans
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatatransfer.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datatransfer.v1.DataTransferService/StartManualTransferRuns")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/transferConfigs/*}:startManualRuns")
@@ -1964,9 +2011,6 @@ func (c *restClient) GetTransferRun(ctx context.Context, req *datatransferpb.Get
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatatransfer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datatransfer.v1.DataTransferService/GetTransferRun")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/transferConfigs/*/runs/*}")
@@ -2021,9 +2065,6 @@ func (c *restClient) DeleteTransferRun(ctx context.Context, req *datatransferpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatatransfer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datatransfer.v1.DataTransferService/DeleteTransferRun")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/transferConfigs/*/runs/*}")
@@ -2239,9 +2280,6 @@ func (c *restClient) CheckValidCreds(ctx context.Context, req *datatransferpb.Ch
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatatransfer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datatransfer.v1.DataTransferService/CheckValidCreds")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/dataSources/*}:checkValidCreds")
@@ -2309,9 +2347,6 @@ func (c *restClient) EnrollDataSources(ctx context.Context, req *datatransferpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatatransfer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datatransfer.v1.DataTransferService/EnrollDataSources")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*}:enrollDataSources")
@@ -2361,9 +2396,6 @@ func (c *restClient) UnenrollDataSources(ctx context.Context, req *datatransferp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatatransfer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datatransfer.v1.DataTransferService/UnenrollDataSources")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*}:unenrollDataSources")
@@ -2403,9 +2435,6 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloud.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*}")

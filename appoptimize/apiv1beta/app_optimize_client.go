@@ -412,6 +412,53 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "appoptimize",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appoptimize/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "appoptimize.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateReport = append(client.CallOptions.CreateReport, gax.WithClientTracing(tracing))
+		client.CallOptions.GetReport = append(client.CallOptions.GetReport, gax.WithClientTracing(tracing))
+		client.CallOptions.ListReports = append(client.CallOptions.ListReports, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteReport = append(client.CallOptions.DeleteReport, gax.WithClientTracing(tracing))
+		client.CallOptions.ReadReport = append(client.CallOptions.ReadReport, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "appoptimize",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appoptimize/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "appoptimize.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateReport = append(client.CallOptions.CreateReport, gax.WithClientLogging(logging))
+		client.CallOptions.GetReport = append(client.CallOptions.GetReport, gax.WithClientLogging(logging))
+		client.CallOptions.ListReports = append(client.CallOptions.ListReports, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteReport = append(client.CallOptions.DeleteReport, gax.WithClientLogging(logging))
+		client.CallOptions.ReadReport = append(client.CallOptions.ReadReport, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -529,6 +576,53 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "appoptimize",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appoptimize/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "appoptimize.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateReport = append(callOpts.CreateReport, gax.WithClientTracing(tracing))
+		callOpts.GetReport = append(callOpts.GetReport, gax.WithClientTracing(tracing))
+		callOpts.ListReports = append(callOpts.ListReports, gax.WithClientTracing(tracing))
+		callOpts.DeleteReport = append(callOpts.DeleteReport, gax.WithClientTracing(tracing))
+		callOpts.ReadReport = append(callOpts.ReadReport, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "appoptimize",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appoptimize/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "appoptimize.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateReport = append(callOpts.CreateReport, gax.WithClientLogging(logging))
+		callOpts.GetReport = append(callOpts.GetReport, gax.WithClientLogging(logging))
+		callOpts.ListReports = append(callOpts.ListReports, gax.WithClientLogging(logging))
+		callOpts.DeleteReport = append(callOpts.DeleteReport, gax.WithClientLogging(logging))
+		callOpts.ReadReport = append(callOpts.ReadReport, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -585,9 +679,6 @@ func (c *gRPCClient) CreateReport(ctx context.Context, req *appoptimizepb.Create
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//appoptimize.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.appoptimize.v1beta.AppOptimize/CreateReport")
 	}
@@ -615,9 +706,6 @@ func (c *gRPCClient) GetReport(ctx context.Context, req *appoptimizepb.GetReport
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//appoptimize.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.appoptimize.v1beta.AppOptimize/GetReport")
 	}
@@ -639,9 +727,6 @@ func (c *gRPCClient) ListReports(ctx context.Context, req *appoptimizepb.ListRep
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//appoptimize.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.appoptimize.v1beta.AppOptimize/ListReports")
 	}
@@ -691,9 +776,6 @@ func (c *gRPCClient) DeleteReport(ctx context.Context, req *appoptimizepb.Delete
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//appoptimize.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.appoptimize.v1beta.AppOptimize/DeleteReport")
 	}
@@ -711,9 +793,6 @@ func (c *gRPCClient) ReadReport(ctx context.Context, req *appoptimizepb.ReadRepo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//appoptimize.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.appoptimize.v1beta.AppOptimize/ReadReport")
 	}
@@ -963,9 +1042,6 @@ func (c *restClient) CreateReport(ctx context.Context, req *appoptimizepb.Create
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//appoptimize.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.appoptimize.v1beta.AppOptimize/CreateReport")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*}/reports")
@@ -1027,9 +1103,6 @@ func (c *restClient) GetReport(ctx context.Context, req *appoptimizepb.GetReport
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//appoptimize.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.appoptimize.v1beta.AppOptimize/GetReport")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/reports/*}")
@@ -1165,9 +1238,6 @@ func (c *restClient) DeleteReport(ctx context.Context, req *appoptimizepb.Delete
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//appoptimize.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.appoptimize.v1beta.AppOptimize/DeleteReport")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/reports/*}")

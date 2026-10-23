@@ -30,11 +30,13 @@ import (
 	"os"
 	"strings"
 	"sync"
-	"syscall"
 	"time"
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
+	btopt "cloud.google.com/go/bigtable/internal/option"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/health"
+	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 )
 
 // defaultHandshakeTimeout bounds how long Start waits for the parent process to
@@ -62,7 +64,8 @@ type Server struct {
 	stdinReader  io.Reader     // stdin source; nil disables the stdin watchdog. Defaults to os.Stdin; override with WithStdinReader.
 	stdinBuf     *bufio.Reader // wraps stdinReader once in Start(); shared by readSecret + monitorStdin
 	authSecret   string
-	channel      *Channel
+	channel      channelConn
+	health       *health.Server
 
 	handshakeTimeout time.Duration // bounds readSecret; defaults to defaultHandshakeTimeout, override with WithHandshakeTimeout.
 }
@@ -87,7 +90,7 @@ func WithHandshakeTimeout(d time.Duration) ServerOption {
 }
 
 // NewServer creates a new Server instance.
-func NewServer(udsPath string, channel *Channel, opts ...ServerOption) *Server {
+func NewServer(udsPath string, channel channelConn, opts ...ServerOption) *Server {
 	s := &Server{
 		udsPath:          udsPath,
 		shutdownChan:     make(chan struct{}),
@@ -130,32 +133,15 @@ func (s *Server) Start() error {
 	// sibling shares this path.
 	_ = os.Remove(s.udsPath)
 
-	// Bind under a private umask so the socket is never world-connectable, even
-	// for the instant between creation and the Chmod below. net.Listen -> bind(2)
-	// creates the socket file subject to the process umask; the common default
-	// (022) would leave it group/other accessible during that window, letting any
-	// local process connect before we lock it down. umask is process-global, so
-	// we narrow it only around the bind and restore it immediately after.
-	oldMask := syscall.Umask(0077)
-	l, err := net.Listen("unix", s.udsPath)
-	syscall.Umask(oldMask)
+	// Bind the socket and restrict it to the owning user. How that restriction is
+	// achieved is platform-specific -- see listenUDS in socket_unix.go (umask +
+	// chmod) and socket_windows.go (inherited directory ACL).
+	l, err := listenUDS(s.udsPath)
 	if err != nil {
 		log.Printf("failed to start accelerator: %v", err)
 		return err
 	}
 	s.listener = l
-
-	// Tighten to 0600, dropping the owner-execute bit the 0077 umask leaves at
-	// 0700. The daemon is paired 1:1 with its parent process, so no other user
-	// should be able to issue RPCs against it. Because the umask above already
-	// guaranteed the socket was never group/other accessible, this Chmod is
-	// race-free hardening rather than the sole line of defense.
-	if err := os.Chmod(s.udsPath, 0600); err != nil {
-		_ = l.Close()
-		_ = os.Remove(s.udsPath)
-		log.Printf("failed to chmod accelerator socket: %v", err)
-		return err
-	}
 
 	// Chain the proxy interceptors, which route each RPC through the Channel.
 	// The auth interceptors are prepended only when a secret was read from stdin
@@ -172,6 +158,14 @@ func (s *Server) Start() error {
 	s.grpcServer = grpc.NewServer(
 		grpc.ChainUnaryInterceptor(unaryInterceptors...),
 		grpc.ChainStreamInterceptor(streamInterceptors...),
+		// gRPC's 4 MiB default receive limit is there to bound what an
+		// untrusted remote peer can make a server allocate. This server's only
+		// peer is the SDK process that spawned it, over a Unix socket it alone
+		// can reach, so the limit only serves to reject large mutations the
+		// native client would have sent straight to the service. The send
+		// direction is left alone: its default is already math.MaxInt32, and
+		// pinning it to MaxMessageSize would lower it.
+		grpc.MaxRecvMsgSize(btopt.MaxMessageSize),
 	)
 
 	// Register the empty bigtableServerStub. gRPC requires a typed
@@ -180,6 +174,26 @@ func (s *Server) Start() error {
 	// the stub before it is reached — the stub exists solely to satisfy
 	// gRPC's registration contract.
 	btpb.RegisterBigtableServer(s.grpcServer, s.service)
+
+	// Register the standard health service. Unlike the Bigtable stub above this
+	// one is served locally -- isProxied keeps the proxy interceptors off it.
+	//
+	// What it is for: the caller needs a way to ask "is the daemon up and
+	// responsive?" that neither consumes a session nor touches the backend. The
+	// latency of a Check is therefore almost entirely this process's own
+	// scheduling delay, which is what makes it a usable starvation signal; the
+	// latency of a real RPC would fold in Bigtable's latency and the network and
+	// tell the caller much less.
+	//
+	// Note the status is a liveness statement, not a load assessment: we report
+	// SERVING whenever the server is up, and leave "is it fast enough?" to the
+	// caller, which can time its own probes. Self-declaring NOT_SERVING under
+	// load would be guesswork against a threshold we cannot pick correctly from
+	// in here, and the client's fallback breaker is permanent -- a daemon that
+	// briefly called itself unhealthy would be abandoned for good.
+	s.health = health.NewServer()
+	healthpb.RegisterHealthServer(s.grpcServer, s.health)
+	s.health.SetServingStatus("", healthpb.HealthCheckResponse_SERVING)
 
 	go func() {
 		// Serve returns ErrServerStopped on a clean GracefulStop/Stop; anything
@@ -201,8 +215,10 @@ func (s *Server) Start() error {
 	// Skip the parent-PID watchdog when initialPpid is 1: it's ambiguous (orphan
 	// vs. legitimate child of pid 1), and monitorStdin already covers parent
 	// death. When initialPpid is a real parent, any later change to it means the
-	// parent we shadow has died.
-	if initialPpid != 1 {
+	// parent we shadow has died. Also skip it entirely on platforms that don't
+	// reparent orphans (Windows), where the ppid can never change and polling it
+	// is pure cost -- see parentPidWatchdogSupported.
+	if parentPidWatchdogSupported && initialPpid != 1 {
 		go s.monitorParentPid(initialPpid)
 	}
 
@@ -214,6 +230,15 @@ func (s *Server) Start() error {
 func (s *Server) Stop() {
 	s.stopOnce.Do(func() {
 		close(s.shutdownChan)
+
+		// Flip to NOT_SERVING before draining so a caller probing mid-shutdown
+		// gets an honest answer instead of a SERVING reply from a server that is
+		// about to stop accepting RPCs. health.Server.Shutdown also latches, so
+		// any Watch stream still open is notified and later SetServingStatus
+		// calls cannot revive it.
+		if s.health != nil {
+			s.health.Shutdown()
+		}
 
 		if s.grpcServer != nil {
 			// GracefulStop blocks until all in-flight RPCs finish. A wedged or

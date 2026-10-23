@@ -388,6 +388,45 @@ func NewAccessPoliciesClient(ctx context.Context, opts ...option.ClientOption) (
 		client.CallOptions.SearchAccessPolicyBindings = append(client.CallOptions.SearchAccessPolicyBindings, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "iam",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/iam/apiv3beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "iam.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateAccessPolicy = append(client.CallOptions.CreateAccessPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAccessPolicy = append(client.CallOptions.GetAccessPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateAccessPolicy = append(client.CallOptions.UpdateAccessPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteAccessPolicy = append(client.CallOptions.DeleteAccessPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.ListAccessPolicies = append(client.CallOptions.ListAccessPolicies, gax.WithClientTracing(tracing))
+		client.CallOptions.SearchAccessPolicyBindings = append(client.CallOptions.SearchAccessPolicyBindings, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "iam",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/iam/apiv3beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "iam.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateAccessPolicy = append(client.CallOptions.CreateAccessPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.GetAccessPolicy = append(client.CallOptions.GetAccessPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateAccessPolicy = append(client.CallOptions.UpdateAccessPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteAccessPolicy = append(client.CallOptions.DeleteAccessPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.ListAccessPolicies = append(client.CallOptions.ListAccessPolicies, gax.WithClientLogging(logging))
+		client.CallOptions.SearchAccessPolicyBindings = append(client.CallOptions.SearchAccessPolicyBindings, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -501,6 +540,45 @@ func NewAccessPoliciesRESTClient(ctx context.Context, opts ...option.ClientOptio
 		callOpts.SearchAccessPolicyBindings = append(callOpts.SearchAccessPolicyBindings, gax.WithClientMetrics(metrics))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "iam",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/iam/apiv3beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "iam.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateAccessPolicy = append(callOpts.CreateAccessPolicy, gax.WithClientTracing(tracing))
+		callOpts.GetAccessPolicy = append(callOpts.GetAccessPolicy, gax.WithClientTracing(tracing))
+		callOpts.UpdateAccessPolicy = append(callOpts.UpdateAccessPolicy, gax.WithClientTracing(tracing))
+		callOpts.DeleteAccessPolicy = append(callOpts.DeleteAccessPolicy, gax.WithClientTracing(tracing))
+		callOpts.ListAccessPolicies = append(callOpts.ListAccessPolicies, gax.WithClientTracing(tracing))
+		callOpts.SearchAccessPolicyBindings = append(callOpts.SearchAccessPolicyBindings, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "iam",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/iam/apiv3beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "iam.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateAccessPolicy = append(callOpts.CreateAccessPolicy, gax.WithClientLogging(logging))
+		callOpts.GetAccessPolicy = append(callOpts.GetAccessPolicy, gax.WithClientLogging(logging))
+		callOpts.UpdateAccessPolicy = append(callOpts.UpdateAccessPolicy, gax.WithClientLogging(logging))
+		callOpts.DeleteAccessPolicy = append(callOpts.DeleteAccessPolicy, gax.WithClientLogging(logging))
+		callOpts.ListAccessPolicies = append(callOpts.ListAccessPolicies, gax.WithClientLogging(logging))
+		callOpts.SearchAccessPolicyBindings = append(callOpts.SearchAccessPolicyBindings, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -557,9 +635,6 @@ func (c *accessPoliciesGRPCClient) CreateAccessPolicy(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3beta.AccessPolicies/CreateAccessPolicy")
 	}
@@ -587,9 +662,6 @@ func (c *accessPoliciesGRPCClient) GetAccessPolicy(ctx context.Context, req *iam
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3beta.AccessPolicies/GetAccessPolicy")
 	}
@@ -638,9 +710,6 @@ func (c *accessPoliciesGRPCClient) DeleteAccessPolicy(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3beta.AccessPolicies/DeleteAccessPolicy")
 	}
@@ -668,9 +737,6 @@ func (c *accessPoliciesGRPCClient) ListAccessPolicies(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3beta.AccessPolicies/ListAccessPolicies")
 	}
@@ -720,9 +786,6 @@ func (c *accessPoliciesGRPCClient) SearchAccessPolicyBindings(ctx context.Contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3beta.AccessPolicies/SearchAccessPolicyBindings")
 	}
@@ -818,9 +881,6 @@ func (c *accessPoliciesRESTClient) CreateAccessPolicy(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3beta.AccessPolicies/CreateAccessPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta/{parent=projects/*/locations/*}/accessPolicies")
@@ -882,9 +942,6 @@ func (c *accessPoliciesRESTClient) GetAccessPolicy(ctx context.Context, req *iam
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3beta.AccessPolicies/GetAccessPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta/{name=projects/*/locations/*/accessPolicies/*}")
@@ -1019,9 +1076,6 @@ func (c *accessPoliciesRESTClient) DeleteAccessPolicy(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3beta.AccessPolicies/DeleteAccessPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta/{name=projects/*/locations/*/accessPolicies/*}")

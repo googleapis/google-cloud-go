@@ -156,6 +156,8 @@ type internalStoragePoolsClient interface {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The StoragePools API.
+//
+// This client uses StoragePools version 2026-09-01.
 type StoragePoolsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalStoragePoolsClient
@@ -325,6 +327,51 @@ func NewStoragePoolsRESTClient(ctx context.Context, opts ...option.ClientOption)
 		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
 		callOpts.Update = append(callOpts.Update, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientTracing(tracing))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+		callOpts.ListDisks = append(callOpts.ListDisks, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+		callOpts.Update = append(callOpts.Update, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientLogging(logging))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+		callOpts.ListDisks = append(callOpts.ListDisks, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+		callOpts.Update = append(callOpts.Update, gax.WithClientLogging(logging))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -359,6 +406,7 @@ func (c *storagePoolsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-09-01",
 	}
 }
 
@@ -419,9 +467,6 @@ func (c *storagePoolsRESTClient) AggregatedList(ctx context.Context, req *comput
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 		if req != nil && req.ServiceProjectNumber != nil {
 			params.Add("serviceProjectNumber", fmt.Sprintf("%v", req.GetServiceProjectNumber()))
@@ -507,9 +552,6 @@ func (c *storagePoolsRESTClient) Delete(ctx context.Context, req *computepb.Dele
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/zones/%v/storagePools/%v", req.GetProject(), req.GetZone(), req.GetStoragePool()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.StoragePools/Delete")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/storagePools/{storage_pool}")
@@ -568,9 +610,6 @@ func (c *storagePoolsRESTClient) Get(ctx context.Context, req *computepb.GetStor
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/zones/%v/storagePools/%v", req.GetProject(), req.GetZone(), req.GetStoragePool()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.StoragePools/Get")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/storagePools/{storage_pool}")
@@ -628,9 +667,6 @@ func (c *storagePoolsRESTClient) GetIamPolicy(ctx context.Context, req *computep
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/zones/%v/storagePools/%v", req.GetProject(), req.GetZone(), req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.StoragePools/GetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/storagePools/{resource}/getIamPolicy")
@@ -695,9 +731,6 @@ func (c *storagePoolsRESTClient) Insert(ctx context.Context, req *computepb.Inse
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/zones/%v", req.GetProject(), req.GetZone()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.StoragePools/Insert")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/storagePools")
@@ -775,9 +808,6 @@ func (c *storagePoolsRESTClient) List(ctx context.Context, req *computepb.ListSt
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -862,9 +892,6 @@ func (c *storagePoolsRESTClient) ListDisks(ctx context.Context, req *computepb.L
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
-		}
 
 		baseUrl.RawQuery = params.Encode()
 
@@ -936,9 +963,6 @@ func (c *storagePoolsRESTClient) SetIamPolicy(ctx context.Context, req *computep
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/zones/%v/storagePools/%v", req.GetProject(), req.GetZone(), req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.StoragePools/SetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/storagePools/{resource}/setIamPolicy")
@@ -995,9 +1019,6 @@ func (c *storagePoolsRESTClient) TestIamPermissions(ctx context.Context, req *co
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/zones/%v/storagePools/%v", req.GetProject(), req.GetZone(), req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.StoragePools/TestIamPermissions")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/storagePools/{resource}/testIamPermissions")
@@ -1068,9 +1089,6 @@ func (c *storagePoolsRESTClient) Update(ctx context.Context, req *computepb.Upda
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/zones/%v/storagePools/%v", req.GetProject(), req.GetZone(), req.GetStoragePool()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.StoragePools/Update")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/storagePools/{storage_pool}")

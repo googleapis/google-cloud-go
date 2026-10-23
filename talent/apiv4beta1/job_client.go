@@ -447,6 +447,53 @@ func NewJobClient(ctx context.Context, opts ...option.ClientOption) (*JobClient,
 		client.CallOptions.SearchJobsForAlert = append(client.CallOptions.SearchJobsForAlert, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "jobs",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/talent/apiv4beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "jobs.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateJob = append(client.CallOptions.CreateJob, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchCreateJobs = append(client.CallOptions.BatchCreateJobs, gax.WithClientTracing(tracing))
+		client.CallOptions.GetJob = append(client.CallOptions.GetJob, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateJob = append(client.CallOptions.UpdateJob, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchUpdateJobs = append(client.CallOptions.BatchUpdateJobs, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteJob = append(client.CallOptions.DeleteJob, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchDeleteJobs = append(client.CallOptions.BatchDeleteJobs, gax.WithClientTracing(tracing))
+		client.CallOptions.ListJobs = append(client.CallOptions.ListJobs, gax.WithClientTracing(tracing))
+		client.CallOptions.SearchJobs = append(client.CallOptions.SearchJobs, gax.WithClientTracing(tracing))
+		client.CallOptions.SearchJobsForAlert = append(client.CallOptions.SearchJobsForAlert, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "jobs",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/talent/apiv4beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "jobs.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateJob = append(client.CallOptions.CreateJob, gax.WithClientLogging(logging))
+		client.CallOptions.BatchCreateJobs = append(client.CallOptions.BatchCreateJobs, gax.WithClientLogging(logging))
+		client.CallOptions.GetJob = append(client.CallOptions.GetJob, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateJob = append(client.CallOptions.UpdateJob, gax.WithClientLogging(logging))
+		client.CallOptions.BatchUpdateJobs = append(client.CallOptions.BatchUpdateJobs, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteJob = append(client.CallOptions.DeleteJob, gax.WithClientLogging(logging))
+		client.CallOptions.BatchDeleteJobs = append(client.CallOptions.BatchDeleteJobs, gax.WithClientLogging(logging))
+		client.CallOptions.ListJobs = append(client.CallOptions.ListJobs, gax.WithClientLogging(logging))
+		client.CallOptions.SearchJobs = append(client.CallOptions.SearchJobs, gax.WithClientLogging(logging))
+		client.CallOptions.SearchJobsForAlert = append(client.CallOptions.SearchJobsForAlert, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -564,6 +611,53 @@ func NewJobRESTClient(ctx context.Context, opts ...option.ClientOption) (*JobCli
 		callOpts.SearchJobsForAlert = append(callOpts.SearchJobsForAlert, gax.WithClientMetrics(metrics))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "jobs",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/talent/apiv4beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "jobs.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateJob = append(callOpts.CreateJob, gax.WithClientTracing(tracing))
+		callOpts.BatchCreateJobs = append(callOpts.BatchCreateJobs, gax.WithClientTracing(tracing))
+		callOpts.GetJob = append(callOpts.GetJob, gax.WithClientTracing(tracing))
+		callOpts.UpdateJob = append(callOpts.UpdateJob, gax.WithClientTracing(tracing))
+		callOpts.BatchUpdateJobs = append(callOpts.BatchUpdateJobs, gax.WithClientTracing(tracing))
+		callOpts.DeleteJob = append(callOpts.DeleteJob, gax.WithClientTracing(tracing))
+		callOpts.BatchDeleteJobs = append(callOpts.BatchDeleteJobs, gax.WithClientTracing(tracing))
+		callOpts.ListJobs = append(callOpts.ListJobs, gax.WithClientTracing(tracing))
+		callOpts.SearchJobs = append(callOpts.SearchJobs, gax.WithClientTracing(tracing))
+		callOpts.SearchJobsForAlert = append(callOpts.SearchJobsForAlert, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "jobs",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/talent/apiv4beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "jobs.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateJob = append(callOpts.CreateJob, gax.WithClientLogging(logging))
+		callOpts.BatchCreateJobs = append(callOpts.BatchCreateJobs, gax.WithClientLogging(logging))
+		callOpts.GetJob = append(callOpts.GetJob, gax.WithClientLogging(logging))
+		callOpts.UpdateJob = append(callOpts.UpdateJob, gax.WithClientLogging(logging))
+		callOpts.BatchUpdateJobs = append(callOpts.BatchUpdateJobs, gax.WithClientLogging(logging))
+		callOpts.DeleteJob = append(callOpts.DeleteJob, gax.WithClientLogging(logging))
+		callOpts.BatchDeleteJobs = append(callOpts.BatchDeleteJobs, gax.WithClientLogging(logging))
+		callOpts.ListJobs = append(callOpts.ListJobs, gax.WithClientLogging(logging))
+		callOpts.SearchJobs = append(callOpts.SearchJobs, gax.WithClientLogging(logging))
+		callOpts.SearchJobsForAlert = append(callOpts.SearchJobsForAlert, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -620,9 +714,6 @@ func (c *jobGRPCClient) CreateJob(ctx context.Context, req *talentpb.CreateJobRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//jobs.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.talent.v4beta1.JobService/CreateJob")
 	}
@@ -644,9 +735,6 @@ func (c *jobGRPCClient) BatchCreateJobs(ctx context.Context, req *talentpb.Batch
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//jobs.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.talent.v4beta1.JobService/BatchCreateJobs")
 	}
@@ -674,9 +762,6 @@ func (c *jobGRPCClient) GetJob(ctx context.Context, req *talentpb.GetJobRequest,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//jobs.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.talent.v4beta1.JobService/GetJob")
 	}
@@ -719,9 +804,6 @@ func (c *jobGRPCClient) BatchUpdateJobs(ctx context.Context, req *talentpb.Batch
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//jobs.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.talent.v4beta1.JobService/BatchUpdateJobs")
 	}
@@ -749,9 +831,6 @@ func (c *jobGRPCClient) DeleteJob(ctx context.Context, req *talentpb.DeleteJobRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//jobs.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.talent.v4beta1.JobService/DeleteJob")
 	}
@@ -769,9 +848,6 @@ func (c *jobGRPCClient) BatchDeleteJobs(ctx context.Context, req *talentpb.Batch
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//jobs.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.talent.v4beta1.JobService/BatchDeleteJobs")
 	}
@@ -789,9 +865,6 @@ func (c *jobGRPCClient) ListJobs(ctx context.Context, req *talentpb.ListJobsRequ
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//jobs.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.talent.v4beta1.JobService/ListJobs")
 	}
@@ -841,9 +914,6 @@ func (c *jobGRPCClient) SearchJobs(ctx context.Context, req *talentpb.SearchJobs
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//jobs.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.talent.v4beta1.JobService/SearchJobs")
 	}
@@ -865,9 +935,6 @@ func (c *jobGRPCClient) SearchJobsForAlert(ctx context.Context, req *talentpb.Se
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//jobs.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.talent.v4beta1.JobService/SearchJobsForAlert")
 	}
@@ -961,9 +1028,6 @@ func (c *jobRESTClient) CreateJob(ctx context.Context, req *talentpb.CreateJobRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//jobs.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.talent.v4beta1.JobService/CreateJob")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v4beta1/{parent=projects/*/tenants/*}/jobs")
@@ -1024,9 +1088,6 @@ func (c *jobRESTClient) BatchCreateJobs(ctx context.Context, req *talentpb.Batch
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//jobs.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.talent.v4beta1.JobService/BatchCreateJobs")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v4beta1/{parent=projects/*/tenants/*}/jobs:batchCreate")
@@ -1089,9 +1150,6 @@ func (c *jobRESTClient) GetJob(ctx context.Context, req *talentpb.GetJobRequest,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//jobs.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.talent.v4beta1.JobService/GetJob")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v4beta1/{name=projects/*/tenants/*/jobs/*}")
@@ -1215,9 +1273,6 @@ func (c *jobRESTClient) BatchUpdateJobs(ctx context.Context, req *talentpb.Batch
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//jobs.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.talent.v4beta1.JobService/BatchUpdateJobs")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v4beta1/{parent=projects/*/tenants/*}/jobs:batchUpdate")
@@ -1282,9 +1337,6 @@ func (c *jobRESTClient) DeleteJob(ctx context.Context, req *talentpb.DeleteJobRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//jobs.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.talent.v4beta1.JobService/DeleteJob")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v4beta1/{name=projects/*/tenants/*/jobs/*}")
@@ -1330,9 +1382,6 @@ func (c *jobRESTClient) BatchDeleteJobs(ctx context.Context, req *talentpb.Batch
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//jobs.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.talent.v4beta1.JobService/BatchDeleteJobs")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v4beta1/{parent=projects/*/tenants/*}/jobs:batchDelete")
@@ -1466,9 +1515,6 @@ func (c *jobRESTClient) SearchJobs(ctx context.Context, req *talentpb.SearchJobs
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//jobs.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.talent.v4beta1.JobService/SearchJobs")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v4beta1/{parent=projects/*/tenants/*}/jobs:search")

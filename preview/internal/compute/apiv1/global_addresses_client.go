@@ -113,6 +113,8 @@ type internalGlobalAddressesClient interface {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The GlobalAddresses API.
+//
+// This client uses GlobalAddresses version 2026-10-01-preview.
 type GlobalAddressesClient struct {
 	// The internal transport-dependent client.
 	internalClient internalGlobalAddressesClient
@@ -250,6 +252,45 @@ func NewGlobalAddressesRESTClient(ctx context.Context, opts ...option.ClientOpti
 		callOpts.SetLabels = append(callOpts.SetLabels, gax.WithClientMetrics(metrics))
 		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+		callOpts.Move = append(callOpts.Move, gax.WithClientTracing(tracing))
+		callOpts.SetLabels = append(callOpts.SetLabels, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+		callOpts.Move = append(callOpts.Move, gax.WithClientLogging(logging))
+		callOpts.SetLabels = append(callOpts.SetLabels, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -284,6 +325,7 @@ func (c *globalAddressesRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-10-01-preview",
 	}
 }
 
@@ -326,9 +368,6 @@ func (c *globalAddressesRESTClient) Delete(ctx context.Context, req *computepb.D
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/global/addresses/%v", req.GetProject(), req.GetAddress()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.GlobalAddresses/Delete")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/addresses/{address}")
@@ -385,9 +424,6 @@ func (c *globalAddressesRESTClient) Get(ctx context.Context, req *computepb.GetG
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/global/addresses/%v", req.GetProject(), req.GetAddress()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.GlobalAddresses/Get")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/addresses/{address}")
@@ -452,9 +488,6 @@ func (c *globalAddressesRESTClient) Insert(ctx context.Context, req *computepb.I
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v", req.GetProject()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.GlobalAddresses/Insert")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/addresses")
@@ -530,9 +563,6 @@ func (c *globalAddressesRESTClient) List(ctx context.Context, req *computepb.Lis
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -611,9 +641,6 @@ func (c *globalAddressesRESTClient) Move(ctx context.Context, req *computepb.Mov
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/global/addresses/%v", req.GetProject(), req.GetAddress()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.GlobalAddresses/Move")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/addresses/{address}/move")
@@ -678,9 +705,6 @@ func (c *globalAddressesRESTClient) SetLabels(ctx context.Context, req *computep
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/global/addresses/%v", req.GetProject(), req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.GlobalAddresses/SetLabels")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/addresses/{resource}/setLabels")
@@ -744,9 +768,6 @@ func (c *globalAddressesRESTClient) TestIamPermissions(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/global/addresses/%v", req.GetProject(), req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.GlobalAddresses/TestIamPermissions")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/addresses/{resource}/testIamPermissions")

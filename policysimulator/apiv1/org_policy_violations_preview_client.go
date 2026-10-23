@@ -368,6 +368,43 @@ func NewOrgPolicyViolationsPreviewClient(ctx context.Context, opts ...option.Cli
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "policysimulator",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/policysimulator/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "policysimulator.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListOrgPolicyViolationsPreviews = append(client.CallOptions.ListOrgPolicyViolationsPreviews, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOrgPolicyViolationsPreview = append(client.CallOptions.GetOrgPolicyViolationsPreview, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateOrgPolicyViolationsPreview = append(client.CallOptions.CreateOrgPolicyViolationsPreview, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOrgPolicyViolations = append(client.CallOptions.ListOrgPolicyViolations, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "policysimulator",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/policysimulator/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "policysimulator.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListOrgPolicyViolationsPreviews = append(client.CallOptions.ListOrgPolicyViolationsPreviews, gax.WithClientLogging(logging))
+		client.CallOptions.GetOrgPolicyViolationsPreview = append(client.CallOptions.GetOrgPolicyViolationsPreview, gax.WithClientLogging(logging))
+		client.CallOptions.CreateOrgPolicyViolationsPreview = append(client.CallOptions.CreateOrgPolicyViolationsPreview, gax.WithClientLogging(logging))
+		client.CallOptions.ListOrgPolicyViolations = append(client.CallOptions.ListOrgPolicyViolations, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -490,6 +527,43 @@ func NewOrgPolicyViolationsPreviewRESTClient(ctx context.Context, opts ...option
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "policysimulator",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/policysimulator/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "policysimulator.googleapis.com",
+			}),
+		)
+
+		callOpts.ListOrgPolicyViolationsPreviews = append(callOpts.ListOrgPolicyViolationsPreviews, gax.WithClientTracing(tracing))
+		callOpts.GetOrgPolicyViolationsPreview = append(callOpts.GetOrgPolicyViolationsPreview, gax.WithClientTracing(tracing))
+		callOpts.CreateOrgPolicyViolationsPreview = append(callOpts.CreateOrgPolicyViolationsPreview, gax.WithClientTracing(tracing))
+		callOpts.ListOrgPolicyViolations = append(callOpts.ListOrgPolicyViolations, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "policysimulator",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/policysimulator/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "policysimulator.googleapis.com",
+			}),
+		)
+
+		callOpts.ListOrgPolicyViolationsPreviews = append(callOpts.ListOrgPolicyViolationsPreviews, gax.WithClientLogging(logging))
+		callOpts.GetOrgPolicyViolationsPreview = append(callOpts.GetOrgPolicyViolationsPreview, gax.WithClientLogging(logging))
+		callOpts.CreateOrgPolicyViolationsPreview = append(callOpts.CreateOrgPolicyViolationsPreview, gax.WithClientLogging(logging))
+		callOpts.ListOrgPolicyViolations = append(callOpts.ListOrgPolicyViolations, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -546,9 +620,6 @@ func (c *orgPolicyViolationsPreviewGRPCClient) ListOrgPolicyViolationsPreviews(c
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//policysimulator.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewService/ListOrgPolicyViolationsPreviews")
 	}
@@ -598,9 +669,6 @@ func (c *orgPolicyViolationsPreviewGRPCClient) GetOrgPolicyViolationsPreview(ctx
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//policysimulator.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewService/GetOrgPolicyViolationsPreview")
 	}
@@ -622,9 +690,6 @@ func (c *orgPolicyViolationsPreviewGRPCClient) CreateOrgPolicyViolationsPreview(
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//policysimulator.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewService/CreateOrgPolicyViolationsPreview")
 	}
@@ -652,9 +717,6 @@ func (c *orgPolicyViolationsPreviewGRPCClient) ListOrgPolicyViolations(ctx conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//policysimulator.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewService/ListOrgPolicyViolations")
 	}
@@ -874,9 +936,6 @@ func (c *orgPolicyViolationsPreviewRESTClient) GetOrgPolicyViolationsPreview(ctx
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//policysimulator.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewService/GetOrgPolicyViolationsPreview")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=organizations/*/locations/*/orgPolicyViolationsPreviews/*}")
@@ -946,9 +1005,6 @@ func (c *orgPolicyViolationsPreviewRESTClient) CreateOrgPolicyViolationsPreview(
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//policysimulator.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewService/CreateOrgPolicyViolationsPreview")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=organizations/*/locations/*}/orgPolicyViolationsPreviews")

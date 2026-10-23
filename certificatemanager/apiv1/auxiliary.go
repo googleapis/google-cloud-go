@@ -18,12 +18,14 @@ package certificatemanager
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	certificatemanagerpb "cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -730,6 +732,70 @@ func (op *DeleteTrustConfigOperation) Name() string {
 	return op.lro.Name()
 }
 
+// UpdateCertificateIssuanceConfigOperation manages a long-running operation from UpdateCertificateIssuanceConfig.
+type UpdateCertificateIssuanceConfigOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *UpdateCertificateIssuanceConfigOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*certificatemanagerpb.CertificateIssuanceConfig, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp certificatemanagerpb.CertificateIssuanceConfig
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *UpdateCertificateIssuanceConfigOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*certificatemanagerpb.CertificateIssuanceConfig, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp certificatemanagerpb.CertificateIssuanceConfig
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *UpdateCertificateIssuanceConfigOperation) Metadata() (*certificatemanagerpb.OperationMetadata, error) {
+	var meta certificatemanagerpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *UpdateCertificateIssuanceConfigOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *UpdateCertificateIssuanceConfigOperation) Name() string {
+	return op.lro.Name()
+}
+
 // UpdateCertificateMapEntryOperation manages a long-running operation from UpdateCertificateMapEntry.
 type UpdateCertificateMapEntryOperation struct {
 	lro      *longrunning.Operation
@@ -1050,6 +1116,12 @@ func (op *UpdateTrustConfigOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CertificateIssuanceConfigIterator) All() iter.Seq2[*certificatemanagerpb.CertificateIssuanceConfig, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // CertificateIssuanceConfigIterator manages a stream of *certificatemanagerpb.CertificateIssuanceConfig.
 type CertificateIssuanceConfigIterator struct {
 	items    []*certificatemanagerpb.CertificateIssuanceConfig
@@ -1095,6 +1167,12 @@ func (it *CertificateIssuanceConfigIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CertificateIterator) All() iter.Seq2[*certificatemanagerpb.Certificate, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // CertificateIterator manages a stream of *certificatemanagerpb.Certificate.
@@ -1144,6 +1222,12 @@ func (it *CertificateIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CertificateMapEntryIterator) All() iter.Seq2[*certificatemanagerpb.CertificateMapEntry, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // CertificateMapEntryIterator manages a stream of *certificatemanagerpb.CertificateMapEntry.
 type CertificateMapEntryIterator struct {
 	items    []*certificatemanagerpb.CertificateMapEntry
@@ -1189,6 +1273,12 @@ func (it *CertificateMapEntryIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CertificateMapIterator) All() iter.Seq2[*certificatemanagerpb.CertificateMap, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // CertificateMapIterator manages a stream of *certificatemanagerpb.CertificateMap.
@@ -1238,6 +1328,12 @@ func (it *CertificateMapIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DnsAuthorizationIterator) All() iter.Seq2[*certificatemanagerpb.DnsAuthorization, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // DnsAuthorizationIterator manages a stream of *certificatemanagerpb.DnsAuthorization.
 type DnsAuthorizationIterator struct {
 	items    []*certificatemanagerpb.DnsAuthorization
@@ -1283,6 +1379,12 @@ func (it *DnsAuthorizationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LocationIterator manages a stream of *locationpb.Location.
@@ -1332,6 +1434,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -1377,6 +1485,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TrustConfigIterator) All() iter.Seq2[*certificatemanagerpb.TrustConfig, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // TrustConfigIterator manages a stream of *certificatemanagerpb.TrustConfig.

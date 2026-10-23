@@ -353,6 +353,41 @@ func NewSearchClient(ctx context.Context, opts ...option.ClientOption) (*SearchC
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.Search = append(client.CallOptions.Search, gax.WithClientTracing(tracing))
+		client.CallOptions.SearchLite = append(client.CallOptions.SearchLite, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.Search = append(client.CallOptions.Search, gax.WithClientLogging(logging))
+		client.CallOptions.SearchLite = append(client.CallOptions.SearchLite, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -448,6 +483,41 @@ func NewSearchRESTClient(ctx context.Context, opts ...option.ClientOption) (*Sea
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		callOpts.Search = append(callOpts.Search, gax.WithClientTracing(tracing))
+		callOpts.SearchLite = append(callOpts.SearchLite, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		callOpts.Search = append(callOpts.Search, gax.WithClientLogging(logging))
+		callOpts.SearchLite = append(callOpts.SearchLite, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	return &SearchClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -494,9 +564,6 @@ func (c *searchGRPCClient) Search(ctx context.Context, req *discoveryenginepb.Se
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetServingConfig()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.SearchService/Search")
 	}
@@ -546,9 +613,6 @@ func (c *searchGRPCClient) SearchLite(ctx context.Context, req *discoveryenginep
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetServingConfig()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.SearchService/SearchLite")
 	}

@@ -257,6 +257,41 @@ func NewAuthorizedCertificatesClient(ctx context.Context, opts ...option.ClientO
 		client.CallOptions.UpdateAuthorizedCertificate = append(client.CallOptions.UpdateAuthorizedCertificate, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteAuthorizedCertificate = append(client.CallOptions.DeleteAuthorizedCertificate, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "appengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appengine/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "appengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListAuthorizedCertificates = append(client.CallOptions.ListAuthorizedCertificates, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAuthorizedCertificate = append(client.CallOptions.GetAuthorizedCertificate, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateAuthorizedCertificate = append(client.CallOptions.CreateAuthorizedCertificate, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateAuthorizedCertificate = append(client.CallOptions.UpdateAuthorizedCertificate, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteAuthorizedCertificate = append(client.CallOptions.DeleteAuthorizedCertificate, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "appengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appengine/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "appengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListAuthorizedCertificates = append(client.CallOptions.ListAuthorizedCertificates, gax.WithClientLogging(logging))
+		client.CallOptions.GetAuthorizedCertificate = append(client.CallOptions.GetAuthorizedCertificate, gax.WithClientLogging(logging))
+		client.CallOptions.CreateAuthorizedCertificate = append(client.CallOptions.CreateAuthorizedCertificate, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateAuthorizedCertificate = append(client.CallOptions.UpdateAuthorizedCertificate, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteAuthorizedCertificate = append(client.CallOptions.DeleteAuthorizedCertificate, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -352,6 +387,41 @@ func NewAuthorizedCertificatesRESTClient(ctx context.Context, opts ...option.Cli
 		callOpts.CreateAuthorizedCertificate = append(callOpts.CreateAuthorizedCertificate, gax.WithClientMetrics(metrics))
 		callOpts.UpdateAuthorizedCertificate = append(callOpts.UpdateAuthorizedCertificate, gax.WithClientMetrics(metrics))
 		callOpts.DeleteAuthorizedCertificate = append(callOpts.DeleteAuthorizedCertificate, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "appengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appengine/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "appengine.googleapis.com",
+			}),
+		)
+
+		callOpts.ListAuthorizedCertificates = append(callOpts.ListAuthorizedCertificates, gax.WithClientTracing(tracing))
+		callOpts.GetAuthorizedCertificate = append(callOpts.GetAuthorizedCertificate, gax.WithClientTracing(tracing))
+		callOpts.CreateAuthorizedCertificate = append(callOpts.CreateAuthorizedCertificate, gax.WithClientTracing(tracing))
+		callOpts.UpdateAuthorizedCertificate = append(callOpts.UpdateAuthorizedCertificate, gax.WithClientTracing(tracing))
+		callOpts.DeleteAuthorizedCertificate = append(callOpts.DeleteAuthorizedCertificate, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "appengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appengine/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "appengine.googleapis.com",
+			}),
+		)
+
+		callOpts.ListAuthorizedCertificates = append(callOpts.ListAuthorizedCertificates, gax.WithClientLogging(logging))
+		callOpts.GetAuthorizedCertificate = append(callOpts.GetAuthorizedCertificate, gax.WithClientLogging(logging))
+		callOpts.CreateAuthorizedCertificate = append(callOpts.CreateAuthorizedCertificate, gax.WithClientLogging(logging))
+		callOpts.UpdateAuthorizedCertificate = append(callOpts.UpdateAuthorizedCertificate, gax.WithClientLogging(logging))
+		callOpts.DeleteAuthorizedCertificate = append(callOpts.DeleteAuthorizedCertificate, gax.WithClientLogging(logging))
 	}
 
 	return &AuthorizedCertificatesClient{internalClient: c, CallOptions: callOpts}, nil

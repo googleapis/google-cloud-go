@@ -551,6 +551,51 @@ func NewModelClient(ctx context.Context, opts ...option.ClientOption) (*ModelCli
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "retail",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/retail/apiv2beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "retail.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateModel = append(client.CallOptions.CreateModel, gax.WithClientTracing(tracing))
+		client.CallOptions.GetModel = append(client.CallOptions.GetModel, gax.WithClientTracing(tracing))
+		client.CallOptions.PauseModel = append(client.CallOptions.PauseModel, gax.WithClientTracing(tracing))
+		client.CallOptions.ResumeModel = append(client.CallOptions.ResumeModel, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteModel = append(client.CallOptions.DeleteModel, gax.WithClientTracing(tracing))
+		client.CallOptions.ListModels = append(client.CallOptions.ListModels, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateModel = append(client.CallOptions.UpdateModel, gax.WithClientTracing(tracing))
+		client.CallOptions.TuneModel = append(client.CallOptions.TuneModel, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "retail",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/retail/apiv2beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "retail.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateModel = append(client.CallOptions.CreateModel, gax.WithClientLogging(logging))
+		client.CallOptions.GetModel = append(client.CallOptions.GetModel, gax.WithClientLogging(logging))
+		client.CallOptions.PauseModel = append(client.CallOptions.PauseModel, gax.WithClientLogging(logging))
+		client.CallOptions.ResumeModel = append(client.CallOptions.ResumeModel, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteModel = append(client.CallOptions.DeleteModel, gax.WithClientLogging(logging))
+		client.CallOptions.ListModels = append(client.CallOptions.ListModels, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateModel = append(client.CallOptions.UpdateModel, gax.WithClientLogging(logging))
+		client.CallOptions.TuneModel = append(client.CallOptions.TuneModel, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -681,6 +726,51 @@ func NewModelRESTClient(ctx context.Context, opts ...option.ClientOption) (*Mode
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "retail",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/retail/apiv2beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "retail.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateModel = append(callOpts.CreateModel, gax.WithClientTracing(tracing))
+		callOpts.GetModel = append(callOpts.GetModel, gax.WithClientTracing(tracing))
+		callOpts.PauseModel = append(callOpts.PauseModel, gax.WithClientTracing(tracing))
+		callOpts.ResumeModel = append(callOpts.ResumeModel, gax.WithClientTracing(tracing))
+		callOpts.DeleteModel = append(callOpts.DeleteModel, gax.WithClientTracing(tracing))
+		callOpts.ListModels = append(callOpts.ListModels, gax.WithClientTracing(tracing))
+		callOpts.UpdateModel = append(callOpts.UpdateModel, gax.WithClientTracing(tracing))
+		callOpts.TuneModel = append(callOpts.TuneModel, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "retail",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/retail/apiv2beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "retail.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateModel = append(callOpts.CreateModel, gax.WithClientLogging(logging))
+		callOpts.GetModel = append(callOpts.GetModel, gax.WithClientLogging(logging))
+		callOpts.PauseModel = append(callOpts.PauseModel, gax.WithClientLogging(logging))
+		callOpts.ResumeModel = append(callOpts.ResumeModel, gax.WithClientLogging(logging))
+		callOpts.DeleteModel = append(callOpts.DeleteModel, gax.WithClientLogging(logging))
+		callOpts.ListModels = append(callOpts.ListModels, gax.WithClientLogging(logging))
+		callOpts.UpdateModel = append(callOpts.UpdateModel, gax.WithClientLogging(logging))
+		callOpts.TuneModel = append(callOpts.TuneModel, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -737,9 +827,6 @@ func (c *modelGRPCClient) CreateModel(ctx context.Context, req *retailpb.CreateM
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2beta.ModelService/CreateModel")
 	}
@@ -767,9 +854,6 @@ func (c *modelGRPCClient) GetModel(ctx context.Context, req *retailpb.GetModelRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2beta.ModelService/GetModel")
 	}
@@ -791,9 +875,6 @@ func (c *modelGRPCClient) PauseModel(ctx context.Context, req *retailpb.PauseMod
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2beta.ModelService/PauseModel")
 	}
@@ -836,9 +917,6 @@ func (c *modelGRPCClient) DeleteModel(ctx context.Context, req *retailpb.DeleteM
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2beta.ModelService/DeleteModel")
 	}
@@ -856,9 +934,6 @@ func (c *modelGRPCClient) ListModels(ctx context.Context, req *retailpb.ListMode
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2beta.ModelService/ListModels")
 	}
@@ -929,9 +1004,6 @@ func (c *modelGRPCClient) TuneModel(ctx context.Context, req *retailpb.TuneModel
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2beta.ModelService/TuneModel")
 	}
@@ -1053,9 +1125,6 @@ func (c *modelRESTClient) CreateModel(ctx context.Context, req *retailpb.CreateM
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2beta.ModelService/CreateModel")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta/{parent=projects/*/locations/*/catalogs/*}/models")
@@ -1117,9 +1186,6 @@ func (c *modelRESTClient) GetModel(ctx context.Context, req *retailpb.GetModelRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2beta.ModelService/GetModel")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta/{name=projects/*/locations/*/catalogs/*/models/*}")
@@ -1180,9 +1246,6 @@ func (c *modelRESTClient) PauseModel(ctx context.Context, req *retailpb.PauseMod
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2beta.ModelService/PauseModel")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta/{name=projects/*/locations/*/catalogs/*/models/*}:pause")
@@ -1297,9 +1360,6 @@ func (c *modelRESTClient) DeleteModel(ctx context.Context, req *retailpb.DeleteM
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2beta.ModelService/DeleteModel")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta/{name=projects/*/locations/*/catalogs/*/models/*}")
@@ -1494,9 +1554,6 @@ func (c *modelRESTClient) TuneModel(ctx context.Context, req *retailpb.TuneModel
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2beta.ModelService/TuneModel")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta/{name=projects/*/locations/*/catalogs/*/models/*}:tune")

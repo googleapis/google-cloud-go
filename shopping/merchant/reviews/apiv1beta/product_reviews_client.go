@@ -306,6 +306,39 @@ func NewProductReviewsClient(ctx context.Context, opts ...option.ClientOption) (
 		client.CallOptions.InsertProductReview = append(client.CallOptions.InsertProductReview, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteProductReview = append(client.CallOptions.DeleteProductReview, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/reviews/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetProductReview = append(client.CallOptions.GetProductReview, gax.WithClientTracing(tracing))
+		client.CallOptions.ListProductReviews = append(client.CallOptions.ListProductReviews, gax.WithClientTracing(tracing))
+		client.CallOptions.InsertProductReview = append(client.CallOptions.InsertProductReview, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteProductReview = append(client.CallOptions.DeleteProductReview, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/reviews/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetProductReview = append(client.CallOptions.GetProductReview, gax.WithClientLogging(logging))
+		client.CallOptions.ListProductReviews = append(client.CallOptions.ListProductReviews, gax.WithClientLogging(logging))
+		client.CallOptions.InsertProductReview = append(client.CallOptions.InsertProductReview, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteProductReview = append(client.CallOptions.DeleteProductReview, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -400,6 +433,39 @@ func NewProductReviewsRESTClient(ctx context.Context, opts ...option.ClientOptio
 		callOpts.InsertProductReview = append(callOpts.InsertProductReview, gax.WithClientMetrics(metrics))
 		callOpts.DeleteProductReview = append(callOpts.DeleteProductReview, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/reviews/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetProductReview = append(callOpts.GetProductReview, gax.WithClientTracing(tracing))
+		callOpts.ListProductReviews = append(callOpts.ListProductReviews, gax.WithClientTracing(tracing))
+		callOpts.InsertProductReview = append(callOpts.InsertProductReview, gax.WithClientTracing(tracing))
+		callOpts.DeleteProductReview = append(callOpts.DeleteProductReview, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/reviews/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetProductReview = append(callOpts.GetProductReview, gax.WithClientLogging(logging))
+		callOpts.ListProductReviews = append(callOpts.ListProductReviews, gax.WithClientLogging(logging))
+		callOpts.InsertProductReview = append(callOpts.InsertProductReview, gax.WithClientLogging(logging))
+		callOpts.DeleteProductReview = append(callOpts.DeleteProductReview, gax.WithClientLogging(logging))
+	}
 
 	return &ProductReviewsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -446,9 +512,6 @@ func (c *productReviewsGRPCClient) GetProductReview(ctx context.Context, req *re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.reviews.v1beta.ProductReviewsService/GetProductReview")
 	}
@@ -470,9 +533,6 @@ func (c *productReviewsGRPCClient) ListProductReviews(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.reviews.v1beta.ProductReviewsService/ListProductReviews")
 	}
@@ -543,9 +603,6 @@ func (c *productReviewsGRPCClient) DeleteProductReview(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.reviews.v1beta.ProductReviewsService/DeleteProductReview")
 	}
@@ -577,9 +634,6 @@ func (c *productReviewsRESTClient) GetProductReview(ctx context.Context, req *re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.reviews.v1beta.ProductReviewsService/GetProductReview")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/reviews/v1beta/{name=accounts/*/productReviews/*}")
@@ -774,9 +828,6 @@ func (c *productReviewsRESTClient) DeleteProductReview(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.reviews.v1beta.ProductReviewsService/DeleteProductReview")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/reviews/v1beta/{name=accounts/*/productReviews/*}")

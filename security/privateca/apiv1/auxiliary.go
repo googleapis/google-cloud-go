@@ -18,12 +18,14 @@ package privateca
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	privatecapb "cloud.google.com/go/security/privateca/apiv1/privatecapb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -902,6 +904,12 @@ func (op *UpdateCertificateTemplateOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CaPoolIterator) All() iter.Seq2[*privatecapb.CaPool, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // CaPoolIterator manages a stream of *privatecapb.CaPool.
 type CaPoolIterator struct {
 	items    []*privatecapb.CaPool
@@ -947,6 +955,12 @@ func (it *CaPoolIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CertificateAuthorityIterator) All() iter.Seq2[*privatecapb.CertificateAuthority, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // CertificateAuthorityIterator manages a stream of *privatecapb.CertificateAuthority.
@@ -996,6 +1010,12 @@ func (it *CertificateAuthorityIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CertificateIterator) All() iter.Seq2[*privatecapb.Certificate, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // CertificateIterator manages a stream of *privatecapb.Certificate.
 type CertificateIterator struct {
 	items    []*privatecapb.Certificate
@@ -1041,6 +1061,12 @@ func (it *CertificateIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CertificateRevocationListIterator) All() iter.Seq2[*privatecapb.CertificateRevocationList, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // CertificateRevocationListIterator manages a stream of *privatecapb.CertificateRevocationList.
@@ -1090,6 +1116,12 @@ func (it *CertificateRevocationListIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CertificateTemplateIterator) All() iter.Seq2[*privatecapb.CertificateTemplate, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // CertificateTemplateIterator manages a stream of *privatecapb.CertificateTemplate.
 type CertificateTemplateIterator struct {
 	items    []*privatecapb.CertificateTemplate
@@ -1137,6 +1169,12 @@ func (it *CertificateTemplateIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // LocationIterator manages a stream of *locationpb.Location.
 type LocationIterator struct {
 	items    []*locationpb.Location
@@ -1182,6 +1220,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OperationIterator manages a stream of *longrunningpb.Operation.

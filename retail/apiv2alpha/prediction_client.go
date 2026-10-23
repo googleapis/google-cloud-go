@@ -262,6 +262,37 @@ func NewPredictionClient(ctx context.Context, opts ...option.ClientOption) (*Pre
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "retail",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/retail/apiv2alpha",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "retail.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.Predict = append(client.CallOptions.Predict, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "retail",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/retail/apiv2alpha",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "retail.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.Predict = append(client.CallOptions.Predict, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -354,6 +385,37 @@ func NewPredictionRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		callOpts.Predict = append(callOpts.Predict, gax.WithClientMetrics(metrics))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "retail",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/retail/apiv2alpha",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "retail.googleapis.com",
+			}),
+		)
+
+		callOpts.Predict = append(callOpts.Predict, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "retail",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/retail/apiv2alpha",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "retail.googleapis.com",
+			}),
+		)
+
+		callOpts.Predict = append(callOpts.Predict, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
 	}
 
 	return &PredictionClient{internalClient: c, CallOptions: callOpts}, nil

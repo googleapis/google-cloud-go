@@ -5408,18 +5408,18 @@ var File_google_cloud_developerconnect_v1_developer_connect_proto protoreflect.F
 
 const file_google_cloud_developerconnect_v1_developer_connect_proto_rawDesc = "" +
 	"\n" +
-	"8google/cloud/developerconnect/v1/developer_connect.proto\x12 google.cloud.developerconnect.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdb\x01\n" +
-	"\x10ListUsersRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$developerconnect.googleapis.com/UserR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"8google/cloud/developerconnect/v1/developer_connect.proto\x12 google.cloud.developerconnect.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe0\x01\n" +
+	"\x10ListUsersRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$developerconnect.googleapis.com/UserR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\x9b\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\x9b\x01\n" +
 	"\x11ListUsersResponse\x12<\n" +
 	"\x05users\x18\x01 \x03(\v2&.google.cloud.developerconnect.v1.UserR\x05users\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\x80\x10\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\x8e\x10\n" +
 	"\n" +
 	"Connection\x12U\n" +
 	"\rgithub_config\x18\x05 \x01(\v2..google.cloud.developerconnect.v1.GitHubConfigH\x00R\fgithubConfig\x12t\n" +
@@ -5428,26 +5428,26 @@ const file_google_cloud_developerconnect_v1_developer_connect_proto_rawDesc = ""
 	"\x18gitlab_enterprise_config\x18\x10 \x01(\v28.google.cloud.developerconnect.v1.GitLabEnterpriseConfigH\x00R\x16gitlabEnterpriseConfig\x12~\n" +
 	"\x1cbitbucket_data_center_config\x18\x11 \x01(\v2;.google.cloud.developerconnect.v1.BitbucketDataCenterConfigH\x00R\x19bitbucketDataCenterConfig\x12n\n" +
 	"\x16bitbucket_cloud_config\x18\x12 \x01(\v26.google.cloud.developerconnect.v1.BitbucketCloudConfigH\x00R\x14bitbucketCloudConfig\x12\x97\x01\n" +
-	"%secure_source_manager_instance_config\x18\x14 \x01(\v2C.google.cloud.developerconnect.v1.SecureSourceManagerInstanceConfigH\x00R!secureSourceManagerInstanceConfig\x12c\n" +
-	"\vhttp_config\x18\x15 \x01(\v2;.google.cloud.developerconnect.v1.GenericHTTPEndpointConfigB\x03\xe0A\x01H\x00R\n" +
-	"httpConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12@\n" +
-	"\vdelete_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"deleteTime\x12U\n" +
-	"\x06labels\x18\x04 \x03(\v28.google.cloud.developerconnect.v1.Connection.LabelsEntryB\x03\xe0A\x01R\x06labels\x12g\n" +
-	"\x12installation_state\x18\x06 \x01(\v23.google.cloud.developerconnect.v1.InstallationStateB\x03\xe0A\x03R\x11installationState\x12\x1f\n" +
-	"\bdisabled\x18\a \x01(\bB\x03\xe0A\x01R\bdisabled\x12%\n" +
-	"\vreconciling\x18\b \x01(\bB\x03\xe0A\x03R\vreconciling\x12d\n" +
-	"\vannotations\x18\t \x03(\v2=.google.cloud.developerconnect.v1.Connection.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12\x17\n" +
+	"%secure_source_manager_instance_config\x18\x14 \x01(\v2C.google.cloud.developerconnect.v1.SecureSourceManagerInstanceConfigH\x00R!secureSourceManagerInstanceConfig\x12d\n" +
+	"\vhttp_config\x18\x15 \x01(\v2;.google.cloud.developerconnect.v1.GenericHTTPEndpointConfigB\x04\xe2A\x01\x01H\x00R\n" +
+	"httpConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12A\n" +
+	"\vdelete_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"deleteTime\x12V\n" +
+	"\x06labels\x18\x04 \x03(\v28.google.cloud.developerconnect.v1.Connection.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12h\n" +
+	"\x12installation_state\x18\x06 \x01(\v23.google.cloud.developerconnect.v1.InstallationStateB\x04\xe2A\x01\x03R\x11installationState\x12 \n" +
+	"\bdisabled\x18\a \x01(\bB\x04\xe2A\x01\x01R\bdisabled\x12&\n" +
+	"\vreconciling\x18\b \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12e\n" +
+	"\vannotations\x18\t \x03(\v2=.google.cloud.developerconnect.v1.Connection.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12\x18\n" +
 	"\x04etag\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\x04etag\x12\x1d\n" +
-	"\x03uid\x18\f \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12b\n" +
-	"\x11crypto_key_config\x18\x0f \x01(\v21.google.cloud.developerconnect.v1.CryptoKeyConfigB\x03\xe0A\x01R\x0fcryptoKeyConfig\x12_\n" +
-	"\x10git_proxy_config\x18\x13 \x01(\v20.google.cloud.developerconnect.v1.GitProxyConfigB\x03\xe0A\x01R\x0egitProxyConfig\x1a9\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12\x1e\n" +
+	"\x03uid\x18\f \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12c\n" +
+	"\x11crypto_key_config\x18\x0f \x01(\v21.google.cloud.developerconnect.v1.CryptoKeyConfigB\x04\xe2A\x01\x01R\x0fcryptoKeyConfig\x12`\n" +
+	"\x10git_proxy_config\x18\x13 \x01(\v20.google.cloud.developerconnect.v1.GitProxyConfigB\x04\xe2A\x01\x01R\x0egitProxyConfig\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a>\n" +
@@ -5456,221 +5456,221 @@ const file_google_cloud_developerconnect_v1_developer_connect_proto_rawDesc = ""
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x8e\x01\xeaA\x8a\x01\n" +
 	"*developerconnect.googleapis.com/Connection\x12@projects/{project}/locations/{location}/connections/{connection}*\vconnections2\n" +
 	"connectionR\x01\x01B\x13\n" +
-	"\x11connection_config\"a\n" +
-	"\x0fCryptoKeyConfig\x12N\n" +
-	"\rkey_reference\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!cloudkms.googleapis.com/CryptoKeyR\fkeyReference\"c\n" +
-	"\x0eGitProxyConfig\x12\x1d\n" +
-	"\aenabled\x18\x01 \x01(\bB\x03\xe0A\x01R\aenabled\x122\n" +
-	"\x13http_proxy_base_uri\x18\x02 \x01(\tB\x03\xe0A\x03R\x10httpProxyBaseUri\"\xa3\x02\n" +
-	"\x11InstallationState\x12T\n" +
-	"\x05stage\x18\x01 \x01(\x0e29.google.cloud.developerconnect.v1.InstallationState.StageB\x03\xe0A\x03R\x05stage\x12\x1d\n" +
-	"\amessage\x18\x02 \x01(\tB\x03\xe0A\x03R\amessage\x12\"\n" +
+	"\x11connection_config\"b\n" +
+	"\x0fCryptoKeyConfig\x12O\n" +
+	"\rkey_reference\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!cloudkms.googleapis.com/CryptoKeyR\fkeyReference\"e\n" +
+	"\x0eGitProxyConfig\x12\x1e\n" +
+	"\aenabled\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\aenabled\x123\n" +
+	"\x13http_proxy_base_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x10httpProxyBaseUri\"\xa6\x02\n" +
+	"\x11InstallationState\x12U\n" +
+	"\x05stage\x18\x01 \x01(\x0e29.google.cloud.developerconnect.v1.InstallationState.StageB\x04\xe2A\x01\x03R\x05stage\x12\x1e\n" +
+	"\amessage\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\amessage\x12#\n" +
 	"\n" +
-	"action_uri\x18\x03 \x01(\tB\x03\xe0A\x03R\tactionUri\"u\n" +
+	"action_uri\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\tactionUri\"u\n" +
 	"\x05Stage\x12\x15\n" +
 	"\x11STAGE_UNSPECIFIED\x10\x00\x12\x16\n" +
 	"\x12PENDING_CREATE_APP\x10\x01\x12\x16\n" +
 	"\x12PENDING_USER_OAUTH\x10\x02\x12\x17\n" +
 	"\x13PENDING_INSTALL_APP\x10\x03\x12\f\n" +
 	"\bCOMPLETE\x10\n" +
-	"\"\xe6\x06\n" +
-	"\x19GenericHTTPEndpointConfig\x12\x89\x01\n" +
-	"\x14basic_authentication\x18\x01 \x01(\v2O.google.cloud.developerconnect.v1.GenericHTTPEndpointConfig.BasicAuthenticationB\x03\xe0A\x01H\x00R\x13basicAuthentication\x12\x9c\x01\n" +
-	"\x1bbearer_token_authentication\x18\x02 \x01(\v2U.google.cloud.developerconnect.v1.GenericHTTPEndpointConfig.BearerTokenAuthenticationB\x03\xe0A\x01H\x00R\x19bearerTokenAuthentication\x12!\n" +
-	"\bhost_uri\x18\x03 \x01(\tB\x06\xe0A\x02\xe0A\x05R\ahostUri\x12w\n" +
-	"\x18service_directory_config\x18\x04 \x01(\v28.google.cloud.developerconnect.v1.ServiceDirectoryConfigB\x03\xe0A\x01R\x16serviceDirectoryConfig\x121\n" +
-	"\x12ssl_ca_certificate\x18\x05 \x01(\tB\x03\xe0A\x01R\x10sslCaCertificate\x1a\xad\x01\n" +
+	"\"\xeb\x06\n" +
+	"\x19GenericHTTPEndpointConfig\x12\x8a\x01\n" +
+	"\x14basic_authentication\x18\x01 \x01(\v2O.google.cloud.developerconnect.v1.GenericHTTPEndpointConfig.BasicAuthenticationB\x04\xe2A\x01\x01H\x00R\x13basicAuthentication\x12\x9d\x01\n" +
+	"\x1bbearer_token_authentication\x18\x02 \x01(\v2U.google.cloud.developerconnect.v1.GenericHTTPEndpointConfig.BearerTokenAuthenticationB\x04\xe2A\x01\x01H\x00R\x19bearerTokenAuthentication\x12 \n" +
+	"\bhost_uri\x18\x03 \x01(\tB\x05\xe2A\x02\x02\x05R\ahostUri\x12x\n" +
+	"\x18service_directory_config\x18\x04 \x01(\v28.google.cloud.developerconnect.v1.ServiceDirectoryConfigB\x04\xe2A\x01\x01R\x16serviceDirectoryConfig\x122\n" +
+	"\x12ssl_ca_certificate\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x10sslCaCertificate\x1a\xae\x01\n" +
 	"\x13BasicAuthentication\x12i\n" +
 	"\x17password_secret_version\x18\x02 \x01(\tB/\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionH\x00R\x15passwordSecretVersion\x12\x1f\n" +
-	"\busername\x18\x01 \x01(\tB\x03\xe0A\x02R\busernameB\n" +
+	"*secretmanager.googleapis.com/SecretVersionH\x00R\x15passwordSecretVersion\x12 \n" +
+	"\busername\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\busernameB\n" +
 	"\n" +
-	"\bpassword\x1a\x8c\x01\n" +
-	"\x19BearerTokenAuthentication\x12f\n" +
-	"\x14token_secret_version\x18\x01 \x01(\tB2\xe0A\x01\xfaA,\n" +
+	"\bpassword\x1a\x8d\x01\n" +
+	"\x19BearerTokenAuthentication\x12g\n" +
+	"\x14token_secret_version\x18\x01 \x01(\tB3\xe2A\x01\x01\xfaA,\n" +
 	"*secretmanager.googleapis.com/SecretVersionH\x00R\x12tokenSecretVersionB\a\n" +
 	"\x05tokenB\x10\n" +
-	"\x0eauthentication\"\xa8\x03\n" +
-	"\fGitHubConfig\x12_\n" +
+	"\x0eauthentication\"\xaa\x03\n" +
+	"\fGitHubConfig\x12^\n" +
 	"\n" +
-	"github_app\x18\x01 \x01(\x0e28.google.cloud.developerconnect.v1.GitHubConfig.GitHubAppB\x06\xe0A\x02\xe0A\x05R\tgithubApp\x12k\n" +
-	"\x15authorizer_credential\x18\x02 \x01(\v21.google.cloud.developerconnect.v1.OAuthCredentialB\x03\xe0A\x01R\x14authorizerCredential\x123\n" +
-	"\x13app_installation_id\x18\x03 \x01(\x03B\x03\xe0A\x01R\x11appInstallationId\x12.\n" +
-	"\x10installation_uri\x18\x04 \x01(\tB\x03\xe0A\x03R\x0finstallationUri\"e\n" +
+	"github_app\x18\x01 \x01(\x0e28.google.cloud.developerconnect.v1.GitHubConfig.GitHubAppB\x05\xe2A\x02\x02\x05R\tgithubApp\x12l\n" +
+	"\x15authorizer_credential\x18\x02 \x01(\v21.google.cloud.developerconnect.v1.OAuthCredentialB\x04\xe2A\x01\x01R\x14authorizerCredential\x124\n" +
+	"\x13app_installation_id\x18\x03 \x01(\x03B\x04\xe2A\x01\x01R\x11appInstallationId\x12/\n" +
+	"\x10installation_uri\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x0finstallationUri\"e\n" +
 	"\tGitHubApp\x12\x1b\n" +
 	"\x17GIT_HUB_APP_UNSPECIFIED\x10\x00\x12\x15\n" +
 	"\x11DEVELOPER_CONNECT\x10\x01\x12\f\n" +
 	"\bFIREBASE\x10\x02\x12\x16\n" +
-	"\x12GEMINI_CODE_ASSIST\x10\x03\"\xc5\x05\n" +
-	"\x16GitHubEnterpriseConfig\x12\x1e\n" +
-	"\bhost_uri\x18\x01 \x01(\tB\x03\xe0A\x02R\ahostUri\x12\x1a\n" +
-	"\x06app_id\x18\x02 \x01(\x03B\x03\xe0A\x01R\x05appId\x12\x1e\n" +
-	"\bapp_slug\x18\x03 \x01(\tB\x03\xe0A\x03R\aappSlug\x12o\n" +
-	"\x1aprivate_key_secret_version\x18\x04 \x01(\tB2\xe0A\x01\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionR\x17privateKeySecretVersion\x12u\n" +
-	"\x1dwebhook_secret_secret_version\x18\x05 \x01(\tB2\xe0A\x01\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionR\x1awebhookSecretSecretVersion\x123\n" +
-	"\x13app_installation_id\x18\b \x01(\x03B\x03\xe0A\x01R\x11appInstallationId\x12.\n" +
-	"\x10installation_uri\x18\t \x01(\tB\x03\xe0A\x03R\x0finstallationUri\x12w\n" +
+	"\x12GEMINI_CODE_ASSIST\x10\x03\"\xce\x05\n" +
+	"\x16GitHubEnterpriseConfig\x12\x1f\n" +
+	"\bhost_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\ahostUri\x12\x1b\n" +
+	"\x06app_id\x18\x02 \x01(\x03B\x04\xe2A\x01\x01R\x05appId\x12\x1f\n" +
+	"\bapp_slug\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\aappSlug\x12p\n" +
+	"\x1aprivate_key_secret_version\x18\x04 \x01(\tB3\xe2A\x01\x01\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionR\x17privateKeySecretVersion\x12v\n" +
+	"\x1dwebhook_secret_secret_version\x18\x05 \x01(\tB3\xe2A\x01\x01\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionR\x1awebhookSecretSecretVersion\x124\n" +
+	"\x13app_installation_id\x18\b \x01(\x03B\x04\xe2A\x01\x01R\x11appInstallationId\x12/\n" +
+	"\x10installation_uri\x18\t \x01(\tB\x04\xe2A\x01\x03R\x0finstallationUri\x12x\n" +
 	"\x18service_directory_config\x18\n" +
-	" \x01(\v28.google.cloud.developerconnect.v1.ServiceDirectoryConfigB\x03\xe0A\x01R\x16serviceDirectoryConfig\x12*\n" +
-	"\x0eserver_version\x18\f \x01(\tB\x03\xe0A\x03R\rserverVersion\x121\n" +
-	"\x12ssl_ca_certificate\x18\x0e \x01(\tB\x03\xe0A\x01R\x10sslCaCertificate\x12*\n" +
-	"\forganization\x18\x0f \x01(\tB\x06\xe0A\x01\xe0A\x05R\forganization\"c\n" +
-	"\x16ServiceDirectoryConfig\x12I\n" +
-	"\aservice\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'servicedirectory.googleapis.com/ServiceR\aservice\"\xa3\x01\n" +
-	"\x0fOAuthCredential\x12o\n" +
-	"\x1aoauth_token_secret_version\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionR\x17oauthTokenSecretVersion\x12\x1f\n" +
-	"\busername\x18\x02 \x01(\tB\x03\xe0A\x03R\busername\"\xe9\x02\n" +
-	"\fGitLabConfig\x12x\n" +
-	"\x1dwebhook_secret_secret_version\x18\x01 \x01(\tB5\xe0A\x02\xe0A\x05\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionR\x1awebhookSecretSecretVersion\x12s\n" +
-	"\x1aread_authorizer_credential\x18\x02 \x01(\v20.google.cloud.developerconnect.v1.UserCredentialB\x03\xe0A\x02R\x18readAuthorizerCredential\x12j\n" +
-	"\x15authorizer_credential\x18\x03 \x01(\v20.google.cloud.developerconnect.v1.UserCredentialB\x03\xe0A\x02R\x14authorizerCredential\"\xa0\x01\n" +
-	"\x0eUserCredential\x12m\n" +
-	"\x19user_token_secret_version\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionR\x16userTokenSecretVersion\x12\x1f\n" +
-	"\busername\x18\x02 \x01(\tB\x03\xe0A\x03R\busername\"\xeb\x04\n" +
-	"\x16GitLabEnterpriseConfig\x12\x1e\n" +
-	"\bhost_uri\x18\x01 \x01(\tB\x03\xe0A\x02R\ahostUri\x12x\n" +
-	"\x1dwebhook_secret_secret_version\x18\x02 \x01(\tB5\xe0A\x02\xe0A\x05\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionR\x1awebhookSecretSecretVersion\x12s\n" +
-	"\x1aread_authorizer_credential\x18\x03 \x01(\v20.google.cloud.developerconnect.v1.UserCredentialB\x03\xe0A\x02R\x18readAuthorizerCredential\x12j\n" +
-	"\x15authorizer_credential\x18\x04 \x01(\v20.google.cloud.developerconnect.v1.UserCredentialB\x03\xe0A\x02R\x14authorizerCredential\x12w\n" +
-	"\x18service_directory_config\x18\x05 \x01(\v28.google.cloud.developerconnect.v1.ServiceDirectoryConfigB\x03\xe0A\x01R\x16serviceDirectoryConfig\x121\n" +
-	"\x12ssl_ca_certificate\x18\x06 \x01(\tB\x03\xe0A\x01R\x10sslCaCertificate\x12*\n" +
-	"\x0eserver_version\x18\a \x01(\tB\x03\xe0A\x03R\rserverVersion\"\xee\x04\n" +
-	"\x19BitbucketDataCenterConfig\x12\x1e\n" +
-	"\bhost_uri\x18\x01 \x01(\tB\x03\xe0A\x02R\ahostUri\x12x\n" +
-	"\x1dwebhook_secret_secret_version\x18\x02 \x01(\tB5\xe0A\x02\xe0A\x05\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionR\x1awebhookSecretSecretVersion\x12s\n" +
-	"\x1aread_authorizer_credential\x18\x03 \x01(\v20.google.cloud.developerconnect.v1.UserCredentialB\x03\xe0A\x02R\x18readAuthorizerCredential\x12j\n" +
-	"\x15authorizer_credential\x18\x04 \x01(\v20.google.cloud.developerconnect.v1.UserCredentialB\x03\xe0A\x02R\x14authorizerCredential\x12w\n" +
-	"\x18service_directory_config\x18\x05 \x01(\v28.google.cloud.developerconnect.v1.ServiceDirectoryConfigB\x03\xe0A\x01R\x16serviceDirectoryConfig\x121\n" +
-	"\x12ssl_ca_certificate\x18\x06 \x01(\tB\x03\xe0A\x01R\x10sslCaCertificate\x12*\n" +
-	"\x0eserver_version\x18\a \x01(\tB\x03\xe0A\x03R\rserverVersion\"\x94\x03\n" +
-	"\x14BitbucketCloudConfig\x12!\n" +
-	"\tworkspace\x18\x01 \x01(\tB\x03\xe0A\x02R\tworkspace\x12x\n" +
-	"\x1dwebhook_secret_secret_version\x18\x02 \x01(\tB5\xe0A\x02\xe0A\x05\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionR\x1awebhookSecretSecretVersion\x12s\n" +
-	"\x1aread_authorizer_credential\x18\x03 \x01(\v20.google.cloud.developerconnect.v1.UserCredentialB\x03\xe0A\x02R\x18readAuthorizerCredential\x12j\n" +
-	"\x15authorizer_credential\x18\x04 \x01(\v20.google.cloud.developerconnect.v1.UserCredentialB\x03\xe0A\x02R\x14authorizerCredential\"w\n" +
-	"!SecureSourceManagerInstanceConfig\x12R\n" +
-	"\binstance\x18\x01 \x01(\tB6\xe0A\x02\xe0A\x05\xfaA-\n" +
-	"+securesourcemanager.googleapis.com/InstanceR\binstance\"\xe7\x01\n" +
-	"\x16ListConnectionsRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*developerconnect.googleapis.com/ConnectionR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	" \x01(\v28.google.cloud.developerconnect.v1.ServiceDirectoryConfigB\x04\xe2A\x01\x01R\x16serviceDirectoryConfig\x12+\n" +
+	"\x0eserver_version\x18\f \x01(\tB\x04\xe2A\x01\x03R\rserverVersion\x122\n" +
+	"\x12ssl_ca_certificate\x18\x0e \x01(\tB\x04\xe2A\x01\x01R\x10sslCaCertificate\x12)\n" +
+	"\forganization\x18\x0f \x01(\tB\x05\xe2A\x02\x01\x05R\forganization\"d\n" +
+	"\x16ServiceDirectoryConfig\x12J\n" +
+	"\aservice\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'servicedirectory.googleapis.com/ServiceR\aservice\"\xa5\x01\n" +
+	"\x0fOAuthCredential\x12p\n" +
+	"\x1aoauth_token_secret_version\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionR\x17oauthTokenSecretVersion\x12 \n" +
+	"\busername\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\busername\"\xea\x02\n" +
+	"\fGitLabConfig\x12w\n" +
+	"\x1dwebhook_secret_secret_version\x18\x01 \x01(\tB4\xe2A\x02\x02\x05\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionR\x1awebhookSecretSecretVersion\x12t\n" +
+	"\x1aread_authorizer_credential\x18\x02 \x01(\v20.google.cloud.developerconnect.v1.UserCredentialB\x04\xe2A\x01\x02R\x18readAuthorizerCredential\x12k\n" +
+	"\x15authorizer_credential\x18\x03 \x01(\v20.google.cloud.developerconnect.v1.UserCredentialB\x04\xe2A\x01\x02R\x14authorizerCredential\"\xa2\x01\n" +
+	"\x0eUserCredential\x12n\n" +
+	"\x19user_token_secret_version\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionR\x16userTokenSecretVersion\x12 \n" +
+	"\busername\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\busername\"\xf0\x04\n" +
+	"\x16GitLabEnterpriseConfig\x12\x1f\n" +
+	"\bhost_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\ahostUri\x12w\n" +
+	"\x1dwebhook_secret_secret_version\x18\x02 \x01(\tB4\xe2A\x02\x02\x05\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionR\x1awebhookSecretSecretVersion\x12t\n" +
+	"\x1aread_authorizer_credential\x18\x03 \x01(\v20.google.cloud.developerconnect.v1.UserCredentialB\x04\xe2A\x01\x02R\x18readAuthorizerCredential\x12k\n" +
+	"\x15authorizer_credential\x18\x04 \x01(\v20.google.cloud.developerconnect.v1.UserCredentialB\x04\xe2A\x01\x02R\x14authorizerCredential\x12x\n" +
+	"\x18service_directory_config\x18\x05 \x01(\v28.google.cloud.developerconnect.v1.ServiceDirectoryConfigB\x04\xe2A\x01\x01R\x16serviceDirectoryConfig\x122\n" +
+	"\x12ssl_ca_certificate\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x10sslCaCertificate\x12+\n" +
+	"\x0eserver_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\rserverVersion\"\xf3\x04\n" +
+	"\x19BitbucketDataCenterConfig\x12\x1f\n" +
+	"\bhost_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\ahostUri\x12w\n" +
+	"\x1dwebhook_secret_secret_version\x18\x02 \x01(\tB4\xe2A\x02\x02\x05\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionR\x1awebhookSecretSecretVersion\x12t\n" +
+	"\x1aread_authorizer_credential\x18\x03 \x01(\v20.google.cloud.developerconnect.v1.UserCredentialB\x04\xe2A\x01\x02R\x18readAuthorizerCredential\x12k\n" +
+	"\x15authorizer_credential\x18\x04 \x01(\v20.google.cloud.developerconnect.v1.UserCredentialB\x04\xe2A\x01\x02R\x14authorizerCredential\x12x\n" +
+	"\x18service_directory_config\x18\x05 \x01(\v28.google.cloud.developerconnect.v1.ServiceDirectoryConfigB\x04\xe2A\x01\x01R\x16serviceDirectoryConfig\x122\n" +
+	"\x12ssl_ca_certificate\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x10sslCaCertificate\x12+\n" +
+	"\x0eserver_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\rserverVersion\"\x96\x03\n" +
+	"\x14BitbucketCloudConfig\x12\"\n" +
+	"\tworkspace\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tworkspace\x12w\n" +
+	"\x1dwebhook_secret_secret_version\x18\x02 \x01(\tB4\xe2A\x02\x02\x05\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionR\x1awebhookSecretSecretVersion\x12t\n" +
+	"\x1aread_authorizer_credential\x18\x03 \x01(\v20.google.cloud.developerconnect.v1.UserCredentialB\x04\xe2A\x01\x02R\x18readAuthorizerCredential\x12k\n" +
+	"\x15authorizer_credential\x18\x04 \x01(\v20.google.cloud.developerconnect.v1.UserCredentialB\x04\xe2A\x01\x02R\x14authorizerCredential\"v\n" +
+	"!SecureSourceManagerInstanceConfig\x12Q\n" +
+	"\binstance\x18\x01 \x01(\tB5\xe2A\x02\x02\x05\xfaA-\n" +
+	"+securesourcemanager.googleapis.com/InstanceR\binstance\"\xec\x01\n" +
+	"\x16ListConnectionsRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*developerconnect.googleapis.com/ConnectionR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xb3\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xb3\x01\n" +
 	"\x17ListConnectionsResponse\x12N\n" +
 	"\vconnections\x18\x01 \x03(\v2,.google.cloud.developerconnect.v1.ConnectionR\vconnections\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"^\n" +
-	"\x14GetConnectionRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*developerconnect.googleapis.com/ConnectionR\x04name\"\xb8\x02\n" +
-	"\x17CreateConnectionRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*developerconnect.googleapis.com/ConnectionR\x06parent\x12(\n" +
-	"\rconnection_id\x18\x02 \x01(\tB\x03\xe0A\x02R\fconnectionId\x12Q\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"_\n" +
+	"\x14GetConnectionRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*developerconnect.googleapis.com/ConnectionR\x04name\"\xbd\x02\n" +
+	"\x17CreateConnectionRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*developerconnect.googleapis.com/ConnectionR\x06parent\x12)\n" +
+	"\rconnection_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\fconnectionId\x12R\n" +
 	"\n" +
-	"connection\x18\x03 \x01(\v2,.google.cloud.developerconnect.v1.ConnectionB\x03\xe0A\x02R\n" +
-	"connection\x12*\n" +
+	"connection\x18\x03 \x01(\v2,.google.cloud.developerconnect.v1.ConnectionB\x04\xe2A\x01\x02R\n" +
+	"connection\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12(\n" +
-	"\rvalidate_only\x18\x05 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xae\x02\n" +
-	"\x17UpdateConnectionRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12Q\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12)\n" +
+	"\rvalidate_only\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xb3\x02\n" +
+	"\x17UpdateConnectionRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12R\n" +
 	"\n" +
-	"connection\x18\x02 \x01(\v2,.google.cloud.developerconnect.v1.ConnectionB\x03\xe0A\x02R\n" +
-	"connection\x12*\n" +
+	"connection\x18\x02 \x01(\v2,.google.cloud.developerconnect.v1.ConnectionB\x04\xe2A\x01\x02R\n" +
+	"connection\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12(\n" +
-	"\rallow_missing\x18\x04 \x01(\bB\x03\xe0A\x01R\fallowMissing\x12(\n" +
-	"\rvalidate_only\x18\x05 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xd0\x01\n" +
-	"\x17DeleteConnectionRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*developerconnect.googleapis.com/ConnectionR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12)\n" +
+	"\rallow_missing\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fallowMissing\x12)\n" +
+	"\rvalidate_only\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xd4\x01\n" +
+	"\x17DeleteConnectionRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*developerconnect.googleapis.com/ConnectionR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12\x17\n" +
-	"\x04etag\x18\x04 \x01(\tB\x03\xe0A\x01R\x04etag\"\xf3\x01\n" +
-	"\x1cListAccountConnectorsRequest\x12P\n" +
-	"\x06parent\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\x120developerconnect.googleapis.com/AccountConnectorR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12\x18\n" +
+	"\x04etag\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"\xf8\x01\n" +
+	"\x1cListAccountConnectorsRequest\x12Q\n" +
+	"\x06parent\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\x120developerconnect.googleapis.com/AccountConnectorR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xcc\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xcc\x01\n" +
 	"\x1dListAccountConnectorsResponse\x12a\n" +
 	"\x12account_connectors\x18\x01 \x03(\v22.google.cloud.developerconnect.v1.AccountConnectorR\x11accountConnectors\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"j\n" +
-	"\x1aGetAccountConnectorRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0developerconnect.googleapis.com/AccountConnectorR\x04name\"\xe4\x02\n" +
-	"\x1dCreateAccountConnectorRequest\x12P\n" +
-	"\x06parent\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\x120developerconnect.googleapis.com/AccountConnectorR\x06parent\x125\n" +
-	"\x14account_connector_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x12accountConnectorId\x12d\n" +
-	"\x11account_connector\x18\x03 \x01(\v22.google.cloud.developerconnect.v1.AccountConnectorB\x03\xe0A\x02R\x10accountConnector\x12*\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"k\n" +
+	"\x1aGetAccountConnectorRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0developerconnect.googleapis.com/AccountConnectorR\x04name\"\xe9\x02\n" +
+	"\x1dCreateAccountConnectorRequest\x12Q\n" +
+	"\x06parent\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\x120developerconnect.googleapis.com/AccountConnectorR\x06parent\x126\n" +
+	"\x14account_connector_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x12accountConnectorId\x12e\n" +
+	"\x11account_connector\x18\x03 \x01(\v22.google.cloud.developerconnect.v1.AccountConnectorB\x04\xe2A\x01\x02R\x10accountConnector\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12(\n" +
-	"\rvalidate_only\x18\x05 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xc7\x02\n" +
-	"\x1dUpdateAccountConnectorRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12d\n" +
-	"\x11account_connector\x18\x02 \x01(\v22.google.cloud.developerconnect.v1.AccountConnectorB\x03\xe0A\x02R\x10accountConnector\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12)\n" +
+	"\rvalidate_only\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xcc\x02\n" +
+	"\x1dUpdateAccountConnectorRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12e\n" +
+	"\x11account_connector\x18\x02 \x01(\v22.google.cloud.developerconnect.v1.AccountConnectorB\x04\xe2A\x01\x02R\x10accountConnector\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12(\n" +
-	"\rallow_missing\x18\x04 \x01(\bB\x03\xe0A\x01R\fallowMissing\x12(\n" +
-	"\rvalidate_only\x18\x05 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xf7\x01\n" +
-	"\x1dDeleteAccountConnectorRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0developerconnect.googleapis.com/AccountConnectorR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12)\n" +
+	"\rallow_missing\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fallowMissing\x12)\n" +
+	"\rvalidate_only\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xfc\x01\n" +
+	"\x1dDeleteAccountConnectorRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0developerconnect.googleapis.com/AccountConnectorR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12\x17\n" +
-	"\x04etag\x18\x04 \x01(\tB\x03\xe0A\x01R\x04etag\x12\x19\n" +
-	"\x05force\x18\x05 \x01(\bB\x03\xe0A\x01R\x05force\"\xc4\x01\n" +
-	"\x11DeleteUserRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$developerconnect.googleapis.com/UserR\x04name\x12*\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12\x18\n" +
+	"\x04etag\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12\x1a\n" +
+	"\x05force\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\x05force\"\xc8\x01\n" +
+	"\x11DeleteUserRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$developerconnect.googleapis.com/UserR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12\x17\n" +
-	"\x04etag\x18\x04 \x01(\tB\x03\xe0A\x01R\x04etag\"\xd5\x02\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion\"`\n" +
-	"\x10FetchSelfRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0developerconnect.googleapis.com/AccountConnectorR\x04name\"a\n" +
-	"\x11DeleteSelfRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0developerconnect.googleapis.com/AccountConnectorR\x04name\"\x80\x01\n" +
-	"\x17FetchAccessTokenRequest\x12e\n" +
-	"\x11account_connector\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12\x18\n" +
+	"\x04etag\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"\xdc\x02\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"apiVersion\"a\n" +
+	"\x10FetchSelfRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0developerconnect.googleapis.com/AccountConnectorR\x04name\"b\n" +
+	"\x11DeleteSelfRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0developerconnect.googleapis.com/AccountConnectorR\x04name\"\x81\x01\n" +
+	"\x17FetchAccessTokenRequest\x12f\n" +
+	"\x11account_connector\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
 	"0developerconnect.googleapis.com/AccountConnectorR\x10accountConnector\"\xe5\x01\n" +
 	"\x18FetchAccessTokenResponse\x12\x14\n" +
 	"\x05token\x18\x01 \x01(\tR\x05token\x12C\n" +
 	"\x0fexpiration_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x0eexpirationTime\x12\x16\n" +
 	"\x06scopes\x18\x03 \x03(\tR\x06scopes\x12V\n" +
-	"\x0eexchange_error\x18\x04 \x01(\v2/.google.cloud.developerconnect.v1.ExchangeErrorR\rexchangeError\"z\n" +
-	"\x11StartOAuthRequest\x12e\n" +
-	"\x11account_connector\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
+	"\x0eexchange_error\x18\x04 \x01(\v2/.google.cloud.developerconnect.v1.ExchangeErrorR\rexchangeError\"{\n" +
+	"\x11StartOAuthRequest\x12f\n" +
+	"\x11account_connector\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
 	"0developerconnect.googleapis.com/AccountConnectorR\x10accountConnector\"\xbf\x02\n" +
 	"\x12StartOAuthResponse\x12`\n" +
 	"\x12system_provider_id\x18\a \x01(\x0e20.google.cloud.developerconnect.v1.SystemProviderH\x00R\x10systemProviderId\x12\x16\n" +
@@ -5680,83 +5680,83 @@ const file_google_cloud_developerconnect_v1_developer_connect_proto_rawDesc = ""
 	"\tclient_id\x18\x04 \x01(\tR\bclientId\x12\x16\n" +
 	"\x06scopes\x18\x05 \x03(\tR\x06scopes\x12\x19\n" +
 	"\bauth_uri\x18\x06 \x01(\tR\aauthUriB\x04\n" +
-	"\x02id\"\xa2\x04\n" +
+	"\x02id\"\xa8\x04\n" +
 	"\x12FinishOAuthRequest\x12e\n" +
 	"\foauth_params\x18\x02 \x01(\v2@.google.cloud.developerconnect.v1.FinishOAuthRequest.OAuthParamsH\x00R\voauthParams\x12x\n" +
-	"\x13google_oauth_params\x18\x03 \x01(\v2F.google.cloud.developerconnect.v1.FinishOAuthRequest.GoogleOAuthParamsH\x00R\x11googleOauthParams\x12e\n" +
-	"\x11account_connector\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0developerconnect.googleapis.com/AccountConnectorR\x10accountConnector\x1aC\n" +
-	"\vOAuthParams\x12\x17\n" +
-	"\x04code\x18\x01 \x01(\tB\x03\xe0A\x02R\x04code\x12\x1b\n" +
-	"\x06ticket\x18\x02 \x01(\tB\x03\xe0A\x02R\x06ticket\x1au\n" +
-	"\x11GoogleOAuthParams\x12\x1b\n" +
-	"\x06scopes\x18\x01 \x03(\tB\x03\xe0A\x02R\x06scopes\x12&\n" +
-	"\fversion_info\x18\x02 \x01(\tB\x03\xe0A\x01R\vversionInfo\x12\x1b\n" +
-	"\x06ticket\x18\x03 \x01(\tB\x03\xe0A\x02R\x06ticketB\b\n" +
+	"\x13google_oauth_params\x18\x03 \x01(\v2F.google.cloud.developerconnect.v1.FinishOAuthRequest.GoogleOAuthParamsH\x00R\x11googleOauthParams\x12f\n" +
+	"\x11account_connector\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0developerconnect.googleapis.com/AccountConnectorR\x10accountConnector\x1aE\n" +
+	"\vOAuthParams\x12\x18\n" +
+	"\x04code\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04code\x12\x1c\n" +
+	"\x06ticket\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06ticket\x1ax\n" +
+	"\x11GoogleOAuthParams\x12\x1c\n" +
+	"\x06scopes\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\x06scopes\x12'\n" +
+	"\fversion_info\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vversionInfo\x12\x1c\n" +
+	"\x06ticket\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x06ticketB\b\n" +
 	"\x06params\"m\n" +
 	"\x13FinishOAuthResponse\x12V\n" +
 	"\x0eexchange_error\x18\x01 \x01(\v2/.google.cloud.developerconnect.v1.ExchangeErrorR\rexchangeError\"E\n" +
 	"\rExchangeError\x12\x12\n" +
 	"\x04code\x18\x01 \x01(\tR\x04code\x12 \n" +
-	"\vdescription\x18\x02 \x01(\tR\vdescription\"\xd5\a\n" +
-	"\x11GitRepositoryLink\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12 \n" +
-	"\tclone_uri\x18\x02 \x01(\tB\x03\xe0A\x02R\bcloneUri\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12@\n" +
-	"\vdelete_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"deleteTime\x12\\\n" +
-	"\x06labels\x18\x06 \x03(\v2?.google.cloud.developerconnect.v1.GitRepositoryLink.LabelsEntryB\x03\xe0A\x01R\x06labels\x12\x17\n" +
-	"\x04etag\x18\a \x01(\tB\x03\xe0A\x01R\x04etag\x12%\n" +
-	"\vreconciling\x18\b \x01(\bB\x03\xe0A\x03R\vreconciling\x12k\n" +
-	"\vannotations\x18\t \x03(\v2D.google.cloud.developerconnect.v1.GitRepositoryLink.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12\x1d\n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\"\xe1\a\n" +
+	"\x11GitRepositoryLink\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12!\n" +
+	"\tclone_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\bcloneUri\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12A\n" +
+	"\vdelete_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"deleteTime\x12]\n" +
+	"\x06labels\x18\x06 \x03(\v2?.google.cloud.developerconnect.v1.GitRepositoryLink.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12\x18\n" +
+	"\x04etag\x18\a \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12&\n" +
+	"\vreconciling\x18\b \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12l\n" +
+	"\vannotations\x18\t \x03(\v2D.google.cloud.developerconnect.v1.GitRepositoryLink.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12\x1e\n" +
 	"\x03uid\x18\n" +
-	" \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12\"\n" +
+	" \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12#\n" +
 	"\n" +
-	"webhook_id\x18\v \x01(\tB\x03\xe0A\x03R\twebhookId\x12'\n" +
-	"\rgit_proxy_uri\x18\f \x01(\tB\x03\xe0A\x03R\vgitProxyUri\x1a9\n" +
+	"webhook_id\x18\v \x01(\tB\x04\xe2A\x01\x03R\twebhookId\x12(\n" +
+	"\rgit_proxy_uri\x18\f \x01(\tB\x04\xe2A\x01\x03R\vgitProxyUri\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a>\n" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\xcc\x01\xeaA\xc8\x01\n" +
-	"1developerconnect.googleapis.com/GitRepositoryLink\x12iprojects/{project}/locations/{location}/connections/{connection}/gitRepositoryLinks/{git_repository_link}*\x12gitRepositoryLinks2\x11gitRepositoryLinkR\x01\x01\"\xed\x02\n" +
-	"\x1eCreateGitRepositoryLinkRequest\x12Q\n" +
-	"\x06parent\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\x121developerconnect.googleapis.com/GitRepositoryLinkR\x06parent\x12h\n" +
-	"\x13git_repository_link\x18\x02 \x01(\v23.google.cloud.developerconnect.v1.GitRepositoryLinkB\x03\xe0A\x02R\x11gitRepositoryLink\x128\n" +
-	"\x16git_repository_link_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x13gitRepositoryLinkId\x12*\n" +
+	"1developerconnect.googleapis.com/GitRepositoryLink\x12iprojects/{project}/locations/{location}/connections/{connection}/gitRepositoryLinks/{git_repository_link}*\x12gitRepositoryLinks2\x11gitRepositoryLinkR\x01\x01\"\xf2\x02\n" +
+	"\x1eCreateGitRepositoryLinkRequest\x12R\n" +
+	"\x06parent\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\x121developerconnect.googleapis.com/GitRepositoryLinkR\x06parent\x12i\n" +
+	"\x13git_repository_link\x18\x02 \x01(\v23.google.cloud.developerconnect.v1.GitRepositoryLinkB\x04\xe2A\x01\x02R\x11gitRepositoryLink\x129\n" +
+	"\x16git_repository_link_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x13gitRepositoryLinkId\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12(\n" +
-	"\rvalidate_only\x18\x05 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xde\x01\n" +
-	"\x1eDeleteGitRepositoryLinkRequest\x12M\n" +
-	"\x04name\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
-	"1developerconnect.googleapis.com/GitRepositoryLinkR\x04name\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12)\n" +
+	"\rvalidate_only\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xe2\x01\n" +
+	"\x1eDeleteGitRepositoryLinkRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1developerconnect.googleapis.com/GitRepositoryLinkR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12\x17\n" +
-	"\x04etag\x18\x04 \x01(\tB\x03\xe0A\x01R\x04etag\"\xf5\x01\n" +
-	"\x1dListGitRepositoryLinksRequest\x12Q\n" +
-	"\x06parent\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\x121developerconnect.googleapis.com/GitRepositoryLinkR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12\x18\n" +
+	"\x04etag\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"\xfa\x01\n" +
+	"\x1dListGitRepositoryLinksRequest\x12R\n" +
+	"\x06parent\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\x121developerconnect.googleapis.com/GitRepositoryLinkR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xd1\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xd1\x01\n" +
 	"\x1eListGitRepositoryLinksResponse\x12e\n" +
 	"\x14git_repository_links\x18\x01 \x03(\v23.google.cloud.developerconnect.v1.GitRepositoryLinkR\x12gitRepositoryLinks\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"l\n" +
-	"\x1bGetGitRepositoryLinkRequest\x12M\n" +
-	"\x04name\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
-	"1developerconnect.googleapis.com/GitRepositoryLinkR\x04name\"\x87\x01\n" +
-	"\x1aFetchReadWriteTokenRequest\x12i\n" +
-	"\x13git_repository_link\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
-	"1developerconnect.googleapis.com/GitRepositoryLinkR\x11gitRepositoryLink\"\x82\x01\n" +
-	"\x15FetchReadTokenRequest\x12i\n" +
-	"\x13git_repository_link\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"m\n" +
+	"\x1bGetGitRepositoryLinkRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1developerconnect.googleapis.com/GitRepositoryLinkR\x04name\"\x88\x01\n" +
+	"\x1aFetchReadWriteTokenRequest\x12j\n" +
+	"\x13git_repository_link\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1developerconnect.googleapis.com/GitRepositoryLinkR\x11gitRepositoryLink\"\x83\x01\n" +
+	"\x15FetchReadTokenRequest\x12j\n" +
+	"\x13git_repository_link\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
 	"1developerconnect.googleapis.com/GitRepositoryLinkR\x11gitRepositoryLink\"\x96\x01\n" +
 	"\x16FetchReadTokenResponse\x12\x14\n" +
 	"\x05token\x18\x01 \x01(\tR\x05token\x12C\n" +
@@ -5765,23 +5765,23 @@ const file_google_cloud_developerconnect_v1_developer_connect_proto_rawDesc = ""
 	"\x1bFetchReadWriteTokenResponse\x12\x14\n" +
 	"\x05token\x18\x01 \x01(\tR\x05token\x12C\n" +
 	"\x0fexpiration_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x0eexpirationTime\x12!\n" +
-	"\fgit_username\x18\x03 \x01(\tR\vgitUsername\"\xbf\x01\n" +
-	"#FetchLinkableGitRepositoriesRequest\x12R\n" +
+	"\fgit_username\x18\x03 \x01(\tR\vgitUsername\"\xc2\x01\n" +
+	"#FetchLinkableGitRepositoriesRequest\x12S\n" +
 	"\n" +
-	"connection\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
+	"connection\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
 	"*developerconnect.googleapis.com/ConnectionR\n" +
-	"connection\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"connection\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xc3\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xc3\x01\n" +
 	"$FetchLinkableGitRepositoriesResponse\x12s\n" +
 	"\x19linkable_git_repositories\x18\x01 \x03(\v27.google.cloud.developerconnect.v1.LinkableGitRepositoryR\x17linkableGitRepositories\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"4\n" +
 	"\x15LinkableGitRepository\x12\x1b\n" +
-	"\tclone_uri\x18\x01 \x01(\tR\bcloneUri\"u\n" +
-	"\x1fFetchGitHubInstallationsRequest\x12R\n" +
+	"\tclone_uri\x18\x01 \x01(\tR\bcloneUri\"v\n" +
+	"\x1fFetchGitHubInstallationsRequest\x12S\n" +
 	"\n" +
-	"connection\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
+	"connection\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
 	"*developerconnect.googleapis.com/ConnectionR\n" +
 	"connection\"\xe1\x01\n" +
 	" FetchGitHubInstallationsResponse\x12u\n" +
@@ -5789,14 +5789,14 @@ const file_google_cloud_developerconnect_v1_developer_connect_proto_rawDesc = ""
 	"\fInstallation\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x12\n" +
-	"\x04type\x18\x03 \x01(\tR\x04type\"\xdf\x02\n" +
-	"\x13FetchGitRefsRequest\x12i\n" +
-	"\x13git_repository_link\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
-	"1developerconnect.googleapis.com/GitRepositoryLinkR\x11gitRepositoryLink\x12]\n" +
-	"\bref_type\x18\x02 \x01(\x0e2=.google.cloud.developerconnect.v1.FetchGitRefsRequest.RefTypeB\x03\xe0A\x02R\arefType\x12 \n" +
-	"\tpage_size\x18\x04 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x04type\x18\x03 \x01(\tR\x04type\"\xe3\x02\n" +
+	"\x13FetchGitRefsRequest\x12j\n" +
+	"\x13git_repository_link\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1developerconnect.googleapis.com/GitRepositoryLinkR\x11gitRepositoryLink\x12^\n" +
+	"\bref_type\x18\x02 \x01(\x0e2=.google.cloud.developerconnect.v1.FetchGitRefsRequest.RefTypeB\x04\xe2A\x01\x02R\arefType\x12!\n" +
+	"\tpage_size\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x05 \x01(\tB\x03\xe0A\x01R\tpageToken\"8\n" +
+	"page_token\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"8\n" +
 	"\aRefType\x12\x18\n" +
 	"\x14REF_TYPE_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03TAG\x10\x01\x12\n" +
@@ -5804,19 +5804,19 @@ const file_google_cloud_developerconnect_v1_developer_connect_proto_rawDesc = ""
 	"\x06BRANCH\x10\x02\"[\n" +
 	"\x14FetchGitRefsResponse\x12\x1b\n" +
 	"\tref_names\x18\x01 \x03(\tR\brefNames\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xf7\x06\n" +
-	"\x10AccountConnector\x12p\n" +
-	"\x15provider_oauth_config\x18\x05 \x01(\v25.google.cloud.developerconnect.v1.ProviderOAuthConfigB\x03\xe0A\x01H\x00R\x13providerOauthConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12j\n" +
-	"\vannotations\x18\x06 \x03(\v2C.google.cloud.developerconnect.v1.AccountConnector.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12\x17\n" +
-	"\x04etag\x18\a \x01(\tB\x03\xe0A\x01R\x04etag\x12[\n" +
-	"\x06labels\x18\b \x03(\v2>.google.cloud.developerconnect.v1.AccountConnector.LabelsEntryB\x03\xe0A\x01R\x06labels\x12+\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xff\x06\n" +
+	"\x10AccountConnector\x12q\n" +
+	"\x15provider_oauth_config\x18\x05 \x01(\v25.google.cloud.developerconnect.v1.ProviderOAuthConfigB\x04\xe2A\x01\x01H\x00R\x13providerOauthConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12k\n" +
+	"\vannotations\x18\x06 \x03(\v2C.google.cloud.developerconnect.v1.AccountConnector.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12\x18\n" +
+	"\x04etag\x18\a \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12\\\n" +
+	"\x06labels\x18\b \x03(\v2>.google.cloud.developerconnect.v1.AccountConnector.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12,\n" +
 	"\x0foauth_start_uri\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R\roauthStartUri\x1a>\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R\roauthStartUri\x1a>\n" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a9\n" +
@@ -5824,17 +5824,17 @@ const file_google_cloud_developerconnect_v1_developer_connect_proto_rawDesc = ""
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\xad\x01\xeaA\xa9\x01\n" +
 	"0developerconnect.googleapis.com/AccountConnector\x12Mprojects/{project}/locations/{location}/accountConnectors/{account_connector}*\x11accountConnectors2\x10accountConnectorR\x01\x01B\x1a\n" +
-	"\x18account_connector_config\"\xf7\x02\n" +
-	"\x04User\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12V\n" +
-	"\x17last_token_request_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x14lastTokenRequestTime:\x93\x01\xeaA\x8f\x01\n" +
+	"\x18account_connector_config\"\xfb\x02\n" +
+	"\x04User\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12W\n" +
+	"\x17last_token_request_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x14lastTokenRequestTime:\x93\x01\xeaA\x8f\x01\n" +
 	"$developerconnect.googleapis.com/User\x12Zprojects/{project}/locations/{location}/accountConnectors/{account_connector}/users/{user}*\x05users2\x04user\"\xb1\x01\n" +
-	"\x13ProviderOAuthConfig\x12h\n" +
-	"\x12system_provider_id\x18\x01 \x01(\x0e20.google.cloud.developerconnect.v1.SystemProviderB\x06\xe0A\x05\xe0A\x01H\x00R\x10systemProviderId\x12\x1b\n" +
-	"\x06scopes\x18\x02 \x03(\tB\x03\xe0A\x02R\x06scopesB\x13\n" +
+	"\x13ProviderOAuthConfig\x12g\n" +
+	"\x12system_provider_id\x18\x01 \x01(\x0e20.google.cloud.developerconnect.v1.SystemProviderB\x05\xe2A\x02\x05\x01H\x00R\x10systemProviderId\x12\x1c\n" +
+	"\x06scopes\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\x06scopesB\x13\n" +
 	"\x11oauth_provider_id*\x97\x01\n" +
 	"\x0eSystemProvider\x12\x1f\n" +
 	"\x1bSYSTEM_PROVIDER_UNSPECIFIED\x10\x00\x12\n" +

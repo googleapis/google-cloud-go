@@ -296,6 +296,43 @@ func NewGkeInferenceQuickstartClient(ctx context.Context, opts ...option.ClientO
 		client.CallOptions.GenerateOptimizedManifest = append(client.CallOptions.GenerateOptimizedManifest, gax.WithClientMetrics(metrics))
 		client.CallOptions.FetchBenchmarkingData = append(client.CallOptions.FetchBenchmarkingData, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "gkerecommender",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/gkerecommender/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "gkerecommender.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.FetchModels = append(client.CallOptions.FetchModels, gax.WithClientTracing(tracing))
+		client.CallOptions.FetchModelServers = append(client.CallOptions.FetchModelServers, gax.WithClientTracing(tracing))
+		client.CallOptions.FetchModelServerVersions = append(client.CallOptions.FetchModelServerVersions, gax.WithClientTracing(tracing))
+		client.CallOptions.FetchProfiles = append(client.CallOptions.FetchProfiles, gax.WithClientTracing(tracing))
+		client.CallOptions.GenerateOptimizedManifest = append(client.CallOptions.GenerateOptimizedManifest, gax.WithClientTracing(tracing))
+		client.CallOptions.FetchBenchmarkingData = append(client.CallOptions.FetchBenchmarkingData, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "gkerecommender",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/gkerecommender/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "gkerecommender.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.FetchModels = append(client.CallOptions.FetchModels, gax.WithClientLogging(logging))
+		client.CallOptions.FetchModelServers = append(client.CallOptions.FetchModelServers, gax.WithClientLogging(logging))
+		client.CallOptions.FetchModelServerVersions = append(client.CallOptions.FetchModelServerVersions, gax.WithClientLogging(logging))
+		client.CallOptions.FetchProfiles = append(client.CallOptions.FetchProfiles, gax.WithClientLogging(logging))
+		client.CallOptions.GenerateOptimizedManifest = append(client.CallOptions.GenerateOptimizedManifest, gax.WithClientLogging(logging))
+		client.CallOptions.FetchBenchmarkingData = append(client.CallOptions.FetchBenchmarkingData, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -394,6 +431,43 @@ func NewGkeInferenceQuickstartRESTClient(ctx context.Context, opts ...option.Cli
 		callOpts.FetchProfiles = append(callOpts.FetchProfiles, gax.WithClientMetrics(metrics))
 		callOpts.GenerateOptimizedManifest = append(callOpts.GenerateOptimizedManifest, gax.WithClientMetrics(metrics))
 		callOpts.FetchBenchmarkingData = append(callOpts.FetchBenchmarkingData, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "gkerecommender",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/gkerecommender/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "gkerecommender.googleapis.com",
+			}),
+		)
+
+		callOpts.FetchModels = append(callOpts.FetchModels, gax.WithClientTracing(tracing))
+		callOpts.FetchModelServers = append(callOpts.FetchModelServers, gax.WithClientTracing(tracing))
+		callOpts.FetchModelServerVersions = append(callOpts.FetchModelServerVersions, gax.WithClientTracing(tracing))
+		callOpts.FetchProfiles = append(callOpts.FetchProfiles, gax.WithClientTracing(tracing))
+		callOpts.GenerateOptimizedManifest = append(callOpts.GenerateOptimizedManifest, gax.WithClientTracing(tracing))
+		callOpts.FetchBenchmarkingData = append(callOpts.FetchBenchmarkingData, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "gkerecommender",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/gkerecommender/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "gkerecommender.googleapis.com",
+			}),
+		)
+
+		callOpts.FetchModels = append(callOpts.FetchModels, gax.WithClientLogging(logging))
+		callOpts.FetchModelServers = append(callOpts.FetchModelServers, gax.WithClientLogging(logging))
+		callOpts.FetchModelServerVersions = append(callOpts.FetchModelServerVersions, gax.WithClientLogging(logging))
+		callOpts.FetchProfiles = append(callOpts.FetchProfiles, gax.WithClientLogging(logging))
+		callOpts.GenerateOptimizedManifest = append(callOpts.GenerateOptimizedManifest, gax.WithClientLogging(logging))
+		callOpts.FetchBenchmarkingData = append(callOpts.FetchBenchmarkingData, gax.WithClientLogging(logging))
 	}
 
 	return &GkeInferenceQuickstartClient{internalClient: c, CallOptions: callOpts}, nil

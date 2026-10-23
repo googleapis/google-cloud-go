@@ -282,22 +282,22 @@ var File_google_firestore_admin_v1_backup_proto protoreflect.FileDescriptor
 
 const file_google_firestore_admin_v1_backup_proto_rawDesc = "" +
 	"\n" +
-	"&google/firestore/admin/v1/backup.proto\x12\x19google.firestore.admin.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcb\x05\n" +
-	"\x06Backup\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12E\n" +
-	"\bdatabase\x18\x02 \x01(\tB)\xe0A\x03\xfaA#\n" +
-	"!firestore.googleapis.com/DatabaseR\bdatabase\x12&\n" +
-	"\fdatabase_uid\x18\a \x01(\tB\x03\xe0A\x03R\vdatabaseUid\x12D\n" +
-	"\rsnapshot_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\fsnapshotTime\x12@\n" +
-	"\vexpire_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"expireTime\x12B\n" +
-	"\x05stats\x18\x06 \x01(\v2'.google.firestore.admin.v1.Backup.StatsB\x03\xe0A\x03R\x05stats\x12B\n" +
-	"\x05state\x18\b \x01(\x0e2'.google.firestore.admin.v1.Backup.StateB\x03\xe0A\x03R\x05state\x1a}\n" +
-	"\x05Stats\x12\"\n" +
+	"&google/firestore/admin/v1/backup.proto\x12\x19google.firestore.admin.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd6\x05\n" +
+	"\x06Backup\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12F\n" +
+	"\bdatabase\x18\x02 \x01(\tB*\xe2A\x01\x03\xfaA#\n" +
+	"!firestore.googleapis.com/DatabaseR\bdatabase\x12'\n" +
+	"\fdatabase_uid\x18\a \x01(\tB\x04\xe2A\x01\x03R\vdatabaseUid\x12E\n" +
+	"\rsnapshot_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\fsnapshotTime\x12A\n" +
+	"\vexpire_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"expireTime\x12C\n" +
+	"\x05stats\x18\x06 \x01(\v2'.google.firestore.admin.v1.Backup.StatsB\x04\xe2A\x01\x03R\x05stats\x12C\n" +
+	"\x05state\x18\b \x01(\x0e2'.google.firestore.admin.v1.Backup.StateB\x04\xe2A\x01\x03R\x05state\x1a\x80\x01\n" +
+	"\x05Stats\x12#\n" +
 	"\n" +
-	"size_bytes\x18\x01 \x01(\x03B\x03\xe0A\x03R\tsizeBytes\x12*\n" +
-	"\x0edocument_count\x18\x02 \x01(\x03B\x03\xe0A\x03R\rdocumentCount\x12$\n" +
-	"\vindex_count\x18\x03 \x01(\x03B\x03\xe0A\x03R\n" +
+	"size_bytes\x18\x01 \x01(\x03B\x04\xe2A\x01\x03R\tsizeBytes\x12+\n" +
+	"\x0edocument_count\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\rdocumentCount\x12%\n" +
+	"\vindex_count\x18\x03 \x01(\x03B\x04\xe2A\x01\x03R\n" +
 	"indexCount\"J\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +

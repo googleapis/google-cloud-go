@@ -594,6 +594,61 @@ func NewGrafeasV1Beta1Client(ctx context.Context, opts ...option.ClientOption) (
 		client.CallOptions.ListNoteOccurrences = append(client.CallOptions.ListNoteOccurrences, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetVulnerabilityOccurrencesSummary = append(client.CallOptions.GetVulnerabilityOccurrencesSummary, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "containeranalysis",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/containeranalysis/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "containeranalysis.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetOccurrence = append(client.CallOptions.GetOccurrence, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOccurrences = append(client.CallOptions.ListOccurrences, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOccurrence = append(client.CallOptions.DeleteOccurrence, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateOccurrence = append(client.CallOptions.CreateOccurrence, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchCreateOccurrences = append(client.CallOptions.BatchCreateOccurrences, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateOccurrence = append(client.CallOptions.UpdateOccurrence, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOccurrenceNote = append(client.CallOptions.GetOccurrenceNote, gax.WithClientTracing(tracing))
+		client.CallOptions.GetNote = append(client.CallOptions.GetNote, gax.WithClientTracing(tracing))
+		client.CallOptions.ListNotes = append(client.CallOptions.ListNotes, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteNote = append(client.CallOptions.DeleteNote, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateNote = append(client.CallOptions.CreateNote, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchCreateNotes = append(client.CallOptions.BatchCreateNotes, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateNote = append(client.CallOptions.UpdateNote, gax.WithClientTracing(tracing))
+		client.CallOptions.ListNoteOccurrences = append(client.CallOptions.ListNoteOccurrences, gax.WithClientTracing(tracing))
+		client.CallOptions.GetVulnerabilityOccurrencesSummary = append(client.CallOptions.GetVulnerabilityOccurrencesSummary, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "containeranalysis",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/containeranalysis/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "containeranalysis.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetOccurrence = append(client.CallOptions.GetOccurrence, gax.WithClientLogging(logging))
+		client.CallOptions.ListOccurrences = append(client.CallOptions.ListOccurrences, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOccurrence = append(client.CallOptions.DeleteOccurrence, gax.WithClientLogging(logging))
+		client.CallOptions.CreateOccurrence = append(client.CallOptions.CreateOccurrence, gax.WithClientLogging(logging))
+		client.CallOptions.BatchCreateOccurrences = append(client.CallOptions.BatchCreateOccurrences, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateOccurrence = append(client.CallOptions.UpdateOccurrence, gax.WithClientLogging(logging))
+		client.CallOptions.GetOccurrenceNote = append(client.CallOptions.GetOccurrenceNote, gax.WithClientLogging(logging))
+		client.CallOptions.GetNote = append(client.CallOptions.GetNote, gax.WithClientLogging(logging))
+		client.CallOptions.ListNotes = append(client.CallOptions.ListNotes, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteNote = append(client.CallOptions.DeleteNote, gax.WithClientLogging(logging))
+		client.CallOptions.CreateNote = append(client.CallOptions.CreateNote, gax.WithClientLogging(logging))
+		client.CallOptions.BatchCreateNotes = append(client.CallOptions.BatchCreateNotes, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateNote = append(client.CallOptions.UpdateNote, gax.WithClientLogging(logging))
+		client.CallOptions.ListNoteOccurrences = append(client.CallOptions.ListNoteOccurrences, gax.WithClientLogging(logging))
+		client.CallOptions.GetVulnerabilityOccurrencesSummary = append(client.CallOptions.GetVulnerabilityOccurrencesSummary, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -711,6 +766,61 @@ func NewGrafeasV1Beta1RESTClient(ctx context.Context, opts ...option.ClientOptio
 		callOpts.UpdateNote = append(callOpts.UpdateNote, gax.WithClientMetrics(metrics))
 		callOpts.ListNoteOccurrences = append(callOpts.ListNoteOccurrences, gax.WithClientMetrics(metrics))
 		callOpts.GetVulnerabilityOccurrencesSummary = append(callOpts.GetVulnerabilityOccurrencesSummary, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "containeranalysis",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/containeranalysis/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "containeranalysis.googleapis.com",
+			}),
+		)
+
+		callOpts.GetOccurrence = append(callOpts.GetOccurrence, gax.WithClientTracing(tracing))
+		callOpts.ListOccurrences = append(callOpts.ListOccurrences, gax.WithClientTracing(tracing))
+		callOpts.DeleteOccurrence = append(callOpts.DeleteOccurrence, gax.WithClientTracing(tracing))
+		callOpts.CreateOccurrence = append(callOpts.CreateOccurrence, gax.WithClientTracing(tracing))
+		callOpts.BatchCreateOccurrences = append(callOpts.BatchCreateOccurrences, gax.WithClientTracing(tracing))
+		callOpts.UpdateOccurrence = append(callOpts.UpdateOccurrence, gax.WithClientTracing(tracing))
+		callOpts.GetOccurrenceNote = append(callOpts.GetOccurrenceNote, gax.WithClientTracing(tracing))
+		callOpts.GetNote = append(callOpts.GetNote, gax.WithClientTracing(tracing))
+		callOpts.ListNotes = append(callOpts.ListNotes, gax.WithClientTracing(tracing))
+		callOpts.DeleteNote = append(callOpts.DeleteNote, gax.WithClientTracing(tracing))
+		callOpts.CreateNote = append(callOpts.CreateNote, gax.WithClientTracing(tracing))
+		callOpts.BatchCreateNotes = append(callOpts.BatchCreateNotes, gax.WithClientTracing(tracing))
+		callOpts.UpdateNote = append(callOpts.UpdateNote, gax.WithClientTracing(tracing))
+		callOpts.ListNoteOccurrences = append(callOpts.ListNoteOccurrences, gax.WithClientTracing(tracing))
+		callOpts.GetVulnerabilityOccurrencesSummary = append(callOpts.GetVulnerabilityOccurrencesSummary, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "containeranalysis",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/containeranalysis/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "containeranalysis.googleapis.com",
+			}),
+		)
+
+		callOpts.GetOccurrence = append(callOpts.GetOccurrence, gax.WithClientLogging(logging))
+		callOpts.ListOccurrences = append(callOpts.ListOccurrences, gax.WithClientLogging(logging))
+		callOpts.DeleteOccurrence = append(callOpts.DeleteOccurrence, gax.WithClientLogging(logging))
+		callOpts.CreateOccurrence = append(callOpts.CreateOccurrence, gax.WithClientLogging(logging))
+		callOpts.BatchCreateOccurrences = append(callOpts.BatchCreateOccurrences, gax.WithClientLogging(logging))
+		callOpts.UpdateOccurrence = append(callOpts.UpdateOccurrence, gax.WithClientLogging(logging))
+		callOpts.GetOccurrenceNote = append(callOpts.GetOccurrenceNote, gax.WithClientLogging(logging))
+		callOpts.GetNote = append(callOpts.GetNote, gax.WithClientLogging(logging))
+		callOpts.ListNotes = append(callOpts.ListNotes, gax.WithClientLogging(logging))
+		callOpts.DeleteNote = append(callOpts.DeleteNote, gax.WithClientLogging(logging))
+		callOpts.CreateNote = append(callOpts.CreateNote, gax.WithClientLogging(logging))
+		callOpts.BatchCreateNotes = append(callOpts.BatchCreateNotes, gax.WithClientLogging(logging))
+		callOpts.UpdateNote = append(callOpts.UpdateNote, gax.WithClientLogging(logging))
+		callOpts.ListNoteOccurrences = append(callOpts.ListNoteOccurrences, gax.WithClientLogging(logging))
+		callOpts.GetVulnerabilityOccurrencesSummary = append(callOpts.GetVulnerabilityOccurrencesSummary, gax.WithClientLogging(logging))
 	}
 
 	return &GrafeasV1Beta1Client{internalClient: c, CallOptions: callOpts}, nil

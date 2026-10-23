@@ -968,65 +968,65 @@ var File_google_cloud_run_v2_vendor_settings_proto protoreflect.FileDescriptor
 
 const file_google_cloud_run_v2_vendor_settings_proto_rawDesc = "" +
 	"\n" +
-	")google/cloud/run/v2/vendor_settings.proto\x12\x13google.cloud.run.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xc2\x03\n" +
+	")google/cloud/run/v2/vendor_settings.proto\x12\x13google.cloud.run.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xc7\x03\n" +
 	"\tVpcAccess\x12E\n" +
 	"\tconnector\x18\x01 \x01(\tB'\xfaA$\n" +
-	"\"vpcaccess.googleapis.com/ConnectorR\tconnector\x12E\n" +
-	"\x06egress\x18\x02 \x01(\x0e2(.google.cloud.run.v2.VpcAccess.VpcEgressB\x03\xe0A\x01R\x06egress\x12c\n" +
-	"\x12network_interfaces\x18\x03 \x03(\v2/.google.cloud.run.v2.VpcAccess.NetworkInterfaceB\x03\xe0A\x01R\x11networkInterfaces\x1ao\n" +
-	"\x10NetworkInterface\x12\x1d\n" +
-	"\anetwork\x18\x01 \x01(\tB\x03\xe0A\x01R\anetwork\x12#\n" +
+	"\"vpcaccess.googleapis.com/ConnectorR\tconnector\x12F\n" +
+	"\x06egress\x18\x02 \x01(\x0e2(.google.cloud.run.v2.VpcAccess.VpcEgressB\x04\xe2A\x01\x01R\x06egress\x12d\n" +
+	"\x12network_interfaces\x18\x03 \x03(\v2/.google.cloud.run.v2.VpcAccess.NetworkInterfaceB\x04\xe2A\x01\x01R\x11networkInterfaces\x1ar\n" +
+	"\x10NetworkInterface\x12\x1e\n" +
+	"\anetwork\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\anetwork\x12$\n" +
 	"\n" +
-	"subnetwork\x18\x02 \x01(\tB\x03\xe0A\x01R\n" +
-	"subnetwork\x12\x17\n" +
-	"\x04tags\x18\x03 \x03(\tB\x03\xe0A\x01R\x04tags\"Q\n" +
+	"subnetwork\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"subnetwork\x12\x18\n" +
+	"\x04tags\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x04tags\"Q\n" +
 	"\tVpcEgress\x12\x1a\n" +
 	"\x16VPC_EGRESS_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vALL_TRAFFIC\x10\x01\x12\x17\n" +
-	"\x13PRIVATE_RANGES_ONLY\x10\x02\"\xdd\x01\n" +
-	"\x13BinaryAuthorization\x12&\n" +
-	"\vuse_default\x18\x01 \x01(\bB\x03\xe0A\x01H\x00R\n" +
-	"useDefault\x12K\n" +
-	"\x06policy\x18\x03 \x01(\tB1\xe0A\x01\xfaA+\n" +
-	")binaryauthorization.googleapis.com/PolicyH\x00R\x06policy\x12>\n" +
-	"\x18breakglass_justification\x18\x02 \x01(\tB\x03\xe0A\x01R\x17breakglassJustificationB\x11\n" +
-	"\x0fbinauthz_method\"w\n" +
-	"\x0fRevisionScaling\x121\n" +
-	"\x12min_instance_count\x18\x01 \x01(\x05B\x03\xe0A\x01R\x10minInstanceCount\x121\n" +
-	"\x12max_instance_count\x18\x02 \x01(\x05B\x03\xe0A\x01R\x10maxInstanceCount\"K\n" +
+	"\x13PRIVATE_RANGES_ONLY\x10\x02\"\xe0\x01\n" +
+	"\x13BinaryAuthorization\x12'\n" +
+	"\vuse_default\x18\x01 \x01(\bB\x04\xe2A\x01\x01H\x00R\n" +
+	"useDefault\x12L\n" +
+	"\x06policy\x18\x03 \x01(\tB2\xe2A\x01\x01\xfaA+\n" +
+	")binaryauthorization.googleapis.com/PolicyH\x00R\x06policy\x12?\n" +
+	"\x18breakglass_justification\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x17breakglassJustificationB\x11\n" +
+	"\x0fbinauthz_method\"y\n" +
+	"\x0fRevisionScaling\x122\n" +
+	"\x12min_instance_count\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\x10minInstanceCount\x122\n" +
+	"\x12max_instance_count\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x10maxInstanceCount\"K\n" +
 	"\vServiceMesh\x12<\n" +
 	"\x04mesh\x18\x01 \x01(\tB(\xfaA%\n" +
-	"#networkservices.googleapis.com/MeshR\x04mesh\"\xef\x02\n" +
-	"\x0eServiceScaling\x121\n" +
-	"\x12min_instance_count\x18\x01 \x01(\x05B\x03\xe0A\x01R\x10minInstanceCount\x12W\n" +
-	"\fscaling_mode\x18\x03 \x01(\x0e2/.google.cloud.run.v2.ServiceScaling.ScalingModeB\x03\xe0A\x01R\vscalingMode\x121\n" +
-	"\x12max_instance_count\x18\x04 \x01(\x05B\x03\xe0A\x01R\x10maxInstanceCount\x12<\n" +
-	"\x15manual_instance_count\x18\x06 \x01(\x05B\x03\xe0A\x01H\x00R\x13manualInstanceCount\x88\x01\x01\"F\n" +
+	"#networkservices.googleapis.com/MeshR\x04mesh\"\xf3\x02\n" +
+	"\x0eServiceScaling\x122\n" +
+	"\x12min_instance_count\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\x10minInstanceCount\x12X\n" +
+	"\fscaling_mode\x18\x03 \x01(\x0e2/.google.cloud.run.v2.ServiceScaling.ScalingModeB\x04\xe2A\x01\x01R\vscalingMode\x122\n" +
+	"\x12max_instance_count\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\x10maxInstanceCount\x12=\n" +
+	"\x15manual_instance_count\x18\x06 \x01(\x05B\x04\xe2A\x01\x01H\x00R\x13manualInstanceCount\x88\x01\x01\"F\n" +
 	"\vScalingMode\x12\x1c\n" +
 	"\x18SCALING_MODE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tAUTOMATIC\x10\x01\x12\n" +
 	"\n" +
 	"\x06MANUAL\x10\x02B\x18\n" +
-	"\x16_manual_instance_count\"k\n" +
-	"\x11WorkerPoolScaling\x12<\n" +
-	"\x15manual_instance_count\x18\x06 \x01(\x05B\x03\xe0A\x01H\x00R\x13manualInstanceCount\x88\x01\x01B\x18\n" +
-	"\x16_manual_instance_count\"5\n" +
-	"\fNodeSelector\x12%\n" +
-	"\vaccelerator\x18\x01 \x01(\tB\x03\xe0A\x02R\vaccelerator\"\xe7\x04\n" +
-	"\vBuildConfig\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x03\xfaA!\n" +
+	"\x16_manual_instance_count\"l\n" +
+	"\x11WorkerPoolScaling\x12=\n" +
+	"\x15manual_instance_count\x18\x06 \x01(\x05B\x04\xe2A\x01\x01H\x00R\x13manualInstanceCount\x88\x01\x01B\x18\n" +
+	"\x16_manual_instance_count\"6\n" +
+	"\fNodeSelector\x12&\n" +
+	"\vaccelerator\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vaccelerator\"\xef\x04\n" +
+	"\vBuildConfig\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x03\xfaA!\n" +
 	"\x1fcloudbuild.googleapis.com/BuildR\x04name\x12'\n" +
-	"\x0fsource_location\x18\x02 \x01(\tR\x0esourceLocation\x12,\n" +
-	"\x0ffunction_target\x18\x03 \x01(\tB\x03\xe0A\x01R\x0efunctionTarget\x12 \n" +
-	"\timage_uri\x18\x04 \x01(\tB\x03\xe0A\x01R\bimageUri\x12\"\n" +
+	"\x0fsource_location\x18\x02 \x01(\tR\x0esourceLocation\x12-\n" +
+	"\x0ffunction_target\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x0efunctionTarget\x12!\n" +
+	"\timage_uri\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\bimageUri\x12#\n" +
 	"\n" +
-	"base_image\x18\x05 \x01(\tB\x03\xe0A\x01R\tbaseImage\x12=\n" +
-	"\x18enable_automatic_updates\x18\x06 \x01(\bB\x03\xe0A\x01R\x16enableAutomaticUpdates\x12R\n" +
-	"\vworker_pool\x18\a \x01(\tB1\xe0A\x01\xfaA+\n" +
+	"base_image\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\tbaseImage\x12>\n" +
+	"\x18enable_automatic_updates\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\x16enableAutomaticUpdates\x12S\n" +
+	"\vworker_pool\x18\a \x01(\tB2\xe2A\x01\x01\xfaA+\n" +
 	")cloudbuild.googleapis.com/BuildWorkerPoolR\n" +
-	"workerPool\x12t\n" +
-	"\x15environment_variables\x18\b \x03(\v2:.google.cloud.run.v2.BuildConfig.EnvironmentVariablesEntryB\x03\xe0A\x01R\x14environmentVariables\x12,\n" +
-	"\x0fservice_account\x18\t \x01(\tB\x03\xe0A\x01R\x0eserviceAccount\x1aG\n" +
+	"workerPool\x12u\n" +
+	"\x15environment_variables\x18\b \x03(\v2:.google.cloud.run.v2.BuildConfig.EnvironmentVariablesEntryB\x04\xe2A\x01\x01R\x14environmentVariables\x12-\n" +
+	"\x0fservice_account\x18\t \x01(\tB\x04\xe2A\x01\x01R\x0eserviceAccount\x1aG\n" +
 	"\x19EnvironmentVariablesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01*\xb3\x01\n" +

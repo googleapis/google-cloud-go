@@ -365,27 +365,27 @@ var File_google_shopping_merchant_accounts_v1_accountrelationships_proto protore
 
 const file_google_shopping_merchant_accounts_v1_accountrelationships_proto_rawDesc = "" +
 	"\n" +
-	"?google/shopping/merchant/accounts/v1/accountrelationships.proto\x12$google.shopping.merchant.accounts.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\"\xdc\x02\n" +
-	"\x13AccountRelationship\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12$\n" +
-	"\bprovider\x18\x02 \x01(\tB\x03\xe0A\x05H\x00R\bprovider\x88\x01\x01\x127\n" +
-	"\x15provider_display_name\x18\x03 \x01(\tB\x03\xe0A\x03R\x13providerDisplayName\x12-\n" +
-	"\x10account_id_alias\x18\x04 \x01(\tB\x03\xe0A\x01R\x0eaccountIdAlias:\x90\x01\xeaA\x8c\x01\n" +
+	"?google/shopping/merchant/accounts/v1/accountrelationships.proto\x12$google.shopping.merchant.accounts.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\"\xe0\x02\n" +
+	"\x13AccountRelationship\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12%\n" +
+	"\bprovider\x18\x02 \x01(\tB\x04\xe2A\x01\x05H\x00R\bprovider\x88\x01\x01\x128\n" +
+	"\x15provider_display_name\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x13providerDisplayName\x12.\n" +
+	"\x10account_id_alias\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x0eaccountIdAlias:\x90\x01\xeaA\x8c\x01\n" +
 	".merchantapi.googleapis.com/AccountRelationship\x12/accounts/{account}/relationships/{relationship}*\x14accountRelationships2\x13accountRelationshipB\v\n" +
-	"\t_provider\"k\n" +
-	"\x1dGetAccountRelationshipRequest\x12J\n" +
-	"\x04name\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".merchantapi.googleapis.com/AccountRelationshipR\x04name\"\xd7\x01\n" +
-	" UpdateAccountRelationshipRequest\x12q\n" +
-	"\x14account_relationship\x18\x01 \x01(\v29.google.shopping.merchant.accounts.v1.AccountRelationshipB\x03\xe0A\x02R\x13accountRelationship\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"\xab\x01\n" +
-	"\x1fListAccountRelationshipsRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"merchantapi.googleapis.com/AccountR\x06parent\x12\"\n" +
+	"\t_provider\"l\n" +
+	"\x1dGetAccountRelationshipRequest\x12K\n" +
+	"\x04name\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".merchantapi.googleapis.com/AccountRelationshipR\x04name\"\xd9\x01\n" +
+	" UpdateAccountRelationshipRequest\x12r\n" +
+	"\x14account_relationship\x18\x01 \x01(\v29.google.shopping.merchant.accounts.v1.AccountRelationshipB\x04\xe2A\x01\x02R\x13accountRelationship\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"\xae\x01\n" +
+	"\x1fListAccountRelationshipsRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"merchantapi.googleapis.com/AccountR\x06parent\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12 \n" +
-	"\tpage_size\x18\x04 \x01(\x05B\x03\xe0A\x01R\bpageSize\"\xba\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12!\n" +
+	"\tpage_size\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\"\xba\x01\n" +
 	" ListAccountRelationshipsResponse\x12n\n" +
 	"\x15account_relationships\x18\x01 \x03(\v29.google.shopping.merchant.accounts.v1.AccountRelationshipR\x14accountRelationships\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken2\xd5\x06\n" +

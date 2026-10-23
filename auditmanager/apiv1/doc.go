@@ -56,11 +56,11 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	req := &auditmanagerpb.EnrollResourceRequest{
+//	req := &auditmanagerpb.CreateAuditScheduleRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/auditmanager/apiv1/auditmanagerpb#EnrollResourceRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/auditmanager/apiv1/auditmanagerpb#CreateAuditScheduleRequest.
 //	}
-//	resp, err := c.EnrollResource(ctx, req)
+//	resp, err := c.CreateAuditSchedule(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

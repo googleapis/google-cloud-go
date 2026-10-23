@@ -100,9 +100,19 @@ type Config struct {
 	// classic/session traffic split follows the server's directive.
 	SessionLoadListener func(load float64)
 
-	// BackgroundCtx is the parent context passed to each per-pool
-	// Start(ctx) call. Cancelled by Client teardown so every pool's
-	// Tick + AFE prune loops unwind together.
+	// BackgroundCtx is the parent context for the Client's own
+	// process-lifetime loops (today: ClientConfigurationManager polling).
+	// Cancelled by Client teardown.
+	//
+	// Deliberately NOT handed to session pools. A pool's lifetime is a
+	// strict subset of this Client's: Close() closes every pool, and
+	// session.TableCache also evicts + Closes individual pools while the
+	// Client keeps running. So this ctx is always too coarse to scope
+	// pool-owned work — it can only ever fire after the pool is already
+	// gone (client shutdown), or never at all (TTL eviction). Either way
+	// the pool's loops outlive its Close, and since each loop closure
+	// captures the pool, the pool itself stays reachable. Pools scope
+	// their own goroutines; see SessionPoolImpl.Start / maintCtx.
 	BackgroundCtx context.Context
 
 	// EnableDebug controls whether the pools this Client mints will
@@ -367,10 +377,7 @@ func NewClient(
 	// Instance-scoped headers for GetClientConfiguration — shared by the
 	// DirectAccessChecker's compat probe and ClientConfigurationManager's
 	// steady-state polls so both hit the same-shaped RPC.
-	configMD := metadata.Join(metadata.Pairs(
-		resourcePrefixHeader, fullInstance,
-		requestParamsHeader, fmt.Sprintf("name=%s", url.QueryEscape(fullInstance)),
-	), directAccessMD)
+	configMD := buildConfigMetadata(fullInstance, appProfile, directAccessMD)
 
 	// Session pool bypasses CreateAndStartManagedChannelPool so we can
 	// plug in the session-flavored primer + direct-access checker
@@ -567,8 +574,8 @@ func (sc *sessionClient) OpenMaterializedView(view string) TableAPI {
 // firing against half-dead pools:
 //  1. Stop config polling — no more UpdateConfig can fire after.
 //  2. Close every session pool (per-pool listeners already detached).
-//  3. Cancel the background ctx we constructed (unwinds heartbeat /
-//     AFE-prune / scaling loops parented on it).
+//  3. Cancel the background ctx we constructed (unwinds the
+//     client-scoped loops parented on it).
 //  4. managed.Close() stops the DynamicScaleMonitor + ConnectionRecycler
 //     wired by btransport.CreateAndStartManagedChannelPool, then closes
 //     the underlying pool — in that order, so no scale-up / recycle tick
@@ -754,7 +761,6 @@ func (sc *sessionClient) createSessionPool(
 	mp := &managedSessionPool{id: id, key: key, pool: pool}
 	sc.sessionPools[id] = mp
 	configManager := sc.configManager
-	backgroundCtx := sc.cfg.BackgroundCtx
 	sc.sessionPoolsMu.Unlock()
 
 	if configManager != nil {
@@ -771,7 +777,7 @@ func (sc *sessionClient) createSessionPool(
 		}
 	}
 
-	pool.Start(backgroundCtx)
+	pool.Start()
 	return pool, sc.releasePoolByID(id)
 }
 
@@ -827,6 +833,20 @@ func (sc *sessionClient) perResourceMetadata(fullResourceName, paramKey, paramVa
 		resourcePrefixHeader, fullResourceName,
 		requestParamsHeader, fmt.Sprintf("%s=%s&app_profile_id=%s", paramKey, url.QueryEscape(paramVal), url.QueryEscape(sc.cfg.AppProfile)),
 	), sc.cfg.FeatureFlagsMD)
+}
+
+// buildConfigMetadata builds the metadata attached to every
+// GetClientConfiguration RPC — both the DirectAccessChecker's compat
+// probe and ClientConfigurationManager's steady-state polls. The proto
+// field is instance_name, and Java pairs it with app_profile_id in
+// x-goog-request-params so the RLS router can key on both
+// (Util.composeMetadata + ClientConfigurationManager ctor).
+func buildConfigMetadata(fullInstance, appProfile string, featureFlagsMD metadata.MD) metadata.MD {
+	return metadata.Join(metadata.Pairs(
+		resourcePrefixHeader, fullInstance,
+		requestParamsHeader, fmt.Sprintf("instance_name=%s&app_profile_id=%s",
+			url.QueryEscape(fullInstance), url.QueryEscape(appProfile)),
+	), featureFlagsMD)
 }
 
 // Resource-name composition — duplicated from bigtable.Client to

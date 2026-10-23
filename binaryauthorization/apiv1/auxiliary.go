@@ -17,9 +17,18 @@
 package binaryauthorization
 
 import (
+	"iter"
+
 	binaryauthorizationpb "cloud.google.com/go/binaryauthorization/apiv1/binaryauthorizationpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AttestorIterator) All() iter.Seq2[*binaryauthorizationpb.Attestor, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // AttestorIterator manages a stream of *binaryauthorizationpb.Attestor.
 type AttestorIterator struct {

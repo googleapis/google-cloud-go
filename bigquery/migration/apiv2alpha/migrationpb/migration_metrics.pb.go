@@ -393,22 +393,22 @@ var File_google_cloud_bigquery_migration_v2alpha_migration_metrics_proto protore
 
 const file_google_cloud_bigquery_migration_v2alpha_migration_metrics_proto_rawDesc = "" +
 	"\n" +
-	"?google/cloud/bigquery/migration/v2alpha/migration_metrics.proto\x12'google.cloud.bigquery.migration.v2alpha\x1a\x1dgoogle/api/distribution.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x17google/api/metric.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x91\x02\n" +
+	"?google/cloud/bigquery/migration/v2alpha/migration_metrics.proto\x12'google.cloud.bigquery.migration.v2alpha\x1a\x1dgoogle/api/distribution.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x17google/api/metric.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x95\x02\n" +
 	"\n" +
-	"TimeSeries\x12\x1b\n" +
-	"\x06metric\x18\x01 \x01(\tB\x03\xe0A\x02R\x06metric\x12J\n" +
+	"TimeSeries\x12\x1c\n" +
+	"\x06metric\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06metric\x12K\n" +
 	"\n" +
-	"value_type\x18\x02 \x01(\x0e2&.google.api.MetricDescriptor.ValueTypeB\x03\xe0A\x02R\tvalueType\x12M\n" +
-	"\vmetric_kind\x18\x03 \x01(\x0e2'.google.api.MetricDescriptor.MetricKindB\x03\xe0A\x01R\n" +
-	"metricKind\x12K\n" +
-	"\x06points\x18\x04 \x03(\v2..google.cloud.bigquery.migration.v2alpha.PointB\x03\xe0A\x02R\x06points\"\xa5\x01\n" +
+	"value_type\x18\x02 \x01(\x0e2&.google.api.MetricDescriptor.ValueTypeB\x04\xe2A\x01\x02R\tvalueType\x12N\n" +
+	"\vmetric_kind\x18\x03 \x01(\x0e2'.google.api.MetricDescriptor.MetricKindB\x04\xe2A\x01\x01R\n" +
+	"metricKind\x12L\n" +
+	"\x06points\x18\x04 \x03(\v2..google.cloud.bigquery.migration.v2alpha.PointB\x04\xe2A\x01\x02R\x06points\"\xa5\x01\n" +
 	"\x05Point\x12Q\n" +
 	"\binterval\x18\x01 \x01(\v25.google.cloud.bigquery.migration.v2alpha.TimeIntervalR\binterval\x12I\n" +
-	"\x05value\x18\x02 \x01(\v23.google.cloud.bigquery.migration.v2alpha.TypedValueR\x05value\"\x8a\x01\n" +
-	"\fTimeInterval\x12>\n" +
+	"\x05value\x18\x02 \x01(\v23.google.cloud.bigquery.migration.v2alpha.TypedValueR\x05value\"\x8c\x01\n" +
+	"\fTimeInterval\x12?\n" +
 	"\n" +
-	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\tstartTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\aendTime\"\xee\x01\n" +
+	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\tstartTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\aendTime\"\xee\x01\n" +
 	"\n" +
 	"TypedValue\x12\x1f\n" +
 	"\n" +

@@ -1412,99 +1412,99 @@ var File_google_cloud_bigquery_analyticshub_v1_pubsub_proto protoreflect.FileDes
 
 const file_google_cloud_bigquery_analyticshub_v1_pubsub_proto_rawDesc = "" +
 	"\n" +
-	"2google/cloud/bigquery/analyticshub/v1/pubsub.proto\x12%google.cloud.bigquery.analyticshub.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\"\xc8\v\n" +
-	"\x12PubSubSubscription\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12W\n" +
-	"\vpush_config\x18\x04 \x01(\v21.google.cloud.bigquery.analyticshub.v1.PushConfigB\x03\xe0A\x01R\n" +
-	"pushConfig\x12c\n" +
-	"\x0fbigquery_config\x18\x12 \x01(\v25.google.cloud.bigquery.analyticshub.v1.BigQueryConfigB\x03\xe0A\x01R\x0ebigqueryConfig\x12p\n" +
-	"\x14cloud_storage_config\x18\x16 \x01(\v29.google.cloud.bigquery.analyticshub.v1.CloudStorageConfigB\x03\xe0A\x01R\x12cloudStorageConfig\x125\n" +
-	"\x14ack_deadline_seconds\x18\x05 \x01(\x05B\x03\xe0A\x01R\x12ackDeadlineSeconds\x127\n" +
-	"\x15retain_acked_messages\x18\a \x01(\bB\x03\xe0A\x01R\x13retainAckedMessages\x12\\\n" +
-	"\x1amessage_retention_duration\x18\b \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x18messageRetentionDuration\x12b\n" +
-	"\x06labels\x18\t \x03(\v2E.google.cloud.bigquery.analyticshub.v1.PubSubSubscription.LabelsEntryB\x03\xe0A\x01R\x06labels\x12;\n" +
+	"2google/cloud/bigquery/analyticshub/v1/pubsub.proto\x12%google.cloud.bigquery.analyticshub.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\"\xd5\v\n" +
+	"\x12PubSubSubscription\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12X\n" +
+	"\vpush_config\x18\x04 \x01(\v21.google.cloud.bigquery.analyticshub.v1.PushConfigB\x04\xe2A\x01\x01R\n" +
+	"pushConfig\x12d\n" +
+	"\x0fbigquery_config\x18\x12 \x01(\v25.google.cloud.bigquery.analyticshub.v1.BigQueryConfigB\x04\xe2A\x01\x01R\x0ebigqueryConfig\x12q\n" +
+	"\x14cloud_storage_config\x18\x16 \x01(\v29.google.cloud.bigquery.analyticshub.v1.CloudStorageConfigB\x04\xe2A\x01\x01R\x12cloudStorageConfig\x126\n" +
+	"\x14ack_deadline_seconds\x18\x05 \x01(\x05B\x04\xe2A\x01\x01R\x12ackDeadlineSeconds\x128\n" +
+	"\x15retain_acked_messages\x18\a \x01(\bB\x04\xe2A\x01\x01R\x13retainAckedMessages\x12]\n" +
+	"\x1amessage_retention_duration\x18\b \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x18messageRetentionDuration\x12c\n" +
+	"\x06labels\x18\t \x03(\v2E.google.cloud.bigquery.analyticshub.v1.PubSubSubscription.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12<\n" +
 	"\x17enable_message_ordering\x18\n" +
-	" \x01(\bB\x03\xe0A\x01R\x15enableMessageOrdering\x12i\n" +
-	"\x11expiration_policy\x18\v \x01(\v27.google.cloud.bigquery.analyticshub.v1.ExpirationPolicyB\x03\xe0A\x01R\x10expirationPolicy\x12\x1b\n" +
-	"\x06filter\x18\f \x01(\tB\x03\xe0A\x01R\x06filter\x12j\n" +
-	"\x12dead_letter_policy\x18\r \x01(\v27.google.cloud.bigquery.analyticshub.v1.DeadLetterPolicyB\x03\xe0A\x01R\x10deadLetterPolicy\x12Z\n" +
-	"\fretry_policy\x18\x0e \x01(\v22.google.cloud.bigquery.analyticshub.v1.RetryPolicyB\x03\xe0A\x01R\vretryPolicy\x12\x1f\n" +
-	"\bdetached\x18\x0f \x01(\bB\x03\xe0A\x01R\bdetached\x12D\n" +
-	"\x1cenable_exactly_once_delivery\x18\x10 \x01(\bB\x03\xe0A\x01R\x19enableExactlyOnceDelivery\x12k\n" +
-	"\x12message_transforms\x18\x19 \x03(\v27.google.cloud.bigquery.analyticshub.v1.MessageTransformB\x03\xe0A\x01R\x11messageTransforms\x12b\n" +
-	"\x04tags\x18\x1a \x03(\v2C.google.cloud.bigquery.analyticshub.v1.PubSubSubscription.TagsEntryB\t\xe0A\x04\xe0A\x05\xe0A\x01R\x04tags\x1a9\n" +
+	" \x01(\bB\x04\xe2A\x01\x01R\x15enableMessageOrdering\x12j\n" +
+	"\x11expiration_policy\x18\v \x01(\v27.google.cloud.bigquery.analyticshub.v1.ExpirationPolicyB\x04\xe2A\x01\x01R\x10expirationPolicy\x12\x1c\n" +
+	"\x06filter\x18\f \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12k\n" +
+	"\x12dead_letter_policy\x18\r \x01(\v27.google.cloud.bigquery.analyticshub.v1.DeadLetterPolicyB\x04\xe2A\x01\x01R\x10deadLetterPolicy\x12[\n" +
+	"\fretry_policy\x18\x0e \x01(\v22.google.cloud.bigquery.analyticshub.v1.RetryPolicyB\x04\xe2A\x01\x01R\vretryPolicy\x12 \n" +
+	"\bdetached\x18\x0f \x01(\bB\x04\xe2A\x01\x01R\bdetached\x12E\n" +
+	"\x1cenable_exactly_once_delivery\x18\x10 \x01(\bB\x04\xe2A\x01\x01R\x19enableExactlyOnceDelivery\x12l\n" +
+	"\x12message_transforms\x18\x19 \x03(\v27.google.cloud.bigquery.analyticshub.v1.MessageTransformB\x04\xe2A\x01\x01R\x11messageTransforms\x12_\n" +
+	"\x04tags\x18\x1a \x03(\v2C.google.cloud.bigquery.analyticshub.v1.PubSubSubscription.TagsEntryB\x06\xe2A\x03\x04\x05\x01R\x04tags\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a7\n" +
 	"\tTagsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x9f\x01\n" +
-	"\vRetryPolicy\x12G\n" +
-	"\x0fminimum_backoff\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x0eminimumBackoff\x12G\n" +
-	"\x0fmaximum_backoff\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x0emaximumBackoff\"|\n" +
-	"\x10DeadLetterPolicy\x12/\n" +
-	"\x11dead_letter_topic\x18\x01 \x01(\tB\x03\xe0A\x01R\x0fdeadLetterTopic\x127\n" +
-	"\x15max_delivery_attempts\x18\x02 \x01(\x05B\x03\xe0A\x01R\x13maxDeliveryAttempts\"D\n" +
-	"\x10ExpirationPolicy\x120\n" +
-	"\x03ttl\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x03ttl\"\xe7\x05\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xa1\x01\n" +
+	"\vRetryPolicy\x12H\n" +
+	"\x0fminimum_backoff\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x0eminimumBackoff\x12H\n" +
+	"\x0fmaximum_backoff\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x0emaximumBackoff\"~\n" +
+	"\x10DeadLetterPolicy\x120\n" +
+	"\x11dead_letter_topic\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0fdeadLetterTopic\x128\n" +
+	"\x15max_delivery_attempts\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x13maxDeliveryAttempts\"E\n" +
+	"\x10ExpirationPolicy\x121\n" +
+	"\x03ttl\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x03ttl\"\xef\x05\n" +
 	"\n" +
-	"PushConfig\x12a\n" +
+	"PushConfig\x12b\n" +
 	"\n" +
-	"oidc_token\x18\x03 \x01(\v2;.google.cloud.bigquery.analyticshub.v1.PushConfig.OidcTokenB\x03\xe0A\x01H\x00R\toidcToken\x12m\n" +
-	"\x0epubsub_wrapper\x18\x04 \x01(\v2?.google.cloud.bigquery.analyticshub.v1.PushConfig.PubsubWrapperB\x03\xe0A\x01H\x01R\rpubsubWrapper\x12a\n" +
+	"oidc_token\x18\x03 \x01(\v2;.google.cloud.bigquery.analyticshub.v1.PushConfig.OidcTokenB\x04\xe2A\x01\x01H\x00R\toidcToken\x12n\n" +
+	"\x0epubsub_wrapper\x18\x04 \x01(\v2?.google.cloud.bigquery.analyticshub.v1.PushConfig.PubsubWrapperB\x04\xe2A\x01\x01H\x01R\rpubsubWrapper\x12b\n" +
 	"\n" +
-	"no_wrapper\x18\x05 \x01(\v2;.google.cloud.bigquery.analyticshub.v1.PushConfig.NoWrapperB\x03\xe0A\x01H\x01R\tnoWrapper\x12(\n" +
-	"\rpush_endpoint\x18\x01 \x01(\tB\x03\xe0A\x01R\fpushEndpoint\x12f\n" +
+	"no_wrapper\x18\x05 \x01(\v2;.google.cloud.bigquery.analyticshub.v1.PushConfig.NoWrapperB\x04\xe2A\x01\x01H\x01R\tnoWrapper\x12)\n" +
+	"\rpush_endpoint\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\fpushEndpoint\x12g\n" +
 	"\n" +
-	"attributes\x18\x02 \x03(\v2A.google.cloud.bigquery.analyticshub.v1.PushConfig.AttributesEntryB\x03\xe0A\x01R\n" +
-	"attributes\x1ae\n" +
-	"\tOidcToken\x127\n" +
-	"\x15service_account_email\x18\x01 \x01(\tB\x03\xe0A\x01R\x13serviceAccountEmail\x12\x1f\n" +
-	"\baudience\x18\x02 \x01(\tB\x03\xe0A\x01R\baudience\x1a\x0f\n" +
-	"\rPubsubWrapper\x1a7\n" +
-	"\tNoWrapper\x12*\n" +
-	"\x0ewrite_metadata\x18\x01 \x01(\bB\x03\xe0A\x01R\rwriteMetadata\x1a=\n" +
+	"attributes\x18\x02 \x03(\v2A.google.cloud.bigquery.analyticshub.v1.PushConfig.AttributesEntryB\x04\xe2A\x01\x01R\n" +
+	"attributes\x1ag\n" +
+	"\tOidcToken\x128\n" +
+	"\x15service_account_email\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x13serviceAccountEmail\x12 \n" +
+	"\baudience\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\baudience\x1a\x0f\n" +
+	"\rPubsubWrapper\x1a8\n" +
+	"\tNoWrapper\x12+\n" +
+	"\x0ewrite_metadata\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\rwriteMetadata\x1a=\n" +
 	"\x0fAttributesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\x17\n" +
 	"\x15authentication_methodB\t\n" +
-	"\awrapper\"\xa3\x02\n" +
-	"\x0eBigQueryConfig\x12\x19\n" +
-	"\x05table\x18\x01 \x01(\tB\x03\xe0A\x01R\x05table\x12-\n" +
-	"\x10use_topic_schema\x18\x02 \x01(\bB\x03\xe0A\x01R\x0euseTopicSchema\x12*\n" +
-	"\x0ewrite_metadata\x18\x03 \x01(\bB\x03\xe0A\x01R\rwriteMetadata\x123\n" +
-	"\x13drop_unknown_fields\x18\x04 \x01(\bB\x03\xe0A\x01R\x11dropUnknownFields\x12-\n" +
-	"\x10use_table_schema\x18\x06 \x01(\bB\x03\xe0A\x01R\x0euseTableSchema\x127\n" +
-	"\x15service_account_email\x18\a \x01(\tB\x03\xe0A\x01R\x13serviceAccountEmail\"\xf6\x05\n" +
-	"\x12CloudStorageConfig\x12l\n" +
-	"\vtext_config\x18\x04 \x01(\v2D.google.cloud.bigquery.analyticshub.v1.CloudStorageConfig.TextConfigB\x03\xe0A\x01H\x00R\n" +
-	"textConfig\x12l\n" +
-	"\vavro_config\x18\x05 \x01(\v2D.google.cloud.bigquery.analyticshub.v1.CloudStorageConfig.AvroConfigB\x03\xe0A\x01H\x00R\n" +
-	"avroConfig\x12\x1b\n" +
-	"\x06bucket\x18\x01 \x01(\tB\x03\xe0A\x02R\x06bucket\x12,\n" +
-	"\x0ffilename_prefix\x18\x02 \x01(\tB\x03\xe0A\x01R\x0efilenamePrefix\x12,\n" +
-	"\x0ffilename_suffix\x18\x03 \x01(\tB\x03\xe0A\x01R\x0efilenameSuffix\x12=\n" +
+	"\awrapper\"\xa9\x02\n" +
+	"\x0eBigQueryConfig\x12\x1a\n" +
+	"\x05table\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x05table\x12.\n" +
+	"\x10use_topic_schema\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x0euseTopicSchema\x12+\n" +
+	"\x0ewrite_metadata\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\rwriteMetadata\x124\n" +
+	"\x13drop_unknown_fields\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x11dropUnknownFields\x12.\n" +
+	"\x10use_table_schema\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\x0euseTableSchema\x128\n" +
+	"\x15service_account_email\x18\a \x01(\tB\x04\xe2A\x01\x01R\x13serviceAccountEmail\"\x82\x06\n" +
+	"\x12CloudStorageConfig\x12m\n" +
+	"\vtext_config\x18\x04 \x01(\v2D.google.cloud.bigquery.analyticshub.v1.CloudStorageConfig.TextConfigB\x04\xe2A\x01\x01H\x00R\n" +
+	"textConfig\x12m\n" +
+	"\vavro_config\x18\x05 \x01(\v2D.google.cloud.bigquery.analyticshub.v1.CloudStorageConfig.AvroConfigB\x04\xe2A\x01\x01H\x00R\n" +
+	"avroConfig\x12\x1c\n" +
+	"\x06bucket\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06bucket\x12-\n" +
+	"\x0ffilename_prefix\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x0efilenamePrefix\x12-\n" +
+	"\x0ffilename_suffix\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x0efilenameSuffix\x12>\n" +
 	"\x18filename_datetime_format\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\x16filenameDatetimeFormat\x12A\n" +
-	"\fmax_duration\x18\x06 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\vmaxDuration\x12 \n" +
-	"\tmax_bytes\x18\a \x01(\x03B\x03\xe0A\x01R\bmaxBytes\x12&\n" +
-	"\fmax_messages\x18\b \x01(\x03B\x03\xe0A\x01R\vmaxMessages\x127\n" +
-	"\x15service_account_email\x18\v \x01(\tB\x03\xe0A\x01R\x13serviceAccountEmail\x1a\f\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\x16filenameDatetimeFormat\x12B\n" +
+	"\fmax_duration\x18\x06 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\vmaxDuration\x12!\n" +
+	"\tmax_bytes\x18\a \x01(\x03B\x04\xe2A\x01\x01R\bmaxBytes\x12'\n" +
+	"\fmax_messages\x18\b \x01(\x03B\x04\xe2A\x01\x01R\vmaxMessages\x128\n" +
+	"\x15service_account_email\x18\v \x01(\tB\x04\xe2A\x01\x01R\x13serviceAccountEmail\x1a\f\n" +
 	"\n" +
-	"TextConfig\x1ag\n" +
+	"TextConfig\x1ai\n" +
 	"\n" +
-	"AvroConfig\x12*\n" +
-	"\x0ewrite_metadata\x18\x01 \x01(\bB\x03\xe0A\x01R\rwriteMetadata\x12-\n" +
-	"\x10use_topic_schema\x18\x02 \x01(\bB\x03\xe0A\x01R\x0euseTopicSchemaB\x0f\n" +
-	"\routput_format\"\xc5\x01\n" +
-	"\x10MessageTransform\x12b\n" +
-	"\x0ejavascript_udf\x18\x02 \x01(\v24.google.cloud.bigquery.analyticshub.v1.JavaScriptUDFB\x03\xe0A\x01H\x00R\rjavascriptUdf\x12\x1f\n" +
-	"\aenabled\x18\x03 \x01(\bB\x05\xe0A\x01\x18\x01R\aenabled\x12\x1f\n" +
-	"\bdisabled\x18\x04 \x01(\bB\x03\xe0A\x01R\bdisabledB\v\n" +
-	"\ttransform\"R\n" +
-	"\rJavaScriptUDF\x12(\n" +
-	"\rfunction_name\x18\x01 \x01(\tB\x03\xe0A\x02R\ffunctionName\x12\x17\n" +
-	"\x04code\x18\x02 \x01(\tB\x03\xe0A\x02R\x04codeB\x85\x02\n" +
+	"AvroConfig\x12+\n" +
+	"\x0ewrite_metadata\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\rwriteMetadata\x12.\n" +
+	"\x10use_topic_schema\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x0euseTopicSchemaB\x0f\n" +
+	"\routput_format\"\xc8\x01\n" +
+	"\x10MessageTransform\x12c\n" +
+	"\x0ejavascript_udf\x18\x02 \x01(\v24.google.cloud.bigquery.analyticshub.v1.JavaScriptUDFB\x04\xe2A\x01\x01H\x00R\rjavascriptUdf\x12 \n" +
+	"\aenabled\x18\x03 \x01(\bB\x06\xe2A\x01\x01\x18\x01R\aenabled\x12 \n" +
+	"\bdisabled\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\bdisabledB\v\n" +
+	"\ttransform\"T\n" +
+	"\rJavaScriptUDF\x12)\n" +
+	"\rfunction_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\ffunctionName\x12\x18\n" +
+	"\x04code\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04codeB\x85\x02\n" +
 	")com.google.cloud.bigquery.analyticshub.v1B\vPubsubProtoP\x01ZMcloud.google.com/go/bigquery/analyticshub/apiv1/analyticshubpb;analyticshubpb\xaa\x02%Google.Cloud.BigQuery.AnalyticsHub.V1\xca\x02%Google\\Cloud\\BigQuery\\AnalyticsHub\\V1\xea\x02)Google::Cloud::Bigquery::AnalyticsHub::V1b\x06proto3"
 
 var (

@@ -20,6 +20,16 @@
                 "CreateParameterVersion"
               ]
             },
+            "CreateTemplate": {
+              "methods": [
+                "CreateTemplate"
+              ]
+            },
+            "CreateTemplateVersion": {
+              "methods": [
+                "CreateTemplateVersion"
+              ]
+            },
             "DeleteParameter": {
               "methods": [
                 "DeleteParameter"
@@ -28,6 +38,16 @@
             "DeleteParameterVersion": {
               "methods": [
                 "DeleteParameterVersion"
+              ]
+            },
+            "DeleteTemplate": {
+              "methods": [
+                "DeleteTemplate"
+              ]
+            },
+            "DeleteTemplateVersion": {
+              "methods": [
+                "DeleteTemplateVersion"
               ]
             },
             "GetLocation": {
@@ -45,6 +65,16 @@
                 "GetParameterVersion"
               ]
             },
+            "GetTemplate": {
+              "methods": [
+                "GetTemplate"
+              ]
+            },
+            "GetTemplateVersion": {
+              "methods": [
+                "GetTemplateVersion"
+              ]
+            },
             "ListLocations": {
               "methods": [
                 "ListLocations"
@@ -60,9 +90,24 @@
                 "ListParameters"
               ]
             },
+            "ListTemplateVersions": {
+              "methods": [
+                "ListTemplateVersions"
+              ]
+            },
+            "ListTemplates": {
+              "methods": [
+                "ListTemplates"
+              ]
+            },
             "RenderParameterVersion": {
               "methods": [
                 "RenderParameterVersion"
+              ]
+            },
+            "RenderTemplateVersion": {
+              "methods": [
+                "RenderTemplateVersion"
               ]
             },
             "UpdateParameter": {
@@ -73,6 +118,16 @@
             "UpdateParameterVersion": {
               "methods": [
                 "UpdateParameterVersion"
+              ]
+            },
+            "UpdateTemplate": {
+              "methods": [
+                "UpdateTemplate"
+              ]
+            },
+            "UpdateTemplateVersion": {
+              "methods": [
+                "UpdateTemplateVersion"
               ]
             }
           }
@@ -90,6 +145,16 @@
                 "CreateParameterVersion"
               ]
             },
+            "CreateTemplate": {
+              "methods": [
+                "CreateTemplate"
+              ]
+            },
+            "CreateTemplateVersion": {
+              "methods": [
+                "CreateTemplateVersion"
+              ]
+            },
             "DeleteParameter": {
               "methods": [
                 "DeleteParameter"
@@ -98,6 +163,16 @@
             "DeleteParameterVersion": {
               "methods": [
                 "DeleteParameterVersion"
+              ]
+            },
+            "DeleteTemplate": {
+              "methods": [
+                "DeleteTemplate"
+              ]
+            },
+            "DeleteTemplateVersion": {
+              "methods": [
+                "DeleteTemplateVersion"
               ]
             },
             "GetLocation": {
@@ -115,6 +190,16 @@
                 "GetParameterVersion"
               ]
             },
+            "GetTemplate": {
+              "methods": [
+                "GetTemplate"
+              ]
+            },
+            "GetTemplateVersion": {
+              "methods": [
+                "GetTemplateVersion"
+              ]
+            },
             "ListLocations": {
               "methods": [
                 "ListLocations"
@@ -130,9 +215,24 @@
                 "ListParameters"
               ]
             },
+            "ListTemplateVersions": {
+              "methods": [
+                "ListTemplateVersions"
+              ]
+            },
+            "ListTemplates": {
+              "methods": [
+                "ListTemplates"
+              ]
+            },
             "RenderParameterVersion": {
               "methods": [
                 "RenderParameterVersion"
+              ]
+            },
+            "RenderTemplateVersion": {
+              "methods": [
+                "RenderTemplateVersion"
               ]
             },
             "UpdateParameter": {
@@ -143,6 +243,16 @@
             "UpdateParameterVersion": {
               "methods": [
                 "UpdateParameterVersion"
+              ]
+            },
+            "UpdateTemplate": {
+              "methods": [
+                "UpdateTemplate"
+              ]
+            },
+            "UpdateTemplateVersion": {
+              "methods": [
+                "UpdateTemplateVersion"
               ]
             }
           }

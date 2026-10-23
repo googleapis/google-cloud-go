@@ -193,6 +193,33 @@ func NewSqlTiersClient(ctx context.Context, opts ...option.ClientOption) (*SqlTi
 
 		client.CallOptions.List = append(client.CallOptions.List, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "sqladmin",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/sql/apiv1beta4",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "sqladmin.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.List = append(client.CallOptions.List, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "sqladmin",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/sql/apiv1beta4",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "sqladmin.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.List = append(client.CallOptions.List, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -283,6 +310,33 @@ func NewSqlTiersRESTClient(ctx context.Context, opts ...option.ClientOption) (*S
 		)
 
 		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "sqladmin",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/sql/apiv1beta4",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "sqladmin.googleapis.com",
+			}),
+		)
+
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "sqladmin",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/sql/apiv1beta4",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "sqladmin.googleapis.com",
+			}),
+		)
+
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
 	}
 
 	return &SqlTiersClient{internalClient: c, CallOptions: callOpts}, nil

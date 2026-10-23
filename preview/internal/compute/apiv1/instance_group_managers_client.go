@@ -217,6 +217,8 @@ type internalInstanceGroupManagersClient interface {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The InstanceGroupManagers API.
+//
+// This client uses InstanceGroupManagers version 2026-10-01-preview.
 type InstanceGroupManagersClient struct {
 	// The internal transport-dependent client.
 	internalClient internalInstanceGroupManagersClient
@@ -655,6 +657,79 @@ func NewInstanceGroupManagersRESTClient(ctx context.Context, opts ...option.Clie
 		callOpts.SuspendInstances = append(callOpts.SuspendInstances, gax.WithClientMetrics(metrics))
 		callOpts.UpdatePerInstanceConfigs = append(callOpts.UpdatePerInstanceConfigs, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AbandonInstances = append(callOpts.AbandonInstances, gax.WithClientTracing(tracing))
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientTracing(tracing))
+		callOpts.ApplyUpdatesToInstances = append(callOpts.ApplyUpdatesToInstances, gax.WithClientTracing(tracing))
+		callOpts.CreateInstances = append(callOpts.CreateInstances, gax.WithClientTracing(tracing))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.DeleteInstances = append(callOpts.DeleteInstances, gax.WithClientTracing(tracing))
+		callOpts.DeletePerInstanceConfigs = append(callOpts.DeletePerInstanceConfigs, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+		callOpts.ListErrors = append(callOpts.ListErrors, gax.WithClientTracing(tracing))
+		callOpts.ListManagedInstances = append(callOpts.ListManagedInstances, gax.WithClientTracing(tracing))
+		callOpts.ListPerInstanceConfigs = append(callOpts.ListPerInstanceConfigs, gax.WithClientTracing(tracing))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientTracing(tracing))
+		callOpts.PatchPerInstanceConfigs = append(callOpts.PatchPerInstanceConfigs, gax.WithClientTracing(tracing))
+		callOpts.RecreateInstances = append(callOpts.RecreateInstances, gax.WithClientTracing(tracing))
+		callOpts.Resize = append(callOpts.Resize, gax.WithClientTracing(tracing))
+		callOpts.ResumeInstances = append(callOpts.ResumeInstances, gax.WithClientTracing(tracing))
+		callOpts.SetInstanceTemplate = append(callOpts.SetInstanceTemplate, gax.WithClientTracing(tracing))
+		callOpts.SetTargetPools = append(callOpts.SetTargetPools, gax.WithClientTracing(tracing))
+		callOpts.StartInstances = append(callOpts.StartInstances, gax.WithClientTracing(tracing))
+		callOpts.StopInstances = append(callOpts.StopInstances, gax.WithClientTracing(tracing))
+		callOpts.SuspendInstances = append(callOpts.SuspendInstances, gax.WithClientTracing(tracing))
+		callOpts.UpdatePerInstanceConfigs = append(callOpts.UpdatePerInstanceConfigs, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AbandonInstances = append(callOpts.AbandonInstances, gax.WithClientLogging(logging))
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientLogging(logging))
+		callOpts.ApplyUpdatesToInstances = append(callOpts.ApplyUpdatesToInstances, gax.WithClientLogging(logging))
+		callOpts.CreateInstances = append(callOpts.CreateInstances, gax.WithClientLogging(logging))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.DeleteInstances = append(callOpts.DeleteInstances, gax.WithClientLogging(logging))
+		callOpts.DeletePerInstanceConfigs = append(callOpts.DeletePerInstanceConfigs, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+		callOpts.ListErrors = append(callOpts.ListErrors, gax.WithClientLogging(logging))
+		callOpts.ListManagedInstances = append(callOpts.ListManagedInstances, gax.WithClientLogging(logging))
+		callOpts.ListPerInstanceConfigs = append(callOpts.ListPerInstanceConfigs, gax.WithClientLogging(logging))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientLogging(logging))
+		callOpts.PatchPerInstanceConfigs = append(callOpts.PatchPerInstanceConfigs, gax.WithClientLogging(logging))
+		callOpts.RecreateInstances = append(callOpts.RecreateInstances, gax.WithClientLogging(logging))
+		callOpts.Resize = append(callOpts.Resize, gax.WithClientLogging(logging))
+		callOpts.ResumeInstances = append(callOpts.ResumeInstances, gax.WithClientLogging(logging))
+		callOpts.SetInstanceTemplate = append(callOpts.SetInstanceTemplate, gax.WithClientLogging(logging))
+		callOpts.SetTargetPools = append(callOpts.SetTargetPools, gax.WithClientLogging(logging))
+		callOpts.StartInstances = append(callOpts.StartInstances, gax.WithClientLogging(logging))
+		callOpts.StopInstances = append(callOpts.StopInstances, gax.WithClientLogging(logging))
+		callOpts.SuspendInstances = append(callOpts.SuspendInstances, gax.WithClientLogging(logging))
+		callOpts.UpdatePerInstanceConfigs = append(callOpts.UpdatePerInstanceConfigs, gax.WithClientLogging(logging))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -689,6 +764,7 @@ func (c *instanceGroupManagersRESTClient) setGoogleClientInfo(keyval ...string) 
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-10-01-preview",
 	}
 }
 
@@ -752,9 +828,6 @@ func (c *instanceGroupManagersRESTClient) AbandonInstances(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/zones/%v/instanceGroupManagers/%v", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.InstanceGroupManagers/AbandonInstances")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/instanceGroupManagers/{instance_group_manager}/abandonInstances")
@@ -838,9 +911,6 @@ func (c *instanceGroupManagersRESTClient) AggregatedList(ctx context.Context, re
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
-		}
 		if req != nil && req.ServiceProjectNumber != nil {
 			params.Add("serviceProjectNumber", fmt.Sprintf("%v", req.GetServiceProjectNumber()))
 		}
@@ -922,9 +992,6 @@ func (c *instanceGroupManagersRESTClient) ApplyUpdatesToInstances(ctx context.Co
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/zones/%v/instanceGroupManagers/%v", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.InstanceGroupManagers/ApplyUpdatesToInstances")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/instanceGroupManagers/{instance_group_manager}/applyUpdatesToInstances")
@@ -999,9 +1066,6 @@ func (c *instanceGroupManagersRESTClient) CreateInstances(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/zones/%v/instanceGroupManagers/%v", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.InstanceGroupManagers/CreateInstances")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/instanceGroupManagers/{instance_group_manager}/createInstances")
@@ -1072,9 +1136,6 @@ func (c *instanceGroupManagersRESTClient) Delete(ctx context.Context, req *compu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/zones/%v/instanceGroupManagers/%v", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.InstanceGroupManagers/Delete")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/instanceGroupManagers/{instance_group_manager}")
@@ -1163,9 +1224,6 @@ func (c *instanceGroupManagersRESTClient) DeleteInstances(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/zones/%v/instanceGroupManagers/%v", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.InstanceGroupManagers/DeleteInstances")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/instanceGroupManagers/{instance_group_manager}/deleteInstances")
@@ -1231,9 +1289,6 @@ func (c *instanceGroupManagersRESTClient) DeletePerInstanceConfigs(ctx context.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/zones/%v/instanceGroupManagers/%v", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.InstanceGroupManagers/DeletePerInstanceConfigs")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/instanceGroupManagers/{instance_group_manager}/deletePerInstanceConfigs")
@@ -1291,9 +1346,6 @@ func (c *instanceGroupManagersRESTClient) Get(ctx context.Context, req *computep
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/zones/%v/instanceGroupManagers/%v", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.InstanceGroupManagers/Get")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/instanceGroupManagers/{instance_group_manager}")
@@ -1367,9 +1419,6 @@ func (c *instanceGroupManagersRESTClient) Insert(ctx context.Context, req *compu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/zones/%v", req.GetProject(), req.GetZone()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.InstanceGroupManagers/Insert")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/instanceGroupManagers")
@@ -1447,9 +1496,6 @@ func (c *instanceGroupManagersRESTClient) List(ctx context.Context, req *compute
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -1535,9 +1581,6 @@ func (c *instanceGroupManagersRESTClient) ListErrors(ctx context.Context, req *c
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -1630,9 +1673,6 @@ func (c *instanceGroupManagersRESTClient) ListManagedInstances(ctx context.Conte
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
-		}
 
 		baseUrl.RawQuery = params.Encode()
 
@@ -1716,9 +1756,6 @@ func (c *instanceGroupManagersRESTClient) ListPerInstanceConfigs(ctx context.Con
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -1811,9 +1848,6 @@ func (c *instanceGroupManagersRESTClient) Patch(ctx context.Context, req *comput
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/zones/%v/instanceGroupManagers/%v", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.InstanceGroupManagers/Patch")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/instanceGroupManagers/{instance_group_manager}")
@@ -1887,9 +1921,6 @@ func (c *instanceGroupManagersRESTClient) PatchPerInstanceConfigs(ctx context.Co
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/zones/%v/instanceGroupManagers/%v", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.InstanceGroupManagers/PatchPerInstanceConfigs")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/instanceGroupManagers/{instance_group_manager}/patchPerInstanceConfigs")
@@ -1976,9 +2007,6 @@ func (c *instanceGroupManagersRESTClient) RecreateInstances(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/zones/%v/instanceGroupManagers/%v", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.InstanceGroupManagers/RecreateInstances")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/instanceGroupManagers/{instance_group_manager}/recreateInstances")
@@ -2069,9 +2097,6 @@ func (c *instanceGroupManagersRESTClient) Resize(ctx context.Context, req *compu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/zones/%v/instanceGroupManagers/%v", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.InstanceGroupManagers/Resize")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/instanceGroupManagers/{instance_group_manager}/resize")
@@ -2158,9 +2183,6 @@ func (c *instanceGroupManagersRESTClient) ResumeInstances(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/zones/%v/instanceGroupManagers/%v", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.InstanceGroupManagers/ResumeInstances")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/instanceGroupManagers/{instance_group_manager}/resumeInstances")
@@ -2234,9 +2256,6 @@ func (c *instanceGroupManagersRESTClient) SetInstanceTemplate(ctx context.Contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/zones/%v/instanceGroupManagers/%v", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.InstanceGroupManagers/SetInstanceTemplate")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/instanceGroupManagers/{instance_group_manager}/setInstanceTemplate")
@@ -2313,9 +2332,6 @@ func (c *instanceGroupManagersRESTClient) SetTargetPools(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/zones/%v/instanceGroupManagers/%v", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.InstanceGroupManagers/SetTargetPools")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/instanceGroupManagers/{instance_group_manager}/setTargetPools")
@@ -2402,9 +2418,6 @@ func (c *instanceGroupManagersRESTClient) StartInstances(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/zones/%v/instanceGroupManagers/%v", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.InstanceGroupManagers/StartInstances")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/instanceGroupManagers/{instance_group_manager}/startInstances")
@@ -2503,9 +2516,6 @@ func (c *instanceGroupManagersRESTClient) StopInstances(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/zones/%v/instanceGroupManagers/%v", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.InstanceGroupManagers/StopInstances")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/instanceGroupManagers/{instance_group_manager}/stopInstances")
@@ -2601,9 +2611,6 @@ func (c *instanceGroupManagersRESTClient) SuspendInstances(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/zones/%v/instanceGroupManagers/%v", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.InstanceGroupManagers/SuspendInstances")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/instanceGroupManagers/{instance_group_manager}/suspendInstances")
@@ -2677,9 +2684,6 @@ func (c *instanceGroupManagersRESTClient) UpdatePerInstanceConfigs(ctx context.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/zones/%v/instanceGroupManagers/%v", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.InstanceGroupManagers/UpdatePerInstanceConfigs")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/instanceGroupManagers/{instance_group_manager}/updatePerInstanceConfigs")

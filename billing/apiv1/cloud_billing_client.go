@@ -575,6 +575,53 @@ func NewCloudBillingClient(ctx context.Context, opts ...option.ClientOption) (*C
 		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientMetrics(metrics))
 		client.CallOptions.MoveBillingAccount = append(client.CallOptions.MoveBillingAccount, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudbilling",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/billing/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudbilling.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetBillingAccount = append(client.CallOptions.GetBillingAccount, gax.WithClientTracing(tracing))
+		client.CallOptions.ListBillingAccounts = append(client.CallOptions.ListBillingAccounts, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateBillingAccount = append(client.CallOptions.UpdateBillingAccount, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateBillingAccount = append(client.CallOptions.CreateBillingAccount, gax.WithClientTracing(tracing))
+		client.CallOptions.ListProjectBillingInfo = append(client.CallOptions.ListProjectBillingInfo, gax.WithClientTracing(tracing))
+		client.CallOptions.GetProjectBillingInfo = append(client.CallOptions.GetProjectBillingInfo, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateProjectBillingInfo = append(client.CallOptions.UpdateProjectBillingInfo, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientTracing(tracing))
+		client.CallOptions.MoveBillingAccount = append(client.CallOptions.MoveBillingAccount, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudbilling",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/billing/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudbilling.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetBillingAccount = append(client.CallOptions.GetBillingAccount, gax.WithClientLogging(logging))
+		client.CallOptions.ListBillingAccounts = append(client.CallOptions.ListBillingAccounts, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateBillingAccount = append(client.CallOptions.UpdateBillingAccount, gax.WithClientLogging(logging))
+		client.CallOptions.CreateBillingAccount = append(client.CallOptions.CreateBillingAccount, gax.WithClientLogging(logging))
+		client.CallOptions.ListProjectBillingInfo = append(client.CallOptions.ListProjectBillingInfo, gax.WithClientLogging(logging))
+		client.CallOptions.GetProjectBillingInfo = append(client.CallOptions.GetProjectBillingInfo, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateProjectBillingInfo = append(client.CallOptions.UpdateProjectBillingInfo, gax.WithClientLogging(logging))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientLogging(logging))
+		client.CallOptions.MoveBillingAccount = append(client.CallOptions.MoveBillingAccount, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -677,6 +724,53 @@ func NewCloudBillingRESTClient(ctx context.Context, opts ...option.ClientOption)
 		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
 		callOpts.MoveBillingAccount = append(callOpts.MoveBillingAccount, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudbilling",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/billing/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudbilling.googleapis.com",
+			}),
+		)
+
+		callOpts.GetBillingAccount = append(callOpts.GetBillingAccount, gax.WithClientTracing(tracing))
+		callOpts.ListBillingAccounts = append(callOpts.ListBillingAccounts, gax.WithClientTracing(tracing))
+		callOpts.UpdateBillingAccount = append(callOpts.UpdateBillingAccount, gax.WithClientTracing(tracing))
+		callOpts.CreateBillingAccount = append(callOpts.CreateBillingAccount, gax.WithClientTracing(tracing))
+		callOpts.ListProjectBillingInfo = append(callOpts.ListProjectBillingInfo, gax.WithClientTracing(tracing))
+		callOpts.GetProjectBillingInfo = append(callOpts.GetProjectBillingInfo, gax.WithClientTracing(tracing))
+		callOpts.UpdateProjectBillingInfo = append(callOpts.UpdateProjectBillingInfo, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+		callOpts.MoveBillingAccount = append(callOpts.MoveBillingAccount, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudbilling",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/billing/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudbilling.googleapis.com",
+			}),
+		)
+
+		callOpts.GetBillingAccount = append(callOpts.GetBillingAccount, gax.WithClientLogging(logging))
+		callOpts.ListBillingAccounts = append(callOpts.ListBillingAccounts, gax.WithClientLogging(logging))
+		callOpts.UpdateBillingAccount = append(callOpts.UpdateBillingAccount, gax.WithClientLogging(logging))
+		callOpts.CreateBillingAccount = append(callOpts.CreateBillingAccount, gax.WithClientLogging(logging))
+		callOpts.ListProjectBillingInfo = append(callOpts.ListProjectBillingInfo, gax.WithClientLogging(logging))
+		callOpts.GetProjectBillingInfo = append(callOpts.GetProjectBillingInfo, gax.WithClientLogging(logging))
+		callOpts.UpdateProjectBillingInfo = append(callOpts.UpdateProjectBillingInfo, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+		callOpts.MoveBillingAccount = append(callOpts.MoveBillingAccount, gax.WithClientLogging(logging))
+	}
 
 	return &CloudBillingClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -723,9 +817,6 @@ func (c *cloudBillingGRPCClient) GetBillingAccount(ctx context.Context, req *bil
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbilling.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.billing.v1.CloudBilling/GetBillingAccount")
 	}
@@ -796,9 +887,6 @@ func (c *cloudBillingGRPCClient) UpdateBillingAccount(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbilling.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.billing.v1.CloudBilling/UpdateBillingAccount")
 	}
@@ -841,9 +929,6 @@ func (c *cloudBillingGRPCClient) ListProjectBillingInfo(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbilling.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.billing.v1.CloudBilling/ListProjectBillingInfo")
 	}
@@ -893,9 +978,6 @@ func (c *cloudBillingGRPCClient) GetProjectBillingInfo(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbilling.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.billing.v1.CloudBilling/GetProjectBillingInfo")
 	}
@@ -938,9 +1020,6 @@ func (c *cloudBillingGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbilling.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.billing.v1.CloudBilling/GetIamPolicy")
 	}
@@ -962,9 +1041,6 @@ func (c *cloudBillingGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbilling.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.billing.v1.CloudBilling/SetIamPolicy")
 	}
@@ -986,9 +1062,6 @@ func (c *cloudBillingGRPCClient) TestIamPermissions(ctx context.Context, req *ia
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbilling.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.billing.v1.CloudBilling/TestIamPermissions")
 	}
@@ -1010,9 +1083,6 @@ func (c *cloudBillingGRPCClient) MoveBillingAccount(ctx context.Context, req *bi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbilling.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.billing.v1.CloudBilling/MoveBillingAccount")
 	}
@@ -1050,9 +1120,6 @@ func (c *cloudBillingRESTClient) GetBillingAccount(ctx context.Context, req *bil
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbilling.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.billing.v1.CloudBilling/GetBillingAccount")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=billingAccounts/*}")
@@ -1212,9 +1279,6 @@ func (c *cloudBillingRESTClient) UpdateBillingAccount(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbilling.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.billing.v1.CloudBilling/UpdateBillingAccount")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=billingAccounts/*}")
@@ -1432,9 +1496,6 @@ func (c *cloudBillingRESTClient) GetProjectBillingInfo(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbilling.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.billing.v1.CloudBilling/GetProjectBillingInfo")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*}/billingInfo")
@@ -1586,9 +1647,6 @@ func (c *cloudBillingRESTClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbilling.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.billing.v1.CloudBilling/GetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=billingAccounts/*}:getIamPolicy")
@@ -1653,9 +1711,6 @@ func (c *cloudBillingRESTClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbilling.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.billing.v1.CloudBilling/SetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=billingAccounts/*}:setIamPolicy")
@@ -1718,9 +1773,6 @@ func (c *cloudBillingRESTClient) TestIamPermissions(ctx context.Context, req *ia
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbilling.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.billing.v1.CloudBilling/TestIamPermissions")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=billingAccounts/*}:testIamPermissions")
@@ -1781,9 +1833,6 @@ func (c *cloudBillingRESTClient) MoveBillingAccount(ctx context.Context, req *bi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbilling.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.billing.v1.CloudBilling/MoveBillingAccount")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=billingAccounts/*}:move")

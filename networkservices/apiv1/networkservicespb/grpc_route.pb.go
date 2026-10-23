@@ -1465,51 +1465,51 @@ var File_google_cloud_networkservices_v1_grpc_route_proto protoreflect.FileDescr
 
 const file_google_cloud_networkservices_v1_grpc_route_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/networkservices/v1/grpc_route.proto\x12\x1fgoogle.cloud.networkservices.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb5\x18\n" +
-	"\tGrpcRoute\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12 \n" +
-	"\tself_link\x18\f \x01(\tB\x03\xe0A\x03R\bselfLink\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12S\n" +
-	"\x06labels\x18\x04 \x03(\v26.google.cloud.networkservices.v1.GrpcRoute.LabelsEntryB\x03\xe0A\x01R\x06labels\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tB\x03\xe0A\x01R\vdescription\x12!\n" +
-	"\thostnames\x18\x06 \x03(\tB\x03\xe0A\x02R\thostnames\x12C\n" +
-	"\x06meshes\x18\t \x03(\tB+\xe0A\x01\xfaA%\n" +
-	"#networkservices.googleapis.com/MeshR\x06meshes\x12J\n" +
+	"0google/cloud/networkservices/v1/grpc_route.proto\x12\x1fgoogle.cloud.networkservices.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd3\x18\n" +
+	"\tGrpcRoute\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12!\n" +
+	"\tself_link\x18\f \x01(\tB\x04\xe2A\x01\x03R\bselfLink\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12T\n" +
+	"\x06labels\x18\x04 \x03(\v26.google.cloud.networkservices.v1.GrpcRoute.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\"\n" +
+	"\thostnames\x18\x06 \x03(\tB\x04\xe2A\x01\x02R\thostnames\x12D\n" +
+	"\x06meshes\x18\t \x03(\tB,\xe2A\x01\x01\xfaA%\n" +
+	"#networkservices.googleapis.com/MeshR\x06meshes\x12K\n" +
 	"\bgateways\x18\n" +
-	" \x03(\tB.\xe0A\x01\xfaA(\n" +
-	"&networkservices.googleapis.com/GatewayR\bgateways\x12O\n" +
-	"\x05rules\x18\a \x03(\v24.google.cloud.networkservices.v1.GrpcRoute.RouteRuleB\x03\xe0A\x02R\x05rules\x1a\xb6\x02\n" +
-	"\vMethodMatch\x12T\n" +
-	"\x04type\x18\x01 \x01(\x0e2;.google.cloud.networkservices.v1.GrpcRoute.MethodMatch.TypeB\x03\xe0A\x01R\x04type\x12&\n" +
-	"\fgrpc_service\x18\x02 \x01(\tB\x03\xe0A\x02R\vgrpcService\x12$\n" +
-	"\vgrpc_method\x18\x03 \x01(\tB\x03\xe0A\x02R\n" +
-	"grpcMethod\x12/\n" +
-	"\x0ecase_sensitive\x18\x04 \x01(\bB\x03\xe0A\x01H\x00R\rcaseSensitive\x88\x01\x01\"?\n" +
+	" \x03(\tB/\xe2A\x01\x01\xfaA(\n" +
+	"&networkservices.googleapis.com/GatewayR\bgateways\x12P\n" +
+	"\x05rules\x18\a \x03(\v24.google.cloud.networkservices.v1.GrpcRoute.RouteRuleB\x04\xe2A\x01\x02R\x05rules\x1a\xba\x02\n" +
+	"\vMethodMatch\x12U\n" +
+	"\x04type\x18\x01 \x01(\x0e2;.google.cloud.networkservices.v1.GrpcRoute.MethodMatch.TypeB\x04\xe2A\x01\x01R\x04type\x12'\n" +
+	"\fgrpc_service\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vgrpcService\x12%\n" +
+	"\vgrpc_method\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"grpcMethod\x120\n" +
+	"\x0ecase_sensitive\x18\x04 \x01(\bB\x04\xe2A\x01\x01H\x00R\rcaseSensitive\x88\x01\x01\"?\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05EXACT\x10\x01\x12\x16\n" +
 	"\x12REGULAR_EXPRESSION\x10\x02B\x11\n" +
-	"\x0f_case_sensitive\x1a\xd6\x01\n" +
-	"\vHeaderMatch\x12T\n" +
-	"\x04type\x18\x01 \x01(\x0e2;.google.cloud.networkservices.v1.GrpcRoute.HeaderMatch.TypeB\x03\xe0A\x01R\x04type\x12\x15\n" +
-	"\x03key\x18\x02 \x01(\tB\x03\xe0A\x02R\x03key\x12\x19\n" +
-	"\x05value\x18\x03 \x01(\tB\x03\xe0A\x02R\x05value\"?\n" +
+	"\x0f_case_sensitive\x1a\xd9\x01\n" +
+	"\vHeaderMatch\x12U\n" +
+	"\x04type\x18\x01 \x01(\x0e2;.google.cloud.networkservices.v1.GrpcRoute.HeaderMatch.TypeB\x04\xe2A\x01\x01R\x04type\x12\x16\n" +
+	"\x03key\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x03key\x12\x1a\n" +
+	"\x05value\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x05value\"?\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05EXACT\x10\x01\x12\x16\n" +
-	"\x12REGULAR_EXPRESSION\x10\x02\x1a\xc8\x01\n" +
+	"\x12REGULAR_EXPRESSION\x10\x02\x1a\xca\x01\n" +
 	"\n" +
-	"RouteMatch\x12X\n" +
-	"\x06method\x18\x01 \x01(\v26.google.cloud.networkservices.v1.GrpcRoute.MethodMatchB\x03\xe0A\x01H\x00R\x06method\x88\x01\x01\x12U\n" +
-	"\aheaders\x18\x02 \x03(\v26.google.cloud.networkservices.v1.GrpcRoute.HeaderMatchB\x03\xe0A\x01R\aheadersB\t\n" +
-	"\a_method\x1a\xa2\x01\n" +
-	"\vDestination\x12R\n" +
-	"\fservice_name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%compute.googleapis.com/BackendServiceH\x00R\vserviceName\x12 \n" +
-	"\x06weight\x18\x02 \x01(\x05B\x03\xe0A\x01H\x01R\x06weight\x88\x01\x01B\x12\n" +
+	"RouteMatch\x12Y\n" +
+	"\x06method\x18\x01 \x01(\v26.google.cloud.networkservices.v1.GrpcRoute.MethodMatchB\x04\xe2A\x01\x01H\x00R\x06method\x88\x01\x01\x12V\n" +
+	"\aheaders\x18\x02 \x03(\v26.google.cloud.networkservices.v1.GrpcRoute.HeaderMatchB\x04\xe2A\x01\x01R\aheadersB\t\n" +
+	"\a_method\x1a\xa4\x01\n" +
+	"\vDestination\x12S\n" +
+	"\fservice_name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%compute.googleapis.com/BackendServiceH\x00R\vserviceName\x12!\n" +
+	"\x06weight\x18\x02 \x01(\x05B\x04\xe2A\x01\x01H\x01R\x06weight\x88\x01\x01B\x12\n" +
 	"\x10destination_typeB\t\n" +
 	"\a_weight\x1a\xf0\x03\n" +
 	"\x14FaultInjectionPolicy\x12`\n" +
@@ -1532,54 +1532,54 @@ const file_google_cloud_networkservices_v1_grpc_route_proto_rawDesc = "" +
 	"\f_http_statusB\r\n" +
 	"\v_percentageB\b\n" +
 	"\x06_delayB\b\n" +
-	"\x06_abort\x1a^\n" +
-	"\x1dStatefulSessionAffinityPolicy\x12=\n" +
+	"\x06_abort\x1a_\n" +
+	"\x1dStatefulSessionAffinityPolicy\x12>\n" +
 	"\n" +
-	"cookie_ttl\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x02R\tcookieTtl\x1aY\n" +
+	"cookie_ttl\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x02R\tcookieTtl\x1aY\n" +
 	"\vRetryPolicy\x12)\n" +
 	"\x10retry_conditions\x18\x01 \x03(\tR\x0fretryConditions\x12\x1f\n" +
 	"\vnum_retries\x18\x02 \x01(\rR\n" +
-	"numRetries\x1a\xd3\x04\n" +
-	"\vRouteAction\x12_\n" +
-	"\fdestinations\x18\x01 \x03(\v26.google.cloud.networkservices.v1.GrpcRoute.DestinationB\x03\xe0A\x01R\fdestinations\x12z\n" +
-	"\x16fault_injection_policy\x18\x03 \x01(\v2?.google.cloud.networkservices.v1.GrpcRoute.FaultInjectionPolicyB\x03\xe0A\x01R\x14faultInjectionPolicy\x128\n" +
-	"\atimeout\x18\a \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\atimeout\x12^\n" +
-	"\fretry_policy\x18\b \x01(\v26.google.cloud.networkservices.v1.GrpcRoute.RetryPolicyB\x03\xe0A\x01R\vretryPolicy\x12\x89\x01\n" +
-	"\x19stateful_session_affinity\x18\v \x01(\v2H.google.cloud.networkservices.v1.GrpcRoute.StatefulSessionAffinityPolicyB\x03\xe0A\x01R\x17statefulSessionAffinity\x12A\n" +
-	"\fidle_timeout\x18\f \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\vidleTimeout\x1a\xb6\x01\n" +
-	"\tRouteRule\x12T\n" +
-	"\amatches\x18\x01 \x03(\v25.google.cloud.networkservices.v1.GrpcRoute.RouteMatchB\x03\xe0A\x01R\amatches\x12S\n" +
-	"\x06action\x18\x02 \x01(\v26.google.cloud.networkservices.v1.GrpcRoute.RouteActionB\x03\xe0A\x02R\x06action\x1a9\n" +
+	"numRetries\x1a\xd9\x04\n" +
+	"\vRouteAction\x12`\n" +
+	"\fdestinations\x18\x01 \x03(\v26.google.cloud.networkservices.v1.GrpcRoute.DestinationB\x04\xe2A\x01\x01R\fdestinations\x12{\n" +
+	"\x16fault_injection_policy\x18\x03 \x01(\v2?.google.cloud.networkservices.v1.GrpcRoute.FaultInjectionPolicyB\x04\xe2A\x01\x01R\x14faultInjectionPolicy\x129\n" +
+	"\atimeout\x18\a \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\atimeout\x12_\n" +
+	"\fretry_policy\x18\b \x01(\v26.google.cloud.networkservices.v1.GrpcRoute.RetryPolicyB\x04\xe2A\x01\x01R\vretryPolicy\x12\x8a\x01\n" +
+	"\x19stateful_session_affinity\x18\v \x01(\v2H.google.cloud.networkservices.v1.GrpcRoute.StatefulSessionAffinityPolicyB\x04\xe2A\x01\x01R\x17statefulSessionAffinity\x12B\n" +
+	"\fidle_timeout\x18\f \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\vidleTimeout\x1a\xb8\x01\n" +
+	"\tRouteRule\x12U\n" +
+	"\amatches\x18\x01 \x03(\v25.google.cloud.networkservices.v1.GrpcRoute.RouteMatchB\x04\xe2A\x01\x01R\amatches\x12T\n" +
+	"\x06action\x18\x02 \x01(\v26.google.cloud.networkservices.v1.GrpcRoute.RouteActionB\x04\xe2A\x01\x02R\x06action\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:n\xeaAk\n" +
-	"(networkservices.googleapis.com/GrpcRoute\x12?projects/{project}/locations/{location}/grpcRoutes/{grpc_route}\"\xd8\x01\n" +
-	"\x15ListGrpcRoutesRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(networkservices.googleapis.com/GrpcRouteR\x06parent\x12\x1b\n" +
+	"(networkservices.googleapis.com/GrpcRoute\x12?projects/{project}/locations/{location}/grpcRoutes/{grpc_route}\"\xda\x01\n" +
+	"\x15ListGrpcRoutesRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(networkservices.googleapis.com/GrpcRouteR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\x129\n" +
-	"\x16return_partial_success\x18\x04 \x01(\bB\x03\xe0A\x01R\x14returnPartialSuccess\"\xaf\x01\n" +
+	"page_token\x18\x03 \x01(\tR\tpageToken\x12:\n" +
+	"\x16return_partial_success\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x14returnPartialSuccess\"\xaf\x01\n" +
 	"\x16ListGrpcRoutesResponse\x12K\n" +
 	"\vgrpc_routes\x18\x01 \x03(\v2*.google.cloud.networkservices.v1.GrpcRouteR\n" +
 	"grpcRoutes\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"[\n" +
-	"\x13GetGrpcRouteRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(networkservices.googleapis.com/GrpcRouteR\x04name\"\xdb\x01\n" +
-	"\x16CreateGrpcRouteRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(networkservices.googleapis.com/GrpcRouteR\x06parent\x12'\n" +
-	"\rgrpc_route_id\x18\x02 \x01(\tB\x03\xe0A\x02R\vgrpcRouteId\x12N\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\\\n" +
+	"\x13GetGrpcRouteRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(networkservices.googleapis.com/GrpcRouteR\x04name\"\xde\x01\n" +
+	"\x16CreateGrpcRouteRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(networkservices.googleapis.com/GrpcRouteR\x06parent\x12(\n" +
+	"\rgrpc_route_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vgrpcRouteId\x12O\n" +
 	"\n" +
-	"grpc_route\x18\x03 \x01(\v2*.google.cloud.networkservices.v1.GrpcRouteB\x03\xe0A\x02R\tgrpcRoute\"\xaa\x01\n" +
-	"\x16UpdateGrpcRouteRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12N\n" +
+	"grpc_route\x18\x03 \x01(\v2*.google.cloud.networkservices.v1.GrpcRouteB\x04\xe2A\x01\x02R\tgrpcRoute\"\xac\x01\n" +
+	"\x16UpdateGrpcRouteRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12O\n" +
 	"\n" +
-	"grpc_route\x18\x02 \x01(\v2*.google.cloud.networkservices.v1.GrpcRouteB\x03\xe0A\x02R\tgrpcRoute\"^\n" +
-	"\x16DeleteGrpcRouteRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"grpc_route\x18\x02 \x01(\v2*.google.cloud.networkservices.v1.GrpcRouteB\x04\xe2A\x01\x02R\tgrpcRoute\"_\n" +
+	"\x16DeleteGrpcRouteRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
 	"(networkservices.googleapis.com/GrpcRouteR\x04nameB\xe4\x02\xeaAr\n" +
 	"%compute.googleapis.com/BackendService\x12Iprojects/{project}/locations/{location}/backendServices/{backend_service}\n" +
 	"#com.google.cloud.networkservices.v1B\x0eGrpcRouteProtoP\x01ZMcloud.google.com/go/networkservices/apiv1/networkservicespb;networkservicespb\xaa\x02\x1fGoogle.Cloud.NetworkServices.V1\xca\x02\x1fGoogle\\Cloud\\NetworkServices\\V1\xea\x02\"Google::Cloud::NetworkServices::V1b\x06proto3"

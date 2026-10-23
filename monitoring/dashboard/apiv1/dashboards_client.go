@@ -314,6 +314,41 @@ func NewDashboardsClient(ctx context.Context, opts ...option.ClientOption) (*Das
 		client.CallOptions.DeleteDashboard = append(client.CallOptions.DeleteDashboard, gax.WithClientMetrics(metrics))
 		client.CallOptions.UpdateDashboard = append(client.CallOptions.UpdateDashboard, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "monitoring",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/monitoring/dashboard/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "monitoring.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateDashboard = append(client.CallOptions.CreateDashboard, gax.WithClientTracing(tracing))
+		client.CallOptions.ListDashboards = append(client.CallOptions.ListDashboards, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDashboard = append(client.CallOptions.GetDashboard, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteDashboard = append(client.CallOptions.DeleteDashboard, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateDashboard = append(client.CallOptions.UpdateDashboard, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "monitoring",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/monitoring/dashboard/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "monitoring.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateDashboard = append(client.CallOptions.CreateDashboard, gax.WithClientLogging(logging))
+		client.CallOptions.ListDashboards = append(client.CallOptions.ListDashboards, gax.WithClientLogging(logging))
+		client.CallOptions.GetDashboard = append(client.CallOptions.GetDashboard, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteDashboard = append(client.CallOptions.DeleteDashboard, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateDashboard = append(client.CallOptions.UpdateDashboard, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -410,6 +445,41 @@ func NewDashboardsRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		callOpts.DeleteDashboard = append(callOpts.DeleteDashboard, gax.WithClientMetrics(metrics))
 		callOpts.UpdateDashboard = append(callOpts.UpdateDashboard, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "monitoring",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/monitoring/dashboard/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "monitoring.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateDashboard = append(callOpts.CreateDashboard, gax.WithClientTracing(tracing))
+		callOpts.ListDashboards = append(callOpts.ListDashboards, gax.WithClientTracing(tracing))
+		callOpts.GetDashboard = append(callOpts.GetDashboard, gax.WithClientTracing(tracing))
+		callOpts.DeleteDashboard = append(callOpts.DeleteDashboard, gax.WithClientTracing(tracing))
+		callOpts.UpdateDashboard = append(callOpts.UpdateDashboard, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "monitoring",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/monitoring/dashboard/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "monitoring.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateDashboard = append(callOpts.CreateDashboard, gax.WithClientLogging(logging))
+		callOpts.ListDashboards = append(callOpts.ListDashboards, gax.WithClientLogging(logging))
+		callOpts.GetDashboard = append(callOpts.GetDashboard, gax.WithClientLogging(logging))
+		callOpts.DeleteDashboard = append(callOpts.DeleteDashboard, gax.WithClientLogging(logging))
+		callOpts.UpdateDashboard = append(callOpts.UpdateDashboard, gax.WithClientLogging(logging))
+	}
 
 	return &DashboardsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -456,9 +526,6 @@ func (c *dashboardsGRPCClient) CreateDashboard(ctx context.Context, req *dashboa
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//monitoring.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.monitoring.dashboard.v1.DashboardsService/CreateDashboard")
 	}
@@ -480,9 +547,6 @@ func (c *dashboardsGRPCClient) ListDashboards(ctx context.Context, req *dashboar
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//monitoring.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.monitoring.dashboard.v1.DashboardsService/ListDashboards")
 	}
@@ -532,9 +596,6 @@ func (c *dashboardsGRPCClient) GetDashboard(ctx context.Context, req *dashboardp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//monitoring.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.monitoring.dashboard.v1.DashboardsService/GetDashboard")
 	}
@@ -556,9 +617,6 @@ func (c *dashboardsGRPCClient) DeleteDashboard(ctx context.Context, req *dashboa
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//monitoring.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.monitoring.dashboard.v1.DashboardsService/DeleteDashboard")
 	}
@@ -626,9 +684,6 @@ func (c *dashboardsRESTClient) CreateDashboard(ctx context.Context, req *dashboa
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//monitoring.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.monitoring.dashboard.v1.DashboardsService/CreateDashboard")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*}/dashboards")
@@ -769,9 +824,6 @@ func (c *dashboardsRESTClient) GetDashboard(ctx context.Context, req *dashboardp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//monitoring.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.monitoring.dashboard.v1.DashboardsService/GetDashboard")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/dashboards/*}")
@@ -830,9 +882,6 @@ func (c *dashboardsRESTClient) DeleteDashboard(ctx context.Context, req *dashboa
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//monitoring.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.monitoring.dashboard.v1.DashboardsService/DeleteDashboard")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/dashboards/*}")

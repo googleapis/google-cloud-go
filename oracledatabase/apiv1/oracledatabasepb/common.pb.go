@@ -329,22 +329,22 @@ var File_google_cloud_oracledatabase_v1_common_proto protoreflect.FileDescriptor
 
 const file_google_cloud_oracledatabase_v1_common_proto_rawDesc = "" +
 	"\n" +
-	"+google/cloud/oracledatabase/v1/common.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\",\n" +
-	"\x0fCustomerContact\x12\x19\n" +
-	"\x05email\x18\x01 \x01(\tB\x03\xe0A\x02R\x05email\"\xb7\x02\n" +
-	"\x11IdentityConnector\x123\n" +
-	"\x13service_agent_email\x18\x01 \x01(\tB\x03\xe0A\x03R\x11serviceAgentEmail\x12q\n" +
-	"\x10connection_state\x18\x02 \x01(\x0e2A.google.cloud.oracledatabase.v1.IdentityConnector.ConnectionStateB\x03\xe0A\x03R\x0fconnectionState\"z\n" +
+	"+google/cloud/oracledatabase/v1/common.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\"-\n" +
+	"\x0fCustomerContact\x12\x1a\n" +
+	"\x05email\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05email\"\xb9\x02\n" +
+	"\x11IdentityConnector\x124\n" +
+	"\x13service_agent_email\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x11serviceAgentEmail\x12r\n" +
+	"\x10connection_state\x18\x02 \x01(\x0e2A.google.cloud.oracledatabase.v1.IdentityConnector.ConnectionStateB\x04\xe2A\x01\x03R\x0fconnectionState\"z\n" +
 	"\x0fConnectionState\x12 \n" +
 	"\x1cCONNECTION_STATE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tCONNECTED\x10\x01\x12\x17\n" +
 	"\x13PARTIALLY_CONNECTED\x10\x02\x12\x10\n" +
 	"\fDISCONNECTED\x10\x03\x12\v\n" +
-	"\aUNKNOWN\x10\x04\"\xe9\x01\n" +
-	"\x1bDataCollectionOptionsCommon\x12F\n" +
-	"\x1dis_diagnostics_events_enabled\x18\x01 \x01(\bB\x03\xe0A\x01R\x1aisDiagnosticsEventsEnabled\x12D\n" +
-	"\x1cis_health_monitoring_enabled\x18\x02 \x01(\bB\x03\xe0A\x01R\x19isHealthMonitoringEnabled\x12<\n" +
-	"\x18is_incident_logs_enabled\x18\x03 \x01(\bB\x03\xe0A\x01R\x15isIncidentLogsEnabled*]\n" +
+	"\aUNKNOWN\x10\x04\"\xec\x01\n" +
+	"\x1bDataCollectionOptionsCommon\x12G\n" +
+	"\x1dis_diagnostics_events_enabled\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x1aisDiagnosticsEventsEnabled\x12E\n" +
+	"\x1cis_health_monitoring_enabled\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x19isHealthMonitoringEnabled\x12=\n" +
+	"\x18is_incident_logs_enabled\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x15isIncidentLogsEnabled*]\n" +
 	"\fComputeModel\x12\x1d\n" +
 	"\x19COMPUTE_MODEL_UNSPECIFIED\x10\x00\x12\x16\n" +
 	"\x12COMPUTE_MODEL_ECPU\x10\x01\x12\x16\n" +

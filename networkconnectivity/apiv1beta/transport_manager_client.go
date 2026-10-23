@@ -479,6 +479,67 @@ func NewTransportManagerClient(ctx context.Context, opts ...option.ClientOption)
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "networkconnectivity",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/networkconnectivity/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "networkconnectivity.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListRemoteTransportProfiles = append(client.CallOptions.ListRemoteTransportProfiles, gax.WithClientTracing(tracing))
+		client.CallOptions.GetRemoteTransportProfile = append(client.CallOptions.GetRemoteTransportProfile, gax.WithClientTracing(tracing))
+		client.CallOptions.ParseFromActivationKey = append(client.CallOptions.ParseFromActivationKey, gax.WithClientTracing(tracing))
+		client.CallOptions.ListTransports = append(client.CallOptions.ListTransports, gax.WithClientTracing(tracing))
+		client.CallOptions.GetTransport = append(client.CallOptions.GetTransport, gax.WithClientTracing(tracing))
+		client.CallOptions.GetStatus = append(client.CallOptions.GetStatus, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateTransport = append(client.CallOptions.CreateTransport, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateTransport = append(client.CallOptions.UpdateTransport, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteTransport = append(client.CallOptions.DeleteTransport, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "networkconnectivity",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/networkconnectivity/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "networkconnectivity.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListRemoteTransportProfiles = append(client.CallOptions.ListRemoteTransportProfiles, gax.WithClientLogging(logging))
+		client.CallOptions.GetRemoteTransportProfile = append(client.CallOptions.GetRemoteTransportProfile, gax.WithClientLogging(logging))
+		client.CallOptions.ParseFromActivationKey = append(client.CallOptions.ParseFromActivationKey, gax.WithClientLogging(logging))
+		client.CallOptions.ListTransports = append(client.CallOptions.ListTransports, gax.WithClientLogging(logging))
+		client.CallOptions.GetTransport = append(client.CallOptions.GetTransport, gax.WithClientLogging(logging))
+		client.CallOptions.GetStatus = append(client.CallOptions.GetStatus, gax.WithClientLogging(logging))
+		client.CallOptions.CreateTransport = append(client.CallOptions.CreateTransport, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateTransport = append(client.CallOptions.UpdateTransport, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteTransport = append(client.CallOptions.DeleteTransport, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -526,9 +587,6 @@ func (c *transportManagerGRPCClient) ListRemoteTransportProfiles(ctx context.Con
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1beta.TransportManager/ListRemoteTransportProfiles")
 	}
@@ -578,9 +636,6 @@ func (c *transportManagerGRPCClient) GetRemoteTransportProfile(ctx context.Conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1beta.TransportManager/GetRemoteTransportProfile")
 	}
@@ -602,9 +657,6 @@ func (c *transportManagerGRPCClient) ParseFromActivationKey(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1beta.TransportManager/ParseFromActivationKey")
 	}
@@ -626,9 +678,6 @@ func (c *transportManagerGRPCClient) ListTransports(ctx context.Context, req *ne
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1beta.TransportManager/ListTransports")
 	}
@@ -678,9 +727,6 @@ func (c *transportManagerGRPCClient) GetTransport(ctx context.Context, req *netw
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1beta.TransportManager/GetTransport")
 	}
@@ -702,9 +748,6 @@ func (c *transportManagerGRPCClient) GetStatus(ctx context.Context, req *network
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1beta.TransportManager/GetStatus")
 	}
@@ -726,9 +769,6 @@ func (c *transportManagerGRPCClient) CreateTransport(ctx context.Context, req *n
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1beta.TransportManager/CreateTransport")
 	}
@@ -783,9 +823,6 @@ func (c *transportManagerGRPCClient) DeleteTransport(ctx context.Context, req *n
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1beta.TransportManager/DeleteTransport")
 	}
@@ -883,9 +920,6 @@ func (c *transportManagerGRPCClient) GetIamPolicy(ctx context.Context, req *iamp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
 	}
@@ -907,9 +941,6 @@ func (c *transportManagerGRPCClient) SetIamPolicy(ctx context.Context, req *iamp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
 	}
@@ -931,9 +962,6 @@ func (c *transportManagerGRPCClient) TestIamPermissions(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
 	}

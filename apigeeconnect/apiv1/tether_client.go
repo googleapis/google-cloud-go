@@ -186,6 +186,33 @@ func NewTetherClient(ctx context.Context, opts ...option.ClientOption) (*TetherC
 
 		client.CallOptions.Egress = append(client.CallOptions.Egress, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "apigeeconnect",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apigeeconnect/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "apigeeconnect.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.Egress = append(client.CallOptions.Egress, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "apigeeconnect",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apigeeconnect/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "apigeeconnect.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.Egress = append(client.CallOptions.Egress, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 

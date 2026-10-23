@@ -1092,34 +1092,34 @@ var File_google_cloud_networkconnectivity_v1_internal_range_proto protoreflect.F
 
 const file_google_cloud_networkconnectivity_v1_internal_range_proto_rawDesc = "" +
 	"\n" +
-	"8google/cloud/networkconnectivity/v1/internal_range.proto\x12#google.cloud.networkconnectivity.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/networkconnectivity/v1/common.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xab\x0f\n" +
-	"\rInternalRange\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"8google/cloud/networkconnectivity/v1/internal_range.proto\x12#google.cloud.networkconnectivity.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/networkconnectivity/v1/common.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbf\x0f\n" +
+	"\rInternalRange\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12V\n" +
-	"\x06labels\x18\x04 \x03(\v2>.google.cloud.networkconnectivity.v1.InternalRange.LabelsEntryR\x06labels\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tB\x03\xe0A\x01R\vdescription\x12'\n" +
-	"\rip_cidr_range\x18\x06 \x01(\tB\x03\xe0A\x01R\vipCidrRange\x12\x1d\n" +
-	"\anetwork\x18\a \x01(\tB\x03\xe0A\x05R\anetwork\x12S\n" +
-	"\x05usage\x18\b \x01(\x0e28.google.cloud.networkconnectivity.v1.InternalRange.UsageB\x03\xe0A\x01R\x05usage\x12Y\n" +
-	"\apeering\x18\t \x01(\x0e2:.google.cloud.networkconnectivity.v1.InternalRange.PeeringB\x03\xe0A\x01R\apeering\x12(\n" +
+	"\x06labels\x18\x04 \x03(\v2>.google.cloud.networkconnectivity.v1.InternalRange.LabelsEntryR\x06labels\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12(\n" +
+	"\rip_cidr_range\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\vipCidrRange\x12\x1e\n" +
+	"\anetwork\x18\a \x01(\tB\x04\xe2A\x01\x05R\anetwork\x12T\n" +
+	"\x05usage\x18\b \x01(\x0e28.google.cloud.networkconnectivity.v1.InternalRange.UsageB\x04\xe2A\x01\x01R\x05usage\x12Z\n" +
+	"\apeering\x18\t \x01(\x0e2:.google.cloud.networkconnectivity.v1.InternalRange.PeeringB\x04\xe2A\x01\x01R\apeering\x12)\n" +
 	"\rprefix_length\x18\n" +
-	" \x01(\x05B\x03\xe0A\x01R\fprefixLength\x12/\n" +
-	"\x11target_cidr_range\x18\v \x03(\tB\x03\xe0A\x01R\x0ftargetCidrRange\x12\x19\n" +
-	"\x05users\x18\f \x03(\tB\x03\xe0A\x03R\x05users\x12[\n" +
-	"\boverlaps\x18\r \x03(\x0e2:.google.cloud.networkconnectivity.v1.InternalRange.OverlapB\x03\xe0A\x01R\boverlaps\x12_\n" +
-	"\tmigration\x18\x0e \x01(\v2<.google.cloud.networkconnectivity.v1.InternalRange.MigrationB\x03\xe0A\x01R\tmigration\x12!\n" +
-	"\timmutable\x18\x0f \x01(\bB\x03\xe0A\x01R\timmutable\x12x\n" +
-	"\x12allocation_options\x18\x10 \x01(\v2D.google.cloud.networkconnectivity.v1.InternalRange.AllocationOptionsB\x03\xe0A\x01R\x11allocationOptions\x123\n" +
-	"\x13exclude_cidr_ranges\x18\x11 \x03(\tB\x03\xe0A\x01R\x11excludeCidrRanges\x1aE\n" +
-	"\tMigration\x12\x1b\n" +
-	"\x06source\x18\x01 \x01(\tB\x03\xe0A\x05R\x06source\x12\x1b\n" +
-	"\x06target\x18\x02 \x01(\tB\x03\xe0A\x05R\x06target\x1a\xe1\x01\n" +
-	"\x11AllocationOptions\x12{\n" +
-	"\x13allocation_strategy\x18\x01 \x01(\x0e2E.google.cloud.networkconnectivity.v1.InternalRange.AllocationStrategyB\x03\xe0A\x01R\x12allocationStrategy\x12O\n" +
-	"\"first_available_ranges_lookup_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\x1efirstAvailableRangesLookupSize\x1a9\n" +
+	" \x01(\x05B\x04\xe2A\x01\x01R\fprefixLength\x120\n" +
+	"\x11target_cidr_range\x18\v \x03(\tB\x04\xe2A\x01\x01R\x0ftargetCidrRange\x12\x1a\n" +
+	"\x05users\x18\f \x03(\tB\x04\xe2A\x01\x03R\x05users\x12\\\n" +
+	"\boverlaps\x18\r \x03(\x0e2:.google.cloud.networkconnectivity.v1.InternalRange.OverlapB\x04\xe2A\x01\x01R\boverlaps\x12`\n" +
+	"\tmigration\x18\x0e \x01(\v2<.google.cloud.networkconnectivity.v1.InternalRange.MigrationB\x04\xe2A\x01\x01R\tmigration\x12\"\n" +
+	"\timmutable\x18\x0f \x01(\bB\x04\xe2A\x01\x01R\timmutable\x12y\n" +
+	"\x12allocation_options\x18\x10 \x01(\v2D.google.cloud.networkconnectivity.v1.InternalRange.AllocationOptionsB\x04\xe2A\x01\x01R\x11allocationOptions\x124\n" +
+	"\x13exclude_cidr_ranges\x18\x11 \x03(\tB\x04\xe2A\x01\x01R\x11excludeCidrRanges\x1aG\n" +
+	"\tMigration\x12\x1c\n" +
+	"\x06source\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x06source\x12\x1c\n" +
+	"\x06target\x18\x02 \x01(\tB\x04\xe2A\x01\x05R\x06target\x1a\xe3\x01\n" +
+	"\x11AllocationOptions\x12|\n" +
+	"\x13allocation_strategy\x18\x01 \x01(\x0e2E.google.cloud.networkconnectivity.v1.InternalRange.AllocationStrategyB\x04\xe2A\x01\x01R\x12allocationStrategy\x12P\n" +
+	"\"first_available_ranges_lookup_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x1efirstAvailableRangesLookupSize\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"S\n" +
@@ -1145,9 +1145,9 @@ const file_google_cloud_networkconnectivity_v1_internal_range_proto_rawDesc = ""
 	"\x0fFIRST_AVAILABLE\x10\x02\x12\x1c\n" +
 	"\x18RANDOM_FIRST_N_AVAILABLE\x10\x03\x12\x1a\n" +
 	"\x16FIRST_SMALLEST_FITTING\x10\x04:~\xeaA{\n" +
-	"0networkconnectivity.googleapis.com/InternalRange\x12Gprojects/{project}/locations/{location}/internalRanges/{internal_range}\"\xcd\x01\n" +
-	"\x19ListInternalRangesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"0networkconnectivity.googleapis.com/InternalRange\x12Gprojects/{project}/locations/{location}/internalRanges/{internal_range}\"\xce\x01\n" +
+	"\x19ListInternalRangesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -1157,27 +1157,27 @@ const file_google_cloud_networkconnectivity_v1_internal_range_proto_rawDesc = ""
 	"\x1aListInternalRangesResponse\x12[\n" +
 	"\x0finternal_ranges\x18\x01 \x03(\v22.google.cloud.networkconnectivity.v1.InternalRangeR\x0einternalRanges\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"g\n" +
-	"\x17GetInternalRangeRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0networkconnectivity.googleapis.com/InternalRangeR\x04name\"\xa3\x02\n" +
-	"\x1aCreateInternalRangeRequest\x12P\n" +
-	"\x06parent\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\x120networkconnectivity.googleapis.com/InternalRangeR\x06parent\x12/\n" +
-	"\x11internal_range_id\x18\x02 \x01(\tB\x03\xe0A\x01R\x0finternalRangeId\x12^\n" +
-	"\x0einternal_range\x18\x03 \x01(\v22.google.cloud.networkconnectivity.v1.InternalRangeB\x03\xe0A\x02R\rinternalRange\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"h\n" +
+	"\x17GetInternalRangeRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0networkconnectivity.googleapis.com/InternalRangeR\x04name\"\xa7\x02\n" +
+	"\x1aCreateInternalRangeRequest\x12Q\n" +
+	"\x06parent\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\x120networkconnectivity.googleapis.com/InternalRangeR\x06parent\x120\n" +
+	"\x11internal_range_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x0finternalRangeId\x12_\n" +
+	"\x0einternal_range\x18\x03 \x01(\v22.google.cloud.networkconnectivity.v1.InternalRangeB\x04\xe2A\x01\x02R\rinternalRange\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xe2\x01\n" +
-	"\x1aUpdateInternalRangeRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12^\n" +
-	"\x0einternal_range\x18\x02 \x01(\v22.google.cloud.networkconnectivity.v1.InternalRangeB\x03\xe0A\x02R\rinternalRange\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xe5\x01\n" +
+	"\x1aUpdateInternalRangeRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12_\n" +
+	"\x0einternal_range\x18\x02 \x01(\v22.google.cloud.networkconnectivity.v1.InternalRangeB\x04\xe2A\x01\x02R\rinternalRange\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"\x8e\x01\n" +
-	"\x1aDeleteInternalRangeRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0networkconnectivity.googleapis.com/InternalRangeR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x90\x01\n" +
+	"\x1aDeleteInternalRangeRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0networkconnectivity.googleapis.com/InternalRangeR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId2\xa7\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId2\xa7\n" +
 	"\n" +
 	"\x14InternalRangeService\x12\xda\x01\n" +
 	"\x12ListInternalRanges\x12>.google.cloud.networkconnectivity.v1.ListInternalRangesRequest\x1a?.google.cloud.networkconnectivity.v1.ListInternalRangesResponse\"C\xdaA\x06parent\x82\xd3\xe4\x93\x024\x122/v1/{parent=projects/*/locations/*}/internalRanges\x12\xc7\x01\n" +

@@ -239,6 +239,35 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.CreateSession = append(client.CallOptions.CreateSession, gax.WithClientMetrics(metrics))
 		client.CallOptions.AdaptMessage = append(client.CallOptions.AdaptMessage, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "spanner",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/spanner/adapter/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "spanner.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateSession = append(client.CallOptions.CreateSession, gax.WithClientTracing(tracing))
+		client.CallOptions.AdaptMessage = append(client.CallOptions.AdaptMessage, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "spanner",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/spanner/adapter/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "spanner.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateSession = append(client.CallOptions.CreateSession, gax.WithClientLogging(logging))
+		client.CallOptions.AdaptMessage = append(client.CallOptions.AdaptMessage, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -335,6 +364,35 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.CreateSession = append(callOpts.CreateSession, gax.WithClientMetrics(metrics))
 		callOpts.AdaptMessage = append(callOpts.AdaptMessage, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "spanner",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/spanner/adapter/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "spanner.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateSession = append(callOpts.CreateSession, gax.WithClientTracing(tracing))
+		callOpts.AdaptMessage = append(callOpts.AdaptMessage, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "spanner",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/spanner/adapter/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "spanner.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateSession = append(callOpts.CreateSession, gax.WithClientLogging(logging))
+		callOpts.AdaptMessage = append(callOpts.AdaptMessage, gax.WithClientLogging(logging))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -381,9 +439,6 @@ func (c *gRPCClient) CreateSession(ctx context.Context, req *adapterpb.CreateSes
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.adapter.v1.Adapter/CreateSession")
 	}
@@ -405,9 +460,6 @@ func (c *gRPCClient) AdaptMessage(ctx context.Context, req *adapterpb.AdaptMessa
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.adapter.v1.Adapter/AdaptMessage")
 	}
@@ -454,9 +506,6 @@ func (c *restClient) CreateSession(ctx context.Context, req *adapterpb.CreateSes
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.adapter.v1.Adapter/CreateSession")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/instances/*/databases/*}/sessions:adapter")
@@ -519,9 +568,6 @@ func (c *restClient) AdaptMessage(ctx context.Context, req *adapterpb.AdaptMessa
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.adapter.v1.Adapter/AdaptMessage")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/instances/*/databases/*/sessions/*}:adaptMessage")

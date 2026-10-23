@@ -1278,32 +1278,32 @@ var File_google_cloud_baremetalsolution_v2_instance_proto protoreflect.FileDescr
 
 const file_google_cloud_baremetalsolution_v2_instance_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/baremetalsolution/v2/instance.proto\x12!google.cloud.baremetalsolution.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a.google/cloud/baremetalsolution/v2/common.proto\x1a+google/cloud/baremetalsolution/v2/lun.proto\x1a/google/cloud/baremetalsolution/v2/network.proto\x1a.google/cloud/baremetalsolution/v2/volume.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc3\v\n" +
-	"\bInstance\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12\x13\n" +
-	"\x02id\x18\v \x01(\tB\x03\xe0A\x03R\x02id\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12&\n" +
-	"\fmachine_type\x18\x04 \x01(\tB\x03\xe0A\x05R\vmachineType\x12L\n" +
-	"\x05state\x18\x05 \x01(\x0e21.google.cloud.baremetalsolution.v2.Instance.StateB\x03\xe0A\x03R\x05state\x125\n" +
+	"0google/cloud/baremetalsolution/v2/instance.proto\x12!google.cloud.baremetalsolution.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a.google/cloud/baremetalsolution/v2/common.proto\x1a+google/cloud/baremetalsolution/v2/lun.proto\x1a/google/cloud/baremetalsolution/v2/network.proto\x1a.google/cloud/baremetalsolution/v2/volume.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd0\v\n" +
+	"\bInstance\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12\x14\n" +
+	"\x02id\x18\v \x01(\tB\x04\xe2A\x01\x03R\x02id\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12'\n" +
+	"\fmachine_type\x18\x04 \x01(\tB\x04\xe2A\x01\x05R\vmachineType\x12M\n" +
+	"\x05state\x18\x05 \x01(\x0e21.google.cloud.baremetalsolution.v2.Instance.StateB\x04\xe2A\x01\x03R\x05state\x125\n" +
 	"\x16hyperthreading_enabled\x18\x06 \x01(\bR\x15hyperthreadingEnabled\x12O\n" +
-	"\x06labels\x18\a \x03(\v27.google.cloud.baremetalsolution.v2.Instance.LabelsEntryR\x06labels\x12?\n" +
-	"\x04luns\x18\b \x03(\v2&.google.cloud.baremetalsolution.v2.LunB\x03\xe0A\x05R\x04luns\x12H\n" +
-	"\avolumes\x18\x10 \x03(\v2).google.cloud.baremetalsolution.v2.VolumeB\x03\xe0A\x04R\avolumes\x12K\n" +
-	"\bnetworks\x18\t \x03(\v2*.google.cloud.baremetalsolution.v2.NetworkB\x03\xe0A\x03R\bnetworks\x12P\n" +
+	"\x06labels\x18\a \x03(\v27.google.cloud.baremetalsolution.v2.Instance.LabelsEntryR\x06labels\x12@\n" +
+	"\x04luns\x18\b \x03(\v2&.google.cloud.baremetalsolution.v2.LunB\x04\xe2A\x01\x05R\x04luns\x12I\n" +
+	"\avolumes\x18\x10 \x03(\v2).google.cloud.baremetalsolution.v2.VolumeB\x04\xe2A\x01\x04R\avolumes\x12L\n" +
+	"\bnetworks\x18\t \x03(\v2*.google.cloud.baremetalsolution.v2.NetworkB\x04\xe2A\x01\x03R\bnetworks\x12Q\n" +
 	"\"interactive_serial_console_enabled\x18\n" +
-	" \x01(\bB\x03\xe0A\x03R\x1finteractiveSerialConsoleEnabled\x12\x19\n" +
-	"\bos_image\x18\f \x01(\tR\aosImage\x12\x15\n" +
-	"\x03pod\x18\r \x01(\tB\x03\xe0A\x05R\x03pod\x12f\n" +
+	" \x01(\bB\x04\xe2A\x01\x03R\x1finteractiveSerialConsoleEnabled\x12\x19\n" +
+	"\bos_image\x18\f \x01(\tR\aosImage\x12\x16\n" +
+	"\x03pod\x18\r \x01(\tB\x04\xe2A\x01\x05R\x03pod\x12f\n" +
 	"\x10network_template\x18\x0e \x01(\tB;\xfaA8\n" +
 	"6baremetalsolution.googleapis.com/ServerNetworkTemplateR\x0fnetworkTemplate\x12b\n" +
-	"\x12logical_interfaces\x18\x0f \x03(\v23.google.cloud.baremetalsolution.v2.LogicalInterfaceR\x11logicalInterfaces\x12\"\n" +
+	"\x12logical_interfaces\x18\x0f \x03(\v23.google.cloud.baremetalsolution.v2.LogicalInterfaceR\x11logicalInterfaces\x12#\n" +
 	"\n" +
-	"login_info\x18\x11 \x01(\tB\x03\xe0A\x03R\tloginInfo\x12]\n" +
-	"\x10workload_profile\x18\x12 \x01(\x0e22.google.cloud.baremetalsolution.v2.WorkloadProfileR\x0fworkloadProfile\x12.\n" +
-	"\x10firmware_version\x18\x13 \x01(\tB\x03\xe0A\x03R\x0ffirmwareVersion\x1a9\n" +
+	"login_info\x18\x11 \x01(\tB\x04\xe2A\x01\x03R\tloginInfo\x12]\n" +
+	"\x10workload_profile\x18\x12 \x01(\x0e22.google.cloud.baremetalsolution.v2.WorkloadProfileR\x0fworkloadProfile\x12/\n" +
+	"\x10firmware_version\x18\x13 \x01(\tB\x04\xe2A\x01\x03R\x0ffirmwareVersion\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x82\x01\n" +
@@ -1316,12 +1316,12 @@ const file_google_cloud_baremetalsolution_v2_instance_proto_rawDesc = "" +
 	"\bSTARTING\x10\x05\x12\f\n" +
 	"\bSTOPPING\x10\x06\x12\f\n" +
 	"\bSHUTDOWN\x10\a:l\xeaAi\n" +
-	")baremetalsolution.googleapis.com/Instance\x12<projects/{project}/locations/{location}/instances/{instance}\"[\n" +
-	"\x12GetInstanceRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")baremetalsolution.googleapis.com/InstanceR\x04name\"\xad\x01\n" +
-	"\x14ListInstancesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	")baremetalsolution.googleapis.com/Instance\x12<projects/{project}/locations/{location}/instances/{instance}\"\\\n" +
+	"\x12GetInstanceRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")baremetalsolution.googleapis.com/InstanceR\x04name\"\xae\x01\n" +
+	"\x14ListInstancesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -1330,43 +1330,43 @@ const file_google_cloud_baremetalsolution_v2_instance_proto_rawDesc = "" +
 	"\x15ListInstancesResponse\x12I\n" +
 	"\tinstances\x18\x01 \x03(\v2+.google.cloud.baremetalsolution.v2.InstanceR\tinstances\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xa2\x01\n" +
-	"\x15UpdateInstanceRequest\x12L\n" +
-	"\binstance\x18\x01 \x01(\v2+.google.cloud.baremetalsolution.v2.InstanceB\x03\xe0A\x02R\binstance\x12;\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xa3\x01\n" +
+	"\x15UpdateInstanceRequest\x12M\n" +
+	"\binstance\x18\x01 \x01(\v2+.google.cloud.baremetalsolution.v2.InstanceB\x04\xe2A\x01\x02R\binstance\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"\x8b\x01\n" +
-	"\x15RenameInstanceRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")baremetalsolution.googleapis.com/InstanceR\x04name\x12+\n" +
-	"\x0fnew_instance_id\x18\x02 \x01(\tB\x03\xe0A\x02R\rnewInstanceId\"]\n" +
-	"\x14ResetInstanceRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")baremetalsolution.googleapis.com/InstanceR\x04name\"]\n" +
-	"\x14StartInstanceRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
+	"updateMask\"\x8d\x01\n" +
+	"\x15RenameInstanceRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")baremetalsolution.googleapis.com/InstanceR\x04name\x12,\n" +
+	"\x0fnew_instance_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\rnewInstanceId\"^\n" +
+	"\x14ResetInstanceRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")baremetalsolution.googleapis.com/InstanceR\x04name\"^\n" +
+	"\x14StartInstanceRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
 	")baremetalsolution.googleapis.com/InstanceR\x04name\"\x17\n" +
-	"\x15StartInstanceResponse\"\\\n" +
-	"\x13StopInstanceRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
+	"\x15StartInstanceResponse\"]\n" +
+	"\x13StopInstanceRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
 	")baremetalsolution.googleapis.com/InstanceR\x04name\"\x16\n" +
-	"\x14StopInstanceResponse\"n\n" +
-	"%EnableInteractiveSerialConsoleRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
+	"\x14StopInstanceResponse\"o\n" +
+	"%EnableInteractiveSerialConsoleRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
 	")baremetalsolution.googleapis.com/InstanceR\x04name\"(\n" +
-	"&EnableInteractiveSerialConsoleResponse\"o\n" +
-	"&DisableInteractiveSerialConsoleRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
+	"&EnableInteractiveSerialConsoleResponse\"p\n" +
+	"&DisableInteractiveSerialConsoleRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
 	")baremetalsolution.googleapis.com/InstanceR\x04name\")\n" +
-	"'DisableInteractiveSerialConsoleResponse\"\xc2\x01\n" +
-	"\x10DetachLunRequest\x12M\n" +
-	"\binstance\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")baremetalsolution.googleapis.com/InstanceR\binstance\x12>\n" +
-	"\x03lun\x18\x02 \x01(\tB,\xe0A\x02\xfaA&\n" +
+	"'DisableInteractiveSerialConsoleResponse\"\xc4\x01\n" +
+	"\x10DetachLunRequest\x12N\n" +
+	"\binstance\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")baremetalsolution.googleapis.com/InstanceR\binstance\x12?\n" +
+	"\x03lun\x18\x02 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
 	"$baremetalsolution.googleapis.com/LunR\x03lun\x12\x1f\n" +
 	"\vskip_reboot\x18\x03 \x01(\bR\n" +
-	"skipReboot\"\xf4\x04\n" +
-	"\x15ServerNetworkTemplate\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12:\n" +
+	"skipReboot\"\xf5\x04\n" +
+	"\x15ServerNetworkTemplate\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12:\n" +
 	"\x19applicable_instance_types\x18\x02 \x03(\tR\x17applicableInstanceTypes\x12x\n" +
 	"\x12logical_interfaces\x18\x03 \x03(\v2I.google.cloud.baremetalsolution.v2.ServerNetworkTemplate.LogicalInterfaceR\x11logicalInterfaces\x1a\xf3\x01\n" +
 	"\x10LogicalInterface\x12\x12\n" +

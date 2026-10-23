@@ -781,7 +781,7 @@ var File_google_cloud_websecurityscanner_v1_scan_config_proto protoreflect.FileD
 
 const file_google_cloud_websecurityscanner_v1_scan_config_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/websecurityscanner/v1/scan_config.proto\x12\"google.cloud.websecurityscanner.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xba\x10\n" +
+	"4google/cloud/websecurityscanner/v1/scan_config.proto\x12\"google.cloud.websecurityscanner.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbb\x10\n" +
 	"\n" +
 	"ScanConfig\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12!\n" +
@@ -799,7 +799,7 @@ const file_google_cloud_websecurityscanner_v1_scan_config_proto_rawDesc = "" +
 	"risk_level\x18\f \x01(\x0e28.google.cloud.websecurityscanner.v1.ScanConfig.RiskLevelR\triskLevel\x12!\n" +
 	"\fmanaged_scan\x18\r \x01(\bR\vmanagedScan\x12$\n" +
 	"\x0estatic_ip_scan\x18\x0e \x01(\bR\fstaticIpScan\x129\n" +
-	"\x19ignore_http_status_errors\x18\x0f \x01(\bR\x16ignoreHttpStatusErrors\x1a\xe9\x06\n" +
+	"\x19ignore_http_status_errors\x18\x0f \x01(\bR\x16ignoreHttpStatusErrors\x1a\xea\x06\n" +
 	"\x0eAuthentication\x12x\n" +
 	"\x0egoogle_account\x18\x01 \x01(\v2K.google.cloud.websecurityscanner.v1.ScanConfig.Authentication.GoogleAccountB\x02\x18\x01H\x00R\rgoogleAccount\x12t\n" +
 	"\x0ecustom_account\x18\x02 \x01(\v2K.google.cloud.websecurityscanner.v1.ScanConfig.Authentication.CustomAccountH\x00R\rcustomAccount\x12t\n" +
@@ -810,11 +810,11 @@ const file_google_cloud_websecurityscanner_v1_scan_config_proto_rawDesc = "" +
 	"\rCustomAccount\x12\x1a\n" +
 	"\busername\x18\x01 \x01(\tR\busername\x12\x1a\n" +
 	"\bpassword\x18\x02 \x01(\tR\bpassword\x12\x1b\n" +
-	"\tlogin_url\x18\x03 \x01(\tR\bloginUrl\x1a\xab\x02\n" +
+	"\tlogin_url\x18\x03 \x01(\tR\bloginUrl\x1a\xac\x02\n" +
 	"\rIapCredential\x12\xa9\x01\n" +
-	"\x1diap_test_service_account_info\x18\x01 \x01(\v2e.google.cloud.websecurityscanner.v1.ScanConfig.Authentication.IapCredential.IapTestServiceAccountInfoH\x00R\x19iapTestServiceAccountInfo\x1a[\n" +
-	"\x19IapTestServiceAccountInfo\x12>\n" +
-	"\x19target_audience_client_id\x18\x01 \x01(\tB\x03\xe0A\x02R\x16targetAudienceClientIdB\x11\n" +
+	"\x1diap_test_service_account_info\x18\x01 \x01(\v2e.google.cloud.websecurityscanner.v1.ScanConfig.Authentication.IapCredential.IapTestServiceAccountInfoH\x00R\x19iapTestServiceAccountInfo\x1a\\\n" +
+	"\x19IapTestServiceAccountInfo\x12?\n" +
+	"\x19target_audience_client_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x16targetAudienceClientIdB\x11\n" +
 	"\x0fiap_credentialsB\x10\n" +
 	"\x0eauthentication\x1a\x81\x01\n" +
 	"\bSchedule\x12?\n" +

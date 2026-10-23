@@ -184,6 +184,33 @@ func NewSpannerExecutorProxyClient(ctx context.Context, opts ...option.ClientOpt
 
 		client.CallOptions.ExecuteActionAsync = append(client.CallOptions.ExecuteActionAsync, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "spanner-cloud-executor",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/spanner/executor/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "spanner-cloud-executor.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ExecuteActionAsync = append(client.CallOptions.ExecuteActionAsync, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "spanner-cloud-executor",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/spanner/executor/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "spanner-cloud-executor.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ExecuteActionAsync = append(client.CallOptions.ExecuteActionAsync, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 

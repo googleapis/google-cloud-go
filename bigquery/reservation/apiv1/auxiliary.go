@@ -17,9 +17,18 @@
 package reservation
 
 import (
+	"iter"
+
 	reservationpb "cloud.google.com/go/bigquery/reservation/apiv1/reservationpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AssignmentIterator) All() iter.Seq2[*reservationpb.Assignment, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // AssignmentIterator manages a stream of *reservationpb.Assignment.
 type AssignmentIterator struct {
@@ -66,6 +75,12 @@ func (it *AssignmentIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CapacityCommitmentIterator) All() iter.Seq2[*reservationpb.CapacityCommitment, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // CapacityCommitmentIterator manages a stream of *reservationpb.CapacityCommitment.
@@ -115,6 +130,12 @@ func (it *CapacityCommitmentIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ReservationGroupIterator) All() iter.Seq2[*reservationpb.ReservationGroup, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ReservationGroupIterator manages a stream of *reservationpb.ReservationGroup.
 type ReservationGroupIterator struct {
 	items    []*reservationpb.ReservationGroup
@@ -160,6 +181,12 @@ func (it *ReservationGroupIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ReservationIterator) All() iter.Seq2[*reservationpb.Reservation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ReservationIterator manages a stream of *reservationpb.Reservation.

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -191,15 +191,15 @@ var File_google_cloud_apphub_v1_service_project_attachment_proto protoreflect.Fi
 
 const file_google_cloud_apphub_v1_service_project_attachment_proto_rawDesc = "" +
 	"\n" +
-	"7google/cloud/apphub/v1/service_project_attachment.proto\x12\x16google.cloud.apphub.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdc\x04\n" +
-	"\x18ServiceProjectAttachment\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12_\n" +
-	"\x0fservice_project\x18\x02 \x01(\tB6\xe0A\x02\xe0A\x05\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x0eserviceProject\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12\x1d\n" +
-	"\x03uid\x18\x04 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12Q\n" +
-	"\x05state\x18\x05 \x01(\x0e26.google.cloud.apphub.v1.ServiceProjectAttachment.StateB\x03\xe0A\x03R\x05state\"F\n" +
+	"7google/cloud/apphub/v1/service_project_attachment.proto\x12\x16google.cloud.apphub.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdf\x04\n" +
+	"\x18ServiceProjectAttachment\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12^\n" +
+	"\x0fservice_project\x18\x02 \x01(\tB5\xe2A\x02\x02\x05\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x0eserviceProject\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12\x1e\n" +
+	"\x03uid\x18\x04 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12R\n" +
+	"\x05state\x18\x05 \x01(\x0e26.google.cloud.apphub.v1.ServiceProjectAttachment.StateB\x04\xe2A\x01\x03R\x05state\"F\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bCREATING\x10\x01\x12\n" +

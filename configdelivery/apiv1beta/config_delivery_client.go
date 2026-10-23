@@ -891,6 +891,93 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "configdelivery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/configdelivery/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "configdelivery.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListResourceBundles = append(client.CallOptions.ListResourceBundles, gax.WithClientTracing(tracing))
+		client.CallOptions.GetResourceBundle = append(client.CallOptions.GetResourceBundle, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateResourceBundle = append(client.CallOptions.CreateResourceBundle, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateResourceBundle = append(client.CallOptions.UpdateResourceBundle, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteResourceBundle = append(client.CallOptions.DeleteResourceBundle, gax.WithClientTracing(tracing))
+		client.CallOptions.ListFleetPackages = append(client.CallOptions.ListFleetPackages, gax.WithClientTracing(tracing))
+		client.CallOptions.GetFleetPackage = append(client.CallOptions.GetFleetPackage, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateFleetPackage = append(client.CallOptions.CreateFleetPackage, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateFleetPackage = append(client.CallOptions.UpdateFleetPackage, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteFleetPackage = append(client.CallOptions.DeleteFleetPackage, gax.WithClientTracing(tracing))
+		client.CallOptions.ListReleases = append(client.CallOptions.ListReleases, gax.WithClientTracing(tracing))
+		client.CallOptions.GetRelease = append(client.CallOptions.GetRelease, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateRelease = append(client.CallOptions.CreateRelease, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateRelease = append(client.CallOptions.UpdateRelease, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteRelease = append(client.CallOptions.DeleteRelease, gax.WithClientTracing(tracing))
+		client.CallOptions.ListVariants = append(client.CallOptions.ListVariants, gax.WithClientTracing(tracing))
+		client.CallOptions.GetVariant = append(client.CallOptions.GetVariant, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateVariant = append(client.CallOptions.CreateVariant, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateVariant = append(client.CallOptions.UpdateVariant, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteVariant = append(client.CallOptions.DeleteVariant, gax.WithClientTracing(tracing))
+		client.CallOptions.ListRollouts = append(client.CallOptions.ListRollouts, gax.WithClientTracing(tracing))
+		client.CallOptions.GetRollout = append(client.CallOptions.GetRollout, gax.WithClientTracing(tracing))
+		client.CallOptions.SuspendRollout = append(client.CallOptions.SuspendRollout, gax.WithClientTracing(tracing))
+		client.CallOptions.ResumeRollout = append(client.CallOptions.ResumeRollout, gax.WithClientTracing(tracing))
+		client.CallOptions.AbortRollout = append(client.CallOptions.AbortRollout, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "configdelivery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/configdelivery/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "configdelivery.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListResourceBundles = append(client.CallOptions.ListResourceBundles, gax.WithClientLogging(logging))
+		client.CallOptions.GetResourceBundle = append(client.CallOptions.GetResourceBundle, gax.WithClientLogging(logging))
+		client.CallOptions.CreateResourceBundle = append(client.CallOptions.CreateResourceBundle, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateResourceBundle = append(client.CallOptions.UpdateResourceBundle, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteResourceBundle = append(client.CallOptions.DeleteResourceBundle, gax.WithClientLogging(logging))
+		client.CallOptions.ListFleetPackages = append(client.CallOptions.ListFleetPackages, gax.WithClientLogging(logging))
+		client.CallOptions.GetFleetPackage = append(client.CallOptions.GetFleetPackage, gax.WithClientLogging(logging))
+		client.CallOptions.CreateFleetPackage = append(client.CallOptions.CreateFleetPackage, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateFleetPackage = append(client.CallOptions.UpdateFleetPackage, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteFleetPackage = append(client.CallOptions.DeleteFleetPackage, gax.WithClientLogging(logging))
+		client.CallOptions.ListReleases = append(client.CallOptions.ListReleases, gax.WithClientLogging(logging))
+		client.CallOptions.GetRelease = append(client.CallOptions.GetRelease, gax.WithClientLogging(logging))
+		client.CallOptions.CreateRelease = append(client.CallOptions.CreateRelease, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateRelease = append(client.CallOptions.UpdateRelease, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteRelease = append(client.CallOptions.DeleteRelease, gax.WithClientLogging(logging))
+		client.CallOptions.ListVariants = append(client.CallOptions.ListVariants, gax.WithClientLogging(logging))
+		client.CallOptions.GetVariant = append(client.CallOptions.GetVariant, gax.WithClientLogging(logging))
+		client.CallOptions.CreateVariant = append(client.CallOptions.CreateVariant, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateVariant = append(client.CallOptions.UpdateVariant, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteVariant = append(client.CallOptions.DeleteVariant, gax.WithClientLogging(logging))
+		client.CallOptions.ListRollouts = append(client.CallOptions.ListRollouts, gax.WithClientLogging(logging))
+		client.CallOptions.GetRollout = append(client.CallOptions.GetRollout, gax.WithClientLogging(logging))
+		client.CallOptions.SuspendRollout = append(client.CallOptions.SuspendRollout, gax.WithClientLogging(logging))
+		client.CallOptions.ResumeRollout = append(client.CallOptions.ResumeRollout, gax.WithClientLogging(logging))
+		client.CallOptions.AbortRollout = append(client.CallOptions.AbortRollout, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -1029,6 +1116,93 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "configdelivery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/configdelivery/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "configdelivery.googleapis.com",
+			}),
+		)
+
+		callOpts.ListResourceBundles = append(callOpts.ListResourceBundles, gax.WithClientTracing(tracing))
+		callOpts.GetResourceBundle = append(callOpts.GetResourceBundle, gax.WithClientTracing(tracing))
+		callOpts.CreateResourceBundle = append(callOpts.CreateResourceBundle, gax.WithClientTracing(tracing))
+		callOpts.UpdateResourceBundle = append(callOpts.UpdateResourceBundle, gax.WithClientTracing(tracing))
+		callOpts.DeleteResourceBundle = append(callOpts.DeleteResourceBundle, gax.WithClientTracing(tracing))
+		callOpts.ListFleetPackages = append(callOpts.ListFleetPackages, gax.WithClientTracing(tracing))
+		callOpts.GetFleetPackage = append(callOpts.GetFleetPackage, gax.WithClientTracing(tracing))
+		callOpts.CreateFleetPackage = append(callOpts.CreateFleetPackage, gax.WithClientTracing(tracing))
+		callOpts.UpdateFleetPackage = append(callOpts.UpdateFleetPackage, gax.WithClientTracing(tracing))
+		callOpts.DeleteFleetPackage = append(callOpts.DeleteFleetPackage, gax.WithClientTracing(tracing))
+		callOpts.ListReleases = append(callOpts.ListReleases, gax.WithClientTracing(tracing))
+		callOpts.GetRelease = append(callOpts.GetRelease, gax.WithClientTracing(tracing))
+		callOpts.CreateRelease = append(callOpts.CreateRelease, gax.WithClientTracing(tracing))
+		callOpts.UpdateRelease = append(callOpts.UpdateRelease, gax.WithClientTracing(tracing))
+		callOpts.DeleteRelease = append(callOpts.DeleteRelease, gax.WithClientTracing(tracing))
+		callOpts.ListVariants = append(callOpts.ListVariants, gax.WithClientTracing(tracing))
+		callOpts.GetVariant = append(callOpts.GetVariant, gax.WithClientTracing(tracing))
+		callOpts.CreateVariant = append(callOpts.CreateVariant, gax.WithClientTracing(tracing))
+		callOpts.UpdateVariant = append(callOpts.UpdateVariant, gax.WithClientTracing(tracing))
+		callOpts.DeleteVariant = append(callOpts.DeleteVariant, gax.WithClientTracing(tracing))
+		callOpts.ListRollouts = append(callOpts.ListRollouts, gax.WithClientTracing(tracing))
+		callOpts.GetRollout = append(callOpts.GetRollout, gax.WithClientTracing(tracing))
+		callOpts.SuspendRollout = append(callOpts.SuspendRollout, gax.WithClientTracing(tracing))
+		callOpts.ResumeRollout = append(callOpts.ResumeRollout, gax.WithClientTracing(tracing))
+		callOpts.AbortRollout = append(callOpts.AbortRollout, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "configdelivery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/configdelivery/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "configdelivery.googleapis.com",
+			}),
+		)
+
+		callOpts.ListResourceBundles = append(callOpts.ListResourceBundles, gax.WithClientLogging(logging))
+		callOpts.GetResourceBundle = append(callOpts.GetResourceBundle, gax.WithClientLogging(logging))
+		callOpts.CreateResourceBundle = append(callOpts.CreateResourceBundle, gax.WithClientLogging(logging))
+		callOpts.UpdateResourceBundle = append(callOpts.UpdateResourceBundle, gax.WithClientLogging(logging))
+		callOpts.DeleteResourceBundle = append(callOpts.DeleteResourceBundle, gax.WithClientLogging(logging))
+		callOpts.ListFleetPackages = append(callOpts.ListFleetPackages, gax.WithClientLogging(logging))
+		callOpts.GetFleetPackage = append(callOpts.GetFleetPackage, gax.WithClientLogging(logging))
+		callOpts.CreateFleetPackage = append(callOpts.CreateFleetPackage, gax.WithClientLogging(logging))
+		callOpts.UpdateFleetPackage = append(callOpts.UpdateFleetPackage, gax.WithClientLogging(logging))
+		callOpts.DeleteFleetPackage = append(callOpts.DeleteFleetPackage, gax.WithClientLogging(logging))
+		callOpts.ListReleases = append(callOpts.ListReleases, gax.WithClientLogging(logging))
+		callOpts.GetRelease = append(callOpts.GetRelease, gax.WithClientLogging(logging))
+		callOpts.CreateRelease = append(callOpts.CreateRelease, gax.WithClientLogging(logging))
+		callOpts.UpdateRelease = append(callOpts.UpdateRelease, gax.WithClientLogging(logging))
+		callOpts.DeleteRelease = append(callOpts.DeleteRelease, gax.WithClientLogging(logging))
+		callOpts.ListVariants = append(callOpts.ListVariants, gax.WithClientLogging(logging))
+		callOpts.GetVariant = append(callOpts.GetVariant, gax.WithClientLogging(logging))
+		callOpts.CreateVariant = append(callOpts.CreateVariant, gax.WithClientLogging(logging))
+		callOpts.UpdateVariant = append(callOpts.UpdateVariant, gax.WithClientLogging(logging))
+		callOpts.DeleteVariant = append(callOpts.DeleteVariant, gax.WithClientLogging(logging))
+		callOpts.ListRollouts = append(callOpts.ListRollouts, gax.WithClientLogging(logging))
+		callOpts.GetRollout = append(callOpts.GetRollout, gax.WithClientLogging(logging))
+		callOpts.SuspendRollout = append(callOpts.SuspendRollout, gax.WithClientLogging(logging))
+		callOpts.ResumeRollout = append(callOpts.ResumeRollout, gax.WithClientLogging(logging))
+		callOpts.AbortRollout = append(callOpts.AbortRollout, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -1085,9 +1259,6 @@ func (c *gRPCClient) ListResourceBundles(ctx context.Context, req *configdeliver
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//configdelivery.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.configdelivery.v1beta.ConfigDelivery/ListResourceBundles")
 	}
@@ -1137,9 +1308,6 @@ func (c *gRPCClient) GetResourceBundle(ctx context.Context, req *configdeliveryp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//configdelivery.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.configdelivery.v1beta.ConfigDelivery/GetResourceBundle")
 	}
@@ -1161,9 +1329,6 @@ func (c *gRPCClient) CreateResourceBundle(ctx context.Context, req *configdelive
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//configdelivery.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.configdelivery.v1beta.ConfigDelivery/CreateResourceBundle")
 	}
@@ -1218,9 +1383,6 @@ func (c *gRPCClient) DeleteResourceBundle(ctx context.Context, req *configdelive
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//configdelivery.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.configdelivery.v1beta.ConfigDelivery/DeleteResourceBundle")
 	}
@@ -1248,9 +1410,6 @@ func (c *gRPCClient) ListFleetPackages(ctx context.Context, req *configdeliveryp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//configdelivery.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.configdelivery.v1beta.ConfigDelivery/ListFleetPackages")
 	}
@@ -1300,9 +1459,6 @@ func (c *gRPCClient) GetFleetPackage(ctx context.Context, req *configdeliverypb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//configdelivery.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.configdelivery.v1beta.ConfigDelivery/GetFleetPackage")
 	}
@@ -1324,9 +1480,6 @@ func (c *gRPCClient) CreateFleetPackage(ctx context.Context, req *configdelivery
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//configdelivery.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.configdelivery.v1beta.ConfigDelivery/CreateFleetPackage")
 	}
@@ -1381,9 +1534,6 @@ func (c *gRPCClient) DeleteFleetPackage(ctx context.Context, req *configdelivery
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//configdelivery.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.configdelivery.v1beta.ConfigDelivery/DeleteFleetPackage")
 	}
@@ -1411,9 +1561,6 @@ func (c *gRPCClient) ListReleases(ctx context.Context, req *configdeliverypb.Lis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//configdelivery.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.configdelivery.v1beta.ConfigDelivery/ListReleases")
 	}
@@ -1463,9 +1610,6 @@ func (c *gRPCClient) GetRelease(ctx context.Context, req *configdeliverypb.GetRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//configdelivery.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.configdelivery.v1beta.ConfigDelivery/GetRelease")
 	}
@@ -1487,9 +1631,6 @@ func (c *gRPCClient) CreateRelease(ctx context.Context, req *configdeliverypb.Cr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//configdelivery.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.configdelivery.v1beta.ConfigDelivery/CreateRelease")
 	}
@@ -1544,9 +1685,6 @@ func (c *gRPCClient) DeleteRelease(ctx context.Context, req *configdeliverypb.De
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//configdelivery.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.configdelivery.v1beta.ConfigDelivery/DeleteRelease")
 	}
@@ -1574,9 +1712,6 @@ func (c *gRPCClient) ListVariants(ctx context.Context, req *configdeliverypb.Lis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//configdelivery.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.configdelivery.v1beta.ConfigDelivery/ListVariants")
 	}
@@ -1626,9 +1761,6 @@ func (c *gRPCClient) GetVariant(ctx context.Context, req *configdeliverypb.GetVa
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//configdelivery.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.configdelivery.v1beta.ConfigDelivery/GetVariant")
 	}
@@ -1650,9 +1782,6 @@ func (c *gRPCClient) CreateVariant(ctx context.Context, req *configdeliverypb.Cr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//configdelivery.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.configdelivery.v1beta.ConfigDelivery/CreateVariant")
 	}
@@ -1707,9 +1836,6 @@ func (c *gRPCClient) DeleteVariant(ctx context.Context, req *configdeliverypb.De
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//configdelivery.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.configdelivery.v1beta.ConfigDelivery/DeleteVariant")
 	}
@@ -1737,9 +1863,6 @@ func (c *gRPCClient) ListRollouts(ctx context.Context, req *configdeliverypb.Lis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//configdelivery.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.configdelivery.v1beta.ConfigDelivery/ListRollouts")
 	}
@@ -1789,9 +1912,6 @@ func (c *gRPCClient) GetRollout(ctx context.Context, req *configdeliverypb.GetRo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//configdelivery.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.configdelivery.v1beta.ConfigDelivery/GetRollout")
 	}
@@ -1813,9 +1933,6 @@ func (c *gRPCClient) SuspendRollout(ctx context.Context, req *configdeliverypb.S
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//configdelivery.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.configdelivery.v1beta.ConfigDelivery/SuspendRollout")
 	}
@@ -1843,9 +1960,6 @@ func (c *gRPCClient) ResumeRollout(ctx context.Context, req *configdeliverypb.Re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//configdelivery.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.configdelivery.v1beta.ConfigDelivery/ResumeRollout")
 	}
@@ -1873,9 +1987,6 @@ func (c *gRPCClient) AbortRollout(ctx context.Context, req *configdeliverypb.Abo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//configdelivery.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.configdelivery.v1beta.ConfigDelivery/AbortRollout")
 	}
@@ -2175,9 +2286,6 @@ func (c *restClient) GetResourceBundle(ctx context.Context, req *configdeliveryp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//configdelivery.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.configdelivery.v1beta.ConfigDelivery/GetResourceBundle")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/resourceBundles/*}")
@@ -2243,9 +2351,6 @@ func (c *restClient) CreateResourceBundle(ctx context.Context, req *configdelive
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//configdelivery.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.configdelivery.v1beta.ConfigDelivery/CreateResourceBundle")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*}/resourceBundles")
@@ -2391,9 +2496,6 @@ func (c *restClient) DeleteResourceBundle(ctx context.Context, req *configdelive
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//configdelivery.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.configdelivery.v1beta.ConfigDelivery/DeleteResourceBundle")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/resourceBundles/*}")
@@ -2539,9 +2641,6 @@ func (c *restClient) GetFleetPackage(ctx context.Context, req *configdeliverypb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//configdelivery.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.configdelivery.v1beta.ConfigDelivery/GetFleetPackage")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/fleetPackages/*}")
@@ -2607,9 +2706,6 @@ func (c *restClient) CreateFleetPackage(ctx context.Context, req *configdelivery
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//configdelivery.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.configdelivery.v1beta.ConfigDelivery/CreateFleetPackage")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*}/fleetPackages")
@@ -2758,9 +2854,6 @@ func (c *restClient) DeleteFleetPackage(ctx context.Context, req *configdelivery
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//configdelivery.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.configdelivery.v1beta.ConfigDelivery/DeleteFleetPackage")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/fleetPackages/*}")
@@ -2906,9 +2999,6 @@ func (c *restClient) GetRelease(ctx context.Context, req *configdeliverypb.GetRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//configdelivery.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.configdelivery.v1beta.ConfigDelivery/GetRelease")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/resourceBundles/*/releases/*}")
@@ -2974,9 +3064,6 @@ func (c *restClient) CreateRelease(ctx context.Context, req *configdeliverypb.Cr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//configdelivery.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.configdelivery.v1beta.ConfigDelivery/CreateRelease")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*/resourceBundles/*}/releases")
@@ -3122,9 +3209,6 @@ func (c *restClient) DeleteRelease(ctx context.Context, req *configdeliverypb.De
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//configdelivery.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.configdelivery.v1beta.ConfigDelivery/DeleteRelease")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/resourceBundles/*/releases/*}")
@@ -3270,9 +3354,6 @@ func (c *restClient) GetVariant(ctx context.Context, req *configdeliverypb.GetVa
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//configdelivery.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.configdelivery.v1beta.ConfigDelivery/GetVariant")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/resourceBundles/*/releases/*/variants/*}")
@@ -3339,9 +3420,6 @@ func (c *restClient) CreateVariant(ctx context.Context, req *configdeliverypb.Cr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//configdelivery.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.configdelivery.v1beta.ConfigDelivery/CreateVariant")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*/resourceBundles/*/releases/*}/variants")
@@ -3484,9 +3562,6 @@ func (c *restClient) DeleteVariant(ctx context.Context, req *configdeliverypb.De
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//configdelivery.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.configdelivery.v1beta.ConfigDelivery/DeleteVariant")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/resourceBundles/*/releases/*/variants/*}")
@@ -3632,9 +3707,6 @@ func (c *restClient) GetRollout(ctx context.Context, req *configdeliverypb.GetRo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//configdelivery.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.configdelivery.v1beta.ConfigDelivery/GetRollout")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/fleetPackages/*/rollouts/*}")
@@ -3695,9 +3767,6 @@ func (c *restClient) SuspendRollout(ctx context.Context, req *configdeliverypb.S
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//configdelivery.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.configdelivery.v1beta.ConfigDelivery/SuspendRollout")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/fleetPackages/*/rollouts/*}:suspend")
@@ -3765,9 +3834,6 @@ func (c *restClient) ResumeRollout(ctx context.Context, req *configdeliverypb.Re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//configdelivery.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.configdelivery.v1beta.ConfigDelivery/ResumeRollout")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/fleetPackages/*/rollouts/*}:resume")
@@ -3835,9 +3901,6 @@ func (c *restClient) AbortRollout(ctx context.Context, req *configdeliverypb.Abo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//configdelivery.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.configdelivery.v1beta.ConfigDelivery/AbortRollout")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/fleetPackages/*/rollouts/*}:abort")

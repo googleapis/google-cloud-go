@@ -61,6 +61,9 @@ const (
 	ChatService_CreateReaction_FullMethodName                 = "/google.chat.v1.ChatService/CreateReaction"
 	ChatService_ListReactions_FullMethodName                  = "/google.chat.v1.ChatService/ListReactions"
 	ChatService_DeleteReaction_FullMethodName                 = "/google.chat.v1.ChatService/DeleteReaction"
+	ChatService_ListMessagePins_FullMethodName                = "/google.chat.v1.ChatService/ListMessagePins"
+	ChatService_CreateMessagePin_FullMethodName               = "/google.chat.v1.ChatService/CreateMessagePin"
+	ChatService_DeleteMessagePin_FullMethodName               = "/google.chat.v1.ChatService/DeleteMessagePin"
 	ChatService_CreateCustomEmoji_FullMethodName              = "/google.chat.v1.ChatService/CreateCustomEmoji"
 	ChatService_GetCustomEmoji_FullMethodName                 = "/google.chat.v1.ChatService/GetCustomEmoji"
 	ChatService_ListCustomEmojis_FullMethodName               = "/google.chat.v1.ChatService/ListCustomEmojis"
@@ -819,6 +822,40 @@ type ChatServiceClient interface {
 	//   - `https://www.googleapis.com/auth/chat.messages`
 	//   - `https://www.googleapis.com/auth/chat.import` (import mode spaces only)
 	DeleteReaction(ctx context.Context, in *DeleteReactionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Lists message pins in a space. Users can pin important messages in spaces
+	// for easy access. For more information, see [Pin or unpin a conversation in
+	// Google Chat](https://support.google.com/chat/answer/15622437).
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.spaces.pins.readonly`
+	//   - `https://www.googleapis.com/auth/chat.spaces.pins`
+	//   - `https://www.googleapis.com/auth/chat.spaces.readonly`
+	//   - `https://www.googleapis.com/auth/chat.spaces`
+	ListMessagePins(ctx context.Context, in *ListMessagePinsRequest, opts ...grpc.CallOption) (*ListMessagePinsResponse, error)
+	// Creates a message pin.
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.spaces.pins`
+	//   - `https://www.googleapis.com/auth/chat.spaces`
+	CreateMessagePin(ctx context.Context, in *CreateMessagePinRequest, opts ...grpc.CallOption) (*MessagePin, error)
+	// Deletes a message pin.
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.spaces.pins`
+	//   - `https://www.googleapis.com/auth/chat.spaces`
+	DeleteMessagePin(ctx context.Context, in *DeleteMessagePinRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Creates a custom emoji.
 	//
 	// Custom emojis are only available for Google Workspace accounts, and the
@@ -1433,6 +1470,33 @@ func (c *chatServiceClient) ListReactions(ctx context.Context, in *ListReactions
 func (c *chatServiceClient) DeleteReaction(ctx context.Context, in *DeleteReactionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, ChatService_DeleteReaction_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatServiceClient) ListMessagePins(ctx context.Context, in *ListMessagePinsRequest, opts ...grpc.CallOption) (*ListMessagePinsResponse, error) {
+	out := new(ListMessagePinsResponse)
+	err := c.cc.Invoke(ctx, ChatService_ListMessagePins_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatServiceClient) CreateMessagePin(ctx context.Context, in *CreateMessagePinRequest, opts ...grpc.CallOption) (*MessagePin, error) {
+	out := new(MessagePin)
+	err := c.cc.Invoke(ctx, ChatService_CreateMessagePin_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatServiceClient) DeleteMessagePin(ctx context.Context, in *DeleteMessagePinRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, ChatService_DeleteMessagePin_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -2379,6 +2443,40 @@ type ChatServiceServer interface {
 	//   - `https://www.googleapis.com/auth/chat.messages`
 	//   - `https://www.googleapis.com/auth/chat.import` (import mode spaces only)
 	DeleteReaction(context.Context, *DeleteReactionRequest) (*emptypb.Empty, error)
+	// Lists message pins in a space. Users can pin important messages in spaces
+	// for easy access. For more information, see [Pin or unpin a conversation in
+	// Google Chat](https://support.google.com/chat/answer/15622437).
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.spaces.pins.readonly`
+	//   - `https://www.googleapis.com/auth/chat.spaces.pins`
+	//   - `https://www.googleapis.com/auth/chat.spaces.readonly`
+	//   - `https://www.googleapis.com/auth/chat.spaces`
+	ListMessagePins(context.Context, *ListMessagePinsRequest) (*ListMessagePinsResponse, error)
+	// Creates a message pin.
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.spaces.pins`
+	//   - `https://www.googleapis.com/auth/chat.spaces`
+	CreateMessagePin(context.Context, *CreateMessagePinRequest) (*MessagePin, error)
+	// Deletes a message pin.
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.spaces.pins`
+	//   - `https://www.googleapis.com/auth/chat.spaces`
+	DeleteMessagePin(context.Context, *DeleteMessagePinRequest) (*emptypb.Empty, error)
 	// Creates a custom emoji.
 	//
 	// Custom emojis are only available for Google Workspace accounts, and the
@@ -2838,6 +2936,15 @@ func (UnimplementedChatServiceServer) ListReactions(context.Context, *ListReacti
 }
 func (UnimplementedChatServiceServer) DeleteReaction(context.Context, *DeleteReactionRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteReaction not implemented")
+}
+func (UnimplementedChatServiceServer) ListMessagePins(context.Context, *ListMessagePinsRequest) (*ListMessagePinsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListMessagePins not implemented")
+}
+func (UnimplementedChatServiceServer) CreateMessagePin(context.Context, *CreateMessagePinRequest) (*MessagePin, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateMessagePin not implemented")
+}
+func (UnimplementedChatServiceServer) DeleteMessagePin(context.Context, *DeleteMessagePinRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteMessagePin not implemented")
 }
 func (UnimplementedChatServiceServer) CreateCustomEmoji(context.Context, *CreateCustomEmojiRequest) (*CustomEmoji, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateCustomEmoji not implemented")
@@ -3388,6 +3495,60 @@ func _ChatService_DeleteReaction_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ChatService_ListMessagePins_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListMessagePinsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).ListMessagePins(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ChatService_ListMessagePins_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).ListMessagePins(ctx, req.(*ListMessagePinsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatService_CreateMessagePin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateMessagePinRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).CreateMessagePin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ChatService_CreateMessagePin_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).CreateMessagePin(ctx, req.(*CreateMessagePinRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatService_DeleteMessagePin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteMessagePinRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).DeleteMessagePin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ChatService_DeleteMessagePin_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).DeleteMessagePin(ctx, req.(*DeleteMessagePinRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ChatService_CreateCustomEmoji_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateCustomEmojiRequest)
 	if err := dec(in); err != nil {
@@ -3912,6 +4073,18 @@ var ChatService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteReaction",
 			Handler:    _ChatService_DeleteReaction_Handler,
+		},
+		{
+			MethodName: "ListMessagePins",
+			Handler:    _ChatService_ListMessagePins_Handler,
+		},
+		{
+			MethodName: "CreateMessagePin",
+			Handler:    _ChatService_CreateMessagePin_Handler,
+		},
+		{
+			MethodName: "DeleteMessagePin",
+			Handler:    _ChatService_DeleteMessagePin_Handler,
 		},
 		{
 			MethodName: "CreateCustomEmoji",

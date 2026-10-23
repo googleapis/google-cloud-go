@@ -1,5 +1,34 @@
 # Changes
 
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/chat/v1.9.0...chat/v1.10.0) (2026-10-22)
+
+
+### Features
+
+* Update API sources and regenerate ([#20728](https://github.com/googleapis/google-cloud-go/issues/20728)) ([ab1da9d](https://github.com/googleapis/google-cloud-go/commit/ab1da9d200416594ae18fa7a2944961f1c92c928))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/chat/v1.8.0...chat/v1.9.0) (2026-10-01)
+
+
+### Features
+
+* Update API sources and regenerate ([#20607](https://github.com/googleapis/google-cloud-go/issues/20607)) ([395fc59](https://github.com/googleapis/google-cloud-go/commit/395fc59e067ed2576a1c8c961edf3f749633520c))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/chat/v1.7.0...chat/v1.8.0) (2026-09-23)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+* Update API sources and regenerate ([#20570](https://github.com/googleapis/google-cloud-go/issues/20570)) ([cc91d66](https://github.com/googleapis/google-cloud-go/commit/cc91d66d3435de4bed07ffec7abc226cdcdbf29c))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/chat/v1.6.0...chat/v1.7.0) (2026-08-20)
+
+
+### Features
+
+* Update sources and regenerate ([#20399](https://github.com/googleapis/google-cloud-go/issues/20399)) ([a6b5cdb](https://github.com/googleapis/google-cloud-go/commit/a6b5cdb4eec5e66fb6bb4a00f9ec89c088826e26))
+
 ## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/chat/v1.5.0...chat/v1.6.0) (2026-08-07)
 
 

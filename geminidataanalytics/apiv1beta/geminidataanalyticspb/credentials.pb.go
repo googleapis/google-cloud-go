@@ -304,16 +304,16 @@ const file_google_cloud_geminidataanalytics_v1beta_credentials_proto_rawDesc = "
 	"9google/cloud/geminidataanalytics/v1beta/credentials.proto\x12'google.cloud.geminidataanalytics.v1beta\x1a\x1fgoogle/api/field_behavior.proto\"h\n" +
 	"\vCredentials\x12Q\n" +
 	"\x05oauth\x18\x01 \x01(\v29.google.cloud.geminidataanalytics.v1beta.OAuthCredentialsH\x00R\x05oauthB\x06\n" +
-	"\x04kind\"\xea\x02\n" +
+	"\x04kind\"\xed\x02\n" +
 	"\x10OAuthCredentials\x12_\n" +
 	"\x06secret\x18\x02 \x01(\v2E.google.cloud.geminidataanalytics.v1beta.OAuthCredentials.SecretBasedH\x00R\x06secret\x12\\\n" +
-	"\x05token\x18\x03 \x01(\v2D.google.cloud.geminidataanalytics.v1beta.OAuthCredentials.TokenBasedH\x00R\x05token\x1aY\n" +
-	"\vSecretBased\x12 \n" +
-	"\tclient_id\x18\x02 \x01(\tB\x03\xe0A\x02R\bclientId\x12(\n" +
-	"\rclient_secret\x18\x03 \x01(\tB\x03\xe0A\x02R\fclientSecret\x1a4\n" +
+	"\x05token\x18\x03 \x01(\v2D.google.cloud.geminidataanalytics.v1beta.OAuthCredentials.TokenBasedH\x00R\x05token\x1a[\n" +
+	"\vSecretBased\x12!\n" +
+	"\tclient_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\bclientId\x12)\n" +
+	"\rclient_secret\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\fclientSecret\x1a5\n" +
 	"\n" +
-	"TokenBased\x12&\n" +
-	"\faccess_token\x18\x01 \x01(\tB\x03\xe0A\x02R\vaccessTokenB\x06\n" +
+	"TokenBased\x12'\n" +
+	"\faccess_token\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vaccessTokenB\x06\n" +
 	"\x04kindB\xa1\x02\n" +
 	"+com.google.cloud.geminidataanalytics.v1betaB\x10CredentialsProtoP\x01Z]cloud.google.com/go/geminidataanalytics/apiv1beta/geminidataanalyticspb;geminidataanalyticspb\xaa\x02'Google.Cloud.GeminiDataAnalytics.V1Beta\xca\x02'Google\\Cloud\\GeminiDataAnalytics\\V1beta\xea\x02*Google::Cloud::GeminiDataAnalytics::V1betab\x06proto3"
 

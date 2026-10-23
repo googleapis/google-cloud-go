@@ -17,9 +17,18 @@
 package cloudprofiler
 
 import (
+	"iter"
+
 	cloudprofilerpb "cloud.google.com/go/cloudprofiler/apiv2/cloudprofilerpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ProfileIterator) All() iter.Seq2[*cloudprofilerpb.Profile, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // ProfileIterator manages a stream of *cloudprofilerpb.Profile.
 type ProfileIterator struct {

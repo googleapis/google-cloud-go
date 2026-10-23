@@ -263,16 +263,16 @@ var File_google_cloud_discoveryengine_v1alpha_sample_query_proto protoreflect.Fi
 
 const file_google_cloud_discoveryengine_v1alpha_sample_query_proto_rawDesc = "" +
 	"\n" +
-	"7google/cloud/discoveryengine/v1alpha/sample_query.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdd\x04\n" +
+	"7google/cloud/discoveryengine/v1alpha/sample_query.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe0\x04\n" +
 	"\vSampleQuery\x12_\n" +
 	"\vquery_entry\x18\x02 \x01(\v2<.google.cloud.discoveryengine.v1alpha.SampleQuery.QueryEntryH\x00R\n" +
-	"queryEntry\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x1a\xea\x01\n" +
+	"queryEntry\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x1a\xeb\x01\n" +
 	"\n" +
-	"QueryEntry\x12\x19\n" +
-	"\x05query\x18\x01 \x01(\tB\x03\xe0A\x02R\x05query\x12]\n" +
+	"QueryEntry\x12\x1a\n" +
+	"\x05query\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05query\x12]\n" +
 	"\atargets\x18\x03 \x03(\v2C.google.cloud.discoveryengine.v1alpha.SampleQuery.QueryEntry.TargetR\atargets\x1ab\n" +
 	"\x06Target\x12\x10\n" +
 	"\x03uri\x18\x01 \x01(\tR\x03uri\x12!\n" +

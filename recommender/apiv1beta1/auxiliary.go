@@ -17,9 +17,18 @@
 package recommender
 
 import (
+	"iter"
+
 	recommenderpb "cloud.google.com/go/recommender/apiv1beta1/recommenderpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InsightIterator) All() iter.Seq2[*recommenderpb.Insight, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // InsightIterator manages a stream of *recommenderpb.Insight.
 type InsightIterator struct {
@@ -66,6 +75,12 @@ func (it *InsightIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InsightTypeIterator) All() iter.Seq2[*recommenderpb.InsightType, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // InsightTypeIterator manages a stream of *recommenderpb.InsightType.
@@ -115,6 +130,12 @@ func (it *InsightTypeIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RecommendationIterator) All() iter.Seq2[*recommenderpb.Recommendation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // RecommendationIterator manages a stream of *recommenderpb.Recommendation.
 type RecommendationIterator struct {
 	items    []*recommenderpb.Recommendation
@@ -160,6 +181,12 @@ func (it *RecommendationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RecommenderTypeIterator) All() iter.Seq2[*recommenderpb.RecommenderType, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // RecommenderTypeIterator manages a stream of *recommenderpb.RecommenderType.

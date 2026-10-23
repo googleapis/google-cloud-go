@@ -18,11 +18,13 @@ package domains
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	domainspb "cloud.google.com/go/domains/apiv1beta1/domainspb"
 	"cloud.google.com/go/longrunning"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -525,6 +527,12 @@ func (op *UpdateRegistrationOperation) Done() bool {
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *UpdateRegistrationOperation) Name() string {
 	return op.lro.Name()
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RegistrationIterator) All() iter.Seq2[*domainspb.Registration, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // RegistrationIterator manages a stream of *domainspb.Registration.

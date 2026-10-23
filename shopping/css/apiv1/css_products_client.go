@@ -253,6 +253,35 @@ func NewCssProductsClient(ctx context.Context, opts ...option.ClientOption) (*Cs
 		client.CallOptions.GetCssProduct = append(client.CallOptions.GetCssProduct, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListCssProducts = append(client.CallOptions.ListCssProducts, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "css",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/css/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "css.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetCssProduct = append(client.CallOptions.GetCssProduct, gax.WithClientTracing(tracing))
+		client.CallOptions.ListCssProducts = append(client.CallOptions.ListCssProducts, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "css",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/css/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "css.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetCssProduct = append(client.CallOptions.GetCssProduct, gax.WithClientLogging(logging))
+		client.CallOptions.ListCssProducts = append(client.CallOptions.ListCssProducts, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -346,6 +375,35 @@ func NewCssProductsRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		callOpts.GetCssProduct = append(callOpts.GetCssProduct, gax.WithClientMetrics(metrics))
 		callOpts.ListCssProducts = append(callOpts.ListCssProducts, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "css",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/css/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "css.googleapis.com",
+			}),
+		)
+
+		callOpts.GetCssProduct = append(callOpts.GetCssProduct, gax.WithClientTracing(tracing))
+		callOpts.ListCssProducts = append(callOpts.ListCssProducts, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "css",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/css/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "css.googleapis.com",
+			}),
+		)
+
+		callOpts.GetCssProduct = append(callOpts.GetCssProduct, gax.WithClientLogging(logging))
+		callOpts.ListCssProducts = append(callOpts.ListCssProducts, gax.WithClientLogging(logging))
+	}
 
 	return &CssProductsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -392,9 +450,6 @@ func (c *cssProductsGRPCClient) GetCssProduct(ctx context.Context, req *csspb.Ge
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//css.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.css.v1.CssProductsService/GetCssProduct")
 	}
@@ -416,9 +471,6 @@ func (c *cssProductsGRPCClient) ListCssProducts(ctx context.Context, req *csspb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//css.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.css.v1.CssProductsService/ListCssProducts")
 	}
@@ -484,9 +536,6 @@ func (c *cssProductsRESTClient) GetCssProduct(ctx context.Context, req *csspb.Ge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//css.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.css.v1.CssProductsService/GetCssProduct")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=accounts/*/cssProducts/*}")

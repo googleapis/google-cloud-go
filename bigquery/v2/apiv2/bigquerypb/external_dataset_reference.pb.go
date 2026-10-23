@@ -100,11 +100,11 @@ var File_google_cloud_bigquery_v2_external_dataset_reference_proto protoreflect.
 
 const file_google_cloud_bigquery_v2_external_dataset_reference_proto_rawDesc = "" +
 	"\n" +
-	"9google/cloud/bigquery/v2/external_dataset_reference.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x9e\x01\n" +
-	"\x18ExternalDatasetReference\x12,\n" +
-	"\x0fexternal_source\x18\x02 \x01(\tB\x03\xe0A\x02R\x0eexternalSource\x12T\n" +
+	"9google/cloud/bigquery/v2/external_dataset_reference.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xa0\x01\n" +
+	"\x18ExternalDatasetReference\x12-\n" +
+	"\x0fexternal_source\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0eexternalSource\x12U\n" +
 	"\n" +
-	"connection\x18\x03 \x01(\tB4\xe0A\x02\xfaA.\n" +
+	"connection\x18\x03 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
 	",bigqueryconnection.googleapis.com/ConnectionR\n" +
 	"connectionB\xef\x01\xeaAp\n" +
 	",bigqueryconnection.googleapis.com/Connection\x12@projects/{project}/locations/{location}/connections/{connection}\n" +

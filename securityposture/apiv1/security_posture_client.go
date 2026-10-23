@@ -782,6 +782,71 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "securityposture",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/securityposture/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "securityposture.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListPostures = append(client.CallOptions.ListPostures, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPostureRevisions = append(client.CallOptions.ListPostureRevisions, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPosture = append(client.CallOptions.GetPosture, gax.WithClientTracing(tracing))
+		client.CallOptions.CreatePosture = append(client.CallOptions.CreatePosture, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdatePosture = append(client.CallOptions.UpdatePosture, gax.WithClientTracing(tracing))
+		client.CallOptions.DeletePosture = append(client.CallOptions.DeletePosture, gax.WithClientTracing(tracing))
+		client.CallOptions.ExtractPosture = append(client.CallOptions.ExtractPosture, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPostureDeployments = append(client.CallOptions.ListPostureDeployments, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPostureDeployment = append(client.CallOptions.GetPostureDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.CreatePostureDeployment = append(client.CallOptions.CreatePostureDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdatePostureDeployment = append(client.CallOptions.UpdatePostureDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.DeletePostureDeployment = append(client.CallOptions.DeletePostureDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPostureTemplates = append(client.CallOptions.ListPostureTemplates, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPostureTemplate = append(client.CallOptions.GetPostureTemplate, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "securityposture",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/securityposture/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "securityposture.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListPostures = append(client.CallOptions.ListPostures, gax.WithClientLogging(logging))
+		client.CallOptions.ListPostureRevisions = append(client.CallOptions.ListPostureRevisions, gax.WithClientLogging(logging))
+		client.CallOptions.GetPosture = append(client.CallOptions.GetPosture, gax.WithClientLogging(logging))
+		client.CallOptions.CreatePosture = append(client.CallOptions.CreatePosture, gax.WithClientLogging(logging))
+		client.CallOptions.UpdatePosture = append(client.CallOptions.UpdatePosture, gax.WithClientLogging(logging))
+		client.CallOptions.DeletePosture = append(client.CallOptions.DeletePosture, gax.WithClientLogging(logging))
+		client.CallOptions.ExtractPosture = append(client.CallOptions.ExtractPosture, gax.WithClientLogging(logging))
+		client.CallOptions.ListPostureDeployments = append(client.CallOptions.ListPostureDeployments, gax.WithClientLogging(logging))
+		client.CallOptions.GetPostureDeployment = append(client.CallOptions.GetPostureDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.CreatePostureDeployment = append(client.CallOptions.CreatePostureDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.UpdatePostureDeployment = append(client.CallOptions.UpdatePostureDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.DeletePostureDeployment = append(client.CallOptions.DeletePostureDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.ListPostureTemplates = append(client.CallOptions.ListPostureTemplates, gax.WithClientLogging(logging))
+		client.CallOptions.GetPostureTemplate = append(client.CallOptions.GetPostureTemplate, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -908,6 +973,71 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "securityposture",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/securityposture/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "securityposture.googleapis.com",
+			}),
+		)
+
+		callOpts.ListPostures = append(callOpts.ListPostures, gax.WithClientTracing(tracing))
+		callOpts.ListPostureRevisions = append(callOpts.ListPostureRevisions, gax.WithClientTracing(tracing))
+		callOpts.GetPosture = append(callOpts.GetPosture, gax.WithClientTracing(tracing))
+		callOpts.CreatePosture = append(callOpts.CreatePosture, gax.WithClientTracing(tracing))
+		callOpts.UpdatePosture = append(callOpts.UpdatePosture, gax.WithClientTracing(tracing))
+		callOpts.DeletePosture = append(callOpts.DeletePosture, gax.WithClientTracing(tracing))
+		callOpts.ExtractPosture = append(callOpts.ExtractPosture, gax.WithClientTracing(tracing))
+		callOpts.ListPostureDeployments = append(callOpts.ListPostureDeployments, gax.WithClientTracing(tracing))
+		callOpts.GetPostureDeployment = append(callOpts.GetPostureDeployment, gax.WithClientTracing(tracing))
+		callOpts.CreatePostureDeployment = append(callOpts.CreatePostureDeployment, gax.WithClientTracing(tracing))
+		callOpts.UpdatePostureDeployment = append(callOpts.UpdatePostureDeployment, gax.WithClientTracing(tracing))
+		callOpts.DeletePostureDeployment = append(callOpts.DeletePostureDeployment, gax.WithClientTracing(tracing))
+		callOpts.ListPostureTemplates = append(callOpts.ListPostureTemplates, gax.WithClientTracing(tracing))
+		callOpts.GetPostureTemplate = append(callOpts.GetPostureTemplate, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "securityposture",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/securityposture/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "securityposture.googleapis.com",
+			}),
+		)
+
+		callOpts.ListPostures = append(callOpts.ListPostures, gax.WithClientLogging(logging))
+		callOpts.ListPostureRevisions = append(callOpts.ListPostureRevisions, gax.WithClientLogging(logging))
+		callOpts.GetPosture = append(callOpts.GetPosture, gax.WithClientLogging(logging))
+		callOpts.CreatePosture = append(callOpts.CreatePosture, gax.WithClientLogging(logging))
+		callOpts.UpdatePosture = append(callOpts.UpdatePosture, gax.WithClientLogging(logging))
+		callOpts.DeletePosture = append(callOpts.DeletePosture, gax.WithClientLogging(logging))
+		callOpts.ExtractPosture = append(callOpts.ExtractPosture, gax.WithClientLogging(logging))
+		callOpts.ListPostureDeployments = append(callOpts.ListPostureDeployments, gax.WithClientLogging(logging))
+		callOpts.GetPostureDeployment = append(callOpts.GetPostureDeployment, gax.WithClientLogging(logging))
+		callOpts.CreatePostureDeployment = append(callOpts.CreatePostureDeployment, gax.WithClientLogging(logging))
+		callOpts.UpdatePostureDeployment = append(callOpts.UpdatePostureDeployment, gax.WithClientLogging(logging))
+		callOpts.DeletePostureDeployment = append(callOpts.DeletePostureDeployment, gax.WithClientLogging(logging))
+		callOpts.ListPostureTemplates = append(callOpts.ListPostureTemplates, gax.WithClientLogging(logging))
+		callOpts.GetPostureTemplate = append(callOpts.GetPostureTemplate, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -964,9 +1094,6 @@ func (c *gRPCClient) ListPostures(ctx context.Context, req *securityposturepb.Li
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securityposture.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securityposture.v1.SecurityPosture/ListPostures")
 	}
@@ -1016,9 +1143,6 @@ func (c *gRPCClient) ListPostureRevisions(ctx context.Context, req *securitypost
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securityposture.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securityposture.v1.SecurityPosture/ListPostureRevisions")
 	}
@@ -1068,9 +1192,6 @@ func (c *gRPCClient) GetPosture(ctx context.Context, req *securityposturepb.GetP
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securityposture.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securityposture.v1.SecurityPosture/GetPosture")
 	}
@@ -1092,9 +1213,6 @@ func (c *gRPCClient) CreatePosture(ctx context.Context, req *securityposturepb.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securityposture.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securityposture.v1.SecurityPosture/CreatePosture")
 	}
@@ -1149,9 +1267,6 @@ func (c *gRPCClient) DeletePosture(ctx context.Context, req *securityposturepb.D
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securityposture.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securityposture.v1.SecurityPosture/DeletePosture")
 	}
@@ -1179,9 +1294,6 @@ func (c *gRPCClient) ExtractPosture(ctx context.Context, req *securityposturepb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securityposture.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securityposture.v1.SecurityPosture/ExtractPosture")
 	}
@@ -1209,9 +1321,6 @@ func (c *gRPCClient) ListPostureDeployments(ctx context.Context, req *securitypo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securityposture.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securityposture.v1.SecurityPosture/ListPostureDeployments")
 	}
@@ -1261,9 +1370,6 @@ func (c *gRPCClient) GetPostureDeployment(ctx context.Context, req *securitypost
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securityposture.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securityposture.v1.SecurityPosture/GetPostureDeployment")
 	}
@@ -1285,9 +1391,6 @@ func (c *gRPCClient) CreatePostureDeployment(ctx context.Context, req *securityp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securityposture.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securityposture.v1.SecurityPosture/CreatePostureDeployment")
 	}
@@ -1342,9 +1445,6 @@ func (c *gRPCClient) DeletePostureDeployment(ctx context.Context, req *securityp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securityposture.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securityposture.v1.SecurityPosture/DeletePostureDeployment")
 	}
@@ -1372,9 +1472,6 @@ func (c *gRPCClient) ListPostureTemplates(ctx context.Context, req *securitypost
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securityposture.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securityposture.v1.SecurityPosture/ListPostureTemplates")
 	}
@@ -1424,9 +1521,6 @@ func (c *gRPCClient) GetPostureTemplate(ctx context.Context, req *securitypostur
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securityposture.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securityposture.v1.SecurityPosture/GetPostureTemplate")
 	}
@@ -1806,9 +1900,6 @@ func (c *restClient) GetPosture(ctx context.Context, req *securityposturepb.GetP
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securityposture.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securityposture.v1.SecurityPosture/GetPosture")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=organizations/*/locations/*/postures/*}")
@@ -1874,9 +1965,6 @@ func (c *restClient) CreatePosture(ctx context.Context, req *securityposturepb.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securityposture.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securityposture.v1.SecurityPosture/CreatePosture")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=organizations/*/locations/*}/postures")
@@ -2030,9 +2118,6 @@ func (c *restClient) DeletePosture(ctx context.Context, req *securityposturepb.D
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securityposture.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securityposture.v1.SecurityPosture/DeletePosture")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=organizations/*/locations/*/postures/*}")
@@ -2102,9 +2187,6 @@ func (c *restClient) ExtractPosture(ctx context.Context, req *securityposturepb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securityposture.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securityposture.v1.SecurityPosture/ExtractPosture")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=organizations/*/locations/*}/postures:extract")
@@ -2248,9 +2330,6 @@ func (c *restClient) GetPostureDeployment(ctx context.Context, req *securitypost
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securityposture.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securityposture.v1.SecurityPosture/GetPostureDeployment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=organizations/*/locations/*/postureDeployments/*}")
@@ -2313,9 +2392,6 @@ func (c *restClient) CreatePostureDeployment(ctx context.Context, req *securityp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securityposture.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securityposture.v1.SecurityPosture/CreatePostureDeployment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=organizations/*/locations/*}/postureDeployments")
@@ -2455,9 +2531,6 @@ func (c *restClient) DeletePostureDeployment(ctx context.Context, req *securityp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securityposture.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securityposture.v1.SecurityPosture/DeletePostureDeployment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=organizations/*/locations/*/postureDeployments/*}")
@@ -2609,9 +2682,6 @@ func (c *restClient) GetPostureTemplate(ctx context.Context, req *securitypostur
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securityposture.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securityposture.v1.SecurityPosture/GetPostureTemplate")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=organizations/*/locations/*/postureTemplates/*}")

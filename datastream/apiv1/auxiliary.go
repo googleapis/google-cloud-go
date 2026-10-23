@@ -18,12 +18,14 @@ package datastream
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	datastreampb "cloud.google.com/go/datastream/apiv1/datastreampb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -688,6 +690,12 @@ func (op *UpdateStreamOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ConnectionProfileIterator) All() iter.Seq2[*datastreampb.ConnectionProfile, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ConnectionProfileIterator manages a stream of *datastreampb.ConnectionProfile.
 type ConnectionProfileIterator struct {
 	items    []*datastreampb.ConnectionProfile
@@ -733,6 +741,12 @@ func (it *ConnectionProfileIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LocationIterator manages a stream of *locationpb.Location.
@@ -782,6 +796,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -827,6 +847,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PrivateConnectionIterator) All() iter.Seq2[*datastreampb.PrivateConnection, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // PrivateConnectionIterator manages a stream of *datastreampb.PrivateConnection.
@@ -876,6 +902,12 @@ func (it *PrivateConnectionIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RouteIterator) All() iter.Seq2[*datastreampb.Route, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // RouteIterator manages a stream of *datastreampb.Route.
 type RouteIterator struct {
 	items    []*datastreampb.Route
@@ -921,6 +953,12 @@ func (it *RouteIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *StreamIterator) All() iter.Seq2[*datastreampb.Stream, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // StreamIterator manages a stream of *datastreampb.Stream.
@@ -970,6 +1008,12 @@ func (it *StreamIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *StreamObjectIterator) All() iter.Seq2[*datastreampb.StreamObject, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // StreamObjectIterator manages a stream of *datastreampb.StreamObject.
 type StreamObjectIterator struct {
 	items    []*datastreampb.StreamObject
@@ -1015,6 +1059,12 @@ func (it *StreamObjectIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *StringIterator) All() iter.Seq2[string, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // StringIterator manages a stream of string.

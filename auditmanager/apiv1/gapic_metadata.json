@@ -15,6 +15,11 @@
                 "CancelOperation"
               ]
             },
+            "CreateAuditSchedule": {
+              "methods": [
+                "CreateAuditSchedule"
+              ]
+            },
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
@@ -40,6 +45,11 @@
                 "GetAuditReport"
               ]
             },
+            "GetAuditSchedule": {
+              "methods": [
+                "GetAuditSchedule"
+              ]
+            },
             "GetLocation": {
               "methods": [
                 "GetLocation"
@@ -60,6 +70,11 @@
                 "ListAuditReports"
               ]
             },
+            "ListAuditSchedules": {
+              "methods": [
+                "ListAuditSchedules"
+              ]
+            },
             "ListControls": {
               "methods": [
                 "ListControls"
@@ -78,6 +93,11 @@
             "ListResourceEnrollmentStatuses": {
               "methods": [
                 "ListResourceEnrollmentStatuses"
+              ]
+            },
+            "UpdateAuditSchedule": {
+              "methods": [
+                "UpdateAuditSchedule"
               ]
             }
           }
@@ -90,6 +110,11 @@
                 "CancelOperation"
               ]
             },
+            "CreateAuditSchedule": {
+              "methods": [
+                "CreateAuditSchedule"
+              ]
+            },
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
@@ -115,6 +140,11 @@
                 "GetAuditReport"
               ]
             },
+            "GetAuditSchedule": {
+              "methods": [
+                "GetAuditSchedule"
+              ]
+            },
             "GetLocation": {
               "methods": [
                 "GetLocation"
@@ -135,6 +165,11 @@
                 "ListAuditReports"
               ]
             },
+            "ListAuditSchedules": {
+              "methods": [
+                "ListAuditSchedules"
+              ]
+            },
             "ListControls": {
               "methods": [
                 "ListControls"
@@ -153,6 +188,11 @@
             "ListResourceEnrollmentStatuses": {
               "methods": [
                 "ListResourceEnrollmentStatuses"
+              ]
+            },
+            "UpdateAuditSchedule": {
+              "methods": [
+                "UpdateAuditSchedule"
               ]
             }
           }

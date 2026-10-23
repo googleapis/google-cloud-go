@@ -216,6 +216,33 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 		client.CallOptions.ListAssets = append(client.CallOptions.ListAssets, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudasset",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/asset/apiv1p5beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudasset.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListAssets = append(client.CallOptions.ListAssets, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudasset",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/asset/apiv1p5beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudasset.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListAssets = append(client.CallOptions.ListAssets, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -307,6 +334,33 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 
 		callOpts.ListAssets = append(callOpts.ListAssets, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudasset",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/asset/apiv1p5beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudasset.googleapis.com",
+			}),
+		)
+
+		callOpts.ListAssets = append(callOpts.ListAssets, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudasset",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/asset/apiv1p5beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudasset.googleapis.com",
+			}),
+		)
+
+		callOpts.ListAssets = append(callOpts.ListAssets, gax.WithClientLogging(logging))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -353,9 +407,6 @@ func (c *gRPCClient) ListAssets(ctx context.Context, req *assetpb.ListAssetsRequ
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudasset.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.asset.v1p5beta1.AssetService/ListAssets")
 	}

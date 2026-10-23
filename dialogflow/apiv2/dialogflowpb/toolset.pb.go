@@ -108,12 +108,12 @@ var File_google_cloud_dialogflow_v2_toolset_proto protoreflect.FileDescriptor
 
 const file_google_cloud_dialogflow_v2_toolset_proto_rawDesc = "" +
 	"\n" +
-	"(google/cloud/dialogflow/v2/toolset.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a%google/cloud/dialogflow/v2/tool.proto\"\xed\x01\n" +
-	"\vToolsetTool\x12<\n" +
-	"\atoolset\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
-	"\x1aces.googleapis.com/ToolsetR\atoolset\x12&\n" +
-	"\foperation_id\x18\x02 \x01(\tB\x03\xe0A\x01R\voperationId\x12x\n" +
-	"\x18confirmation_requirement\x18\x03 \x01(\x0e28.google.cloud.dialogflow.v2.Tool.ConfirmationRequirementB\x03\xe0A\x01R\x17confirmationRequirementB\xf8\x01\xeaAc\n" +
+	"(google/cloud/dialogflow/v2/toolset.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a%google/cloud/dialogflow/v2/tool.proto\"\xf0\x01\n" +
+	"\vToolsetTool\x12=\n" +
+	"\atoolset\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\n" +
+	"\x1aces.googleapis.com/ToolsetR\atoolset\x12'\n" +
+	"\foperation_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\voperationId\x12y\n" +
+	"\x18confirmation_requirement\x18\x03 \x01(\x0e28.google.cloud.dialogflow.v2.Tool.ConfirmationRequirementB\x04\xe2A\x01\x01R\x17confirmationRequirementB\xf8\x01\xeaAc\n" +
 	"\x1aces.googleapis.com/Toolset\x12Eprojects/{project}/locations/{location}/apps/{app}/toolsets/{toolset}\n" +
 	"\x1ecom.google.cloud.dialogflow.v2B\fToolsetProtoP\x01Z>cloud.google.com/go/dialogflow/apiv2/dialogflowpb;dialogflowpb\xa2\x02\x02DF\xaa\x02\x1aGoogle.Cloud.Dialogflow.V2b\x06proto3"
 

@@ -18,16 +18,146 @@ package cluster
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	clusterpb "cloud.google.com/go/redis/cluster/apiv1/clusterpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	anypb "google.golang.org/protobuf/types/known/anypb"
 )
+
+// AddAuthTokenOperation manages a long-running operation from AddAuthToken.
+type AddAuthTokenOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *AddAuthTokenOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*clusterpb.TokenAuthUser, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp clusterpb.TokenAuthUser
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *AddAuthTokenOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*clusterpb.TokenAuthUser, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp clusterpb.TokenAuthUser
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *AddAuthTokenOperation) Metadata() (*clusterpb.OperationMetadata, error) {
+	var meta clusterpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *AddAuthTokenOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *AddAuthTokenOperation) Name() string {
+	return op.lro.Name()
+}
+
+// AddTokenAuthUserOperation manages a long-running operation from AddTokenAuthUser.
+type AddTokenAuthUserOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *AddTokenAuthUserOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*clusterpb.Cluster, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp clusterpb.Cluster
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *AddTokenAuthUserOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*clusterpb.Cluster, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp clusterpb.Cluster
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *AddTokenAuthUserOperation) Metadata() (*clusterpb.OperationMetadata, error) {
+	var meta clusterpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *AddTokenAuthUserOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *AddTokenAuthUserOperation) Name() string {
+	return op.lro.Name()
+}
 
 // BackupClusterOperation manages a long-running operation from BackupCluster.
 type BackupClusterOperation struct {
@@ -157,6 +287,112 @@ func (op *CreateClusterOperation) Name() string {
 	return op.lro.Name()
 }
 
+// DeleteAclPolicyOperation manages a long-running operation from DeleteAclPolicy.
+type DeleteAclPolicyOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeleteAclPolicyOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeleteAclPolicyOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeleteAclPolicyOperation) Metadata() (*clusterpb.OperationMetadata, error) {
+	var meta clusterpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeleteAclPolicyOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeleteAclPolicyOperation) Name() string {
+	return op.lro.Name()
+}
+
+// DeleteAuthTokenOperation manages a long-running operation from DeleteAuthToken.
+type DeleteAuthTokenOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeleteAuthTokenOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeleteAuthTokenOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeleteAuthTokenOperation) Metadata() (*clusterpb.OperationMetadata, error) {
+	var meta clusterpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeleteAuthTokenOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeleteAuthTokenOperation) Name() string {
+	return op.lro.Name()
+}
+
 // DeleteBackupOperation manages a long-running operation from DeleteBackup.
 type DeleteBackupOperation struct {
 	lro      *longrunning.Operation
@@ -260,6 +496,59 @@ func (op *DeleteClusterOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *DeleteClusterOperation) Name() string {
+	return op.lro.Name()
+}
+
+// DeleteTokenAuthUserOperation manages a long-running operation from DeleteTokenAuthUser.
+type DeleteTokenAuthUserOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeleteTokenAuthUserOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeleteTokenAuthUserOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeleteTokenAuthUserOperation) Metadata() (*clusterpb.OperationMetadata, error) {
+	var meta clusterpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeleteTokenAuthUserOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeleteTokenAuthUserOperation) Name() string {
 	return op.lro.Name()
 }
 
@@ -391,6 +680,70 @@ func (op *RescheduleClusterMaintenanceOperation) Name() string {
 	return op.lro.Name()
 }
 
+// UpdateAclPolicyOperation manages a long-running operation from UpdateAclPolicy.
+type UpdateAclPolicyOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *UpdateAclPolicyOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*clusterpb.AclPolicy, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp clusterpb.AclPolicy
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *UpdateAclPolicyOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*clusterpb.AclPolicy, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp clusterpb.AclPolicy
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *UpdateAclPolicyOperation) Metadata() (*clusterpb.OperationMetadata, error) {
+	var meta clusterpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *UpdateAclPolicyOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *UpdateAclPolicyOperation) Name() string {
+	return op.lro.Name()
+}
+
 // UpdateClusterOperation manages a long-running operation from UpdateCluster.
 type UpdateClusterOperation struct {
 	lro      *longrunning.Operation
@@ -455,6 +808,171 @@ func (op *UpdateClusterOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AclPolicyIterator) All() iter.Seq2[*clusterpb.AclPolicy, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// AclPolicyIterator manages a stream of *clusterpb.AclPolicy.
+type AclPolicyIterator struct {
+	items    []*clusterpb.AclPolicy
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*clusterpb.AclPolicy, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *AclPolicyIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *AclPolicyIterator) Next() (*clusterpb.AclPolicy, error) {
+	var item *clusterpb.AclPolicy
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *AclPolicyIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *AclPolicyIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AclPolicyRevisionIterator) All() iter.Seq2[*clusterpb.AclPolicyRevision, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// AclPolicyRevisionIterator manages a stream of *clusterpb.AclPolicyRevision.
+type AclPolicyRevisionIterator struct {
+	items    []*clusterpb.AclPolicyRevision
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*clusterpb.AclPolicyRevision, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *AclPolicyRevisionIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *AclPolicyRevisionIterator) Next() (*clusterpb.AclPolicyRevision, error) {
+	var item *clusterpb.AclPolicyRevision
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *AclPolicyRevisionIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *AclPolicyRevisionIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AuthTokenIterator) All() iter.Seq2[*clusterpb.AuthToken, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// AuthTokenIterator manages a stream of *clusterpb.AuthToken.
+type AuthTokenIterator struct {
+	items    []*clusterpb.AuthToken
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*clusterpb.AuthToken, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *AuthTokenIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *AuthTokenIterator) Next() (*clusterpb.AuthToken, error) {
+	var item *clusterpb.AuthToken
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *AuthTokenIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *AuthTokenIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BackupCollectionIterator) All() iter.Seq2[*clusterpb.BackupCollection, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // BackupCollectionIterator manages a stream of *clusterpb.BackupCollection.
 type BackupCollectionIterator struct {
 	items    []*clusterpb.BackupCollection
@@ -500,6 +1018,12 @@ func (it *BackupCollectionIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BackupIterator) All() iter.Seq2[*clusterpb.Backup, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // BackupIterator manages a stream of *clusterpb.Backup.
@@ -549,6 +1073,12 @@ func (it *BackupIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ClusterIterator) All() iter.Seq2[*clusterpb.Cluster, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ClusterIterator manages a stream of *clusterpb.Cluster.
 type ClusterIterator struct {
 	items    []*clusterpb.Cluster
@@ -594,6 +1124,12 @@ func (it *ClusterIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LocationIterator manages a stream of *locationpb.Location.
@@ -643,6 +1179,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -685,6 +1227,59 @@ func (it *OperationIterator) bufLen() int {
 }
 
 func (it *OperationIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TokenAuthUserIterator) All() iter.Seq2[*clusterpb.TokenAuthUser, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// TokenAuthUserIterator manages a stream of *clusterpb.TokenAuthUser.
+type TokenAuthUserIterator struct {
+	items    []*clusterpb.TokenAuthUser
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*clusterpb.TokenAuthUser, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *TokenAuthUserIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *TokenAuthUserIterator) Next() (*clusterpb.TokenAuthUser, error) {
+	var item *clusterpb.TokenAuthUser
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *TokenAuthUserIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *TokenAuthUserIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

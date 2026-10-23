@@ -20,6 +20,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
+	"reflect"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"testing"
@@ -27,10 +30,16 @@ import (
 
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	. "cloud.google.com/go/spanner/internal/testutil"
+	"github.com/google/go-cmp/cmp"
 	"github.com/googleapis/gax-go/v2"
+	"go.opentelemetry.io/otel/attribute"
+	otelmetric "go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/metric/noop"
+	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"google.golang.org/api/iterator"
+	"google.golang.org/api/option"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
@@ -188,16 +197,18 @@ func genProtoListValue(v ...string) *proto3.Value_ListValue {
 }
 
 // Test Row generation logics of partialResultSetDecoder.
-func TestPartialResultSetDecoder(t *testing.T) {
-	restore := setMaxBytesBetweenResumeTokens()
-	defer restore()
-	var tests = []struct {
-		input    []*sppb.PartialResultSet
-		wantF    []*Row
-		wantTxID transactionID
-		wantTs   time.Time
-		wantD    bool
-	}{
+type partialResultSetDecoderTest struct {
+	input    []*sppb.PartialResultSet
+	wantF    []*Row
+	wantTxID transactionID
+	wantTs   time.Time
+	wantD    bool
+}
+
+// partialResultSetDecoderTests returns test cases that assemble
+// PartialResultSets into rows.
+func partialResultSetDecoderTests() []partialResultSetDecoderTest {
+	return []partialResultSetDecoderTest{
 		{
 			// Empty input.
 			wantD: true,
@@ -576,9 +587,13 @@ func TestPartialResultSetDecoder(t *testing.T) {
 			wantD:    true,
 		},
 	}
+}
 
+func TestPartialResultSetDecoder(t *testing.T) {
+	restore := setMaxBytesBetweenResumeTokens()
+	defer restore()
 nextTest:
-	for i, test := range tests {
+	for i, test := range partialResultSetDecoderTests() {
 		var rows []*Row
 		p := &partialResultSetDecoder{}
 		for j, v := range test.input {
@@ -813,7 +828,6 @@ func TestRsdNonblockingStates(t *testing.T) {
 			ctx := metadata.NewOutgoingContext(context.Background(), md)
 			ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 			defer cancel()
-			mt := c.metricsTracerFactory.createBuiltinMetricsTracer(ctx)
 			r := newResumableStreamDecoder(
 				ctx,
 				cancel,
@@ -880,7 +894,7 @@ func TestRsdNonblockingStates(t *testing.T) {
 						if item == nil {
 							break
 						}
-						q = append(q, item)
+						q = append(q, item.(*sppb.PartialResultSet))
 					}
 					if !testEqual(q, test.queue) {
 						t.Fatalf("PartialResultSets still queued: \n%v\n, want \n%v\n", q, test.queue)
@@ -895,13 +909,9 @@ func TestRsdNonblockingStates(t *testing.T) {
 					}
 					return
 				}
-				mt.currOp.incrementAttemptCount()
-				mt.currOp.currAttempt = &attemptTracer{
-					startTime: time.Now(),
-				}
 				// Receive next decoded item.
-				if r.next(&mt) {
-					rs = append(rs, r.get())
+				if r.next() {
+					rs = append(rs, r.get().(*sppb.PartialResultSet))
 				}
 			}
 		})
@@ -1120,7 +1130,6 @@ func TestRsdBlockingStates(t *testing.T) {
 			ctx := metadata.NewOutgoingContext(context.Background(), md)
 			ctx, cancel := context.WithCancel(ctx)
 			defer cancel()
-			mt := c.metricsTracerFactory.createBuiltinMetricsTracer(ctx)
 			r := newResumableStreamDecoder(
 				ctx,
 				cancel,
@@ -1156,7 +1165,9 @@ func TestRsdBlockingStates(t *testing.T) {
 					st = append(st, rs)
 					if len(st) == hl {
 						lastErr = r.lastErr()
-						q = r.q.dump()
+						for _, item := range r.q.dump() {
+							q = append(q, item.(*sppb.PartialResultSet))
+						}
 						close(stateDone)
 					}
 				}
@@ -1170,18 +1181,14 @@ func TestRsdBlockingStates(t *testing.T) {
 			var rs []*sppb.PartialResultSet
 			rowsFetched := make(chan int)
 			go func() {
-				mt.currOp.incrementAttemptCount()
-				mt.currOp.currAttempt = &attemptTracer{
-					startTime: time.Now(),
-				}
 				for {
-					if !r.next(&mt) {
+					if !r.next() {
 						// Note that r.Next also exits on context cancel/timeout.
 						close(rowsFetched)
 						return
 					}
 					mutex.Lock()
-					rs = append(rs, r.get())
+					rs = append(rs, r.get().(*sppb.PartialResultSet))
 					mutex.Unlock()
 				}
 			}()
@@ -1297,7 +1304,6 @@ func TestQueueBytes(t *testing.T) {
 	ctx := metadata.NewOutgoingContext(context.Background(), md)
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
-	mt := c.metricsTracerFactory.createBuiltinMetricsTracer(ctx)
 	decoder := newResumableStreamDecoder(
 		ctx,
 		cancel,
@@ -1325,24 +1331,24 @@ func TestQueueBytes(t *testing.T) {
 		ResumeToken: rt1,
 	})
 
-	decoder.next(&mt)
-	decoder.next(&mt)
-	decoder.next(&mt)
+	decoder.next()
+	decoder.next()
+	decoder.next()
 	if got, want := decoder.bytesBetweenResumeTokens, int32(2*sizeOfPRS); got != want {
 		t.Errorf("r.bytesBetweenResumeTokens = %v, want %v", got, want)
 	}
 
-	decoder.next(&mt)
+	decoder.next()
 	if decoder.bytesBetweenResumeTokens != 0 {
 		t.Errorf("r.bytesBetweenResumeTokens = %v, want 0", decoder.bytesBetweenResumeTokens)
 	}
 
-	decoder.next(&mt)
+	decoder.next()
 	if got, want := decoder.bytesBetweenResumeTokens, int32(sizeOfPRS); got != want {
 		t.Errorf("r.bytesBetweenResumeTokens = %v, want %v", got, want)
 	}
 
-	decoder.next(&mt)
+	decoder.next()
 	if decoder.bytesBetweenResumeTokens != 0 {
 		t.Errorf("r.bytesBetweenResumeTokens = %v, want 0", decoder.bytesBetweenResumeTokens)
 	}
@@ -1428,7 +1434,7 @@ func TestResumeToken(t *testing.T) {
 		if err != nil {
 			t.Fatalf("failed to get next value: %v", err)
 		}
-		rows = append(rows, row)
+		rows = append(rows, detachRow(row))
 	}
 
 	want := []*Row{
@@ -1465,7 +1471,7 @@ func TestResumeToken(t *testing.T) {
 		if err != nil {
 			t.Fatalf("failed to get next value: %v", err)
 		}
-		rows = append(rows, row)
+		rows = append(rows, detachRow(row))
 	}
 
 	// Since resumableStreamDecoder is already at queueingUnretryable state,
@@ -1492,7 +1498,7 @@ func TestResumeToken(t *testing.T) {
 		if err != nil {
 			t.Fatalf("failed to get next value: %v", err)
 		}
-		rows = append(rows, row)
+		rows = append(rows, detachRow(row))
 	}
 
 	// Verify if a normal server side EOF flushes all queued rows.
@@ -2013,12 +2019,8 @@ func TestIteratorStopEarly(t *testing.T) {
 }
 
 func TestIteratorWithError(t *testing.T) {
-	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(context.Background(), "projects/my-project/instances/my-instance/databases/my-database", "identity", false, false, noop.NewMeterProvider())
-	if err != nil {
-		t.Fatalf("failed to create metrics tracer factory: %v", err)
-	}
 	injected := errors.New("Failed iterator")
-	iter := RowIterator{meterTracerFactory: metricsTracerFactory, err: injected}
+	iter := RowIterator{err: injected}
 	defer iter.Stop()
 	if _, err := iter.Next(); err != injected {
 		t.Fatalf("Expected error: %v, got %v", injected, err)
@@ -2036,3 +2038,554 @@ func createSession(client spannerClient) (*sppb.Session, error) {
 	ctx = metadata.NewOutgoingContext(ctx, md)
 	return client.CreateSession(ctx, request)
 }
+
+// partialResultSetsReceiver is a streamingReceiver that returns the given
+// PartialResultSets in order, followed by io.EOF.
+type partialResultSetsReceiver struct {
+	prs []*sppb.PartialResultSet
+}
+
+func (r *partialResultSetsReceiver) Recv() (*sppb.PartialResultSet, error) {
+	if len(r.prs) == 0 {
+		return nil, io.EOF
+	}
+	prs := r.prs[0]
+	r.prs = r.prs[1:]
+	return prs, nil
+}
+
+func (r *partialResultSetsReceiver) Context() context.Context {
+	return context.Background()
+}
+
+func TestRowIteratorNextBufferedRowsDoesNotAllocate(t *testing.T) {
+	const rows = 200
+	values := make([]*structpb.Value, rows)
+	for i := range values {
+		values[i] = structpb.NewStringValue(fmt.Sprint(i))
+	}
+	prs := &sppb.PartialResultSet{
+		Metadata: &sppb.ResultSetMetadata{RowType: &sppb.StructType{Fields: []*sppb.StructType_Field{
+			{Name: "Value", Type: &sppb.Type{Code: sppb.TypeCode_INT64}},
+		}}},
+		Values:      values,
+		ResumeToken: EncodeResumeToken(rows),
+	}
+	_, clientMetricsProvider := newTestMeterProvider()
+
+	for _, test := range []struct {
+		name                  string
+		clientMetricsProvider otelmetric.MeterProvider
+		wantEnabled           bool
+	}{
+		{name: "metrics disabled"},
+		{name: "metrics enabled", clientMetricsProvider: clientMetricsProvider, wantEnabled: true},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			factory, err := newBuiltinMetricsTracerFactory(context.Background(), "projects/p/instances/i/databases/d", "identity", false, false, noop.NewMeterProvider(), test.clientMetricsProvider)
+			if err != nil {
+				t.Fatalf("failed to create metrics tracer factory: %v", err)
+			}
+			if factory.enabled != test.wantEnabled {
+				t.Fatalf("metrics tracer factory enabled = %v, want %v", factory.enabled, test.wantEnabled)
+			}
+			receiver := &partialResultSetsReceiver{prs: []*sppb.PartialResultSet{prs}}
+			iter := stream(context.Background(), nil, factory,
+				func(context.Context, []byte, ...gax.CallOption) (streamingReceiver, error) {
+					return receiver, nil
+				},
+				nil,
+				func(error) {}, &grpcSpannerClient{nthRequest: new(atomic.Uint32)})
+			defer iter.Stop()
+
+			// The first call receives the PartialResultSet and buffers its rows.
+			if _, err := iter.Next(); err != nil {
+				t.Fatalf("Next() failed: %v", err)
+			}
+			allocs := testing.AllocsPerRun(rows/2, func() {
+				if _, err := iter.Next(); err != nil {
+					t.Fatalf("Next() failed: %v", err)
+				}
+			})
+			if allocs != 0 {
+				t.Errorf("Next() on a buffered row allocated %v times, want 0", allocs)
+			}
+		})
+	}
+}
+
+// streamingQueryMetrics returns the built-in metrics recorded for
+// ExecuteStreamingSql, and any recorded without a method, keyed by metric
+// name, method and status. Counters are summed and histograms report their
+// number of recordings.
+func streamingQueryMetrics(t *testing.T, rm metricdata.ResourceMetrics) map[string]int64 {
+	t.Helper()
+	return builtInMetricsForMethod(t, rm, "Spanner.ExecuteStreamingSql")
+}
+
+// builtInMetricsForMethod returns the built-in metrics recorded for method,
+// and any recorded without a method, keyed by metric name, method and status.
+// Counters are summed and histograms report their number of recordings.
+func builtInMetricsForMethod(t *testing.T, rm metricdata.ResourceMetrics, wantMethod string) map[string]int64 {
+	t.Helper()
+	got := make(map[string]int64)
+	for _, sm := range rm.ScopeMetrics {
+		for _, m := range sm.Metrics {
+			name := strings.TrimPrefix(m.Name, clientMetricsPrefix)
+			add := func(attrs attribute.Set, value int64) {
+				method, ok := attrs.Value(metricLabelKeyMethod)
+				if !ok || (method.AsString() != wantMethod && method.AsString() != "") {
+					return
+				}
+				rpcStatus, _ := attrs.Value(metricLabelKeyStatus)
+				got[fmt.Sprintf("%s method=%q status=%s", name, method.AsString(), rpcStatus.AsString())] += value
+			}
+			switch data := m.Data.(type) {
+			case metricdata.Sum[int64]:
+				for _, point := range data.DataPoints {
+					add(point.Attributes, point.Value)
+				}
+			case metricdata.Histogram[float64]:
+				for _, point := range data.DataPoints {
+					add(point.Attributes, int64(point.Count))
+				}
+			}
+		}
+	}
+	return got
+}
+
+// TestRowIteratorRecordsBuiltInMetrics verifies the built-in metrics that
+// RowIterator records for a streaming query. The result stream is one
+// operation that ends when Next returns iterator.Done or an error, or when the
+// iterator is stopped, and every stream that is opened for it is an attempt.
+func TestRowIteratorRecordsBuiltInMetrics(t *testing.T) {
+	const singleRowSQL = "SELECT Value FROM SingleRow"
+	singleRowResult := &StatementResult{
+		Type: StatementResultResultSet,
+		ResultSet: &sppb.ResultSet{
+			Metadata: &sppb.ResultSetMetadata{RowType: &sppb.StructType{Fields: []*sppb.StructType_Field{
+				{Name: "Value", Type: &sppb.Type{Code: sppb.TypeCode_INT64}},
+			}}},
+			Rows: []*structpb.ListValue{{Values: []*structpb.Value{structpb.NewStringValue("1")}}},
+		},
+		SetLastFlag: true,
+	}
+	const emptySQL = "SELECT Value FROM Empty"
+	emptyResult := &StatementResult{
+		Type: StatementResultResultSet,
+		ResultSet: &sppb.ResultSet{
+			Metadata: singleRowResult.ResultSet.Metadata,
+		},
+	}
+	readAll := func(iter *RowIterator) (rows int, err error) {
+		for {
+			if _, err = iter.Next(); err != nil {
+				return rows, err
+			}
+			rows++
+		}
+	}
+	readWithDo := func(iter *RowIterator) (rows int, err error) {
+		err = iter.Do(func(*Row) error {
+			rows++
+			return nil
+		})
+		return rows, err
+	}
+	stopBeforeNext := func(iter *RowIterator) (int, error) {
+		iter.Stop()
+		return 0, nil
+	}
+	errDoCallback := errors.New("callback failed")
+	doCallbackError := func(iter *RowIterator) (rows int, err error) {
+		err = iter.Do(func(*Row) error {
+			rows++
+			return errDoCallback
+		})
+		return rows, err
+	}
+	stopAfterFirstRow := func(iter *RowIterator) (int, error) {
+		defer iter.Stop()
+		_, err := iter.Next()
+		return 1, err
+	}
+	op := func(code string, attempts int64) map[string]int64 {
+		return map[string]int64{
+			`attempt_count method="Spanner.ExecuteStreamingSql" status=` + code:       attempts,
+			`operation_count method="Spanner.ExecuteStreamingSql" status=` + code:     1,
+			`operation_latencies method="Spanner.ExecuteStreamingSql" status=` + code: 1,
+		}
+	}
+	attempts := func(want map[string]int64, codes ...string) map[string]int64 {
+		for _, code := range codes {
+			want[`attempt_latencies method="Spanner.ExecuteStreamingSql" status=`+code]++
+			want[`gfe_connectivity_error_count method="Spanner.ExecuteStreamingSql" status=`+code]++
+		}
+		return want
+	}
+
+	for _, test := range []struct {
+		name                string
+		sql                 string
+		canceled            bool
+		failFirstStreamOpen bool
+		executionTime       *SimulatedExecutionTime
+		streamErr           *PartialResultSetExecutionTime
+		iterate             func(*RowIterator) (int, error)
+		wantRows            int
+		wantCode            codes.Code
+		want                map[string]int64
+	}{
+		{
+			name:     "no rows",
+			sql:      emptySQL,
+			iterate:  readAll,
+			wantRows: 0,
+			want:     attempts(op("OK", 1), "OK"),
+		},
+		{
+			name:     "multiple rows",
+			iterate:  readAll,
+			wantRows: 3,
+			want:     attempts(op("OK", 1), "OK"),
+		},
+		{
+			name:     "multiple rows with Do",
+			iterate:  readWithDo,
+			wantRows: 3,
+			want:     attempts(op("OK", 1), "OK"),
+		},
+		{
+			name:     "error returned by Do callback",
+			iterate:  doCallbackError,
+			wantRows: 1,
+			wantCode: codes.Unknown,
+			want:     attempts(op("OK", 1), "OK"),
+		},
+		{
+			name:    "stopped before first Next",
+			iterate: stopBeforeNext,
+			want:    map[string]int64{},
+		},
+		{
+			name:                "retryable error opening first stream",
+			failFirstStreamOpen: true,
+			iterate:             readAll,
+			wantRows:            3,
+			want:                attempts(op("OK", 2), "Unavailable", "OK"),
+		},
+		{
+			name:     "context canceled before first stream",
+			canceled: true,
+			iterate:  readAll,
+			wantCode: codes.Canceled,
+			want:     attempts(op("Canceled", 1), "Canceled"),
+		},
+		{
+			name:          "retryable error before first row",
+			executionTime: &SimulatedExecutionTime{Errors: []error{status.Error(codes.Unavailable, "unavailable")}},
+			iterate:       readAll,
+			wantRows:      3,
+			want:          attempts(op("OK", 2), "Unavailable", "OK"),
+		},
+		{
+			name: "stream resumed after retryable error",
+			streamErr: &PartialResultSetExecutionTime{
+				ResumeToken: EncodeResumeToken(2),
+				Err:         status.Error(codes.Unavailable, "unavailable"),
+			},
+			iterate:  readAll,
+			wantRows: 3,
+			want:     attempts(op("OK", 2), "Unavailable", "OK"),
+		},
+		{
+			name:     "stopped before end of stream",
+			iterate:  stopAfterFirstRow,
+			wantRows: 1,
+			want:     attempts(op("OK", 1), "OK"),
+		},
+		{
+			name:     "stopped after end of stream",
+			sql:      singleRowSQL,
+			iterate:  stopAfterFirstRow,
+			wantRows: 1,
+			want:     attempts(op("OK", 1), "OK"),
+		},
+		{
+			name:          "non-retryable error before first row",
+			executionTime: &SimulatedExecutionTime{Errors: []error{status.Error(codes.InvalidArgument, "invalid")}},
+			iterate:       readAll,
+			wantCode:      codes.InvalidArgument,
+			want:          attempts(op("InvalidArgument", 1), "InvalidArgument"),
+		},
+		{
+			name: "non-retryable error after first row",
+			streamErr: &PartialResultSetExecutionTime{
+				ResumeToken: EncodeResumeToken(2),
+				Err:         status.Error(codes.InvalidArgument, "invalid"),
+			},
+			iterate:  readAll,
+			wantRows: 1,
+			wantCode: codes.InvalidArgument,
+			want:     attempts(op("InvalidArgument", 1), "InvalidArgument"),
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			reader, provider := newTestMeterProvider()
+			var opts []option.ClientOption
+			if test.failFirstStreamOpen {
+				var opened bool
+				opts = append(opts, option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(
+					func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+						if strings.HasSuffix(method, "/ExecuteStreamingSql") && !opened {
+							opened = true
+							return nil, status.Error(codes.Unavailable, "unavailable")
+						}
+						return streamer(ctx, desc, cc, method, opts...)
+					})))
+			}
+			server, client, teardown := setupMockedTestServerWithConfigAndClientOptions(t, ClientConfig{DisableNativeMetrics: true, ClientMetricsProvider: provider}, opts)
+			defer teardown()
+			if err := server.TestSpanner.PutStatementResult(singleRowSQL, singleRowResult); err != nil {
+				t.Fatal(err)
+			}
+			if err := server.TestSpanner.PutStatementResult(emptySQL, emptyResult); err != nil {
+				t.Fatal(err)
+			}
+			sql := test.sql
+			if sql == "" {
+				sql = SelectSingerIDAlbumIDAlbumTitleFromAlbums
+			}
+			if test.executionTime != nil {
+				server.TestSpanner.PutExecutionTime(MethodExecuteStreamingSql, *test.executionTime)
+			}
+			if test.streamErr != nil {
+				server.TestSpanner.AddPartialResultSetError(sql, *test.streamErr)
+			}
+
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+			iter := client.Single().Query(ctx, NewStatement(sql))
+			defer iter.Stop()
+			if test.canceled {
+				cancel()
+			}
+			gotRows, err := test.iterate(iter)
+			var gotCode codes.Code
+			if err != nil && err != iterator.Done {
+				gotCode = ErrCode(err)
+			}
+			if g, w := gotCode, test.wantCode; g != w {
+				t.Fatalf("error code mismatch\n Got: %v\nWant: %v", g, w)
+			}
+			if gotRows != test.wantRows {
+				t.Fatalf("row count mismatch\n Got: %v\nWant: %v", gotRows, test.wantRows)
+			}
+			got := streamingQueryMetrics(t, collectTestMetrics(t, reader))
+			if diff := cmp.Diff(test.want, got); diff != "" {
+				t.Errorf("recorded metrics mismatch (-want +got):\n%s", diff)
+			}
+
+			// The operation ends only once.
+			iter.Next()
+			iter.Stop()
+			if diff := cmp.Diff(got, streamingQueryMetrics(t, collectTestMetrics(t, reader))); diff != "" {
+				t.Errorf("Next() and Stop() after the end recorded metrics (-before +after):\n%s", diff)
+			}
+		})
+	}
+}
+
+func TestRowIteratorOperationLatencyIncludesApplicationTime(t *testing.T) {
+	const pause = 20 * time.Millisecond
+	reader, provider := newTestMeterProvider()
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, ClientMetricsProvider: provider})
+	defer teardown()
+
+	iter := client.Single().Query(context.Background(), NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+	defer iter.Stop()
+	var rows int
+	for {
+		_, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatalf("Next() failed: %v", err)
+		}
+		rows++
+		time.Sleep(pause)
+	}
+
+	m := requireTestMetric(t, collectTestMetrics(t, reader), clientMetricsPrefix+metricNameOperationLatencies)
+	var got float64
+	for _, point := range m.Data.(metricdata.Histogram[float64]).DataPoints {
+		if method, _ := point.Attributes.Value(metricLabelKeyMethod); method.AsString() == "Spanner.ExecuteStreamingSql" {
+			got += point.Sum
+		}
+	}
+	if want := float64(time.Duration(rows) * pause / time.Millisecond); got < want {
+		t.Errorf("operation latency = %vms, want at least %vms", got, want)
+	}
+}
+
+func TestRowIteratorNextErrorWithoutTracerDoesNotAllocate(t *testing.T) {
+	_, provider := newTestMeterProvider()
+	factory, err := newBuiltinMetricsTracerFactory(context.Background(), "projects/p/instances/i/databases/d", "identity", false, false, noop.NewMeterProvider(), provider)
+	if err != nil {
+		t.Fatalf("failed to create metrics tracer factory: %v", err)
+	}
+	for _, test := range []struct {
+		name string
+		mt   *builtinMetricsTracer
+	}{
+		{name: "metrics disabled"},
+		{name: "operation already ended", mt: factory.newBuiltinMetricsTracer(context.Background())},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			iter := &RowIterator{
+				err:     spannerErrorf(codes.InvalidArgument, "invalid"),
+				streamd: &resumableStreamDecoder{streamOperationMetrics: streamOperationMetrics{mt: test.mt}},
+			}
+			// The first call ends the operation, if there is one.
+			iter.Next()
+			allocs := testing.AllocsPerRun(100, func() {
+				iter.Next()
+			})
+			if allocs != 0 {
+				t.Errorf("Next() returning an error allocated %v times, want 0", allocs)
+			}
+		})
+	}
+}
+
+func TestRowIteratorDoesNotRecordAttemptsRejectedBeforeRPC(t *testing.T) {
+	for _, test := range []struct {
+		name         string
+		rowsBefore   int
+		wantRequests int
+		want         map[string]int64
+	}{
+		{
+			name: "rejected before first stream",
+			want: map[string]int64{},
+		},
+		{
+			name:         "resume rejected after stream error",
+			rowsBefore:   1,
+			wantRequests: 1,
+			// attempt_count has the status of the last attempt, which is the
+			// rejected resume.
+			want: map[string]int64{
+				`attempt_count method="Spanner.ExecuteStreamingSql" status=FailedPrecondition`:         1,
+				`attempt_latencies method="Spanner.ExecuteStreamingSql" status=Unavailable`:            1,
+				`gfe_connectivity_error_count method="Spanner.ExecuteStreamingSql" status=Unavailable`: 1,
+				`operation_count method="Spanner.ExecuteStreamingSql" status=FailedPrecondition`:       1,
+				`operation_latencies method="Spanner.ExecuteStreamingSql" status=FailedPrecondition`:   1,
+			},
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			reader, provider := newTestMeterProvider()
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, ClientMetricsProvider: provider})
+			defer teardown()
+			ctx := context.Background()
+			tx, err := NewReadWriteStmtBasedTransaction(ctx, client)
+			if err != nil {
+				t.Fatal(err)
+			}
+			sql := SelectSingerIDAlbumIDAlbumTitleFromAlbums
+			server.TestSpanner.AddPartialResultSetError(sql, PartialResultSetExecutionTime{
+				ResumeToken: EncodeResumeToken(2),
+				Err:         status.Error(codes.Unavailable, "unavailable"),
+			})
+			iter := tx.Query(ctx, NewStatement(sql))
+			defer iter.Stop()
+			for i := 0; i < test.rowsBefore; i++ {
+				if _, err := iter.Next(); err != nil {
+					t.Fatalf("Next() failed: %v", err)
+				}
+			}
+			// Rolling back the transaction makes the query reject opening or
+			// resuming its stream before sending an RPC.
+			tx.Rollback(ctx)
+			for err == nil {
+				_, err = iter.Next()
+			}
+			if g, w := ErrCode(err), codes.FailedPrecondition; g != w {
+				t.Fatalf("error code mismatch\n Got: %v\nWant: %v", g, w)
+			}
+			requests := requestsOfType(drainRequestsFromServer(server.TestSpanner), reflect.TypeOf(&sppb.ExecuteSqlRequest{}))
+			if g, w := len(requests), test.wantRequests; g != w {
+				t.Fatalf("ExecuteStreamingSql request count mismatch\n Got: %v\nWant: %v", g, w)
+			}
+			if diff := cmp.Diff(test.want, streamingQueryMetrics(t, collectTestMetrics(t, reader))); diff != "" {
+				t.Errorf("recorded metrics mismatch (-want +got):\n%s", diff)
+			}
+		})
+	}
+}
+
+// statusCountingError counts how often its status is read.
+type statusCountingError struct {
+	code  codes.Code
+	calls *int
+}
+
+func (e statusCountingError) Error() string { return e.code.String() }
+
+func (e statusCountingError) GRPCStatus() *status.Status {
+	*e.calls++
+	return status.New(e.code, e.code.String())
+}
+
+func TestResumableStreamDecoderDisabledMetricsDoNotReadErrorStatus(t *testing.T) {
+	_, provider := newTestMeterProvider()
+	enabled, err := newBuiltinMetricsTracerFactory(context.Background(), "projects/p/instances/i/databases/d", "identity", false, false, noop.NewMeterProvider(), provider)
+	if err != nil {
+		t.Fatalf("failed to create metrics tracer factory: %v", err)
+	}
+	for _, test := range []struct {
+		name    string
+		openErr bool
+	}{
+		{name: "stream open error", openErr: true},
+		{name: "receive error"},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			// statusReads returns how often the error status is read while
+			// the decoder fails with a non-retryable error.
+			statusReads := func(factory *builtinMetricsTracerFactory) int {
+				var calls int
+				streamErr := statusCountingError{code: codes.InvalidArgument, calls: &calls}
+				d := newResumableStreamDecoder(context.Background(), nil, nil,
+					func(context.Context, []byte, ...gax.CallOption) (streamingReceiver, error) {
+						if test.openErr {
+							return nil, streamErr
+						}
+						return &errorReceiver{err: streamErr}, nil
+					},
+					&grpcSpannerClient{nthRequest: new(atomic.Uint32)}, true, false)
+				d.meterTracerFactory = factory
+				if d.next() {
+					t.Fatal("next() succeeded, want error")
+				}
+				return calls
+			}
+			// Enabled metrics read the status once to record the attempt.
+			if g, w := statusReads(nil), statusReads(enabled)-1; g != w {
+				t.Errorf("status reads with metrics disabled = %v, want %v", g, w)
+			}
+		})
+	}
+}
+
+// errorReceiver is a streamingReceiver that fails with err.
+type errorReceiver struct {
+	err error
+}
+
+func (r *errorReceiver) Recv() (*sppb.PartialResultSet, error) { return nil, r.err }
+
+func (r *errorReceiver) Context() context.Context { return context.Background() }

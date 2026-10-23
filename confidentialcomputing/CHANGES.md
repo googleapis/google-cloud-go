@@ -1,6 +1,27 @@
 # Changes
 
 
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.19.0...confidentialcomputing/v1.20.0) (2026-10-22)
+
+
+### Features
+
+* Update API sources and regenerate ([#20728](https://github.com/googleapis/google-cloud-go/issues/20728)) ([ab1da9d](https://github.com/googleapis/google-cloud-go/commit/ab1da9d200416594ae18fa7a2944961f1c92c928))
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.18.0...confidentialcomputing/v1.19.0) (2026-09-23)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.17.0...confidentialcomputing/v1.18.0) (2026-09-02)
+
+
+### Features
+
+* Update API sources and regenerate ([#20459](https://github.com/googleapis/google-cloud-go/issues/20459)) ([5426e32](https://github.com/googleapis/google-cloud-go/commit/5426e32154fdced65087675b6c37aba66436ac47))
+
 ## [1.17.0](https://github.com/googleapis/google-cloud-go/releases/tag/confidentialcomputing%2Fv1.17.0) (2026-06-11)
 
 ### Features

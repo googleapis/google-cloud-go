@@ -18,12 +18,14 @@ package contactcenterinsights
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	contactcenterinsightspb "cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -1104,6 +1106,12 @@ func (op *UploadConversationOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AnalysisIterator) All() iter.Seq2[*contactcenterinsightspb.Analysis, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AnalysisIterator manages a stream of *contactcenterinsightspb.Analysis.
 type AnalysisIterator struct {
 	items    []*contactcenterinsightspb.Analysis
@@ -1149,6 +1157,12 @@ func (it *AnalysisIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AnalysisRuleIterator) All() iter.Seq2[*contactcenterinsightspb.AnalysisRule, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // AnalysisRuleIterator manages a stream of *contactcenterinsightspb.AnalysisRule.
@@ -1198,6 +1212,12 @@ func (it *AnalysisRuleIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ConversationIterator) All() iter.Seq2[*contactcenterinsightspb.Conversation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ConversationIterator manages a stream of *contactcenterinsightspb.Conversation.
 type ConversationIterator struct {
 	items    []*contactcenterinsightspb.Conversation
@@ -1243,6 +1263,12 @@ func (it *ConversationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FeedbackLabelIterator) All() iter.Seq2[*contactcenterinsightspb.FeedbackLabel, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // FeedbackLabelIterator manages a stream of *contactcenterinsightspb.FeedbackLabel.
@@ -1292,6 +1318,12 @@ func (it *FeedbackLabelIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -1337,6 +1369,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PhraseMatcherIterator) All() iter.Seq2[*contactcenterinsightspb.PhraseMatcher, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // PhraseMatcherIterator manages a stream of *contactcenterinsightspb.PhraseMatcher.
@@ -1386,6 +1424,12 @@ func (it *PhraseMatcherIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *QaQuestionIterator) All() iter.Seq2[*contactcenterinsightspb.QaQuestion, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // QaQuestionIterator manages a stream of *contactcenterinsightspb.QaQuestion.
 type QaQuestionIterator struct {
 	items    []*contactcenterinsightspb.QaQuestion
@@ -1431,6 +1475,12 @@ func (it *QaQuestionIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *QaScorecardIterator) All() iter.Seq2[*contactcenterinsightspb.QaScorecard, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // QaScorecardIterator manages a stream of *contactcenterinsightspb.QaScorecard.
@@ -1480,6 +1530,12 @@ func (it *QaScorecardIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *QaScorecardRevisionIterator) All() iter.Seq2[*contactcenterinsightspb.QaScorecardRevision, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // QaScorecardRevisionIterator manages a stream of *contactcenterinsightspb.QaScorecardRevision.
 type QaScorecardRevisionIterator struct {
 	items    []*contactcenterinsightspb.QaScorecardRevision
@@ -1525,6 +1581,12 @@ func (it *QaScorecardRevisionIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ViewIterator) All() iter.Seq2[*contactcenterinsightspb.View, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ViewIterator manages a stream of *contactcenterinsightspb.View.

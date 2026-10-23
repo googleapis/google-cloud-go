@@ -1,5 +1,31 @@
 # Changes
 
+## [2.8.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v2.7.0...pubsub/v2.8.0) (2026-10-21)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+* **pubsub/v2:** Add publish hedging ([#20136](https://github.com/googleapis/google-cloud-go/issues/20136)) ([6a92ef7](https://github.com/googleapis/google-cloud-go/commit/6a92ef79dc4969fc5f84dc9060aeff998747aa94))
+* Update API sources and regenerate ([#20526](https://github.com/googleapis/google-cloud-go/issues/20526)) ([e6f37a3](https://github.com/googleapis/google-cloud-go/commit/e6f37a362b6e37b0bc74e77b8d7f151dc7443fb8))
+* Update API sources and regenerate ([#20683](https://github.com/googleapis/google-cloud-go/issues/20683)) ([005d7ce](https://github.com/googleapis/google-cloud-go/commit/005d7ce4872f1cf1ad269cd5d0ce8da7a844d3c8))
+* Update API sources and regenerate ([#20728](https://github.com/googleapis/google-cloud-go/issues/20728)) ([ab1da9d](https://github.com/googleapis/google-cloud-go/commit/ab1da9d200416594ae18fa7a2944961f1c92c928))
+* Update API sources and regenerate. ([e6f37a3](https://github.com/googleapis/google-cloud-go/commit/e6f37a362b6e37b0bc74e77b8d7f151dc7443fb8))
+
+## [2.7.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v2.6.2...pubsub/v2.7.0) (2026-08-26)
+
+
+### Features
+
+* Update API sources and regenerate ([#20427](https://github.com/googleapis/google-cloud-go/issues/20427)) ([eb07af9](https://github.com/googleapis/google-cloud-go/commit/eb07af97288cb3446ef50ff1806c7bc12d5c6350))
+
+## [2.6.2](https://github.com/googleapis/google-cloud-go/compare/pubsub/v2.6.1...pubsub/v2.6.2) (2026-08-19)
+
+
+### Bug Fixes
+
+* **pubsub/v2:** Update ackID batch size to 1000 ([#20393](https://github.com/googleapis/google-cloud-go/issues/20393)) ([530b88a](https://github.com/googleapis/google-cloud-go/commit/530b88ac7ff8ecb87a6bb4eae035d36c1958a9b2)), refs [#20391](https://github.com/googleapis/google-cloud-go/issues/20391)
+
 ## [2.6.1](https://github.com/googleapis/google-cloud-go/compare/pubsub/v2.6.0...pubsub/v2.6.1) (2026-07-07)
 
 

@@ -389,6 +389,49 @@ func NewPhoneNumbersClient(ctx context.Context, opts ...option.ClientOption) (*P
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/apiv2beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListPhoneNumbers = append(client.CallOptions.ListPhoneNumbers, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdatePhoneNumber = append(client.CallOptions.UpdatePhoneNumber, gax.WithClientTracing(tracing))
+		client.CallOptions.DeletePhoneNumber = append(client.CallOptions.DeletePhoneNumber, gax.WithClientTracing(tracing))
+		client.CallOptions.UndeletePhoneNumber = append(client.CallOptions.UndeletePhoneNumber, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/apiv2beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListPhoneNumbers = append(client.CallOptions.ListPhoneNumbers, gax.WithClientLogging(logging))
+		client.CallOptions.UpdatePhoneNumber = append(client.CallOptions.UpdatePhoneNumber, gax.WithClientLogging(logging))
+		client.CallOptions.DeletePhoneNumber = append(client.CallOptions.DeletePhoneNumber, gax.WithClientLogging(logging))
+		client.CallOptions.UndeletePhoneNumber = append(client.CallOptions.UndeletePhoneNumber, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -489,6 +532,49 @@ func NewPhoneNumbersRESTClient(ctx context.Context, opts ...option.ClientOption)
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/apiv2beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		callOpts.ListPhoneNumbers = append(callOpts.ListPhoneNumbers, gax.WithClientTracing(tracing))
+		callOpts.UpdatePhoneNumber = append(callOpts.UpdatePhoneNumber, gax.WithClientTracing(tracing))
+		callOpts.DeletePhoneNumber = append(callOpts.DeletePhoneNumber, gax.WithClientTracing(tracing))
+		callOpts.UndeletePhoneNumber = append(callOpts.UndeletePhoneNumber, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/apiv2beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		callOpts.ListPhoneNumbers = append(callOpts.ListPhoneNumbers, gax.WithClientLogging(logging))
+		callOpts.UpdatePhoneNumber = append(callOpts.UpdatePhoneNumber, gax.WithClientLogging(logging))
+		callOpts.DeletePhoneNumber = append(callOpts.DeletePhoneNumber, gax.WithClientLogging(logging))
+		callOpts.UndeletePhoneNumber = append(callOpts.UndeletePhoneNumber, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	return &PhoneNumbersClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -535,9 +621,6 @@ func (c *phoneNumbersGRPCClient) ListPhoneNumbers(ctx context.Context, req *dial
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2beta1.PhoneNumbers/ListPhoneNumbers")
 	}
@@ -608,9 +691,6 @@ func (c *phoneNumbersGRPCClient) DeletePhoneNumber(ctx context.Context, req *dia
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2beta1.PhoneNumbers/DeletePhoneNumber")
 	}
@@ -632,9 +712,6 @@ func (c *phoneNumbersGRPCClient) UndeletePhoneNumber(ctx context.Context, req *d
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2beta1.PhoneNumbers/UndeletePhoneNumber")
 	}
@@ -981,9 +1058,6 @@ func (c *phoneNumbersRESTClient) DeletePhoneNumber(ctx context.Context, req *dia
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2beta1.PhoneNumbers/DeletePhoneNumber")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta1/{name=projects/*/phoneNumbers/*}")
@@ -1047,9 +1121,6 @@ func (c *phoneNumbersRESTClient) UndeletePhoneNumber(ctx context.Context, req *d
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2beta1.PhoneNumbers/UndeletePhoneNumber")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta1/{name=projects/*/phoneNumbers/*}:undelete")

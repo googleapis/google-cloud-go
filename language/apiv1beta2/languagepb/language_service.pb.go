@@ -3901,47 +3901,47 @@ const file_google_cloud_language_v1beta2_language_service_proto_rawDesc = "" +
 	"\x02V1\x10\x01\x12\x06\n" +
 	"\x02V2\x10\x02B\f\n" +
 	"\n" +
-	"model_type\"\xb5\x01\n" +
-	"\x17AnalyzeSentimentRequest\x12H\n" +
-	"\bdocument\x18\x01 \x01(\v2'.google.cloud.language.v1beta2.DocumentB\x03\xe0A\x02R\bdocument\x12P\n" +
+	"model_type\"\xb6\x01\n" +
+	"\x17AnalyzeSentimentRequest\x12I\n" +
+	"\bdocument\x18\x01 \x01(\v2'.google.cloud.language.v1beta2.DocumentB\x04\xe2A\x01\x02R\bdocument\x12P\n" +
 	"\rencoding_type\x18\x02 \x01(\x0e2+.google.cloud.language.v1beta2.EncodingTypeR\fencodingType\"\xd6\x01\n" +
 	"\x18AnalyzeSentimentResponse\x12W\n" +
 	"\x12document_sentiment\x18\x01 \x01(\v2(.google.cloud.language.v1beta2.SentimentR\x11documentSentiment\x12\x1a\n" +
 	"\blanguage\x18\x02 \x01(\tR\blanguage\x12E\n" +
-	"\tsentences\x18\x03 \x03(\v2'.google.cloud.language.v1beta2.SentenceR\tsentences\"\xbb\x01\n" +
-	"\x1dAnalyzeEntitySentimentRequest\x12H\n" +
-	"\bdocument\x18\x01 \x01(\v2'.google.cloud.language.v1beta2.DocumentB\x03\xe0A\x02R\bdocument\x12P\n" +
+	"\tsentences\x18\x03 \x03(\v2'.google.cloud.language.v1beta2.SentenceR\tsentences\"\xbc\x01\n" +
+	"\x1dAnalyzeEntitySentimentRequest\x12I\n" +
+	"\bdocument\x18\x01 \x01(\v2'.google.cloud.language.v1beta2.DocumentB\x04\xe2A\x01\x02R\bdocument\x12P\n" +
 	"\rencoding_type\x18\x02 \x01(\x0e2+.google.cloud.language.v1beta2.EncodingTypeR\fencodingType\"\x7f\n" +
 	"\x1eAnalyzeEntitySentimentResponse\x12A\n" +
 	"\bentities\x18\x01 \x03(\v2%.google.cloud.language.v1beta2.EntityR\bentities\x12\x1a\n" +
-	"\blanguage\x18\x02 \x01(\tR\blanguage\"\xb4\x01\n" +
-	"\x16AnalyzeEntitiesRequest\x12H\n" +
-	"\bdocument\x18\x01 \x01(\v2'.google.cloud.language.v1beta2.DocumentB\x03\xe0A\x02R\bdocument\x12P\n" +
+	"\blanguage\x18\x02 \x01(\tR\blanguage\"\xb5\x01\n" +
+	"\x16AnalyzeEntitiesRequest\x12I\n" +
+	"\bdocument\x18\x01 \x01(\v2'.google.cloud.language.v1beta2.DocumentB\x04\xe2A\x01\x02R\bdocument\x12P\n" +
 	"\rencoding_type\x18\x02 \x01(\x0e2+.google.cloud.language.v1beta2.EncodingTypeR\fencodingType\"x\n" +
 	"\x17AnalyzeEntitiesResponse\x12A\n" +
 	"\bentities\x18\x01 \x03(\v2%.google.cloud.language.v1beta2.EntityR\bentities\x12\x1a\n" +
-	"\blanguage\x18\x02 \x01(\tR\blanguage\"\xb2\x01\n" +
-	"\x14AnalyzeSyntaxRequest\x12H\n" +
-	"\bdocument\x18\x01 \x01(\v2'.google.cloud.language.v1beta2.DocumentB\x03\xe0A\x02R\bdocument\x12P\n" +
+	"\blanguage\x18\x02 \x01(\tR\blanguage\"\xb3\x01\n" +
+	"\x14AnalyzeSyntaxRequest\x12I\n" +
+	"\bdocument\x18\x01 \x01(\v2'.google.cloud.language.v1beta2.DocumentB\x04\xe2A\x01\x02R\bdocument\x12P\n" +
 	"\rencoding_type\x18\x02 \x01(\x0e2+.google.cloud.language.v1beta2.EncodingTypeR\fencodingType\"\xb8\x01\n" +
 	"\x15AnalyzeSyntaxResponse\x12E\n" +
 	"\tsentences\x18\x01 \x03(\v2'.google.cloud.language.v1beta2.SentenceR\tsentences\x12<\n" +
 	"\x06tokens\x18\x02 \x03(\v2$.google.cloud.language.v1beta2.TokenR\x06tokens\x12\x1a\n" +
-	"\blanguage\x18\x03 \x01(\tR\blanguage\"\xdc\x01\n" +
-	"\x13ClassifyTextRequest\x12H\n" +
-	"\bdocument\x18\x01 \x01(\v2'.google.cloud.language.v1beta2.DocumentB\x03\xe0A\x02R\bdocument\x12{\n" +
+	"\blanguage\x18\x03 \x01(\tR\blanguage\"\xdd\x01\n" +
+	"\x13ClassifyTextRequest\x12I\n" +
+	"\bdocument\x18\x01 \x01(\v2'.google.cloud.language.v1beta2.DocumentB\x04\xe2A\x01\x02R\bdocument\x12{\n" +
 	"\x1cclassification_model_options\x18\x03 \x01(\v29.google.cloud.language.v1beta2.ClassificationModelOptionsR\x1aclassificationModelOptions\"m\n" +
 	"\x14ClassifyTextResponse\x12U\n" +
 	"\n" +
 	"categories\x18\x01 \x03(\v25.google.cloud.language.v1beta2.ClassificationCategoryR\n" +
-	"categories\"_\n" +
-	"\x13ModerateTextRequest\x12H\n" +
-	"\bdocument\x18\x01 \x01(\v2'.google.cloud.language.v1beta2.DocumentB\x03\xe0A\x02R\bdocument\"\x82\x01\n" +
+	"categories\"`\n" +
+	"\x13ModerateTextRequest\x12I\n" +
+	"\bdocument\x18\x01 \x01(\v2'.google.cloud.language.v1beta2.DocumentB\x04\xe2A\x01\x02R\bdocument\"\x82\x01\n" +
 	"\x14ModerateTextResponse\x12j\n" +
-	"\x15moderation_categories\x18\x01 \x03(\v25.google.cloud.language.v1beta2.ClassificationCategoryR\x14moderationCategories\"\xad\x05\n" +
-	"\x13AnnotateTextRequest\x12H\n" +
-	"\bdocument\x18\x01 \x01(\v2'.google.cloud.language.v1beta2.DocumentB\x03\xe0A\x02R\bdocument\x12\\\n" +
-	"\bfeatures\x18\x02 \x01(\v2;.google.cloud.language.v1beta2.AnnotateTextRequest.FeaturesB\x03\xe0A\x02R\bfeatures\x12P\n" +
+	"\x15moderation_categories\x18\x01 \x03(\v25.google.cloud.language.v1beta2.ClassificationCategoryR\x14moderationCategories\"\xaf\x05\n" +
+	"\x13AnnotateTextRequest\x12I\n" +
+	"\bdocument\x18\x01 \x01(\v2'.google.cloud.language.v1beta2.DocumentB\x04\xe2A\x01\x02R\bdocument\x12]\n" +
+	"\bfeatures\x18\x02 \x01(\v2;.google.cloud.language.v1beta2.AnnotateTextRequest.FeaturesB\x04\xe2A\x01\x02R\bfeatures\x12P\n" +
 	"\rencoding_type\x18\x03 \x01(\x0e2+.google.cloud.language.v1beta2.EncodingTypeR\fencodingType\x1a\x9b\x03\n" +
 	"\bFeatures\x12%\n" +
 	"\x0eextract_syntax\x18\x01 \x01(\bR\rextractSyntax\x12)\n" +

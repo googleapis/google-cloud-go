@@ -240,27 +240,27 @@ var File_google_shopping_merchant_accounts_v1beta_businessinfo_proto protoreflec
 
 const file_google_shopping_merchant_accounts_v1beta_businessinfo_proto_rawDesc = "" +
 	"\n" +
-	";google/shopping/merchant/accounts/v1beta/businessinfo.proto\x12(google.shopping.merchant.accounts.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a>google/shopping/merchant/accounts/v1beta/customerservice.proto\x1aEgoogle/shopping/merchant/accounts/v1beta/phoneverificationstate.proto\x1a\x1egoogle/type/phone_number.proto\x1a google/type/postal_address.proto\"\xcd\x05\n" +
-	"\fBusinessInfo\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12>\n" +
-	"\aaddress\x18\x02 \x01(\v2\x1a.google.type.PostalAddressB\x03\xe0A\x01H\x00R\aaddress\x88\x01\x01\x128\n" +
-	"\x05phone\x18\x03 \x01(\v2\x18.google.type.PhoneNumberB\x03\xe0A\x03H\x01R\x05phone\x88\x01\x01\x12\x84\x01\n" +
-	"\x18phone_verification_state\x18\x04 \x01(\x0e2@.google.shopping.merchant.accounts.v1beta.PhoneVerificationStateB\x03\xe0A\x03H\x02R\x16phoneVerificationState\x88\x01\x01\x12n\n" +
-	"\x10customer_service\x18\x05 \x01(\v29.google.shopping.merchant.accounts.v1beta.CustomerServiceB\x03\xe0A\x01H\x03R\x0fcustomerService\x88\x01\x01\x12W\n" +
-	"#korean_business_registration_number\x18\x06 \x01(\tB\x03\xe0A\x01H\x04R koreanBusinessRegistrationNumber\x88\x01\x01:j\xeaAg\n" +
+	";google/shopping/merchant/accounts/v1beta/businessinfo.proto\x12(google.shopping.merchant.accounts.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a>google/shopping/merchant/accounts/v1beta/customerservice.proto\x1aEgoogle/shopping/merchant/accounts/v1beta/phoneverificationstate.proto\x1a\x1egoogle/type/phone_number.proto\x1a google/type/postal_address.proto\"\xd3\x05\n" +
+	"\fBusinessInfo\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12?\n" +
+	"\aaddress\x18\x02 \x01(\v2\x1a.google.type.PostalAddressB\x04\xe2A\x01\x01H\x00R\aaddress\x88\x01\x01\x129\n" +
+	"\x05phone\x18\x03 \x01(\v2\x18.google.type.PhoneNumberB\x04\xe2A\x01\x03H\x01R\x05phone\x88\x01\x01\x12\x85\x01\n" +
+	"\x18phone_verification_state\x18\x04 \x01(\x0e2@.google.shopping.merchant.accounts.v1beta.PhoneVerificationStateB\x04\xe2A\x01\x03H\x02R\x16phoneVerificationState\x88\x01\x01\x12o\n" +
+	"\x10customer_service\x18\x05 \x01(\v29.google.shopping.merchant.accounts.v1beta.CustomerServiceB\x04\xe2A\x01\x01H\x03R\x0fcustomerService\x88\x01\x01\x12X\n" +
+	"#korean_business_registration_number\x18\x06 \x01(\tB\x04\xe2A\x01\x01H\x04R koreanBusinessRegistrationNumber\x88\x01\x01:j\xeaAg\n" +
 	"'merchantapi.googleapis.com/BusinessInfo\x12\x1faccounts/{account}/businessInfo*\rbusinessInfos2\fbusinessInfoB\n" +
 	"\n" +
 	"\b_addressB\b\n" +
 	"\x06_phoneB\x1b\n" +
 	"\x19_phone_verification_stateB\x13\n" +
 	"\x11_customer_serviceB&\n" +
-	"$_korean_business_registration_number\"]\n" +
-	"\x16GetBusinessInfoRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'merchantapi.googleapis.com/BusinessInfoR\x04name\"\xbf\x01\n" +
-	"\x19UpdateBusinessInfoRequest\x12`\n" +
-	"\rbusiness_info\x18\x01 \x01(\v26.google.shopping.merchant.accounts.v1beta.BusinessInfoB\x03\xe0A\x02R\fbusinessInfo\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
+	"$_korean_business_registration_number\"^\n" +
+	"\x16GetBusinessInfoRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'merchantapi.googleapis.com/BusinessInfoR\x04name\"\xc1\x01\n" +
+	"\x19UpdateBusinessInfoRequest\x12a\n" +
+	"\rbusiness_info\x18\x01 \x01(\v26.google.shopping.merchant.accounts.v1beta.BusinessInfoB\x04\xe2A\x01\x02R\fbusinessInfo\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
 	"updateMask2\xb2\x04\n" +
 	"\x13BusinessInfoService\x12\xcb\x01\n" +
 	"\x0fGetBusinessInfo\x12@.google.shopping.merchant.accounts.v1beta.GetBusinessInfoRequest\x1a6.google.shopping.merchant.accounts.v1beta.BusinessInfo\">\xdaA\x04name\x82\xd3\xe4\x93\x021\x12//accounts/v1beta/{name=accounts/*/businessInfo}\x12\x83\x02\n" +

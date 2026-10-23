@@ -25,7 +25,6 @@ import (
 	"cloud.google.com/go/internal/trace"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"github.com/googleapis/gax-go/v2"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 )
@@ -140,7 +139,7 @@ func (t *BatchReadOnlyTransaction) PartitionReadUsingIndexWithOptions(ctx contex
 		Columns:          columns,
 		KeySet:           kset,
 		PartitionOptions: opt.toProto(),
-	}, gax.WithGRPCOptions(grpc.Header(&md)))
+	}, gfeLatencyHeaderOptions(&md, t.ct != nil, t.otConfig)...)
 
 	if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
 		if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "PartitionReadUsingIndexWithOptions"); err != nil {
@@ -206,7 +205,7 @@ func (t *BatchReadOnlyTransaction) partitionQuery(ctx context.Context, statement
 		Params:           params,
 		ParamTypes:       paramTypes,
 	}
-	resp, err := client.PartitionQuery(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), req, gax.WithGRPCOptions(grpc.Header(&md)))
+	resp, err := client.PartitionQuery(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), req, gfeLatencyHeaderOptions(&md, t.ct != nil, t.otConfig)...)
 
 	if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
 		if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "partitionQuery"); err != nil {
@@ -315,6 +314,9 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 			if err != nil {
 				return client, err
 			}
+			if !gfeLatencySinksEnabled(t.ct != nil, t.otConfig) {
+				return client, nil
+			}
 			md, err := client.Header()
 			if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
 				if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "Execute"); err != nil {
@@ -345,6 +347,9 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 			if err != nil {
 				return client, err
 			}
+			if !gfeLatencySinksEnabled(t.ct != nil, t.otConfig) {
+				return client, nil
+			}
 			md, err := client.Header()
 
 			if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
@@ -372,6 +377,7 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 		t.release,
 		requestIDHeaderProviderFromSpannerClient(client),
 		true,
+		false,
 		false,
 	)
 }

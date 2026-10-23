@@ -133,6 +133,8 @@ type internalNetworkEndpointGroupsClient interface {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The NetworkEndpointGroups API.
+//
+// This client uses NetworkEndpointGroups version 2026-10-01-preview.
 type NetworkEndpointGroupsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalNetworkEndpointGroupsClient
@@ -291,6 +293,49 @@ func NewNetworkEndpointGroupsRESTClient(ctx context.Context, opts ...option.Clie
 		callOpts.ListNetworkEndpoints = append(callOpts.ListNetworkEndpoints, gax.WithClientMetrics(metrics))
 		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientTracing(tracing))
+		callOpts.AttachNetworkEndpoints = append(callOpts.AttachNetworkEndpoints, gax.WithClientTracing(tracing))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.DetachNetworkEndpoints = append(callOpts.DetachNetworkEndpoints, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+		callOpts.ListNetworkEndpoints = append(callOpts.ListNetworkEndpoints, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientLogging(logging))
+		callOpts.AttachNetworkEndpoints = append(callOpts.AttachNetworkEndpoints, gax.WithClientLogging(logging))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.DetachNetworkEndpoints = append(callOpts.DetachNetworkEndpoints, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+		callOpts.ListNetworkEndpoints = append(callOpts.ListNetworkEndpoints, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -325,6 +370,7 @@ func (c *networkEndpointGroupsRESTClient) setGoogleClientInfo(keyval ...string) 
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-10-01-preview",
 	}
 }
 
@@ -385,9 +431,6 @@ func (c *networkEndpointGroupsRESTClient) AggregatedList(ctx context.Context, re
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 		if req != nil && req.ServiceProjectNumber != nil {
 			params.Add("serviceProjectNumber", fmt.Sprintf("%v", req.GetServiceProjectNumber()))
@@ -476,9 +519,6 @@ func (c *networkEndpointGroupsRESTClient) AttachNetworkEndpoints(ctx context.Con
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/zones/%v/networkEndpointGroups/%v", req.GetProject(), req.GetZone(), req.GetNetworkEndpointGroup()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.NetworkEndpointGroups/AttachNetworkEndpoints")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/networkEndpointGroups/{network_endpoint_group}/attachNetworkEndpoints")
@@ -546,9 +586,6 @@ func (c *networkEndpointGroupsRESTClient) Delete(ctx context.Context, req *compu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/zones/%v/networkEndpointGroups/%v", req.GetProject(), req.GetZone(), req.GetNetworkEndpointGroup()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.NetworkEndpointGroups/Delete")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/networkEndpointGroups/{network_endpoint_group}")
@@ -621,9 +658,6 @@ func (c *networkEndpointGroupsRESTClient) DetachNetworkEndpoints(ctx context.Con
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/zones/%v/networkEndpointGroups/%v", req.GetProject(), req.GetZone(), req.GetNetworkEndpointGroup()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.NetworkEndpointGroups/DetachNetworkEndpoints")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/networkEndpointGroups/{network_endpoint_group}/detachNetworkEndpoints")
@@ -681,9 +715,6 @@ func (c *networkEndpointGroupsRESTClient) Get(ctx context.Context, req *computep
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/zones/%v/networkEndpointGroups/%v", req.GetProject(), req.GetZone(), req.GetNetworkEndpointGroup()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.NetworkEndpointGroups/Get")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/networkEndpointGroups/{network_endpoint_group}")
@@ -750,9 +781,6 @@ func (c *networkEndpointGroupsRESTClient) Insert(ctx context.Context, req *compu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/zones/%v", req.GetProject(), req.GetZone()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.NetworkEndpointGroups/Insert")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/networkEndpointGroups")
@@ -830,9 +858,6 @@ func (c *networkEndpointGroupsRESTClient) List(ctx context.Context, req *compute
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -923,9 +948,6 @@ func (c *networkEndpointGroupsRESTClient) ListNetworkEndpoints(ctx context.Conte
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
-		}
 
 		baseUrl.RawQuery = params.Encode()
 
@@ -996,9 +1018,6 @@ func (c *networkEndpointGroupsRESTClient) TestIamPermissions(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/zones/%v/networkEndpointGroups/%v", req.GetProject(), req.GetZone(), req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.NetworkEndpointGroups/TestIamPermissions")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/networkEndpointGroups/{resource}/testIamPermissions")

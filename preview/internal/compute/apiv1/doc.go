@@ -19,6 +19,14 @@
 //
 // Creates and runs virtual machines on Google Cloud Platform.
 //
+// # API Versions
+//
+// The versioned iterations of API service interfaces in this API client package.
+// Each client includes the API version identifier mentioned below in their API calls.
+// Navigate to the product documentation to learn more about the API versions used in this package.
+//
+// All clients in this package use version 2026-10-01-preview of their service interface.
+//
 // # General documentation
 //
 // For information that is relevant for all client libraries please reference
@@ -42,7 +50,7 @@
 //	// - It may require correct/in-range values for request initialization.
 //	// - It may require specifying regional endpoints when creating the service client as shown in:
 //	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//	c, err := compute.NewAcceleratorTypesRESTClient(ctx)
+//	c, err := compute.NewAcceleratorInterconnectMemberInstancesRESTClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
@@ -56,11 +64,11 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	req := &computepb.AggregatedListAcceleratorTypesRequest{
+//	req := &computepb.ListAcceleratorInterconnectMemberInstancesRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AggregatedListAcceleratorTypesRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListAcceleratorInterconnectMemberInstancesRequest.
 //	}
-//	it := c.AggregatedList(ctx, req)
+//	it := c.List(ctx, req)
 //	for {
 //		resp, err := it.Next()
 //		if err == iterator.Done {
@@ -76,12 +84,12 @@
 //		// you can do so by casting the `Response` as below.
 //		// Otherwise, remove this line. Only populated after
 //		// first call to Next(). Not safe for concurrent access.
-//		_ = it.Response.(*computepb.AcceleratorTypeAggregatedList)
+//		_ = it.Response.(*computepb.AcceleratorInterconnectMemberInstancesListResponse)
 //	}
 //
 // # Use of Context
 //
-// The ctx passed to NewAcceleratorTypesRESTClient is used for authentication requests and
+// The ctx passed to NewAcceleratorInterconnectMemberInstancesRESTClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.
 // Individual methods on the client use the ctx given to them.
 //

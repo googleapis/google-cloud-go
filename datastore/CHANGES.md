@@ -1,5 +1,28 @@
 # Changes
 
+## [1.28.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.27.1...datastore/v1.28.0) (2026-10-22)
+
+
+### Features
+
+* Update API sources and regenerate ([#20728](https://github.com/googleapis/google-cloud-go/issues/20728)) ([ab1da9d](https://github.com/googleapis/google-cloud-go/commit/ab1da9d200416594ae18fa7a2944961f1c92c928))
+
+## [1.27.1](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.27.0...datastore/v1.27.1) (2026-10-20)
+
+
+### Bug Fixes
+
+* **datastore:** Keep flatten validation on the tagged field ([#20659](https://github.com/googleapis/google-cloud-go/issues/20659)) ([75a3563](https://github.com/googleapis/google-cloud-go/commit/75a3563d6a4a0696cc5d20b54b5a918ce088dc69)), refs [#20645](https://github.com/googleapis/google-cloud-go/issues/20645) [#5026](https://github.com/googleapis/google-cloud-go/issues/5026)
+* **datastore:** Key visited types in validateChildType by flatten and prevSlice state ([#20710](https://github.com/googleapis/google-cloud-go/issues/20710)) ([3333374](https://github.com/googleapis/google-cloud-go/commit/33333745cd15a7f381def48e1f48e660310a4cd1))
+* **datastore:** Roll back transaction when RunInTransaction callback panics ([#20674](https://github.com/googleapis/google-cloud-go/issues/20674)) ([b867ab9](https://github.com/googleapis/google-cloud-go/commit/b867ab97cf0bad23955fe0b13bae36bea954a684))
+
+## [1.27.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.26.0...datastore/v1.27.0) (2026-09-23)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
 ## [1.26.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.25.0...datastore/v1.26.0) (2026-07-23)
 
 

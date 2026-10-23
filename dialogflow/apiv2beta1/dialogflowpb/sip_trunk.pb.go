@@ -1203,49 +1203,49 @@ var File_google_cloud_dialogflow_v2beta1_sip_trunk_proto protoreflect.FileDescri
 
 const file_google_cloud_dialogflow_v2beta1_sip_trunk_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/dialogflow/v2beta1/sip_trunk.proto\x12\x1fgoogle.cloud.dialogflow.v2beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa8\x01\n" +
-	"\x15CreateSipTrunkRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"dialogflow.googleapis.com/SipTrunkR\x06parent\x12K\n" +
-	"\tsip_trunk\x18\x02 \x01(\v2).google.cloud.dialogflow.v2beta1.SipTrunkB\x03\xe0A\x02R\bsipTrunk\"W\n" +
-	"\x15DeleteSipTrunkRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"dialogflow.googleapis.com/SipTrunkR\x04name\"\xa0\x01\n" +
-	"\x14ListSipTrunksRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"dialogflow.googleapis.com/SipTrunkR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"/google/cloud/dialogflow/v2beta1/sip_trunk.proto\x12\x1fgoogle.cloud.dialogflow.v2beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xaa\x01\n" +
+	"\x15CreateSipTrunkRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"dialogflow.googleapis.com/SipTrunkR\x06parent\x12L\n" +
+	"\tsip_trunk\x18\x02 \x01(\v2).google.cloud.dialogflow.v2beta1.SipTrunkB\x04\xe2A\x01\x02R\bsipTrunk\"X\n" +
+	"\x15DeleteSipTrunkRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"dialogflow.googleapis.com/SipTrunkR\x04name\"\xa3\x01\n" +
+	"\x14ListSipTrunksRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"dialogflow.googleapis.com/SipTrunkR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x89\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x89\x01\n" +
 	"\x15ListSipTrunksResponse\x12H\n" +
 	"\n" +
 	"sip_trunks\x18\x01 \x03(\v2).google.cloud.dialogflow.v2beta1.SipTrunkR\tsipTrunks\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"T\n" +
-	"\x12GetSipTrunkRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"dialogflow.googleapis.com/SipTrunkR\x04name\"\xa6\x01\n" +
-	"\x15UpdateSipTrunkRequest\x12K\n" +
-	"\tsip_trunk\x18\x01 \x01(\v2).google.cloud.dialogflow.v2beta1.SipTrunkB\x03\xe0A\x02R\bsipTrunk\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"\xe7\x04\n" +
-	"\bSipTrunk\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x120\n" +
-	"\x11expected_hostname\x18\x02 \x03(\tB\x03\xe0A\x02R\x10expectedHostname\x12R\n" +
-	"\vconnections\x18\x03 \x03(\v2+.google.cloud.dialogflow.v2beta1.ConnectionB\x03\xe0A\x03R\vconnections\x12&\n" +
-	"\fdisplay_name\x18\x04 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12X\n" +
-	"\x0epeer_hostnames\x18\b \x03(\v2,.google.cloud.dialogflow.v2beta1.SipHostnameB\x03\xe0A\x02R\rpeerHostnames\x12t\n" +
-	"\x15google_root_cert_file\x18\t \x01(\x0e2<.google.cloud.dialogflow.v2beta1.SipTrunk.GoogleRootCertFileB\x03\xe0A\x01R\x12googleRootCertFile\"H\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"U\n" +
+	"\x12GetSipTrunkRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"dialogflow.googleapis.com/SipTrunkR\x04name\"\xa8\x01\n" +
+	"\x15UpdateSipTrunkRequest\x12L\n" +
+	"\tsip_trunk\x18\x01 \x01(\v2).google.cloud.dialogflow.v2beta1.SipTrunkB\x04\xe2A\x01\x02R\bsipTrunk\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"\xed\x04\n" +
+	"\bSipTrunk\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x121\n" +
+	"\x11expected_hostname\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\x10expectedHostname\x12S\n" +
+	"\vconnections\x18\x03 \x03(\v2+.google.cloud.dialogflow.v2beta1.ConnectionB\x04\xe2A\x01\x03R\vconnections\x12'\n" +
+	"\fdisplay_name\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12Y\n" +
+	"\x0epeer_hostnames\x18\b \x03(\v2,.google.cloud.dialogflow.v2beta1.SipHostnameB\x04\xe2A\x01\x02R\rpeerHostnames\x12u\n" +
+	"\x15google_root_cert_file\x18\t \x01(\x0e2<.google.cloud.dialogflow.v2beta1.SipTrunk.GoogleRootCertFileB\x04\xe2A\x01\x01R\x12googleRootCertFile\"H\n" +
 	"\x12GoogleRootCertFile\x12\x19\n" +
 	"\x15CERT_FILE_UNSPECIFIED\x10\x00\x12\x17\n" +
 	"\x13EXTERNAL_PRIVATE_CA\x10\x05:z\xeaAw\n" +
-	"\"dialogflow.googleapis.com/SipTrunk\x12<projects/{project}/locations/{location}/sipTrunks/{siptrunk}*\tsipTrunks2\bsipTrunk\"\xcf\a\n" +
+	"\"dialogflow.googleapis.com/SipTrunk\x12<projects/{project}/locations/{location}/sipTrunks/{siptrunk}*\tsipTrunks2\bsipTrunk\"\xd4\a\n" +
 	"\n" +
-	"Connection\x12(\n" +
-	"\rconnection_id\x18\x01 \x01(\tB\x03\xe0A\x03R\fconnectionId\x12L\n" +
-	"\x05state\x18\x02 \x01(\x0e21.google.cloud.dialogflow.v2beta1.Connection.StateB\x03\xe0A\x03R\x05state\x12E\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03H\x00R\n" +
-	"updateTime\x88\x01\x01\x12g\n" +
-	"\rerror_details\x18\x04 \x01(\v28.google.cloud.dialogflow.v2beta1.Connection.ErrorDetailsB\x03\xe0A\x03H\x01R\ferrorDetails\x88\x01\x01\x1a\xd5\x01\n" +
-	"\fErrorDetails\x12s\n" +
-	"\x11certificate_state\x18\x01 \x01(\x0e2<.google.cloud.dialogflow.v2beta1.Connection.CertificateStateB\x03\xe0A\x03H\x00R\x10certificateState\x88\x01\x01\x12(\n" +
+	"Connection\x12)\n" +
+	"\rconnection_id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\fconnectionId\x12M\n" +
+	"\x05state\x18\x02 \x01(\x0e21.google.cloud.dialogflow.v2beta1.Connection.StateB\x04\xe2A\x01\x03R\x05state\x12F\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03H\x00R\n" +
+	"updateTime\x88\x01\x01\x12h\n" +
+	"\rerror_details\x18\x04 \x01(\v28.google.cloud.dialogflow.v2beta1.Connection.ErrorDetailsB\x04\xe2A\x01\x03H\x01R\ferrorDetails\x88\x01\x01\x1a\xd6\x01\n" +
+	"\fErrorDetails\x12t\n" +
+	"\x11certificate_state\x18\x01 \x01(\x0e2<.google.cloud.dialogflow.v2beta1.Connection.CertificateStateB\x04\xe2A\x01\x03H\x00R\x10certificateState\x88\x01\x01\x12(\n" +
 	"\rerror_message\x18\x02 \x01(\tH\x01R\ferrorMessage\x88\x01\x01B\x14\n" +
 	"\x12_certificate_stateB\x10\n" +
 	"\x0e_error_message\"i\n" +
@@ -1266,18 +1266,18 @@ const file_google_cloud_dialogflow_v2beta1_sip_trunk_proto_rawDesc = "" +
 	"#CERTIFICATE_HOSTNAME_INVALID_FORMAT\x10\a\x12\x1e\n" +
 	"\x1aCERTIFICATE_QUOTA_EXCEEDED\x10\bB\x0e\n" +
 	"\f_update_timeB\x10\n" +
-	"\x0e_error_details\"\xb7\b\n" +
-	"\vSipHostname\x12(\n" +
-	"\rpeer_hostname\x18\x01 \x01(\tB\x03\xe0A\x02R\fpeerHostname\x12-\n" +
-	"\x10enabled_sip_ping\x18\x02 \x01(\bB\x03\xe0A\x03R\x0eenabledSipPing\x12C\n" +
-	"\rping_interval\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x03R\fpingInterval\x123\n" +
-	"\x13peer_socket_address\x18\x04 \x01(\tB\x03\xe0A\x03R\x11peerSocketAddress\x12W\n" +
-	"\rprobe_details\x18\x05 \x01(\v2-.google.cloud.dialogflow.v2beta1.ProbeDetailsB\x03\xe0A\x03R\fprobeDetails\x12l\n" +
-	"\x10connection_state\x18\x06 \x01(\x0e2<.google.cloud.dialogflow.v2beta1.SipHostname.ConnectionStateB\x03\xe0A\x03R\x0fconnectionState\x12k\n" +
-	"\rerror_details\x18\a \x01(\v2A.google.cloud.dialogflow.v2beta1.SipHostname.HostnameErrorDetailsB\x03\xe0A\x03R\ferrorDetails\x1a\xb9\x01\n" +
-	"\x14HostnameErrorDetails\x12w\n" +
-	"\x11certificate_state\x18\x01 \x01(\x0e2E.google.cloud.dialogflow.v2beta1.SipHostname.HostnameCertificateStateB\x03\xe0A\x03R\x10certificateState\x12(\n" +
-	"\rerror_message\x18\x02 \x01(\tB\x03\xe0A\x03R\ferrorMessage\"~\n" +
+	"\x0e_error_details\"\xc0\b\n" +
+	"\vSipHostname\x12)\n" +
+	"\rpeer_hostname\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\fpeerHostname\x12.\n" +
+	"\x10enabled_sip_ping\x18\x02 \x01(\bB\x04\xe2A\x01\x03R\x0eenabledSipPing\x12D\n" +
+	"\rping_interval\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x03R\fpingInterval\x124\n" +
+	"\x13peer_socket_address\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x11peerSocketAddress\x12X\n" +
+	"\rprobe_details\x18\x05 \x01(\v2-.google.cloud.dialogflow.v2beta1.ProbeDetailsB\x04\xe2A\x01\x03R\fprobeDetails\x12m\n" +
+	"\x10connection_state\x18\x06 \x01(\x0e2<.google.cloud.dialogflow.v2beta1.SipHostname.ConnectionStateB\x04\xe2A\x01\x03R\x0fconnectionState\x12l\n" +
+	"\rerror_details\x18\a \x01(\v2A.google.cloud.dialogflow.v2beta1.SipHostname.HostnameErrorDetailsB\x04\xe2A\x01\x03R\ferrorDetails\x1a\xbb\x01\n" +
+	"\x14HostnameErrorDetails\x12x\n" +
+	"\x11certificate_state\x18\x01 \x01(\x0e2E.google.cloud.dialogflow.v2beta1.SipHostname.HostnameCertificateStateB\x04\xe2A\x01\x03R\x10certificateState\x12)\n" +
+	"\rerror_message\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\ferrorMessage\"~\n" +
 	"\x0fConnectionState\x12 \n" +
 	"\x1cCONNECTION_STATE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tCONNECTED\x10\x01\x12\x10\n" +
@@ -1293,11 +1293,11 @@ const file_google_cloud_dialogflow_v2beta1_sip_trunk_proto_rawDesc = "" +
 	"\x0fUNAUTHENTICATED\x10\x05\x12\x19\n" +
 	"\x15TRUST_STORE_NOT_FOUND\x10\x06\x12\x1b\n" +
 	"\x17HOSTNAME_INVALID_FORMAT\x10\a\x12\x12\n" +
-	"\x0eQUOTA_EXCEEDED\x10\b\"\xd8\x02\n" +
-	"\fProbeDetails\x12G\n" +
-	"\x0foptions_latency\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x03R\x0eoptionsLatency\x12a\n" +
-	"\fprobe_status\x18\x02 \x01(\x0e29.google.cloud.dialogflow.v2beta1.ProbeDetails.ProbeStatusB\x03\xe0A\x03R\vprobeStatus\x12<\n" +
-	"\tinit_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\binitTime\"^\n" +
+	"\x0eQUOTA_EXCEEDED\x10\b\"\xdb\x02\n" +
+	"\fProbeDetails\x12H\n" +
+	"\x0foptions_latency\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x03R\x0eoptionsLatency\x12b\n" +
+	"\fprobe_status\x18\x02 \x01(\x0e29.google.cloud.dialogflow.v2beta1.ProbeDetails.ProbeStatusB\x04\xe2A\x01\x03R\vprobeStatus\x12=\n" +
+	"\tinit_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\binitTime\"^\n" +
 	"\vProbeStatus\x12\x1c\n" +
 	"\x18PROBE_STATUS_UNSPECIFIED\x10\x00\x12\x18\n" +
 	"\x14PROBE_STATUS_SUCCESS\x10\x01\x12\x17\n" +

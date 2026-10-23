@@ -223,6 +223,35 @@ func NewKeyTrackingClient(ctx context.Context, opts ...option.ClientOption) (*Ke
 		client.CallOptions.GetProtectedResourcesSummary = append(client.CallOptions.GetProtectedResourcesSummary, gax.WithClientMetrics(metrics))
 		client.CallOptions.SearchProtectedResources = append(client.CallOptions.SearchProtectedResources, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "kmsinventory",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/kms/inventory/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "kmsinventory.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetProtectedResourcesSummary = append(client.CallOptions.GetProtectedResourcesSummary, gax.WithClientTracing(tracing))
+		client.CallOptions.SearchProtectedResources = append(client.CallOptions.SearchProtectedResources, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "kmsinventory",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/kms/inventory/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "kmsinventory.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetProtectedResourcesSummary = append(client.CallOptions.GetProtectedResourcesSummary, gax.WithClientLogging(logging))
+		client.CallOptions.SearchProtectedResources = append(client.CallOptions.SearchProtectedResources, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -316,6 +345,35 @@ func NewKeyTrackingRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		callOpts.GetProtectedResourcesSummary = append(callOpts.GetProtectedResourcesSummary, gax.WithClientMetrics(metrics))
 		callOpts.SearchProtectedResources = append(callOpts.SearchProtectedResources, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "kmsinventory",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/kms/inventory/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "kmsinventory.googleapis.com",
+			}),
+		)
+
+		callOpts.GetProtectedResourcesSummary = append(callOpts.GetProtectedResourcesSummary, gax.WithClientTracing(tracing))
+		callOpts.SearchProtectedResources = append(callOpts.SearchProtectedResources, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "kmsinventory",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/kms/inventory/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "kmsinventory.googleapis.com",
+			}),
+		)
+
+		callOpts.GetProtectedResourcesSummary = append(callOpts.GetProtectedResourcesSummary, gax.WithClientLogging(logging))
+		callOpts.SearchProtectedResources = append(callOpts.SearchProtectedResources, gax.WithClientLogging(logging))
+	}
 
 	return &KeyTrackingClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -362,9 +420,6 @@ func (c *keyTrackingGRPCClient) GetProtectedResourcesSummary(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//kmsinventory.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.kms.inventory.v1.KeyTrackingService/GetProtectedResourcesSummary")
 	}
@@ -386,9 +441,6 @@ func (c *keyTrackingGRPCClient) SearchProtectedResources(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//kmsinventory.googleapis.com/%v", req.GetScope()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.kms.inventory.v1.KeyTrackingService/SearchProtectedResources")
 	}
@@ -465,9 +517,6 @@ func (c *keyTrackingRESTClient) GetProtectedResourcesSummary(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//kmsinventory.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.kms.inventory.v1.KeyTrackingService/GetProtectedResourcesSummary")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/keyRings/*/cryptoKeys/**}/protectedResourcesSummary")

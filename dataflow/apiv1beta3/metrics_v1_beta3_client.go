@@ -234,6 +234,37 @@ func NewMetricsV1Beta3Client(ctx context.Context, opts ...option.ClientOption) (
 		client.CallOptions.GetJobExecutionDetails = append(client.CallOptions.GetJobExecutionDetails, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetStageExecutionDetails = append(client.CallOptions.GetStageExecutionDetails, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "dataflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataflow/apiv1beta3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dataflow.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetJobMetrics = append(client.CallOptions.GetJobMetrics, gax.WithClientTracing(tracing))
+		client.CallOptions.GetJobExecutionDetails = append(client.CallOptions.GetJobExecutionDetails, gax.WithClientTracing(tracing))
+		client.CallOptions.GetStageExecutionDetails = append(client.CallOptions.GetStageExecutionDetails, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "dataflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataflow/apiv1beta3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dataflow.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetJobMetrics = append(client.CallOptions.GetJobMetrics, gax.WithClientLogging(logging))
+		client.CallOptions.GetJobExecutionDetails = append(client.CallOptions.GetJobExecutionDetails, gax.WithClientLogging(logging))
+		client.CallOptions.GetStageExecutionDetails = append(client.CallOptions.GetStageExecutionDetails, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -326,6 +357,37 @@ func NewMetricsV1Beta3RESTClient(ctx context.Context, opts ...option.ClientOptio
 		callOpts.GetJobMetrics = append(callOpts.GetJobMetrics, gax.WithClientMetrics(metrics))
 		callOpts.GetJobExecutionDetails = append(callOpts.GetJobExecutionDetails, gax.WithClientMetrics(metrics))
 		callOpts.GetStageExecutionDetails = append(callOpts.GetStageExecutionDetails, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "dataflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataflow/apiv1beta3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dataflow.googleapis.com",
+			}),
+		)
+
+		callOpts.GetJobMetrics = append(callOpts.GetJobMetrics, gax.WithClientTracing(tracing))
+		callOpts.GetJobExecutionDetails = append(callOpts.GetJobExecutionDetails, gax.WithClientTracing(tracing))
+		callOpts.GetStageExecutionDetails = append(callOpts.GetStageExecutionDetails, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "dataflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataflow/apiv1beta3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dataflow.googleapis.com",
+			}),
+		)
+
+		callOpts.GetJobMetrics = append(callOpts.GetJobMetrics, gax.WithClientLogging(logging))
+		callOpts.GetJobExecutionDetails = append(callOpts.GetJobExecutionDetails, gax.WithClientLogging(logging))
+		callOpts.GetStageExecutionDetails = append(callOpts.GetStageExecutionDetails, gax.WithClientLogging(logging))
 	}
 
 	return &MetricsV1Beta3Client{internalClient: c, CallOptions: callOpts}, nil

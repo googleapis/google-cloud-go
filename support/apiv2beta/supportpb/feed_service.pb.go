@@ -178,14 +178,14 @@ var File_google_cloud_support_v2beta_feed_service_proto protoreflect.FileDescrip
 
 const file_google_cloud_support_v2beta_feed_service_proto_rawDesc = "" +
 	"\n" +
-	".google/cloud/support/v2beta/feed_service.proto\x12\x1bgoogle.cloud.support.v2beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a+google/cloud/support/v2beta/feed_item.proto\"\xb9\x01\n" +
-	"\x0fShowFeedRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" cloudsupport.googleapis.com/CaseR\x06parent\x12\x1e\n" +
-	"\border_by\x18\x02 \x01(\tB\x03\xe0A\x01R\aorderBy\x12 \n" +
-	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	".google/cloud/support/v2beta/feed_service.proto\x12\x1bgoogle.cloud.support.v2beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a+google/cloud/support/v2beta/feed_item.proto\"\xbd\x01\n" +
+	"\x0fShowFeedRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" cloudsupport.googleapis.com/CaseR\x06parent\x12\x1f\n" +
+	"\border_by\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\x12!\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x80\x01\n" +
+	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x80\x01\n" +
 	"\x10ShowFeedResponse\x12D\n" +
 	"\n" +
 	"feed_items\x18\x01 \x03(\v2%.google.cloud.support.v2beta.FeedItemR\tfeedItems\x12&\n" +

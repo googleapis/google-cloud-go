@@ -21,6 +21,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"slices"
 	"strings"
 	"time"
 
@@ -293,16 +294,12 @@ func retryableError(err error, allowedReasons []string) bool {
 		var reason string
 		if len(e.Errors) > 0 {
 			reason = e.Errors[0].Reason
-			for _, r := range allowedReasons {
-				if reason == r {
-					return true
-				}
-			}
-		}
-		for _, code := range retry5xxCodes {
-			if e.Code == code {
+			if slices.Contains(allowedReasons, reason) {
 				return true
 			}
+		}
+		if slices.Contains(retry5xxCodes, e.Code) {
+			return true
 		}
 	case *url.Error:
 		retryable := []string{"connection refused", "connection reset"}

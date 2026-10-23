@@ -1865,6 +1865,9 @@ type JobConfiguration struct {
 	// determined based on the rules defined by the reservation assignments. The
 	// expected format is
 	// `projects/{project}/locations/{location}/reservations/{reservation}`.
+	// Forces the query to use on-demand billing when set to `none`, which
+	// requires the project or organization to have
+	// `reservation_override_mode` set to `ALLOW_ANY_OVERRIDE`.
 	Reservation   *string `protobuf:"bytes,11,opt,name=reservation,proto3,oneof" json:"reservation,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -2024,35 +2027,35 @@ var File_google_cloud_bigquery_v2_job_config_proto protoreflect.FileDescriptor
 
 const file_google_cloud_bigquery_v2_job_config_proto_rawDesc = "" +
 	"\n" +
-	")google/cloud/bigquery/v2/job_config.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a)google/cloud/bigquery/v2/clustering.proto\x1a0google/cloud/bigquery/v2/dataset_reference.proto\x1a3google/cloud/bigquery/v2/decimal_target_types.proto\x1a0google/cloud/bigquery/v2/encryption_config.proto\x1a3google/cloud/bigquery/v2/external_data_config.proto\x1a:google/cloud/bigquery/v2/file_set_specification_type.proto\x1a0google/cloud/bigquery/v2/hive_partitioning.proto\x1a-google/cloud/bigquery/v2/json_extension.proto\x1a.google/cloud/bigquery/v2/model_reference.proto\x1a.google/cloud/bigquery/v2/query_parameter.proto\x1a1google/cloud/bigquery/v2/range_partitioning.proto\x1a.google/cloud/bigquery/v2/system_variable.proto\x1a.google/cloud/bigquery/v2/table_reference.proto\x1a+google/cloud/bigquery/v2/table_schema.proto\x1a0google/cloud/bigquery/v2/time_partitioning.proto\x1a+google/cloud/bigquery/v2/udf_resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xc3\x02\n" +
-	"\x1aDestinationTableProperties\x12F\n" +
-	"\rfriendly_name\x18\x01 \x01(\v2\x1c.google.protobuf.StringValueB\x03\xe0A\x01R\ffriendlyName\x12C\n" +
-	"\vdescription\x18\x02 \x01(\v2\x1c.google.protobuf.StringValueB\x03\xe0A\x01R\vdescription\x12]\n" +
-	"\x06labels\x18\x03 \x03(\v2@.google.cloud.bigquery.v2.DestinationTableProperties.LabelsEntryB\x03\xe0A\x01R\x06labels\x1a9\n" +
+	")google/cloud/bigquery/v2/job_config.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a)google/cloud/bigquery/v2/clustering.proto\x1a0google/cloud/bigquery/v2/dataset_reference.proto\x1a3google/cloud/bigquery/v2/decimal_target_types.proto\x1a0google/cloud/bigquery/v2/encryption_config.proto\x1a3google/cloud/bigquery/v2/external_data_config.proto\x1a:google/cloud/bigquery/v2/file_set_specification_type.proto\x1a0google/cloud/bigquery/v2/hive_partitioning.proto\x1a-google/cloud/bigquery/v2/json_extension.proto\x1a.google/cloud/bigquery/v2/model_reference.proto\x1a.google/cloud/bigquery/v2/query_parameter.proto\x1a1google/cloud/bigquery/v2/range_partitioning.proto\x1a.google/cloud/bigquery/v2/system_variable.proto\x1a.google/cloud/bigquery/v2/table_reference.proto\x1a+google/cloud/bigquery/v2/table_schema.proto\x1a0google/cloud/bigquery/v2/time_partitioning.proto\x1a+google/cloud/bigquery/v2/udf_resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xc6\x02\n" +
+	"\x1aDestinationTableProperties\x12G\n" +
+	"\rfriendly_name\x18\x01 \x01(\v2\x1c.google.protobuf.StringValueB\x04\xe2A\x01\x01R\ffriendlyName\x12D\n" +
+	"\vdescription\x18\x02 \x01(\v2\x1c.google.protobuf.StringValueB\x04\xe2A\x01\x01R\vdescription\x12^\n" +
+	"\x06labels\x18\x03 \x03(\v2@.google.cloud.bigquery.v2.DestinationTableProperties.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"<\n" +
 	"\x12ConnectionProperty\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value\"\x8e\x11\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value\"\x9b\x11\n" +
 	"\x15JobConfigurationQuery\x12\x14\n" +
-	"\x05query\x18\x01 \x01(\tR\x05query\x12Z\n" +
-	"\x11destination_table\x18\x02 \x01(\v2(.google.cloud.bigquery.v2.TableReferenceB\x03\xe0A\x01R\x10destinationTable\x12\x88\x01\n" +
-	"\x1aexternal_table_definitions\x18\x17 \x03(\v2M.google.cloud.bigquery.v2.JobConfigurationQuery.ExternalTableDefinitionsEntryB\x03\xe0A\x01R\x10tableDefinitions\x12|\n" +
-	"\x1fuser_defined_function_resources\x18\x04 \x03(\v25.google.cloud.bigquery.v2.UserDefinedFunctionResourceR\x1cuserDefinedFunctionResources\x122\n" +
-	"\x12create_disposition\x18\x05 \x01(\tB\x03\xe0A\x01R\x11createDisposition\x120\n" +
-	"\x11write_disposition\x18\x06 \x01(\tB\x03\xe0A\x01R\x10writeDisposition\x12X\n" +
-	"\x0fdefault_dataset\x18\a \x01(\v2*.google.cloud.bigquery.v2.DatasetReferenceB\x03\xe0A\x01R\x0edefaultDataset\x12\x1f\n" +
-	"\bpriority\x18\b \x01(\tB\x03\xe0A\x01R\bpriority\x12O\n" +
+	"\x05query\x18\x01 \x01(\tR\x05query\x12[\n" +
+	"\x11destination_table\x18\x02 \x01(\v2(.google.cloud.bigquery.v2.TableReferenceB\x04\xe2A\x01\x01R\x10destinationTable\x12\x89\x01\n" +
+	"\x1aexternal_table_definitions\x18\x17 \x03(\v2M.google.cloud.bigquery.v2.JobConfigurationQuery.ExternalTableDefinitionsEntryB\x04\xe2A\x01\x01R\x10tableDefinitions\x12|\n" +
+	"\x1fuser_defined_function_resources\x18\x04 \x03(\v25.google.cloud.bigquery.v2.UserDefinedFunctionResourceR\x1cuserDefinedFunctionResources\x123\n" +
+	"\x12create_disposition\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x11createDisposition\x121\n" +
+	"\x11write_disposition\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x10writeDisposition\x12Y\n" +
+	"\x0fdefault_dataset\x18\a \x01(\v2*.google.cloud.bigquery.v2.DatasetReferenceB\x04\xe2A\x01\x01R\x0edefaultDataset\x12 \n" +
+	"\bpriority\x18\b \x01(\tB\x04\xe2A\x01\x01R\bpriority\x12P\n" +
 	"\x13allow_large_results\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\x11allowLargeResults\x12G\n" +
-	"\x0fuse_query_cache\x18\v \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\ruseQueryCache\x12H\n" +
-	"\x0fflatten_results\x18\f \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\x0eflattenResults\x12M\n" +
-	"\x14maximum_bytes_billed\x18\x0e \x01(\v2\x1b.google.protobuf.Int64ValueR\x12maximumBytesBilled\x12E\n" +
-	"\x0euse_legacy_sql\x18\x0f \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\fuseLegacySql\x12%\n" +
+	" \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\x11allowLargeResults\x12H\n" +
+	"\x0fuse_query_cache\x18\v \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\ruseQueryCache\x12I\n" +
+	"\x0fflatten_results\x18\f \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\x0eflattenResults\x12M\n" +
+	"\x14maximum_bytes_billed\x18\x0e \x01(\v2\x1b.google.protobuf.Int64ValueR\x12maximumBytesBilled\x12F\n" +
+	"\x0euse_legacy_sql\x18\x0f \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\fuseLegacySql\x12%\n" +
 	"\x0eparameter_mode\x18\x10 \x01(\tR\rparameterMode\x12S\n" +
-	"\x10query_parameters\x18\x11 \x03(\v2(.google.cloud.bigquery.v2.QueryParameterR\x0fqueryParameters\x12^\n" +
-	"\x10system_variables\x18# \x01(\v2).google.cloud.bigquery.v2.SystemVariablesB\x03\xe0A\x03H\x00R\x0fsystemVariables\x88\x01\x01\x122\n" +
+	"\x10query_parameters\x18\x11 \x03(\v2(.google.cloud.bigquery.v2.QueryParameterR\x0fqueryParameters\x12_\n" +
+	"\x10system_variables\x18# \x01(\v2).google.cloud.bigquery.v2.SystemVariablesB\x04\xe2A\x01\x03H\x00R\x0fsystemVariables\x88\x01\x01\x122\n" +
 	"\x15schema_update_options\x18\x12 \x03(\tR\x13schemaUpdateOptions\x12W\n" +
 	"\x11time_partitioning\x18\x13 \x01(\v2*.google.cloud.bigquery.v2.TimePartitioningR\x10timePartitioning\x12Z\n" +
 	"\x12range_partitioning\x18\x16 \x01(\v2+.google.cloud.bigquery.v2.RangePartitioningR\x11rangePartitioning\x12D\n" +
@@ -2062,11 +2065,11 @@ const file_google_cloud_bigquery_v2_job_config_proto_rawDesc = "" +
 	"$destination_encryption_configuration\x18\x15 \x01(\v21.google.cloud.bigquery.v2.EncryptionConfigurationR\"destinationEncryptionConfiguration\x12N\n" +
 	"\x0escript_options\x18\x18 \x01(\v2'.google.cloud.bigquery.v2.ScriptOptionsR\rscriptOptions\x12a\n" +
 	"\x15connection_properties\x18! \x03(\v2,.google.cloud.bigquery.v2.ConnectionPropertyR\x14connectionProperties\x12A\n" +
-	"\x0ecreate_session\x18\" \x01(\v2\x1a.google.protobuf.BoolValueR\rcreateSession\x12?\n" +
+	"\x0ecreate_session\x18\" \x01(\v2\x1a.google.protobuf.BoolValueR\rcreateSession\x12@\n" +
 	"\n" +
-	"continuous\x18$ \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\n" +
-	"continuous\x12?\n" +
-	"\x19write_incremental_results\x18% \x01(\bB\x03\xe0A\x01R\x17writeIncrementalResults\x1a\x80\x01\n" +
+	"continuous\x18$ \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\n" +
+	"continuous\x12@\n" +
+	"\x19write_incremental_results\x18% \x01(\bB\x04\xe2A\x01\x01R\x17writeIncrementalResults\x1a\x80\x01\n" +
 	"\x1dExternalTableDefinitionsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12I\n" +
 	"\x05value\x18\x02 \x01(\v23.google.cloud.bigquery.v2.ExternalDataConfigurationR\x05value:\x028\x01B\x13\n" +
@@ -2078,31 +2081,31 @@ const file_google_cloud_bigquery_v2_job_config_proto_rawDesc = "" +
 	"\x16KeyResultStatementKind\x12)\n" +
 	"%KEY_RESULT_STATEMENT_KIND_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04LAST\x10\x01\x12\x10\n" +
-	"\fFIRST_SELECT\x10\x02\"\xad\x1b\n" +
+	"\fFIRST_SELECT\x10\x02\"\xcd\x1b\n" +
 	"\x14JobConfigurationLoad\x12\x1f\n" +
 	"\vsource_uris\x18\x01 \x03(\tR\n" +
-	"sourceUris\x12[\n" +
-	"\x12file_set_spec_type\x181 \x01(\x0e2).google.cloud.bigquery.v2.FileSetSpecTypeB\x03\xe0A\x01R\x0ffileSetSpecType\x12B\n" +
-	"\x06schema\x18\x02 \x01(\v2%.google.cloud.bigquery.v2.TableSchemaB\x03\xe0A\x01R\x06schema\x12U\n" +
-	"\x11destination_table\x18\x03 \x01(\v2(.google.cloud.bigquery.v2.TableReferenceR\x10destinationTable\x12{\n" +
-	"\x1cdestination_table_properties\x18\x04 \x01(\v24.google.cloud.bigquery.v2.DestinationTablePropertiesB\x03\xe0A\x01R\x1adestinationTableProperties\x122\n" +
-	"\x12create_disposition\x18\x05 \x01(\tB\x03\xe0A\x01R\x11createDisposition\x120\n" +
-	"\x11write_disposition\x18\x06 \x01(\tB\x03\xe0A\x01R\x10writeDisposition\x12B\n" +
-	"\vnull_marker\x18\a \x01(\v2\x1c.google.protobuf.StringValueB\x03\xe0A\x01R\n" +
-	"nullMarker\x12,\n" +
-	"\x0ffield_delimiter\x18\b \x01(\tB\x03\xe0A\x01R\x0efieldDelimiter\x12L\n" +
-	"\x11skip_leading_rows\x18\t \x01(\v2\x1b.google.protobuf.Int32ValueB\x03\xe0A\x01R\x0fskipLeadingRows\x12\x1f\n" +
+	"sourceUris\x12\\\n" +
+	"\x12file_set_spec_type\x181 \x01(\x0e2).google.cloud.bigquery.v2.FileSetSpecTypeB\x04\xe2A\x01\x01R\x0ffileSetSpecType\x12C\n" +
+	"\x06schema\x18\x02 \x01(\v2%.google.cloud.bigquery.v2.TableSchemaB\x04\xe2A\x01\x01R\x06schema\x12U\n" +
+	"\x11destination_table\x18\x03 \x01(\v2(.google.cloud.bigquery.v2.TableReferenceR\x10destinationTable\x12|\n" +
+	"\x1cdestination_table_properties\x18\x04 \x01(\v24.google.cloud.bigquery.v2.DestinationTablePropertiesB\x04\xe2A\x01\x01R\x1adestinationTableProperties\x123\n" +
+	"\x12create_disposition\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x11createDisposition\x121\n" +
+	"\x11write_disposition\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x10writeDisposition\x12C\n" +
+	"\vnull_marker\x18\a \x01(\v2\x1c.google.protobuf.StringValueB\x04\xe2A\x01\x01R\n" +
+	"nullMarker\x12-\n" +
+	"\x0ffield_delimiter\x18\b \x01(\tB\x04\xe2A\x01\x01R\x0efieldDelimiter\x12M\n" +
+	"\x11skip_leading_rows\x18\t \x01(\v2\x1b.google.protobuf.Int32ValueB\x04\xe2A\x01\x01R\x0fskipLeadingRows\x12 \n" +
 	"\bencoding\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\bencoding\x127\n" +
-	"\x05quote\x18\v \x01(\v2\x1c.google.protobuf.StringValueB\x03\xe0A\x01R\x05quote\x12H\n" +
-	"\x0fmax_bad_records\x18\f \x01(\v2\x1b.google.protobuf.Int32ValueB\x03\xe0A\x01R\rmaxBadRecords\x12N\n" +
-	"\x15allow_quoted_newlines\x18\x0f \x01(\v2\x1a.google.protobuf.BoolValueR\x13allowQuotedNewlines\x12(\n" +
-	"\rsource_format\x18\x10 \x01(\tB\x03\xe0A\x01R\fsourceFormat\x12K\n" +
-	"\x11allow_jagged_rows\x18\x11 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\x0fallowJaggedRows\x12S\n" +
-	"\x15ignore_unknown_values\x18\x12 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\x13ignoreUnknownValues\x12+\n" +
-	"\x11projection_fields\x18\x13 \x03(\tR\x10projectionFields\x12?\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\bencoding\x128\n" +
+	"\x05quote\x18\v \x01(\v2\x1c.google.protobuf.StringValueB\x04\xe2A\x01\x01R\x05quote\x12I\n" +
+	"\x0fmax_bad_records\x18\f \x01(\v2\x1b.google.protobuf.Int32ValueB\x04\xe2A\x01\x01R\rmaxBadRecords\x12N\n" +
+	"\x15allow_quoted_newlines\x18\x0f \x01(\v2\x1a.google.protobuf.BoolValueR\x13allowQuotedNewlines\x12)\n" +
+	"\rsource_format\x18\x10 \x01(\tB\x04\xe2A\x01\x01R\fsourceFormat\x12L\n" +
+	"\x11allow_jagged_rows\x18\x11 \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\x0fallowJaggedRows\x12T\n" +
+	"\x15ignore_unknown_values\x18\x12 \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\x13ignoreUnknownValues\x12+\n" +
+	"\x11projection_fields\x18\x13 \x03(\tR\x10projectionFields\x12@\n" +
 	"\n" +
-	"autodetect\x18\x14 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\n" +
+	"autodetect\x18\x14 \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\n" +
 	"autodetect\x122\n" +
 	"\x15schema_update_options\x18\x15 \x03(\tR\x13schemaUpdateOptions\x12W\n" +
 	"\x11time_partitioning\x18\x16 \x01(\v2*.google.cloud.bigquery.v2.TimePartitioningR\x10timePartitioning\x12Z\n" +
@@ -2110,27 +2113,27 @@ const file_google_cloud_bigquery_v2_job_config_proto_rawDesc = "" +
 	"\n" +
 	"clustering\x18\x17 \x01(\v2$.google.cloud.bigquery.v2.ClusteringR\n" +
 	"clustering\x12\x83\x01\n" +
-	"$destination_encryption_configuration\x18\x18 \x01(\v21.google.cloud.bigquery.v2.EncryptionConfigurationR\"destinationEncryptionConfiguration\x12T\n" +
-	"\x16use_avro_logical_types\x18\x19 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\x13useAvroLogicalTypes\x12\\\n" +
-	"\x19reference_file_schema_uri\x18- \x01(\v2\x1c.google.protobuf.StringValueB\x03\xe0A\x01R\x16referenceFileSchemaUri\x12r\n" +
-	"\x19hive_partitioning_options\x18% \x01(\v21.google.cloud.bigquery.v2.HivePartitioningOptionsB\x03\xe0A\x01R\x17hivePartitioningOptions\x12]\n" +
-	"\x14decimal_target_types\x18' \x03(\x0e2+.google.cloud.bigquery.v2.DecimalTargetTypeR\x12decimalTargetTypes\x12S\n" +
-	"\x0ejson_extension\x18) \x01(\x0e2'.google.cloud.bigquery.v2.JsonExtensionB\x03\xe0A\x01R\rjsonExtension\x12V\n" +
-	"\x0fparquet_options\x18* \x01(\v2(.google.cloud.bigquery.v2.ParquetOptionsB\x03\xe0A\x01R\x0eparquetOptions\x12j\n" +
-	"!preserve_ascii_control_characters\x18, \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\x1epreserveAsciiControlCharacters\x12f\n" +
-	"\x15connection_properties\x18. \x03(\v2,.google.cloud.bigquery.v2.ConnectionPropertyB\x03\xe0A\x01R\x14connectionProperties\x12F\n" +
-	"\x0ecreate_session\x18/ \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\rcreateSession\x12\x85\x01\n" +
-	"\x19column_name_character_map\x182 \x01(\x0e2E.google.cloud.bigquery.v2.JobConfigurationLoad.ColumnNameCharacterMapB\x03\xe0A\x01R\x16columnNameCharacterMap\x12G\n" +
-	"\x0fcopy_files_only\x183 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\rcopyFilesOnly\x12>\n" +
-	"\ttime_zone\x184 \x01(\v2\x1c.google.protobuf.StringValueB\x03\xe0A\x01R\btimeZone\x12&\n" +
-	"\fnull_markers\x185 \x03(\tB\x03\xe0A\x01R\vnullMarkers\x12)\n" +
-	"\vdate_format\x186 \x01(\tB\x03\xe0A\x01H\x00R\n" +
-	"dateFormat\x88\x01\x01\x121\n" +
-	"\x0fdatetime_format\x187 \x01(\tB\x03\xe0A\x01H\x01R\x0edatetimeFormat\x88\x01\x01\x12)\n" +
-	"\vtime_format\x188 \x01(\tB\x03\xe0A\x01H\x02R\n" +
-	"timeFormat\x88\x01\x01\x123\n" +
-	"\x10timestamp_format\x189 \x01(\tB\x03\xe0A\x01H\x03R\x0ftimestampFormat\x88\x01\x01\x12u\n" +
-	"\x13source_column_match\x18: \x01(\x0e2@.google.cloud.bigquery.v2.JobConfigurationLoad.SourceColumnMatchB\x03\xe0A\x01R\x11sourceColumnMatch\x12<\n" +
+	"$destination_encryption_configuration\x18\x18 \x01(\v21.google.cloud.bigquery.v2.EncryptionConfigurationR\"destinationEncryptionConfiguration\x12U\n" +
+	"\x16use_avro_logical_types\x18\x19 \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\x13useAvroLogicalTypes\x12]\n" +
+	"\x19reference_file_schema_uri\x18- \x01(\v2\x1c.google.protobuf.StringValueB\x04\xe2A\x01\x01R\x16referenceFileSchemaUri\x12s\n" +
+	"\x19hive_partitioning_options\x18% \x01(\v21.google.cloud.bigquery.v2.HivePartitioningOptionsB\x04\xe2A\x01\x01R\x17hivePartitioningOptions\x12]\n" +
+	"\x14decimal_target_types\x18' \x03(\x0e2+.google.cloud.bigquery.v2.DecimalTargetTypeR\x12decimalTargetTypes\x12T\n" +
+	"\x0ejson_extension\x18) \x01(\x0e2'.google.cloud.bigquery.v2.JsonExtensionB\x04\xe2A\x01\x01R\rjsonExtension\x12W\n" +
+	"\x0fparquet_options\x18* \x01(\v2(.google.cloud.bigquery.v2.ParquetOptionsB\x04\xe2A\x01\x01R\x0eparquetOptions\x12k\n" +
+	"!preserve_ascii_control_characters\x18, \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\x1epreserveAsciiControlCharacters\x12g\n" +
+	"\x15connection_properties\x18. \x03(\v2,.google.cloud.bigquery.v2.ConnectionPropertyB\x04\xe2A\x01\x01R\x14connectionProperties\x12G\n" +
+	"\x0ecreate_session\x18/ \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\rcreateSession\x12\x86\x01\n" +
+	"\x19column_name_character_map\x182 \x01(\x0e2E.google.cloud.bigquery.v2.JobConfigurationLoad.ColumnNameCharacterMapB\x04\xe2A\x01\x01R\x16columnNameCharacterMap\x12H\n" +
+	"\x0fcopy_files_only\x183 \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\rcopyFilesOnly\x12?\n" +
+	"\ttime_zone\x184 \x01(\v2\x1c.google.protobuf.StringValueB\x04\xe2A\x01\x01R\btimeZone\x12'\n" +
+	"\fnull_markers\x185 \x03(\tB\x04\xe2A\x01\x01R\vnullMarkers\x12*\n" +
+	"\vdate_format\x186 \x01(\tB\x04\xe2A\x01\x01H\x00R\n" +
+	"dateFormat\x88\x01\x01\x122\n" +
+	"\x0fdatetime_format\x187 \x01(\tB\x04\xe2A\x01\x01H\x01R\x0edatetimeFormat\x88\x01\x01\x12*\n" +
+	"\vtime_format\x188 \x01(\tB\x04\xe2A\x01\x01H\x02R\n" +
+	"timeFormat\x88\x01\x01\x124\n" +
+	"\x10timestamp_format\x189 \x01(\tB\x04\xe2A\x01\x01H\x03R\x0ftimestampFormat\x88\x01\x01\x12v\n" +
+	"\x13source_column_match\x18: \x01(\x0e2@.google.cloud.bigquery.v2.JobConfigurationLoad.SourceColumnMatchB\x04\xe2A\x01\x01R\x11sourceColumnMatch\x12<\n" +
 	"\x1atimestamp_target_precision\x18; \x03(\x05R\x18timestampTargetPrecision\"_\n" +
 	"\x16ColumnNameCharacterMap\x12)\n" +
 	"%COLUMN_NAME_CHARACTER_MAP_UNSPECIFIED\x10\x00\x12\n" +
@@ -2145,46 +2148,46 @@ const file_google_cloud_bigquery_v2_job_config_proto_rawDesc = "" +
 	"\f_date_formatB\x12\n" +
 	"\x10_datetime_formatB\x0e\n" +
 	"\f_time_formatB\x13\n" +
-	"\x11_timestamp_format\"\xab\x06\n" +
+	"\x11_timestamp_format\"\xaf\x06\n" +
 	"\x19JobConfigurationTableCopy\x12K\n" +
 	"\fsource_table\x18\x01 \x01(\v2(.google.cloud.bigquery.v2.TableReferenceR\vsourceTable\x12M\n" +
 	"\rsource_tables\x18\x02 \x03(\v2(.google.cloud.bigquery.v2.TableReferenceR\fsourceTables\x12U\n" +
-	"\x11destination_table\x18\x03 \x01(\v2(.google.cloud.bigquery.v2.TableReferenceR\x10destinationTable\x122\n" +
-	"\x12create_disposition\x18\x04 \x01(\tB\x03\xe0A\x01R\x11createDisposition\x120\n" +
-	"\x11write_disposition\x18\x05 \x01(\tB\x03\xe0A\x01R\x10writeDisposition\x12\x83\x01\n" +
-	"$destination_encryption_configuration\x18\x06 \x01(\v21.google.cloud.bigquery.v2.EncryptionConfigurationR\"destinationEncryptionConfiguration\x12m\n" +
-	"\x0eoperation_type\x18\b \x01(\x0e2A.google.cloud.bigquery.v2.JobConfigurationTableCopy.OperationTypeB\x03\xe0A\x01R\roperationType\x12_\n" +
-	"\x1bdestination_expiration_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\x19destinationExpirationTime\"_\n" +
+	"\x11destination_table\x18\x03 \x01(\v2(.google.cloud.bigquery.v2.TableReferenceR\x10destinationTable\x123\n" +
+	"\x12create_disposition\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x11createDisposition\x121\n" +
+	"\x11write_disposition\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x10writeDisposition\x12\x83\x01\n" +
+	"$destination_encryption_configuration\x18\x06 \x01(\v21.google.cloud.bigquery.v2.EncryptionConfigurationR\"destinationEncryptionConfiguration\x12n\n" +
+	"\x0eoperation_type\x18\b \x01(\x0e2A.google.cloud.bigquery.v2.JobConfigurationTableCopy.OperationTypeB\x04\xe2A\x01\x01R\roperationType\x12`\n" +
+	"\x1bdestination_expiration_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\x19destinationExpirationTime\"_\n" +
 	"\rOperationType\x12\x1e\n" +
 	"\x1aOPERATION_TYPE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04COPY\x10\x01\x12\f\n" +
 	"\bSNAPSHOT\x10\x02\x12\v\n" +
 	"\aRESTORE\x10\x03\x12\t\n" +
-	"\x05CLONE\x10\x04\"\xd9\x05\n" +
+	"\x05CLONE\x10\x04\"\xde\x05\n" +
 	"\x17JobConfigurationExtract\x12M\n" +
 	"\fsource_table\x18\x01 \x01(\v2(.google.cloud.bigquery.v2.TableReferenceH\x00R\vsourceTable\x12M\n" +
 	"\fsource_model\x18\t \x01(\v2(.google.cloud.bigquery.v2.ModelReferenceH\x00R\vsourceModel\x12)\n" +
-	"\x10destination_uris\x18\x03 \x03(\tR\x0fdestinationUris\x12B\n" +
-	"\fprint_header\x18\x04 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\vprintHeader\x12,\n" +
-	"\x0ffield_delimiter\x18\x05 \x01(\tB\x03\xe0A\x01R\x0efieldDelimiter\x122\n" +
-	"\x12destination_format\x18\x06 \x01(\tB\x03\xe0A\x01R\x11destinationFormat\x12%\n" +
-	"\vcompression\x18\a \x01(\tB\x03\xe0A\x01R\vcompression\x12O\n" +
-	"\x16use_avro_logical_types\x18\r \x01(\v2\x1a.google.protobuf.BoolValueR\x13useAvroLogicalTypes\x12~\n" +
-	"\x15model_extract_options\x18\x0e \x01(\v2E.google.cloud.bigquery.v2.JobConfigurationExtract.ModelExtractOptionsB\x03\xe0A\x01R\x13modelExtractOptions\x1aM\n" +
+	"\x10destination_uris\x18\x03 \x03(\tR\x0fdestinationUris\x12C\n" +
+	"\fprint_header\x18\x04 \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\vprintHeader\x12-\n" +
+	"\x0ffield_delimiter\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x0efieldDelimiter\x123\n" +
+	"\x12destination_format\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x11destinationFormat\x12&\n" +
+	"\vcompression\x18\a \x01(\tB\x04\xe2A\x01\x01R\vcompression\x12O\n" +
+	"\x16use_avro_logical_types\x18\r \x01(\v2\x1a.google.protobuf.BoolValueR\x13useAvroLogicalTypes\x12\x7f\n" +
+	"\x15model_extract_options\x18\x0e \x01(\v2E.google.cloud.bigquery.v2.JobConfigurationExtract.ModelExtractOptionsB\x04\xe2A\x01\x01R\x13modelExtractOptions\x1aM\n" +
 	"\x13ModelExtractOptions\x126\n" +
 	"\btrial_id\x18\x01 \x01(\v2\x1b.google.protobuf.Int64ValueR\atrialIdB\b\n" +
-	"\x06source\"\xff\x05\n" +
+	"\x06source\"\x83\x06\n" +
 	"\x10JobConfiguration\x12\x19\n" +
 	"\bjob_type\x18\b \x01(\tR\ajobType\x12E\n" +
 	"\x05query\x18\x01 \x01(\v2/.google.cloud.bigquery.v2.JobConfigurationQueryR\x05query\x12B\n" +
 	"\x04load\x18\x02 \x01(\v2..google.cloud.bigquery.v2.JobConfigurationLoadR\x04load\x12G\n" +
 	"\x04copy\x18\x03 \x01(\v23.google.cloud.bigquery.v2.JobConfigurationTableCopyR\x04copy\x12K\n" +
-	"\aextract\x18\x04 \x01(\v21.google.cloud.bigquery.v2.JobConfigurationExtractR\aextract\x128\n" +
-	"\adry_run\x18\x05 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\x06dryRun\x12F\n" +
-	"\x0ejob_timeout_ms\x18\x06 \x01(\v2\x1b.google.protobuf.Int64ValueB\x03\xe0A\x01R\fjobTimeoutMs\x12%\n" +
-	"\tmax_slots\x18\f \x01(\x05B\x03\xe0A\x01H\x00R\bmaxSlots\x88\x01\x01\x12N\n" +
-	"\x06labels\x18\a \x03(\v26.google.cloud.bigquery.v2.JobConfiguration.LabelsEntryR\x06labels\x12]\n" +
-	"\vreservation\x18\v \x01(\tB6\xe0A\x01\xfaA0\n" +
+	"\aextract\x18\x04 \x01(\v21.google.cloud.bigquery.v2.JobConfigurationExtractR\aextract\x129\n" +
+	"\adry_run\x18\x05 \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\x06dryRun\x12G\n" +
+	"\x0ejob_timeout_ms\x18\x06 \x01(\v2\x1b.google.protobuf.Int64ValueB\x04\xe2A\x01\x01R\fjobTimeoutMs\x12&\n" +
+	"\tmax_slots\x18\f \x01(\x05B\x04\xe2A\x01\x01H\x00R\bmaxSlots\x88\x01\x01\x12N\n" +
+	"\x06labels\x18\a \x03(\v26.google.cloud.bigquery.v2.JobConfiguration.LabelsEntryR\x06labels\x12^\n" +
+	"\vreservation\x18\v \x01(\tB7\xe2A\x01\x01\xfaA0\n" +
 	".bigqueryreservation.googleapis.com/ReservationH\x01R\vreservation\x88\x01\x01\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +

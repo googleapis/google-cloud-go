@@ -1133,23 +1133,23 @@ var File_google_cloud_resourcemanager_v3_projects_proto protoreflect.FileDescrip
 
 const file_google_cloud_resourcemanager_v3_projects_proto_rawDesc = "" +
 	"\n" +
-	".google/cloud/resourcemanager/v3/projects.proto\x12\x1fgoogle.cloud.resourcemanager.v3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xce\x05\n" +
-	"\aProject\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x1b\n" +
-	"\x06parent\x18\x02 \x01(\tB\x03\xe0A\x01R\x06parent\x12\"\n" +
+	".google/cloud/resourcemanager/v3/projects.proto\x12\x1fgoogle.cloud.resourcemanager.v3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd8\x05\n" +
+	"\aProject\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x1c\n" +
+	"\x06parent\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06parent\x12#\n" +
 	"\n" +
-	"project_id\x18\x03 \x01(\tB\x03\xe0A\x05R\tprojectId\x12I\n" +
-	"\x05state\x18\x04 \x01(\x0e2..google.cloud.resourcemanager.v3.Project.StateB\x03\xe0A\x03R\x05state\x12&\n" +
-	"\fdisplay_name\x18\x05 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12@\n" +
-	"\vdelete_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"deleteTime\x12\x17\n" +
-	"\x04etag\x18\t \x01(\tB\x03\xe0A\x03R\x04etag\x12Q\n" +
+	"project_id\x18\x03 \x01(\tB\x04\xe2A\x01\x05R\tprojectId\x12J\n" +
+	"\x05state\x18\x04 \x01(\x0e2..google.cloud.resourcemanager.v3.Project.StateB\x04\xe2A\x01\x03R\x05state\x12'\n" +
+	"\fdisplay_name\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12A\n" +
+	"\vdelete_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"deleteTime\x12\x18\n" +
+	"\x04etag\x18\t \x01(\tB\x04\xe2A\x01\x03R\x04etag\x12R\n" +
 	"\x06labels\x18\n" +
-	" \x03(\v24.google.cloud.resourcemanager.v3.Project.LabelsEntryB\x03\xe0A\x01R\x06labels\x1a9\n" +
+	" \x03(\v24.google.cloud.resourcemanager.v3.Project.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"@\n" +
@@ -1158,50 +1158,52 @@ const file_google_cloud_resourcemanager_v3_projects_proto_rawDesc = "" +
 	"\n" +
 	"\x06ACTIVE\x10\x01\x12\x14\n" +
 	"\x10DELETE_REQUESTED\x10\x02:G\xeaAD\n" +
-	"+cloudresourcemanager.googleapis.com/Project\x12\x12projects/{project}R\x01\x01\"\\\n" +
-	"\x11GetProjectRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x04name\"\xa6\x01\n" +
-	"\x13ListProjectsRequest\x12!\n" +
-	"\x06parent\x18\x01 \x01(\tB\t\xe0A\x02\xfaA\x03\x12\x01*R\x06parent\x12\"\n" +
+	"+cloudresourcemanager.googleapis.com/Project\x12\x12projects/{project}R\x01\x01\"]\n" +
+	"\x11GetProjectRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x04name\"\xaa\x01\n" +
+	"\x13ListProjectsRequest\x12\"\n" +
+	"\x06parent\x18\x01 \x01(\tB\n" +
+	"\xe2A\x01\x02\xfaA\x03\x12\x01*R\x06parent\x12#\n" +
 	"\n" +
-	"page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\tpageToken\x12 \n" +
-	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12&\n" +
-	"\fshow_deleted\x18\x04 \x01(\bB\x03\xe0A\x01R\vshowDeleted\"\x84\x01\n" +
+	"page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12!\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12'\n" +
+	"\fshow_deleted\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\vshowDeleted\"\x84\x01\n" +
 	"\x14ListProjectsResponse\x12D\n" +
 	"\bprojects\x18\x01 \x03(\v2(.google.cloud.resourcemanager.v3.ProjectR\bprojects\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"x\n" +
-	"\x15SearchProjectsRequest\x12\x19\n" +
-	"\x05query\x18\x01 \x01(\tB\x03\xe0A\x01R\x05query\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"{\n" +
+	"\x15SearchProjectsRequest\x12\x1a\n" +
+	"\x05query\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x05query\x12#\n" +
 	"\n" +
-	"page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\tpageToken\x12 \n" +
-	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\"\x86\x01\n" +
+	"page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12!\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\"\x86\x01\n" +
 	"\x16SearchProjectsResponse\x12D\n" +
 	"\bprojects\x18\x01 \x03(\v2(.google.cloud.resourcemanager.v3.ProjectR\bprojects\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"_\n" +
-	"\x14CreateProjectRequest\x12G\n" +
-	"\aproject\x18\x01 \x01(\v2(.google.cloud.resourcemanager.v3.ProjectB\x03\xe0A\x02R\aproject\"\x86\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"`\n" +
+	"\x14CreateProjectRequest\x12H\n" +
+	"\aproject\x18\x01 \x01(\v2(.google.cloud.resourcemanager.v3.ProjectB\x04\xe2A\x01\x02R\aproject\"\x86\x01\n" +
 	"\x15CreateProjectMetadata\x12;\n" +
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12\x1a\n" +
 	"\bgettable\x18\x02 \x01(\bR\bgettable\x12\x14\n" +
-	"\x05ready\x18\x03 \x01(\bR\x05ready\"\xa1\x01\n" +
-	"\x14UpdateProjectRequest\x12G\n" +
-	"\aproject\x18\x01 \x01(\v2(.google.cloud.resourcemanager.v3.ProjectB\x03\xe0A\x02R\aproject\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
+	"\x05ready\x18\x03 \x01(\bR\x05ready\"\xa3\x01\n" +
+	"\x14UpdateProjectRequest\x12H\n" +
+	"\aproject\x18\x01 \x01(\v2(.google.cloud.resourcemanager.v3.ProjectB\x04\xe2A\x01\x02R\aproject\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
 	"updateMask\"\x17\n" +
-	"\x15UpdateProjectMetadata\"\x97\x01\n" +
-	"\x12MoveProjectRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x04name\x128\n" +
-	"\x12destination_parent\x18\x02 \x01(\tB\t\xe0A\x02\xfaA\x03\x12\x01*R\x11destinationParent\"\x15\n" +
-	"\x13MoveProjectMetadata\"_\n" +
-	"\x14DeleteProjectRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
+	"\x15UpdateProjectMetadata\"\x99\x01\n" +
+	"\x12MoveProjectRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x04name\x129\n" +
+	"\x12destination_parent\x18\x02 \x01(\tB\n" +
+	"\xe2A\x01\x02\xfaA\x03\x12\x01*R\x11destinationParent\"\x15\n" +
+	"\x13MoveProjectMetadata\"`\n" +
+	"\x14DeleteProjectRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
 	"+cloudresourcemanager.googleapis.com/ProjectR\x04name\"\x17\n" +
-	"\x15DeleteProjectMetadata\"a\n" +
-	"\x16UndeleteProjectRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
+	"\x15DeleteProjectMetadata\"b\n" +
+	"\x16UndeleteProjectRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
 	"+cloudresourcemanager.googleapis.com/ProjectR\x04name\"\x19\n" +
 	"\x17UndeleteProjectMetadata2\x8f\x10\n" +
 	"\bProjects\x12\x90\x01\n" +

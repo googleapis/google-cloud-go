@@ -284,6 +284,49 @@ func NewFileClient(ctx context.Context, opts ...option.ClientOption) (*FileClien
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "generativelanguage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ai/generativelanguage/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "generativelanguage.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateFile = append(client.CallOptions.CreateFile, gax.WithClientTracing(tracing))
+		client.CallOptions.ListFiles = append(client.CallOptions.ListFiles, gax.WithClientTracing(tracing))
+		client.CallOptions.GetFile = append(client.CallOptions.GetFile, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteFile = append(client.CallOptions.DeleteFile, gax.WithClientTracing(tracing))
+		client.CallOptions.DownloadFile = append(client.CallOptions.DownloadFile, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "generativelanguage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ai/generativelanguage/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "generativelanguage.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateFile = append(client.CallOptions.CreateFile, gax.WithClientLogging(logging))
+		client.CallOptions.ListFiles = append(client.CallOptions.ListFiles, gax.WithClientLogging(logging))
+		client.CallOptions.GetFile = append(client.CallOptions.GetFile, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteFile = append(client.CallOptions.DeleteFile, gax.WithClientLogging(logging))
+		client.CallOptions.DownloadFile = append(client.CallOptions.DownloadFile, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -382,6 +425,49 @@ func NewFileRESTClient(ctx context.Context, opts ...option.ClientOption) (*FileC
 		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "generativelanguage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ai/generativelanguage/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "generativelanguage.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateFile = append(callOpts.CreateFile, gax.WithClientTracing(tracing))
+		callOpts.ListFiles = append(callOpts.ListFiles, gax.WithClientTracing(tracing))
+		callOpts.GetFile = append(callOpts.GetFile, gax.WithClientTracing(tracing))
+		callOpts.DeleteFile = append(callOpts.DeleteFile, gax.WithClientTracing(tracing))
+		callOpts.DownloadFile = append(callOpts.DownloadFile, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "generativelanguage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ai/generativelanguage/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "generativelanguage.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateFile = append(callOpts.CreateFile, gax.WithClientLogging(logging))
+		callOpts.ListFiles = append(callOpts.ListFiles, gax.WithClientLogging(logging))
+		callOpts.GetFile = append(callOpts.GetFile, gax.WithClientLogging(logging))
+		callOpts.DeleteFile = append(callOpts.DeleteFile, gax.WithClientLogging(logging))
+		callOpts.DownloadFile = append(callOpts.DownloadFile, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
 	}
 
 	return &FileClient{internalClient: c, CallOptions: callOpts}, nil
@@ -493,9 +579,6 @@ func (c *fileGRPCClient) GetFile(ctx context.Context, req *generativelanguagepb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta.FileService/GetFile")
 	}
@@ -517,9 +600,6 @@ func (c *fileGRPCClient) DeleteFile(ctx context.Context, req *generativelanguage
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta.FileService/DeleteFile")
 	}
@@ -537,9 +617,6 @@ func (c *fileGRPCClient) DownloadFile(ctx context.Context, req *generativelangua
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta.FileService/DownloadFile")
 	}
@@ -814,9 +891,6 @@ func (c *fileRESTClient) GetFile(ctx context.Context, req *generativelanguagepb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta.FileService/GetFile")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=files/*}")
@@ -871,9 +945,6 @@ func (c *fileRESTClient) DeleteFile(ctx context.Context, req *generativelanguage
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta.FileService/DeleteFile")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=files/*}")
@@ -913,9 +984,6 @@ func (c *fileRESTClient) DownloadFile(ctx context.Context, req *generativelangua
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta.FileService/DownloadFile")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=files/*}:download")

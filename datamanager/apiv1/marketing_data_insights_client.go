@@ -208,6 +208,33 @@ func NewMarketingDataInsightsClient(ctx context.Context, opts ...option.ClientOp
 
 		client.CallOptions.RetrieveInsights = append(client.CallOptions.RetrieveInsights, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "datamanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datamanager/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "datamanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.RetrieveInsights = append(client.CallOptions.RetrieveInsights, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "datamanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datamanager/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "datamanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.RetrieveInsights = append(client.CallOptions.RetrieveInsights, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -300,6 +327,33 @@ func NewMarketingDataInsightsRESTClient(ctx context.Context, opts ...option.Clie
 		)
 
 		callOpts.RetrieveInsights = append(callOpts.RetrieveInsights, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "datamanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datamanager/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "datamanager.googleapis.com",
+			}),
+		)
+
+		callOpts.RetrieveInsights = append(callOpts.RetrieveInsights, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "datamanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datamanager/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "datamanager.googleapis.com",
+			}),
+		)
+
+		callOpts.RetrieveInsights = append(callOpts.RetrieveInsights, gax.WithClientLogging(logging))
 	}
 
 	return &MarketingDataInsightsClient{internalClient: c, CallOptions: callOpts}, nil

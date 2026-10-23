@@ -298,6 +298,41 @@ func NewCloudLocationFinderClient(ctx context.Context, opts ...option.ClientOpti
 		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudlocationfinder",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/locationfinder/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudlocationfinder.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListCloudLocations = append(client.CallOptions.ListCloudLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.GetCloudLocation = append(client.CallOptions.GetCloudLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.SearchCloudLocations = append(client.CallOptions.SearchCloudLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudlocationfinder",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/locationfinder/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudlocationfinder.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListCloudLocations = append(client.CallOptions.ListCloudLocations, gax.WithClientLogging(logging))
+		client.CallOptions.GetCloudLocation = append(client.CallOptions.GetCloudLocation, gax.WithClientLogging(logging))
+		client.CallOptions.SearchCloudLocations = append(client.CallOptions.SearchCloudLocations, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -393,6 +428,41 @@ func NewCloudLocationFinderRESTClient(ctx context.Context, opts ...option.Client
 		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
 		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudlocationfinder",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/locationfinder/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudlocationfinder.googleapis.com",
+			}),
+		)
+
+		callOpts.ListCloudLocations = append(callOpts.ListCloudLocations, gax.WithClientTracing(tracing))
+		callOpts.GetCloudLocation = append(callOpts.GetCloudLocation, gax.WithClientTracing(tracing))
+		callOpts.SearchCloudLocations = append(callOpts.SearchCloudLocations, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudlocationfinder",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/locationfinder/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudlocationfinder.googleapis.com",
+			}),
+		)
+
+		callOpts.ListCloudLocations = append(callOpts.ListCloudLocations, gax.WithClientLogging(logging))
+		callOpts.GetCloudLocation = append(callOpts.GetCloudLocation, gax.WithClientLogging(logging))
+		callOpts.SearchCloudLocations = append(callOpts.SearchCloudLocations, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+	}
 
 	return &CloudLocationFinderClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -439,9 +509,6 @@ func (c *cloudLocationFinderGRPCClient) ListCloudLocations(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudlocationfinder.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.locationfinder.v1.CloudLocationFinder/ListCloudLocations")
 	}
@@ -491,9 +558,6 @@ func (c *cloudLocationFinderGRPCClient) GetCloudLocation(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudlocationfinder.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.locationfinder.v1.CloudLocationFinder/GetCloudLocation")
 	}
@@ -515,9 +579,6 @@ func (c *cloudLocationFinderGRPCClient) SearchCloudLocations(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudlocationfinder.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.locationfinder.v1.CloudLocationFinder/SearchCloudLocations")
 	}
@@ -732,9 +793,6 @@ func (c *cloudLocationFinderRESTClient) GetCloudLocation(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudlocationfinder.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.locationfinder.v1.CloudLocationFinder/GetCloudLocation")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/cloudLocations/*}")

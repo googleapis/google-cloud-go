@@ -352,6 +352,47 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "serviceusage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/serviceusage/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "serviceusage.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.EnableService = append(client.CallOptions.EnableService, gax.WithClientTracing(tracing))
+		client.CallOptions.DisableService = append(client.CallOptions.DisableService, gax.WithClientTracing(tracing))
+		client.CallOptions.GetService = append(client.CallOptions.GetService, gax.WithClientTracing(tracing))
+		client.CallOptions.ListServices = append(client.CallOptions.ListServices, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchEnableServices = append(client.CallOptions.BatchEnableServices, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchGetServices = append(client.CallOptions.BatchGetServices, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "serviceusage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/serviceusage/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "serviceusage.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.EnableService = append(client.CallOptions.EnableService, gax.WithClientLogging(logging))
+		client.CallOptions.DisableService = append(client.CallOptions.DisableService, gax.WithClientLogging(logging))
+		client.CallOptions.GetService = append(client.CallOptions.GetService, gax.WithClientLogging(logging))
+		client.CallOptions.ListServices = append(client.CallOptions.ListServices, gax.WithClientLogging(logging))
+		client.CallOptions.BatchEnableServices = append(client.CallOptions.BatchEnableServices, gax.WithClientLogging(logging))
+		client.CallOptions.BatchGetServices = append(client.CallOptions.BatchGetServices, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -469,6 +510,47 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.BatchGetServices = append(callOpts.BatchGetServices, gax.WithClientMetrics(metrics))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "serviceusage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/serviceusage/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "serviceusage.googleapis.com",
+			}),
+		)
+
+		callOpts.EnableService = append(callOpts.EnableService, gax.WithClientTracing(tracing))
+		callOpts.DisableService = append(callOpts.DisableService, gax.WithClientTracing(tracing))
+		callOpts.GetService = append(callOpts.GetService, gax.WithClientTracing(tracing))
+		callOpts.ListServices = append(callOpts.ListServices, gax.WithClientTracing(tracing))
+		callOpts.BatchEnableServices = append(callOpts.BatchEnableServices, gax.WithClientTracing(tracing))
+		callOpts.BatchGetServices = append(callOpts.BatchGetServices, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "serviceusage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/serviceusage/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "serviceusage.googleapis.com",
+			}),
+		)
+
+		callOpts.EnableService = append(callOpts.EnableService, gax.WithClientLogging(logging))
+		callOpts.DisableService = append(callOpts.DisableService, gax.WithClientLogging(logging))
+		callOpts.GetService = append(callOpts.GetService, gax.WithClientLogging(logging))
+		callOpts.ListServices = append(callOpts.ListServices, gax.WithClientLogging(logging))
+		callOpts.BatchEnableServices = append(callOpts.BatchEnableServices, gax.WithClientLogging(logging))
+		callOpts.BatchGetServices = append(callOpts.BatchGetServices, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
 	}
 
 	lroOpts := []option.ClientOption{

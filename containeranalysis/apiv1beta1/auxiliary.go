@@ -17,9 +17,18 @@
 package containeranalysis
 
 import (
+	"iter"
+
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	grafeaspb "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *NoteIterator) All() iter.Seq2[*grafeaspb.Note, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // NoteIterator manages a stream of *grafeaspb.Note.
 type NoteIterator struct {
@@ -66,6 +75,12 @@ func (it *NoteIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OccurrenceIterator) All() iter.Seq2[*grafeaspb.Occurrence, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OccurrenceIterator manages a stream of *grafeaspb.Occurrence.

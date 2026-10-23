@@ -558,6 +558,55 @@ func NewFoldersClient(ctx context.Context, opts ...option.ClientOption) (*Folder
 		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudresourcemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/resourcemanager/apiv3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudresourcemanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetFolder = append(client.CallOptions.GetFolder, gax.WithClientTracing(tracing))
+		client.CallOptions.ListFolders = append(client.CallOptions.ListFolders, gax.WithClientTracing(tracing))
+		client.CallOptions.SearchFolders = append(client.CallOptions.SearchFolders, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateFolder = append(client.CallOptions.CreateFolder, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateFolder = append(client.CallOptions.UpdateFolder, gax.WithClientTracing(tracing))
+		client.CallOptions.MoveFolder = append(client.CallOptions.MoveFolder, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteFolder = append(client.CallOptions.DeleteFolder, gax.WithClientTracing(tracing))
+		client.CallOptions.UndeleteFolder = append(client.CallOptions.UndeleteFolder, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudresourcemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/resourcemanager/apiv3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudresourcemanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetFolder = append(client.CallOptions.GetFolder, gax.WithClientLogging(logging))
+		client.CallOptions.ListFolders = append(client.CallOptions.ListFolders, gax.WithClientLogging(logging))
+		client.CallOptions.SearchFolders = append(client.CallOptions.SearchFolders, gax.WithClientLogging(logging))
+		client.CallOptions.CreateFolder = append(client.CallOptions.CreateFolder, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateFolder = append(client.CallOptions.UpdateFolder, gax.WithClientLogging(logging))
+		client.CallOptions.MoveFolder = append(client.CallOptions.MoveFolder, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteFolder = append(client.CallOptions.DeleteFolder, gax.WithClientLogging(logging))
+		client.CallOptions.UndeleteFolder = append(client.CallOptions.UndeleteFolder, gax.WithClientLogging(logging))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -678,6 +727,55 @@ func NewFoldersRESTClient(ctx context.Context, opts ...option.ClientOption) (*Fo
 		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudresourcemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/resourcemanager/apiv3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudresourcemanager.googleapis.com",
+			}),
+		)
+
+		callOpts.GetFolder = append(callOpts.GetFolder, gax.WithClientTracing(tracing))
+		callOpts.ListFolders = append(callOpts.ListFolders, gax.WithClientTracing(tracing))
+		callOpts.SearchFolders = append(callOpts.SearchFolders, gax.WithClientTracing(tracing))
+		callOpts.CreateFolder = append(callOpts.CreateFolder, gax.WithClientTracing(tracing))
+		callOpts.UpdateFolder = append(callOpts.UpdateFolder, gax.WithClientTracing(tracing))
+		callOpts.MoveFolder = append(callOpts.MoveFolder, gax.WithClientTracing(tracing))
+		callOpts.DeleteFolder = append(callOpts.DeleteFolder, gax.WithClientTracing(tracing))
+		callOpts.UndeleteFolder = append(callOpts.UndeleteFolder, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudresourcemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/resourcemanager/apiv3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudresourcemanager.googleapis.com",
+			}),
+		)
+
+		callOpts.GetFolder = append(callOpts.GetFolder, gax.WithClientLogging(logging))
+		callOpts.ListFolders = append(callOpts.ListFolders, gax.WithClientLogging(logging))
+		callOpts.SearchFolders = append(callOpts.SearchFolders, gax.WithClientLogging(logging))
+		callOpts.CreateFolder = append(callOpts.CreateFolder, gax.WithClientLogging(logging))
+		callOpts.UpdateFolder = append(callOpts.UpdateFolder, gax.WithClientLogging(logging))
+		callOpts.MoveFolder = append(callOpts.MoveFolder, gax.WithClientLogging(logging))
+		callOpts.DeleteFolder = append(callOpts.DeleteFolder, gax.WithClientLogging(logging))
+		callOpts.UndeleteFolder = append(callOpts.UndeleteFolder, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -734,9 +832,6 @@ func (c *foldersGRPCClient) GetFolder(ctx context.Context, req *resourcemanagerp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudresourcemanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Folders/GetFolder")
 	}
@@ -901,9 +996,6 @@ func (c *foldersGRPCClient) MoveFolder(ctx context.Context, req *resourcemanager
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudresourcemanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Folders/MoveFolder")
 	}
@@ -931,9 +1023,6 @@ func (c *foldersGRPCClient) DeleteFolder(ctx context.Context, req *resourcemanag
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudresourcemanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Folders/DeleteFolder")
 	}
@@ -961,9 +1050,6 @@ func (c *foldersGRPCClient) UndeleteFolder(ctx context.Context, req *resourceman
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudresourcemanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Folders/UndeleteFolder")
 	}
@@ -991,9 +1077,6 @@ func (c *foldersGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamP
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudresourcemanager.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Folders/GetIamPolicy")
 	}
@@ -1015,9 +1098,6 @@ func (c *foldersGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamP
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudresourcemanager.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Folders/SetIamPolicy")
 	}
@@ -1039,9 +1119,6 @@ func (c *foldersGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.T
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudresourcemanager.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Folders/TestIamPermissions")
 	}
@@ -1102,9 +1179,6 @@ func (c *foldersRESTClient) GetFolder(ctx context.Context, req *resourcemanagerp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudresourcemanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Folders/GetFolder")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=folders/*}")
@@ -1539,9 +1613,6 @@ func (c *foldersRESTClient) MoveFolder(ctx context.Context, req *resourcemanager
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudresourcemanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Folders/MoveFolder")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=folders/*}:move")
@@ -1613,9 +1684,6 @@ func (c *foldersRESTClient) DeleteFolder(ctx context.Context, req *resourcemanag
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudresourcemanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Folders/DeleteFolder")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=folders/*}")
@@ -1693,9 +1761,6 @@ func (c *foldersRESTClient) UndeleteFolder(ctx context.Context, req *resourceman
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudresourcemanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Folders/UndeleteFolder")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=folders/*}:undelete")
@@ -1767,9 +1832,6 @@ func (c *foldersRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamP
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudresourcemanager.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Folders/GetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{resource=folders/*}:getIamPolicy")
@@ -1834,9 +1896,6 @@ func (c *foldersRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamP
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudresourcemanager.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Folders/SetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{resource=folders/*}:setIamPolicy")
@@ -1901,9 +1960,6 @@ func (c *foldersRESTClient) TestIamPermissions(ctx context.Context, req *iampb.T
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudresourcemanager.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Folders/TestIamPermissions")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{resource=folders/*}:testIamPermissions")

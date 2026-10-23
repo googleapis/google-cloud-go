@@ -561,6 +561,55 @@ func NewTopicAdminClient(ctx context.Context, opts ...option.ClientOption) (*Top
 		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientMetrics(metrics))
 		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "pubsub",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/pubsub/v2/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "pubsub.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateTopic = append(client.CallOptions.CreateTopic, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateTopic = append(client.CallOptions.UpdateTopic, gax.WithClientTracing(tracing))
+		client.CallOptions.Publish = append(client.CallOptions.Publish, gax.WithClientTracing(tracing))
+		client.CallOptions.GetTopic = append(client.CallOptions.GetTopic, gax.WithClientTracing(tracing))
+		client.CallOptions.ListTopics = append(client.CallOptions.ListTopics, gax.WithClientTracing(tracing))
+		client.CallOptions.ListTopicSubscriptions = append(client.CallOptions.ListTopicSubscriptions, gax.WithClientTracing(tracing))
+		client.CallOptions.ListTopicSnapshots = append(client.CallOptions.ListTopicSnapshots, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteTopic = append(client.CallOptions.DeleteTopic, gax.WithClientTracing(tracing))
+		client.CallOptions.DetachSubscription = append(client.CallOptions.DetachSubscription, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "pubsub",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/pubsub/v2/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "pubsub.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateTopic = append(client.CallOptions.CreateTopic, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateTopic = append(client.CallOptions.UpdateTopic, gax.WithClientLogging(logging))
+		client.CallOptions.Publish = append(client.CallOptions.Publish, gax.WithClientLogging(logging))
+		client.CallOptions.GetTopic = append(client.CallOptions.GetTopic, gax.WithClientLogging(logging))
+		client.CallOptions.ListTopics = append(client.CallOptions.ListTopics, gax.WithClientLogging(logging))
+		client.CallOptions.ListTopicSubscriptions = append(client.CallOptions.ListTopicSubscriptions, gax.WithClientLogging(logging))
+		client.CallOptions.ListTopicSnapshots = append(client.CallOptions.ListTopicSnapshots, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteTopic = append(client.CallOptions.DeleteTopic, gax.WithClientLogging(logging))
+		client.CallOptions.DetachSubscription = append(client.CallOptions.DetachSubscription, gax.WithClientLogging(logging))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -664,6 +713,55 @@ func NewTopicAdminRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
 		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "pubsub",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/pubsub/v2/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "pubsub.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateTopic = append(callOpts.CreateTopic, gax.WithClientTracing(tracing))
+		callOpts.UpdateTopic = append(callOpts.UpdateTopic, gax.WithClientTracing(tracing))
+		callOpts.Publish = append(callOpts.Publish, gax.WithClientTracing(tracing))
+		callOpts.GetTopic = append(callOpts.GetTopic, gax.WithClientTracing(tracing))
+		callOpts.ListTopics = append(callOpts.ListTopics, gax.WithClientTracing(tracing))
+		callOpts.ListTopicSubscriptions = append(callOpts.ListTopicSubscriptions, gax.WithClientTracing(tracing))
+		callOpts.ListTopicSnapshots = append(callOpts.ListTopicSnapshots, gax.WithClientTracing(tracing))
+		callOpts.DeleteTopic = append(callOpts.DeleteTopic, gax.WithClientTracing(tracing))
+		callOpts.DetachSubscription = append(callOpts.DetachSubscription, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "pubsub",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/pubsub/v2/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "pubsub.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateTopic = append(callOpts.CreateTopic, gax.WithClientLogging(logging))
+		callOpts.UpdateTopic = append(callOpts.UpdateTopic, gax.WithClientLogging(logging))
+		callOpts.Publish = append(callOpts.Publish, gax.WithClientLogging(logging))
+		callOpts.GetTopic = append(callOpts.GetTopic, gax.WithClientLogging(logging))
+		callOpts.ListTopics = append(callOpts.ListTopics, gax.WithClientLogging(logging))
+		callOpts.ListTopicSubscriptions = append(callOpts.ListTopicSubscriptions, gax.WithClientLogging(logging))
+		callOpts.ListTopicSnapshots = append(callOpts.ListTopicSnapshots, gax.WithClientLogging(logging))
+		callOpts.DeleteTopic = append(callOpts.DeleteTopic, gax.WithClientLogging(logging))
+		callOpts.DetachSubscription = append(callOpts.DetachSubscription, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+	}
 
 	return &TopicAdminClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -710,9 +808,6 @@ func (c *topicAdminGRPCClient) CreateTopic(ctx context.Context, req *pubsubpb.To
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//pubsub.googleapis.com/%v", req.GetKmsKeyName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.pubsub.v1.Publisher/CreateTopic")
 	}
@@ -755,9 +850,6 @@ func (c *topicAdminGRPCClient) Publish(ctx context.Context, req *pubsubpb.Publis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//pubsub.googleapis.com/%v", req.GetTopic()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.pubsub.v1.Publisher/Publish")
 	}
@@ -779,9 +871,6 @@ func (c *topicAdminGRPCClient) GetTopic(ctx context.Context, req *pubsubpb.GetTo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//pubsub.googleapis.com/%v", req.GetTopic()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.pubsub.v1.Publisher/GetTopic")
 	}
@@ -803,9 +892,6 @@ func (c *topicAdminGRPCClient) ListTopics(ctx context.Context, req *pubsubpb.Lis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//pubsub.googleapis.com/%v", req.GetProject()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.pubsub.v1.Publisher/ListTopics")
 	}
@@ -855,9 +941,6 @@ func (c *topicAdminGRPCClient) ListTopicSubscriptions(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//pubsub.googleapis.com/%v", req.GetTopic()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.pubsub.v1.Publisher/ListTopicSubscriptions")
 	}
@@ -907,9 +990,6 @@ func (c *topicAdminGRPCClient) ListTopicSnapshots(ctx context.Context, req *pubs
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//pubsub.googleapis.com/%v", req.GetTopic()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.pubsub.v1.Publisher/ListTopicSnapshots")
 	}
@@ -959,9 +1039,6 @@ func (c *topicAdminGRPCClient) DeleteTopic(ctx context.Context, req *pubsubpb.De
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//pubsub.googleapis.com/%v", req.GetTopic()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.pubsub.v1.Publisher/DeleteTopic")
 	}
@@ -979,9 +1056,6 @@ func (c *topicAdminGRPCClient) DetachSubscription(ctx context.Context, req *pubs
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//pubsub.googleapis.com/%v", req.GetSubscription()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.pubsub.v1.Publisher/DetachSubscription")
 	}
@@ -1003,9 +1077,6 @@ func (c *topicAdminGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetI
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
 	}
@@ -1027,9 +1098,6 @@ func (c *topicAdminGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetI
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
 	}
@@ -1051,9 +1119,6 @@ func (c *topicAdminGRPCClient) TestIamPermissions(ctx context.Context, req *iamp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
 	}
@@ -1096,9 +1161,6 @@ func (c *topicAdminRESTClient) CreateTopic(ctx context.Context, req *pubsubpb.To
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//pubsub.googleapis.com/%v", req.GetKmsKeyName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.pubsub.v1.Publisher/CreateTopic")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/topics/*}")
@@ -1221,9 +1283,6 @@ func (c *topicAdminRESTClient) Publish(ctx context.Context, req *pubsubpb.Publis
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//pubsub.googleapis.com/%v", req.GetTopic()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.pubsub.v1.Publisher/Publish")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{topic=projects/*/topics/*}:publish")
@@ -1278,9 +1337,6 @@ func (c *topicAdminRESTClient) GetTopic(ctx context.Context, req *pubsubpb.GetTo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//pubsub.googleapis.com/%v", req.GetTopic()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.pubsub.v1.Publisher/GetTopic")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{topic=projects/*/topics/*}")
@@ -1577,9 +1633,6 @@ func (c *topicAdminRESTClient) DeleteTopic(ctx context.Context, req *pubsubpb.De
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//pubsub.googleapis.com/%v", req.GetTopic()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.pubsub.v1.Publisher/DeleteTopic")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{topic=projects/*/topics/*}")
@@ -1622,9 +1675,6 @@ func (c *topicAdminRESTClient) DetachSubscription(ctx context.Context, req *pubs
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//pubsub.googleapis.com/%v", req.GetSubscription()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.pubsub.v1.Publisher/DetachSubscription")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{subscription=projects/*/subscriptions/*}:detach")
@@ -1683,9 +1733,6 @@ func (c *topicAdminRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetI
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/topics/*}:getIamPolicy")
@@ -1750,9 +1797,6 @@ func (c *topicAdminRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetI
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/topics/*}:setIamPolicy")
@@ -1819,9 +1863,6 @@ func (c *topicAdminRESTClient) TestIamPermissions(ctx context.Context, req *iamp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/subscriptions/*}:testIamPermissions")

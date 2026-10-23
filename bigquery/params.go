@@ -21,6 +21,7 @@ import (
 	"math/big"
 	"reflect"
 	"regexp"
+	"slices"
 	"strings"
 	"time"
 
@@ -46,7 +47,7 @@ const (
 	jsonTagOption     = "json"
 )
 
-func bqTagParser(t reflect.StructTag) (name string, keep bool, other interface{}, err error) {
+func bqTagParser(t reflect.StructTag) (name string, keep bool, other any, err error) {
 	name, keep, opts, err := fields.ParseStandardTag("bigquery", t)
 	if err != nil {
 		return "", false, nil, err
@@ -91,14 +92,14 @@ var (
 )
 
 var (
-	typeOfDate                = reflect.TypeOf(civil.Date{})
-	typeOfTime                = reflect.TypeOf(civil.Time{})
-	typeOfDateTime            = reflect.TypeOf(civil.DateTime{})
-	typeOfGoTime              = reflect.TypeOf(time.Time{})
-	typeOfRat                 = reflect.TypeOf(&big.Rat{})
-	typeOfIntervalValue       = reflect.TypeOf(&IntervalValue{})
-	typeOfRangeValue          = reflect.TypeOf(&RangeValue{})
-	typeOfQueryParameterValue = reflect.TypeOf(&QueryParameterValue{})
+	typeOfDate                = reflect.TypeFor[civil.Date]()
+	typeOfTime                = reflect.TypeFor[civil.Time]()
+	typeOfDateTime            = reflect.TypeFor[civil.DateTime]()
+	typeOfGoTime              = reflect.TypeFor[time.Time]()
+	typeOfRat                 = reflect.TypeFor[*big.Rat]()
+	typeOfIntervalValue       = reflect.TypeFor[*IntervalValue]()
+	typeOfRangeValue          = reflect.TypeFor[*RangeValue]()
+	typeOfQueryParameterValue = reflect.TypeFor[*QueryParameterValue]()
 )
 
 // A QueryParameter is a parameter to a query.
@@ -146,7 +147,7 @@ type QueryParameter struct {
 	// When valid (non-null) Null types are sent, they come back as the Go types indicated
 	// above.  Null strings will report in query statistics as a valid empty
 	// string.
-	Value interface{}
+	Value any
 }
 
 // QueryParameterValue is a go type for representing a explicit typed QueryParameter.
@@ -176,7 +177,7 @@ type QueryParameterValue struct {
 	//		},
 	//		Value: BigNumericString(*big.Rat),
 	//	}
-	Value interface{}
+	Value any
 
 	// ArrayValue is the array of values for the parameter.
 	//
@@ -397,7 +398,7 @@ func paramType(t reflect.Type, v reflect.Value) (*bq.QueryParameterType, error) 
 		}
 		return &bq.QueryParameterType{Type: "ARRAY", ArrayType: et}, nil
 
-	case reflect.Ptr:
+	case reflect.Pointer:
 		if t.Elem().Kind() != reflect.Struct {
 			break
 		}
@@ -560,7 +561,7 @@ func paramValue(v reflect.Value) (*bq.QueryParameterValue, error) {
 		}
 		return &bq.QueryParameterValue{ArrayValues: vals}, nil
 
-	case reflect.Ptr:
+	case reflect.Pointer:
 		if t.Elem().Kind() != reflect.Struct {
 			return res, fmt.Errorf("bigquery: Go type %s cannot be represented as a parameter value", t)
 		}
@@ -626,16 +627,16 @@ var paramTypeToFieldType = map[string]FieldType{
 // Convert a parameter value from the service to a Go value. This is similar to, but
 // not quite the same as, converting data values.  Namely, rather than returning nil
 // directly, we wrap them in the appropriate Null types (NullInt64, etc).
-func convertParamValue(qval *bq.QueryParameterValue, qtype *bq.QueryParameterType) (interface{}, error) {
+func convertParamValue(qval *bq.QueryParameterValue, qtype *bq.QueryParameterType) (any, error) {
 	switch qtype.Type {
 	case "ARRAY":
 		if qval == nil {
-			return []interface{}(nil), nil
+			return []any(nil), nil
 		}
 		return convertParamArray(qval.ArrayValues, qtype.ArrayType)
 	case "STRUCT":
 		if qval == nil {
-			return map[string]interface{}(nil), nil
+			return map[string]any(nil), nil
 		}
 		return convertParamStruct(qval.StructValues, qtype.StructTypes)
 	case "RANGE":
@@ -711,18 +712,13 @@ func isNullScalar(qval *bq.QueryParameterValue) bool {
 	if qval == nil {
 		return true
 	}
-	for _, v := range qval.NullFields {
-		if v == "Value" {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(qval.NullFields, "Value")
 }
 
 // convertParamArray converts a query parameter array value to a Go value. It
 // always returns a []interface{}.
-func convertParamArray(elVals []*bq.QueryParameterValue, elType *bq.QueryParameterType) ([]interface{}, error) {
-	var vals []interface{}
+func convertParamArray(elVals []*bq.QueryParameterValue, elType *bq.QueryParameterType) ([]any, error) {
+	var vals []any
 	for _, el := range elVals {
 		val, err := convertParamValue(el, elType)
 		if err != nil {
@@ -735,8 +731,8 @@ func convertParamArray(elVals []*bq.QueryParameterValue, elType *bq.QueryParamet
 
 // convertParamStruct converts a query parameter struct value into a Go value. It
 // always returns a map[string]interface{}.
-func convertParamStruct(sVals map[string]bq.QueryParameterValue, sTypes []*bq.QueryParameterTypeStructTypes) (map[string]interface{}, error) {
-	vals := map[string]interface{}{}
+func convertParamStruct(sVals map[string]bq.QueryParameterValue, sTypes []*bq.QueryParameterTypeStructTypes) (map[string]any, error) {
+	vals := map[string]any{}
 	for _, st := range sTypes {
 		if sv, ok := sVals[st.Name]; ok {
 			val, err := convertParamValue(&sv, st.Type)

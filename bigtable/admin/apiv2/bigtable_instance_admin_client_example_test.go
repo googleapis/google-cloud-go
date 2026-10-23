@@ -452,6 +452,31 @@ func ExampleBigtableInstanceAdminClient_GetMaterializedView() {
 	_ = resp
 }
 
+func ExampleBigtableInstanceAdminClient_GetMemoryLayer() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := admin.NewBigtableInstanceAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.GetMemoryLayerRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/bigtable/admin/apiv2/adminpb#GetMemoryLayerRequest.
+	}
+	resp, err := c.GetMemoryLayer(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleBigtableInstanceAdminClient_ListAppProfiles() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -647,6 +672,43 @@ func ExampleBigtableInstanceAdminClient_ListMaterializedViews() {
 		// Otherwise, remove this line. Only populated after
 		// first call to Next(). Not safe for concurrent access.
 		_ = it.Response.(*adminpb.ListMaterializedViewsResponse)
+	}
+}
+
+func ExampleBigtableInstanceAdminClient_ListMemoryLayers() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := admin.NewBigtableInstanceAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.ListMemoryLayersRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/bigtable/admin/apiv2/adminpb#ListMemoryLayersRequest.
+	}
+	it := c.ListMemoryLayers(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*adminpb.ListMemoryLayersResponse)
 	}
 }
 
@@ -893,6 +955,36 @@ func ExampleBigtableInstanceAdminClient_UpdateMaterializedView() {
 		// See https://pkg.go.dev/cloud.google.com/go/bigtable/admin/apiv2/adminpb#UpdateMaterializedViewRequest.
 	}
 	op, err := c.UpdateMaterializedView(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleBigtableInstanceAdminClient_UpdateMemoryLayer() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := admin.NewBigtableInstanceAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.UpdateMemoryLayerRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/bigtable/admin/apiv2/adminpb#UpdateMemoryLayerRequest.
+	}
+	op, err := c.UpdateMemoryLayer(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

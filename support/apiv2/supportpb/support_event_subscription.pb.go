@@ -158,6 +158,19 @@ func (SupportEventSubscription_FailureReason) EnumDescriptor() ([]byte, []int) {
 }
 
 // A support event subscription.
+//
+// You can also manage support event subscriptions using other tools:
+//
+// * [`gcloud support
+// support-event-subscriptions`](/sdk/gcloud/reference/support/support-event-subscriptions)
+// (or [`gcloud
+// beta`](/sdk/gcloud/reference/beta/support/support-event-subscriptions)
+// for beta)
+// * [Terraform
+// `google_cloud_support_support_event_subscription`](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/cloud_support_support_event_subscription)
+// (or [google-beta
+// provider](https://registry.terraform.io/providers/hashicorp/google-beta/latest/docs/resources/cloud_support_support_event_subscription)
+// for beta)
 type SupportEventSubscription struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Identifier. The resource name of the support event subscription.
@@ -272,20 +285,20 @@ var File_google_cloud_support_v2_support_event_subscription_proto protoreflect.F
 
 const file_google_cloud_support_v2_support_event_subscription_proto_rawDesc = "" +
 	"\n" +
-	"8google/cloud/support/v2/support_event_subscription.proto\x12\x17google.cloud.support.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x99\a\n" +
-	"\x18SupportEventSubscription\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12'\n" +
-	"\rpub_sub_topic\x18\x02 \x01(\tB\x03\xe0A\x02R\vpubSubTopic\x12R\n" +
-	"\x05state\x18\x03 \x01(\x0e27.google.cloud.support.v2.SupportEventSubscription.StateB\x03\xe0A\x03R\x05state\x12k\n" +
-	"\x0efailure_reason\x18\x04 \x01(\x0e2?.google.cloud.support.v2.SupportEventSubscription.FailureReasonB\x03\xe0A\x03R\rfailureReason\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12@\n" +
-	"\vdelete_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"deleteTime\x12>\n" +
+	"8google/cloud/support/v2/support_event_subscription.proto\x12\x17google.cloud.support.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa1\a\n" +
+	"\x18SupportEventSubscription\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12(\n" +
+	"\rpub_sub_topic\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vpubSubTopic\x12S\n" +
+	"\x05state\x18\x03 \x01(\x0e27.google.cloud.support.v2.SupportEventSubscription.StateB\x04\xe2A\x01\x03R\x05state\x12l\n" +
+	"\x0efailure_reason\x18\x04 \x01(\x0e2?.google.cloud.support.v2.SupportEventSubscription.FailureReasonB\x04\xe2A\x01\x03R\rfailureReason\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12A\n" +
+	"\vdelete_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"deleteTime\x12?\n" +
 	"\n" +
-	"purge_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tpurgeTime\"E\n" +
+	"purge_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tpurgeTime\"E\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aWORKING\x10\x01\x12\v\n" +

@@ -413,6 +413,45 @@ func NewEvaluationClient(ctx context.Context, opts ...option.ClientOption) (*Eva
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetEvaluation = append(client.CallOptions.GetEvaluation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListEvaluations = append(client.CallOptions.ListEvaluations, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateEvaluation = append(client.CallOptions.CreateEvaluation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListEvaluationResults = append(client.CallOptions.ListEvaluationResults, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetEvaluation = append(client.CallOptions.GetEvaluation, gax.WithClientLogging(logging))
+		client.CallOptions.ListEvaluations = append(client.CallOptions.ListEvaluations, gax.WithClientLogging(logging))
+		client.CallOptions.CreateEvaluation = append(client.CallOptions.CreateEvaluation, gax.WithClientLogging(logging))
+		client.CallOptions.ListEvaluationResults = append(client.CallOptions.ListEvaluationResults, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -527,6 +566,45 @@ func NewEvaluationRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		callOpts.GetEvaluation = append(callOpts.GetEvaluation, gax.WithClientTracing(tracing))
+		callOpts.ListEvaluations = append(callOpts.ListEvaluations, gax.WithClientTracing(tracing))
+		callOpts.CreateEvaluation = append(callOpts.CreateEvaluation, gax.WithClientTracing(tracing))
+		callOpts.ListEvaluationResults = append(callOpts.ListEvaluationResults, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		callOpts.GetEvaluation = append(callOpts.GetEvaluation, gax.WithClientLogging(logging))
+		callOpts.ListEvaluations = append(callOpts.ListEvaluations, gax.WithClientLogging(logging))
+		callOpts.CreateEvaluation = append(callOpts.CreateEvaluation, gax.WithClientLogging(logging))
+		callOpts.ListEvaluationResults = append(callOpts.ListEvaluationResults, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -583,9 +661,6 @@ func (c *evaluationGRPCClient) GetEvaluation(ctx context.Context, req *discovery
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.EvaluationService/GetEvaluation")
 	}
@@ -607,9 +682,6 @@ func (c *evaluationGRPCClient) ListEvaluations(ctx context.Context, req *discove
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.EvaluationService/ListEvaluations")
 	}
@@ -659,9 +731,6 @@ func (c *evaluationGRPCClient) CreateEvaluation(ctx context.Context, req *discov
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.EvaluationService/CreateEvaluation")
 	}
@@ -689,9 +758,6 @@ func (c *evaluationGRPCClient) ListEvaluationResults(ctx context.Context, req *d
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetEvaluation()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.EvaluationService/ListEvaluationResults")
 	}
@@ -842,9 +908,6 @@ func (c *evaluationRESTClient) GetEvaluation(ctx context.Context, req *discovery
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.EvaluationService/GetEvaluation")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/evaluations/*}")
@@ -988,9 +1051,6 @@ func (c *evaluationRESTClient) CreateEvaluation(ctx context.Context, req *discov
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.EvaluationService/CreateEvaluation")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*}/evaluations")

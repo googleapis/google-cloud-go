@@ -2424,32 +2424,32 @@ var File_google_shopping_merchant_accounts_v1_shippingsettings_proto protoreflec
 
 const file_google_shopping_merchant_accounts_v1_shippingsettings_proto_rawDesc = "" +
 	"\n" +
-	";google/shopping/merchant/accounts/v1/shippingsettings.proto\x12$google.shopping.merchant.accounts.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/shopping/type/types.proto\"\xe5\x02\n" +
-	"\x10ShippingSettings\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12N\n" +
-	"\bservices\x18\x02 \x03(\v2-.google.shopping.merchant.accounts.v1.ServiceB\x03\xe0A\x01R\bservices\x12T\n" +
+	";google/shopping/merchant/accounts/v1/shippingsettings.proto\x12$google.shopping.merchant.accounts.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/shopping/type/types.proto\"\xe9\x02\n" +
+	"\x10ShippingSettings\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12O\n" +
+	"\bservices\x18\x02 \x03(\v2-.google.shopping.merchant.accounts.v1.ServiceB\x04\xe2A\x01\x01R\bservices\x12U\n" +
 	"\n" +
-	"warehouses\x18\x03 \x03(\v2/.google.shopping.merchant.accounts.v1.WarehouseB\x03\xe0A\x01R\n" +
-	"warehouses\x12\x17\n" +
-	"\x04etag\x18\x04 \x01(\tB\x03\xe0A\x02R\x04etag:y\xeaAv\n" +
-	"+merchantapi.googleapis.com/ShippingSettings\x12#accounts/{account}/shippingSettings*\x10shippingSettings2\x10shippingSettings\"\x8e\x13\n" +
-	"\aService\x12+\n" +
-	"\fservice_name\x18\x01 \x01(\tB\x03\xe0A\x02H\x00R\vserviceName\x88\x01\x01\x12 \n" +
-	"\x06active\x18\x02 \x01(\bB\x03\xe0A\x02H\x01R\x06active\x88\x01\x01\x122\n" +
-	"\x12delivery_countries\x18\x03 \x03(\tB\x03\xe0A\x02R\x11deliveryCountries\x12-\n" +
-	"\rcurrency_code\x18\x04 \x01(\tB\x03\xe0A\x02H\x02R\fcurrencyCode\x88\x01\x01\x12a\n" +
-	"\rdelivery_time\x18\x05 \x01(\v22.google.shopping.merchant.accounts.v1.DeliveryTimeB\x03\xe0A\x02H\x03R\fdeliveryTime\x88\x01\x01\x12U\n" +
-	"\vrate_groups\x18\x06 \x03(\v2/.google.shopping.merchant.accounts.v1.RateGroupB\x03\xe0A\x01R\n" +
-	"rateGroups\x12i\n" +
-	"\rshipment_type\x18\a \x01(\x0e2:.google.shopping.merchant.accounts.v1.Service.ShipmentTypeB\x03\xe0A\x01H\x04R\fshipmentType\x88\x01\x01\x12U\n" +
-	"\x13minimum_order_value\x18\b \x01(\v2\x1b.google.shopping.type.PriceB\x03\xe0A\x01H\x05R\x11minimumOrderValue\x88\x01\x01\x12\x81\x01\n" +
-	"\x19minimum_order_value_table\x18\t \x01(\v2<.google.shopping.merchant.accounts.v1.MinimumOrderValueTableB\x03\xe0A\x01H\x06R\x16minimumOrderValueTable\x88\x01\x01\x12a\n" +
+	"warehouses\x18\x03 \x03(\v2/.google.shopping.merchant.accounts.v1.WarehouseB\x04\xe2A\x01\x01R\n" +
+	"warehouses\x12\x18\n" +
+	"\x04etag\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\x04etag:y\xeaAv\n" +
+	"+merchantapi.googleapis.com/ShippingSettings\x12#accounts/{account}/shippingSettings*\x10shippingSettings2\x10shippingSettings\"\x9a\x13\n" +
+	"\aService\x12,\n" +
+	"\fservice_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02H\x00R\vserviceName\x88\x01\x01\x12!\n" +
+	"\x06active\x18\x02 \x01(\bB\x04\xe2A\x01\x02H\x01R\x06active\x88\x01\x01\x123\n" +
+	"\x12delivery_countries\x18\x03 \x03(\tB\x04\xe2A\x01\x02R\x11deliveryCountries\x12.\n" +
+	"\rcurrency_code\x18\x04 \x01(\tB\x04\xe2A\x01\x02H\x02R\fcurrencyCode\x88\x01\x01\x12b\n" +
+	"\rdelivery_time\x18\x05 \x01(\v22.google.shopping.merchant.accounts.v1.DeliveryTimeB\x04\xe2A\x01\x02H\x03R\fdeliveryTime\x88\x01\x01\x12V\n" +
+	"\vrate_groups\x18\x06 \x03(\v2/.google.shopping.merchant.accounts.v1.RateGroupB\x04\xe2A\x01\x01R\n" +
+	"rateGroups\x12j\n" +
+	"\rshipment_type\x18\a \x01(\x0e2:.google.shopping.merchant.accounts.v1.Service.ShipmentTypeB\x04\xe2A\x01\x01H\x04R\fshipmentType\x88\x01\x01\x12V\n" +
+	"\x13minimum_order_value\x18\b \x01(\v2\x1b.google.shopping.type.PriceB\x04\xe2A\x01\x01H\x05R\x11minimumOrderValue\x88\x01\x01\x12\x82\x01\n" +
+	"\x19minimum_order_value_table\x18\t \x01(\v2<.google.shopping.merchant.accounts.v1.MinimumOrderValueTableB\x04\xe2A\x01\x01H\x06R\x16minimumOrderValueTable\x88\x01\x01\x12a\n" +
 	"\fstore_config\x18\n" +
-	" \x01(\v29.google.shopping.merchant.accounts.v1.Service.StoreConfigH\aR\vstoreConfig\x88\x01\x01\x12l\n" +
-	"\x10loyalty_programs\x18\v \x03(\v2<.google.shopping.merchant.accounts.v1.Service.LoyaltyProgramB\x03\xe0A\x01R\x0floyaltyPrograms\x1a\xda\a\n" +
+	" \x01(\v29.google.shopping.merchant.accounts.v1.Service.StoreConfigH\aR\vstoreConfig\x88\x01\x01\x12m\n" +
+	"\x10loyalty_programs\x18\v \x03(\v2<.google.shopping.merchant.accounts.v1.Service.LoyaltyProgramB\x04\xe2A\x01\x01R\x0floyaltyPrograms\x1a\xdb\a\n" +
 	"\vStoreConfig\x12}\n" +
-	"\x12store_service_type\x18\x01 \x01(\x0e2J.google.shopping.merchant.accounts.v1.Service.StoreConfig.StoreServiceTypeH\x00R\x10storeServiceType\x88\x01\x01\x12$\n" +
-	"\vstore_codes\x18\x02 \x03(\tB\x03\xe0A\x01R\n" +
+	"\x12store_service_type\x18\x01 \x01(\x0e2J.google.shopping.merchant.accounts.v1.Service.StoreConfig.StoreServiceTypeH\x00R\x10storeServiceType\x88\x01\x01\x12%\n" +
+	"\vstore_codes\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\n" +
 	"storeCodes\x12p\n" +
 	"\rcutoff_config\x18\x03 \x01(\v2F.google.shopping.merchant.accounts.v1.Service.StoreConfig.CutoffConfigH\x01R\fcutoffConfig\x88\x01\x01\x12Z\n" +
 	"\x0eservice_radius\x18\x04 \x01(\v2..google.shopping.merchant.accounts.v1.DistanceH\x02R\rserviceRadius\x88\x01\x01\x1a\xbe\x03\n" +
@@ -2472,10 +2472,10 @@ const file_google_shopping_merchant_accounts_v1_shippingsettings_proto_rawDesc =
 	"\x0fSELECTED_STORES\x10\x02B\x15\n" +
 	"\x13_store_service_typeB\x10\n" +
 	"\x0e_cutoff_configB\x11\n" +
-	"\x0f_service_radius\x1a\xa2\x02\n" +
+	"\x0f_service_radius\x1a\xa3\x02\n" +
 	"\x0eLoyaltyProgram\x12(\n" +
-	"\rprogram_label\x18\x01 \x01(\tH\x00R\fprogramLabel\x88\x01\x01\x12\x89\x01\n" +
-	"\x15loyalty_program_tiers\x18\x02 \x03(\v2P.google.shopping.merchant.accounts.v1.Service.LoyaltyProgram.LoyaltyProgramTiersB\x03\xe0A\x01R\x13loyaltyProgramTiers\x1aH\n" +
+	"\rprogram_label\x18\x01 \x01(\tH\x00R\fprogramLabel\x88\x01\x01\x12\x8a\x01\n" +
+	"\x15loyalty_program_tiers\x18\x02 \x03(\v2P.google.shopping.merchant.accounts.v1.Service.LoyaltyProgram.LoyaltyProgramTiersB\x04\xe2A\x01\x01R\x13loyaltyProgramTiers\x1aH\n" +
 	"\x13LoyaltyProgramTiers\x12\"\n" +
 	"\n" +
 	"tier_label\x18\x01 \x01(\tH\x00R\ttierLabel\x88\x01\x01B\r\n" +
@@ -2503,37 +2503,37 @@ const file_google_shopping_merchant_accounts_v1_shippingsettings_proto_rawDesc =
 	"\n" +
 	"KILOMETERS\x10\x02B\b\n" +
 	"\x06_valueB\a\n" +
-	"\x05_unit\"\xe8\x03\n" +
-	"\tWarehouse\x12\x1c\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02H\x00R\x04name\x88\x01\x01\x12b\n" +
-	"\x10shipping_address\x18\x02 \x01(\v2-.google.shopping.merchant.accounts.v1.AddressB\x03\xe0A\x02H\x01R\x0fshippingAddress\x88\x01\x01\x12d\n" +
-	"\vcutoff_time\x18\x03 \x01(\v29.google.shopping.merchant.accounts.v1.WarehouseCutoffTimeB\x03\xe0A\x02H\x02R\n" +
-	"cutoffTime\x88\x01\x01\x12-\n" +
-	"\rhandling_days\x18\x04 \x01(\x03B\x03\xe0A\x02H\x03R\fhandlingDays\x88\x01\x01\x12l\n" +
+	"\x05_unit\"\xec\x03\n" +
+	"\tWarehouse\x12\x1d\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02H\x00R\x04name\x88\x01\x01\x12c\n" +
+	"\x10shipping_address\x18\x02 \x01(\v2-.google.shopping.merchant.accounts.v1.AddressB\x04\xe2A\x01\x02H\x01R\x0fshippingAddress\x88\x01\x01\x12e\n" +
+	"\vcutoff_time\x18\x03 \x01(\v29.google.shopping.merchant.accounts.v1.WarehouseCutoffTimeB\x04\xe2A\x01\x02H\x02R\n" +
+	"cutoffTime\x88\x01\x01\x12.\n" +
+	"\rhandling_days\x18\x04 \x01(\x03B\x04\xe2A\x01\x02H\x03R\fhandlingDays\x88\x01\x01\x12l\n" +
 	"\x13business_day_config\x18\x05 \x01(\v27.google.shopping.merchant.accounts.v1.BusinessDayConfigH\x04R\x11businessDayConfig\x88\x01\x01B\a\n" +
 	"\x05_nameB\x13\n" +
 	"\x11_shipping_addressB\x0e\n" +
 	"\f_cutoff_timeB\x10\n" +
 	"\x0e_handling_daysB\x16\n" +
-	"\x14_business_day_config\"i\n" +
-	"\x13WarehouseCutoffTime\x12\x1c\n" +
-	"\x04hour\x18\x01 \x01(\x05B\x03\xe0A\x02H\x00R\x04hour\x88\x01\x01\x12 \n" +
-	"\x06minute\x18\x02 \x01(\x05B\x03\xe0A\x02H\x01R\x06minute\x88\x01\x01B\a\n" +
+	"\x14_business_day_config\"k\n" +
+	"\x13WarehouseCutoffTime\x12\x1d\n" +
+	"\x04hour\x18\x01 \x01(\x05B\x04\xe2A\x01\x02H\x00R\x04hour\x88\x01\x01\x12!\n" +
+	"\x06minute\x18\x02 \x01(\x05B\x04\xe2A\x01\x02H\x01R\x06minute\x88\x01\x01B\a\n" +
 	"\x05_hourB\t\n" +
-	"\a_minute\"\xb8\x02\n" +
+	"\a_minute\"\xbc\x02\n" +
 	"\aAddress\x12*\n" +
-	"\x0estreet_address\x18\x01 \x01(\tH\x00R\rstreetAddress\x88\x01\x01\x12\x1c\n" +
-	"\x04city\x18\x02 \x01(\tB\x03\xe0A\x02H\x01R\x04city\x88\x01\x01\x129\n" +
-	"\x13administrative_area\x18\x03 \x01(\tB\x03\xe0A\x02H\x02R\x12administrativeArea\x88\x01\x01\x12)\n" +
-	"\vpostal_code\x18\x04 \x01(\tB\x03\xe0A\x02H\x03R\n" +
-	"postalCode\x88\x01\x01\x12)\n" +
-	"\vregion_code\x18\x05 \x01(\tB\x03\xe0A\x02H\x04R\n" +
+	"\x0estreet_address\x18\x01 \x01(\tH\x00R\rstreetAddress\x88\x01\x01\x12\x1d\n" +
+	"\x04city\x18\x02 \x01(\tB\x04\xe2A\x01\x02H\x01R\x04city\x88\x01\x01\x12:\n" +
+	"\x13administrative_area\x18\x03 \x01(\tB\x04\xe2A\x01\x02H\x02R\x12administrativeArea\x88\x01\x01\x12*\n" +
+	"\vpostal_code\x18\x04 \x01(\tB\x04\xe2A\x01\x02H\x03R\n" +
+	"postalCode\x88\x01\x01\x12*\n" +
+	"\vregion_code\x18\x05 \x01(\tB\x04\xe2A\x01\x02H\x04R\n" +
 	"regionCode\x88\x01\x01B\x11\n" +
 	"\x0f_street_addressB\a\n" +
 	"\x05_cityB\x16\n" +
 	"\x14_administrative_areaB\x0e\n" +
 	"\f_postal_codeB\x0e\n" +
-	"\f_region_code\"\xd4\a\n" +
+	"\f_region_code\"\xd5\a\n" +
 	"\fDeliveryTime\x12-\n" +
 	"\x10min_transit_days\x18\x01 \x01(\x05H\x00R\x0eminTransitDays\x88\x01\x01\x12-\n" +
 	"\x10max_transit_days\x18\x02 \x01(\x05H\x01R\x0emaxTransitDays\x88\x01\x01\x12V\n" +
@@ -2543,8 +2543,8 @@ const file_google_shopping_merchant_accounts_v1_shippingsettings_proto_rawDesc =
 	"\x11max_handling_days\x18\x05 \x01(\x05H\x04R\x0fmaxHandlingDays\x88\x01\x01\x12e\n" +
 	"\x12transit_time_table\x18\x06 \x01(\v22.google.shopping.merchant.accounts.v1.TransitTableH\x05R\x10transitTimeTable\x88\x01\x01\x12}\n" +
 	"\x1chandling_business_day_config\x18\a \x01(\v27.google.shopping.merchant.accounts.v1.BusinessDayConfigH\x06R\x19handlingBusinessDayConfig\x88\x01\x01\x12{\n" +
-	"\x1btransit_business_day_config\x18\b \x01(\v27.google.shopping.merchant.accounts.v1.BusinessDayConfigH\aR\x18transitBusinessDayConfig\x88\x01\x01\x12\x8a\x01\n" +
-	"\x1ewarehouse_based_delivery_times\x18\t \x03(\v2@.google.shopping.merchant.accounts.v1.WarehouseBasedDeliveryTimeB\x03\xe0A\x01R\x1bwarehouseBasedDeliveryTimesB\x13\n" +
+	"\x1btransit_business_day_config\x18\b \x01(\v27.google.shopping.merchant.accounts.v1.BusinessDayConfigH\aR\x18transitBusinessDayConfig\x88\x01\x01\x12\x8b\x01\n" +
+	"\x1ewarehouse_based_delivery_times\x18\t \x03(\v2@.google.shopping.merchant.accounts.v1.WarehouseBasedDeliveryTimeB\x04\xe2A\x01\x01R\x1bwarehouseBasedDeliveryTimesB\x13\n" +
 	"\x11_min_transit_daysB\x13\n" +
 	"\x11_max_transit_daysB\x0e\n" +
 	"\f_cutoff_timeB\x14\n" +
@@ -2552,18 +2552,18 @@ const file_google_shopping_merchant_accounts_v1_shippingsettings_proto_rawDesc =
 	"\x12_max_handling_daysB\x15\n" +
 	"\x13_transit_time_tableB\x1f\n" +
 	"\x1d_handling_business_day_configB\x1e\n" +
-	"\x1c_transit_business_day_config\"\x95\x01\n" +
+	"\x1c_transit_business_day_config\"\x98\x01\n" +
 	"\n" +
-	"CutoffTime\x12\x1c\n" +
-	"\x04hour\x18\x01 \x01(\x05B\x03\xe0A\x02H\x00R\x04hour\x88\x01\x01\x12 \n" +
-	"\x06minute\x18\x02 \x01(\x05B\x03\xe0A\x02H\x01R\x06minute\x88\x01\x01\x12%\n" +
-	"\ttime_zone\x18\x03 \x01(\tB\x03\xe0A\x02H\x02R\btimeZone\x88\x01\x01B\a\n" +
+	"CutoffTime\x12\x1d\n" +
+	"\x04hour\x18\x01 \x01(\x05B\x04\xe2A\x01\x02H\x00R\x04hour\x88\x01\x01\x12!\n" +
+	"\x06minute\x18\x02 \x01(\x05B\x04\xe2A\x01\x02H\x01R\x06minute\x88\x01\x01\x12&\n" +
+	"\ttime_zone\x18\x03 \x01(\tB\x04\xe2A\x01\x02H\x02R\btimeZone\x88\x01\x01B\a\n" +
 	"\x05_hourB\t\n" +
 	"\a_minuteB\f\n" +
 	"\n" +
-	"_time_zone\"\xfe\x01\n" +
-	"\x11BusinessDayConfig\x12i\n" +
-	"\rbusiness_days\x18\x01 \x03(\x0e2?.google.shopping.merchant.accounts.v1.BusinessDayConfig.WeekdayB\x03\xe0A\x02R\fbusinessDays\"~\n" +
+	"_time_zone\"\xff\x01\n" +
+	"\x11BusinessDayConfig\x12j\n" +
+	"\rbusiness_days\x18\x01 \x03(\x0e2?.google.shopping.merchant.accounts.v1.BusinessDayConfig.WeekdayB\x04\xe2A\x01\x02R\fbusinessDays\"~\n" +
 	"\aWeekday\x12\x17\n" +
 	"\x13WEEKDAY_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
@@ -2575,64 +2575,64 @@ const file_google_shopping_merchant_accounts_v1_shippingsettings_proto_rawDesc =
 	"\x06FRIDAY\x10\x05\x12\f\n" +
 	"\bSATURDAY\x10\x06\x12\n" +
 	"\n" +
-	"\x06SUNDAY\x10\a\"\xc9\x01\n" +
-	"\x1aWarehouseBasedDeliveryTime\x12\"\n" +
-	"\acarrier\x18\x01 \x01(\tB\x03\xe0A\x02H\x00R\acarrier\x88\x01\x01\x121\n" +
-	"\x0fcarrier_service\x18\x02 \x01(\tB\x03\xe0A\x02H\x01R\x0ecarrierService\x88\x01\x01\x12&\n" +
-	"\twarehouse\x18\x03 \x01(\tB\x03\xe0A\x02H\x02R\twarehouse\x88\x01\x01B\n" +
+	"\x06SUNDAY\x10\a\"\xcc\x01\n" +
+	"\x1aWarehouseBasedDeliveryTime\x12#\n" +
+	"\acarrier\x18\x01 \x01(\tB\x04\xe2A\x01\x02H\x00R\acarrier\x88\x01\x01\x122\n" +
+	"\x0fcarrier_service\x18\x02 \x01(\tB\x04\xe2A\x01\x02H\x01R\x0ecarrierService\x88\x01\x01\x12'\n" +
+	"\twarehouse\x18\x03 \x01(\tB\x04\xe2A\x01\x02H\x02R\twarehouse\x88\x01\x01B\n" +
 	"\n" +
 	"\b_carrierB\x12\n" +
 	"\x10_carrier_serviceB\f\n" +
 	"\n" +
-	"_warehouse\"\xe8\x03\n" +
-	"\tRateGroup\x12A\n" +
-	"\x1aapplicable_shipping_labels\x18\x01 \x03(\tB\x03\xe0A\x02R\x18applicableShippingLabels\x12S\n" +
+	"_warehouse\"\xec\x03\n" +
+	"\tRateGroup\x12B\n" +
+	"\x1aapplicable_shipping_labels\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\x18applicableShippingLabels\x12S\n" +
 	"\fsingle_value\x18\x02 \x01(\v2+.google.shopping.merchant.accounts.v1.ValueH\x00R\vsingleValue\x88\x01\x01\x12O\n" +
 	"\n" +
-	"main_table\x18\x03 \x01(\v2+.google.shopping.merchant.accounts.v1.TableH\x01R\tmainTable\x88\x01\x01\x12N\n" +
-	"\tsubtables\x18\x04 \x03(\v2+.google.shopping.merchant.accounts.v1.TableB\x03\xe0A\x01R\tsubtables\x12[\n" +
-	"\rcarrier_rates\x18\x05 \x03(\v21.google.shopping.merchant.accounts.v1.CarrierRateB\x03\xe0A\x01R\fcarrierRates\x12\x1c\n" +
-	"\x04name\x18\x06 \x01(\tB\x03\xe0A\x01H\x02R\x04name\x88\x01\x01B\x0f\n" +
+	"main_table\x18\x03 \x01(\v2+.google.shopping.merchant.accounts.v1.TableH\x01R\tmainTable\x88\x01\x01\x12O\n" +
+	"\tsubtables\x18\x04 \x03(\v2+.google.shopping.merchant.accounts.v1.TableB\x04\xe2A\x01\x01R\tsubtables\x12\\\n" +
+	"\rcarrier_rates\x18\x05 \x03(\v21.google.shopping.merchant.accounts.v1.CarrierRateB\x04\xe2A\x01\x01R\fcarrierRates\x12\x1d\n" +
+	"\x04name\x18\x06 \x01(\tB\x04\xe2A\x01\x01H\x02R\x04name\x88\x01\x01B\x0f\n" +
 	"\r_single_valueB\r\n" +
 	"\v_main_tableB\a\n" +
-	"\x05_name\"\xc5\x02\n" +
+	"\x05_name\"\xc7\x02\n" +
 	"\x05Table\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tH\x00R\x04name\x88\x01\x01\x12X\n" +
-	"\vrow_headers\x18\x02 \x01(\v2-.google.shopping.merchant.accounts.v1.HeadersB\x03\xe0A\x02H\x01R\n" +
+	"\x04name\x18\x01 \x01(\tH\x00R\x04name\x88\x01\x01\x12Y\n" +
+	"\vrow_headers\x18\x02 \x01(\v2-.google.shopping.merchant.accounts.v1.HeadersB\x04\xe2A\x01\x02H\x01R\n" +
 	"rowHeaders\x88\x01\x01\x12Y\n" +
-	"\x0ecolumn_headers\x18\x03 \x01(\v2-.google.shopping.merchant.accounts.v1.HeadersH\x02R\rcolumnHeaders\x88\x01\x01\x12B\n" +
-	"\x04rows\x18\x04 \x03(\v2).google.shopping.merchant.accounts.v1.RowB\x03\xe0A\x02R\x04rowsB\a\n" +
+	"\x0ecolumn_headers\x18\x03 \x01(\v2-.google.shopping.merchant.accounts.v1.HeadersH\x02R\rcolumnHeaders\x88\x01\x01\x12C\n" +
+	"\x04rows\x18\x04 \x03(\v2).google.shopping.merchant.accounts.v1.RowB\x04\xe2A\x01\x02R\x04rowsB\a\n" +
 	"\x05_nameB\x0e\n" +
 	"\f_row_headersB\x11\n" +
-	"\x0f_column_headers\"\xfc\x03\n" +
-	"\fTransitTable\x12:\n" +
-	"\x17postal_code_group_names\x18\x01 \x03(\tB\x03\xe0A\x02R\x14postalCodeGroupNames\x123\n" +
-	"\x13transit_time_labels\x18\x02 \x03(\tB\x03\xe0A\x02R\x11transitTimeLabels\x12Z\n" +
-	"\x04rows\x18\x03 \x03(\v2A.google.shopping.merchant.accounts.v1.TransitTable.TransitTimeRowB\x03\xe0A\x02R\x04rows\x1a\x9e\x02\n" +
-	"\x0eTransitTimeRow\x12o\n" +
-	"\x06values\x18\x01 \x03(\v2R.google.shopping.merchant.accounts.v1.TransitTable.TransitTimeRow.TransitTimeValueB\x03\xe0A\x02R\x06values\x1a\x9a\x01\n" +
+	"\x0f_column_headers\"\x80\x04\n" +
+	"\fTransitTable\x12;\n" +
+	"\x17postal_code_group_names\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\x14postalCodeGroupNames\x124\n" +
+	"\x13transit_time_labels\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\x11transitTimeLabels\x12[\n" +
+	"\x04rows\x18\x03 \x03(\v2A.google.shopping.merchant.accounts.v1.TransitTable.TransitTimeRowB\x04\xe2A\x01\x02R\x04rows\x1a\x9f\x02\n" +
+	"\x0eTransitTimeRow\x12p\n" +
+	"\x06values\x18\x01 \x03(\v2R.google.shopping.merchant.accounts.v1.TransitTable.TransitTimeRow.TransitTimeValueB\x04\xe2A\x01\x02R\x06values\x1a\x9a\x01\n" +
 	"\x10TransitTimeValue\x12-\n" +
 	"\x10min_transit_days\x18\x01 \x01(\x05H\x00R\x0eminTransitDays\x88\x01\x01\x12-\n" +
 	"\x10max_transit_days\x18\x02 \x01(\x05H\x01R\x0emaxTransitDays\x88\x01\x01B\x13\n" +
 	"\x11_min_transit_daysB\x13\n" +
-	"\x11_max_transit_days\"\xa7\x02\n" +
-	"\x16MinimumOrderValueTable\x12\x8d\x01\n" +
-	"\x18store_code_set_with_movs\x18\x01 \x03(\v2P.google.shopping.merchant.accounts.v1.MinimumOrderValueTable.StoreCodeSetWithMovB\x03\xe0A\x02R\x14storeCodeSetWithMovs\x1a}\n" +
-	"\x13StoreCodeSetWithMov\x12$\n" +
-	"\vstore_codes\x18\x01 \x03(\tB\x03\xe0A\x01R\n" +
+	"\x11_max_transit_days\"\xa9\x02\n" +
+	"\x16MinimumOrderValueTable\x12\x8e\x01\n" +
+	"\x18store_code_set_with_movs\x18\x01 \x03(\v2P.google.shopping.merchant.accounts.v1.MinimumOrderValueTable.StoreCodeSetWithMovB\x04\xe2A\x01\x02R\x14storeCodeSetWithMovs\x1a~\n" +
+	"\x13StoreCodeSetWithMov\x12%\n" +
+	"\vstore_codes\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\n" +
 	"storeCodes\x126\n" +
 	"\x05value\x18\x02 \x01(\v2\x1b.google.shopping.type.PriceH\x00R\x05value\x88\x01\x01B\b\n" +
-	"\x06_value\"\xc1\x02\n" +
-	"\aHeaders\x128\n" +
-	"\x06prices\x18\x01 \x03(\v2\x1b.google.shopping.type.PriceB\x03\xe0A\x02R\x06prices\x12;\n" +
-	"\aweights\x18\x02 \x03(\v2\x1c.google.shopping.type.WeightB\x03\xe0A\x02R\aweights\x12+\n" +
-	"\x0fnumber_of_items\x18\x03 \x03(\tB\x03\xe0A\x02R\rnumberOfItems\x12:\n" +
-	"\x17postal_code_group_names\x18\x04 \x03(\tB\x03\xe0A\x02R\x14postalCodeGroupNames\x12V\n" +
-	"\tlocations\x18\x05 \x03(\v23.google.shopping.merchant.accounts.v1.LocationIdSetB\x03\xe0A\x02R\tlocations\"7\n" +
-	"\rLocationIdSet\x12&\n" +
-	"\flocation_ids\x18\x01 \x03(\tB\x03\xe0A\x02R\vlocationIds\"M\n" +
-	"\x03Row\x12F\n" +
-	"\x05cells\x18\x01 \x03(\v2+.google.shopping.merchant.accounts.v1.ValueB\x03\xe0A\x02R\x05cells\"\xb6\x02\n" +
+	"\x06_value\"\xc6\x02\n" +
+	"\aHeaders\x129\n" +
+	"\x06prices\x18\x01 \x03(\v2\x1b.google.shopping.type.PriceB\x04\xe2A\x01\x02R\x06prices\x12<\n" +
+	"\aweights\x18\x02 \x03(\v2\x1c.google.shopping.type.WeightB\x04\xe2A\x01\x02R\aweights\x12,\n" +
+	"\x0fnumber_of_items\x18\x03 \x03(\tB\x04\xe2A\x01\x02R\rnumberOfItems\x12;\n" +
+	"\x17postal_code_group_names\x18\x04 \x03(\tB\x04\xe2A\x01\x02R\x14postalCodeGroupNames\x12W\n" +
+	"\tlocations\x18\x05 \x03(\v23.google.shopping.merchant.accounts.v1.LocationIdSetB\x04\xe2A\x01\x02R\tlocations\"8\n" +
+	"\rLocationIdSet\x12'\n" +
+	"\flocation_ids\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\vlocationIds\"N\n" +
+	"\x03Row\x12G\n" +
+	"\x05cells\x18\x01 \x03(\v2+.google.shopping.merchant.accounts.v1.ValueB\x04\xe2A\x01\x02R\x05cells\"\xb6\x02\n" +
 	"\x05Value\x12$\n" +
 	"\vno_shipping\x18\x01 \x01(\bH\x00R\n" +
 	"noShipping\x88\x01\x01\x12=\n" +
@@ -2645,28 +2645,28 @@ const file_google_shopping_merchant_accounts_v1_shippingsettings_proto_rawDesc =
 	"_flat_rateB\x13\n" +
 	"\x11_price_percentageB\x0f\n" +
 	"\r_carrier_rateB\v\n" +
-	"\t_subtable\"\xb7\x03\n" +
-	"\vCarrierRate\x12\x1c\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02H\x00R\x04name\x88\x01\x01\x12\"\n" +
-	"\acarrier\x18\x02 \x01(\tB\x03\xe0A\x02H\x01R\acarrier\x88\x01\x01\x121\n" +
-	"\x0fcarrier_service\x18\x03 \x01(\tB\x03\xe0A\x02H\x02R\x0ecarrierService\x88\x01\x01\x126\n" +
-	"\x12origin_postal_code\x18\x04 \x01(\tB\x03\xe0A\x02H\x03R\x10originPostalCode\x88\x01\x01\x12=\n" +
-	"\x15percentage_adjustment\x18\x05 \x01(\tB\x03\xe0A\x01H\x04R\x14percentageAdjustment\x88\x01\x01\x12N\n" +
-	"\x0fflat_adjustment\x18\x06 \x01(\v2\x1b.google.shopping.type.PriceB\x03\xe0A\x01H\x05R\x0eflatAdjustment\x88\x01\x01B\a\n" +
+	"\t_subtable\"\xbd\x03\n" +
+	"\vCarrierRate\x12\x1d\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02H\x00R\x04name\x88\x01\x01\x12#\n" +
+	"\acarrier\x18\x02 \x01(\tB\x04\xe2A\x01\x02H\x01R\acarrier\x88\x01\x01\x122\n" +
+	"\x0fcarrier_service\x18\x03 \x01(\tB\x04\xe2A\x01\x02H\x02R\x0ecarrierService\x88\x01\x01\x127\n" +
+	"\x12origin_postal_code\x18\x04 \x01(\tB\x04\xe2A\x01\x02H\x03R\x10originPostalCode\x88\x01\x01\x12>\n" +
+	"\x15percentage_adjustment\x18\x05 \x01(\tB\x04\xe2A\x01\x01H\x04R\x14percentageAdjustment\x88\x01\x01\x12O\n" +
+	"\x0fflat_adjustment\x18\x06 \x01(\v2\x1b.google.shopping.type.PriceB\x04\xe2A\x01\x01H\x05R\x0eflatAdjustment\x88\x01\x01B\a\n" +
 	"\x05_nameB\n" +
 	"\n" +
 	"\b_carrierB\x12\n" +
 	"\x10_carrier_serviceB\x15\n" +
 	"\x13_origin_postal_codeB\x18\n" +
 	"\x16_percentage_adjustmentB\x12\n" +
-	"\x10_flat_adjustment\"e\n" +
-	"\x1aGetShippingSettingsRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+merchantapi.googleapis.com/ShippingSettingsR\x04name\"\xcb\x01\n" +
-	"\x1dInsertShippingSettingsRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"merchantapi.googleapis.com/AccountR\x06parent\x12f\n" +
-	"\x10shipping_setting\x18\x02 \x01(\v26.google.shopping.merchant.accounts.v1.ShippingSettingsB\x03\xe0A\x02R\x0fshippingSetting2\xa0\x04\n" +
+	"\x10_flat_adjustment\"f\n" +
+	"\x1aGetShippingSettingsRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+merchantapi.googleapis.com/ShippingSettingsR\x04name\"\xcd\x01\n" +
+	"\x1dInsertShippingSettingsRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"merchantapi.googleapis.com/AccountR\x06parent\x12g\n" +
+	"\x10shipping_setting\x18\x02 \x01(\v26.google.shopping.merchant.accounts.v1.ShippingSettingsB\x04\xe2A\x01\x02R\x0fshippingSetting2\xa0\x04\n" +
 	"\x17ShippingSettingsService\x12\xcf\x01\n" +
 	"\x13GetShippingSettings\x12@.google.shopping.merchant.accounts.v1.GetShippingSettingsRequest\x1a6.google.shopping.merchant.accounts.v1.ShippingSettings\">\xdaA\x04name\x82\xd3\xe4\x93\x021\x12//accounts/v1/{name=accounts/*/shippingSettings}\x12\xe9\x01\n" +
 	"\x16InsertShippingSettings\x12C.google.shopping.merchant.accounts.v1.InsertShippingSettingsRequest\x1a6.google.shopping.merchant.accounts.v1.ShippingSettings\"R\x82\xd3\xe4\x93\x02L:\x10shipping_setting\"8/accounts/v1/{parent=accounts/*}/shippingSettings:insert\x1aG\xcaA\x1amerchantapi.googleapis.com\xd2A'https://www.googleapis.com/auth/contentB\x88\x02\n" +

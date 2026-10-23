@@ -420,6 +420,41 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.OptimizeToursUri = append(client.CallOptions.OptimizeToursUri, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "routeoptimization",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/routeoptimization/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "routeoptimization.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.OptimizeTours = append(client.CallOptions.OptimizeTours, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchOptimizeTours = append(client.CallOptions.BatchOptimizeTours, gax.WithClientTracing(tracing))
+		client.CallOptions.OptimizeToursLongRunning = append(client.CallOptions.OptimizeToursLongRunning, gax.WithClientTracing(tracing))
+		client.CallOptions.OptimizeToursUri = append(client.CallOptions.OptimizeToursUri, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "routeoptimization",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/routeoptimization/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "routeoptimization.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.OptimizeTours = append(client.CallOptions.OptimizeTours, gax.WithClientLogging(logging))
+		client.CallOptions.BatchOptimizeTours = append(client.CallOptions.BatchOptimizeTours, gax.WithClientLogging(logging))
+		client.CallOptions.OptimizeToursLongRunning = append(client.CallOptions.OptimizeToursLongRunning, gax.WithClientLogging(logging))
+		client.CallOptions.OptimizeToursUri = append(client.CallOptions.OptimizeToursUri, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -556,6 +591,41 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.OptimizeToursLongRunning = append(callOpts.OptimizeToursLongRunning, gax.WithClientMetrics(metrics))
 		callOpts.OptimizeToursUri = append(callOpts.OptimizeToursUri, gax.WithClientMetrics(metrics))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "routeoptimization",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/routeoptimization/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "routeoptimization.googleapis.com",
+			}),
+		)
+
+		callOpts.OptimizeTours = append(callOpts.OptimizeTours, gax.WithClientTracing(tracing))
+		callOpts.BatchOptimizeTours = append(callOpts.BatchOptimizeTours, gax.WithClientTracing(tracing))
+		callOpts.OptimizeToursLongRunning = append(callOpts.OptimizeToursLongRunning, gax.WithClientTracing(tracing))
+		callOpts.OptimizeToursUri = append(callOpts.OptimizeToursUri, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "routeoptimization",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/routeoptimization/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "routeoptimization.googleapis.com",
+			}),
+		)
+
+		callOpts.OptimizeTours = append(callOpts.OptimizeTours, gax.WithClientLogging(logging))
+		callOpts.BatchOptimizeTours = append(callOpts.BatchOptimizeTours, gax.WithClientLogging(logging))
+		callOpts.OptimizeToursLongRunning = append(callOpts.OptimizeToursLongRunning, gax.WithClientLogging(logging))
+		callOpts.OptimizeToursUri = append(callOpts.OptimizeToursUri, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
 	}
 
 	lroOpts := []option.ClientOption{

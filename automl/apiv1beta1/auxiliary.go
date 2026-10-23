@@ -18,11 +18,13 @@ package automl
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	automlpb "cloud.google.com/go/automl/apiv1beta1/automlpb"
 	"cloud.google.com/go/longrunning"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -578,6 +580,12 @@ func (op *UndeployModelOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ColumnSpecIterator) All() iter.Seq2[*automlpb.ColumnSpec, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ColumnSpecIterator manages a stream of *automlpb.ColumnSpec.
 type ColumnSpecIterator struct {
 	items    []*automlpb.ColumnSpec
@@ -623,6 +631,12 @@ func (it *ColumnSpecIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DatasetIterator) All() iter.Seq2[*automlpb.Dataset, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DatasetIterator manages a stream of *automlpb.Dataset.
@@ -672,6 +686,12 @@ func (it *DatasetIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ModelEvaluationIterator) All() iter.Seq2[*automlpb.ModelEvaluation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ModelEvaluationIterator manages a stream of *automlpb.ModelEvaluation.
 type ModelEvaluationIterator struct {
 	items    []*automlpb.ModelEvaluation
@@ -719,6 +739,12 @@ func (it *ModelEvaluationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ModelIterator) All() iter.Seq2[*automlpb.Model, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ModelIterator manages a stream of *automlpb.Model.
 type ModelIterator struct {
 	items    []*automlpb.Model
@@ -764,6 +790,12 @@ func (it *ModelIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TableSpecIterator) All() iter.Seq2[*automlpb.TableSpec, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // TableSpecIterator manages a stream of *automlpb.TableSpec.

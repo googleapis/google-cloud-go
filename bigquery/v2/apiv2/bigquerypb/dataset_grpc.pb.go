@@ -49,29 +49,65 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type DatasetServiceClient interface {
 	// Returns the dataset specified by datasetID.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.datasets.get` permission on the dataset.
 	GetDataset(ctx context.Context, in *GetDatasetRequest, opts ...grpc.CallOption) (*Dataset, error)
 	// Creates a new empty dataset.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.datasets.create` permission on the project.
 	InsertDataset(ctx context.Context, in *InsertDatasetRequest, opts ...grpc.CallOption) (*Dataset, error)
 	// Updates information in an existing dataset. The update method replaces the
 	// entire dataset resource, whereas the patch method only replaces fields that
 	// are provided in the submitted dataset resource.
 	// This method supports RFC5789 patch semantics.
+	//
+	// # IAM Permissions
+	//
+	// Requires the following IAM permission(s) to use this method:
+	//
+	//   - `bigquery.datasets.update` on the dataset.
+	//   - `bigquery.datasets.get` on the dataset.
 	PatchDataset(ctx context.Context, in *UpdateOrPatchDatasetRequest, opts ...grpc.CallOption) (*Dataset, error)
 	// Updates information in an existing dataset. The update method replaces the
 	// entire dataset resource, whereas the patch method only replaces fields that
 	// are provided in the submitted dataset resource.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.datasets.update` permission on the dataset.
 	UpdateDataset(ctx context.Context, in *UpdateOrPatchDatasetRequest, opts ...grpc.CallOption) (*Dataset, error)
 	// Deletes the dataset specified by the datasetId value. Before you can delete
 	// a dataset, you must delete all its tables, either manually or by specifying
 	// deleteContents. Immediately after deletion, you can create another dataset
 	// with the same name.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.datasets.delete` permission on the dataset.
 	DeleteDataset(ctx context.Context, in *DeleteDatasetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Lists all datasets in the specified project to which the user has been
 	// granted the READER dataset role.
+	//
+	// # IAM Permissions
+	//
+	// Requires no specific IAM permission(s) to use this method.
+	// Results are filtered to only include datasets on which the caller has the
+	// `bigquery.datasets.get` permission.
 	ListDatasets(ctx context.Context, in *ListDatasetsRequest, opts ...grpc.CallOption) (*DatasetList, error)
 	// Undeletes a dataset which is within time travel window based on datasetId.
 	// If a time is specified, the dataset version deleted at that time is
 	// undeleted, else the last live version is undeleted.
+	//
+	// # IAM Permissions
+	//
+	// Requires the following IAM permission(s) to use this method:
+	//
+	//   - `bigquery.datasets.create` on the project.
+	//   - `bigquery.datasets.get` on the dataset.
 	UndeleteDataset(ctx context.Context, in *UndeleteDatasetRequest, opts ...grpc.CallOption) (*Dataset, error)
 }
 
@@ -151,29 +187,65 @@ func (c *datasetServiceClient) UndeleteDataset(ctx context.Context, in *Undelete
 // for forward compatibility
 type DatasetServiceServer interface {
 	// Returns the dataset specified by datasetID.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.datasets.get` permission on the dataset.
 	GetDataset(context.Context, *GetDatasetRequest) (*Dataset, error)
 	// Creates a new empty dataset.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.datasets.create` permission on the project.
 	InsertDataset(context.Context, *InsertDatasetRequest) (*Dataset, error)
 	// Updates information in an existing dataset. The update method replaces the
 	// entire dataset resource, whereas the patch method only replaces fields that
 	// are provided in the submitted dataset resource.
 	// This method supports RFC5789 patch semantics.
+	//
+	// # IAM Permissions
+	//
+	// Requires the following IAM permission(s) to use this method:
+	//
+	//   - `bigquery.datasets.update` on the dataset.
+	//   - `bigquery.datasets.get` on the dataset.
 	PatchDataset(context.Context, *UpdateOrPatchDatasetRequest) (*Dataset, error)
 	// Updates information in an existing dataset. The update method replaces the
 	// entire dataset resource, whereas the patch method only replaces fields that
 	// are provided in the submitted dataset resource.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.datasets.update` permission on the dataset.
 	UpdateDataset(context.Context, *UpdateOrPatchDatasetRequest) (*Dataset, error)
 	// Deletes the dataset specified by the datasetId value. Before you can delete
 	// a dataset, you must delete all its tables, either manually or by specifying
 	// deleteContents. Immediately after deletion, you can create another dataset
 	// with the same name.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.datasets.delete` permission on the dataset.
 	DeleteDataset(context.Context, *DeleteDatasetRequest) (*emptypb.Empty, error)
 	// Lists all datasets in the specified project to which the user has been
 	// granted the READER dataset role.
+	//
+	// # IAM Permissions
+	//
+	// Requires no specific IAM permission(s) to use this method.
+	// Results are filtered to only include datasets on which the caller has the
+	// `bigquery.datasets.get` permission.
 	ListDatasets(context.Context, *ListDatasetsRequest) (*DatasetList, error)
 	// Undeletes a dataset which is within time travel window based on datasetId.
 	// If a time is specified, the dataset version deleted at that time is
 	// undeleted, else the last live version is undeleted.
+	//
+	// # IAM Permissions
+	//
+	// Requires the following IAM permission(s) to use this method:
+	//
+	//   - `bigquery.datasets.create` on the project.
+	//   - `bigquery.datasets.get` on the dataset.
 	UndeleteDataset(context.Context, *UndeleteDatasetRequest) (*Dataset, error)
 }
 

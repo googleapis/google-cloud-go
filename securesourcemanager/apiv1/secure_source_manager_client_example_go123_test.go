@@ -27,6 +27,32 @@ import (
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
 
+func ExampleClient_FetchRefs_all() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := securesourcemanager.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &securesourcemanagerpb.FetchRefsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securesourcemanager/apiv1/securesourcemanagerpb#FetchRefsRequest.
+	}
+	for resp, err := range c.FetchRefs(ctx, req).All() {
+		if err != nil {
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
 func ExampleClient_FetchTree_all() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.

@@ -481,7 +481,7 @@ var File_google_cloud_tasks_v2beta3_task_proto protoreflect.FileDescriptor
 
 const file_google_cloud_tasks_v2beta3_task_proto_rawDesc = "" +
 	"\n" +
-	"%google/cloud/tasks/v2beta3/task.proto\x12\x1agoogle.cloud.tasks.v2beta3\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a&google/cloud/tasks/v2beta3/queue.proto\x1a'google/cloud/tasks/v2beta3/target.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\x80\b\n" +
+	"%google/cloud/tasks/v2beta3/task.proto\x12\x1agoogle.cloud.tasks.v2beta3\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a&google/cloud/tasks/v2beta3/queue.proto\x1a'google/cloud/tasks/v2beta3/target.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\x81\b\n" +
 	"\x04Task\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12i\n" +
 	"\x17app_engine_http_request\x18\x03 \x01(\v20.google.cloud.tasks.v2beta3.AppEngineHttpRequestH\x00R\x14appEngineHttpRequest\x12L\n" +
@@ -496,8 +496,8 @@ const file_google_cloud_tasks_v2beta3_task_proto_rawDesc = "" +
 	"\rfirst_attempt\x18\b \x01(\v2#.google.cloud.tasks.v2beta3.AttemptR\ffirstAttempt\x12F\n" +
 	"\flast_attempt\x18\t \x01(\v2#.google.cloud.tasks.v2beta3.AttemptR\vlastAttempt\x129\n" +
 	"\x04view\x18\n" +
-	" \x01(\x0e2%.google.cloud.tasks.v2beta3.Task.ViewR\x04view\x12O\n" +
-	"\fretry_config\x18\x0e \x01(\v2'.google.cloud.tasks.v2beta3.RetryConfigB\x03\xe0A\x01R\vretryConfig\"1\n" +
+	" \x01(\x0e2%.google.cloud.tasks.v2beta3.Task.ViewR\x04view\x12P\n" +
+	"\fretry_config\x18\x0e \x01(\v2'.google.cloud.tasks.v2beta3.RetryConfigB\x04\xe2A\x01\x01R\vretryConfig\"1\n" +
 	"\x04View\x12\x14\n" +
 	"\x10VIEW_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05BASIC\x10\x01\x12\b\n" +

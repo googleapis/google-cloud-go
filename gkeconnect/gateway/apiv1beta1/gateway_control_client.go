@@ -166,6 +166,33 @@ func NewGatewayControlRESTClient(ctx context.Context, opts ...option.ClientOptio
 
 		callOpts.GenerateCredentials = append(callOpts.GenerateCredentials, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "connectgateway",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/gkeconnect/gateway/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "connectgateway.googleapis.com",
+			}),
+		)
+
+		callOpts.GenerateCredentials = append(callOpts.GenerateCredentials, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "connectgateway",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/gkeconnect/gateway/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "connectgateway.googleapis.com",
+			}),
+		)
+
+		callOpts.GenerateCredentials = append(callOpts.GenerateCredentials, gax.WithClientLogging(logging))
+	}
 
 	return &GatewayControlClient{internalClient: c, CallOptions: callOpts}, nil
 }

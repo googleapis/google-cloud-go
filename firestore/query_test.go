@@ -1854,7 +1854,6 @@ func TestQuery_Pipeline(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			p := tc.query.Pipeline()
@@ -1877,12 +1876,14 @@ func TestQuery_Pipeline(t *testing.T) {
 	}
 }
 
+//go:fix inline
 func intptr(i int) *int {
-	return &i
+	return new(i)
 }
 
+//go:fix inline
 func stringptr(s string) *string {
-	return &s
+	return new(s)
 }
 
 func TestAggregationQuery_Pipeline(t *testing.T) {
@@ -1926,7 +1927,6 @@ func TestAggregationQuery_Pipeline(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			p := tc.query.Pipeline()
@@ -2075,7 +2075,7 @@ func TestFindNearest(t *testing.T) {
 			desc: "Valid path with valid vector type WithDistanceResultField and WithDistanceThreshold ",
 			vQuery: c.Collection(collName).
 				FindNearest("path", []float32{5, 6, 7}, limit, DistanceMeasureEuclidean, &FindNearestOptions{
-					DistanceThreshold:   Ptr[float64](threshold),
+					DistanceThreshold:   new(threshold),
 					DistanceResultField: resultField,
 				}),
 			wantReq: &wantReqThresholdField,

@@ -239,6 +239,39 @@ func NewMetricsScopesClient(ctx context.Context, opts ...option.ClientOption) (*
 		client.CallOptions.CreateMonitoredProject = append(client.CallOptions.CreateMonitoredProject, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteMonitoredProject = append(client.CallOptions.DeleteMonitoredProject, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "monitoring",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/monitoring/metricsscope/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "monitoring.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetMetricsScope = append(client.CallOptions.GetMetricsScope, gax.WithClientTracing(tracing))
+		client.CallOptions.ListMetricsScopesByMonitoredProject = append(client.CallOptions.ListMetricsScopesByMonitoredProject, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateMonitoredProject = append(client.CallOptions.CreateMonitoredProject, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteMonitoredProject = append(client.CallOptions.DeleteMonitoredProject, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "monitoring",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/monitoring/metricsscope/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "monitoring.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetMetricsScope = append(client.CallOptions.GetMetricsScope, gax.WithClientLogging(logging))
+		client.CallOptions.ListMetricsScopesByMonitoredProject = append(client.CallOptions.ListMetricsScopesByMonitoredProject, gax.WithClientLogging(logging))
+		client.CallOptions.CreateMonitoredProject = append(client.CallOptions.CreateMonitoredProject, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteMonitoredProject = append(client.CallOptions.DeleteMonitoredProject, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -286,9 +319,6 @@ func (c *metricsScopesGRPCClient) GetMetricsScope(ctx context.Context, req *metr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//monitoring.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.monitoring.metricsscope.v1.MetricsScopes/GetMetricsScope")
 	}
@@ -328,9 +358,6 @@ func (c *metricsScopesGRPCClient) CreateMonitoredProject(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//monitoring.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.monitoring.metricsscope.v1.MetricsScopes/CreateMonitoredProject")
 	}
@@ -358,9 +385,6 @@ func (c *metricsScopesGRPCClient) DeleteMonitoredProject(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//monitoring.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.monitoring.metricsscope.v1.MetricsScopes/DeleteMonitoredProject")
 	}

@@ -457,6 +457,63 @@ func NewOrganizationSecurityPoliciesRESTClient(ctx context.Context, opts ...opti
 		callOpts.RemoveAssociation = append(callOpts.RemoveAssociation, gax.WithClientMetrics(metrics))
 		callOpts.RemoveRule = append(callOpts.RemoveRule, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AddAssociation = append(callOpts.AddAssociation, gax.WithClientTracing(tracing))
+		callOpts.AddRule = append(callOpts.AddRule, gax.WithClientTracing(tracing))
+		callOpts.CopyRules = append(callOpts.CopyRules, gax.WithClientTracing(tracing))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.GetAssociation = append(callOpts.GetAssociation, gax.WithClientTracing(tracing))
+		callOpts.GetRule = append(callOpts.GetRule, gax.WithClientTracing(tracing))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+		callOpts.ListAssociations = append(callOpts.ListAssociations, gax.WithClientTracing(tracing))
+		callOpts.ListPreconfiguredExpressionSets = append(callOpts.ListPreconfiguredExpressionSets, gax.WithClientTracing(tracing))
+		callOpts.Move = append(callOpts.Move, gax.WithClientTracing(tracing))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientTracing(tracing))
+		callOpts.PatchRule = append(callOpts.PatchRule, gax.WithClientTracing(tracing))
+		callOpts.RemoveAssociation = append(callOpts.RemoveAssociation, gax.WithClientTracing(tracing))
+		callOpts.RemoveRule = append(callOpts.RemoveRule, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AddAssociation = append(callOpts.AddAssociation, gax.WithClientLogging(logging))
+		callOpts.AddRule = append(callOpts.AddRule, gax.WithClientLogging(logging))
+		callOpts.CopyRules = append(callOpts.CopyRules, gax.WithClientLogging(logging))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.GetAssociation = append(callOpts.GetAssociation, gax.WithClientLogging(logging))
+		callOpts.GetRule = append(callOpts.GetRule, gax.WithClientLogging(logging))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+		callOpts.ListAssociations = append(callOpts.ListAssociations, gax.WithClientLogging(logging))
+		callOpts.ListPreconfiguredExpressionSets = append(callOpts.ListPreconfiguredExpressionSets, gax.WithClientLogging(logging))
+		callOpts.Move = append(callOpts.Move, gax.WithClientLogging(logging))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientLogging(logging))
+		callOpts.PatchRule = append(callOpts.PatchRule, gax.WithClientLogging(logging))
+		callOpts.RemoveAssociation = append(callOpts.RemoveAssociation, gax.WithClientLogging(logging))
+		callOpts.RemoveRule = append(callOpts.RemoveRule, gax.WithClientLogging(logging))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -552,9 +609,6 @@ func (c *organizationSecurityPoliciesRESTClient) AddAssociation(ctx context.Cont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/locations/global/securityPolicies/%v", req.GetSecurityPolicy()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.OrganizationSecurityPolicies/AddAssociation")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/locations/global/securityPolicies/{security_policy}/addAssociation")
@@ -628,9 +682,6 @@ func (c *organizationSecurityPoliciesRESTClient) AddRule(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/locations/global/securityPolicies/%v", req.GetSecurityPolicy()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.OrganizationSecurityPolicies/AddRule")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/locations/global/securityPolicies/{security_policy}/addRule")
@@ -701,9 +752,6 @@ func (c *organizationSecurityPoliciesRESTClient) CopyRules(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/locations/global/securityPolicies/%v", req.GetSecurityPolicy()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.OrganizationSecurityPolicies/CopyRules")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/locations/global/securityPolicies/{security_policy}/copyRules")
@@ -770,9 +818,6 @@ func (c *organizationSecurityPoliciesRESTClient) Delete(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/locations/global/securityPolicies/%v", req.GetSecurityPolicy()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.OrganizationSecurityPolicies/Delete")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/locations/global/securityPolicies/{security_policy}")
@@ -832,9 +877,6 @@ func (c *organizationSecurityPoliciesRESTClient) Get(ctx context.Context, req *c
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/locations/global/securityPolicies/%v", req.GetSecurityPolicy()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.OrganizationSecurityPolicies/Get")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/locations/global/securityPolicies/{security_policy}")
@@ -896,9 +938,6 @@ func (c *organizationSecurityPoliciesRESTClient) GetAssociation(ctx context.Cont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/locations/global/securityPolicies/%v", req.GetSecurityPolicy()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.OrganizationSecurityPolicies/GetAssociation")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/locations/global/securityPolicies/{security_policy}/getAssociation")
@@ -959,9 +998,6 @@ func (c *organizationSecurityPoliciesRESTClient) GetRule(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/locations/global/securityPolicies/%v", req.GetSecurityPolicy()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.OrganizationSecurityPolicies/GetRule")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/locations/global/securityPolicies/{security_policy}/getRule")
@@ -1320,9 +1356,6 @@ func (c *organizationSecurityPoliciesRESTClient) Move(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/locations/global/securityPolicies/%v", req.GetSecurityPolicy()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.OrganizationSecurityPolicies/Move")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/locations/global/securityPolicies/{security_policy}/move")
@@ -1399,9 +1432,6 @@ func (c *organizationSecurityPoliciesRESTClient) Patch(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/locations/global/securityPolicies/%v", req.GetSecurityPolicy()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.OrganizationSecurityPolicies/Patch")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/locations/global/securityPolicies/{security_policy}")
@@ -1482,9 +1512,6 @@ func (c *organizationSecurityPoliciesRESTClient) PatchRule(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/locations/global/securityPolicies/%v", req.GetSecurityPolicy()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.OrganizationSecurityPolicies/PatchRule")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/locations/global/securityPolicies/{security_policy}/patchRule")
@@ -1555,9 +1582,6 @@ func (c *organizationSecurityPoliciesRESTClient) RemoveAssociation(ctx context.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/locations/global/securityPolicies/%v", req.GetSecurityPolicy()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.OrganizationSecurityPolicies/RemoveAssociation")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/locations/global/securityPolicies/{security_policy}/removeAssociation")
@@ -1628,9 +1652,6 @@ func (c *organizationSecurityPoliciesRESTClient) RemoveRule(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/locations/global/securityPolicies/%v", req.GetSecurityPolicy()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.OrganizationSecurityPolicies/RemoveRule")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/locations/global/securityPolicies/{security_policy}/removeRule")
