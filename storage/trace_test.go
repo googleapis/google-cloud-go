@@ -539,12 +539,12 @@ func TestGRPCRetryAttemptNumberTracing(t *testing.T) {
 	}
 
 	for _, tc := range []struct {
-		name         string
-		devTracing   bool
-		failures     int
-		opSpan       string
-		attemptSpan  string
-		call         func(t *testing.T, ctx context.Context, client *Client)
+		name        string
+		devTracing  bool
+		failures    int
+		opSpan      string
+		attemptSpan string
+		call        func(t *testing.T, ctx context.Context, client *Client)
 		// wantAttempts are the attempt numbers expected on the attempt spans,
 		// in order. nil means the spans carry none.
 		wantAttempts []int64
