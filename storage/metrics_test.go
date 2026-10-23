@@ -32,6 +32,7 @@ import (
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"go.opentelemetry.io/otel/sdk/resource"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -887,6 +888,13 @@ func TestComputeErrorType(t *testing.T) {
 		{err: context.DeadlineExceeded, want: "TIMEOUT"},
 		{err: context.Canceled, want: "CANCELLED"},
 		{err: status.Error(codes.NotFound, "not found"), want: "NOT_FOUND"},
+		{err: ErrObjectNotExist, isHTTP: true, want: "NOT_FOUND"},
+		{err: ErrBucketNotExist, want: "NOT_FOUND"},
+		{err: status.Error(codes.NotFound, "No such object: bucket/my-key"), want: "NOT_FOUND"},
+		{err: &googleapi.Error{Code: 404, Message: "No such object: bucket/author.txt"}, isHTTP: true, want: "NOT_FOUND"},
+		{err: status.Error(codes.InvalidArgument, "Invalid page token."), want: "INVALID_ARGUMENT"},
+		{err: status.Error(codes.Unavailable, "connection error: connection reset by peer"), want: "CONNECTION_ERROR"},
+		{err: status.Error(codes.Unavailable, "unavailable"), want: "UNAVAILABLE"},
 	}
 
 	for _, tc := range tests {

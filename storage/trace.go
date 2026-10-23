@@ -18,12 +18,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"strings"
 
 	internalTrace "cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/storage/internal"
+	"github.com/googleapis/gax-go/v2/apierror"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	otelcodes "go.opentelemetry.io/otel/codes"
@@ -150,9 +152,48 @@ func isNotFoundError(err error) bool {
 	return false
 }
 
+// errorAttributes returns the error.type and, when known, gcp.errors.domain
+// span attributes for err. It returns no attributes for a nil error or io.EOF.
+//
+// error.type reuses computeErrorType, the classifier behind the error.type
+// metric attribute, so spans and metrics report the same value for a failure.
+// gcp.errors.domain is the google.rpc.ErrorInfo domain of the error response.
+func errorAttributes(err error) []attribute.KeyValue {
+	if err == nil || err == io.EOF {
+		return nil
+	}
+	// Infer the transport from the error, since endSpan does not know it:
+	// HTTP errors always carry a *googleapi.Error.
+	var httpErr *googleapi.Error
+	isHTTP := errors.As(err, &httpErr)
+	attrs := []attribute.KeyValue{attribute.String("error.type", computeErrorType(err, isHTTP, 0))}
+	if domain := errorDomain(err); domain != "" {
+		attrs = append(attrs, attribute.String("gcp.errors.domain", domain))
+	}
+	return attrs
+}
+
+// errorDomain returns the google.rpc.ErrorInfo domain of err, or "" if the
+// error response carried no ErrorInfo.
+func errorDomain(err error) string {
+	// Check for an existing APIError first: the generated JSON client returns
+	// a googleapi.Error wrapping an APIError, and ParseError on that prefers
+	// the APIError's mapped gRPC status, which carries no ErrorInfo.
+	var apiErr *apierror.APIError
+	if !errors.As(err, &apiErr) {
+		var ok bool
+		if apiErr, ok = apierror.ParseError(err, false); !ok {
+			return ""
+		}
+	}
+	return apiErr.Domain()
+}
+
 // endSpan retrieves the current span from ctx and completes the span.
-// If an error occurs, the error is recorded as an exception span event for this span,
-// and the span status is set in the form of a code and a description.
+// If an error occurs, the error.type and, when known, gcp.errors.domain
+// attributes are set, the error is recorded as an exception span event for
+// this span, and the span status is set in the form of a code and a
+// description.
 func endSpan(ctx context.Context, err error) {
 	if err != nil && isNotFoundError(err) {
 		isBucket, _ := ctx.Value(isBucketContextKey).(bool)
@@ -170,6 +211,7 @@ func endSpan(ctx context.Context, err error) {
 	} else {
 		span := trace.SpanFromContext(ctx)
 		if err != nil {
+			span.SetAttributes(errorAttributes(err)...)
 			span.SetStatus(otelcodes.Error, err.Error())
 			span.RecordError(err)
 		}
