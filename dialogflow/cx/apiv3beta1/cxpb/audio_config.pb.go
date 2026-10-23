@@ -968,9 +968,9 @@ const file_google_cloud_dialogflow_cx_v3beta1_audio_config_proto_rawDesc = "" +
 	"confidence\"\x9d\x01\n" +
 	"\rBargeInConfig\x12J\n" +
 	"\x14no_barge_in_duration\x18\x01 \x01(\v2\x19.google.protobuf.DurationR\x11noBargeInDuration\x12@\n" +
-	"\x0etotal_duration\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\rtotalDuration\"\xad\x04\n" +
-	"\x10InputAudioConfig\x12]\n" +
-	"\x0eaudio_encoding\x18\x01 \x01(\x0e21.google.cloud.dialogflow.cx.v3beta1.AudioEncodingB\x03\xe0A\x02R\raudioEncoding\x12*\n" +
+	"\x0etotal_duration\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\rtotalDuration\"\xae\x04\n" +
+	"\x10InputAudioConfig\x12^\n" +
+	"\x0eaudio_encoding\x18\x01 \x01(\x0e21.google.cloud.dialogflow.cx.v3beta1.AudioEncodingB\x04\xe2A\x01\x02R\raudioEncoding\x12*\n" +
 	"\x11sample_rate_hertz\x18\x02 \x01(\x05R\x0fsampleRateHertz\x12(\n" +
 	"\x10enable_word_info\x18\r \x01(\bR\x0eenableWordInfo\x12!\n" +
 	"\fphrase_hints\x18\x04 \x03(\tR\vphraseHints\x12\x14\n" +
@@ -989,9 +989,9 @@ const file_google_cloud_dialogflow_cx_v3beta1_audio_config_proto_rawDesc = "" +
 	"\x05pitch\x18\x02 \x01(\x01R\x05pitch\x12$\n" +
 	"\x0evolume_gain_db\x18\x03 \x01(\x01R\fvolumeGainDb\x12,\n" +
 	"\x12effects_profile_id\x18\x05 \x03(\tR\x10effectsProfileId\x12N\n" +
-	"\x05voice\x18\x04 \x01(\v28.google.cloud.dialogflow.cx.v3beta1.VoiceSelectionParamsR\x05voice\"\x9a\x02\n" +
-	"\x11OutputAudioConfig\x12c\n" +
-	"\x0eaudio_encoding\x18\x01 \x01(\x0e27.google.cloud.dialogflow.cx.v3beta1.OutputAudioEncodingB\x03\xe0A\x02R\raudioEncoding\x12*\n" +
+	"\x05voice\x18\x04 \x01(\v28.google.cloud.dialogflow.cx.v3beta1.VoiceSelectionParamsR\x05voice\"\x9b\x02\n" +
+	"\x11OutputAudioConfig\x12d\n" +
+	"\x0eaudio_encoding\x18\x01 \x01(\x0e27.google.cloud.dialogflow.cx.v3beta1.OutputAudioEncodingB\x04\xe2A\x01\x02R\raudioEncoding\x12*\n" +
 	"\x11sample_rate_hertz\x18\x02 \x01(\x05R\x0fsampleRateHertz\x12t\n" +
 	"\x18synthesize_speech_config\x18\x03 \x01(\v2:.google.cloud.dialogflow.cx.v3beta1.SynthesizeSpeechConfigR\x16synthesizeSpeechConfig\"\xb3\x02\n" +
 	"\x14TextToSpeechSettings\x12\x91\x01\n" +

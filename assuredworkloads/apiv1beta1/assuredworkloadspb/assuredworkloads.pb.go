@@ -1873,69 +1873,69 @@ var File_google_cloud_assuredworkloads_v1beta1_assuredworkloads_proto protorefle
 
 const file_google_cloud_assuredworkloads_v1beta1_assuredworkloads_proto_rawDesc = "" +
 	"\n" +
-	"<google/cloud/assuredworkloads/v1beta1/assuredworkloads.proto\x12%google.cloud.assuredworkloads.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd9\x01\n" +
-	"\x15CreateWorkloadRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(assuredworkloads.googleapis.com/WorkloadR\x06parent\x12P\n" +
-	"\bworkload\x18\x02 \x01(\v2/.google.cloud.assuredworkloads.v1beta1.WorkloadB\x03\xe0A\x02R\bworkload\x12$\n" +
-	"\vexternal_id\x18\x03 \x01(\tB\x03\xe0A\x01R\n" +
-	"externalId\"\xab\x01\n" +
-	"\x15UpdateWorkloadRequest\x12P\n" +
-	"\bworkload\x18\x01 \x01(\v2/.google.cloud.assuredworkloads.v1beta1.WorkloadB\x03\xe0A\x02R\bworkload\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\xb4\x02\n" +
-	"\x1fRestrictAllowedResourcesRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x86\x01\n" +
-	"\x10restriction_type\x18\x02 \x01(\x0e2V.google.cloud.assuredworkloads.v1beta1.RestrictAllowedResourcesRequest.RestrictionTypeB\x03\xe0A\x02R\x0frestrictionType\"o\n" +
+	"<google/cloud/assuredworkloads/v1beta1/assuredworkloads.proto\x12%google.cloud.assuredworkloads.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdc\x01\n" +
+	"\x15CreateWorkloadRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(assuredworkloads.googleapis.com/WorkloadR\x06parent\x12Q\n" +
+	"\bworkload\x18\x02 \x01(\v2/.google.cloud.assuredworkloads.v1beta1.WorkloadB\x04\xe2A\x01\x02R\bworkload\x12%\n" +
+	"\vexternal_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"externalId\"\xad\x01\n" +
+	"\x15UpdateWorkloadRequest\x12Q\n" +
+	"\bworkload\x18\x01 \x01(\v2/.google.cloud.assuredworkloads.v1beta1.WorkloadB\x04\xe2A\x01\x02R\bworkload\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\xb6\x02\n" +
+	"\x1fRestrictAllowedResourcesRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12\x87\x01\n" +
+	"\x10restriction_type\x18\x02 \x01(\x0e2V.google.cloud.assuredworkloads.v1beta1.RestrictAllowedResourcesRequest.RestrictionTypeB\x04\xe2A\x01\x02R\x0frestrictionType\"o\n" +
 	"\x0fRestrictionType\x12 \n" +
 	"\x1cRESTRICTION_TYPE_UNSPECIFIED\x10\x00\x12\x1b\n" +
 	"\x17ALLOW_ALL_GCP_RESOURCES\x10\x01\x12\x1d\n" +
 	"\x19ALLOW_COMPLIANT_RESOURCES\x10\x02\"\"\n" +
-	" RestrictAllowedResourcesResponse\"v\n" +
-	"\x15DeleteWorkloadRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(assuredworkloads.googleapis.com/WorkloadR\x04name\x12\x17\n" +
-	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x01R\x04etag\"Z\n" +
-	"\x12GetWorkloadRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(assuredworkloads.googleapis.com/WorkloadR\x04name\"\x8c\x01\n" +
+	" RestrictAllowedResourcesResponse\"x\n" +
+	"\x15DeleteWorkloadRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(assuredworkloads.googleapis.com/WorkloadR\x04name\x12\x18\n" +
+	"\x04etag\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"[\n" +
+	"\x12GetWorkloadRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(assuredworkloads.googleapis.com/WorkloadR\x04name\"\x8d\x01\n" +
 	"\x1aAnalyzeWorkloadMoveRequest\x12\x18\n" +
 	"\x06source\x18\x01 \x01(\tH\x00R\x06source\x12\x1a\n" +
-	"\aproject\x18\x03 \x01(\tH\x00R\aproject\x12\x1b\n" +
-	"\x06target\x18\x02 \x01(\tB\x03\xe0A\x02R\x06targetB\x1b\n" +
+	"\aproject\x18\x03 \x01(\tH\x00R\aproject\x12\x1c\n" +
+	"\x06target\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06targetB\x1b\n" +
 	"\x19projectOrWorkloadResource\"9\n" +
 	"\x1bAnalyzeWorkloadMoveResponse\x12\x1a\n" +
-	"\bblockers\x18\x01 \x03(\tR\bblockers\"\xb4\x01\n" +
-	"\x14ListWorkloadsRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(assuredworkloads.googleapis.com/WorkloadR\x06parent\x12\x1b\n" +
+	"\bblockers\x18\x01 \x03(\tR\bblockers\"\xb5\x01\n" +
+	"\x14ListWorkloadsRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(assuredworkloads.googleapis.com/WorkloadR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
 	"\x06filter\x18\x04 \x01(\tR\x06filter\"\x8e\x01\n" +
 	"\x15ListWorkloadsResponse\x12M\n" +
 	"\tworkloads\x18\x01 \x03(\v2/.google.cloud.assuredworkloads.v1beta1.WorkloadR\tworkloads\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xd6\x1f\n" +
-	"\bWorkload\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x01R\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12_\n" +
-	"\tresources\x18\x03 \x03(\v2<.google.cloud.assuredworkloads.v1beta1.Workload.ResourceInfoB\x03\xe0A\x03R\tresources\x12u\n" +
-	"\x11compliance_regime\x18\x04 \x01(\x0e2@.google.cloud.assuredworkloads.v1beta1.Workload.ComplianceRegimeB\x06\xe0A\x02\xe0A\x05R\x10complianceRegime\x12C\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x06\xe0A\x03\xe0A\x05R\n" +
-	"createTime\x12,\n" +
-	"\x0fbilling_account\x18\x06 \x01(\tB\x03\xe0A\x03R\x0ebillingAccount\x12j\n" +
-	"\fil4_settings\x18\a \x01(\v2;.google.cloud.assuredworkloads.v1beta1.Workload.IL4SettingsB\b\xe0A\x04\xe0A\x05\x18\x01H\x00R\vil4Settings\x12m\n" +
-	"\rcjis_settings\x18\b \x01(\v2<.google.cloud.assuredworkloads.v1beta1.Workload.CJISSettingsB\b\xe0A\x04\xe0A\x05\x18\x01H\x00R\fcjisSettings\x12\x83\x01\n" +
-	"\x15fedramp_high_settings\x18\v \x01(\v2C.google.cloud.assuredworkloads.v1beta1.Workload.FedrampHighSettingsB\b\xe0A\x04\xe0A\x05\x18\x01H\x00R\x13fedrampHighSettings\x12\x8f\x01\n" +
-	"\x19fedramp_moderate_settings\x18\f \x01(\v2G.google.cloud.assuredworkloads.v1beta1.Workload.FedrampModerateSettingsB\b\xe0A\x04\xe0A\x05\x18\x01H\x00R\x17fedrampModerateSettings\x12\x17\n" +
-	"\x04etag\x18\t \x01(\tB\x03\xe0A\x01R\x04etag\x12X\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xd3\x1f\n" +
+	"\bWorkload\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12`\n" +
+	"\tresources\x18\x03 \x03(\v2<.google.cloud.assuredworkloads.v1beta1.Workload.ResourceInfoB\x04\xe2A\x01\x03R\tresources\x12t\n" +
+	"\x11compliance_regime\x18\x04 \x01(\x0e2@.google.cloud.assuredworkloads.v1beta1.Workload.ComplianceRegimeB\x05\xe2A\x02\x02\x05R\x10complianceRegime\x12B\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x05\xe2A\x02\x03\x05R\n" +
+	"createTime\x12-\n" +
+	"\x0fbilling_account\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x0ebillingAccount\x12i\n" +
+	"\fil4_settings\x18\a \x01(\v2;.google.cloud.assuredworkloads.v1beta1.Workload.IL4SettingsB\a\xe2A\x02\x04\x05\x18\x01H\x00R\vil4Settings\x12l\n" +
+	"\rcjis_settings\x18\b \x01(\v2<.google.cloud.assuredworkloads.v1beta1.Workload.CJISSettingsB\a\xe2A\x02\x04\x05\x18\x01H\x00R\fcjisSettings\x12\x82\x01\n" +
+	"\x15fedramp_high_settings\x18\v \x01(\v2C.google.cloud.assuredworkloads.v1beta1.Workload.FedrampHighSettingsB\a\xe2A\x02\x04\x05\x18\x01H\x00R\x13fedrampHighSettings\x12\x8e\x01\n" +
+	"\x19fedramp_moderate_settings\x18\f \x01(\v2G.google.cloud.assuredworkloads.v1beta1.Workload.FedrampModerateSettingsB\a\xe2A\x02\x04\x05\x18\x01H\x00R\x17fedrampModerateSettings\x12\x18\n" +
+	"\x04etag\x18\t \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12Y\n" +
 	"\x06labels\x18\n" +
-	" \x03(\v2;.google.cloud.assuredworkloads.v1beta1.Workload.LabelsEntryB\x03\xe0A\x01R\x06labels\x12E\n" +
-	"\x1cprovisioned_resources_parent\x18\r \x01(\tB\x03\xe0A\x04R\x1aprovisionedResourcesParent\x12e\n" +
-	"\fkms_settings\x18\x0e \x01(\v2;.google.cloud.assuredworkloads.v1beta1.Workload.KMSSettingsB\x05\xe0A\x04\x18\x01R\vkmsSettings\x12r\n" +
-	"\x11resource_settings\x18\x0f \x03(\v2@.google.cloud.assuredworkloads.v1beta1.Workload.ResourceSettingsB\x03\xe0A\x04R\x10resourceSettings\x12y\n" +
-	"\x14kaj_enrollment_state\x18\x11 \x01(\x0e2B.google.cloud.assuredworkloads.v1beta1.Workload.KajEnrollmentStateB\x03\xe0A\x03R\x12kajEnrollmentState\x12?\n" +
-	"\x19enable_sovereign_controls\x18\x12 \x01(\bB\x03\xe0A\x01R\x17enableSovereignControls\x12\x82\x01\n" +
-	"\x17saa_enrollment_response\x18\x14 \x01(\v2E.google.cloud.assuredworkloads.v1beta1.Workload.SaaEnrollmentResponseB\x03\xe0A\x03R\x15saaEnrollmentResponse\x12N\n" +
-	"!compliant_but_disallowed_services\x18\x18 \x03(\tB\x03\xe0A\x03R\x1ecompliantButDisallowedServices\x1a\xa8\x02\n" +
+	" \x03(\v2;.google.cloud.assuredworkloads.v1beta1.Workload.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12F\n" +
+	"\x1cprovisioned_resources_parent\x18\r \x01(\tB\x04\xe2A\x01\x04R\x1aprovisionedResourcesParent\x12f\n" +
+	"\fkms_settings\x18\x0e \x01(\v2;.google.cloud.assuredworkloads.v1beta1.Workload.KMSSettingsB\x06\xe2A\x01\x04\x18\x01R\vkmsSettings\x12s\n" +
+	"\x11resource_settings\x18\x0f \x03(\v2@.google.cloud.assuredworkloads.v1beta1.Workload.ResourceSettingsB\x04\xe2A\x01\x04R\x10resourceSettings\x12z\n" +
+	"\x14kaj_enrollment_state\x18\x11 \x01(\x0e2B.google.cloud.assuredworkloads.v1beta1.Workload.KajEnrollmentStateB\x04\xe2A\x01\x03R\x12kajEnrollmentState\x12@\n" +
+	"\x19enable_sovereign_controls\x18\x12 \x01(\bB\x04\xe2A\x01\x01R\x17enableSovereignControls\x12\x83\x01\n" +
+	"\x17saa_enrollment_response\x18\x14 \x01(\v2E.google.cloud.assuredworkloads.v1beta1.Workload.SaaEnrollmentResponseB\x04\xe2A\x01\x03R\x15saaEnrollmentResponse\x12O\n" +
+	"!compliant_but_disallowed_services\x18\x18 \x03(\tB\x04\xe2A\x01\x03R\x1ecompliantButDisallowedServices\x1a\xa8\x02\n" +
 	"\fResourceInfo\x12\x1f\n" +
 	"\vresource_id\x18\x01 \x01(\x03R\n" +
 	"resourceId\x12n\n" +
@@ -1945,18 +1945,18 @@ const file_google_cloud_assuredworkloads_v1beta1_assuredworkloads_proto_rawDesc 
 	"\x10CONSUMER_PROJECT\x10\x01\x1a\x02\b\x01\x12\x13\n" +
 	"\x0fCONSUMER_FOLDER\x10\x04\x12\x1b\n" +
 	"\x17ENCRYPTION_KEYS_PROJECT\x10\x02\x12\v\n" +
-	"\aKEYRING\x10\x03\x1a\xb5\x01\n" +
-	"\vKMSSettings\x12S\n" +
-	"\x12next_rotation_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\t\xe0A\x02\xe0A\x04\xe0A\x05R\x10nextRotationTime\x12M\n" +
-	"\x0frotation_period\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\t\xe0A\x02\xe0A\x04\xe0A\x05R\x0erotationPeriod:\x02\x18\x01\x1ay\n" +
-	"\vIL4Settings\x12f\n" +
-	"\fkms_settings\x18\x01 \x01(\v2;.google.cloud.assuredworkloads.v1beta1.Workload.KMSSettingsB\x06\xe0A\x04\xe0A\x05R\vkmsSettings:\x02\x18\x01\x1az\n" +
-	"\fCJISSettings\x12f\n" +
-	"\fkms_settings\x18\x01 \x01(\v2;.google.cloud.assuredworkloads.v1beta1.Workload.KMSSettingsB\x06\xe0A\x04\xe0A\x05R\vkmsSettings:\x02\x18\x01\x1a\x81\x01\n" +
-	"\x13FedrampHighSettings\x12f\n" +
-	"\fkms_settings\x18\x01 \x01(\v2;.google.cloud.assuredworkloads.v1beta1.Workload.KMSSettingsB\x06\xe0A\x04\xe0A\x05R\vkmsSettings:\x02\x18\x01\x1a\x85\x01\n" +
-	"\x17FedrampModerateSettings\x12f\n" +
-	"\fkms_settings\x18\x01 \x01(\v2;.google.cloud.assuredworkloads.v1beta1.Workload.KMSSettingsB\x06\xe0A\x04\xe0A\x05R\vkmsSettings:\x02\x18\x01\x1a\xc6\x01\n" +
+	"\aKEYRING\x10\x03\x1a\xaf\x01\n" +
+	"\vKMSSettings\x12P\n" +
+	"\x12next_rotation_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x06\xe2A\x03\x02\x04\x05R\x10nextRotationTime\x12J\n" +
+	"\x0frotation_period\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x06\xe2A\x03\x02\x04\x05R\x0erotationPeriod:\x02\x18\x01\x1ax\n" +
+	"\vIL4Settings\x12e\n" +
+	"\fkms_settings\x18\x01 \x01(\v2;.google.cloud.assuredworkloads.v1beta1.Workload.KMSSettingsB\x05\xe2A\x02\x04\x05R\vkmsSettings:\x02\x18\x01\x1ay\n" +
+	"\fCJISSettings\x12e\n" +
+	"\fkms_settings\x18\x01 \x01(\v2;.google.cloud.assuredworkloads.v1beta1.Workload.KMSSettingsB\x05\xe2A\x02\x04\x05R\vkmsSettings:\x02\x18\x01\x1a\x80\x01\n" +
+	"\x13FedrampHighSettings\x12e\n" +
+	"\fkms_settings\x18\x01 \x01(\v2;.google.cloud.assuredworkloads.v1beta1.Workload.KMSSettingsB\x05\xe2A\x02\x04\x05R\vkmsSettings:\x02\x18\x01\x1a\x84\x01\n" +
+	"\x17FedrampModerateSettings\x12e\n" +
+	"\fkms_settings\x18\x01 \x01(\v2;.google.cloud.assuredworkloads.v1beta1.Workload.KMSSettingsB\x05\xe2A\x02\x04\x05R\vkmsSettings:\x02\x18\x01\x1a\xc6\x01\n" +
 	"\x10ResourceSettings\x12\x1f\n" +
 	"\vresource_id\x18\x01 \x01(\tR\n" +
 	"resourceId\x12n\n" +
@@ -2000,14 +2000,14 @@ const file_google_cloud_assuredworkloads_v1beta1_assuredworkloads_proto_rawDesc 
 	"\x1cKAJ_ENROLLMENT_STATE_PENDING\x10\x01\x12!\n" +
 	"\x1dKAJ_ENROLLMENT_STATE_COMPLETE\x10\x02:u\xeaAr\n" +
 	"(assuredworkloads.googleapis.com/Workload\x12Forganizations/{organization}/locations/{location}/workloads/{workload}B\x1c\n" +
-	"\x1acompliance_regime_settings\"\x90\x03\n" +
-	"\x1fCreateWorkloadOperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\n" +
-	"createTime\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12\x1b\n" +
-	"\x06parent\x18\x03 \x01(\tB\x03\xe0A\x01R\x06parent\x12r\n" +
-	"\x11compliance_regime\x18\x04 \x01(\x0e2@.google.cloud.assuredworkloads.v1beta1.Workload.ComplianceRegimeB\x03\xe0A\x01R\x10complianceRegime\x12r\n" +
-	"\x11resource_settings\x18\x05 \x03(\v2@.google.cloud.assuredworkloads.v1beta1.Workload.ResourceSettingsB\x03\xe0A\x01R\x10resourceSettingsB\xf6\x02\xeaA]\n" +
+	"\x1acompliance_regime_settings\"\x95\x03\n" +
+	"\x1fCreateWorkloadOperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\n" +
+	"createTime\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12\x1c\n" +
+	"\x06parent\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x06parent\x12s\n" +
+	"\x11compliance_regime\x18\x04 \x01(\x0e2@.google.cloud.assuredworkloads.v1beta1.Workload.ComplianceRegimeB\x04\xe2A\x01\x01R\x10complianceRegime\x12s\n" +
+	"\x11resource_settings\x18\x05 \x03(\v2@.google.cloud.assuredworkloads.v1beta1.Workload.ResourceSettingsB\x04\xe2A\x01\x01R\x10resourceSettingsB\xf6\x02\xeaA]\n" +
 	"(assuredworkloads.googleapis.com/Location\x121organizations/{organization}/locations/{location}\n" +
 	")com.google.cloud.assuredworkloads.v1beta1B\x15AssuredworkloadsProtoP\x01ZUcloud.google.com/go/assuredworkloads/apiv1beta1/assuredworkloadspb;assuredworkloadspb\xaa\x02%Google.Cloud.AssuredWorkloads.V1Beta1\xca\x02%Google\\Cloud\\AssuredWorkloads\\V1beta1\xea\x02(Google::Cloud::AssuredWorkloads::V1beta1b\x06proto3"
 

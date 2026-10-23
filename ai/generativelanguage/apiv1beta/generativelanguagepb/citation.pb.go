@@ -168,13 +168,13 @@ const file_google_ai_generativelanguage_v1beta_citation_proto_rawDesc = "" +
 	"\n" +
 	"2google/ai/generativelanguage/v1beta/citation.proto\x12#google.ai.generativelanguage.v1beta\x1a\x1fgoogle/api/field_behavior.proto\"r\n" +
 	"\x10CitationMetadata\x12^\n" +
-	"\x10citation_sources\x18\x01 \x03(\v23.google.ai.generativelanguage.v1beta.CitationSourceR\x0fcitationSources\"\xd4\x01\n" +
-	"\x0eCitationSource\x12)\n" +
-	"\vstart_index\x18\x01 \x01(\x05B\x03\xe0A\x01H\x00R\n" +
-	"startIndex\x88\x01\x01\x12%\n" +
-	"\tend_index\x18\x02 \x01(\x05B\x03\xe0A\x01H\x01R\bendIndex\x88\x01\x01\x12\x1a\n" +
-	"\x03uri\x18\x03 \x01(\tB\x03\xe0A\x01H\x02R\x03uri\x88\x01\x01\x12\"\n" +
-	"\alicense\x18\x04 \x01(\tB\x03\xe0A\x01H\x03R\alicense\x88\x01\x01B\x0e\n" +
+	"\x10citation_sources\x18\x01 \x03(\v23.google.ai.generativelanguage.v1beta.CitationSourceR\x0fcitationSources\"\xd8\x01\n" +
+	"\x0eCitationSource\x12*\n" +
+	"\vstart_index\x18\x01 \x01(\x05B\x04\xe2A\x01\x01H\x00R\n" +
+	"startIndex\x88\x01\x01\x12&\n" +
+	"\tend_index\x18\x02 \x01(\x05B\x04\xe2A\x01\x01H\x01R\bendIndex\x88\x01\x01\x12\x1b\n" +
+	"\x03uri\x18\x03 \x01(\tB\x04\xe2A\x01\x01H\x02R\x03uri\x88\x01\x01\x12#\n" +
+	"\alicense\x18\x04 \x01(\tB\x04\xe2A\x01\x01H\x03R\alicense\x88\x01\x01B\x0e\n" +
 	"\f_start_indexB\f\n" +
 	"\n" +
 	"_end_indexB\x06\n" +

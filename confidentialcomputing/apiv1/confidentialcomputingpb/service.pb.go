@@ -2553,94 +2553,94 @@ var File_google_cloud_confidentialcomputing_v1_service_proto protoreflect.FileDe
 
 const file_google_cloud_confidentialcomputing_v1_service_proto_rawDesc = "" +
 	"\n" +
-	"3google/cloud/confidentialcomputing/v1/service.proto\x12%google.cloud.confidentialcomputing.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xd3\x02\n" +
-	"\tChallenge\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vexpire_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"expireTime\x12\x17\n" +
-	"\x04used\x18\x04 \x01(\bB\x03\xe0A\x03R\x04used\x12 \n" +
-	"\ttpm_nonce\x18\x06 \x01(\tB\x03\xe0A\x03R\btpmNonce:n\xeaAk\n" +
-	".confidentialcomputing.googleapis.com/Challenge\x129projects/{project}/locations/{location}/challenges/{uuid}\"\xb0\x01\n" +
-	"\x16CreateChallengeRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12S\n" +
-	"\tchallenge\x18\x02 \x01(\v20.google.cloud.confidentialcomputing.v1.ChallengeB\x03\xe0A\x02R\tchallenge\"\xdf\a\n" +
-	"\x18VerifyAttestationRequest\x12Y\n" +
-	"\atd_ccel\x18\x06 \x01(\v29.google.cloud.confidentialcomputing.v1.TdxCcelAttestationB\x03\xe0A\x01H\x00R\x06tdCcel\x12o\n" +
-	"\x13sev_snp_attestation\x18\a \x01(\v28.google.cloud.confidentialcomputing.v1.SevSnpAttestationB\x03\xe0A\x01H\x00R\x11sevSnpAttestation\x12n\n" +
-	"\x12nvidia_attestation\x18\t \x01(\v28.google.cloud.confidentialcomputing.v1.NvidiaAttestationB\x03\xe0A\x01H\x01R\x11nvidiaAttestation\x12T\n" +
-	"\tchallenge\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".confidentialcomputing.googleapis.com/ChallengeR\tchallenge\x12c\n" +
-	"\x0fgcp_credentials\x18\x02 \x01(\v25.google.cloud.confidentialcomputing.v1.GcpCredentialsB\x03\xe0A\x01R\x0egcpCredentials\x12c\n" +
-	"\x0ftpm_attestation\x18\x03 \x01(\v25.google.cloud.confidentialcomputing.v1.TpmAttestationB\x03\xe0A\x02R\x0etpmAttestation\x12y\n" +
-	"\x17confidential_space_info\x18\x04 \x01(\v2<.google.cloud.confidentialcomputing.v1.ConfidentialSpaceInfoB\x03\xe0A\x01R\x15confidentialSpaceInfo\x12]\n" +
-	"\rtoken_options\x18\x05 \x01(\v23.google.cloud.confidentialcomputing.v1.TokenOptionsB\x03\xe0A\x01R\ftokenOptions\x12\x1f\n" +
-	"\battester\x18\b \x01(\tB\x03\xe0A\x01R\battester\x12C\n" +
+	"3google/cloud/confidentialcomputing/v1/service.proto\x12%google.cloud.confidentialcomputing.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xd8\x02\n" +
+	"\tChallenge\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vexpire_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"expireTime\x12\x18\n" +
+	"\x04used\x18\x04 \x01(\bB\x04\xe2A\x01\x03R\x04used\x12!\n" +
+	"\ttpm_nonce\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\btpmNonce:n\xeaAk\n" +
+	".confidentialcomputing.googleapis.com/Challenge\x129projects/{project}/locations/{location}/challenges/{uuid}\"\xb2\x01\n" +
+	"\x16CreateChallengeRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12T\n" +
+	"\tchallenge\x18\x02 \x01(\v20.google.cloud.confidentialcomputing.v1.ChallengeB\x04\xe2A\x01\x02R\tchallenge\"\xe9\a\n" +
+	"\x18VerifyAttestationRequest\x12Z\n" +
+	"\atd_ccel\x18\x06 \x01(\v29.google.cloud.confidentialcomputing.v1.TdxCcelAttestationB\x04\xe2A\x01\x01H\x00R\x06tdCcel\x12p\n" +
+	"\x13sev_snp_attestation\x18\a \x01(\v28.google.cloud.confidentialcomputing.v1.SevSnpAttestationB\x04\xe2A\x01\x01H\x00R\x11sevSnpAttestation\x12o\n" +
+	"\x12nvidia_attestation\x18\t \x01(\v28.google.cloud.confidentialcomputing.v1.NvidiaAttestationB\x04\xe2A\x01\x01H\x01R\x11nvidiaAttestation\x12U\n" +
+	"\tchallenge\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".confidentialcomputing.googleapis.com/ChallengeR\tchallenge\x12d\n" +
+	"\x0fgcp_credentials\x18\x02 \x01(\v25.google.cloud.confidentialcomputing.v1.GcpCredentialsB\x04\xe2A\x01\x01R\x0egcpCredentials\x12d\n" +
+	"\x0ftpm_attestation\x18\x03 \x01(\v25.google.cloud.confidentialcomputing.v1.TpmAttestationB\x04\xe2A\x01\x02R\x0etpmAttestation\x12z\n" +
+	"\x17confidential_space_info\x18\x04 \x01(\v2<.google.cloud.confidentialcomputing.v1.ConfidentialSpaceInfoB\x04\xe2A\x01\x01R\x15confidentialSpaceInfo\x12^\n" +
+	"\rtoken_options\x18\x05 \x01(\v23.google.cloud.confidentialcomputing.v1.TokenOptionsB\x04\xe2A\x01\x01R\ftokenOptions\x12 \n" +
+	"\battester\x18\b \x01(\tB\x04\xe2A\x01\x01R\battester\x12D\n" +
 	"\binstance\x18\n" +
-	" \x01(\tB'\xe0A\x01\xfaA!\n" +
+	" \x01(\tB(\xe2A\x01\x01\xfaA!\n" +
 	"\x1fcompute.googleapis.com/InstanceR\binstanceB\x11\n" +
 	"\x0ftee_attestationB\x14\n" +
-	"\x12device_attestation\"\x9b\f\n" +
+	"\x12device_attestation\"\xa8\f\n" +
 	"\x11NvidiaAttestation\x12i\n" +
 	"\x03spt\x18\x01 \x01(\v2U.google.cloud.confidentialcomputing.v1.NvidiaAttestation.SinglePassthroughAttestationH\x00R\x03spt\x12i\n" +
 	"\x05ppcie\x18\x02 \x01(\v2Q.google.cloud.confidentialcomputing.v1.NvidiaAttestation.ProtectedPcieAttestationH\x00R\x05ppcie\x12q\n" +
-	"\x03mpt\x18\x03 \x01(\v2].google.cloud.confidentialcomputing.v1.NvidiaAttestation.MultiGpuSecurePassthroughAttestationH\x00R\x03mpt\x1a\xfd\x02\n" +
-	"\aGpuInfo\x12\x17\n" +
-	"\x04uuid\x18\x01 \x01(\tB\x03\xe0A\x01R\x04uuid\x12*\n" +
-	"\x0edriver_version\x18\x02 \x01(\tB\x03\xe0A\x01R\rdriverVersion\x12(\n" +
-	"\rvbios_version\x18\x03 \x01(\tB\x03\xe0A\x01R\fvbiosVersion\x12\x85\x01\n" +
-	"\x15gpu_architecture_type\x18\x04 \x01(\x0e2L.google.cloud.confidentialcomputing.v1.NvidiaAttestation.GpuArchitectureTypeB\x03\xe0A\x01R\x13gpuArchitectureType\x12G\n" +
-	"\x1dattestation_certificate_chain\x18\x05 \x01(\fB\x03\xe0A\x01R\x1battestationCertificateChain\x122\n" +
-	"\x12attestation_report\x18\x06 \x01(\fB\x03\xe0A\x01R\x11attestationReport\x1a\xa2\x01\n" +
+	"\x03mpt\x18\x03 \x01(\v2].google.cloud.confidentialcomputing.v1.NvidiaAttestation.MultiGpuSecurePassthroughAttestationH\x00R\x03mpt\x1a\x83\x03\n" +
+	"\aGpuInfo\x12\x18\n" +
+	"\x04uuid\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04uuid\x12+\n" +
+	"\x0edriver_version\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\rdriverVersion\x12)\n" +
+	"\rvbios_version\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\fvbiosVersion\x12\x86\x01\n" +
+	"\x15gpu_architecture_type\x18\x04 \x01(\x0e2L.google.cloud.confidentialcomputing.v1.NvidiaAttestation.GpuArchitectureTypeB\x04\xe2A\x01\x01R\x13gpuArchitectureType\x12H\n" +
+	"\x1dattestation_certificate_chain\x18\x05 \x01(\fB\x04\xe2A\x01\x01R\x1battestationCertificateChain\x123\n" +
+	"\x12attestation_report\x18\x06 \x01(\fB\x04\xe2A\x01\x01R\x11attestationReport\x1a\xa5\x01\n" +
 	"\n" +
-	"SwitchInfo\x12\x17\n" +
-	"\x04uuid\x18\x01 \x01(\tB\x03\xe0A\x01R\x04uuid\x12G\n" +
-	"\x1dattestation_certificate_chain\x18\x02 \x01(\fB\x03\xe0A\x01R\x1battestationCertificateChain\x122\n" +
-	"\x12attestation_report\x18\x03 \x01(\fB\x03\xe0A\x01R\x11attestationReport\x1a\x82\x01\n" +
-	"\x1cSinglePassthroughAttestation\x12b\n" +
-	"\tgpu_quote\x18\x01 \x01(\v2@.google.cloud.confidentialcomputing.v1.NvidiaAttestation.GpuInfoB\x03\xe0A\x01R\bgpuQuote\x1a\xef\x01\n" +
-	"\x18ProtectedPcieAttestation\x12d\n" +
+	"SwitchInfo\x12\x18\n" +
+	"\x04uuid\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04uuid\x12H\n" +
+	"\x1dattestation_certificate_chain\x18\x02 \x01(\fB\x04\xe2A\x01\x01R\x1battestationCertificateChain\x123\n" +
+	"\x12attestation_report\x18\x03 \x01(\fB\x04\xe2A\x01\x01R\x11attestationReport\x1a\x83\x01\n" +
+	"\x1cSinglePassthroughAttestation\x12c\n" +
+	"\tgpu_quote\x18\x01 \x01(\v2@.google.cloud.confidentialcomputing.v1.NvidiaAttestation.GpuInfoB\x04\xe2A\x01\x01R\bgpuQuote\x1a\xf1\x01\n" +
+	"\x18ProtectedPcieAttestation\x12e\n" +
 	"\n" +
-	"gpu_quotes\x18\x01 \x03(\v2@.google.cloud.confidentialcomputing.v1.NvidiaAttestation.GpuInfoB\x03\xe0A\x01R\tgpuQuotes\x12m\n" +
-	"\rswitch_quotes\x18\x02 \x03(\v2C.google.cloud.confidentialcomputing.v1.NvidiaAttestation.SwitchInfoB\x03\xe0A\x01R\fswitchQuotes\x1a\x8c\x01\n" +
-	"$MultiGpuSecurePassthroughAttestation\x12d\n" +
+	"gpu_quotes\x18\x01 \x03(\v2@.google.cloud.confidentialcomputing.v1.NvidiaAttestation.GpuInfoB\x04\xe2A\x01\x01R\tgpuQuotes\x12n\n" +
+	"\rswitch_quotes\x18\x02 \x03(\v2C.google.cloud.confidentialcomputing.v1.NvidiaAttestation.SwitchInfoB\x04\xe2A\x01\x01R\fswitchQuotes\x1a\x8d\x01\n" +
+	"$MultiGpuSecurePassthroughAttestation\x12e\n" +
 	"\n" +
-	"gpu_quotes\x18\x01 \x03(\v2@.google.cloud.confidentialcomputing.v1.NvidiaAttestation.GpuInfoB\x03\xe0A\x01R\tgpuQuotes\"\x83\x01\n" +
+	"gpu_quotes\x18\x01 \x03(\v2@.google.cloud.confidentialcomputing.v1.NvidiaAttestation.GpuInfoB\x04\xe2A\x01\x01R\tgpuQuotes\"\x83\x01\n" +
 	"\x13GpuArchitectureType\x12%\n" +
 	"!GPU_ARCHITECTURE_TYPE_UNSPECIFIED\x10\x00\x12 \n" +
 	"\x1cGPU_ARCHITECTURE_TYPE_HOPPER\x10\b\x12#\n" +
 	"\x1fGPU_ARCHITECTURE_TYPE_BLACKWELL\x10\n" +
 	"B\f\n" +
 	"\n" +
-	"cc_feature\"\xb8\x01\n" +
-	"\x12TdxCcelAttestation\x12+\n" +
-	"\x0fccel_acpi_table\x18\x01 \x01(\fB\x03\xe0A\x01R\rccelAcpiTable\x12 \n" +
-	"\tccel_data\x18\x02 \x01(\fB\x03\xe0A\x01R\bccelData\x123\n" +
-	"\x13canonical_event_log\x18\x03 \x01(\fB\x03\xe0A\x01R\x11canonicalEventLog\x12\x1e\n" +
-	"\btd_quote\x18\x04 \x01(\fB\x03\xe0A\x01R\atdQuote\"P\n" +
-	"\x11SevSnpAttestation\x12\x1b\n" +
-	"\x06report\x18\x01 \x01(\fB\x03\xe0A\x01R\x06report\x12\x1e\n" +
-	"\baux_blob\x18\x02 \x01(\fB\x03\xe0A\x01R\aauxBlob\"\x8c\x01\n" +
-	"\x19VerifyAttestationResponse\x12/\n" +
-	"\x11oidc_claims_token\x18\x02 \x01(\tB\x03\xe0A\x03R\x0foidcClaimsToken\x12>\n" +
-	"\x0epartial_errors\x18\x03 \x03(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\rpartialErrors\"K\n" +
+	"cc_feature\"\xbc\x01\n" +
+	"\x12TdxCcelAttestation\x12,\n" +
+	"\x0fccel_acpi_table\x18\x01 \x01(\fB\x04\xe2A\x01\x01R\rccelAcpiTable\x12!\n" +
+	"\tccel_data\x18\x02 \x01(\fB\x04\xe2A\x01\x01R\bccelData\x124\n" +
+	"\x13canonical_event_log\x18\x03 \x01(\fB\x04\xe2A\x01\x01R\x11canonicalEventLog\x12\x1f\n" +
+	"\btd_quote\x18\x04 \x01(\fB\x04\xe2A\x01\x01R\atdQuote\"R\n" +
+	"\x11SevSnpAttestation\x12\x1c\n" +
+	"\x06report\x18\x01 \x01(\fB\x04\xe2A\x01\x01R\x06report\x12\x1f\n" +
+	"\baux_blob\x18\x02 \x01(\fB\x04\xe2A\x01\x01R\aauxBlob\"\x8e\x01\n" +
+	"\x19VerifyAttestationResponse\x120\n" +
+	"\x11oidc_claims_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x0foidcClaimsToken\x12?\n" +
+	"\x0epartial_errors\x18\x03 \x03(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\rpartialErrors\"K\n" +
 	"\x0eGcpCredentials\x129\n" +
-	"\x19service_account_id_tokens\x18\x02 \x03(\tR\x16serviceAccountIdTokens\"\xbb\x02\n" +
-	"\fTokenOptions\x12\x82\x01\n" +
-	"\x1aaws_principal_tags_options\x18\x04 \x01(\v2>.google.cloud.confidentialcomputing.v1.AwsPrincipalTagsOptionsB\x03\xe0A\x01H\x00R\x17awsPrincipalTagsOptions\x12\x1f\n" +
-	"\baudience\x18\x01 \x01(\tB\x03\xe0A\x01R\baudience\x12\x19\n" +
-	"\x05nonce\x18\x02 \x03(\tB\x03\xe0A\x01R\x05nonce\x12T\n" +
+	"\x19service_account_id_tokens\x18\x02 \x03(\tR\x16serviceAccountIdTokens\"\xbf\x02\n" +
+	"\fTokenOptions\x12\x83\x01\n" +
+	"\x1aaws_principal_tags_options\x18\x04 \x01(\v2>.google.cloud.confidentialcomputing.v1.AwsPrincipalTagsOptionsB\x04\xe2A\x01\x01H\x00R\x17awsPrincipalTagsOptions\x12 \n" +
+	"\baudience\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\baudience\x12\x1a\n" +
+	"\x05nonce\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x05nonce\x12U\n" +
 	"\n" +
-	"token_type\x18\x03 \x01(\x0e20.google.cloud.confidentialcomputing.v1.TokenTypeB\x03\xe0A\x01R\ttokenTypeB\x14\n" +
-	"\x12token_type_options\"\xaf\x03\n" +
-	"\x17AwsPrincipalTagsOptions\x12\x8e\x01\n" +
-	"\x16allowed_principal_tags\x18\x01 \x01(\v2S.google.cloud.confidentialcomputing.v1.AwsPrincipalTagsOptions.AllowedPrincipalTagsB\x03\xe0A\x01R\x14allowedPrincipalTags\x1a\x82\x02\n" +
-	"\x14AllowedPrincipalTags\x12\xaf\x01\n" +
-	"\x1acontainer_image_signatures\x18\x01 \x01(\v2l.google.cloud.confidentialcomputing.v1.AwsPrincipalTagsOptions.AllowedPrincipalTags.ContainerImageSignaturesB\x03\xe0A\x01R\x18containerImageSignatures\x1a8\n" +
-	"\x18ContainerImageSignatures\x12\x1c\n" +
-	"\akey_ids\x18\x01 \x03(\tB\x03\xe0A\x01R\x06keyIds\"\x83\x04\n" +
+	"token_type\x18\x03 \x01(\x0e20.google.cloud.confidentialcomputing.v1.TokenTypeB\x04\xe2A\x01\x01R\ttokenTypeB\x14\n" +
+	"\x12token_type_options\"\xb2\x03\n" +
+	"\x17AwsPrincipalTagsOptions\x12\x8f\x01\n" +
+	"\x16allowed_principal_tags\x18\x01 \x01(\v2S.google.cloud.confidentialcomputing.v1.AwsPrincipalTagsOptions.AllowedPrincipalTagsB\x04\xe2A\x01\x01R\x14allowedPrincipalTags\x1a\x84\x02\n" +
+	"\x14AllowedPrincipalTags\x12\xb0\x01\n" +
+	"\x1acontainer_image_signatures\x18\x01 \x01(\v2l.google.cloud.confidentialcomputing.v1.AwsPrincipalTagsOptions.AllowedPrincipalTags.ContainerImageSignaturesB\x04\xe2A\x01\x01R\x18containerImageSignatures\x1a9\n" +
+	"\x18ContainerImageSignatures\x12\x1d\n" +
+	"\akey_ids\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\x06keyIds\"\x83\x04\n" +
 	"\x0eTpmAttestation\x12S\n" +
 	"\x06quotes\x18\x01 \x03(\v2;.google.cloud.confidentialcomputing.v1.TpmAttestation.QuoteR\x06quotes\x12\"\n" +
 	"\rtcg_event_log\x18\x02 \x01(\fR\vtcgEventLog\x12.\n" +
@@ -2656,59 +2656,59 @@ const file_google_cloud_confidentialcomputing_v1_service_proto_rawDesc = "" +
 	"\rraw_signature\x18\x04 \x01(\fR\frawSignature\x1a<\n" +
 	"\x0ePcrValuesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\x05R\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\fR\x05value:\x028\x01\"z\n" +
-	"\x15ConfidentialSpaceInfo\x12a\n" +
-	"\x0fsigned_entities\x18\x01 \x03(\v23.google.cloud.confidentialcomputing.v1.SignedEntityB\x03\xe0A\x01R\x0esignedEntities\"\x92\x01\n" +
-	"\fSignedEntity\x12\x81\x01\n" +
-	"\x1acontainer_image_signatures\x18\x01 \x03(\v2>.google.cloud.confidentialcomputing.v1.ContainerImageSignatureB\x03\xe0A\x01R\x18containerImageSignatures\"\xd6\x01\n" +
-	"\x17ContainerImageSignature\x12\x1d\n" +
-	"\apayload\x18\x01 \x01(\fB\x03\xe0A\x01R\apayload\x12!\n" +
-	"\tsignature\x18\x02 \x01(\fB\x03\xe0A\x01R\tsignature\x12\"\n" +
+	"\x05value\x18\x02 \x01(\fR\x05value:\x028\x01\"{\n" +
+	"\x15ConfidentialSpaceInfo\x12b\n" +
+	"\x0fsigned_entities\x18\x01 \x03(\v23.google.cloud.confidentialcomputing.v1.SignedEntityB\x04\xe2A\x01\x01R\x0esignedEntities\"\x93\x01\n" +
+	"\fSignedEntity\x12\x82\x01\n" +
+	"\x1acontainer_image_signatures\x18\x01 \x03(\v2>.google.cloud.confidentialcomputing.v1.ContainerImageSignatureB\x04\xe2A\x01\x01R\x18containerImageSignatures\"\xda\x01\n" +
+	"\x17ContainerImageSignature\x12\x1e\n" +
+	"\apayload\x18\x01 \x01(\fB\x04\xe2A\x01\x01R\apayload\x12\"\n" +
+	"\tsignature\x18\x02 \x01(\fB\x04\xe2A\x01\x01R\tsignature\x12#\n" +
 	"\n" +
-	"public_key\x18\x03 \x01(\fB\x03\xe0A\x01R\tpublicKey\x12U\n" +
-	"\asig_alg\x18\x04 \x01(\x0e27.google.cloud.confidentialcomputing.v1.SigningAlgorithmB\x03\xe0A\x01R\x06sigAlg\"\xad\n" +
+	"public_key\x18\x03 \x01(\fB\x04\xe2A\x01\x01R\tpublicKey\x12V\n" +
+	"\asig_alg\x18\x04 \x01(\x0e27.google.cloud.confidentialcomputing.v1.SigningAlgorithmB\x04\xe2A\x01\x01R\x06sigAlg\"\xba\n" +
 	"\n" +
-	"\x1eVerifyConfidentialSpaceRequest\x12Y\n" +
-	"\atd_ccel\x18\x03 \x01(\v29.google.cloud.confidentialcomputing.v1.TdxCcelAttestationB\x03\xe0A\x04H\x00R\x06tdCcel\x12e\n" +
-	"\x0ftpm_attestation\x18\x04 \x01(\v25.google.cloud.confidentialcomputing.v1.TpmAttestationB\x03\xe0A\x04H\x00R\x0etpmAttestation\x12T\n" +
-	"\tchallenge\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".confidentialcomputing.googleapis.com/ChallengeR\tchallenge\x12c\n" +
-	"\x0fgcp_credentials\x18\x02 \x01(\v25.google.cloud.confidentialcomputing.v1.GcpCredentialsB\x03\xe0A\x01R\x0egcpCredentials\x12a\n" +
-	"\x0fsigned_entities\x18\x05 \x03(\v23.google.cloud.confidentialcomputing.v1.SignedEntityB\x03\xe0A\x01R\x0esignedEntities\x12s\n" +
-	"\x15gce_shielded_identity\x18\x06 \x01(\v2:.google.cloud.confidentialcomputing.v1.GceShieldedIdentityB\x03\xe0A\x01R\x13gceShieldedIdentity\x12}\n" +
-	"\aoptions\x18\a \x01(\v2^.google.cloud.confidentialcomputing.v1.VerifyConfidentialSpaceRequest.ConfidentialSpaceOptionsB\x03\xe0A\x01R\aoptions\x12l\n" +
-	"\x12nvidia_attestation\x18\b \x01(\v28.google.cloud.confidentialcomputing.v1.NvidiaAttestationB\x03\xe0A\x01R\x11nvidiaAttestation\x1a\xb5\x03\n" +
-	"\x18ConfidentialSpaceOptions\x12\x82\x01\n" +
-	"\x1aaws_principal_tags_options\x18\x05 \x01(\v2>.google.cloud.confidentialcomputing.v1.AwsPrincipalTagsOptionsB\x03\xe0A\x01H\x00R\x17awsPrincipalTagsOptions\x12\x1f\n" +
-	"\baudience\x18\x01 \x01(\tB\x03\xe0A\x01R\baudience\x12]\n" +
-	"\rtoken_profile\x18\x02 \x01(\x0e23.google.cloud.confidentialcomputing.v1.TokenProfileB\x03\xe0A\x01R\ftokenProfile\x12\x19\n" +
-	"\x05nonce\x18\x03 \x03(\tB\x03\xe0A\x01R\x05nonce\x12`\n" +
-	"\x0esignature_type\x18\x04 \x01(\x0e24.google.cloud.confidentialcomputing.v1.SignatureTypeB\x03\xe0A\x01R\rsignatureTypeB\x17\n" +
+	"\x1eVerifyConfidentialSpaceRequest\x12Z\n" +
+	"\atd_ccel\x18\x03 \x01(\v29.google.cloud.confidentialcomputing.v1.TdxCcelAttestationB\x04\xe2A\x01\x04H\x00R\x06tdCcel\x12f\n" +
+	"\x0ftpm_attestation\x18\x04 \x01(\v25.google.cloud.confidentialcomputing.v1.TpmAttestationB\x04\xe2A\x01\x04H\x00R\x0etpmAttestation\x12U\n" +
+	"\tchallenge\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".confidentialcomputing.googleapis.com/ChallengeR\tchallenge\x12d\n" +
+	"\x0fgcp_credentials\x18\x02 \x01(\v25.google.cloud.confidentialcomputing.v1.GcpCredentialsB\x04\xe2A\x01\x01R\x0egcpCredentials\x12b\n" +
+	"\x0fsigned_entities\x18\x05 \x03(\v23.google.cloud.confidentialcomputing.v1.SignedEntityB\x04\xe2A\x01\x01R\x0esignedEntities\x12t\n" +
+	"\x15gce_shielded_identity\x18\x06 \x01(\v2:.google.cloud.confidentialcomputing.v1.GceShieldedIdentityB\x04\xe2A\x01\x01R\x13gceShieldedIdentity\x12~\n" +
+	"\aoptions\x18\a \x01(\v2^.google.cloud.confidentialcomputing.v1.VerifyConfidentialSpaceRequest.ConfidentialSpaceOptionsB\x04\xe2A\x01\x01R\aoptions\x12m\n" +
+	"\x12nvidia_attestation\x18\b \x01(\v28.google.cloud.confidentialcomputing.v1.NvidiaAttestationB\x04\xe2A\x01\x01R\x11nvidiaAttestation\x1a\xba\x03\n" +
+	"\x18ConfidentialSpaceOptions\x12\x83\x01\n" +
+	"\x1aaws_principal_tags_options\x18\x05 \x01(\v2>.google.cloud.confidentialcomputing.v1.AwsPrincipalTagsOptionsB\x04\xe2A\x01\x01H\x00R\x17awsPrincipalTagsOptions\x12 \n" +
+	"\baudience\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\baudience\x12^\n" +
+	"\rtoken_profile\x18\x02 \x01(\x0e23.google.cloud.confidentialcomputing.v1.TokenProfileB\x04\xe2A\x01\x01R\ftokenProfile\x12\x1a\n" +
+	"\x05nonce\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x05nonce\x12a\n" +
+	"\x0esignature_type\x18\x04 \x01(\x0e24.google.cloud.confidentialcomputing.v1.SignatureTypeB\x04\xe2A\x01\x01R\rsignatureTypeB\x17\n" +
 	"\x15token_profile_optionsB\x11\n" +
-	"\x0ftee_attestation\"\\\n" +
-	"\x13GceShieldedIdentity\x12\x1c\n" +
-	"\aak_cert\x18\x01 \x01(\fB\x03\xe0A\x01R\x06akCert\x12'\n" +
-	"\rak_cert_chain\x18\x02 \x03(\fB\x03\xe0A\x01R\vakCertChain\"\x93\x01\n" +
-	"\x1fVerifyConfidentialSpaceResponse\x120\n" +
-	"\x11attestation_token\x18\x01 \x01(\tB\x03\xe0A\x03R\x10attestationToken\x12>\n" +
-	"\x0epartial_errors\x18\x02 \x03(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\rpartialErrors\"\xf2\x05\n" +
+	"\x0ftee_attestation\"^\n" +
+	"\x13GceShieldedIdentity\x12\x1d\n" +
+	"\aak_cert\x18\x01 \x01(\fB\x04\xe2A\x01\x01R\x06akCert\x12(\n" +
+	"\rak_cert_chain\x18\x02 \x03(\fB\x04\xe2A\x01\x01R\vakCertChain\"\x95\x01\n" +
+	"\x1fVerifyConfidentialSpaceResponse\x121\n" +
+	"\x11attestation_token\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x10attestationToken\x12?\n" +
+	"\x0epartial_errors\x18\x02 \x03(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\rpartialErrors\"\xf8\x05\n" +
 	"\x1cVerifyConfidentialGkeRequest\x12`\n" +
-	"\x0ftpm_attestation\x18\x02 \x01(\v25.google.cloud.confidentialcomputing.v1.TpmAttestationH\x00R\x0etpmAttestation\x12T\n" +
-	"\tchallenge\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".confidentialcomputing.googleapis.com/ChallengeR\tchallenge\x12y\n" +
-	"\aoptions\x18\x03 \x01(\v2Z.google.cloud.confidentialcomputing.v1.VerifyConfidentialGkeRequest.ConfidentialGkeOptionsB\x03\xe0A\x01R\aoptions\x12z\n" +
-	"\rplatform_type\x18\x04 \x01(\x0e2P.google.cloud.confidentialcomputing.v1.VerifyConfidentialGkeRequest.PlatformTypeB\x03\xe0A\x01R\fplatformType\x1a\xb6\x01\n" +
-	"\x16ConfidentialGkeOptions\x12\x1f\n" +
-	"\baudience\x18\x01 \x01(\tB\x03\xe0A\x01R\baudience\x12\x19\n" +
-	"\x05nonce\x18\x03 \x03(\tB\x03\xe0A\x01R\x05nonce\x12`\n" +
-	"\x0esignature_type\x18\x04 \x01(\x0e24.google.cloud.confidentialcomputing.v1.SignatureTypeB\x03\xe0A\x01R\rsignatureType\"W\n" +
+	"\x0ftpm_attestation\x18\x02 \x01(\v25.google.cloud.confidentialcomputing.v1.TpmAttestationH\x00R\x0etpmAttestation\x12U\n" +
+	"\tchallenge\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".confidentialcomputing.googleapis.com/ChallengeR\tchallenge\x12z\n" +
+	"\aoptions\x18\x03 \x01(\v2Z.google.cloud.confidentialcomputing.v1.VerifyConfidentialGkeRequest.ConfidentialGkeOptionsB\x04\xe2A\x01\x01R\aoptions\x12{\n" +
+	"\rplatform_type\x18\x04 \x01(\x0e2P.google.cloud.confidentialcomputing.v1.VerifyConfidentialGkeRequest.PlatformTypeB\x04\xe2A\x01\x01R\fplatformType\x1a\xb9\x01\n" +
+	"\x16ConfidentialGkeOptions\x12 \n" +
+	"\baudience\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\baudience\x12\x1a\n" +
+	"\x05nonce\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x05nonce\x12a\n" +
+	"\x0esignature_type\x18\x04 \x01(\x0e24.google.cloud.confidentialcomputing.v1.SignatureTypeB\x04\xe2A\x01\x01R\rsignatureType\"W\n" +
 	"\fPlatformType\x12\x1d\n" +
 	"\x19PLATFORM_TYPE_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fVIRTUALIZED_CVM\x10\x01\x12\x13\n" +
 	"\x0fBARE_METAL_VTPM\x10\x02B\x11\n" +
-	"\x0ftee_attestation\"Q\n" +
-	"\x1dVerifyConfidentialGkeResponse\x120\n" +
-	"\x11attestation_token\x18\x01 \x01(\tB\x03\xe0A\x03R\x10attestationToken*\x7f\n" +
+	"\x0ftee_attestation\"R\n" +
+	"\x1dVerifyConfidentialGkeResponse\x121\n" +
+	"\x11attestation_token\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x10attestationToken*\x7f\n" +
 	"\x10SigningAlgorithm\x12!\n" +
 	"\x1dSIGNING_ALGORITHM_UNSPECIFIED\x10\x00\x12\x15\n" +
 	"\x11RSASSA_PSS_SHA256\x10\x01\x12\x1a\n" +

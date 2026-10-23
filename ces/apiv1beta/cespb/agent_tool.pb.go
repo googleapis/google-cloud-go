@@ -106,11 +106,11 @@ var File_google_cloud_ces_v1beta_agent_tool_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1beta_agent_tool_proto_rawDesc = "" +
 	"\n" +
-	"(google/cloud/ces/v1beta/agent_tool.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x83\x01\n" +
-	"\tAgentTool\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x126\n" +
-	"\x05agent\x18\x04 \x01(\tB \xe0A\x01\xfaA\x1a\n" +
+	"(google/cloud/ces/v1beta/agent_tool.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x86\x01\n" +
+	"\tAgentTool\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x127\n" +
+	"\x05agent\x18\x04 \x01(\tB!\xe2A\x01\x01\xfaA\x1a\n" +
 	"\x18ces.googleapis.com/AgentR\x05agentB^\n" +
 	"\x1bcom.google.cloud.ces.v1betaB\x0eAgentToolProtoP\x01Z-cloud.google.com/go/ces/apiv1beta/cespb;cespbb\x06proto3"
 

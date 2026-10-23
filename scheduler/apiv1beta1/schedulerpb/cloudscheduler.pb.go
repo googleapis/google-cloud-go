@@ -597,9 +597,9 @@ var File_google_cloud_scheduler_v1beta1_cloudscheduler_proto protoreflect.FileDe
 
 const file_google_cloud_scheduler_v1beta1_cloudscheduler_proto_rawDesc = "" +
 	"\n" +
-	"3google/cloud/scheduler/v1beta1/cloudscheduler.proto\x12\x1egoogle.cloud.scheduler.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/scheduler/v1beta1/job.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xdd\x01\n" +
-	"\x0fListJobsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!cloudscheduler.googleapis.com/JobR\x06parent\x12\x16\n" +
+	"3google/cloud/scheduler/v1beta1/cloudscheduler.proto\x12\x1egoogle.cloud.scheduler.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/scheduler/v1beta1/job.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xde\x01\n" +
+	"\x0fListJobsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!cloudscheduler.googleapis.com/JobR\x06parent\x12\x16\n" +
 	"\x06filter\x18\x04 \x01(\tR\x06filter\x12\x1b\n" +
 	"\tpage_size\x18\x05 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -607,29 +607,29 @@ const file_google_cloud_scheduler_v1beta1_cloudscheduler_proto_rawDesc = "" +
 	"\x16legacy_app_engine_cron\x18\a \x01(\bR\x13legacyAppEngineCron\"s\n" +
 	"\x10ListJobsResponse\x127\n" +
 	"\x04jobs\x18\x01 \x03(\v2#.google.cloud.scheduler.v1beta1.JobR\x04jobs\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"N\n" +
-	"\rGetJobRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!cloudscheduler.googleapis.com/JobR\x04name\"\x91\x01\n" +
-	"\x10CreateJobRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!cloudscheduler.googleapis.com/JobR\x06parent\x12:\n" +
-	"\x03job\x18\x02 \x01(\v2#.google.cloud.scheduler.v1beta1.JobB\x03\xe0A\x02R\x03job\"\x8b\x01\n" +
-	"\x10UpdateJobRequest\x12:\n" +
-	"\x03job\x18\x01 \x01(\v2#.google.cloud.scheduler.v1beta1.JobB\x03\xe0A\x02R\x03job\x12;\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"O\n" +
+	"\rGetJobRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!cloudscheduler.googleapis.com/JobR\x04name\"\x93\x01\n" +
+	"\x10CreateJobRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!cloudscheduler.googleapis.com/JobR\x06parent\x12;\n" +
+	"\x03job\x18\x02 \x01(\v2#.google.cloud.scheduler.v1beta1.JobB\x04\xe2A\x01\x02R\x03job\"\x8c\x01\n" +
+	"\x10UpdateJobRequest\x12;\n" +
+	"\x03job\x18\x01 \x01(\v2#.google.cloud.scheduler.v1beta1.JobB\x04\xe2A\x01\x02R\x03job\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"\x86\x01\n" +
-	"\x10DeleteJobRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"updateMask\"\x87\x01\n" +
+	"\x10DeleteJobRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!cloudscheduler.googleapis.com/JobR\x04name\x123\n" +
-	"\x16legacy_app_engine_cron\x18\x02 \x01(\bR\x13legacyAppEngineCron\"P\n" +
-	"\x0fPauseJobRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!cloudscheduler.googleapis.com/JobR\x04name\"Q\n" +
-	"\x10ResumeJobRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!cloudscheduler.googleapis.com/JobR\x04name\"\x83\x01\n" +
-	"\rRunJobRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x16legacy_app_engine_cron\x18\x02 \x01(\bR\x13legacyAppEngineCron\"Q\n" +
+	"\x0fPauseJobRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!cloudscheduler.googleapis.com/JobR\x04name\"R\n" +
+	"\x10ResumeJobRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!cloudscheduler.googleapis.com/JobR\x04name\"\x84\x01\n" +
+	"\rRunJobRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!cloudscheduler.googleapis.com/JobR\x04name\x123\n" +
 	"\x16legacy_app_engine_cron\x18\x02 \x01(\bR\x13legacyAppEngineCron2\xa6\v\n" +
 	"\x0eCloudScheduler\x12\xad\x01\n" +

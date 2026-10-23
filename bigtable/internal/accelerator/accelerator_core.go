@@ -168,6 +168,11 @@ func NewChannel(
 	if err != nil {
 		return nil, err
 	}
+	// DefaultClientOptions does not touch message sizes, and this dial does not
+	// go through bigtable.NewClient, so without this the daemon would keep
+	// gRPC's 4 MiB default receive limit — making the accelerated path reject
+	// ReadRows responses the client it stands in for accepts.
+	defaultOpts = append(defaultOpts, btopt.MessageSizeOptions()...)
 	opts = append(defaultOpts, opts...)
 
 	sc, err := newSessionClient(ctx, project, instance, appProfile, clientName, opts...)

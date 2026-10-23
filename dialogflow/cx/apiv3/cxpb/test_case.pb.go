@@ -3088,17 +3088,17 @@ var File_google_cloud_dialogflow_cx_v3_test_case_proto protoreflect.FileDescript
 
 const file_google_cloud_dialogflow_cx_v3_test_case_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/dialogflow/cx/v3/test_case.proto\x12\x1dgoogle.cloud.dialogflow.cx.v3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/dialogflow/cx/v3/flow.proto\x1a*google/cloud/dialogflow/cx/v3/intent.proto\x1a(google/cloud/dialogflow/cx/v3/page.proto\x1a4google/cloud/dialogflow/cx/v3/response_message.proto\x1a+google/cloud/dialogflow/cx/v3/session.proto\x1a:google/cloud/dialogflow/cx/v3/transition_route_group.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xc4\x04\n" +
+	"-google/cloud/dialogflow/cx/v3/test_case.proto\x12\x1dgoogle.cloud.dialogflow.cx.v3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/dialogflow/cx/v3/flow.proto\x1a*google/cloud/dialogflow/cx/v3/intent.proto\x1a(google/cloud/dialogflow/cx/v3/page.proto\x1a4google/cloud/dialogflow/cx/v3/response_message.proto\x1a+google/cloud/dialogflow/cx/v3/session.proto\x1a:google/cloud/dialogflow/cx/v3/transition_route_group.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xc6\x04\n" +
 	"\bTestCase\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x12\n" +
-	"\x04tags\x18\x02 \x03(\tR\x04tags\x12&\n" +
-	"\fdisplay_name\x18\x03 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12\x14\n" +
+	"\x04tags\x18\x02 \x03(\tR\x04tags\x12'\n" +
+	"\fdisplay_name\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12\x14\n" +
 	"\x05notes\x18\x04 \x01(\tR\x05notes\x12J\n" +
 	"\vtest_config\x18\r \x01(\v2).google.cloud.dialogflow.cx.v3.TestConfigR\n" +
 	"testConfig\x12p\n" +
-	"\x1ctest_case_conversation_turns\x18\x05 \x03(\v2/.google.cloud.dialogflow.cx.v3.ConversationTurnR\x19testCaseConversationTurns\x12D\n" +
+	"\x1ctest_case_conversation_turns\x18\x05 \x03(\v2/.google.cloud.dialogflow.cx.v3.ConversationTurnR\x19testCaseConversationTurns\x12E\n" +
 	"\rcreation_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\fcreationTime\x12W\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\fcreationTime\x12W\n" +
 	"\x10last_test_result\x18\f \x01(\v2-.google.cloud.dialogflow.cx.v3.TestCaseResultR\x0elastTestResult:u\xeaAr\n" +
 	"\"dialogflow.googleapis.com/TestCase\x12Lprojects/{project}/locations/{location}/agents/{agent}/testCases/{test_case}\"\xe7\x03\n" +
 	"\x0eTestCaseResult\x12\x12\n" +
@@ -3127,9 +3127,9 @@ const file_google_cloud_dialogflow_cx_v3_test_case_proto_rawDesc = "" +
 	"\x12is_webhook_enabled\x18\x03 \x01(\bR\x10isWebhookEnabled\x12:\n" +
 	"\x19enable_sentiment_analysis\x18\a \x01(\bR\x17enableSentimentAnalysis\x1a\xa1\x04\n" +
 	"\x12VirtualAgentOutput\x12F\n" +
-	"\x12session_parameters\x18\x04 \x01(\v2\x17.google.protobuf.StructR\x11sessionParameters\x12W\n" +
-	"\vdifferences\x18\x05 \x03(\v20.google.cloud.dialogflow.cx.v3.TestRunDifferenceB\x03\xe0A\x03R\vdifferences\x12H\n" +
-	"\x0fdiagnostic_info\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x06\xe0A\x02\xe0A\x04R\x0ediagnosticInfo\x12P\n" +
+	"\x12session_parameters\x18\x04 \x01(\v2\x17.google.protobuf.StructR\x11sessionParameters\x12X\n" +
+	"\vdifferences\x18\x05 \x03(\v20.google.cloud.dialogflow.cx.v3.TestRunDifferenceB\x04\xe2A\x01\x03R\vdifferences\x12G\n" +
+	"\x0fdiagnostic_info\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x05\xe2A\x02\x02\x04R\x0ediagnosticInfo\x12P\n" +
 	"\x10triggered_intent\x18\a \x01(\v2%.google.cloud.dialogflow.cx.v3.IntentR\x0ftriggeredIntent\x12F\n" +
 	"\fcurrent_page\x18\b \x01(\v2#.google.cloud.dialogflow.cx.v3.PageR\vcurrentPage\x12Z\n" +
 	"\x0etext_responses\x18\t \x03(\v23.google.cloud.dialogflow.cx.v3.ResponseMessage.TextR\rtextResponses\x12*\n" +
@@ -3181,11 +3181,11 @@ const file_google_cloud_dialogflow_cx_v3_test_case_proto_rawDesc = "" +
 	"\x06Intent\x12=\n" +
 	"\x06intent\x18\x01 \x01(\tB%\xfaA\"\n" +
 	" dialogflow.googleapis.com/IntentR\x06intent\x12\x18\n" +
-	"\acovered\x18\x02 \x01(\bR\acovered\"\xa4\x02\n" +
-	"\x18CalculateCoverageRequest\x12=\n" +
-	"\x05agent\x18\x03 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fdialogflow.googleapis.com/AgentR\x05agent\x12]\n" +
-	"\x04type\x18\x02 \x01(\x0e2D.google.cloud.dialogflow.cx.v3.CalculateCoverageRequest.CoverageTypeB\x03\xe0A\x02R\x04type\"j\n" +
+	"\acovered\x18\x02 \x01(\bR\acovered\"\xa6\x02\n" +
+	"\x18CalculateCoverageRequest\x12>\n" +
+	"\x05agent\x18\x03 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fdialogflow.googleapis.com/AgentR\x05agent\x12^\n" +
+	"\x04type\x18\x02 \x01(\x0e2D.google.cloud.dialogflow.cx.v3.CalculateCoverageRequest.CoverageTypeB\x04\xe2A\x01\x02R\x04type\"j\n" +
 	"\fCoverageType\x12\x1d\n" +
 	"\x19COVERAGE_TYPE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
@@ -3198,9 +3198,9 @@ const file_google_cloud_dialogflow_cx_v3_test_case_proto_rawDesc = "" +
 	"\x0fintent_coverage\x18\x02 \x01(\v2-.google.cloud.dialogflow.cx.v3.IntentCoverageH\x00R\x0eintentCoverage\x12d\n" +
 	"\x13transition_coverage\x18\x04 \x01(\v21.google.cloud.dialogflow.cx.v3.TransitionCoverageH\x00R\x12transitionCoverage\x12o\n" +
 	"\x14route_group_coverage\x18\x06 \x01(\v2;.google.cloud.dialogflow.cx.v3.TransitionRouteGroupCoverageH\x00R\x12routeGroupCoverageB\x0f\n" +
-	"\rcoverage_type\"\xb1\x02\n" +
-	"\x14ListTestCasesRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"dialogflow.googleapis.com/TestCaseR\x06parent\x12\x1b\n" +
+	"\rcoverage_type\"\xb2\x02\n" +
+	"\x14ListTestCasesRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"dialogflow.googleapis.com/TestCaseR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12T\n" +
@@ -3212,35 +3212,35 @@ const file_google_cloud_dialogflow_cx_v3_test_case_proto_rawDesc = "" +
 	"\x15ListTestCasesResponse\x12F\n" +
 	"\n" +
 	"test_cases\x18\x01 \x03(\v2'.google.cloud.dialogflow.cx.v3.TestCaseR\ttestCases\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa3\x01\n" +
-	"\x1bBatchDeleteTestCasesRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"dialogflow.googleapis.com/TestCaseR\x06parent\x12@\n" +
-	"\x05names\x18\x03 \x03(\tB*\xe0A\x02\xfaA$\n" +
-	"\"dialogflow.googleapis.com/TestCaseR\x05names\"\xa6\x01\n" +
-	"\x15CreateTestCaseRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"dialogflow.googleapis.com/TestCaseR\x06parent\x12I\n" +
-	"\ttest_case\x18\x02 \x01(\v2'.google.cloud.dialogflow.cx.v3.TestCaseB\x03\xe0A\x02R\btestCase\"\xa4\x01\n" +
-	"\x15UpdateTestCaseRequest\x12I\n" +
-	"\ttest_case\x18\x01 \x01(\v2'.google.cloud.dialogflow.cx.v3.TestCaseB\x03\xe0A\x02R\btestCase\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"T\n" +
-	"\x12GetTestCaseRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"dialogflow.googleapis.com/TestCaseR\x04name\"\xa5\x01\n" +
-	"\x12RunTestCaseRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"dialogflow.googleapis.com/TestCaseR\x04name\x12O\n" +
-	"\venvironment\x18\x02 \x01(\tB-\xe0A\x01\xfaA'\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa5\x01\n" +
+	"\x1bBatchDeleteTestCasesRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"dialogflow.googleapis.com/TestCaseR\x06parent\x12A\n" +
+	"\x05names\x18\x03 \x03(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"dialogflow.googleapis.com/TestCaseR\x05names\"\xa8\x01\n" +
+	"\x15CreateTestCaseRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"dialogflow.googleapis.com/TestCaseR\x06parent\x12J\n" +
+	"\ttest_case\x18\x02 \x01(\v2'.google.cloud.dialogflow.cx.v3.TestCaseB\x04\xe2A\x01\x02R\btestCase\"\xa6\x01\n" +
+	"\x15UpdateTestCaseRequest\x12J\n" +
+	"\ttest_case\x18\x01 \x01(\v2'.google.cloud.dialogflow.cx.v3.TestCaseB\x04\xe2A\x01\x02R\btestCase\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"U\n" +
+	"\x12GetTestCaseRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"dialogflow.googleapis.com/TestCaseR\x04name\"\xa7\x01\n" +
+	"\x12RunTestCaseRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"dialogflow.googleapis.com/TestCaseR\x04name\x12P\n" +
+	"\venvironment\x18\x02 \x01(\tB.\xe2A\x01\x01\xfaA'\n" +
 	"%dialogflow.googleapis.com/EnvironmentR\venvironment\"\\\n" +
 	"\x13RunTestCaseResponse\x12E\n" +
 	"\x06result\x18\x02 \x01(\v2-.google.cloud.dialogflow.cx.v3.TestCaseResultR\x06result\"\x15\n" +
-	"\x13RunTestCaseMetadata\"\xfa\x01\n" +
-	"\x18BatchRunTestCasesRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"dialogflow.googleapis.com/TestCaseR\x06parent\x12O\n" +
-	"\venvironment\x18\x02 \x01(\tB-\xe0A\x01\xfaA'\n" +
-	"%dialogflow.googleapis.com/EnvironmentR\venvironment\x12I\n" +
+	"\x13RunTestCaseMetadata\"\xfd\x01\n" +
+	"\x18BatchRunTestCasesRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"dialogflow.googleapis.com/TestCaseR\x06parent\x12P\n" +
+	"\venvironment\x18\x02 \x01(\tB.\xe2A\x01\x01\xfaA'\n" +
+	"%dialogflow.googleapis.com/EnvironmentR\venvironment\x12J\n" +
 	"\n" +
-	"test_cases\x18\x03 \x03(\tB*\xe0A\x02\xfaA$\n" +
+	"test_cases\x18\x03 \x03(\tB+\xe2A\x01\x02\xfaA$\n" +
 	"\"dialogflow.googleapis.com/TestCaseR\ttestCases\"d\n" +
 	"\x19BatchRunTestCasesResponse\x12G\n" +
 	"\aresults\x18\x01 \x03(\v2-.google.cloud.dialogflow.cx.v3.TestCaseResultR\aresults\"]\n" +
@@ -3250,9 +3250,9 @@ const file_google_cloud_dialogflow_cx_v3_test_case_proto_rawDesc = "" +
 	"\ttest_case\x18\x01 \x01(\tB'\xfaA$\n" +
 	"\"dialogflow.googleapis.com/TestCaseR\btestCase\x12*\n" +
 	"\x06status\x18\x02 \x01(\v2\x12.google.rpc.StatusR\x06status\x127\n" +
-	"\ttest_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\btestTime\"\x9d\x01\n" +
-	"\x16ImportTestCasesRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"dialogflow.googleapis.com/TestCaseR\x06parent\x12\x19\n" +
+	"\ttest_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\btestTime\"\x9e\x01\n" +
+	"\x16ImportTestCasesRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"dialogflow.googleapis.com/TestCaseR\x06parent\x12\x19\n" +
 	"\agcs_uri\x18\x02 \x01(\tH\x00R\x06gcsUri\x12\x1a\n" +
 	"\acontent\x18\x03 \x01(\fH\x00R\acontentB\b\n" +
 	"\x06source\"X\n" +
@@ -3263,9 +3263,9 @@ const file_google_cloud_dialogflow_cx_v3_test_case_proto_rawDesc = "" +
 	"\x06errors\x18\x01 \x03(\v2,.google.cloud.dialogflow.cx.v3.TestCaseErrorR\x06errors\"\x81\x01\n" +
 	"\rTestCaseError\x12D\n" +
 	"\ttest_case\x18\x01 \x01(\v2'.google.cloud.dialogflow.cx.v3.TestCaseR\btestCase\x12*\n" +
-	"\x06status\x18\x02 \x01(\v2\x12.google.rpc.StatusR\x06status\"\xc0\x02\n" +
-	"\x16ExportTestCasesRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"dialogflow.googleapis.com/TestCaseR\x06parent\x12\x19\n" +
+	"\x06status\x18\x02 \x01(\v2\x12.google.rpc.StatusR\x06status\"\xc1\x02\n" +
+	"\x16ExportTestCasesRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"dialogflow.googleapis.com/TestCaseR\x06parent\x12\x19\n" +
 	"\agcs_uri\x18\x02 \x01(\tH\x00R\x06gcsUri\x12a\n" +
 	"\vdata_format\x18\x03 \x01(\x0e2@.google.cloud.dialogflow.cx.v3.ExportTestCasesRequest.DataFormatR\n" +
 	"dataFormat\x12\x16\n" +
@@ -3280,18 +3280,18 @@ const file_google_cloud_dialogflow_cx_v3_test_case_proto_rawDesc = "" +
 	"\agcs_uri\x18\x01 \x01(\tH\x00R\x06gcsUri\x12\x1a\n" +
 	"\acontent\x18\x02 \x01(\fH\x00R\acontentB\r\n" +
 	"\vdestination\"\x19\n" +
-	"\x17ExportTestCasesMetadata\"\xba\x01\n" +
-	"\x1aListTestCaseResultsRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(dialogflow.googleapis.com/TestCaseResultR\x06parent\x12\x1b\n" +
+	"\x17ExportTestCasesMetadata\"\xbb\x01\n" +
+	"\x1aListTestCaseResultsRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(dialogflow.googleapis.com/TestCaseResultR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
 	"\x06filter\x18\x04 \x01(\tR\x06filter\"\xa0\x01\n" +
 	"\x1bListTestCaseResultsResponse\x12Y\n" +
 	"\x11test_case_results\x18\x01 \x03(\v2-.google.cloud.dialogflow.cx.v3.TestCaseResultR\x0ftestCaseResults\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"`\n" +
-	"\x18GetTestCaseResultRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"a\n" +
+	"\x18GetTestCaseResultRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
 	"(dialogflow.googleapis.com/TestCaseResultR\x04name*A\n" +
 	"\n" +
 	"TestResult\x12\x1b\n" +

@@ -227,27 +227,27 @@ var File_google_cloud_run_v2_worker_pool_revision_template_proto protoreflect.Fi
 
 const file_google_cloud_run_v2_worker_pool_revision_template_proto_rawDesc = "" +
 	"\n" +
-	"7google/cloud/run/v2/worker_pool_revision_template.proto\x12\x13google.cloud.run.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a!google/cloud/run/v2/k8s.min.proto\x1a)google/cloud/run/v2/vendor_settings.proto\x1a\x1egoogle/protobuf/duration.proto\"\xca\t\n" +
-	"\x1aWorkerPoolRevisionTemplate\x12?\n" +
-	"\brevision\x18\x01 \x01(\tB#\xe0A\x01\xfaA\x1d\n" +
-	"\x1brun.googleapis.com/RevisionR\brevision\x12X\n" +
-	"\x06labels\x18\x02 \x03(\v2;.google.cloud.run.v2.WorkerPoolRevisionTemplate.LabelsEntryB\x03\xe0A\x01R\x06labels\x12g\n" +
-	"\vannotations\x18\x03 \x03(\v2@.google.cloud.run.v2.WorkerPoolRevisionTemplate.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12B\n" +
+	"7google/cloud/run/v2/worker_pool_revision_template.proto\x12\x13google.cloud.run.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a!google/cloud/run/v2/k8s.min.proto\x1a)google/cloud/run/v2/vendor_settings.proto\x1a\x1egoogle/protobuf/duration.proto\"\xd5\t\n" +
+	"\x1aWorkerPoolRevisionTemplate\x12@\n" +
+	"\brevision\x18\x01 \x01(\tB$\xe2A\x01\x01\xfaA\x1d\n" +
+	"\x1brun.googleapis.com/RevisionR\brevision\x12Y\n" +
+	"\x06labels\x18\x02 \x03(\v2;.google.cloud.run.v2.WorkerPoolRevisionTemplate.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12h\n" +
+	"\vannotations\x18\x03 \x03(\v2@.google.cloud.run.v2.WorkerPoolRevisionTemplate.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12C\n" +
 	"\n" +
-	"vpc_access\x18\x04 \x01(\v2\x1e.google.cloud.run.v2.VpcAccessB\x03\xe0A\x01R\tvpcAccess\x12,\n" +
-	"\x0fservice_account\x18\x05 \x01(\tB\x03\xe0A\x01R\x0eserviceAccount\x12>\n" +
+	"vpc_access\x18\x04 \x01(\v2\x1e.google.cloud.run.v2.VpcAccessB\x04\xe2A\x01\x01R\tvpcAccess\x12-\n" +
+	"\x0fservice_account\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x0eserviceAccount\x12>\n" +
 	"\n" +
 	"containers\x18\x06 \x03(\v2\x1e.google.cloud.run.v2.ContainerR\n" +
-	"containers\x12:\n" +
-	"\avolumes\x18\a \x03(\v2\x1b.google.cloud.run.v2.VolumeB\x03\xe0A\x01R\avolumes\x12M\n" +
+	"containers\x12;\n" +
+	"\avolumes\x18\a \x03(\v2\x1b.google.cloud.run.v2.VolumeB\x04\xe2A\x01\x01R\avolumes\x12M\n" +
 	"\x0eencryption_key\x18\b \x01(\tB&\xfaA#\n" +
-	"!cloudkms.googleapis.com/CryptoKeyR\rencryptionKey\x12H\n" +
-	"\fservice_mesh\x18\t \x01(\v2 .google.cloud.run.v2.ServiceMeshB\x03\xe0A\x01R\vserviceMesh\x12\x80\x01\n" +
+	"!cloudkms.googleapis.com/CryptoKeyR\rencryptionKey\x12I\n" +
+	"\fservice_mesh\x18\t \x01(\v2 .google.cloud.run.v2.ServiceMeshB\x04\xe2A\x01\x01R\vserviceMesh\x12\x81\x01\n" +
 	" encryption_key_revocation_action\x18\n" +
-	" \x01(\x0e22.google.cloud.run.v2.EncryptionKeyRevocationActionB\x03\xe0A\x01R\x1dencryptionKeyRevocationAction\x12g\n" +
-	" encryption_key_shutdown_duration\x18\v \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x1dencryptionKeyShutdownDuration\x12K\n" +
-	"\rnode_selector\x18\r \x01(\v2!.google.cloud.run.v2.NodeSelectorB\x03\xe0A\x01R\fnodeSelector\x12K\n" +
-	"\x1dgpu_zonal_redundancy_disabled\x18\x10 \x01(\bB\x03\xe0A\x01H\x00R\x1agpuZonalRedundancyDisabled\x88\x01\x01\x1a9\n" +
+	" \x01(\x0e22.google.cloud.run.v2.EncryptionKeyRevocationActionB\x04\xe2A\x01\x01R\x1dencryptionKeyRevocationAction\x12h\n" +
+	" encryption_key_shutdown_duration\x18\v \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x1dencryptionKeyShutdownDuration\x12L\n" +
+	"\rnode_selector\x18\r \x01(\v2!.google.cloud.run.v2.NodeSelectorB\x04\xe2A\x01\x01R\fnodeSelector\x12L\n" +
+	"\x1dgpu_zonal_redundancy_disabled\x18\x10 \x01(\bB\x04\xe2A\x01\x01H\x00R\x1agpuZonalRedundancyDisabled\x88\x01\x01\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a>\n" +

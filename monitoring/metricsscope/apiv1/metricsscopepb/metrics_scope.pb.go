@@ -184,18 +184,18 @@ var File_google_monitoring_metricsscope_v1_metrics_scope_proto protoreflect.File
 
 const file_google_monitoring_metricsscope_v1_metrics_scope_proto_rawDesc = "" +
 	"\n" +
-	"5google/monitoring/metricsscope/v1/metrics_scope.proto\x12!google.monitoring.metricsscope.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf0\x02\n" +
-	"\fMetricsScope\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12g\n" +
-	"\x12monitored_projects\x18\x04 \x03(\v23.google.monitoring.metricsscope.v1.MonitoredProjectB\x03\xe0A\x03R\x11monitoredProjects:Z\xeaAW\n" +
-	"&monitoring.googleapis.com/MetricsScope\x12-locations/global/metricsScope/{metrics_scope}\"\xe1\x01\n" +
-	"\x10MonitoredProject\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"5google/monitoring/metricsscope/v1/metrics_scope.proto\x12!google.monitoring.metricsscope.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf4\x02\n" +
+	"\fMetricsScope\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12h\n" +
+	"\x12monitored_projects\x18\x04 \x03(\v23.google.monitoring.metricsscope.v1.MonitoredProjectB\x04\xe2A\x01\x03R\x11monitoredProjects:Z\xeaAW\n" +
+	"&monitoring.googleapis.com/MetricsScope\x12-locations/global/metricsScope/{metrics_scope}\"\xe3\x01\n" +
+	"\x10MonitoredProject\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"createTime:r\xeaAo\n" +
 	"*monitoring.googleapis.com/MonitoredProject\x12Alocations/global/metricsScopes/{metrics_scope}/projects/{project}B\x8f\x02\n" +
 	"%com.google.monitoring.metricsscope.v1B\x11MetricsScopeProtoP\x01ZOcloud.google.com/go/monitoring/metricsscope/apiv1/metricsscopepb;metricsscopepb\xaa\x02'Google.Cloud.Monitoring.MetricsScope.V1\xca\x02'Google\\Cloud\\Monitoring\\MetricsScope\\V1\xea\x02+Google::Cloud::Monitoring::MetricsScope::V1b\x06proto3"

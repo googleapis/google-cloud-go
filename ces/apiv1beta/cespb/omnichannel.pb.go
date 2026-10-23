@@ -539,22 +539,22 @@ var File_google_cloud_ces_v1beta_omnichannel_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1beta_omnichannel_proto_rawDesc = "" +
 	"\n" +
-	")google/cloud/ces/v1beta/omnichannel.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x82\x04\n" +
-	"\vOmnichannel\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x17\n" +
-	"\x04etag\x18\x06 \x01(\tB\x03\xe0A\x03R\x04etag\x12i\n" +
-	"\x12integration_config\x18\a \x01(\v25.google.cloud.ces.v1beta.OmnichannelIntegrationConfigB\x03\xe0A\x01R\x11integrationConfig:\x82\x01\xeaA\x7f\n" +
-	"\x1eces.googleapis.com/Omnichannel\x12Bprojects/{project}/locations/{location}/omnichannels/{omnichannel}*\fomnichannels2\vomnichannel\"\x9c\f\n" +
-	"\x1cOmnichannelIntegrationConfig\x12w\n" +
-	"\x0fchannel_configs\x18\x01 \x03(\v2I.google.cloud.ces.v1beta.OmnichannelIntegrationConfig.ChannelConfigsEntryB\x03\xe0A\x01R\x0echannelConfigs\x12\x80\x01\n" +
-	"\x12subscriber_configs\x18\x02 \x03(\v2L.google.cloud.ces.v1beta.OmnichannelIntegrationConfig.SubscriberConfigsEntryB\x03\xe0A\x01R\x11subscriberConfigs\x12w\n" +
-	"\x0frouting_configs\x18\x03 \x03(\v2I.google.cloud.ces.v1beta.OmnichannelIntegrationConfig.RoutingConfigsEntryB\x03\xe0A\x01R\x0eroutingConfigs\x1a\x92\x01\n" +
+	")google/cloud/ces/v1beta/omnichannel.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x89\x04\n" +
+	"\vOmnichannel\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x18\n" +
+	"\x04etag\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x04etag\x12j\n" +
+	"\x12integration_config\x18\a \x01(\v25.google.cloud.ces.v1beta.OmnichannelIntegrationConfigB\x04\xe2A\x01\x01R\x11integrationConfig:\x82\x01\xeaA\x7f\n" +
+	"\x1eces.googleapis.com/Omnichannel\x12Bprojects/{project}/locations/{location}/omnichannels/{omnichannel}*\fomnichannels2\vomnichannel\"\x9f\f\n" +
+	"\x1cOmnichannelIntegrationConfig\x12x\n" +
+	"\x0fchannel_configs\x18\x01 \x03(\v2I.google.cloud.ces.v1beta.OmnichannelIntegrationConfig.ChannelConfigsEntryB\x04\xe2A\x01\x01R\x0echannelConfigs\x12\x81\x01\n" +
+	"\x12subscriber_configs\x18\x02 \x03(\v2L.google.cloud.ces.v1beta.OmnichannelIntegrationConfig.SubscriberConfigsEntryB\x04\xe2A\x01\x01R\x11subscriberConfigs\x12x\n" +
+	"\x0frouting_configs\x18\x03 \x03(\v2I.google.cloud.ces.v1beta.OmnichannelIntegrationConfig.RoutingConfigsEntryB\x04\xe2A\x01\x01R\x0eroutingConfigs\x1a\x92\x01\n" +
 	"\rChannelConfig\x12o\n" +
 	"\x0fwhatsapp_config\x18\x01 \x01(\v2D.google.cloud.ces.v1beta.OmnichannelIntegrationConfig.WhatsappConfigH\x00R\x0ewhatsappConfigB\x10\n" +
 	"\x0echannel_config\x1a\xc3\x02\n" +

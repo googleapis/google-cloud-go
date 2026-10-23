@@ -394,20 +394,20 @@ var File_google_cloud_talent_v4beta1_event_proto protoreflect.FileDescriptor
 
 const file_google_cloud_talent_v4beta1_event_proto_rawDesc = "" +
 	"\n" +
-	"'google/cloud/talent/v4beta1/event.proto\x12\x1bgoogle.cloud.talent.v4beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfe\x01\n" +
+	"'google/cloud/talent/v4beta1/event.proto\x12\x1bgoogle.cloud.talent.v4beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x80\x02\n" +
 	"\vClientEvent\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x01 \x01(\tR\trequestId\x12\x1e\n" +
-	"\bevent_id\x18\x02 \x01(\tB\x03\xe0A\x02R\aeventId\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\n" +
+	"request_id\x18\x01 \x01(\tR\trequestId\x12\x1f\n" +
+	"\bevent_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\aeventId\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\n" +
 	"createTime\x12D\n" +
 	"\tjob_event\x18\x05 \x01(\v2%.google.cloud.talent.v4beta1.JobEventH\x00R\bjobEvent\x12\x1f\n" +
 	"\vevent_notes\x18\t \x01(\tR\n" +
 	"eventNotesB\a\n" +
-	"\x05event\"\x8b\x04\n" +
-	"\bJobEvent\x12K\n" +
-	"\x04type\x18\x01 \x01(\x0e22.google.cloud.talent.v4beta1.JobEvent.JobEventTypeB\x03\xe0A\x02R\x04type\x12\x17\n" +
-	"\x04jobs\x18\x02 \x03(\tB\x03\xe0A\x02R\x04jobs\x12\x18\n" +
+	"\x05event\"\x8d\x04\n" +
+	"\bJobEvent\x12L\n" +
+	"\x04type\x18\x01 \x01(\x0e22.google.cloud.talent.v4beta1.JobEvent.JobEventTypeB\x04\xe2A\x01\x02R\x04type\x12\x18\n" +
+	"\x04jobs\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\x04jobs\x12\x18\n" +
 	"\aprofile\x18\x03 \x01(\tR\aprofile\"\xfe\x02\n" +
 	"\fJobEventType\x12\x1e\n" +
 	"\x1aJOB_EVENT_TYPE_UNSPECIFIED\x10\x00\x12\x0e\n" +

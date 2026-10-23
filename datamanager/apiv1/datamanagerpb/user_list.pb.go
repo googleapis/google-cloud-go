@@ -1385,23 +1385,23 @@ var File_google_ads_datamanager_v1_user_list_proto protoreflect.FileDescriptor
 
 const file_google_ads_datamanager_v1_user_list_proto_rawDesc = "" +
 	"\n" +
-	")google/ads/datamanager/v1/user_list.proto\x12\x19google.ads.datamanager.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\"\xc9\f\n" +
-	"\bUserList\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x13\n" +
-	"\x02id\x18\x02 \x01(\x03B\x03\xe0A\x03R\x02id\x12 \n" +
-	"\tread_only\x18\x03 \x01(\bB\x03\xe0A\x03R\breadOnly\x12+\n" +
-	"\fdisplay_name\x18\x04 \x01(\tB\x03\xe0A\x02H\x01R\vdisplayName\x88\x01\x01\x12*\n" +
-	"\vdescription\x18\x05 \x01(\tB\x03\xe0A\x01H\x02R\vdescription\x88\x01\x01\x12k\n" +
-	"\x11membership_status\x18\x06 \x01(\x0e24.google.ads.datamanager.v1.UserList.MembershipStatusB\x03\xe0A\x01H\x03R\x10membershipStatus\x88\x01\x01\x123\n" +
-	"\x10integration_code\x18\a \x01(\tB\x03\xe0A\x01H\x04R\x0fintegrationCode\x88\x01\x01\x12O\n" +
-	"\x13membership_duration\x18\b \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x12membershipDuration\x12b\n" +
-	"\x0eclosing_reason\x18\t \x01(\x0e21.google.ads.datamanager.v1.UserList.ClosingReasonB\x03\xe0A\x03H\x05R\rclosingReason\x88\x01\x01\x12Z\n" +
+	")google/ads/datamanager/v1/user_list.proto\x12\x19google.ads.datamanager.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\"\xd7\f\n" +
+	"\bUserList\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x14\n" +
+	"\x02id\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\x02id\x12!\n" +
+	"\tread_only\x18\x03 \x01(\bB\x04\xe2A\x01\x03R\breadOnly\x12,\n" +
+	"\fdisplay_name\x18\x04 \x01(\tB\x04\xe2A\x01\x02H\x01R\vdisplayName\x88\x01\x01\x12+\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01H\x02R\vdescription\x88\x01\x01\x12l\n" +
+	"\x11membership_status\x18\x06 \x01(\x0e24.google.ads.datamanager.v1.UserList.MembershipStatusB\x04\xe2A\x01\x01H\x03R\x10membershipStatus\x88\x01\x01\x124\n" +
+	"\x10integration_code\x18\a \x01(\tB\x04\xe2A\x01\x01H\x04R\x0fintegrationCode\x88\x01\x01\x12P\n" +
+	"\x13membership_duration\x18\b \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x12membershipDuration\x12c\n" +
+	"\x0eclosing_reason\x18\t \x01(\x0e21.google.ads.datamanager.v1.UserList.ClosingReasonB\x04\xe2A\x01\x03H\x05R\rclosingReason\x88\x01\x01\x12[\n" +
 	"\raccess_reason\x18\n" +
-	" \x01(\x0e20.google.ads.datamanager.v1.UserList.AccessReasonB\x03\xe0A\x03R\faccessReason\x12n\n" +
-	"\x15account_access_status\x18\v \x01(\x0e20.google.ads.datamanager.v1.UserList.AccessStatusB\x03\xe0A\x01H\x06R\x13accountAccessStatus\x88\x01\x01\x12E\n" +
-	"\tsize_info\x18\f \x01(\v2#.google.ads.datamanager.v1.SizeInfoB\x03\xe0A\x03R\bsizeInfo\x12a\n" +
-	"\x13target_network_info\x18\r \x01(\v2,.google.ads.datamanager.v1.TargetNetworkInfoB\x03\xe0A\x01R\x11targetNetworkInfo\x12m\n" +
-	"\x17ingested_user_list_info\x18\x0e \x01(\v2/.google.ads.datamanager.v1.IngestedUserListInfoB\x03\xe0A\x01H\x00R\x14ingestedUserListInfo\"K\n" +
+	" \x01(\x0e20.google.ads.datamanager.v1.UserList.AccessReasonB\x04\xe2A\x01\x03R\faccessReason\x12o\n" +
+	"\x15account_access_status\x18\v \x01(\x0e20.google.ads.datamanager.v1.UserList.AccessStatusB\x04\xe2A\x01\x01H\x06R\x13accountAccessStatus\x88\x01\x01\x12F\n" +
+	"\tsize_info\x18\f \x01(\v2#.google.ads.datamanager.v1.SizeInfoB\x04\xe2A\x01\x03R\bsizeInfo\x12b\n" +
+	"\x13target_network_info\x18\r \x01(\v2,.google.ads.datamanager.v1.TargetNetworkInfoB\x04\xe2A\x01\x01R\x11targetNetworkInfo\x12n\n" +
+	"\x17ingested_user_list_info\x18\x0e \x01(\v2/.google.ads.datamanager.v1.IngestedUserListInfoB\x04\xe2A\x01\x01H\x00R\x14ingestedUserListInfo\"K\n" +
 	"\x10MembershipStatus\x12!\n" +
 	"\x1dMEMBERSHIP_STATUS_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04OPEN\x10\x01\x12\n" +
@@ -1432,26 +1432,26 @@ const file_google_ads_datamanager_v1_user_list_proto_rawDesc = "" +
 	"\x12_membership_statusB\x13\n" +
 	"\x11_integration_codeB\x11\n" +
 	"\x0f_closing_reasonB\x18\n" +
-	"\x16_account_access_status\"\x86\x02\n" +
-	"\bSizeInfo\x12F\n" +
-	"\x1ddisplay_network_members_count\x18\x01 \x01(\x03B\x03\xe0A\x03R\x1adisplayNetworkMembersCount\x12D\n" +
-	"\x1csearch_network_members_count\x18\x02 \x01(\x03B\x03\xe0A\x03R\x19searchNetworkMembersCount\x127\n" +
-	"\x15youtube_members_count\x18\x03 \x01(\x03B\x03\xe0A\x03R\x13youtubeMembersCount\x123\n" +
-	"\x13gmail_members_count\x18\x04 \x01(\x03B\x03\xe0A\x03R\x11gmailMembersCount\"\x9c\x01\n" +
-	"\x11TargetNetworkInfo\x125\n" +
-	"\x14eligible_for_display\x18\x01 \x01(\bB\x03\xe0A\x03R\x12eligibleForDisplay\x128\n" +
-	"\x13eligible_for_search\x18\x02 \x01(\bB\x03\xe0A\x01H\x00R\x11eligibleForSearch\x88\x01\x01B\x16\n" +
-	"\x14_eligible_for_search\"\x9d\x06\n" +
-	"\x14IngestedUserListInfo\x12o\n" +
-	"\x10upload_key_types\x18\x01 \x03(\x0e2=.google.ads.datamanager.v1.IngestedUserListInfo.UploadKeyTypeB\x06\xe0A\x02\xe0A\x05R\x0euploadKeyTypes\x12U\n" +
-	"\x0fcontact_id_info\x18\x02 \x01(\v2(.google.ads.datamanager.v1.ContactIdInfoB\x03\xe0A\x01R\rcontactIdInfo\x12R\n" +
-	"\x0emobile_id_info\x18\x03 \x01(\v2'.google.ads.datamanager.v1.MobileIdInfoB\x03\xe0A\x01R\fmobileIdInfo\x12L\n" +
-	"\fuser_id_info\x18\x04 \x01(\v2%.google.ads.datamanager.v1.UserIdInfoB\x03\xe0A\x01R\n" +
-	"userIdInfo\x12L\n" +
-	"\fpair_id_info\x18\x05 \x01(\v2%.google.ads.datamanager.v1.PairIdInfoB\x03\xe0A\x01R\n" +
-	"pairIdInfo\x12d\n" +
-	"\x14pseudonymous_id_info\x18\x06 \x01(\v2-.google.ads.datamanager.v1.PseudonymousIdInfoB\x03\xe0A\x01R\x12pseudonymousIdInfo\x12g\n" +
-	"\x15partner_audience_info\x18\a \x01(\v2..google.ads.datamanager.v1.PartnerAudienceInfoB\x03\xe0A\x01R\x13partnerAudienceInfo\"~\n" +
+	"\x16_account_access_status\"\x8a\x02\n" +
+	"\bSizeInfo\x12G\n" +
+	"\x1ddisplay_network_members_count\x18\x01 \x01(\x03B\x04\xe2A\x01\x03R\x1adisplayNetworkMembersCount\x12E\n" +
+	"\x1csearch_network_members_count\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\x19searchNetworkMembersCount\x128\n" +
+	"\x15youtube_members_count\x18\x03 \x01(\x03B\x04\xe2A\x01\x03R\x13youtubeMembersCount\x124\n" +
+	"\x13gmail_members_count\x18\x04 \x01(\x03B\x04\xe2A\x01\x03R\x11gmailMembersCount\"\x9e\x01\n" +
+	"\x11TargetNetworkInfo\x126\n" +
+	"\x14eligible_for_display\x18\x01 \x01(\bB\x04\xe2A\x01\x03R\x12eligibleForDisplay\x129\n" +
+	"\x13eligible_for_search\x18\x02 \x01(\bB\x04\xe2A\x01\x01H\x00R\x11eligibleForSearch\x88\x01\x01B\x16\n" +
+	"\x14_eligible_for_search\"\xa2\x06\n" +
+	"\x14IngestedUserListInfo\x12n\n" +
+	"\x10upload_key_types\x18\x01 \x03(\x0e2=.google.ads.datamanager.v1.IngestedUserListInfo.UploadKeyTypeB\x05\xe2A\x02\x02\x05R\x0euploadKeyTypes\x12V\n" +
+	"\x0fcontact_id_info\x18\x02 \x01(\v2(.google.ads.datamanager.v1.ContactIdInfoB\x04\xe2A\x01\x01R\rcontactIdInfo\x12S\n" +
+	"\x0emobile_id_info\x18\x03 \x01(\v2'.google.ads.datamanager.v1.MobileIdInfoB\x04\xe2A\x01\x01R\fmobileIdInfo\x12M\n" +
+	"\fuser_id_info\x18\x04 \x01(\v2%.google.ads.datamanager.v1.UserIdInfoB\x04\xe2A\x01\x01R\n" +
+	"userIdInfo\x12M\n" +
+	"\fpair_id_info\x18\x05 \x01(\v2%.google.ads.datamanager.v1.PairIdInfoB\x04\xe2A\x01\x01R\n" +
+	"pairIdInfo\x12e\n" +
+	"\x14pseudonymous_id_info\x18\x06 \x01(\v2-.google.ads.datamanager.v1.PseudonymousIdInfoB\x04\xe2A\x01\x01R\x12pseudonymousIdInfo\x12h\n" +
+	"\x15partner_audience_info\x18\a \x01(\v2..google.ads.datamanager.v1.PartnerAudienceInfoB\x04\xe2A\x01\x01R\x13partnerAudienceInfo\"~\n" +
 	"\rUploadKeyType\x12\x1f\n" +
 	"\x1bUPLOAD_KEY_TYPE_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +
@@ -1460,14 +1460,14 @@ const file_google_ads_datamanager_v1_user_list_proto_rawDesc = "" +
 	"\aUSER_ID\x10\x03\x12\v\n" +
 	"\aPAIR_ID\x10\x04\x12\x13\n" +
 	"\x0fPSEUDONYMOUS_ID\x10\x05\"\xbf\x01\n" +
-	"\rContactIdInfo\x12`\n" +
-	"\x10data_source_type\x18\x01 \x01(\x0e2).google.ads.datamanager.v1.DataSourceTypeB\x06\xe0A\x01\xe0A\x05H\x00R\x0edataSourceType\x88\x01\x01\x127\n" +
-	"\x15match_rate_percentage\x18\x02 \x01(\x05B\x03\xe0A\x03R\x13matchRatePercentageB\x13\n" +
-	"\x11_data_source_type\"\xdb\x02\n" +
-	"\fMobileIdInfo\x12`\n" +
-	"\x10data_source_type\x18\x01 \x01(\x0e2).google.ads.datamanager.v1.DataSourceTypeB\x06\xe0A\x01\xe0A\x05H\x00R\x0edataSourceType\x88\x01\x01\x12Z\n" +
-	"\tkey_space\x18\x02 \x01(\x0e20.google.ads.datamanager.v1.MobileIdInfo.KeySpaceB\x06\xe0A\x02\xe0A\x05H\x01R\bkeySpace\x88\x01\x01\x12\"\n" +
-	"\x06app_id\x18\x03 \x01(\tB\x06\xe0A\x02\xe0A\x05H\x02R\x05appId\x88\x01\x01\";\n" +
+	"\rContactIdInfo\x12_\n" +
+	"\x10data_source_type\x18\x01 \x01(\x0e2).google.ads.datamanager.v1.DataSourceTypeB\x05\xe2A\x02\x01\x05H\x00R\x0edataSourceType\x88\x01\x01\x128\n" +
+	"\x15match_rate_percentage\x18\x02 \x01(\x05B\x04\xe2A\x01\x03R\x13matchRatePercentageB\x13\n" +
+	"\x11_data_source_type\"\xd8\x02\n" +
+	"\fMobileIdInfo\x12_\n" +
+	"\x10data_source_type\x18\x01 \x01(\x0e2).google.ads.datamanager.v1.DataSourceTypeB\x05\xe2A\x02\x01\x05H\x00R\x0edataSourceType\x88\x01\x01\x12Y\n" +
+	"\tkey_space\x18\x02 \x01(\x0e20.google.ads.datamanager.v1.MobileIdInfo.KeySpaceB\x05\xe2A\x02\x02\x05H\x01R\bkeySpace\x88\x01\x01\x12!\n" +
+	"\x06app_id\x18\x03 \x01(\tB\x05\xe2A\x02\x02\x05H\x02R\x05appId\x88\x01\x01\";\n" +
 	"\bKeySpace\x12\x19\n" +
 	"\x15KEY_SPACE_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03IOS\x10\x01\x12\v\n" +
@@ -1475,26 +1475,26 @@ const file_google_ads_datamanager_v1_user_list_proto_rawDesc = "" +
 	"\x11_data_source_typeB\f\n" +
 	"\n" +
 	"_key_spaceB\t\n" +
-	"\a_app_id\"\x83\x01\n" +
+	"\a_app_id\"\x82\x01\n" +
 	"\n" +
-	"UserIdInfo\x12`\n" +
-	"\x10data_source_type\x18\x01 \x01(\x0e2).google.ads.datamanager.v1.DataSourceTypeB\x06\xe0A\x01\xe0A\x05H\x00R\x0edataSourceType\x88\x01\x01B\x13\n" +
-	"\x11_data_source_type\"\xae\x03\n" +
+	"UserIdInfo\x12_\n" +
+	"\x10data_source_type\x18\x01 \x01(\x0e2).google.ads.datamanager.v1.DataSourceTypeB\x05\xe2A\x02\x01\x05H\x00R\x0edataSourceType\x88\x01\x01B\x13\n" +
+	"\x11_data_source_type\"\xaf\x03\n" +
 	"\n" +
-	"PairIdInfo\x12.\n" +
-	"\fpublisher_id\x18\x01 \x01(\x03B\x06\xe0A\x02\xe0A\x05H\x00R\vpublisherId\x88\x01\x01\x12/\n" +
-	"\x0epublisher_name\x18\x02 \x01(\tB\x03\xe0A\x02H\x01R\rpublisherName\x88\x01\x01\x12<\n" +
-	"\x15match_rate_percentage\x18\x03 \x01(\x05B\x03\xe0A\x02H\x02R\x13matchRatePercentage\x88\x01\x01\x12H\n" +
-	"\x1badvertiser_identifier_count\x18\x04 \x01(\x03B\x03\xe0A\x01H\x03R\x19advertiserIdentifierCount\x88\x01\x01\x12?\n" +
-	"\x15clean_room_identifier\x18\x05 \x01(\tB\x06\xe0A\x02\xe0A\x05H\x04R\x13cleanRoomIdentifier\x88\x01\x01B\x0f\n" +
+	"PairIdInfo\x12-\n" +
+	"\fpublisher_id\x18\x01 \x01(\x03B\x05\xe2A\x02\x02\x05H\x00R\vpublisherId\x88\x01\x01\x120\n" +
+	"\x0epublisher_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02H\x01R\rpublisherName\x88\x01\x01\x12=\n" +
+	"\x15match_rate_percentage\x18\x03 \x01(\x05B\x04\xe2A\x01\x02H\x02R\x13matchRatePercentage\x88\x01\x01\x12I\n" +
+	"\x1badvertiser_identifier_count\x18\x04 \x01(\x03B\x04\xe2A\x01\x01H\x03R\x19advertiserIdentifierCount\x88\x01\x01\x12>\n" +
+	"\x15clean_room_identifier\x18\x05 \x01(\tB\x05\xe2A\x02\x02\x05H\x04R\x13cleanRoomIdentifier\x88\x01\x01B\x0f\n" +
 	"\r_publisher_idB\x11\n" +
 	"\x0f_publisher_nameB\x18\n" +
 	"\x16_match_rate_percentageB\x1e\n" +
 	"\x1c_advertiser_identifier_countB\x18\n" +
 	"\x16_clean_room_identifier\"\x97\x03\n" +
-	"\x13PartnerAudienceInfo\x12\x89\x01\n" +
-	"\x17partner_audience_source\x18\x01 \x01(\x0e2D.google.ads.datamanager.v1.PartnerAudienceInfo.PartnerAudienceSourceB\x06\xe0A\x02\xe0A\x05H\x00R\x15partnerAudienceSource\x88\x01\x01\x123\n" +
-	"\x10commerce_partner\x18\x02 \x01(\tB\x03\xe0A\x01H\x01R\x0fcommercePartner\x88\x01\x01\"\x8d\x01\n" +
+	"\x13PartnerAudienceInfo\x12\x88\x01\n" +
+	"\x17partner_audience_source\x18\x01 \x01(\x0e2D.google.ads.datamanager.v1.PartnerAudienceInfo.PartnerAudienceSourceB\x05\xe2A\x02\x02\x05H\x00R\x15partnerAudienceSource\x88\x01\x01\x124\n" +
+	"\x10commerce_partner\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x01R\x0fcommercePartner\x88\x01\x01\"\x8d\x01\n" +
 	"\x15PartnerAudienceSource\x12'\n" +
 	"#PARTNER_AUDIENCE_SOURCE_UNSPECIFIED\x10\x00\x12\x15\n" +
 	"\x11COMMERCE_AUDIENCE\x10\x01\x12\x16\n" +
@@ -1502,10 +1502,10 @@ const file_google_ads_datamanager_v1_user_list_proto_rawDesc = "" +
 	"\x18AGENCY_PROVIDER_AUDIENCE\x10\x03B\x1a\n" +
 	"\x18_partner_audience_sourceB\x13\n" +
 	"\x11_commerce_partner\"\xbb\x02\n" +
-	"\x12PseudonymousIdInfo\x12c\n" +
-	"\vsync_status\x18\x01 \x01(\x0e28.google.ads.datamanager.v1.PseudonymousIdInfo.SyncStatusB\x03\xe0A\x03H\x00R\n" +
-	"syncStatus\x88\x01\x01\x12?\n" +
-	"\x15billable_record_count\x18\x02 \x01(\x03B\x06\xe0A\x01\xe0A\x05H\x01R\x13billableRecordCount\x88\x01\x01\"U\n" +
+	"\x12PseudonymousIdInfo\x12d\n" +
+	"\vsync_status\x18\x01 \x01(\x0e28.google.ads.datamanager.v1.PseudonymousIdInfo.SyncStatusB\x04\xe2A\x01\x03H\x00R\n" +
+	"syncStatus\x88\x01\x01\x12>\n" +
+	"\x15billable_record_count\x18\x02 \x01(\x03B\x05\xe2A\x02\x01\x05H\x01R\x13billableRecordCount\x88\x01\x01\"U\n" +
 	"\n" +
 	"SyncStatus\x12\x1b\n" +
 	"\x17SYNC_STATUS_UNSPECIFIED\x10\x00\x12\v\n" +

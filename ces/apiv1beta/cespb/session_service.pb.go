@@ -1812,50 +1812,50 @@ var File_google_cloud_ces_v1beta_session_service_proto protoreflect.FileDescript
 
 const file_google_cloud_ces_v1beta_session_service_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/ces/v1beta/session_service.proto\x12\x17google.cloud.ces.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x18google/api/routing.proto\x1a$google/cloud/ces/v1beta/common.proto\x1a%google/cloud/ces/v1beta/example.proto\x1a#google/cloud/ces/v1beta/mocks.proto\x1a0google/cloud/ces/v1beta/search_suggestions.proto\x1a\x19google/protobuf/any.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xd3\x02\n" +
+	"-google/cloud/ces/v1beta/session_service.proto\x12\x17google.cloud.ces.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x18google/api/routing.proto\x1a$google/cloud/ces/v1beta/common.proto\x1a%google/cloud/ces/v1beta/example.proto\x1a#google/cloud/ces/v1beta/mocks.proto\x1a0google/cloud/ces/v1beta/search_suggestions.proto\x1a\x19google/protobuf/any.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xd5\x02\n" +
 	"\n" +
-	"MockConfig\x12X\n" +
-	"\x11mocked_tool_calls\x18\x01 \x03(\v2'.google.cloud.ces.v1beta.MockedToolCallB\x03\xe0A\x01R\x0fmockedToolCalls\x12\x83\x01\n" +
-	"\x1cunmatched_tool_call_behavior\x18\x02 \x01(\x0e2=.google.cloud.ces.v1beta.MockConfig.UnmatchedToolCallBehaviorB\x03\xe0A\x02R\x19unmatchedToolCallBehavior\"e\n" +
+	"MockConfig\x12Y\n" +
+	"\x11mocked_tool_calls\x18\x01 \x03(\v2'.google.cloud.ces.v1beta.MockedToolCallB\x04\xe2A\x01\x01R\x0fmockedToolCalls\x12\x84\x01\n" +
+	"\x1cunmatched_tool_call_behavior\x18\x02 \x01(\x0e2=.google.cloud.ces.v1beta.MockConfig.UnmatchedToolCallBehaviorB\x04\xe2A\x01\x02R\x19unmatchedToolCallBehavior\"e\n" +
 	"\x19UnmatchedToolCallBehavior\x12,\n" +
 	"(UNMATCHED_TOOL_CALL_BEHAVIOR_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04FAIL\x10\x01\x12\x10\n" +
-	"\fPASS_THROUGH\x10\x02\"\xd4\x01\n" +
-	"\x10InputAudioConfig\x12R\n" +
-	"\x0eaudio_encoding\x18\x01 \x01(\x0e2&.google.cloud.ces.v1beta.AudioEncodingB\x03\xe0A\x02R\raudioEncoding\x12/\n" +
-	"\x11sample_rate_hertz\x18\x02 \x01(\x05B\x03\xe0A\x02R\x0fsampleRateHertz\x12;\n" +
-	"\x17noise_suppression_level\x18\x06 \x01(\tB\x03\xe0A\x01R\x15noiseSuppressionLevel\"\x98\x01\n" +
-	"\x11OutputAudioConfig\x12R\n" +
-	"\x0eaudio_encoding\x18\x01 \x01(\x0e2&.google.cloud.ces.v1beta.AudioEncodingB\x03\xe0A\x02R\raudioEncoding\x12/\n" +
-	"\x11sample_rate_hertz\x18\x02 \x01(\x05B\x03\xe0A\x02R\x0fsampleRateHertz\"\xe1\b\n" +
-	"\rSessionConfig\x12<\n" +
-	"\asession\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
-	"\x1aces.googleapis.com/SessionR\asession\x12\\\n" +
-	"\x12input_audio_config\x18\x02 \x01(\v2).google.cloud.ces.v1beta.InputAudioConfigB\x03\xe0A\x01R\x10inputAudioConfig\x12_\n" +
-	"\x13output_audio_config\x18\x03 \x01(\v2*.google.cloud.ces.v1beta.OutputAudioConfigB\x03\xe0A\x01R\x11outputAudioConfig\x12V\n" +
-	"\x13historical_contexts\x18\x05 \x03(\v2 .google.cloud.ces.v1beta.MessageB\x03\xe0A\x01R\x12historicalContexts\x12A\n" +
-	"\ventry_agent\x18\f \x01(\tB \xe0A\x01\xfaA\x1a\n" +
+	"\fPASS_THROUGH\x10\x02\"\xd7\x01\n" +
+	"\x10InputAudioConfig\x12S\n" +
+	"\x0eaudio_encoding\x18\x01 \x01(\x0e2&.google.cloud.ces.v1beta.AudioEncodingB\x04\xe2A\x01\x02R\raudioEncoding\x120\n" +
+	"\x11sample_rate_hertz\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\x0fsampleRateHertz\x12<\n" +
+	"\x17noise_suppression_level\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x15noiseSuppressionLevel\"\x9a\x01\n" +
+	"\x11OutputAudioConfig\x12S\n" +
+	"\x0eaudio_encoding\x18\x01 \x01(\x0e2&.google.cloud.ces.v1beta.AudioEncodingB\x04\xe2A\x01\x02R\raudioEncoding\x120\n" +
+	"\x11sample_rate_hertz\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\x0fsampleRateHertz\"\xee\b\n" +
+	"\rSessionConfig\x12=\n" +
+	"\asession\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\n" +
+	"\x1aces.googleapis.com/SessionR\asession\x12]\n" +
+	"\x12input_audio_config\x18\x02 \x01(\v2).google.cloud.ces.v1beta.InputAudioConfigB\x04\xe2A\x01\x01R\x10inputAudioConfig\x12`\n" +
+	"\x13output_audio_config\x18\x03 \x01(\v2*.google.cloud.ces.v1beta.OutputAudioConfigB\x04\xe2A\x01\x01R\x11outputAudioConfig\x12W\n" +
+	"\x13historical_contexts\x18\x05 \x03(\v2 .google.cloud.ces.v1beta.MessageB\x04\xe2A\x01\x01R\x12historicalContexts\x12B\n" +
+	"\ventry_agent\x18\f \x01(\tB!\xe2A\x01\x01\xfaA\x1a\n" +
 	"\x18ces.googleapis.com/AgentR\n" +
-	"entryAgent\x12#\n" +
+	"entryAgent\x12$\n" +
 	"\n" +
-	"deployment\x18\b \x01(\tB\x03\xe0A\x01R\n" +
-	"deployment\x12 \n" +
-	"\ttime_zone\x18\v \x01(\tB\x03\xe0A\x01R\btimeZone\x12)\n" +
-	"\x0euse_tool_fakes\x18\x0e \x01(\bB\x03\xe0A\x01R\fuseToolFakes\x12\x98\x01\n" +
-	"\"remote_dialogflow_query_parameters\x18\x0f \x01(\v2F.google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParametersB\x03\xe0A\x01R\x1fremoteDialogflowQueryParameters\x127\n" +
-	"\x15enable_text_streaming\x18\x12 \x01(\bB\x03\xe0A\x01R\x13enableTextStreaming\x1a\xf1\x02\n" +
-	"\x1fRemoteDialogflowQueryParameters\x12\x88\x01\n" +
-	"\x0fwebhook_headers\x18\x01 \x03(\v2Z.google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParameters.WebhookHeadersEntryB\x03\xe0A\x01R\x0ewebhookHeaders\x126\n" +
-	"\apayload\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\apayload\x12H\n" +
-	"\x11end_user_metadata\x18\x03 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x0fendUserMetadata\x1aA\n" +
+	"deployment\x18\b \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"deployment\x12!\n" +
+	"\ttime_zone\x18\v \x01(\tB\x04\xe2A\x01\x01R\btimeZone\x12*\n" +
+	"\x0euse_tool_fakes\x18\x0e \x01(\bB\x04\xe2A\x01\x01R\fuseToolFakes\x12\x99\x01\n" +
+	"\"remote_dialogflow_query_parameters\x18\x0f \x01(\v2F.google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParametersB\x04\xe2A\x01\x01R\x1fremoteDialogflowQueryParameters\x128\n" +
+	"\x15enable_text_streaming\x18\x12 \x01(\bB\x04\xe2A\x01\x01R\x13enableTextStreaming\x1a\xf4\x02\n" +
+	"\x1fRemoteDialogflowQueryParameters\x12\x89\x01\n" +
+	"\x0fwebhook_headers\x18\x01 \x03(\v2Z.google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParameters.WebhookHeadersEntryB\x04\xe2A\x01\x01R\x0ewebhookHeaders\x127\n" +
+	"\apayload\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\apayload\x12I\n" +
+	"\x11end_user_metadata\x18\x03 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\x0fendUserMetadata\x1aA\n" +
 	"\x13WebhookHeadersEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"R\n" +
-	"\tToolCalls\x12E\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"S\n" +
+	"\tToolCalls\x12F\n" +
 	"\n" +
-	"tool_calls\x18\x01 \x03(\v2!.google.cloud.ces.v1beta.ToolCallB\x03\xe0A\x01R\ttoolCalls\"b\n" +
-	"\rToolResponses\x12Q\n" +
-	"\x0etool_responses\x18\x01 \x03(\v2%.google.cloud.ces.v1beta.ToolResponseB\x03\xe0A\x01R\rtoolResponses\"\xda\x01\n" +
+	"tool_calls\x18\x01 \x03(\v2!.google.cloud.ces.v1beta.ToolCallB\x04\xe2A\x01\x01R\ttoolCalls\"c\n" +
+	"\rToolResponses\x12R\n" +
+	"\x0etool_responses\x18\x01 \x03(\v2%.google.cloud.ces.v1beta.ToolResponseB\x04\xe2A\x01\x01R\rtoolResponses\"\xda\x01\n" +
 	"\tCitations\x12P\n" +
 	"\fcited_chunks\x18\x01 \x03(\v2-.google.cloud.ces.v1beta.Citations.CitedChunkR\vcitedChunks\x1a{\n" +
 	"\n" +
@@ -1863,21 +1863,21 @@ const file_google_cloud_ces_v1beta_session_service_proto_rawDesc = "" +
 	"\x03uri\x18\x01 \x01(\tR\x03uri\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12\x12\n" +
 	"\x04text\x18\x03 \x01(\tR\x04text\x121\n" +
-	"\x14requires_attribution\x18\x04 \x01(\bR\x13requiresAttribution\"\"\n" +
-	"\x05Event\x12\x19\n" +
-	"\x05event\x18\x01 \x01(\tB\x03\xe0A\x02R\x05event\"\xe1\x03\n" +
-	"\fSessionInput\x12\x19\n" +
-	"\x04text\x18\x01 \x01(\tB\x03\xe0A\x01H\x00R\x04text\x12\x19\n" +
-	"\x04dtmf\x18\x06 \x01(\tB\x03\xe0A\x01H\x00R\x04dtmf\x12\x1b\n" +
-	"\x05audio\x18\x02 \x01(\fB\x03\xe0A\x01H\x00R\x05audio\x12T\n" +
-	"\x0etool_responses\x18\x03 \x01(\v2&.google.cloud.ces.v1beta.ToolResponsesB\x03\xe0A\x01H\x00R\rtoolResponses\x12;\n" +
-	"\x05image\x18\x04 \x01(\v2\x1e.google.cloud.ces.v1beta.ImageB\x03\xe0A\x01H\x00R\x05image\x128\n" +
-	"\x04blob\x18\a \x01(\v2\x1d.google.cloud.ces.v1beta.BlobB\x03\xe0A\x01H\x00R\x04blob\x12<\n" +
-	"\tvariables\x18\x05 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01H\x00R\tvariables\x12;\n" +
-	"\x05event\x18\t \x01(\v2\x1e.google.cloud.ces.v1beta.EventB\x03\xe0A\x01H\x00R\x05event\x12(\n" +
-	"\rwill_continue\x18\b \x01(\bB\x03\xe0A\x01R\fwillContinueB\f\n" +
+	"\x14requires_attribution\x18\x04 \x01(\bR\x13requiresAttribution\"#\n" +
+	"\x05Event\x12\x1a\n" +
+	"\x05event\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05event\"\xea\x03\n" +
+	"\fSessionInput\x12\x1a\n" +
+	"\x04text\x18\x01 \x01(\tB\x04\xe2A\x01\x01H\x00R\x04text\x12\x1a\n" +
+	"\x04dtmf\x18\x06 \x01(\tB\x04\xe2A\x01\x01H\x00R\x04dtmf\x12\x1c\n" +
+	"\x05audio\x18\x02 \x01(\fB\x04\xe2A\x01\x01H\x00R\x05audio\x12U\n" +
+	"\x0etool_responses\x18\x03 \x01(\v2&.google.cloud.ces.v1beta.ToolResponsesB\x04\xe2A\x01\x01H\x00R\rtoolResponses\x12<\n" +
+	"\x05image\x18\x04 \x01(\v2\x1e.google.cloud.ces.v1beta.ImageB\x04\xe2A\x01\x01H\x00R\x05image\x129\n" +
+	"\x04blob\x18\a \x01(\v2\x1d.google.cloud.ces.v1beta.BlobB\x04\xe2A\x01\x01H\x00R\x04blob\x12=\n" +
+	"\tvariables\x18\x05 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01H\x00R\tvariables\x12<\n" +
+	"\x05event\x18\t \x01(\v2\x1e.google.cloud.ces.v1beta.EventB\x04\xe2A\x01\x01H\x00R\x05event\x12)\n" +
+	"\rwill_continue\x18\b \x01(\bB\x04\xe2A\x01\x01R\fwillContinueB\f\n" +
 	"\n" +
-	"input_type\"\xaa\x06\n" +
+	"input_type\"\xab\x06\n" +
 	"\rSessionOutput\x12\x14\n" +
 	"\x04text\x18\x01 \x01(\tH\x00R\x04text\x12\x16\n" +
 	"\x05audio\x18\x02 \x01(\fH\x00R\x05audio\x12C\n" +
@@ -1891,39 +1891,39 @@ const file_google_cloud_ces_v1beta_session_service_proto_rawDesc = "" +
 	"\apayload\x18\v \x01(\v2\x17.google.protobuf.StructH\x00R\apayload\x12\x1d\n" +
 	"\n" +
 	"turn_index\x18\x06 \x01(\x05R\tturnIndex\x12%\n" +
-	"\x0eturn_completed\x18\x04 \x01(\bR\rturnCompleted\x12c\n" +
-	"\x0fdiagnostic_info\x18\a \x01(\v25.google.cloud.ces.v1beta.SessionOutput.DiagnosticInfoB\x03\xe0A\x01R\x0ediagnosticInfo\x12.\n" +
+	"\x0eturn_completed\x18\x04 \x01(\bR\rturnCompleted\x12d\n" +
+	"\x0fdiagnostic_info\x18\a \x01(\v25.google.cloud.ces.v1beta.SessionOutput.DiagnosticInfoB\x04\xe2A\x01\x01R\x0ediagnosticInfo\x12.\n" +
 	"\acontext\x18\f \x03(\v2\x14.google.protobuf.AnyR\acontext\x1a\x8a\x01\n" +
 	"\x0eDiagnosticInfo\x12<\n" +
 	"\bmessages\x18\x01 \x03(\v2 .google.cloud.ces.v1beta.MessageR\bmessages\x12:\n" +
 	"\troot_span\x18\x03 \x01(\v2\x1d.google.cloud.ces.v1beta.SpanR\brootSpanB\r\n" +
-	"\voutput_type\"8\n" +
-	"\x11RecognitionResult\x12#\n" +
+	"\voutput_type\"9\n" +
+	"\x11RecognitionResult\x12$\n" +
 	"\n" +
-	"transcript\x18\x01 \x01(\tB\x03\xe0A\x01R\n" +
+	"transcript\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\n" +
 	"transcript\"/\n" +
 	"\x12InterruptionSignal\x12\x19\n" +
-	"\bbarge_in\x18\x01 \x01(\bR\abargeIn\"F\n" +
+	"\bbarge_in\x18\x01 \x01(\bR\abargeIn\"G\n" +
 	"\n" +
-	"EndSession\x128\n" +
-	"\bmetadata\x18\x01 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\bmetadata\"\b\n" +
-	"\x06GoAway\"\x9c\x01\n" +
-	"\x11RunSessionRequest\x12C\n" +
-	"\x06config\x18\x01 \x01(\v2&.google.cloud.ces.v1beta.SessionConfigB\x03\xe0A\x02R\x06config\x12B\n" +
-	"\x06inputs\x18\x03 \x03(\v2%.google.cloud.ces.v1beta.SessionInputB\x03\xe0A\x02R\x06inputs\"V\n" +
+	"EndSession\x129\n" +
+	"\bmetadata\x18\x01 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\bmetadata\"\b\n" +
+	"\x06GoAway\"\x9e\x01\n" +
+	"\x11RunSessionRequest\x12D\n" +
+	"\x06config\x18\x01 \x01(\v2&.google.cloud.ces.v1beta.SessionConfigB\x04\xe2A\x01\x02R\x06config\x12C\n" +
+	"\x06inputs\x18\x03 \x03(\v2%.google.cloud.ces.v1beta.SessionInputB\x04\xe2A\x01\x02R\x06inputs\"V\n" +
 	"\x12RunSessionResponse\x12@\n" +
-	"\aoutputs\x18\x01 \x03(\v2&.google.cloud.ces.v1beta.SessionOutputR\aoutputs\"\xc6\x01\n" +
-	"\x18BidiSessionClientMessage\x12E\n" +
-	"\x06config\x18\x01 \x01(\v2&.google.cloud.ces.v1beta.SessionConfigB\x03\xe0A\x01H\x00R\x06config\x12S\n" +
-	"\x0erealtime_input\x18\x02 \x01(\v2%.google.cloud.ces.v1beta.SessionInputB\x03\xe0A\x01H\x00R\rrealtimeInputB\x0e\n" +
-	"\fmessage_type\"\xd5\x03\n" +
-	"\x18BidiSessionServerMessage\x12T\n" +
-	"\x0esession_output\x18\x01 \x01(\v2&.google.cloud.ces.v1beta.SessionOutputB\x03\xe0A\x01H\x00R\rsessionOutput\x12`\n" +
-	"\x12recognition_result\x18\x02 \x01(\v2*.google.cloud.ces.v1beta.RecognitionResultB\x03\xe0A\x01H\x00R\x11recognitionResult\x12c\n" +
-	"\x13interruption_signal\x18\x03 \x01(\v2+.google.cloud.ces.v1beta.InterruptionSignalB\x03\xe0A\x01H\x00R\x12interruptionSignal\x12K\n" +
-	"\vend_session\x18\x05 \x01(\v2#.google.cloud.ces.v1beta.EndSessionB\x03\xe0A\x01H\x00R\n" +
-	"endSession\x12?\n" +
-	"\ago_away\x18\x06 \x01(\v2\x1f.google.cloud.ces.v1beta.GoAwayB\x03\xe0A\x01H\x00R\x06goAwayB\x0e\n" +
+	"\aoutputs\x18\x01 \x03(\v2&.google.cloud.ces.v1beta.SessionOutputR\aoutputs\"\xc8\x01\n" +
+	"\x18BidiSessionClientMessage\x12F\n" +
+	"\x06config\x18\x01 \x01(\v2&.google.cloud.ces.v1beta.SessionConfigB\x04\xe2A\x01\x01H\x00R\x06config\x12T\n" +
+	"\x0erealtime_input\x18\x02 \x01(\v2%.google.cloud.ces.v1beta.SessionInputB\x04\xe2A\x01\x01H\x00R\rrealtimeInputB\x0e\n" +
+	"\fmessage_type\"\xda\x03\n" +
+	"\x18BidiSessionServerMessage\x12U\n" +
+	"\x0esession_output\x18\x01 \x01(\v2&.google.cloud.ces.v1beta.SessionOutputB\x04\xe2A\x01\x01H\x00R\rsessionOutput\x12a\n" +
+	"\x12recognition_result\x18\x02 \x01(\v2*.google.cloud.ces.v1beta.RecognitionResultB\x04\xe2A\x01\x01H\x00R\x11recognitionResult\x12d\n" +
+	"\x13interruption_signal\x18\x03 \x01(\v2+.google.cloud.ces.v1beta.InterruptionSignalB\x04\xe2A\x01\x01H\x00R\x12interruptionSignal\x12L\n" +
+	"\vend_session\x18\x05 \x01(\v2#.google.cloud.ces.v1beta.EndSessionB\x04\xe2A\x01\x01H\x00R\n" +
+	"endSession\x12@\n" +
+	"\ago_away\x18\x06 \x01(\v2\x1f.google.cloud.ces.v1beta.GoAwayB\x04\xe2A\x01\x01H\x00R\x06goAwayB\x0e\n" +
 	"\fmessage_type*R\n" +
 	"\rAudioEncoding\x12\x1e\n" +
 	"\x1aAUDIO_ENCODING_UNSPECIFIED\x10\x00\x12\f\n" +

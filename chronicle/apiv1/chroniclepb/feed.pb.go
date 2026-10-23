@@ -13054,19 +13054,19 @@ var File_google_cloud_chronicle_v1_feed_proto protoreflect.FileDescriptor
 
 const file_google_cloud_chronicle_v1_feed_proto_rawDesc = "" +
 	"\n" +
-	"$google/cloud/chronicle/v1/feed.proto\x12\x19google.cloud.chronicle.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/httpbody.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x94\x05\n" +
-	"\bFeedPack\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x03R\vdescription\x12\x17\n" +
-	"\x04icon\x18\x04 \x01(\fB\x03\xe0A\x03R\x04icon\x12#\n" +
+	"$google/cloud/chronicle/v1/feed.proto\x12\x19google.cloud.chronicle.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/httpbody.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x9d\x05\n" +
+	"\bFeedPack\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\vdescription\x12\x18\n" +
+	"\x04icon\x18\x04 \x01(\fB\x04\xe2A\x01\x03R\x04icon\x12$\n" +
 	"\n" +
-	"categories\x18\x05 \x03(\tB\x03\xe0A\x03R\n" +
-	"categories\x12N\n" +
-	"\tpack_type\x18\x06 \x01(\x0e2,.google.cloud.chronicle.v1.FeedPack.PackTypeB\x03\xe0A\x03R\bpackType\x12Q\n" +
-	"\x0epack_log_types\x18\a \x03(\v2&.google.cloud.chronicle.v1.PackLogTypeB\x03\xe0A\x03R\fpackLogTypes\x12\x1b\n" +
-	"\x06hidden\x18\b \x01(\bB\x03\xe0A\x03R\x06hidden\x122\n" +
-	"\x12pack_documentation\x18\t \x01(\tB\x03\xe0A\x03R\x11packDocumentation\"[\n" +
+	"categories\x18\x05 \x03(\tB\x04\xe2A\x01\x03R\n" +
+	"categories\x12O\n" +
+	"\tpack_type\x18\x06 \x01(\x0e2,.google.cloud.chronicle.v1.FeedPack.PackTypeB\x04\xe2A\x01\x03R\bpackType\x12R\n" +
+	"\x0epack_log_types\x18\a \x03(\v2&.google.cloud.chronicle.v1.PackLogTypeB\x04\xe2A\x01\x03R\fpackLogTypes\x12\x1c\n" +
+	"\x06hidden\x18\b \x01(\bB\x04\xe2A\x01\x03R\x06hidden\x123\n" +
+	"\x12pack_documentation\x18\t \x01(\tB\x04\xe2A\x01\x03R\x11packDocumentation\"[\n" +
 	"\bPackType\x12\x19\n" +
 	"\x15PACK_TYPE_UNSPECIFIED\x10\x00\x12\x11\n" +
 	"\rPRODUCT_BASED\x10\x01\x12\x11\n" +
@@ -13081,20 +13081,20 @@ const file_google_cloud_chronicle_v1_feed_proto_rawDesc = "" +
 	"\x17recommended_source_type\x18\x04 \x01(\x0e25.google.cloud.chronicle.v1.FeedDetails.FeedSourceTypeR\x15recommendedSourceType\x12!\n" +
 	"\fdisplay_name\x18\x05 \x01(\tR\vdisplayName\x12?\n" +
 	"\x1bconfiguration_documentation\x18\x06 \x01(\tR\x1aconfigurationDocumentation\x129\n" +
-	"\x18additional_documentation\x18\a \x01(\tR\x17additionalDocumentation\"\xda\x05\n" +
+	"\x18additional_documentation\x18\a \x01(\tR\x17additionalDocumentation\"\xe1\x05\n" +
 	"\x04Feed\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1d\n" +
-	"\x03uid\x18\t \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12!\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1e\n" +
+	"\x03uid\x18\t \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12@\n" +
-	"\adetails\x18\x03 \x01(\v2&.google.cloud.chronicle.v1.FeedDetailsR\adetails\x12@\n" +
-	"\x05state\x18\x04 \x01(\x0e2%.google.cloud.chronicle.v1.Feed.StateB\x03\xe0A\x03R\x05state\x12$\n" +
-	"\vfailure_msg\x18\x05 \x01(\tB\x03\xe0A\x03R\n" +
-	"failureMsg\x12 \n" +
-	"\tread_only\x18\x06 \x01(\bB\x03\xe0A\x03R\breadOnly\x12Z\n" +
-	"\x19last_feed_initiation_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x16lastFeedInitiationTime\x12[\n" +
-	"\x0ffailure_details\x18\b \x01(\v2-.google.cloud.chronicle.v1.FeedFailureDetailsB\x03\xe0A\x03R\x0efailureDetails\x12&\n" +
+	"\adetails\x18\x03 \x01(\v2&.google.cloud.chronicle.v1.FeedDetailsR\adetails\x12A\n" +
+	"\x05state\x18\x04 \x01(\x0e2%.google.cloud.chronicle.v1.Feed.StateB\x04\xe2A\x01\x03R\x05state\x12%\n" +
+	"\vfailure_msg\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"failureMsg\x12!\n" +
+	"\tread_only\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\breadOnly\x12[\n" +
+	"\x19last_feed_initiation_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x16lastFeedInitiationTime\x12\\\n" +
+	"\x0ffailure_details\x18\b \x01(\v2-.google.cloud.chronicle.v1.FeedFailureDetailsB\x04\xe2A\x01\x03R\x0efailureDetails\x12'\n" +
 	"\freference_id\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R\vreferenceId\"`\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R\vreferenceId\"`\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
@@ -13104,19 +13104,19 @@ const file_google_cloud_chronicle_v1_feed_proto_rawDesc = "" +
 	"\tSUCCEEDED\x10\x04\x12\n" +
 	"\n" +
 	"\x06FAILED\x10\x05:m\xeaAj\n" +
-	"\x1dchronicle.googleapis.com/Feed\x12Iprojects/{project}/locations/{location}/instances/{instance}/feeds/{feed}\"\xb3\x01\n" +
-	"\x12FeedFailureDetails\x12\"\n" +
+	"\x1dchronicle.googleapis.com/Feed\x12Iprojects/{project}/locations/{location}/instances/{instance}/feeds/{feed}\"\xb7\x01\n" +
+	"\x12FeedFailureDetails\x12#\n" +
 	"\n" +
-	"error_code\x18\x01 \x01(\tB\x03\xe0A\x03R\terrorCode\x12+\n" +
-	"\x0fhttp_error_code\x18\x02 \x01(\x05B\x03\xe0A\x03R\rhttpErrorCode\x12$\n" +
-	"\verror_cause\x18\x03 \x01(\tB\x03\xe0A\x03R\n" +
-	"errorCause\x12&\n" +
-	"\ferror_action\x18\x04 \x01(\tB\x03\xe0A\x03R\verrorAction\"\xe4\x01\n" +
+	"error_code\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\terrorCode\x12,\n" +
+	"\x0fhttp_error_code\x18\x02 \x01(\x05B\x04\xe2A\x01\x03R\rhttpErrorCode\x12%\n" +
+	"\verror_cause\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"errorCause\x12'\n" +
+	"\ferror_action\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\verrorAction\"\xe4\x01\n" +
 	"\x12FeedServiceAccount\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1d\n" +
 	"\n" +
 	"subject_id\x18\x02 \x01(\tR\tsubjectId:\x9a\x01\xeaA\x96\x01\n" +
-	"+chronicle.googleapis.com/FeedServiceAccount\x12gprojects/{project}/locations/{location}/instances/{instance}/feedServiceAccounts/{feed_service_account}\"\xecJ\n" +
+	"+chronicle.googleapis.com/FeedServiceAccount\x12gprojects/{project}/locations/{location}/instances/{instance}/feedServiceAccounts/{feed_service_account}\"\xefJ\n" +
 	"\vFeedDetails\x12Z\n" +
 	"\x10anomali_settings\x18\x03 \x01(\v2-.google.cloud.chronicle.v1.AnomaliIocSettingsH\x00R\x0fanomaliSettings\x12n\n" +
 	"\x19azure_ad_context_settings\x18\x04 \x01(\v21.google.cloud.chronicle.v1.AzureADContextSettingsH\x00R\x16azureAdContextSettings\x12g\n" +
@@ -13191,17 +13191,17 @@ const file_google_cloud_chronicle_v1_feed_proto_rawDesc = "" +
 	"\x1atrellix_hx_alerts_settings\x18M \x01(\v22.google.cloud.chronicle.v1.TrellixHxAlertsSettingsH\x00R\x17trellixHxAlertsSettings\x12\x9d\x01\n" +
 	"*google_cloud_storage_event_driven_settings\x18N \x01(\v2@.google.cloud.chronicle.v1.GoogleCloudStorageEventDrivenSettingsH\x00R%googleCloudStorageEventDrivenSettings\x12v\n" +
 	"\x1bcrowdstrike_alerts_settings\x18O \x01(\v24.google.cloud.chronicle.v1.CrowdStrikeAlertsSettingsH\x00R\x19crowdstrikeAlertsSettings\x12x\n" +
-	"\x1dtrellix_hx_bulk_acqs_settings\x18P \x01(\v24.google.cloud.chronicle.v1.TrellixHxBulkAcqsSettingsH\x00R\x19trellixHxBulkAcqsSettings\x12s\n" +
-	"\x19mimecast_mail_v2_settings\x18R \x01(\v21.google.cloud.chronicle.v1.MimecastMailV2SettingsB\x03\xe0A\x02H\x00R\x16mimecastMailV2Settings\x12{\n" +
+	"\x1dtrellix_hx_bulk_acqs_settings\x18P \x01(\v24.google.cloud.chronicle.v1.TrellixHxBulkAcqsSettingsH\x00R\x19trellixHxBulkAcqsSettings\x12t\n" +
+	"\x19mimecast_mail_v2_settings\x18R \x01(\v21.google.cloud.chronicle.v1.MimecastMailV2SettingsB\x04\xe2A\x01\x02H\x00R\x16mimecastMailV2Settings\x12{\n" +
 	"\x1ethreat_connect_ioc_v3_settings\x18S \x01(\v25.google.cloud.chronicle.v1.ThreatConnectIoCV3SettingsH\x00R\x1athreatConnectIocV3Settings\x12^\n" +
 	"\x13custom_api_settings\x18U \x01(\v2,.google.cloud.chronicle.v1.CustomAPISettingsH\x00R\x11customApiSettings\x12_\n" +
 	"\x10feed_source_type\x18\x01 \x01(\x0e25.google.cloud.chronicle.v1.FeedDetails.FeedSourceTypeR\x0efeedSourceType\x12@\n" +
 	"\blog_type\x18\x02 \x01(\tB%\xfaA\"\n" +
 	" chronicle.googleapis.com/LogTypeR\alogType\x12'\n" +
 	"\x0fasset_namespace\x183 \x01(\tR\x0eassetNamespace\x12J\n" +
-	"\x06labels\x184 \x03(\v22.google.cloud.chronicle.v1.FeedDetails.LabelsEntryR\x06labels\x12y\n" +
-	"\x17sts_migration_readiness\x18Q \x01(\x0e2<.google.cloud.chronicle.v1.FeedDetails.STSMigrationReadinessB\x03\xe0A\x01R\x15stsMigrationReadiness\x12c\n" +
-	"\x1elast_v2_migration_attempt_time\x18T \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\x1alastV2MigrationAttemptTime\x1a9\n" +
+	"\x06labels\x184 \x03(\v22.google.cloud.chronicle.v1.FeedDetails.LabelsEntryR\x06labels\x12z\n" +
+	"\x17sts_migration_readiness\x18Q \x01(\x0e2<.google.cloud.chronicle.v1.FeedDetails.STSMigrationReadinessB\x04\xe2A\x01\x01R\x15stsMigrationReadiness\x12d\n" +
+	"\x1elast_v2_migration_attempt_time\x18T \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\x1alastV2MigrationAttemptTime\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xdd\x03\n" +
@@ -13236,23 +13236,23 @@ const file_google_cloud_chronicle_v1_feed_proto_rawDesc = "" +
 	"\tNOT_READY\x10\x01\x12\t\n" +
 	"\x05READY\x10\x02\x12\x1a\n" +
 	"\x16AUTH_RECONFIG_REQUIRED\x10\x03B\t\n" +
-	"\adetails\"\x91\x01\n" +
-	"\x14DummyLogTypeSettings\x12V\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2).google.cloud.chronicle.v1.HttpHeaderAuthB\x03\xe0A\x04R\x0eauthentication\x12!\n" +
-	"\fapi_endpoint\x18\x02 \x01(\tR\vapiEndpoint\"R\n" +
-	"\"HttpsPushGoogleCloudPubSubSettings\x12,\n" +
-	"\x0fsplit_delimiter\x18\x01 \x01(\tB\x03\xe0A\x01R\x0esplitDelimiter\"V\n" +
-	"&HttpsPushAmazonKinesisFirehoseSettings\x12,\n" +
-	"\x0fsplit_delimiter\x18\x01 \x01(\tB\x03\xe0A\x01R\x0esplitDelimiter\"H\n" +
-	"\x18HttpsPushWebhookSettings\x12,\n" +
-	"\x0fsplit_delimiter\x18\x01 \x01(\tB\x03\xe0A\x01R\x0esplitDelimiter\"\xf3\x01\n" +
-	"\x18SentineloneAlertSettings\x12V\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2).google.cloud.chronicle.v1.HttpHeaderAuthB\x03\xe0A\x04R\x0eauthentication\x12\x1a\n" +
+	"\adetails\"\x92\x01\n" +
+	"\x14DummyLogTypeSettings\x12W\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2).google.cloud.chronicle.v1.HttpHeaderAuthB\x04\xe2A\x01\x04R\x0eauthentication\x12!\n" +
+	"\fapi_endpoint\x18\x02 \x01(\tR\vapiEndpoint\"S\n" +
+	"\"HttpsPushGoogleCloudPubSubSettings\x12-\n" +
+	"\x0fsplit_delimiter\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0esplitDelimiter\"W\n" +
+	"&HttpsPushAmazonKinesisFirehoseSettings\x12-\n" +
+	"\x0fsplit_delimiter\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0esplitDelimiter\"I\n" +
+	"\x18HttpsPushWebhookSettings\x12-\n" +
+	"\x0fsplit_delimiter\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0esplitDelimiter\"\xf4\x01\n" +
+	"\x18SentineloneAlertSettings\x12W\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2).google.cloud.chronicle.v1.HttpHeaderAuthB\x04\xe2A\x01\x04R\x0eauthentication\x12\x1a\n" +
 	"\bhostname\x18\x02 \x01(\tR\bhostname\x12,\n" +
 	"\x12initial_start_time\x18\x03 \x01(\tR\x10initialStartTime\x125\n" +
-	"\x17is_alert_api_subscribed\x18\x04 \x01(\bR\x14isAlertApiSubscribed\"\xdc\x02\n" +
-	"\x12QualysScanSettings\x12Z\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2-.google.cloud.chronicle.v1.UsernameSecretAuthB\x03\xe0A\x04R\x0eauthentication\x12\x1a\n" +
+	"\x17is_alert_api_subscribed\x18\x04 \x01(\bR\x14isAlertApiSubscribed\"\xdd\x02\n" +
+	"\x12QualysScanSettings\x12[\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2-.google.cloud.chronicle.v1.UsernameSecretAuthB\x04\xe2A\x01\x04R\x0eauthentication\x12\x1a\n" +
 	"\bhostname\x18\x02 \x01(\tR\bhostname\x12P\n" +
 	"\bapi_type\x18\x03 \x01(\x0e25.google.cloud.chronicle.v1.QualysScanSettings.ApiTypeR\aapiType\"|\n" +
 	"\aApiType\x12\x18\n" +
@@ -13263,81 +13263,81 @@ const file_google_cloud_chronicle_v1_feed_proto_rawDesc = "" +
 	"\x0ePubsubSettings\x12?\n" +
 	"\x1cgoogle_service_account_email\x18\x01 \x01(\tR\x19googleServiceAccountEmail\"\x1f\n" +
 	"\x1dAmazonKinesisFirehoseSettings\"\x11\n" +
-	"\x0fWebhookSettings\"\xc5\x02\n" +
+	"\x0fWebhookSettings\"\xc6\x02\n" +
 	"\x11AmazonSQSSettings\x12;\n" +
 	"\x06region\x18\x01 \x01(\x0e2#.google.cloud.chronicle.v1.S3RegionR\x06region\x12\x14\n" +
 	"\x05queue\x18\x02 \x01(\tR\x05queue\x12%\n" +
-	"\x0eaccount_number\x18\x03 \x01(\tR\raccountNumber\x12O\n" +
-	"\x0eauthentication\x18\x04 \x01(\v2\".google.cloud.chronicle.v1.SQSAuthB\x03\xe0A\x04R\x0eauthentication\x12e\n" +
-	"\x16source_deletion_option\x18\x05 \x01(\x0e2/.google.cloud.chronicle.v1.SourceDeletionOptionR\x14sourceDeletionOption\"\x91\x01\n" +
-	"\x12AnomaliIocSettings\x12Z\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2-.google.cloud.chronicle.v1.UsernameSecretAuthB\x03\xe0A\x04R\x0eauthentication\x12\x1f\n" +
-	"\bhostname\x18\x02 \x01(\tB\x03\xe0A\x01R\bhostname\"\xd8\x01\n" +
-	"\x0fAzureADSettings\x12g\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2:.google.cloud.chronicle.v1.MicrosoftOAuthClientCredentialsB\x03\xe0A\x04R\x0eauthentication\x12\x1b\n" +
+	"\x0eaccount_number\x18\x03 \x01(\tR\raccountNumber\x12P\n" +
+	"\x0eauthentication\x18\x04 \x01(\v2\".google.cloud.chronicle.v1.SQSAuthB\x04\xe2A\x01\x04R\x0eauthentication\x12e\n" +
+	"\x16source_deletion_option\x18\x05 \x01(\x0e2/.google.cloud.chronicle.v1.SourceDeletionOptionR\x14sourceDeletionOption\"\x93\x01\n" +
+	"\x12AnomaliIocSettings\x12[\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2-.google.cloud.chronicle.v1.UsernameSecretAuthB\x04\xe2A\x01\x04R\x0eauthentication\x12 \n" +
+	"\bhostname\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\bhostname\"\xd9\x01\n" +
+	"\x0fAzureADSettings\x12h\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2:.google.cloud.chronicle.v1.MicrosoftOAuthClientCredentialsB\x04\xe2A\x01\x04R\x0eauthentication\x12\x1b\n" +
 	"\ttenant_id\x18\x02 \x01(\tR\btenantId\x12\x1a\n" +
 	"\bhostname\x18\x03 \x01(\tR\bhostname\x12#\n" +
-	"\rauth_endpoint\x18\x04 \x01(\tR\fauthEndpoint\"\xdd\x01\n" +
-	"\x14AzureADAuditSettings\x12g\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2:.google.cloud.chronicle.v1.MicrosoftOAuthClientCredentialsB\x03\xe0A\x04R\x0eauthentication\x12\x1b\n" +
+	"\rauth_endpoint\x18\x04 \x01(\tR\fauthEndpoint\"\xde\x01\n" +
+	"\x14AzureADAuditSettings\x12h\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2:.google.cloud.chronicle.v1.MicrosoftOAuthClientCredentialsB\x04\xe2A\x01\x04R\x0eauthentication\x12\x1b\n" +
 	"\ttenant_id\x18\x02 \x01(\tR\btenantId\x12\x1a\n" +
 	"\bhostname\x18\x03 \x01(\tR\bhostname\x12#\n" +
-	"\rauth_endpoint\x18\x04 \x01(\tR\fauthEndpoint\"\xb3\x02\n" +
-	"\x16AzureADContextSettings\x12g\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2:.google.cloud.chronicle.v1.MicrosoftOAuthClientCredentialsB\x03\xe0A\x04R\x0eauthentication\x12)\n" +
+	"\rauth_endpoint\x18\x04 \x01(\tR\fauthEndpoint\"\xb4\x02\n" +
+	"\x16AzureADContextSettings\x12h\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2:.google.cloud.chronicle.v1.MicrosoftOAuthClientCredentialsB\x04\xe2A\x01\x04R\x0eauthentication\x12)\n" +
 	"\x10retrieve_devices\x18\x02 \x01(\bR\x0fretrieveDevices\x12'\n" +
 	"\x0fretrieve_groups\x18\x03 \x01(\bR\x0eretrieveGroups\x12\x1b\n" +
 	"\ttenant_id\x18\x04 \x01(\tR\btenantId\x12\x1a\n" +
 	"\bhostname\x18\x05 \x01(\tR\bhostname\x12#\n" +
-	"\rauth_endpoint\x18\x06 \x01(\tR\fauthEndpoint\"\x93\x01\n" +
-	"\x14CloudPassageSettings\x12Z\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2-.google.cloud.chronicle.v1.UsernameSecretAuthB\x03\xe0A\x04R\x0eauthentication\x12\x1f\n" +
+	"\rauth_endpoint\x18\x06 \x01(\tR\fauthEndpoint\"\x94\x01\n" +
+	"\x14CloudPassageSettings\x12[\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2-.google.cloud.chronicle.v1.UsernameSecretAuthB\x04\xe2A\x01\x04R\x0eauthentication\x12\x1f\n" +
 	"\vevent_types\x18\x02 \x03(\tR\n" +
-	"eventTypes\"\xa3\x01\n" +
-	"\x11CortexXDRSettings\x12V\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2).google.cloud.chronicle.v1.HttpHeaderAuthB\x03\xe0A\x04R\x0eauthentication\x12\x1a\n" +
+	"eventTypes\"\xa4\x01\n" +
+	"\x11CortexXDRSettings\x12W\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2).google.cloud.chronicle.v1.HttpHeaderAuthB\x04\xe2A\x01\x04R\x0eauthentication\x12\x1a\n" +
 	"\bhostname\x18\x02 \x01(\tR\bhostname\x12\x1a\n" +
-	"\bendpoint\x18\x03 \x01(\tR\bendpoint\"\xf3\x02\n" +
-	"\x1aCrowdStrikeDetectsSettings\x12^\n" +
-	"\x0eauthentication\x18\x01 \x01(\v21.google.cloud.chronicle.v1.OAuthClientCredentialsB\x03\xe0A\x04R\x0eauthentication\x12\x1a\n" +
-	"\bhostname\x18\x02 \x01(\tR\bhostname\x12o\n" +
-	"\x0eingestion_type\x18\x03 \x01(\x0e2C.google.cloud.chronicle.v1.CrowdStrikeDetectsSettings.IngestionTypeB\x03\xe0A\x01R\ringestionType\"h\n" +
+	"\bendpoint\x18\x03 \x01(\tR\bendpoint\"\xf5\x02\n" +
+	"\x1aCrowdStrikeDetectsSettings\x12_\n" +
+	"\x0eauthentication\x18\x01 \x01(\v21.google.cloud.chronicle.v1.OAuthClientCredentialsB\x04\xe2A\x01\x04R\x0eauthentication\x12\x1a\n" +
+	"\bhostname\x18\x02 \x01(\tR\bhostname\x12p\n" +
+	"\x0eingestion_type\x18\x03 \x01(\x0e2C.google.cloud.chronicle.v1.CrowdStrikeDetectsSettings.IngestionTypeB\x04\xe2A\x01\x01R\ringestionType\"h\n" +
 	"\rIngestionType\x12\x1e\n" +
 	"\x1aINGESTION_TYPE_UNSPECIFIED\x10\x00\x12\x1d\n" +
 	"\x19BRING_ONLY_NEW_DETECTIONS\x10\x01\x12\x18\n" +
-	"\x14BRING_ALL_DETECTIONS\x10\x02\"\xee\x02\n" +
-	"\x19CrowdStrikeAlertsSettings\x12^\n" +
-	"\x0eauthentication\x18\x01 \x01(\v21.google.cloud.chronicle.v1.OAuthClientCredentialsB\x03\xe0A\x02R\x0eauthentication\x12\x1f\n" +
-	"\bhostname\x18\x02 \x01(\tB\x03\xe0A\x02R\bhostname\x12n\n" +
-	"\x0eingestion_type\x18\x03 \x01(\x0e2B.google.cloud.chronicle.v1.CrowdStrikeAlertsSettings.IngestionTypeB\x03\xe0A\x01R\ringestionType\"`\n" +
+	"\x14BRING_ALL_DETECTIONS\x10\x02\"\xf1\x02\n" +
+	"\x19CrowdStrikeAlertsSettings\x12_\n" +
+	"\x0eauthentication\x18\x01 \x01(\v21.google.cloud.chronicle.v1.OAuthClientCredentialsB\x04\xe2A\x01\x02R\x0eauthentication\x12 \n" +
+	"\bhostname\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\bhostname\x12o\n" +
+	"\x0eingestion_type\x18\x03 \x01(\x0e2B.google.cloud.chronicle.v1.CrowdStrikeAlertsSettings.IngestionTypeB\x04\xe2A\x01\x01R\ringestionType\"`\n" +
 	"\rIngestionType\x12\x1e\n" +
 	"\x1aINGESTION_TYPE_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10BRING_ALL_ALERTS\x10\x01\x12\x19\n" +
-	"\x15BRING_ONLY_NEW_ALERTS\x10\x02\"\x89\x01\n" +
-	"\x0fDuoAuthSettings\x12Z\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2-.google.cloud.chronicle.v1.UsernameSecretAuthB\x03\xe0A\x04R\x0eauthentication\x12\x1a\n" +
-	"\bhostname\x18\x02 \x01(\tR\bhostname\"\x90\x01\n" +
-	"\x16DuoUserContextSettings\x12Z\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2-.google.cloud.chronicle.v1.UsernameSecretAuthB\x03\xe0A\x04R\x0eauthentication\x12\x1a\n" +
-	"\bhostname\x18\x02 \x01(\tR\bhostname\"\xe4\x01\n" +
-	"\x1bMicrosoftGraphAlertSettings\x12g\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2:.google.cloud.chronicle.v1.MicrosoftOAuthClientCredentialsB\x03\xe0A\x04R\x0eauthentication\x12\x1b\n" +
+	"\x15BRING_ONLY_NEW_ALERTS\x10\x02\"\x8a\x01\n" +
+	"\x0fDuoAuthSettings\x12[\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2-.google.cloud.chronicle.v1.UsernameSecretAuthB\x04\xe2A\x01\x04R\x0eauthentication\x12\x1a\n" +
+	"\bhostname\x18\x02 \x01(\tR\bhostname\"\x91\x01\n" +
+	"\x16DuoUserContextSettings\x12[\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2-.google.cloud.chronicle.v1.UsernameSecretAuthB\x04\xe2A\x01\x04R\x0eauthentication\x12\x1a\n" +
+	"\bhostname\x18\x02 \x01(\tR\bhostname\"\xe5\x01\n" +
+	"\x1bMicrosoftGraphAlertSettings\x12h\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2:.google.cloud.chronicle.v1.MicrosoftOAuthClientCredentialsB\x04\xe2A\x01\x04R\x0eauthentication\x12\x1b\n" +
 	"\ttenant_id\x18\x02 \x01(\tR\btenantId\x12\x1a\n" +
 	"\bhostname\x18\x03 \x01(\tR\bhostname\x12#\n" +
-	"\rauth_endpoint\x18\x04 \x01(\tR\fauthEndpoint\"\x96\x02\n" +
-	"$MicrosoftSecurityCenterAlertSettings\x12g\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2:.google.cloud.chronicle.v1.MicrosoftOAuthClientCredentialsB\x03\xe0A\x04R\x0eauthentication\x12'\n" +
+	"\rauth_endpoint\x18\x04 \x01(\tR\fauthEndpoint\"\x97\x02\n" +
+	"$MicrosoftSecurityCenterAlertSettings\x12h\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2:.google.cloud.chronicle.v1.MicrosoftOAuthClientCredentialsB\x04\xe2A\x01\x04R\x0eauthentication\x12'\n" +
 	"\x0fsubscription_id\x18\x02 \x01(\tR\x0esubscriptionId\x12\x1b\n" +
 	"\ttenant_id\x18\x03 \x01(\tR\btenantId\x12\x1a\n" +
 	"\bhostname\x18\x04 \x01(\tR\bhostname\x12#\n" +
-	"\rauth_endpoint\x18\x05 \x01(\tR\fauthEndpoint\"\x8a\x01\n" +
-	"\x14MimecastMailSettings\x12V\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2).google.cloud.chronicle.v1.HttpHeaderAuthB\x03\xe0A\x04R\x0eauthentication\x12\x1a\n" +
-	"\bhostname\x18\x02 \x01(\tR\bhostname\"\x85\x01\n" +
-	"\x16MimecastMailV2Settings\x12k\n" +
-	"\x10auth_credentials\x18\x01 \x01(\v2;.google.cloud.chronicle.v1.MimecastV2OAuthClientCredentialsB\x03\xe0A\x02R\x0fauthCredentials\"\xd2\x03\n" +
-	"\x11Office365Settings\x12g\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2:.google.cloud.chronicle.v1.MicrosoftOAuthClientCredentialsB\x03\xe0A\x04R\x0eauthentication\x12\x1b\n" +
+	"\rauth_endpoint\x18\x05 \x01(\tR\fauthEndpoint\"\x8b\x01\n" +
+	"\x14MimecastMailSettings\x12W\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2).google.cloud.chronicle.v1.HttpHeaderAuthB\x04\xe2A\x01\x04R\x0eauthentication\x12\x1a\n" +
+	"\bhostname\x18\x02 \x01(\tR\bhostname\"\x86\x01\n" +
+	"\x16MimecastMailV2Settings\x12l\n" +
+	"\x10auth_credentials\x18\x01 \x01(\v2;.google.cloud.chronicle.v1.MimecastV2OAuthClientCredentialsB\x04\xe2A\x01\x02R\x0fauthCredentials\"\xd3\x03\n" +
+	"\x11Office365Settings\x12h\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2:.google.cloud.chronicle.v1.MicrosoftOAuthClientCredentialsB\x04\xe2A\x01\x04R\x0eauthentication\x12\x1b\n" +
 	"\ttenant_id\x18\x02 \x01(\tR\btenantId\x12[\n" +
 	"\fcontent_type\x18\x03 \x01(\x0e28.google.cloud.chronicle.v1.Office365Settings.ContentTypeR\vcontentType\x12\x1a\n" +
 	"\bhostname\x18\x04 \x01(\tR\bhostname\x12#\n" +
@@ -13348,166 +13348,166 @@ const file_google_cloud_chronicle_v1_feed_proto_rawDesc = "" +
 	"\x0eAUDIT_EXCHANGE\x10\x02\x12\x15\n" +
 	"\x11AUDIT_SHARE_POINT\x10\x03\x12\x11\n" +
 	"\rAUDIT_GENERAL\x10\x04\x12\v\n" +
-	"\aDLP_ALL\x10\x05\"t\n" +
-	"\x16ProofpointMailSettings\x12Z\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2-.google.cloud.chronicle.v1.UsernameSecretAuthB\x03\xe0A\x04R\x0eauthentication\"\x93\x01\n" +
-	"\x1aProofpointOnDemandSettings\x12V\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2).google.cloud.chronicle.v1.HttpHeaderAuthB\x03\xe0A\x04R\x0eauthentication\x12\x1d\n" +
+	"\aDLP_ALL\x10\x05\"u\n" +
+	"\x16ProofpointMailSettings\x12[\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2-.google.cloud.chronicle.v1.UsernameSecretAuthB\x04\xe2A\x01\x04R\x0eauthentication\"\x94\x01\n" +
+	"\x1aProofpointOnDemandSettings\x12W\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2).google.cloud.chronicle.v1.HttpHeaderAuthB\x04\xe2A\x01\x04R\x0eauthentication\x12\x1d\n" +
 	"\n" +
-	"cluster_id\x18\x02 \x01(\tR\tclusterId\"s\n" +
-	"\x19RecordedFutureIocSettings\x12V\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2).google.cloud.chronicle.v1.HttpHeaderAuthB\x03\xe0A\x04R\x0eauthentication\"\x9f\x01\n" +
-	"\x0fWorkdaySettings\x12S\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2&.google.cloud.chronicle.v1.WorkdayAuthB\x03\xe0A\x04R\x0eauthentication\x12\x1a\n" +
+	"cluster_id\x18\x02 \x01(\tR\tclusterId\"t\n" +
+	"\x19RecordedFutureIocSettings\x12W\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2).google.cloud.chronicle.v1.HttpHeaderAuthB\x04\xe2A\x01\x04R\x0eauthentication\"\xa0\x01\n" +
+	"\x0fWorkdaySettings\x12T\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2&.google.cloud.chronicle.v1.WorkdayAuthB\x04\xe2A\x01\x04R\x0eauthentication\x12\x1a\n" +
 	"\bhostname\x18\x02 \x01(\tR\bhostname\x12\x1b\n" +
-	"\ttenant_id\x18\x03 \x01(\tR\btenantId\"\x95\x01\n" +
-	"\x0ePanIocSettings\x12V\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2).google.cloud.chronicle.v1.HttpHeaderAuthB\x03\xe0A\x04R\x0eauthentication\x12\x17\n" +
+	"\ttenant_id\x18\x03 \x01(\tR\btenantId\"\x96\x01\n" +
+	"\x0ePanIocSettings\x12W\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2).google.cloud.chronicle.v1.HttpHeaderAuthB\x04\xe2A\x01\x04R\x0eauthentication\x12\x17\n" +
 	"\afeed_id\x18\x02 \x01(\tR\x06feedId\x12\x12\n" +
-	"\x04feed\x18\x03 \x01(\tR\x04feed\"\x82\x01\n" +
-	"\fOktaSettings\x12V\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2).google.cloud.chronicle.v1.HttpHeaderAuthB\x03\xe0A\x04R\x0eauthentication\x12\x1a\n" +
-	"\bhostname\x18\x02 \x01(\tR\bhostname\"\xca\x01\n" +
-	"\x17OktaUserContextSettings\x12V\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2).google.cloud.chronicle.v1.HttpHeaderAuthB\x03\xe0A\x04R\x0eauthentication\x12\x1a\n" +
+	"\x04feed\x18\x03 \x01(\tR\x04feed\"\x83\x01\n" +
+	"\fOktaSettings\x12W\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2).google.cloud.chronicle.v1.HttpHeaderAuthB\x04\xe2A\x01\x04R\x0eauthentication\x12\x1a\n" +
+	"\bhostname\x18\x02 \x01(\tR\bhostname\"\xcb\x01\n" +
+	"\x17OktaUserContextSettings\x12W\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2).google.cloud.chronicle.v1.HttpHeaderAuthB\x04\xe2A\x01\x04R\x0eauthentication\x12\x1a\n" +
 	"\bhostname\x18\x02 \x01(\tR\bhostname\x12;\n" +
-	"\x1amanager_id_reference_field\x18\x03 \x01(\tR\x17managerIdReferenceField\"\xf8\x01\n" +
-	"\x11FoxITStixSettings\x12Z\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2-.google.cloud.chronicle.v1.UsernameSecretAuthB\x03\xe0A\x04R\x0eauthentication\x12=\n" +
+	"\x1amanager_id_reference_field\x18\x03 \x01(\tR\x17managerIdReferenceField\"\xf9\x01\n" +
+	"\x11FoxITStixSettings\x12[\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2-.google.cloud.chronicle.v1.UsernameSecretAuthB\x04\xe2A\x01\x04R\x0eauthentication\x12=\n" +
 	"\x03ssl\x18\x02 \x01(\v2+.google.cloud.chronicle.v1.SSLClientKeypairR\x03ssl\x12(\n" +
 	"\x10poll_service_uri\x18\x03 \x01(\tR\x0epollServiceUri\x12\x1e\n" +
 	"\n" +
 	"collection\x18\x04 \x01(\tR\n" +
-	"collection\"\xaa\x01\n" +
-	"\x18ThreatConnectIoCSettings\x12Z\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2-.google.cloud.chronicle.v1.UsernameSecretAuthB\x03\xe0A\x04R\x0eauthentication\x12\x1a\n" +
+	"collection\"\xab\x01\n" +
+	"\x18ThreatConnectIoCSettings\x12[\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2-.google.cloud.chronicle.v1.UsernameSecretAuthB\x04\xe2A\x01\x04R\x0eauthentication\x12\x1a\n" +
 	"\bhostname\x18\x02 \x01(\tR\bhostname\x12\x16\n" +
-	"\x06owners\x18\x03 \x03(\tR\x06owners\"\x99\x02\n" +
-	"\x1aThreatConnectIoCV3Settings\x12]\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2-.google.cloud.chronicle.v1.UsernameSecretAuthB\x06\xe0A\x02\xe0A\x04R\x0eauthentication\x12\x1f\n" +
-	"\bhostname\x18\x02 \x01(\tB\x03\xe0A\x02R\bhostname\x12\x1b\n" +
-	"\x06owners\x18\x03 \x03(\tB\x03\xe0A\x02R\x06owners\x12 \n" +
-	"\ttql_query\x18\x04 \x01(\tB\x03\xe0A\x01R\btqlQuery\x12\x1b\n" +
-	"\x06fields\x18\x05 \x03(\tB\x03\xe0A\x01R\x06fields\x12\x1f\n" +
-	"\bschedule\x18\x06 \x01(\x05B\x03\xe0A\x01R\bschedule\"\xac\x01\n" +
-	"\x16ServiceNowCMDBSettings\x12Z\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2-.google.cloud.chronicle.v1.UsernameSecretAuthB\x03\xe0A\x04R\x0eauthentication\x12\x1a\n" +
+	"\x06owners\x18\x03 \x03(\tR\x06owners\"\x9d\x02\n" +
+	"\x1aThreatConnectIoCV3Settings\x12\\\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2-.google.cloud.chronicle.v1.UsernameSecretAuthB\x05\xe2A\x02\x02\x04R\x0eauthentication\x12 \n" +
+	"\bhostname\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\bhostname\x12\x1c\n" +
+	"\x06owners\x18\x03 \x03(\tB\x04\xe2A\x01\x02R\x06owners\x12!\n" +
+	"\ttql_query\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\btqlQuery\x12\x1c\n" +
+	"\x06fields\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\x06fields\x12 \n" +
+	"\bschedule\x18\x06 \x01(\x05B\x04\xe2A\x01\x01R\bschedule\"\xad\x01\n" +
+	"\x16ServiceNowCMDBSettings\x12[\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2-.google.cloud.chronicle.v1.UsernameSecretAuthB\x04\xe2A\x01\x04R\x0eauthentication\x12\x1a\n" +
 	"\bhostname\x18\x02 \x01(\tR\bhostname\x12\x1a\n" +
-	"\bfeedname\x18\x03 \x01(\tR\bfeedname\"l\n" +
-	"\x12ImpervaWAFSettings\x12V\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2).google.cloud.chronicle.v1.HttpHeaderAuthB\x03\xe0A\x04R\x0eauthentication\"\x8b\x01\n" +
-	"\x15ThinkstCanarySettings\x12V\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2).google.cloud.chronicle.v1.HttpHeaderAuthB\x03\xe0A\x04R\x0eauthentication\x12\x1a\n" +
-	"\bhostname\x18\x02 \x01(\tR\bhostname\"s\n" +
-	"\x11RHIsacIocSettings\x12^\n" +
-	"\x0eauthentication\x18\x01 \x01(\v21.google.cloud.chronicle.v1.OAuthClientCredentialsB\x03\xe0A\x04R\x0eauthentication\"\xa7\x01\n" +
-	"\x15Rapid7InsightSettings\x12V\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2).google.cloud.chronicle.v1.HttpHeaderAuthB\x03\xe0A\x04R\x0eauthentication\x12\x1a\n" +
+	"\bfeedname\x18\x03 \x01(\tR\bfeedname\"m\n" +
+	"\x12ImpervaWAFSettings\x12W\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2).google.cloud.chronicle.v1.HttpHeaderAuthB\x04\xe2A\x01\x04R\x0eauthentication\"\x8c\x01\n" +
+	"\x15ThinkstCanarySettings\x12W\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2).google.cloud.chronicle.v1.HttpHeaderAuthB\x04\xe2A\x01\x04R\x0eauthentication\x12\x1a\n" +
+	"\bhostname\x18\x02 \x01(\tR\bhostname\"t\n" +
+	"\x11RHIsacIocSettings\x12_\n" +
+	"\x0eauthentication\x18\x01 \x01(\v21.google.cloud.chronicle.v1.OAuthClientCredentialsB\x04\xe2A\x01\x04R\x0eauthentication\"\xa8\x01\n" +
+	"\x15Rapid7InsightSettings\x12W\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2).google.cloud.chronicle.v1.HttpHeaderAuthB\x04\xe2A\x01\x04R\x0eauthentication\x12\x1a\n" +
 	"\bendpoint\x18\x02 \x01(\tR\bendpoint\x12\x1a\n" +
-	"\bhostname\x18\x03 \x01(\tR\bhostname\"\xa9\x02\n" +
-	"\x12SalesforceSettings\x12z\n" +
-	"\x19oauth_password_grant_auth\x18\x01 \x01(\v28.google.cloud.chronicle.v1.OAuthPasswordGrantCredentialsB\x03\xe0A\x04H\x00R\x16oauthPasswordGrantAuth\x12i\n" +
-	"\x15oauth_jwt_credentials\x18\x02 \x01(\v2..google.cloud.chronicle.v1.OAuthJWTCredentialsB\x03\xe0A\x04H\x00R\x13oauthJwtCredentials\x12\x1a\n" +
+	"\bhostname\x18\x03 \x01(\tR\bhostname\"\xab\x02\n" +
+	"\x12SalesforceSettings\x12{\n" +
+	"\x19oauth_password_grant_auth\x18\x01 \x01(\v28.google.cloud.chronicle.v1.OAuthPasswordGrantCredentialsB\x04\xe2A\x01\x04H\x00R\x16oauthPasswordGrantAuth\x12j\n" +
+	"\x15oauth_jwt_credentials\x18\x02 \x01(\v2..google.cloud.chronicle.v1.OAuthJWTCredentialsB\x04\xe2A\x01\x04H\x00R\x13oauthJwtCredentials\x12\x1a\n" +
 	"\bhostname\x18\x03 \x01(\tR\bhostnameB\x10\n" +
-	"\x0eauthentication\"\xa8\x01\n" +
-	"\x13MandiantIoCSettings\x12V\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2).google.cloud.chronicle.v1.HttpHeaderAuthB\x03\xe0A\x04R\x0eauthentication\x129\n" +
+	"\x0eauthentication\"\xa9\x01\n" +
+	"\x13MandiantIoCSettings\x12W\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2).google.cloud.chronicle.v1.HttpHeaderAuthB\x04\xe2A\x01\x04R\x0eauthentication\x129\n" +
 	"\n" +
-	"start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\"\xca\x01\n" +
-	"\x15NetskopeAlertSettings\x12V\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2).google.cloud.chronicle.v1.HttpHeaderAuthB\x03\xe0A\x04R\x0eauthentication\x12\x1a\n" +
+	"start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\"\xcb\x01\n" +
+	"\x15NetskopeAlertSettings\x12W\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2).google.cloud.chronicle.v1.HttpHeaderAuthB\x04\xe2A\x01\x04R\x0eauthentication\x12\x1a\n" +
 	"\bhostname\x18\x02 \x01(\tR\bhostname\x12\x1a\n" +
 	"\bfeedname\x18\x03 \x01(\tR\bfeedname\x12!\n" +
-	"\fcontent_type\x18\x04 \x01(\tR\vcontentType\"\xdd\x01\n" +
-	"\x17NetskopeAlertV2Settings\x12V\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2).google.cloud.chronicle.v1.HttpHeaderAuthB\x03\xe0A\x04R\x0eauthentication\x12\x1a\n" +
+	"\fcontent_type\x18\x04 \x01(\tR\vcontentType\"\xde\x01\n" +
+	"\x17NetskopeAlertV2Settings\x12W\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2).google.cloud.chronicle.v1.HttpHeaderAuthB\x04\xe2A\x01\x04R\x0eauthentication\x12\x1a\n" +
 	"\bhostname\x18\x02 \x01(\tR\bhostname\x12)\n" +
 	"\x10content_category\x18\x03 \x01(\tR\x0fcontentCategory\x12#\n" +
-	"\rcontent_types\x18\x04 \x03(\tR\fcontentTypes\"\xdf\x01\n" +
-	"\x16AzureMDMIntuneSettings\x12g\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2:.google.cloud.chronicle.v1.MicrosoftOAuthClientCredentialsB\x03\xe0A\x04R\x0eauthentication\x12\x1b\n" +
+	"\rcontent_types\x18\x04 \x03(\tR\fcontentTypes\"\xe0\x01\n" +
+	"\x16AzureMDMIntuneSettings\x12h\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2:.google.cloud.chronicle.v1.MicrosoftOAuthClientCredentialsB\x04\xe2A\x01\x04R\x0eauthentication\x12\x1b\n" +
 	"\ttenant_id\x18\x02 \x01(\tR\btenantId\x12\x1a\n" +
 	"\bhostname\x18\x03 \x01(\tR\bhostname\x12#\n" +
-	"\rauth_endpoint\x18\x04 \x01(\tR\fauthEndpoint\"\xf7\x02\n" +
-	"\x16WorkspaceUsersSettings\x12[\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2..google.cloud.chronicle.v1.OAuthJWTCredentialsB\x03\xe0A\x04R\x0eauthentication\x122\n" +
-	"\x15workspace_customer_id\x18\x02 \x01(\tR\x13workspaceCustomerId\x12n\n" +
-	"\x0fprojection_type\x18\x03 \x01(\x0e2@.google.cloud.chronicle.v1.WorkspaceUsersSettings.ProjectionTypeB\x03\xe0A\x01R\x0eprojectionType\"\\\n" +
+	"\rauth_endpoint\x18\x04 \x01(\tR\fauthEndpoint\"\xf9\x02\n" +
+	"\x16WorkspaceUsersSettings\x12\\\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2..google.cloud.chronicle.v1.OAuthJWTCredentialsB\x04\xe2A\x01\x04R\x0eauthentication\x122\n" +
+	"\x15workspace_customer_id\x18\x02 \x01(\tR\x13workspaceCustomerId\x12o\n" +
+	"\x0fprojection_type\x18\x03 \x01(\x0e2@.google.cloud.chronicle.v1.WorkspaceUsersSettings.ProjectionTypeB\x04\xe2A\x01\x01R\x0eprojectionType\"\\\n" +
 	"\x0eProjectionType\x12\x1f\n" +
 	"\x1bPROJECTION_TYPE_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10BASIC_PROJECTION\x10\x01\x12\x13\n" +
-	"\x0fFULL_PROJECTION\x10\x02\"\xd0\x01\n" +
-	"\x19WorkspaceActivitySettings\x12[\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2..google.cloud.chronicle.v1.OAuthJWTCredentialsB\x03\xe0A\x04R\x0eauthentication\x122\n" +
+	"\x0fFULL_PROJECTION\x10\x02\"\xd1\x01\n" +
+	"\x19WorkspaceActivitySettings\x12\\\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2..google.cloud.chronicle.v1.OAuthJWTCredentialsB\x04\xe2A\x01\x04R\x0eauthentication\x122\n" +
 	"\x15workspace_customer_id\x18\x02 \x01(\tR\x13workspaceCustomerId\x12\"\n" +
-	"\fapplications\x18\x03 \x03(\tR\fapplications\"\xaa\x01\n" +
-	"\x17WorkspaceAlertsSettings\x12[\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2..google.cloud.chronicle.v1.OAuthJWTCredentialsB\x03\xe0A\x04R\x0eauthentication\x122\n" +
-	"\x15workspace_customer_id\x18\x02 \x01(\tR\x13workspaceCustomerId\"\xae\x01\n" +
-	"\x1bWorkspacePrivilegesSettings\x12[\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2..google.cloud.chronicle.v1.OAuthJWTCredentialsB\x03\xe0A\x04R\x0eauthentication\x122\n" +
-	"\x15workspace_customer_id\x18\x02 \x01(\tR\x13workspaceCustomerId\"\xaa\x01\n" +
-	"\x17WorkspaceMobileSettings\x12[\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2..google.cloud.chronicle.v1.OAuthJWTCredentialsB\x03\xe0A\x04R\x0eauthentication\x122\n" +
-	"\x15workspace_customer_id\x18\x02 \x01(\tR\x13workspaceCustomerId\"\xac\x01\n" +
-	"\x19WorkspaceChromeOSSettings\x12[\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2..google.cloud.chronicle.v1.OAuthJWTCredentialsB\x03\xe0A\x04R\x0eauthentication\x122\n" +
-	"\x15workspace_customer_id\x18\x02 \x01(\tR\x13workspaceCustomerId\"\xaa\x01\n" +
-	"\x17WorkspaceGroupsSettings\x12[\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2..google.cloud.chronicle.v1.OAuthJWTCredentialsB\x03\xe0A\x04R\x0eauthentication\x122\n" +
-	"\x15workspace_customer_id\x18\x02 \x01(\tR\x13workspaceCustomerId\"\xa2\x01\n" +
-	"\"GoogleCloudIdentityDevicesSettings\x12[\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2..google.cloud.chronicle.v1.OAuthJWTCredentialsB\x03\xe0A\x04R\x0eauthentication\x12\x1f\n" +
+	"\fapplications\x18\x03 \x03(\tR\fapplications\"\xab\x01\n" +
+	"\x17WorkspaceAlertsSettings\x12\\\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2..google.cloud.chronicle.v1.OAuthJWTCredentialsB\x04\xe2A\x01\x04R\x0eauthentication\x122\n" +
+	"\x15workspace_customer_id\x18\x02 \x01(\tR\x13workspaceCustomerId\"\xaf\x01\n" +
+	"\x1bWorkspacePrivilegesSettings\x12\\\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2..google.cloud.chronicle.v1.OAuthJWTCredentialsB\x04\xe2A\x01\x04R\x0eauthentication\x122\n" +
+	"\x15workspace_customer_id\x18\x02 \x01(\tR\x13workspaceCustomerId\"\xab\x01\n" +
+	"\x17WorkspaceMobileSettings\x12\\\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2..google.cloud.chronicle.v1.OAuthJWTCredentialsB\x04\xe2A\x01\x04R\x0eauthentication\x122\n" +
+	"\x15workspace_customer_id\x18\x02 \x01(\tR\x13workspaceCustomerId\"\xad\x01\n" +
+	"\x19WorkspaceChromeOSSettings\x12\\\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2..google.cloud.chronicle.v1.OAuthJWTCredentialsB\x04\xe2A\x01\x04R\x0eauthentication\x122\n" +
+	"\x15workspace_customer_id\x18\x02 \x01(\tR\x13workspaceCustomerId\"\xab\x01\n" +
+	"\x17WorkspaceGroupsSettings\x12\\\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2..google.cloud.chronicle.v1.OAuthJWTCredentialsB\x04\xe2A\x01\x04R\x0eauthentication\x122\n" +
+	"\x15workspace_customer_id\x18\x02 \x01(\tR\x13workspaceCustomerId\"\xa3\x01\n" +
+	"\"GoogleCloudIdentityDevicesSettings\x12\\\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2..google.cloud.chronicle.v1.OAuthJWTCredentialsB\x04\xe2A\x01\x04R\x0eauthentication\x12\x1f\n" +
 	"\vapi_version\x18\x02 \x01(\tR\n" +
-	"apiVersion\"\x85\x01\n" +
-	"&GoogleCloudIdentityDeviceUsersSettings\x12[\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2..google.cloud.chronicle.v1.OAuthJWTCredentialsB\x03\xe0A\x04R\x0eauthentication\"x\n" +
-	"\x1bSymantecEventExportSettings\x12Y\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2,.google.cloud.chronicle.v1.OAuthRefreshTokenB\x03\xe0A\x04R\x0eauthentication\"\x8a\x01\n" +
-	"\x10QualysVMSettings\x12Z\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2-.google.cloud.chronicle.v1.UsernameSecretAuthB\x03\xe0A\x04R\x0eauthentication\x12\x1a\n" +
-	"\bhostname\x18\x02 \x01(\tR\bhostname\"\x8b\x01\n" +
-	"\x16PanPrismaCloudSettings\x12U\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2(.google.cloud.chronicle.v1.PanPrismaAuthB\x03\xe0A\x04R\x0eauthentication\x12\x1a\n" +
-	"\bhostname\x18\x02 \x01(\tR\bhostname\"\xa4\x02\n" +
-	"\fSftpSettings\x12P\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2#.google.cloud.chronicle.v1.SftpAuthB\x03\xe0A\x04R\x0eauthentication\x12\x10\n" +
+	"apiVersion\"\x86\x01\n" +
+	"&GoogleCloudIdentityDeviceUsersSettings\x12\\\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2..google.cloud.chronicle.v1.OAuthJWTCredentialsB\x04\xe2A\x01\x04R\x0eauthentication\"y\n" +
+	"\x1bSymantecEventExportSettings\x12Z\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2,.google.cloud.chronicle.v1.OAuthRefreshTokenB\x04\xe2A\x01\x04R\x0eauthentication\"\x8b\x01\n" +
+	"\x10QualysVMSettings\x12[\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2-.google.cloud.chronicle.v1.UsernameSecretAuthB\x04\xe2A\x01\x04R\x0eauthentication\x12\x1a\n" +
+	"\bhostname\x18\x02 \x01(\tR\bhostname\"\x8c\x01\n" +
+	"\x16PanPrismaCloudSettings\x12V\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2(.google.cloud.chronicle.v1.PanPrismaAuthB\x04\xe2A\x01\x04R\x0eauthentication\x12\x1a\n" +
+	"\bhostname\x18\x02 \x01(\tR\bhostname\"\xa5\x02\n" +
+	"\fSftpSettings\x12Q\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2#.google.cloud.chronicle.v1.SftpAuthB\x04\xe2A\x01\x04R\x0eauthentication\x12\x10\n" +
 	"\x03uri\x18\x02 \x01(\tR\x03uri\x12I\n" +
 	"\vsource_type\x18\x03 \x01(\x0e2(.google.cloud.chronicle.v1.URISourceTypeR\n" +
 	"sourceType\x12e\n" +
-	"\x16source_deletion_option\x18\x04 \x01(\x0e2/.google.cloud.chronicle.v1.SourceDeletionOptionR\x14sourceDeletionOption\"\xae\x02\n" +
+	"\x16source_deletion_option\x18\x04 \x01(\x0e2/.google.cloud.chronicle.v1.SourceDeletionOptionR\x14sourceDeletionOption\"\xaf\x02\n" +
 	"\x1aGoogleCloudStorageSettings\x12\x1d\n" +
 	"\n" +
 	"bucket_uri\x18\x01 \x01(\tR\tbucketUri\x12I\n" +
 	"\vsource_type\x18\x02 \x01(\x0e2(.google.cloud.chronicle.v1.URISourceTypeR\n" +
 	"sourceType\x12e\n" +
-	"\x16source_deletion_option\x18\x03 \x01(\x0e2/.google.cloud.chronicle.v1.SourceDeletionOptionR\x14sourceDeletionOption\x12?\n" +
-	"\x19chronicle_service_account\x18\x04 \x01(\tB\x03\xe0A\x03R\x17chronicleServiceAccount\"\xd2\x01\n" +
+	"\x16source_deletion_option\x18\x03 \x01(\x0e2/.google.cloud.chronicle.v1.SourceDeletionOptionR\x14sourceDeletionOption\x12@\n" +
+	"\x19chronicle_service_account\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x17chronicleServiceAccount\"\xd2\x01\n" +
 	"\fHttpSettings\x12\x10\n" +
 	"\x03uri\x18\x01 \x01(\tR\x03uri\x12I\n" +
 	"\vsource_type\x18\x02 \x01(\x0e2(.google.cloud.chronicle.v1.URISourceTypeR\n" +
 	"sourceType\x12e\n" +
-	"\x16source_deletion_option\x18\x03 \x01(\x0e2/.google.cloud.chronicle.v1.SourceDeletionOptionR\x14sourceDeletionOption\"\xab\x02\n" +
-	"\x10AmazonS3Settings\x12N\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2!.google.cloud.chronicle.v1.S3AuthB\x03\xe0A\x04R\x0eauthentication\x12\x15\n" +
+	"\x16source_deletion_option\x18\x03 \x01(\x0e2/.google.cloud.chronicle.v1.SourceDeletionOptionR\x14sourceDeletionOption\"\xac\x02\n" +
+	"\x10AmazonS3Settings\x12O\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2!.google.cloud.chronicle.v1.S3AuthB\x04\xe2A\x01\x04R\x0eauthentication\x12\x15\n" +
 	"\x06s3_uri\x18\x02 \x01(\tR\x05s3Uri\x12I\n" +
 	"\vsource_type\x18\x03 \x01(\x0e2(.google.cloud.chronicle.v1.URISourceTypeR\n" +
 	"sourceType\x12e\n" +
-	"\x16source_deletion_option\x18\x04 \x01(\x0e2/.google.cloud.chronicle.v1.SourceDeletionOptionR\x14sourceDeletionOption\"\xba\x02\n" +
-	"\x16AzureBlobStoreSettings\x12Q\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2$.google.cloud.chronicle.v1.AzureAuthB\x03\xe0A\x04R\x0eauthentication\x12\x1b\n" +
+	"\x16source_deletion_option\x18\x04 \x01(\x0e2/.google.cloud.chronicle.v1.SourceDeletionOptionR\x14sourceDeletionOption\"\xbb\x02\n" +
+	"\x16AzureBlobStoreSettings\x12R\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2$.google.cloud.chronicle.v1.AzureAuthB\x04\xe2A\x01\x04R\x0eauthentication\x12\x1b\n" +
 	"\tazure_uri\x18\x02 \x01(\tR\bazureUri\x12I\n" +
 	"\vsource_type\x18\x03 \x01(\x0e2(.google.cloud.chronicle.v1.URISourceTypeR\n" +
 	"sourceType\x12e\n" +
-	"\x16source_deletion_option\x18\x04 \x01(\x0e2/.google.cloud.chronicle.v1.SourceDeletionOptionR\x14sourceDeletionOption\"q\n" +
-	"\x13AWSEC2HostsSettings\x12Z\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2-.google.cloud.chronicle.v1.UsernameSecretAuthB\x03\xe0A\x04R\x0eauthentication\"u\n" +
-	"\x17AWSEC2InstancesSettings\x12Z\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2-.google.cloud.chronicle.v1.UsernameSecretAuthB\x03\xe0A\x04R\x0eauthentication\"p\n" +
-	"\x12AWSEC2VpcsSettings\x12Z\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2-.google.cloud.chronicle.v1.UsernameSecretAuthB\x03\xe0A\x04R\x0eauthentication\"\x81\x02\n" +
-	"\x0eAWSIAMSettings\x12Z\n" +
-	"\x0eauthentication\x18\x02 \x01(\v2-.google.cloud.chronicle.v1.UsernameSecretAuthB\x03\xe0A\x04R\x0eauthentication\x12L\n" +
+	"\x16source_deletion_option\x18\x04 \x01(\x0e2/.google.cloud.chronicle.v1.SourceDeletionOptionR\x14sourceDeletionOption\"r\n" +
+	"\x13AWSEC2HostsSettings\x12[\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2-.google.cloud.chronicle.v1.UsernameSecretAuthB\x04\xe2A\x01\x04R\x0eauthentication\"v\n" +
+	"\x17AWSEC2InstancesSettings\x12[\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2-.google.cloud.chronicle.v1.UsernameSecretAuthB\x04\xe2A\x01\x04R\x0eauthentication\"q\n" +
+	"\x12AWSEC2VpcsSettings\x12[\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2-.google.cloud.chronicle.v1.UsernameSecretAuthB\x04\xe2A\x01\x04R\x0eauthentication\"\x82\x02\n" +
+	"\x0eAWSIAMSettings\x12[\n" +
+	"\x0eauthentication\x18\x02 \x01(\v2-.google.cloud.chronicle.v1.UsernameSecretAuthB\x04\xe2A\x01\x04R\x0eauthentication\x12L\n" +
 	"\bapi_type\x18\x03 \x01(\x0e21.google.cloud.chronicle.v1.AWSIAMSettings.ApiTypeR\aapiType\"E\n" +
 	"\aApiType\x12\x18\n" +
 	"\x14API_TYPE_UNSPECIFIED\x10\x00\x12\t\n" +
@@ -13522,10 +13522,10 @@ const file_google_cloud_chronicle_v1_feed_proto_rawDesc = "" +
 	"\tauth_type\"\x84\x02\n" +
 	"\aSQSAuth\x12m\n" +
 	"\x1asqs_access_key_secret_auth\x18\x01 \x01(\v21.google.cloud.chronicle.v1.SQSAccessKeySecretAuthR\x16sqsAccessKeySecretAuth\x12\x89\x01\n" +
-	"$additional_s3_access_key_secret_auth\x18\x02 \x01(\v2:.google.cloud.chronicle.v1.AdditionalS3AccessKeySecretAuthR\x1fadditionalS3AccessKeySecretAuth\"\xf7\x01\n" +
-	"\tSQSAuthV2\x12{\n" +
-	"\x1dsqs_v2_access_key_secret_auth\x18\x03 \x01(\v23.google.cloud.chronicle.v1.SQSV2AccessKeySecretAuthB\x03\xe0A\x02H\x00R\x18sqsV2AccessKeySecretAuth\x12`\n" +
-	"\x11aws_iam_role_auth\x18\x05 \x01(\v2..google.cloud.chronicle.v1.SQSV2AwsIamRoleAuthB\x03\xe0A\x02H\x00R\x0eawsIamRoleAuthB\v\n" +
+	"$additional_s3_access_key_secret_auth\x18\x02 \x01(\v2:.google.cloud.chronicle.v1.AdditionalS3AccessKeySecretAuthR\x1fadditionalS3AccessKeySecretAuth\"\xf9\x01\n" +
+	"\tSQSAuthV2\x12|\n" +
+	"\x1dsqs_v2_access_key_secret_auth\x18\x03 \x01(\v23.google.cloud.chronicle.v1.SQSV2AccessKeySecretAuthB\x04\xe2A\x01\x02H\x00R\x18sqsV2AccessKeySecretAuth\x12a\n" +
+	"\x11aws_iam_role_auth\x18\x05 \x01(\v2..google.cloud.chronicle.v1.SQSV2AwsIamRoleAuthB\x04\xe2A\x01\x02H\x00R\x0eawsIamRoleAuthB\v\n" +
 	"\tauth_type\"]\n" +
 	"\x13SQSV2AwsIamRoleAuth\x12'\n" +
 	"\x10aws_iam_role_arn\x18\x01 \x01(\tR\rawsIamRoleArn\x12\x1d\n" +
@@ -13604,22 +13604,22 @@ const file_google_cloud_chronicle_v1_feed_proto_rawDesc = "" +
 	"\x0etoken_endpoint\x18\x03 \x01(\tR\rtokenEndpoint\x12\x1b\n" +
 	"\tclient_id\x18\x04 \x01(\tR\bclientId\x12#\n" +
 	"\rclient_secret\x18\x05 \x01(\tR\fclientSecret\x12#\n" +
-	"\rrefresh_token\x18\x06 \x01(\tR\frefreshToken\"\xd2\x02\n" +
-	"\x1cGoogleCloudStorageV2Settings\x12\"\n" +
+	"\rrefresh_token\x18\x06 \x01(\tR\frefreshToken\"\xd7\x02\n" +
+	"\x1cGoogleCloudStorageV2Settings\x12#\n" +
 	"\n" +
-	"bucket_uri\x18\x01 \x01(\tB\x03\xe0A\x02R\tbucketUri\x12l\n" +
-	"\x16source_deletion_option\x18\x02 \x01(\x0e21.google.cloud.chronicle.v1.SourceDeletionOptionV2B\x03\xe0A\x01R\x14sourceDeletionOption\x12?\n" +
-	"\x19chronicle_service_account\x18\x03 \x01(\tB\x03\xe0A\x03R\x17chronicleServiceAccount\x12/\n" +
-	"\x11max_lookback_days\x18\x04 \x01(\x05B\x03\xe0A\x01R\x0fmaxLookbackDays\x12.\n" +
-	"\x10include_prefixes\x18\x05 \x03(\tB\x03\xe0A\x01R\x0fincludePrefixes\"\x91\x03\n" +
-	"%GoogleCloudStorageEventDrivenSettings\x12\"\n" +
+	"bucket_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tbucketUri\x12m\n" +
+	"\x16source_deletion_option\x18\x02 \x01(\x0e21.google.cloud.chronicle.v1.SourceDeletionOptionV2B\x04\xe2A\x01\x01R\x14sourceDeletionOption\x12@\n" +
+	"\x19chronicle_service_account\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x17chronicleServiceAccount\x120\n" +
+	"\x11max_lookback_days\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\x0fmaxLookbackDays\x12/\n" +
+	"\x10include_prefixes\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\x0fincludePrefixes\"\x97\x03\n" +
+	"%GoogleCloudStorageEventDrivenSettings\x12#\n" +
 	"\n" +
-	"bucket_uri\x18\x01 \x01(\tB\x03\xe0A\x02R\tbucketUri\x124\n" +
-	"\x13pubsub_subscription\x18\x02 \x01(\tB\x03\xe0A\x02R\x12pubsubSubscription\x12l\n" +
-	"\x16source_deletion_option\x18\x03 \x01(\x0e21.google.cloud.chronicle.v1.SourceDeletionOptionV2B\x03\xe0A\x01R\x14sourceDeletionOption\x12?\n" +
-	"\x19chronicle_service_account\x18\x04 \x01(\tB\x03\xe0A\x03R\x17chronicleServiceAccount\x12/\n" +
-	"\x11max_lookback_days\x18\x05 \x01(\x05B\x03\xe0A\x01R\x0fmaxLookbackDays\x12.\n" +
-	"\x10include_prefixes\x18\x06 \x03(\tB\x03\xe0A\x01R\x0fincludePrefixes\"\xde\x01\n" +
+	"bucket_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tbucketUri\x125\n" +
+	"\x13pubsub_subscription\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x12pubsubSubscription\x12m\n" +
+	"\x16source_deletion_option\x18\x03 \x01(\x0e21.google.cloud.chronicle.v1.SourceDeletionOptionV2B\x04\xe2A\x01\x01R\x14sourceDeletionOption\x12@\n" +
+	"\x19chronicle_service_account\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x17chronicleServiceAccount\x120\n" +
+	"\x11max_lookback_days\x18\x05 \x01(\x05B\x04\xe2A\x01\x01R\x0fmaxLookbackDays\x12/\n" +
+	"\x10include_prefixes\x18\x06 \x03(\tB\x04\xe2A\x01\x01R\x0fincludePrefixes\"\xde\x01\n" +
 	"\bS3AuthV2\x12i\n" +
 	"\x16access_key_secret_auth\x18\x03 \x01(\v22.google.cloud.chronicle.v1.S3V2AccessKeySecretAuthH\x00R\x13accessKeySecretAuth\x12Z\n" +
 	"\x11aws_iam_role_auth\x18\x05 \x01(\v2-.google.cloud.chronicle.v1.S3V2AwsIamRoleAuthH\x00R\x0eawsIamRoleAuthB\v\n" +
@@ -13627,81 +13627,81 @@ const file_google_cloud_chronicle_v1_feed_proto_rawDesc = "" +
 	"\x12S3V2AwsIamRoleAuth\x12'\n" +
 	"\x10aws_iam_role_arn\x18\x01 \x01(\tR\rawsIamRoleArn\x12\x1d\n" +
 	"\n" +
-	"subject_id\x18\x02 \x01(\tR\tsubjectId\"s\n" +
-	"\x17S3V2AccessKeySecretAuth\x12'\n" +
-	"\raccess_key_id\x18\x01 \x01(\tB\x03\xe0A\x02R\vaccessKeyId\x12/\n" +
-	"\x11secret_access_key\x18\x02 \x01(\tB\x03\xe0A\x02R\x0fsecretAccessKey\"\x92\x03\n" +
-	"\x12AmazonS3V2Settings\x12P\n" +
-	"\x0eauthentication\x18\x01 \x01(\v2#.google.cloud.chronicle.v1.S3AuthV2B\x03\xe0A\x02R\x0eauthentication\x12\x1a\n" +
-	"\x06s3_uri\x18\x02 \x01(\tB\x03\xe0A\x02R\x05s3Uri\x12l\n" +
-	"\x16source_deletion_option\x18\x03 \x01(\x0e21.google.cloud.chronicle.v1.SourceDeletionOptionV2B\x03\xe0A\x01R\x14sourceDeletionOption\x12/\n" +
-	"\x11max_lookback_days\x18\x04 \x01(\x05B\x03\xe0A\x01R\x0fmaxLookbackDays\x12?\n" +
-	"\x19chronicle_service_account\x18\x05 \x01(\tB\x03\xe0A\x03R\x17chronicleServiceAccount\x12.\n" +
-	"\x10include_prefixes\x18\x06 \x03(\tB\x03\xe0A\x01R\x0fincludePrefixes\"~\n" +
-	"\x12MssoAuthentication\x12\x1f\n" +
-	"\busername\x18\x01 \x01(\tB\x03\xe0A\x02R\busername\x12\x1f\n" +
-	"\bpassword\x18\x02 \x01(\tB\x03\xe0A\x02R\bpassword\x12&\n" +
-	"\fapi_endpoint\x18\x03 \x01(\tB\x03\xe0A\x02R\vapiEndpoint\"n\n" +
-	" MimecastV2OAuthClientCredentials\x12 \n" +
-	"\tclient_id\x18\x01 \x01(\tB\x03\xe0A\x02R\bclientId\x12(\n" +
-	"\rclient_secret\x18\x02 \x01(\tB\x03\xe0A\x02R\fclientSecret\"\x81\x01\n" +
-	"\x18TrellixIAMAuthentication\x12 \n" +
-	"\tclient_id\x18\x01 \x01(\tB\x03\xe0A\x02R\bclientId\x12(\n" +
-	"\rclient_secret\x18\x02 \x01(\tB\x03\xe0A\x02R\fclientSecret\x12\x19\n" +
-	"\x05scope\x18\x03 \x01(\tB\x03\xe0A\x02R\x05scope\"\xb2\x01\n" +
-	"\x1aTrellixLocalAuthentication\x12\x1f\n" +
-	"\busername\x18\x01 \x01(\tB\x03\xe0A\x02R\busername\x12\x1f\n" +
-	"\bpassword\x18\x02 \x01(\tB\x03\xe0A\x02R\bpassword\x12*\n" +
-	"\x0etoken_endpoint\x18\x03 \x01(\tB\x03\xe0A\x02R\rtokenEndpoint\x12&\n" +
-	"\ftoken_header\x18\x04 \x01(\tB\x03\xe0A\x02R\vtokenHeader\"\xb3\x02\n" +
-	"\x1aTrellixStarXAuthentication\x12H\n" +
-	"\x04msso\x18\x01 \x01(\v2-.google.cloud.chronicle.v1.MssoAuthenticationB\x03\xe0A\x04H\x00R\x04msso\x12[\n" +
-	"\vtrellix_iam\x18\x02 \x01(\v23.google.cloud.chronicle.v1.TrellixIAMAuthenticationB\x03\xe0A\x04H\x00R\n" +
-	"trellixIam\x12a\n" +
-	"\rtrellix_local\x18\x03 \x01(\v25.google.cloud.chronicle.v1.TrellixLocalAuthenticationB\x03\xe0A\x04H\x00R\ftrellixLocalB\v\n" +
-	"\tauth_type\"\x9d\x01\n" +
-	"\x16TrellixHxHostsSettings\x12b\n" +
-	"\x0eauthentication\x18\x01 \x01(\v25.google.cloud.chronicle.v1.TrellixStarXAuthenticationB\x03\xe0A\x02R\x0eauthentication\x12\x1f\n" +
-	"\bendpoint\x18\x02 \x01(\tB\x03\xe0A\x02R\bendpoint\"\x9e\x01\n" +
-	"\x17TrellixHxAlertsSettings\x12b\n" +
-	"\x0eauthentication\x18\x01 \x01(\v25.google.cloud.chronicle.v1.TrellixStarXAuthenticationB\x03\xe0A\x02R\x0eauthentication\x12\x1f\n" +
-	"\bendpoint\x18\x02 \x01(\tB\x03\xe0A\x02R\bendpoint\"\xa0\x01\n" +
-	"\x19TrellixHxBulkAcqsSettings\x12b\n" +
-	"\x0eauthentication\x18\x01 \x01(\v25.google.cloud.chronicle.v1.TrellixStarXAuthenticationB\x03\xe0A\x02R\x0eauthentication\x12\x1f\n" +
-	"\bendpoint\x18\x02 \x01(\tB\x03\xe0A\x02R\bendpoint\"\x8b\x03\n" +
-	"\x15AzureEventHubSettings\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12*\n" +
-	"\x0econsumer_group\x18\x02 \x01(\tB\x03\xe0A\x02R\rconsumerGroup\x12B\n" +
-	"\x1bevent_hub_connection_string\x18\x03 \x01(\tB\x03\xe0A\x02R\x18eventHubConnectionString\x12J\n" +
-	"\x1fazure_storage_connection_string\x18\x04 \x01(\tB\x03\xe0A\x01R\x1cazureStorageConnectionString\x12;\n" +
-	"\x17azure_storage_container\x18\x05 \x01(\tB\x03\xe0A\x01R\x15azureStorageContainer\x12+\n" +
-	"\x0fazure_sas_token\x18\x06 \x01(\tB\x03\xe0A\x01R\razureSasToken\x123\n" +
-	"\x13event_hub_namespace\x18\a \x01(\tB\x03\xe0A\x03R\x11eventHubNamespace\"\xaf\x03\n" +
-	"\x13AmazonSQSV2Settings\x12\x19\n" +
-	"\x05queue\x18\x01 \x01(\tB\x03\xe0A\x02R\x05queue\x12\x1a\n" +
-	"\x06s3_uri\x18\x02 \x01(\tB\x03\xe0A\x02R\x05s3Uri\x12Q\n" +
-	"\x0eauthentication\x18\x03 \x01(\v2$.google.cloud.chronicle.v1.SQSAuthV2B\x03\xe0A\x02R\x0eauthentication\x12l\n" +
-	"\x16source_deletion_option\x18\x04 \x01(\x0e21.google.cloud.chronicle.v1.SourceDeletionOptionV2B\x03\xe0A\x01R\x14sourceDeletionOption\x12/\n" +
-	"\x11max_lookback_days\x18\x05 \x01(\x05B\x03\xe0A\x01R\x0fmaxLookbackDays\x12?\n" +
-	"\x19chronicle_service_account\x18\x06 \x01(\tB\x03\xe0A\x03R\x17chronicleServiceAccount\x12.\n" +
-	"\x10include_prefixes\x18\a \x03(\tB\x03\xe0A\x01R\x0fincludePrefixes\"\xa1\x03\n" +
-	"\x18AzureBlobStoreV2Settings\x12 \n" +
-	"\tazure_uri\x18\x01 \x01(\tB\x03\xe0A\x02R\bazureUri\x12S\n" +
-	"\x0eauthentication\x18\x03 \x01(\v2&.google.cloud.chronicle.v1.AzureAuthV2B\x03\xe0A\x02R\x0eauthentication\x12l\n" +
-	"\x16source_deletion_option\x18\x04 \x01(\x0e21.google.cloud.chronicle.v1.SourceDeletionOptionV2B\x03\xe0A\x01R\x14sourceDeletionOption\x12/\n" +
-	"\x11max_lookback_days\x18\x05 \x01(\x05B\x03\xe0A\x01R\x0fmaxLookbackDays\x12?\n" +
-	"\x19chronicle_service_account\x18\x06 \x01(\tB\x03\xe0A\x03R\x17chronicleServiceAccount\x12.\n" +
-	"\x10include_prefixes\x18\a \x03(\tB\x03\xe0A\x01R\x0fincludePrefixes\"\x8b\x01\n" +
-	"!AzureV2WorkloadIdentityFederation\x12 \n" +
-	"\tclient_id\x18\x01 \x01(\tB\x03\xe0A\x02R\bclientId\x12 \n" +
-	"\ttenant_id\x18\x02 \x01(\tB\x03\xe0A\x02R\btenantId\x12\"\n" +
+	"subject_id\x18\x02 \x01(\tR\tsubjectId\"u\n" +
+	"\x17S3V2AccessKeySecretAuth\x12(\n" +
+	"\raccess_key_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vaccessKeyId\x120\n" +
+	"\x11secret_access_key\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0fsecretAccessKey\"\x98\x03\n" +
+	"\x12AmazonS3V2Settings\x12Q\n" +
+	"\x0eauthentication\x18\x01 \x01(\v2#.google.cloud.chronicle.v1.S3AuthV2B\x04\xe2A\x01\x02R\x0eauthentication\x12\x1b\n" +
+	"\x06s3_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05s3Uri\x12m\n" +
+	"\x16source_deletion_option\x18\x03 \x01(\x0e21.google.cloud.chronicle.v1.SourceDeletionOptionV2B\x04\xe2A\x01\x01R\x14sourceDeletionOption\x120\n" +
+	"\x11max_lookback_days\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\x0fmaxLookbackDays\x12@\n" +
+	"\x19chronicle_service_account\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x17chronicleServiceAccount\x12/\n" +
+	"\x10include_prefixes\x18\x06 \x03(\tB\x04\xe2A\x01\x01R\x0fincludePrefixes\"\x81\x01\n" +
+	"\x12MssoAuthentication\x12 \n" +
+	"\busername\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\busername\x12 \n" +
+	"\bpassword\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\bpassword\x12'\n" +
+	"\fapi_endpoint\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\vapiEndpoint\"p\n" +
+	" MimecastV2OAuthClientCredentials\x12!\n" +
+	"\tclient_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bclientId\x12)\n" +
+	"\rclient_secret\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\fclientSecret\"\x84\x01\n" +
+	"\x18TrellixIAMAuthentication\x12!\n" +
+	"\tclient_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bclientId\x12)\n" +
+	"\rclient_secret\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\fclientSecret\x12\x1a\n" +
+	"\x05scope\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x05scope\"\xb6\x01\n" +
+	"\x1aTrellixLocalAuthentication\x12 \n" +
+	"\busername\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\busername\x12 \n" +
+	"\bpassword\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\bpassword\x12+\n" +
+	"\x0etoken_endpoint\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\rtokenEndpoint\x12'\n" +
+	"\ftoken_header\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\vtokenHeader\"\xb6\x02\n" +
+	"\x1aTrellixStarXAuthentication\x12I\n" +
+	"\x04msso\x18\x01 \x01(\v2-.google.cloud.chronicle.v1.MssoAuthenticationB\x04\xe2A\x01\x04H\x00R\x04msso\x12\\\n" +
+	"\vtrellix_iam\x18\x02 \x01(\v23.google.cloud.chronicle.v1.TrellixIAMAuthenticationB\x04\xe2A\x01\x04H\x00R\n" +
+	"trellixIam\x12b\n" +
+	"\rtrellix_local\x18\x03 \x01(\v25.google.cloud.chronicle.v1.TrellixLocalAuthenticationB\x04\xe2A\x01\x04H\x00R\ftrellixLocalB\v\n" +
+	"\tauth_type\"\x9f\x01\n" +
+	"\x16TrellixHxHostsSettings\x12c\n" +
+	"\x0eauthentication\x18\x01 \x01(\v25.google.cloud.chronicle.v1.TrellixStarXAuthenticationB\x04\xe2A\x01\x02R\x0eauthentication\x12 \n" +
+	"\bendpoint\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\bendpoint\"\xa0\x01\n" +
+	"\x17TrellixHxAlertsSettings\x12c\n" +
+	"\x0eauthentication\x18\x01 \x01(\v25.google.cloud.chronicle.v1.TrellixStarXAuthenticationB\x04\xe2A\x01\x02R\x0eauthentication\x12 \n" +
+	"\bendpoint\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\bendpoint\"\xa2\x01\n" +
+	"\x19TrellixHxBulkAcqsSettings\x12c\n" +
+	"\x0eauthentication\x18\x01 \x01(\v25.google.cloud.chronicle.v1.TrellixStarXAuthenticationB\x04\xe2A\x01\x02R\x0eauthentication\x12 \n" +
+	"\bendpoint\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\bendpoint\"\x92\x03\n" +
+	"\x15AzureEventHubSettings\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12+\n" +
+	"\x0econsumer_group\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\rconsumerGroup\x12C\n" +
+	"\x1bevent_hub_connection_string\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x18eventHubConnectionString\x12K\n" +
+	"\x1fazure_storage_connection_string\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x1cazureStorageConnectionString\x12<\n" +
+	"\x17azure_storage_container\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x15azureStorageContainer\x12,\n" +
+	"\x0fazure_sas_token\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\razureSasToken\x124\n" +
+	"\x13event_hub_namespace\x18\a \x01(\tB\x04\xe2A\x01\x03R\x11eventHubNamespace\"\xb6\x03\n" +
+	"\x13AmazonSQSV2Settings\x12\x1a\n" +
+	"\x05queue\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05queue\x12\x1b\n" +
+	"\x06s3_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05s3Uri\x12R\n" +
+	"\x0eauthentication\x18\x03 \x01(\v2$.google.cloud.chronicle.v1.SQSAuthV2B\x04\xe2A\x01\x02R\x0eauthentication\x12m\n" +
+	"\x16source_deletion_option\x18\x04 \x01(\x0e21.google.cloud.chronicle.v1.SourceDeletionOptionV2B\x04\xe2A\x01\x01R\x14sourceDeletionOption\x120\n" +
+	"\x11max_lookback_days\x18\x05 \x01(\x05B\x04\xe2A\x01\x01R\x0fmaxLookbackDays\x12@\n" +
+	"\x19chronicle_service_account\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x17chronicleServiceAccount\x12/\n" +
+	"\x10include_prefixes\x18\a \x03(\tB\x04\xe2A\x01\x01R\x0fincludePrefixes\"\xa7\x03\n" +
+	"\x18AzureBlobStoreV2Settings\x12!\n" +
+	"\tazure_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bazureUri\x12T\n" +
+	"\x0eauthentication\x18\x03 \x01(\v2&.google.cloud.chronicle.v1.AzureAuthV2B\x04\xe2A\x01\x02R\x0eauthentication\x12m\n" +
+	"\x16source_deletion_option\x18\x04 \x01(\x0e21.google.cloud.chronicle.v1.SourceDeletionOptionV2B\x04\xe2A\x01\x01R\x14sourceDeletionOption\x120\n" +
+	"\x11max_lookback_days\x18\x05 \x01(\x05B\x04\xe2A\x01\x01R\x0fmaxLookbackDays\x12@\n" +
+	"\x19chronicle_service_account\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x17chronicleServiceAccount\x12/\n" +
+	"\x10include_prefixes\x18\a \x03(\tB\x04\xe2A\x01\x01R\x0fincludePrefixes\"\x8e\x01\n" +
+	"!AzureV2WorkloadIdentityFederation\x12!\n" +
+	"\tclient_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bclientId\x12!\n" +
+	"\ttenant_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\btenantId\x12#\n" +
 	"\n" +
-	"subject_id\x18\x03 \x01(\tB\x03\xe0A\x02R\tsubjectId\"\xfc\x01\n" +
-	"\vAzureAuthV2\x12$\n" +
+	"subject_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\tsubjectId\"\xff\x01\n" +
+	"\vAzureAuthV2\x12%\n" +
 	"\n" +
-	"access_key\x18\x01 \x01(\tB\x03\xe0A\x02H\x00R\taccessKey\x12\"\n" +
-	"\tsas_token\x18\x02 \x01(\tB\x03\xe0A\x02H\x00R\bsasToken\x12\x95\x01\n" +
-	"%azure_v2_workload_identity_federation\x18\x03 \x01(\v2<.google.cloud.chronicle.v1.AzureV2WorkloadIdentityFederationB\x03\xe0A\x02H\x00R!azureV2WorkloadIdentityFederationB\v\n" +
+	"access_key\x18\x01 \x01(\tB\x04\xe2A\x01\x02H\x00R\taccessKey\x12#\n" +
+	"\tsas_token\x18\x02 \x01(\tB\x04\xe2A\x01\x02H\x00R\bsasToken\x12\x96\x01\n" +
+	"%azure_v2_workload_identity_federation\x18\x03 \x01(\v2<.google.cloud.chronicle.v1.AzureV2WorkloadIdentityFederationB\x04\xe2A\x01\x02H\x00R!azureV2WorkloadIdentityFederationB\v\n" +
 	"\tauth_type\"\x8a\x03\n" +
 	"\x14FeedSourceTypeSchema\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12!\n" +
@@ -13738,86 +13738,86 @@ const file_google_cloud_chronicle_v1_feed_proto_rawDesc = "" +
 	"\x05value\x18\x01 \x01(\tR\x05value\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12 \n" +
 	"\vdescription\x18\x03 \x01(\tR\vdescription:\xad\x01\xeaA\xa9\x01\n" +
-	"&chronicle.googleapis.com/LogTypeSchema\x12\x7fprojects/{project}/locations/{location}/instances/{instance}/feedSourceTypeSchemas/{feed_source_type}/logTypeSchemas/{log_type}\"t\n" +
-	"%FetchServiceAccountForCustomerRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+chronicle.googleapis.com/FeedServiceAccountR\x06parent\"\xad\x01\n" +
-	" ListFeedSourceTypeSchemasRequest\x12M\n" +
-	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\x12-chronicle.googleapis.com/FeedSourceTypeSchemaR\x06parent\x12\x1b\n" +
+	"&chronicle.googleapis.com/LogTypeSchema\x12\x7fprojects/{project}/locations/{location}/instances/{instance}/feedSourceTypeSchemas/{feed_source_type}/logTypeSchemas/{log_type}\"u\n" +
+	"%FetchServiceAccountForCustomerRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+chronicle.googleapis.com/FeedServiceAccountR\x06parent\"\xae\x01\n" +
+	" ListFeedSourceTypeSchemasRequest\x12N\n" +
+	"\x06parent\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\x12-chronicle.googleapis.com/FeedSourceTypeSchemaR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xb5\x01\n" +
 	"!ListFeedSourceTypeSchemasResponse\x12h\n" +
 	"\x18feed_source_type_schemas\x18\x01 \x03(\v2/.google.cloud.chronicle.v1.FeedSourceTypeSchemaR\x15feedSourceTypeSchemas\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x9f\x01\n" +
-	"\x19ListLogTypeSchemasRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&chronicle.googleapis.com/LogTypeSchemaR\x06parent\x12\x1b\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa0\x01\n" +
+	"\x19ListLogTypeSchemasRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\x12&chronicle.googleapis.com/LogTypeSchemaR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x98\x01\n" +
 	"\x1aListLogTypeSchemasResponse\x12R\n" +
 	"\x10log_type_schemas\x18\x01 \x03(\v2(.google.cloud.chronicle.v1.LogTypeSchemaR\x0elogTypeSchemas\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xab\x01\n" +
-	"\x15ImportPushLogsRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dchronicle.googleapis.com/FeedR\x06parent\x126\n" +
-	"\thttp_body\x18\x02 \x01(\v2\x14.google.api.HttpBodyB\x03\xe0A\x02R\bhttpBody\x12\x1b\n" +
-	"\x06secret\x18\x03 \x01(\tB\x03\xe0A\x05R\x06secret\"\x8f\x01\n" +
-	"\x11UpdateFeedRequest\x128\n" +
-	"\x04feed\x18\x01 \x01(\v2\x1f.google.cloud.chronicle.v1.FeedB\x03\xe0A\x02R\x04feed\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"\x8d\x01\n" +
-	"\x10ListFeedsRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\x12\x1dchronicle.googleapis.com/FeedR\x06parent\x12\x1b\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xae\x01\n" +
+	"\x15ImportPushLogsRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dchronicle.googleapis.com/FeedR\x06parent\x127\n" +
+	"\thttp_body\x18\x02 \x01(\v2\x14.google.api.HttpBodyB\x04\xe2A\x01\x02R\bhttpBody\x12\x1c\n" +
+	"\x06secret\x18\x03 \x01(\tB\x04\xe2A\x01\x05R\x06secret\"\x91\x01\n" +
+	"\x11UpdateFeedRequest\x129\n" +
+	"\x04feed\x18\x01 \x01(\v2\x1f.google.cloud.chronicle.v1.FeedB\x04\xe2A\x01\x02R\x04feed\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"\x8e\x01\n" +
+	"\x10ListFeedsRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\x12\x1dchronicle.googleapis.com/FeedR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"r\n" +
 	"\x11ListFeedsResponse\x125\n" +
 	"\x05feeds\x18\x01 \x03(\v2\x1f.google.cloud.chronicle.v1.FeedR\x05feeds\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x9f\x01\n" +
-	"\x14ListFeedPacksRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!chronicle.googleapis.com/FeedPackR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa2\x01\n" +
+	"\x14ListFeedPacksRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!chronicle.googleapis.com/FeedPackR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x83\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x83\x01\n" +
 	"\x15ListFeedPacksResponse\x12B\n" +
 	"\n" +
 	"feed_packs\x18\x01 \x03(\v2#.google.cloud.chronicle.v1.FeedPackR\tfeedPacks\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"S\n" +
-	"\x12GetFeedPackRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!chronicle.googleapis.com/FeedPackR\x04name\"\x8c\x01\n" +
-	"\x11CreateFeedRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\x12\x1dchronicle.googleapis.com/FeedR\x06parent\x128\n" +
-	"\x04feed\x18\x02 \x01(\v2\x1f.google.cloud.chronicle.v1.FeedB\x03\xe0A\x02R\x04feed\"K\n" +
-	"\x0eGetFeedRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dchronicle.googleapis.com/FeedR\x04name\"z\n" +
-	"\x11DeleteFeedRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dchronicle.googleapis.com/FeedR\x04name\x12*\n" +
-	"\x0edelete_backlog\x18\x02 \x01(\bB\x03\xe0A\x01R\rdeleteBacklog\"N\n" +
-	"\x11EnableFeedRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dchronicle.googleapis.com/FeedR\x04name\"R\n" +
-	"\x15GenerateSecretRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"T\n" +
+	"\x12GetFeedPackRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!chronicle.googleapis.com/FeedPackR\x04name\"\x8e\x01\n" +
+	"\x11CreateFeedRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\x12\x1dchronicle.googleapis.com/FeedR\x06parent\x129\n" +
+	"\x04feed\x18\x02 \x01(\v2\x1f.google.cloud.chronicle.v1.FeedB\x04\xe2A\x01\x02R\x04feed\"L\n" +
+	"\x0eGetFeedRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dchronicle.googleapis.com/FeedR\x04name\"|\n" +
+	"\x11DeleteFeedRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dchronicle.googleapis.com/FeedR\x04name\x12+\n" +
+	"\x0edelete_backlog\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\rdeleteBacklog\"O\n" +
+	"\x11EnableFeedRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dchronicle.googleapis.com/FeedR\x04name\"S\n" +
+	"\x15GenerateSecretRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
 	"\x1dchronicle.googleapis.com/FeedR\x04name\"0\n" +
 	"\x16GenerateSecretResponse\x12\x16\n" +
-	"\x06secret\x18\x01 \x01(\tR\x06secret\"O\n" +
-	"\x12DisableFeedRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dchronicle.googleapis.com/FeedR\x04name\"K\n" +
-	"\x17CustomAPIHeaderKeyValue\x12\x15\n" +
-	"\x03key\x18\x01 \x01(\tB\x03\xe0A\x02R\x03key\x12\x19\n" +
-	"\x05value\x18\x02 \x01(\tB\x03\xe0A\x02R\x05value\"z\n" +
-	"\x13CustomAPIHeaderAuth\x12c\n" +
-	"\x11header_key_values\x18\x01 \x03(\v22.google.cloud.chronicle.v1.CustomAPIHeaderKeyValueB\x03\xe0A\x01R\x0fheaderKeyValues\"J\n" +
-	"\x16CustomAPIQueryKeyValue\x12\x15\n" +
-	"\x03key\x18\x01 \x01(\tB\x03\xe0A\x02R\x03key\x12\x19\n" +
-	"\x05value\x18\x02 \x01(\tB\x03\xe0A\x02R\x05value\"v\n" +
-	"\x12CustomAPIQueryAuth\x12`\n" +
-	"\x10query_key_values\x18\x01 \x03(\v21.google.cloud.chronicle.v1.CustomAPIQueryKeyValueB\x03\xe0A\x01R\x0equeryKeyValues\"\x11\n" +
-	"\x0fCustomAPINoAuth\"\x80\x05\n" +
+	"\x06secret\x18\x01 \x01(\tR\x06secret\"P\n" +
+	"\x12DisableFeedRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dchronicle.googleapis.com/FeedR\x04name\"M\n" +
+	"\x17CustomAPIHeaderKeyValue\x12\x16\n" +
+	"\x03key\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03key\x12\x1a\n" +
+	"\x05value\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05value\"{\n" +
+	"\x13CustomAPIHeaderAuth\x12d\n" +
+	"\x11header_key_values\x18\x01 \x03(\v22.google.cloud.chronicle.v1.CustomAPIHeaderKeyValueB\x04\xe2A\x01\x01R\x0fheaderKeyValues\"L\n" +
+	"\x16CustomAPIQueryKeyValue\x12\x16\n" +
+	"\x03key\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03key\x12\x1a\n" +
+	"\x05value\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05value\"w\n" +
+	"\x12CustomAPIQueryAuth\x12a\n" +
+	"\x10query_key_values\x18\x01 \x03(\v21.google.cloud.chronicle.v1.CustomAPIQueryKeyValueB\x04\xe2A\x01\x01R\x0equeryKeyValues\"\x11\n" +
+	"\x0fCustomAPINoAuth\"\x83\x05\n" +
 	"\x11CustomAPISettings\x12E\n" +
 	"\ano_auth\x18\b \x01(\v2*.google.cloud.chronicle.v1.CustomAPINoAuthH\x00R\x06noAuth\x12N\n" +
 	"\n" +
@@ -13826,53 +13826,53 @@ const file_google_cloud_chronicle_v1_feed_proto_rawDesc = "" +
 	"\vheader_auth\x18\x05 \x01(\v2..google.cloud.chronicle.v1.CustomAPIHeaderAuthH\x00R\n" +
 	"headerAuth\x12N\n" +
 	"\n" +
-	"query_auth\x18\t \x01(\v2-.google.cloud.chronicle.v1.CustomAPIQueryAuthH\x00R\tqueryAuth\x12\x1e\n" +
-	"\bbase_url\x18\x01 \x01(\tB\x03\xe0A\x02R\abaseUrl\x120\n" +
-	"\x11polling_frequency\x18\x02 \x01(\x05B\x03\xe0A\x01R\x10pollingFrequency\x12^\n" +
-	"\x0fprimary_request\x18\x06 \x01(\v20.google.cloud.chronicle.v1.CustomAPITransferNodeB\x03\xe0A\x02R\x0eprimaryRequestB\x10\n" +
-	"\x0eauthentication\"\xa3\x04\n" +
-	"\x15CustomAPITransferNode\x12a\n" +
-	"\x10request_settings\x18\x01 \x01(\v21.google.cloud.chronicle.v1.CustomAPIRequestConfigB\x03\xe0A\x02R\x0frequestSettings\x12b\n" +
-	"\x10response_mapping\x18\x02 \x01(\v22.google.cloud.chronicle.v1.CustomAPIResponseConfigB\x03\xe0A\x02R\x0fresponseMapping\x12d\n" +
-	"\x13pagination_strategy\x18\x03 \x01(\v2..google.cloud.chronicle.v1.CustomAPIPaginationB\x03\xe0A\x02R\x12paginationStrategy\x12_\n" +
-	"\rcheckpointing\x18\x04 \x01(\v24.google.cloud.chronicle.v1.CustomAPICheckpointConfigB\x03\xe0A\x02R\rcheckpointing\x12|\n" +
-	"\x19dependent_requests_config\x18\b \x01(\v2;.google.cloud.chronicle.v1.CustomAPIDependentRequestsConfigB\x03\xe0A\x01R\x17dependentRequestsConfig\"\xe7\x01\n" +
-	" CustomAPIDependentRequestsConfig\x12.\n" +
-	"\x11item_id_json_path\x18\x01 \x01(\tB\x03\xe0A\x02R\x0eitemIdJsonPath\x12-\n" +
-	"\x10item_id_variable\x18\x02 \x01(\tB\x03\xe0A\x01R\x0eitemIdVariable\x12d\n" +
-	"\x12dependent_requests\x18\x03 \x03(\v20.google.cloud.chronicle.v1.CustomAPITransferNodeB\x03\xe0A\x01R\x11dependentRequests\"\xfa\x03\n" +
-	"\x16CustomAPIRequestConfig\x12(\n" +
-	"\rendpoint_path\x18\x01 \x01(\tB\x03\xe0A\x02R\fendpointPath\x12b\n" +
-	"\vhttp_method\x18\x02 \x01(\x0e2<.google.cloud.chronicle.v1.CustomAPIRequestConfig.HttpMethodB\x03\xe0A\x02R\n" +
-	"httpMethod\x12&\n" +
-	"\frequest_body\x18\x03 \x01(\tB\x03\xe0A\x01R\vrequestBody\x12Y\n" +
-	"\x10query_parameters\x18\x04 \x03(\v2).google.cloud.chronicle.v1.HeaderKeyValueB\x03\xe0A\x01R\x0fqueryParameters\x12U\n" +
-	"\x0ecustom_headers\x18\x05 \x03(\v2).google.cloud.chronicle.v1.HeaderKeyValueB\x03\xe0A\x01R\rcustomHeaders\x12:\n" +
-	"\x17max_requests_per_minute\x18\x06 \x01(\x05B\x03\xe0A\x01R\x14maxRequestsPerMinute\"<\n" +
+	"query_auth\x18\t \x01(\v2-.google.cloud.chronicle.v1.CustomAPIQueryAuthH\x00R\tqueryAuth\x12\x1f\n" +
+	"\bbase_url\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\abaseUrl\x121\n" +
+	"\x11polling_frequency\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x10pollingFrequency\x12_\n" +
+	"\x0fprimary_request\x18\x06 \x01(\v20.google.cloud.chronicle.v1.CustomAPITransferNodeB\x04\xe2A\x01\x02R\x0eprimaryRequestB\x10\n" +
+	"\x0eauthentication\"\xa8\x04\n" +
+	"\x15CustomAPITransferNode\x12b\n" +
+	"\x10request_settings\x18\x01 \x01(\v21.google.cloud.chronicle.v1.CustomAPIRequestConfigB\x04\xe2A\x01\x02R\x0frequestSettings\x12c\n" +
+	"\x10response_mapping\x18\x02 \x01(\v22.google.cloud.chronicle.v1.CustomAPIResponseConfigB\x04\xe2A\x01\x02R\x0fresponseMapping\x12e\n" +
+	"\x13pagination_strategy\x18\x03 \x01(\v2..google.cloud.chronicle.v1.CustomAPIPaginationB\x04\xe2A\x01\x02R\x12paginationStrategy\x12`\n" +
+	"\rcheckpointing\x18\x04 \x01(\v24.google.cloud.chronicle.v1.CustomAPICheckpointConfigB\x04\xe2A\x01\x02R\rcheckpointing\x12}\n" +
+	"\x19dependent_requests_config\x18\b \x01(\v2;.google.cloud.chronicle.v1.CustomAPIDependentRequestsConfigB\x04\xe2A\x01\x01R\x17dependentRequestsConfig\"\xea\x01\n" +
+	" CustomAPIDependentRequestsConfig\x12/\n" +
+	"\x11item_id_json_path\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x0eitemIdJsonPath\x12.\n" +
+	"\x10item_id_variable\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x0eitemIdVariable\x12e\n" +
+	"\x12dependent_requests\x18\x03 \x03(\v20.google.cloud.chronicle.v1.CustomAPITransferNodeB\x04\xe2A\x01\x01R\x11dependentRequests\"\x80\x04\n" +
+	"\x16CustomAPIRequestConfig\x12)\n" +
+	"\rendpoint_path\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\fendpointPath\x12c\n" +
+	"\vhttp_method\x18\x02 \x01(\x0e2<.google.cloud.chronicle.v1.CustomAPIRequestConfig.HttpMethodB\x04\xe2A\x01\x02R\n" +
+	"httpMethod\x12'\n" +
+	"\frequest_body\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vrequestBody\x12Z\n" +
+	"\x10query_parameters\x18\x04 \x03(\v2).google.cloud.chronicle.v1.HeaderKeyValueB\x04\xe2A\x01\x01R\x0fqueryParameters\x12V\n" +
+	"\x0ecustom_headers\x18\x05 \x03(\v2).google.cloud.chronicle.v1.HeaderKeyValueB\x04\xe2A\x01\x01R\rcustomHeaders\x12;\n" +
+	"\x17max_requests_per_minute\x18\x06 \x01(\x05B\x04\xe2A\x01\x01R\x14maxRequestsPerMinute\"<\n" +
 	"\n" +
 	"HttpMethod\x12\x1b\n" +
 	"\x17HTTP_METHOD_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03GET\x10\x01\x12\b\n" +
-	"\x04POST\x10\x02\"H\n" +
-	"\x17CustomAPIResponseConfig\x12-\n" +
-	"\x10target_data_path\x18\x01 \x03(\tB\x03\xe0A\x02R\x0etargetDataPath\"\xbf\a\n" +
+	"\x04POST\x10\x02\"I\n" +
+	"\x17CustomAPIResponseConfig\x12.\n" +
+	"\x10target_data_path\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\x0etargetDataPath\"\xc5\a\n" +
 	"\x19CustomAPICheckpointConfig\x12h\n" +
 	"\rnone_strategy\x18\x01 \x01(\v2A.google.cloud.chronicle.v1.CustomAPICheckpointConfig.NoneStrategyH\x00R\fnoneStrategy\x12\x8a\x01\n" +
 	"\x19latest_timestamp_strategy\x18\x02 \x01(\v2L.google.cloud.chronicle.v1.CustomAPICheckpointConfig.LatestTimestampStrategyH\x00R\x17latestTimestampStrategy\x12\x81\x01\n" +
 	"\x16latest_record_strategy\x18\x03 \x01(\v2I.google.cloud.chronicle.v1.CustomAPICheckpointConfig.LatestRecordStrategyH\x00R\x14latestRecordStrategy\x12t\n" +
 	"\x11iterator_strategy\x18\x04 \x01(\v2E.google.cloud.chronicle.v1.CustomAPICheckpointConfig.IteratorStrategyH\x00R\x10iteratorStrategy\x1a\x0e\n" +
-	"\fNoneStrategy\x1a\x88\x01\n" +
-	"\x17LatestTimestampStrategy\x127\n" +
-	"\x15checkpoint_value_path\x18\x01 \x01(\tB\x03\xe0A\x02R\x13checkpointValuePath\x124\n" +
-	"\x13checkpoint_variable\x18\x02 \x01(\tB\x03\xe0A\x02R\x12checkpointVariable\x1a\x85\x01\n" +
-	"\x14LatestRecordStrategy\x127\n" +
-	"\x15checkpoint_value_path\x18\x01 \x01(\tB\x03\xe0A\x02R\x13checkpointValuePath\x124\n" +
-	"\x13checkpoint_variable\x18\x02 \x01(\tB\x03\xe0A\x02R\x12checkpointVariable\x1a\x81\x01\n" +
-	"\x10IteratorStrategy\x127\n" +
-	"\x15checkpoint_value_path\x18\x01 \x01(\tB\x03\xe0A\x02R\x13checkpointValuePath\x124\n" +
-	"\x13checkpoint_variable\x18\x02 \x01(\tB\x03\xe0A\x02R\x12checkpointVariableB\n" +
+	"\fNoneStrategy\x1a\x8a\x01\n" +
+	"\x17LatestTimestampStrategy\x128\n" +
+	"\x15checkpoint_value_path\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x13checkpointValuePath\x125\n" +
+	"\x13checkpoint_variable\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x12checkpointVariable\x1a\x87\x01\n" +
+	"\x14LatestRecordStrategy\x128\n" +
+	"\x15checkpoint_value_path\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x13checkpointValuePath\x125\n" +
+	"\x13checkpoint_variable\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x12checkpointVariable\x1a\x83\x01\n" +
+	"\x10IteratorStrategy\x128\n" +
+	"\x15checkpoint_value_path\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x13checkpointValuePath\x125\n" +
+	"\x13checkpoint_variable\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x12checkpointVariableB\n" +
 	"\n" +
-	"\bstrategy\"\xe5\x06\n" +
+	"\bstrategy\"\xea\x06\n" +
 	"\x13CustomAPIPagination\x12S\n" +
 	"\x04none\x18\x04 \x01(\v2=.google.cloud.chronicle.v1.CustomAPIPagination.NonePaginationH\x00R\x04none\x12V\n" +
 	"\x05token\x18\x05 \x01(\v2>.google.cloud.chronicle.v1.CustomAPIPagination.TokenPaginationH\x00R\x05token\x12S\n" +
@@ -13880,17 +13880,17 @@ const file_google_cloud_chronicle_v1_feed_proto_rawDesc = "" +
 	"\x06offset\x18\a \x01(\v2?.google.cloud.chronicle.v1.CustomAPIPagination.OffsetPaginationH\x00R\x06offset\x12f\n" +
 	"\vpage_number\x18\b \x01(\v2C.google.cloud.chronicle.v1.CustomAPIPagination.PageNumberPaginationH\x00R\n" +
 	"pageNumber\x1a\x10\n" +
-	"\x0eNonePagination\x1av\n" +
-	"\x0fTokenPagination\x12=\n" +
-	"\x19next_page_token_json_path\x18\x01 \x01(\tB\x03\xe0A\x02R\x15nextPageTokenJsonPath\x12$\n" +
-	"\vquery_param\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"queryParam\x1aM\n" +
-	"\x0eLinkPagination\x12;\n" +
-	"\x18next_page_link_json_path\x18\x01 \x01(\tB\x03\xe0A\x02R\x14nextPageLinkJsonPath\x1aE\n" +
-	"\x10OffsetPagination\x121\n" +
-	"\x12offset_query_param\x18\x01 \x01(\tB\x03\xe0A\x02R\x10offsetQueryParam\x1aR\n" +
-	"\x14PageNumberPagination\x12:\n" +
-	"\x17page_number_query_param\x18\x01 \x01(\tB\x03\xe0A\x02R\x14pageNumberQueryParamB\x15\n" +
+	"\x0eNonePagination\x1ax\n" +
+	"\x0fTokenPagination\x12>\n" +
+	"\x19next_page_token_json_path\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x15nextPageTokenJsonPath\x12%\n" +
+	"\vquery_param\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"queryParam\x1aN\n" +
+	"\x0eLinkPagination\x12<\n" +
+	"\x18next_page_link_json_path\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x14nextPageLinkJsonPath\x1aF\n" +
+	"\x10OffsetPagination\x122\n" +
+	"\x12offset_query_param\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x10offsetQueryParam\x1aS\n" +
+	"\x14PageNumberPagination\x12;\n" +
+	"\x17page_number_query_param\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x14pageNumberQueryParamB\x15\n" +
 	"\x13pagination_strategy*_\n" +
 	"\rURISourceType\x12\x1f\n" +
 	"\x1bURI_SOURCE_TYPE_UNSPECIFIED\x10\x00\x12\t\n" +

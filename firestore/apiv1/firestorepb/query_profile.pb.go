@@ -289,9 +289,9 @@ var File_google_firestore_v1_query_profile_proto protoreflect.FileDescriptor
 
 const file_google_firestore_v1_query_profile_proto_rawDesc = "" +
 	"\n" +
-	"'google/firestore/v1/query_profile.proto\x12\x13google.firestore.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1cgoogle/protobuf/struct.proto\"/\n" +
-	"\x0eExplainOptions\x12\x1d\n" +
-	"\aanalyze\x18\x01 \x01(\bB\x03\xe0A\x01R\aanalyze\"\xa3\x01\n" +
+	"'google/firestore/v1/query_profile.proto\x12\x13google.firestore.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1cgoogle/protobuf/struct.proto\"0\n" +
+	"\x0eExplainOptions\x12\x1e\n" +
+	"\aanalyze\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\aanalyze\"\xa3\x01\n" +
 	"\x0eExplainMetrics\x12C\n" +
 	"\fplan_summary\x18\x01 \x01(\v2 .google.firestore.v1.PlanSummaryR\vplanSummary\x12L\n" +
 	"\x0fexecution_stats\x18\x02 \x01(\v2#.google.firestore.v1.ExecutionStatsR\x0eexecutionStats\"I\n" +

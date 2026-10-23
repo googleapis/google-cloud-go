@@ -504,41 +504,41 @@ var File_google_cloud_retail_v2_serving_config_service_proto protoreflect.FileDe
 
 const file_google_cloud_retail_v2_serving_config_service_proto_rawDesc = "" +
 	"\n" +
-	"3google/cloud/retail/v2/serving_config_service.proto\x12\x16google.cloud.retail.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a+google/cloud/retail/v2/serving_config.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xdf\x01\n" +
-	"\x1aCreateServingConfigRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dretail.googleapis.com/CatalogR\x06parent\x12Q\n" +
-	"\x0eserving_config\x18\x02 \x01(\v2%.google.cloud.retail.v2.ServingConfigB\x03\xe0A\x02R\rservingConfig\x12/\n" +
-	"\x11serving_config_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x0fservingConfigId\"\xac\x01\n" +
-	"\x1aUpdateServingConfigRequest\x12Q\n" +
-	"\x0eserving_config\x18\x01 \x01(\v2%.google.cloud.retail.v2.ServingConfigB\x03\xe0A\x02R\rservingConfig\x12;\n" +
+	"3google/cloud/retail/v2/serving_config_service.proto\x12\x16google.cloud.retail.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a+google/cloud/retail/v2/serving_config.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xe2\x01\n" +
+	"\x1aCreateServingConfigRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dretail.googleapis.com/CatalogR\x06parent\x12R\n" +
+	"\x0eserving_config\x18\x02 \x01(\v2%.google.cloud.retail.v2.ServingConfigB\x04\xe2A\x01\x02R\rservingConfig\x120\n" +
+	"\x11serving_config_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x0fservingConfigId\"\xad\x01\n" +
+	"\x1aUpdateServingConfigRequest\x12R\n" +
+	"\x0eserving_config\x18\x01 \x01(\v2%.google.cloud.retail.v2.ServingConfigB\x04\xe2A\x01\x02R\rservingConfig\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"]\n" +
-	"\x1aDeleteServingConfigRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#retail.googleapis.com/ServingConfigR\x04name\"Z\n" +
-	"\x17GetServingConfigRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#retail.googleapis.com/ServingConfigR\x04name\"\xa0\x01\n" +
-	"\x19ListServingConfigsRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dretail.googleapis.com/CatalogR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"updateMask\"^\n" +
+	"\x1aDeleteServingConfigRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#retail.googleapis.com/ServingConfigR\x04name\"[\n" +
+	"\x17GetServingConfigRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#retail.googleapis.com/ServingConfigR\x04name\"\xa3\x01\n" +
+	"\x19ListServingConfigsRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dretail.googleapis.com/CatalogR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x94\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x94\x01\n" +
 	"\x1aListServingConfigsResponse\x12N\n" +
 	"\x0fserving_configs\x18\x01 \x03(\v2%.google.cloud.retail.v2.ServingConfigR\x0eservingConfigs\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x8b\x01\n" +
-	"\x11AddControlRequest\x12R\n" +
-	"\x0eserving_config\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#retail.googleapis.com/ServingConfigR\rservingConfig\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x8d\x01\n" +
+	"\x11AddControlRequest\x12S\n" +
+	"\x0eserving_config\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#retail.googleapis.com/ServingConfigR\rservingConfig\x12#\n" +
 	"\n" +
-	"control_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tcontrolId\"\x8e\x01\n" +
-	"\x14RemoveControlRequest\x12R\n" +
-	"\x0eserving_config\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#retail.googleapis.com/ServingConfigR\rservingConfig\x12\"\n" +
+	"control_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tcontrolId\"\x90\x01\n" +
+	"\x14RemoveControlRequest\x12S\n" +
+	"\x0eserving_config\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#retail.googleapis.com/ServingConfigR\rservingConfig\x12#\n" +
 	"\n" +
-	"control_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tcontrolId2\xb2\f\n" +
+	"control_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tcontrolId2\xb2\f\n" +
 	"\x14ServingConfigService\x12\xf1\x01\n" +
 	"\x13CreateServingConfig\x122.google.cloud.retail.v2.CreateServingConfigRequest\x1a%.google.cloud.retail.v2.ServingConfig\"\x7f\xdaA'parent,serving_config,serving_config_id\x82\xd3\xe4\x93\x02O:\x0eserving_config\"=/v2/{parent=projects/*/locations/*/catalogs/*}/servingConfigs\x12\xaf\x01\n" +
 	"\x13DeleteServingConfig\x122.google.cloud.retail.v2.DeleteServingConfigRequest\x1a\x16.google.protobuf.Empty\"L\xdaA\x04name\x82\xd3\xe4\x93\x02?*=/v2/{name=projects/*/locations/*/catalogs/*/servingConfigs/*}\x12\xf4\x01\n" +

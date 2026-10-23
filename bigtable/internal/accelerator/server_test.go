@@ -15,10 +15,18 @@
 package accelerator
 
 import (
+	"bytes"
+	"context"
 	"os"
 	"path/filepath"
 	"testing"
 	"time"
+
+	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/status"
 )
 
 func TestServer_Permissions(t *testing.T) {
@@ -219,5 +227,63 @@ func TestServer_StartFailure(t *testing.T) {
 	server := NewServer(udsPath, channel, WithStdinReader(nil))
 	if err := server.Start(); err == nil {
 		t.Error("expected error when starting server with nonexistent UDS path, but got nil")
+	}
+}
+
+// TestServer_AcceptsRequestOverGRPCDefaultLimit pins that the daemon's UDS
+// server does not inherit gRPC's 4 MiB default receive limit.
+//
+// That default bounds what an untrusted remote peer can make a server
+// allocate; the daemon's only peer is the SDK process that spawned it. Left in
+// place it would reject mutations the native client sends to the service
+// without complaint, and the caller would see RESOURCE_EXHAUSTED on the
+// accelerated path only.
+func TestServer_AcceptsRequestOverGRPCDefaultLimit(t *testing.T) {
+	tmpDir, err := os.MkdirTemp("", "accelerator-msgsize-*")
+	if err != nil {
+		t.Fatalf("failed to create temp dir: %v", err)
+	}
+	defer os.RemoveAll(tmpDir)
+	udsPath := filepath.Join(tmpDir, "bt_proxy.sock")
+
+	// Zero-value Channel: resource-name validation rejects the request before
+	// the session client is dereferenced. This test only asks whether the
+	// request reached the handler at all, so that is far enough.
+	server := NewServer(udsPath, &Channel{}, WithStdinReader(nil))
+	if err := server.Start(); err != nil {
+		t.Fatalf("failed to start server: %v", err)
+	}
+	defer server.Stop()
+
+	conn, err := grpc.NewClient("unix:"+udsPath, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		t.Fatalf("grpc.NewClient: %v", err)
+	}
+	defer conn.Close()
+
+	// Comfortably past the 4 MiB default, far under btopt.MaxMessageSize.
+	value := bytes.Repeat([]byte{'x'}, 6<<20)
+	req := &btpb.MutateRowRequest{
+		TableName: "projects/p/instances/i/tables/t",
+		RowKey:    []byte("row"),
+		Mutations: []*btpb.Mutation{{
+			Mutation: &btpb.Mutation_SetCell_{SetCell: &btpb.Mutation_SetCell{
+				FamilyName:      "f",
+				ColumnQualifier: []byte("q"),
+				TimestampMicros: 1000,
+				Value:           value,
+			}},
+		}},
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	_, err = btpb.NewBigtableClient(conn).MutateRow(ctx, req)
+	if err == nil {
+		t.Fatal("MutateRow unexpectedly succeeded against a zero-value Channel")
+	}
+	if got := status.Code(err); got == codes.ResourceExhausted {
+		t.Fatalf("server rejected a %d-byte request at the transport layer (code %v: %v); "+
+			"grpc.MaxRecvMsgSize is not being applied", len(value), got, err)
 	}
 }

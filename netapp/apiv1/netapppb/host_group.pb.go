@@ -640,45 +640,45 @@ var File_google_cloud_netapp_v1_host_group_proto protoreflect.FileDescriptor
 
 const file_google_cloud_netapp_v1_host_group_proto_rawDesc = "" +
 	"\n" +
-	"'google/cloud/netapp/v1/host_group.proto\x12\x16google.cloud.netapp.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/cloud/netapp/v1/common.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdb\x01\n" +
-	"\x15ListHostGroupsRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1fnetapp.googleapis.com/HostGroupR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"'google/cloud/netapp/v1/host_group.proto\x12\x16google.cloud.netapp.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/cloud/netapp/v1/common.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe0\x01\n" +
+	"\x15ListHostGroupsRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1fnetapp.googleapis.com/HostGroupR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xa6\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xa6\x01\n" +
 	"\x16ListHostGroupsResponse\x12B\n" +
 	"\vhost_groups\x18\x01 \x03(\v2!.google.cloud.netapp.v1.HostGroupR\n" +
 	"hostGroups\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"R\n" +
-	"\x13GetHostGroupRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fnetapp.googleapis.com/HostGroupR\x04name\"\xc9\x01\n" +
-	"\x16CreateHostGroupRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1fnetapp.googleapis.com/HostGroupR\x06parent\x12E\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"S\n" +
+	"\x13GetHostGroupRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fnetapp.googleapis.com/HostGroupR\x04name\"\xcc\x01\n" +
+	"\x16CreateHostGroupRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1fnetapp.googleapis.com/HostGroupR\x06parent\x12F\n" +
 	"\n" +
-	"host_group\x18\x02 \x01(\v2!.google.cloud.netapp.v1.HostGroupB\x03\xe0A\x02R\thostGroup\x12'\n" +
-	"\rhost_group_id\x18\x03 \x01(\tB\x03\xe0A\x02R\vhostGroupId\"\xa1\x01\n" +
-	"\x16UpdateHostGroupRequest\x12E\n" +
+	"host_group\x18\x02 \x01(\v2!.google.cloud.netapp.v1.HostGroupB\x04\xe2A\x01\x02R\thostGroup\x12(\n" +
+	"\rhost_group_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\vhostGroupId\"\xa3\x01\n" +
+	"\x16UpdateHostGroupRequest\x12F\n" +
 	"\n" +
-	"host_group\x18\x01 \x01(\v2!.google.cloud.netapp.v1.HostGroupB\x03\xe0A\x02R\thostGroup\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"U\n" +
-	"\x16DeleteHostGroupRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fnetapp.googleapis.com/HostGroupR\x04name\"\x86\x06\n" +
-	"\tHostGroup\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12?\n" +
-	"\x04type\x18\x02 \x01(\x0e2&.google.cloud.netapp.v1.HostGroup.TypeB\x03\xe0A\x02R\x04type\x12B\n" +
-	"\x05state\x18\x03 \x01(\x0e2'.google.cloud.netapp.v1.HostGroup.StateB\x03\xe0A\x03R\x05state\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12\x19\n" +
-	"\x05hosts\x18\x05 \x03(\tB\x03\xe0A\x02R\x05hosts\x12<\n" +
-	"\aos_type\x18\x06 \x01(\x0e2\x1e.google.cloud.netapp.v1.OsTypeB\x03\xe0A\x02R\x06osType\x12%\n" +
-	"\vdescription\x18\a \x01(\tB\x03\xe0A\x01R\vdescription\x12J\n" +
-	"\x06labels\x18\b \x03(\v2-.google.cloud.netapp.v1.HostGroup.LabelsEntryB\x03\xe0A\x01R\x06labels\x1a9\n" +
+	"host_group\x18\x01 \x01(\v2!.google.cloud.netapp.v1.HostGroupB\x04\xe2A\x01\x02R\thostGroup\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"V\n" +
+	"\x16DeleteHostGroupRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fnetapp.googleapis.com/HostGroupR\x04name\"\x8e\x06\n" +
+	"\tHostGroup\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12@\n" +
+	"\x04type\x18\x02 \x01(\x0e2&.google.cloud.netapp.v1.HostGroup.TypeB\x04\xe2A\x01\x02R\x04type\x12C\n" +
+	"\x05state\x18\x03 \x01(\x0e2'.google.cloud.netapp.v1.HostGroup.StateB\x04\xe2A\x01\x03R\x05state\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12\x1a\n" +
+	"\x05hosts\x18\x05 \x03(\tB\x04\xe2A\x01\x02R\x05hosts\x12=\n" +
+	"\aos_type\x18\x06 \x01(\x0e2\x1e.google.cloud.netapp.v1.OsTypeB\x04\xe2A\x01\x02R\x06osType\x12&\n" +
+	"\vdescription\x18\a \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12K\n" +
+	"\x06labels\x18\b \x03(\v2-.google.cloud.netapp.v1.HostGroup.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"1\n" +

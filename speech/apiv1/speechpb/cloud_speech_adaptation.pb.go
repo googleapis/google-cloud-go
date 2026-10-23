@@ -803,53 +803,53 @@ var File_google_cloud_speech_v1_cloud_speech_adaptation_proto protoreflect.FileD
 
 const file_google_cloud_speech_v1_cloud_speech_adaptation_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/speech/v1/cloud_speech_adaptation.proto\x12\x16google.cloud.speech.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a%google/cloud/speech/v1/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xc9\x01\n" +
-	"\x16CreatePhraseSetRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1fspeech.googleapis.com/PhraseSetR\x06parent\x12'\n" +
-	"\rphrase_set_id\x18\x02 \x01(\tB\x03\xe0A\x02R\vphraseSetId\x12E\n" +
+	"4google/cloud/speech/v1/cloud_speech_adaptation.proto\x12\x16google.cloud.speech.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a%google/cloud/speech/v1/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xcc\x01\n" +
+	"\x16CreatePhraseSetRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1fspeech.googleapis.com/PhraseSetR\x06parent\x12(\n" +
+	"\rphrase_set_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vphraseSetId\x12F\n" +
 	"\n" +
-	"phrase_set\x18\x03 \x01(\v2!.google.cloud.speech.v1.PhraseSetB\x03\xe0A\x02R\tphraseSet\"\x9c\x01\n" +
-	"\x16UpdatePhraseSetRequest\x12E\n" +
+	"phrase_set\x18\x03 \x01(\v2!.google.cloud.speech.v1.PhraseSetB\x04\xe2A\x01\x02R\tphraseSet\"\x9d\x01\n" +
+	"\x16UpdatePhraseSetRequest\x12F\n" +
 	"\n" +
-	"phrase_set\x18\x01 \x01(\v2!.google.cloud.speech.v1.PhraseSetB\x03\xe0A\x02R\tphraseSet\x12;\n" +
+	"phrase_set\x18\x01 \x01(\v2!.google.cloud.speech.v1.PhraseSetB\x04\xe2A\x01\x02R\tphraseSet\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"R\n" +
-	"\x13GetPhraseSetRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fspeech.googleapis.com/PhraseSetR\x04name\"\x93\x01\n" +
-	"\x14ListPhraseSetRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1fspeech.googleapis.com/PhraseSetR\x06parent\x12\x1b\n" +
+	"updateMask\"S\n" +
+	"\x13GetPhraseSetRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fspeech.googleapis.com/PhraseSetR\x04name\"\x94\x01\n" +
+	"\x14ListPhraseSetRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1fspeech.googleapis.com/PhraseSetR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x83\x01\n" +
 	"\x15ListPhraseSetResponse\x12B\n" +
 	"\vphrase_sets\x18\x01 \x03(\v2!.google.cloud.speech.v1.PhraseSetR\n" +
 	"phraseSets\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"U\n" +
-	"\x16DeletePhraseSetRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fspeech.googleapis.com/PhraseSetR\x04name\"\xd7\x01\n" +
-	"\x18CreateCustomClassRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!speech.googleapis.com/CustomClassR\x06parent\x12+\n" +
-	"\x0fcustom_class_id\x18\x02 \x01(\tB\x03\xe0A\x02R\rcustomClassId\x12K\n" +
-	"\fcustom_class\x18\x03 \x01(\v2#.google.cloud.speech.v1.CustomClassB\x03\xe0A\x02R\vcustomClass\"\xa4\x01\n" +
-	"\x18UpdateCustomClassRequest\x12K\n" +
-	"\fcustom_class\x18\x01 \x01(\v2#.google.cloud.speech.v1.CustomClassB\x03\xe0A\x02R\vcustomClass\x12;\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"V\n" +
+	"\x16DeletePhraseSetRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fspeech.googleapis.com/PhraseSetR\x04name\"\xda\x01\n" +
+	"\x18CreateCustomClassRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!speech.googleapis.com/CustomClassR\x06parent\x12,\n" +
+	"\x0fcustom_class_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\rcustomClassId\x12L\n" +
+	"\fcustom_class\x18\x03 \x01(\v2#.google.cloud.speech.v1.CustomClassB\x04\xe2A\x01\x02R\vcustomClass\"\xa5\x01\n" +
+	"\x18UpdateCustomClassRequest\x12L\n" +
+	"\fcustom_class\x18\x01 \x01(\v2#.google.cloud.speech.v1.CustomClassB\x04\xe2A\x01\x02R\vcustomClass\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"V\n" +
-	"\x15GetCustomClassRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!speech.googleapis.com/CustomClassR\x04name\"\x99\x01\n" +
-	"\x18ListCustomClassesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!speech.googleapis.com/CustomClassR\x06parent\x12\x1b\n" +
+	"updateMask\"W\n" +
+	"\x15GetCustomClassRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!speech.googleapis.com/CustomClassR\x04name\"\x9a\x01\n" +
+	"\x18ListCustomClassesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!speech.googleapis.com/CustomClassR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x8f\x01\n" +
 	"\x19ListCustomClassesResponse\x12J\n" +
 	"\x0ecustom_classes\x18\x01 \x03(\v2#.google.cloud.speech.v1.CustomClassR\rcustomClasses\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"Y\n" +
-	"\x18DeleteCustomClassRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"Z\n" +
+	"\x18DeleteCustomClassRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!speech.googleapis.com/CustomClassR\x04name2\x8e\x0f\n" +
 	"\n" +
 	"Adaptation\x12\xc1\x01\n" +

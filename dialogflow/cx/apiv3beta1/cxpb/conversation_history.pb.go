@@ -1076,24 +1076,24 @@ var File_google_cloud_dialogflow_cx_v3beta1_conversation_history_proto protorefl
 
 const file_google_cloud_dialogflow_cx_v3beta1_conversation_history_proto_rawDesc = "" +
 	"\n" +
-	"=google/cloud/dialogflow/cx/v3beta1/conversation_history.proto\x12\"google.cloud.dialogflow.cx.v3beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/dialogflow/cx/v3beta1/environment.proto\x1a-google/cloud/dialogflow/cx/v3beta1/flow.proto\x1a/google/cloud/dialogflow/cx/v3beta1/intent.proto\x1a-google/cloud/dialogflow/cx/v3beta1/page.proto\x1a0google/cloud/dialogflow/cx/v3beta1/session.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\\\n" +
-	"\x16GetConversationRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&dialogflow.googleapis.com/ConversationR\x04name\"_\n" +
-	"\x19DeleteConversationRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&dialogflow.googleapis.com/ConversationR\x04name\"\xc5\x01\n" +
-	"\x18ListConversationsRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&dialogflow.googleapis.com/ConversationR\x06parent\x12\x1b\n" +
-	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x01R\x06filter\x12 \n" +
-	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"=google/cloud/dialogflow/cx/v3beta1/conversation_history.proto\x12\"google.cloud.dialogflow.cx.v3beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/dialogflow/cx/v3beta1/environment.proto\x1a-google/cloud/dialogflow/cx/v3beta1/flow.proto\x1a/google/cloud/dialogflow/cx/v3beta1/intent.proto\x1a-google/cloud/dialogflow/cx/v3beta1/page.proto\x1a0google/cloud/dialogflow/cx/v3beta1/session.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"]\n" +
+	"\x16GetConversationRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&dialogflow.googleapis.com/ConversationR\x04name\"`\n" +
+	"\x19DeleteConversationRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&dialogflow.googleapis.com/ConversationR\x04name\"\xc9\x01\n" +
+	"\x18ListConversationsRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\x12&dialogflow.googleapis.com/ConversationR\x06parent\x12\x1c\n" +
+	"\x06filter\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12!\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x9b\x01\n" +
+	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x9b\x01\n" +
 	"\x19ListConversationsResponse\x12V\n" +
 	"\rconversations\x18\x01 \x03(\v20.google.cloud.dialogflow.cx.v3beta1.ConversationR\rconversations\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb8\x19\n" +
-	"\fConversation\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12I\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb9\x19\n" +
+	"\fConversation\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12I\n" +
 	"\x04type\x18\x02 \x01(\x0e25.google.cloud.dialogflow.cx.v3beta1.Conversation.TypeR\x04type\x12#\n" +
 	"\rlanguage_code\x18\x03 \x01(\tR\flanguageCode\x129\n" +
 	"\n" +

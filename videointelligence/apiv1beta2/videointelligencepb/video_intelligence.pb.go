@@ -1589,15 +1589,15 @@ var File_google_cloud_videointelligence_v1beta2_video_intelligence_proto protore
 
 const file_google_cloud_videointelligence_v1beta2_video_intelligence_proto_rawDesc = "" +
 	"\n" +
-	"?google/cloud/videointelligence/v1beta2/video_intelligence.proto\x12&google.cloud.videointelligence.v1beta2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xcf\x02\n" +
+	"?google/cloud/videointelligence/v1beta2/video_intelligence.proto\x12&google.cloud.videointelligence.v1beta2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xd2\x02\n" +
 	"\x14AnnotateVideoRequest\x12\x1b\n" +
 	"\tinput_uri\x18\x01 \x01(\tR\binputUri\x12#\n" +
-	"\rinput_content\x18\x06 \x01(\fR\finputContent\x12P\n" +
-	"\bfeatures\x18\x02 \x03(\x0e2/.google.cloud.videointelligence.v1beta2.FeatureB\x03\xe0A\x02R\bfeatures\x12Y\n" +
-	"\rvideo_context\x18\x03 \x01(\v24.google.cloud.videointelligence.v1beta2.VideoContextR\fvideoContext\x12\"\n" +
+	"\rinput_content\x18\x06 \x01(\fR\finputContent\x12Q\n" +
+	"\bfeatures\x18\x02 \x03(\x0e2/.google.cloud.videointelligence.v1beta2.FeatureB\x04\xe2A\x01\x02R\bfeatures\x12Y\n" +
+	"\rvideo_context\x18\x03 \x01(\v24.google.cloud.videointelligence.v1beta2.VideoContextR\fvideoContext\x12#\n" +
 	"\n" +
-	"output_uri\x18\x04 \x01(\tB\x03\xe0A\x01R\toutputUri\x12$\n" +
-	"\vlocation_id\x18\x05 \x01(\tB\x03\xe0A\x01R\n" +
+	"output_uri\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\toutputUri\x12%\n" +
+	"\vlocation_id\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\n" +
 	"locationId\"\xde\x04\n" +
 	"\fVideoContext\x12P\n" +
 	"\bsegments\x18\x01 \x03(\v24.google.cloud.videointelligence.v1beta2.VideoSegmentR\bsegments\x12r\n" +

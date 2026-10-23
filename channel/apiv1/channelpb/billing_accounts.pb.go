@@ -125,14 +125,14 @@ var File_google_cloud_channel_v1_billing_accounts_proto protoreflect.FileDescrip
 
 const file_google_cloud_channel_v1_billing_accounts_proto_rawDesc = "" +
 	"\n" +
-	".google/cloud/channel/v1/billing_accounts.proto\x12\x17google.cloud.channel.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc5\x02\n" +
-	"\x0eBillingAccount\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12!\n" +
-	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12(\n" +
-	"\rcurrency_code\x18\x04 \x01(\tB\x03\xe0A\x03R\fcurrencyCode\x12$\n" +
-	"\vregion_code\x18\x05 \x01(\tB\x03\xe0A\x03R\n" +
+	".google/cloud/channel/v1/billing_accounts.proto\x12\x17google.cloud.channel.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc9\x02\n" +
+	"\x0eBillingAccount\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12!\n" +
+	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12)\n" +
+	"\rcurrency_code\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\fcurrencyCode\x12%\n" +
+	"\vregion_code\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\n" +
 	"regionCode:e\xeaAb\n" +
 	"*cloudchannel.googleapis.com/BillingAccount\x124accounts/{account}/billingAccounts/{billing_account}Bl\n" +
 	"\x1bcom.google.cloud.channel.v1B\x14BillingAccountsProtoP\x01Z5cloud.google.com/go/channel/apiv1/channelpb;channelpbb\x06proto3"

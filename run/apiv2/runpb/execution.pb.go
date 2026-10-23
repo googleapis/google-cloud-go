@@ -696,12 +696,12 @@ var File_google_cloud_run_v2_execution_proto protoreflect.FileDescriptor
 
 const file_google_cloud_run_v2_execution_proto_rawDesc = "" +
 	"\n" +
-	"#google/cloud/run/v2/execution.proto\x12\x13google.cloud.run.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1dgoogle/api/launch_stage.proto\x1a\x19google/api/resource.proto\x1a#google/cloud/run/v2/condition.proto\x1a'google/cloud/run/v2/task_template.proto\x1a#google/longrunning/operations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"O\n" +
-	"\x13GetExecutionRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1crun.googleapis.com/ExecutionR\x04name\"\xb4\x01\n" +
-	"\x15ListExecutionsRequest\x12<\n" +
-	"\x06parent\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\x12\x1crun.googleapis.com/ExecutionR\x06parent\x12\x1b\n" +
+	"#google/cloud/run/v2/execution.proto\x12\x13google.cloud.run.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1dgoogle/api/launch_stage.proto\x1a\x19google/api/resource.proto\x1a#google/cloud/run/v2/condition.proto\x1a'google/cloud/run/v2/task_template.proto\x1a#google/longrunning/operations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"P\n" +
+	"\x13GetExecutionRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1crun.googleapis.com/ExecutionR\x04name\"\xb5\x01\n" +
+	"\x15ListExecutionsRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\x12\x1crun.googleapis.com/ExecutionR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12!\n" +
@@ -710,58 +710,58 @@ const file_google_cloud_run_v2_execution_proto_rawDesc = "" +
 	"\n" +
 	"executions\x18\x01 \x03(\v2\x1e.google.cloud.run.v2.ExecutionR\n" +
 	"executions\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x8b\x01\n" +
-	"\x16DeleteExecutionRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x8c\x01\n" +
+	"\x16DeleteExecutionRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
 	"\x1crun.googleapis.com/ExecutionR\x04name\x12#\n" +
 	"\rvalidate_only\x18\x02 \x01(\bR\fvalidateOnly\x12\x12\n" +
-	"\x04etag\x18\x03 \x01(\tR\x04etag\"\x8b\x01\n" +
-	"\x16CancelExecutionRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
+	"\x04etag\x18\x03 \x01(\tR\x04etag\"\x8c\x01\n" +
+	"\x16CancelExecutionRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
 	"\x1crun.googleapis.com/ExecutionR\x04name\x12#\n" +
 	"\rvalidate_only\x18\x02 \x01(\bR\fvalidateOnly\x12\x12\n" +
-	"\x04etag\x18\x03 \x01(\tR\x04etag\"\xf6\f\n" +
-	"\tExecution\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x15\n" +
-	"\x03uid\x18\x02 \x01(\tB\x03\xe0A\x03R\x03uid\x12\x1d\n" +
-	"\acreator\x18  \x01(\tB\x03\xe0A\x03R\acreator\x12#\n" +
+	"\x04etag\x18\x03 \x01(\tR\x04etag\"\x91\r\n" +
+	"\tExecution\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x16\n" +
+	"\x03uid\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12\x1e\n" +
+	"\acreator\x18  \x01(\tB\x04\xe2A\x01\x03R\acreator\x12$\n" +
 	"\n" +
-	"generation\x18\x03 \x01(\x03B\x03\xe0A\x03R\n" +
-	"generation\x12G\n" +
-	"\x06labels\x18\x04 \x03(\v2*.google.cloud.run.v2.Execution.LabelsEntryB\x03\xe0A\x03R\x06labels\x12V\n" +
-	"\vannotations\x18\x05 \x03(\v2/.google.cloud.run.v2.Execution.AnnotationsEntryB\x03\xe0A\x03R\vannotations\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12>\n" +
+	"generation\x18\x03 \x01(\x03B\x04\xe2A\x01\x03R\n" +
+	"generation\x12H\n" +
+	"\x06labels\x18\x04 \x03(\v2*.google.cloud.run.v2.Execution.LabelsEntryB\x04\xe2A\x01\x03R\x06labels\x12W\n" +
+	"\vannotations\x18\x05 \x03(\v2/.google.cloud.run.v2.Execution.AnnotationsEntryB\x04\xe2A\x01\x03R\vannotations\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12?\n" +
 	"\n" +
-	"start_time\x18\x16 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12H\n" +
-	"\x0fcompletion_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0ecompletionTime\x12@\n" +
-	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12@\n" +
-	"\vdelete_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"deleteTime\x12@\n" +
+	"start_time\x18\x16 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12I\n" +
+	"\x0fcompletion_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x0ecompletionTime\x12A\n" +
+	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12A\n" +
+	"\vdelete_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"deleteTime\x12A\n" +
 	"\vexpire_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"expireTime\x12:\n" +
-	"\flaunch_stage\x18\v \x01(\x0e2\x17.google.api.LaunchStageR\vlaunchStage\x120\n" +
-	"\x03job\x18\f \x01(\tB\x1e\xe0A\x03\xfaA\x18\n" +
-	"\x16run.googleapis.com/JobR\x03job\x12%\n" +
-	"\vparallelism\x18\r \x01(\x05B\x03\xe0A\x03R\vparallelism\x12\"\n" +
+	"\flaunch_stage\x18\v \x01(\x0e2\x17.google.api.LaunchStageR\vlaunchStage\x121\n" +
+	"\x03job\x18\f \x01(\tB\x1f\xe2A\x01\x03\xfaA\x18\n" +
+	"\x16run.googleapis.com/JobR\x03job\x12&\n" +
+	"\vparallelism\x18\r \x01(\x05B\x04\xe2A\x01\x03R\vparallelism\x12#\n" +
 	"\n" +
-	"task_count\x18\x0e \x01(\x05B\x03\xe0A\x03R\ttaskCount\x12B\n" +
-	"\btemplate\x18\x0f \x01(\v2!.google.cloud.run.v2.TaskTemplateB\x03\xe0A\x03R\btemplate\x12%\n" +
-	"\vreconciling\x18\x10 \x01(\bB\x03\xe0A\x03R\vreconciling\x12C\n" +
+	"task_count\x18\x0e \x01(\x05B\x04\xe2A\x01\x03R\ttaskCount\x12C\n" +
+	"\btemplate\x18\x0f \x01(\v2!.google.cloud.run.v2.TaskTemplateB\x04\xe2A\x01\x03R\btemplate\x12&\n" +
+	"\vreconciling\x18\x10 \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12D\n" +
 	"\n" +
-	"conditions\x18\x11 \x03(\v2\x1e.google.cloud.run.v2.ConditionB\x03\xe0A\x03R\n" +
-	"conditions\x124\n" +
-	"\x13observed_generation\x18\x12 \x01(\x03B\x03\xe0A\x03R\x12observedGeneration\x12(\n" +
-	"\rrunning_count\x18\x13 \x01(\x05B\x03\xe0A\x03R\frunningCount\x12,\n" +
-	"\x0fsucceeded_count\x18\x14 \x01(\x05B\x03\xe0A\x03R\x0esucceededCount\x12&\n" +
-	"\ffailed_count\x18\x15 \x01(\x05B\x03\xe0A\x03R\vfailedCount\x12,\n" +
-	"\x0fcancelled_count\x18\x18 \x01(\x05B\x03\xe0A\x03R\x0ecancelledCount\x12(\n" +
-	"\rretried_count\x18\x19 \x01(\x05B\x03\xe0A\x03R\fretriedCount\x12\x1c\n" +
-	"\alog_uri\x18\x1a \x01(\tB\x03\xe0A\x03R\x06logUri\x12(\n" +
-	"\rsatisfies_pzs\x18\x1b \x01(\bB\x03\xe0A\x03R\fsatisfiesPzs\x12\x17\n" +
-	"\x04etag\x18c \x01(\tB\x03\xe0A\x03R\x04etag\x1a9\n" +
+	"conditions\x18\x11 \x03(\v2\x1e.google.cloud.run.v2.ConditionB\x04\xe2A\x01\x03R\n" +
+	"conditions\x125\n" +
+	"\x13observed_generation\x18\x12 \x01(\x03B\x04\xe2A\x01\x03R\x12observedGeneration\x12)\n" +
+	"\rrunning_count\x18\x13 \x01(\x05B\x04\xe2A\x01\x03R\frunningCount\x12-\n" +
+	"\x0fsucceeded_count\x18\x14 \x01(\x05B\x04\xe2A\x01\x03R\x0esucceededCount\x12'\n" +
+	"\ffailed_count\x18\x15 \x01(\x05B\x04\xe2A\x01\x03R\vfailedCount\x12-\n" +
+	"\x0fcancelled_count\x18\x18 \x01(\x05B\x04\xe2A\x01\x03R\x0ecancelledCount\x12)\n" +
+	"\rretried_count\x18\x19 \x01(\x05B\x04\xe2A\x01\x03R\fretriedCount\x12\x1d\n" +
+	"\alog_uri\x18\x1a \x01(\tB\x04\xe2A\x01\x03R\x06logUri\x12)\n" +
+	"\rsatisfies_pzs\x18\x1b \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzs\x12\x18\n" +
+	"\x04etag\x18c \x01(\tB\x04\xe2A\x01\x03R\x04etag\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a>\n" +

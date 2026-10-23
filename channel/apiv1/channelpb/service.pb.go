@@ -5801,11 +5801,11 @@ var File_google_cloud_channel_v1_service_proto protoreflect.FileDescriptor
 
 const file_google_cloud_channel_v1_service_proto_rawDesc = "" +
 	"\n" +
-	"%google/cloud/channel/v1/service.proto\x12\x17google.cloud.channel.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a.google/cloud/channel/v1/billing_accounts.proto\x1a3google/cloud/channel/v1/channel_partner_links.proto\x1a$google/cloud/channel/v1/common.proto\x1a'google/cloud/channel/v1/customers.proto\x1a1google/cloud/channel/v1/entitlement_changes.proto\x1a*google/cloud/channel/v1/entitlements.proto\x1a$google/cloud/channel/v1/offers.proto\x1a(google/cloud/channel/v1/operations.proto\x1a&google/cloud/channel/v1/products.proto\x1a'google/cloud/channel/v1/repricing.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\x97\x01\n" +
-	"&CheckCloudIdentityAccountsExistRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12\x1b\n" +
-	"\x06domain\x18\x02 \x01(\tB\x03\xe0A\x02R\x06domain\x123\n" +
-	"\x13primary_admin_email\x18\x04 \x01(\tB\x03\xe0A\x01R\x11primaryAdminEmail\"\xda\x02\n" +
+	"%google/cloud/channel/v1/service.proto\x12\x17google.cloud.channel.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a.google/cloud/channel/v1/billing_accounts.proto\x1a3google/cloud/channel/v1/channel_partner_links.proto\x1a$google/cloud/channel/v1/common.proto\x1a'google/cloud/channel/v1/customers.proto\x1a1google/cloud/channel/v1/entitlement_changes.proto\x1a*google/cloud/channel/v1/entitlements.proto\x1a$google/cloud/channel/v1/offers.proto\x1a(google/cloud/channel/v1/operations.proto\x1a&google/cloud/channel/v1/products.proto\x1a'google/cloud/channel/v1/repricing.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\x9a\x01\n" +
+	"&CheckCloudIdentityAccountsExistRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12\x1c\n" +
+	"\x06domain\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06domain\x124\n" +
+	"\x13primary_admin_email\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x11primaryAdminEmail\"\xda\x02\n" +
 	"\x1cCloudIdentityCustomerAccount\x12\x1a\n" +
 	"\bexisting\x18\x01 \x01(\bR\bexisting\x12\x14\n" +
 	"\x05owned\x18\x02 \x01(\bR\x05owned\x12#\n" +
@@ -5814,165 +5814,165 @@ const file_google_cloud_channel_v1_service_proto_rawDesc = "" +
 	"\rcustomer_type\x18\x05 \x01(\x0e27.google.cloud.channel.v1.CloudIdentityInfo.CustomerTypeR\fcustomerType\x12H\n" +
 	"!channel_partner_cloud_identity_id\x18\x06 \x01(\tR\x1dchannelPartnerCloudIdentityId\"\x98\x01\n" +
 	"'CheckCloudIdentityAccountsExistResponse\x12m\n" +
-	"\x17cloud_identity_accounts\x18\x01 \x03(\v25.google.cloud.channel.v1.CloudIdentityCustomerAccountR\x15cloudIdentityAccounts\"\x96\x01\n" +
-	"\x14ListCustomersRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x17cloud_identity_accounts\x18\x01 \x03(\v25.google.cloud.channel.v1.CloudIdentityCustomerAccountR\x15cloudIdentityAccounts\"\x9a\x01\n" +
+	"\x14ListCustomersRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\x80\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x80\x01\n" +
 	"\x15ListCustomersResponse\x12?\n" +
 	"\tcustomers\x18\x01 \x03(\v2!.google.cloud.channel.v1.CustomerR\tcustomers\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"V\n" +
-	"\x12GetCustomerRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$cloudchannel.googleapis.com/CustomerR\x04name\"x\n" +
-	"\x15CreateCustomerRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12B\n" +
-	"\bcustomer\x18\x02 \x01(\v2!.google.cloud.channel.v1.CustomerB\x03\xe0A\x02R\bcustomer\"\x98\x01\n" +
-	"\x15UpdateCustomerRequest\x12B\n" +
-	"\bcustomer\x18\x02 \x01(\v2!.google.cloud.channel.v1.CustomerB\x03\xe0A\x02R\bcustomer\x12;\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"W\n" +
+	"\x12GetCustomerRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$cloudchannel.googleapis.com/CustomerR\x04name\"z\n" +
+	"\x15CreateCustomerRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12C\n" +
+	"\bcustomer\x18\x02 \x01(\v2!.google.cloud.channel.v1.CustomerB\x04\xe2A\x01\x02R\bcustomer\"\x99\x01\n" +
+	"\x15UpdateCustomerRequest\x12C\n" +
+	"\bcustomer\x18\x02 \x01(\v2!.google.cloud.channel.v1.CustomerB\x04\xe2A\x01\x02R\bcustomer\x12;\n" +
 	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"Y\n" +
-	"\x15DeleteCustomerRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$cloudchannel.googleapis.com/CustomerR\x04name\"\xa8\x03\n" +
-	"\x15ImportCustomerRequest\x12\x1d\n" +
-	"\x06domain\x18\x02 \x01(\tB\x03\xe0A\x02H\x00R\x06domain\x121\n" +
-	"\x11cloud_identity_id\x18\x03 \x01(\tB\x03\xe0A\x02H\x00R\x0fcloudIdentityId\x125\n" +
-	"\x13primary_admin_email\x18\b \x01(\tB\x03\xe0A\x02H\x00R\x11primaryAdminEmail\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12\"\n" +
+	"updateMask\"Z\n" +
+	"\x15DeleteCustomerRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$cloudchannel.googleapis.com/CustomerR\x04name\"\xb0\x03\n" +
+	"\x15ImportCustomerRequest\x12\x1e\n" +
+	"\x06domain\x18\x02 \x01(\tB\x04\xe2A\x01\x02H\x00R\x06domain\x122\n" +
+	"\x11cloud_identity_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02H\x00R\x0fcloudIdentityId\x126\n" +
+	"\x13primary_admin_email\x18\b \x01(\tB\x04\xe2A\x01\x02H\x00R\x11primaryAdminEmail\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12#\n" +
 	"\n" +
-	"auth_token\x18\x04 \x01(\tB\x03\xe0A\x01R\tauthToken\x123\n" +
-	"\x13overwrite_if_exists\x18\x05 \x01(\bB\x03\xe0A\x02R\x11overwriteIfExists\x121\n" +
-	"\x12channel_partner_id\x18\x06 \x01(\tB\x03\xe0A\x01R\x10channelPartnerId\x12H\n" +
-	"\bcustomer\x18\a \x01(\tB,\xe0A\x01\xfaA&\n" +
+	"auth_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tauthToken\x124\n" +
+	"\x13overwrite_if_exists\x18\x05 \x01(\bB\x04\xe2A\x01\x02R\x11overwriteIfExists\x122\n" +
+	"\x12channel_partner_id\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x10channelPartnerId\x12I\n" +
+	"\bcustomer\x18\a \x01(\tB-\xe2A\x01\x01\xfaA&\n" +
 	"$cloudchannel.googleapis.com/CustomerR\bcustomerB\x13\n" +
-	"\x11customer_identity\"\xa2\x02\n" +
-	"\x1dProvisionCloudIdentityRequest\x12H\n" +
-	"\bcustomer\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
+	"\x11customer_identity\"\xa3\x02\n" +
+	"\x1dProvisionCloudIdentityRequest\x12I\n" +
+	"\bcustomer\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
 	"$cloudchannel.googleapis.com/CustomerR\bcustomer\x12Z\n" +
 	"\x13cloud_identity_info\x18\x02 \x01(\v2*.google.cloud.channel.v1.CloudIdentityInfoR\x11cloudIdentityInfo\x126\n" +
 	"\x04user\x18\x03 \x01(\v2\".google.cloud.channel.v1.AdminUserR\x04user\x12#\n" +
-	"\rvalidate_only\x18\x04 \x01(\bR\fvalidateOnly\"\xa5\x01\n" +
-	"\x17ListEntitlementsRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$cloudchannel.googleapis.com/CustomerR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\rvalidate_only\x18\x04 \x01(\bR\fvalidateOnly\"\xa8\x01\n" +
+	"\x17ListEntitlementsRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$cloudchannel.googleapis.com/CustomerR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x8c\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x8c\x01\n" +
 	"\x18ListEntitlementsResponse\x12H\n" +
 	"\fentitlements\x18\x01 \x03(\v2$.google.cloud.channel.v1.EntitlementR\fentitlements\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb5\x02\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb7\x02\n" +
 	"\x1bListTransferableSkusRequest\x12,\n" +
 	"\x11cloud_identity_id\x18\x04 \x01(\tH\x00R\x0fcloudIdentityId\x12%\n" +
-	"\rcustomer_name\x18\a \x01(\tH\x00R\fcustomerName\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12\x1b\n" +
+	"\rcustomer_name\x18\a \x01(\tH\x00R\fcustomerName\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\x12\"\n" +
+	"page_token\x18\x03 \x01(\tR\tpageToken\x12#\n" +
 	"\n" +
-	"auth_token\x18\x05 \x01(\tB\x03\xe0A\x01R\tauthToken\x12#\n" +
+	"auth_token\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\tauthToken\x12#\n" +
 	"\rlanguage_code\x18\x06 \x01(\tR\flanguageCodeB\x1f\n" +
 	"\x1dtransferred_customer_identity\"\x9d\x01\n" +
 	"\x1cListTransferableSkusResponse\x12U\n" +
 	"\x11transferable_skus\x18\x01 \x03(\v2(.google.cloud.channel.v1.TransferableSkuR\x10transferableSkus\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xdd\x02\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xe1\x02\n" +
 	"\x1dListTransferableOffersRequest\x12,\n" +
 	"\x11cloud_identity_id\x18\x04 \x01(\tH\x00R\x0fcloudIdentityId\x12%\n" +
-	"\rcustomer_name\x18\x05 \x01(\tH\x00R\fcustomerName\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12\x1b\n" +
+	"\rcustomer_name\x18\x05 \x01(\tH\x00R\fcustomerName\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x15\n" +
-	"\x03sku\x18\x06 \x01(\tB\x03\xe0A\x02R\x03sku\x12(\n" +
-	"\rlanguage_code\x18\a \x01(\tB\x03\xe0A\x01R\flanguageCode\x12,\n" +
-	"\x0fbilling_account\x18\b \x01(\tB\x03\xe0A\x01R\x0ebillingAccountB\x1f\n" +
+	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
+	"\x03sku\x18\x06 \x01(\tB\x04\xe2A\x01\x02R\x03sku\x12)\n" +
+	"\rlanguage_code\x18\a \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\x12-\n" +
+	"\x0fbilling_account\x18\b \x01(\tB\x04\xe2A\x01\x01R\x0ebillingAccountB\x1f\n" +
 	"\x1dtransferred_customer_identity\"\xa5\x01\n" +
 	"\x1eListTransferableOffersResponse\x12[\n" +
 	"\x13transferable_offers\x18\x01 \x03(\v2*.google.cloud.channel.v1.TransferableOfferR\x12transferableOffers\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"|\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"}\n" +
 	"\x11TransferableOffer\x124\n" +
-	"\x05offer\x18\x01 \x01(\v2\x1e.google.cloud.channel.v1.OfferR\x05offer\x121\n" +
-	"\x12price_reference_id\x18\x02 \x01(\tB\x03\xe0A\x01R\x10priceReferenceId\"\\\n" +
-	"\x15GetEntitlementRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'cloudchannel.googleapis.com/EntitlementR\x04name\"\xcd\x01\n" +
-	"\x1eListChannelPartnerLinksRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x05offer\x18\x01 \x01(\v2\x1e.google.cloud.channel.v1.OfferR\x05offer\x122\n" +
+	"\x12price_reference_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x10priceReferenceId\"]\n" +
+	"\x15GetEntitlementRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'cloudchannel.googleapis.com/EntitlementR\x04name\"\xd1\x01\n" +
+	"\x1eListChannelPartnerLinksRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12H\n" +
-	"\x04view\x18\x04 \x01(\x0e2/.google.cloud.channel.v1.ChannelPartnerLinkViewB\x03\xe0A\x01R\x04view\"\xaa\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12I\n" +
+	"\x04view\x18\x04 \x01(\x0e2/.google.cloud.channel.v1.ChannelPartnerLinkViewB\x04\xe2A\x01\x01R\x04view\"\xaa\x01\n" +
 	"\x1fListChannelPartnerLinksResponse\x12_\n" +
 	"\x15channel_partner_links\x18\x01 \x03(\v2+.google.cloud.channel.v1.ChannelPartnerLinkR\x13channelPartnerLinks\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x81\x01\n" +
-	"\x1cGetChannelPartnerLinkRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12H\n" +
-	"\x04view\x18\x02 \x01(\x0e2/.google.cloud.channel.v1.ChannelPartnerLinkViewB\x03\xe0A\x01R\x04view\"\xa2\x01\n" +
-	"\x1fCreateChannelPartnerLinkRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12b\n" +
-	"\x14channel_partner_link\x18\x02 \x01(\v2+.google.cloud.channel.v1.ChannelPartnerLinkB\x03\xe0A\x02R\x12channelPartnerLink\"\xe0\x01\n" +
-	"\x1fUpdateChannelPartnerLinkRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12b\n" +
-	"\x14channel_partner_link\x18\x02 \x01(\v2+.google.cloud.channel.v1.ChannelPartnerLinkB\x03\xe0A\x02R\x12channelPartnerLink\x12@\n" +
-	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"t\n" +
-	"!GetCustomerRepricingConfigRequest\x12O\n" +
-	"\x04name\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\n" +
-	"3cloudchannel.googleapis.com/CustomerRepricingConfigR\x04name\"\xce\x01\n" +
-	"#ListCustomerRepricingConfigsRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$cloudchannel.googleapis.com/CustomerR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x83\x01\n" +
+	"\x1cGetChannelPartnerLinkRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12I\n" +
+	"\x04view\x18\x02 \x01(\x0e2/.google.cloud.channel.v1.ChannelPartnerLinkViewB\x04\xe2A\x01\x01R\x04view\"\xa4\x01\n" +
+	"\x1fCreateChannelPartnerLinkRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12c\n" +
+	"\x14channel_partner_link\x18\x02 \x01(\v2+.google.cloud.channel.v1.ChannelPartnerLinkB\x04\xe2A\x01\x02R\x12channelPartnerLink\"\xe3\x01\n" +
+	"\x1fUpdateChannelPartnerLinkRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12c\n" +
+	"\x14channel_partner_link\x18\x02 \x01(\v2+.google.cloud.channel.v1.ChannelPartnerLinkB\x04\xe2A\x01\x02R\x12channelPartnerLink\x12A\n" +
+	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"u\n" +
+	"!GetCustomerRepricingConfigRequest\x12P\n" +
+	"\x04name\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\n" +
+	"3cloudchannel.googleapis.com/CustomerRepricingConfigR\x04name\"\xd2\x01\n" +
+	"#ListCustomerRepricingConfigsRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$cloudchannel.googleapis.com/CustomerR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\xbe\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xbe\x01\n" +
 	"$ListCustomerRepricingConfigsResponse\x12n\n" +
 	"\x1acustomer_repricing_configs\x18\x01 \x03(\v20.google.cloud.channel.v1.CustomerRepricingConfigR\x18customerRepricingConfigs\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xdf\x01\n" +
-	"$CreateCustomerRepricingConfigRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$cloudchannel.googleapis.com/CustomerR\x06parent\x12q\n" +
-	"\x19customer_repricing_config\x18\x02 \x01(\v20.google.cloud.channel.v1.CustomerRepricingConfigB\x03\xe0A\x02R\x17customerRepricingConfig\"\x99\x01\n" +
-	"$UpdateCustomerRepricingConfigRequest\x12q\n" +
-	"\x19customer_repricing_config\x18\x01 \x01(\v20.google.cloud.channel.v1.CustomerRepricingConfigB\x03\xe0A\x02R\x17customerRepricingConfig\"w\n" +
-	"$DeleteCustomerRepricingConfigRequest\x12O\n" +
-	"\x04name\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\n" +
-	"3cloudchannel.googleapis.com/CustomerRepricingConfigR\x04name\"\x80\x01\n" +
-	"'GetChannelPartnerRepricingConfigRequest\x12U\n" +
-	"\x04name\x18\x01 \x01(\tBA\xe0A\x02\xfaA;\n" +
-	"9cloudchannel.googleapis.com/ChannelPartnerRepricingConfigR\x04name\"\xde\x01\n" +
-	")ListChannelPartnerRepricingConfigsRequest\x12N\n" +
-	"\x06parent\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".cloudchannel.googleapis.com/ChannelPartnerLinkR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xe1\x01\n" +
+	"$CreateCustomerRepricingConfigRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$cloudchannel.googleapis.com/CustomerR\x06parent\x12r\n" +
+	"\x19customer_repricing_config\x18\x02 \x01(\v20.google.cloud.channel.v1.CustomerRepricingConfigB\x04\xe2A\x01\x02R\x17customerRepricingConfig\"\x9a\x01\n" +
+	"$UpdateCustomerRepricingConfigRequest\x12r\n" +
+	"\x19customer_repricing_config\x18\x01 \x01(\v20.google.cloud.channel.v1.CustomerRepricingConfigB\x04\xe2A\x01\x02R\x17customerRepricingConfig\"x\n" +
+	"$DeleteCustomerRepricingConfigRequest\x12P\n" +
+	"\x04name\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\n" +
+	"3cloudchannel.googleapis.com/CustomerRepricingConfigR\x04name\"\x81\x01\n" +
+	"'GetChannelPartnerRepricingConfigRequest\x12V\n" +
+	"\x04name\x18\x01 \x01(\tBB\xe2A\x01\x02\xfaA;\n" +
+	"9cloudchannel.googleapis.com/ChannelPartnerRepricingConfigR\x04name\"\xe2\x01\n" +
+	")ListChannelPartnerRepricingConfigsRequest\x12O\n" +
+	"\x06parent\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".cloudchannel.googleapis.com/ChannelPartnerLinkR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\xd8\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xd8\x01\n" +
 	"*ListChannelPartnerRepricingConfigsResponse\x12\x81\x01\n" +
 	"!channel_partner_repricing_configs\x18\x01 \x03(\v26.google.cloud.channel.v1.ChannelPartnerRepricingConfigR\x1echannelPartnerRepricingConfigs\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x83\x02\n" +
-	"*CreateChannelPartnerRepricingConfigRequest\x12N\n" +
-	"\x06parent\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".cloudchannel.googleapis.com/ChannelPartnerLinkR\x06parent\x12\x84\x01\n" +
-	" channel_partner_repricing_config\x18\x02 \x01(\v26.google.cloud.channel.v1.ChannelPartnerRepricingConfigB\x03\xe0A\x02R\x1dchannelPartnerRepricingConfig\"\xb3\x01\n" +
-	"*UpdateChannelPartnerRepricingConfigRequest\x12\x84\x01\n" +
-	" channel_partner_repricing_config\x18\x01 \x01(\v26.google.cloud.channel.v1.ChannelPartnerRepricingConfigB\x03\xe0A\x02R\x1dchannelPartnerRepricingConfig\"\x83\x01\n" +
-	"*DeleteChannelPartnerRepricingConfigRequest\x12U\n" +
-	"\x04name\x18\x01 \x01(\tBA\xe0A\x02\xfaA;\n" +
-	"9cloudchannel.googleapis.com/ChannelPartnerRepricingConfigR\x04name\"y\n" +
-	"\x14ListSkuGroupsRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x85\x02\n" +
+	"*CreateChannelPartnerRepricingConfigRequest\x12O\n" +
+	"\x06parent\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".cloudchannel.googleapis.com/ChannelPartnerLinkR\x06parent\x12\x85\x01\n" +
+	" channel_partner_repricing_config\x18\x02 \x01(\v26.google.cloud.channel.v1.ChannelPartnerRepricingConfigB\x04\xe2A\x01\x02R\x1dchannelPartnerRepricingConfig\"\xb4\x01\n" +
+	"*UpdateChannelPartnerRepricingConfigRequest\x12\x85\x01\n" +
+	" channel_partner_repricing_config\x18\x01 \x01(\v26.google.cloud.channel.v1.ChannelPartnerRepricingConfigB\x04\xe2A\x01\x02R\x1dchannelPartnerRepricingConfig\"\x84\x01\n" +
+	"*DeleteChannelPartnerRepricingConfigRequest\x12V\n" +
+	"\x04name\x18\x01 \x01(\tBB\xe2A\x01\x02\xfaA;\n" +
+	"9cloudchannel.googleapis.com/ChannelPartnerRepricingConfigR\x04name\"|\n" +
+	"\x14ListSkuGroupsRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xad\x01\n" +
-	"\x1fListSkuGroupBillableSkusRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$cloudchannel.googleapis.com/SkuGroupR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xb0\x01\n" +
+	"\x1fListSkuGroupBillableSkusRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$cloudchannel.googleapis.com/SkuGroupR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x81\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x81\x01\n" +
 	"\x15ListSkuGroupsResponse\x12@\n" +
 	"\n" +
 	"sku_groups\x18\x01 \x03(\v2!.google.cloud.channel.v1.SkuGroupR\tskuGroups\x12&\n" +
@@ -5988,116 +5988,116 @@ const file_google_cloud_channel_v1_service_proto_rawDesc = "" +
 	"\x03sku\x18\x01 \x01(\tR\x03sku\x12(\n" +
 	"\x10sku_display_name\x18\x02 \x01(\tR\x0eskuDisplayName\x12\x18\n" +
 	"\aservice\x18\x03 \x01(\tR\aservice\x120\n" +
-	"\x14service_display_name\x18\x04 \x01(\tR\x12serviceDisplayName\"\xd1\x01\n" +
-	"\x18CreateEntitlementRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$cloudchannel.googleapis.com/CustomerR\x06parent\x12K\n" +
-	"\ventitlement\x18\x02 \x01(\v2$.google.cloud.channel.v1.EntitlementB\x03\xe0A\x02R\ventitlement\x12\"\n" +
+	"\x14service_display_name\x18\x04 \x01(\tR\x12serviceDisplayName\"\xd4\x01\n" +
+	"\x18CreateEntitlementRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$cloudchannel.googleapis.com/CustomerR\x06parent\x12L\n" +
+	"\ventitlement\x18\x02 \x01(\v2$.google.cloud.channel.v1.EntitlementB\x04\xe2A\x01\x02R\ventitlement\x12#\n" +
 	"\n" +
-	"request_id\x18\x05 \x01(\tB\x03\xe0A\x01R\trequestId\"\xcc\x01\n" +
-	"\x1bTransferEntitlementsRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12M\n" +
-	"\fentitlements\x18\x02 \x03(\v2$.google.cloud.channel.v1.EntitlementB\x03\xe0A\x02R\fentitlements\x12\x1d\n" +
+	"request_id\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xcf\x01\n" +
+	"\x1bTransferEntitlementsRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12N\n" +
+	"\fentitlements\x18\x02 \x03(\v2$.google.cloud.channel.v1.EntitlementB\x04\xe2A\x01\x02R\fentitlements\x12\x1d\n" +
 	"\n" +
-	"auth_token\x18\x04 \x01(\tR\tauthToken\x12\"\n" +
+	"auth_token\x18\x04 \x01(\tR\tauthToken\x12#\n" +
 	"\n" +
-	"request_id\x18\x06 \x01(\tB\x03\xe0A\x01R\trequestId\"h\n" +
+	"request_id\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"h\n" +
 	"\x1cTransferEntitlementsResponse\x12H\n" +
-	"\fentitlements\x18\x01 \x03(\v2$.google.cloud.channel.v1.EntitlementR\fentitlements\"\xb5\x01\n" +
-	"#TransferEntitlementsToGoogleRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12M\n" +
-	"\fentitlements\x18\x02 \x03(\v2$.google.cloud.channel.v1.EntitlementB\x03\xe0A\x02R\fentitlements\x12\"\n" +
+	"\fentitlements\x18\x01 \x03(\v2$.google.cloud.channel.v1.EntitlementR\fentitlements\"\xb8\x01\n" +
+	"#TransferEntitlementsToGoogleRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12N\n" +
+	"\fentitlements\x18\x02 \x03(\v2$.google.cloud.channel.v1.EntitlementB\x04\xe2A\x01\x02R\fentitlements\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"\xd0\x01\n" +
-	"\x17ChangeParametersRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12G\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xd4\x01\n" +
+	"\x17ChangeParametersRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12H\n" +
 	"\n" +
-	"parameters\x18\x02 \x03(\v2\".google.cloud.channel.v1.ParameterB\x03\xe0A\x02R\n" +
-	"parameters\x12\"\n" +
+	"parameters\x18\x02 \x03(\v2\".google.cloud.channel.v1.ParameterB\x04\xe2A\x01\x02R\n" +
+	"parameters\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\x12/\n" +
-	"\x11purchase_order_id\x18\x05 \x01(\tB\x03\xe0A\x01R\x0fpurchaseOrderId\"\xb5\x01\n" +
-	"\x1cChangeRenewalSettingsRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12X\n" +
-	"\x10renewal_settings\x18\x04 \x01(\v2(.google.cloud.channel.v1.RenewalSettingsB\x03\xe0A\x02R\x0frenewalSettings\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x120\n" +
+	"\x11purchase_order_id\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x0fpurchaseOrderId\"\xb8\x01\n" +
+	"\x1cChangeRenewalSettingsRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12Y\n" +
+	"\x10renewal_settings\x18\x04 \x01(\v2(.google.cloud.channel.v1.RenewalSettingsB\x04\xe2A\x01\x02R\x0frenewalSettings\x12#\n" +
 	"\n" +
-	"request_id\x18\x05 \x01(\tB\x03\xe0A\x01R\trequestId\"\xed\x02\n" +
-	"\x12ChangeOfferRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12?\n" +
-	"\x05offer\x18\x02 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!cloudchannel.googleapis.com/OfferR\x05offer\x12G\n" +
+	"request_id\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xf4\x02\n" +
+	"\x12ChangeOfferRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12@\n" +
+	"\x05offer\x18\x02 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!cloudchannel.googleapis.com/OfferR\x05offer\x12H\n" +
 	"\n" +
-	"parameters\x18\x03 \x03(\v2\".google.cloud.channel.v1.ParameterB\x03\xe0A\x01R\n" +
-	"parameters\x12/\n" +
-	"\x11purchase_order_id\x18\x05 \x01(\tB\x03\xe0A\x01R\x0fpurchaseOrderId\x12\"\n" +
+	"parameters\x18\x03 \x03(\v2\".google.cloud.channel.v1.ParameterB\x04\xe2A\x01\x01R\n" +
+	"parameters\x120\n" +
+	"\x11purchase_order_id\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x0fpurchaseOrderId\x12#\n" +
 	"\n" +
-	"request_id\x18\x06 \x01(\tB\x03\xe0A\x01R\trequestId\x12,\n" +
-	"\x0fbilling_account\x18\a \x01(\tB\x03\xe0A\x01R\x0ebillingAccount\x121\n" +
-	"\x12price_reference_id\x18\b \x01(\tB\x03\xe0A\x01R\x10priceReferenceId\"V\n" +
-	"\x17StartPaidServiceRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\"\n" +
+	"request_id\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12-\n" +
+	"\x0fbilling_account\x18\a \x01(\tB\x04\xe2A\x01\x01R\x0ebillingAccount\x122\n" +
+	"\x12price_reference_id\x18\b \x01(\tB\x04\xe2A\x01\x01R\x10priceReferenceId\"X\n" +
+	"\x17StartPaidServiceRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"W\n" +
-	"\x18CancelEntitlementRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"Y\n" +
+	"\x18CancelEntitlementRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"X\n" +
-	"\x19SuspendEntitlementRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"Z\n" +
+	"\x19SuspendEntitlementRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"Y\n" +
-	"\x1aActivateEntitlementRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"[\n" +
+	"\x1aActivateEntitlementRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"g\n" +
-	"\x12LookupOfferRequest\x12Q\n" +
-	"\ventitlement\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'cloudchannel.googleapis.com/EntitlementR\ventitlement\"\xa4\x01\n" +
-	"\x13ListProductsRequest\x12\x1d\n" +
-	"\aaccount\x18\x01 \x01(\tB\x03\xe0A\x02R\aaccount\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"h\n" +
+	"\x12LookupOfferRequest\x12R\n" +
+	"\ventitlement\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'cloudchannel.googleapis.com/EntitlementR\ventitlement\"\xa8\x01\n" +
+	"\x13ListProductsRequest\x12\x1e\n" +
+	"\aaccount\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\aaccount\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12(\n" +
-	"\rlanguage_code\x18\x04 \x01(\tB\x03\xe0A\x01R\flanguageCode\"|\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12)\n" +
+	"\rlanguage_code\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\"|\n" +
 	"\x14ListProductsResponse\x12<\n" +
 	"\bproducts\x18\x01 \x03(\v2 .google.cloud.channel.v1.ProductR\bproducts\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xe5\x01\n" +
-	"\x0fListSkusRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#cloudchannel.googleapis.com/ProductR\x06parent\x12\x1d\n" +
-	"\aaccount\x18\x02 \x01(\tB\x03\xe0A\x02R\aaccount\x12 \n" +
-	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xea\x01\n" +
+	"\x0fListSkusRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#cloudchannel.googleapis.com/ProductR\x06parent\x12\x1e\n" +
+	"\aaccount\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\aaccount\x12!\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01R\tpageToken\x12(\n" +
-	"\rlanguage_code\x18\x05 \x01(\tB\x03\xe0A\x01R\flanguageCode\"l\n" +
+	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12)\n" +
+	"\rlanguage_code\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\"l\n" +
 	"\x10ListSkusResponse\x120\n" +
 	"\x04skus\x18\x01 \x03(\v2\x1c.google.cloud.channel.v1.SkuR\x04skus\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xf0\x01\n" +
-	"\x11ListOffersRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xf6\x01\n" +
+	"\x11ListOffersRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12(\n" +
-	"\rlanguage_code\x18\x05 \x01(\tB\x03\xe0A\x01R\flanguageCode\x121\n" +
-	"\x12show_future_offers\x18\a \x01(\bB\x03\xe0A\x01R\x10showFutureOffers\"t\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12)\n" +
+	"\rlanguage_code\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\x122\n" +
+	"\x12show_future_offers\x18\a \x01(\bB\x04\xe2A\x01\x01R\x10showFutureOffers\"t\n" +
 	"\x12ListOffersResponse\x126\n" +
 	"\x06offers\x18\x01 \x03(\v2\x1e.google.cloud.channel.v1.OfferR\x06offers\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb6\x06\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xbd\x06\n" +
 	"\x1aListPurchasableSkusRequest\x12\x8f\x01\n" +
 	"\x1bcreate_entitlement_purchase\x18\x02 \x01(\v2M.google.cloud.channel.v1.ListPurchasableSkusRequest.CreateEntitlementPurchaseH\x00R\x19createEntitlementPurchase\x12}\n" +
-	"\x15change_offer_purchase\x18\x03 \x01(\v2G.google.cloud.channel.v1.ListPurchasableSkusRequest.ChangeOfferPurchaseH\x00R\x13changeOfferPurchase\x12H\n" +
-	"\bcustomer\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$cloudchannel.googleapis.com/CustomerR\bcustomer\x12 \n" +
-	"\tpage_size\x18\x04 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x15change_offer_purchase\x18\x03 \x01(\v2G.google.cloud.channel.v1.ListPurchasableSkusRequest.ChangeOfferPurchaseH\x00R\x13changeOfferPurchase\x12I\n" +
+	"\bcustomer\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$cloudchannel.googleapis.com/CustomerR\bcustomer\x12!\n" +
+	"\tpage_size\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x05 \x01(\tB\x03\xe0A\x01R\tpageToken\x12(\n" +
-	"\rlanguage_code\x18\x06 \x01(\tB\x03\xe0A\x01R\flanguageCode\x1a:\n" +
-	"\x19CreateEntitlementPurchase\x12\x1d\n" +
-	"\aproduct\x18\x01 \x01(\tB\x03\xe0A\x02R\aproduct\x1a\xfd\x01\n" +
-	"\x13ChangeOfferPurchase\x12%\n" +
-	"\ventitlement\x18\x01 \x01(\tB\x03\xe0A\x02R\ventitlement\x12x\n" +
-	"\vchange_type\x18\x02 \x01(\x0e2R.google.cloud.channel.v1.ListPurchasableSkusRequest.ChangeOfferPurchase.ChangeTypeB\x03\xe0A\x02R\n" +
+	"page_token\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12)\n" +
+	"\rlanguage_code\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\x1a;\n" +
+	"\x19CreateEntitlementPurchase\x12\x1e\n" +
+	"\aproduct\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\aproduct\x1a\xff\x01\n" +
+	"\x13ChangeOfferPurchase\x12&\n" +
+	"\ventitlement\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\ventitlement\x12y\n" +
+	"\vchange_type\x18\x02 \x01(\x0e2R.google.cloud.channel.v1.ListPurchasableSkusRequest.ChangeOfferPurchase.ChangeTypeB\x04\xe2A\x01\x02R\n" +
 	"changeType\"E\n" +
 	"\n" +
 	"ChangeType\x12\x1b\n" +
@@ -6109,82 +6109,82 @@ const file_google_cloud_channel_v1_service_proto_rawDesc = "" +
 	"\x10purchasable_skus\x18\x01 \x03(\v2'.google.cloud.channel.v1.PurchasableSkuR\x0fpurchasableSkus\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"@\n" +
 	"\x0ePurchasableSku\x12.\n" +
-	"\x03sku\x18\x01 \x01(\v2\x1c.google.cloud.channel.v1.SkuR\x03sku\"\xed\x05\n" +
+	"\x03sku\x18\x01 \x01(\v2\x1c.google.cloud.channel.v1.SkuR\x03sku\"\xf6\x05\n" +
 	"\x1cListPurchasableOffersRequest\x12\x91\x01\n" +
 	"\x1bcreate_entitlement_purchase\x18\x02 \x01(\v2O.google.cloud.channel.v1.ListPurchasableOffersRequest.CreateEntitlementPurchaseH\x00R\x19createEntitlementPurchase\x12\x7f\n" +
-	"\x15change_offer_purchase\x18\x03 \x01(\v2I.google.cloud.channel.v1.ListPurchasableOffersRequest.ChangeOfferPurchaseH\x00R\x13changeOfferPurchase\x12H\n" +
-	"\bcustomer\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$cloudchannel.googleapis.com/CustomerR\bcustomer\x12 \n" +
-	"\tpage_size\x18\x04 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x15change_offer_purchase\x18\x03 \x01(\v2I.google.cloud.channel.v1.ListPurchasableOffersRequest.ChangeOfferPurchaseH\x00R\x13changeOfferPurchase\x12I\n" +
+	"\bcustomer\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$cloudchannel.googleapis.com/CustomerR\bcustomer\x12!\n" +
+	"\tpage_size\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x05 \x01(\tB\x03\xe0A\x01R\tpageToken\x12(\n" +
-	"\rlanguage_code\x18\x06 \x01(\tB\x03\xe0A\x01R\flanguageCode\x1a`\n" +
-	"\x19CreateEntitlementPurchase\x12\x15\n" +
-	"\x03sku\x18\x01 \x01(\tB\x03\xe0A\x02R\x03sku\x12,\n" +
-	"\x0fbilling_account\x18\x02 \x01(\tB\x03\xe0A\x01R\x0ebillingAccount\x1a\x88\x01\n" +
-	"\x13ChangeOfferPurchase\x12%\n" +
-	"\ventitlement\x18\x01 \x01(\tB\x03\xe0A\x02R\ventitlement\x12\x1c\n" +
-	"\anew_sku\x18\x02 \x01(\tB\x03\xe0A\x01R\x06newSku\x12,\n" +
-	"\x0fbilling_account\x18\x03 \x01(\tB\x03\xe0A\x01R\x0ebillingAccountB\x11\n" +
+	"page_token\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12)\n" +
+	"\rlanguage_code\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\x1ab\n" +
+	"\x19CreateEntitlementPurchase\x12\x16\n" +
+	"\x03sku\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03sku\x12-\n" +
+	"\x0fbilling_account\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x0ebillingAccount\x1a\x8b\x01\n" +
+	"\x13ChangeOfferPurchase\x12&\n" +
+	"\ventitlement\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\ventitlement\x12\x1d\n" +
+	"\anew_sku\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06newSku\x12-\n" +
+	"\x0fbilling_account\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x0ebillingAccountB\x11\n" +
 	"\x0fpurchase_option\"\xa1\x01\n" +
 	"\x1dListPurchasableOffersResponse\x12X\n" +
 	"\x12purchasable_offers\x18\x01 \x03(\v2).google.cloud.channel.v1.PurchasableOfferR\x11purchasableOffers\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"{\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"|\n" +
 	"\x10PurchasableOffer\x124\n" +
-	"\x05offer\x18\x01 \x01(\v2\x1e.google.cloud.channel.v1.OfferR\x05offer\x121\n" +
-	"\x12price_reference_id\x18\x02 \x01(\tB\x03\xe0A\x01R\x10priceReferenceId\"\x88\x01\n" +
-	"#QueryEligibleBillingAccountsRequest\x12H\n" +
-	"\bcustomer\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$cloudchannel.googleapis.com/CustomerR\bcustomer\x12\x17\n" +
-	"\x04skus\x18\x02 \x03(\tB\x03\xe0A\x02R\x04skus\"\x81\x01\n" +
+	"\x05offer\x18\x01 \x01(\v2\x1e.google.cloud.channel.v1.OfferR\x05offer\x122\n" +
+	"\x12price_reference_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x10priceReferenceId\"\x8a\x01\n" +
+	"#QueryEligibleBillingAccountsRequest\x12I\n" +
+	"\bcustomer\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$cloudchannel.googleapis.com/CustomerR\bcustomer\x12\x18\n" +
+	"\x04skus\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\x04skus\"\x81\x01\n" +
 	"$QueryEligibleBillingAccountsResponse\x12Y\n" +
 	"\x13sku_purchase_groups\x18\x01 \x03(\v2).google.cloud.channel.v1.SkuPurchaseGroupR\x11skuPurchaseGroups\"\xa0\x01\n" +
 	"\x10SkuPurchaseGroup\x12\x12\n" +
 	"\x04skus\x18\x01 \x03(\tR\x04skus\x12x\n" +
 	"\x1ebilling_account_purchase_infos\x18\x02 \x03(\v23.google.cloud.channel.v1.BillingAccountPurchaseInfoR\x1bbillingAccountPurchaseInfos\"n\n" +
 	"\x1aBillingAccountPurchaseInfo\x12P\n" +
-	"\x0fbilling_account\x18\x01 \x01(\v2'.google.cloud.channel.v1.BillingAccountR\x0ebillingAccount\"\xc9\x01\n" +
-	"\x19RegisterSubscriberRequest\x12E\n" +
-	"\aaccount\x18\x01 \x01(\tB+\xe0A\x01\xfaA%\n" +
-	"#cloudchannel.googleapis.com/AccountR\aaccount\x12,\n" +
-	"\x0fservice_account\x18\x02 \x01(\tB\x03\xe0A\x02R\x0eserviceAccount\x12(\n" +
+	"\x0fbilling_account\x18\x01 \x01(\v2'.google.cloud.channel.v1.BillingAccountR\x0ebillingAccount\"\xcc\x01\n" +
+	"\x19RegisterSubscriberRequest\x12F\n" +
+	"\aaccount\x18\x01 \x01(\tB,\xe2A\x01\x01\xfaA%\n" +
+	"#cloudchannel.googleapis.com/AccountR\aaccount\x12-\n" +
+	"\x0fservice_account\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0eserviceAccount\x12)\n" +
 	"\n" +
-	"integrator\x18\x03 \x01(\tB\x03\xe0A\x01H\x00R\n" +
+	"integrator\x18\x03 \x01(\tB\x04\xe2A\x01\x01H\x00R\n" +
 	"integrator\x88\x01\x01B\r\n" +
 	"\v_integrator\"2\n" +
 	"\x1aRegisterSubscriberResponse\x12\x14\n" +
-	"\x05topic\x18\x01 \x01(\tR\x05topic\"\xcb\x01\n" +
-	"\x1bUnregisterSubscriberRequest\x12E\n" +
-	"\aaccount\x18\x01 \x01(\tB+\xe0A\x01\xfaA%\n" +
-	"#cloudchannel.googleapis.com/AccountR\aaccount\x12,\n" +
-	"\x0fservice_account\x18\x02 \x01(\tB\x03\xe0A\x02R\x0eserviceAccount\x12(\n" +
+	"\x05topic\x18\x01 \x01(\tR\x05topic\"\xce\x01\n" +
+	"\x1bUnregisterSubscriberRequest\x12F\n" +
+	"\aaccount\x18\x01 \x01(\tB,\xe2A\x01\x01\xfaA%\n" +
+	"#cloudchannel.googleapis.com/AccountR\aaccount\x12-\n" +
+	"\x0fservice_account\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0eserviceAccount\x12)\n" +
 	"\n" +
-	"integrator\x18\x03 \x01(\tB\x03\xe0A\x01H\x00R\n" +
+	"integrator\x18\x03 \x01(\tB\x04\xe2A\x01\x01H\x00R\n" +
 	"integrator\x88\x01\x01B\r\n" +
 	"\v_integrator\"4\n" +
 	"\x1cUnregisterSubscriberResponse\x12\x14\n" +
-	"\x05topic\x18\x01 \x01(\tR\x05topic\"\xde\x01\n" +
-	"\x16ListSubscribersRequest\x12E\n" +
-	"\aaccount\x18\x01 \x01(\tB+\xe0A\x01\xfaA%\n" +
-	"#cloudchannel.googleapis.com/AccountR\aaccount\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x05topic\x18\x01 \x01(\tR\x05topic\"\xe2\x01\n" +
+	"\x16ListSubscribersRequest\x12F\n" +
+	"\aaccount\x18\x01 \x01(\tB,\xe2A\x01\x01\xfaA%\n" +
+	"#cloudchannel.googleapis.com/AccountR\aaccount\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12(\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12)\n" +
 	"\n" +
-	"integrator\x18\x04 \x01(\tB\x03\xe0A\x01H\x00R\n" +
+	"integrator\x18\x04 \x01(\tB\x04\xe2A\x01\x01H\x00R\n" +
 	"integrator\x88\x01\x01B\r\n" +
 	"\v_integrator\"\x82\x01\n" +
 	"\x17ListSubscribersResponse\x12\x14\n" +
 	"\x05topic\x18\x01 \x01(\tR\x05topic\x12)\n" +
 	"\x10service_accounts\x18\x02 \x03(\tR\x0fserviceAccounts\x12&\n" +
-	"\x0fnext_page_token\x18\x03 \x01(\tR\rnextPageToken\"\xcb\x01\n" +
-	"\x1dListEntitlementChangesRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'cloudchannel.googleapis.com/EntitlementR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x03 \x01(\tR\rnextPageToken\"\xcf\x01\n" +
+	"\x1dListEntitlementChangesRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'cloudchannel.googleapis.com/EntitlementR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\xa5\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xa5\x01\n" +
 	"\x1eListEntitlementChangesResponse\x12[\n" +
 	"\x13entitlement_changes\x18\x01 \x03(\v2*.google.cloud.channel.v1.EntitlementChangeR\x12entitlementChanges\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken2\xe9S\n" +

@@ -1140,30 +1140,30 @@ var File_google_cloud_notebooks_v2_gce_setup_proto protoreflect.FileDescriptor
 
 const file_google_cloud_notebooks_v2_gce_setup_proto_rawDesc = "" +
 	"\n" +
-	")google/cloud/notebooks/v2/gce_setup.proto\x12\x19google.cloud.notebooks.v2\x1a\x1fgoogle/api/field_behavior.proto\"\xe3\x01\n" +
-	"\x10NetworkInterface\x12\x1d\n" +
-	"\anetwork\x18\x01 \x01(\tB\x03\xe0A\x01R\anetwork\x12\x1b\n" +
-	"\x06subnet\x18\x02 \x01(\tB\x03\xe0A\x01R\x06subnet\x12S\n" +
-	"\bnic_type\x18\x03 \x01(\x0e23.google.cloud.notebooks.v2.NetworkInterface.NicTypeB\x03\xe0A\x01R\anicType\">\n" +
+	")google/cloud/notebooks/v2/gce_setup.proto\x12\x19google.cloud.notebooks.v2\x1a\x1fgoogle/api/field_behavior.proto\"\xe6\x01\n" +
+	"\x10NetworkInterface\x12\x1e\n" +
+	"\anetwork\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\anetwork\x12\x1c\n" +
+	"\x06subnet\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06subnet\x12T\n" +
+	"\bnic_type\x18\x03 \x01(\x0e23.google.cloud.notebooks.v2.NetworkInterface.NicTypeB\x04\xe2A\x01\x01R\anicType\">\n" +
 	"\aNicType\x12\x18\n" +
 	"\x14NIC_TYPE_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +
 	"VIRTIO_NET\x10\x01\x12\t\n" +
-	"\x05GVNIC\x10\x02\"k\n" +
-	"\aVmImage\x12\x1d\n" +
-	"\aproject\x18\x01 \x01(\tB\x03\xe0A\x02R\aproject\x12\x19\n" +
-	"\x04name\x18\x02 \x01(\tB\x03\xe0A\x01H\x00R\x04name\x12\x1d\n" +
-	"\x06family\x18\x03 \x01(\tB\x03\xe0A\x01H\x00R\x06familyB\a\n" +
-	"\x05image\"L\n" +
-	"\x0eContainerImage\x12#\n" +
+	"\x05GVNIC\x10\x02\"n\n" +
+	"\aVmImage\x12\x1e\n" +
+	"\aproject\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1a\n" +
+	"\x04name\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x00R\x04name\x12\x1e\n" +
+	"\x06family\x18\x03 \x01(\tB\x04\xe2A\x01\x01H\x00R\x06familyB\a\n" +
+	"\x05image\"N\n" +
+	"\x0eContainerImage\x12$\n" +
 	"\n" +
-	"repository\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"repository\x12\x15\n" +
-	"\x03tag\x18\x02 \x01(\tB\x03\xe0A\x01R\x03tag\"\xa5\x03\n" +
-	"\x11AcceleratorConfig\x12U\n" +
-	"\x04type\x18\x01 \x01(\x0e2<.google.cloud.notebooks.v2.AcceleratorConfig.AcceleratorTypeB\x03\xe0A\x01R\x04type\x12\"\n" +
+	"repository\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"repository\x12\x16\n" +
+	"\x03tag\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x03tag\"\xa7\x03\n" +
+	"\x11AcceleratorConfig\x12V\n" +
+	"\x04type\x18\x01 \x01(\x0e2<.google.cloud.notebooks.v2.AcceleratorConfig.AcceleratorTypeB\x04\xe2A\x01\x01R\x04type\x12#\n" +
 	"\n" +
-	"core_count\x18\x02 \x01(\x03B\x03\xe0A\x01R\tcoreCount\"\x94\x02\n" +
+	"core_count\x18\x02 \x01(\x03B\x04\xe2A\x01\x01R\tcoreCount\"\x94\x02\n" +
 	"\x0fAcceleratorType\x12 \n" +
 	"\x1cACCELERATOR_TYPE_UNSPECIFIED\x10\x00\x12\x15\n" +
 	"\x11NVIDIA_TESLA_P100\x10\x02\x12\x15\n" +
@@ -1176,47 +1176,47 @@ const file_google_cloud_notebooks_v2_gce_setup_proto_rawDesc = "" +
 	"\x13NVIDIA_TESLA_T4_VWS\x10\b\x12\x19\n" +
 	"\x15NVIDIA_TESLA_P100_VWS\x10\t\x12\x17\n" +
 	"\x13NVIDIA_TESLA_P4_VWS\x10\n" +
-	"\"\xb6\x01\n" +
-	"\x16ShieldedInstanceConfig\x121\n" +
-	"\x12enable_secure_boot\x18\x01 \x01(\bB\x03\xe0A\x01R\x10enableSecureBoot\x12$\n" +
-	"\venable_vtpm\x18\x02 \x01(\bB\x03\xe0A\x01R\n" +
-	"enableVtpm\x12C\n" +
-	"\x1benable_integrity_monitoring\x18\x03 \x01(\bB\x03\xe0A\x01R\x19enableIntegrityMonitoring\"|\n" +
-	"\x0fGPUDriverConfig\x12/\n" +
-	"\x11enable_gpu_driver\x18\x01 \x01(\bB\x03\xe0A\x01R\x0fenableGpuDriver\x128\n" +
-	"\x16custom_gpu_driver_path\x18\x02 \x01(\tB\x03\xe0A\x01R\x13customGpuDriverPath\"\xf8\x01\n" +
-	"\bDataDisk\x12%\n" +
-	"\fdisk_size_gb\x18\x01 \x01(\x03B\x03\xe0A\x01R\n" +
-	"diskSizeGb\x12H\n" +
-	"\tdisk_type\x18\x02 \x01(\x0e2#.google.cloud.notebooks.v2.DiskTypeB\x06\xe0A\x04\xe0A\x01R\bdiskType\x12Z\n" +
-	"\x0fdisk_encryption\x18\x05 \x01(\x0e2).google.cloud.notebooks.v2.DiskEncryptionB\x06\xe0A\x04\xe0A\x01R\x0ediskEncryption\x12\x1f\n" +
-	"\akms_key\x18\x06 \x01(\tB\x06\xe0A\x04\xe0A\x01R\x06kmsKey\"\xf5\x01\n" +
-	"\bBootDisk\x12%\n" +
-	"\fdisk_size_gb\x18\x01 \x01(\x03B\x03\xe0A\x01R\n" +
-	"diskSizeGb\x12E\n" +
-	"\tdisk_type\x18\x02 \x01(\x0e2#.google.cloud.notebooks.v2.DiskTypeB\x03\xe0A\x01R\bdiskType\x12Z\n" +
-	"\x0fdisk_encryption\x18\x03 \x01(\x0e2).google.cloud.notebooks.v2.DiskEncryptionB\x06\xe0A\x04\xe0A\x01R\x0ediskEncryption\x12\x1f\n" +
-	"\akms_key\x18\x04 \x01(\tB\x06\xe0A\x04\xe0A\x01R\x06kmsKey\"H\n" +
-	"\x0eServiceAccount\x12\x19\n" +
-	"\x05email\x18\x01 \x01(\tB\x03\xe0A\x01R\x05email\x12\x1b\n" +
-	"\x06scopes\x18\x02 \x03(\tB\x03\xe0A\x03R\x06scopes\"\xed\b\n" +
-	"\bGceSetup\x12&\n" +
-	"\fmachine_type\x18\x01 \x01(\tB\x03\xe0A\x01R\vmachineType\x12b\n" +
-	"\x13accelerator_configs\x18\x02 \x03(\v2,.google.cloud.notebooks.v2.AcceleratorConfigB\x03\xe0A\x01R\x12acceleratorConfigs\x12Y\n" +
-	"\x10service_accounts\x18\x03 \x03(\v2).google.cloud.notebooks.v2.ServiceAccountB\x03\xe0A\x01R\x0fserviceAccounts\x12D\n" +
-	"\bvm_image\x18\x04 \x01(\v2\".google.cloud.notebooks.v2.VmImageB\x03\xe0A\x01H\x00R\avmImage\x12Y\n" +
-	"\x0fcontainer_image\x18\x05 \x01(\v2).google.cloud.notebooks.v2.ContainerImageB\x03\xe0A\x01H\x00R\x0econtainerImage\x12E\n" +
-	"\tboot_disk\x18\x06 \x01(\v2#.google.cloud.notebooks.v2.BootDiskB\x03\xe0A\x01R\bbootDisk\x12G\n" +
+	"\"\xb9\x01\n" +
+	"\x16ShieldedInstanceConfig\x122\n" +
+	"\x12enable_secure_boot\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x10enableSecureBoot\x12%\n" +
+	"\venable_vtpm\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\n" +
+	"enableVtpm\x12D\n" +
+	"\x1benable_integrity_monitoring\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x19enableIntegrityMonitoring\"~\n" +
+	"\x0fGPUDriverConfig\x120\n" +
+	"\x11enable_gpu_driver\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x0fenableGpuDriver\x129\n" +
+	"\x16custom_gpu_driver_path\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x13customGpuDriverPath\"\xf6\x01\n" +
+	"\bDataDisk\x12&\n" +
+	"\fdisk_size_gb\x18\x01 \x01(\x03B\x04\xe2A\x01\x01R\n" +
+	"diskSizeGb\x12G\n" +
+	"\tdisk_type\x18\x02 \x01(\x0e2#.google.cloud.notebooks.v2.DiskTypeB\x05\xe2A\x02\x04\x01R\bdiskType\x12Y\n" +
+	"\x0fdisk_encryption\x18\x05 \x01(\x0e2).google.cloud.notebooks.v2.DiskEncryptionB\x05\xe2A\x02\x04\x01R\x0ediskEncryption\x12\x1e\n" +
+	"\akms_key\x18\x06 \x01(\tB\x05\xe2A\x02\x04\x01R\x06kmsKey\"\xf5\x01\n" +
+	"\bBootDisk\x12&\n" +
+	"\fdisk_size_gb\x18\x01 \x01(\x03B\x04\xe2A\x01\x01R\n" +
+	"diskSizeGb\x12F\n" +
+	"\tdisk_type\x18\x02 \x01(\x0e2#.google.cloud.notebooks.v2.DiskTypeB\x04\xe2A\x01\x01R\bdiskType\x12Y\n" +
+	"\x0fdisk_encryption\x18\x03 \x01(\x0e2).google.cloud.notebooks.v2.DiskEncryptionB\x05\xe2A\x02\x04\x01R\x0ediskEncryption\x12\x1e\n" +
+	"\akms_key\x18\x04 \x01(\tB\x05\xe2A\x02\x04\x01R\x06kmsKey\"J\n" +
+	"\x0eServiceAccount\x12\x1a\n" +
+	"\x05email\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x05email\x12\x1c\n" +
+	"\x06scopes\x18\x02 \x03(\tB\x04\xe2A\x01\x03R\x06scopes\"\xfb\b\n" +
+	"\bGceSetup\x12'\n" +
+	"\fmachine_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\vmachineType\x12c\n" +
+	"\x13accelerator_configs\x18\x02 \x03(\v2,.google.cloud.notebooks.v2.AcceleratorConfigB\x04\xe2A\x01\x01R\x12acceleratorConfigs\x12Z\n" +
+	"\x10service_accounts\x18\x03 \x03(\v2).google.cloud.notebooks.v2.ServiceAccountB\x04\xe2A\x01\x01R\x0fserviceAccounts\x12E\n" +
+	"\bvm_image\x18\x04 \x01(\v2\".google.cloud.notebooks.v2.VmImageB\x04\xe2A\x01\x01H\x00R\avmImage\x12Z\n" +
+	"\x0fcontainer_image\x18\x05 \x01(\v2).google.cloud.notebooks.v2.ContainerImageB\x04\xe2A\x01\x01H\x00R\x0econtainerImage\x12F\n" +
+	"\tboot_disk\x18\x06 \x01(\v2#.google.cloud.notebooks.v2.BootDiskB\x04\xe2A\x01\x01R\bbootDisk\x12H\n" +
 	"\n" +
-	"data_disks\x18\a \x03(\v2#.google.cloud.notebooks.v2.DataDiskB\x03\xe0A\x01R\tdataDisks\x12p\n" +
-	"\x18shielded_instance_config\x18\b \x01(\v21.google.cloud.notebooks.v2.ShieldedInstanceConfigB\x03\xe0A\x01R\x16shieldedInstanceConfig\x12_\n" +
-	"\x12network_interfaces\x18\t \x03(\v2+.google.cloud.notebooks.v2.NetworkInterfaceB\x03\xe0A\x01R\x11networkInterfaces\x12/\n" +
+	"data_disks\x18\a \x03(\v2#.google.cloud.notebooks.v2.DataDiskB\x04\xe2A\x01\x01R\tdataDisks\x12q\n" +
+	"\x18shielded_instance_config\x18\b \x01(\v21.google.cloud.notebooks.v2.ShieldedInstanceConfigB\x04\xe2A\x01\x01R\x16shieldedInstanceConfig\x12`\n" +
+	"\x12network_interfaces\x18\t \x03(\v2+.google.cloud.notebooks.v2.NetworkInterfaceB\x04\xe2A\x01\x01R\x11networkInterfaces\x120\n" +
 	"\x11disable_public_ip\x18\n" +
-	" \x01(\bB\x03\xe0A\x01R\x0fdisablePublicIp\x12\x17\n" +
-	"\x04tags\x18\v \x03(\tB\x03\xe0A\x01R\x04tags\x12R\n" +
-	"\bmetadata\x18\f \x03(\v21.google.cloud.notebooks.v2.GceSetup.MetadataEntryB\x03\xe0A\x01R\bmetadata\x125\n" +
-	"\x14enable_ip_forwarding\x18\r \x01(\bB\x03\xe0A\x01R\x12enableIpForwarding\x12[\n" +
-	"\x11gpu_driver_config\x18\x0e \x01(\v2*.google.cloud.notebooks.v2.GPUDriverConfigB\x03\xe0A\x01R\x0fgpuDriverConfig\x1a;\n" +
+	" \x01(\bB\x04\xe2A\x01\x01R\x0fdisablePublicIp\x12\x18\n" +
+	"\x04tags\x18\v \x03(\tB\x04\xe2A\x01\x01R\x04tags\x12S\n" +
+	"\bmetadata\x18\f \x03(\v21.google.cloud.notebooks.v2.GceSetup.MetadataEntryB\x04\xe2A\x01\x01R\bmetadata\x126\n" +
+	"\x14enable_ip_forwarding\x18\r \x01(\bB\x04\xe2A\x01\x01R\x12enableIpForwarding\x12\\\n" +
+	"\x11gpu_driver_config\x18\x0e \x01(\v2*.google.cloud.notebooks.v2.GPUDriverConfigB\x04\xe2A\x01\x01R\x0fgpuDriverConfig\x1a;\n" +
 	"\rMetadataEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\a\n" +

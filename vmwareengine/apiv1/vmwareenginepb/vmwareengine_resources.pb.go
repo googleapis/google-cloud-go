@@ -5291,49 +5291,49 @@ var File_google_cloud_vmwareengine_v1_vmwareengine_resources_proto protoreflect.
 
 const file_google_cloud_vmwareengine_v1_vmwareengine_resources_proto_rawDesc = "" +
 	"\n" +
-	"9google/cloud/vmwareengine/v1/vmwareengine_resources.proto\x12\x1cgoogle.cloud.vmwareengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa8\x03\n" +
-	"\rNetworkConfig\x12,\n" +
-	"\x0fmanagement_cidr\x18\x04 \x01(\tB\x03\xe0A\x02R\x0emanagementCidr\x12k\n" +
-	"\x15vmware_engine_network\x18\x05 \x01(\tB7\xe0A\x01\xfaA1\n" +
-	"/vmwareengine.googleapis.com/VmwareEngineNetworkR\x13vmwareEngineNetwork\x12~\n" +
-	"\x1fvmware_engine_network_canonical\x18\x06 \x01(\tB7\xe0A\x03\xfaA1\n" +
-	"/vmwareengine.googleapis.com/VmwareEngineNetworkR\x1cvmwareEngineNetworkCanonical\x12S\n" +
-	"$management_ip_address_layout_version\x18\b \x01(\x05B\x03\xe0A\x03R managementIpAddressLayoutVersion\x12'\n" +
-	"\rdns_server_ip\x18\t \x01(\tB\x03\xe0A\x03R\vdnsServerIp\"e\n" +
-	"\x0eNodeTypeConfig\x12\"\n" +
+	"9google/cloud/vmwareengine/v1/vmwareengine_resources.proto\x12\x1cgoogle.cloud.vmwareengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xad\x03\n" +
+	"\rNetworkConfig\x12-\n" +
+	"\x0fmanagement_cidr\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\x0emanagementCidr\x12l\n" +
+	"\x15vmware_engine_network\x18\x05 \x01(\tB8\xe2A\x01\x01\xfaA1\n" +
+	"/vmwareengine.googleapis.com/VmwareEngineNetworkR\x13vmwareEngineNetwork\x12\x7f\n" +
+	"\x1fvmware_engine_network_canonical\x18\x06 \x01(\tB8\xe2A\x01\x03\xfaA1\n" +
+	"/vmwareengine.googleapis.com/VmwareEngineNetworkR\x1cvmwareEngineNetworkCanonical\x12T\n" +
+	"$management_ip_address_layout_version\x18\b \x01(\x05B\x04\xe2A\x01\x03R managementIpAddressLayoutVersion\x12(\n" +
+	"\rdns_server_ip\x18\t \x01(\tB\x04\xe2A\x01\x03R\vdnsServerIp\"g\n" +
+	"\x0eNodeTypeConfig\x12#\n" +
 	"\n" +
-	"node_count\x18\x01 \x01(\x05B\x03\xe0A\x02R\tnodeCount\x12/\n" +
-	"\x11custom_core_count\x18\x02 \x01(\x05B\x03\xe0A\x01R\x0fcustomCoreCount\"\xcc\x01\n" +
-	"\x16StretchedClusterConfig\x12X\n" +
-	"\x12preferred_location\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x11preferredLocation\x12X\n" +
-	"\x12secondary_location\x18\x02 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x11secondaryLocation\"\xc8\f\n" +
-	"\fPrivateCloud\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12@\n" +
-	"\vdelete_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"deleteTime\x12@\n" +
-	"\vexpire_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"expireTime\x12K\n" +
-	"\x05state\x18\b \x01(\x0e20.google.cloud.vmwareengine.v1.PrivateCloud.StateB\x03\xe0A\x03R\x05state\x12W\n" +
-	"\x0enetwork_config\x18\t \x01(\v2+.google.cloud.vmwareengine.v1.NetworkConfigB\x03\xe0A\x02R\rnetworkConfig\x12s\n" +
+	"node_count\x18\x01 \x01(\x05B\x04\xe2A\x01\x02R\tnodeCount\x120\n" +
+	"\x11custom_core_count\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x0fcustomCoreCount\"\xce\x01\n" +
+	"\x16StretchedClusterConfig\x12Y\n" +
+	"\x12preferred_location\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x11preferredLocation\x12Y\n" +
+	"\x12secondary_location\x18\x02 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x11secondaryLocation\"\xd6\f\n" +
+	"\fPrivateCloud\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12A\n" +
+	"\vdelete_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"deleteTime\x12A\n" +
+	"\vexpire_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"expireTime\x12L\n" +
+	"\x05state\x18\b \x01(\x0e20.google.cloud.vmwareengine.v1.PrivateCloud.StateB\x04\xe2A\x01\x03R\x05state\x12X\n" +
+	"\x0enetwork_config\x18\t \x01(\v2+.google.cloud.vmwareengine.v1.NetworkConfigB\x04\xe2A\x01\x02R\rnetworkConfig\x12r\n" +
 	"\x12management_cluster\x18\n" +
-	" \x01(\v2<.google.cloud.vmwareengine.v1.PrivateCloud.ManagementClusterB\x06\xe0A\x04\xe0A\x02R\x11managementCluster\x12 \n" +
-	"\vdescription\x18\v \x01(\tR\vdescription\x128\n" +
-	"\x03hcx\x18\x11 \x01(\v2!.google.cloud.vmwareengine.v1.HcxB\x03\xe0A\x03R\x03hcx\x128\n" +
-	"\x03nsx\x18\x12 \x01(\v2!.google.cloud.vmwareengine.v1.NsxB\x03\xe0A\x03R\x03nsx\x12D\n" +
-	"\avcenter\x18\x13 \x01(\v2%.google.cloud.vmwareengine.v1.VcenterB\x03\xe0A\x03R\avcenter\x12\x15\n" +
-	"\x03uid\x18\x14 \x01(\tB\x03\xe0A\x03R\x03uid\x12H\n" +
-	"\x04type\x18\x16 \x01(\x0e2/.google.cloud.vmwareengine.v1.PrivateCloud.TypeB\x03\xe0A\x01R\x04type\x1a\xa3\x03\n" +
-	"\x11ManagementCluster\x12\"\n" +
+	" \x01(\v2<.google.cloud.vmwareengine.v1.PrivateCloud.ManagementClusterB\x05\xe2A\x02\x04\x02R\x11managementCluster\x12 \n" +
+	"\vdescription\x18\v \x01(\tR\vdescription\x129\n" +
+	"\x03hcx\x18\x11 \x01(\v2!.google.cloud.vmwareengine.v1.HcxB\x04\xe2A\x01\x03R\x03hcx\x129\n" +
+	"\x03nsx\x18\x12 \x01(\v2!.google.cloud.vmwareengine.v1.NsxB\x04\xe2A\x01\x03R\x03nsx\x12E\n" +
+	"\avcenter\x18\x13 \x01(\v2%.google.cloud.vmwareengine.v1.VcenterB\x04\xe2A\x01\x03R\avcenter\x12\x16\n" +
+	"\x03uid\x18\x14 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12I\n" +
+	"\x04type\x18\x16 \x01(\x0e2/.google.cloud.vmwareengine.v1.PrivateCloud.TypeB\x04\xe2A\x01\x01R\x04type\x1a\xa6\x03\n" +
+	"\x11ManagementCluster\x12#\n" +
 	"\n" +
-	"cluster_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tclusterId\x12\x82\x01\n" +
-	"\x11node_type_configs\x18\a \x03(\v2Q.google.cloud.vmwareengine.v1.PrivateCloud.ManagementCluster.NodeTypeConfigsEntryB\x03\xe0A\x02R\x0fnodeTypeConfigs\x12s\n" +
-	"\x18stretched_cluster_config\x18\b \x01(\v24.google.cloud.vmwareengine.v1.StretchedClusterConfigB\x03\xe0A\x01R\x16stretchedClusterConfig\x1ap\n" +
+	"cluster_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tclusterId\x12\x83\x01\n" +
+	"\x11node_type_configs\x18\a \x03(\v2Q.google.cloud.vmwareengine.v1.PrivateCloud.ManagementCluster.NodeTypeConfigsEntryB\x04\xe2A\x01\x02R\x0fnodeTypeConfigs\x12t\n" +
+	"\x18stretched_cluster_config\x18\b \x01(\v24.google.cloud.vmwareengine.v1.StretchedClusterConfigB\x04\xe2A\x01\x01R\x16stretchedClusterConfig\x1ap\n" +
 	"\x14NodeTypeConfigsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12B\n" +
 	"\x05value\x18\x02 \x01(\v2,.google.cloud.vmwareengine.v1.NodeTypeConfigR\x05value:\x028\x01\"l\n" +
@@ -5351,21 +5351,21 @@ const file_google_cloud_vmwareengine_v1_vmwareengine_resources_proto_rawDesc = "
 	"\bSTANDARD\x10\x00\x12\x10\n" +
 	"\fTIME_LIMITED\x10\x01\x12\r\n" +
 	"\tSTRETCHED\x10\x02:t\xeaAq\n" +
-	"(vmwareengine.googleapis.com/PrivateCloud\x12Eprojects/{project}/locations/{location}/privateClouds/{private_cloud}\"\xd3\a\n" +
-	"\aCluster\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12F\n" +
-	"\x05state\x18\x06 \x01(\x0e2+.google.cloud.vmwareengine.v1.Cluster.StateB\x03\xe0A\x03R\x05state\x12#\n" +
+	"(vmwareengine.googleapis.com/PrivateCloud\x12Eprojects/{project}/locations/{location}/privateClouds/{private_cloud}\"\xdc\a\n" +
+	"\aCluster\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12G\n" +
+	"\x05state\x18\x06 \x01(\x0e2+.google.cloud.vmwareengine.v1.Cluster.StateB\x04\xe2A\x01\x03R\x05state\x12$\n" +
 	"\n" +
-	"management\x18\a \x01(\bB\x03\xe0A\x03R\n" +
-	"management\x12i\n" +
-	"\x14autoscaling_settings\x18\x12 \x01(\v21.google.cloud.vmwareengine.v1.AutoscalingSettingsB\x03\xe0A\x01R\x13autoscalingSettings\x12\x15\n" +
-	"\x03uid\x18\x0e \x01(\tB\x03\xe0A\x03R\x03uid\x12k\n" +
-	"\x11node_type_configs\x18\x10 \x03(\v2:.google.cloud.vmwareengine.v1.Cluster.NodeTypeConfigsEntryB\x03\xe0A\x02R\x0fnodeTypeConfigs\x12s\n" +
-	"\x18stretched_cluster_config\x18\x11 \x01(\v24.google.cloud.vmwareengine.v1.StretchedClusterConfigB\x03\xe0A\x01R\x16stretchedClusterConfig\x1ap\n" +
+	"management\x18\a \x01(\bB\x04\xe2A\x01\x03R\n" +
+	"management\x12j\n" +
+	"\x14autoscaling_settings\x18\x12 \x01(\v21.google.cloud.vmwareengine.v1.AutoscalingSettingsB\x04\xe2A\x01\x01R\x13autoscalingSettings\x12\x16\n" +
+	"\x03uid\x18\x0e \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12l\n" +
+	"\x11node_type_configs\x18\x10 \x03(\v2:.google.cloud.vmwareengine.v1.Cluster.NodeTypeConfigsEntryB\x04\xe2A\x01\x02R\x0fnodeTypeConfigs\x12t\n" +
+	"\x18stretched_cluster_config\x18\x11 \x01(\v24.google.cloud.vmwareengine.v1.StretchedClusterConfigB\x04\xe2A\x01\x01R\x16stretchedClusterConfig\x1ap\n" +
 	"\x14NodeTypeConfigsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12B\n" +
 	"\x05value\x18\x02 \x01(\v2,.google.cloud.vmwareengine.v1.NodeTypeConfigR\x05value:\x028\x01\"c\n" +
@@ -5377,17 +5377,17 @@ const file_google_cloud_vmwareengine_v1_vmwareengine_resources_proto_rawDesc = "
 	"\bUPDATING\x10\x03\x12\f\n" +
 	"\bDELETING\x10\x04\x12\r\n" +
 	"\tREPAIRING\x10\x05:\x82\x01\xeaA\x7f\n" +
-	"#vmwareengine.googleapis.com/Cluster\x12Xprojects/{project}/locations/{location}/privateClouds/{private_cloud}/clusters/{cluster}\"\xff\x03\n" +
-	"\x04Node\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x17\n" +
-	"\x04fqdn\x18\x02 \x01(\tB\x03\xe0A\x03R\x04fqdn\x12$\n" +
-	"\vinternal_ip\x18\x03 \x01(\tB\x03\xe0A\x03R\n" +
-	"internalIp\x12%\n" +
-	"\fnode_type_id\x18\x04 \x01(\tB\x03\xe0A\x03R\n" +
-	"nodeTypeId\x12\x1d\n" +
-	"\aversion\x18\x05 \x01(\tB\x03\xe0A\x03R\aversion\x12/\n" +
-	"\x11custom_core_count\x18\x06 \x01(\x03B\x03\xe0A\x03R\x0fcustomCoreCount\x12C\n" +
-	"\x05state\x18\a \x01(\x0e2(.google.cloud.vmwareengine.v1.Node.StateB\x03\xe0A\x03R\x05state\"S\n" +
+	"#vmwareengine.googleapis.com/Cluster\x12Xprojects/{project}/locations/{location}/privateClouds/{private_cloud}/clusters/{cluster}\"\x86\x04\n" +
+	"\x04Node\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x18\n" +
+	"\x04fqdn\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x04fqdn\x12%\n" +
+	"\vinternal_ip\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"internalIp\x12&\n" +
+	"\fnode_type_id\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"nodeTypeId\x12\x1e\n" +
+	"\aversion\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\aversion\x120\n" +
+	"\x11custom_core_count\x18\x06 \x01(\x03B\x04\xe2A\x01\x03R\x0fcustomCoreCount\x12D\n" +
+	"\x05state\x18\a \x01(\x0e2(.google.cloud.vmwareengine.v1.Node.StateB\x04\xe2A\x01\x03R\x05state\"S\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
@@ -5396,19 +5396,19 @@ const file_google_cloud_vmwareengine_v1_vmwareengine_resources_proto_rawDesc = "
 	"\n" +
 	"\x06FAILED\x10\x03\x12\r\n" +
 	"\tUPGRADING\x10\x04:\x8d\x01\xeaA\x89\x01\n" +
-	" vmwareengine.googleapis.com/Node\x12eprojects/{project}/locations/{location}/privateClouds/{private_cloud}/clusters/{cluster}/nodes/{node}\"\xf4\x04\n" +
-	"\x0fExternalAddress\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	" vmwareengine.googleapis.com/Node\x12eprojects/{project}/locations/{location}/privateClouds/{private_cloud}/clusters/{cluster}/nodes/{node}\"\xfa\x04\n" +
+	"\x0fExternalAddress\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12\x1f\n" +
 	"\vinternal_ip\x18\x06 \x01(\tR\n" +
-	"internalIp\x12$\n" +
-	"\vexternal_ip\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"externalIp\x12N\n" +
-	"\x05state\x18\b \x01(\x0e23.google.cloud.vmwareengine.v1.ExternalAddress.StateB\x03\xe0A\x03R\x05state\x12\x15\n" +
-	"\x03uid\x18\t \x01(\tB\x03\xe0A\x03R\x03uid\x12 \n" +
+	"internalIp\x12%\n" +
+	"\vexternal_ip\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"externalIp\x12O\n" +
+	"\x05state\x18\b \x01(\x0e23.google.cloud.vmwareengine.v1.ExternalAddress.StateB\x04\xe2A\x01\x03R\x05state\x12\x16\n" +
+	"\x03uid\x18\t \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12 \n" +
 	"\vdescription\x18\v \x01(\tR\vdescription\"T\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\n" +
@@ -5417,15 +5417,15 @@ const file_google_cloud_vmwareengine_v1_vmwareengine_resources_proto_rawDesc = "
 	"\bCREATING\x10\x02\x12\f\n" +
 	"\bUPDATING\x10\x03\x12\f\n" +
 	"\bDELETING\x10\x04:\x9d\x01\xeaA\x99\x01\n" +
-	"+vmwareengine.googleapis.com/ExternalAddress\x12jprojects/{project}/locations/{location}/privateClouds/{private_cloud}/externalAddresses/{external_address}\"\xd6\x03\n" +
-	"\x06Subnet\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\"\n" +
+	"+vmwareengine.googleapis.com/ExternalAddress\x12jprojects/{project}/locations/{location}/privateClouds/{private_cloud}/externalAddresses/{external_address}\"\xda\x03\n" +
+	"\x06Subnet\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\"\n" +
 	"\rip_cidr_range\x18\a \x01(\tR\vipCidrRange\x12\x1d\n" +
 	"\n" +
-	"gateway_ip\x18\b \x01(\tR\tgatewayIp\x12\x17\n" +
-	"\x04type\x18\v \x01(\tB\x03\xe0A\x03R\x04type\x12E\n" +
-	"\x05state\x18\r \x01(\x0e2*.google.cloud.vmwareengine.v1.Subnet.StateB\x03\xe0A\x03R\x05state\x12\x1c\n" +
-	"\avlan_id\x18\x10 \x01(\x05B\x03\xe0A\x03R\x06vlanId\"q\n" +
+	"gateway_ip\x18\b \x01(\tR\tgatewayIp\x12\x18\n" +
+	"\x04type\x18\v \x01(\tB\x04\xe2A\x01\x03R\x04type\x12F\n" +
+	"\x05state\x18\r \x01(\x0e2*.google.cloud.vmwareengine.v1.Subnet.StateB\x04\xe2A\x01\x03R\x05state\x12\x1d\n" +
+	"\avlan_id\x18\x10 \x01(\x05B\x04\xe2A\x01\x03R\x06vlanId\"q\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
@@ -5436,12 +5436,12 @@ const file_google_cloud_vmwareengine_v1_vmwareengine_resources_proto_rawDesc = "
 	"\vRECONCILING\x10\x05\x12\n" +
 	"\n" +
 	"\x06FAILED\x10\x06:\x7f\xeaA|\n" +
-	"\"vmwareengine.googleapis.com/Subnet\x12Vprojects/{project}/locations/{location}/privateClouds/{private_cloud}/subnets/{subnet}\"\xea\t\n" +
-	"\x12ExternalAccessRule\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\"vmwareengine.googleapis.com/Subnet\x12Vprojects/{project}/locations/{location}/privateClouds/{private_cloud}/subnets/{subnet}\"\xef\t\n" +
+	"\x12ExternalAccessRule\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12 \n" +
 	"\vdescription\x18\x05 \x01(\tR\vdescription\x12\x1a\n" +
 	"\bpriority\x18\x06 \x01(\x05R\bpriority\x12O\n" +
@@ -5452,9 +5452,9 @@ const file_google_cloud_vmwareengine_v1_vmwareengine_resources_proto_rawDesc = "
 	"\fsource_ports\x18\n" +
 	" \x03(\tR\vsourcePorts\x12l\n" +
 	"\x15destination_ip_ranges\x18\v \x03(\v28.google.cloud.vmwareengine.v1.ExternalAccessRule.IpRangeR\x13destinationIpRanges\x12+\n" +
-	"\x11destination_ports\x18\f \x03(\tR\x10destinationPorts\x12Q\n" +
-	"\x05state\x18\r \x01(\x0e26.google.cloud.vmwareengine.v1.ExternalAccessRule.StateB\x03\xe0A\x03R\x05state\x12\x15\n" +
-	"\x03uid\x18\x0e \x01(\tB\x03\xe0A\x03R\x03uid\x1a\xc1\x01\n" +
+	"\x11destination_ports\x18\f \x03(\tR\x10destinationPorts\x12R\n" +
+	"\x05state\x18\r \x01(\x0e26.google.cloud.vmwareengine.v1.ExternalAccessRule.StateB\x04\xe2A\x01\x03R\x05state\x12\x16\n" +
+	"\x03uid\x18\x0e \x01(\tB\x04\xe2A\x01\x03R\x03uid\x1a\xc1\x01\n" +
 	"\aIpRange\x12\x1f\n" +
 	"\n" +
 	"ip_address\x18\x01 \x01(\tH\x00R\tipAddress\x12*\n" +
@@ -5474,20 +5474,20 @@ const file_google_cloud_vmwareengine_v1_vmwareengine_resources_proto_rawDesc = "
 	"\bCREATING\x10\x02\x12\f\n" +
 	"\bUPDATING\x10\x03\x12\f\n" +
 	"\bDELETING\x10\x04:\xa9\x01\xeaA\xa5\x01\n" +
-	".vmwareengine.googleapis.com/ExternalAccessRule\x12sprojects/{project}/locations/{location}/networkPolicies/{network_policy}/externalAccessRules/{external_access_rule}\"\xde\x05\n" +
-	"\rLoggingServer\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x1f\n" +
-	"\bhostname\x18\x05 \x01(\tB\x03\xe0A\x02R\bhostname\x12\x17\n" +
-	"\x04port\x18\a \x01(\x05B\x03\xe0A\x02R\x04port\x12U\n" +
-	"\bprotocol\x18\x06 \x01(\x0e24.google.cloud.vmwareengine.v1.LoggingServer.ProtocolB\x03\xe0A\x02R\bprotocol\x12\\\n" +
+	".vmwareengine.googleapis.com/ExternalAccessRule\x12sprojects/{project}/locations/{location}/networkPolicies/{network_policy}/externalAccessRules/{external_access_rule}\"\xe6\x05\n" +
+	"\rLoggingServer\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12 \n" +
+	"\bhostname\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\bhostname\x12\x18\n" +
+	"\x04port\x18\a \x01(\x05B\x04\xe2A\x01\x02R\x04port\x12V\n" +
+	"\bprotocol\x18\x06 \x01(\x0e24.google.cloud.vmwareengine.v1.LoggingServer.ProtocolB\x04\xe2A\x01\x02R\bprotocol\x12]\n" +
 	"\vsource_type\x18\n" +
-	" \x01(\x0e26.google.cloud.vmwareengine.v1.LoggingServer.SourceTypeB\x03\xe0A\x02R\n" +
-	"sourceType\x12\x15\n" +
-	"\x03uid\x18\b \x01(\tB\x03\xe0A\x03R\x03uid\"R\n" +
+	" \x01(\x0e26.google.cloud.vmwareengine.v1.LoggingServer.SourceTypeB\x04\xe2A\x01\x02R\n" +
+	"sourceType\x12\x16\n" +
+	"\x03uid\x18\b \x01(\tB\x04\xe2A\x01\x03R\x03uid\"R\n" +
 	"\bProtocol\x12\x18\n" +
 	"\x14PROTOCOL_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03UDP\x10\x01\x12\a\n" +
@@ -5500,21 +5500,21 @@ const file_google_cloud_vmwareengine_v1_vmwareengine_resources_proto_rawDesc = "
 	"\x17SOURCE_TYPE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04ESXI\x10\x01\x12\b\n" +
 	"\x04VCSA\x10\x02:\x96\x01\xeaA\x92\x01\n" +
-	")vmwareengine.googleapis.com/LoggingServer\x12eprojects/{project}/locations/{location}/privateClouds/{private_cloud}/loggingServers/{logging_server}\"\x8e\x06\n" +
-	"\bNodeType\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12%\n" +
-	"\fnode_type_id\x18\x02 \x01(\tB\x03\xe0A\x03R\n" +
-	"nodeTypeId\x12&\n" +
-	"\fdisplay_name\x18\x03 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12/\n" +
-	"\x11virtual_cpu_count\x18\x04 \x01(\x05B\x03\xe0A\x03R\x0fvirtualCpuCount\x12-\n" +
-	"\x10total_core_count\x18\x05 \x01(\x05B\x03\xe0A\x03R\x0etotalCoreCount\x12 \n" +
-	"\tmemory_gb\x18\a \x01(\x05B\x03\xe0A\x03R\bmemoryGb\x12%\n" +
-	"\fdisk_size_gb\x18\b \x01(\x05B\x03\xe0A\x03R\n" +
-	"diskSizeGb\x12D\n" +
-	"\x1cavailable_custom_core_counts\x18\v \x03(\x05B\x03\xe0A\x03R\x19availableCustomCoreCounts\x12D\n" +
-	"\x04kind\x18\f \x01(\x0e2+.google.cloud.vmwareengine.v1.NodeType.KindB\x03\xe0A\x03R\x04kind\x12\x1f\n" +
-	"\bfamilies\x18\r \x03(\tB\x03\xe0A\x03R\bfamilies\x12Z\n" +
-	"\fcapabilities\x18\x0e \x03(\x0e21.google.cloud.vmwareengine.v1.NodeType.CapabilityB\x03\xe0A\x03R\fcapabilities\"<\n" +
+	")vmwareengine.googleapis.com/LoggingServer\x12eprojects/{project}/locations/{location}/privateClouds/{private_cloud}/loggingServers/{logging_server}\"\x99\x06\n" +
+	"\bNodeType\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12&\n" +
+	"\fnode_type_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"nodeTypeId\x12'\n" +
+	"\fdisplay_name\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x120\n" +
+	"\x11virtual_cpu_count\x18\x04 \x01(\x05B\x04\xe2A\x01\x03R\x0fvirtualCpuCount\x12.\n" +
+	"\x10total_core_count\x18\x05 \x01(\x05B\x04\xe2A\x01\x03R\x0etotalCoreCount\x12!\n" +
+	"\tmemory_gb\x18\a \x01(\x05B\x04\xe2A\x01\x03R\bmemoryGb\x12&\n" +
+	"\fdisk_size_gb\x18\b \x01(\x05B\x04\xe2A\x01\x03R\n" +
+	"diskSizeGb\x12E\n" +
+	"\x1cavailable_custom_core_counts\x18\v \x03(\x05B\x04\xe2A\x01\x03R\x19availableCustomCoreCounts\x12E\n" +
+	"\x04kind\x18\f \x01(\x0e2+.google.cloud.vmwareengine.v1.NodeType.KindB\x04\xe2A\x01\x03R\x04kind\x12 \n" +
+	"\bfamilies\x18\r \x03(\tB\x04\xe2A\x01\x03R\bfamilies\x12[\n" +
+	"\fcapabilities\x18\x0e \x03(\x0e21.google.cloud.vmwareengine.v1.NodeType.CapabilityB\x04\xe2A\x01\x03R\fcapabilities\"<\n" +
 	"\x04Kind\x12\x14\n" +
 	"\x10KIND_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bSTANDARD\x10\x01\x12\x10\n" +
@@ -5526,25 +5526,25 @@ const file_google_cloud_vmwareengine_v1_vmwareengine_resources_proto_rawDesc = "
 	"$vmwareengine.googleapis.com/NodeType\x12=projects/{project}/locations/{location}/nodeTypes/{node_type}\"E\n" +
 	"\vCredentials\x12\x1a\n" +
 	"\busername\x18\x01 \x01(\tR\busername\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword\"\xef\x03\n" +
-	"\x10HcxActivationKey\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12O\n" +
-	"\x05state\x18\x03 \x01(\x0e24.google.cloud.vmwareengine.v1.HcxActivationKey.StateB\x03\xe0A\x03R\x05state\x12*\n" +
-	"\x0eactivation_key\x18\x04 \x01(\tB\x03\xe0A\x03R\ractivationKey\x12\x15\n" +
-	"\x03uid\x18\x05 \x01(\tB\x03\xe0A\x03R\x03uid\"I\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\"\xf4\x03\n" +
+	"\x10HcxActivationKey\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12P\n" +
+	"\x05state\x18\x03 \x01(\x0e24.google.cloud.vmwareengine.v1.HcxActivationKey.StateB\x04\xe2A\x01\x03R\x05state\x12+\n" +
+	"\x0eactivation_key\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\ractivationKey\x12\x16\n" +
+	"\x03uid\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x03uid\"I\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tAVAILABLE\x10\x01\x12\f\n" +
 	"\bCONSUMED\x10\x02\x12\f\n" +
 	"\bCREATING\x10\x03:\xa0\x01\xeaA\x9c\x01\n" +
-	",vmwareengine.googleapis.com/HcxActivationKey\x12lprojects/{project}/locations/{location}/privateClouds/{private_cloud}/hcxActivationKeys/{hcx_activation_key}\"\xe2\x01\n" +
+	",vmwareengine.googleapis.com/HcxActivationKey\x12lprojects/{project}/locations/{location}/privateClouds/{private_cloud}/hcxActivationKeys/{hcx_activation_key}\"\xe3\x01\n" +
 	"\x03Hcx\x12\x1f\n" +
 	"\vinternal_ip\x18\x02 \x01(\tR\n" +
 	"internalIp\x12\x18\n" +
-	"\aversion\x18\x04 \x01(\tR\aversion\x12B\n" +
-	"\x05state\x18\x05 \x01(\x0e2'.google.cloud.vmwareengine.v1.Hcx.StateB\x03\xe0A\x03R\x05state\x12\x12\n" +
+	"\aversion\x18\x04 \x01(\tR\aversion\x12C\n" +
+	"\x05state\x18\x05 \x01(\x0e2'.google.cloud.vmwareengine.v1.Hcx.StateB\x04\xe2A\x01\x03R\x05state\x12\x12\n" +
 	"\x04fqdn\x18\x06 \x01(\tR\x04fqdn\"H\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\n" +
@@ -5552,81 +5552,81 @@ const file_google_cloud_vmwareengine_v1_vmwareengine_resources_proto_rawDesc = "
 	"\x06ACTIVE\x10\x01\x12\f\n" +
 	"\bCREATING\x10\x02\x12\x0e\n" +
 	"\n" +
-	"ACTIVATING\x10\x03\"\xd2\x01\n" +
+	"ACTIVATING\x10\x03\"\xd3\x01\n" +
 	"\x03Nsx\x12\x1f\n" +
 	"\vinternal_ip\x18\x02 \x01(\tR\n" +
 	"internalIp\x12\x18\n" +
-	"\aversion\x18\x04 \x01(\tR\aversion\x12B\n" +
-	"\x05state\x18\x05 \x01(\x0e2'.google.cloud.vmwareengine.v1.Nsx.StateB\x03\xe0A\x03R\x05state\x12\x12\n" +
+	"\aversion\x18\x04 \x01(\tR\aversion\x12C\n" +
+	"\x05state\x18\x05 \x01(\x0e2'.google.cloud.vmwareengine.v1.Nsx.StateB\x04\xe2A\x01\x03R\x05state\x12\x12\n" +
 	"\x04fqdn\x18\x06 \x01(\tR\x04fqdn\"8\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06ACTIVE\x10\x01\x12\f\n" +
-	"\bCREATING\x10\x02\"\xda\x01\n" +
+	"\bCREATING\x10\x02\"\xdb\x01\n" +
 	"\aVcenter\x12\x1f\n" +
 	"\vinternal_ip\x18\x02 \x01(\tR\n" +
 	"internalIp\x12\x18\n" +
-	"\aversion\x18\x04 \x01(\tR\aversion\x12F\n" +
-	"\x05state\x18\x05 \x01(\x0e2+.google.cloud.vmwareengine.v1.Vcenter.StateB\x03\xe0A\x03R\x05state\x12\x12\n" +
+	"\aversion\x18\x04 \x01(\tR\aversion\x12G\n" +
+	"\x05state\x18\x05 \x01(\x0e2+.google.cloud.vmwareengine.v1.Vcenter.StateB\x04\xe2A\x01\x03R\x05state\x12\x12\n" +
 	"\x04fqdn\x18\x06 \x01(\tR\x04fqdn\"8\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06ACTIVE\x10\x01\x12\f\n" +
-	"\bCREATING\x10\x02\"\xfa\b\n" +
-	"\x13AutoscalingSettings\x12\x82\x01\n" +
-	"\x14autoscaling_policies\x18\x01 \x03(\v2J.google.cloud.vmwareengine.v1.AutoscalingSettings.AutoscalingPoliciesEntryB\x03\xe0A\x02R\x13autoscalingPolicies\x128\n" +
-	"\x16min_cluster_node_count\x18\x02 \x01(\x05B\x03\xe0A\x01R\x13minClusterNodeCount\x128\n" +
-	"\x16max_cluster_node_count\x18\x03 \x01(\x05B\x03\xe0A\x01R\x13maxClusterNodeCount\x12H\n" +
-	"\x10cool_down_period\x18\x04 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x0ecoolDownPeriod\x1aN\n" +
+	"\bCREATING\x10\x02\"\x87\t\n" +
+	"\x13AutoscalingSettings\x12\x83\x01\n" +
+	"\x14autoscaling_policies\x18\x01 \x03(\v2J.google.cloud.vmwareengine.v1.AutoscalingSettings.AutoscalingPoliciesEntryB\x04\xe2A\x01\x02R\x13autoscalingPolicies\x129\n" +
+	"\x16min_cluster_node_count\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x13minClusterNodeCount\x129\n" +
+	"\x16max_cluster_node_count\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\x13maxClusterNodeCount\x12I\n" +
+	"\x10cool_down_period\x18\x04 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x0ecoolDownPeriod\x1aP\n" +
 	"\n" +
-	"Thresholds\x12 \n" +
-	"\tscale_out\x18\x01 \x01(\x05B\x03\xe0A\x02R\bscaleOut\x12\x1e\n" +
-	"\bscale_in\x18\x02 \x01(\x05B\x03\xe0A\x02R\ascaleIn\x1a\xc1\x04\n" +
-	"\x11AutoscalingPolicy\x12%\n" +
-	"\fnode_type_id\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"nodeTypeId\x12)\n" +
-	"\x0escale_out_size\x18\x02 \x01(\x05B\x03\xe0A\x02R\fscaleOutSize\x12h\n" +
-	"\x0ecpu_thresholds\x18\v \x01(\v2<.google.cloud.vmwareengine.v1.AutoscalingSettings.ThresholdsB\x03\xe0A\x01R\rcpuThresholds\x12}\n" +
-	"\x19granted_memory_thresholds\x18\f \x01(\v2<.google.cloud.vmwareengine.v1.AutoscalingSettings.ThresholdsB\x03\xe0A\x01R\x17grantedMemoryThresholds\x12\x7f\n" +
-	"\x1aconsumed_memory_thresholds\x18\r \x01(\v2<.google.cloud.vmwareengine.v1.AutoscalingSettings.ThresholdsB\x03\xe0A\x01R\x18consumedMemoryThresholds\x12p\n" +
-	"\x12storage_thresholds\x18\x0e \x01(\v2<.google.cloud.vmwareengine.v1.AutoscalingSettings.ThresholdsB\x03\xe0A\x01R\x11storageThresholds\x1a\x8b\x01\n" +
+	"Thresholds\x12!\n" +
+	"\tscale_out\x18\x01 \x01(\x05B\x04\xe2A\x01\x02R\bscaleOut\x12\x1f\n" +
+	"\bscale_in\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\ascaleIn\x1a\xc8\x04\n" +
+	"\x11AutoscalingPolicy\x12&\n" +
+	"\fnode_type_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"nodeTypeId\x12*\n" +
+	"\x0escale_out_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\fscaleOutSize\x12i\n" +
+	"\x0ecpu_thresholds\x18\v \x01(\v2<.google.cloud.vmwareengine.v1.AutoscalingSettings.ThresholdsB\x04\xe2A\x01\x01R\rcpuThresholds\x12~\n" +
+	"\x19granted_memory_thresholds\x18\f \x01(\v2<.google.cloud.vmwareengine.v1.AutoscalingSettings.ThresholdsB\x04\xe2A\x01\x01R\x17grantedMemoryThresholds\x12\x80\x01\n" +
+	"\x1aconsumed_memory_thresholds\x18\r \x01(\v2<.google.cloud.vmwareengine.v1.AutoscalingSettings.ThresholdsB\x04\xe2A\x01\x01R\x18consumedMemoryThresholds\x12q\n" +
+	"\x12storage_thresholds\x18\x0e \x01(\v2<.google.cloud.vmwareengine.v1.AutoscalingSettings.ThresholdsB\x04\xe2A\x01\x01R\x11storageThresholds\x1a\x8b\x01\n" +
 	"\x18AutoscalingPoliciesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12Y\n" +
-	"\x05value\x18\x02 \x01(\v2C.google.cloud.vmwareengine.v1.AutoscalingSettings.AutoscalingPolicyR\x05value:\x028\x01\"\xf6\x03\n" +
-	"\rDnsForwarding\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12j\n" +
-	"\x10forwarding_rules\x18\x04 \x03(\v2:.google.cloud.vmwareengine.v1.DnsForwarding.ForwardingRuleB\x03\xe0A\x02R\x0fforwardingRules\x1aU\n" +
-	"\x0eForwardingRule\x12\x1b\n" +
-	"\x06domain\x18\x01 \x01(\tB\x03\xe0A\x02R\x06domain\x12&\n" +
-	"\fname_servers\x18\x02 \x03(\tB\x03\xe0A\x02R\vnameServers:\x84\x01\xeaA\x80\x01\n" +
-	")vmwareengine.googleapis.com/DnsForwarding\x12Sprojects/{project}/locations/{location}/privateClouds/{private_cloud}/dnsForwarding\"\xc3\f\n" +
-	"\x0eNetworkPeering\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12&\n" +
-	"\fpeer_network\x18\x05 \x01(\tB\x03\xe0A\x02R\vpeerNetwork\x12:\n" +
-	"\x14export_custom_routes\x18\b \x01(\bB\x03\xe0A\x01H\x00R\x12exportCustomRoutes\x88\x01\x01\x12:\n" +
-	"\x14import_custom_routes\x18\t \x01(\bB\x03\xe0A\x01H\x01R\x12importCustomRoutes\x88\x01\x01\x12>\n" +
+	"\x05value\x18\x02 \x01(\v2C.google.cloud.vmwareengine.v1.AutoscalingSettings.AutoscalingPolicyR\x05value:\x028\x01\"\xfc\x03\n" +
+	"\rDnsForwarding\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12k\n" +
+	"\x10forwarding_rules\x18\x04 \x03(\v2:.google.cloud.vmwareengine.v1.DnsForwarding.ForwardingRuleB\x04\xe2A\x01\x02R\x0fforwardingRules\x1aW\n" +
+	"\x0eForwardingRule\x12\x1c\n" +
+	"\x06domain\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06domain\x12'\n" +
+	"\fname_servers\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\vnameServers:\x84\x01\xeaA\x80\x01\n" +
+	")vmwareengine.googleapis.com/DnsForwarding\x12Sprojects/{project}/locations/{location}/privateClouds/{private_cloud}/dnsForwarding\"\xd3\f\n" +
+	"\x0eNetworkPeering\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12'\n" +
+	"\fpeer_network\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\vpeerNetwork\x12;\n" +
+	"\x14export_custom_routes\x18\b \x01(\bB\x04\xe2A\x01\x01H\x00R\x12exportCustomRoutes\x88\x01\x01\x12;\n" +
+	"\x14import_custom_routes\x18\t \x01(\bB\x04\xe2A\x01\x01H\x01R\x12importCustomRoutes\x88\x01\x01\x12?\n" +
 	"\x16exchange_subnet_routes\x18\n" +
-	" \x01(\bB\x03\xe0A\x01H\x02R\x14exchangeSubnetRoutes\x88\x01\x01\x12U\n" +
-	"#export_custom_routes_with_public_ip\x18\v \x01(\bB\x03\xe0A\x01H\x03R\x1eexportCustomRoutesWithPublicIp\x88\x01\x01\x12U\n" +
-	"#import_custom_routes_with_public_ip\x18\f \x01(\bB\x03\xe0A\x01H\x04R\x1eimportCustomRoutesWithPublicIp\x88\x01\x01\x12M\n" +
-	"\x05state\x18\r \x01(\x0e22.google.cloud.vmwareengine.v1.NetworkPeering.StateB\x03\xe0A\x03R\x05state\x12(\n" +
-	"\rstate_details\x18\a \x01(\tB\x03\xe0A\x03R\fstateDetails\x12\x1e\n" +
-	"\bpeer_mtu\x18\x0e \x01(\x05B\x03\xe0A\x01R\apeerMtu\x12m\n" +
-	"\x11peer_network_type\x18\x10 \x01(\x0e2<.google.cloud.vmwareengine.v1.NetworkPeering.PeerNetworkTypeB\x03\xe0A\x02R\x0fpeerNetworkType\x12\x15\n" +
-	"\x03uid\x18\x11 \x01(\tB\x03\xe0A\x03R\x03uid\x12k\n" +
-	"\x15vmware_engine_network\x18\x14 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/vmwareengine.googleapis.com/VmwareEngineNetworkR\x13vmwareEngineNetwork\x12%\n" +
-	"\vdescription\x18\x15 \x01(\tB\x03\xe0A\x01R\vdescription\"T\n" +
+	" \x01(\bB\x04\xe2A\x01\x01H\x02R\x14exchangeSubnetRoutes\x88\x01\x01\x12V\n" +
+	"#export_custom_routes_with_public_ip\x18\v \x01(\bB\x04\xe2A\x01\x01H\x03R\x1eexportCustomRoutesWithPublicIp\x88\x01\x01\x12V\n" +
+	"#import_custom_routes_with_public_ip\x18\f \x01(\bB\x04\xe2A\x01\x01H\x04R\x1eimportCustomRoutesWithPublicIp\x88\x01\x01\x12N\n" +
+	"\x05state\x18\r \x01(\x0e22.google.cloud.vmwareengine.v1.NetworkPeering.StateB\x04\xe2A\x01\x03R\x05state\x12)\n" +
+	"\rstate_details\x18\a \x01(\tB\x04\xe2A\x01\x03R\fstateDetails\x12\x1f\n" +
+	"\bpeer_mtu\x18\x0e \x01(\x05B\x04\xe2A\x01\x01R\apeerMtu\x12n\n" +
+	"\x11peer_network_type\x18\x10 \x01(\x0e2<.google.cloud.vmwareengine.v1.NetworkPeering.PeerNetworkTypeB\x04\xe2A\x01\x02R\x0fpeerNetworkType\x12\x16\n" +
+	"\x03uid\x18\x11 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12l\n" +
+	"\x15vmware_engine_network\x18\x14 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/vmwareengine.googleapis.com/VmwareEngineNetworkR\x13vmwareEngineNetwork\x12&\n" +
+	"\vdescription\x18\x15 \x01(\tB\x04\xe2A\x01\x01R\vdescription\"T\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bINACTIVE\x10\x01\x12\n" +
@@ -5648,15 +5648,15 @@ const file_google_cloud_vmwareengine_v1_vmwareengine_resources_proto_rawDesc = "
 	"\x15_import_custom_routesB\x19\n" +
 	"\x17_exchange_subnet_routesB&\n" +
 	"$_export_custom_routes_with_public_ipB&\n" +
-	"$_import_custom_routes_with_public_ip\"\xf5\x03\n" +
-	"\fPeeringRoute\x12\"\n" +
+	"$_import_custom_routes_with_public_ip\"\xfb\x03\n" +
+	"\fPeeringRoute\x12#\n" +
 	"\n" +
-	"dest_range\x18\x01 \x01(\tB\x03\xe0A\x03R\tdestRange\x12H\n" +
-	"\x04type\x18\x02 \x01(\x0e2/.google.cloud.vmwareengine.v1.PeeringRoute.TypeB\x03\xe0A\x03R\x04type\x12+\n" +
-	"\x0fnext_hop_region\x18\x03 \x01(\tB\x03\xe0A\x03R\rnextHopRegion\x12\x1f\n" +
-	"\bpriority\x18\x04 \x01(\x03B\x03\xe0A\x03R\bpriority\x12\x1f\n" +
-	"\bimported\x18\x05 \x01(\bB\x03\xe0A\x03R\bimported\x12W\n" +
-	"\tdirection\x18\x06 \x01(\x0e24.google.cloud.vmwareengine.v1.PeeringRoute.DirectionB\x03\xe0A\x03R\tdirection\"k\n" +
+	"dest_range\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\tdestRange\x12I\n" +
+	"\x04type\x18\x02 \x01(\x0e2/.google.cloud.vmwareengine.v1.PeeringRoute.TypeB\x04\xe2A\x01\x03R\x04type\x12,\n" +
+	"\x0fnext_hop_region\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\rnextHopRegion\x12 \n" +
+	"\bpriority\x18\x04 \x01(\x03B\x04\xe2A\x01\x03R\bpriority\x12 \n" +
+	"\bimported\x18\x05 \x01(\bB\x04\xe2A\x01\x03R\bimported\x12X\n" +
+	"\tdirection\x18\x06 \x01(\x0e24.google.cloud.vmwareengine.v1.PeeringRoute.DirectionB\x04\xe2A\x01\x03R\tdirection\"k\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x19\n" +
 	"\x15DYNAMIC_PEERING_ROUTE\x10\x01\x12\x18\n" +
@@ -5665,48 +5665,48 @@ const file_google_cloud_vmwareengine_v1_vmwareengine_resources_proto_rawDesc = "
 	"\tDirection\x12\x19\n" +
 	"\x15DIRECTION_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bINCOMING\x10\x01\x12\f\n" +
-	"\bOUTGOING\x10\x02\"\xa0\b\n" +
-	"\rNetworkPolicy\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\bOUTGOING\x10\x02\"\xa9\b\n" +
+	"\rNetworkPolicy\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12c\n" +
 	"\x0finternet_access\x18\x06 \x01(\v2:.google.cloud.vmwareengine.v1.NetworkPolicy.NetworkServiceR\x0einternetAccess\x12[\n" +
 	"\vexternal_ip\x18\a \x01(\v2:.google.cloud.vmwareengine.v1.NetworkPolicy.NetworkServiceR\n" +
-	"externalIp\x121\n" +
-	"\x12edge_services_cidr\x18\t \x01(\tB\x03\xe0A\x02R\x10edgeServicesCidr\x12\x15\n" +
+	"externalIp\x122\n" +
+	"\x12edge_services_cidr\x18\t \x01(\tB\x04\xe2A\x01\x02R\x10edgeServicesCidr\x12\x16\n" +
 	"\x03uid\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R\x03uid\x12k\n" +
-	"\x15vmware_engine_network\x18\f \x01(\tB7\xe0A\x01\xfaA1\n" +
-	"/vmwareengine.googleapis.com/VmwareEngineNetworkR\x13vmwareEngineNetwork\x12%\n" +
-	"\vdescription\x18\r \x01(\tB\x03\xe0A\x01R\vdescription\x12~\n" +
-	"\x1fvmware_engine_network_canonical\x18\x0e \x01(\tB7\xe0A\x03\xfaA1\n" +
-	"/vmwareengine.googleapis.com/VmwareEngineNetworkR\x1cvmwareEngineNetworkCanonical\x1a\xd7\x01\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12l\n" +
+	"\x15vmware_engine_network\x18\f \x01(\tB8\xe2A\x01\x01\xfaA1\n" +
+	"/vmwareengine.googleapis.com/VmwareEngineNetworkR\x13vmwareEngineNetwork\x12&\n" +
+	"\vdescription\x18\r \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\x7f\n" +
+	"\x1fvmware_engine_network_canonical\x18\x0e \x01(\tB8\xe2A\x01\x03\xfaA1\n" +
+	"/vmwareengine.googleapis.com/VmwareEngineNetworkR\x1cvmwareEngineNetworkCanonical\x1a\xd8\x01\n" +
 	"\x0eNetworkService\x12\x18\n" +
-	"\aenabled\x18\x01 \x01(\bR\aenabled\x12[\n" +
-	"\x05state\x18\x02 \x01(\x0e2@.google.cloud.vmwareengine.v1.NetworkPolicy.NetworkService.StateB\x03\xe0A\x03R\x05state\"N\n" +
+	"\aenabled\x18\x01 \x01(\bR\aenabled\x12\\\n" +
+	"\x05state\x18\x02 \x01(\x0e2@.google.cloud.vmwareengine.v1.NetworkPolicy.NetworkService.StateB\x04\xe2A\x01\x03R\x05state\"N\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\x11\n" +
 	"\rUNPROVISIONED\x10\x01\x12\x0f\n" +
 	"\vRECONCILING\x10\x02\x12\n" +
 	"\n" +
 	"\x06ACTIVE\x10\x03:x\xeaAu\n" +
-	")vmwareengine.googleapis.com/NetworkPolicy\x12Hprojects/{project}/locations/{location}/networkPolicies/{network_policy}\"\xab\x06\n" +
-	"\x18ManagementDnsZoneBinding\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12W\n" +
-	"\x05state\x18\b \x01(\x0e2<.google.cloud.vmwareengine.v1.ManagementDnsZoneBinding.StateB\x03\xe0A\x03R\x05state\x12 \n" +
+	")vmwareengine.googleapis.com/NetworkPolicy\x12Hprojects/{project}/locations/{location}/networkPolicies/{network_policy}\"\xb0\x06\n" +
+	"\x18ManagementDnsZoneBinding\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12X\n" +
+	"\x05state\x18\b \x01(\x0e2<.google.cloud.vmwareengine.v1.ManagementDnsZoneBinding.StateB\x04\xe2A\x01\x03R\x05state\x12 \n" +
 	"\vdescription\x18\r \x01(\tR\vdescription\x12F\n" +
 	"\vvpc_network\x18\x0e \x01(\tB#\xfaA \n" +
 	"\x1ecompute.googleapis.com/NetworkH\x00R\n" +
 	"vpcNetwork\x12j\n" +
 	"\x15vmware_engine_network\x18\x0f \x01(\tB4\xfaA1\n" +
-	"/vmwareengine.googleapis.com/VmwareEngineNetworkH\x00R\x13vmwareEngineNetwork\x12\x15\n" +
-	"\x03uid\x18\t \x01(\tB\x03\xe0A\x03R\x03uid\"`\n" +
+	"/vmwareengine.googleapis.com/VmwareEngineNetworkH\x00R\x13vmwareEngineNetwork\x12\x16\n" +
+	"\x03uid\x18\t \x01(\tB\x04\xe2A\x01\x03R\x03uid\"`\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
@@ -5717,24 +5717,24 @@ const file_google_cloud_vmwareengine_v1_vmwareengine_resources_proto_rawDesc = "
 	"\n" +
 	"\x06FAILED\x10\x05:\xb9\x01\xeaA\xb5\x01\n" +
 	"4vmwareengine.googleapis.com/ManagementDnsZoneBinding\x12}projects/{project}/locations/{location}/privateClouds/{private_cloud}/managementDnsZoneBindings/{management_dns_zone_binding}B\x0e\n" +
-	"\fbind_network\"\x9f\b\n" +
-	"\x13VmwareEngineNetwork\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\fbind_network\"\xa8\b\n" +
+	"\x13VmwareEngineNetwork\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12 \n" +
-	"\vdescription\x18\x05 \x01(\tR\vdescription\x12d\n" +
-	"\fvpc_networks\x18\x06 \x03(\v2<.google.cloud.vmwareengine.v1.VmwareEngineNetwork.VpcNetworkB\x03\xe0A\x03R\vvpcNetworks\x12R\n" +
-	"\x05state\x18\a \x01(\x0e27.google.cloud.vmwareengine.v1.VmwareEngineNetwork.StateB\x03\xe0A\x03R\x05state\x12O\n" +
-	"\x04type\x18\b \x01(\x0e26.google.cloud.vmwareengine.v1.VmwareEngineNetwork.TypeB\x03\xe0A\x02R\x04type\x12\x15\n" +
-	"\x03uid\x18\t \x01(\tB\x03\xe0A\x03R\x03uid\x12\x12\n" +
+	"\vdescription\x18\x05 \x01(\tR\vdescription\x12e\n" +
+	"\fvpc_networks\x18\x06 \x03(\v2<.google.cloud.vmwareengine.v1.VmwareEngineNetwork.VpcNetworkB\x04\xe2A\x01\x03R\vvpcNetworks\x12S\n" +
+	"\x05state\x18\a \x01(\x0e27.google.cloud.vmwareengine.v1.VmwareEngineNetwork.StateB\x04\xe2A\x01\x03R\x05state\x12P\n" +
+	"\x04type\x18\b \x01(\x0e26.google.cloud.vmwareengine.v1.VmwareEngineNetwork.TypeB\x04\xe2A\x01\x02R\x04type\x12\x16\n" +
+	"\x03uid\x18\t \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12\x12\n" +
 	"\x04etag\x18\n" +
-	" \x01(\tR\x04etag\x1a\xf6\x01\n" +
+	" \x01(\tR\x04etag\x1a\xf8\x01\n" +
 	"\n" +
-	"VpcNetwork\x12Z\n" +
-	"\x04type\x18\x01 \x01(\x0e2A.google.cloud.vmwareengine.v1.VmwareEngineNetwork.VpcNetwork.TypeB\x03\xe0A\x03R\x04type\x12@\n" +
-	"\anetwork\x18\x02 \x01(\tB&\xe0A\x03\xfaA \n" +
+	"VpcNetwork\x12[\n" +
+	"\x04type\x18\x01 \x01(\x0e2A.google.cloud.vmwareengine.v1.VmwareEngineNetwork.VpcNetwork.TypeB\x04\xe2A\x01\x03R\x04type\x12A\n" +
+	"\anetwork\x18\x02 \x01(\tB'\xe2A\x01\x03\xfaA \n" +
 	"\x1ecompute.googleapis.com/NetworkR\anetwork\"J\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
@@ -5753,28 +5753,28 @@ const file_google_cloud_vmwareengine_v1_vmwareengine_resources_proto_rawDesc = "
 	"\n" +
 	"\x06LEGACY\x10\x01\x12\f\n" +
 	"\bSTANDARD\x10\x02:\x8b\x01\xeaA\x87\x01\n" +
-	"/vmwareengine.googleapis.com/VmwareEngineNetwork\x12Tprojects/{project}/locations/{location}/vmwareEngineNetworks/{vmware_engine_network}\"\xdd\v\n" +
-	"\x11PrivateConnection\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12%\n" +
-	"\vdescription\x18\x04 \x01(\tB\x03\xe0A\x01R\vdescription\x12P\n" +
-	"\x05state\x18\x05 \x01(\x0e25.google.cloud.vmwareengine.v1.PrivateConnection.StateB\x03\xe0A\x03R\x05state\x12k\n" +
-	"\x15vmware_engine_network\x18\b \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/vmwareengine.googleapis.com/VmwareEngineNetworkR\x13vmwareEngineNetwork\x12~\n" +
-	"\x1fvmware_engine_network_canonical\x18\t \x01(\tB7\xe0A\x03\xfaA1\n" +
-	"/vmwareengine.googleapis.com/VmwareEngineNetworkR\x1cvmwareEngineNetworkCanonical\x12M\n" +
+	"/vmwareengine.googleapis.com/VmwareEngineNetwork\x12Tprojects/{project}/locations/{location}/vmwareEngineNetworks/{vmware_engine_network}\"\xea\v\n" +
+	"\x11PrivateConnection\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12&\n" +
+	"\vdescription\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12Q\n" +
+	"\x05state\x18\x05 \x01(\x0e25.google.cloud.vmwareengine.v1.PrivateConnection.StateB\x04\xe2A\x01\x03R\x05state\x12l\n" +
+	"\x15vmware_engine_network\x18\b \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/vmwareengine.googleapis.com/VmwareEngineNetworkR\x13vmwareEngineNetwork\x12\x7f\n" +
+	"\x1fvmware_engine_network_canonical\x18\t \x01(\tB8\xe2A\x01\x03\xfaA1\n" +
+	"/vmwareengine.googleapis.com/VmwareEngineNetworkR\x1cvmwareEngineNetworkCanonical\x12N\n" +
 	"\x04type\x18\n" +
-	" \x01(\x0e24.google.cloud.vmwareengine.v1.PrivateConnection.TypeB\x03\xe0A\x02R\x04type\x12\"\n" +
+	" \x01(\x0e24.google.cloud.vmwareengine.v1.PrivateConnection.TypeB\x04\xe2A\x01\x02R\x04type\x12#\n" +
 	"\n" +
-	"peering_id\x18\f \x01(\tB\x03\xe0A\x03R\tpeeringId\x12c\n" +
-	"\frouting_mode\x18\r \x01(\x0e2;.google.cloud.vmwareengine.v1.PrivateConnection.RoutingModeB\x03\xe0A\x01R\vroutingMode\x12\x15\n" +
-	"\x03uid\x18\x0e \x01(\tB\x03\xe0A\x03R\x03uid\x12O\n" +
-	"\x0fservice_network\x18\x10 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1ecompute.googleapis.com/NetworkR\x0eserviceNetwork\x12f\n" +
-	"\rpeering_state\x18\x11 \x01(\x0e2<.google.cloud.vmwareengine.v1.PrivateConnection.PeeringStateB\x03\xe0A\x03R\fpeeringState\"s\n" +
+	"peering_id\x18\f \x01(\tB\x04\xe2A\x01\x03R\tpeeringId\x12d\n" +
+	"\frouting_mode\x18\r \x01(\x0e2;.google.cloud.vmwareengine.v1.PrivateConnection.RoutingModeB\x04\xe2A\x01\x01R\vroutingMode\x12\x16\n" +
+	"\x03uid\x18\x0e \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12P\n" +
+	"\x0fservice_network\x18\x10 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1ecompute.googleapis.com/NetworkR\x0eserviceNetwork\x12g\n" +
+	"\rpeering_state\x18\x11 \x01(\x0e2<.google.cloud.vmwareengine.v1.PrivateConnection.PeeringStateB\x04\xe2A\x01\x03R\fpeeringState\"s\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bCREATING\x10\x01\x12\n" +
@@ -5800,17 +5800,17 @@ const file_google_cloud_vmwareengine_v1_vmwareengine_resources_proto_rawDesc = "
 	"\x19PEERING_STATE_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0ePEERING_ACTIVE\x10\x01\x12\x14\n" +
 	"\x10PEERING_INACTIVE\x10\x02:\x84\x01\xeaA\x80\x01\n" +
-	"-vmwareengine.googleapis.com/PrivateConnection\x12Oprojects/{project}/locations/{location}/privateConnections/{private_connection}\"\xb8\x01\n" +
-	"\x10LocationMetadata\x12b\n" +
-	"\fcapabilities\x18\x01 \x03(\x0e29.google.cloud.vmwareengine.v1.LocationMetadata.CapabilityB\x03\xe0A\x03R\fcapabilities\"@\n" +
+	"-vmwareengine.googleapis.com/PrivateConnection\x12Oprojects/{project}/locations/{location}/privateConnections/{private_connection}\"\xb9\x01\n" +
+	"\x10LocationMetadata\x12c\n" +
+	"\fcapabilities\x18\x01 \x03(\x0e29.google.cloud.vmwareengine.v1.LocationMetadata.CapabilityB\x04\xe2A\x01\x03R\fcapabilities\"@\n" +
 	"\n" +
 	"Capability\x12\x1a\n" +
 	"\x16CAPABILITY_UNSPECIFIED\x10\x00\x12\x16\n" +
-	"\x12STRETCHED_CLUSTERS\x10\x01\"\xe9\x01\n" +
-	"\x11DnsBindPermission\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12L\n" +
+	"\x12STRETCHED_CLUSTERS\x10\x01\"\xeb\x01\n" +
+	"\x11DnsBindPermission\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12M\n" +
 	"\n" +
-	"principals\x18\x02 \x03(\v2'.google.cloud.vmwareengine.v1.PrincipalB\x03\xe0A\x03R\n" +
+	"principals\x18\x02 \x03(\v2'.google.cloud.vmwareengine.v1.PrincipalB\x04\xe2A\x01\x03R\n" +
 	"principals:m\xeaAj\n" +
 	"-vmwareengine.googleapis.com/DnsBindPermission\x129projects/{project}/locations/{location}/dnsBindPermission\"Y\n" +
 	"\tPrincipal\x12\x14\n" +

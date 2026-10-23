@@ -806,7 +806,7 @@ const file_google_cloud_sql_v1_cloud_sql_backup_runs_proto_rawDesc = "" +
 	"maxResults\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x18\n" +
-	"\aproject\x18\x04 \x01(\tR\aproject\"\xbf\b\n" +
+	"\aproject\x18\x04 \x01(\tR\aproject\"\xc1\b\n" +
 	"\tBackupRun\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12?\n" +
 	"\x06status\x18\x02 \x01(\x0e2'.google.cloud.sql.v1.SqlBackupRunStatusR\x06status\x12?\n" +
@@ -822,14 +822,14 @@ const file_google_cloud_sql_v1_cloud_sql_backup_runs_proto_rawDesc = "" +
 	" \x01(\v2\x1a.google.protobuf.TimestampR\x0fwindowStartTime\x12\x1a\n" +
 	"\binstance\x18\v \x01(\tR\binstance\x12\x1b\n" +
 	"\tself_link\x18\f \x01(\tR\bselfLink\x12\x1a\n" +
-	"\blocation\x18\r \x01(\tR\blocation\x12W\n" +
-	"\x10database_version\x18\x0f \x01(\x0e2'.google.cloud.sql.v1.SqlDatabaseVersionB\x03\xe0A\x03R\x0fdatabaseVersion\x12t\n" +
+	"\blocation\x18\r \x01(\tR\blocation\x12X\n" +
+	"\x10database_version\x18\x0f \x01(\x0e2'.google.cloud.sql.v1.SqlDatabaseVersionB\x04\xe2A\x01\x03R\x0fdatabaseVersion\x12t\n" +
 	"\x1ddisk_encryption_configuration\x18\x10 \x01(\v20.google.cloud.sql.v1.DiskEncryptionConfigurationR\x1bdiskEncryptionConfiguration\x12_\n" +
 	"\x16disk_encryption_status\x18\x11 \x01(\v2).google.cloud.sql.v1.DiskEncryptionStatusR\x14diskEncryptionStatus\x12C\n" +
 	"\vbackup_kind\x18\x13 \x01(\x0e2\".google.cloud.sql.v1.SqlBackupKindR\n" +
 	"backupKind\x12\x1b\n" +
-	"\ttime_zone\x18\x17 \x01(\tR\btimeZone\x12:\n" +
-	"\x14max_chargeable_bytes\x18\x18 \x01(\x03B\x03\xe0A\x03H\x00R\x12maxChargeableBytes\x88\x01\x01B\x17\n" +
+	"\ttime_zone\x18\x17 \x01(\tR\btimeZone\x12;\n" +
+	"\x14max_chargeable_bytes\x18\x18 \x01(\x03B\x04\xe2A\x01\x03H\x00R\x12maxChargeableBytes\x88\x01\x01B\x17\n" +
 	"\x15_max_chargeable_bytes\"\x8a\x01\n" +
 	"\x16BackupRunsListResponse\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x124\n" +
