@@ -1659,79 +1659,79 @@ var File_google_cloud_tasks_v2beta3_cloudtasks_proto protoreflect.FileDescriptor
 
 const file_google_cloud_tasks_v2beta3_cloudtasks_proto_rawDesc = "" +
 	"\n" +
-	"+google/cloud/tasks/v2beta3/cloudtasks.proto\x12\x1agoogle.cloud.tasks.v2beta3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/tasks/v2beta3/cmek_config.proto\x1a&google/cloud/tasks/v2beta3/queue.proto\x1a%google/cloud/tasks/v2beta3/task.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xe6\x01\n" +
-	"\x11ListQueuesRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1fcloudtasks.googleapis.com/QueueR\x06parent\x12\x16\n" +
+	"+google/cloud/tasks/v2beta3/cloudtasks.proto\x12\x1agoogle.cloud.tasks.v2beta3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/tasks/v2beta3/cmek_config.proto\x1a&google/cloud/tasks/v2beta3/queue.proto\x1a%google/cloud/tasks/v2beta3/task.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xe8\x01\n" +
+	"\x11ListQueuesRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1fcloudtasks.googleapis.com/QueueR\x06parent\x12\x16\n" +
 	"\x06filter\x18\x02 \x01(\tR\x06filter\x12\x1b\n" +
 	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tR\tpageToken\x12<\n" +
-	"\tread_mask\x18\x05 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\breadMask\"w\n" +
+	"page_token\x18\x04 \x01(\tR\tpageToken\x12=\n" +
+	"\tread_mask\x18\x05 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\breadMask\"w\n" +
 	"\x12ListQueuesResponse\x129\n" +
 	"\x06queues\x18\x01 \x03(\v2!.google.cloud.tasks.v2beta3.QueueR\x06queues\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x8c\x01\n" +
-	"\x0fGetQueueRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fcloudtasks.googleapis.com/QueueR\x04name\x12<\n" +
-	"\tread_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\breadMask\"\x93\x01\n" +
-	"\x12CreateQueueRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1fcloudtasks.googleapis.com/QueueR\x06parent\x12<\n" +
-	"\x05queue\x18\x02 \x01(\v2!.google.cloud.tasks.v2beta3.QueueB\x03\xe0A\x02R\x05queue\"\x8f\x01\n" +
-	"\x12UpdateQueueRequest\x12<\n" +
-	"\x05queue\x18\x01 \x01(\v2!.google.cloud.tasks.v2beta3.QueueB\x03\xe0A\x02R\x05queue\x12;\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x8e\x01\n" +
+	"\x0fGetQueueRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fcloudtasks.googleapis.com/QueueR\x04name\x12=\n" +
+	"\tread_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\breadMask\"\x95\x01\n" +
+	"\x12CreateQueueRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1fcloudtasks.googleapis.com/QueueR\x06parent\x12=\n" +
+	"\x05queue\x18\x02 \x01(\v2!.google.cloud.tasks.v2beta3.QueueB\x04\xe2A\x01\x02R\x05queue\"\x90\x01\n" +
+	"\x12UpdateQueueRequest\x12=\n" +
+	"\x05queue\x18\x01 \x01(\v2!.google.cloud.tasks.v2beta3.QueueB\x04\xe2A\x01\x02R\x05queue\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"Q\n" +
-	"\x12DeleteQueueRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fcloudtasks.googleapis.com/QueueR\x04name\"P\n" +
-	"\x11PurgeQueueRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fcloudtasks.googleapis.com/QueueR\x04name\"P\n" +
-	"\x11PauseQueueRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
+	"updateMask\"R\n" +
+	"\x12DeleteQueueRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
 	"\x1fcloudtasks.googleapis.com/QueueR\x04name\"Q\n" +
-	"\x12ResumeQueueRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fcloudtasks.googleapis.com/QueueR\x04name\"\xda\x01\n" +
-	"\x10ListTasksRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \x12\x1ecloudtasks.googleapis.com/TaskR\x06parent\x12J\n" +
+	"\x11PurgeQueueRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fcloudtasks.googleapis.com/QueueR\x04name\"Q\n" +
+	"\x11PauseQueueRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fcloudtasks.googleapis.com/QueueR\x04name\"R\n" +
+	"\x12ResumeQueueRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fcloudtasks.googleapis.com/QueueR\x04name\"\xdb\x01\n" +
+	"\x10ListTasksRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \x12\x1ecloudtasks.googleapis.com/TaskR\x06parent\x12J\n" +
 	"\rresponse_view\x18\x02 \x01(\x0e2%.google.cloud.tasks.v2beta3.Task.ViewR\fresponseView\x12\x1b\n" +
 	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x04 \x01(\tR\tpageToken\"s\n" +
 	"\x11ListTasksResponse\x126\n" +
 	"\x05tasks\x18\x01 \x03(\v2 .google.cloud.tasks.v2beta3.TaskR\x05tasks\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x98\x01\n" +
-	"\x0eGetTaskRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x99\x01\n" +
+	"\x0eGetTaskRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
 	"\x1ecloudtasks.googleapis.com/TaskR\x04name\x12J\n" +
-	"\rresponse_view\x18\x02 \x01(\x0e2%.google.cloud.tasks.v2beta3.Task.ViewR\fresponseView\"\xda\x01\n" +
-	"\x11CreateTaskRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \x12\x1ecloudtasks.googleapis.com/TaskR\x06parent\x129\n" +
-	"\x04task\x18\x02 \x01(\v2 .google.cloud.tasks.v2beta3.TaskB\x03\xe0A\x02R\x04task\x12J\n" +
-	"\rresponse_view\x18\x03 \x01(\x0e2%.google.cloud.tasks.v2beta3.Task.ViewR\fresponseView\"\xd6\x01\n" +
-	"\x17BatchCreateTasksRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fcloudtasks.googleapis.com/QueueR\x06parent\x12N\n" +
-	"\brequests\x18\x02 \x03(\v2-.google.cloud.tasks.v2beta3.CreateTaskRequestB\x03\xe0A\x02R\brequests\x12*\n" +
+	"\rresponse_view\x18\x02 \x01(\x0e2%.google.cloud.tasks.v2beta3.Task.ViewR\fresponseView\"\xdc\x01\n" +
+	"\x11CreateTaskRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \x12\x1ecloudtasks.googleapis.com/TaskR\x06parent\x12:\n" +
+	"\x04task\x18\x02 \x01(\v2 .google.cloud.tasks.v2beta3.TaskB\x04\xe2A\x01\x02R\x04task\x12J\n" +
+	"\rresponse_view\x18\x03 \x01(\x0e2%.google.cloud.tasks.v2beta3.Task.ViewR\fresponseView\"\xd9\x01\n" +
+	"\x17BatchCreateTasksRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fcloudtasks.googleapis.com/QueueR\x06parent\x12O\n" +
+	"\brequests\x18\x02 \x03(\v2-.google.cloud.tasks.v2beta3.CreateTaskRequestB\x04\xe2A\x01\x02R\brequests\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"O\n" +
-	"\x11DeleteTaskRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1ecloudtasks.googleapis.com/TaskR\x04name\"\xc4\x01\n" +
-	"\x17BatchDeleteTasksRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fcloudtasks.googleapis.com/QueueR\x06parent\x12<\n" +
-	"\x05names\x18\x02 \x03(\tB&\xe0A\x02\xfaA \n" +
-	"\x1ecloudtasks.googleapis.com/TaskR\x05names\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"P\n" +
+	"\x11DeleteTaskRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1ecloudtasks.googleapis.com/TaskR\x04name\"\xc7\x01\n" +
+	"\x17BatchDeleteTasksRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fcloudtasks.googleapis.com/QueueR\x06parent\x12=\n" +
+	"\x05names\x18\x02 \x03(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1ecloudtasks.googleapis.com/TaskR\x05names\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x9d\x04\n" +
-	"\x18BatchDeleteTasksMetadata\x12>\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xa1\x04\n" +
+	"\x18BatchDeleteTasksMetadata\x12?\n" +
 	"\n" +
-	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12U\n" +
-	"\x05state\x18\x03 \x01(\x0e2:.google.cloud.tasks.v2beta3.BatchDeleteTasksMetadata.StateB\x03\xe0A\x03R\x05state\x12v\n" +
-	"\x0ffailed_requests\x18\x04 \x03(\v2H.google.cloud.tasks.v2beta3.BatchDeleteTasksMetadata.FailedRequestsEntryB\x03\xe0A\x03R\x0efailedRequests\x1aU\n" +
+	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12V\n" +
+	"\x05state\x18\x03 \x01(\x0e2:.google.cloud.tasks.v2beta3.BatchDeleteTasksMetadata.StateB\x04\xe2A\x01\x03R\x05state\x12w\n" +
+	"\x0ffailed_requests\x18\x04 \x03(\v2H.google.cloud.tasks.v2beta3.BatchDeleteTasksMetadata.FailedRequestsEntryB\x04\xe2A\x01\x03R\x0efailedRequests\x1aU\n" +
 	"\x13FailedRequestsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\x05R\x03key\x12(\n" +
 	"\x05value\x18\x02 \x01(\v2\x12.google.rpc.StatusR\x05value:\x028\x01\"_\n" +
@@ -1741,18 +1741,18 @@ const file_google_cloud_tasks_v2beta3_cloudtasks_proto_rawDesc = "" +
 	"\tSUCCEEDED\x10\x02\x12\x17\n" +
 	"\x13PARTIALLY_SUCCEEDED\x10\x03\x12\n" +
 	"\n" +
-	"\x06FAILED\x10\x04\"\x98\x01\n" +
-	"\x0eRunTaskRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
+	"\x06FAILED\x10\x04\"\x99\x01\n" +
+	"\x0eRunTaskRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
 	"\x1ecloudtasks.googleapis.com/TaskR\x04name\x12J\n" +
 	"\rresponse_view\x18\x02 \x01(\x0e2%.google.cloud.tasks.v2beta3.Task.ViewR\fresponseView\"R\n" +
 	"\x18BatchCreateTasksResponse\x126\n" +
-	"\x05tasks\x18\x01 \x03(\v2 .google.cloud.tasks.v2beta3.TaskR\x05tasks\"\x9d\x04\n" +
+	"\x05tasks\x18\x01 \x03(\v2 .google.cloud.tasks.v2beta3.TaskR\x05tasks\"\x9e\x04\n" +
 	"\x18BatchCreateTasksMetadata\x129\n" +
 	"\n" +
 	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x125\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\x12U\n" +
-	"\x05state\x18\x03 \x01(\x0e2:.google.cloud.tasks.v2beta3.BatchCreateTasksMetadata.StateB\x03\xe0A\x03R\x05state\x12q\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\x12V\n" +
+	"\x05state\x18\x03 \x01(\x0e2:.google.cloud.tasks.v2beta3.BatchCreateTasksMetadata.StateB\x04\xe2A\x01\x03R\x05state\x12q\n" +
 	"\x0ffailed_requests\x18\x04 \x03(\v2H.google.cloud.tasks.v2beta3.BatchCreateTasksMetadata.FailedRequestsEntryR\x0efailedRequests\x1aU\n" +
 	"\x13FailedRequestsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\x05R\x03key\x12(\n" +
@@ -1764,14 +1764,14 @@ const file_google_cloud_tasks_v2beta3_cloudtasks_proto_rawDesc = "" +
 	"\x13PARTIALLY_SUCCEEDED\x10\x05\x12\n" +
 	"\n" +
 	"\x06FAILED\x10\x03\x12\r\n" +
-	"\tCANCELLED\x10\x04\"\xa4\x01\n" +
-	"\x17UpdateCmekConfigRequest\x12L\n" +
-	"\vcmek_config\x18\x01 \x01(\v2&.google.cloud.tasks.v2beta3.CmekConfigB\x03\xe0A\x02R\n" +
+	"\tCANCELLED\x10\x04\"\xa5\x01\n" +
+	"\x17UpdateCmekConfigRequest\x12M\n" +
+	"\vcmek_config\x18\x01 \x01(\v2&.google.cloud.tasks.v2beta3.CmekConfigB\x04\xe2A\x01\x02R\n" +
 	"cmekConfig\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"X\n" +
-	"\x14GetCmekConfigRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
+	"updateMask\"Y\n" +
+	"\x14GetCmekConfigRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
 	"$cloudtasks.googleapis.com/CmekConfigR\x04name2\xb3\x1d\n" +
 	"\n" +
 	"CloudTasks\x12\xad\x01\n" +

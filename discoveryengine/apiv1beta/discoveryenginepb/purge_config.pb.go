@@ -994,11 +994,11 @@ var File_google_cloud_discoveryengine_v1beta_purge_config_proto protoreflect.Fil
 
 const file_google_cloud_discoveryengine_v1beta_purge_config_proto_rawDesc = "" +
 	"\n" +
-	"6google/cloud/discoveryengine/v1beta/purge_config.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a7google/cloud/discoveryengine/v1beta/import_config.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\x95\x01\n" +
-	"\x16PurgeUserEventsRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(discoveryengine.googleapis.com/DataStoreR\x06parent\x12\x1b\n" +
-	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x02R\x06filter\x12\x14\n" +
+	"6google/cloud/discoveryengine/v1beta/purge_config.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a7google/cloud/discoveryengine/v1beta/import_config.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\x97\x01\n" +
+	"\x16PurgeUserEventsRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(discoveryengine.googleapis.com/DataStoreR\x06parent\x12\x1c\n" +
+	"\x06filter\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06filter\x12\x14\n" +
 	"\x05force\x18\x03 \x01(\bR\x05force\":\n" +
 	"\x17PurgeUserEventsResponse\x12\x1f\n" +
 	"\vpurge_count\x18\x01 \x01(\x03R\n" +
@@ -1013,18 +1013,18 @@ const file_google_cloud_discoveryengine_v1beta_purge_config_proto_rawDesc = "" +
 	"\x10PurgeErrorConfig\x12\x1f\n" +
 	"\n" +
 	"gcs_prefix\x18\x01 \x01(\tH\x00R\tgcsPrefixB\r\n" +
-	"\vdestination\"\x95\x04\n" +
+	"\vdestination\"\x98\x04\n" +
 	"\x15PurgeDocumentsRequest\x12O\n" +
 	"\n" +
 	"gcs_source\x18\x05 \x01(\v2..google.cloud.discoveryengine.v1beta.GcsSourceH\x00R\tgcsSource\x12n\n" +
-	"\rinline_source\x18\x06 \x01(\v2G.google.cloud.discoveryengine.v1beta.PurgeDocumentsRequest.InlineSourceH\x00R\finlineSource\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%discoveryengine.googleapis.com/BranchR\x06parent\x12\x1b\n" +
-	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x02R\x06filter\x12X\n" +
+	"\rinline_source\x18\x06 \x01(\v2G.google.cloud.discoveryengine.v1beta.PurgeDocumentsRequest.InlineSourceH\x00R\finlineSource\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%discoveryengine.googleapis.com/BranchR\x06parent\x12\x1c\n" +
+	"\x06filter\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06filter\x12X\n" +
 	"\ferror_config\x18\a \x01(\v25.google.cloud.discoveryengine.v1beta.PurgeErrorConfigR\verrorConfig\x12\x14\n" +
-	"\x05force\x18\x03 \x01(\bR\x05force\x1a]\n" +
-	"\fInlineSource\x12M\n" +
-	"\tdocuments\x18\x01 \x03(\tB/\xe0A\x02\xfaA)\n" +
+	"\x05force\x18\x03 \x01(\bR\x05force\x1a^\n" +
+	"\fInlineSource\x12N\n" +
+	"\tdocuments\x18\x01 \x03(\tB0\xe2A\x01\x02\xfaA)\n" +
 	"'discoveryengine.googleapis.com/DocumentR\tdocumentsB\b\n" +
 	"\x06source\"\x8a\x01\n" +
 	"\x16PurgeDocumentsResponse\x12\x1f\n" +
@@ -1039,9 +1039,9 @@ const file_google_cloud_discoveryengine_v1beta_purge_config_proto_rawDesc = "" +
 	"updateTime\x12#\n" +
 	"\rsuccess_count\x18\x03 \x01(\x03R\fsuccessCount\x12#\n" +
 	"\rfailure_count\x18\x04 \x01(\x03R\ffailureCount\x12#\n" +
-	"\rignored_count\x18\x05 \x01(\x03R\fignoredCount\"q\n" +
-	"%PurgeSuggestionDenyListEntriesRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"\rignored_count\x18\x05 \x01(\x03R\fignoredCount\"r\n" +
+	"%PurgeSuggestionDenyListEntriesRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
 	"(discoveryengine.googleapis.com/DataStoreR\x06parent\"\x82\x01\n" +
 	"&PurgeSuggestionDenyListEntriesResponse\x12\x1f\n" +
 	"\vpurge_count\x18\x01 \x01(\x03R\n" +
@@ -1051,9 +1051,9 @@ const file_google_cloud_discoveryengine_v1beta_purge_config_proto_rawDesc = "" +
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12;\n" +
 	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"updateTime\"m\n" +
-	"!PurgeCompletionSuggestionsRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"updateTime\"n\n" +
+	"!PurgeCompletionSuggestionsRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
 	"(discoveryengine.googleapis.com/DataStoreR\x06parent\"\x86\x01\n" +
 	"\"PurgeCompletionSuggestionsResponse\x12'\n" +
 	"\x0fpurge_succeeded\x18\x01 \x01(\bR\x0epurgeSucceeded\x127\n" +

@@ -567,52 +567,52 @@ var File_google_cloud_dialogflow_v2beta1_tool_call_proto protoreflect.FileDescri
 
 const file_google_cloud_dialogflow_v2beta1_tool_call_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/dialogflow/v2beta1/tool_call.proto\x12\x1fgoogle.cloud.dialogflow.v2beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdf\x05\n" +
-	"\bToolCall\x12<\n" +
-	"\x04tool\x18\x01 \x01(\tB&\xe0A\x01\xfaA \n" +
-	"\x1edialogflow.googleapis.com/ToolH\x00R\x04tool\x12<\n" +
-	"\bces_tool\x18\v \x01(\tB\x1f\xe0A\x01\xfaA\x19\n" +
-	"\x17ces.googleapis.com/ToolH\x00R\acesTool\x12E\n" +
-	"\vces_toolset\x18\f \x01(\tB\"\xe0A\x01\xfaA\x1c\n" +
+	"/google/cloud/dialogflow/v2beta1/tool_call.proto\x12\x1fgoogle.cloud.dialogflow.v2beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xea\x05\n" +
+	"\bToolCall\x12=\n" +
+	"\x04tool\x18\x01 \x01(\tB'\xe2A\x01\x01\xfaA \n" +
+	"\x1edialogflow.googleapis.com/ToolH\x00R\x04tool\x12=\n" +
+	"\bces_tool\x18\v \x01(\tB \xe2A\x01\x01\xfaA\x19\n" +
+	"\x17ces.googleapis.com/ToolH\x00R\acesTool\x12F\n" +
+	"\vces_toolset\x18\f \x01(\tB#\xe2A\x01\x01\xfaA\x1c\n" +
 	"\x1aces.googleapis.com/ToolsetH\x00R\n" +
-	"cesToolset\x129\n" +
-	"\aces_app\x18\b \x01(\tB\x1e\xe0A\x01\xfaA\x18\n" +
-	"\x16ces.googleapis.com/AppH\x00R\x06cesApp\x12/\n" +
-	"\x11tool_display_name\x18\t \x01(\tB\x03\xe0A\x01R\x0ftoolDisplayName\x125\n" +
+	"cesToolset\x12:\n" +
+	"\aces_app\x18\b \x01(\tB\x1f\xe2A\x01\x01\xfaA\x18\n" +
+	"\x16ces.googleapis.com/AppH\x00R\x06cesApp\x120\n" +
+	"\x11tool_display_name\x18\t \x01(\tB\x04\xe2A\x01\x01R\x0ftoolDisplayName\x126\n" +
 	"\x14tool_display_details\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\x12toolDisplayDetails\x12\x1b\n" +
-	"\x06action\x18\x02 \x01(\tB\x03\xe0A\x01R\x06action\x12G\n" +
-	"\x10input_parameters\x18\x03 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x0finputParameters\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12(\n" +
-	"\ranswer_record\x18\x06 \x01(\tB\x03\xe0A\x01R\fanswerRecord\x12J\n" +
-	"\x05state\x18\a \x01(\x0e2/.google.cloud.dialogflow.v2beta1.ToolCall.StateB\x03\xe0A\x03R\x05state\"E\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\x12toolDisplayDetails\x12\x1c\n" +
+	"\x06action\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06action\x12H\n" +
+	"\x10input_parameters\x18\x03 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\x0finputParameters\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12)\n" +
+	"\ranswer_record\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\fanswerRecord\x12K\n" +
+	"\x05state\x18\a \x01(\x0e2/.google.cloud.dialogflow.v2beta1.ToolCall.StateB\x04\xe2A\x01\x03R\x05state\"E\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tTRIGGERED\x10\x01\x12\x16\n" +
 	"\x12NEEDS_CONFIRMATION\x10\x02B\b\n" +
-	"\x06source\"\x93\x05\n" +
-	"\x0eToolCallResult\x12<\n" +
-	"\x04tool\x18\x01 \x01(\tB&\xe0A\x01\xfaA \n" +
-	"\x1edialogflow.googleapis.com/ToolH\x00R\x04tool\x12<\n" +
-	"\bces_tool\x18\f \x01(\tB\x1f\xe0A\x01\xfaA\x19\n" +
-	"\x17ces.googleapis.com/ToolH\x00R\acesTool\x12E\n" +
-	"\vces_toolset\x18\r \x01(\tB\"\xe0A\x01\xfaA\x1c\n" +
+	"\x06source\"\x9f\x05\n" +
+	"\x0eToolCallResult\x12=\n" +
+	"\x04tool\x18\x01 \x01(\tB'\xe2A\x01\x01\xfaA \n" +
+	"\x1edialogflow.googleapis.com/ToolH\x00R\x04tool\x12=\n" +
+	"\bces_tool\x18\f \x01(\tB \xe2A\x01\x01\xfaA\x19\n" +
+	"\x17ces.googleapis.com/ToolH\x00R\acesTool\x12F\n" +
+	"\vces_toolset\x18\r \x01(\tB#\xe2A\x01\x01\xfaA\x1c\n" +
 	"\x1aces.googleapis.com/ToolsetH\x00R\n" +
-	"cesToolset\x129\n" +
-	"\aces_app\x18\v \x01(\tB\x1e\xe0A\x01\xfaA\x18\n" +
-	"\x16ces.googleapis.com/AppH\x00R\x06cesApp\x12\x1b\n" +
-	"\x06action\x18\x02 \x01(\tB\x03\xe0A\x01R\x06action\x12R\n" +
-	"\x05error\x18\x03 \x01(\v25.google.cloud.dialogflow.v2beta1.ToolCallResult.ErrorB\x03\xe0A\x01H\x01R\x05error\x12&\n" +
-	"\vraw_content\x18\x05 \x01(\fB\x03\xe0A\x01H\x01R\n" +
-	"rawContent\x12\x1f\n" +
-	"\acontent\x18\x06 \x01(\tB\x03\xe0A\x01H\x01R\acontent\x12@\n" +
-	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12(\n" +
-	"\ranswer_record\x18\t \x01(\tB\x03\xe0A\x01R\fanswerRecord\x1aI\n" +
-	"\x05Error\x12\x1d\n" +
-	"\amessage\x18\x01 \x01(\tB\x03\xe0A\x01R\amessage\x12!\n" +
-	"\tretryable\x18\x02 \x01(\bB\x03\xe0A\x01R\tretryableB\b\n" +
+	"cesToolset\x12:\n" +
+	"\aces_app\x18\v \x01(\tB\x1f\xe2A\x01\x01\xfaA\x18\n" +
+	"\x16ces.googleapis.com/AppH\x00R\x06cesApp\x12\x1c\n" +
+	"\x06action\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06action\x12S\n" +
+	"\x05error\x18\x03 \x01(\v25.google.cloud.dialogflow.v2beta1.ToolCallResult.ErrorB\x04\xe2A\x01\x01H\x01R\x05error\x12'\n" +
+	"\vraw_content\x18\x05 \x01(\fB\x04\xe2A\x01\x01H\x01R\n" +
+	"rawContent\x12 \n" +
+	"\acontent\x18\x06 \x01(\tB\x04\xe2A\x01\x01H\x01R\acontent\x12A\n" +
+	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12)\n" +
+	"\ranswer_record\x18\t \x01(\tB\x04\xe2A\x01\x01R\fanswerRecord\x1aK\n" +
+	"\x05Error\x12\x1e\n" +
+	"\amessage\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\amessage\x12\"\n" +
+	"\tretryable\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\tretryableB\b\n" +
 	"\x06sourceB\b\n" +
 	"\x06resultB\xa2\x01\n" +
 	"#com.google.cloud.dialogflow.v2beta1B\rToolCallProtoP\x01ZCcloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb;dialogflowpb\xa2\x02\x02DF\xaa\x02\x1fGoogle.Cloud.Dialogflow.V2Beta1b\x06proto3"

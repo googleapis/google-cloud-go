@@ -273,19 +273,19 @@ var File_google_cloud_discoveryengine_v1alpha_serving_config_service_proto proto
 
 const file_google_cloud_discoveryengine_v1alpha_serving_config_service_proto_rawDesc = "" +
 	"\n" +
-	"Agoogle/cloud/discoveryengine/v1alpha/serving_config_service.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a9google/cloud/discoveryengine/v1alpha/serving_config.proto\x1a google/protobuf/field_mask.proto\"\xba\x01\n" +
-	"\x1aUpdateServingConfigRequest\x12_\n" +
-	"\x0eserving_config\x18\x01 \x01(\v23.google.cloud.discoveryengine.v1alpha.ServingConfigB\x03\xe0A\x02R\rservingConfig\x12;\n" +
+	"Agoogle/cloud/discoveryengine/v1alpha/serving_config_service.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a9google/cloud/discoveryengine/v1alpha/serving_config.proto\x1a google/protobuf/field_mask.proto\"\xbb\x01\n" +
+	"\x1aUpdateServingConfigRequest\x12`\n" +
+	"\x0eserving_config\x18\x01 \x01(\v23.google.cloud.discoveryengine.v1alpha.ServingConfigB\x04\xe2A\x01\x02R\rservingConfig\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"c\n" +
-	"\x17GetServingConfigRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",discoveryengine.googleapis.com/ServingConfigR\x04name\"\xaf\x01\n" +
-	"\x19ListServingConfigsRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,discoveryengine.googleapis.com/ServingConfigR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"updateMask\"d\n" +
+	"\x17GetServingConfigRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",discoveryengine.googleapis.com/ServingConfigR\x04name\"\xb2\x01\n" +
+	"\x19ListServingConfigsRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,discoveryengine.googleapis.com/ServingConfigR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xa2\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xa2\x01\n" +
 	"\x1aListServingConfigsResponse\x12\\\n" +
 	"\x0fserving_configs\x18\x01 \x03(\v23.google.cloud.discoveryengine.v1alpha.ServingConfigR\x0eservingConfigs\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken2\x91\v\n" +

@@ -111,12 +111,12 @@ var File_google_firestore_admin_v1_snapshot_proto protoreflect.FileDescriptor
 
 const file_google_firestore_admin_v1_snapshot_proto_rawDesc = "" +
 	"\n" +
-	"(google/firestore/admin/v1/snapshot.proto\x12\x19google.firestore.admin.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc3\x01\n" +
-	"\fPitrSnapshot\x12E\n" +
-	"\bdatabase\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!firestore.googleapis.com/DatabaseR\bdatabase\x12&\n" +
-	"\fdatabase_uid\x18\x02 \x01(\fB\x03\xe0A\x03R\vdatabaseUid\x12D\n" +
-	"\rsnapshot_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\fsnapshotTimeB\xe0\x01\n" +
+	"(google/firestore/admin/v1/snapshot.proto\x12\x19google.firestore.admin.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc6\x01\n" +
+	"\fPitrSnapshot\x12F\n" +
+	"\bdatabase\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!firestore.googleapis.com/DatabaseR\bdatabase\x12'\n" +
+	"\fdatabase_uid\x18\x02 \x01(\fB\x04\xe2A\x01\x03R\vdatabaseUid\x12E\n" +
+	"\rsnapshot_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\fsnapshotTimeB\xe0\x01\n" +
 	"\x1dcom.google.firestore.admin.v1B\x11PitrSnapshotProtoP\x01Z9cloud.google.com/go/firestore/apiv1/admin/adminpb;adminpb\xa2\x02\x04GCFS\xaa\x02\x1fGoogle.Cloud.Firestore.Admin.V1\xca\x02\x1fGoogle\\Cloud\\Firestore\\Admin\\V1\xea\x02#Google::Cloud::Firestore::Admin::V1b\x06proto3"
 
 var (

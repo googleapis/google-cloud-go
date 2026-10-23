@@ -410,11 +410,11 @@ var File_google_cloud_pubsublite_v1_topic_stats_proto protoreflect.FileDescripto
 
 const file_google_cloud_pubsublite_v1_topic_stats_proto_rawDesc = "" +
 	"\n" +
-	",google/cloud/pubsublite/v1/topic_stats.proto\x12\x1agoogle.cloud.pubsublite.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/pubsublite/v1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x88\x02\n" +
-	"\x1aComputeMessageStatsRequest\x12=\n" +
-	"\x05topic\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fpubsublite.googleapis.com/TopicR\x05topic\x12!\n" +
-	"\tpartition\x18\x02 \x01(\x03B\x03\xe0A\x02R\tpartition\x12E\n" +
+	",google/cloud/pubsublite/v1/topic_stats.proto\x12\x1agoogle.cloud.pubsublite.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/pubsublite/v1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8a\x02\n" +
+	"\x1aComputeMessageStatsRequest\x12>\n" +
+	"\x05topic\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fpubsublite.googleapis.com/TopicR\x05topic\x12\"\n" +
+	"\tpartition\x18\x02 \x01(\x03B\x04\xe2A\x01\x02R\tpartition\x12E\n" +
 	"\fstart_cursor\x18\x03 \x01(\v2\".google.cloud.pubsublite.v1.CursorR\vstartCursor\x12A\n" +
 	"\n" +
 	"end_cursor\x18\x04 \x01(\v2\".google.cloud.pubsublite.v1.CursorR\tendCursor\"\xff\x01\n" +
@@ -422,19 +422,19 @@ const file_google_cloud_pubsublite_v1_topic_stats_proto_rawDesc = "" +
 	"\rmessage_count\x18\x01 \x01(\x03R\fmessageCount\x12#\n" +
 	"\rmessage_bytes\x18\x02 \x01(\x03R\fmessageBytes\x12L\n" +
 	"\x14minimum_publish_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\x12minimumPublishTime\x12H\n" +
-	"\x12minimum_event_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\x10minimumEventTime\"|\n" +
-	"\x18ComputeHeadCursorRequest\x12=\n" +
-	"\x05topic\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fpubsublite.googleapis.com/TopicR\x05topic\x12!\n" +
-	"\tpartition\x18\x02 \x01(\x03B\x03\xe0A\x02R\tpartition\"`\n" +
+	"\x12minimum_event_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\x10minimumEventTime\"~\n" +
+	"\x18ComputeHeadCursorRequest\x12>\n" +
+	"\x05topic\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fpubsublite.googleapis.com/TopicR\x05topic\x12\"\n" +
+	"\tpartition\x18\x02 \x01(\x03B\x04\xe2A\x01\x02R\tpartition\"`\n" +
 	"\x19ComputeHeadCursorResponse\x12C\n" +
 	"\vhead_cursor\x18\x01 \x01(\v2\".google.cloud.pubsublite.v1.CursorR\n" +
-	"headCursor\"\xc1\x01\n" +
-	"\x18ComputeTimeCursorRequest\x12=\n" +
-	"\x05topic\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fpubsublite.googleapis.com/TopicR\x05topic\x12!\n" +
-	"\tpartition\x18\x02 \x01(\x03B\x03\xe0A\x02R\tpartition\x12C\n" +
-	"\x06target\x18\x03 \x01(\v2&.google.cloud.pubsublite.v1.TimeTargetB\x03\xe0A\x02R\x06target\"W\n" +
+	"headCursor\"\xc4\x01\n" +
+	"\x18ComputeTimeCursorRequest\x12>\n" +
+	"\x05topic\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fpubsublite.googleapis.com/TopicR\x05topic\x12\"\n" +
+	"\tpartition\x18\x02 \x01(\x03B\x04\xe2A\x01\x02R\tpartition\x12D\n" +
+	"\x06target\x18\x03 \x01(\v2&.google.cloud.pubsublite.v1.TimeTargetB\x04\xe2A\x01\x02R\x06target\"W\n" +
 	"\x19ComputeTimeCursorResponse\x12:\n" +
 	"\x06cursor\x18\x01 \x01(\v2\".google.cloud.pubsublite.v1.CursorR\x06cursor2\xf2\x05\n" +
 	"\x11TopicStatsService\x12\xdd\x01\n" +

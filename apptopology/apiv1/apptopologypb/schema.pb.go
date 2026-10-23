@@ -986,12 +986,12 @@ var File_google_cloud_apptopology_v1_schema_proto protoreflect.FileDescriptor
 
 const file_google_cloud_apptopology_v1_schema_proto_rawDesc = "" +
 	"\n" +
-	"(google/cloud/apptopology/v1/schema.proto\x12\x1bgoogle.cloud.apptopology.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x94\x01\n" +
-	"\x06Domain\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name:q\xeaAn\n" +
-	"!apptopology.googleapis.com/Domain\x128projects/{project}/locations/{location}/domains/{domain}*\adomains2\x06domain\"\xc6\x03\n" +
-	"\x06Schema\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12D\n" +
+	"(google/cloud/apptopology/v1/schema.proto\x12\x1bgoogle.cloud.apptopology.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x95\x01\n" +
+	"\x06Domain\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name:q\xeaAn\n" +
+	"!apptopology.googleapis.com/Domain\x128projects/{project}/locations/{location}/domains/{domain}*\adomains2\x06domain\"\xc7\x03\n" +
+	"\x06Schema\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12D\n" +
 	"\n" +
 	"node_types\x18\x02 \x03(\v2%.google.cloud.apptopology.v1.NodeTypeR\tnodeTypes\x12D\n" +
 	"\n" +
@@ -1009,16 +1009,16 @@ const file_google_cloud_apptopology_v1_schema_proto_rawDesc = "" +
 	"\x04type\x18\x01 \x01(\tR\x04type\x12\x16\n" +
 	"\x06labels\x18\x02 \x03(\tR\x06labels\x12 \n" +
 	"\vdescription\x18\x03 \x01(\tR\vdescription\x12'\n" +
-	"\x0foptional_labels\x18\x04 \x03(\tR\x0eoptionalLabels\"/\n" +
-	"\tNodeGroup\x12\"\n" +
+	"\x0foptional_labels\x18\x04 \x03(\tR\x0eoptionalLabels\"0\n" +
+	"\tNodeGroup\x12#\n" +
 	"\n" +
-	"any_labels\x18\x01 \x03(\tB\x03\xe0A\x01R\tanyLabels\"\xd3\x02\n" +
-	"\bEdgeRule\x12)\n" +
-	"\rsrc_node_type\x18\x04 \x01(\tB\x03\xe0A\x01H\x00R\vsrcNodeType\x12S\n" +
-	"\x0esrc_node_group\x18\x05 \x01(\v2&.google.cloud.apptopology.v1.NodeGroupB\x03\xe0A\x01H\x00R\fsrcNodeGroup\x12+\n" +
-	"\x0edest_node_type\x18\x06 \x01(\tB\x03\xe0A\x01H\x01R\fdestNodeType\x12U\n" +
-	"\x0fdest_node_group\x18\a \x01(\v2&.google.cloud.apptopology.v1.NodeGroupB\x03\xe0A\x01H\x01R\rdestNodeGroup\x12 \n" +
-	"\tedge_type\x18\x03 \x01(\tB\x03\xe0A\x01R\bedgeTypeB\r\n" +
+	"any_labels\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\tanyLabels\"\xd8\x02\n" +
+	"\bEdgeRule\x12*\n" +
+	"\rsrc_node_type\x18\x04 \x01(\tB\x04\xe2A\x01\x01H\x00R\vsrcNodeType\x12T\n" +
+	"\x0esrc_node_group\x18\x05 \x01(\v2&.google.cloud.apptopology.v1.NodeGroupB\x04\xe2A\x01\x01H\x00R\fsrcNodeGroup\x12,\n" +
+	"\x0edest_node_type\x18\x06 \x01(\tB\x04\xe2A\x01\x01H\x01R\fdestNodeType\x12V\n" +
+	"\x0fdest_node_group\x18\a \x01(\v2&.google.cloud.apptopology.v1.NodeGroupB\x04\xe2A\x01\x01H\x01R\rdestNodeGroup\x12!\n" +
+	"\tedge_type\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\bedgeTypeB\r\n" +
 	"\vsource_nodeB\x12\n" +
 	"\x10destination_node\"\x90\x01\n" +
 	"\x0fLabelProperties\x12\x14\n" +

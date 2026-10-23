@@ -153,14 +153,14 @@ var File_google_cloud_run_v2_execution_template_proto protoreflect.FileDescripto
 
 const file_google_cloud_run_v2_execution_template_proto_rawDesc = "" +
 	"\n" +
-	",google/cloud/run/v2/execution_template.proto\x12\x13google.cloud.run.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a'google/cloud/run/v2/task_template.proto\"\xbf\x03\n" +
+	",google/cloud/run/v2/execution_template.proto\x12\x13google.cloud.run.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a'google/cloud/run/v2/task_template.proto\"\xc1\x03\n" +
 	"\x11ExecutionTemplate\x12J\n" +
 	"\x06labels\x18\x01 \x03(\v22.google.cloud.run.v2.ExecutionTemplate.LabelsEntryR\x06labels\x12Y\n" +
-	"\vannotations\x18\x02 \x03(\v27.google.cloud.run.v2.ExecutionTemplate.AnnotationsEntryR\vannotations\x12%\n" +
-	"\vparallelism\x18\x03 \x01(\x05B\x03\xe0A\x01R\vparallelism\x12\x1d\n" +
+	"\vannotations\x18\x02 \x03(\v27.google.cloud.run.v2.ExecutionTemplate.AnnotationsEntryR\vannotations\x12&\n" +
+	"\vparallelism\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\vparallelism\x12\x1d\n" +
 	"\n" +
-	"task_count\x18\x04 \x01(\x05R\ttaskCount\x12B\n" +
-	"\btemplate\x18\x05 \x01(\v2!.google.cloud.run.v2.TaskTemplateB\x03\xe0A\x02R\btemplate\x1a9\n" +
+	"task_count\x18\x04 \x01(\x05R\ttaskCount\x12C\n" +
+	"\btemplate\x18\x05 \x01(\v2!.google.cloud.run.v2.TaskTemplateB\x04\xe2A\x01\x02R\btemplate\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a>\n" +

@@ -1645,60 +1645,60 @@ var File_google_maps_fleetengine_v1_vehicle_api_proto protoreflect.FileDescripto
 
 const file_google_maps_fleetengine_v1_vehicle_api_proto_rawDesc = "" +
 	"\n" +
-	",google/maps/fleetengine/v1/vehicle_api.proto\x12\x13maps.fleetengine.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x18google/api/routing.proto\x1a\x1egoogle/geo/type/viewport.proto\x1a,google/maps/fleetengine/v1/fleetengine.proto\x1a'google/maps/fleetengine/v1/header.proto\x1a)google/maps/fleetengine/v1/vehicles.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x18google/type/latlng.proto\"\xd0\x01\n" +
+	",google/maps/fleetengine/v1/vehicle_api.proto\x12\x13maps.fleetengine.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x18google/api/routing.proto\x1a\x1egoogle/geo/type/viewport.proto\x1a,google/maps/fleetengine/v1/fleetengine.proto\x1a'google/maps/fleetengine/v1/header.proto\x1a)google/maps/fleetengine/v1/vehicles.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x18google/type/latlng.proto\"\xd3\x01\n" +
 	"\x14CreateVehicleRequest\x12:\n" +
-	"\x06header\x18\x01 \x01(\v2\".maps.fleetengine.v1.RequestHeaderR\x06header\x12\x1b\n" +
-	"\x06parent\x18\x03 \x01(\tB\x03\xe0A\x02R\x06parent\x12\"\n" +
+	"\x06header\x18\x01 \x01(\v2\".maps.fleetengine.v1.RequestHeaderR\x06header\x12\x1c\n" +
+	"\x06parent\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12#\n" +
 	"\n" +
-	"vehicle_id\x18\x04 \x01(\tB\x03\xe0A\x02R\tvehicleId\x12;\n" +
-	"\avehicle\x18\x05 \x01(\v2\x1c.maps.fleetengine.v1.VehicleB\x03\xe0A\x02R\avehicle\"\xb7\x02\n" +
+	"vehicle_id\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\tvehicleId\x12<\n" +
+	"\avehicle\x18\x05 \x01(\v2\x1c.maps.fleetengine.v1.VehicleB\x04\xe2A\x01\x02R\avehicle\"\xb8\x02\n" +
 	"\x11GetVehicleRequest\x12:\n" +
-	"\x06header\x18\x01 \x01(\v2\".maps.fleetengine.v1.RequestHeaderR\x06header\x12>\n" +
-	"\x04name\x18\x03 \x01(\tB*\xe0A\x02\xfaA$\n" +
+	"\x06header\x18\x01 \x01(\v2\".maps.fleetengine.v1.RequestHeaderR\x06header\x12?\n" +
+	"\x04name\x18\x03 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
 	"\"fleetengine.googleapis.com/VehicleR\x04name\x12]\n" +
 	"\x1dcurrent_route_segment_version\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\x1acurrentRouteSegmentVersion\x12G\n" +
-	"\x11waypoints_version\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\x10waypointsVersion\"\x97\x01\n" +
-	"\x14DeleteVehicleRequest\x12?\n" +
-	"\x06header\x18\x01 \x01(\v2\".maps.fleetengine.v1.RequestHeaderB\x03\xe0A\x01R\x06header\x12>\n" +
-	"\x04name\x18\x02 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"fleetengine.googleapis.com/VehicleR\x04name\"\xea\x01\n" +
+	"\x11waypoints_version\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\x10waypointsVersion\"\x99\x01\n" +
+	"\x14DeleteVehicleRequest\x12@\n" +
+	"\x06header\x18\x01 \x01(\v2\".maps.fleetengine.v1.RequestHeaderB\x04\xe2A\x01\x01R\x06header\x12?\n" +
+	"\x04name\x18\x02 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"fleetengine.googleapis.com/VehicleR\x04name\"\xed\x01\n" +
 	"\x14UpdateVehicleRequest\x12:\n" +
-	"\x06header\x18\x01 \x01(\v2\".maps.fleetengine.v1.RequestHeaderR\x06header\x12\x17\n" +
-	"\x04name\x18\x03 \x01(\tB\x03\xe0A\x02R\x04name\x12;\n" +
-	"\avehicle\x18\x04 \x01(\v2\x1c.maps.fleetengine.v1.VehicleB\x03\xe0A\x02R\avehicle\x12@\n" +
-	"\vupdate_mask\x18\x05 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\xc1\x01\n" +
+	"\x06header\x18\x01 \x01(\v2\".maps.fleetengine.v1.RequestHeaderR\x06header\x12\x18\n" +
+	"\x04name\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12<\n" +
+	"\avehicle\x18\x04 \x01(\v2\x1c.maps.fleetengine.v1.VehicleB\x04\xe2A\x01\x02R\avehicle\x12A\n" +
+	"\vupdate_mask\x18\x05 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\xc3\x01\n" +
 	"\x1eUpdateVehicleAttributesRequest\x12:\n" +
-	"\x06header\x18\x01 \x01(\v2\".maps.fleetengine.v1.RequestHeaderR\x06header\x12\x17\n" +
-	"\x04name\x18\x03 \x01(\tB\x03\xe0A\x02R\x04name\x12J\n" +
+	"\x06header\x18\x01 \x01(\v2\".maps.fleetengine.v1.RequestHeaderR\x06header\x12\x18\n" +
+	"\x04name\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12K\n" +
 	"\n" +
-	"attributes\x18\x04 \x03(\v2%.maps.fleetengine.v1.VehicleAttributeB\x03\xe0A\x02R\n" +
-	"attributes\"m\n" +
-	"\x1fUpdateVehicleAttributesResponse\x12J\n" +
+	"attributes\x18\x04 \x03(\v2%.maps.fleetengine.v1.VehicleAttributeB\x04\xe2A\x01\x02R\n" +
+	"attributes\"n\n" +
+	"\x1fUpdateVehicleAttributesResponse\x12K\n" +
 	"\n" +
-	"attributes\x18\x01 \x03(\v2%.maps.fleetengine.v1.VehicleAttributeB\x03\xe0A\x02R\n" +
-	"attributes\"\xd2\v\n" +
+	"attributes\x18\x01 \x03(\v2%.maps.fleetengine.v1.VehicleAttributeB\x04\xe2A\x01\x02R\n" +
+	"attributes\"\xdb\v\n" +
 	"\x15SearchVehiclesRequest\x12:\n" +
-	"\x06header\x18\x01 \x01(\v2\".maps.fleetengine.v1.RequestHeaderR\x06header\x12\x1b\n" +
-	"\x06parent\x18\x03 \x01(\tB\x03\xe0A\x02R\x06parent\x12M\n" +
-	"\fpickup_point\x18\x04 \x01(\v2%.maps.fleetengine.v1.TerminalLocationB\x03\xe0A\x02R\vpickupPoint\x12J\n" +
-	"\rdropoff_point\x18\x05 \x01(\v2%.maps.fleetengine.v1.TerminalLocationR\fdropoffPoint\x125\n" +
-	"\x14pickup_radius_meters\x18\x06 \x01(\x05B\x03\xe0A\x02R\x12pickupRadiusMeters\x12\x19\n" +
-	"\x05count\x18\a \x01(\x05B\x03\xe0A\x02R\x05count\x12.\n" +
-	"\x10minimum_capacity\x18\b \x01(\x05B\x03\xe0A\x02R\x0fminimumCapacity\x12A\n" +
+	"\x06header\x18\x01 \x01(\v2\".maps.fleetengine.v1.RequestHeaderR\x06header\x12\x1c\n" +
+	"\x06parent\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12N\n" +
+	"\fpickup_point\x18\x04 \x01(\v2%.maps.fleetengine.v1.TerminalLocationB\x04\xe2A\x01\x02R\vpickupPoint\x12J\n" +
+	"\rdropoff_point\x18\x05 \x01(\v2%.maps.fleetengine.v1.TerminalLocationR\fdropoffPoint\x126\n" +
+	"\x14pickup_radius_meters\x18\x06 \x01(\x05B\x04\xe2A\x01\x02R\x12pickupRadiusMeters\x12\x1a\n" +
+	"\x05count\x18\a \x01(\x05B\x04\xe2A\x01\x02R\x05count\x12/\n" +
+	"\x10minimum_capacity\x18\b \x01(\x05B\x04\xe2A\x01\x02R\x0fminimumCapacity\x12B\n" +
 	"\n" +
-	"trip_types\x18\t \x03(\x0e2\x1d.maps.fleetengine.v1.TripTypeB\x03\xe0A\x02R\ttripTypes\x12F\n" +
+	"trip_types\x18\t \x03(\x0e2\x1d.maps.fleetengine.v1.TripTypeB\x04\xe2A\x01\x02R\ttripTypes\x12F\n" +
 	"\x11maximum_staleness\x18\n" +
-	" \x01(\v2\x19.google.protobuf.DurationR\x10maximumStaleness\x12R\n" +
-	"\rvehicle_types\x18\x0e \x03(\v2(.maps.fleetengine.v1.Vehicle.VehicleTypeB\x03\xe0A\x02R\fvehicleTypes\x12V\n" +
+	" \x01(\v2\x19.google.protobuf.DurationR\x10maximumStaleness\x12S\n" +
+	"\rvehicle_types\x18\x0e \x03(\v2(.maps.fleetengine.v1.Vehicle.VehicleTypeB\x04\xe2A\x01\x02R\fvehicleTypes\x12V\n" +
 	"\x13required_attributes\x18\f \x03(\v2%.maps.fleetengine.v1.VehicleAttributeR\x12requiredAttributes\x12f\n" +
 	"\x1arequired_one_of_attributes\x18\x0f \x03(\v2).maps.fleetengine.v1.VehicleAttributeListR\x17requiredOneOfAttributes\x12m\n" +
-	"\x1erequired_one_of_attribute_sets\x18\x14 \x03(\v2).maps.fleetengine.v1.VehicleAttributeListR\x1arequiredOneOfAttributeSets\x12\\\n" +
-	"\border_by\x18\r \x01(\x0e2<.maps.fleetengine.v1.SearchVehiclesRequest.VehicleMatchOrderB\x03\xe0A\x02R\aorderBy\x12/\n" +
+	"\x1erequired_one_of_attribute_sets\x18\x14 \x03(\v2).maps.fleetengine.v1.VehicleAttributeListR\x1arequiredOneOfAttributeSets\x12]\n" +
+	"\border_by\x18\r \x01(\x0e2<.maps.fleetengine.v1.SearchVehiclesRequest.VehicleMatchOrderB\x04\xe2A\x01\x02R\aorderBy\x12/\n" +
 	"\x14include_back_to_back\x18\x12 \x01(\bR\x11includeBackToBack\x12\x17\n" +
 	"\atrip_id\x18\x13 \x01(\tR\x06tripId\x12r\n" +
-	"\x15current_trips_present\x18\x15 \x01(\x0e2>.maps.fleetengine.v1.SearchVehiclesRequest.CurrentTripsPresentR\x13currentTripsPresent\x12\x1b\n" +
-	"\x06filter\x18\x16 \x01(\tB\x03\xe0A\x01R\x06filter\"\xaa\x01\n" +
+	"\x15current_trips_present\x18\x15 \x01(\x0e2>.maps.fleetengine.v1.SearchVehiclesRequest.CurrentTripsPresentR\x13currentTripsPresent\x12\x1c\n" +
+	"\x06filter\x18\x16 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xaa\x01\n" +
 	"\x11VehicleMatchOrder\x12\x1f\n" +
 	"\x1bUNKNOWN_VEHICLE_MATCH_ORDER\x10\x00\x12\x14\n" +
 	"\x10PICKUP_POINT_ETA\x10\x01\x12\x19\n" +
@@ -1711,43 +1711,43 @@ const file_google_maps_fleetengine_v1_vehicle_api_proto_rawDesc = "" +
 	"\x04NONE\x10\x01\x12\a\n" +
 	"\x03ANY\x10\x02\"U\n" +
 	"\x16SearchVehiclesResponse\x12;\n" +
-	"\amatches\x18\x01 \x03(\v2!.maps.fleetengine.v1.VehicleMatchR\amatches\"\xdd\x06\n" +
+	"\amatches\x18\x01 \x03(\v2!.maps.fleetengine.v1.VehicleMatchR\amatches\"\xe1\x06\n" +
 	"\x13ListVehiclesRequest\x12:\n" +
-	"\x06header\x18\f \x01(\v2\".maps.fleetengine.v1.RequestHeaderR\x06header\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12\x1b\n" +
+	"\x06header\x18\f \x01(\v2\".maps.fleetengine.v1.RequestHeaderR\x06header\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x04 \x01(\tR\tpageToken\x12F\n" +
 	"\x10minimum_capacity\x18\x06 \x01(\v2\x1b.google.protobuf.Int32ValueR\x0fminimumCapacity\x12<\n" +
 	"\n" +
 	"trip_types\x18\a \x03(\x0e2\x1d.maps.fleetengine.v1.TripTypeR\ttripTypes\x12F\n" +
-	"\x11maximum_staleness\x18\b \x01(\v2\x19.google.protobuf.DurationR\x10maximumStaleness\x12n\n" +
-	"\x17vehicle_type_categories\x18\t \x03(\x0e21.maps.fleetengine.v1.Vehicle.VehicleType.CategoryB\x03\xe0A\x02R\x15vehicleTypeCategories\x12/\n" +
+	"\x11maximum_staleness\x18\b \x01(\v2\x19.google.protobuf.DurationR\x10maximumStaleness\x12o\n" +
+	"\x17vehicle_type_categories\x18\t \x03(\x0e21.maps.fleetengine.v1.Vehicle.VehicleType.CategoryB\x04\xe2A\x01\x02R\x15vehicleTypeCategories\x12/\n" +
 	"\x13required_attributes\x18\n" +
 	" \x03(\tR\x12requiredAttributes\x12;\n" +
 	"\x1arequired_one_of_attributes\x18\r \x03(\tR\x17requiredOneOfAttributes\x12B\n" +
 	"\x1erequired_one_of_attribute_sets\x18\x0f \x03(\tR\x1arequiredOneOfAttributeSets\x12F\n" +
 	"\rvehicle_state\x18\v \x01(\x0e2!.maps.fleetengine.v1.VehicleStateR\fvehicleState\x12 \n" +
 	"\fon_trip_only\x18\x0e \x01(\bR\n" +
-	"onTripOnly\x12\x1b\n" +
-	"\x06filter\x18\x10 \x01(\tB\x03\xe0A\x01R\x06filter\x12:\n" +
-	"\bviewport\x18\x11 \x01(\v2\x19.google.geo.type.ViewportB\x03\xe0A\x01R\bviewport\"\x9c\x01\n" +
+	"onTripOnly\x12\x1c\n" +
+	"\x06filter\x18\x10 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12;\n" +
+	"\bviewport\x18\x11 \x01(\v2\x19.google.geo.type.ViewportB\x04\xe2A\x01\x01R\bviewport\"\x9d\x01\n" +
 	"\x14ListVehiclesResponse\x128\n" +
 	"\bvehicles\x18\x01 \x03(\v2\x1c.maps.fleetengine.v1.VehicleR\bvehicles\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12#\n" +
 	"\n" +
-	"total_size\x18\x03 \x01(\x03B\x03\xe0A\x02R\ttotalSize\"f\n" +
+	"total_size\x18\x03 \x01(\x03B\x04\xe2A\x01\x02R\ttotalSize\"f\n" +
 	"\bWaypoint\x12,\n" +
 	"\alat_lng\x18\x01 \x01(\v2\x13.google.type.LatLngR\x06latLng\x12,\n" +
-	"\x03eta\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x03eta\"\xea\b\n" +
-	"\fVehicleMatch\x12;\n" +
-	"\avehicle\x18\x01 \x01(\v2\x1c.maps.fleetengine.v1.VehicleB\x03\xe0A\x02R\avehicle\x12H\n" +
+	"\x03eta\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x03eta\"\xee\b\n" +
+	"\fVehicleMatch\x12<\n" +
+	"\avehicle\x18\x01 \x01(\v2\x1c.maps.fleetengine.v1.VehicleB\x04\xe2A\x01\x02R\avehicle\x12H\n" +
 	"\x12vehicle_pickup_eta\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x10vehiclePickupEta\x12`\n" +
-	"\x1evehicle_pickup_distance_meters\x18\x03 \x01(\v2\x1b.google.protobuf.Int32ValueR\x1bvehiclePickupDistanceMeters\x12\x7f\n" +
-	",vehicle_pickup_straight_line_distance_meters\x18\v \x01(\v2\x1b.google.protobuf.Int32ValueB\x03\xe0A\x02R'vehiclePickupStraightLineDistanceMeters\x12J\n" +
+	"\x1evehicle_pickup_distance_meters\x18\x03 \x01(\v2\x1b.google.protobuf.Int32ValueR\x1bvehiclePickupDistanceMeters\x12\x80\x01\n" +
+	",vehicle_pickup_straight_line_distance_meters\x18\v \x01(\v2\x1b.google.protobuf.Int32ValueB\x04\xe2A\x01\x02R'vehiclePickupStraightLineDistanceMeters\x12J\n" +
 	"\x13vehicle_dropoff_eta\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\x11vehicleDropoffEta\x12t\n" +
-	")vehicle_pickup_to_dropoff_distance_meters\x18\x05 \x01(\v2\x1b.google.protobuf.Int32ValueR$vehiclePickupToDropoffDistanceMeters\x12?\n" +
-	"\ttrip_type\x18\x06 \x01(\x0e2\x1d.maps.fleetengine.v1.TripTypeB\x03\xe0A\x02R\btripType\x12U\n" +
+	")vehicle_pickup_to_dropoff_distance_meters\x18\x05 \x01(\v2\x1b.google.protobuf.Int32ValueR$vehiclePickupToDropoffDistanceMeters\x12@\n" +
+	"\ttrip_type\x18\x06 \x01(\x0e2\x1d.maps.fleetengine.v1.TripTypeB\x04\xe2A\x01\x02R\btripType\x12U\n" +
 	"\x17vehicle_trips_waypoints\x18\a \x03(\v2\x1d.maps.fleetengine.v1.WaypointR\x15vehicleTripsWaypoints\x12`\n" +
 	"\x12vehicle_match_type\x18\b \x01(\x0e22.maps.fleetengine.v1.VehicleMatch.VehicleMatchTypeR\x10vehicleMatchType\x12n\n" +
 	"\x14requested_ordered_by\x18\t \x01(\x0e2<.maps.fleetengine.v1.SearchVehiclesRequest.VehicleMatchOrderR\x12requestedOrderedBy\x12[\n" +

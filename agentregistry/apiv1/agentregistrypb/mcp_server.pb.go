@@ -326,33 +326,33 @@ var File_google_cloud_agentregistry_v1_mcp_server_proto protoreflect.FileDescrip
 
 const file_google_cloud_agentregistry_v1_mcp_server_proto_rawDesc = "" +
 	"\n" +
-	".google/cloud/agentregistry/v1/mcp_server.proto\x12\x1dgoogle.cloud.agentregistry.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a.google/cloud/agentregistry/v1/properties.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x83\t\n" +
-	"\tMcpServer\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12'\n" +
-	"\rmcp_server_id\x18\t \x01(\tB\x03\xe0A\x03R\vmcpServerId\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x03R\vdescription\x12M\n" +
+	".google/cloud/agentregistry/v1/mcp_server.proto\x12\x1dgoogle.cloud.agentregistry.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a.google/cloud/agentregistry/v1/properties.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x94\t\n" +
+	"\tMcpServer\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12(\n" +
+	"\rmcp_server_id\x18\t \x01(\tB\x04\xe2A\x01\x03R\vmcpServerId\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\vdescription\x12N\n" +
 	"\n" +
-	"interfaces\x18\x04 \x03(\v2(.google.cloud.agentregistry.v1.InterfaceB\x03\xe0A\x03R\n" +
-	"interfaces\x12H\n" +
-	"\x05tools\x18\x05 \x03(\v2-.google.cloud.agentregistry.v1.McpServer.ToolB\x03\xe0A\x03R\x05tools\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12]\n" +
+	"interfaces\x18\x04 \x03(\v2(.google.cloud.agentregistry.v1.InterfaceB\x04\xe2A\x01\x03R\n" +
+	"interfaces\x12I\n" +
+	"\x05tools\x18\x05 \x03(\v2-.google.cloud.agentregistry.v1.McpServer.ToolB\x04\xe2A\x01\x03R\x05tools\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12^\n" +
 	"\n" +
-	"attributes\x18\b \x03(\v28.google.cloud.agentregistry.v1.McpServer.AttributesEntryB\x03\xe0A\x03R\n" +
-	"attributes\x1a\x89\x03\n" +
-	"\x04Tool\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x03R\vdescription\x12`\n" +
-	"\vannotations\x18\x03 \x01(\v29.google.cloud.agentregistry.v1.McpServer.Tool.AnnotationsB\x03\xe0A\x03R\vannotations\x1a\xde\x01\n" +
-	"\vAnnotations\x12\x19\n" +
-	"\x05title\x18\x01 \x01(\tB\x03\xe0A\x03R\x05title\x12.\n" +
-	"\x10destructive_hint\x18\x02 \x01(\bB\x03\xe0A\x03R\x0fdestructiveHint\x12,\n" +
-	"\x0fidempotent_hint\x18\x03 \x01(\bB\x03\xe0A\x03R\x0eidempotentHint\x12+\n" +
-	"\x0fopen_world_hint\x18\x04 \x01(\bB\x03\xe0A\x03R\ropenWorldHint\x12)\n" +
-	"\x0eread_only_hint\x18\x05 \x01(\bB\x03\xe0A\x03R\freadOnlyHint\x1aV\n" +
+	"attributes\x18\b \x03(\v28.google.cloud.agentregistry.v1.McpServer.AttributesEntryB\x04\xe2A\x01\x03R\n" +
+	"attributes\x1a\x91\x03\n" +
+	"\x04Tool\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vdescription\x12a\n" +
+	"\vannotations\x18\x03 \x01(\v29.google.cloud.agentregistry.v1.McpServer.Tool.AnnotationsB\x04\xe2A\x01\x03R\vannotations\x1a\xe3\x01\n" +
+	"\vAnnotations\x12\x1a\n" +
+	"\x05title\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x05title\x12/\n" +
+	"\x10destructive_hint\x18\x02 \x01(\bB\x04\xe2A\x01\x03R\x0fdestructiveHint\x12-\n" +
+	"\x0fidempotent_hint\x18\x03 \x01(\bB\x04\xe2A\x01\x03R\x0eidempotentHint\x12,\n" +
+	"\x0fopen_world_hint\x18\x04 \x01(\bB\x04\xe2A\x01\x03R\ropenWorldHint\x12*\n" +
+	"\x0eread_only_hint\x18\x05 \x01(\bB\x04\xe2A\x01\x03R\freadOnlyHint\x1aV\n" +
 	"\x0fAttributesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12-\n" +
 	"\x05value\x18\x02 \x01(\v2\x17.google.protobuf.StructR\x05value:\x028\x01:\x84\x01\xeaA\x80\x01\n" +

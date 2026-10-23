@@ -613,26 +613,26 @@ const file_google_devtools_artifactregistry_v1_file_proto_rawDesc = "" +
 	"\n" +
 	"\x06SHA256\x10\x01\x12\a\n" +
 	"\x03MD5\x10\x02\x12\x11\n" +
-	"\rDIRSUM_SHA256\x10\x03\"\xf4\x04\n" +
+	"\rDIRSUM_SHA256\x10\x03\"\xf8\x04\n" +
 	"\x04File\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1d\n" +
 	"\n" +
 	"size_bytes\x18\x03 \x01(\x03R\tsizeBytes\x12A\n" +
-	"\x06hashes\x18\x04 \x03(\v2).google.devtools.artifactregistry.v1.HashR\x06hashes\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x06hashes\x18\x04 \x03(\v2).google.devtools.artifactregistry.v1.HashR\x06hashes\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12\x14\n" +
-	"\x05owner\x18\a \x01(\tR\x05owner\x12>\n" +
+	"\x05owner\x18\a \x01(\tR\x05owner\x12?\n" +
 	"\n" +
-	"fetch_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tfetchTime\x12a\n" +
-	"\vannotations\x18\t \x03(\v2:.google.devtools.artifactregistry.v1.File.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x1a>\n" +
+	"fetch_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tfetchTime\x12b\n" +
+	"\vannotations\x18\t \x03(\v2:.google.devtools.artifactregistry.v1.File.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x1a>\n" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:y\xeaAv\n" +
-	"$artifactregistry.googleapis.com/File\x12Nprojects/{project}/locations/{location}/repositories/{repository}/files/{file}\"\xc7\x01\n" +
-	"\x10ListFilesRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$artifactregistry.googleapis.com/FileR\x06parent\x12\x16\n" +
+	"$artifactregistry.googleapis.com/File\x12Nprojects/{project}/locations/{location}/repositories/{repository}/files/{file}\"\xc8\x01\n" +
+	"\x10ListFilesRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$artifactregistry.googleapis.com/FileR\x06parent\x12\x16\n" +
 	"\x06filter\x18\x04 \x01(\tR\x06filter\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -640,16 +640,16 @@ const file_google_devtools_artifactregistry_v1_file_proto_rawDesc = "" +
 	"\border_by\x18\x05 \x01(\tR\aorderBy\"|\n" +
 	"\x11ListFilesResponse\x12?\n" +
 	"\x05files\x18\x01 \x03(\v2).google.devtools.artifactregistry.v1.FileR\x05files\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"R\n" +
-	"\x0eGetFileRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$artifactregistry.googleapis.com/FileR\x04name\"U\n" +
-	"\x11DeleteFileRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$artifactregistry.googleapis.com/FileR\x04name\"\x99\x01\n" +
-	"\x11UpdateFileRequest\x12B\n" +
-	"\x04file\x18\x01 \x01(\v2).google.devtools.artifactregistry.v1.FileB\x03\xe0A\x02R\x04file\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"S\n" +
+	"\x0eGetFileRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$artifactregistry.googleapis.com/FileR\x04name\"V\n" +
+	"\x11DeleteFileRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$artifactregistry.googleapis.com/FileR\x04name\"\x9b\x01\n" +
+	"\x11UpdateFileRequest\x12C\n" +
+	"\x04file\x18\x01 \x01(\v2).google.devtools.artifactregistry.v1.FileB\x04\xe2A\x01\x02R\x04file\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
 	"updateMaskB\xf4\x01\n" +
 	"'com.google.devtools.artifactregistry.v1B\tFileProtoP\x01ZPcloud.google.com/go/artifactregistry/apiv1/artifactregistrypb;artifactregistrypb\xaa\x02 Google.Cloud.ArtifactRegistry.V1\xca\x02 Google\\Cloud\\ArtifactRegistry\\V1\xea\x02#Google::Cloud::ArtifactRegistry::V1b\x06proto3"
 

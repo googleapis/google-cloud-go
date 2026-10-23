@@ -207,13 +207,13 @@ var File_google_cloud_recommender_v1_recommender_config_proto protoreflect.FileD
 const file_google_cloud_recommender_v1_recommender_config_proto_rawDesc = "" +
 	"\n" +
 	"4google/cloud/recommender/v1/recommender_config.proto\x12\x1bgoogle.cloud.recommender.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x99\x06\n" +
-	"\x11RecommenderConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12|\n" +
+	"\x11RecommenderConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12|\n" +
 	"\x1drecommender_generation_config\x18\x02 \x01(\v28.google.cloud.recommender.v1.RecommenderGenerationConfigR\x1brecommenderGenerationConfig\x12\x12\n" +
 	"\x04etag\x18\x03 \x01(\tR\x04etag\x12;\n" +
 	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"updateTime\x12'\n" +
-	"\vrevision_id\x18\x05 \x01(\tB\x06\xe0A\x05\xe0A\x03R\n" +
+	"updateTime\x12&\n" +
+	"\vrevision_id\x18\x05 \x01(\tB\x05\xe2A\x02\x05\x03R\n" +
 	"revisionId\x12a\n" +
 	"\vannotations\x18\x06 \x03(\v2?.google.cloud.recommender.v1.RecommenderConfig.AnnotationsEntryR\vannotations\x12!\n" +
 	"\fdisplay_name\x18\a \x01(\tR\vdisplayName\x1a>\n" +

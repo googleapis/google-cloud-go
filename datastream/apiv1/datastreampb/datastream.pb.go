@@ -2961,22 +2961,22 @@ var File_google_cloud_datastream_v1_datastream_proto protoreflect.FileDescriptor
 
 const file_google_cloud_datastream_v1_datastream_proto_rawDesc = "" +
 	"\n" +
-	"+google/cloud/datastream/v1/datastream.proto\x12\x1agoogle.cloud.datastream.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a5google/cloud/datastream/v1/datastream_resources.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe5\b\n" +
-	" DiscoverConnectionProfileRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+datastream.googleapis.com/ConnectionProfileR\x06parent\x12d\n" +
-	"\x12connection_profile\x18\xc8\x01 \x01(\v2-.google.cloud.datastream.v1.ConnectionProfileB\x03\xe0A\x01H\x00R\x11connectionProfile\x12>\n" +
-	"\x17connection_profile_name\x18\xc9\x01 \x01(\tB\x03\xe0A\x01H\x00R\x15connectionProfileName\x12,\n" +
-	"\x0efull_hierarchy\x18\x03 \x01(\bB\x03\xe0A\x01H\x01R\rfullHierarchy\x12.\n" +
-	"\x0fhierarchy_depth\x18\x04 \x01(\x05B\x03\xe0A\x01H\x01R\x0ehierarchyDepth\x12Q\n" +
-	"\foracle_rdbms\x18d \x01(\v2'.google.cloud.datastream.v1.OracleRdbmsB\x03\xe0A\x01H\x02R\voracleRdbms\x12N\n" +
-	"\vmysql_rdbms\x18e \x01(\v2&.google.cloud.datastream.v1.MysqlRdbmsB\x03\xe0A\x01H\x02R\n" +
-	"mysqlRdbms\x12]\n" +
-	"\x10postgresql_rdbms\x18f \x01(\v2+.google.cloud.datastream.v1.PostgresqlRdbmsB\x03\xe0A\x01H\x02R\x0fpostgresqlRdbms\x12[\n" +
-	"\x10sql_server_rdbms\x18g \x01(\v2*.google.cloud.datastream.v1.SqlServerRdbmsB\x03\xe0A\x01H\x02R\x0esqlServerRdbms\x12W\n" +
-	"\x0esalesforce_org\x18h \x01(\v2).google.cloud.datastream.v1.SalesforceOrgB\x03\xe0A\x01H\x02R\rsalesforceOrg\x12Z\n" +
-	"\x0fmongodb_cluster\x18i \x01(\v2*.google.cloud.datastream.v1.MongodbClusterB\x03\xe0A\x01H\x02R\x0emongodbCluster\x12]\n" +
-	"\x10spanner_database\x18j \x01(\v2+.google.cloud.datastream.v1.SpannerDatabaseB\x03\xe0A\x01H\x02R\x0fspannerDatabase\x12W\n" +
-	"\x0esource_catalog\x18l \x01(\v2).google.cloud.datastream.v1.SourceCatalogB\x03\xe0A\x01H\x02R\rsourceCatalogB\b\n" +
+	"+google/cloud/datastream/v1/datastream.proto\x12\x1agoogle.cloud.datastream.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a5google/cloud/datastream/v1/datastream_resources.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf2\b\n" +
+	" DiscoverConnectionProfileRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+datastream.googleapis.com/ConnectionProfileR\x06parent\x12e\n" +
+	"\x12connection_profile\x18\xc8\x01 \x01(\v2-.google.cloud.datastream.v1.ConnectionProfileB\x04\xe2A\x01\x01H\x00R\x11connectionProfile\x12?\n" +
+	"\x17connection_profile_name\x18\xc9\x01 \x01(\tB\x04\xe2A\x01\x01H\x00R\x15connectionProfileName\x12-\n" +
+	"\x0efull_hierarchy\x18\x03 \x01(\bB\x04\xe2A\x01\x01H\x01R\rfullHierarchy\x12/\n" +
+	"\x0fhierarchy_depth\x18\x04 \x01(\x05B\x04\xe2A\x01\x01H\x01R\x0ehierarchyDepth\x12R\n" +
+	"\foracle_rdbms\x18d \x01(\v2'.google.cloud.datastream.v1.OracleRdbmsB\x04\xe2A\x01\x01H\x02R\voracleRdbms\x12O\n" +
+	"\vmysql_rdbms\x18e \x01(\v2&.google.cloud.datastream.v1.MysqlRdbmsB\x04\xe2A\x01\x01H\x02R\n" +
+	"mysqlRdbms\x12^\n" +
+	"\x10postgresql_rdbms\x18f \x01(\v2+.google.cloud.datastream.v1.PostgresqlRdbmsB\x04\xe2A\x01\x01H\x02R\x0fpostgresqlRdbms\x12\\\n" +
+	"\x10sql_server_rdbms\x18g \x01(\v2*.google.cloud.datastream.v1.SqlServerRdbmsB\x04\xe2A\x01\x01H\x02R\x0esqlServerRdbms\x12X\n" +
+	"\x0esalesforce_org\x18h \x01(\v2).google.cloud.datastream.v1.SalesforceOrgB\x04\xe2A\x01\x01H\x02R\rsalesforceOrg\x12[\n" +
+	"\x0fmongodb_cluster\x18i \x01(\v2*.google.cloud.datastream.v1.MongodbClusterB\x04\xe2A\x01\x01H\x02R\x0emongodbCluster\x12^\n" +
+	"\x10spanner_database\x18j \x01(\v2+.google.cloud.datastream.v1.SpannerDatabaseB\x04\xe2A\x01\x01H\x02R\x0fspannerDatabase\x12X\n" +
+	"\x0esource_catalog\x18l \x01(\v2).google.cloud.datastream.v1.SourceCatalogB\x04\xe2A\x01\x01H\x02R\rsourceCatalogB\b\n" +
 	"\x06targetB\v\n" +
 	"\thierarchyB\r\n" +
 	"\vdata_object\"\xd6\x05\n" +
@@ -2990,181 +2990,181 @@ const file_google_cloud_datastream_v1_datastream_proto_rawDesc = "" +
 	"\x0fmongodb_cluster\x18i \x01(\v2*.google.cloud.datastream.v1.MongodbClusterH\x00R\x0emongodbCluster\x12X\n" +
 	"\x10spanner_database\x18j \x01(\v2+.google.cloud.datastream.v1.SpannerDatabaseH\x00R\x0fspannerDatabase\x12R\n" +
 	"\x0esource_catalog\x18l \x01(\v2).google.cloud.datastream.v1.SourceCatalogH\x00R\rsourceCatalogB\r\n" +
-	"\vdata_object\"\x9c\x01\n" +
-	"\x15FetchStaticIpsRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x04name\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\vdata_object\"\x9f\x01\n" +
+	"\x15FetchStaticIpsRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x04name\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"_\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"_\n" +
 	"\x16FetchStaticIpsResponse\x12\x1d\n" +
 	"\n" +
 	"static_ips\x18\x01 \x03(\tR\tstaticIps\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xef\x01\n" +
-	"\x1dListConnectionProfilesRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+datastream.googleapis.com/ConnectionProfileR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xf4\x01\n" +
+	"\x1dListConnectionProfilesRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+datastream.googleapis.com/ConnectionProfileR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xca\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xca\x01\n" +
 	"\x1eListConnectionProfilesResponse\x12^\n" +
 	"\x13connection_profiles\x18\x01 \x03(\v2-.google.cloud.datastream.v1.ConnectionProfileR\x12connectionProfiles\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"f\n" +
-	"\x1bGetConnectionProfileRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+datastream.googleapis.com/ConnectionProfileR\x04name\"\xf2\x02\n" +
-	"\x1eCreateConnectionProfileRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+datastream.googleapis.com/ConnectionProfileR\x06parent\x127\n" +
-	"\x15connection_profile_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x13connectionProfileId\x12a\n" +
-	"\x12connection_profile\x18\x03 \x01(\v2-.google.cloud.datastream.v1.ConnectionProfileB\x03\xe0A\x02R\x11connectionProfile\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"g\n" +
+	"\x1bGetConnectionProfileRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+datastream.googleapis.com/ConnectionProfileR\x04name\"\xf8\x02\n" +
+	"\x1eCreateConnectionProfileRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+datastream.googleapis.com/ConnectionProfileR\x06parent\x128\n" +
+	"\x15connection_profile_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x13connectionProfileId\x12b\n" +
+	"\x12connection_profile\x18\x03 \x01(\v2-.google.cloud.datastream.v1.ConnectionProfileB\x04\xe2A\x01\x02R\x11connectionProfile\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\x12(\n" +
-	"\rvalidate_only\x18\x05 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12\x19\n" +
-	"\x05force\x18\x06 \x01(\bB\x03\xe0A\x01R\x05force\"\xae\x02\n" +
-	"\x1eUpdateConnectionProfileRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12a\n" +
-	"\x12connection_profile\x18\x02 \x01(\v2-.google.cloud.datastream.v1.ConnectionProfileB\x03\xe0A\x02R\x11connectionProfile\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12)\n" +
+	"\rvalidate_only\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12\x1a\n" +
+	"\x05force\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\x05force\"\xb3\x02\n" +
+	"\x1eUpdateConnectionProfileRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12b\n" +
+	"\x12connection_profile\x18\x02 \x01(\v2-.google.cloud.datastream.v1.ConnectionProfileB\x04\xe2A\x01\x02R\x11connectionProfile\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\x12(\n" +
-	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12\x19\n" +
-	"\x05force\x18\x05 \x01(\bB\x03\xe0A\x01R\x05force\"\x8d\x01\n" +
-	"\x1eDeleteConnectionProfileRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+datastream.googleapis.com/ConnectionProfileR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12)\n" +
+	"\rvalidate_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12\x1a\n" +
+	"\x05force\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\x05force\"\x8f\x01\n" +
+	"\x1eDeleteConnectionProfileRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+datastream.googleapis.com/ConnectionProfileR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\xd9\x01\n" +
-	"\x12ListStreamsRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\x12 datastream.googleapis.com/StreamR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xde\x01\n" +
+	"\x12ListStreamsRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\x12 datastream.googleapis.com/StreamR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\x9d\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\x9d\x01\n" +
 	"\x13ListStreamsResponse\x12<\n" +
 	"\astreams\x18\x01 \x03(\v2\".google.cloud.datastream.v1.StreamR\astreams\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"P\n" +
-	"\x10GetStreamRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" datastream.googleapis.com/StreamR\x04name\"\xa3\x02\n" +
-	"\x13CreateStreamRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\x12 datastream.googleapis.com/StreamR\x06parent\x12 \n" +
-	"\tstream_id\x18\x02 \x01(\tB\x03\xe0A\x02R\bstreamId\x12?\n" +
-	"\x06stream\x18\x03 \x01(\v2\".google.cloud.datastream.v1.StreamB\x03\xe0A\x02R\x06stream\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"Q\n" +
+	"\x10GetStreamRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" datastream.googleapis.com/StreamR\x04name\"\xa9\x02\n" +
+	"\x13CreateStreamRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\x12 datastream.googleapis.com/StreamR\x06parent\x12!\n" +
+	"\tstream_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\bstreamId\x12@\n" +
+	"\x06stream\x18\x03 \x01(\v2\".google.cloud.datastream.v1.StreamB\x04\xe2A\x01\x02R\x06stream\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\x12(\n" +
-	"\rvalidate_only\x18\x05 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12\x19\n" +
-	"\x05force\x18\x06 \x01(\bB\x03\xe0A\x01R\x05force\"\x81\x02\n" +
-	"\x13UpdateStreamRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12?\n" +
-	"\x06stream\x18\x02 \x01(\v2\".google.cloud.datastream.v1.StreamB\x03\xe0A\x02R\x06stream\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12)\n" +
+	"\rvalidate_only\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12\x1a\n" +
+	"\x05force\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\x05force\"\x86\x02\n" +
+	"\x13UpdateStreamRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12@\n" +
+	"\x06stream\x18\x02 \x01(\v2\".google.cloud.datastream.v1.StreamB\x04\xe2A\x01\x02R\x06stream\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\x12(\n" +
-	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12\x19\n" +
-	"\x05force\x18\x05 \x01(\bB\x03\xe0A\x01R\x05force\"w\n" +
-	"\x13DeleteStreamRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" datastream.googleapis.com/StreamR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12)\n" +
+	"\rvalidate_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12\x1a\n" +
+	"\x05force\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\x05force\"y\n" +
+	"\x13DeleteStreamRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" datastream.googleapis.com/StreamR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\xbc\x01\n" +
-	"\x10RunStreamRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" datastream.googleapis.com/StreamR\x04name\x12O\n" +
-	"\fcdc_strategy\x18\x02 \x01(\v2'.google.cloud.datastream.v1.CdcStrategyB\x03\xe0A\x01R\vcdcStrategy\x12\x19\n" +
-	"\x05force\x18\x03 \x01(\bB\x03\xe0A\x01R\x05force\"\\\n" +
-	"\x16GetStreamObjectRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&datastream.googleapis.com/StreamObjectR\x04name\"\xd0\x01\n" +
-	"\x19LookupStreamObjectRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" datastream.googleapis.com/StreamR\x06parent\x12q\n" +
-	"\x18source_object_identifier\x18\x02 \x01(\v22.google.cloud.datastream.v1.SourceObjectIdentifierB\x03\xe0A\x02R\x16sourceObjectIdentifier\"\xb2\x01\n" +
-	"\x17StartBackfillJobRequest\x12F\n" +
-	"\x06object\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&datastream.googleapis.com/StreamObjectR\x06object\x12O\n" +
-	"\fevent_filter\x18\x02 \x01(\v2'.google.cloud.datastream.v1.EventFilterB\x03\xe0A\x01R\veventFilter\"\\\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xbf\x01\n" +
+	"\x10RunStreamRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" datastream.googleapis.com/StreamR\x04name\x12P\n" +
+	"\fcdc_strategy\x18\x02 \x01(\v2'.google.cloud.datastream.v1.CdcStrategyB\x04\xe2A\x01\x01R\vcdcStrategy\x12\x1a\n" +
+	"\x05force\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x05force\"]\n" +
+	"\x16GetStreamObjectRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&datastream.googleapis.com/StreamObjectR\x04name\"\xd2\x01\n" +
+	"\x19LookupStreamObjectRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" datastream.googleapis.com/StreamR\x06parent\x12r\n" +
+	"\x18source_object_identifier\x18\x02 \x01(\v22.google.cloud.datastream.v1.SourceObjectIdentifierB\x04\xe2A\x01\x02R\x16sourceObjectIdentifier\"\xb4\x01\n" +
+	"\x17StartBackfillJobRequest\x12G\n" +
+	"\x06object\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&datastream.googleapis.com/StreamObjectR\x06object\x12P\n" +
+	"\fevent_filter\x18\x02 \x01(\v2'.google.cloud.datastream.v1.EventFilterB\x04\xe2A\x01\x01R\veventFilter\"\\\n" +
 	"\x18StartBackfillJobResponse\x12@\n" +
-	"\x06object\x18\x01 \x01(\v2(.google.cloud.datastream.v1.StreamObjectR\x06object\"`\n" +
-	"\x16StopBackfillJobRequest\x12F\n" +
-	"\x06object\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
+	"\x06object\x18\x01 \x01(\v2(.google.cloud.datastream.v1.StreamObjectR\x06object\"a\n" +
+	"\x16StopBackfillJobRequest\x12G\n" +
+	"\x06object\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
 	"&datastream.googleapis.com/StreamObjectR\x06object\"[\n" +
 	"\x17StopBackfillJobResponse\x12@\n" +
-	"\x06object\x18\x01 \x01(\v2(.google.cloud.datastream.v1.StreamObjectR\x06object\"\xa8\x01\n" +
-	"\x18ListStreamObjectsRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&datastream.googleapis.com/StreamObjectR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x06object\x18\x01 \x01(\v2(.google.cloud.datastream.v1.StreamObjectR\x06object\"\xab\x01\n" +
+	"\x18ListStreamObjectsRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\x12&datastream.googleapis.com/StreamObjectR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x94\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x94\x01\n" +
 	"\x19ListStreamObjectsResponse\x12O\n" +
 	"\x0estream_objects\x18\x01 \x03(\v2(.google.cloud.datastream.v1.StreamObjectR\rstreamObjects\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb5\x03\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion\x12^\n" +
-	"\x11validation_result\x18\b \x01(\v2,.google.cloud.datastream.v1.ValidationResultB\x03\xe0A\x03R\x10validationResult\"\xf2\x02\n" +
-	"\x1eCreatePrivateConnectionRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+datastream.googleapis.com/PrivateConnectionR\x06parent\x127\n" +
-	"\x15private_connection_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x13privateConnectionId\x12a\n" +
-	"\x12private_connection\x18\x03 \x01(\v2-.google.cloud.datastream.v1.PrivateConnectionB\x03\xe0A\x02R\x11privateConnection\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xbd\x03\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"apiVersion\x12_\n" +
+	"\x11validation_result\x18\b \x01(\v2,.google.cloud.datastream.v1.ValidationResultB\x04\xe2A\x01\x03R\x10validationResult\"\xf8\x02\n" +
+	"\x1eCreatePrivateConnectionRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+datastream.googleapis.com/PrivateConnectionR\x06parent\x128\n" +
+	"\x15private_connection_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x13privateConnectionId\x12b\n" +
+	"\x12private_connection\x18\x03 \x01(\v2-.google.cloud.datastream.v1.PrivateConnectionB\x04\xe2A\x01\x02R\x11privateConnection\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\x12\x19\n" +
-	"\x05force\x18\x06 \x01(\bB\x03\xe0A\x01R\x05force\x12(\n" +
-	"\rvalidate_only\x18\b \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xea\x01\n" +
-	"\x1dListPrivateConnectionsRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+datastream.googleapis.com/PrivateConnectionR\x06parent\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12\x1a\n" +
+	"\x05force\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\x05force\x12)\n" +
+	"\rvalidate_only\x18\b \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xee\x01\n" +
+	"\x1dListPrivateConnectionsRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+datastream.googleapis.com/PrivateConnectionR\x06parent\x12\x1b\n" +
+	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xca\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xca\x01\n" +
 	"\x1eListPrivateConnectionsResponse\x12^\n" +
 	"\x13private_connections\x18\x01 \x03(\v2-.google.cloud.datastream.v1.PrivateConnectionR\x12privateConnections\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xa8\x01\n" +
-	"\x1eDeletePrivateConnectionRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+datastream.googleapis.com/PrivateConnectionR\x04name\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xab\x01\n" +
+	"\x1eDeletePrivateConnectionRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+datastream.googleapis.com/PrivateConnectionR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\x12\x19\n" +
-	"\x05force\x18\x03 \x01(\bB\x03\xe0A\x01R\x05force\"f\n" +
-	"\x1bGetPrivateConnectionRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+datastream.googleapis.com/PrivateConnectionR\x04name\"\xd7\x01\n" +
-	"\x12CreateRouteRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1fdatastream.googleapis.com/RouteR\x06parent\x12\x1e\n" +
-	"\broute_id\x18\x02 \x01(\tB\x03\xe0A\x02R\arouteId\x12<\n" +
-	"\x05route\x18\x03 \x01(\v2!.google.cloud.datastream.v1.RouteB\x03\xe0A\x02R\x05route\x12\"\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12\x1a\n" +
+	"\x05force\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x05force\"g\n" +
+	"\x1bGetPrivateConnectionRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+datastream.googleapis.com/PrivateConnectionR\x04name\"\xdb\x01\n" +
+	"\x12CreateRouteRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1fdatastream.googleapis.com/RouteR\x06parent\x12\x1f\n" +
+	"\broute_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\arouteId\x12=\n" +
+	"\x05route\x18\x03 \x01(\v2!.google.cloud.datastream.v1.RouteB\x04\xe2A\x01\x02R\x05route\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xd7\x01\n" +
-	"\x11ListRoutesRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1fdatastream.googleapis.com/RouteR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xdc\x01\n" +
+	"\x11ListRoutesRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1fdatastream.googleapis.com/RouteR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\x99\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\x99\x01\n" +
 	"\x12ListRoutesResponse\x129\n" +
 	"\x06routes\x18\x01 \x03(\v2!.google.cloud.datastream.v1.RouteR\x06routes\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"u\n" +
-	"\x12DeleteRouteRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fdatastream.googleapis.com/RouteR\x04name\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"w\n" +
+	"\x12DeleteRouteRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fdatastream.googleapis.com/RouteR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"N\n" +
-	"\x0fGetRouteRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"O\n" +
+	"\x0fGetRouteRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
 	"\x1fdatastream.googleapis.com/RouteR\x04name2\xb2,\n" +
 	"\n" +
 	"Datastream\x12\xd8\x01\n" +

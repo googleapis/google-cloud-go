@@ -722,53 +722,53 @@ var File_google_cloud_backupdr_v1beta_datasourcereference_proto protoreflect.Fil
 
 const file_google_cloud_backupdr_v1beta_datasourcereference_proto_rawDesc = "" +
 	"\n" +
-	"6google/cloud/backupdr/v1beta/datasourcereference.proto\x12\x1cgoogle.cloud.backupdr.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a.google/cloud/backupdr/v1beta/backupvault.proto\x1a6google/cloud/backupdr/v1beta/backupvault_alloydb.proto\x1a7google/cloud/backupdr/v1beta/backupvault_cloudsql.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xff\x06\n" +
-	"\x13DataSourceReference\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12K\n" +
-	"\vdata_source\x18\x02 \x01(\tB*\xe0A\x03\xfaA$\n" +
+	"6google/cloud/backupdr/v1beta/datasourcereference.proto\x12\x1cgoogle.cloud.backupdr.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a.google/cloud/backupdr/v1beta/backupvault.proto\x1a6google/cloud/backupdr/v1beta/backupvault_alloydb.proto\x1a7google/cloud/backupdr/v1beta/backupvault_cloudsql.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x87\a\n" +
+	"\x13DataSourceReference\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12L\n" +
+	"\vdata_source\x18\x02 \x01(\tB+\xe2A\x01\x03\xfaA$\n" +
 	"\"backupdr.googleapis.com/DataSourceR\n" +
-	"dataSource\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12z\n" +
-	"\x1fdata_source_backup_config_state\x18\x04 \x01(\x0e2/.google.cloud.backupdr.v1beta.BackupConfigStateB\x03\xe0A\x03R\x1bdataSourceBackupConfigState\x12<\n" +
-	"\x18data_source_backup_count\x18\x05 \x01(\x03B\x03\xe0A\x03R\x15dataSourceBackupCount\x12\x81\x01\n" +
-	"\x1edata_source_backup_config_info\x18\x06 \x01(\v28.google.cloud.backupdr.v1beta.DataSourceBackupConfigInfoB\x03\xe0A\x03R\x1adataSourceBackupConfigInfo\x12~\n" +
-	"\x1ddata_source_gcp_resource_info\x18\a \x01(\v27.google.cloud.backupdr.v1beta.DataSourceGcpResourceInfoB\x03\xe0A\x03R\x19dataSourceGcpResourceInfo\x126\n" +
-	"\x12total_stored_bytes\x18\b \x01(\x03B\x03\xe0A\x03H\x00R\x10totalStoredBytes\x88\x01\x01:\xb2\x01\xeaA\xae\x01\n" +
+	"dataSource\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12{\n" +
+	"\x1fdata_source_backup_config_state\x18\x04 \x01(\x0e2/.google.cloud.backupdr.v1beta.BackupConfigStateB\x04\xe2A\x01\x03R\x1bdataSourceBackupConfigState\x12=\n" +
+	"\x18data_source_backup_count\x18\x05 \x01(\x03B\x04\xe2A\x01\x03R\x15dataSourceBackupCount\x12\x82\x01\n" +
+	"\x1edata_source_backup_config_info\x18\x06 \x01(\v28.google.cloud.backupdr.v1beta.DataSourceBackupConfigInfoB\x04\xe2A\x01\x03R\x1adataSourceBackupConfigInfo\x12\x7f\n" +
+	"\x1ddata_source_gcp_resource_info\x18\a \x01(\v27.google.cloud.backupdr.v1beta.DataSourceGcpResourceInfoB\x04\xe2A\x01\x03R\x19dataSourceGcpResourceInfo\x127\n" +
+	"\x12total_stored_bytes\x18\b \x01(\x03B\x04\xe2A\x01\x03H\x00R\x10totalStoredBytes\x88\x01\x01:\xb2\x01\xeaA\xae\x01\n" +
 	"+backupdr.googleapis.com/DataSourceReference\x12Tprojects/{project}/locations/{location}/dataSourceReferences/{data_source_reference}*\x14dataSourceReferences2\x13dataSourceReferenceB\x15\n" +
-	"\x13_total_stored_bytes\"\x84\x02\n" +
-	"\x1aDataSourceBackupConfigInfo\x12o\n" +
-	"\x11last_backup_state\x18\x01 \x01(\x0e2>.google.cloud.backupdr.v1beta.BackupConfigInfo.LastBackupStateB\x03\xe0A\x03R\x0flastBackupState\x12u\n" +
-	"'last_successful_backup_consistency_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R#lastSuccessfulBackupConsistencyTime\"\xc6\x03\n" +
-	"\x19DataSourceGcpResourceInfo\x12\x95\x01\n" +
-	"\x1dcloud_sql_instance_properties\x18\x04 \x01(\v2K.google.cloud.backupdr.v1beta.CloudSqlInstanceDataSourceReferencePropertiesB\x03\xe0A\x03H\x00R\x1acloudSqlInstanceProperties\x12\x8f\x01\n" +
-	"\x1balloy_db_cluster_properties\x18\x06 \x01(\v2I.google.cloud.backupdr.v1beta.AlloyDBClusterDataSourceReferencePropertiesB\x03\xe0A\x03H\x00R\x18alloyDbClusterProperties\x12.\n" +
-	"\x10gcp_resourcename\x18\x01 \x01(\tB\x03\xe0A\x03R\x0fgcpResourcename\x12\x17\n" +
-	"\x04type\x18\x02 \x01(\tB\x03\xe0A\x03R\x04type\x12\x1f\n" +
-	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x03R\blocationB\x15\n" +
-	"\x13resource_properties\"h\n" +
-	"\x1dGetDataSourceReferenceRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+backupdr.googleapis.com/DataSourceReferenceR\x04name\"\xf1\x01\n" +
-	"\x1fListDataSourceReferencesRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+backupdr.googleapis.com/DataSourceReferenceR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x13_total_stored_bytes\"\x86\x02\n" +
+	"\x1aDataSourceBackupConfigInfo\x12p\n" +
+	"\x11last_backup_state\x18\x01 \x01(\x0e2>.google.cloud.backupdr.v1beta.BackupConfigInfo.LastBackupStateB\x04\xe2A\x01\x03R\x0flastBackupState\x12v\n" +
+	"'last_successful_backup_consistency_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R#lastSuccessfulBackupConsistencyTime\"\xcb\x03\n" +
+	"\x19DataSourceGcpResourceInfo\x12\x96\x01\n" +
+	"\x1dcloud_sql_instance_properties\x18\x04 \x01(\v2K.google.cloud.backupdr.v1beta.CloudSqlInstanceDataSourceReferencePropertiesB\x04\xe2A\x01\x03H\x00R\x1acloudSqlInstanceProperties\x12\x90\x01\n" +
+	"\x1balloy_db_cluster_properties\x18\x06 \x01(\v2I.google.cloud.backupdr.v1beta.AlloyDBClusterDataSourceReferencePropertiesB\x04\xe2A\x01\x03H\x00R\x18alloyDbClusterProperties\x12/\n" +
+	"\x10gcp_resourcename\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x0fgcpResourcename\x12\x18\n" +
+	"\x04type\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x04type\x12 \n" +
+	"\blocation\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\blocationB\x15\n" +
+	"\x13resource_properties\"i\n" +
+	"\x1dGetDataSourceReferenceRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+backupdr.googleapis.com/DataSourceReferenceR\x04name\"\xf6\x01\n" +
+	"\x1fListDataSourceReferencesRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+backupdr.googleapis.com/DataSourceReferenceR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xd5\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xd5\x01\n" +
 	" ListDataSourceReferencesResponse\x12g\n" +
 	"\x16data_source_references\x18\x01 \x03(\v21.google.cloud.backupdr.v1beta.DataSourceReferenceR\x14dataSourceReferences\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xab\x02\n" +
-	"/FetchDataSourceReferencesForResourceTypeRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+backupdr.googleapis.com/DataSourceReferenceR\x06parent\x12(\n" +
-	"\rresource_type\x18\x02 \x01(\tB\x03\xe0A\x02R\fresourceType\x12 \n" +
-	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xb1\x02\n" +
+	"/FetchDataSourceReferencesForResourceTypeRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+backupdr.googleapis.com/DataSourceReferenceR\x06parent\x12)\n" +
+	"\rresource_type\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\fresourceType\x12!\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x05 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x06 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xc3\x01\n" +
+	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xc3\x01\n" +
 	"0FetchDataSourceReferencesForResourceTypeResponse\x12g\n" +
 	"\x16data_source_references\x18\x01 \x03(\v21.google.cloud.backupdr.v1beta.DataSourceReferenceR\x14dataSourceReferences\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageTokenB\xdc\x01\n" +

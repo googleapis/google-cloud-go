@@ -178,19 +178,19 @@ var File_google_cloud_gkebackup_v1_backup_channel_proto protoreflect.FileDescrip
 
 const file_google_cloud_gkebackup_v1_backup_channel_proto_rawDesc = "" +
 	"\n" +
-	".google/cloud/gkebackup/v1/backup_channel.proto\x12\x19google.cloud.gkebackup.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa4\x05\n" +
-	"\rBackupChannel\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x127\n" +
-	"\x13destination_project\x18\x02 \x01(\tB\x06\xe0A\x05\xe0A\x02R\x12destinationProject\x12\x1d\n" +
-	"\x03uid\x18\x03 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12Q\n" +
-	"\x06labels\x18\x06 \x03(\v24.google.cloud.gkebackup.v1.BackupChannel.LabelsEntryB\x03\xe0A\x01R\x06labels\x12%\n" +
-	"\vdescription\x18\a \x01(\tB\x03\xe0A\x01R\vdescription\x12\x17\n" +
-	"\x04etag\x18\b \x01(\tB\x03\xe0A\x03R\x04etag\x129\n" +
-	"\x16destination_project_id\x18\t \x01(\tB\x03\xe0A\x03R\x14destinationProjectId\x1a9\n" +
+	".google/cloud/gkebackup/v1/backup_channel.proto\x12\x19google.cloud.gkebackup.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xab\x05\n" +
+	"\rBackupChannel\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x126\n" +
+	"\x13destination_project\x18\x02 \x01(\tB\x05\xe2A\x02\x05\x02R\x12destinationProject\x12\x1e\n" +
+	"\x03uid\x18\x03 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12R\n" +
+	"\x06labels\x18\x06 \x03(\v24.google.cloud.gkebackup.v1.BackupChannel.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12&\n" +
+	"\vdescription\x18\a \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\x18\n" +
+	"\x04etag\x18\b \x01(\tB\x04\xe2A\x01\x03R\x04etag\x12:\n" +
+	"\x16destination_project_id\x18\t \x01(\tB\x04\xe2A\x01\x03R\x14destinationProjectId\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x94\x01\xeaA\x90\x01\n" +

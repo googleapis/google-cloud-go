@@ -453,17 +453,17 @@ var File_google_cloud_bigquery_migration_v2alpha_translation_service_proto proto
 
 const file_google_cloud_bigquery_migration_v2alpha_translation_service_proto_rawDesc = "" +
 	"\n" +
-	"Agoogle/cloud/bigquery/migration/v2alpha/translation_service.proto\x12'google.cloud.bigquery.migration.v2alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xdb\x02\n" +
-	"\x15TranslateQueryRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12\x86\x01\n" +
-	"\x0esource_dialect\x18\x02 \x01(\x0e2Z.google.cloud.bigquery.migration.v2alpha.TranslateQueryRequest.SqlTranslationSourceDialectB\x03\xe0A\x02R\rsourceDialect\x12\x19\n" +
-	"\x05query\x18\x03 \x01(\tB\x03\xe0A\x02R\x05query\"[\n" +
+	"Agoogle/cloud/bigquery/migration/v2alpha/translation_service.proto\x12'google.cloud.bigquery.migration.v2alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xde\x02\n" +
+	"\x15TranslateQueryRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12\x87\x01\n" +
+	"\x0esource_dialect\x18\x02 \x01(\x0e2Z.google.cloud.bigquery.migration.v2alpha.TranslateQueryRequest.SqlTranslationSourceDialectB\x04\xe2A\x01\x02R\rsourceDialect\x12\x1a\n" +
+	"\x05query\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x05query\"[\n" +
 	"\x1bSqlTranslationSourceDialect\x12.\n" +
 	"*SQL_TRANSLATION_SOURCE_DIALECT_UNSPECIFIED\x10\x00\x12\f\n" +
-	"\bTERADATA\x10\x01\"\xa6\x02\n" +
-	"\x16TranslateQueryResponse\x12/\n" +
-	"\x0ftranslation_job\x18\x04 \x01(\tB\x06\xe0A\x03\xe0A\x05R\x0etranslationJob\x12)\n" +
+	"\bTERADATA\x10\x01\"\xa5\x02\n" +
+	"\x16TranslateQueryResponse\x12.\n" +
+	"\x0ftranslation_job\x18\x04 \x01(\tB\x05\xe2A\x02\x03\x05R\x0etranslationJob\x12)\n" +
 	"\x10translated_query\x18\x01 \x01(\tR\x0ftranslatedQuery\x12T\n" +
 	"\x06errors\x18\x02 \x03(\v2<.google.cloud.bigquery.migration.v2alpha.SqlTranslationErrorR\x06errors\x12Z\n" +
 	"\bwarnings\x18\x03 \x03(\v2>.google.cloud.bigquery.migration.v2alpha.SqlTranslationWarningR\bwarnings\"_\n" +

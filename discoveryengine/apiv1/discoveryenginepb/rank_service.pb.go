@@ -302,14 +302,14 @@ const file_google_cloud_discoveryengine_v1_rank_service_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12\x18\n" +
 	"\acontent\x18\x03 \x01(\tR\acontent\x12\x14\n" +
-	"\x05score\x18\x04 \x01(\x02R\x05score\"\xe2\x03\n" +
-	"\vRankRequest\x12[\n" +
-	"\x0eranking_config\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
+	"\x05score\x18\x04 \x01(\x02R\x05score\"\xe4\x03\n" +
+	"\vRankRequest\x12\\\n" +
+	"\x0eranking_config\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
 	",discoveryengine.googleapis.com/RankingConfigR\rrankingConfig\x12\x14\n" +
 	"\x05model\x18\x02 \x01(\tR\x05model\x12\x13\n" +
 	"\x05top_n\x18\x03 \x01(\x05R\x04topN\x12\x14\n" +
-	"\x05query\x18\x04 \x01(\tR\x05query\x12M\n" +
-	"\arecords\x18\x05 \x03(\v2..google.cloud.discoveryengine.v1.RankingRecordB\x03\xe0A\x02R\arecords\x12H\n" +
+	"\x05query\x18\x04 \x01(\tR\x05query\x12N\n" +
+	"\arecords\x18\x05 \x03(\v2..google.cloud.discoveryengine.v1.RankingRecordB\x04\xe2A\x01\x02R\arecords\x12H\n" +
 	"!ignore_record_details_in_response\x18\x06 \x01(\bR\x1dignoreRecordDetailsInResponse\x12]\n" +
 	"\vuser_labels\x18\a \x03(\v2<.google.cloud.discoveryengine.v1.RankRequest.UserLabelsEntryR\n" +
 	"userLabels\x1a=\n" +

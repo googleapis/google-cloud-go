@@ -151,11 +151,11 @@ var File_google_ads_datamanager_v1_consent_proto protoreflect.FileDescriptor
 
 const file_google_ads_datamanager_v1_consent_proto_rawDesc = "" +
 	"\n" +
-	"'google/ads/datamanager/v1/consent.proto\x12\x19google.ads.datamanager.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xb8\x01\n" +
-	"\aConsent\x12O\n" +
-	"\fad_user_data\x18\x01 \x01(\x0e2(.google.ads.datamanager.v1.ConsentStatusB\x03\xe0A\x01R\n" +
-	"adUserData\x12\\\n" +
-	"\x12ad_personalization\x18\x02 \x01(\x0e2(.google.ads.datamanager.v1.ConsentStatusB\x03\xe0A\x01R\x11adPersonalization*X\n" +
+	"'google/ads/datamanager/v1/consent.proto\x12\x19google.ads.datamanager.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xba\x01\n" +
+	"\aConsent\x12P\n" +
+	"\fad_user_data\x18\x01 \x01(\x0e2(.google.ads.datamanager.v1.ConsentStatusB\x04\xe2A\x01\x01R\n" +
+	"adUserData\x12]\n" +
+	"\x12ad_personalization\x18\x02 \x01(\x0e2(.google.ads.datamanager.v1.ConsentStatusB\x04\xe2A\x01\x01R\x11adPersonalization*X\n" +
 	"\rConsentStatus\x12\x1e\n" +
 	"\x1aCONSENT_STATUS_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fCONSENT_GRANTED\x10\x01\x12\x12\n" +

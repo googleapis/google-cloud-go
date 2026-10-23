@@ -1532,44 +1532,44 @@ var File_google_cloud_networkservices_v1_extensibility_proto protoreflect.FileDe
 
 const file_google_cloud_networkservices_v1_extensibility_proto_rawDesc = "" +
 	"\n" +
-	"3google/cloud/networkservices/v1/extensibility.proto\x12\x1fgoogle.cloud.networkservices.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x9f\x0e\n" +
+	"3google/cloud/networkservices/v1/extensibility.proto\x12\x1fgoogle.cloud.networkservices.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb3\x0e\n" +
 	"\n" +
-	"WasmPlugin\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12%\n" +
-	"\vdescription\x18\x04 \x01(\tB\x03\xe0A\x01R\vdescription\x12T\n" +
-	"\x06labels\x18\x05 \x03(\v27.google.cloud.networkservices.v1.WasmPlugin.LabelsEntryB\x03\xe0A\x01R\x06labels\x12+\n" +
-	"\x0fmain_version_id\x18\x06 \x01(\tB\x03\xe0A\x01R\rmainVersionId\x12Y\n" +
+	"WasmPlugin\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12&\n" +
+	"\vdescription\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12U\n" +
+	"\x06labels\x18\x05 \x03(\v27.google.cloud.networkservices.v1.WasmPlugin.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12,\n" +
+	"\x0fmain_version_id\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\rmainVersionId\x12Z\n" +
 	"\n" +
-	"log_config\x18\t \x01(\v25.google.cloud.networkservices.v1.WasmPlugin.LogConfigB\x03\xe0A\x01R\tlogConfig\x12Z\n" +
+	"log_config\x18\t \x01(\v25.google.cloud.networkservices.v1.WasmPlugin.LogConfigB\x04\xe2A\x01\x01R\tlogConfig\x12[\n" +
 	"\bversions\x18\n" +
-	" \x03(\v29.google.cloud.networkservices.v1.WasmPlugin.VersionsEntryB\x03\xe0A\x01R\bversions\x12P\n" +
-	"\aused_by\x18\v \x03(\v22.google.cloud.networkservices.v1.WasmPlugin.UsedByB\x03\xe0A\x03R\x06usedBy\x1a\xd2\x04\n" +
+	" \x03(\v29.google.cloud.networkservices.v1.WasmPlugin.VersionsEntryB\x04\xe2A\x01\x01R\bversions\x12Q\n" +
+	"\aused_by\x18\v \x03(\v22.google.cloud.networkservices.v1.WasmPlugin.UsedByB\x04\xe2A\x01\x03R\x06usedBy\x1a\xd9\x04\n" +
 	"\x0eVersionDetails\x12.\n" +
 	"\x12plugin_config_data\x18\t \x01(\fH\x00R\x10pluginConfigData\x12,\n" +
 	"\x11plugin_config_uri\x18\n" +
-	" \x01(\tH\x00R\x0fpluginConfigUri\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12c\n" +
-	"\x06labels\x18\x04 \x03(\v2F.google.cloud.networkservices.v1.WasmPlugin.VersionDetails.LabelsEntryB\x03\xe0A\x01R\x06labels\x12 \n" +
-	"\timage_uri\x18\x05 \x01(\tB\x03\xe0A\x01R\bimageUri\x12&\n" +
-	"\fimage_digest\x18\x06 \x01(\tB\x03\xe0A\x03R\vimageDigest\x125\n" +
-	"\x14plugin_config_digest\x18\v \x01(\tB\x03\xe0A\x03R\x12pluginConfigDigest\x1a9\n" +
+	" \x01(\tH\x00R\x0fpluginConfigUri\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12d\n" +
+	"\x06labels\x18\x04 \x03(\v2F.google.cloud.networkservices.v1.WasmPlugin.VersionDetails.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12!\n" +
+	"\timage_uri\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\bimageUri\x12'\n" +
+	"\fimage_digest\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\vimageDigest\x126\n" +
+	"\x14plugin_config_digest\x18\v \x01(\tB\x04\xe2A\x01\x03R\x12pluginConfigDigest\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\x16\n" +
-	"\x14plugin_config_source\x1a\xa1\x02\n" +
-	"\tLogConfig\x12\x1b\n" +
-	"\x06enable\x18\x01 \x01(\bB\x03\xe0A\x01R\x06enable\x12$\n" +
-	"\vsample_rate\x18\x02 \x01(\x02B\x03\xe0A\aR\n" +
-	"sampleRate\x12g\n" +
-	"\rmin_log_level\x18\x03 \x01(\x0e2>.google.cloud.networkservices.v1.WasmPlugin.LogConfig.LogLevelB\x03\xe0A\aR\vminLogLevel\"h\n" +
+	"\x14plugin_config_source\x1a\xa4\x02\n" +
+	"\tLogConfig\x12\x1c\n" +
+	"\x06enable\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x06enable\x12%\n" +
+	"\vsample_rate\x18\x02 \x01(\x02B\x04\xe2A\x01\aR\n" +
+	"sampleRate\x12h\n" +
+	"\rmin_log_level\x18\x03 \x01(\x0e2>.google.cloud.networkservices.v1.WasmPlugin.LogConfig.LogLevelB\x04\xe2A\x01\aR\vminLogLevel\"h\n" +
 	"\bLogLevel\x12\x19\n" +
 	"\x15LOG_LEVEL_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05TRACE\x10\x01\x12\t\n" +
@@ -1577,78 +1577,78 @@ const file_google_cloud_networkservices_v1_extensibility_proto_rawDesc = "" +
 	"\x04INFO\x10\x03\x12\b\n" +
 	"\x04WARN\x10\x04\x12\t\n" +
 	"\x05ERROR\x10\x05\x12\f\n" +
-	"\bCRITICAL\x10\x06\x1a!\n" +
-	"\x06UsedBy\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x1a9\n" +
+	"\bCRITICAL\x10\x06\x1a\"\n" +
+	"\x06UsedBy\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1aw\n" +
 	"\rVersionsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12P\n" +
 	"\x05value\x18\x02 \x01(\v2:.google.cloud.networkservices.v1.WasmPlugin.VersionDetailsR\x05value:\x028\x01:q\xeaAn\n" +
-	")networkservices.googleapis.com/WasmPlugin\x12Aprojects/{project}/locations/{location}/wasmPlugins/{wasm_plugin}\"\x81\x06\n" +
+	")networkservices.googleapis.com/WasmPlugin\x12Aprojects/{project}/locations/{location}/wasmPlugins/{wasm_plugin}\"\x89\x06\n" +
 	"\x11WasmPluginVersion\x12.\n" +
 	"\x12plugin_config_data\x18\f \x01(\fH\x00R\x10pluginConfigData\x12,\n" +
-	"\x11plugin_config_uri\x18\r \x01(\tH\x00R\x0fpluginConfigUri\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tB\x03\xe0A\x01R\vdescription\x12[\n" +
-	"\x06labels\x18\x06 \x03(\v2>.google.cloud.networkservices.v1.WasmPluginVersion.LabelsEntryB\x03\xe0A\x01R\x06labels\x12 \n" +
-	"\timage_uri\x18\b \x01(\tB\x03\xe0A\x01R\bimageUri\x12&\n" +
-	"\fimage_digest\x18\t \x01(\tB\x03\xe0A\x03R\vimageDigest\x125\n" +
-	"\x14plugin_config_digest\x18\x0e \x01(\tB\x03\xe0A\x03R\x12pluginConfigDigest\x1a9\n" +
+	"\x11plugin_config_uri\x18\r \x01(\tH\x00R\x0fpluginConfigUri\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\\\n" +
+	"\x06labels\x18\x06 \x03(\v2>.google.cloud.networkservices.v1.WasmPluginVersion.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12!\n" +
+	"\timage_uri\x18\b \x01(\tB\x04\xe2A\x01\x01R\bimageUri\x12'\n" +
+	"\fimage_digest\x18\t \x01(\tB\x04\xe2A\x01\x03R\vimageDigest\x126\n" +
+	"\x14plugin_config_digest\x18\x0e \x01(\tB\x04\xe2A\x01\x03R\x12pluginConfigDigest\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x98\x01\xeaA\x94\x01\n" +
 	"0networkservices.googleapis.com/WasmPluginVersion\x12`projects/{project}/locations/{location}/wasmPlugins/{wasm_plugin}/versions/{wasm_plugin_version}B\x16\n" +
-	"\x14plugin_config_source\"\x9f\x01\n" +
-	"\x16ListWasmPluginsRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\x12)networkservices.googleapis.com/WasmPluginR\x06parent\x12\x1b\n" +
+	"\x14plugin_config_source\"\xa0\x01\n" +
+	"\x16ListWasmPluginsRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\x12)networkservices.googleapis.com/WasmPluginR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xb3\x01\n" +
 	"\x17ListWasmPluginsResponse\x12N\n" +
 	"\fwasm_plugins\x18\x01 \x03(\v2+.google.cloud.networkservices.v1.WasmPluginR\vwasmPlugins\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xa2\x01\n" +
-	"\x14GetWasmPluginRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xa3\x01\n" +
+	"\x14GetWasmPluginRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
 	")networkservices.googleapis.com/WasmPluginR\x04name\x12C\n" +
-	"\x04view\x18\x02 \x01(\x0e2/.google.cloud.networkservices.v1.WasmPluginViewR\x04view\"\xe2\x01\n" +
-	"\x17CreateWasmPluginRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\x12)networkservices.googleapis.com/WasmPluginR\x06parent\x12)\n" +
-	"\x0ewasm_plugin_id\x18\x02 \x01(\tB\x03\xe0A\x02R\fwasmPluginId\x12Q\n" +
-	"\vwasm_plugin\x18\x03 \x01(\v2+.google.cloud.networkservices.v1.WasmPluginB\x03\xe0A\x02R\n" +
-	"wasmPlugin\"\xae\x01\n" +
-	"\x17UpdateWasmPluginRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12Q\n" +
-	"\vwasm_plugin\x18\x02 \x01(\v2+.google.cloud.networkservices.v1.WasmPluginB\x03\xe0A\x02R\n" +
-	"wasmPlugin\"`\n" +
-	"\x17DeleteWasmPluginRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")networkservices.googleapis.com/WasmPluginR\x04name\"\xad\x01\n" +
-	"\x1dListWasmPluginVersionsRequest\x12P\n" +
-	"\x06parent\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\x120networkservices.googleapis.com/WasmPluginVersionR\x06parent\x12\x1b\n" +
+	"\x04view\x18\x02 \x01(\x0e2/.google.cloud.networkservices.v1.WasmPluginViewR\x04view\"\xe5\x01\n" +
+	"\x17CreateWasmPluginRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\x12)networkservices.googleapis.com/WasmPluginR\x06parent\x12*\n" +
+	"\x0ewasm_plugin_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\fwasmPluginId\x12R\n" +
+	"\vwasm_plugin\x18\x03 \x01(\v2+.google.cloud.networkservices.v1.WasmPluginB\x04\xe2A\x01\x02R\n" +
+	"wasmPlugin\"\xb0\x01\n" +
+	"\x17UpdateWasmPluginRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12R\n" +
+	"\vwasm_plugin\x18\x02 \x01(\v2+.google.cloud.networkservices.v1.WasmPluginB\x04\xe2A\x01\x02R\n" +
+	"wasmPlugin\"a\n" +
+	"\x17DeleteWasmPluginRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")networkservices.googleapis.com/WasmPluginR\x04name\"\xae\x01\n" +
+	"\x1dListWasmPluginVersionsRequest\x12Q\n" +
+	"\x06parent\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\x120networkservices.googleapis.com/WasmPluginVersionR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xd0\x01\n" +
 	"\x1eListWasmPluginVersionsResponse\x12d\n" +
 	"\x14wasm_plugin_versions\x18\x01 \x03(\v22.google.cloud.networkservices.v1.WasmPluginVersionR\x12wasmPluginVersions\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"k\n" +
-	"\x1bGetWasmPluginVersionRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0networkservices.googleapis.com/WasmPluginVersionR\x04name\"\x95\x02\n" +
-	"\x1eCreateWasmPluginVersionRequest\x12P\n" +
-	"\x06parent\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\x120networkservices.googleapis.com/WasmPluginVersionR\x06parent\x128\n" +
-	"\x16wasm_plugin_version_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x13wasmPluginVersionId\x12g\n" +
-	"\x13wasm_plugin_version\x18\x03 \x01(\v22.google.cloud.networkservices.v1.WasmPluginVersionB\x03\xe0A\x02R\x11wasmPluginVersion\"n\n" +
-	"\x1eDeleteWasmPluginVersionRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"l\n" +
+	"\x1bGetWasmPluginVersionRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0networkservices.googleapis.com/WasmPluginVersionR\x04name\"\x98\x02\n" +
+	"\x1eCreateWasmPluginVersionRequest\x12Q\n" +
+	"\x06parent\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\x120networkservices.googleapis.com/WasmPluginVersionR\x06parent\x129\n" +
+	"\x16wasm_plugin_version_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x13wasmPluginVersionId\x12h\n" +
+	"\x13wasm_plugin_version\x18\x03 \x01(\v22.google.cloud.networkservices.v1.WasmPluginVersionB\x04\xe2A\x01\x02R\x11wasmPluginVersion\"o\n" +
+	"\x1eDeleteWasmPluginVersionRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
 	"0networkservices.googleapis.com/WasmPluginVersionR\x04name*i\n" +
 	"\x0eWasmPluginView\x12 \n" +
 	"\x1cWASM_PLUGIN_VIEW_UNSPECIFIED\x10\x00\x12\x1a\n" +

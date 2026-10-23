@@ -5979,15 +5979,15 @@ var File_google_cloud_sql_v1beta4_cloud_sql_proto protoreflect.FileDescriptor
 
 const file_google_cloud_sql_v1beta4_cloud_sql_proto_rawDesc = "" +
 	"\n" +
-	"(google/cloud/sql/v1beta4/cloud_sql.proto\x12\x18google.cloud.sql.v1beta4\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x18google/api/routing.proto\x1a2google/cloud/sql/v1beta4/cloud_sql_resources.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\x94\x01\n" +
-	"\x13CreateBackupRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \x12\x1esqladmin.googleapis.com/BackupR\x06parent\x12=\n" +
-	"\x06backup\x18\x02 \x01(\v2 .google.cloud.sql.v1beta4.BackupB\x03\xe0A\x02R\x06backup\"N\n" +
-	"\x10GetBackupRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1esqladmin.googleapis.com/BackupR\x04name\"\xa8\x01\n" +
-	"\x12ListBackupsRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \x12\x1esqladmin.googleapis.com/BackupR\x06parent\x12\x1b\n" +
+	"(google/cloud/sql/v1beta4/cloud_sql.proto\x12\x18google.cloud.sql.v1beta4\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x18google/api/routing.proto\x1a2google/cloud/sql/v1beta4/cloud_sql_resources.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\x96\x01\n" +
+	"\x13CreateBackupRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \x12\x1esqladmin.googleapis.com/BackupR\x06parent\x12>\n" +
+	"\x06backup\x18\x02 \x01(\v2 .google.cloud.sql.v1beta4.BackupB\x04\xe2A\x01\x02R\x06backup\"O\n" +
+	"\x10GetBackupRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1esqladmin.googleapis.com/BackupR\x04name\"\xa9\x01\n" +
+	"\x12ListBackupsRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \x12\x1esqladmin.googleapis.com/BackupR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -5995,13 +5995,13 @@ const file_google_cloud_sql_v1beta4_cloud_sql_proto_rawDesc = "" +
 	"\x13ListBackupsResponse\x12:\n" +
 	"\abackups\x18\x01 \x03(\v2 .google.cloud.sql.v1beta4.BackupR\abackups\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12@\n" +
-	"\bwarnings\x18\x03 \x03(\v2$.google.cloud.sql.v1beta4.ApiWarningR\bwarnings\"\x91\x01\n" +
-	"\x13UpdateBackupRequest\x12=\n" +
-	"\x06backup\x18\x01 \x01(\v2 .google.cloud.sql.v1beta4.BackupB\x03\xe0A\x02R\x06backup\x12;\n" +
+	"\bwarnings\x18\x03 \x03(\v2$.google.cloud.sql.v1beta4.ApiWarningR\bwarnings\"\x92\x01\n" +
+	"\x13UpdateBackupRequest\x12>\n" +
+	"\x06backup\x18\x01 \x01(\v2 .google.cloud.sql.v1beta4.BackupB\x04\xe2A\x01\x02R\x06backup\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"Q\n" +
-	"\x13DeleteBackupRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
+	"updateMask\"R\n" +
+	"\x13DeleteBackupRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
 	"\x1esqladmin.googleapis.com/BackupR\x04name\"b\n" +
 	"\x1aSqlBackupRunsDeleteRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1a\n" +
@@ -6021,194 +6021,194 @@ const file_google_cloud_sql_v1beta4_cloud_sql_proto_rawDesc = "" +
 	"maxResults\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x18\n" +
-	"\aproject\x18\x04 \x01(\tR\aproject\"\x8e\x01\n" +
+	"\aproject\x18\x04 \x01(\tR\aproject\"\x8f\x01\n" +
 	"\x19SqlDatabasesDeleteRequest\x12\x1a\n" +
 	"\bdatabase\x18\x01 \x01(\tR\bdatabase\x12\x1a\n" +
 	"\binstance\x18\x02 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x03 \x01(\tR\aproject\x12\x1f\n" +
-	"\blocation\x18\x04 \x01(\tB\x03\xe0A\x01R\blocation\"\x8b\x01\n" +
+	"\aproject\x18\x03 \x01(\tR\aproject\x12 \n" +
+	"\blocation\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\blocation\"\x8c\x01\n" +
 	"\x16SqlDatabasesGetRequest\x12\x1a\n" +
 	"\bdatabase\x18\x01 \x01(\tR\bdatabase\x12\x1a\n" +
 	"\binstance\x18\x02 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x03 \x01(\tR\aproject\x12\x1f\n" +
-	"\blocation\x18\x04 \x01(\tB\x03\xe0A\x01R\blocation\"\xaa\x01\n" +
+	"\aproject\x18\x03 \x01(\tR\aproject\x12 \n" +
+	"\blocation\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\blocation\"\xab\x01\n" +
 	"\x19SqlDatabasesInsertRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x126\n" +
-	"\x04body\x18d \x01(\v2\".google.cloud.sql.v1beta4.DatabaseR\x04body\x12\x1f\n" +
-	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"p\n" +
+	"\x04body\x18d \x01(\v2\".google.cloud.sql.v1beta4.DatabaseR\x04body\x12 \n" +
+	"\blocation\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\blocation\"q\n" +
 	"\x17SqlDatabasesListRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x02 \x01(\tR\aproject\x12\x1f\n" +
-	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xc6\x01\n" +
+	"\aproject\x18\x02 \x01(\tR\aproject\x12 \n" +
+	"\blocation\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\blocation\"\xc7\x01\n" +
 	"\x19SqlDatabasesUpdateRequest\x12\x1a\n" +
 	"\bdatabase\x18\x01 \x01(\tR\bdatabase\x12\x1a\n" +
 	"\binstance\x18\x02 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x03 \x01(\tR\aproject\x126\n" +
-	"\x04body\x18d \x01(\v2\".google.cloud.sql.v1beta4.DatabaseR\x04body\x12\x1f\n" +
-	"\blocation\x18\x04 \x01(\tB\x03\xe0A\x01R\blocation\"\xa0\x01\n" +
+	"\x04body\x18d \x01(\v2\".google.cloud.sql.v1beta4.DatabaseR\x04body\x12 \n" +
+	"\blocation\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\blocation\"\xa1\x01\n" +
 	"\x13SqlFlagsListRequest\x12)\n" +
-	"\x10database_version\x18\x01 \x01(\tR\x0fdatabaseVersion\x12O\n" +
+	"\x10database_version\x18\x01 \x01(\tR\x0fdatabaseVersion\x12P\n" +
 	"\n" +
-	"flag_scope\x18\x03 \x01(\x0e2&.google.cloud.sql.v1beta4.SqlFlagScopeB\x03\xe0A\x01H\x00R\tflagScope\x88\x01\x01B\r\n" +
-	"\v_flag_scope\"w\n" +
+	"flag_scope\x18\x03 \x01(\x0e2&.google.cloud.sql.v1beta4.SqlFlagScopeB\x04\xe2A\x01\x01H\x00R\tflagScope\x88\x01\x01B\r\n" +
+	"\v_flag_scope\"x\n" +
 	"\x1eSqlInstancesAddServerCaRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x02 \x01(\tR\aproject\x12\x1f\n" +
-	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\x8a\x01\n" +
-	"'SqlInstancesAddServerCertificateRequest\x12\x1f\n" +
-	"\binstance\x18\x01 \x01(\tB\x03\xe0A\x02R\binstance\x12\x1d\n" +
-	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\x12\x1f\n" +
-	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\x8b\x01\n" +
-	"(SqlInstancesAddEntraIdCertificateRequest\x12\x1f\n" +
-	"\binstance\x18\x01 \x01(\tB\x03\xe0A\x02R\binstance\x12\x1d\n" +
-	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\x12\x1f\n" +
-	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xb6\x01\n" +
+	"\aproject\x18\x02 \x01(\tR\aproject\x12 \n" +
+	"\blocation\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\blocation\"\x8d\x01\n" +
+	"'SqlInstancesAddServerCertificateRequest\x12 \n" +
+	"\binstance\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\binstance\x12\x1e\n" +
+	"\aproject\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\aproject\x12 \n" +
+	"\blocation\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\blocation\"\x8e\x01\n" +
+	"(SqlInstancesAddEntraIdCertificateRequest\x12 \n" +
+	"\binstance\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\binstance\x12\x1e\n" +
+	"\aproject\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\aproject\x12 \n" +
+	"\blocation\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\blocation\"\xb7\x01\n" +
 	"\x18SqlInstancesCloneRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12C\n" +
-	"\x04body\x18d \x01(\v2/.google.cloud.sql.v1beta4.InstancesCloneRequestR\x04body\x12\x1f\n" +
-	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xa2\x03\n" +
+	"\x04body\x18d \x01(\v2/.google.cloud.sql.v1beta4.InstancesCloneRequestR\x04body\x12 \n" +
+	"\blocation\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\blocation\"\xa6\x03\n" +
 	"\x19SqlInstancesDeleteRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x123\n" +
-	"\x13enable_final_backup\x18\a \x01(\bH\x01R\x11enableFinalBackup\x88\x01\x01\x128\n" +
-	"\x15final_backup_ttl_days\x18\x04 \x01(\x03B\x03\xe0A\x01H\x00R\x12finalBackupTtlDays\x12Z\n" +
-	"\x18final_backup_expiry_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01H\x00R\x15finalBackupExpiryTime\x12=\n" +
-	"\x18final_backup_description\x18\x05 \x01(\tB\x03\xe0A\x01R\x16finalBackupDescription\x12\x1f\n" +
-	"\blocation\x18\v \x01(\tB\x03\xe0A\x01R\blocationB\f\n" +
+	"\x13enable_final_backup\x18\a \x01(\bH\x01R\x11enableFinalBackup\x88\x01\x01\x129\n" +
+	"\x15final_backup_ttl_days\x18\x04 \x01(\x03B\x04\xe2A\x01\x01H\x00R\x12finalBackupTtlDays\x12[\n" +
+	"\x18final_backup_expiry_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01H\x00R\x15finalBackupExpiryTime\x12>\n" +
+	"\x18final_backup_description\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x16finalBackupDescription\x12 \n" +
+	"\blocation\x18\v \x01(\tB\x04\xe2A\x01\x01R\blocationB\f\n" +
 	"\n" +
 	"expirationB\x16\n" +
-	"\x14_enable_final_backup\"\xc4\x01\n" +
+	"\x14_enable_final_backup\"\xc5\x01\n" +
 	"\x1fSqlInstancesDemoteMasterRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12J\n" +
-	"\x04body\x18d \x01(\v26.google.cloud.sql.v1beta4.InstancesDemoteMasterRequestR\x04body\x12\x1f\n" +
-	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xc2\x01\n" +
-	"\x19SqlInstancesDemoteRequest\x12\x1f\n" +
-	"\binstance\x18\x01 \x01(\tB\x03\xe0A\x02R\binstance\x12\x1d\n" +
-	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\x12D\n" +
-	"\x04body\x18d \x01(\v20.google.cloud.sql.v1beta4.InstancesDemoteRequestR\x04body\x12\x1f\n" +
-	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xb8\x01\n" +
+	"\x04body\x18d \x01(\v26.google.cloud.sql.v1beta4.InstancesDemoteMasterRequestR\x04body\x12 \n" +
+	"\blocation\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\blocation\"\xc5\x01\n" +
+	"\x19SqlInstancesDemoteRequest\x12 \n" +
+	"\binstance\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\binstance\x12\x1e\n" +
+	"\aproject\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\aproject\x12D\n" +
+	"\x04body\x18d \x01(\v20.google.cloud.sql.v1beta4.InstancesDemoteRequestR\x04body\x12 \n" +
+	"\blocation\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\blocation\"\xb9\x01\n" +
 	"\x19SqlInstancesExportRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12D\n" +
-	"\x04body\x18d \x01(\v20.google.cloud.sql.v1beta4.InstancesExportRequestR\x04body\x12\x1f\n" +
-	"\blocation\x18\x05 \x01(\tB\x03\xe0A\x01R\blocation\"\xbc\x01\n" +
+	"\x04body\x18d \x01(\v20.google.cloud.sql.v1beta4.InstancesExportRequestR\x04body\x12 \n" +
+	"\blocation\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\blocation\"\xbd\x01\n" +
 	"\x1bSqlInstancesFailoverRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12F\n" +
-	"\x04body\x18d \x01(\v22.google.cloud.sql.v1beta4.InstancesFailoverRequestR\x04body\x12\x1f\n" +
-	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"o\n" +
+	"\x04body\x18d \x01(\v22.google.cloud.sql.v1beta4.InstancesFailoverRequestR\x04body\x12 \n" +
+	"\blocation\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\blocation\"p\n" +
 	"\x16SqlInstancesGetRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x02 \x01(\tR\aproject\x12\x1f\n" +
-	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xb8\x01\n" +
+	"\aproject\x18\x02 \x01(\tR\aproject\x12 \n" +
+	"\blocation\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\blocation\"\xb9\x01\n" +
 	"\x19SqlInstancesImportRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12D\n" +
-	"\x04body\x18d \x01(\v20.google.cloud.sql.v1beta4.InstancesImportRequestR\x04body\x12\x1f\n" +
-	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\x96\x01\n" +
+	"\x04body\x18d \x01(\v20.google.cloud.sql.v1beta4.InstancesImportRequestR\x04body\x12 \n" +
+	"\blocation\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\blocation\"\x97\x01\n" +
 	"\x19SqlInstancesInsertRequest\x12\x18\n" +
 	"\aproject\x18\x01 \x01(\tR\aproject\x12>\n" +
-	"\x04body\x18d \x01(\v2*.google.cloud.sql.v1beta4.DatabaseInstanceR\x04body\x12\x1f\n" +
-	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xac\x01\n" +
+	"\x04body\x18d \x01(\v2*.google.cloud.sql.v1beta4.DatabaseInstanceR\x04body\x12 \n" +
+	"\blocation\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\blocation\"\xad\x01\n" +
 	"\x17SqlInstancesListRequest\x12\x16\n" +
 	"\x06filter\x18\x01 \x01(\tR\x06filter\x12\x1f\n" +
 	"\vmax_results\x18\x02 \x01(\rR\n" +
 	"maxResults\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x18\n" +
-	"\aproject\x18\x04 \x01(\tR\aproject\x12\x1f\n" +
-	"\blocation\x18\x05 \x01(\tB\x03\xe0A\x01R\blocation\"y\n" +
+	"\aproject\x18\x04 \x01(\tR\aproject\x12 \n" +
+	"\blocation\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\blocation\"z\n" +
 	" SqlInstancesListServerCasRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x02 \x01(\tR\aproject\x12\x1f\n" +
-	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\x8c\x01\n" +
-	")SqlInstancesListServerCertificatesRequest\x12\x1f\n" +
-	"\binstance\x18\x01 \x01(\tB\x03\xe0A\x02R\binstance\x12\x1d\n" +
-	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\x12\x1f\n" +
-	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\x8d\x01\n" +
-	"*SqlInstancesListEntraIdCertificatesRequest\x12\x1f\n" +
-	"\binstance\x18\x01 \x01(\tB\x03\xe0A\x02R\binstance\x12\x1d\n" +
-	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\x12\x1f\n" +
-	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\x84\x03\n" +
+	"\aproject\x18\x02 \x01(\tR\aproject\x12 \n" +
+	"\blocation\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\blocation\"\x8f\x01\n" +
+	")SqlInstancesListServerCertificatesRequest\x12 \n" +
+	"\binstance\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\binstance\x12\x1e\n" +
+	"\aproject\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\aproject\x12 \n" +
+	"\blocation\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\blocation\"\x90\x01\n" +
+	"*SqlInstancesListEntraIdCertificatesRequest\x12 \n" +
+	"\binstance\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\binstance\x12\x1e\n" +
+	"\aproject\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\aproject\x12 \n" +
+	"\blocation\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\blocation\"\x87\x03\n" +
 	"\x18SqlInstancesPatchRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x02 \x01(\tR\aproject\x12B\n" +
-	"\x18reconcile_psc_networking\x18\x04 \x01(\bB\x03\xe0A\x01H\x00R\x16reconcilePscNetworking\x88\x01\x01\x12M\n" +
-	"\x1ereconcile_psc_networking_force\x18\x05 \x01(\bB\x03\xe0A\x01H\x01R\x1breconcilePscNetworkingForce\x88\x01\x01\x12>\n" +
-	"\x04body\x18d \x01(\v2*.google.cloud.sql.v1beta4.DatabaseInstanceR\x04body\x12\x1f\n" +
-	"\blocation\x18\x06 \x01(\tB\x03\xe0A\x01R\blocationB\x1b\n" +
+	"\aproject\x18\x02 \x01(\tR\aproject\x12C\n" +
+	"\x18reconcile_psc_networking\x18\x04 \x01(\bB\x04\xe2A\x01\x01H\x00R\x16reconcilePscNetworking\x88\x01\x01\x12N\n" +
+	"\x1ereconcile_psc_networking_force\x18\x05 \x01(\bB\x04\xe2A\x01\x01H\x01R\x1breconcilePscNetworkingForce\x88\x01\x01\x12>\n" +
+	"\x04body\x18d \x01(\v2*.google.cloud.sql.v1beta4.DatabaseInstanceR\x04body\x12 \n" +
+	"\blocation\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\blocationB\x1b\n" +
 	"\x19_reconcile_psc_networkingB!\n" +
-	"\x1f_reconcile_psc_networking_force\"\x96\x01\n" +
+	"\x1f_reconcile_psc_networking_force\"\x97\x01\n" +
 	"!SqlInstancesPromoteReplicaRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12\x1a\n" +
-	"\bfailover\x18\x03 \x01(\bR\bfailover\x12\x1f\n" +
-	"\blocation\x18\x04 \x01(\tB\x03\xe0A\x01R\blocation\"\xb5\x01\n" +
+	"\bfailover\x18\x03 \x01(\bR\bfailover\x12 \n" +
+	"\blocation\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\blocation\"\xb7\x01\n" +
 	"\x1dSqlInstancesSwitchoverRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x02 \x01(\tR\aproject\x12=\n" +
+	"\aproject\x18\x02 \x01(\tR\aproject\x12>\n" +
 	"\n" +
-	"db_timeout\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\tdbTimeout\x12\x1f\n" +
-	"\blocation\x18\x04 \x01(\tB\x03\xe0A\x01R\blocation\"\xad\x02\n" +
+	"db_timeout\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\tdbTimeout\x12 \n" +
+	"\blocation\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\blocation\"\xaf\x02\n" +
 	"!SqlInstancesResetSslConfigRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x02 \x01(\tR\aproject\x12a\n" +
-	"\x04mode\x18\x03 \x01(\x0e2H.google.cloud.sql.v1beta4.SqlInstancesResetSslConfigRequest.ResetSslModeB\x03\xe0A\x01R\x04mode\x12\x1f\n" +
-	"\blocation\x18\x04 \x01(\tB\x03\xe0A\x01R\blocation\"N\n" +
+	"\aproject\x18\x02 \x01(\tR\aproject\x12b\n" +
+	"\x04mode\x18\x03 \x01(\x0e2H.google.cloud.sql.v1beta4.SqlInstancesResetSslConfigRequest.ResetSslModeB\x04\xe2A\x01\x01R\x04mode\x12 \n" +
+	"\blocation\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\blocation\"N\n" +
 	"\fResetSslMode\x12\x1e\n" +
 	"\x1aRESET_SSL_MODE_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03ALL\x10\x01\x12\x15\n" +
-	"\x11SYNC_FROM_PRIMARY\x10\x02\"s\n" +
+	"\x11SYNC_FROM_PRIMARY\x10\x02\"t\n" +
 	"\x1aSqlInstancesRestartRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x02 \x01(\tR\aproject\x12\x1f\n" +
-	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xc6\x01\n" +
+	"\aproject\x18\x02 \x01(\tR\aproject\x12 \n" +
+	"\blocation\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\blocation\"\xc7\x01\n" +
 	" SqlInstancesRestoreBackupRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12K\n" +
-	"\x04body\x18d \x01(\v27.google.cloud.sql.v1beta4.InstancesRestoreBackupRequestR\x04body\x12\x1f\n" +
-	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xc8\x01\n" +
+	"\x04body\x18d \x01(\v27.google.cloud.sql.v1beta4.InstancesRestoreBackupRequestR\x04body\x12 \n" +
+	"\blocation\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\blocation\"\xc9\x01\n" +
 	"!SqlInstancesRotateServerCaRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12L\n" +
-	"\x04body\x18d \x01(\v28.google.cloud.sql.v1beta4.InstancesRotateServerCaRequestR\x04body\x12\x1f\n" +
-	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xe9\x01\n" +
-	"*SqlInstancesRotateServerCertificateRequest\x12\x1f\n" +
-	"\binstance\x18\x01 \x01(\tB\x03\xe0A\x02R\binstance\x12\x1d\n" +
-	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\x12Z\n" +
-	"\x04body\x18d \x01(\v2A.google.cloud.sql.v1beta4.InstancesRotateServerCertificateRequestB\x03\xe0A\x02R\x04body\x12\x1f\n" +
-	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xeb\x01\n" +
-	"+SqlInstancesRotateEntraIdCertificateRequest\x12\x1f\n" +
-	"\binstance\x18\x01 \x01(\tB\x03\xe0A\x02R\binstance\x12\x1d\n" +
-	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\x12[\n" +
-	"\x04body\x18d \x01(\v2B.google.cloud.sql.v1beta4.InstancesRotateEntraIdCertificateRequestB\x03\xe0A\x02R\x04body\x12\x1f\n" +
-	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"x\n" +
+	"\x04body\x18d \x01(\v28.google.cloud.sql.v1beta4.InstancesRotateServerCaRequestR\x04body\x12 \n" +
+	"\blocation\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\blocation\"\xed\x01\n" +
+	"*SqlInstancesRotateServerCertificateRequest\x12 \n" +
+	"\binstance\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\binstance\x12\x1e\n" +
+	"\aproject\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\aproject\x12[\n" +
+	"\x04body\x18d \x01(\v2A.google.cloud.sql.v1beta4.InstancesRotateServerCertificateRequestB\x04\xe2A\x01\x02R\x04body\x12 \n" +
+	"\blocation\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\blocation\"\xef\x01\n" +
+	"+SqlInstancesRotateEntraIdCertificateRequest\x12 \n" +
+	"\binstance\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\binstance\x12\x1e\n" +
+	"\aproject\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\\\n" +
+	"\x04body\x18d \x01(\v2B.google.cloud.sql.v1beta4.InstancesRotateEntraIdCertificateRequestB\x04\xe2A\x01\x02R\x04body\x12 \n" +
+	"\blocation\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\blocation\"y\n" +
 	"\x1fSqlInstancesStartReplicaRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x02 \x01(\tR\aproject\x12\x1f\n" +
-	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"w\n" +
+	"\aproject\x18\x02 \x01(\tR\aproject\x12 \n" +
+	"\blocation\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\blocation\"x\n" +
 	"\x1eSqlInstancesStopReplicaRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x02 \x01(\tR\aproject\x12\x1f\n" +
-	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xc2\x01\n" +
+	"\aproject\x18\x02 \x01(\tR\aproject\x12 \n" +
+	"\blocation\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\blocation\"\xc3\x01\n" +
 	"\x1eSqlInstancesTruncateLogRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12I\n" +
-	"\x04body\x18d \x01(\v25.google.cloud.sql.v1beta4.InstancesTruncateLogRequestR\x04body\x12\x1f\n" +
-	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xb2\x01\n" +
+	"\x04body\x18d \x01(\v25.google.cloud.sql.v1beta4.InstancesTruncateLogRequestR\x04body\x12 \n" +
+	"\blocation\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\blocation\"\xb3\x01\n" +
 	"\x19SqlInstancesUpdateRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12>\n" +
-	"\x04body\x18d \x01(\v2*.google.cloud.sql.v1beta4.DatabaseInstanceR\x04body\x12\x1f\n" +
-	"\blocation\x18\x04 \x01(\tB\x03\xe0A\x01R\blocation\"\xbe\x01\n" +
+	"\x04body\x18d \x01(\v2*.google.cloud.sql.v1beta4.DatabaseInstanceR\x04body\x12 \n" +
+	"\blocation\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\blocation\"\xbf\x01\n" +
 	"\x1cSqlInstancesReencryptRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12G\n" +
-	"\x04body\x18\x03 \x01(\v23.google.cloud.sql.v1beta4.InstancesReencryptRequestR\x04body\x12\x1f\n" +
-	"\blocation\x18\x04 \x01(\tB\x03\xe0A\x01R\blocation\"\xb1\x01\n" +
+	"\x04body\x18\x03 \x01(\v23.google.cloud.sql.v1beta4.InstancesReencryptRequestR\x04body\x12 \n" +
+	"\blocation\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\blocation\"\xb1\x01\n" +
 	"\x19InstancesReencryptRequest\x12u\n" +
 	"\x1abackup_reencryption_config\x18\x01 \x01(\v22.google.cloud.sql.v1beta4.BackupReencryptionConfigH\x00R\x18backupReencryptionConfig\x88\x01\x01B\x1d\n" +
 	"\x1b_backup_reencryption_config\"\x91\x02\n" +
@@ -6222,31 +6222,31 @@ const file_google_cloud_sql_v1beta4_cloud_sql_proto_rawDesc = "" +
 	"\tAUTOMATED\x10\x01\x12\r\n" +
 	"\tON_DEMAND\x10\x02B\x0f\n" +
 	"\r_backup_limitB\x0e\n" +
-	"\f_backup_type\"\xdd\x01\n" +
+	"\f_backup_type\"\xde\x01\n" +
 	"(SqlInstancesRescheduleMaintenanceRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12Z\n" +
-	"\x04body\x18d \x01(\v2F.google.cloud.sql.v1beta4.SqlInstancesRescheduleMaintenanceRequestBodyR\x04body\x12\x1f\n" +
-	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xc5\x01\n" +
+	"\x04body\x18d \x01(\v2F.google.cloud.sql.v1beta4.SqlInstancesRescheduleMaintenanceRequestBodyR\x04body\x12 \n" +
+	"\blocation\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\blocation\"\xc6\x01\n" +
 	"$SqlInstancesPerformDiskShrinkRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12F\n" +
-	"\x04body\x18d \x01(\v22.google.cloud.sql.v1beta4.PerformDiskShrinkContextR\x04body\x12\x1f\n" +
-	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"8\n" +
+	"\x04body\x18d \x01(\v22.google.cloud.sql.v1beta4.PerformDiskShrinkContextR\x04body\x12 \n" +
+	"\blocation\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\blocation\"8\n" +
 	"\x1aExternalSyncSelectedObject\x12\x1a\n" +
-	"\bdatabase\x18\x01 \x01(\tR\bdatabase\"\xce\a\n" +
+	"\bdatabase\x18\x01 \x01(\tR\bdatabase\"\xd4\a\n" +
 	"-SqlInstancesVerifyExternalSyncSettingsRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x124\n" +
 	"\x16verify_connection_only\x18\x03 \x01(\bR\x14verifyConnectionOnly\x12u\n" +
-	"\tsync_mode\x18\x04 \x01(\x0e2X.google.cloud.sql.v1beta4.SqlInstancesVerifyExternalSyncSettingsRequest.ExternalSyncModeR\bsyncMode\x12;\n" +
-	"\x17verify_replication_only\x18\x05 \x01(\bB\x03\xe0A\x01R\x15verifyReplicationOnly\x12\\\n" +
-	"\x11mysql_sync_config\x18\x06 \x01(\v2).google.cloud.sql.v1beta4.MySqlSyncConfigB\x03\xe0A\x01H\x00R\x0fmysqlSyncConfig\x12\x81\x01\n" +
-	"\x0emigration_type\x18\a \x01(\x0e2U.google.cloud.sql.v1beta4.SqlInstancesVerifyExternalSyncSettingsRequest.MigrationTypeB\x03\xe0A\x01R\rmigrationType\x12h\n" +
-	"\x13sync_parallel_level\x18\b \x01(\x0e23.google.cloud.sql.v1beta4.ExternalSyncParallelLevelB\x03\xe0A\x01R\x11syncParallelLevel\x12d\n" +
-	"\x10selected_objects\x18\t \x03(\v24.google.cloud.sql.v1beta4.ExternalSyncSelectedObjectB\x03\xe0A\x01R\x0fselectedObjects\x12\x1f\n" +
+	"\tsync_mode\x18\x04 \x01(\x0e2X.google.cloud.sql.v1beta4.SqlInstancesVerifyExternalSyncSettingsRequest.ExternalSyncModeR\bsyncMode\x12<\n" +
+	"\x17verify_replication_only\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\x15verifyReplicationOnly\x12]\n" +
+	"\x11mysql_sync_config\x18\x06 \x01(\v2).google.cloud.sql.v1beta4.MySqlSyncConfigB\x04\xe2A\x01\x01H\x00R\x0fmysqlSyncConfig\x12\x82\x01\n" +
+	"\x0emigration_type\x18\a \x01(\x0e2U.google.cloud.sql.v1beta4.SqlInstancesVerifyExternalSyncSettingsRequest.MigrationTypeB\x04\xe2A\x01\x01R\rmigrationType\x12i\n" +
+	"\x13sync_parallel_level\x18\b \x01(\x0e23.google.cloud.sql.v1beta4.ExternalSyncParallelLevelB\x04\xe2A\x01\x01R\x11syncParallelLevel\x12e\n" +
+	"\x10selected_objects\x18\t \x03(\v24.google.cloud.sql.v1beta4.ExternalSyncSelectedObjectB\x04\xe2A\x01\x01R\x0fselectedObjects\x12 \n" +
 	"\blocation\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\blocation\"O\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\blocation\"O\n" +
 	"\x10ExternalSyncMode\x12\"\n" +
 	"\x1eEXTERNAL_SYNC_MODE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
@@ -6256,44 +6256,44 @@ const file_google_cloud_sql_v1beta4_cloud_sql_proto_rawDesc = "" +
 	"\x1aMIGRATION_TYPE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aLOGICAL\x10\x01\x12\f\n" +
 	"\bPHYSICAL\x10\x02B\r\n" +
-	"\vsync_config\"\xb8\x05\n" +
+	"\vsync_config\"\xbc\x05\n" +
 	"$SqlInstancesStartExternalSyncRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12u\n" +
 	"\tsync_mode\x18\x03 \x01(\x0e2X.google.cloud.sql.v1beta4.SqlInstancesVerifyExternalSyncSettingsRequest.ExternalSyncModeR\bsyncMode\x12+\n" +
 	"\x11skip_verification\x18\x04 \x01(\bR\x10skipVerification\x12W\n" +
-	"\x11mysql_sync_config\x18\x06 \x01(\v2).google.cloud.sql.v1beta4.MySqlSyncConfigH\x00R\x0fmysqlSyncConfig\x12h\n" +
-	"\x13sync_parallel_level\x18\a \x01(\x0e23.google.cloud.sql.v1beta4.ExternalSyncParallelLevelB\x03\xe0A\x01R\x11syncParallelLevel\x12\x81\x01\n" +
-	"\x0emigration_type\x18\b \x01(\x0e2U.google.cloud.sql.v1beta4.SqlInstancesVerifyExternalSyncSettingsRequest.MigrationTypeB\x03\xe0A\x01R\rmigrationType\x12?\n" +
-	"\x19replica_overwrite_enabled\x18\t \x01(\bB\x03\xe0A\x01R\x17replicaOverwriteEnabled\x12\x1f\n" +
+	"\x11mysql_sync_config\x18\x06 \x01(\v2).google.cloud.sql.v1beta4.MySqlSyncConfigH\x00R\x0fmysqlSyncConfig\x12i\n" +
+	"\x13sync_parallel_level\x18\a \x01(\x0e23.google.cloud.sql.v1beta4.ExternalSyncParallelLevelB\x04\xe2A\x01\x01R\x11syncParallelLevel\x12\x82\x01\n" +
+	"\x0emigration_type\x18\b \x01(\x0e2U.google.cloud.sql.v1beta4.SqlInstancesVerifyExternalSyncSettingsRequest.MigrationTypeB\x04\xe2A\x01\x01R\rmigrationType\x12@\n" +
+	"\x19replica_overwrite_enabled\x18\t \x01(\bB\x04\xe2A\x01\x01R\x17replicaOverwriteEnabled\x12 \n" +
 	"\blocation\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\blocationB\r\n" +
-	"\vsync_config\"|\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\blocationB\r\n" +
+	"\vsync_config\"}\n" +
 	"#SqlInstancesResetReplicaSizeRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x02 \x01(\tR\aproject\x12\x1f\n" +
-	"\blocation\x18\x04 \x01(\tB\x03\xe0A\x01R\blocation\"r\n" +
+	"\aproject\x18\x02 \x01(\tR\aproject\x12 \n" +
+	"\blocation\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\blocation\"s\n" +
 	"\x17SqlOperationsGetRequest\x12\x1c\n" +
 	"\toperation\x18\x01 \x01(\tR\toperation\x12\x18\n" +
-	"\aproject\x18\x02 \x01(\tR\aproject\x12\x1f\n" +
-	"\blocation\x18\x04 \x01(\tB\x03\xe0A\x01R\blocation\"\xb1\x01\n" +
+	"\aproject\x18\x02 \x01(\tR\aproject\x12 \n" +
+	"\blocation\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\blocation\"\xb2\x01\n" +
 	"\x18SqlOperationsListRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x1f\n" +
 	"\vmax_results\x18\x02 \x01(\rR\n" +
 	"maxResults\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x18\n" +
-	"\aproject\x18\x04 \x01(\tR\aproject\x12\x1f\n" +
-	"\blocation\x18\x06 \x01(\tB\x03\xe0A\x01R\blocation\"u\n" +
+	"\aproject\x18\x04 \x01(\tR\aproject\x12 \n" +
+	"\blocation\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\blocation\"v\n" +
 	"\x1aSqlOperationsCancelRequest\x12\x1c\n" +
 	"\toperation\x18\x01 \x01(\tR\toperation\x12\x18\n" +
-	"\aproject\x18\x02 \x01(\tR\aproject\x12\x1f\n" +
-	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xcd\x01\n" +
+	"\aproject\x18\x02 \x01(\tR\aproject\x12 \n" +
+	"\blocation\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\blocation\"\xce\x01\n" +
 	"&SqlInstancesCreateEphemeralCertRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12L\n" +
-	"\x04body\x18d \x01(\v28.google.cloud.sql.v1beta4.SslCertsCreateEphemeralRequestR\x04body\x12\x1f\n" +
-	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"{\n" +
+	"\x04body\x18d \x01(\v28.google.cloud.sql.v1beta4.SslCertsCreateEphemeralRequestR\x04body\x12 \n" +
+	"\blocation\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\blocation\"{\n" +
 	"\x18SqlSslCertsDeleteRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12)\n" +
@@ -6308,43 +6308,43 @@ const file_google_cloud_sql_v1beta4_cloud_sql_proto_rawDesc = "" +
 	"\x04body\x18d \x01(\v2/.google.cloud.sql.v1beta4.SslCertsInsertRequestR\x04body\"N\n" +
 	"\x16SqlSslCertsListRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x02 \x01(\tR\aproject\"\x7f\n" +
+	"\aproject\x18\x02 \x01(\tR\aproject\"\x80\x01\n" +
 	"&SqlInstancesGetDiskShrinkConfigRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x02 \x01(\tR\aproject\x12\x1f\n" +
-	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\x87\x02\n" +
+	"\aproject\x18\x02 \x01(\tR\aproject\x12 \n" +
+	"\blocation\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\blocation\"\x88\x02\n" +
 	"(SqlInstancesGetLatestRecoveryTimeRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12b\n" +
-	"\x1dsource_instance_deletion_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\x1asourceInstanceDeletionTime\x88\x01\x01\x12\x1f\n" +
-	"\blocation\x18\x05 \x01(\tB\x03\xe0A\x01R\blocationB \n" +
+	"\x1dsource_instance_deletion_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\x1asourceInstanceDeletionTime\x88\x01\x01\x12 \n" +
+	"\blocation\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\blocationB \n" +
 	"\x1e_source_instance_deletion_time\"\xdf\x01\n" +
 	")SqlInstancesGetLatestRecoveryTimeResponse\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12L\n" +
 	"\x14latest_recovery_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x12latestRecoveryTime\x12P\n" +
-	"\x16earliest_recovery_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\x14earliestRecoveryTime\"\xc1\x01\n" +
-	"\x1dSqlInstancesExecuteSqlRequest\x12\x1f\n" +
-	"\binstance\x18\x01 \x01(\tB\x03\xe0A\x02R\binstance\x12\x1d\n" +
-	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\x12?\n" +
-	"\x04body\x18d \x01(\v2+.google.cloud.sql.v1beta4.ExecuteSqlPayloadR\x04body\x12\x1f\n" +
-	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\x86\x01\n" +
-	"#SqlInstancesReleaseSsrsLeaseRequest\x12\x1f\n" +
-	"\binstance\x18\x01 \x01(\tB\x03\xe0A\x02R\binstance\x12\x1d\n" +
-	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\x12\x1f\n" +
-	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"I\n" +
+	"\x16earliest_recovery_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\x14earliestRecoveryTime\"\xc4\x01\n" +
+	"\x1dSqlInstancesExecuteSqlRequest\x12 \n" +
+	"\binstance\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\binstance\x12\x1e\n" +
+	"\aproject\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\aproject\x12?\n" +
+	"\x04body\x18d \x01(\v2+.google.cloud.sql.v1beta4.ExecuteSqlPayloadR\x04body\x12 \n" +
+	"\blocation\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\blocation\"\x89\x01\n" +
+	"#SqlInstancesReleaseSsrsLeaseRequest\x12 \n" +
+	"\binstance\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\binstance\x12\x1e\n" +
+	"\aproject\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\aproject\x12 \n" +
+	"\blocation\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\blocation\"I\n" +
 	"$SqlInstancesReleaseSsrsLeaseResponse\x12!\n" +
-	"\foperation_id\x18\x01 \x01(\tR\voperationId\"\xcd\x04\n" +
-	"\x11ExecuteSqlPayload\x12\x17\n" +
-	"\x04user\x18\x01 \x01(\tB\x03\xe0A\x01R\x04user\x12(\n" +
-	"\rsql_statement\x18\x02 \x01(\tB\x03\xe0A\x02R\fsqlStatement\x12\x1f\n" +
-	"\bdatabase\x18\x03 \x01(\tB\x03\xe0A\x01R\bdatabase\x12l\n" +
-	"\x17password_secret_version\x18\x05 \x01(\tB2\xe0A\x01\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionH\x00R\x15passwordSecretVersion\x12+\n" +
-	"\x0eauto_iam_authn\x18\v \x01(\bB\x03\xe0A\x01H\x00R\fautoIamAuthn\x12 \n" +
+	"\foperation_id\x18\x01 \x01(\tR\voperationId\"\xd5\x04\n" +
+	"\x11ExecuteSqlPayload\x12\x18\n" +
+	"\x04user\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04user\x12)\n" +
+	"\rsql_statement\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\fsqlStatement\x12 \n" +
+	"\bdatabase\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\bdatabase\x12m\n" +
+	"\x17password_secret_version\x18\x05 \x01(\tB3\xe2A\x01\x01\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionH\x00R\x15passwordSecretVersion\x12,\n" +
+	"\x0eauto_iam_authn\x18\v \x01(\bB\x04\xe2A\x01\x01H\x00R\fautoIamAuthn\x12!\n" +
 	"\trow_limit\x18\n" +
-	" \x01(\x03B\x03\xe0A\x01R\browLimit\x12r\n" +
-	"\x13partial_result_mode\x18\r \x01(\x0e2=.google.cloud.sql.v1beta4.ExecuteSqlPayload.PartialResultModeB\x03\xe0A\x01R\x11partialResultMode\x12%\n" +
-	"\vapplication\x18\x10 \x01(\tB\x03\xe0A\x01R\vapplication\"k\n" +
+	" \x01(\x03B\x04\xe2A\x01\x01R\browLimit\x12s\n" +
+	"\x13partial_result_mode\x18\r \x01(\x0e2=.google.cloud.sql.v1beta4.ExecuteSqlPayload.PartialResultModeB\x04\xe2A\x01\x01R\x11partialResultMode\x12&\n" +
+	"\vapplication\x18\x10 \x01(\tB\x04\xe2A\x01\x01R\vapplication\"k\n" +
 	"\x11PartialResultMode\x12#\n" +
 	"\x1fPARTIAL_RESULT_MODE_UNSPECIFIED\x10\x00\x12\x17\n" +
 	"\x13FAIL_PARTIAL_RESULT\x10\x01\x12\x18\n" +
@@ -6377,23 +6377,23 @@ const file_google_cloud_sql_v1beta4_cloud_sql_proto_rawDesc = "" +
 	"\n" +
 	"null_value\x18\x02 \x01(\bR\tnullValue\"f\n" +
 	"\bMetadata\x12Z\n" +
-	"\x1csql_statement_execution_time\x18\x01 \x01(\v2\x19.google.protobuf.DurationR\x19sqlStatementExecutionTime\"\xd6\x01\n" +
-	"#SqlInstancesAcquireSsrsLeaseRequest\x12\x1f\n" +
-	"\binstance\x18\x01 \x01(\tB\x03\xe0A\x02R\binstance\x12\x1d\n" +
-	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\x12N\n" +
-	"\x04body\x18d \x01(\v2:.google.cloud.sql.v1beta4.InstancesAcquireSsrsLeaseRequestR\x04body\x12\x1f\n" +
-	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xf1\x01\n" +
-	".SqlInstancesPreCheckMajorVersionUpgradeRequest\x12\x1f\n" +
-	"\binstance\x18\x01 \x01(\tB\x03\xe0A\x02R\binstance\x12\x1d\n" +
-	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\x12^\n" +
-	"\x04body\x18\x03 \x01(\v2E.google.cloud.sql.v1beta4.InstancesPreCheckMajorVersionUpgradeRequestB\x03\xe0A\x02R\x04body\x12\x1f\n" +
-	"\blocation\x18\x04 \x01(\tB\x03\xe0A\x01R\blocation\"_\n" +
+	"\x1csql_statement_execution_time\x18\x01 \x01(\v2\x19.google.protobuf.DurationR\x19sqlStatementExecutionTime\"\xd9\x01\n" +
+	"#SqlInstancesAcquireSsrsLeaseRequest\x12 \n" +
+	"\binstance\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\binstance\x12\x1e\n" +
+	"\aproject\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\aproject\x12N\n" +
+	"\x04body\x18d \x01(\v2:.google.cloud.sql.v1beta4.InstancesAcquireSsrsLeaseRequestR\x04body\x12 \n" +
+	"\blocation\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\blocation\"\xf5\x01\n" +
+	".SqlInstancesPreCheckMajorVersionUpgradeRequest\x12 \n" +
+	"\binstance\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\binstance\x12\x1e\n" +
+	"\aproject\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\aproject\x12_\n" +
+	"\x04body\x18\x03 \x01(\v2E.google.cloud.sql.v1beta4.InstancesPreCheckMajorVersionUpgradeRequestB\x04\xe2A\x01\x02R\x04body\x12 \n" +
+	"\blocation\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\blocation\"_\n" +
 	"$SqlInstancesAcquireSsrsLeaseResponse\x12&\n" +
 	"\foperation_id\x18\x01 \x01(\tH\x00R\voperationId\x88\x01\x01B\x0f\n" +
-	"\r_operation_id\"\x98\x01\n" +
-	"%SqlInstancesPointInTimeRestoreRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12R\n" +
-	"\acontext\x18d \x01(\v23.google.cloud.sql.v1beta4.PointInTimeRestoreContextB\x03\xe0A\x02R\acontext*h\n" +
+	"\r_operation_id\"\x9a\x01\n" +
+	"%SqlInstancesPointInTimeRestoreRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12S\n" +
+	"\acontext\x18d \x01(\v23.google.cloud.sql.v1beta4.PointInTimeRestoreContextB\x04\xe2A\x01\x02R\acontext*h\n" +
 	"\x19ExternalSyncParallelLevel\x12,\n" +
 	"(EXTERNAL_SYNC_PARALLEL_LEVEL_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03MIN\x10\x01\x12\v\n" +

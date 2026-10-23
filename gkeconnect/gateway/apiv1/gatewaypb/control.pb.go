@@ -241,13 +241,13 @@ var File_google_cloud_gkeconnect_gateway_v1_control_proto protoreflect.FileDescr
 
 const file_google_cloud_gkeconnect_gateway_v1_control_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/gkeconnect/gateway/v1/control.proto\x12\"google.cloud.gkeconnect.gateway.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\"\x8c\x03\n" +
-	"\x1aGenerateCredentialsRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12+\n" +
-	"\x0fforce_use_agent\x18\x02 \x01(\bB\x03\xe0A\x01R\rforceUseAgent\x12\x1d\n" +
-	"\aversion\x18\x03 \x01(\tB\x03\xe0A\x01R\aversion\x126\n" +
-	"\x14kubernetes_namespace\x18\x04 \x01(\tB\x03\xe0A\x01R\x13kubernetesNamespace\x12~\n" +
-	"\x10operating_system\x18\x05 \x01(\x0e2N.google.cloud.gkeconnect.gateway.v1.GenerateCredentialsRequest.OperatingSystemB\x03\xe0A\x01R\x0foperatingSystem\"Q\n" +
+	"0google/cloud/gkeconnect/gateway/v1/control.proto\x12\"google.cloud.gkeconnect.gateway.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\"\x91\x03\n" +
+	"\x1aGenerateCredentialsRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12,\n" +
+	"\x0fforce_use_agent\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\rforceUseAgent\x12\x1e\n" +
+	"\aversion\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\aversion\x127\n" +
+	"\x14kubernetes_namespace\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x13kubernetesNamespace\x12\x7f\n" +
+	"\x10operating_system\x18\x05 \x01(\x0e2N.google.cloud.gkeconnect.gateway.v1.GenerateCredentialsRequest.OperatingSystemB\x04\xe2A\x01\x01R\x0foperatingSystem\"Q\n" +
 	"\x0fOperatingSystem\x12 \n" +
 	"\x1cOPERATING_SYSTEM_UNSPECIFIED\x10\x00\x12\x1c\n" +
 	"\x18OPERATING_SYSTEM_WINDOWS\x10\x01\"Y\n" +

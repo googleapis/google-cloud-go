@@ -1017,17 +1017,17 @@ const file_google_cloud_dialogflow_cx_v3_data_store_connection_proto_rawDesc = "
 	"\x0fdata_store_type\x18\x01 \x01(\x0e2,.google.cloud.dialogflow.cx.v3.DataStoreTypeR\rdataStoreType\x12\x1d\n" +
 	"\n" +
 	"data_store\x18\x02 \x01(\tR\tdataStore\x12o\n" +
-	"\x18document_processing_mode\x18\x04 \x01(\x0e25.google.cloud.dialogflow.cx.v3.DocumentProcessingModeR\x16documentProcessingMode\"\xdf\x15\n" +
-	"\x1aDataStoreConnectionSignals\x12\x96\x01\n" +
-	"\x1brewriter_model_call_signals\x18\x01 \x01(\v2R.google.cloud.dialogflow.cx.v3.DataStoreConnectionSignals.RewriterModelCallSignalsB\x03\xe0A\x01R\x18rewriterModelCallSignals\x12,\n" +
-	"\x0frewritten_query\x18\x02 \x01(\tB\x03\xe0A\x01R\x0erewrittenQuery\x12u\n" +
-	"\x0fsearch_snippets\x18\x03 \x03(\v2G.google.cloud.dialogflow.cx.v3.DataStoreConnectionSignals.SearchSnippetB\x03\xe0A\x01R\x0esearchSnippets\x12\xaf\x01\n" +
-	"$answer_generation_model_call_signals\x18\x04 \x01(\v2Z.google.cloud.dialogflow.cx.v3.DataStoreConnectionSignals.AnswerGenerationModelCallSignalsB\x03\xe0A\x01R answerGenerationModelCallSignals\x12\x1b\n" +
-	"\x06answer\x18\x05 \x01(\tB\x03\xe0A\x01R\x06answer\x12l\n" +
-	"\fanswer_parts\x18\x06 \x03(\v2D.google.cloud.dialogflow.cx.v3.DataStoreConnectionSignals.AnswerPartB\x03\xe0A\x01R\vanswerParts\x12r\n" +
-	"\x0ecited_snippets\x18\a \x03(\v2F.google.cloud.dialogflow.cx.v3.DataStoreConnectionSignals.CitedSnippetB\x03\xe0A\x01R\rcitedSnippets\x12|\n" +
-	"\x11grounding_signals\x18\b \x01(\v2J.google.cloud.dialogflow.cx.v3.DataStoreConnectionSignals.GroundingSignalsB\x03\xe0A\x01R\x10groundingSignals\x12s\n" +
-	"\x0esafety_signals\x18\t \x01(\v2G.google.cloud.dialogflow.cx.v3.DataStoreConnectionSignals.SafetySignalsB\x03\xe0A\x01R\rsafetySignals\x1a|\n" +
+	"\x18document_processing_mode\x18\x04 \x01(\x0e25.google.cloud.dialogflow.cx.v3.DocumentProcessingModeR\x16documentProcessingMode\"\xe8\x15\n" +
+	"\x1aDataStoreConnectionSignals\x12\x97\x01\n" +
+	"\x1brewriter_model_call_signals\x18\x01 \x01(\v2R.google.cloud.dialogflow.cx.v3.DataStoreConnectionSignals.RewriterModelCallSignalsB\x04\xe2A\x01\x01R\x18rewriterModelCallSignals\x12-\n" +
+	"\x0frewritten_query\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x0erewrittenQuery\x12v\n" +
+	"\x0fsearch_snippets\x18\x03 \x03(\v2G.google.cloud.dialogflow.cx.v3.DataStoreConnectionSignals.SearchSnippetB\x04\xe2A\x01\x01R\x0esearchSnippets\x12\xb0\x01\n" +
+	"$answer_generation_model_call_signals\x18\x04 \x01(\v2Z.google.cloud.dialogflow.cx.v3.DataStoreConnectionSignals.AnswerGenerationModelCallSignalsB\x04\xe2A\x01\x01R answerGenerationModelCallSignals\x12\x1c\n" +
+	"\x06answer\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x06answer\x12m\n" +
+	"\fanswer_parts\x18\x06 \x03(\v2D.google.cloud.dialogflow.cx.v3.DataStoreConnectionSignals.AnswerPartB\x04\xe2A\x01\x01R\vanswerParts\x12s\n" +
+	"\x0ecited_snippets\x18\a \x03(\v2F.google.cloud.dialogflow.cx.v3.DataStoreConnectionSignals.CitedSnippetB\x04\xe2A\x01\x01R\rcitedSnippets\x12}\n" +
+	"\x11grounding_signals\x18\b \x01(\v2J.google.cloud.dialogflow.cx.v3.DataStoreConnectionSignals.GroundingSignalsB\x04\xe2A\x01\x01R\x10groundingSignals\x12t\n" +
+	"\x0esafety_signals\x18\t \x01(\v2G.google.cloud.dialogflow.cx.v3.DataStoreConnectionSignals.SafetySignalsB\x04\xe2A\x01\x01R\rsafetySignals\x1a|\n" +
 	"\x18RewriterModelCallSignals\x12'\n" +
 	"\x0frendered_prompt\x18\x01 \x01(\tR\x0erenderedPrompt\x12!\n" +
 	"\fmodel_output\x18\x02 \x01(\tR\vmodelOutput\x12\x14\n" +

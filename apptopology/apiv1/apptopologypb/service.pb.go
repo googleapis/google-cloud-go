@@ -699,37 +699,37 @@ var File_google_cloud_apptopology_v1_service_proto protoreflect.FileDescriptor
 
 const file_google_cloud_apptopology_v1_service_proto_rawDesc = "" +
 	"\n" +
-	")google/cloud/apptopology/v1/service.proto\x12\x1bgoogle.cloud.apptopology.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/apptopology/v1/graph.proto\x1a'google/cloud/apptopology/v1/query.proto\x1a(google/cloud/apptopology/v1/schema.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd5\x02\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion\"\xa4\x02\n" +
+	")google/cloud/apptopology/v1/service.proto\x12\x1bgoogle.cloud.apptopology.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/apptopology/v1/graph.proto\x1a'google/cloud/apptopology/v1/query.proto\x1a(google/cloud/apptopology/v1/schema.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdc\x02\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"apiVersion\"\xa6\x02\n" +
 	"*GenerateDiscoveredResourcesTopologyRequest\x12C\n" +
-	"\x06filter\x18\x03 \x01(\v2).google.cloud.apptopology.v1.GraphPatternH\x00R\x06filter\x12R\n" +
-	"\x04name\x18\x01 \x01(\tB>\xe0A\x02\xfaA8\n" +
-	"6apptopology.googleapis.com/DiscoveredResourcesTopologyR\x04name\x12T\n" +
-	"\x10topology_domains\x18\x02 \x03(\tB)\xe0A\x02\xfaA#\n" +
+	"\x06filter\x18\x03 \x01(\v2).google.cloud.apptopology.v1.GraphPatternH\x00R\x06filter\x12S\n" +
+	"\x04name\x18\x01 \x01(\tB?\xe2A\x01\x02\xfaA8\n" +
+	"6apptopology.googleapis.com/DiscoveredResourcesTopologyR\x04name\x12U\n" +
+	"\x10topology_domains\x18\x02 \x03(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!apptopology.googleapis.com/DomainR\x0ftopologyDomainsB\a\n" +
 	"\x05query\"g\n" +
 	"+GenerateDiscoveredResourcesTopologyResponse\x128\n" +
-	"\x05graph\x18\x01 \x01(\v2\".google.cloud.apptopology.v1.GraphR\x05graph\"Q\n" +
-	"\x10GetSchemaRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!apptopology.googleapis.com/SchemaR\x04name\"\xde\x01\n" +
-	"\x14ExploreSchemaRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!apptopology.googleapis.com/SchemaR\x04name\x12&\n" +
-	"\fstart_labels\x18\x03 \x03(\tB\x03\xe0A\x01R\vstartLabels\x12\x19\n" +
-	"\x05depth\x18\x04 \x01(\x05B\x03\xe0A\x01R\x05depth\x12 \n" +
-	"\tpage_size\x18\x05 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x05graph\x18\x01 \x01(\v2\".google.cloud.apptopology.v1.GraphR\x05graph\"R\n" +
+	"\x10GetSchemaRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!apptopology.googleapis.com/SchemaR\x04name\"\xe3\x01\n" +
+	"\x14ExploreSchemaRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!apptopology.googleapis.com/SchemaR\x04name\x12'\n" +
+	"\fstart_labels\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\vstartLabels\x12\x1a\n" +
+	"\x05depth\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\x05depth\x12!\n" +
+	"\tpage_size\x18\x05 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x06 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xea\x02\n" +
+	"page_token\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xea\x02\n" +
 	"\x15ExploreSchemaResponse\x12D\n" +
 	"\n" +
 	"node_types\x18\x01 \x03(\v2%.google.cloud.apptopology.v1.NodeTypeR\tnodeTypes\x12D\n" +
@@ -738,15 +738,15 @@ const file_google_cloud_apptopology_v1_service_proto_rawDesc = "" +
 	"\x10label_properties\x18\x03 \x03(\v2,.google.cloud.apptopology.v1.LabelPropertiesR\x0flabelProperties\x12D\n" +
 	"\n" +
 	"edge_rules\x18\x04 \x03(\v2%.google.cloud.apptopology.v1.EdgeRuleR\tedgeRules\x12&\n" +
-	"\x0fnext_page_token\x18\x05 \x01(\tR\rnextPageToken\"Q\n" +
-	"\x10GetDomainRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!apptopology.googleapis.com/DomainR\x04name\"\x9d\x01\n" +
-	"\x12ListDomainsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!apptopology.googleapis.com/DomainR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x05 \x01(\tR\rnextPageToken\"R\n" +
+	"\x10GetDomainRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!apptopology.googleapis.com/DomainR\x04name\"\xa0\x01\n" +
+	"\x12ListDomainsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!apptopology.googleapis.com/DomainR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"|\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"|\n" +
 	"\x13ListDomainsResponse\x12=\n" +
 	"\adomains\x18\x01 \x03(\v2#.google.cloud.apptopology.v1.DomainR\adomains\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken2\xad\t\n" +

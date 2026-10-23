@@ -469,24 +469,24 @@ var File_google_cloud_apphub_v1_service_proto protoreflect.FileDescriptor
 
 const file_google_cloud_apphub_v1_service_proto_rawDesc = "" +
 	"\n" +
-	"$google/cloud/apphub/v1/service.proto\x12\x16google.cloud.apphub.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/apphub/v1/attributes.proto\x1a'google/cloud/apphub/v1/properties.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa3\a\n" +
-	"\aService\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12Z\n" +
-	"\x11service_reference\x18\x04 \x01(\v2(.google.cloud.apphub.v1.ServiceReferenceB\x03\xe0A\x03R\x10serviceReference\x12]\n" +
-	"\x12service_properties\x18\x05 \x01(\v2).google.cloud.apphub.v1.ServicePropertiesB\x03\xe0A\x03R\x11serviceProperties\x12G\n" +
+	"$google/cloud/apphub/v1/service.proto\x12\x16google.cloud.apphub.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/apphub/v1/attributes.proto\x1a'google/cloud/apphub/v1/properties.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xac\a\n" +
+	"\aService\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12[\n" +
+	"\x11service_reference\x18\x04 \x01(\v2(.google.cloud.apphub.v1.ServiceReferenceB\x04\xe2A\x01\x03R\x10serviceReference\x12^\n" +
+	"\x12service_properties\x18\x05 \x01(\v2).google.cloud.apphub.v1.ServicePropertiesB\x04\xe2A\x01\x03R\x11serviceProperties\x12H\n" +
 	"\n" +
-	"attributes\x18\x06 \x01(\v2\".google.cloud.apphub.v1.AttributesB\x03\xe0A\x01R\n" +
-	"attributes\x12a\n" +
-	"\x12discovered_service\x18\a \x01(\tB2\xe0A\x02\xe0A\x05\xfaA)\x12'apphub.googleapis.com/DiscoveredServiceR\x11discoveredService\x12@\n" +
-	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x1d\n" +
+	"attributes\x18\x06 \x01(\v2\".google.cloud.apphub.v1.AttributesB\x04\xe2A\x01\x01R\n" +
+	"attributes\x12`\n" +
+	"\x12discovered_service\x18\a \x01(\tB1\xe2A\x02\x02\x05\xfaA)\x12'apphub.googleapis.com/DiscoveredServiceR\x11discoveredService\x12A\n" +
+	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x1e\n" +
 	"\x03uid\x18\n" +
-	" \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12@\n" +
-	"\x05state\x18\v \x01(\x0e2%.google.cloud.apphub.v1.Service.StateB\x03\xe0A\x03R\x05state\"T\n" +
+	" \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12A\n" +
+	"\x05state\x18\v \x01(\x0e2%.google.cloud.apphub.v1.Service.StateB\x04\xe2A\x01\x03R\x05state\"T\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bCREATING\x10\x01\x12\n" +
@@ -494,25 +494,25 @@ const file_google_cloud_apphub_v1_service_proto_rawDesc = "" +
 	"\x06ACTIVE\x10\x02\x12\f\n" +
 	"\bDELETING\x10\x03\x12\f\n" +
 	"\bDETACHED\x10\x04:\x8d\x01\xeaA\x89\x01\n" +
-	"\x1dapphub.googleapis.com/Service\x12Uprojects/{project}/locations/{location}/applications/{application}/services/{service}*\bservices2\aservice\")\n" +
-	"\x10ServiceReference\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x03R\x03uri\"\xca\x04\n" +
-	"\x11ServiceProperties\x12$\n" +
-	"\vgcp_project\x18\x01 \x01(\tB\x03\xe0A\x03R\n" +
-	"gcpProject\x12\x1f\n" +
-	"\blocation\x18\x02 \x01(\tB\x03\xe0A\x03R\blocation\x12\x17\n" +
-	"\x04zone\x18\x03 \x01(\tB\x03\xe0A\x03R\x04zone\x12T\n" +
-	"\x0ffunctional_type\x18\x04 \x01(\v2&.google.cloud.apphub.v1.FunctionalTypeB\x03\xe0A\x03R\x0efunctionalType\x12Z\n" +
-	"\x11registration_type\x18\x05 \x01(\v2(.google.cloud.apphub.v1.RegistrationTypeB\x03\xe0A\x03R\x10registrationType\x12q\n" +
-	"\x11extended_metadata\x18\x06 \x03(\v2?.google.cloud.apphub.v1.ServiceProperties.ExtendedMetadataEntryB\x03\xe0A\x03R\x10extendedMetadata\x12A\n" +
-	"\bidentity\x18\a \x01(\v2 .google.cloud.apphub.v1.IdentityB\x03\xe0A\x03R\bidentity\x1am\n" +
+	"\x1dapphub.googleapis.com/Service\x12Uprojects/{project}/locations/{location}/applications/{application}/services/{service}*\bservices2\aservice\"*\n" +
+	"\x10ServiceReference\x12\x16\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x03uri\"\xd1\x04\n" +
+	"\x11ServiceProperties\x12%\n" +
+	"\vgcp_project\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"gcpProject\x12 \n" +
+	"\blocation\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\blocation\x12\x18\n" +
+	"\x04zone\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x04zone\x12U\n" +
+	"\x0ffunctional_type\x18\x04 \x01(\v2&.google.cloud.apphub.v1.FunctionalTypeB\x04\xe2A\x01\x03R\x0efunctionalType\x12[\n" +
+	"\x11registration_type\x18\x05 \x01(\v2(.google.cloud.apphub.v1.RegistrationTypeB\x04\xe2A\x01\x03R\x10registrationType\x12r\n" +
+	"\x11extended_metadata\x18\x06 \x03(\v2?.google.cloud.apphub.v1.ServiceProperties.ExtendedMetadataEntryB\x04\xe2A\x01\x03R\x10extendedMetadata\x12B\n" +
+	"\bidentity\x18\a \x01(\v2 .google.cloud.apphub.v1.IdentityB\x04\xe2A\x01\x03R\bidentity\x1am\n" +
 	"\x15ExtendedMetadataEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12>\n" +
-	"\x05value\x18\x02 \x01(\v2(.google.cloud.apphub.v1.ExtendedMetadataR\x05value:\x028\x01\"\x8f\x03\n" +
-	"\x11DiscoveredService\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12Z\n" +
-	"\x11service_reference\x18\x02 \x01(\v2(.google.cloud.apphub.v1.ServiceReferenceB\x03\xe0A\x03R\x10serviceReference\x12]\n" +
-	"\x12service_properties\x18\x03 \x01(\v2).google.cloud.apphub.v1.ServicePropertiesB\x03\xe0A\x03R\x11serviceProperties:\xa5\x01\xeaA\xa1\x01\n" +
+	"\x05value\x18\x02 \x01(\v2(.google.cloud.apphub.v1.ExtendedMetadataR\x05value:\x028\x01\"\x92\x03\n" +
+	"\x11DiscoveredService\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12[\n" +
+	"\x11service_reference\x18\x02 \x01(\v2(.google.cloud.apphub.v1.ServiceReferenceB\x04\xe2A\x01\x03R\x10serviceReference\x12^\n" +
+	"\x12service_properties\x18\x03 \x01(\v2).google.cloud.apphub.v1.ServicePropertiesB\x04\xe2A\x01\x03R\x11serviceProperties:\xa5\x01\xeaA\xa1\x01\n" +
 	"'apphub.googleapis.com/DiscoveredService\x12Oprojects/{project}/locations/{location}/discoveredServices/{discovered_service}*\x12discoveredServices2\x11discoveredServiceB\xae\x01\n" +
 	"\x1acom.google.cloud.apphub.v1B\fServiceProtoP\x01Z2cloud.google.com/go/apphub/apiv1/apphubpb;apphubpb\xaa\x02\x16Google.Cloud.AppHub.V1\xca\x02\x16Google\\Cloud\\AppHub\\V1\xea\x02\x19Google::Cloud::AppHub::V1b\x06proto3"
 
