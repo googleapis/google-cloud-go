@@ -158,12 +158,6 @@ libraries:
     apis:
       - path: google/cloud/apptopology/v1
     copyright_year: "2026"
-  - name: area120
-    version: 0.17.0
-    apis:
-      - path: google/area120/tables/v1alpha1
-        go:
-          no_metadata: true
   - name: artifactregistry
     version: 1.28.0
     apis:
