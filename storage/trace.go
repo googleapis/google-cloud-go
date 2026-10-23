@@ -233,14 +233,9 @@ func recordWriterTraceAttributes(ctx context.Context, w *Writer) {
 	span.SetAttributes(attribute.String("gcp.storage.write.mode", writeMode))
 }
 
-// isOneshotUpload reports whether a non-parallel, non-appendable Writer
-// performs (or is configured to perform) a single-request upload.
-// When ChunkSize <= 0, chunking is disabled and the upload is always oneshot.
-// When ChunkSize > 0, an upload that has opened and closed still runs as
-// oneshot if the entire payload fit in the first chunk buffer (via forceOneShot
-// in gRPC, or a single chunk in HTTP where googleapi.ChunkSize rounds up to a
-// 256 KiB multiple and sends payloads strictly smaller than that size in a
-// single request).
+// isOneshotUpload reports whether the Writer performs a single-request upload.
+// For HTTP, payloads smaller than the 256 KiB-aligned ChunkSize are sent in a
+// single request (matching googleapi.ChunkSize).
 func isOneshotUpload(w *Writer) bool {
 	if gw, ok := w.iw.(*gRPCWriter); ok {
 		return gw.usesOneshotSender()
