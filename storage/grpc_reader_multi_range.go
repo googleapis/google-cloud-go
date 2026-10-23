@@ -1317,9 +1317,11 @@ func (s *bidiReadStreamSession) Shutdown() {
 		close(done)
 	}()
 
+	timer := time.NewTimer(defaultSessionShutdownTimeout)
+	defer timer.Stop()
 	select {
 	case <-done:
-	case <-time.After(defaultSessionShutdownTimeout):
+	case <-timer.C:
 		s.cancel()
 		<-done
 	}

@@ -1885,7 +1885,7 @@ func (r *gRPCReader) recv() error {
 	err := r.stream.RecvMsg(&databufs)
 	// If we get a mid-stream error on a recv call, reopen the stream.
 	// ABORTED could indicate a redirect so should also trigger a reopen.
-	if err != nil && ((r.settings != nil && r.settings.retry != nil && r.settings.retry.runShouldRetry(err, nil)) || status.Code(err) == codes.Aborted) {
+	if err != nil && ((r.settings != nil && r.settings.retry.runShouldRetry(err, nil)) || status.Code(err) == codes.Aborted) {
 		// This will "close" the existing stream and immediately attempt to
 		// reopen the stream, but will backoff if further attempts are necessary.
 		// Reopening the stream Recvs the first message, so if retrying is
