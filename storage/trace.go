@@ -202,9 +202,6 @@ func appendPackageName(spanName string) string {
 // recordRetryBackoff records the backoff that started at start as a
 // RetryBackoff child span of the span in ctx. It is a no-op unless dev tracing
 // is enabled and the span in ctx is recording.
-//
-// TODO: When the dev tracing flag is removed, decide whether backoff spans
-// need their own opt-in or sampling, since each retry adds one span.
 func recordRetryBackoff(ctx context.Context, start time.Time) {
 	if !isOTelTracingDevEnabled() {
 		return

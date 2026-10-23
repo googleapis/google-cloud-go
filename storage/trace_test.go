@@ -352,49 +352,6 @@ func TestEndSpanEviction(t *testing.T) {
 	}
 }
 
-// findSpans returns the spans in spans named with the package-qualified form
-// of name.
-func findSpans(spans tracetest.SpanStubs, name string) tracetest.SpanStubs {
-	want := appendPackageName(name)
-	var found tracetest.SpanStubs
-	for _, s := range spans {
-		if s.Name == want {
-			found = append(found, s)
-		}
-	}
-	return found
-}
-
-// checkRetryBackoffs checks that the single Bucket.Attrs span in spans has
-// wantBackoffs RetryBackoff child spans, each lying within the parent span's
-// time range and lasting at least minDuration.
-func checkRetryBackoffs(t *testing.T, spans tracetest.SpanStubs, wantBackoffs int, minDuration time.Duration) {
-	t.Helper()
-	parents := findSpans(spans, "Bucket.Attrs")
-	if len(parents) != 1 {
-		t.Fatalf("got %d Bucket.Attrs spans, want 1", len(parents))
-	}
-	parent := parents[0]
-	backoffs := findSpans(spans, "RetryBackoff")
-	if len(backoffs) != wantBackoffs {
-		t.Errorf("got %d RetryBackoff spans, want %d", len(backoffs), wantBackoffs)
-	}
-	for _, s := range backoffs {
-		if got, want := s.Parent.SpanID(), parent.SpanContext.SpanID(); got != want {
-			t.Errorf("RetryBackoff span parent ID = %v, want %v", got, want)
-		}
-		if s.StartTime.After(s.EndTime) {
-			t.Errorf("RetryBackoff span start time %v is after end time %v", s.StartTime, s.EndTime)
-		}
-		if got := s.EndTime.Sub(s.StartTime); got < minDuration {
-			t.Errorf("RetryBackoff span duration = %v, want >= %v", got, minDuration)
-		}
-		if s.StartTime.Before(parent.StartTime) || s.EndTime.After(parent.EndTime) {
-			t.Errorf("RetryBackoff span [%v, %v] is outside parent span [%v, %v]", s.StartTime, s.EndTime, parent.StartTime, parent.EndTime)
-		}
-	}
-}
-
 func TestRecordRetryBackoffNoParentSpan(t *testing.T) {
 	ctx := context.Background()
 	te := testutil.NewOpenTelemetryTestExporter()
@@ -528,5 +485,48 @@ func TestRunRetryBackoffTracingDisabled(t *testing.T) {
 	spans := te.Spans()
 	if len(spans) != 1 {
 		t.Errorf("run() produced %d spans, want 1", len(spans))
+	}
+}
+
+// findSpans returns the spans in spans named with the package-qualified form
+// of name.
+func findSpans(spans tracetest.SpanStubs, name string) tracetest.SpanStubs {
+	want := appendPackageName(name)
+	var found tracetest.SpanStubs
+	for _, s := range spans {
+		if s.Name == want {
+			found = append(found, s)
+		}
+	}
+	return found
+}
+
+// checkRetryBackoffs checks that the single Bucket.Attrs span in spans has
+// wantBackoffs RetryBackoff child spans, each lying within the parent span's
+// time range and lasting at least minDuration.
+func checkRetryBackoffs(t *testing.T, spans tracetest.SpanStubs, wantBackoffs int, minDuration time.Duration) {
+	t.Helper()
+	parents := findSpans(spans, "Bucket.Attrs")
+	if len(parents) != 1 {
+		t.Fatalf("got %d Bucket.Attrs spans, want 1", len(parents))
+	}
+	parent := parents[0]
+	backoffs := findSpans(spans, "RetryBackoff")
+	if len(backoffs) != wantBackoffs {
+		t.Errorf("got %d RetryBackoff spans, want %d", len(backoffs), wantBackoffs)
+	}
+	for _, s := range backoffs {
+		if got, want := s.Parent.SpanID(), parent.SpanContext.SpanID(); got != want {
+			t.Errorf("RetryBackoff span parent ID = %v, want %v", got, want)
+		}
+		if s.StartTime.After(s.EndTime) {
+			t.Errorf("RetryBackoff span start time %v is after end time %v", s.StartTime, s.EndTime)
+		}
+		if got := s.EndTime.Sub(s.StartTime); got < minDuration {
+			t.Errorf("RetryBackoff span duration = %v, want >= %v", got, minDuration)
+		}
+		if s.StartTime.Before(parent.StartTime) || s.EndTime.After(parent.EndTime) {
+			t.Errorf("RetryBackoff span [%v, %v] is outside parent span [%v, %v]", s.StartTime, s.EndTime, parent.StartTime, parent.EndTime)
+		}
 	}
 }
