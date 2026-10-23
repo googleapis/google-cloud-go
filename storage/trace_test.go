@@ -367,8 +367,8 @@ func findSpans(spans tracetest.SpanStubs, name string) tracetest.SpanStubs {
 
 // checkRetryBackoffs checks that the single Bucket.Attrs span in spans has
 // wantBackoffs RetryBackoff child spans, each lying within the parent span's
-// time range.
-func checkRetryBackoffs(t *testing.T, spans tracetest.SpanStubs, wantBackoffs int) {
+// time range and lasting at least minDuration.
+func checkRetryBackoffs(t *testing.T, spans tracetest.SpanStubs, wantBackoffs int, minDuration time.Duration) {
 	t.Helper()
 	parents := findSpans(spans, "Bucket.Attrs")
 	if len(parents) != 1 {
@@ -385,6 +385,9 @@ func checkRetryBackoffs(t *testing.T, spans tracetest.SpanStubs, wantBackoffs in
 		}
 		if s.StartTime.After(s.EndTime) {
 			t.Errorf("RetryBackoff span start time %v is after end time %v", s.StartTime, s.EndTime)
+		}
+		if got := s.EndTime.Sub(s.StartTime); got < minDuration {
+			t.Errorf("RetryBackoff span duration = %v, want >= %v", got, minDuration)
 		}
 		if s.StartTime.Before(parent.StartTime) || s.EndTime.After(parent.EndTime) {
 			t.Errorf("RetryBackoff span [%v, %v] is outside parent span [%v, %v]", s.StartTime, s.EndTime, parent.StartTime, parent.EndTime)
@@ -492,7 +495,7 @@ func TestRunRetryBackoffTracing(t *testing.T) {
 			if gotErr := err != nil; gotErr != tc.wantErr {
 				t.Fatalf("run() = %v, want error: %t", err, tc.wantErr)
 			}
-			checkRetryBackoffs(t, te.Spans(), tc.wantBackoffs)
+			checkRetryBackoffs(t, te.Spans(), tc.wantBackoffs, tc.timeout)
 		})
 	}
 }
