@@ -226,12 +226,8 @@ func withRetryAttempt(ctx context.Context, attempt int) context.Context {
 	})
 }
 
-// retryAttemptStatsHandler is a gRPC stats handler that records
-// gcp.client.retry.attempt_number on the span of every gRPC attempt made by
-// run. The attempt span is created by the OpenTelemetry stats handler that the
-// transport layer installs ahead of the client's own dial options, so by the
-// time TagRPC runs here the span in ctx is that attempt span. The handler is
-// only registered when dev tracing is enabled.
+// retryAttemptStatsHandler records gcp.client.retry.attempt_number on the
+// transport's gRPC attempt span.
 type retryAttemptStatsHandler struct{}
 
 // TagRPC implements stats.Handler.
