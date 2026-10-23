@@ -16,7 +16,9 @@ package storage
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"io"
 	"net"
 	"net/http"
 	"strconv"
@@ -452,8 +454,27 @@ func TestRetryAttemptStatsHandlerTagRPC(t *testing.T) {
 	}
 }
 
-// retryAttemptTestServer is a fake storage server whose GetBucket fails with
-// UNAVAILABLE for the first failures calls and succeeds afterwards.
+// startFakeStorageServer starts an in-process gRPC server for srv, points
+// STORAGE_EMULATOR_HOST_GRPC at it for the duration of t, and returns the
+// listener address.
+func startFakeStorageServer(t *testing.T, srv storagepb.StorageServer) string {
+	t.Helper()
+	lis, err := net.Listen("tcp", "localhost:0")
+	if err != nil {
+		t.Fatalf("net.Listen: %v", err)
+	}
+	grpcSrv := grpc.NewServer()
+	storagepb.RegisterStorageServer(grpcSrv, srv)
+	go grpcSrv.Serve(lis)
+	t.Cleanup(grpcSrv.Stop)
+	addr := lis.Addr().String()
+	t.Setenv("STORAGE_EMULATOR_HOST_GRPC", addr)
+	return addr
+}
+
+// retryAttemptTestServer is a fake storage server whose GetBucket and
+// BidiReadObject fail with UNAVAILABLE for the first failures calls and
+// succeed afterwards.
 type retryAttemptTestServer struct {
 	storagepb.UnimplementedStorageServer
 	mu       sync.Mutex
@@ -461,41 +482,105 @@ type retryAttemptTestServer struct {
 	calls    int
 }
 
-func (s *retryAttemptTestServer) GetBucket(_ context.Context, req *storagepb.GetBucketRequest) (*storagepb.Bucket, error) {
+func (s *retryAttemptTestServer) nextShouldFail() bool {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.calls++
-	if s.calls <= s.failures {
+	return s.calls <= s.failures
+}
+
+func (s *retryAttemptTestServer) GetBucket(_ context.Context, req *storagepb.GetBucketRequest) (*storagepb.Bucket, error) {
+	if s.nextShouldFail() {
 		return nil, status.Error(codes.Unavailable, "retry me")
 	}
 	return &storagepb.Bucket{Name: req.GetName()}, nil
 }
 
+func (s *retryAttemptTestServer) BidiReadObject(stream storagepb.Storage_BidiReadObjectServer) error {
+	if _, err := stream.Recv(); err != nil {
+		return err
+	}
+	if s.nextShouldFail() {
+		return status.Error(codes.Unavailable, "retry me")
+	}
+	if err := stream.Send(&storagepb.BidiReadObjectResponse{
+		Metadata: &storagepb.Object{Size: 1},
+	}); err != nil {
+		return err
+	}
+	_, err := stream.Recv()
+	if errors.Is(err, io.EOF) {
+		return nil
+	}
+	return err
+}
+
 func TestGRPCRetryAttemptNumberTracing(t *testing.T) {
-	const getBucketSpan = "google.storage.v2.Storage/GetBucket"
+	const (
+		getBucketSpan      = "google.storage.v2.Storage/GetBucket"
+		bidiReadObjectSpan = "google.storage.v2.Storage/BidiReadObject"
+	)
+
+	getBucketCall := func(t *testing.T, ctx context.Context, client *Client) {
+		t.Helper()
+		if _, err := client.Bucket("bucket").Attrs(ctx); err != nil {
+			t.Fatalf("Bucket.Attrs: %v", err)
+		}
+	}
+	mrdCall := func(t *testing.T, ctx context.Context, client *Client) {
+		t.Helper()
+		mrd, err := client.Bucket("bucket").Object("object").NewMultiRangeDownloader(ctx)
+		if err != nil {
+			t.Fatalf("NewMultiRangeDownloader: %v", err)
+		}
+		if err := mrd.Close(); err != nil {
+			t.Fatalf("mrd.Close: %v", err)
+		}
+	}
 
 	for _, tc := range []struct {
-		name       string
-		devTracing bool
-		failures   int
-		// wantAttempts are the attempt numbers expected on the GetBucket
-		// attempt spans, in order. nil means the spans carry none.
+		name         string
+		devTracing   bool
+		failures     int
+		opSpan       string
+		attemptSpan  string
+		call         func(t *testing.T, ctx context.Context, client *Client)
+		// wantAttempts are the attempt numbers expected on the attempt spans,
+		// in order. nil means the spans carry none.
 		wantAttempts []int64
 	}{
 		{
 			name:         "single attempt",
 			devTracing:   true,
+			opSpan:       "Bucket.Attrs",
+			attemptSpan:  getBucketSpan,
+			call:         getBucketCall,
 			wantAttempts: []int64{1},
 		},
 		{
 			name:         "retried",
 			devTracing:   true,
 			failures:     2,
+			opSpan:       "Bucket.Attrs",
+			attemptSpan:  getBucketSpan,
+			call:         getBucketCall,
 			wantAttempts: []int64{1, 2, 3},
 		},
 		{
-			name:     "dev tracing disabled",
-			failures: 1,
+			name:         "retried MRD BidiReadObject",
+			devTracing:   true,
+			failures:     2,
+			opSpan:       "Object.MultiRangeDownloader",
+			attemptSpan:  bidiReadObjectSpan,
+			call:         mrdCall,
+			wantAttempts: []int64{1, 2, 3},
+		},
+		{
+			name:        "dev tracing disabled",
+			failures:    1,
+			opSpan:      "Bucket.Attrs",
+			attemptSpan: getBucketSpan,
+			call:        getBucketCall,
 		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
@@ -509,60 +594,50 @@ func TestGRPCRetryAttemptNumberTracing(t *testing.T) {
 			// untraced GetBucket that also consumes the server's failures.
 			t.Setenv("GO_OTEL_BUCKETMETADATA_DISABLED", "true")
 
-			lis, err := net.Listen("tcp", "localhost:0")
-			if err != nil {
-				t.Fatalf("net.Listen: %v", err)
-			}
-			grpcSrv := grpc.NewServer()
-			storagepb.RegisterStorageServer(grpcSrv, &retryAttemptTestServer{failures: tc.failures})
-			go grpcSrv.Serve(lis)
-			t.Cleanup(grpcSrv.Stop)
-			t.Setenv("STORAGE_EMULATOR_HOST_GRPC", lis.Addr().String())
+			startFakeStorageServer(t, &retryAttemptTestServer{failures: tc.failures})
 
-			client, err := NewGRPCClient(ctx)
+			client, err := NewGRPCClient(ctx, WithGRPCBidiReads())
 			if err != nil {
 				t.Fatalf("NewGRPCClient: %v", err)
 			}
 			t.Cleanup(func() { client.Close() })
 			client.SetRetry(WithBackoff(gax.Backoff{Initial: time.Millisecond, Max: time.Millisecond}))
 
-			if _, err := client.Bucket("bucket").Attrs(ctx); err != nil {
-				t.Fatalf("Bucket.Attrs: %v", err)
-			}
+			tc.call(t, ctx, client)
 
 			spans := te.Spans()
 			var opSpan *tracetest.SpanStub
 			for i := range spans {
-				if spans[i].Name == appendPackageName("Bucket.Attrs") {
+				if spans[i].Name == appendPackageName(tc.opSpan) {
 					if opSpan != nil {
-						t.Fatalf("got more than one Bucket.Attrs span")
+						t.Fatalf("got more than one %s span", tc.opSpan)
 					}
 					opSpan = &spans[i]
 				}
 			}
 			if opSpan == nil {
-				t.Fatalf("Bucket.Attrs span not found")
+				t.Fatalf("%s span not found", tc.opSpan)
 			}
 
 			var gotAttempts []int64
 			attemptSpans := 0
 			for _, s := range spans {
-				if s.Name != getBucketSpan {
+				if s.Name != tc.attemptSpan {
 					continue
 				}
 				attemptSpans++
 				if got, want := s.Parent.SpanID(), opSpan.SpanContext.SpanID(); got != want {
-					t.Errorf("%s span parent ID = %v, want %v", getBucketSpan, got, want)
+					t.Errorf("%s span parent ID = %v, want %v", tc.attemptSpan, got, want)
 				}
 				if n, ok := retryAttemptNumber(s.Attributes); ok {
 					gotAttempts = append(gotAttempts, n)
 				}
 			}
 			if want := tc.failures + 1; attemptSpans != want {
-				t.Errorf("got %d %s spans, want %d", attemptSpans, getBucketSpan, want)
+				t.Errorf("got %d %s spans, want %d", attemptSpans, tc.attemptSpan, want)
 			}
 			if diff := cmp.Diff(tc.wantAttempts, gotAttempts); diff != "" {
-				t.Errorf("attempt numbers on %s spans mismatch (-want +got):\n%s", getBucketSpan, diff)
+				t.Errorf("attempt numbers on %s spans mismatch (-want +got):\n%s", tc.attemptSpan, diff)
 			}
 		})
 	}

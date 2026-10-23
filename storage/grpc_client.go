@@ -243,7 +243,10 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 	)
 	if isOTelTracingDevEnabled() {
 		// Registered after the transport's OpenTelemetry stats handler so
-		// that it sees the attempt span. See retryAttemptStatsHandler.
+		// that it sees the attempt span: both google.golang.org/api/transport/grpc
+		// (dial.go) and cloud.google.com/go/auth/grpctransport (grpctransport.go)
+		// add their otelgrpc handler before the caller's dial options.
+		// See retryAttemptStatsHandler.
 		s.clientOption = append(s.clientOption,
 			option.WithGRPCDialOption(grpc.WithStatsHandler(retryAttemptStatsHandler{})))
 	}
