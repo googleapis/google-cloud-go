@@ -98,11 +98,11 @@ var File_google_cloud_ces_v1_toolset_tool_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1_toolset_tool_proto_rawDesc = "" +
 	"\n" +
-	"&google/cloud/ces/v1/toolset_tool.proto\x12\x13google.cloud.ces.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"i\n" +
-	"\vToolsetTool\x12<\n" +
-	"\atoolset\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
-	"\x1aces.googleapis.com/ToolsetR\atoolset\x12\x1c\n" +
-	"\atool_id\x18\x03 \x01(\tB\x03\xe0A\x01R\x06toolIdBX\n" +
+	"&google/cloud/ces/v1/toolset_tool.proto\x12\x13google.cloud.ces.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"k\n" +
+	"\vToolsetTool\x12=\n" +
+	"\atoolset\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\n" +
+	"\x1aces.googleapis.com/ToolsetR\atoolset\x12\x1d\n" +
+	"\atool_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x06toolIdBX\n" +
 	"\x17com.google.cloud.ces.v1B\x10ToolsetToolProtoP\x01Z)cloud.google.com/go/ces/apiv1/cespb;cespbb\x06proto3"
 
 var (

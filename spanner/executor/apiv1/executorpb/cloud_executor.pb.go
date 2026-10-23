@@ -7587,7 +7587,7 @@ const file_google_spanner_executor_v1_cloud_executor_proto_rawDesc = "" +
 	"\vinstance_id\x18\x02 \x01(\tR\n" +
 	"instanceId\x12\x1f\n" +
 	"\vdatabase_id\x18\x03 \x01(\tR\n" +
-	"databaseId\"\x8f\x03\n" +
+	"databaseId\"\x90\x03\n" +
 	"\x17CreateCloudBackupAction\x12\x1d\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tR\tprojectId\x12\x1f\n" +
@@ -7595,34 +7595,34 @@ const file_google_spanner_executor_v1_cloud_executor_proto_rawDesc = "" +
 	"instanceId\x12\x1b\n" +
 	"\tbackup_id\x18\x03 \x01(\tR\bbackupId\x12\x1f\n" +
 	"\vdatabase_id\x18\x04 \x01(\tR\n" +
-	"databaseId\x12@\n" +
-	"\vexpire_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"databaseId\x12A\n" +
+	"\vexpire_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"expireTime\x12B\n" +
 	"\fversion_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\vversionTime\x88\x01\x01\x12_\n" +
 	"\x11encryption_config\x18\a \x01(\v22.google.spanner.admin.database.v1.EncryptionConfigR\x10encryptionConfigB\x0f\n" +
-	"\r_version_time\"\xdb\x01\n" +
+	"\r_version_time\"\xdc\x01\n" +
 	"\x15CopyCloudBackupAction\x12\x1d\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tR\tprojectId\x12\x1f\n" +
 	"\vinstance_id\x18\x02 \x01(\tR\n" +
 	"instanceId\x12\x1b\n" +
 	"\tbackup_id\x18\x03 \x01(\tR\bbackupId\x12#\n" +
-	"\rsource_backup\x18\x04 \x01(\tR\fsourceBackup\x12@\n" +
-	"\vexpire_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\rsource_backup\x18\x04 \x01(\tR\fsourceBackup\x12A\n" +
+	"\vexpire_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"expireTime\"s\n" +
 	"\x14GetCloudBackupAction\x12\x1d\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tR\tprojectId\x12\x1f\n" +
 	"\vinstance_id\x18\x02 \x01(\tR\n" +
 	"instanceId\x12\x1b\n" +
-	"\tbackup_id\x18\x03 \x01(\tR\bbackupId\"\xb8\x01\n" +
+	"\tbackup_id\x18\x03 \x01(\tR\bbackupId\"\xb9\x01\n" +
 	"\x17UpdateCloudBackupAction\x12\x1d\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tR\tprojectId\x12\x1f\n" +
 	"\vinstance_id\x18\x02 \x01(\tR\n" +
 	"instanceId\x12\x1b\n" +
-	"\tbackup_id\x18\x03 \x01(\tR\bbackupId\x12@\n" +
-	"\vexpire_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\tbackup_id\x18\x03 \x01(\tR\bbackupId\x12A\n" +
+	"\vexpire_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"expireTime\"v\n" +
 	"\x17DeleteCloudBackupAction\x12\x1d\n" +
 	"\n" +

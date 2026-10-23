@@ -1048,62 +1048,62 @@ var File_google_cloud_ces_v1beta_guardrail_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1beta_guardrail_proto_rawDesc = "" +
 	"\n" +
-	"'google/cloud/ces/v1beta/guardrail.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a$google/cloud/ces/v1beta/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd6\x1a\n" +
-	"\tGuardrail\x12^\n" +
-	"\x0econtent_filter\x18\b \x01(\v20.google.cloud.ces.v1beta.Guardrail.ContentFilterB\x03\xe0A\x01H\x00R\rcontentFilter\x12k\n" +
-	"\x13llm_prompt_security\x18\t \x01(\v24.google.cloud.ces.v1beta.Guardrail.LlmPromptSecurityB\x03\xe0A\x01H\x00R\x11llmPromptSecurity\x12R\n" +
+	"'google/cloud/ces/v1beta/guardrail.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a$google/cloud/ces/v1beta/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf8\x1a\n" +
+	"\tGuardrail\x12_\n" +
+	"\x0econtent_filter\x18\b \x01(\v20.google.cloud.ces.v1beta.Guardrail.ContentFilterB\x04\xe2A\x01\x01H\x00R\rcontentFilter\x12l\n" +
+	"\x13llm_prompt_security\x18\t \x01(\v24.google.cloud.ces.v1beta.Guardrail.LlmPromptSecurityB\x04\xe2A\x01\x01H\x00R\x11llmPromptSecurity\x12S\n" +
 	"\n" +
 	"llm_policy\x18\n" +
-	" \x01(\v2,.google.cloud.ces.v1beta.Guardrail.LlmPolicyB\x03\xe0A\x01H\x00R\tllmPolicy\x12X\n" +
-	"\fmodel_safety\x18\r \x01(\v2..google.cloud.ces.v1beta.Guardrail.ModelSafetyB\x03\xe0A\x01H\x00R\vmodelSafety\x12[\n" +
-	"\rcode_callback\x18\x0e \x01(\v2/.google.cloud.ces.v1beta.Guardrail.CodeCallbackB\x03\xe0A\x01H\x00R\fcodeCallback\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12\x1d\n" +
-	"\aenabled\x18\x04 \x01(\bB\x03\xe0A\x01R\aenabled\x12C\n" +
-	"\x06action\x18\x05 \x01(\v2&.google.cloud.ces.v1beta.TriggerActionB\x03\xe0A\x01R\x06action\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	" \x01(\v2,.google.cloud.ces.v1beta.Guardrail.LlmPolicyB\x04\xe2A\x01\x01H\x00R\tllmPolicy\x12Y\n" +
+	"\fmodel_safety\x18\r \x01(\v2..google.cloud.ces.v1beta.Guardrail.ModelSafetyB\x04\xe2A\x01\x01H\x00R\vmodelSafety\x12\\\n" +
+	"\rcode_callback\x18\x0e \x01(\v2/.google.cloud.ces.v1beta.Guardrail.CodeCallbackB\x04\xe2A\x01\x01H\x00R\fcodeCallback\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\x1e\n" +
+	"\aenabled\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\aenabled\x12D\n" +
+	"\x06action\x18\x05 \x01(\v2&.google.cloud.ces.v1beta.TriggerActionB\x04\xe2A\x01\x01R\x06action\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12\x12\n" +
-	"\x04etag\x18\v \x01(\tR\x04etag\x1a\xdf\x03\n" +
-	"\rContentFilter\x12,\n" +
-	"\x0fbanned_contents\x18\x01 \x03(\tB\x03\xe0A\x01R\x0ebannedContents\x12E\n" +
-	"\x1dbanned_contents_in_user_input\x18\x02 \x03(\tB\x03\xe0A\x01R\x19bannedContentsInUserInput\x12M\n" +
-	"!banned_contents_in_agent_response\x18\x03 \x03(\tB\x03\xe0A\x01R\x1dbannedContentsInAgentResponse\x12^\n" +
+	"\x04etag\x18\v \x01(\tR\x04etag\x1a\xe4\x03\n" +
+	"\rContentFilter\x12-\n" +
+	"\x0fbanned_contents\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\x0ebannedContents\x12F\n" +
+	"\x1dbanned_contents_in_user_input\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x19bannedContentsInUserInput\x12N\n" +
+	"!banned_contents_in_agent_response\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x1dbannedContentsInAgentResponse\x12_\n" +
 	"\n" +
-	"match_type\x18\x04 \x01(\x0e2:.google.cloud.ces.v1beta.Guardrail.ContentFilter.MatchTypeB\x03\xe0A\x02R\tmatchType\x126\n" +
-	"\x14disregard_diacritics\x18\x05 \x01(\bB\x03\xe0A\x01R\x13disregardDiacritics\"r\n" +
+	"match_type\x18\x04 \x01(\x0e2:.google.cloud.ces.v1beta.Guardrail.ContentFilter.MatchTypeB\x04\xe2A\x01\x02R\tmatchType\x127\n" +
+	"\x14disregard_diacritics\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\x13disregardDiacritics\"r\n" +
 	"\tMatchType\x12\x1a\n" +
 	"\x16MATCH_TYPE_UNSPECIFIED\x10\x00\x12\x17\n" +
 	"\x13SIMPLE_STRING_MATCH\x10\x01\x12\x1e\n" +
 	"\x1aWORD_BOUNDARY_STRING_MATCH\x10\x02\x12\x10\n" +
-	"\fREGEXP_MATCH\x10\x03\x1a\xfa\x02\n" +
-	"\x11LlmPromptSecurity\x12~\n" +
-	"\x10default_settings\x18\x01 \x01(\v2L.google.cloud.ces.v1beta.Guardrail.LlmPromptSecurity.DefaultSecuritySettingsB\x03\xe0A\x01H\x00R\x0fdefaultSettings\x12X\n" +
-	"\rcustom_policy\x18\x02 \x01(\v2,.google.cloud.ces.v1beta.Guardrail.LlmPolicyB\x03\xe0A\x01H\x00R\fcustomPolicy\x12 \n" +
-	"\tfail_open\x18\x03 \x01(\bB\x03\xe0A\x01R\bfailOpen\x1aV\n" +
-	"\x17DefaultSecuritySettings\x12;\n" +
-	"\x17default_prompt_template\x18\x01 \x01(\tB\x03\xe0A\x03R\x15defaultPromptTemplateB\x11\n" +
-	"\x0fsecurity_config\x1a\xee\x03\n" +
-	"\tLlmPolicy\x12?\n" +
-	"\x19max_conversation_messages\x18\x01 \x01(\x05B\x03\xe0A\x01R\x17maxConversationMessages\x12R\n" +
-	"\x0emodel_settings\x18\x02 \x01(\v2&.google.cloud.ces.v1beta.ModelSettingsB\x03\xe0A\x01R\rmodelSettings\x12\x1b\n" +
-	"\x06prompt\x18\x03 \x01(\tB\x03\xe0A\x02R\x06prompt\x12`\n" +
-	"\fpolicy_scope\x18\x04 \x01(\x0e28.google.cloud.ces.v1beta.Guardrail.LlmPolicy.PolicyScopeB\x03\xe0A\x02R\vpolicyScope\x12 \n" +
-	"\tfail_open\x18\x05 \x01(\bB\x03\xe0A\x01R\bfailOpen\x127\n" +
-	"\x15allow_short_utterance\x18\x06 \x01(\bB\x03\xe0A\x01R\x13allowShortUtterance\"r\n" +
+	"\fREGEXP_MATCH\x10\x03\x1a\xfe\x02\n" +
+	"\x11LlmPromptSecurity\x12\x7f\n" +
+	"\x10default_settings\x18\x01 \x01(\v2L.google.cloud.ces.v1beta.Guardrail.LlmPromptSecurity.DefaultSecuritySettingsB\x04\xe2A\x01\x01H\x00R\x0fdefaultSettings\x12Y\n" +
+	"\rcustom_policy\x18\x02 \x01(\v2,.google.cloud.ces.v1beta.Guardrail.LlmPolicyB\x04\xe2A\x01\x01H\x00R\fcustomPolicy\x12!\n" +
+	"\tfail_open\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\bfailOpen\x1aW\n" +
+	"\x17DefaultSecuritySettings\x12<\n" +
+	"\x17default_prompt_template\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x15defaultPromptTemplateB\x11\n" +
+	"\x0fsecurity_config\x1a\xf4\x03\n" +
+	"\tLlmPolicy\x12@\n" +
+	"\x19max_conversation_messages\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\x17maxConversationMessages\x12S\n" +
+	"\x0emodel_settings\x18\x02 \x01(\v2&.google.cloud.ces.v1beta.ModelSettingsB\x04\xe2A\x01\x01R\rmodelSettings\x12\x1c\n" +
+	"\x06prompt\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x06prompt\x12a\n" +
+	"\fpolicy_scope\x18\x04 \x01(\x0e28.google.cloud.ces.v1beta.Guardrail.LlmPolicy.PolicyScopeB\x04\xe2A\x01\x02R\vpolicyScope\x12!\n" +
+	"\tfail_open\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\bfailOpen\x128\n" +
+	"\x15allow_short_utterance\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\x13allowShortUtterance\"r\n" +
 	"\vPolicyScope\x12\x1c\n" +
 	"\x18POLICY_SCOPE_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +
 	"USER_QUERY\x10\x01\x12\x12\n" +
 	"\x0eAGENT_RESPONSE\x10\x02\x12!\n" +
-	"\x1dUSER_QUERY_AND_AGENT_RESPONSE\x10\x03\x1a\xa6\x05\n" +
-	"\vModelSafety\x12j\n" +
-	"\x0fsafety_settings\x18\x01 \x03(\v2<.google.cloud.ces.v1beta.Guardrail.ModelSafety.SafetySettingB\x03\xe0A\x02R\x0esafetySettings\x1a\xd3\x01\n" +
-	"\rSafetySetting\x12\\\n" +
-	"\bcategory\x18\x01 \x01(\x0e2;.google.cloud.ces.v1beta.Guardrail.ModelSafety.HarmCategoryB\x03\xe0A\x02R\bcategory\x12d\n" +
-	"\tthreshold\x18\x02 \x01(\x0e2A.google.cloud.ces.v1beta.Guardrail.ModelSafety.HarmBlockThresholdB\x03\xe0A\x02R\tthreshold\"\xb4\x01\n" +
+	"\x1dUSER_QUERY_AND_AGENT_RESPONSE\x10\x03\x1a\xa9\x05\n" +
+	"\vModelSafety\x12k\n" +
+	"\x0fsafety_settings\x18\x01 \x03(\v2<.google.cloud.ces.v1beta.Guardrail.ModelSafety.SafetySettingB\x04\xe2A\x01\x02R\x0esafetySettings\x1a\xd5\x01\n" +
+	"\rSafetySetting\x12]\n" +
+	"\bcategory\x18\x01 \x01(\x0e2;.google.cloud.ces.v1beta.Guardrail.ModelSafety.HarmCategoryB\x04\xe2A\x01\x02R\bcategory\x12e\n" +
+	"\tthreshold\x18\x02 \x01(\x0e2A.google.cloud.ces.v1beta.Guardrail.ModelSafety.HarmBlockThresholdB\x04\xe2A\x01\x02R\tthreshold\"\xb4\x01\n" +
 	"\fHarmCategory\x12\x1d\n" +
 	"\x19HARM_CATEGORY_UNSPECIFIED\x10\x00\x12\x1d\n" +
 	"\x19HARM_CATEGORY_HATE_SPEECH\x10\x01\x12#\n" +
@@ -1117,12 +1117,12 @@ const file_google_cloud_ces_v1beta_guardrail_proto_rawDesc = "" +
 	"\x0fBLOCK_ONLY_HIGH\x10\x03\x12\x0e\n" +
 	"\n" +
 	"BLOCK_NONE\x10\x04\x12\a\n" +
-	"\x03OFF\x10\x05\x1a\xfa\x02\n" +
-	"\fCodeCallback\x12Z\n" +
-	"\x15before_agent_callback\x18\x01 \x01(\v2!.google.cloud.ces.v1beta.CallbackB\x03\xe0A\x01R\x13beforeAgentCallback\x12X\n" +
-	"\x14after_agent_callback\x18\x02 \x01(\v2!.google.cloud.ces.v1beta.CallbackB\x03\xe0A\x01R\x12afterAgentCallback\x12Z\n" +
-	"\x15before_model_callback\x18\x03 \x01(\v2!.google.cloud.ces.v1beta.CallbackB\x03\xe0A\x01R\x13beforeModelCallback\x12X\n" +
-	"\x14after_model_callback\x18\x04 \x01(\v2!.google.cloud.ces.v1beta.CallbackB\x03\xe0A\x01R\x12afterModelCallback:\x84\x01\xeaA\x80\x01\n" +
+	"\x03OFF\x10\x05\x1a\xfe\x02\n" +
+	"\fCodeCallback\x12[\n" +
+	"\x15before_agent_callback\x18\x01 \x01(\v2!.google.cloud.ces.v1beta.CallbackB\x04\xe2A\x01\x01R\x13beforeAgentCallback\x12Y\n" +
+	"\x14after_agent_callback\x18\x02 \x01(\v2!.google.cloud.ces.v1beta.CallbackB\x04\xe2A\x01\x01R\x12afterAgentCallback\x12[\n" +
+	"\x15before_model_callback\x18\x03 \x01(\v2!.google.cloud.ces.v1beta.CallbackB\x04\xe2A\x01\x01R\x13beforeModelCallback\x12Y\n" +
+	"\x14after_model_callback\x18\x04 \x01(\v2!.google.cloud.ces.v1beta.CallbackB\x04\xe2A\x01\x01R\x12afterModelCallback:\x84\x01\xeaA\x80\x01\n" +
 	"\x1cces.googleapis.com/Guardrail\x12Iprojects/{project}/locations/{location}/apps/{app}/guardrails/{guardrail}*\n" +
 	"guardrails2\tguardrailB\x10\n" +
 	"\x0eguardrail_typeB^\n" +

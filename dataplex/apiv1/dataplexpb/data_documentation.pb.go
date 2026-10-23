@@ -798,35 +798,35 @@ var File_google_cloud_dataplex_v1_data_documentation_proto protoreflect.FileDesc
 
 const file_google_cloud_dataplex_v1_data_documentation_proto_rawDesc = "" +
 	"\n" +
-	"1google/cloud/dataplex/v1/data_documentation.proto\x12\x18google.cloud.dataplex.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xbf\x02\n" +
-	"\x15DataDocumentationSpec\x12A\n" +
-	"\x1acatalog_publishing_enabled\x18\x02 \x01(\bB\x03\xe0A\x01R\x18catalogPublishingEnabled\x12q\n" +
-	"\x11generation_scopes\x18\x03 \x03(\x0e2?.google.cloud.dataplex.v1.DataDocumentationSpec.GenerationScopeB\x03\xe0A\x01R\x10generationScopes\"p\n" +
+	"1google/cloud/dataplex/v1/data_documentation.proto\x12\x18google.cloud.dataplex.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xc1\x02\n" +
+	"\x15DataDocumentationSpec\x12B\n" +
+	"\x1acatalog_publishing_enabled\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x18catalogPublishingEnabled\x12r\n" +
+	"\x11generation_scopes\x18\x03 \x03(\x0e2?.google.cloud.dataplex.v1.DataDocumentationSpec.GenerationScopeB\x04\xe2A\x01\x01R\x10generationScopes\"p\n" +
 	"\x0fGenerationScope\x12 \n" +
 	"\x1cGENERATION_SCOPE_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03ALL\x10\x01\x12!\n" +
 	"\x1dTABLE_AND_COLUMN_DESCRIPTIONS\x10\x02\x12\x0f\n" +
-	"\vSQL_QUERIES\x10\x03\"\x87\x0e\n" +
-	"\x17DataDocumentationResult\x12m\n" +
-	"\x0edataset_result\x18\a \x01(\v2?.google.cloud.dataplex.v1.DataDocumentationResult.DatasetResultB\x03\xe0A\x03H\x00R\rdatasetResult\x12g\n" +
-	"\ftable_result\x18\b \x01(\v2=.google.cloud.dataplex.v1.DataDocumentationResult.TableResultB\x03\xe0A\x03H\x00R\vtableResult\x1a\x86\x02\n" +
-	"\rDatasetResult\x12\x1f\n" +
-	"\boverview\x18\x01 \x01(\tB\x03\xe0A\x03R\boverview\x12|\n" +
-	"\x14schema_relationships\x18\x03 \x03(\v2D.google.cloud.dataplex.v1.DataDocumentationResult.SchemaRelationshipB\x03\xe0A\x03R\x13schemaRelationships\x12V\n" +
-	"\aqueries\x18\x04 \x03(\v27.google.cloud.dataplex.v1.DataDocumentationResult.QueryB\x03\xe0A\x03R\aqueries\x1a\xf6\x01\n" +
-	"\vTableResult\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x1f\n" +
-	"\boverview\x18\x02 \x01(\tB\x03\xe0A\x03R\boverview\x12U\n" +
-	"\x06schema\x18\x03 \x01(\v28.google.cloud.dataplex.v1.DataDocumentationResult.SchemaB\x03\xe0A\x03R\x06schema\x12V\n" +
-	"\aqueries\x18\x04 \x03(\v27.google.cloud.dataplex.v1.DataDocumentationResult.QueryB\x03\xe0A\x03R\aqueries\x1a\xc0\x05\n" +
-	"\x12SchemaRelationship\x12\x81\x01\n" +
-	"\x11left_schema_paths\x18\x01 \x01(\v2P.google.cloud.dataplex.v1.DataDocumentationResult.SchemaRelationship.SchemaPathsB\x03\xe0A\x03R\x0fleftSchemaPaths\x12\x83\x01\n" +
-	"\x12right_schema_paths\x18\x02 \x01(\v2P.google.cloud.dataplex.v1.DataDocumentationResult.SchemaRelationship.SchemaPathsB\x03\xe0A\x03R\x10rightSchemaPaths\x12j\n" +
-	"\asources\x18\x04 \x03(\x0e2K.google.cloud.dataplex.v1.DataDocumentationResult.SchemaRelationship.SourceB\x03\xe0A\x03R\asources\x12b\n" +
-	"\x04type\x18\x06 \x01(\x0e2I.google.cloud.dataplex.v1.DataDocumentationResult.SchemaRelationship.TypeB\x03\xe0A\x03R\x04type\x1aJ\n" +
-	"\vSchemaPaths\x12 \n" +
-	"\ttable_fqn\x18\x01 \x01(\tB\x03\xe0A\x03R\btableFqn\x12\x19\n" +
-	"\x05paths\x18\x02 \x03(\tB\x03\xe0A\x03R\x05paths\"U\n" +
+	"\vSQL_QUERIES\x10\x03\"\x9c\x0e\n" +
+	"\x17DataDocumentationResult\x12n\n" +
+	"\x0edataset_result\x18\a \x01(\v2?.google.cloud.dataplex.v1.DataDocumentationResult.DatasetResultB\x04\xe2A\x01\x03H\x00R\rdatasetResult\x12h\n" +
+	"\ftable_result\x18\b \x01(\v2=.google.cloud.dataplex.v1.DataDocumentationResult.TableResultB\x04\xe2A\x01\x03H\x00R\vtableResult\x1a\x89\x02\n" +
+	"\rDatasetResult\x12 \n" +
+	"\boverview\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\boverview\x12}\n" +
+	"\x14schema_relationships\x18\x03 \x03(\v2D.google.cloud.dataplex.v1.DataDocumentationResult.SchemaRelationshipB\x04\xe2A\x01\x03R\x13schemaRelationships\x12W\n" +
+	"\aqueries\x18\x04 \x03(\v27.google.cloud.dataplex.v1.DataDocumentationResult.QueryB\x04\xe2A\x01\x03R\aqueries\x1a\xfa\x01\n" +
+	"\vTableResult\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12 \n" +
+	"\boverview\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\boverview\x12V\n" +
+	"\x06schema\x18\x03 \x01(\v28.google.cloud.dataplex.v1.DataDocumentationResult.SchemaB\x04\xe2A\x01\x03R\x06schema\x12W\n" +
+	"\aqueries\x18\x04 \x03(\v27.google.cloud.dataplex.v1.DataDocumentationResult.QueryB\x04\xe2A\x01\x03R\aqueries\x1a\xc6\x05\n" +
+	"\x12SchemaRelationship\x12\x82\x01\n" +
+	"\x11left_schema_paths\x18\x01 \x01(\v2P.google.cloud.dataplex.v1.DataDocumentationResult.SchemaRelationship.SchemaPathsB\x04\xe2A\x01\x03R\x0fleftSchemaPaths\x12\x84\x01\n" +
+	"\x12right_schema_paths\x18\x02 \x01(\v2P.google.cloud.dataplex.v1.DataDocumentationResult.SchemaRelationship.SchemaPathsB\x04\xe2A\x01\x03R\x10rightSchemaPaths\x12k\n" +
+	"\asources\x18\x04 \x03(\x0e2K.google.cloud.dataplex.v1.DataDocumentationResult.SchemaRelationship.SourceB\x04\xe2A\x01\x03R\asources\x12c\n" +
+	"\x04type\x18\x06 \x01(\x0e2I.google.cloud.dataplex.v1.DataDocumentationResult.SchemaRelationship.TypeB\x04\xe2A\x01\x03R\x04type\x1aL\n" +
+	"\vSchemaPaths\x12!\n" +
+	"\ttable_fqn\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\btableFqn\x12\x1a\n" +
+	"\x05paths\x18\x02 \x03(\tB\x04\xe2A\x01\x03R\x05paths\"U\n" +
 	"\x06Source\x12\x16\n" +
 	"\x12SOURCE_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05AGENT\x10\x04\x12\x11\n" +
@@ -834,16 +834,16 @@ const file_google_cloud_dataplex_v1_data_documentation_proto_rawDesc = "" +
 	"\x11TABLE_CONSTRAINTS\x10\x06\"-\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x0f\n" +
-	"\vSCHEMA_JOIN\x10\x01\x1aE\n" +
-	"\x05Query\x12\x15\n" +
-	"\x03sql\x18\x01 \x01(\tB\x03\xe0A\x03R\x03sql\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x03R\vdescription\x1a^\n" +
-	"\x06Schema\x12T\n" +
-	"\x06fields\x18\x01 \x03(\v27.google.cloud.dataplex.v1.DataDocumentationResult.FieldB\x03\xe0A\x03R\x06fields\x1a\x9d\x01\n" +
-	"\x05Field\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x03R\vdescription\x12T\n" +
-	"\x06fields\x18\x03 \x03(\v27.google.cloud.dataplex.v1.DataDocumentationResult.FieldB\x03\xe0A\x03R\x06fieldsB\b\n" +
+	"\vSCHEMA_JOIN\x10\x01\x1aG\n" +
+	"\x05Query\x12\x16\n" +
+	"\x03sql\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x03sql\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vdescription\x1a_\n" +
+	"\x06Schema\x12U\n" +
+	"\x06fields\x18\x01 \x03(\v27.google.cloud.dataplex.v1.DataDocumentationResult.FieldB\x04\xe2A\x01\x03R\x06fields\x1a\xa0\x01\n" +
+	"\x05Field\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vdescription\x12U\n" +
+	"\x06fields\x18\x03 \x03(\v27.google.cloud.dataplex.v1.DataDocumentationResult.FieldB\x04\xe2A\x01\x03R\x06fieldsB\b\n" +
 	"\x06resultBr\n" +
 	"\x1ccom.google.cloud.dataplex.v1B\x16DataDocumentationProtoP\x01Z8cloud.google.com/go/dataplex/apiv1/dataplexpb;dataplexpbb\x06proto3"
 

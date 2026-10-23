@@ -229,13 +229,13 @@ var File_google_cloud_securitycenter_settings_v1beta1_billing_settings_proto pro
 
 const file_google_cloud_securitycenter_settings_v1beta1_billing_settings_proto_rawDesc = "" +
 	"\n" +
-	"Cgoogle/cloud/securitycenter/settings/v1beta1/billing_settings.proto\x12,google.cloud.securitycenter.settings.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd9\x02\n" +
-	"\x0fBillingSettings\x12a\n" +
-	"\fbilling_tier\x18\x01 \x01(\x0e29.google.cloud.securitycenter.settings.v1beta1.BillingTierB\x03\xe0A\x03R\vbillingTier\x12a\n" +
-	"\fbilling_type\x18\x02 \x01(\x0e29.google.cloud.securitycenter.settings.v1beta1.BillingTypeB\x03\xe0A\x03R\vbillingType\x12>\n" +
+	"Cgoogle/cloud/securitycenter/settings/v1beta1/billing_settings.proto\x12,google.cloud.securitycenter.settings.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdd\x02\n" +
+	"\x0fBillingSettings\x12b\n" +
+	"\fbilling_tier\x18\x01 \x01(\x0e29.google.cloud.securitycenter.settings.v1beta1.BillingTierB\x04\xe2A\x01\x03R\vbillingTier\x12b\n" +
+	"\fbilling_type\x18\x02 \x01(\x0e29.google.cloud.securitycenter.settings.v1beta1.BillingTypeB\x04\xe2A\x01\x03R\vbillingType\x12?\n" +
 	"\n" +
-	"start_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12@\n" +
-	"\vexpire_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"start_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12A\n" +
+	"\vexpire_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"expireTime*F\n" +
 	"\vBillingTier\x12\x1c\n" +
 	"\x18BILLING_TIER_UNSPECIFIED\x10\x00\x12\f\n" +

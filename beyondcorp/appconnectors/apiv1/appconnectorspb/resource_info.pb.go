@@ -302,9 +302,9 @@ var File_google_cloud_beyondcorp_appconnectors_v1_resource_info_proto protorefle
 
 const file_google_cloud_beyondcorp_appconnectors_v1_resource_info_proto_rawDesc = "" +
 	"\n" +
-	"<google/cloud/beyondcorp/appconnectors/v1/resource_info.proto\x12(google.cloud.beyondcorp.appconnectors.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/protobuf/any.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x9f\x02\n" +
-	"\fResourceInfo\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\x12N\n" +
+	"<google/cloud/beyondcorp/appconnectors/v1/resource_info.proto\x12(google.cloud.beyondcorp.appconnectors.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/protobuf/any.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa0\x02\n" +
+	"\fResourceInfo\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x02id\x12N\n" +
 	"\x06status\x18\x02 \x01(\x0e26.google.cloud.beyondcorp.appconnectors.v1.HealthStatusR\x06status\x120\n" +
 	"\bresource\x18\x03 \x01(\v2\x14.google.protobuf.AnyR\bresource\x12.\n" +
 	"\x04time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\x04time\x12H\n" +

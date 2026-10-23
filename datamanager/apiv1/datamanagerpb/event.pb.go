@@ -746,64 +746,64 @@ var File_google_ads_datamanager_v1_event_proto protoreflect.FileDescriptor
 
 const file_google_ads_datamanager_v1_event_proto_rawDesc = "" +
 	"\n" +
-	"%google/ads/datamanager/v1/event.proto\x12\x19google.ads.datamanager.v1\x1a)google/ads/datamanager/v1/cart_data.proto\x1a'google/ads/datamanager/v1/consent.proto\x1a+google/ads/datamanager/v1/device_info.proto\x1a1google/ads/datamanager/v1/encrypted_user_id.proto\x1a2google/ads/datamanager/v1/experimental_field.proto\x1a)google/ads/datamanager/v1/user_data.proto\x1a/google/ads/datamanager/v1/user_properties.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe0\f\n" +
-	"\x05Event\x12:\n" +
-	"\x16destination_references\x18\x01 \x03(\tB\x03\xe0A\x01R\x15destinationReferences\x12*\n" +
-	"\x0etransaction_id\x18\x02 \x01(\tB\x03\xe0A\x01R\rtransactionId\x12H\n" +
-	"\x0fevent_timestamp\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\x0eeventTimestamp\x12U\n" +
-	"\x16last_updated_timestamp\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\x14lastUpdatedTimestamp\x12E\n" +
-	"\tuser_data\x18\x05 \x01(\v2#.google.ads.datamanager.v1.UserDataB\x03\xe0A\x01R\buserData\x12A\n" +
-	"\aconsent\x18\x06 \x01(\v2\".google.ads.datamanager.v1.ConsentB\x03\xe0A\x01R\aconsent\x12T\n" +
-	"\x0ead_identifiers\x18\a \x01(\v2(.google.ads.datamanager.v1.AdIdentifiersB\x03\xe0A\x01R\radIdentifiers\x12\x1f\n" +
-	"\bcurrency\x18\b \x01(\tB\x03\xe0A\x01R\bcurrency\x123\n" +
-	"\x10conversion_value\x18\t \x01(\x01B\x03\xe0A\x01H\x00R\x0fconversionValue\x88\x01\x01\x123\n" +
-	"\x10conversion_count\x18\x17 \x01(\x01B\x03\xe0A\x01H\x01R\x0fconversionCount\x88\x01\x01\x12N\n" +
+	"%google/ads/datamanager/v1/event.proto\x12\x19google.ads.datamanager.v1\x1a)google/ads/datamanager/v1/cart_data.proto\x1a'google/ads/datamanager/v1/consent.proto\x1a+google/ads/datamanager/v1/device_info.proto\x1a1google/ads/datamanager/v1/encrypted_user_id.proto\x1a2google/ads/datamanager/v1/experimental_field.proto\x1a)google/ads/datamanager/v1/user_data.proto\x1a/google/ads/datamanager/v1/user_properties.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf7\f\n" +
+	"\x05Event\x12;\n" +
+	"\x16destination_references\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\x15destinationReferences\x12+\n" +
+	"\x0etransaction_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\rtransactionId\x12I\n" +
+	"\x0fevent_timestamp\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\x0eeventTimestamp\x12V\n" +
+	"\x16last_updated_timestamp\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\x14lastUpdatedTimestamp\x12F\n" +
+	"\tuser_data\x18\x05 \x01(\v2#.google.ads.datamanager.v1.UserDataB\x04\xe2A\x01\x01R\buserData\x12B\n" +
+	"\aconsent\x18\x06 \x01(\v2\".google.ads.datamanager.v1.ConsentB\x04\xe2A\x01\x01R\aconsent\x12U\n" +
+	"\x0ead_identifiers\x18\a \x01(\v2(.google.ads.datamanager.v1.AdIdentifiersB\x04\xe2A\x01\x01R\radIdentifiers\x12 \n" +
+	"\bcurrency\x18\b \x01(\tB\x04\xe2A\x01\x01R\bcurrency\x124\n" +
+	"\x10conversion_value\x18\t \x01(\x01B\x04\xe2A\x01\x01H\x00R\x0fconversionValue\x88\x01\x01\x124\n" +
+	"\x10conversion_count\x18\x17 \x01(\x01B\x04\xe2A\x01\x01H\x01R\x0fconversionCount\x88\x01\x01\x12O\n" +
 	"\fevent_source\x18\n" +
-	" \x01(\x0e2&.google.ads.datamanager.v1.EventSourceB\x03\xe0A\x01R\veventSource\x12V\n" +
-	"\x11event_device_info\x18\v \x01(\v2%.google.ads.datamanager.v1.DeviceInfoB\x03\xe0A\x01R\x0feventDeviceInfo\x12E\n" +
-	"\tcart_data\x18\f \x01(\v2#.google.ads.datamanager.v1.CartDataB\x03\xe0A\x01R\bcartData\x12Y\n" +
-	"\x10custom_variables\x18\r \x03(\v2).google.ads.datamanager.v1.CustomVariableB\x03\xe0A\x01R\x0fcustomVariables\x12b\n" +
-	"\x13experimental_fields\x18\x0e \x03(\v2,.google.ads.datamanager.v1.ExperimentalFieldB\x03\xe0A\x01R\x12experimentalFields\x12W\n" +
-	"\x0fuser_properties\x18\x0f \x01(\v2).google.ads.datamanager.v1.UserPropertiesB\x03\xe0A\x01R\x0euserProperties\x12\"\n" +
+	" \x01(\x0e2&.google.ads.datamanager.v1.EventSourceB\x04\xe2A\x01\x01R\veventSource\x12W\n" +
+	"\x11event_device_info\x18\v \x01(\v2%.google.ads.datamanager.v1.DeviceInfoB\x04\xe2A\x01\x01R\x0feventDeviceInfo\x12F\n" +
+	"\tcart_data\x18\f \x01(\v2#.google.ads.datamanager.v1.CartDataB\x04\xe2A\x01\x01R\bcartData\x12Z\n" +
+	"\x10custom_variables\x18\r \x03(\v2).google.ads.datamanager.v1.CustomVariableB\x04\xe2A\x01\x01R\x0fcustomVariables\x12c\n" +
+	"\x13experimental_fields\x18\x0e \x03(\v2,.google.ads.datamanager.v1.ExperimentalFieldB\x04\xe2A\x01\x01R\x12experimentalFields\x12X\n" +
+	"\x0fuser_properties\x18\x0f \x01(\v2).google.ads.datamanager.v1.UserPropertiesB\x04\xe2A\x01\x01R\x0euserProperties\x12#\n" +
 	"\n" +
-	"event_name\x18\x10 \x01(\tB\x03\xe0A\x01R\teventName\x12 \n" +
-	"\tclient_id\x18\x11 \x01(\tB\x03\xe0A\x01R\bclientId\x12\x1c\n" +
-	"\auser_id\x18\x12 \x01(\tB\x03\xe0A\x01R\x06userId\x12n\n" +
-	"\x1badditional_event_parameters\x18\x13 \x03(\v2).google.ads.datamanager.v1.EventParameterB\x03\xe0A\x01R\x19additionalEventParameters\x12[\n" +
-	"\x15third_party_user_data\x18\x14 \x01(\v2#.google.ads.datamanager.v1.UserDataB\x03\xe0A\x01R\x12thirdPartyUserData\x12T\n" +
-	"\x0eevent_location\x18\x15 \x01(\v2(.google.ads.datamanager.v1.EventLocationB\x03\xe0A\x01R\reventLocation\x12+\n" +
-	"\x0fapp_instance_id\x18\x16 \x01(\tB\x03\xe0A\x01R\rappInstanceIdB\x13\n" +
+	"event_name\x18\x10 \x01(\tB\x04\xe2A\x01\x01R\teventName\x12!\n" +
+	"\tclient_id\x18\x11 \x01(\tB\x04\xe2A\x01\x01R\bclientId\x12\x1d\n" +
+	"\auser_id\x18\x12 \x01(\tB\x04\xe2A\x01\x01R\x06userId\x12o\n" +
+	"\x1badditional_event_parameters\x18\x13 \x03(\v2).google.ads.datamanager.v1.EventParameterB\x04\xe2A\x01\x01R\x19additionalEventParameters\x12\\\n" +
+	"\x15third_party_user_data\x18\x14 \x01(\v2#.google.ads.datamanager.v1.UserDataB\x04\xe2A\x01\x01R\x12thirdPartyUserData\x12U\n" +
+	"\x0eevent_location\x18\x15 \x01(\v2(.google.ads.datamanager.v1.EventLocationB\x04\xe2A\x01\x01R\reventLocation\x12,\n" +
+	"\x0fapp_instance_id\x18\x16 \x01(\tB\x04\xe2A\x01\x01R\rappInstanceIdB\x13\n" +
 	"\x11_conversion_valueB\x13\n" +
-	"\x11_conversion_count\"\xb1\x04\n" +
-	"\rAdIdentifiers\x122\n" +
-	"\x12session_attributes\x18\x01 \x01(\tB\x03\xe0A\x01R\x11sessionAttributes\x12\x19\n" +
-	"\x05gclid\x18\x02 \x01(\tB\x03\xe0A\x01R\x05gclid\x12\x1b\n" +
-	"\x06gbraid\x18\x03 \x01(\tB\x03\xe0A\x01R\x06gbraid\x12\x1b\n" +
-	"\x06wbraid\x18\x04 \x01(\tB\x03\xe0A\x01R\x06wbraid\x12c\n" +
-	"\x18landing_page_device_info\x18\x05 \x01(\v2%.google.ads.datamanager.v1.DeviceInfoB\x03\xe0A\x01R\x15landingPageDeviceInfo\x12-\n" +
-	"\x10mobile_device_id\x18\x06 \x01(\tB\x03\xe0A\x01R\x0emobileDeviceId\x12\x19\n" +
-	"\x05dclid\x18\a \x01(\tB\x03\xe0A\x01R\x05dclid\x12(\n" +
-	"\rimpression_id\x18\b \x01(\tB\x03\xe0A\x01R\fimpressionId\x12\x1e\n" +
-	"\bmatch_id\x18\t \x01(\tB\x03\xe0A\x01R\amatchId\x12]\n" +
+	"\x11_conversion_count\"\xbd\x04\n" +
+	"\rAdIdentifiers\x123\n" +
+	"\x12session_attributes\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x11sessionAttributes\x12\x1a\n" +
+	"\x05gclid\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x05gclid\x12\x1c\n" +
+	"\x06gbraid\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x06gbraid\x12\x1c\n" +
+	"\x06wbraid\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06wbraid\x12d\n" +
+	"\x18landing_page_device_info\x18\x05 \x01(\v2%.google.ads.datamanager.v1.DeviceInfoB\x04\xe2A\x01\x01R\x15landingPageDeviceInfo\x12.\n" +
+	"\x10mobile_device_id\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x0emobileDeviceId\x12\x1a\n" +
+	"\x05dclid\x18\a \x01(\tB\x04\xe2A\x01\x01R\x05dclid\x12)\n" +
+	"\rimpression_id\x18\b \x01(\tB\x04\xe2A\x01\x01R\fimpressionId\x12\x1f\n" +
+	"\bmatch_id\x18\t \x01(\tB\x04\xe2A\x01\x01R\amatchId\x12^\n" +
 	"\x12encrypted_user_ids\x18\n" +
-	" \x03(\v2*.google.ads.datamanager.v1.EncryptedUserIdB\x03\xe0A\x01R\x10encryptedUserIds\x12\x17\n" +
-	"\x04ppid\x18\v \x01(\tB\x03\xe0A\x01R\x04ppid\x12&\n" +
-	"\fvisitor_ppid\x18\f \x01(\tB\x03\xe0A\x01R\vvisitorPpid\"\x88\x01\n" +
-	"\x0eCustomVariable\x12\x1f\n" +
-	"\bvariable\x18\x01 \x01(\tB\x03\xe0A\x01R\bvariable\x12\x19\n" +
-	"\x05value\x18\x02 \x01(\tB\x03\xe0A\x01R\x05value\x12:\n" +
-	"\x16destination_references\x18\x03 \x03(\tB\x03\xe0A\x01R\x15destinationReferences\"W\n" +
-	"\x0eEventParameter\x12*\n" +
-	"\x0eparameter_name\x18\x01 \x01(\tB\x03\xe0A\x02R\rparameterName\x12\x19\n" +
-	"\x05value\x18\x02 \x01(\tB\x03\xe0A\x02R\x05value\"\xfc\x01\n" +
-	"\rEventLocation\x12\x1e\n" +
-	"\bstore_id\x18\x01 \x01(\tB\x03\xe0A\x01R\astoreId\x12\x17\n" +
-	"\x04city\x18\x02 \x01(\tB\x03\xe0A\x01R\x04city\x12.\n" +
-	"\x10subdivision_code\x18\x03 \x01(\tB\x03\xe0A\x01R\x0fsubdivisionCode\x12$\n" +
-	"\vregion_code\x18\x04 \x01(\tB\x03\xe0A\x01R\n" +
-	"regionCode\x120\n" +
-	"\x11subcontinent_code\x18\x05 \x01(\tB\x03\xe0A\x01R\x10subcontinentCode\x12*\n" +
-	"\x0econtinent_code\x18\x06 \x01(\tB\x03\xe0A\x01R\rcontinentCode*n\n" +
+	" \x03(\v2*.google.ads.datamanager.v1.EncryptedUserIdB\x04\xe2A\x01\x01R\x10encryptedUserIds\x12\x18\n" +
+	"\x04ppid\x18\v \x01(\tB\x04\xe2A\x01\x01R\x04ppid\x12'\n" +
+	"\fvisitor_ppid\x18\f \x01(\tB\x04\xe2A\x01\x01R\vvisitorPpid\"\x8b\x01\n" +
+	"\x0eCustomVariable\x12 \n" +
+	"\bvariable\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\bvariable\x12\x1a\n" +
+	"\x05value\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x05value\x12;\n" +
+	"\x16destination_references\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x15destinationReferences\"Y\n" +
+	"\x0eEventParameter\x12+\n" +
+	"\x0eparameter_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\rparameterName\x12\x1a\n" +
+	"\x05value\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05value\"\x82\x02\n" +
+	"\rEventLocation\x12\x1f\n" +
+	"\bstore_id\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\astoreId\x12\x18\n" +
+	"\x04city\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04city\x12/\n" +
+	"\x10subdivision_code\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x0fsubdivisionCode\x12%\n" +
+	"\vregion_code\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"regionCode\x121\n" +
+	"\x11subcontinent_code\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x10subcontinentCode\x12+\n" +
+	"\x0econtinent_code\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\rcontinentCode*n\n" +
 	"\vEventSource\x12\x1c\n" +
 	"\x18EVENT_SOURCE_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03WEB\x10\x01\x12\a\n" +

@@ -1129,67 +1129,67 @@ var File_google_cloud_sql_v1beta4_cloud_sql_users_proto protoreflect.FileDescrip
 
 const file_google_cloud_sql_v1beta4_cloud_sql_users_proto_rawDesc = "" +
 	"\n" +
-	".google/cloud/sql/v1beta4/cloud_sql_users.proto\x12\x18google.cloud.sql.v1beta4\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a2google/cloud/sql/v1beta4/cloud_sql_resources.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x96\x01\n" +
+	".google/cloud/sql/v1beta4/cloud_sql_users.proto\x12\x18google.cloud.sql.v1beta4\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a2google/cloud/sql/v1beta4/cloud_sql_resources.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x97\x01\n" +
 	"\x15SqlUsersDeleteRequest\x12\x12\n" +
 	"\x04host\x18\x01 \x01(\tR\x04host\x12\x1a\n" +
 	"\binstance\x18\x02 \x01(\tR\binstance\x12\x12\n" +
 	"\x04name\x18\x03 \x01(\tR\x04name\x12\x18\n" +
-	"\aproject\x18\x04 \x01(\tR\aproject\x12\x1f\n" +
-	"\blocation\x18\x05 \x01(\tB\x03\xe0A\x01R\blocation\"\x93\x01\n" +
+	"\aproject\x18\x04 \x01(\tR\aproject\x12 \n" +
+	"\blocation\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\blocation\"\x94\x01\n" +
 	"\x12SqlUsersGetRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x18\n" +
 	"\aproject\x18\x03 \x01(\tR\aproject\x12\x12\n" +
-	"\x04host\x18\x04 \x01(\tR\x04host\x12\x1f\n" +
-	"\blocation\x18\x05 \x01(\tB\x03\xe0A\x01R\blocation\"\xa2\x01\n" +
+	"\x04host\x18\x04 \x01(\tR\x04host\x12 \n" +
+	"\blocation\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\blocation\"\xa3\x01\n" +
 	"\x15SqlUsersInsertRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x122\n" +
-	"\x04body\x18d \x01(\v2\x1e.google.cloud.sql.v1beta4.UserR\x04body\x12\x1f\n" +
-	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"l\n" +
+	"\x04body\x18d \x01(\v2\x1e.google.cloud.sql.v1beta4.UserR\x04body\x12 \n" +
+	"\blocation\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\blocation\"m\n" +
 	"\x13SqlUsersListRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x02 \x01(\tR\aproject\x12\x1f\n" +
-	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xe7\x03\n" +
-	"\x15SqlUsersUpdateRequest\x12\x17\n" +
-	"\x04host\x18\x01 \x01(\tB\x03\xe0A\x01R\x04host\x12\x1a\n" +
+	"\aproject\x18\x02 \x01(\tR\aproject\x12 \n" +
+	"\blocation\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\blocation\"\xed\x03\n" +
+	"\x15SqlUsersUpdateRequest\x12\x18\n" +
+	"\x04host\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04host\x12\x1a\n" +
 	"\binstance\x18\x02 \x01(\tR\binstance\x12\x12\n" +
 	"\x04name\x18\x03 \x01(\tR\x04name\x12\x18\n" +
-	"\aproject\x18\x04 \x01(\tR\aproject\x12*\n" +
-	"\x0edatabase_roles\x18\x05 \x03(\tB\x03\xe0A\x01R\rdatabaseRoles\x12<\n" +
-	"\x15revoke_existing_roles\x18\x06 \x01(\bB\x03\xe0A\x01H\x00R\x13revokeExistingRoles\x88\x01\x01\x12&\n" +
-	"\fserver_roles\x18\a \x03(\tB\x03\xe0A\x01R\vserverRoles\x12I\n" +
-	"\x1crevoke_existing_server_roles\x18\b \x01(\bB\x03\xe0A\x01H\x01R\x19revokeExistingServerRoles\x88\x01\x01\x122\n" +
-	"\x04body\x18d \x01(\v2\x1e.google.cloud.sql.v1beta4.UserR\x04body\x12\x1f\n" +
-	"\blocation\x18\t \x01(\tB\x03\xe0A\x01R\blocationB\x18\n" +
+	"\aproject\x18\x04 \x01(\tR\aproject\x12+\n" +
+	"\x0edatabase_roles\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\rdatabaseRoles\x12=\n" +
+	"\x15revoke_existing_roles\x18\x06 \x01(\bB\x04\xe2A\x01\x01H\x00R\x13revokeExistingRoles\x88\x01\x01\x12'\n" +
+	"\fserver_roles\x18\a \x03(\tB\x04\xe2A\x01\x01R\vserverRoles\x12J\n" +
+	"\x1crevoke_existing_server_roles\x18\b \x01(\bB\x04\xe2A\x01\x01H\x01R\x19revokeExistingServerRoles\x88\x01\x01\x122\n" +
+	"\x04body\x18d \x01(\v2\x1e.google.cloud.sql.v1beta4.UserR\x04body\x12 \n" +
+	"\blocation\x18\t \x01(\tB\x04\xe2A\x01\x01R\blocationB\x18\n" +
 	"\x16_revoke_existing_rolesB\x1f\n" +
-	"\x1d_revoke_existing_server_roles\"\xfd\x02\n" +
+	"\x1d_revoke_existing_server_roles\"\xfe\x02\n" +
 	"\x1cUserPasswordValidationPolicy\x126\n" +
 	"\x17allowed_failed_attempts\x18\x01 \x01(\x05R\x15allowedFailedAttempts\x12[\n" +
 	"\x1cpassword_expiration_duration\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\x1apasswordExpirationDuration\x12?\n" +
-	"\x1cenable_failed_attempts_check\x18\x03 \x01(\bR\x19enableFailedAttemptsCheck\x12E\n" +
-	"\x06status\x18\x04 \x01(\v2(.google.cloud.sql.v1beta4.PasswordStatusB\x03\xe0A\x03R\x06status\x12@\n" +
+	"\x1cenable_failed_attempts_check\x18\x03 \x01(\bR\x19enableFailedAttemptsCheck\x12F\n" +
+	"\x06status\x18\x04 \x01(\v2(.google.cloud.sql.v1beta4.PasswordStatusB\x04\xe2A\x01\x03R\x06status\x12@\n" +
 	"\x1cenable_password_verification\x18\x05 \x01(\bR\x1aenablePasswordVerification\"~\n" +
 	"\x0ePasswordStatus\x12\x16\n" +
 	"\x06locked\x18\x01 \x01(\bR\x06locked\x12T\n" +
-	"\x18password_expiration_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x16passwordExpirationTime\"\xae\t\n" +
+	"\x18password_expiration_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x16passwordExpirationTime\"\xb2\t\n" +
 	"\x04User\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12\x1a\n" +
 	"\bpassword\x18\x02 \x01(\tR\bpassword\x12\x12\n" +
 	"\x04etag\x18\x03 \x01(\tR\x04etag\x12\x12\n" +
-	"\x04name\x18\x04 \x01(\tR\x04name\x12\x17\n" +
-	"\x04host\x18\x05 \x01(\tB\x03\xe0A\x01R\x04host\x12\x1a\n" +
+	"\x04name\x18\x04 \x01(\tR\x04name\x12\x18\n" +
+	"\x04host\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x04host\x12\x1a\n" +
 	"\binstance\x18\x06 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\a \x01(\tR\aproject\x12>\n" +
 	"\x04type\x18\b \x01(\x0e2*.google.cloud.sql.v1beta4.User.SqlUserTypeR\x04type\x12f\n" +
-	"\x16sqlserver_user_details\x18\t \x01(\v2..google.cloud.sql.v1beta4.SqlServerUserDetailsH\x00R\x14sqlserverUserDetails\x12 \n" +
-	"\tiam_email\x18\v \x01(\tB\x03\xe0A\x01R\biamEmail\x12_\n" +
+	"\x16sqlserver_user_details\x18\t \x01(\v2..google.cloud.sql.v1beta4.SqlServerUserDetailsH\x00R\x14sqlserverUserDetails\x12!\n" +
+	"\tiam_email\x18\v \x01(\tB\x04\xe2A\x01\x01R\biamEmail\x12_\n" +
 	"\x0fpassword_policy\x18\f \x01(\v26.google.cloud.sql.v1beta4.UserPasswordValidationPolicyR\x0epasswordPolicy\x12b\n" +
 	"\x12dual_password_type\x18\r \x01(\x0e2/.google.cloud.sql.v1beta4.User.DualPasswordTypeH\x01R\x10dualPasswordType\x88\x01\x01\x12L\n" +
 	"\n" +
-	"iam_status\x18\x0e \x01(\x0e2(.google.cloud.sql.v1beta4.User.IamStatusH\x02R\tiamStatus\x88\x01\x01\x12*\n" +
-	"\x0edatabase_roles\x18\x0f \x03(\tB\x03\xe0A\x01R\rdatabaseRoles\x12&\n" +
-	"\fserver_roles\x18\x10 \x03(\tB\x03\xe0A\x01R\vserverRoles\"\xd6\x01\n" +
+	"iam_status\x18\x0e \x01(\x0e2(.google.cloud.sql.v1beta4.User.IamStatusH\x02R\tiamStatus\x88\x01\x01\x12+\n" +
+	"\x0edatabase_roles\x18\x0f \x03(\tB\x04\xe2A\x01\x01R\rdatabaseRoles\x12'\n" +
+	"\fserver_roles\x18\x10 \x03(\tB\x04\xe2A\x01\x01R\vserverRoles\"\xd6\x01\n" +
 	"\vSqlUserType\x12\f\n" +
 	"\bBUILT_IN\x10\x00\x12\x12\n" +
 	"\x0eCLOUD_IAM_USER\x10\x01\x12\x1d\n" +

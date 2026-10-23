@@ -397,12 +397,12 @@ var File_google_cloud_discoveryengine_v1alpha_recommendation_service_proto proto
 
 const file_google_cloud_discoveryengine_v1alpha_recommendation_service_proto_rawDesc = "" +
 	"\n" +
-	"Agoogle/cloud/discoveryengine/v1alpha/recommendation_service.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a3google/cloud/discoveryengine/v1alpha/document.proto\x1a5google/cloud/discoveryengine/v1alpha/user_event.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xf5\x04\n" +
-	"\x10RecommendRequest\x12[\n" +
-	"\x0eserving_config\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",discoveryengine.googleapis.com/ServingConfigR\rservingConfig\x12S\n" +
+	"Agoogle/cloud/discoveryengine/v1alpha/recommendation_service.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a3google/cloud/discoveryengine/v1alpha/document.proto\x1a5google/cloud/discoveryengine/v1alpha/user_event.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xf7\x04\n" +
+	"\x10RecommendRequest\x12\\\n" +
+	"\x0eserving_config\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",discoveryengine.googleapis.com/ServingConfigR\rservingConfig\x12T\n" +
 	"\n" +
-	"user_event\x18\x02 \x01(\v2/.google.cloud.discoveryengine.v1alpha.UserEventB\x03\xe0A\x02R\tuserEvent\x12\x1b\n" +
+	"user_event\x18\x02 \x01(\v2/.google.cloud.discoveryengine.v1alpha.UserEventB\x04\xe2A\x01\x02R\tuserEvent\x12\x1b\n" +
 	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12\x16\n" +
 	"\x06filter\x18\x04 \x01(\tR\x06filter\x12#\n" +
 	"\rvalidate_only\x18\x05 \x01(\bR\fvalidateOnly\x12Z\n" +

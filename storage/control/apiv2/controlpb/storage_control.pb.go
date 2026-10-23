@@ -7203,126 +7203,126 @@ var File_google_storage_control_v2_storage_control_proto protoreflect.FileDescri
 
 const file_google_storage_control_v2_storage_control_proto_rawDesc = "" +
 	"\n" +
-	"/google/storage/control/v2/storage_control.proto\x12\x19google.storage.control.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x18google/api/routing.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a#google/longrunning/operations.proto\x1a\x19google/protobuf/any.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\x1a\x1agoogle/type/interval.proto\"6\n" +
-	"\x11PendingRenameInfo\x12!\n" +
-	"\toperation\x18\x01 \x01(\tB\x03\xe0A\x03R\toperation\"\xa3\x03\n" +
-	"\x06Folder\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12+\n" +
-	"\x0emetageneration\x18\x03 \x01(\x03B\x03\xe0A\x03R\x0emetageneration\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12a\n" +
-	"\x13pending_rename_info\x18\a \x01(\v2,.google.storage.control.v2.PendingRenameInfoB\x03\xe0A\x03R\x11pendingRenameInfo:l\xeaAi\n" +
-	"\x1dstorage.googleapis.com/Folder\x127projects/{project}/buckets/{bucket}/folders/{folder=**}*\afolders2\x06folder\"\xb6\x02\n" +
-	"\x10GetFolderRequest\x129\n" +
-	"\x04name\x18\x06 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
+	"/google/storage/control/v2/storage_control.proto\x12\x19google.storage.control.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x18google/api/routing.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a#google/longrunning/operations.proto\x1a\x19google/protobuf/any.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\x1a\x1agoogle/type/interval.proto\"7\n" +
+	"\x11PendingRenameInfo\x12\"\n" +
+	"\toperation\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\toperation\"\xa8\x03\n" +
+	"\x06Folder\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12,\n" +
+	"\x0emetageneration\x18\x03 \x01(\x03B\x04\xe2A\x01\x03R\x0emetageneration\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12b\n" +
+	"\x13pending_rename_info\x18\a \x01(\v2,.google.storage.control.v2.PendingRenameInfoB\x04\xe2A\x01\x03R\x11pendingRenameInfo:l\xeaAi\n" +
+	"\x1dstorage.googleapis.com/Folder\x127projects/{project}/buckets/{bucket}/folders/{folder=**}*\afolders2\x06folder\"\xb8\x02\n" +
+	"\x10GetFolderRequest\x12:\n" +
+	"\x04name\x18\x06 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
 	"\x1dstorage.googleapis.com/FolderR\x04name\x12;\n" +
 	"\x17if_metageneration_match\x18\x03 \x01(\x03H\x00R\x15ifMetagenerationMatch\x88\x01\x01\x12B\n" +
-	"\x1bif_metageneration_not_match\x18\x04 \x01(\x03H\x01R\x18ifMetagenerationNotMatch\x88\x01\x01\x12*\n" +
+	"\x1bif_metageneration_not_match\x18\x04 \x01(\x03H\x01R\x18ifMetagenerationNotMatch\x88\x01\x01\x12+\n" +
 	"\n" +
-	"request_id\x18\x05 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestIdB\x1a\n" +
+	"request_id\x18\x05 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestIdB\x1a\n" +
 	"\x18_if_metageneration_matchB\x1e\n" +
-	"\x1c_if_metageneration_not_match\"\x85\x02\n" +
-	"\x13CreateFolderRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\x12\x1dstorage.googleapis.com/FolderR\x06parent\x12>\n" +
-	"\x06folder\x18\x02 \x01(\v2!.google.storage.control.v2.FolderB\x03\xe0A\x02R\x06folder\x12 \n" +
-	"\tfolder_id\x18\x03 \x01(\tB\x03\xe0A\x02R\bfolderId\x12!\n" +
-	"\trecursive\x18\x04 \x01(\bB\x03\xe0A\x01R\trecursive\x12*\n" +
+	"\x1c_if_metageneration_not_match\"\x8a\x02\n" +
+	"\x13CreateFolderRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\x12\x1dstorage.googleapis.com/FolderR\x06parent\x12?\n" +
+	"\x06folder\x18\x02 \x01(\v2!.google.storage.control.v2.FolderB\x04\xe2A\x01\x02R\x06folder\x12!\n" +
+	"\tfolder_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\bfolderId\x12\"\n" +
+	"\trecursive\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\trecursive\x12+\n" +
 	"\n" +
-	"request_id\x18\x05 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xb9\x02\n" +
-	"\x13DeleteFolderRequest\x129\n" +
-	"\x04name\x18\x06 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
+	"request_id\x18\x05 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xbb\x02\n" +
+	"\x13DeleteFolderRequest\x12:\n" +
+	"\x04name\x18\x06 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
 	"\x1dstorage.googleapis.com/FolderR\x04name\x12;\n" +
 	"\x17if_metageneration_match\x18\x03 \x01(\x03H\x00R\x15ifMetagenerationMatch\x88\x01\x01\x12B\n" +
-	"\x1bif_metageneration_not_match\x18\x04 \x01(\x03H\x01R\x18ifMetagenerationNotMatch\x88\x01\x01\x12*\n" +
+	"\x1bif_metageneration_not_match\x18\x04 \x01(\x03H\x01R\x18ifMetagenerationNotMatch\x88\x01\x01\x12+\n" +
 	"\n" +
-	"request_id\x18\x05 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestIdB\x1a\n" +
+	"request_id\x18\x05 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestIdB\x1a\n" +
 	"\x18_if_metageneration_matchB\x1e\n" +
-	"\x1c_if_metageneration_not_match\"\xed\x02\n" +
-	"\x12ListFoldersRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\x12\x1dstorage.googleapis.com/FolderR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x1c_if_metageneration_not_match\"\xf5\x02\n" +
+	"\x12ListFoldersRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\x12\x1dstorage.googleapis.com/FolderR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06prefix\x18\x04 \x01(\tB\x03\xe0A\x01R\x06prefix\x12!\n" +
-	"\tdelimiter\x18\b \x01(\tB\x03\xe0A\x01R\tdelimiter\x124\n" +
-	"\x13lexicographic_start\x18\x06 \x01(\tB\x03\xe0A\x01R\x12lexicographicStart\x120\n" +
-	"\x11lexicographic_end\x18\a \x01(\tB\x03\xe0A\x01R\x10lexicographicEnd\x12*\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06prefix\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06prefix\x12\"\n" +
+	"\tdelimiter\x18\b \x01(\tB\x04\xe2A\x01\x01R\tdelimiter\x125\n" +
+	"\x13lexicographic_start\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x12lexicographicStart\x121\n" +
+	"\x11lexicographic_end\x18\a \x01(\tB\x04\xe2A\x01\x01R\x10lexicographicEnd\x12+\n" +
 	"\n" +
-	"request_id\x18\t \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"z\n" +
+	"request_id\x18\t \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"z\n" +
 	"\x13ListFoldersResponse\x12;\n" +
 	"\afolders\x18\x01 \x03(\v2!.google.storage.control.v2.FolderR\afolders\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xf2\x02\n" +
-	"\x13RenameFolderRequest\x129\n" +
-	"\x04name\x18\a \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dstorage.googleapis.com/FolderR\x04name\x127\n" +
-	"\x15destination_folder_id\x18\b \x01(\tB\x03\xe0A\x02R\x13destinationFolderId\x12;\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xf5\x02\n" +
+	"\x13RenameFolderRequest\x12:\n" +
+	"\x04name\x18\a \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dstorage.googleapis.com/FolderR\x04name\x128\n" +
+	"\x15destination_folder_id\x18\b \x01(\tB\x04\xe2A\x01\x02R\x13destinationFolderId\x12;\n" +
 	"\x17if_metageneration_match\x18\x04 \x01(\x03H\x00R\x15ifMetagenerationMatch\x88\x01\x01\x12B\n" +
-	"\x1bif_metageneration_not_match\x18\x05 \x01(\x03H\x01R\x18ifMetagenerationNotMatch\x88\x01\x01\x12*\n" +
+	"\x1bif_metageneration_not_match\x18\x05 \x01(\x03H\x01R\x18ifMetagenerationNotMatch\x88\x01\x01\x12+\n" +
 	"\n" +
-	"request_id\x18\x06 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestIdB\x1a\n" +
+	"request_id\x18\x06 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestIdB\x1a\n" +
 	"\x18_if_metageneration_matchB\x1e\n" +
-	"\x1c_if_metageneration_not_match\"\xcc\x02\n" +
-	"\x1cDeleteFolderRecursiveRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dstorage.googleapis.com/FolderR\x04name\x12@\n" +
-	"\x17if_metageneration_match\x18\x02 \x01(\x03B\x03\xe0A\x01H\x00R\x15ifMetagenerationMatch\x88\x01\x01\x12G\n" +
-	"\x1bif_metageneration_not_match\x18\x03 \x01(\x03B\x03\xe0A\x01H\x01R\x18ifMetagenerationNotMatch\x88\x01\x01\x12*\n" +
+	"\x1c_if_metageneration_not_match\"\xd0\x02\n" +
+	"\x1cDeleteFolderRecursiveRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dstorage.googleapis.com/FolderR\x04name\x12A\n" +
+	"\x17if_metageneration_match\x18\x02 \x01(\x03B\x04\xe2A\x01\x01H\x00R\x15ifMetagenerationMatch\x88\x01\x01\x12H\n" +
+	"\x1bif_metageneration_not_match\x18\x03 \x01(\x03B\x04\xe2A\x01\x01H\x01R\x18ifMetagenerationNotMatch\x88\x01\x01\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestIdB\x1a\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestIdB\x1a\n" +
 	"\x18_if_metageneration_matchB\x1e\n" +
-	"\x1c_if_metageneration_not_match\"\xe9\x02\n" +
-	"\"CommonLongRunningOperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x17\n" +
-	"\x04type\x18\x04 \x01(\tB\x03\xe0A\x03R\x04type\x12:\n" +
-	"\x16requested_cancellation\x18\x05 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12.\n" +
-	"\x10progress_percent\x18\x06 \x01(\x05B\x03\xe0A\x03R\x0fprogressPercent\"\xdc\x01\n" +
+	"\x1c_if_metageneration_not_match\"\xef\x02\n" +
+	"\"CommonLongRunningOperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x18\n" +
+	"\x04type\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04type\x12;\n" +
+	"\x16requested_cancellation\x18\x05 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12/\n" +
+	"\x10progress_percent\x18\x06 \x01(\x05B\x04\xe2A\x01\x03R\x0fprogressPercent\"\xdc\x01\n" +
 	"\x14RenameFolderMetadata\x12f\n" +
 	"\x0fcommon_metadata\x18\x01 \x01(\v2=.google.storage.control.v2.CommonLongRunningOperationMetadataR\x0ecommonMetadata\x12(\n" +
 	"\x10source_folder_id\x18\x02 \x01(\tR\x0esourceFolderId\x122\n" +
 	"\x15destination_folder_id\x18\x03 \x01(\tR\x13destinationFolderId\"\xa4\x01\n" +
 	"\x1dDeleteFolderRecursiveMetadata\x12f\n" +
 	"\x0fcommon_metadata\x18\x01 \x01(\v2=.google.storage.control.v2.CommonLongRunningOperationMetadataR\x0ecommonMetadata\x12\x1b\n" +
-	"\tfolder_id\x18\x02 \x01(\tR\bfolderId\"\xfa\x05\n" +
-	"\rStorageLayout\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x1f\n" +
-	"\blocation\x18\x02 \x01(\tB\x03\xe0A\x03R\blocation\x12(\n" +
-	"\rlocation_type\x18\x03 \x01(\tB\x03\xe0A\x03R\flocationType\x12{\n" +
-	"\x17custom_placement_config\x18\x04 \x01(\v2>.google.storage.control.v2.StorageLayout.CustomPlacementConfigB\x03\xe0A\x03R\x15customPlacementConfig\x12z\n" +
-	"\x16hierarchical_namespace\x18\x05 \x01(\v2>.google.storage.control.v2.StorageLayout.HierarchicalNamespaceB\x03\xe0A\x03R\x15hierarchicalNamespace\x12f\n" +
-	"\x10rapid_cache_info\x18\x06 \x01(\v27.google.storage.control.v2.StorageLayout.RapidCacheInfoB\x03\xe0A\x03R\x0erapidCacheInfo\x1a>\n" +
+	"\tfolder_id\x18\x02 \x01(\tR\bfolderId\"\x81\x06\n" +
+	"\rStorageLayout\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12 \n" +
+	"\blocation\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\blocation\x12)\n" +
+	"\rlocation_type\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\flocationType\x12|\n" +
+	"\x17custom_placement_config\x18\x04 \x01(\v2>.google.storage.control.v2.StorageLayout.CustomPlacementConfigB\x04\xe2A\x01\x03R\x15customPlacementConfig\x12{\n" +
+	"\x16hierarchical_namespace\x18\x05 \x01(\v2>.google.storage.control.v2.StorageLayout.HierarchicalNamespaceB\x04\xe2A\x01\x03R\x15hierarchicalNamespace\x12g\n" +
+	"\x10rapid_cache_info\x18\x06 \x01(\v27.google.storage.control.v2.StorageLayout.RapidCacheInfoB\x04\xe2A\x01\x03R\x0erapidCacheInfo\x1a>\n" +
 	"\x15CustomPlacementConfig\x12%\n" +
 	"\x0edata_locations\x18\x01 \x03(\tR\rdataLocations\x1a1\n" +
 	"\x15HierarchicalNamespace\x12\x18\n" +
-	"\aenabled\x18\x01 \x01(\bR\aenabled\x1a4\n" +
-	"\x0eRapidCacheInfo\x12\"\n" +
+	"\aenabled\x18\x01 \x01(\bR\aenabled\x1a5\n" +
+	"\x0eRapidCacheInfo\x12#\n" +
 	"\n" +
-	"cache_type\x18\x01 \x01(\tB\x03\xe0A\x03R\tcacheType:{\xeaAx\n" +
-	"$storage.googleapis.com/StorageLayout\x121projects/{project}/buckets/{bucket}/storageLayout*\x0estorageLayouts2\rstorageLayout\"\x9f\x01\n" +
-	"\x17GetStorageLayoutRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
+	"cache_type\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\tcacheType:{\xeaAx\n" +
+	"$storage.googleapis.com/StorageLayout\x121projects/{project}/buckets/{bucket}/storageLayout*\x0estorageLayouts2\rstorageLayout\"\xa1\x01\n" +
+	"\x17GetStorageLayoutRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
 	"$storage.googleapis.com/StorageLayoutR\x04name\x12\x16\n" +
-	"\x06prefix\x18\x02 \x01(\tR\x06prefix\x12*\n" +
+	"\x06prefix\x18\x02 \x01(\tR\x06prefix\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x92\b\n" +
-	"\rManagedFolder\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12+\n" +
-	"\x0emetageneration\x18\x03 \x01(\x03B\x03\xe0A\x03R\x0emetageneration\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x99\b\n" +
+	"\rManagedFolder\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12,\n" +
+	"\x0emetageneration\x18\x03 \x01(\x03B\x04\xe2A\x01\x03R\x0emetageneration\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12l\n" +
-	"\x12rapid_cache_config\x18\x06 \x01(\v29.google.storage.control.v2.ManagedFolder.RapidCacheConfigH\x00R\x10rapidCacheConfig\x88\x01\x01\x1a\x9d\x04\n" +
-	"\x10RapidCacheConfig\x12h\n" +
-	"\bpolicies\x18\x01 \x03(\v2G.google.storage.control.v2.ManagedFolder.RapidCacheConfig.PoliciesEntryB\x03\xe0A\x01R\bpolicies\x1a\x94\x02\n" +
-	"\x10RapidCachePolicy\x12)\n" +
-	"\x0erapid_cache_id\x18\x01 \x01(\tB\x03\xe0A\x02R\frapidCacheId\x12\x85\x01\n" +
-	"\x0fingest_on_write\x18\x02 \x01(\x0e2X.google.storage.control.v2.ManagedFolder.RapidCacheConfig.RapidCachePolicy.IngestOnWriteB\x03\xe0A\x02R\ringestOnWrite\"M\n" +
+	"\x12rapid_cache_config\x18\x06 \x01(\v29.google.storage.control.v2.ManagedFolder.RapidCacheConfigH\x00R\x10rapidCacheConfig\x88\x01\x01\x1a\xa0\x04\n" +
+	"\x10RapidCacheConfig\x12i\n" +
+	"\bpolicies\x18\x01 \x03(\v2G.google.storage.control.v2.ManagedFolder.RapidCacheConfig.PoliciesEntryB\x04\xe2A\x01\x01R\bpolicies\x1a\x96\x02\n" +
+	"\x10RapidCachePolicy\x12*\n" +
+	"\x0erapid_cache_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\frapidCacheId\x12\x86\x01\n" +
+	"\x0fingest_on_write\x18\x02 \x01(\x0e2X.google.storage.control.v2.ManagedFolder.RapidCacheConfig.RapidCachePolicy.IngestOnWriteB\x04\xe2A\x01\x02R\ringestOnWrite\"M\n" +
 	"\rIngestOnWrite\x12\x1f\n" +
 	"\x1bINGEST_ON_WRITE_UNSPECIFIED\x10\x00\x12\x1b\n" +
 	"\x17INGEST_ON_WRITE_ENABLED\x10\x01\x1a\x87\x01\n" +
@@ -7330,249 +7330,249 @@ const file_google_storage_control_v2_storage_control_proto_rawDesc = "" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12`\n" +
 	"\x05value\x18\x02 \x01(\v2J.google.storage.control.v2.ManagedFolder.RapidCacheConfig.RapidCachePolicyR\x05value:\x028\x01:\x91\x01\xeaA\x8d\x01\n" +
 	"$storage.googleapis.com/ManagedFolder\x12Fprojects/{project}/buckets/{bucket}/managedFolders/{managed_folder=**}*\x0emanagedFolders2\rmanagedFolderB\x15\n" +
-	"\x13_rapid_cache_config\"\xc4\x02\n" +
-	"\x17GetManagedFolderRequest\x12@\n" +
-	"\x04name\x18\x06 \x01(\tB,\xe0A\x02\xfaA&\n" +
+	"\x13_rapid_cache_config\"\xc6\x02\n" +
+	"\x17GetManagedFolderRequest\x12A\n" +
+	"\x04name\x18\x06 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
 	"$storage.googleapis.com/ManagedFolderR\x04name\x12;\n" +
 	"\x17if_metageneration_match\x18\x03 \x01(\x03H\x00R\x15ifMetagenerationMatch\x88\x01\x01\x12B\n" +
-	"\x1bif_metageneration_not_match\x18\x04 \x01(\x03H\x01R\x18ifMetagenerationNotMatch\x88\x01\x01\x12*\n" +
+	"\x1bif_metageneration_not_match\x18\x04 \x01(\x03H\x01R\x18ifMetagenerationNotMatch\x88\x01\x01\x12+\n" +
 	"\n" +
-	"request_id\x18\x05 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestIdB\x1a\n" +
+	"request_id\x18\x05 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestIdB\x1a\n" +
 	"\x18_if_metageneration_matchB\x1e\n" +
-	"\x1c_if_metageneration_not_match\"\x95\x02\n" +
-	"\x1aCreateManagedFolderRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$storage.googleapis.com/ManagedFolderR\x06parent\x12T\n" +
-	"\x0emanaged_folder\x18\x02 \x01(\v2(.google.storage.control.v2.ManagedFolderB\x03\xe0A\x02R\rmanagedFolder\x12/\n" +
-	"\x11managed_folder_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x0fmanagedFolderId\x12*\n" +
+	"\x1c_if_metageneration_not_match\"\x99\x02\n" +
+	"\x1aCreateManagedFolderRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$storage.googleapis.com/ManagedFolderR\x06parent\x12U\n" +
+	"\x0emanaged_folder\x18\x02 \x01(\v2(.google.storage.control.v2.ManagedFolderB\x04\xe2A\x01\x02R\rmanagedFolder\x120\n" +
+	"\x11managed_folder_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x0fmanagedFolderId\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xef\x02\n" +
-	"\x1aDeleteManagedFolderRequest\x12@\n" +
-	"\x04name\x18\a \x01(\tB,\xe0A\x02\xfaA&\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xf1\x02\n" +
+	"\x1aDeleteManagedFolderRequest\x12A\n" +
+	"\x04name\x18\a \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
 	"$storage.googleapis.com/ManagedFolderR\x04name\x12;\n" +
 	"\x17if_metageneration_match\x18\x03 \x01(\x03H\x00R\x15ifMetagenerationMatch\x88\x01\x01\x12B\n" +
 	"\x1bif_metageneration_not_match\x18\x04 \x01(\x03H\x01R\x18ifMetagenerationNotMatch\x88\x01\x01\x12&\n" +
-	"\x0fallow_non_empty\x18\x05 \x01(\bR\rallowNonEmpty\x12*\n" +
+	"\x0fallow_non_empty\x18\x05 \x01(\bR\rallowNonEmpty\x12+\n" +
 	"\n" +
-	"request_id\x18\x06 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestIdB\x1a\n" +
+	"request_id\x18\x06 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestIdB\x1a\n" +
 	"\x18_if_metageneration_matchB\x1e\n" +
-	"\x1c_if_metageneration_not_match\"\xf0\x01\n" +
-	"\x19ListManagedFoldersRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$storage.googleapis.com/ManagedFolderR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x1c_if_metageneration_not_match\"\xf5\x01\n" +
+	"\x19ListManagedFoldersRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$storage.googleapis.com/ManagedFolderR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06prefix\x18\x04 \x01(\tB\x03\xe0A\x01R\x06prefix\x12*\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06prefix\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06prefix\x12+\n" +
 	"\n" +
-	"request_id\x18\x05 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x97\x01\n" +
+	"request_id\x18\x05 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x97\x01\n" +
 	"\x1aListManagedFoldersResponse\x12Q\n" +
 	"\x0fmanaged_folders\x18\x01 \x03(\v2(.google.storage.control.v2.ManagedFolderR\x0emanagedFolders\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa7\x03\n" +
-	"\x1aUpdateManagedFolderRequest\x12T\n" +
-	"\x0emanaged_folder\x18\x01 \x01(\v2(.google.storage.control.v2.ManagedFolderB\x03\xe0A\x02R\rmanagedFolder\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12@\n" +
-	"\x17if_metageneration_match\x18\x03 \x01(\x03B\x03\xe0A\x01H\x00R\x15ifMetagenerationMatch\x88\x01\x01\x12G\n" +
-	"\x1bif_metageneration_not_match\x18\x04 \x01(\x03B\x03\xe0A\x01H\x01R\x18ifMetagenerationNotMatch\x88\x01\x01\x12*\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xac\x03\n" +
+	"\x1aUpdateManagedFolderRequest\x12U\n" +
+	"\x0emanaged_folder\x18\x01 \x01(\v2(.google.storage.control.v2.ManagedFolderB\x04\xe2A\x01\x02R\rmanagedFolder\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12A\n" +
+	"\x17if_metageneration_match\x18\x03 \x01(\x03B\x04\xe2A\x01\x01H\x00R\x15ifMetagenerationMatch\x88\x01\x01\x12H\n" +
+	"\x1bif_metageneration_not_match\x18\x04 \x01(\x03B\x04\xe2A\x01\x01H\x01R\x18ifMetagenerationNotMatch\x88\x01\x01\x12+\n" +
 	"\n" +
-	"request_id\x18\x05 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestIdB\x1a\n" +
+	"request_id\x18\x05 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestIdB\x1a\n" +
 	"\x18_if_metageneration_matchB\x1e\n" +
-	"\x1c_if_metageneration_not_match\"\xb3\x03\n" +
+	"\x1c_if_metageneration_not_match\"\xb4\x03\n" +
 	"\x1bCreateAnywhereCacheMetadata\x12f\n" +
 	"\x0fcommon_metadata\x18\x01 \x01(\v2=.google.storage.control.v2.CommonLongRunningOperationMetadataR\x0ecommonMetadata\x12/\n" +
 	"\x11anywhere_cache_id\x18\x02 \x01(\tH\x00R\x0fanywhereCacheId\x88\x01\x01\x12\x17\n" +
 	"\x04zone\x18\x06 \x01(\tH\x01R\x04zone\x88\x01\x01\x120\n" +
 	"\x03ttl\x18\x03 \x01(\v2\x19.google.protobuf.DurationH\x02R\x03ttl\x88\x01\x01\x12.\n" +
-	"\x10admission_policy\x18\x05 \x01(\tH\x03R\x0fadmissionPolicy\x88\x01\x01\x120\n" +
-	"\x0fingest_on_write\x18\a \x01(\bB\x03\xe0A\x01H\x04R\ringestOnWrite\x88\x01\x01B\x14\n" +
+	"\x10admission_policy\x18\x05 \x01(\tH\x03R\x0fadmissionPolicy\x88\x01\x01\x121\n" +
+	"\x0fingest_on_write\x18\a \x01(\bB\x04\xe2A\x01\x01H\x04R\ringestOnWrite\x88\x01\x01B\x14\n" +
 	"\x12_anywhere_cache_idB\a\n" +
 	"\x05_zoneB\x06\n" +
 	"\x04_ttlB\x13\n" +
 	"\x11_admission_policyB\x12\n" +
-	"\x10_ingest_on_write\"\xdf\x03\n" +
+	"\x10_ingest_on_write\"\xe1\x03\n" +
 	"\x18CreateRapidCacheMetadata\x12f\n" +
 	"\x0fcommon_metadata\x18\x01 \x01(\v2=.google.storage.control.v2.CommonLongRunningOperationMetadataR\x0ecommonMetadata\x12)\n" +
 	"\x0erapid_cache_id\x18\x02 \x01(\tH\x00R\frapidCacheId\x88\x01\x01\x12\x17\n" +
 	"\x04zone\x18\x03 \x01(\tH\x01R\x04zone\x88\x01\x01\x120\n" +
 	"\x03ttl\x18\x04 \x01(\v2\x19.google.protobuf.DurationH\x02R\x03ttl\x88\x01\x01\x12.\n" +
-	"\x10admission_policy\x18\x05 \x01(\tH\x03R\x0fadmissionPolicy\x88\x01\x01\x120\n" +
-	"\x0fingest_on_write\x18\x06 \x01(\bB\x03\xe0A\x01H\x04R\ringestOnWrite\x88\x01\x01\x12'\n" +
+	"\x10admission_policy\x18\x05 \x01(\tH\x03R\x0fadmissionPolicy\x88\x01\x01\x121\n" +
+	"\x0fingest_on_write\x18\x06 \x01(\bB\x04\xe2A\x01\x01H\x04R\ringestOnWrite\x88\x01\x01\x12(\n" +
 	"\n" +
-	"cache_type\x18\a \x01(\tB\x03\xe0A\x01H\x05R\tcacheType\x88\x01\x01B\x11\n" +
+	"cache_type\x18\a \x01(\tB\x04\xe2A\x01\x01H\x05R\tcacheType\x88\x01\x01B\x11\n" +
 	"\x0f_rapid_cache_idB\a\n" +
 	"\x05_zoneB\x06\n" +
 	"\x04_ttlB\x13\n" +
 	"\x11_admission_policyB\x12\n" +
 	"\x10_ingest_on_writeB\r\n" +
-	"\v_cache_type\"\xb3\x03\n" +
+	"\v_cache_type\"\xb4\x03\n" +
 	"\x1bUpdateAnywhereCacheMetadata\x12f\n" +
 	"\x0fcommon_metadata\x18\x01 \x01(\v2=.google.storage.control.v2.CommonLongRunningOperationMetadataR\x0ecommonMetadata\x12/\n" +
 	"\x11anywhere_cache_id\x18\x02 \x01(\tH\x00R\x0fanywhereCacheId\x88\x01\x01\x12\x17\n" +
 	"\x04zone\x18\x05 \x01(\tH\x01R\x04zone\x88\x01\x01\x120\n" +
-	"\x03ttl\x18\x03 \x01(\v2\x19.google.protobuf.DurationH\x02R\x03ttl\x88\x01\x01\x123\n" +
-	"\x10admission_policy\x18\x04 \x01(\tB\x03\xe0A\x01H\x03R\x0fadmissionPolicy\x88\x01\x01\x12+\n" +
+	"\x03ttl\x18\x03 \x01(\v2\x19.google.protobuf.DurationH\x02R\x03ttl\x88\x01\x01\x124\n" +
+	"\x10admission_policy\x18\x04 \x01(\tB\x04\xe2A\x01\x01H\x03R\x0fadmissionPolicy\x88\x01\x01\x12+\n" +
 	"\x0fingest_on_write\x18\x06 \x01(\bH\x04R\ringestOnWrite\x88\x01\x01B\x14\n" +
 	"\x12_anywhere_cache_idB\a\n" +
 	"\x05_zoneB\x06\n" +
 	"\x04_ttlB\x13\n" +
 	"\x11_admission_policyB\x12\n" +
-	"\x10_ingest_on_write\"\xdf\x03\n" +
+	"\x10_ingest_on_write\"\xe1\x03\n" +
 	"\x18UpdateRapidCacheMetadata\x12f\n" +
 	"\x0fcommon_metadata\x18\x01 \x01(\v2=.google.storage.control.v2.CommonLongRunningOperationMetadataR\x0ecommonMetadata\x12)\n" +
 	"\x0erapid_cache_id\x18\x02 \x01(\tH\x00R\frapidCacheId\x88\x01\x01\x12\x17\n" +
 	"\x04zone\x18\x03 \x01(\tH\x01R\x04zone\x88\x01\x01\x120\n" +
-	"\x03ttl\x18\x04 \x01(\v2\x19.google.protobuf.DurationH\x02R\x03ttl\x88\x01\x01\x123\n" +
-	"\x10admission_policy\x18\x05 \x01(\tB\x03\xe0A\x01H\x03R\x0fadmissionPolicy\x88\x01\x01\x12+\n" +
-	"\x0fingest_on_write\x18\x06 \x01(\bH\x04R\ringestOnWrite\x88\x01\x01\x12'\n" +
+	"\x03ttl\x18\x04 \x01(\v2\x19.google.protobuf.DurationH\x02R\x03ttl\x88\x01\x01\x124\n" +
+	"\x10admission_policy\x18\x05 \x01(\tB\x04\xe2A\x01\x01H\x03R\x0fadmissionPolicy\x88\x01\x01\x12+\n" +
+	"\x0fingest_on_write\x18\x06 \x01(\bH\x04R\ringestOnWrite\x88\x01\x01\x12(\n" +
 	"\n" +
-	"cache_type\x18\a \x01(\tB\x03\xe0A\x01H\x05R\tcacheType\x88\x01\x01B\x11\n" +
+	"cache_type\x18\a \x01(\tB\x04\xe2A\x01\x01H\x05R\tcacheType\x88\x01\x01B\x11\n" +
 	"\x0f_rapid_cache_idB\a\n" +
 	"\x05_zoneB\x06\n" +
 	"\x04_ttlB\x13\n" +
 	"\x11_admission_policyB\x12\n" +
 	"\x10_ingest_on_writeB\r\n" +
-	"\v_cache_type\"\x9b\x02\n" +
+	"\v_cache_type\"\x9c\x02\n" +
 	"\x19DisableRapidCacheMetadata\x12f\n" +
 	"\x0fcommon_metadata\x18\x01 \x01(\v2=.google.storage.control.v2.CommonLongRunningOperationMetadataR\x0ecommonMetadata\x12)\n" +
 	"\x0erapid_cache_id\x18\x02 \x01(\tH\x00R\frapidCacheId\x88\x01\x01\x12\x17\n" +
-	"\x04zone\x18\x03 \x01(\tH\x01R\x04zone\x88\x01\x01\x12'\n" +
+	"\x04zone\x18\x03 \x01(\tH\x01R\x04zone\x88\x01\x01\x12(\n" +
 	"\n" +
-	"cache_type\x18\x04 \x01(\tB\x03\xe0A\x01H\x02R\tcacheType\x88\x01\x01B\x11\n" +
+	"cache_type\x18\x04 \x01(\tB\x04\xe2A\x01\x01H\x02R\tcacheType\x88\x01\x01B\x11\n" +
 	"\x0f_rapid_cache_idB\a\n" +
 	"\x05_zoneB\r\n" +
-	"\v_cache_type\"\xbb\x04\n" +
-	"\rAnywhereCache\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12\x17\n" +
+	"\v_cache_type\"\xc2\x04\n" +
+	"\rAnywhereCache\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12\x18\n" +
 	"\x04zone\x18\n" +
-	" \x01(\tB\x03\xe0A\x05R\x04zone\x12+\n" +
+	" \x01(\tB\x04\xe2A\x01\x05R\x04zone\x12+\n" +
 	"\x03ttl\x18\x03 \x01(\v2\x19.google.protobuf.DurationR\x03ttl\x12)\n" +
-	"\x10admission_policy\x18\t \x01(\tR\x0fadmissionPolicy\x12\x19\n" +
-	"\x05state\x18\x05 \x01(\tB\x03\xe0A\x03R\x05state\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12*\n" +
-	"\x0epending_update\x18\b \x01(\bB\x03\xe0A\x03R\rpendingUpdate\x120\n" +
-	"\x0fingest_on_write\x18\v \x01(\bB\x03\xe0A\x01H\x00R\ringestOnWrite\x88\x01\x01:\x8e\x01\xeaA\x8a\x01\n" +
+	"\x10admission_policy\x18\t \x01(\tR\x0fadmissionPolicy\x12\x1a\n" +
+	"\x05state\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x05state\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12+\n" +
+	"\x0epending_update\x18\b \x01(\bB\x04\xe2A\x01\x03R\rpendingUpdate\x121\n" +
+	"\x0fingest_on_write\x18\v \x01(\bB\x04\xe2A\x01\x01H\x00R\ringestOnWrite\x88\x01\x01:\x8e\x01\xeaA\x8a\x01\n" +
 	"$storage.googleapis.com/AnywhereCache\x12Cprojects/{project}/buckets/{bucket}/anywhereCaches/{anywhere_cache}*\x0eanywhereCaches2\ranywhereCacheB\x12\n" +
-	"\x10_ingest_on_write\"\xe4\x01\n" +
-	"\x1aCreateAnywhereCacheRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$storage.googleapis.com/AnywhereCacheR\x06parent\x12T\n" +
-	"\x0eanywhere_cache\x18\x03 \x01(\v2(.google.storage.control.v2.AnywhereCacheB\x03\xe0A\x02R\ranywhereCache\x12*\n" +
+	"\x10_ingest_on_write\"\xe7\x01\n" +
+	"\x1aCreateAnywhereCacheRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$storage.googleapis.com/AnywhereCacheR\x06parent\x12U\n" +
+	"\x0eanywhere_cache\x18\x03 \x01(\v2(.google.storage.control.v2.AnywhereCacheB\x04\xe2A\x01\x02R\ranywhereCache\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xe0\x01\n" +
-	"\x1aUpdateAnywhereCacheRequest\x12T\n" +
-	"\x0eanywhere_cache\x18\x01 \x01(\v2(.google.storage.control.v2.AnywhereCacheB\x03\xe0A\x02R\ranywhereCache\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xe3\x01\n" +
+	"\x1aUpdateAnywhereCacheRequest\x12U\n" +
+	"\x0eanywhere_cache\x18\x01 \x01(\v2(.google.storage.control.v2.AnywhereCacheB\x04\xe2A\x01\x02R\ranywhereCache\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x8b\x01\n" +
-	"\x1bDisableAnywhereCacheRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$storage.googleapis.com/AnywhereCacheR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x8d\x01\n" +
+	"\x1bDisableAnywhereCacheRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$storage.googleapis.com/AnywhereCacheR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x89\x01\n" +
-	"\x19PauseAnywhereCacheRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$storage.googleapis.com/AnywhereCacheR\x04name\x12*\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x8b\x01\n" +
+	"\x19PauseAnywhereCacheRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$storage.googleapis.com/AnywhereCacheR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x8a\x01\n" +
-	"\x1aResumeAnywhereCacheRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$storage.googleapis.com/AnywhereCacheR\x04name\x12*\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x8c\x01\n" +
+	"\x1aResumeAnywhereCacheRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$storage.googleapis.com/AnywhereCacheR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x87\x01\n" +
-	"\x17GetAnywhereCacheRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$storage.googleapis.com/AnywhereCacheR\x04name\x12*\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x89\x01\n" +
+	"\x17GetAnywhereCacheRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$storage.googleapis.com/AnywhereCacheR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xc9\x01\n" +
-	"\x19ListAnywhereCachesRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$storage.googleapis.com/AnywhereCacheR\x06parent\x12\x1b\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xcb\x01\n" +
+	"\x19ListAnywhereCachesRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$storage.googleapis.com/AnywhereCacheR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\x12*\n" +
+	"page_token\x18\x03 \x01(\tR\tpageToken\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x97\x01\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x97\x01\n" +
 	"\x1aListAnywhereCachesResponse\x12Q\n" +
 	"\x0fanywhere_caches\x18\x01 \x03(\v2(.google.storage.control.v2.AnywhereCacheR\x0eanywhereCaches\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x85\x04\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x8c\x04\n" +
 	"\n" +
-	"RapidCache\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12\x17\n" +
-	"\x04zone\x18\x02 \x01(\tB\x03\xe0A\x05R\x04zone\x12\"\n" +
+	"RapidCache\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12\x18\n" +
+	"\x04zone\x18\x02 \x01(\tB\x04\xe2A\x01\x05R\x04zone\x12#\n" +
 	"\n" +
-	"cache_type\x18\x03 \x01(\tB\x03\xe0A\x05R\tcacheType\x12+\n" +
+	"cache_type\x18\x03 \x01(\tB\x04\xe2A\x01\x05R\tcacheType\x12+\n" +
 	"\x03ttl\x18\x04 \x01(\v2\x19.google.protobuf.DurationR\x03ttl\x12)\n" +
-	"\x10admission_policy\x18\x05 \x01(\tR\x0fadmissionPolicy\x12\x19\n" +
-	"\x05state\x18\x06 \x01(\tB\x03\xe0A\x03R\x05state\x12@\n" +
-	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12*\n" +
-	"\x0epending_update\x18\t \x01(\bB\x03\xe0A\x03R\rpendingUpdate:~\xeaA{\n" +
+	"\x10admission_policy\x18\x05 \x01(\tR\x0fadmissionPolicy\x12\x1a\n" +
+	"\x05state\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x05state\x12A\n" +
+	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12+\n" +
+	"\x0epending_update\x18\t \x01(\bB\x04\xe2A\x01\x03R\rpendingUpdate:~\xeaA{\n" +
 	"!storage.googleapis.com/RapidCache\x12=projects/{project}/buckets/{bucket}/rapidCaches/{rapid_cache}*\vrapidCaches2\n" +
-	"rapidCache\"\xd5\x01\n" +
-	"\x17CreateRapidCacheRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!storage.googleapis.com/RapidCacheR\x06parent\x12K\n" +
-	"\vrapid_cache\x18\x02 \x01(\v2%.google.storage.control.v2.RapidCacheB\x03\xe0A\x02R\n" +
-	"rapidCache\x12*\n" +
+	"rapidCache\"\xd8\x01\n" +
+	"\x17CreateRapidCacheRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!storage.googleapis.com/RapidCacheR\x06parent\x12L\n" +
+	"\vrapid_cache\x18\x02 \x01(\v2%.google.storage.control.v2.RapidCacheB\x04\xe2A\x01\x02R\n" +
+	"rapidCache\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xd4\x01\n" +
-	"\x17UpdateRapidCacheRequest\x12K\n" +
-	"\vrapid_cache\x18\x01 \x01(\v2%.google.storage.control.v2.RapidCacheB\x03\xe0A\x02R\n" +
-	"rapidCache\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xd7\x01\n" +
+	"\x17UpdateRapidCacheRequest\x12L\n" +
+	"\vrapid_cache\x18\x01 \x01(\v2%.google.storage.control.v2.RapidCacheB\x04\xe2A\x01\x02R\n" +
+	"rapidCache\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x85\x01\n" +
-	"\x18DisableRapidCacheRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!storage.googleapis.com/RapidCacheR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x87\x01\n" +
+	"\x18DisableRapidCacheRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!storage.googleapis.com/RapidCacheR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x81\x01\n" +
-	"\x14GetRapidCacheRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!storage.googleapis.com/RapidCacheR\x04name\x12*\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x83\x01\n" +
+	"\x14GetRapidCacheRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!storage.googleapis.com/RapidCacheR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xc3\x01\n" +
-	"\x16ListRapidCachesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!storage.googleapis.com/RapidCacheR\x06parent\x12\x1b\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xc5\x01\n" +
+	"\x16ListRapidCachesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!storage.googleapis.com/RapidCacheR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\x12*\n" +
+	"page_token\x18\x03 \x01(\tR\tpageToken\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x8b\x01\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x8b\x01\n" +
 	"\x17ListRapidCachesResponse\x12H\n" +
 	"\frapid_caches\x18\x01 \x03(\v2%.google.storage.control.v2.RapidCacheR\vrapidCaches\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xbd\x10\n" +
-	"\x12IntelligenceConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12g\n" +
-	"\x0eedition_config\x18\x02 \x01(\x0e2;.google.storage.control.v2.IntelligenceConfig.EditionConfigB\x03\xe0A\x01R\reditionConfig\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12Q\n" +
-	"\x06filter\x18\x04 \x01(\v24.google.storage.control.v2.IntelligenceConfig.FilterB\x03\xe0A\x01R\x06filter\x12\x92\x01\n" +
-	"\x1deffective_intelligence_config\x18\x05 \x01(\v2I.google.storage.control.v2.IntelligenceConfig.EffectiveIntelligenceConfigB\x03\xe0A\x03R\x1beffectiveIntelligenceConfig\x12\\\n" +
-	"\ftrial_config\x18\a \x01(\v29.google.storage.control.v2.IntelligenceConfig.TrialConfigR\vtrialConfig\x1a\x94\x06\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xc7\x10\n" +
+	"\x12IntelligenceConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12h\n" +
+	"\x0eedition_config\x18\x02 \x01(\x0e2;.google.storage.control.v2.IntelligenceConfig.EditionConfigB\x04\xe2A\x01\x01R\reditionConfig\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12R\n" +
+	"\x06filter\x18\x04 \x01(\v24.google.storage.control.v2.IntelligenceConfig.FilterB\x04\xe2A\x01\x01R\x06filter\x12\x93\x01\n" +
+	"\x1deffective_intelligence_config\x18\x05 \x01(\v2I.google.storage.control.v2.IntelligenceConfig.EffectiveIntelligenceConfigB\x04\xe2A\x01\x03R\x1beffectiveIntelligenceConfig\x12\\\n" +
+	"\ftrial_config\x18\a \x01(\v29.google.storage.control.v2.IntelligenceConfig.TrialConfigR\vtrialConfig\x1a\x96\x06\n" +
 	"\x06Filter\x12\x95\x01\n" +
 	" included_cloud_storage_locations\x18\x01 \x01(\v2J.google.storage.control.v2.IntelligenceConfig.Filter.CloudStorageLocationsH\x00R\x1dincludedCloudStorageLocations\x12\x95\x01\n" +
 	" excluded_cloud_storage_locations\x18\x02 \x01(\v2J.google.storage.control.v2.IntelligenceConfig.Filter.CloudStorageLocationsH\x00R\x1dexcludedCloudStorageLocations\x12\x8f\x01\n" +
 	"\x1eincluded_cloud_storage_buckets\x18\x03 \x01(\v2H.google.storage.control.v2.IntelligenceConfig.Filter.CloudStorageBucketsH\x01R\x1bincludedCloudStorageBuckets\x12\x8f\x01\n" +
-	"\x1eexcluded_cloud_storage_buckets\x18\x04 \x01(\v2H.google.storage.control.v2.IntelligenceConfig.Filter.CloudStorageBucketsH\x01R\x1bexcludedCloudStorageBuckets\x1a:\n" +
-	"\x15CloudStorageLocations\x12!\n" +
-	"\tlocations\x18\x01 \x03(\tB\x03\xe0A\x01R\tlocations\x1aF\n" +
-	"\x13CloudStorageBuckets\x12/\n" +
-	"\x11bucket_id_regexes\x18\x01 \x03(\tB\x03\xe0A\x01R\x0fbucketIdRegexesB\x19\n" +
+	"\x1eexcluded_cloud_storage_buckets\x18\x04 \x01(\v2H.google.storage.control.v2.IntelligenceConfig.Filter.CloudStorageBucketsH\x01R\x1bexcludedCloudStorageBuckets\x1a;\n" +
+	"\x15CloudStorageLocations\x12\"\n" +
+	"\tlocations\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\tlocations\x1aG\n" +
+	"\x13CloudStorageBuckets\x120\n" +
+	"\x11bucket_id_regexes\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\x0fbucketIdRegexesB\x19\n" +
 	"\x17cloud_storage_locationsB\x17\n" +
-	"\x15cloud_storage_buckets\x1a\xb1\x02\n" +
-	"\x1bEffectiveIntelligenceConfig\x12\x8c\x01\n" +
-	"\x11effective_edition\x18\x01 \x01(\x0e2Z.google.storage.control.v2.IntelligenceConfig.EffectiveIntelligenceConfig.EffectiveEditionB\x03\xe0A\x03R\x10effectiveEdition\x124\n" +
-	"\x13intelligence_config\x18\x02 \x01(\tB\x03\xe0A\x03R\x12intelligenceConfig\"M\n" +
+	"\x15cloud_storage_buckets\x1a\xb3\x02\n" +
+	"\x1bEffectiveIntelligenceConfig\x12\x8d\x01\n" +
+	"\x11effective_edition\x18\x01 \x01(\x0e2Z.google.storage.control.v2.IntelligenceConfig.EffectiveIntelligenceConfig.EffectiveEditionB\x04\xe2A\x01\x03R\x10effectiveEdition\x125\n" +
+	"\x13intelligence_config\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x12intelligenceConfig\"M\n" +
 	"\x10EffectiveEdition\x12!\n" +
 	"\x1dEFFECTIVE_EDITION_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04NONE\x10\x01\x12\f\n" +
-	"\bSTANDARD\x10\x02\x1aO\n" +
-	"\vTrialConfig\x12@\n" +
-	"\vexpire_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\bSTANDARD\x10\x02\x1aP\n" +
+	"\vTrialConfig\x12A\n" +
+	"\vexpire_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"expireTime\"s\n" +
 	"\rEditionConfig\x12\x1e\n" +
 	"\x1aEDITION_CONFIG_UNSPECIFIED\x10\x00\x12\v\n" +
@@ -7582,148 +7582,148 @@ const file_google_storage_control_v2_storage_control_proto_rawDesc = "" +
 	"\x05TRIAL\x10\x05\x12\x0e\n" +
 	"\n" +
 	"ESSENTIALS\x10\x06:\x8b\x02\xeaA\x87\x02\n" +
-	")storage.googleapis.com/IntelligenceConfig\x128folders/{folder}/locations/{location}/intelligenceConfig\x12;organizations/{org}/locations/{location}/intelligenceConfig\x12:projects/{project}/locations/{location}/intelligenceConfig*\x13intelligenceConfigs2\x12intelligenceConfig\"\x80\x02\n" +
-	"+UpdateOrganizationIntelligenceConfigRequest\x12c\n" +
-	"\x13intelligence_config\x18\x01 \x01(\v2-.google.storage.control.v2.IntelligenceConfigB\x03\xe0A\x02R\x12intelligenceConfig\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12*\n" +
+	")storage.googleapis.com/IntelligenceConfig\x128folders/{folder}/locations/{location}/intelligenceConfig\x12;organizations/{org}/locations/{location}/intelligenceConfig\x12:projects/{project}/locations/{location}/intelligenceConfig*\x13intelligenceConfigs2\x12intelligenceConfig\"\x83\x02\n" +
+	"+UpdateOrganizationIntelligenceConfigRequest\x12d\n" +
+	"\x13intelligence_config\x18\x01 \x01(\v2-.google.storage.control.v2.IntelligenceConfigB\x04\xe2A\x01\x02R\x12intelligenceConfig\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xfa\x01\n" +
-	"%UpdateFolderIntelligenceConfigRequest\x12c\n" +
-	"\x13intelligence_config\x18\x01 \x01(\v2-.google.storage.control.v2.IntelligenceConfigB\x03\xe0A\x02R\x12intelligenceConfig\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xfd\x01\n" +
+	"%UpdateFolderIntelligenceConfigRequest\x12d\n" +
+	"\x13intelligence_config\x18\x01 \x01(\v2-.google.storage.control.v2.IntelligenceConfigB\x04\xe2A\x01\x02R\x12intelligenceConfig\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xfb\x01\n" +
-	"&UpdateProjectIntelligenceConfigRequest\x12c\n" +
-	"\x13intelligence_config\x18\x01 \x01(\v2-.google.storage.control.v2.IntelligenceConfigB\x03\xe0A\x02R\x12intelligenceConfig\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xfe\x01\n" +
+	"&UpdateProjectIntelligenceConfigRequest\x12d\n" +
+	"\x13intelligence_config\x18\x01 \x01(\v2-.google.storage.control.v2.IntelligenceConfigB\x04\xe2A\x01\x02R\x12intelligenceConfig\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"q\n" +
-	"(GetOrganizationIntelligenceConfigRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")storage.googleapis.com/IntelligenceConfigR\x04name\"k\n" +
-	"\"GetFolderIntelligenceConfigRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"r\n" +
+	"(GetOrganizationIntelligenceConfigRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
 	")storage.googleapis.com/IntelligenceConfigR\x04name\"l\n" +
-	"#GetProjectIntelligenceConfigRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")storage.googleapis.com/IntelligenceConfigR\x04name\"\xc9'\n" +
-	"\x13IntelligenceFinding\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x03R\vdescription\x12?\n" +
-	"\x04type\x18\x03 \x01(\x0e2&.google.storage.control.v2.FindingTypeB\x03\xe0A\x03R\x04type\x12K\n" +
-	"\bcategory\x18\x04 \x01(\x0e2*.google.storage.control.v2.FindingCategoryB\x03\xe0A\x03R\bcategory\x12K\n" +
-	"\bseverity\x18\x05 \x01(\x0e2*.google.storage.control.v2.FindingSeverityB\x03\xe0A\x03R\bseverity\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12,\n" +
-	"\x0ftarget_resource\x18\b \x01(\tB\x03\xe0A\x03R\x0etargetResource\x126\n" +
-	"\x14associated_resources\x18\t \x03(\tB\x03\xe0A\x03R\x13associatedResources\x12I\n" +
+	"\"GetFolderIntelligenceConfigRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")storage.googleapis.com/IntelligenceConfigR\x04name\"m\n" +
+	"#GetProjectIntelligenceConfigRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")storage.googleapis.com/IntelligenceConfigR\x04name\"\x83(\n" +
+	"\x13IntelligenceFinding\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vdescription\x12@\n" +
+	"\x04type\x18\x03 \x01(\x0e2&.google.storage.control.v2.FindingTypeB\x04\xe2A\x01\x03R\x04type\x12L\n" +
+	"\bcategory\x18\x04 \x01(\x0e2*.google.storage.control.v2.FindingCategoryB\x04\xe2A\x01\x03R\bcategory\x12L\n" +
+	"\bseverity\x18\x05 \x01(\x0e2*.google.storage.control.v2.FindingSeverityB\x04\xe2A\x01\x03R\bseverity\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12-\n" +
+	"\x0ftarget_resource\x18\b \x01(\tB\x04\xe2A\x01\x03R\x0etargetResource\x127\n" +
+	"\x14associated_resources\x18\t \x03(\tB\x04\xe2A\x01\x03R\x13associatedResources\x12J\n" +
 	"\x12observation_period\x18\n" +
-	" \x01(\v2\x15.google.type.IntervalB\x03\xe0A\x03R\x11observationPeriod\x12\xc2\x01\n" +
-	".coldline_and_archival_storage_operations_spike\x18\v \x01(\v2X.google.storage.control.v2.IntelligenceFinding.ColdlineAndArchivalStorageOperationsSpikeB\x03\xe0A\x03H\x00R)coldlineAndArchivalStorageOperationsSpike\x12\x85\x01\n" +
-	"\x18throttled_requests_spike\x18\f \x01(\v2D.google.storage.control.v2.IntelligenceFinding.ThrottledRequestSpikeB\x03\xe0A\x03H\x00R\x16throttledRequestsSpike\x12\x87\x01\n" +
-	"\x19cross_region_egress_spike\x18\r \x01(\v2E.google.storage.control.v2.IntelligenceFinding.CrossRegionEgressSpikeB\x03\xe0A\x03H\x00R\x16crossRegionEgressSpike\x12\x8a\x01\n" +
-	"\x1astorage_growth_above_trend\x18\x0e \x01(\v2F.google.storage.control.v2.IntelligenceFinding.StorageGrowthAboveTrendB\x03\xe0A\x03H\x00R\x17storageGrowthAboveTrend\x1a\xc6\b\n" +
-	")ColdlineAndArchivalStorageOperationsSpike\x124\n" +
-	"\x13percentage_increase\x18\x01 \x01(\x01B\x03\xe0A\x03R\x12percentageIncrease\x129\n" +
-	"\x16total_operations_count\x18\x02 \x01(\x03B\x03\xe0A\x03R\x14totalOperationsCount\x12\x91\x01\n" +
-	"\vtop_buckets\x18\x03 \x03(\v2k.google.storage.control.v2.IntelligenceFinding.ColdlineAndArchivalStorageOperationsSpike.BucketContributionB\x03\xe0A\x03R\n" +
-	"topBuckets\x1a\x93\x06\n" +
-	"\x12BucketContribution\x12=\n" +
-	"\x06bucket\x18\x01 \x01(\tB%\xe0A\x03\xfaA\x1f\n" +
-	"\x1dstorage.googleapis.com/BucketR\x06bucket\x124\n" +
-	"\x13percentage_increase\x18\x02 \x01(\x01B\x03\xe0A\x03R\x12percentageIncrease\x129\n" +
-	"\x16total_operations_count\x18\x03 \x01(\x03B\x03\xe0A\x03R\x14totalOperationsCount\x12\xa3\x01\n" +
-	"\fcontribution\x18\x04 \x01(\v2x.google.storage.control.v2.IntelligenceFinding.ColdlineAndArchivalStorageOperationsSpike.BucketContribution.ContributionB\x03\xe0A\x03H\x00R\fcontribution\x12/\n" +
-	"\x05error\x18\x05 \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03H\x00R\x05error\x1a\xea\x02\n" +
-	"\fContribution\x12\xb4\x01\n" +
-	"\ftop_prefixes\x18\x01 \x03(\v2\x8b\x01.google.storage.control.v2.IntelligenceFinding.ColdlineAndArchivalStorageOperationsSpike.BucketContribution.Contribution.PrefixContributionB\x03\xe0A\x03R\vtopPrefixes\x1a\xa2\x01\n" +
-	"\x12PrefixContribution\x12\x1b\n" +
-	"\x06prefix\x18\x01 \x01(\tB\x03\xe0A\x03R\x06prefix\x124\n" +
-	"\x13percentage_increase\x18\x02 \x01(\x01B\x03\xe0A\x03R\x12percentageIncrease\x129\n" +
-	"\x16total_operations_count\x18\x03 \x01(\x03B\x03\xe0A\x03R\x14totalOperationsCountB\t\n" +
-	"\adetails\x1a\xe0\a\n" +
-	"\x16CrossRegionEgressSpike\x121\n" +
-	"\x12total_egress_bytes\x18\x01 \x01(\x03B\x03\xe0A\x03R\x10totalEgressBytes\x124\n" +
-	"\x13percentage_increase\x18\x02 \x01(\x01B\x03\xe0A\x03R\x12percentageIncrease\x12~\n" +
-	"\vtop_buckets\x18\x03 \x03(\v2X.google.storage.control.v2.IntelligenceFinding.CrossRegionEgressSpike.BucketContributionB\x03\xe0A\x03R\n" +
-	"topBuckets\x1a\xdc\x05\n" +
-	"\x12BucketContribution\x12=\n" +
-	"\x06bucket\x18\x01 \x01(\tB%\xe0A\x03\xfaA\x1f\n" +
-	"\x1dstorage.googleapis.com/BucketR\x06bucket\x121\n" +
-	"\x12total_egress_bytes\x18\x02 \x01(\x03B\x03\xe0A\x03R\x10totalEgressBytes\x124\n" +
-	"\x13percentage_increase\x18\x03 \x01(\x01B\x03\xe0A\x03R\x12percentageIncrease\x12\x90\x01\n" +
-	"\fcontribution\x18\x04 \x01(\v2e.google.storage.control.v2.IntelligenceFinding.CrossRegionEgressSpike.BucketContribution.ContributionB\x03\xe0A\x03H\x00R\fcontribution\x12/\n" +
-	"\x05error\x18\x05 \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03H\x00R\x05error\x1a\xce\x02\n" +
-	"\fContribution\x12\xa0\x01\n" +
-	"\ftop_prefixes\x18\x01 \x03(\v2x.google.storage.control.v2.IntelligenceFinding.CrossRegionEgressSpike.BucketContribution.Contribution.PrefixContributionB\x03\xe0A\x03R\vtopPrefixes\x1a\x9a\x01\n" +
-	"\x12PrefixContribution\x12\x1b\n" +
-	"\x06prefix\x18\x01 \x01(\tB\x03\xe0A\x03R\x06prefix\x121\n" +
-	"\x12total_egress_bytes\x18\x02 \x01(\x03B\x03\xe0A\x03R\x10totalEgressBytes\x124\n" +
-	"\x13percentage_increase\x18\x03 \x01(\x01B\x03\xe0A\x03R\x12percentageIncreaseB\t\n" +
-	"\adetails\x1a\xdf\a\n" +
-	"\x15ThrottledRequestSpike\x122\n" +
-	"\x12throttled_requests\x18\x01 \x01(\x03B\x03\xe0A\x03R\x11throttledRequests\x124\n" +
-	"\x13percentage_increase\x18\x02 \x01(\x01B\x03\xe0A\x03R\x12percentageIncrease\x12}\n" +
-	"\vtop_buckets\x18\x03 \x03(\v2W.google.storage.control.v2.IntelligenceFinding.ThrottledRequestSpike.BucketContributionB\x03\xe0A\x03R\n" +
-	"topBuckets\x1a\xdc\x05\n" +
-	"\x12BucketContribution\x12=\n" +
-	"\x06bucket\x18\x01 \x01(\tB%\xe0A\x03\xfaA\x1f\n" +
+	" \x01(\v2\x15.google.type.IntervalB\x04\xe2A\x01\x03R\x11observationPeriod\x12\xc3\x01\n" +
+	".coldline_and_archival_storage_operations_spike\x18\v \x01(\v2X.google.storage.control.v2.IntelligenceFinding.ColdlineAndArchivalStorageOperationsSpikeB\x04\xe2A\x01\x03H\x00R)coldlineAndArchivalStorageOperationsSpike\x12\x86\x01\n" +
+	"\x18throttled_requests_spike\x18\f \x01(\v2D.google.storage.control.v2.IntelligenceFinding.ThrottledRequestSpikeB\x04\xe2A\x01\x03H\x00R\x16throttledRequestsSpike\x12\x88\x01\n" +
+	"\x19cross_region_egress_spike\x18\r \x01(\v2E.google.storage.control.v2.IntelligenceFinding.CrossRegionEgressSpikeB\x04\xe2A\x01\x03H\x00R\x16crossRegionEgressSpike\x12\x8b\x01\n" +
+	"\x1astorage_growth_above_trend\x18\x0e \x01(\v2F.google.storage.control.v2.IntelligenceFinding.StorageGrowthAboveTrendB\x04\xe2A\x01\x03H\x00R\x17storageGrowthAboveTrend\x1a\xd2\b\n" +
+	")ColdlineAndArchivalStorageOperationsSpike\x125\n" +
+	"\x13percentage_increase\x18\x01 \x01(\x01B\x04\xe2A\x01\x03R\x12percentageIncrease\x12:\n" +
+	"\x16total_operations_count\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\x14totalOperationsCount\x12\x92\x01\n" +
+	"\vtop_buckets\x18\x03 \x03(\v2k.google.storage.control.v2.IntelligenceFinding.ColdlineAndArchivalStorageOperationsSpike.BucketContributionB\x04\xe2A\x01\x03R\n" +
+	"topBuckets\x1a\x9c\x06\n" +
+	"\x12BucketContribution\x12>\n" +
+	"\x06bucket\x18\x01 \x01(\tB&\xe2A\x01\x03\xfaA\x1f\n" +
+	"\x1dstorage.googleapis.com/BucketR\x06bucket\x125\n" +
+	"\x13percentage_increase\x18\x02 \x01(\x01B\x04\xe2A\x01\x03R\x12percentageIncrease\x12:\n" +
+	"\x16total_operations_count\x18\x03 \x01(\x03B\x04\xe2A\x01\x03R\x14totalOperationsCount\x12\xa4\x01\n" +
+	"\fcontribution\x18\x04 \x01(\v2x.google.storage.control.v2.IntelligenceFinding.ColdlineAndArchivalStorageOperationsSpike.BucketContribution.ContributionB\x04\xe2A\x01\x03H\x00R\fcontribution\x120\n" +
+	"\x05error\x18\x05 \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03H\x00R\x05error\x1a\xee\x02\n" +
+	"\fContribution\x12\xb5\x01\n" +
+	"\ftop_prefixes\x18\x01 \x03(\v2\x8b\x01.google.storage.control.v2.IntelligenceFinding.ColdlineAndArchivalStorageOperationsSpike.BucketContribution.Contribution.PrefixContributionB\x04\xe2A\x01\x03R\vtopPrefixes\x1a\xa5\x01\n" +
+	"\x12PrefixContribution\x12\x1c\n" +
+	"\x06prefix\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x06prefix\x125\n" +
+	"\x13percentage_increase\x18\x02 \x01(\x01B\x04\xe2A\x01\x03R\x12percentageIncrease\x12:\n" +
+	"\x16total_operations_count\x18\x03 \x01(\x03B\x04\xe2A\x01\x03R\x14totalOperationsCountB\t\n" +
+	"\adetails\x1a\xec\a\n" +
+	"\x16CrossRegionEgressSpike\x122\n" +
+	"\x12total_egress_bytes\x18\x01 \x01(\x03B\x04\xe2A\x01\x03R\x10totalEgressBytes\x125\n" +
+	"\x13percentage_increase\x18\x02 \x01(\x01B\x04\xe2A\x01\x03R\x12percentageIncrease\x12\x7f\n" +
+	"\vtop_buckets\x18\x03 \x03(\v2X.google.storage.control.v2.IntelligenceFinding.CrossRegionEgressSpike.BucketContributionB\x04\xe2A\x01\x03R\n" +
+	"topBuckets\x1a\xe5\x05\n" +
+	"\x12BucketContribution\x12>\n" +
+	"\x06bucket\x18\x01 \x01(\tB&\xe2A\x01\x03\xfaA\x1f\n" +
 	"\x1dstorage.googleapis.com/BucketR\x06bucket\x122\n" +
-	"\x12throttled_requests\x18\x02 \x01(\x03B\x03\xe0A\x03R\x11throttledRequests\x124\n" +
-	"\x13percentage_increase\x18\x03 \x01(\x01B\x03\xe0A\x03R\x12percentageIncrease\x12\x8f\x01\n" +
-	"\fcontribution\x18\x04 \x01(\v2d.google.storage.control.v2.IntelligenceFinding.ThrottledRequestSpike.BucketContribution.ContributionB\x03\xe0A\x03H\x00R\fcontribution\x12/\n" +
-	"\x05error\x18\x05 \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03H\x00R\x05error\x1a\xce\x02\n" +
-	"\fContribution\x12\x9f\x01\n" +
-	"\ftop_prefixes\x18\x01 \x03(\v2w.google.storage.control.v2.IntelligenceFinding.ThrottledRequestSpike.BucketContribution.Contribution.PrefixContributionB\x03\xe0A\x03R\vtopPrefixes\x1a\x9b\x01\n" +
-	"\x12PrefixContribution\x12\x1b\n" +
-	"\x06prefix\x18\x01 \x01(\tB\x03\xe0A\x03R\x06prefix\x122\n" +
-	"\x12throttled_requests\x18\x02 \x01(\x03B\x03\xe0A\x03R\x11throttledRequests\x124\n" +
-	"\x13percentage_increase\x18\x03 \x01(\x01B\x03\xe0A\x03R\x12percentageIncreaseB\t\n" +
-	"\adetails\x1a\x9c\x04\n" +
-	"\x17StorageGrowthAboveTrend\x12@\n" +
-	"\x1atotal_storage_growth_bytes\x18\x01 \x01(\x03B\x03\xe0A\x03R\x17totalStorageGrowthBytes\x124\n" +
-	"\x13percentage_increase\x18\x02 \x01(\x01B\x03\xe0A\x03R\x12percentageIncrease\x12\x7f\n" +
-	"\vtop_buckets\x18\x03 \x03(\v2Y.google.storage.control.v2.IntelligenceFinding.StorageGrowthAboveTrend.BucketContributionB\x03\xe0A\x03R\n" +
-	"topBuckets\x1a\x87\x02\n" +
-	"\x12BucketContribution\x12=\n" +
-	"\x06bucket\x18\x01 \x01(\tB%\xe0A\x03\xfaA\x1f\n" +
-	"\x1dstorage.googleapis.com/BucketR\x06bucket\x12@\n" +
-	"\x1atotal_storage_growth_bytes\x18\x02 \x01(\x03B\x03\xe0A\x03R\x17totalStorageGrowthBytes\x124\n" +
-	"\x13percentage_increase\x18\x03 \x01(\x01B\x03\xe0A\x03R\x12percentageIncrease\x12/\n" +
-	"\x05error\x18\x05 \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03H\x00R\x05errorB\t\n" +
+	"\x12total_egress_bytes\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\x10totalEgressBytes\x125\n" +
+	"\x13percentage_increase\x18\x03 \x01(\x01B\x04\xe2A\x01\x03R\x12percentageIncrease\x12\x91\x01\n" +
+	"\fcontribution\x18\x04 \x01(\v2e.google.storage.control.v2.IntelligenceFinding.CrossRegionEgressSpike.BucketContribution.ContributionB\x04\xe2A\x01\x03H\x00R\fcontribution\x120\n" +
+	"\x05error\x18\x05 \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03H\x00R\x05error\x1a\xd2\x02\n" +
+	"\fContribution\x12\xa1\x01\n" +
+	"\ftop_prefixes\x18\x01 \x03(\v2x.google.storage.control.v2.IntelligenceFinding.CrossRegionEgressSpike.BucketContribution.Contribution.PrefixContributionB\x04\xe2A\x01\x03R\vtopPrefixes\x1a\x9d\x01\n" +
+	"\x12PrefixContribution\x12\x1c\n" +
+	"\x06prefix\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x06prefix\x122\n" +
+	"\x12total_egress_bytes\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\x10totalEgressBytes\x125\n" +
+	"\x13percentage_increase\x18\x03 \x01(\x01B\x04\xe2A\x01\x03R\x12percentageIncreaseB\t\n" +
+	"\adetails\x1a\xeb\a\n" +
+	"\x15ThrottledRequestSpike\x123\n" +
+	"\x12throttled_requests\x18\x01 \x01(\x03B\x04\xe2A\x01\x03R\x11throttledRequests\x125\n" +
+	"\x13percentage_increase\x18\x02 \x01(\x01B\x04\xe2A\x01\x03R\x12percentageIncrease\x12~\n" +
+	"\vtop_buckets\x18\x03 \x03(\v2W.google.storage.control.v2.IntelligenceFinding.ThrottledRequestSpike.BucketContributionB\x04\xe2A\x01\x03R\n" +
+	"topBuckets\x1a\xe5\x05\n" +
+	"\x12BucketContribution\x12>\n" +
+	"\x06bucket\x18\x01 \x01(\tB&\xe2A\x01\x03\xfaA\x1f\n" +
+	"\x1dstorage.googleapis.com/BucketR\x06bucket\x123\n" +
+	"\x12throttled_requests\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\x11throttledRequests\x125\n" +
+	"\x13percentage_increase\x18\x03 \x01(\x01B\x04\xe2A\x01\x03R\x12percentageIncrease\x12\x90\x01\n" +
+	"\fcontribution\x18\x04 \x01(\v2d.google.storage.control.v2.IntelligenceFinding.ThrottledRequestSpike.BucketContribution.ContributionB\x04\xe2A\x01\x03H\x00R\fcontribution\x120\n" +
+	"\x05error\x18\x05 \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03H\x00R\x05error\x1a\xd2\x02\n" +
+	"\fContribution\x12\xa0\x01\n" +
+	"\ftop_prefixes\x18\x01 \x03(\v2w.google.storage.control.v2.IntelligenceFinding.ThrottledRequestSpike.BucketContribution.Contribution.PrefixContributionB\x04\xe2A\x01\x03R\vtopPrefixes\x1a\x9e\x01\n" +
+	"\x12PrefixContribution\x12\x1c\n" +
+	"\x06prefix\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x06prefix\x123\n" +
+	"\x12throttled_requests\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\x11throttledRequests\x125\n" +
+	"\x13percentage_increase\x18\x03 \x01(\x01B\x04\xe2A\x01\x03R\x12percentageIncreaseB\t\n" +
+	"\adetails\x1a\xa4\x04\n" +
+	"\x17StorageGrowthAboveTrend\x12A\n" +
+	"\x1atotal_storage_growth_bytes\x18\x01 \x01(\x03B\x04\xe2A\x01\x03R\x17totalStorageGrowthBytes\x125\n" +
+	"\x13percentage_increase\x18\x02 \x01(\x01B\x04\xe2A\x01\x03R\x12percentageIncrease\x12\x80\x01\n" +
+	"\vtop_buckets\x18\x03 \x03(\v2Y.google.storage.control.v2.IntelligenceFinding.StorageGrowthAboveTrend.BucketContributionB\x04\xe2A\x01\x03R\n" +
+	"topBuckets\x1a\x8b\x02\n" +
+	"\x12BucketContribution\x12>\n" +
+	"\x06bucket\x18\x01 \x01(\tB&\xe2A\x01\x03\xfaA\x1f\n" +
+	"\x1dstorage.googleapis.com/BucketR\x06bucket\x12A\n" +
+	"\x1atotal_storage_growth_bytes\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\x17totalStorageGrowthBytes\x125\n" +
+	"\x13percentage_increase\x18\x03 \x01(\x01B\x04\xe2A\x01\x03R\x12percentageIncrease\x120\n" +
+	"\x05error\x18\x05 \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03H\x00R\x05errorB\t\n" +
 	"\adetails:\xb0\x01\xeaA\xac\x01\n" +
 	"*storage.googleapis.com/IntelligenceFinding\x12Sprojects/{project}/locations/{location}/intelligenceFindings/{intelligence_finding}*\x14intelligenceFindings2\x13intelligenceFindingB\x1e\n" +
-	"\x1cintelligence_finding_details\"\xa9\x03\n" +
-	"\x1bIntelligenceFindingRevision\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12O\n" +
-	"\bsnapshot\x18\x02 \x01(\v2..google.storage.control.v2.IntelligenceFindingB\x03\xe0A\x03R\bsnapshot\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x1cintelligence_finding_details\"\xac\x03\n" +
+	"\x1bIntelligenceFindingRevision\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12P\n" +
+	"\bsnapshot\x18\x02 \x01(\v2..google.storage.control.v2.IntelligenceFindingB\x04\xe2A\x01\x03R\bsnapshot\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"createTime:\xdd\x01\xeaA\xd9\x01\n" +
-	"2storage.googleapis.com/IntelligenceFindingRevision\x12hprojects/{project}/locations/{location}/intelligenceFindings/{intelligence_finding}/revisions/{revision}*\x1cintelligenceFindingRevisions2\x1bintelligenceFindingRevision\"g\n" +
-	"\x1dGetIntelligenceFindingRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*storage.googleapis.com/IntelligenceFindingR\x04name\"\xd0\x01\n" +
-	"\x1fListIntelligenceFindingsRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*storage.googleapis.com/IntelligenceFindingR\x06parent\x12\x1b\n" +
-	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x01R\x06filter\x12 \n" +
-	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"2storage.googleapis.com/IntelligenceFindingRevision\x12hprojects/{project}/locations/{location}/intelligenceFindings/{intelligence_finding}/revisions/{revision}*\x1cintelligenceFindingRevisions2\x1bintelligenceFindingRevision\"h\n" +
+	"\x1dGetIntelligenceFindingRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*storage.googleapis.com/IntelligenceFindingR\x04name\"\xd4\x01\n" +
+	"\x1fListIntelligenceFindingsRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*storage.googleapis.com/IntelligenceFindingR\x06parent\x12\x1c\n" +
+	"\x06filter\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12!\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xaf\x01\n" +
+	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xaf\x01\n" +
 	" ListIntelligenceFindingsResponse\x12c\n" +
 	"\x15intelligence_findings\x18\x01 \x03(\v2..google.storage.control.v2.IntelligenceFindingR\x14intelligenceFindings\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xeb\x02\n" +
-	"$SummarizeIntelligenceFindingsRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12y\n" +
-	"\x0eresource_scope\x18\x02 \x01(\x0e2M.google.storage.control.v2.SummarizeIntelligenceFindingsRequest.ResourceScopeB\x03\xe0A\x01R\rresourceScope\x12\x1b\n" +
-	"\x06filter\x18\x03 \x01(\tB\x03\xe0A\x01R\x06filter\x12 \n" +
-	"\tpage_size\x18\x04 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xf0\x02\n" +
+	"$SummarizeIntelligenceFindingsRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12z\n" +
+	"\x0eresource_scope\x18\x02 \x01(\x0e2M.google.storage.control.v2.SummarizeIntelligenceFindingsRequest.ResourceScopeB\x04\xe2A\x01\x01R\rresourceScope\x12\x1c\n" +
+	"\x06filter\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12!\n" +
+	"\tpage_size\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x05 \x01(\tB\x03\xe0A\x01R\tpageToken\"H\n" +
+	"page_token\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"H\n" +
 	"\rResourceScope\x12\x1e\n" +
 	"\x1aRESOURCE_SCOPE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
@@ -7731,35 +7731,35 @@ const file_google_storage_control_v2_storage_control_proto_rawDesc = "" +
 	"\aPROJECT\x10\x02\"\xa7\x01\n" +
 	"%SummarizeIntelligenceFindingsResponse\x12V\n" +
 	"\x11finding_summaries\x18\x01 \x03(\v2).google.storage.control.v2.FindingSummaryR\x10findingSummaries\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"w\n" +
-	"%GetIntelligenceFindingRevisionRequest\x12N\n" +
-	"\x04name\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\n" +
-	"2storage.googleapis.com/IntelligenceFindingRevisionR\x04name\"\xc3\x01\n" +
-	"'ListIntelligenceFindingRevisionsRequest\x12R\n" +
-	"\x06parent\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\x122storage.googleapis.com/IntelligenceFindingRevisionR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"x\n" +
+	"%GetIntelligenceFindingRevisionRequest\x12O\n" +
+	"\x04name\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\n" +
+	"2storage.googleapis.com/IntelligenceFindingRevisionR\x04name\"\xc6\x01\n" +
+	"'ListIntelligenceFindingRevisionsRequest\x12S\n" +
+	"\x06parent\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\x122storage.googleapis.com/IntelligenceFindingRevisionR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xd0\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xd0\x01\n" +
 	"(ListIntelligenceFindingRevisionsResponse\x12|\n" +
 	"\x1eintelligence_finding_revisions\x18\x01 \x03(\v26.google.storage.control.v2.IntelligenceFindingRevisionR\x1cintelligenceFindingRevisions\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xba\x06\n" +
-	"\x0eFindingSummary\x12?\n" +
-	"\x04type\x18\x01 \x01(\x0e2&.google.storage.control.v2.FindingTypeB\x03\xe0A\x03R\x04type\x12K\n" +
-	"\bcategory\x18\x02 \x01(\x0e2*.google.storage.control.v2.FindingCategoryB\x03\xe0A\x03R\bcategory\x12,\n" +
-	"\x0ftarget_resource\x18\x04 \x01(\tB\x03\xe0A\x03R\x0etargetResource\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xc2\x06\n" +
+	"\x0eFindingSummary\x12@\n" +
+	"\x04type\x18\x01 \x01(\x0e2&.google.storage.control.v2.FindingTypeB\x04\xe2A\x01\x03R\x04type\x12L\n" +
+	"\bcategory\x18\x02 \x01(\x0e2*.google.storage.control.v2.FindingCategoryB\x04\xe2A\x01\x03R\bcategory\x12-\n" +
+	"\x0ftarget_resource\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x0etargetResource\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12F\n" +
-	"\bseverity\x18\a \x01(\x0e2*.google.storage.control.v2.FindingSeverityR\bseverity\x12f\n" +
-	"\x0fsummary_details\x18\b \x03(\v28.google.storage.control.v2.FindingSummary.SummaryDetailsB\x03\xe0A\x03R\x0esummaryDetails\x1a\xb7\x02\n" +
+	"\bseverity\x18\a \x01(\x0e2*.google.storage.control.v2.FindingSeverityR\bseverity\x12g\n" +
+	"\x0fsummary_details\x18\b \x03(\v28.google.storage.control.v2.FindingSummary.SummaryDetailsB\x04\xe2A\x01\x03R\x0esummaryDetails\x1a\xb9\x02\n" +
 	"\x0eSummaryDetails\x12\x16\n" +
 	"\x05count\x18\x01 \x01(\x03H\x00R\x05count\x12 \n" +
 	"\n" +
 	"percentage\x18\x02 \x01(\x02H\x00R\n" +
-	"percentage\x12o\n" +
-	"\rresource_type\x18\x03 \x01(\x0e2E.google.storage.control.v2.FindingSummary.SummaryDetails.ResourceTypeB\x03\xe0A\x03R\fresourceType\x12%\n" +
-	"\vdescription\x18\x04 \x01(\tB\x03\xe0A\x03R\vdescription\"F\n" +
+	"percentage\x12p\n" +
+	"\rresource_type\x18\x03 \x01(\x0e2E.google.storage.control.v2.FindingSummary.SummaryDetails.ResourceTypeB\x04\xe2A\x01\x03R\fresourceType\x12&\n" +
+	"\vdescription\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\vdescription\"F\n" +
 	"\fResourceType\x12\x1d\n" +
 	"\x19RESOURCE_TYPE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aPROJECT\x10\x01\x12\n" +
@@ -7780,14 +7780,14 @@ const file_google_storage_control_v2_storage_control_proto_rawDesc = "" +
 	"\n" +
 	"\x06CUSTOM\x10\x01\x12\n" +
 	"\n" +
-	"\x06GOOGLE\x10\x02\"\xa4\x01\n" +
-	"\x1cViewObjectFullContextRequest\x12#\n" +
+	"\x06GOOGLE\x10\x02\"\xa7\x01\n" +
+	"\x1cViewObjectFullContextRequest\x12$\n" +
 	"\n" +
-	"generation\x18\x03 \x01(\x03B\x03\xe0A\x01R\n" +
-	"generation\x12$\n" +
-	"\vcontext_key\x18\x04 \x01(\tB\x03\xe0A\x02R\n" +
-	"contextKey\x129\n" +
-	"\x04name\x18\x05 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
+	"generation\x18\x03 \x01(\x03B\x04\xe2A\x01\x01R\n" +
+	"generation\x12%\n" +
+	"\vcontext_key\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"contextKey\x12:\n" +
+	"\x04name\x18\x05 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
 	"\x1dstorage.googleapis.com/ObjectR\x04name*\xef\x01\n" +
 	"\vFindingType\x12\x1c\n" +
 	"\x18FINDING_TYPE_UNSPECIFIED\x10\x00\x12?\n" +

@@ -1462,9 +1462,9 @@ const file_google_cloud_tasks_v2_target_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\tR\x05value\x1aR\n" +
 	"\x0eHeaderOverride\x12@\n" +
 	"\x06header\x18\x01 \x01(\v2(.google.cloud.tasks.v2.HttpTarget.HeaderR\x06headerB\x16\n" +
-	"\x14authorization_header\"\xa4\x03\n" +
-	"\vHttpRequest\x12\x15\n" +
-	"\x03url\x18\x01 \x01(\tB\x03\xe0A\x02R\x03url\x12B\n" +
+	"\x14authorization_header\"\xa5\x03\n" +
+	"\vHttpRequest\x12\x16\n" +
+	"\x03url\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03url\x12B\n" +
 	"\vhttp_method\x18\x02 \x01(\x0e2!.google.cloud.tasks.v2.HttpMethodR\n" +
 	"httpMethod\x12I\n" +
 	"\aheaders\x18\x03 \x03(\v2/.google.cloud.tasks.v2.HttpRequest.HeadersEntryR\aheaders\x12\x12\n" +

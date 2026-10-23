@@ -200,11 +200,11 @@ var File_google_cloud_datacatalog_v1_dump_content_proto protoreflect.FileDescrip
 
 const file_google_cloud_datacatalog_v1_dump_content_proto_rawDesc = "" +
 	"\n" +
-	".google/cloud/datacatalog/v1/dump_content.proto\x12\x1bgoogle.cloud.datacatalog.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a-google/cloud/datacatalog/v1/datacatalog.proto\x1a&google/cloud/datacatalog/v1/tags.proto\"\xe9\x01\n" +
+	".google/cloud/datacatalog/v1/dump_content.proto\x12\x1bgoogle.cloud.datacatalog.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a-google/cloud/datacatalog/v1/datacatalog.proto\x1a&google/cloud/datacatalog/v1/tags.proto\"\xeb\x01\n" +
 	"\vTaggedEntry\x12?\n" +
-	"\bv1_entry\x18\x01 \x01(\v2\".google.cloud.datacatalog.v1.EntryH\x00R\av1Entry\x12H\n" +
-	"\fpresent_tags\x18\x02 \x03(\v2 .google.cloud.datacatalog.v1.TagB\x03\xe0A\x01R\vpresentTags\x12F\n" +
-	"\vabsent_tags\x18\x03 \x03(\v2 .google.cloud.datacatalog.v1.TagB\x03\xe0A\x01R\n" +
+	"\bv1_entry\x18\x01 \x01(\v2\".google.cloud.datacatalog.v1.EntryH\x00R\av1Entry\x12I\n" +
+	"\fpresent_tags\x18\x02 \x03(\v2 .google.cloud.datacatalog.v1.TagB\x04\xe2A\x01\x01R\vpresentTags\x12G\n" +
+	"\vabsent_tags\x18\x03 \x03(\v2 .google.cloud.datacatalog.v1.TagB\x04\xe2A\x01\x01R\n" +
 	"absentTagsB\a\n" +
 	"\x05entry\"a\n" +
 	"\bDumpItem\x12M\n" +

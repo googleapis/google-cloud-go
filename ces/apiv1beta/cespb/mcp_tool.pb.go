@@ -255,20 +255,20 @@ var File_google_cloud_ces_v1beta_mcp_tool_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1beta_mcp_tool_proto_rawDesc = "" +
 	"\n" +
-	"&google/cloud/ces/v1beta/mcp_tool.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\"google/cloud/ces/v1beta/auth.proto\x1a$google/cloud/ces/v1beta/common.proto\x1a$google/cloud/ces/v1beta/schema.proto\"\xf6\x06\n" +
-	"\aMcpTool\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12(\n" +
-	"\rname_override\x18\r \x01(\tB\x03\xe0A\x01R\fnameOverride\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12G\n" +
-	"\finput_schema\x18\x03 \x01(\v2\x1f.google.cloud.ces.v1beta.SchemaB\x03\xe0A\x01R\vinputSchema\x12I\n" +
-	"\routput_schema\x18\x04 \x01(\v2\x1f.google.cloud.ces.v1beta.SchemaB\x03\xe0A\x01R\foutputSchema\x12*\n" +
-	"\x0eserver_address\x18\x05 \x01(\tB\x03\xe0A\x02R\rserverAddress\x12^\n" +
-	"\x12api_authentication\x18\x06 \x01(\v2*.google.cloud.ces.v1beta.ApiAuthenticationB\x03\xe0A\x01R\x11apiAuthentication\x12F\n" +
+	"&google/cloud/ces/v1beta/mcp_tool.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\"google/cloud/ces/v1beta/auth.proto\x1a$google/cloud/ces/v1beta/common.proto\x1a$google/cloud/ces/v1beta/schema.proto\"\x81\a\n" +
+	"\aMcpTool\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12)\n" +
+	"\rname_override\x18\r \x01(\tB\x04\xe2A\x01\x01R\fnameOverride\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12H\n" +
+	"\finput_schema\x18\x03 \x01(\v2\x1f.google.cloud.ces.v1beta.SchemaB\x04\xe2A\x01\x01R\vinputSchema\x12J\n" +
+	"\routput_schema\x18\x04 \x01(\v2\x1f.google.cloud.ces.v1beta.SchemaB\x04\xe2A\x01\x01R\foutputSchema\x12+\n" +
+	"\x0eserver_address\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\rserverAddress\x12_\n" +
+	"\x12api_authentication\x18\x06 \x01(\v2*.google.cloud.ces.v1beta.ApiAuthenticationB\x04\xe2A\x01\x01R\x11apiAuthentication\x12G\n" +
 	"\n" +
-	"tls_config\x18\a \x01(\v2\".google.cloud.ces.v1beta.TlsConfigB\x03\xe0A\x01R\ttlsConfig\x12n\n" +
-	"\x18service_directory_config\x18\b \x01(\v2/.google.cloud.ces.v1beta.ServiceDirectoryConfigB\x03\xe0A\x01R\x16serviceDirectoryConfig\x12_\n" +
-	"\x0ecustom_headers\x18\t \x03(\v23.google.cloud.ces.v1beta.McpTool.CustomHeadersEntryB\x03\xe0A\x01R\rcustomHeaders\x12A\n" +
-	"\x05state\x18\f \x01(\x0e2&.google.cloud.ces.v1beta.McpTool.StateB\x03\xe0A\x03R\x05state\x1a@\n" +
+	"tls_config\x18\a \x01(\v2\".google.cloud.ces.v1beta.TlsConfigB\x04\xe2A\x01\x01R\ttlsConfig\x12o\n" +
+	"\x18service_directory_config\x18\b \x01(\v2/.google.cloud.ces.v1beta.ServiceDirectoryConfigB\x04\xe2A\x01\x01R\x16serviceDirectoryConfig\x12`\n" +
+	"\x0ecustom_headers\x18\t \x03(\v23.google.cloud.ces.v1beta.McpTool.CustomHeadersEntryB\x04\xe2A\x01\x01R\rcustomHeaders\x12B\n" +
+	"\x05state\x18\f \x01(\x0e2&.google.cloud.ces.v1beta.McpTool.StateB\x04\xe2A\x01\x03R\x05state\x1a@\n" +
 	"\x12CustomHeadersEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"C\n" +

@@ -1898,13 +1898,17 @@ func (r *gRPCReader) WriteTo(w io.Writer) (int64, error) {
 	return r.seen - alreadySeen, finalErr
 }
 
-// Close cancels the read stream's context in order for it to be closed and
-// collected, and frees any currently in use buffers.
+// Close drains a completed stream (bounded by defaultStreamDrainTimeout) so
+// the RPC ends cleanly, then cancels the context and frees buffers.
 func (r *gRPCReader) Close() error {
+	if r.stream != nil && ((r.finalized || r.negativeOffset) && r.size == r.seen || r.zeroRange) {
+		drainStreamOnCompletion(r.cancel, r.stream)
+	}
 	if r.cancel != nil {
 		r.cancel()
 	}
 
+	r.stream = nil
 	r.currMsg = nil
 	return nil
 }
@@ -1926,7 +1930,7 @@ func (r *gRPCReader) recv() error {
 	err := r.stream.RecvMsg(&databufs)
 	// If we get a mid-stream error on a recv call, reopen the stream.
 	// ABORTED could indicate a redirect so should also trigger a reopen.
-	if err != nil && (r.settings.retry.runShouldRetry(err, nil) || status.Code(err) == codes.Aborted) {
+	if err != nil && ((r.settings != nil && r.settings.retry.runShouldRetry(err, nil)) || status.Code(err) == codes.Aborted) {
 		// This will "close" the existing stream and immediately attempt to
 		// reopen the stream, but will backoff if further attempts are necessary.
 		// Reopening the stream Recvs the first message, so if retrying is

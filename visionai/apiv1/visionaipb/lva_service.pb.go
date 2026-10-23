@@ -1858,9 +1858,9 @@ var File_google_cloud_visionai_v1_lva_service_proto protoreflect.FileDescriptor
 
 const file_google_cloud_visionai_v1_lva_service_proto_rawDesc = "" +
 	"\n" +
-	"*google/cloud/visionai/v1/lva_service.proto\x12\x18google.cloud.visionai.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a%google/cloud/visionai/v1/common.proto\x1a,google/cloud/visionai/v1/lva_resources.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xc8\x01\n" +
-	"\x14ListOperatorsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"*google/cloud/visionai/v1/lva_service.proto\x12\x18google.cloud.visionai.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a%google/cloud/visionai/v1/common.proto\x1a,google/cloud/visionai/v1/lva_resources.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xc9\x01\n" +
+	"\x14ListOperatorsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -1870,31 +1870,31 @@ const file_google_cloud_visionai_v1_lva_service_proto_rawDesc = "" +
 	"\x15ListOperatorsResponse\x12@\n" +
 	"\toperators\x18\x01 \x03(\v2\".google.cloud.visionai.v1.OperatorR\toperators\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"R\n" +
-	"\x12GetOperatorRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" visionai.googleapis.com/OperatorR\x04name\"\xe9\x01\n" +
-	"\x15CreateOperatorRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12$\n" +
-	"\voperator_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"operatorId\x12C\n" +
-	"\boperator\x18\x03 \x01(\v2\".google.cloud.visionai.v1.OperatorB\x03\xe0A\x02R\boperator\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"S\n" +
+	"\x12GetOperatorRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" visionai.googleapis.com/OperatorR\x04name\"\xed\x01\n" +
+	"\x15CreateOperatorRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12%\n" +
+	"\voperator_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"operatorId\x12D\n" +
+	"\boperator\x18\x03 \x01(\v2\".google.cloud.visionai.v1.OperatorB\x04\xe2A\x01\x02R\boperator\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xc2\x01\n" +
-	"\x15UpdateOperatorRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12C\n" +
-	"\boperator\x18\x02 \x01(\v2\".google.cloud.visionai.v1.OperatorB\x03\xe0A\x02R\boperator\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xc5\x01\n" +
+	"\x15UpdateOperatorRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12D\n" +
+	"\boperator\x18\x02 \x01(\v2\".google.cloud.visionai.v1.OperatorB\x04\xe2A\x01\x02R\boperator\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"y\n" +
-	"\x15DeleteOperatorRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" visionai.googleapis.com/OperatorR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"{\n" +
+	"\x15DeleteOperatorRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" visionai.googleapis.com/OperatorR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\xc5\x01\n" +
-	"\x13ListAnalysesRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xc6\x01\n" +
+	"\x13ListAnalysesRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
 	"\x1fvisionai.googleapis.com/ClusterR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -1904,31 +1904,31 @@ const file_google_cloud_visionai_v1_lva_service_proto_rawDesc = "" +
 	"\x14ListAnalysesResponse\x12>\n" +
 	"\banalyses\x18\x01 \x03(\v2\".google.cloud.visionai.v1.AnalysisR\banalyses\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"R\n" +
-	"\x12GetAnalysisRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" visionai.googleapis.com/AnalysisR\x04name\"\xe7\x01\n" +
-	"\x15CreateAnalysisRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fvisionai.googleapis.com/ClusterR\x06parent\x12$\n" +
-	"\vanalysis_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"analysisId\x12C\n" +
-	"\banalysis\x18\x03 \x01(\v2\".google.cloud.visionai.v1.AnalysisB\x03\xe0A\x02R\banalysis\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"S\n" +
+	"\x12GetAnalysisRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" visionai.googleapis.com/AnalysisR\x04name\"\xeb\x01\n" +
+	"\x15CreateAnalysisRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fvisionai.googleapis.com/ClusterR\x06parent\x12%\n" +
+	"\vanalysis_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"analysisId\x12D\n" +
+	"\banalysis\x18\x03 \x01(\v2\".google.cloud.visionai.v1.AnalysisB\x04\xe2A\x01\x02R\banalysis\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xc2\x01\n" +
-	"\x15UpdateAnalysisRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12C\n" +
-	"\banalysis\x18\x02 \x01(\v2\".google.cloud.visionai.v1.AnalysisB\x03\xe0A\x02R\banalysis\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xc5\x01\n" +
+	"\x15UpdateAnalysisRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12D\n" +
+	"\banalysis\x18\x02 \x01(\v2\".google.cloud.visionai.v1.AnalysisB\x04\xe2A\x01\x02R\banalysis\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"y\n" +
-	"\x15DeleteAnalysisRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" visionai.googleapis.com/AnalysisR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"{\n" +
+	"\x15DeleteAnalysisRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" visionai.googleapis.com/AnalysisR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\xc6\x01\n" +
-	"\x14ListProcessesRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xc7\x01\n" +
+	"\x14ListProcessesRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
 	"\x1fvisionai.googleapis.com/ClusterR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -1938,35 +1938,35 @@ const file_google_cloud_visionai_v1_lva_service_proto_rawDesc = "" +
 	"\x15ListProcessesResponse\x12?\n" +
 	"\tprocesses\x18\x01 \x03(\v2!.google.cloud.visionai.v1.ProcessR\tprocesses\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"P\n" +
-	"\x11GetProcessRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fvisionai.googleapis.com/ProcessR\x04name\"\xe1\x01\n" +
-	"\x14CreateProcessRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fvisionai.googleapis.com/ClusterR\x06parent\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"Q\n" +
+	"\x11GetProcessRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fvisionai.googleapis.com/ProcessR\x04name\"\xe5\x01\n" +
+	"\x14CreateProcessRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fvisionai.googleapis.com/ClusterR\x06parent\x12#\n" +
 	"\n" +
-	"process_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tprocessId\x12@\n" +
-	"\aprocess\x18\x03 \x01(\v2!.google.cloud.visionai.v1.ProcessB\x03\xe0A\x02R\aprocess\x12\"\n" +
+	"process_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tprocessId\x12A\n" +
+	"\aprocess\x18\x03 \x01(\v2!.google.cloud.visionai.v1.ProcessB\x04\xe2A\x01\x02R\aprocess\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xbe\x01\n" +
-	"\x14UpdateProcessRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12@\n" +
-	"\aprocess\x18\x02 \x01(\v2!.google.cloud.visionai.v1.ProcessB\x03\xe0A\x02R\aprocess\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xc1\x01\n" +
+	"\x14UpdateProcessRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12A\n" +
+	"\aprocess\x18\x02 \x01(\v2!.google.cloud.visionai.v1.ProcessB\x04\xe2A\x01\x02R\aprocess\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"w\n" +
-	"\x14DeleteProcessRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fvisionai.googleapis.com/ProcessR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"y\n" +
+	"\x14DeleteProcessRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fvisionai.googleapis.com/ProcessR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\x8c\x03\n" +
-	"\x16BatchRunProcessRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fvisionai.googleapis.com/ClusterR\x06parent\x12O\n" +
-	"\brequests\x18\x02 \x03(\v2..google.cloud.visionai.v1.CreateProcessRequestB\x03\xe0A\x02R\brequests\x12f\n" +
-	"\aoptions\x18\x03 \x01(\v2G.google.cloud.visionai.v1.BatchRunProcessRequest.BatchRunProcessOptionsB\x03\xe0A\x01R\aoptions\x12\x1e\n" +
-	"\bbatch_id\x18\x04 \x01(\tB\x03\xe0A\x03R\abatchId\x1aX\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x90\x03\n" +
+	"\x16BatchRunProcessRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fvisionai.googleapis.com/ClusterR\x06parent\x12P\n" +
+	"\brequests\x18\x02 \x03(\v2..google.cloud.visionai.v1.CreateProcessRequestB\x04\xe2A\x01\x02R\brequests\x12g\n" +
+	"\aoptions\x18\x03 \x01(\v2G.google.cloud.visionai.v1.BatchRunProcessRequest.BatchRunProcessOptionsB\x04\xe2A\x01\x01R\aoptions\x12\x1f\n" +
+	"\bbatch_id\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\abatchId\x1aX\n" +
 	"\x16BatchRunProcessOptions\x12\x1f\n" +
 	"\vretry_count\x18\x01 \x01(\x05R\n" +
 	"retryCount\x12\x1d\n" +
@@ -1974,19 +1974,19 @@ const file_google_cloud_visionai_v1_lva_service_proto_rawDesc = "" +
 	"batch_size\x18\x02 \x01(\x05R\tbatchSize\"u\n" +
 	"\x17BatchRunProcessResponse\x12\x19\n" +
 	"\bbatch_id\x18\x01 \x01(\tR\abatchId\x12?\n" +
-	"\tprocesses\x18\x02 \x03(\v2!.google.cloud.visionai.v1.ProcessR\tprocesses\"\xa7\x01\n" +
-	"\x1aResolveOperatorInfoRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12F\n" +
-	"\aqueries\x18\x02 \x03(\v2'.google.cloud.visionai.v1.OperatorQueryB\x03\xe0A\x02R\aqueries\"\x8c\x01\n" +
-	"\rOperatorQuery\x12\x1f\n" +
-	"\boperator\x18\x01 \x01(\tB\x03\xe0A\x02R\boperator\x12\x15\n" +
-	"\x03tag\x18\x02 \x01(\tB\x03\xe0A\x01R\x03tag\x12C\n" +
-	"\bregistry\x18\x03 \x01(\x0e2\".google.cloud.visionai.v1.RegistryB\x03\xe0A\x01R\bregistry\"_\n" +
+	"\tprocesses\x18\x02 \x03(\v2!.google.cloud.visionai.v1.ProcessR\tprocesses\"\xa9\x01\n" +
+	"\x1aResolveOperatorInfoRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12G\n" +
+	"\aqueries\x18\x02 \x03(\v2'.google.cloud.visionai.v1.OperatorQueryB\x04\xe2A\x01\x02R\aqueries\"\x8f\x01\n" +
+	"\rOperatorQuery\x12 \n" +
+	"\boperator\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\boperator\x12\x16\n" +
+	"\x03tag\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x03tag\x12D\n" +
+	"\bregistry\x18\x03 \x01(\x0e2\".google.cloud.visionai.v1.RegistryB\x04\xe2A\x01\x01R\bregistry\"_\n" +
 	"\x1bResolveOperatorInfoResponse\x12@\n" +
-	"\toperators\x18\x01 \x03(\v2\".google.cloud.visionai.v1.OperatorR\toperators\"\xce\x01\n" +
-	"\x1aListPublicOperatorsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\toperators\x18\x01 \x03(\v2\".google.cloud.visionai.v1.OperatorR\toperators\"\xcf\x01\n" +
+	"\x1aListPublicOperatorsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +

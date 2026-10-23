@@ -375,33 +375,33 @@ var File_google_cloud_ces_v1beta_agent_card_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1beta_agent_card_proto_rawDesc = "" +
 	"\n" +
-	"(google/cloud/ces/v1beta/agent_card.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\"\x8d\x02\n" +
-	"\tAgentCard\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x02R\vdescription\x12_\n" +
-	"\x14supported_interfaces\x18\x03 \x03(\v2'.google.cloud.ces.v1beta.AgentInterfaceB\x03\xe0A\x02R\x13supportedInterfaces\x12\x1d\n" +
-	"\aversion\x18\x05 \x01(\tB\x03\xe0A\x02R\aversion\x12@\n" +
-	"\x06skills\x18\x06 \x03(\v2#.google.cloud.ces.v1beta.AgentSkillB\x03\xe0A\x02R\x06skills\"\x9f\x01\n" +
-	"\x0eAgentInterface\x12\x15\n" +
-	"\x03url\x18\x01 \x01(\tB\x03\xe0A\x02R\x03url\x12.\n" +
-	"\x10protocol_binding\x18\x02 \x01(\tB\x03\xe0A\x02R\x0fprotocolBinding\x12\x16\n" +
-	"\x06tenant\x18\x03 \x01(\tR\x06tenant\x12.\n" +
-	"\x10protocol_version\x18\x04 \x01(\tB\x03\xe0A\x02R\x0fprotocolVersion\"\xda\x01\n" +
+	"(google/cloud/ces/v1beta/agent_card.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\"\x92\x02\n" +
+	"\tAgentCard\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdescription\x12`\n" +
+	"\x14supported_interfaces\x18\x03 \x03(\v2'.google.cloud.ces.v1beta.AgentInterfaceB\x04\xe2A\x01\x02R\x13supportedInterfaces\x12\x1e\n" +
+	"\aversion\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\aversion\x12A\n" +
+	"\x06skills\x18\x06 \x03(\v2#.google.cloud.ces.v1beta.AgentSkillB\x04\xe2A\x01\x02R\x06skills\"\xa2\x01\n" +
+	"\x0eAgentInterface\x12\x16\n" +
+	"\x03url\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03url\x12/\n" +
+	"\x10protocol_binding\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0fprotocolBinding\x12\x16\n" +
+	"\x06tenant\x18\x03 \x01(\tR\x06tenant\x12/\n" +
+	"\x10protocol_version\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\x0fprotocolVersion\"\xde\x01\n" +
 	"\n" +
-	"AgentSkill\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\x12\x17\n" +
-	"\x04name\x18\x02 \x01(\tB\x03\xe0A\x02R\x04name\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x02R\vdescription\x12\x17\n" +
-	"\x04tags\x18\x04 \x03(\tB\x03\xe0A\x02R\x04tags\x12\x1a\n" +
+	"AgentSkill\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x02id\x12\x18\n" +
+	"\x04name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\vdescription\x12\x18\n" +
+	"\x04tags\x18\x04 \x03(\tB\x04\xe2A\x01\x02R\x04tags\x12\x1a\n" +
 	"\bexamples\x18\x05 \x03(\tR\bexamples\x12\x1f\n" +
 	"\vinput_modes\x18\x06 \x03(\tR\n" +
 	"inputModes\x12!\n" +
-	"\foutput_modes\x18\a \x03(\tR\voutputModes\"\x99\x01\n" +
-	"\x0fRemoteAgentTool\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x02R\vdescription\x12F\n" +
+	"\foutput_modes\x18\a \x03(\tR\voutputModes\"\x9c\x01\n" +
+	"\x0fRemoteAgentTool\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdescription\x12G\n" +
 	"\n" +
-	"agent_card\x18\x03 \x01(\v2\".google.cloud.ces.v1beta.AgentCardB\x03\xe0A\x02R\tagentCardB^\n" +
+	"agent_card\x18\x03 \x01(\v2\".google.cloud.ces.v1beta.AgentCardB\x04\xe2A\x01\x02R\tagentCardB^\n" +
 	"\x1bcom.google.cloud.ces.v1betaB\x0eAgentCardProtoP\x01Z-cloud.google.com/go/ces/apiv1beta/cespb;cespbb\x06proto3"
 
 var (

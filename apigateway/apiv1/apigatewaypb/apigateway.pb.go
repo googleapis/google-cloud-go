@@ -2268,18 +2268,18 @@ var File_google_cloud_apigateway_v1_apigateway_proto protoreflect.FileDescriptor
 
 const file_google_cloud_apigateway_v1_apigateway_proto_rawDesc = "" +
 	"\n" +
-	"+google/cloud/apigateway/v1/apigateway.proto\x12\x1agoogle.cloud.apigateway.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xac\x05\n" +
-	"\x03Api\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12H\n" +
-	"\x06labels\x18\x04 \x03(\v2+.google.cloud.apigateway.v1.Api.LabelsEntryB\x03\xe0A\x01R\x06labels\x12&\n" +
-	"\fdisplay_name\x18\x05 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12c\n" +
-	"\x0fmanaged_service\x18\a \x01(\tB:\xe0A\x05\xe0A\x01\xfaA1\n" +
-	"/servicemanagement.googleapis.com/ManagedServiceR\x0emanagedService\x12@\n" +
-	"\x05state\x18\f \x01(\x0e2%.google.cloud.apigateway.v1.Api.StateB\x03\xe0A\x03R\x05state\x1a9\n" +
+	"+google/cloud/apigateway/v1/apigateway.proto\x12\x1agoogle.cloud.apigateway.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb1\x05\n" +
+	"\x03Api\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12I\n" +
+	"\x06labels\x18\x04 \x03(\v2+.google.cloud.apigateway.v1.Api.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12'\n" +
+	"\fdisplay_name\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12b\n" +
+	"\x0fmanaged_service\x18\a \x01(\tB9\xe2A\x02\x05\x01\xfaA1\n" +
+	"/servicemanagement.googleapis.com/ManagedServiceR\x0emanagedService\x12A\n" +
+	"\x05state\x18\f \x01(\x0e2%.google.cloud.apigateway.v1.Api.StateB\x04\xe2A\x01\x03R\x05state\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"`\n" +
@@ -2292,32 +2292,32 @@ const file_google_cloud_apigateway_v1_apigateway_proto_rawDesc = "" +
 	"\x06FAILED\x10\x03\x12\f\n" +
 	"\bDELETING\x10\x04\x12\f\n" +
 	"\bUPDATING\x10\x05:R\xeaAO\n" +
-	"\x1dapigateway.googleapis.com/Api\x12.projects/{project}/locations/global/apis/{api}\"\xd5\v\n" +
-	"\tApiConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12N\n" +
-	"\x06labels\x18\x04 \x03(\v21.google.cloud.apigateway.v1.ApiConfig.LabelsEntryB\x03\xe0A\x01R\x06labels\x12&\n" +
-	"\fdisplay_name\x18\x05 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12a\n" +
-	"\x17gateway_service_account\x18\x0e \x01(\tB)\xe0A\x05\xfaA#\n" +
-	"!iam.googleapis.com/ServiceAccountR\x15gatewayServiceAccount\x12\\\n" +
-	"\x11service_config_id\x18\f \x01(\tB0\xe0A\x03\xfaA*\n" +
-	"(servicemanagement.googleapis.com/ServiceR\x0fserviceConfigId\x12F\n" +
-	"\x05state\x18\b \x01(\x0e2+.google.cloud.apigateway.v1.ApiConfig.StateB\x03\xe0A\x03R\x05state\x12g\n" +
-	"\x11openapi_documents\x18\t \x03(\v25.google.cloud.apigateway.v1.ApiConfig.OpenApiDocumentB\x03\xe0A\x01R\x10openapiDocuments\x12e\n" +
+	"\x1dapigateway.googleapis.com/Api\x12.projects/{project}/locations/global/apis/{api}\"\xe2\v\n" +
+	"\tApiConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12O\n" +
+	"\x06labels\x18\x04 \x03(\v21.google.cloud.apigateway.v1.ApiConfig.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12'\n" +
+	"\fdisplay_name\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12b\n" +
+	"\x17gateway_service_account\x18\x0e \x01(\tB*\xe2A\x01\x05\xfaA#\n" +
+	"!iam.googleapis.com/ServiceAccountR\x15gatewayServiceAccount\x12]\n" +
+	"\x11service_config_id\x18\f \x01(\tB1\xe2A\x01\x03\xfaA*\n" +
+	"(servicemanagement.googleapis.com/ServiceR\x0fserviceConfigId\x12G\n" +
+	"\x05state\x18\b \x01(\x0e2+.google.cloud.apigateway.v1.ApiConfig.StateB\x04\xe2A\x01\x03R\x05state\x12h\n" +
+	"\x11openapi_documents\x18\t \x03(\v25.google.cloud.apigateway.v1.ApiConfig.OpenApiDocumentB\x04\xe2A\x01\x01R\x10openapiDocuments\x12f\n" +
 	"\rgrpc_services\x18\n" +
-	" \x03(\v2;.google.cloud.apigateway.v1.ApiConfig.GrpcServiceDefinitionB\x03\xe0A\x01R\fgrpcServices\x12g\n" +
-	"\x17managed_service_configs\x18\v \x03(\v2*.google.cloud.apigateway.v1.ApiConfig.FileB\x03\xe0A\x01R\x15managedServiceConfigs\x1a6\n" +
+	" \x03(\v2;.google.cloud.apigateway.v1.ApiConfig.GrpcServiceDefinitionB\x04\xe2A\x01\x01R\fgrpcServices\x12h\n" +
+	"\x17managed_service_configs\x18\v \x03(\v2*.google.cloud.apigateway.v1.ApiConfig.FileB\x04\xe2A\x01\x01R\x15managedServiceConfigs\x1a6\n" +
 	"\x04File\x12\x12\n" +
 	"\x04path\x18\x01 \x01(\tR\x04path\x12\x1a\n" +
 	"\bcontents\x18\x02 \x01(\fR\bcontents\x1aY\n" +
 	"\x0fOpenApiDocument\x12F\n" +
-	"\bdocument\x18\x01 \x01(\v2*.google.cloud.apigateway.v1.ApiConfig.FileR\bdocument\x1a\xc1\x01\n" +
-	"\x15GrpcServiceDefinition\x12_\n" +
-	"\x13file_descriptor_set\x18\x01 \x01(\v2*.google.cloud.apigateway.v1.ApiConfig.FileB\x03\xe0A\x04R\x11fileDescriptorSet\x12G\n" +
-	"\x06source\x18\x02 \x03(\v2*.google.cloud.apigateway.v1.ApiConfig.FileB\x03\xe0A\x01R\x06source\x1a9\n" +
+	"\bdocument\x18\x01 \x01(\v2*.google.cloud.apigateway.v1.ApiConfig.FileR\bdocument\x1a\xc3\x01\n" +
+	"\x15GrpcServiceDefinition\x12`\n" +
+	"\x13file_descriptor_set\x18\x01 \x01(\v2*.google.cloud.apigateway.v1.ApiConfig.FileB\x04\xe2A\x01\x04R\x11fileDescriptorSet\x12H\n" +
+	"\x06source\x18\x02 \x03(\v2*.google.cloud.apigateway.v1.ApiConfig.FileB\x04\xe2A\x01\x01R\x06source\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"p\n" +
@@ -2332,22 +2332,22 @@ const file_google_cloud_apigateway_v1_apigateway_proto_rawDesc = "" +
 	"\bUPDATING\x10\x05\x12\x0e\n" +
 	"\n" +
 	"ACTIVATING\x10\x06:m\xeaAj\n" +
-	"#apigateway.googleapis.com/ApiConfig\x12Cprojects/{project}/locations/global/apis/{api}/configs/{api_config}\"\x9b\t\n" +
-	"\aGateway\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12L\n" +
-	"\x06labels\x18\x04 \x03(\v2/.google.cloud.apigateway.v1.Gateway.LabelsEntryB\x03\xe0A\x01R\x06labels\x12&\n" +
-	"\fdisplay_name\x18\x05 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12J\n" +
+	"#apigateway.googleapis.com/ApiConfig\x12Cprojects/{project}/locations/global/apis/{api}/configs/{api_config}\"\xa3\t\n" +
+	"\aGateway\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12M\n" +
+	"\x06labels\x18\x04 \x03(\v2/.google.cloud.apigateway.v1.Gateway.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12'\n" +
+	"\fdisplay_name\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12K\n" +
 	"\n" +
-	"api_config\x18\x06 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#apigateway.googleapis.com/ApiConfigR\tapiConfig\x12D\n" +
-	"\x05state\x18\a \x01(\x0e2).google.cloud.apigateway.v1.Gateway.StateB\x03\xe0A\x03R\x05state\x12.\n" +
-	"\x10default_hostname\x18\t \x01(\tB\x03\xe0A\x03R\x0fdefaultHostname\x12`\n" +
-	"\x0estreaming_mode\x18\v \x01(\x0e21.google.cloud.apigateway.v1.Gateway.StreamingModeB\x06\xe0A\x05\xe0A\x01R\rstreamingMode\x12y\n" +
-	"\x18effective_streaming_mode\x18\f \x01(\x0e2:.google.cloud.apigateway.v1.Gateway.EffectiveStreamingModeB\x03\xe0A\x03R\x16effectiveStreamingMode\x1a9\n" +
+	"api_config\x18\x06 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#apigateway.googleapis.com/ApiConfigR\tapiConfig\x12E\n" +
+	"\x05state\x18\a \x01(\x0e2).google.cloud.apigateway.v1.Gateway.StateB\x04\xe2A\x01\x03R\x05state\x12/\n" +
+	"\x10default_hostname\x18\t \x01(\tB\x04\xe2A\x01\x03R\x0fdefaultHostname\x12_\n" +
+	"\x0estreaming_mode\x18\v \x01(\x0e21.google.cloud.apigateway.v1.Gateway.StreamingModeB\x05\xe2A\x02\x05\x01R\rstreamingMode\x12z\n" +
+	"\x18effective_streaming_mode\x18\f \x01(\x0e2:.google.cloud.apigateway.v1.Gateway.EffectiveStreamingModeB\x04\xe2A\x01\x03R\x16effectiveStreamingMode\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"`\n" +
@@ -2367,9 +2367,9 @@ const file_google_cloud_apigateway_v1_apigateway_proto_rawDesc = "" +
 	"$EFFECTIVE_STREAMING_MODE_UNSPECIFIED\x10\x00\x12%\n" +
 	"!EFFECTIVE_STREAMING_MODE_DISABLED\x10\x01\x12$\n" +
 	" EFFECTIVE_STREAMING_MODE_ENABLED\x10\x02:b\xeaA_\n" +
-	"!apigateway.googleapis.com/Gateway\x12:projects/{project}/locations/{location}/gateways/{gateway}\"\xc7\x01\n" +
-	"\x13ListGatewaysRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"!apigateway.googleapis.com/Gateway\x12:projects/{project}/locations/{location}/gateways/{gateway}\"\xc8\x01\n" +
+	"\x13ListGatewaysRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -2379,25 +2379,25 @@ const file_google_cloud_apigateway_v1_apigateway_proto_rawDesc = "" +
 	"\x14ListGatewaysResponse\x12?\n" +
 	"\bgateways\x18\x01 \x03(\v2#.google.cloud.apigateway.v1.GatewayR\bgateways\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x123\n" +
-	"\x15unreachable_locations\x18\x03 \x03(\tR\x14unreachableLocations\"R\n" +
-	"\x11GetGatewayRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!apigateway.googleapis.com/GatewayR\x04name\"\xc1\x01\n" +
-	"\x14CreateGatewayRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12\"\n" +
+	"\x15unreachable_locations\x18\x03 \x03(\tR\x14unreachableLocations\"S\n" +
+	"\x11GetGatewayRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!apigateway.googleapis.com/GatewayR\x04name\"\xc4\x01\n" +
+	"\x14CreateGatewayRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12#\n" +
 	"\n" +
-	"gateway_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tgatewayId\x12B\n" +
-	"\agateway\x18\x03 \x01(\v2#.google.cloud.apigateway.v1.GatewayB\x03\xe0A\x02R\agateway\"\x97\x01\n" +
+	"gateway_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tgatewayId\x12C\n" +
+	"\agateway\x18\x03 \x01(\v2#.google.cloud.apigateway.v1.GatewayB\x04\xe2A\x01\x02R\agateway\"\x98\x01\n" +
 	"\x14UpdateGatewayRequest\x12;\n" +
 	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\x12B\n" +
-	"\agateway\x18\x02 \x01(\v2#.google.cloud.apigateway.v1.GatewayB\x03\xe0A\x02R\agateway\"U\n" +
-	"\x14DeleteGatewayRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!apigateway.googleapis.com/GatewayR\x04name\"\xc3\x01\n" +
-	"\x0fListApisRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"updateMask\x12C\n" +
+	"\agateway\x18\x02 \x01(\v2#.google.cloud.apigateway.v1.GatewayB\x04\xe2A\x01\x02R\agateway\"V\n" +
+	"\x14DeleteGatewayRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!apigateway.googleapis.com/GatewayR\x04name\"\xc4\x01\n" +
+	"\x0fListApisRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -2407,24 +2407,24 @@ const file_google_cloud_apigateway_v1_apigateway_proto_rawDesc = "" +
 	"\x10ListApisResponse\x123\n" +
 	"\x04apis\x18\x01 \x03(\v2\x1f.google.cloud.apigateway.v1.ApiR\x04apis\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x123\n" +
-	"\x15unreachable_locations\x18\x03 \x03(\tR\x14unreachableLocations\"J\n" +
-	"\rGetApiRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dapigateway.googleapis.com/ApiR\x04name\"\xa9\x01\n" +
-	"\x10CreateApiRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12\x1a\n" +
-	"\x06api_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x05apiId\x126\n" +
-	"\x03api\x18\x03 \x01(\v2\x1f.google.cloud.apigateway.v1.ApiB\x03\xe0A\x02R\x03api\"\x87\x01\n" +
+	"\x15unreachable_locations\x18\x03 \x03(\tR\x14unreachableLocations\"K\n" +
+	"\rGetApiRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dapigateway.googleapis.com/ApiR\x04name\"\xac\x01\n" +
+	"\x10CreateApiRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
+	"\x06api_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05apiId\x127\n" +
+	"\x03api\x18\x03 \x01(\v2\x1f.google.cloud.apigateway.v1.ApiB\x04\xe2A\x01\x02R\x03api\"\x88\x01\n" +
 	"\x10UpdateApiRequest\x12;\n" +
 	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\x126\n" +
-	"\x03api\x18\x02 \x01(\v2\x1f.google.cloud.apigateway.v1.ApiB\x03\xe0A\x02R\x03api\"M\n" +
-	"\x10DeleteApiRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dapigateway.googleapis.com/ApiR\x04name\"\xc5\x01\n" +
-	"\x15ListApiConfigsRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
+	"updateMask\x127\n" +
+	"\x03api\x18\x02 \x01(\v2\x1f.google.cloud.apigateway.v1.ApiB\x04\xe2A\x01\x02R\x03api\"N\n" +
+	"\x10DeleteApiRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dapigateway.googleapis.com/ApiR\x04name\"\xc6\x01\n" +
+	"\x15ListApiConfigsRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
 	"\x1dapigateway.googleapis.com/ApiR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -2435,41 +2435,41 @@ const file_google_cloud_apigateway_v1_apigateway_proto_rawDesc = "" +
 	"\vapi_configs\x18\x01 \x03(\v2%.google.cloud.apigateway.v1.ApiConfigR\n" +
 	"apiConfigs\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x123\n" +
-	"\x15unreachable_locations\x18\x03 \x03(\tR\x14unreachableLocations\"\xe6\x01\n" +
-	"\x13GetApiConfigRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
+	"\x15unreachable_locations\x18\x03 \x03(\tR\x14unreachableLocations\"\xe7\x01\n" +
+	"\x13GetApiConfigRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
 	"#apigateway.googleapis.com/ApiConfigR\x04name\x12N\n" +
 	"\x04view\x18\x03 \x01(\x0e2:.google.cloud.apigateway.v1.GetApiConfigRequest.ConfigViewR\x04view\">\n" +
 	"\n" +
 	"ConfigView\x12\x1b\n" +
 	"\x17CONFIG_VIEW_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05BASIC\x10\x01\x12\b\n" +
-	"\x04FULL\x10\x02\"\xcb\x01\n" +
-	"\x16CreateApiConfigRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dapigateway.googleapis.com/ApiR\x06parent\x12'\n" +
-	"\rapi_config_id\x18\x02 \x01(\tB\x03\xe0A\x02R\vapiConfigId\x12I\n" +
+	"\x04FULL\x10\x02\"\xce\x01\n" +
+	"\x16CreateApiConfigRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dapigateway.googleapis.com/ApiR\x06parent\x12(\n" +
+	"\rapi_config_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vapiConfigId\x12J\n" +
 	"\n" +
-	"api_config\x18\x03 \x01(\v2%.google.cloud.apigateway.v1.ApiConfigB\x03\xe0A\x02R\tapiConfig\"\xa0\x01\n" +
+	"api_config\x18\x03 \x01(\v2%.google.cloud.apigateway.v1.ApiConfigB\x04\xe2A\x01\x02R\tapiConfig\"\xa1\x01\n" +
 	"\x16UpdateApiConfigRequest\x12;\n" +
 	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\x12I\n" +
+	"updateMask\x12J\n" +
 	"\n" +
-	"api_config\x18\x02 \x01(\v2%.google.cloud.apigateway.v1.ApiConfigB\x03\xe0A\x02R\tapiConfig\"Y\n" +
-	"\x16DeleteApiConfigRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#apigateway.googleapis.com/ApiConfigR\x04name\"\xfa\x03\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion\x12_\n" +
-	"\vdiagnostics\x18\b \x03(\v28.google.cloud.apigateway.v1.OperationMetadata.DiagnosticB\x03\xe0A\x03R\vdiagnostics\x1aB\n" +
+	"api_config\x18\x02 \x01(\v2%.google.cloud.apigateway.v1.ApiConfigB\x04\xe2A\x01\x02R\tapiConfig\"Z\n" +
+	"\x16DeleteApiConfigRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#apigateway.googleapis.com/ApiConfigR\x04name\"\x82\x04\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"apiVersion\x12`\n" +
+	"\vdiagnostics\x18\b \x03(\v28.google.cloud.apigateway.v1.OperationMetadata.DiagnosticB\x04\xe2A\x01\x03R\vdiagnostics\x1aB\n" +
 	"\n" +
 	"Diagnostic\x12\x1a\n" +
 	"\blocation\x18\x01 \x01(\tR\blocation\x12\x18\n" +

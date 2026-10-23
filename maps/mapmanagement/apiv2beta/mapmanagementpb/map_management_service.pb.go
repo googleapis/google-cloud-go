@@ -1784,109 +1784,109 @@ var File_google_maps_mapmanagement_v2beta_map_management_service_proto protorefl
 
 const file_google_maps_mapmanagement_v2beta_map_management_service_proto_rawDesc = "" +
 	"\n" +
-	"=google/maps/mapmanagement/v2beta/map_management_service.proto\x12 google.maps.mapmanagement.v2beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb6\x01\n" +
-	"\x16CreateMapConfigRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12O\n" +
+	"=google/maps/mapmanagement/v2beta/map_management_service.proto\x12 google.maps.mapmanagement.v2beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb8\x01\n" +
+	"\x16CreateMapConfigRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12P\n" +
 	"\n" +
-	"map_config\x18\x02 \x01(\v2+.google.maps.mapmanagement.v2beta.MapConfigB\x03\xe0A\x02R\tmapConfig\"Y\n" +
-	"\x13GetMapConfigRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&mapmanagement.googleapis.com/MapConfigR\x04name\"\xaa\x01\n" +
-	"\x15ListMapConfigsRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"map_config\x18\x02 \x01(\v2+.google.maps.mapmanagement.v2beta.MapConfigB\x04\xe2A\x01\x02R\tmapConfig\"Z\n" +
+	"\x13GetMapConfigRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&mapmanagement.googleapis.com/MapConfigR\x04name\"\xad\x01\n" +
+	"\x15ListMapConfigsRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x8e\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x8e\x01\n" +
 	"\x16ListMapConfigsResponse\x12L\n" +
 	"\vmap_configs\x18\x01 \x03(\v2+.google.maps.mapmanagement.v2beta.MapConfigR\n" +
 	"mapConfigs\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xab\x01\n" +
-	"\x16UpdateMapConfigRequest\x12O\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xad\x01\n" +
+	"\x16UpdateMapConfigRequest\x12P\n" +
 	"\n" +
-	"map_config\x18\x01 \x01(\v2+.google.maps.mapmanagement.v2beta.MapConfigB\x03\xe0A\x02R\tmapConfig\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"w\n" +
-	"\x16DeleteMapConfigRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&mapmanagement.googleapis.com/MapConfigR\x04name\x12\x19\n" +
-	"\x05force\x18\x02 \x01(\bB\x03\xe0A\x01R\x05force\"\x98\x02\n" +
-	"\vMapFeatures\x12i\n" +
-	"\x0fsimple_features\x18\x01 \x03(\x0e2;.google.maps.mapmanagement.v2beta.MapFeatures.SimpleFeatureB\x03\xe0A\x01R\x0esimpleFeatures\x120\n" +
-	"\x0fpoi_boost_level\x18\x02 \x01(\x05B\x03\xe0A\x01H\x00R\rpoiBoostLevel\x88\x01\x01\"X\n" +
+	"map_config\x18\x01 \x01(\v2+.google.maps.mapmanagement.v2beta.MapConfigB\x04\xe2A\x01\x02R\tmapConfig\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"y\n" +
+	"\x16DeleteMapConfigRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&mapmanagement.googleapis.com/MapConfigR\x04name\x12\x1a\n" +
+	"\x05force\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x05force\"\x9a\x02\n" +
+	"\vMapFeatures\x12j\n" +
+	"\x0fsimple_features\x18\x01 \x03(\x0e2;.google.maps.mapmanagement.v2beta.MapFeatures.SimpleFeatureB\x04\xe2A\x01\x01R\x0esimpleFeatures\x121\n" +
+	"\x0fpoi_boost_level\x18\x02 \x01(\x05B\x04\xe2A\x01\x01H\x00R\rpoiBoostLevel\x88\x01\x01\"X\n" +
 	"\rSimpleFeature\x12\x1e\n" +
 	"\x1aSIMPLE_FEATURE_UNSPECIFIED\x10\x00\x12\x15\n" +
 	"\x11FLATTEN_BUILDINGS\x10\x01\x12\x10\n" +
 	"\fICONIC_ICONS\x10\x02B\x12\n" +
-	"\x10_poi_boost_level\"\xdb\x04\n" +
-	"\tMapConfig\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12\x1a\n" +
-	"\x06map_id\x18\x04 \x01(\tB\x03\xe0A\x03R\x05mapId\x12U\n" +
-	"\fmap_features\x18\x05 \x01(\v2-.google.maps.mapmanagement.v2beta.MapFeaturesB\x03\xe0A\x01R\vmapFeatures\x12E\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03H\x00R\n" +
-	"createTime\x88\x01\x01\x12E\n" +
-	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03H\x01R\n" +
-	"updateTime\x88\x01\x01\x12R\n" +
-	"\bmap_type\x18\b \x01(\x0e22.google.maps.mapmanagement.v2beta.MapRenderingTypeB\x03\xe0A\x01R\amapType:n\xeaAk\n" +
+	"\x10_poi_boost_level\"\xe1\x04\n" +
+	"\tMapConfig\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\x1b\n" +
+	"\x06map_id\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x05mapId\x12V\n" +
+	"\fmap_features\x18\x05 \x01(\v2-.google.maps.mapmanagement.v2beta.MapFeaturesB\x04\xe2A\x01\x01R\vmapFeatures\x12F\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03H\x00R\n" +
+	"createTime\x88\x01\x01\x12F\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03H\x01R\n" +
+	"updateTime\x88\x01\x01\x12S\n" +
+	"\bmap_type\x18\b \x01(\x0e22.google.maps.mapmanagement.v2beta.MapRenderingTypeB\x04\xe2A\x01\x01R\amapType:n\xeaAk\n" +
 	"&mapmanagement.googleapis.com/MapConfig\x12*projects/{project}/mapConfigs/{map_config}*\n" +
 	"mapConfigs2\tmapConfigB\x0e\n" +
 	"\f_create_timeB\x0e\n" +
-	"\f_update_time\"\xef\x03\n" +
-	"\vStyleConfig\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12\x1e\n" +
-	"\bstyle_id\x18\x04 \x01(\tB\x03\xe0A\x03R\astyleId\x12-\n" +
-	"\x10json_style_sheet\x18\x06 \x01(\tB\x03\xe0A\x01R\x0ejsonStyleSheet\x12E\n" +
-	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03H\x00R\n" +
-	"createTime\x88\x01\x01\x12E\n" +
-	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03H\x01R\n" +
+	"\f_update_time\"\xf4\x03\n" +
+	"\vStyleConfig\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\x1f\n" +
+	"\bstyle_id\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\astyleId\x12.\n" +
+	"\x10json_style_sheet\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x0ejsonStyleSheet\x12F\n" +
+	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03H\x00R\n" +
+	"createTime\x88\x01\x01\x12F\n" +
+	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03H\x01R\n" +
 	"updateTime\x88\x01\x01:x\xeaAu\n" +
 	"(mapmanagement.googleapis.com/StyleConfig\x12.projects/{project}/styleConfigs/{style_config}*\fstyleConfigs2\vstyleConfigB\x0e\n" +
 	"\f_create_timeB\x0e\n" +
-	"\f_update_time\"\xbe\x01\n" +
-	"\x18CreateStyleConfigRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12U\n" +
-	"\fstyle_config\x18\x02 \x01(\v2-.google.maps.mapmanagement.v2beta.StyleConfigB\x03\xe0A\x02R\vstyleConfig\"]\n" +
-	"\x15GetStyleConfigRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(mapmanagement.googleapis.com/StyleConfigR\x04name\"\x95\x02\n" +
-	"\x17ListStyleConfigsRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\f_update_time\"\xc0\x01\n" +
+	"\x18CreateStyleConfigRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12V\n" +
+	"\fstyle_config\x18\x02 \x01(\v2-.google.maps.mapmanagement.v2beta.StyleConfigB\x04\xe2A\x01\x02R\vstyleConfig\"^\n" +
+	"\x15GetStyleConfigRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(mapmanagement.googleapis.com/StyleConfigR\x04name\"\x9a\x02\n" +
+	"\x17ListStyleConfigsRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12J\n" +
-	"\x04view\x18\x05 \x01(\x0e21.google.maps.mapmanagement.v2beta.StyleConfigViewB\x03\xe0A\x01R\x04view\"\x96\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12K\n" +
+	"\x04view\x18\x05 \x01(\x0e21.google.maps.mapmanagement.v2beta.StyleConfigViewB\x04\xe2A\x01\x01R\x04view\"\x96\x01\n" +
 	"\x18ListStyleConfigsResponse\x12R\n" +
 	"\rstyle_configs\x18\x01 \x03(\v2-.google.maps.mapmanagement.v2beta.StyleConfigR\fstyleConfigs\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb3\x01\n" +
-	"\x18UpdateStyleConfigRequest\x12U\n" +
-	"\fstyle_config\x18\x01 \x01(\v2-.google.maps.mapmanagement.v2beta.StyleConfigB\x03\xe0A\x02R\vstyleConfig\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"`\n" +
-	"\x18DeleteStyleConfigRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(mapmanagement.googleapis.com/StyleConfigR\x04name\"\x99\a\n" +
-	"\x10MapContextConfig\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x12M\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb5\x01\n" +
+	"\x18UpdateStyleConfigRequest\x12V\n" +
+	"\fstyle_config\x18\x01 \x01(\v2-.google.maps.mapmanagement.v2beta.StyleConfigB\x04\xe2A\x01\x02R\vstyleConfig\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"a\n" +
+	"\x18DeleteStyleConfigRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(mapmanagement.googleapis.com/StyleConfigR\x04name\"\x9f\a\n" +
+	"\x10MapContextConfig\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\bR\x04name\x12N\n" +
 	"\n" +
-	"map_config\x18\x02 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&mapmanagement.googleapis.com/MapConfigR\tmapConfig\x12S\n" +
-	"\fstyle_config\x18\x03 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(mapmanagement.googleapis.com/StyleConfigR\vstyleConfig\x12F\n" +
-	"\adataset\x18\x04 \x03(\tB,\xe0A\x01\xfaA&\n" +
-	"$mapmanagement.googleapis.com/DatasetR\adataset\x12\x19\n" +
-	"\x05alias\x18\x05 \x01(\tB\x03\xe0A\x01R\x05alias\x12e\n" +
-	"\fmap_variants\x18\x06 \x03(\x0e2=.google.maps.mapmanagement.v2beta.MapContextConfig.MapVariantB\x03\xe0A\x02R\vmapVariants\x12@\n" +
-	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"map_config\x18\x02 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&mapmanagement.googleapis.com/MapConfigR\tmapConfig\x12T\n" +
+	"\fstyle_config\x18\x03 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(mapmanagement.googleapis.com/StyleConfigR\vstyleConfig\x12G\n" +
+	"\adataset\x18\x04 \x03(\tB-\xe2A\x01\x01\xfaA&\n" +
+	"$mapmanagement.googleapis.com/DatasetR\adataset\x12\x1a\n" +
+	"\x05alias\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x05alias\x12f\n" +
+	"\fmap_variants\x18\x06 \x03(\x0e2=.google.maps.mapmanagement.v2beta.MapContextConfig.MapVariantB\x04\xe2A\x01\x02R\vmapVariants\x12A\n" +
+	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\"\xc8\x01\n" +
 	"\n" +
 	"MapVariant\x12\v\n" +
@@ -1904,29 +1904,29 @@ const file_google_maps_mapmanagement_v2beta_map_management_service_proto_rawDesc
 	"ABSTRACT3D\x10\t\x12\x14\n" +
 	"\x10PHOTOREALISTIC3D\x10\n" +
 	":\xab\x01\xeaA\xa7\x01\n" +
-	"-mapmanagement.googleapis.com/MapContextConfig\x12Qprojects/{project}/mapConfigs/{map_config}/mapContextConfigs/{map_context_config}*\x11mapContextConfigs2\x10mapContextConfig\"\xce\x01\n" +
-	"\x1dCreateMapContextConfigRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&mapmanagement.googleapis.com/MapConfigR\x06parent\x12e\n" +
-	"\x12map_context_config\x18\x02 \x01(\v22.google.maps.mapmanagement.v2beta.MapContextConfigB\x03\xe0A\x02R\x10mapContextConfig\"g\n" +
-	"\x1aGetMapContextConfigRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-mapmanagement.googleapis.com/MapContextConfigR\x04name\"\xac\x01\n" +
-	"\x1cListMapContextConfigsRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&mapmanagement.googleapis.com/MapConfigR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"-mapmanagement.googleapis.com/MapContextConfig\x12Qprojects/{project}/mapConfigs/{map_config}/mapContextConfigs/{map_context_config}*\x11mapContextConfigs2\x10mapContextConfig\"\xd0\x01\n" +
+	"\x1dCreateMapContextConfigRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&mapmanagement.googleapis.com/MapConfigR\x06parent\x12f\n" +
+	"\x12map_context_config\x18\x02 \x01(\v22.google.maps.mapmanagement.v2beta.MapContextConfigB\x04\xe2A\x01\x02R\x10mapContextConfig\"h\n" +
+	"\x1aGetMapContextConfigRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-mapmanagement.googleapis.com/MapContextConfigR\x04name\"\xaf\x01\n" +
+	"\x1cListMapContextConfigsRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&mapmanagement.googleapis.com/MapConfigR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xab\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xab\x01\n" +
 	"\x1dListMapContextConfigsResponse\x12b\n" +
 	"\x13map_context_configs\x18\x01 \x03(\v22.google.maps.mapmanagement.v2beta.MapContextConfigR\x11mapContextConfigs\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xc8\x01\n" +
-	"\x1dUpdateMapContextConfigRequest\x12e\n" +
-	"\x12map_context_config\x18\x01 \x01(\v22.google.maps.mapmanagement.v2beta.MapContextConfigB\x03\xe0A\x02R\x10mapContextConfig\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"j\n" +
-	"\x1dDeleteMapContextConfigRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xca\x01\n" +
+	"\x1dUpdateMapContextConfigRequest\x12f\n" +
+	"\x12map_context_config\x18\x01 \x01(\v22.google.maps.mapmanagement.v2beta.MapContextConfigB\x04\xe2A\x01\x02R\x10mapContextConfig\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"k\n" +
+	"\x1dDeleteMapContextConfigRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
 	"-mapmanagement.googleapis.com/MapContextConfigR\x04name*Q\n" +
 	"\x0fStyleConfigView\x12!\n" +
 	"\x1dSTYLE_CONFIG_VIEW_UNSPECIFIED\x10\x00\x12\b\n" +

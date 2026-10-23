@@ -1038,35 +1038,35 @@ var File_google_cloud_oracledatabase_v1_database_proto protoreflect.FileDescript
 
 const file_google_cloud_oracledatabase_v1_database_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/oracledatabase/v1/database.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a7google/cloud/oracledatabase/v1/pluggable_database.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bgoogle/type/dayofweek.proto\"\xea\n" +
+	"-google/cloud/oracledatabase/v1/database.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a7google/cloud/oracledatabase/v1/pluggable_database.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bgoogle/type/dayofweek.proto\"\xfc\n" +
 	"\n" +
-	"\bDatabase\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1c\n" +
-	"\adb_name\x18\x02 \x01(\tB\x03\xe0A\x01R\x06dbName\x12)\n" +
-	"\x0edb_unique_name\x18\x03 \x01(\tB\x03\xe0A\x01R\fdbUniqueName\x12*\n" +
-	"\x0eadmin_password\x18\x04 \x01(\tB\x03\xe0A\x01R\radminPassword\x12u\n" +
-	"\x1dadmin_password_secret_version\x18\x11 \x01(\tB2\xe0A\x01\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionR\x1aadminPasswordSecretVersion\x123\n" +
-	"\x13tde_wallet_password\x18\x05 \x01(\tB\x03\xe0A\x01R\x11tdeWalletPassword\x12~\n" +
-	"\"tde_wallet_password_secret_version\x18\x12 \x01(\tB2\xe0A\x01\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionR\x1etdeWalletPasswordSecretVersion\x12(\n" +
-	"\rcharacter_set\x18\x06 \x01(\tB\x03\xe0A\x01R\fcharacterSet\x12*\n" +
-	"\x0encharacter_set\x18\a \x01(\tB\x03\xe0A\x01R\rncharacterSet\x12\x1c\n" +
-	"\aoci_url\x18\b \x01(\tB\x03\xe0A\x03R\x06ociUrl\x12@\n" +
-	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12W\n" +
+	"\bDatabase\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x1d\n" +
+	"\adb_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06dbName\x12*\n" +
+	"\x0edb_unique_name\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\fdbUniqueName\x12+\n" +
+	"\x0eadmin_password\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\radminPassword\x12v\n" +
+	"\x1dadmin_password_secret_version\x18\x11 \x01(\tB3\xe2A\x01\x01\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionR\x1aadminPasswordSecretVersion\x124\n" +
+	"\x13tde_wallet_password\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x11tdeWalletPassword\x12\x7f\n" +
+	"\"tde_wallet_password_secret_version\x18\x12 \x01(\tB3\xe2A\x01\x01\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionR\x1etdeWalletPasswordSecretVersion\x12)\n" +
+	"\rcharacter_set\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\fcharacterSet\x12+\n" +
+	"\x0encharacter_set\x18\a \x01(\tB\x04\xe2A\x01\x01R\rncharacterSet\x12\x1d\n" +
+	"\aoci_url\x18\b \x01(\tB\x04\xe2A\x01\x03R\x06ociUrl\x12A\n" +
+	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12X\n" +
 	"\n" +
 	"properties\x18\n" +
-	" \x01(\v22.google.cloud.oracledatabase.v1.DatabasePropertiesB\x03\xe0A\x01R\n" +
-	"properties\x12$\n" +
-	"\vdatabase_id\x18\v \x01(\tB\x03\xe0A\x01R\n" +
-	"databaseId\x12%\n" +
-	"\fdb_home_name\x18\f \x01(\tB\x03\xe0A\x01R\n" +
-	"dbHomeName\x12+\n" +
-	"\x0fgcp_oracle_zone\x18\r \x01(\tB\x03\xe0A\x03R\rgcpOracleZone\x12v\n" +
-	"\x13ops_insights_status\x18\x0e \x01(\x0e2A.google.cloud.oracledatabase.v1.Database.OperationsInsightsStatusB\x03\xe0A\x03R\x11opsInsightsStatus\x127\n" +
-	"\x15pluggable_database_id\x18\x0f \x01(\tB\x03\xe0A\x01R\x13pluggableDatabaseId\x12;\n" +
-	"\x17pluggable_database_name\x18\x10 \x01(\tB\x03\xe0A\x01R\x15pluggableDatabaseName\"\xac\x01\n" +
+	" \x01(\v22.google.cloud.oracledatabase.v1.DatabasePropertiesB\x04\xe2A\x01\x01R\n" +
+	"properties\x12%\n" +
+	"\vdatabase_id\x18\v \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"databaseId\x12&\n" +
+	"\fdb_home_name\x18\f \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"dbHomeName\x12,\n" +
+	"\x0fgcp_oracle_zone\x18\r \x01(\tB\x04\xe2A\x01\x03R\rgcpOracleZone\x12w\n" +
+	"\x13ops_insights_status\x18\x0e \x01(\x0e2A.google.cloud.oracledatabase.v1.Database.OperationsInsightsStatusB\x04\xe2A\x01\x03R\x11opsInsightsStatus\x128\n" +
+	"\x15pluggable_database_id\x18\x0f \x01(\tB\x04\xe2A\x01\x01R\x13pluggableDatabaseId\x12<\n" +
+	"\x17pluggable_database_name\x18\x10 \x01(\tB\x04\xe2A\x01\x01R\x15pluggableDatabaseName\"\xac\x01\n" +
 	"\x18OperationsInsightsStatus\x12*\n" +
 	"&OPERATIONS_INSIGHTS_STATUS_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bENABLING\x10\x01\x12\v\n" +
@@ -1075,13 +1075,13 @@ const file_google_cloud_oracledatabase_v1_database_proto_rawDesc = "" +
 	"\vNOT_ENABLED\x10\x04\x12\x13\n" +
 	"\x0fFAILED_ENABLING\x10\x05\x12\x14\n" +
 	"\x10FAILED_DISABLING\x10\x06:~\xeaA{\n" +
-	"&oracledatabase.googleapis.com/Database\x12<projects/{project}/locations/{location}/databases/{database}*\tdatabases2\bdatabase\"\xe6\x04\n" +
-	"\x12DatabaseProperties\x12d\n" +
-	"\x05state\x18\x01 \x01(\x0e2I.google.cloud.oracledatabase.v1.DatabaseProperties.DatabaseLifecycleStateB\x03\xe0A\x03R\x05state\x12\"\n" +
+	"&oracledatabase.googleapis.com/Database\x12<projects/{project}/locations/{location}/databases/{database}*\tdatabases2\bdatabase\"\xea\x04\n" +
+	"\x12DatabaseProperties\x12e\n" +
+	"\x05state\x18\x01 \x01(\x0e2I.google.cloud.oracledatabase.v1.DatabaseProperties.DatabaseLifecycleStateB\x04\xe2A\x01\x03R\x05state\x12#\n" +
 	"\n" +
-	"db_version\x18\x02 \x01(\tB\x03\xe0A\x02R\tdbVersion\x12]\n" +
-	"\x10db_backup_config\x18\x03 \x01(\v2..google.cloud.oracledatabase.v1.DbBackupConfigB\x03\xe0A\x01R\x0edbBackupConfig\x12{\n" +
-	"\x1adatabase_management_config\x18\x04 \x01(\v28.google.cloud.oracledatabase.v1.DatabaseManagementConfigB\x03\xe0A\x03R\x18databaseManagementConfig\"\xe9\x01\n" +
+	"db_version\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tdbVersion\x12^\n" +
+	"\x10db_backup_config\x18\x03 \x01(\v2..google.cloud.oracledatabase.v1.DbBackupConfigB\x04\xe2A\x01\x01R\x0edbBackupConfig\x12|\n" +
+	"\x1adatabase_management_config\x18\x04 \x01(\v28.google.cloud.oracledatabase.v1.DatabaseManagementConfigB\x04\xe2A\x01\x03R\x18databaseManagementConfig\"\xe9\x01\n" +
 	"\x16DatabaseLifecycleState\x12(\n" +
 	"$DATABASE_LIFECYCLE_STATE_UNSPECIFIED\x10\x00\x12\x10\n" +
 	"\fPROVISIONING\x10\x01\x12\r\n" +
@@ -1097,18 +1097,18 @@ const file_google_cloud_oracledatabase_v1_database_proto_rawDesc = "" +
 	"\x0eRESTORE_FAILED\x10\t\x12\n" +
 	"\n" +
 	"\x06FAILED\x10\n" +
-	"\"\xc2\n" +
+	"\"\xca\n" +
 	"\n" +
-	"\x0eDbBackupConfig\x123\n" +
-	"\x13auto_backup_enabled\x18\x01 \x01(\bB\x03\xe0A\x01R\x11autoBackupEnabled\x12\x8a\x01\n" +
-	"\x1abackup_destination_details\x18\x02 \x03(\v2G.google.cloud.oracledatabase.v1.DbBackupConfig.BackupDestinationDetailsB\x03\xe0A\x01R\x18backupDestinationDetails\x127\n" +
-	"\x15retention_period_days\x18\x03 \x01(\x05B\x03\xe0A\x01R\x13retentionPeriodDays\x12~\n" +
-	"\x16backup_deletion_policy\x18\x04 \x01(\x0e2C.google.cloud.oracledatabase.v1.DbBackupConfig.BackupDeletionPolicyB\x03\xe0A\x01R\x14backupDeletionPolicy\x12L\n" +
-	"\x14auto_full_backup_day\x18\x05 \x01(\x0e2\x16.google.type.DayOfWeekB\x03\xe0A\x01R\x11autoFullBackupDay\x12w\n" +
-	"\x17auto_full_backup_window\x18\x06 \x01(\x0e2;.google.cloud.oracledatabase.v1.DbBackupConfig.BackupWindowB\x03\xe0A\x01R\x14autoFullBackupWindow\x12\x85\x01\n" +
-	"\x1eauto_incremental_backup_window\x18\a \x01(\x0e2;.google.cloud.oracledatabase.v1.DbBackupConfig.BackupWindowB\x03\xe0A\x01R\x1bautoIncrementalBackupWindow\x1ay\n" +
-	"\x18BackupDestinationDetails\x12]\n" +
-	"\x04type\x18\x01 \x01(\x0e2D.google.cloud.oracledatabase.v1.DbBackupConfig.BackupDestinationTypeB\x03\xe0A\x01R\x04type\"\x88\x01\n" +
+	"\x0eDbBackupConfig\x124\n" +
+	"\x13auto_backup_enabled\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x11autoBackupEnabled\x12\x8b\x01\n" +
+	"\x1abackup_destination_details\x18\x02 \x03(\v2G.google.cloud.oracledatabase.v1.DbBackupConfig.BackupDestinationDetailsB\x04\xe2A\x01\x01R\x18backupDestinationDetails\x128\n" +
+	"\x15retention_period_days\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\x13retentionPeriodDays\x12\x7f\n" +
+	"\x16backup_deletion_policy\x18\x04 \x01(\x0e2C.google.cloud.oracledatabase.v1.DbBackupConfig.BackupDeletionPolicyB\x04\xe2A\x01\x01R\x14backupDeletionPolicy\x12M\n" +
+	"\x14auto_full_backup_day\x18\x05 \x01(\x0e2\x16.google.type.DayOfWeekB\x04\xe2A\x01\x01R\x11autoFullBackupDay\x12x\n" +
+	"\x17auto_full_backup_window\x18\x06 \x01(\x0e2;.google.cloud.oracledatabase.v1.DbBackupConfig.BackupWindowB\x04\xe2A\x01\x01R\x14autoFullBackupWindow\x12\x86\x01\n" +
+	"\x1eauto_incremental_backup_window\x18\a \x01(\x0e2;.google.cloud.oracledatabase.v1.DbBackupConfig.BackupWindowB\x04\xe2A\x01\x01R\x1bautoIncrementalBackupWindow\x1az\n" +
+	"\x18BackupDestinationDetails\x12^\n" +
+	"\x04type\x18\x01 \x01(\x0e2D.google.cloud.oracledatabase.v1.DbBackupConfig.BackupDestinationTypeB\x04\xe2A\x01\x01R\x04type\"\x88\x01\n" +
 	"\x15BackupDestinationType\x12'\n" +
 	"#BACKUP_DESTINATION_TYPE_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03NFS\x10\x01\x12\x16\n" +
@@ -1137,16 +1137,16 @@ const file_google_cloud_oracledatabase_v1_database_proto_rawDesc = "" +
 	"\x14BackupDeletionPolicy\x12&\n" +
 	"\"BACKUP_DELETION_POLICY_UNSPECIFIED\x10\x00\x12\x16\n" +
 	"\x12DELETE_IMMEDIATELY\x10\x01\x12!\n" +
-	"\x1dDELETE_AFTER_RETENTION_PERIOD\x10\x02\"X\n" +
-	"\x12GetDatabaseRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&oracledatabase.googleapis.com/DatabaseR\x04name\"\xc1\x01\n" +
-	"\x14ListDatabasesRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&oracledatabase.googleapis.com/DatabaseR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x1dDELETE_AFTER_RETENTION_PERIOD\x10\x02\"Y\n" +
+	"\x12GetDatabaseRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&oracledatabase.googleapis.com/DatabaseR\x04name\"\xc5\x01\n" +
+	"\x14ListDatabasesRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\x12&oracledatabase.googleapis.com/DatabaseR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\x87\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x87\x01\n" +
 	"\x15ListDatabasesResponse\x12F\n" +
 	"\tdatabases\x18\x01 \x03(\v2(.google.cloud.oracledatabase.v1.DatabaseR\tdatabases\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageTokenB\xe7\x01\n" +

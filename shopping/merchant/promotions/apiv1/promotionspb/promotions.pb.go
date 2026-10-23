@@ -459,38 +459,38 @@ var File_google_shopping_merchant_promotions_v1_promotions_proto protoreflect.Fi
 
 const file_google_shopping_merchant_promotions_v1_promotions_proto_rawDesc = "" +
 	"\n" +
-	"7google/shopping/merchant/promotions/v1/promotions.proto\x12&google.shopping.merchant.promotions.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a>google/shopping/merchant/promotions/v1/promotions_common.proto\x1a google/shopping/type/types.proto\"\x89\x06\n" +
-	"\tPromotion\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fpromotion_id\x18\x02 \x01(\tB\x03\xe0A\x02R\vpromotionId\x12.\n" +
-	"\x10content_language\x18\x03 \x01(\tB\x03\xe0A\x02R\x0fcontentLanguage\x12*\n" +
-	"\x0etarget_country\x18\x04 \x01(\tB\x03\xe0A\x02R\rtargetCountry\x12m\n" +
-	"\x12redemption_channel\x18\x05 \x03(\x0e29.google.shopping.merchant.promotions.v1.RedemptionChannelB\x03\xe0A\x02R\x11redemptionChannel\x12$\n" +
-	"\vdata_source\x18\x06 \x01(\tB\x03\xe0A\x03R\n" +
-	"dataSource\x12W\n" +
+	"7google/shopping/merchant/promotions/v1/promotions.proto\x12&google.shopping.merchant.promotions.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a>google/shopping/merchant/promotions/v1/promotions_common.proto\x1a google/shopping/type/types.proto\"\x93\x06\n" +
+	"\tPromotion\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fpromotion_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vpromotionId\x12/\n" +
+	"\x10content_language\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x0fcontentLanguage\x12+\n" +
+	"\x0etarget_country\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\rtargetCountry\x12n\n" +
+	"\x12redemption_channel\x18\x05 \x03(\x0e29.google.shopping.merchant.promotions.v1.RedemptionChannelB\x04\xe2A\x01\x02R\x11redemptionChannel\x12%\n" +
+	"\vdata_source\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"dataSource\x12X\n" +
 	"\n" +
-	"attributes\x18\a \x01(\v22.google.shopping.merchant.promotions.v1.AttributesB\x03\xe0A\x01R\n" +
-	"attributes\x12W\n" +
-	"\x11custom_attributes\x18\b \x03(\v2%.google.shopping.type.CustomAttributeB\x03\xe0A\x01R\x10customAttributes\x12g\n" +
-	"\x10promotion_status\x18\t \x01(\v27.google.shopping.merchant.promotions.v1.PromotionStatusB\x03\xe0A\x03R\x0fpromotionStatus\x12/\n" +
+	"attributes\x18\a \x01(\v22.google.shopping.merchant.promotions.v1.AttributesB\x04\xe2A\x01\x01R\n" +
+	"attributes\x12X\n" +
+	"\x11custom_attributes\x18\b \x03(\v2%.google.shopping.type.CustomAttributeB\x04\xe2A\x01\x01R\x10customAttributes\x12h\n" +
+	"\x10promotion_status\x18\t \x01(\v27.google.shopping.merchant.promotions.v1.PromotionStatusB\x04\xe2A\x01\x03R\x0fpromotionStatus\x120\n" +
 	"\x0eversion_number\x18\n" +
-	" \x01(\x03B\x03\xe0A\x01H\x00R\rversionNumber\x88\x01\x01:k\xeaAh\n" +
+	" \x01(\x03B\x04\xe2A\x01\x01H\x00R\rversionNumber\x88\x01\x01:k\xeaAh\n" +
 	"$merchantapi.googleapis.com/Promotion\x12)accounts/{account}/promotions/{promotion}*\n" +
 	"promotions2\tpromotionB\x11\n" +
-	"\x0f_version_number\"\xb1\x01\n" +
-	"\x16InsertPromotionRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12T\n" +
-	"\tpromotion\x18\x02 \x01(\v21.google.shopping.merchant.promotions.v1.PromotionB\x03\xe0A\x02R\tpromotion\x12$\n" +
-	"\vdata_source\x18\x03 \x01(\tB\x03\xe0A\x02R\n" +
-	"dataSource\"W\n" +
-	"\x13GetPromotionRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$merchantapi.googleapis.com/PromotionR\x04name\"z\n" +
-	"\x15ListPromotionsRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0f_version_number\"\xb4\x01\n" +
+	"\x16InsertPromotionRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12U\n" +
+	"\tpromotion\x18\x02 \x01(\v21.google.shopping.merchant.promotions.v1.PromotionB\x04\xe2A\x01\x02R\tpromotion\x12%\n" +
+	"\vdata_source\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"dataSource\"X\n" +
+	"\x13GetPromotionRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$merchantapi.googleapis.com/PromotionR\x04name\"}\n" +
+	"\x15ListPromotionsRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x93\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x93\x01\n" +
 	"\x16ListPromotionsResponse\x12Q\n" +
 	"\n" +
 	"promotions\x18\x01 \x03(\v21.google.shopping.merchant.promotions.v1.PromotionR\n" +

@@ -1364,9 +1364,9 @@ var File_google_cloud_baremetalsolution_v2_network_proto protoreflect.FileDescri
 
 const file_google_cloud_baremetalsolution_v2_network_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/baremetalsolution/v2/network.proto\x12!google.cloud.baremetalsolution.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\"\xca\b\n" +
-	"\aNetwork\x12\x17\n" +
-	"\x04name\x18\x05 \x01(\tB\x03\xe0A\x03R\x04name\x12\x0e\n" +
+	"/google/cloud/baremetalsolution/v2/network.proto\x12!google.cloud.baremetalsolution.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\"\xce\b\n" +
+	"\aNetwork\x12\x18\n" +
+	"\x04name\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x0e\n" +
 	"\x02id\x18\n" +
 	" \x01(\tR\x02id\x12C\n" +
 	"\x04type\x18\x02 \x01(\x0e2/.google.cloud.baremetalsolution.v2.Network.TypeR\x04type\x12\x1d\n" +
@@ -1380,12 +1380,12 @@ const file_google_cloud_baremetalsolution_v2_network_proto_rawDesc = "" +
 	"\x03vrf\x18\t \x01(\v2&.google.cloud.baremetalsolution.v2.VRFR\x03vrf\x12N\n" +
 	"\x06labels\x18\v \x03(\v26.google.cloud.baremetalsolution.v2.Network.LabelsEntryR\x06labels\x12#\n" +
 	"\rservices_cidr\x18\f \x01(\tR\fservicesCidr\x12`\n" +
-	"\freservations\x18\r \x03(\v2<.google.cloud.baremetalsolution.v2.NetworkAddressReservationR\freservations\x12\x15\n" +
-	"\x03pod\x18\x0e \x01(\tB\x03\xe0A\x03R\x03pod\x12\\\n" +
-	"\fmount_points\x18\x0f \x03(\v24.google.cloud.baremetalsolution.v2.NetworkMountPointB\x03\xe0A\x04R\vmountPoints\x120\n" +
-	"\x14jumbo_frames_enabled\x18\x10 \x01(\bR\x12jumboFramesEnabled\x12\"\n" +
+	"\freservations\x18\r \x03(\v2<.google.cloud.baremetalsolution.v2.NetworkAddressReservationR\freservations\x12\x16\n" +
+	"\x03pod\x18\x0e \x01(\tB\x04\xe2A\x01\x03R\x03pod\x12]\n" +
+	"\fmount_points\x18\x0f \x03(\v24.google.cloud.baremetalsolution.v2.NetworkMountPointB\x04\xe2A\x01\x04R\vmountPoints\x120\n" +
+	"\x14jumbo_frames_enabled\x18\x10 \x01(\bR\x12jumboFramesEnabled\x12#\n" +
 	"\n" +
-	"gateway_ip\x18\x11 \x01(\tB\x03\xe0A\x03R\tgatewayIp\x1a9\n" +
+	"gateway_ip\x18\x11 \x01(\tB\x04\xe2A\x01\x03R\tgatewayIp\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"5\n" +
@@ -1405,7 +1405,7 @@ const file_google_cloud_baremetalsolution_v2_network_proto_rawDesc = "" +
 	"\rstart_address\x18\x01 \x01(\tR\fstartAddress\x12\x1f\n" +
 	"\vend_address\x18\x02 \x01(\tR\n" +
 	"endAddress\x12\x12\n" +
-	"\x04note\x18\x03 \x01(\tR\x04note\"\xee\x05\n" +
+	"\x04note\x18\x03 \x01(\tR\x04note\"\xf1\x05\n" +
 	"\x03VRF\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12B\n" +
 	"\x05state\x18\x05 \x01(\x0e2,.google.cloud.baremetalsolution.v2.VRF.StateR\x05state\x12O\n" +
@@ -1413,18 +1413,18 @@ const file_google_cloud_baremetalsolution_v2_network_proto_rawDesc = "" +
 	"qos_policy\x18\x06 \x01(\v20.google.cloud.baremetalsolution.v2.VRF.QosPolicyR\tqosPolicy\x12`\n" +
 	"\x10vlan_attachments\x18\a \x03(\v25.google.cloud.baremetalsolution.v2.VRF.VlanAttachmentR\x0fvlanAttachments\x1a2\n" +
 	"\tQosPolicy\x12%\n" +
-	"\x0ebandwidth_gbps\x18\x01 \x01(\x01R\rbandwidthGbps\x1a\xe4\x02\n" +
+	"\x0ebandwidth_gbps\x18\x01 \x01(\x01R\rbandwidthGbps\x1a\xe7\x02\n" +
 	"\x0eVlanAttachment\x12 \n" +
 	"\fpeer_vlan_id\x18\x01 \x01(\x03R\n" +
 	"peerVlanId\x12\x17\n" +
 	"\apeer_ip\x18\x02 \x01(\tR\x06peerIp\x12\x1b\n" +
-	"\trouter_ip\x18\x03 \x01(\tR\brouterIp\x12$\n" +
-	"\vpairing_key\x18\x04 \x01(\tB\x03\xe0A\x04R\n" +
+	"\trouter_ip\x18\x03 \x01(\tR\brouterIp\x12%\n" +
+	"\vpairing_key\x18\x04 \x01(\tB\x04\xe2A\x01\x04R\n" +
 	"pairingKey\x12O\n" +
 	"\n" +
-	"qos_policy\x18\x05 \x01(\v20.google.cloud.baremetalsolution.v2.VRF.QosPolicyR\tqosPolicy\x12\x13\n" +
-	"\x02id\x18\x06 \x01(\tB\x03\xe0A\x05R\x02id\x12n\n" +
-	"\x17interconnect_attachment\x18\a \x01(\tB5\xe0A\x01\xfaA/\n" +
+	"qos_policy\x18\x05 \x01(\v20.google.cloud.baremetalsolution.v2.VRF.QosPolicyR\tqosPolicy\x12\x14\n" +
+	"\x02id\x18\x06 \x01(\tB\x04\xe2A\x01\x05R\x02id\x12o\n" +
+	"\x17interconnect_attachment\x18\a \x01(\tB6\xe2A\x01\x01\xfaA/\n" +
 	"-compute.googleapis.com/InterconnectAttachmentR\x16interconnectAttachment\"A\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\x10\n" +
@@ -1440,12 +1440,12 @@ const file_google_cloud_baremetalsolution_v2_network_proto_rawDesc = "" +
 	"ip_address\x18\x02 \x01(\tR\tipAddress\x12'\n" +
 	"\x0fdefault_gateway\x18\x03 \x01(\bR\x0edefaultGateway\x12R\n" +
 	"\fnetwork_type\x18\x04 \x01(\x0e2/.google.cloud.baremetalsolution.v2.Network.TypeR\vnetworkType\x12\x0e\n" +
-	"\x02id\x18\x05 \x01(\tR\x02id\"Y\n" +
-	"\x11GetNetworkRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(baremetalsolution.googleapis.com/NetworkR\x04name\"\xac\x01\n" +
-	"\x13ListNetworksRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x02id\x18\x05 \x01(\tR\x02id\"Z\n" +
+	"\x11GetNetworkRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(baremetalsolution.googleapis.com/NetworkR\x04name\"\xad\x01\n" +
+	"\x13ListNetworksRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -1454,16 +1454,16 @@ const file_google_cloud_baremetalsolution_v2_network_proto_rawDesc = "" +
 	"\x14ListNetworksResponse\x12F\n" +
 	"\bnetworks\x18\x01 \x03(\v2*.google.cloud.baremetalsolution.v2.NetworkR\bnetworks\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\x9e\x01\n" +
-	"\x14UpdateNetworkRequest\x12I\n" +
-	"\anetwork\x18\x01 \x01(\v2*.google.cloud.baremetalsolution.v2.NetworkB\x03\xe0A\x02R\anetwork\x12;\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\x9f\x01\n" +
+	"\x14UpdateNetworkRequest\x12J\n" +
+	"\anetwork\x18\x01 \x01(\v2*.google.cloud.baremetalsolution.v2.NetworkB\x04\xe2A\x01\x02R\anetwork\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"updateMask\"o\n" +
 	"\fNetworkUsage\x12D\n" +
 	"\anetwork\x18\x01 \x01(\v2*.google.cloud.baremetalsolution.v2.NetworkR\anetwork\x12\x19\n" +
-	"\bused_ips\x18\x02 \x03(\tR\ausedIps\"`\n" +
-	"\x17ListNetworkUsageRequest\x12E\n" +
-	"\blocation\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\bused_ips\x18\x02 \x03(\tR\ausedIps\"a\n" +
+	"\x17ListNetworkUsageRequest\x12F\n" +
+	"\blocation\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\blocation\"g\n" +
 	"\x18ListNetworkUsageResponse\x12K\n" +
 	"\bnetworks\x18\x01 \x03(\v2/.google.cloud.baremetalsolution.v2.NetworkUsageR\bnetworks\"\xd4\x01\n" +
@@ -1473,11 +1473,11 @@ const file_google_cloud_baremetalsolution_v2_network_proto_rawDesc = "" +
 	"\x11logical_interface\x18\x02 \x01(\tR\x10logicalInterface\x12'\n" +
 	"\x0fdefault_gateway\x18\x03 \x01(\bR\x0edefaultGateway\x12\x1d\n" +
 	"\n" +
-	"ip_address\x18\x04 \x01(\tR\tipAddress\"\x87\x01\n" +
-	"\x14RenameNetworkRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(baremetalsolution.googleapis.com/NetworkR\x04name\x12)\n" +
-	"\x0enew_network_id\x18\x02 \x01(\tB\x03\xe0A\x02R\fnewNetworkIdB\x85\x03\xeaA\x86\x01\n" +
+	"ip_address\x18\x04 \x01(\tR\tipAddress\"\x89\x01\n" +
+	"\x14RenameNetworkRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(baremetalsolution.googleapis.com/NetworkR\x04name\x12*\n" +
+	"\x0enew_network_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\fnewNetworkIdB\x85\x03\xeaA\x86\x01\n" +
 	"-compute.googleapis.com/InterconnectAttachment\x12Uprojects/{project}/regions/{region}/interconnectAttachments/{interconnect_attachment}\n" +
 	"%com.google.cloud.baremetalsolution.v2B\fNetworkProtoP\x01ZScloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb;baremetalsolutionpb\xaa\x02!Google.Cloud.BareMetalSolution.V2\xca\x02!Google\\Cloud\\BareMetalSolution\\V2\xea\x02$Google::Cloud::BareMetalSolution::V2b\x06proto3"
 

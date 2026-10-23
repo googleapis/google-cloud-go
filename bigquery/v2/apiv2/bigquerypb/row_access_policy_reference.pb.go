@@ -116,14 +116,14 @@ var File_google_cloud_bigquery_v2_row_access_policy_reference_proto protoreflect
 
 const file_google_cloud_bigquery_v2_row_access_policy_reference_proto_rawDesc = "" +
 	"\n" +
-	":google/cloud/bigquery/v2/row_access_policy_reference.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\"\xa4\x01\n" +
-	"\x18RowAccessPolicyReference\x12\"\n" +
+	":google/cloud/bigquery/v2/row_access_policy_reference.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\"\xa8\x01\n" +
+	"\x18RowAccessPolicyReference\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12#\n" +
 	"\n" +
-	"dataset_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tdatasetId\x12\x1e\n" +
-	"\btable_id\x18\x03 \x01(\tB\x03\xe0A\x02R\atableId\x12 \n" +
-	"\tpolicy_id\x18\x04 \x01(\tB\x03\xe0A\x02R\bpolicyIdB|\n" +
+	"dataset_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tdatasetId\x12\x1f\n" +
+	"\btable_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\atableId\x12!\n" +
+	"\tpolicy_id\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\bpolicyIdB|\n" +
 	"\x1ccom.google.cloud.bigquery.v2B\x1dRowAccessPolicyReferenceProtoP\x01Z;cloud.google.com/go/bigquery/v2/apiv2/bigquerypb;bigquerypbb\x06proto3"
 
 var (

@@ -1935,121 +1935,121 @@ var File_google_cloud_chronicle_v1_native_dashboard_proto protoreflect.FileDescr
 
 const file_google_cloud_chronicle_v1_native_dashboard_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/chronicle/v1/native_dashboard.proto\x12\x19google.cloud.chronicle.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a/google/cloud/chronicle/v1/dashboard_chart.proto\x1a/google/cloud/chronicle/v1/dashboard_query.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\x84\x01\n" +
-	"\x1dExportNativeDashboardsRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(chronicle.googleapis.com/NativeDashboardR\x06parent\x12\x19\n" +
-	"\x05names\x18\x02 \x03(\tB\x03\xe0A\x02R\x05names\"\x8e\x01\n" +
+	"0google/cloud/chronicle/v1/native_dashboard.proto\x12\x19google.cloud.chronicle.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a/google/cloud/chronicle/v1/dashboard_chart.proto\x1a/google/cloud/chronicle/v1/dashboard_query.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\x86\x01\n" +
+	"\x1dExportNativeDashboardsRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(chronicle.googleapis.com/NativeDashboardR\x06parent\x12\x1a\n" +
+	"\x05names\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\x05names\"\x8e\x01\n" +
 	"\x1eExportNativeDashboardsResponse\x12]\n" +
 	"\x12inline_destination\x18\x01 \x01(\v2,.google.cloud.chronicle.v1.InlineDestinationH\x00R\x11inlineDestinationB\r\n" +
 	"\vdestination\"s\n" +
 	"\x11InlineDestination\x12^\n" +
 	"\n" +
 	"dashboards\x18\x01 \x03(\v2>.google.cloud.chronicle.v1.NativeDashboardWithChartsAndQueriesR\n" +
-	"dashboards\"\xac\x02\n" +
-	"#NativeDashboardWithChartsAndQueries\x12M\n" +
-	"\tdashboard\x18\x01 \x01(\v2*.google.cloud.chronicle.v1.NativeDashboardB\x03\xe0A\x01R\tdashboard\x12Y\n" +
-	"\x10dashboard_charts\x18\x02 \x03(\v2).google.cloud.chronicle.v1.DashboardChartB\x03\xe0A\x01R\x0fdashboardCharts\x12[\n" +
-	"\x11dashboard_queries\x18\x03 \x03(\v2).google.cloud.chronicle.v1.DashboardQueryB\x03\xe0A\x01R\x10dashboardQueries\"\xc5\x01\n" +
-	"\x1dImportNativeDashboardsRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(chronicle.googleapis.com/NativeDashboardR\x06parent\x12Z\n" +
-	"\x06source\x18\x02 \x01(\v2=.google.cloud.chronicle.v1.ImportNativeDashboardsInlineSourceB\x03\xe0A\x02R\x06source\"\x89\x01\n" +
-	"\"ImportNativeDashboardsInlineSource\x12c\n" +
+	"dashboards\"\xaf\x02\n" +
+	"#NativeDashboardWithChartsAndQueries\x12N\n" +
+	"\tdashboard\x18\x01 \x01(\v2*.google.cloud.chronicle.v1.NativeDashboardB\x04\xe2A\x01\x01R\tdashboard\x12Z\n" +
+	"\x10dashboard_charts\x18\x02 \x03(\v2).google.cloud.chronicle.v1.DashboardChartB\x04\xe2A\x01\x01R\x0fdashboardCharts\x12\\\n" +
+	"\x11dashboard_queries\x18\x03 \x03(\v2).google.cloud.chronicle.v1.DashboardQueryB\x04\xe2A\x01\x01R\x10dashboardQueries\"\xc7\x01\n" +
+	"\x1dImportNativeDashboardsRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(chronicle.googleapis.com/NativeDashboardR\x06parent\x12[\n" +
+	"\x06source\x18\x02 \x01(\v2=.google.cloud.chronicle.v1.ImportNativeDashboardsInlineSourceB\x04\xe2A\x01\x02R\x06source\"\x8a\x01\n" +
+	"\"ImportNativeDashboardsInlineSource\x12d\n" +
 	"\n" +
-	"dashboards\x18\x01 \x03(\v2>.google.cloud.chronicle.v1.NativeDashboardWithChartsAndQueriesB\x03\xe0A\x02R\n" +
-	"dashboards\"n\n" +
-	"\x1eImportNativeDashboardsResponse\x12L\n" +
-	"\aresults\x18\x01 \x03(\v2-.google.cloud.chronicle.v1.ImportExportStatusB\x03\xe0A\x03R\aresults\"c\n" +
+	"dashboards\x18\x01 \x03(\v2>.google.cloud.chronicle.v1.NativeDashboardWithChartsAndQueriesB\x04\xe2A\x01\x02R\n" +
+	"dashboards\"o\n" +
+	"\x1eImportNativeDashboardsResponse\x12M\n" +
+	"\aresults\x18\x01 \x03(\v2-.google.cloud.chronicle.v1.ImportExportStatusB\x04\xe2A\x01\x03R\aresults\"d\n" +
 	"\x12ImportExportStatus\x12\x1c\n" +
-	"\tdashboard\x18\x01 \x01(\tR\tdashboard\x12/\n" +
-	"\x06status\x18\x02 \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x06status\"\x8c\a\n" +
-	"\x0fNativeDashboard\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x03\xfaA*\n" +
-	"(chronicle.googleapis.com/NativeDashboardR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12S\n" +
+	"\tdashboard\x18\x01 \x01(\tR\tdashboard\x120\n" +
+	"\x06status\x18\x02 \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\x06status\"\x98\a\n" +
+	"\x0fNativeDashboard\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x03\xfaA*\n" +
+	"(chronicle.googleapis.com/NativeDashboardR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12T\n" +
 	"\n" +
-	"definition\x18\x04 \x01(\v2..google.cloud.chronicle.v1.DashboardDefinitionB\x03\xe0A\x01R\n" +
-	"definition\x12A\n" +
-	"\x04type\x18\x05 \x01(\x0e2(.google.cloud.chronicle.v1.DashboardTypeB\x03\xe0A\x03R\x04type\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12)\n" +
-	"\x0ecreate_user_id\x18\b \x01(\tB\x03\xe0A\x03R\fcreateUserId\x12)\n" +
-	"\x0eupdate_user_id\x18\t \x01(\tB\x03\xe0A\x03R\fupdateUserId\x12a\n" +
+	"definition\x18\x04 \x01(\v2..google.cloud.chronicle.v1.DashboardDefinitionB\x04\xe2A\x01\x01R\n" +
+	"definition\x12B\n" +
+	"\x04type\x18\x05 \x01(\x0e2(.google.cloud.chronicle.v1.DashboardTypeB\x04\xe2A\x01\x03R\x04type\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12*\n" +
+	"\x0ecreate_user_id\x18\b \x01(\tB\x04\xe2A\x01\x03R\fcreateUserId\x12*\n" +
+	"\x0eupdate_user_id\x18\t \x01(\tB\x04\xe2A\x01\x03R\fupdateUserId\x12b\n" +
 	"\x13dashboard_user_data\x18\n" +
-	" \x01(\v2,.google.cloud.chronicle.v1.DashboardUserDataB\x03\xe0A\x03R\x11dashboardUserData\x12\x17\n" +
-	"\x04etag\x18\v \x01(\tB\x03\xe0A\x01R\x04etag\x12G\n" +
-	"\x06access\x18\f \x01(\x0e2*.google.cloud.chronicle.v1.DashboardAccessB\x03\xe0A\x03R\x06access:\xac\x01\xeaA\xa8\x01\n" +
-	"(chronicle.googleapis.com/NativeDashboard\x12Yprojects/{project}/locations/{location}/instances/{instance}/nativeDashboards/{dashboard}*\x10nativeDashboards2\x0fnativeDashboard\"\xc4\x01\n" +
-	"\x1cCreateNativeDashboardRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(chronicle.googleapis.com/NativeDashboardR\x06parent\x12Z\n" +
-	"\x10native_dashboard\x18\x02 \x01(\v2*.google.cloud.chronicle.v1.NativeDashboardB\x03\xe0A\x02R\x0fnativeDashboard\"\xaa\x01\n" +
-	"\x19GetNativeDashboardRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(chronicle.googleapis.com/NativeDashboardR\x04name\x12G\n" +
-	"\x04view\x18\x02 \x01(\x0e2..google.cloud.chronicle.v1.NativeDashboardViewB\x03\xe0A\x01R\x04view\"\xf6\x01\n" +
-	"\x1bListNativeDashboardsRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(chronicle.googleapis.com/NativeDashboardR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	" \x01(\v2,.google.cloud.chronicle.v1.DashboardUserDataB\x04\xe2A\x01\x03R\x11dashboardUserData\x12\x18\n" +
+	"\x04etag\x18\v \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12H\n" +
+	"\x06access\x18\f \x01(\x0e2*.google.cloud.chronicle.v1.DashboardAccessB\x04\xe2A\x01\x03R\x06access:\xac\x01\xeaA\xa8\x01\n" +
+	"(chronicle.googleapis.com/NativeDashboard\x12Yprojects/{project}/locations/{location}/instances/{instance}/nativeDashboards/{dashboard}*\x10nativeDashboards2\x0fnativeDashboard\"\xc6\x01\n" +
+	"\x1cCreateNativeDashboardRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(chronicle.googleapis.com/NativeDashboardR\x06parent\x12[\n" +
+	"\x10native_dashboard\x18\x02 \x01(\v2*.google.cloud.chronicle.v1.NativeDashboardB\x04\xe2A\x01\x02R\x0fnativeDashboard\"\xac\x01\n" +
+	"\x19GetNativeDashboardRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(chronicle.googleapis.com/NativeDashboardR\x04name\x12H\n" +
+	"\x04view\x18\x02 \x01(\x0e2..google.cloud.chronicle.v1.NativeDashboardViewB\x04\xe2A\x01\x01R\x04view\"\xfa\x01\n" +
+	"\x1bListNativeDashboardsRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(chronicle.googleapis.com/NativeDashboardR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12G\n" +
-	"\x04view\x18\x04 \x01(\x0e2..google.cloud.chronicle.v1.NativeDashboardViewB\x03\xe0A\x01R\x04view\"\x9f\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12H\n" +
+	"\x04view\x18\x04 \x01(\x0e2..google.cloud.chronicle.v1.NativeDashboardViewB\x04\xe2A\x01\x01R\x04view\"\x9f\x01\n" +
 	"\x1cListNativeDashboardsResponse\x12W\n" +
 	"\x11native_dashboards\x18\x01 \x03(\v2*.google.cloud.chronicle.v1.NativeDashboardR\x10nativeDashboards\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xbc\x01\n" +
-	"\x1cUpdateNativeDashboardRequest\x12Z\n" +
-	"\x10native_dashboard\x18\x01 \x01(\v2*.google.cloud.chronicle.v1.NativeDashboardB\x03\xe0A\x02R\x0fnativeDashboard\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\xc3\x01\n" +
-	"\x1fDuplicateNativeDashboardRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(chronicle.googleapis.com/NativeDashboardR\x04name\x12Z\n" +
-	"\x10native_dashboard\x18\x02 \x01(\v2*.google.cloud.chronicle.v1.NativeDashboardB\x03\xe0A\x02R\x0fnativeDashboard\"d\n" +
-	"\x1cDeleteNativeDashboardRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(chronicle.googleapis.com/NativeDashboardR\x04name\"\xf9\x02\n" +
-	"\x0fAddChartRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(chronicle.googleapis.com/NativeDashboardR\x04name\x12W\n" +
-	"\x0fdashboard_query\x18\x02 \x01(\v2).google.cloud.chronicle.v1.DashboardQueryB\x03\xe0A\x01R\x0edashboardQuery\x12W\n" +
-	"\x0fdashboard_chart\x18\x03 \x01(\v2).google.cloud.chronicle.v1.DashboardChartB\x03\xe0A\x02R\x0edashboardChart\x12n\n" +
-	"\fchart_layout\x18\x04 \x01(\v2F.google.cloud.chronicle.v1.DashboardDefinition.ChartConfig.ChartLayoutB\x03\xe0A\x02R\vchartLayout\"\xbd\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xbe\x01\n" +
+	"\x1cUpdateNativeDashboardRequest\x12[\n" +
+	"\x10native_dashboard\x18\x01 \x01(\v2*.google.cloud.chronicle.v1.NativeDashboardB\x04\xe2A\x01\x02R\x0fnativeDashboard\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\xc5\x01\n" +
+	"\x1fDuplicateNativeDashboardRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(chronicle.googleapis.com/NativeDashboardR\x04name\x12[\n" +
+	"\x10native_dashboard\x18\x02 \x01(\v2*.google.cloud.chronicle.v1.NativeDashboardB\x04\xe2A\x01\x02R\x0fnativeDashboard\"e\n" +
+	"\x1cDeleteNativeDashboardRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(chronicle.googleapis.com/NativeDashboardR\x04name\"\xfd\x02\n" +
+	"\x0fAddChartRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(chronicle.googleapis.com/NativeDashboardR\x04name\x12X\n" +
+	"\x0fdashboard_query\x18\x02 \x01(\v2).google.cloud.chronicle.v1.DashboardQueryB\x04\xe2A\x01\x01R\x0edashboardQuery\x12X\n" +
+	"\x0fdashboard_chart\x18\x03 \x01(\v2).google.cloud.chronicle.v1.DashboardChartB\x04\xe2A\x01\x02R\x0edashboardChart\x12o\n" +
+	"\fchart_layout\x18\x04 \x01(\v2F.google.cloud.chronicle.v1.DashboardDefinition.ChartConfig.ChartLayoutB\x04\xe2A\x01\x02R\vchartLayout\"\xbd\x01\n" +
 	"\x10AddChartResponse\x12U\n" +
 	"\x10native_dashboard\x18\x01 \x01(\v2*.google.cloud.chronicle.v1.NativeDashboardR\x0fnativeDashboard\x12R\n" +
-	"\x0fdashboard_chart\x18\x02 \x01(\v2).google.cloud.chronicle.v1.DashboardChartR\x0edashboardChart\"\xa6\x03\n" +
-	"\x10EditChartRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(chronicle.googleapis.com/NativeDashboardR\x04name\x12W\n" +
-	"\x0fdashboard_query\x18\x02 \x01(\v2).google.cloud.chronicle.v1.DashboardQueryB\x03\xe0A\x01R\x0edashboardQuery\x12W\n" +
-	"\x0fdashboard_chart\x18\x03 \x01(\v2).google.cloud.chronicle.v1.DashboardChartB\x03\xe0A\x01R\x0edashboardChart\x12<\n" +
-	"\tedit_mask\x18\x04 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\beditMask\x12\\\n" +
-	"\x11language_features\x18\x05 \x03(\x0e2*.google.cloud.chronicle.v1.LanguageFeatureB\x03\xe0A\x01R\x10languageFeatures\"\xbe\x01\n" +
+	"\x0fdashboard_chart\x18\x02 \x01(\v2).google.cloud.chronicle.v1.DashboardChartR\x0edashboardChart\"\xab\x03\n" +
+	"\x10EditChartRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(chronicle.googleapis.com/NativeDashboardR\x04name\x12X\n" +
+	"\x0fdashboard_query\x18\x02 \x01(\v2).google.cloud.chronicle.v1.DashboardQueryB\x04\xe2A\x01\x01R\x0edashboardQuery\x12X\n" +
+	"\x0fdashboard_chart\x18\x03 \x01(\v2).google.cloud.chronicle.v1.DashboardChartB\x04\xe2A\x01\x01R\x0edashboardChart\x12=\n" +
+	"\tedit_mask\x18\x04 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\beditMask\x12]\n" +
+	"\x11language_features\x18\x05 \x03(\x0e2*.google.cloud.chronicle.v1.LanguageFeatureB\x04\xe2A\x01\x01R\x10languageFeatures\"\xbe\x01\n" +
 	"\x11EditChartResponse\x12U\n" +
 	"\x10native_dashboard\x18\x01 \x01(\v2*.google.cloud.chronicle.v1.NativeDashboardR\x0fnativeDashboard\x12R\n" +
-	"\x0fdashboard_chart\x18\x02 \x01(\v2).google.cloud.chronicle.v1.DashboardChartR\x0edashboardChart\"\xb4\x01\n" +
-	"\x12RemoveChartRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(chronicle.googleapis.com/NativeDashboardR\x04name\x12X\n" +
-	"\x0fdashboard_chart\x18\x02 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'chronicle.googleapis.com/DashboardChartR\x0edashboardChart\"\xb7\x01\n" +
-	"\x15DuplicateChartRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(chronicle.googleapis.com/NativeDashboardR\x04name\x12X\n" +
-	"\x0fdashboard_chart\x18\x02 \x01(\tB/\xe0A\x02\xfaA)\n" +
+	"\x0fdashboard_chart\x18\x02 \x01(\v2).google.cloud.chronicle.v1.DashboardChartR\x0edashboardChart\"\xb6\x01\n" +
+	"\x12RemoveChartRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(chronicle.googleapis.com/NativeDashboardR\x04name\x12Y\n" +
+	"\x0fdashboard_chart\x18\x02 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'chronicle.googleapis.com/DashboardChartR\x0edashboardChart\"\xb9\x01\n" +
+	"\x15DuplicateChartRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(chronicle.googleapis.com/NativeDashboardR\x04name\x12Y\n" +
+	"\x0fdashboard_chart\x18\x02 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
 	"'chronicle.googleapis.com/DashboardChartR\x0edashboardChart\"\xc3\x01\n" +
 	"\x16DuplicateChartResponse\x12U\n" +
 	"\x10native_dashboard\x18\x01 \x01(\v2*.google.cloud.chronicle.v1.NativeDashboardR\x0fnativeDashboard\x12R\n" +
 	"\x0fdashboard_chart\x18\x02 \x01(\v2).google.cloud.chronicle.v1.DashboardChartR\x0edashboardChart\"v\n" +
 	"\x11DashboardUserData\x12D\n" +
 	"\x10last_viewed_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\x0elastViewedTime\x12\x1b\n" +
-	"\tis_pinned\x18\x02 \x01(\bR\bisPinned\"\xd9\x04\n" +
+	"\tis_pinned\x18\x02 \x01(\bR\bisPinned\"\xda\x04\n" +
 	"\x13DashboardDefinition\x12D\n" +
 	"\afilters\x18\x01 \x03(\v2*.google.cloud.chronicle.v1.DashboardFilterR\afilters\x12 \n" +
 	"\vfingerprint\x18\x02 \x01(\tR\vfingerprint\x12R\n" +
-	"\x06charts\x18\x04 \x03(\v2:.google.cloud.chronicle.v1.DashboardDefinition.ChartConfigR\x06charts\x1a\x85\x03\n" +
-	"\vChartConfig\x12X\n" +
-	"\x0fdashboard_chart\x18\x01 \x01(\tB/\xe0A\x03\xfaA)\n" +
+	"\x06charts\x18\x04 \x03(\v2:.google.cloud.chronicle.v1.DashboardDefinition.ChartConfigR\x06charts\x1a\x86\x03\n" +
+	"\vChartConfig\x12Y\n" +
+	"\x0fdashboard_chart\x18\x01 \x01(\tB0\xe2A\x01\x03\xfaA)\n" +
 	"'chronicle.googleapis.com/DashboardChartR\x0edashboardChart\x12i\n" +
 	"\fchart_layout\x18\x02 \x01(\v2F.google.cloud.chronicle.v1.DashboardDefinition.ChartConfig.ChartLayoutR\vchartLayout\x12\x1f\n" +
 	"\vfilters_ids\x18\x04 \x03(\tR\n" +

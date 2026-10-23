@@ -261,20 +261,20 @@ var File_google_cloud_dialogflow_cx_v3_tool_call_proto protoreflect.FileDescript
 
 const file_google_cloud_dialogflow_cx_v3_tool_call_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/dialogflow/cx/v3/tool_call.proto\x12\x1dgoogle.cloud.dialogflow.cx.v3\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xac\x01\n" +
-	"\bToolCall\x12:\n" +
-	"\x04tool\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1edialogflow.googleapis.com/ToolR\x04tool\x12\x1b\n" +
-	"\x06action\x18\x02 \x01(\tB\x03\xe0A\x02R\x06action\x12G\n" +
-	"\x10input_parameters\x18\x03 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x0finputParameters\"\xb0\x02\n" +
-	"\x0eToolCallResult\x12:\n" +
-	"\x04tool\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1edialogflow.googleapis.com/ToolR\x04tool\x12\x1b\n" +
-	"\x06action\x18\x02 \x01(\tB\x03\xe0A\x02R\x06action\x12K\n" +
+	"-google/cloud/dialogflow/cx/v3/tool_call.proto\x12\x1dgoogle.cloud.dialogflow.cx.v3\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xaf\x01\n" +
+	"\bToolCall\x12;\n" +
+	"\x04tool\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1edialogflow.googleapis.com/ToolR\x04tool\x12\x1c\n" +
+	"\x06action\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06action\x12H\n" +
+	"\x10input_parameters\x18\x03 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\x0finputParameters\"\xb3\x02\n" +
+	"\x0eToolCallResult\x12;\n" +
+	"\x04tool\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1edialogflow.googleapis.com/ToolR\x04tool\x12\x1c\n" +
+	"\x06action\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06action\x12K\n" +
 	"\x05error\x18\x03 \x01(\v23.google.cloud.dialogflow.cx.v3.ToolCallResult.ErrorH\x00R\x05error\x12F\n" +
-	"\x11output_parameters\x18\x04 \x01(\v2\x17.google.protobuf.StructH\x00R\x10outputParameters\x1a&\n" +
-	"\x05Error\x12\x1d\n" +
-	"\amessage\x18\x01 \x01(\tB\x03\xe0A\x01R\amessageB\b\n" +
+	"\x11output_parameters\x18\x04 \x01(\v2\x17.google.protobuf.StructH\x00R\x10outputParameters\x1a'\n" +
+	"\x05Error\x12\x1e\n" +
+	"\amessage\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\amessageB\b\n" +
 	"\x06resultB\xb0\x01\n" +
 	"!com.google.cloud.dialogflow.cx.v3B\rToolCallProtoP\x01Z1cloud.google.com/go/dialogflow/cx/apiv3/cxpb;cxpb\xa2\x02\x02DF\xaa\x02\x1dGoogle.Cloud.Dialogflow.Cx.V3\xea\x02!Google::Cloud::Dialogflow::CX::V3b\x06proto3"
 

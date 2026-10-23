@@ -1201,42 +1201,42 @@ const file_google_cloud_gkemulticloud_v1_common_resources_proto_rawDesc = "" +
 	"\n" +
 	"issuer_uri\x18\x01 \x01(\tR\tissuerUri\x12#\n" +
 	"\rworkload_pool\x18\x02 \x01(\tR\fworkloadPool\x12+\n" +
-	"\x11identity_provider\x18\x03 \x01(\tR\x10identityProvider\"C\n" +
-	"\x11MaxPodsConstraint\x12.\n" +
-	"\x11max_pods_per_node\x18\x01 \x01(\x03B\x03\xe0A\x02R\x0emaxPodsPerNode\"\xd5\x02\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12(\n" +
-	"\rstatus_detail\x18\x04 \x01(\tB\x03\xe0A\x03R\fstatusDetail\x12&\n" +
-	"\ferror_detail\x18\x05 \x01(\tB\x03\xe0A\x03R\verrorDetail\x12\x17\n" +
-	"\x04verb\x18\a \x01(\tB\x03\xe0A\x03R\x04verb\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\"\xe6\x01\n" +
-	"\tNodeTaint\x12\x15\n" +
-	"\x03key\x18\x01 \x01(\tB\x03\xe0A\x02R\x03key\x12\x19\n" +
-	"\x05value\x18\x02 \x01(\tB\x03\xe0A\x02R\x05value\x12L\n" +
-	"\x06effect\x18\x03 \x01(\x0e2/.google.cloud.gkemulticloud.v1.NodeTaint.EffectB\x03\xe0A\x02R\x06effect\"Y\n" +
+	"\x11identity_provider\x18\x03 \x01(\tR\x10identityProvider\"D\n" +
+	"\x11MaxPodsConstraint\x12/\n" +
+	"\x11max_pods_per_node\x18\x01 \x01(\x03B\x04\xe2A\x01\x02R\x0emaxPodsPerNode\"\xdc\x02\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12)\n" +
+	"\rstatus_detail\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\fstatusDetail\x12'\n" +
+	"\ferror_detail\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\verrorDetail\x12\x18\n" +
+	"\x04verb\x18\a \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\"\xe9\x01\n" +
+	"\tNodeTaint\x12\x16\n" +
+	"\x03key\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03key\x12\x1a\n" +
+	"\x05value\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05value\x12M\n" +
+	"\x06effect\x18\x03 \x01(\x0e2/.google.cloud.gkemulticloud.v1.NodeTaint.EffectB\x04\xe2A\x01\x02R\x06effect\"Y\n" +
 	"\x06Effect\x12\x16\n" +
 	"\x12EFFECT_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vNO_SCHEDULE\x10\x01\x12\x16\n" +
 	"\x12PREFER_NO_SCHEDULE\x10\x02\x12\x0e\n" +
 	"\n" +
-	"NO_EXECUTE\x10\x03\"\x92\x03\n" +
-	"\x11NodeKubeletConfig\x12W\n" +
-	"&insecure_kubelet_readonly_port_enabled\x18\x01 \x01(\bB\x03\xe0A\x01R\"insecureKubeletReadonlyPortEnabled\x126\n" +
-	"\x12cpu_manager_policy\x18\x02 \x01(\tB\x03\xe0A\x01H\x00R\x10cpuManagerPolicy\x88\x01\x01\x12,\n" +
-	"\rcpu_cfs_quota\x18\x03 \x01(\bB\x03\xe0A\x01H\x01R\vcpuCfsQuota\x88\x01\x01\x129\n" +
-	"\x14cpu_cfs_quota_period\x18\x04 \x01(\tB\x03\xe0A\x01H\x02R\x11cpuCfsQuotaPeriod\x88\x01\x01\x12.\n" +
-	"\x0epod_pids_limit\x18\x05 \x01(\x03B\x03\xe0A\x01H\x03R\fpodPidsLimit\x88\x01\x01B\x15\n" +
+	"NO_EXECUTE\x10\x03\"\x97\x03\n" +
+	"\x11NodeKubeletConfig\x12X\n" +
+	"&insecure_kubelet_readonly_port_enabled\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\"insecureKubeletReadonlyPortEnabled\x127\n" +
+	"\x12cpu_manager_policy\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x00R\x10cpuManagerPolicy\x88\x01\x01\x12-\n" +
+	"\rcpu_cfs_quota\x18\x03 \x01(\bB\x04\xe2A\x01\x01H\x01R\vcpuCfsQuota\x88\x01\x01\x12:\n" +
+	"\x14cpu_cfs_quota_period\x18\x04 \x01(\tB\x04\xe2A\x01\x01H\x02R\x11cpuCfsQuotaPeriod\x88\x01\x01\x12/\n" +
+	"\x0epod_pids_limit\x18\x05 \x01(\x03B\x04\xe2A\x01\x01H\x03R\fpodPidsLimit\x88\x01\x01B\x15\n" +
 	"\x13_cpu_manager_policyB\x10\n" +
 	"\x0e_cpu_cfs_quotaB\x17\n" +
 	"\x15_cpu_cfs_quota_periodB\x11\n" +
-	"\x0f_pod_pids_limit\"K\n" +
-	"\x05Fleet\x12\x1d\n" +
-	"\aproject\x18\x01 \x01(\tB\x03\xe0A\x02R\aproject\x12#\n" +
+	"\x0f_pod_pids_limit\"M\n" +
+	"\x05Fleet\x12\x1e\n" +
+	"\aproject\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\aproject\x12$\n" +
 	"\n" +
-	"membership\x18\x02 \x01(\tB\x03\xe0A\x03R\n" +
+	"membership\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\n" +
 	"membership\"q\n" +
 	"\rLoggingConfig\x12`\n" +
 	"\x10component_config\x18\x01 \x01(\v25.google.cloud.gkemulticloud.v1.LoggingComponentConfigR\x0fcomponentConfig\"\xd4\x01\n" +

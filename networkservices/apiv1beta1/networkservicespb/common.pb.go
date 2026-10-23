@@ -464,28 +464,28 @@ var File_google_cloud_networkservices_v1beta1_common_proto protoreflect.FileDesc
 
 const file_google_cloud_networkservices_v1beta1_common_proto_rawDesc = "" +
 	"\n" +
-	"1google/cloud/networkservices/v1beta1/common.proto\x12$google.cloud.networkservices.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd5\x02\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion\"0\n" +
-	"\x13TrafficPortSelector\x12\x19\n" +
-	"\x05ports\x18\x01 \x03(\tB\x03\xe0A\x01R\x05ports\"\xb6\x05\n" +
+	"1google/cloud/networkservices/v1beta1/common.proto\x12$google.cloud.networkservices.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdc\x02\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"apiVersion\"1\n" +
+	"\x13TrafficPortSelector\x12\x1a\n" +
+	"\x05ports\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\x05ports\"\xb8\x05\n" +
 	"\x0fEndpointMatcher\x12\x82\x01\n" +
-	"\x16metadata_label_matcher\x18\x01 \x01(\v2J.google.cloud.networkservices.v1beta1.EndpointMatcher.MetadataLabelMatcherH\x00R\x14metadataLabelMatcher\x1a\x8d\x04\n" +
+	"\x16metadata_label_matcher\x18\x01 \x01(\v2J.google.cloud.networkservices.v1beta1.EndpointMatcher.MetadataLabelMatcherH\x00R\x14metadataLabelMatcher\x1a\x8f\x04\n" +
 	"\x14MetadataLabelMatcher\x12\xa8\x01\n" +
 	"\x1dmetadata_label_match_criteria\x18\x01 \x01(\x0e2e.google.cloud.networkservices.v1beta1.EndpointMatcher.MetadataLabelMatcher.MetadataLabelMatchCriteriaR\x1ametadataLabelMatchCriteria\x12\x82\x01\n" +
-	"\x0fmetadata_labels\x18\x02 \x03(\v2Y.google.cloud.networkservices.v1beta1.EndpointMatcher.MetadataLabelMatcher.MetadataLabelsR\x0emetadataLabels\x1aZ\n" +
-	"\x0eMetadataLabels\x12\"\n" +
+	"\x0fmetadata_labels\x18\x02 \x03(\v2Y.google.cloud.networkservices.v1beta1.EndpointMatcher.MetadataLabelMatcher.MetadataLabelsR\x0emetadataLabels\x1a\\\n" +
+	"\x0eMetadataLabels\x12#\n" +
 	"\n" +
-	"label_name\x18\x01 \x01(\tB\x03\xe0A\x02R\tlabelName\x12$\n" +
-	"\vlabel_value\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
+	"label_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tlabelName\x12%\n" +
+	"\vlabel_value\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
 	"labelValue\"i\n" +
 	"\x1aMetadataLabelMatchCriteria\x12-\n" +
 	")METADATA_LABEL_MATCH_CRITERIA_UNSPECIFIED\x10\x00\x12\r\n" +

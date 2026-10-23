@@ -604,18 +604,18 @@ var File_google_analytics_admin_v1alpha_subproperty_event_filter_proto protorefl
 
 const file_google_analytics_admin_v1alpha_subproperty_event_filter_proto_rawDesc = "" +
 	"\n" +
-	"=google/analytics/admin/v1alpha/subproperty_event_filter.proto\x12\x1egoogle.analytics.admin.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xc7\x04\n" +
+	"=google/analytics/admin/v1alpha/subproperty_event_filter.proto\x12\x1egoogle.analytics.admin.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xcb\x04\n" +
 	"\x1fSubpropertyEventFilterCondition\x12!\n" +
 	"\vnull_filter\x18\x02 \x01(\bH\x00R\n" +
 	"nullFilter\x12s\n" +
-	"\rstring_filter\x18\x03 \x01(\v2L.google.analytics.admin.v1alpha.SubpropertyEventFilterCondition.StringFilterH\x00R\fstringFilter\x12\"\n" +
+	"\rstring_filter\x18\x03 \x01(\v2L.google.analytics.admin.v1alpha.SubpropertyEventFilterCondition.StringFilterH\x00R\fstringFilter\x12#\n" +
 	"\n" +
-	"field_name\x18\x01 \x01(\tB\x03\xe0A\x02R\tfieldName\x1a\xd9\x02\n" +
-	"\fStringFilter\x12z\n" +
+	"field_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tfieldName\x1a\xdc\x02\n" +
+	"\fStringFilter\x12{\n" +
 	"\n" +
-	"match_type\x18\x01 \x01(\x0e2V.google.analytics.admin.v1alpha.SubpropertyEventFilterCondition.StringFilter.MatchTypeB\x03\xe0A\x02R\tmatchType\x12\x19\n" +
-	"\x05value\x18\x02 \x01(\tB\x03\xe0A\x02R\x05value\x12*\n" +
-	"\x0ecase_sensitive\x18\x03 \x01(\bB\x03\xe0A\x01R\rcaseSensitive\"\x85\x01\n" +
+	"match_type\x18\x01 \x01(\x0e2V.google.analytics.admin.v1alpha.SubpropertyEventFilterCondition.StringFilter.MatchTypeB\x04\xe2A\x01\x02R\tmatchType\x12\x1a\n" +
+	"\x05value\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05value\x12+\n" +
+	"\x0ecase_sensitive\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\rcaseSensitive\"\x85\x01\n" +
 	"\tMatchType\x12\x1a\n" +
 	"\x16MATCH_TYPE_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05EXACT\x10\x01\x12\x0f\n" +
@@ -630,20 +630,20 @@ const file_google_analytics_admin_v1alpha_subproperty_event_filter_proto_rawDesc
 	"\bor_group\x18\x01 \x01(\v2D.google.analytics.admin.v1alpha.SubpropertyEventFilterExpressionListH\x00R\aorGroup\x12i\n" +
 	"\x0enot_expression\x18\x02 \x01(\v2@.google.analytics.admin.v1alpha.SubpropertyEventFilterExpressionH\x00R\rnotExpression\x12l\n" +
 	"\x10filter_condition\x18\x03 \x01(\v2?.google.analytics.admin.v1alpha.SubpropertyEventFilterConditionH\x00R\x0ffilterConditionB\x06\n" +
-	"\x04expr\"\x9f\x01\n" +
-	"$SubpropertyEventFilterExpressionList\x12w\n" +
-	"\x12filter_expressions\x18\x01 \x03(\v2@.google.analytics.admin.v1alpha.SubpropertyEventFilterExpressionB\x06\xe0A\x02\xe0A\x06R\x11filterExpressions\"\xe7\x02\n" +
-	"\x1cSubpropertyEventFilterClause\x12\x80\x01\n" +
-	"\x12filter_clause_type\x18\x01 \x01(\x0e2M.google.analytics.admin.v1alpha.SubpropertyEventFilterClause.FilterClauseTypeB\x03\xe0A\x02R\x10filterClauseType\x12r\n" +
-	"\x11filter_expression\x18\x02 \x01(\v2@.google.analytics.admin.v1alpha.SubpropertyEventFilterExpressionB\x03\xe0A\x02R\x10filterExpression\"P\n" +
+	"\x04expr\"\x9e\x01\n" +
+	"$SubpropertyEventFilterExpressionList\x12v\n" +
+	"\x12filter_expressions\x18\x01 \x03(\v2@.google.analytics.admin.v1alpha.SubpropertyEventFilterExpressionB\x05\xe2A\x02\x02\x06R\x11filterExpressions\"\xe9\x02\n" +
+	"\x1cSubpropertyEventFilterClause\x12\x81\x01\n" +
+	"\x12filter_clause_type\x18\x01 \x01(\x0e2M.google.analytics.admin.v1alpha.SubpropertyEventFilterClause.FilterClauseTypeB\x04\xe2A\x01\x02R\x10filterClauseType\x12s\n" +
+	"\x11filter_expression\x18\x02 \x01(\v2@.google.analytics.admin.v1alpha.SubpropertyEventFilterExpressionB\x04\xe2A\x01\x02R\x10filterExpression\"P\n" +
 	"\x10FilterClauseType\x12\"\n" +
 	"\x1eFILTER_CLAUSE_TYPE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aINCLUDE\x10\x01\x12\v\n" +
-	"\aEXCLUDE\x10\x02\"\xa3\x03\n" +
-	"\x16SubpropertyEventFilter\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x124\n" +
-	"\x11apply_to_property\x18\x02 \x01(\tB\x03\xe0A\x05H\x00R\x0fapplyToProperty\x88\x01\x01\x12k\n" +
-	"\x0efilter_clauses\x18\x03 \x03(\v2<.google.analytics.admin.v1alpha.SubpropertyEventFilterClauseB\x06\xe0A\x02\xe0A\x06R\rfilterClauses:\xb6\x01\xeaA\xb2\x01\n" +
+	"\aEXCLUDE\x10\x02\"\xa4\x03\n" +
+	"\x16SubpropertyEventFilter\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x125\n" +
+	"\x11apply_to_property\x18\x02 \x01(\tB\x04\xe2A\x01\x05H\x00R\x0fapplyToProperty\x88\x01\x01\x12j\n" +
+	"\x0efilter_clauses\x18\x03 \x03(\v2<.google.analytics.admin.v1alpha.SubpropertyEventFilterClauseB\x05\xe2A\x02\x02\x06R\rfilterClauses:\xb6\x01\xeaA\xb2\x01\n" +
 	"4analyticsadmin.googleapis.com/SubpropertyEventFilter\x12Iproperties/{property}/subpropertyEventFilters/{sub_property_event_filter}*\x17subpropertyEventFilters2\x16subpropertyEventFilterB\x14\n" +
 	"\x12_apply_to_propertyB\x83\x01\n" +
 	"\"com.google.analytics.admin.v1alphaB\x1bSubpropertyEventFilterProtoP\x01Z>cloud.google.com/go/analytics/admin/apiv1alpha/adminpb;adminpbb\x06proto3"

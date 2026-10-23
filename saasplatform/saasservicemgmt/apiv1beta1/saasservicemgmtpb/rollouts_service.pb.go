@@ -995,9 +995,9 @@ var File_google_cloud_saasplatform_saasservicemgmt_v1beta1_rollouts_service_prot
 
 const file_google_cloud_saasplatform_saasservicemgmt_v1beta1_rollouts_service_proto_rawDesc = "" +
 	"\n" +
-	"Hgoogle/cloud/saasplatform/saasservicemgmt/v1beta1/rollouts_service.proto\x121google.cloud.saasplatform.saasservicemgmt.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1aJgoogle/cloud/saasplatform/saasservicemgmt/v1beta1/rollouts_resources.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xd1\x01\n" +
-	"\x13ListRolloutsRequest\x12G\n" +
-	"\x06parent\x18\x96N \x01(\tB.\xe0A\x02\xfaA(\x12&saasservicemgmt.googleapis.com/RolloutR\x06parent\x12\x1c\n" +
+	"Hgoogle/cloud/saasplatform/saasservicemgmt/v1beta1/rollouts_service.proto\x121google.cloud.saasplatform.saasservicemgmt.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1aJgoogle/cloud/saasplatform/saasservicemgmt/v1beta1/rollouts_resources.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xd2\x01\n" +
+	"\x13ListRolloutsRequest\x12H\n" +
+	"\x06parent\x18\x96N \x01(\tB/\xe2A\x01\x02\xfaA(\x12&saasservicemgmt.googleapis.com/RolloutR\x06parent\x12\x1c\n" +
 	"\tpage_size\x18\x89R \x01(\x05R\bpageSize\x12\x1e\n" +
 	"\n" +
 	"page_token\x18\x8aR \x01(\tR\tpageToken\x12\x17\n" +
@@ -1006,34 +1006,34 @@ const file_google_cloud_saasplatform_saasservicemgmt_v1beta1_rollouts_service_pr
 	"\x14ListRolloutsResponse\x12W\n" +
 	"\brollouts\x18\x8dR \x03(\v2:.google.cloud.saasplatform.saasservicemgmt.v1beta1.RolloutR\brollouts\x12'\n" +
 	"\x0fnext_page_token\x18\x8eR \x01(\tR\rnextPageToken\x12!\n" +
-	"\vunreachable\x18\x8fR \x03(\tR\vunreachable\"X\n" +
-	"\x11GetRolloutRequest\x12C\n" +
-	"\x04name\x18\x91N \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&saasservicemgmt.googleapis.com/RolloutR\x04name\"\xa6\x02\n" +
-	"\x14CreateRolloutRequest\x12G\n" +
-	"\x06parent\x18\x96N \x01(\tB.\xe0A\x02\xfaA(\x12&saasservicemgmt.googleapis.com/RolloutR\x06parent\x12#\n" +
+	"\vunreachable\x18\x8fR \x03(\tR\vunreachable\"Y\n" +
+	"\x11GetRolloutRequest\x12D\n" +
+	"\x04name\x18\x91N \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&saasservicemgmt.googleapis.com/RolloutR\x04name\"\xa9\x02\n" +
+	"\x14CreateRolloutRequest\x12H\n" +
+	"\x06parent\x18\x96N \x01(\tB/\xe2A\x01\x02\xfaA(\x12&saasservicemgmt.googleapis.com/RolloutR\x06parent\x12$\n" +
 	"\n" +
-	"rollout_id\x18\x87R \x01(\tB\x03\xe0A\x02R\trolloutId\x12Z\n" +
-	"\arollout\x18\x88R \x01(\v2:.google.cloud.saasplatform.saasservicemgmt.v1beta1.RolloutB\x03\xe0A\x02R\arollout\x12$\n" +
+	"rollout_id\x18\x87R \x01(\tB\x04\xe2A\x01\x02R\trolloutId\x12[\n" +
+	"\arollout\x18\x88R \x01(\v2:.google.cloud.saasplatform.saasservicemgmt.v1beta1.RolloutB\x04\xe2A\x01\x02R\arollout\x12$\n" +
 	"\rvalidate_only\x18\x85R \x01(\bR\fvalidateOnly\x12\x1e\n" +
 	"\n" +
-	"request_id\x18\x86R \x01(\tR\trequestId\"\xf6\x01\n" +
-	"\x14UpdateRolloutRequest\x12Z\n" +
-	"\arollout\x18\x88R \x01(\v2:.google.cloud.saasplatform.saasservicemgmt.v1beta1.RolloutB\x03\xe0A\x02R\arollout\x12$\n" +
+	"request_id\x18\x86R \x01(\tR\trequestId\"\xf7\x01\n" +
+	"\x14UpdateRolloutRequest\x12[\n" +
+	"\arollout\x18\x88R \x01(\v2:.google.cloud.saasplatform.saasservicemgmt.v1beta1.RolloutB\x04\xe2A\x01\x02R\arollout\x12$\n" +
 	"\rvalidate_only\x18\x85R \x01(\bR\fvalidateOnly\x12\x1e\n" +
 	"\n" +
 	"request_id\x18\x86R \x01(\tR\trequestId\x12<\n" +
 	"\vupdate_mask\x18\x90R \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"\xb6\x01\n" +
-	"\x14DeleteRolloutRequest\x12C\n" +
-	"\x04name\x18\x91N \x01(\tB.\xe0A\x02\xfaA(\n" +
+	"updateMask\"\xb7\x01\n" +
+	"\x14DeleteRolloutRequest\x12D\n" +
+	"\x04name\x18\x91N \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
 	"&saasservicemgmt.googleapis.com/RolloutR\x04name\x12\x13\n" +
 	"\x04etag\x18\xdaO \x01(\tR\x04etag\x12$\n" +
 	"\rvalidate_only\x18\x85R \x01(\bR\fvalidateOnly\x12\x1e\n" +
 	"\n" +
-	"request_id\x18\x86R \x01(\tR\trequestId\"\xd9\x01\n" +
-	"\x17ListRolloutKindsRequest\x12K\n" +
-	"\x06parent\x18\x96N \x01(\tB2\xe0A\x02\xfaA,\x12*saasservicemgmt.googleapis.com/RolloutKindR\x06parent\x12\x1c\n" +
+	"request_id\x18\x86R \x01(\tR\trequestId\"\xda\x01\n" +
+	"\x17ListRolloutKindsRequest\x12L\n" +
+	"\x06parent\x18\x96N \x01(\tB3\xe2A\x01\x02\xfaA,\x12*saasservicemgmt.googleapis.com/RolloutKindR\x06parent\x12\x1c\n" +
 	"\tpage_size\x18\x89R \x01(\x05R\bpageSize\x12\x1e\n" +
 	"\n" +
 	"page_token\x18\x8aR \x01(\tR\tpageToken\x12\x17\n" +
@@ -1042,26 +1042,26 @@ const file_google_cloud_saasplatform_saasservicemgmt_v1beta1_rollouts_service_pr
 	"\x18ListRolloutKindsResponse\x12d\n" +
 	"\rrollout_kinds\x18\x8dR \x03(\v2>.google.cloud.saasplatform.saasservicemgmt.v1beta1.RolloutKindR\frolloutKinds\x12'\n" +
 	"\x0fnext_page_token\x18\x8eR \x01(\tR\rnextPageToken\x12!\n" +
-	"\vunreachable\x18\x8fR \x03(\tR\vunreachable\"`\n" +
-	"\x15GetRolloutKindRequest\x12G\n" +
-	"\x04name\x18\x91N \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*saasservicemgmt.googleapis.com/RolloutKindR\x04name\"\xc4\x02\n" +
-	"\x18CreateRolloutKindRequest\x12K\n" +
-	"\x06parent\x18\x96N \x01(\tB2\xe0A\x02\xfaA,\x12*saasservicemgmt.googleapis.com/RolloutKindR\x06parent\x12,\n" +
-	"\x0frollout_kind_id\x18\x87R \x01(\tB\x03\xe0A\x02R\rrolloutKindId\x12g\n" +
-	"\frollout_kind\x18\x88R \x01(\v2>.google.cloud.saasplatform.saasservicemgmt.v1beta1.RolloutKindB\x03\xe0A\x02R\vrolloutKind\x12$\n" +
+	"\vunreachable\x18\x8fR \x03(\tR\vunreachable\"a\n" +
+	"\x15GetRolloutKindRequest\x12H\n" +
+	"\x04name\x18\x91N \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*saasservicemgmt.googleapis.com/RolloutKindR\x04name\"\xc7\x02\n" +
+	"\x18CreateRolloutKindRequest\x12L\n" +
+	"\x06parent\x18\x96N \x01(\tB3\xe2A\x01\x02\xfaA,\x12*saasservicemgmt.googleapis.com/RolloutKindR\x06parent\x12-\n" +
+	"\x0frollout_kind_id\x18\x87R \x01(\tB\x04\xe2A\x01\x02R\rrolloutKindId\x12h\n" +
+	"\frollout_kind\x18\x88R \x01(\v2>.google.cloud.saasplatform.saasservicemgmt.v1beta1.RolloutKindB\x04\xe2A\x01\x02R\vrolloutKind\x12$\n" +
 	"\rvalidate_only\x18\x85R \x01(\bR\fvalidateOnly\x12\x1e\n" +
 	"\n" +
-	"request_id\x18\x86R \x01(\tR\trequestId\"\x87\x02\n" +
-	"\x18UpdateRolloutKindRequest\x12g\n" +
-	"\frollout_kind\x18\x88R \x01(\v2>.google.cloud.saasplatform.saasservicemgmt.v1beta1.RolloutKindB\x03\xe0A\x02R\vrolloutKind\x12$\n" +
+	"request_id\x18\x86R \x01(\tR\trequestId\"\x88\x02\n" +
+	"\x18UpdateRolloutKindRequest\x12h\n" +
+	"\frollout_kind\x18\x88R \x01(\v2>.google.cloud.saasplatform.saasservicemgmt.v1beta1.RolloutKindB\x04\xe2A\x01\x02R\vrolloutKind\x12$\n" +
 	"\rvalidate_only\x18\x85R \x01(\bR\fvalidateOnly\x12\x1e\n" +
 	"\n" +
 	"request_id\x18\x86R \x01(\tR\trequestId\x12<\n" +
 	"\vupdate_mask\x18\x90R \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"\xbe\x01\n" +
-	"\x18DeleteRolloutKindRequest\x12G\n" +
-	"\x04name\x18\x91N \x01(\tB2\xe0A\x02\xfaA,\n" +
+	"updateMask\"\xbf\x01\n" +
+	"\x18DeleteRolloutKindRequest\x12H\n" +
+	"\x04name\x18\x91N \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
 	"*saasservicemgmt.googleapis.com/RolloutKindR\x04name\x12\x13\n" +
 	"\x04etag\x18\xdaO \x01(\tR\x04etag\x12$\n" +
 	"\rvalidate_only\x18\x85R \x01(\bR\fvalidateOnly\x12\x1e\n" +

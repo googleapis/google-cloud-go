@@ -484,11 +484,11 @@ var File_google_ads_datamanager_v1_insights_service_proto protoreflect.FileDescr
 
 const file_google_ads_datamanager_v1_insights_service_proto_rawDesc = "" +
 	"\n" +
-	"0google/ads/datamanager/v1/insights_service.proto\x12\x19google.ads.datamanager.v1\x1a)google/ads/datamanager/v1/age_range.proto\x1a&google/ads/datamanager/v1/gender.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\"\xa3\x01\n" +
-	"\x17RetrieveInsightsRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12D\n" +
-	"\bbaseline\x18\x02 \x01(\v2#.google.ads.datamanager.v1.BaselineB\x03\xe0A\x02R\bbaseline\x12%\n" +
-	"\fuser_list_id\x18\x03 \x01(\tB\x03\xe0A\x02R\n" +
+	"0google/ads/datamanager/v1/insights_service.proto\x12\x19google.ads.datamanager.v1\x1a)google/ads/datamanager/v1/age_range.proto\x1a&google/ads/datamanager/v1/gender.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\"\xa6\x01\n" +
+	"\x17RetrieveInsightsRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12E\n" +
+	"\bbaseline\x18\x02 \x01(\v2#.google.ads.datamanager.v1.BaselineB\x04\xe2A\x01\x02R\bbaseline\x12&\n" +
+	"\fuser_list_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\n" +
 	"userListId\"\xeb\x01\n" +
 	"\bBaseline\x12[\n" +
 	"\x11baseline_location\x18\x01 \x01(\v2,.google.ads.datamanager.v1.Baseline.LocationH\x00R\x10baselineLocation\x12G\n" +

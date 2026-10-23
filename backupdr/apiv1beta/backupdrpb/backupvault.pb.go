@@ -4459,31 +4459,31 @@ var File_google_cloud_backupdr_v1beta_backupvault_proto protoreflect.FileDescrip
 
 const file_google_cloud_backupdr_v1beta_backupvault_proto_rawDesc = "" +
 	"\n" +
-	".google/cloud/backupdr/v1beta/backupvault.proto\x12\x1cgoogle.cloud.backupdr.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a6google/cloud/backupdr/v1beta/backupvault_alloydb.proto\x1a1google/cloud/backupdr/v1beta/backupvault_ba.proto\x1a7google/cloud/backupdr/v1beta/backupvault_cloudsql.proto\x1a3google/cloud/backupdr/v1beta/backupvault_disk.proto\x1a2google/cloud/backupdr/v1beta/backupvault_gce.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xe0\x11\n" +
-	"\vBackupVault\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x12*\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01H\x00R\vdescription\x88\x01\x01\x12R\n" +
-	"\x06labels\x18\x03 \x03(\v25.google.cloud.backupdr.v1beta.BackupVault.LabelsEntryB\x03\xe0A\x01R\x06labels\x12E\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03H\x01R\n" +
-	"createTime\x88\x01\x01\x12E\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03H\x02R\n" +
-	"updateTime\x88\x01\x01\x12\x7f\n" +
-	"*backup_minimum_enforced_retention_duration\x18\x14 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x02H\x03R&backupMinimumEnforcedRetentionDuration\x88\x01\x01\x12\x90\x01\n" +
-	"\x1cbackup_retention_inheritance\x18\x1b \x01(\x0e2D.google.cloud.backupdr.v1beta.BackupVault.BackupRetentionInheritanceB\x03\xe0A\x01H\x04R\x1abackupRetentionInheritance\x88\x01\x01\x12&\n" +
-	"\tdeletable\x18\b \x01(\bB\x03\xe0A\x03H\x05R\tdeletable\x88\x01\x01\x12\x1c\n" +
-	"\x04etag\x18\t \x01(\tB\x03\xe0A\x01H\x06R\x04etag\x88\x01\x01\x12J\n" +
+	".google/cloud/backupdr/v1beta/backupvault.proto\x12\x1cgoogle.cloud.backupdr.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a6google/cloud/backupdr/v1beta/backupvault_alloydb.proto\x1a1google/cloud/backupdr/v1beta/backupvault_ba.proto\x1a7google/cloud/backupdr/v1beta/backupvault_cloudsql.proto\x1a3google/cloud/backupdr/v1beta/backupvault_disk.proto\x1a2google/cloud/backupdr/v1beta/backupvault_gce.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xf2\x11\n" +
+	"\vBackupVault\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\bR\x04name\x12+\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x00R\vdescription\x88\x01\x01\x12S\n" +
+	"\x06labels\x18\x03 \x03(\v25.google.cloud.backupdr.v1beta.BackupVault.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12F\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03H\x01R\n" +
+	"createTime\x88\x01\x01\x12F\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03H\x02R\n" +
+	"updateTime\x88\x01\x01\x12\x80\x01\n" +
+	"*backup_minimum_enforced_retention_duration\x18\x14 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x02H\x03R&backupMinimumEnforcedRetentionDuration\x88\x01\x01\x12\x91\x01\n" +
+	"\x1cbackup_retention_inheritance\x18\x1b \x01(\x0e2D.google.cloud.backupdr.v1beta.BackupVault.BackupRetentionInheritanceB\x04\xe2A\x01\x01H\x04R\x1abackupRetentionInheritance\x88\x01\x01\x12'\n" +
+	"\tdeletable\x18\b \x01(\bB\x04\xe2A\x01\x03H\x05R\tdeletable\x88\x01\x01\x12\x1d\n" +
+	"\x04etag\x18\t \x01(\tB\x04\xe2A\x01\x01H\x06R\x04etag\x88\x01\x01\x12K\n" +
 	"\x05state\x18\n" +
-	" \x01(\x0e2/.google.cloud.backupdr.v1beta.BackupVault.StateB\x03\xe0A\x03R\x05state\x12K\n" +
-	"\x0eeffective_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01H\aR\reffectiveTime\x88\x01\x01\x12&\n" +
-	"\fbackup_count\x18\x11 \x01(\x03B\x03\xe0A\x03R\vbackupCount\x12,\n" +
-	"\x0fservice_account\x18\x12 \x01(\tB\x03\xe0A\x03R\x0eserviceAccount\x121\n" +
-	"\x12total_stored_bytes\x18\x13 \x01(\x03B\x03\xe0A\x03R\x10totalStoredBytes\x12\x1d\n" +
-	"\x03uid\x18\x15 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12a\n" +
-	"\vannotations\x18\x16 \x03(\v2:.google.cloud.backupdr.v1beta.BackupVault.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12o\n" +
-	"\x12access_restriction\x18\x18 \x01(\x0e2;.google.cloud.backupdr.v1beta.BackupVault.AccessRestrictionB\x03\xe0A\x01R\x11accessRestriction\x12q\n" +
-	"\x11encryption_config\x18\x1d \x01(\v2:.google.cloud.backupdr.v1beta.BackupVault.EncryptionConfigB\x03\xe0A\x01H\bR\x10encryptionConfig\x88\x01\x01\x1au\n" +
-	"\x10EncryptionConfig\x12P\n" +
-	"\fkms_key_name\x18\x01 \x01(\tB)\xe0A\x01\xfaA#\n" +
+	" \x01(\x0e2/.google.cloud.backupdr.v1beta.BackupVault.StateB\x04\xe2A\x01\x03R\x05state\x12L\n" +
+	"\x0eeffective_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01H\aR\reffectiveTime\x88\x01\x01\x12'\n" +
+	"\fbackup_count\x18\x11 \x01(\x03B\x04\xe2A\x01\x03R\vbackupCount\x12-\n" +
+	"\x0fservice_account\x18\x12 \x01(\tB\x04\xe2A\x01\x03R\x0eserviceAccount\x122\n" +
+	"\x12total_stored_bytes\x18\x13 \x01(\x03B\x04\xe2A\x01\x03R\x10totalStoredBytes\x12\x1e\n" +
+	"\x03uid\x18\x15 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12b\n" +
+	"\vannotations\x18\x16 \x03(\v2:.google.cloud.backupdr.v1beta.BackupVault.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12p\n" +
+	"\x12access_restriction\x18\x18 \x01(\x0e2;.google.cloud.backupdr.v1beta.BackupVault.AccessRestrictionB\x04\xe2A\x01\x01R\x11accessRestriction\x12r\n" +
+	"\x11encryption_config\x18\x1d \x01(\v2:.google.cloud.backupdr.v1beta.BackupVault.EncryptionConfigB\x04\xe2A\x01\x01H\bR\x10encryptionConfig\x88\x01\x01\x1av\n" +
+	"\x10EncryptionConfig\x12Q\n" +
+	"\fkms_key_name\x18\x01 \x01(\tB*\xe2A\x01\x01\xfaA#\n" +
 	"!cloudkms.googleapis.com/CryptoKeyH\x00R\n" +
 	"kmsKeyName\x88\x01\x01B\x0f\n" +
 	"\r_kms_key_name\x1a9\n" +
@@ -4521,24 +4521,24 @@ const file_google_cloud_backupdr_v1beta_backupvault_proto_rawDesc = "" +
 	"_deletableB\a\n" +
 	"\x05_etagB\x11\n" +
 	"\x0f_effective_timeB\x14\n" +
-	"\x12_encryption_config\"\x86\v\n" +
+	"\x12_encryption_config\"\x8c\v\n" +
 	"\n" +
 	"DataSource\x12n\n" +
 	"\x18data_source_gcp_resource\x18\x1a \x01(\v23.google.cloud.backupdr.v1beta.DataSourceGcpResourceH\x00R\x15dataSourceGcpResource\x12\x9c\x01\n" +
-	"(data_source_backup_appliance_application\x18\x1b \x01(\v2B.google.cloud.backupdr.v1beta.DataSourceBackupApplianceApplicationH\x00R$dataSourceBackupApplianceApplication\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x12I\n" +
-	"\x05state\x18\x15 \x01(\x0e2..google.cloud.backupdr.v1beta.DataSource.StateB\x03\xe0A\x03R\x05state\x12Q\n" +
-	"\x06labels\x18\x04 \x03(\v24.google.cloud.backupdr.v1beta.DataSource.LabelsEntryB\x03\xe0A\x01R\x06labels\x12E\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03H\x01R\n" +
-	"createTime\x88\x01\x01\x12E\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03H\x02R\n" +
+	"(data_source_backup_appliance_application\x18\x1b \x01(\v2B.google.cloud.backupdr.v1beta.DataSourceBackupApplianceApplicationH\x00R$dataSourceBackupApplianceApplication\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\bR\x04name\x12J\n" +
+	"\x05state\x18\x15 \x01(\x0e2..google.cloud.backupdr.v1beta.DataSource.StateB\x04\xe2A\x01\x03R\x05state\x12R\n" +
+	"\x06labels\x18\x04 \x03(\v24.google.cloud.backupdr.v1beta.DataSource.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12F\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03H\x01R\n" +
+	"createTime\x88\x01\x01\x12F\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03H\x02R\n" +
 	"updateTime\x88\x01\x01\x12&\n" +
 	"\fbackup_count\x18\a \x01(\x03H\x03R\vbackupCount\x88\x01\x01\x12\x17\n" +
 	"\x04etag\x18\x0e \x01(\tH\x04R\x04etag\x88\x01\x01\x121\n" +
-	"\x12total_stored_bytes\x18\x17 \x01(\x03H\x05R\x10totalStoredBytes\x88\x01\x01\x12W\n" +
-	"\fconfig_state\x18\x18 \x01(\x0e2/.google.cloud.backupdr.v1beta.BackupConfigStateB\x03\xe0A\x03R\vconfigState\x12a\n" +
-	"\x12backup_config_info\x18\x19 \x01(\v2..google.cloud.backupdr.v1beta.BackupConfigInfoB\x03\xe0A\x03R\x10backupConfigInfo\x12^\n" +
-	"*backup_blocked_by_vault_access_restriction\x18\x1c \x01(\bB\x03\xe0A\x03R%backupBlockedByVaultAccessRestriction\x1a9\n" +
+	"\x12total_stored_bytes\x18\x17 \x01(\x03H\x05R\x10totalStoredBytes\x88\x01\x01\x12X\n" +
+	"\fconfig_state\x18\x18 \x01(\x0e2/.google.cloud.backupdr.v1beta.BackupConfigStateB\x04\xe2A\x01\x03R\vconfigState\x12b\n" +
+	"\x12backup_config_info\x18\x19 \x01(\v2..google.cloud.backupdr.v1beta.BackupConfigInfoB\x04\xe2A\x01\x03R\x10backupConfigInfo\x12_\n" +
+	"*backup_blocked_by_vault_access_restriction\x18\x1c \x01(\bB\x04\xe2A\x01\x03R%backupBlockedByVaultAccessRestriction\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"Q\n" +
@@ -4556,13 +4556,13 @@ const file_google_cloud_backupdr_v1beta_backupvault_proto_rawDesc = "" +
 	"\f_update_timeB\x0f\n" +
 	"\r_backup_countB\a\n" +
 	"\x05_etagB\x15\n" +
-	"\x13_total_stored_bytes\"\xb3\x05\n" +
+	"\x13_total_stored_bytes\"\xb6\x05\n" +
 	"\x10BackupConfigInfo\x12[\n" +
 	"\x11gcp_backup_config\x18\x04 \x01(\v2-.google.cloud.backupdr.v1beta.GcpBackupConfigH\x00R\x0fgcpBackupConfig\x12\x80\x01\n" +
-	"\x1ebackup_appliance_backup_config\x18\x05 \x01(\v29.google.cloud.backupdr.v1beta.BackupApplianceBackupConfigH\x00R\x1bbackupApplianceBackupConfig\x12o\n" +
-	"\x11last_backup_state\x18\x01 \x01(\x0e2>.google.cloud.backupdr.v1beta.BackupConfigInfo.LastBackupStateB\x03\xe0A\x03R\x0flastBackupState\x12u\n" +
-	"'last_successful_backup_consistency_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R#lastSuccessfulBackupConsistencyTime\x12C\n" +
-	"\x11last_backup_error\x18\x03 \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x0flastBackupError\"\x80\x01\n" +
+	"\x1ebackup_appliance_backup_config\x18\x05 \x01(\v29.google.cloud.backupdr.v1beta.BackupApplianceBackupConfigH\x00R\x1bbackupApplianceBackupConfig\x12p\n" +
+	"\x11last_backup_state\x18\x01 \x01(\x0e2>.google.cloud.backupdr.v1beta.BackupConfigInfo.LastBackupStateB\x04\xe2A\x01\x03R\x0flastBackupState\x12v\n" +
+	"'last_successful_backup_consistency_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R#lastSuccessfulBackupConsistencyTime\x12D\n" +
+	"\x11last_backup_error\x18\x03 \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\x0flastBackupError\"\x80\x01\n" +
 	"\x0fLastBackupState\x12!\n" +
 	"\x1dLAST_BACKUP_STATE_UNSPECIFIED\x10\x00\x12\x18\n" +
 	"\x14FIRST_BACKUP_PENDING\x10\x01\x12\r\n" +
@@ -4570,7 +4570,7 @@ const file_google_cloud_backupdr_v1beta_backupvault_proto_rawDesc = "" +
 	"\n" +
 	"\x06FAILED\x10\x03\x12\x15\n" +
 	"\x11PERMISSION_DENIED\x10\x04B\x0f\n" +
-	"\rbackup_config\"\xa0\x04\n" +
+	"\rbackup_config\"\xa1\x04\n" +
 	"\x0fGcpBackupConfig\x12H\n" +
 	"\vbackup_plan\x18\x01 \x01(\tB'\xfaA$\n" +
 	"\"backupdr.googleapis.com/BackupPlanR\n" +
@@ -4580,8 +4580,8 @@ const file_google_cloud_backupdr_v1beta_backupvault_proto_rawDesc = "" +
 	"-backupdr.googleapis.com/BackupPlanAssociationR\x15backupPlanAssociation\x12*\n" +
 	"\x11backup_plan_rules\x18\x04 \x03(\tR\x0fbackupPlanRules\x129\n" +
 	"\x19backup_plan_revision_name\x18\x05 \x01(\tR\x16backupPlanRevisionName\x125\n" +
-	"\x17backup_plan_revision_id\x18\x06 \x01(\tR\x14backupPlanRevisionId\x12\x80\x01\n" +
-	"\x1eauto_protection_policy_binding\x18\a \x01(\tB;\xe0A\x03\xfaA5\n" +
+	"\x17backup_plan_revision_id\x18\x06 \x01(\tR\x14backupPlanRevisionId\x12\x81\x01\n" +
+	"\x1eauto_protection_policy_binding\x18\a \x01(\tB<\xe2A\x01\x03\xfaA5\n" +
 	"3backupdr.googleapis.com/AutoProtectionPolicyBindingR\x1bautoProtectionPolicyBinding\"\x96\x02\n" +
 	"\x1bBackupApplianceBackupConfig\x122\n" +
 	"\x15backup_appliance_name\x18\x01 \x01(\tR\x13backupApplianceName\x12.\n" +
@@ -4590,13 +4590,13 @@ const file_google_cloud_backupdr_v1beta_backupvault_proto_rawDesc = "" +
 	"\x10application_name\x18\x04 \x01(\tR\x0fapplicationName\x12\x1b\n" +
 	"\thost_name\x18\x05 \x01(\tR\bhostName\x12\x19\n" +
 	"\bslt_name\x18\x06 \x01(\tR\asltName\x12\x19\n" +
-	"\bslp_name\x18\a \x01(\tR\aslpName\"\xe7\x05\n" +
+	"\bslp_name\x18\a \x01(\tR\aslpName\"\xea\x05\n" +
 	"\x15DataSourceGcpResource\x12\x98\x01\n" +
-	"&compute_instance_datasource_properties\x18\x04 \x01(\v2A.google.cloud.backupdr.v1beta.ComputeInstanceDataSourcePropertiesH\x00R#computeInstanceDatasourceProperties\x12\xa1\x01\n" +
-	"(cloud_sql_instance_datasource_properties\x18\x05 \x01(\v2B.google.cloud.backupdr.v1beta.CloudSqlInstanceDataSourcePropertiesB\x03\xe0A\x03H\x00R$cloudSqlInstanceDatasourceProperties\x12\x9b\x01\n" +
-	"&alloy_db_cluster_datasource_properties\x18\x06 \x01(\v2@.google.cloud.backupdr.v1beta.AlloyDBClusterDataSourcePropertiesB\x03\xe0A\x03H\x00R\"alloyDbClusterDatasourceProperties\x12v\n" +
-	"\x1adisk_datasource_properties\x18\a \x01(\v26.google.cloud.backupdr.v1beta.DiskDataSourcePropertiesH\x00R\x18diskDatasourceProperties\x12.\n" +
-	"\x10gcp_resourcename\x18\x01 \x01(\tB\x03\xe0A\x03R\x0fgcpResourcename\x12\x1a\n" +
+	"&compute_instance_datasource_properties\x18\x04 \x01(\v2A.google.cloud.backupdr.v1beta.ComputeInstanceDataSourcePropertiesH\x00R#computeInstanceDatasourceProperties\x12\xa2\x01\n" +
+	"(cloud_sql_instance_datasource_properties\x18\x05 \x01(\v2B.google.cloud.backupdr.v1beta.CloudSqlInstanceDataSourcePropertiesB\x04\xe2A\x01\x03H\x00R$cloudSqlInstanceDatasourceProperties\x12\x9c\x01\n" +
+	"&alloy_db_cluster_datasource_properties\x18\x06 \x01(\v2@.google.cloud.backupdr.v1beta.AlloyDBClusterDataSourcePropertiesB\x04\xe2A\x01\x03H\x00R\"alloyDbClusterDatasourceProperties\x12v\n" +
+	"\x1adisk_datasource_properties\x18\a \x01(\v26.google.cloud.backupdr.v1beta.DiskDataSourcePropertiesH\x00R\x18diskDatasourceProperties\x12/\n" +
+	"\x10gcp_resourcename\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x0fgcpResourcename\x12\x1a\n" +
 	"\blocation\x18\x02 \x01(\tR\blocation\x12\x12\n" +
 	"\x04type\x18\x03 \x01(\tR\x04typeB\x19\n" +
 	"\x17gcp_resource_properties\"\x8f\x02\n" +
@@ -4607,55 +4607,55 @@ const file_google_cloud_backupdr_v1beta_backupvault_proto_rawDesc = "" +
 	"\x04type\x18\x04 \x01(\tR\x04type\x12%\n" +
 	"\x0eapplication_id\x18\b \x01(\x03R\rapplicationId\x12\x1a\n" +
 	"\bhostname\x18\x06 \x01(\tR\bhostname\x12\x17\n" +
-	"\ahost_id\x18\a \x01(\x03R\x06hostId\"4\n" +
-	"\x0fServiceLockInfo\x12!\n" +
-	"\toperation\x18\x01 \x01(\tB\x03\xe0A\x03R\toperation\"\x97\x02\n" +
+	"\ahost_id\x18\a \x01(\x03R\x06hostId\"5\n" +
+	"\x0fServiceLockInfo\x12\"\n" +
+	"\toperation\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\toperation\"\x9a\x02\n" +
 	"\x17BackupApplianceLockInfo\x12\x1b\n" +
 	"\bjob_name\x18\x06 \x01(\tH\x00R\ajobName\x12#\n" +
 	"\fbackup_image\x18\a \x01(\tH\x00R\vbackupImage\x12\x17\n" +
-	"\x06sla_id\x18\b \x01(\x03H\x00R\x05slaId\x123\n" +
-	"\x13backup_appliance_id\x18\x01 \x01(\x03B\x03\xe0A\x02R\x11backupApplianceId\x127\n" +
-	"\x15backup_appliance_name\x18\x02 \x01(\tB\x03\xe0A\x02R\x13backupApplianceName\x12$\n" +
-	"\vlock_reason\x18\x05 \x01(\tB\x03\xe0A\x02R\n" +
+	"\x06sla_id\x18\b \x01(\x03H\x00R\x05slaId\x124\n" +
+	"\x13backup_appliance_id\x18\x01 \x01(\x03B\x04\xe2A\x01\x02R\x11backupApplianceId\x128\n" +
+	"\x15backup_appliance_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x13backupApplianceName\x12%\n" +
+	"\vlock_reason\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\n" +
 	"lockReasonB\r\n" +
-	"\vlock_source\"\xbf\x02\n" +
+	"\vlock_source\"\xc1\x02\n" +
 	"\n" +
 	"BackupLock\x12t\n" +
-	"\x1abackup_appliance_lock_info\x18\x03 \x01(\v25.google.cloud.backupdr.v1beta.BackupApplianceLockInfoH\x00R\x17backupApplianceLockInfo\x12`\n" +
-	"\x11service_lock_info\x18\x04 \x01(\v2-.google.cloud.backupdr.v1beta.ServiceLockInfoB\x03\xe0A\x03H\x00R\x0fserviceLockInfo\x12G\n" +
-	"\x0flock_until_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\rlockUntilTimeB\x10\n" +
-	"\x0eClientLockInfo\"\xc9\x18\n" +
-	"\x06Backup\x12\x91\x01\n" +
-	"\"compute_instance_backup_properties\x18\x13 \x01(\v2=.google.cloud.backupdr.v1beta.ComputeInstanceBackupPropertiesB\x03\xe0A\x03H\x00R\x1fcomputeInstanceBackupProperties\x12\x95\x01\n" +
-	"$cloud_sql_instance_backup_properties\x18\x1a \x01(\v2>.google.cloud.backupdr.v1beta.CloudSqlInstanceBackupPropertiesB\x03\xe0A\x03H\x00R cloudSqlInstanceBackupProperties\x12\x91\x01\n" +
-	"\"backup_appliance_backup_properties\x18\x15 \x01(\v2=.google.cloud.backupdr.v1beta.BackupApplianceBackupPropertiesB\x03\xe0A\x03H\x00R\x1fbackupApplianceBackupProperties\x12\x80\x01\n" +
-	"\x1aalloy_db_backup_properties\x18\x1b \x01(\v2<.google.cloud.backupdr.v1beta.AlloyDbClusterBackupPropertiesB\x03\xe0A\x03H\x00R\x17alloyDbBackupProperties\x12o\n" +
-	"\x16disk_backup_properties\x18\x1c \x01(\v22.google.cloud.backupdr.v1beta.DiskBackupPropertiesB\x03\xe0A\x03H\x00R\x14diskBackupProperties\x12n\n" +
-	"\x14gcp_backup_plan_info\x18\x16 \x01(\v26.google.cloud.backupdr.v1beta.Backup.GCPBackupPlanInfoB\x03\xe0A\x03H\x01R\x11gcpBackupPlanInfo\x12Y\n" +
-	"\fgcp_resource\x18\x1f \x01(\v2/.google.cloud.backupdr.v1beta.BackupGcpResourceB\x03\xe0A\x03H\x02R\vgcpResource\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x12*\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x03H\x03R\vdescription\x88\x01\x01\x12E\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03H\x04R\n" +
-	"createTime\x88\x01\x01\x12E\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03H\x05R\n" +
-	"updateTime\x88\x01\x01\x12M\n" +
-	"\x06labels\x18\x05 \x03(\v20.google.cloud.backupdr.v1beta.Backup.LabelsEntryB\x03\xe0A\x01R\x06labels\x12c\n" +
-	"\x1benforced_retention_end_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01H\x06R\x18enforcedRetentionEndTime\x88\x01\x01\x12\x90\x01\n" +
-	"\x1cbackup_retention_inheritance\x18\x1e \x01(\x0e2D.google.cloud.backupdr.v1beta.BackupVault.BackupRetentionInheritanceB\x03\xe0A\x03H\aR\x1abackupRetentionInheritance\x88\x01\x01\x12E\n" +
-	"\vexpire_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01H\bR\n" +
-	"expireTime\x88\x01\x01\x12O\n" +
-	"\x10consistency_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03H\tR\x0fconsistencyTime\x88\x01\x01\x12\x1c\n" +
-	"\x04etag\x18\v \x01(\tB\x03\xe0A\x01H\n" +
-	"R\x04etag\x88\x01\x01\x12E\n" +
-	"\x05state\x18\x0f \x01(\x0e2*.google.cloud.backupdr.v1beta.Backup.StateB\x03\xe0A\x03R\x05state\x12R\n" +
-	"\rservice_locks\x18\x11 \x03(\v2(.google.cloud.backupdr.v1beta.BackupLockB\x03\xe0A\x03R\fserviceLocks\x12c\n" +
-	"\x16backup_appliance_locks\x18\x12 \x03(\v2(.google.cloud.backupdr.v1beta.BackupLockB\x03\xe0A\x01R\x14backupApplianceLocks\x12U\n" +
-	"\vbackup_type\x18\x14 \x01(\x0e2/.google.cloud.backupdr.v1beta.Backup.BackupTypeB\x03\xe0A\x03R\n" +
-	"backupType\x123\n" +
-	"\x13resource_size_bytes\x18\x17 \x01(\x03B\x03\xe0A\x03R\x11resourceSizeBytes\x120\n" +
-	"\rsatisfies_pzs\x18\x18 \x01(\bB\x06\xe0A\x03\xe0A\x01H\vR\fsatisfiesPzs\x88\x01\x01\x120\n" +
-	"\rsatisfies_pzi\x18\x19 \x01(\bB\x06\xe0A\x03\xe0A\x01H\fR\fsatisfiesPzi\x88\x01\x01\x12]\n" +
-	"\x10kms_key_versions\x18! \x03(\tB3\xe0A\x01\xe0A\x03\xfaA*\n" +
+	"\x1abackup_appliance_lock_info\x18\x03 \x01(\v25.google.cloud.backupdr.v1beta.BackupApplianceLockInfoH\x00R\x17backupApplianceLockInfo\x12a\n" +
+	"\x11service_lock_info\x18\x04 \x01(\v2-.google.cloud.backupdr.v1beta.ServiceLockInfoB\x04\xe2A\x01\x03H\x00R\x0fserviceLockInfo\x12H\n" +
+	"\x0flock_until_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\rlockUntilTimeB\x10\n" +
+	"\x0eClientLockInfo\"\xda\x18\n" +
+	"\x06Backup\x12\x92\x01\n" +
+	"\"compute_instance_backup_properties\x18\x13 \x01(\v2=.google.cloud.backupdr.v1beta.ComputeInstanceBackupPropertiesB\x04\xe2A\x01\x03H\x00R\x1fcomputeInstanceBackupProperties\x12\x96\x01\n" +
+	"$cloud_sql_instance_backup_properties\x18\x1a \x01(\v2>.google.cloud.backupdr.v1beta.CloudSqlInstanceBackupPropertiesB\x04\xe2A\x01\x03H\x00R cloudSqlInstanceBackupProperties\x12\x92\x01\n" +
+	"\"backup_appliance_backup_properties\x18\x15 \x01(\v2=.google.cloud.backupdr.v1beta.BackupApplianceBackupPropertiesB\x04\xe2A\x01\x03H\x00R\x1fbackupApplianceBackupProperties\x12\x81\x01\n" +
+	"\x1aalloy_db_backup_properties\x18\x1b \x01(\v2<.google.cloud.backupdr.v1beta.AlloyDbClusterBackupPropertiesB\x04\xe2A\x01\x03H\x00R\x17alloyDbBackupProperties\x12p\n" +
+	"\x16disk_backup_properties\x18\x1c \x01(\v22.google.cloud.backupdr.v1beta.DiskBackupPropertiesB\x04\xe2A\x01\x03H\x00R\x14diskBackupProperties\x12o\n" +
+	"\x14gcp_backup_plan_info\x18\x16 \x01(\v26.google.cloud.backupdr.v1beta.Backup.GCPBackupPlanInfoB\x04\xe2A\x01\x03H\x01R\x11gcpBackupPlanInfo\x12Z\n" +
+	"\fgcp_resource\x18\x1f \x01(\v2/.google.cloud.backupdr.v1beta.BackupGcpResourceB\x04\xe2A\x01\x03H\x02R\vgcpResource\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\bR\x04name\x12+\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x03H\x03R\vdescription\x88\x01\x01\x12F\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03H\x04R\n" +
+	"createTime\x88\x01\x01\x12F\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03H\x05R\n" +
+	"updateTime\x88\x01\x01\x12N\n" +
+	"\x06labels\x18\x05 \x03(\v20.google.cloud.backupdr.v1beta.Backup.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12d\n" +
+	"\x1benforced_retention_end_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01H\x06R\x18enforcedRetentionEndTime\x88\x01\x01\x12\x91\x01\n" +
+	"\x1cbackup_retention_inheritance\x18\x1e \x01(\x0e2D.google.cloud.backupdr.v1beta.BackupVault.BackupRetentionInheritanceB\x04\xe2A\x01\x03H\aR\x1abackupRetentionInheritance\x88\x01\x01\x12F\n" +
+	"\vexpire_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01H\bR\n" +
+	"expireTime\x88\x01\x01\x12P\n" +
+	"\x10consistency_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03H\tR\x0fconsistencyTime\x88\x01\x01\x12\x1d\n" +
+	"\x04etag\x18\v \x01(\tB\x04\xe2A\x01\x01H\n" +
+	"R\x04etag\x88\x01\x01\x12F\n" +
+	"\x05state\x18\x0f \x01(\x0e2*.google.cloud.backupdr.v1beta.Backup.StateB\x04\xe2A\x01\x03R\x05state\x12S\n" +
+	"\rservice_locks\x18\x11 \x03(\v2(.google.cloud.backupdr.v1beta.BackupLockB\x04\xe2A\x01\x03R\fserviceLocks\x12d\n" +
+	"\x16backup_appliance_locks\x18\x12 \x03(\v2(.google.cloud.backupdr.v1beta.BackupLockB\x04\xe2A\x01\x01R\x14backupApplianceLocks\x12V\n" +
+	"\vbackup_type\x18\x14 \x01(\x0e2/.google.cloud.backupdr.v1beta.Backup.BackupTypeB\x04\xe2A\x01\x03R\n" +
+	"backupType\x124\n" +
+	"\x13resource_size_bytes\x18\x17 \x01(\x03B\x04\xe2A\x01\x03R\x11resourceSizeBytes\x12/\n" +
+	"\rsatisfies_pzs\x18\x18 \x01(\bB\x05\xe2A\x02\x03\x01H\vR\fsatisfiesPzs\x88\x01\x01\x12/\n" +
+	"\rsatisfies_pzi\x18\x19 \x01(\bB\x05\xe2A\x02\x03\x01H\fR\fsatisfiesPzi\x88\x01\x01\x12\\\n" +
+	"\x10kms_key_versions\x18! \x03(\tB2\xe2A\x02\x01\x03\xfaA*\n" +
 	"(cloudkms.googleapis.com/CryptoKeyVersionR\x0ekmsKeyVersions\x1a\xfe\x01\n" +
 	"\x11GCPBackupPlanInfo\x12H\n" +
 	"\vbackup_plan\x18\x01 \x01(\tB'\xfaA$\n" +
@@ -4694,132 +4694,132 @@ const file_google_cloud_backupdr_v1beta_backupvault_proto_rawDesc = "" +
 	"\x11_consistency_timeB\a\n" +
 	"\x05_etagB\x10\n" +
 	"\x0e_satisfies_pzsB\x10\n" +
-	"\x0e_satisfies_pzi\"\xb5\x02\n" +
-	"\x18CreateBackupVaultRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\x12#backupdr.googleapis.com/BackupVaultR\x06parent\x12+\n" +
-	"\x0fbackup_vault_id\x18\x02 \x01(\tB\x03\xe0A\x02R\rbackupVaultId\x12Q\n" +
-	"\fbackup_vault\x18\x03 \x01(\v2).google.cloud.backupdr.v1beta.BackupVaultB\x03\xe0A\x02R\vbackupVault\x12*\n" +
+	"\x0e_satisfies_pzi\"\xba\x02\n" +
+	"\x18CreateBackupVaultRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\x12#backupdr.googleapis.com/BackupVaultR\x06parent\x12,\n" +
+	"\x0fbackup_vault_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\rbackupVaultId\x12R\n" +
+	"\fbackup_vault\x18\x03 \x01(\v2).google.cloud.backupdr.v1beta.BackupVaultB\x04\xe2A\x01\x02R\vbackupVault\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12(\n" +
-	"\rvalidate_only\x18\x05 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xa9\x02\n" +
-	"\x17ListBackupVaultsRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\x12#backupdr.googleapis.com/BackupVaultR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12)\n" +
+	"\rvalidate_only\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xaf\x02\n" +
+	"\x17ListBackupVaultsRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\x12#backupdr.googleapis.com/BackupVaultR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\x12F\n" +
-	"\x04view\x18\x06 \x01(\x0e2-.google.cloud.backupdr.v1beta.BackupVaultViewB\x03\xe0A\x01R\x04view\"\xb4\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\x12G\n" +
+	"\x04view\x18\x06 \x01(\x0e2-.google.cloud.backupdr.v1beta.BackupVaultViewB\x04\xe2A\x01\x01R\x04view\"\xb4\x01\n" +
 	"\x18ListBackupVaultsResponse\x12N\n" +
 	"\rbackup_vaults\x18\x01 \x03(\v2).google.cloud.backupdr.v1beta.BackupVaultR\fbackupVaults\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xe8\x01\n" +
-	"\x1eFetchUsableBackupVaultsRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\x12#backupdr.googleapis.com/BackupVaultR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xed\x01\n" +
+	"\x1eFetchUsableBackupVaultsRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\x12#backupdr.googleapis.com/BackupVaultR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xbb\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xbb\x01\n" +
 	"\x1fFetchUsableBackupVaultsResponse\x12N\n" +
 	"\rbackup_vaults\x18\x01 \x03(\v2).google.cloud.backupdr.v1beta.BackupVaultR\fbackupVaults\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xd4\x02\n" +
-	"\"FetchBackupsForResourceTypeRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \x12\x1ebackupdr.googleapis.com/BackupR\x06parent\x12(\n" +
-	"\rresource_type\x18\x02 \x01(\tB\x03\xe0A\x02R\fresourceType\x12 \n" +
-	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xdb\x02\n" +
+	"\"FetchBackupsForResourceTypeRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \x12\x1ebackupdr.googleapis.com/BackupR\x06parent\x12)\n" +
+	"\rresource_type\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\fresourceType\x12!\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x05 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x06 \x01(\tB\x03\xe0A\x01R\aorderBy\x12A\n" +
-	"\x04view\x18\a \x01(\x0e2(.google.cloud.backupdr.v1beta.BackupViewB\x03\xe0A\x01R\x04view\"\x8d\x01\n" +
+	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\x12B\n" +
+	"\x04view\x18\a \x01(\x0e2(.google.cloud.backupdr.v1beta.BackupViewB\x04\xe2A\x01\x01R\x04view\"\x8d\x01\n" +
 	"#FetchBackupsForResourceTypeResponse\x12>\n" +
 	"\abackups\x18\x01 \x03(\v2$.google.cloud.backupdr.v1beta.BackupR\abackups\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa0\x01\n" +
-	"\x15GetBackupVaultRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#backupdr.googleapis.com/BackupVaultR\x04name\x12F\n" +
-	"\x04view\x18\x02 \x01(\x0e2-.google.cloud.backupdr.v1beta.BackupVaultViewB\x03\xe0A\x01R\x04view\"\xec\x02\n" +
-	"\x18UpdateBackupVaultRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12Q\n" +
-	"\fbackup_vault\x18\x02 \x01(\v2).google.cloud.backupdr.v1beta.BackupVaultB\x03\xe0A\x02R\vbackupVault\x12*\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa2\x01\n" +
+	"\x15GetBackupVaultRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#backupdr.googleapis.com/BackupVaultR\x04name\x12G\n" +
+	"\x04view\x18\x02 \x01(\x0e2-.google.cloud.backupdr.v1beta.BackupVaultViewB\x04\xe2A\x01\x01R\x04view\"\xf2\x02\n" +
+	"\x18UpdateBackupVaultRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12R\n" +
+	"\fbackup_vault\x18\x02 \x01(\v2).google.cloud.backupdr.v1beta.BackupVaultB\x04\xe2A\x01\x02R\vbackupVault\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12(\n" +
-	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12\x19\n" +
-	"\x05force\x18\x05 \x01(\bB\x03\xe0A\x01R\x05force\x12J\n" +
-	"\x1fforce_update_access_restriction\x18\x06 \x01(\bB\x03\xe0A\x01R\x1cforceUpdateAccessRestriction\"\xd2\x02\n" +
-	"\x18DeleteBackupVaultRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#backupdr.googleapis.com/BackupVaultR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12)\n" +
+	"\rvalidate_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12\x1a\n" +
+	"\x05force\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\x05force\x12K\n" +
+	"\x1fforce_update_access_restriction\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\x1cforceUpdateAccessRestriction\"\xd8\x02\n" +
+	"\x18DeleteBackupVaultRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#backupdr.googleapis.com/BackupVaultR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12\x19\n" +
-	"\x05force\x18\x03 \x01(\bB\x03\xe0A\x01R\x05force\x12\x12\n" +
-	"\x04etag\x18\x04 \x01(\tR\x04etag\x12(\n" +
-	"\rvalidate_only\x18\x05 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12(\n" +
-	"\rallow_missing\x18\x06 \x01(\bB\x03\xe0A\x01R\fallowMissing\x12F\n" +
-	"\x1dignore_backup_plan_references\x18\a \x01(\bB\x03\xe0A\x01R\x1aignoreBackupPlanReferences\"\xdf\x01\n" +
-	"\x16ListDataSourcesRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"backupdr.googleapis.com/DataSourceR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12\x1a\n" +
+	"\x05force\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x05force\x12\x12\n" +
+	"\x04etag\x18\x04 \x01(\tR\x04etag\x12)\n" +
+	"\rvalidate_only\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12)\n" +
+	"\rallow_missing\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\fallowMissing\x12G\n" +
+	"\x1dignore_backup_plan_references\x18\a \x01(\bB\x04\xe2A\x01\x01R\x1aignoreBackupPlanReferences\"\xe4\x01\n" +
+	"\x16ListDataSourcesRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"backupdr.googleapis.com/DataSourceR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xb0\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xb0\x01\n" +
 	"\x17ListDataSourcesResponse\x12K\n" +
 	"\fdata_sources\x18\x01 \x03(\v2(.google.cloud.backupdr.v1beta.DataSourceR\vdataSources\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"V\n" +
-	"\x14GetDataSourceRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"backupdr.googleapis.com/DataSourceR\x04name\"\x81\x02\n" +
-	"\x17UpdateDataSourceRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12N\n" +
-	"\vdata_source\x18\x02 \x01(\v2(.google.cloud.backupdr.v1beta.DataSourceB\x03\xe0A\x02R\n" +
-	"dataSource\x12*\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"W\n" +
+	"\x14GetDataSourceRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"backupdr.googleapis.com/DataSourceR\x04name\"\x85\x02\n" +
+	"\x17UpdateDataSourceRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12O\n" +
+	"\vdata_source\x18\x02 \x01(\v2(.google.cloud.backupdr.v1beta.DataSourceB\x04\xe2A\x01\x02R\n" +
+	"dataSource\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12(\n" +
-	"\rallow_missing\x18\x04 \x01(\bB\x03\xe0A\x01R\fallowMissing\"\x9a\x02\n" +
-	"\x12ListBackupsRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \x12\x1ebackupdr.googleapis.com/BackupR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12)\n" +
+	"\rallow_missing\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fallowMissing\"\xa0\x02\n" +
+	"\x12ListBackupsRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \x12\x1ebackupdr.googleapis.com/BackupR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\x12A\n" +
-	"\x04view\x18\x06 \x01(\x0e2(.google.cloud.backupdr.v1beta.BackupViewB\x03\xe0A\x01R\x04view\"\x9f\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\x12B\n" +
+	"\x04view\x18\x06 \x01(\x0e2(.google.cloud.backupdr.v1beta.BackupViewB\x04\xe2A\x01\x01R\x04view\"\x9f\x01\n" +
 	"\x13ListBackupsResponse\x12>\n" +
 	"\abackups\x18\x01 \x03(\v2$.google.cloud.backupdr.v1beta.BackupR\abackups\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\x91\x01\n" +
-	"\x10GetBackupRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1ebackupdr.googleapis.com/BackupR\x04name\x12A\n" +
-	"\x04view\x18\x02 \x01(\x0e2(.google.cloud.backupdr.v1beta.BackupViewB\x03\xe0A\x01R\x04view\"\xc6\x01\n" +
-	"\x13UpdateBackupRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12A\n" +
-	"\x06backup\x18\x02 \x01(\v2$.google.cloud.backupdr.v1beta.BackupB\x03\xe0A\x02R\x06backup\x12*\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\x93\x01\n" +
+	"\x10GetBackupRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1ebackupdr.googleapis.com/BackupR\x04name\x12B\n" +
+	"\x04view\x18\x02 \x01(\x0e2(.google.cloud.backupdr.v1beta.BackupViewB\x04\xe2A\x01\x01R\x04view\"\xc9\x01\n" +
+	"\x13UpdateBackupRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12B\n" +
+	"\x06backup\x18\x02 \x01(\v2$.google.cloud.backupdr.v1beta.BackupB\x04\xe2A\x01\x02R\x06backup\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"}\n" +
-	"\x13DeleteBackupRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1ebackupdr.googleapis.com/BackupR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x7f\n" +
+	"\x13DeleteBackupRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1ebackupdr.googleapis.com/BackupR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xb2\a\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xb5\a\n" +
 	"\x14RestoreBackupRequest\x12\x8f\x01\n" +
 	"#compute_instance_target_environment\x18\x03 \x01(\v2>.google.cloud.backupdr.v1beta.ComputeInstanceTargetEnvironmentH\x00R computeInstanceTargetEnvironment\x12m\n" +
 	"\x17disk_target_environment\x18\x05 \x01(\v23.google.cloud.backupdr.v1beta.DiskTargetEnvironmentH\x00R\x15diskTargetEnvironment\x12\x80\x01\n" +
 	"\x1eregion_disk_target_environment\x18\x06 \x01(\v29.google.cloud.backupdr.v1beta.RegionDiskTargetEnvironmentH\x00R\x1bregionDiskTargetEnvironment\x12\x8f\x01\n" +
 	"#compute_instance_restore_properties\x18\x04 \x01(\v2>.google.cloud.backupdr.v1beta.ComputeInstanceRestorePropertiesH\x01R computeInstanceRestoreProperties\x12m\n" +
-	"\x17disk_restore_properties\x18\a \x01(\v23.google.cloud.backupdr.v1beta.DiskRestorePropertiesH\x01R\x15diskRestoreProperties\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1ebackupdr.googleapis.com/BackupR\x04name\x12*\n" +
+	"\x17disk_restore_properties\x18\a \x01(\v23.google.cloud.backupdr.v1beta.DiskRestorePropertiesH\x01R\x15diskRestoreProperties\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1ebackupdr.googleapis.com/BackupR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12a\n" +
-	"\x1aclear_overrides_field_mask\x18\b \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01H\x02R\x17clearOverridesFieldMask\x88\x01\x01B\x14\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12b\n" +
+	"\x1aclear_overrides_field_mask\x18\b \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01H\x02R\x17clearOverridesFieldMask\x88\x01\x01B\x14\n" +
 	"\x12target_environmentB\x15\n" +
 	"\x13instance_propertiesB\x1d\n" +
 	"\x1b_clear_overrides_field_mask\"n\n" +

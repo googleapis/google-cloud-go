@@ -174,16 +174,16 @@ var File_google_cloud_datacatalog_v1beta1_schema_proto protoreflect.FileDescript
 
 const file_google_cloud_datacatalog_v1beta1_schema_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/datacatalog/v1beta1/schema.proto\x12 google.cloud.datacatalog.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\"W\n" +
-	"\x06Schema\x12M\n" +
-	"\acolumns\x18\x02 \x03(\v2..google.cloud.datacatalog.v1beta1.ColumnSchemaB\x03\xe0A\x02R\acolumns\"\xd9\x01\n" +
-	"\fColumnSchema\x12\x1b\n" +
-	"\x06column\x18\x06 \x01(\tB\x03\xe0A\x02R\x06column\x12\x17\n" +
-	"\x04type\x18\x01 \x01(\tB\x03\xe0A\x02R\x04type\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12\x17\n" +
-	"\x04mode\x18\x03 \x01(\tB\x03\xe0A\x01R\x04mode\x12S\n" +
+	"-google/cloud/datacatalog/v1beta1/schema.proto\x12 google.cloud.datacatalog.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\"X\n" +
+	"\x06Schema\x12N\n" +
+	"\acolumns\x18\x02 \x03(\v2..google.cloud.datacatalog.v1beta1.ColumnSchemaB\x04\xe2A\x01\x02R\acolumns\"\xde\x01\n" +
+	"\fColumnSchema\x12\x1c\n" +
+	"\x06column\x18\x06 \x01(\tB\x04\xe2A\x01\x02R\x06column\x12\x18\n" +
+	"\x04type\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04type\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\x18\n" +
+	"\x04mode\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04mode\x12T\n" +
 	"\n" +
-	"subcolumns\x18\a \x03(\v2..google.cloud.datacatalog.v1beta1.ColumnSchemaB\x03\xe0A\x01R\n" +
+	"subcolumns\x18\a \x03(\v2..google.cloud.datacatalog.v1beta1.ColumnSchemaB\x04\xe2A\x01\x01R\n" +
 	"subcolumnsB\xdc\x01\n" +
 	"$com.google.cloud.datacatalog.v1beta1P\x01ZFcloud.google.com/go/datacatalog/apiv1beta1/datacatalogpb;datacatalogpb\xaa\x02 Google.Cloud.DataCatalog.V1Beta1\xca\x02 Google\\Cloud\\DataCatalog\\V1beta1\xea\x02#Google::Cloud::DataCatalog::V1beta1b\x06proto3"
 

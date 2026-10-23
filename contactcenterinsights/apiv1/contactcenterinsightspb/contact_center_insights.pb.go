@@ -9591,9 +9591,9 @@ var File_google_cloud_contactcenterinsights_v1_contact_center_insights_proto pro
 
 const file_google_cloud_contactcenterinsights_v1_contact_center_insights_proto_rawDesc = "" +
 	"\n" +
-	"Cgoogle/cloud/contactcenterinsights/v1/contact_center_insights.proto\x12%google.cloud.contactcenterinsights.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a5google/cloud/contactcenterinsights/v1/resources.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\x1a\x1agoogle/type/interval.proto\"v\n" +
-	"\x15CalculateStatsRequest\x12E\n" +
-	"\blocation\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"Cgoogle/cloud/contactcenterinsights/v1/contact_center_insights.proto\x12%google.cloud.contactcenterinsights.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a5google/cloud/contactcenterinsights/v1/resources.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\x1a\x1agoogle/type/interval.proto\"w\n" +
+	"\x15CalculateStatsRequest\x12F\n" +
+	"\blocation\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\blocation\x12\x16\n" +
 	"\x06filter\x18\x02 \x01(\tR\x06filter\"\xa2\f\n" +
 	"\x16CalculateStatsResponse\x12D\n" +
@@ -9624,108 +9624,108 @@ const file_google_cloud_contactcenterinsights_v1_contact_center_insights_proto_r
 	"\x05value\x18\x02 \x01(\x05R\x05value:\x028\x01\x1a\x8c\x01\n" +
 	"\x16IssueMatchesStatsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\\\n" +
-	"\x05value\x18\x02 \x01(\v2F.google.cloud.contactcenterinsights.v1.IssueModelLabelStats.IssueStatsR\x05value:\x028\x01\"\xec\x02\n" +
-	"\x1fCreateAnalysisOperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12]\n" +
-	"\fconversation\x18\x03 \x01(\tB9\xe0A\x03\xfaA3\n" +
-	"1contactcenterinsights.googleapis.com/ConversationR\fconversation\x12l\n" +
-	"\x12annotator_selector\x18\x04 \x01(\v28.google.cloud.contactcenterinsights.v1.AnnotatorSelectorB\x03\xe0A\x03R\x11annotatorSelector\"\xe5\x01\n" +
-	"\x19CreateConversationRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12\\\n" +
-	"\fconversation\x18\x02 \x01(\v23.google.cloud.contactcenterinsights.v1.ConversationB\x03\xe0A\x02R\fconversation\x12'\n" +
-	"\x0fconversation_id\x18\x03 \x01(\tR\x0econversationId\"\xb1\x03\n" +
-	"\x19UploadConversationRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12\\\n" +
-	"\fconversation\x18\x02 \x01(\v23.google.cloud.contactcenterinsights.v1.ConversationB\x03\xe0A\x02R\fconversation\x12,\n" +
-	"\x0fconversation_id\x18\x03 \x01(\tB\x03\xe0A\x01R\x0econversationId\x12f\n" +
-	"\x10redaction_config\x18\x04 \x01(\v26.google.cloud.contactcenterinsights.v1.RedactionConfigB\x03\xe0A\x01R\x0fredactionConfig\x12]\n" +
-	"\rspeech_config\x18\v \x01(\v23.google.cloud.contactcenterinsights.v1.SpeechConfigB\x03\xe0A\x01R\fspeechConfig\"\xa6\x03\n" +
-	"\x1aUploadConversationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12_\n" +
-	"\arequest\x18\x03 \x01(\v2@.google.cloud.contactcenterinsights.v1.UploadConversationRequestB\x03\xe0A\x03R\arequest\x122\n" +
-	"\x12analysis_operation\x18\x04 \x01(\tB\x03\xe0A\x03R\x11analysisOperation\x12u\n" +
-	"\x18applied_redaction_config\x18\x05 \x01(\v26.google.cloud.contactcenterinsights.v1.RedactionConfigB\x03\xe0A\x03R\x16appliedRedactionConfig\"\x9e\x02\n" +
-	"\x18ListConversationsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x05value\x18\x02 \x01(\v2F.google.cloud.contactcenterinsights.v1.IssueModelLabelStats.IssueStatsR\x05value:\x028\x01\"\xf0\x02\n" +
+	"\x1fCreateAnalysisOperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12^\n" +
+	"\fconversation\x18\x03 \x01(\tB:\xe2A\x01\x03\xfaA3\n" +
+	"1contactcenterinsights.googleapis.com/ConversationR\fconversation\x12m\n" +
+	"\x12annotator_selector\x18\x04 \x01(\v28.google.cloud.contactcenterinsights.v1.AnnotatorSelectorB\x04\xe2A\x01\x03R\x11annotatorSelector\"\xe7\x01\n" +
+	"\x19CreateConversationRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12]\n" +
+	"\fconversation\x18\x02 \x01(\v23.google.cloud.contactcenterinsights.v1.ConversationB\x04\xe2A\x01\x02R\fconversation\x12'\n" +
+	"\x0fconversation_id\x18\x03 \x01(\tR\x0econversationId\"\xb6\x03\n" +
+	"\x19UploadConversationRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12]\n" +
+	"\fconversation\x18\x02 \x01(\v23.google.cloud.contactcenterinsights.v1.ConversationB\x04\xe2A\x01\x02R\fconversation\x12-\n" +
+	"\x0fconversation_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x0econversationId\x12g\n" +
+	"\x10redaction_config\x18\x04 \x01(\v26.google.cloud.contactcenterinsights.v1.RedactionConfigB\x04\xe2A\x01\x01R\x0fredactionConfig\x12^\n" +
+	"\rspeech_config\x18\v \x01(\v23.google.cloud.contactcenterinsights.v1.SpeechConfigB\x04\xe2A\x01\x01R\fspeechConfig\"\xab\x03\n" +
+	"\x1aUploadConversationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12`\n" +
+	"\arequest\x18\x03 \x01(\v2@.google.cloud.contactcenterinsights.v1.UploadConversationRequestB\x04\xe2A\x01\x03R\arequest\x123\n" +
+	"\x12analysis_operation\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x11analysisOperation\x12v\n" +
+	"\x18applied_redaction_config\x18\x05 \x01(\v26.google.cloud.contactcenterinsights.v1.RedactionConfigB\x04\xe2A\x01\x03R\x16appliedRedactionConfig\"\xa0\x02\n" +
+	"\x18ListConversationsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
-	"\x06filter\x18\x04 \x01(\tR\x06filter\x12\x1e\n" +
-	"\border_by\x18\a \x01(\tB\x03\xe0A\x01R\aorderBy\x12K\n" +
+	"\x06filter\x18\x04 \x01(\tR\x06filter\x12\x1f\n" +
+	"\border_by\x18\a \x01(\tB\x04\xe2A\x01\x01R\aorderBy\x12K\n" +
 	"\x04view\x18\x05 \x01(\x0e27.google.cloud.contactcenterinsights.v1.ConversationViewR\x04view\"\x9e\x01\n" +
 	"\x19ListConversationsResponse\x12Y\n" +
 	"\rconversations\x18\x01 \x03(\v23.google.cloud.contactcenterinsights.v1.ConversationR\rconversations\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb4\x01\n" +
-	"\x16GetConversationRequest\x12M\n" +
-	"\x04name\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb5\x01\n" +
+	"\x16GetConversationRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
 	"1contactcenterinsights.googleapis.com/ConversationR\x04name\x12K\n" +
-	"\x04view\x18\x02 \x01(\x0e27.google.cloud.contactcenterinsights.v1.ConversationViewR\x04view\"\xb6\x01\n" +
-	"\x19UpdateConversationRequest\x12\\\n" +
-	"\fconversation\x18\x01 \x01(\v23.google.cloud.contactcenterinsights.v1.ConversationB\x03\xe0A\x02R\fconversation\x12;\n" +
+	"\x04view\x18\x02 \x01(\x0e27.google.cloud.contactcenterinsights.v1.ConversationViewR\x04view\"\xb7\x01\n" +
+	"\x19UpdateConversationRequest\x12]\n" +
+	"\fconversation\x18\x01 \x01(\v23.google.cloud.contactcenterinsights.v1.ConversationB\x04\xe2A\x01\x02R\fconversation\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"\x80\x01\n" +
-	"\x19DeleteConversationRequest\x12M\n" +
-	"\x04name\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
+	"updateMask\"\x81\x01\n" +
+	"\x19DeleteConversationRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
 	"1contactcenterinsights.googleapis.com/ConversationR\x04name\x12\x14\n" +
-	"\x05force\x18\x02 \x01(\bR\x05force\"\xad\v\n" +
+	"\x05force\x18\x02 \x01(\bR\x05force\"\xb9\v\n" +
 	"\x1aIngestConversationsRequest\x12l\n" +
 	"\n" +
 	"gcs_source\x18\x02 \x01(\v2K.google.cloud.contactcenterinsights.v1.IngestConversationsRequest.GcsSourceH\x00R\tgcsSource\x12\x94\x01\n" +
-	"\x18transcript_object_config\x18\x03 \x01(\v2X.google.cloud.contactcenterinsights.v1.IngestConversationsRequest.TranscriptObjectConfigH\x01R\x16transcriptObjectConfig\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x18transcript_object_config\x18\x03 \x01(\v2X.google.cloud.contactcenterinsights.v1.IngestConversationsRequest.TranscriptObjectConfigH\x01R\x16transcriptObjectConfig\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x85\x01\n" +
-	"\x13conversation_config\x18\x04 \x01(\v2T.google.cloud.contactcenterinsights.v1.IngestConversationsRequest.ConversationConfigR\x12conversationConfig\x12f\n" +
-	"\x10redaction_config\x18\x05 \x01(\v26.google.cloud.contactcenterinsights.v1.RedactionConfigB\x03\xe0A\x01R\x0fredactionConfig\x12]\n" +
-	"\rspeech_config\x18\x06 \x01(\v23.google.cloud.contactcenterinsights.v1.SpeechConfigB\x03\xe0A\x01R\fspeechConfig\x12)\n" +
-	"\vsample_size\x18\a \x01(\x05B\x03\xe0A\x01H\x02R\n" +
-	"sampleSize\x88\x01\x01\x1a\x9d\x03\n" +
-	"\tGcsSource\x12\"\n" +
+	"\x13conversation_config\x18\x04 \x01(\v2T.google.cloud.contactcenterinsights.v1.IngestConversationsRequest.ConversationConfigR\x12conversationConfig\x12g\n" +
+	"\x10redaction_config\x18\x05 \x01(\v26.google.cloud.contactcenterinsights.v1.RedactionConfigB\x04\xe2A\x01\x01R\x0fredactionConfig\x12^\n" +
+	"\rspeech_config\x18\x06 \x01(\v23.google.cloud.contactcenterinsights.v1.SpeechConfigB\x04\xe2A\x01\x01R\fspeechConfig\x12*\n" +
+	"\vsample_size\x18\a \x01(\x05B\x04\xe2A\x01\x01H\x02R\n" +
+	"sampleSize\x88\x01\x01\x1a\xa1\x03\n" +
+	"\tGcsSource\x12#\n" +
 	"\n" +
-	"bucket_uri\x18\x01 \x01(\tB\x03\xe0A\x02R\tbucketUri\x12\x8f\x01\n" +
-	"\x12bucket_object_type\x18\x02 \x01(\x0e2\\.google.cloud.contactcenterinsights.v1.IngestConversationsRequest.GcsSource.BucketObjectTypeB\x03\xe0A\x01R\x10bucketObjectType\x128\n" +
-	"\x13metadata_bucket_uri\x18\x03 \x01(\tB\x03\xe0A\x01H\x00R\x11metadataBucketUri\x88\x01\x01\x125\n" +
-	"\x14custom_metadata_keys\x18\f \x03(\tB\x03\xe0A\x01R\x12customMetadataKeys\"Q\n" +
+	"bucket_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tbucketUri\x12\x90\x01\n" +
+	"\x12bucket_object_type\x18\x02 \x01(\x0e2\\.google.cloud.contactcenterinsights.v1.IngestConversationsRequest.GcsSource.BucketObjectTypeB\x04\xe2A\x01\x01R\x10bucketObjectType\x129\n" +
+	"\x13metadata_bucket_uri\x18\x03 \x01(\tB\x04\xe2A\x01\x01H\x00R\x11metadataBucketUri\x88\x01\x01\x126\n" +
+	"\x14custom_metadata_keys\x18\f \x03(\tB\x04\xe2A\x01\x01R\x12customMetadataKeys\"Q\n" +
 	"\x10BucketObjectType\x12\"\n" +
 	"\x1eBUCKET_OBJECT_TYPE_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +
 	"TRANSCRIPT\x10\x01\x12\t\n" +
 	"\x05AUDIO\x10\x02B\x16\n" +
-	"\x14_metadata_bucket_uri\x1aq\n" +
-	"\x16TranscriptObjectConfig\x12W\n" +
-	"\x06medium\x18\x01 \x01(\x0e2:.google.cloud.contactcenterinsights.v1.Conversation.MediumB\x03\xe0A\x02R\x06medium\x1a\x8e\x01\n" +
-	"\x12ConversationConfig\x12\x1e\n" +
-	"\bagent_id\x18\x01 \x01(\tB\x03\xe0A\x01R\aagentId\x12(\n" +
-	"\ragent_channel\x18\x02 \x01(\x05B\x03\xe0A\x01R\fagentChannel\x12.\n" +
-	"\x10customer_channel\x18\x03 \x01(\x05B\x03\xe0A\x01R\x0fcustomerChannelB\b\n" +
+	"\x14_metadata_bucket_uri\x1ar\n" +
+	"\x16TranscriptObjectConfig\x12X\n" +
+	"\x06medium\x18\x01 \x01(\x0e2:.google.cloud.contactcenterinsights.v1.Conversation.MediumB\x04\xe2A\x01\x02R\x06medium\x1a\x91\x01\n" +
+	"\x12ConversationConfig\x12\x1f\n" +
+	"\bagent_id\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\aagentId\x12)\n" +
+	"\ragent_channel\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\fagentChannel\x12/\n" +
+	"\x10customer_channel\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\x0fcustomerChannelB\b\n" +
 	"\x06sourceB\x0f\n" +
 	"\robject_configB\x0e\n" +
-	"\f_sample_size\"\xe7\x05\n" +
-	"\x1bIngestConversationsMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12`\n" +
-	"\arequest\x18\x03 \x01(\v2A.google.cloud.contactcenterinsights.v1.IngestConversationsRequestB\x03\xe0A\x03R\arequest\x12>\n" +
-	"\x0epartial_errors\x18\x04 \x03(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\rpartialErrors\x12\x9e\x01\n" +
-	"\x1aingest_conversations_stats\x18\x05 \x01(\v2[.google.cloud.contactcenterinsights.v1.IngestConversationsMetadata.IngestConversationsStatsB\x03\xe0A\x03R\x18ingestConversationsStats\x1a\x86\x02\n" +
-	"\x18IngestConversationsStats\x129\n" +
-	"\x16processed_object_count\x18\x01 \x01(\x05B\x03\xe0A\x03R\x14processedObjectCount\x12=\n" +
-	"\x18duplicates_skipped_count\x18\x02 \x01(\x05B\x03\xe0A\x03R\x16duplicatesSkippedCount\x12;\n" +
-	"\x17successful_ingest_count\x18\x03 \x01(\x05B\x03\xe0A\x03R\x15successfulIngestCount\x123\n" +
-	"\x13failed_ingest_count\x18\x04 \x01(\x05B\x03\xe0A\x03R\x11failedIngestCount\"\x1d\n" +
-	"\x1bIngestConversationsResponse\"\xbc\x01\n" +
-	"\x15CreateAnalysisRequest\x12Q\n" +
-	"\x06parent\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
-	"1contactcenterinsights.googleapis.com/ConversationR\x06parent\x12P\n" +
-	"\banalysis\x18\x02 \x01(\v2/.google.cloud.contactcenterinsights.v1.AnalysisB\x03\xe0A\x02R\banalysis\"\xbc\x01\n" +
-	"\x13ListAnalysesRequest\x12Q\n" +
-	"\x06parent\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
+	"\f_sample_size\"\xf0\x05\n" +
+	"\x1bIngestConversationsMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12a\n" +
+	"\arequest\x18\x03 \x01(\v2A.google.cloud.contactcenterinsights.v1.IngestConversationsRequestB\x04\xe2A\x01\x03R\arequest\x12?\n" +
+	"\x0epartial_errors\x18\x04 \x03(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\rpartialErrors\x12\x9f\x01\n" +
+	"\x1aingest_conversations_stats\x18\x05 \x01(\v2[.google.cloud.contactcenterinsights.v1.IngestConversationsMetadata.IngestConversationsStatsB\x04\xe2A\x01\x03R\x18ingestConversationsStats\x1a\x8a\x02\n" +
+	"\x18IngestConversationsStats\x12:\n" +
+	"\x16processed_object_count\x18\x01 \x01(\x05B\x04\xe2A\x01\x03R\x14processedObjectCount\x12>\n" +
+	"\x18duplicates_skipped_count\x18\x02 \x01(\x05B\x04\xe2A\x01\x03R\x16duplicatesSkippedCount\x12<\n" +
+	"\x17successful_ingest_count\x18\x03 \x01(\x05B\x04\xe2A\x01\x03R\x15successfulIngestCount\x124\n" +
+	"\x13failed_ingest_count\x18\x04 \x01(\x05B\x04\xe2A\x01\x03R\x11failedIngestCount\"\x1d\n" +
+	"\x1bIngestConversationsResponse\"\xbe\x01\n" +
+	"\x15CreateAnalysisRequest\x12R\n" +
+	"\x06parent\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1contactcenterinsights.googleapis.com/ConversationR\x06parent\x12Q\n" +
+	"\banalysis\x18\x02 \x01(\v2/.google.cloud.contactcenterinsights.v1.AnalysisB\x04\xe2A\x01\x02R\banalysis\"\xbd\x01\n" +
+	"\x13ListAnalysesRequest\x12R\n" +
+	"\x06parent\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
 	"1contactcenterinsights.googleapis.com/ConversationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -9733,19 +9733,19 @@ const file_google_cloud_contactcenterinsights_v1_contact_center_insights_proto_r
 	"\x06filter\x18\x04 \x01(\tR\x06filter\"\x8b\x01\n" +
 	"\x14ListAnalysesResponse\x12K\n" +
 	"\banalyses\x18\x01 \x03(\v2/.google.cloud.contactcenterinsights.v1.AnalysisR\banalyses\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"_\n" +
-	"\x12GetAnalysisRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-contactcenterinsights.googleapis.com/AnalysisR\x04name\"b\n" +
-	"\x15DeleteAnalysisRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-contactcenterinsights.googleapis.com/AnalysisR\x04name\"\xa0\x02\n" +
-	"\x1fBulkAnalyzeConversationsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
-	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x02R\x06filter\x124\n" +
-	"\x13analysis_percentage\x18\x03 \x01(\x02B\x03\xe0A\x02R\x12analysisPercentage\x12g\n" +
-	"\x12annotator_selector\x18\b \x01(\v28.google.cloud.contactcenterinsights.v1.AnnotatorSelectorR\x11annotatorSelector\"\xeb\x03\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"`\n" +
+	"\x12GetAnalysisRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-contactcenterinsights.googleapis.com/AnalysisR\x04name\"c\n" +
+	"\x15DeleteAnalysisRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-contactcenterinsights.googleapis.com/AnalysisR\x04name\"\xa3\x02\n" +
+	"\x1fBulkAnalyzeConversationsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12\x1c\n" +
+	"\x06filter\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06filter\x125\n" +
+	"\x13analysis_percentage\x18\x03 \x01(\x02B\x04\xe2A\x01\x02R\x12analysisPercentage\x12g\n" +
+	"\x12annotator_selector\x18\b \x01(\v28.google.cloud.contactcenterinsights.v1.AnnotatorSelectorR\x11annotatorSelector\"\xec\x03\n" +
 	" BulkAnalyzeConversationsMetadata\x12;\n" +
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x125\n" +
@@ -9753,13 +9753,13 @@ const file_google_cloud_contactcenterinsights_v1_contact_center_insights_proto_r
 	"\arequest\x18\x03 \x01(\v2F.google.cloud.contactcenterinsights.v1.BulkAnalyzeConversationsRequestR\arequest\x128\n" +
 	"\x18completed_analyses_count\x18\x04 \x01(\x05R\x16completedAnalysesCount\x122\n" +
 	"\x15failed_analyses_count\x18\x05 \x01(\x05R\x13failedAnalysesCount\x12C\n" +
-	"\x1etotal_requested_analyses_count\x18\x06 \x01(\x05R\x1btotalRequestedAnalysesCount\x12>\n" +
-	"\x0epartial_errors\x18\a \x03(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\rpartialErrors\"\x92\x01\n" +
+	"\x1etotal_requested_analyses_count\x18\x06 \x01(\x05R\x1btotalRequestedAnalysesCount\x12?\n" +
+	"\x0epartial_errors\x18\a \x03(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\rpartialErrors\"\x92\x01\n" +
 	" BulkAnalyzeConversationsResponse\x12:\n" +
 	"\x19successful_analysis_count\x18\x01 \x01(\x05R\x17successfulAnalysisCount\x122\n" +
-	"\x15failed_analysis_count\x18\x02 \x01(\x05R\x13failedAnalysisCount\"\xbb\x01\n" +
-	"\x1eBulkDeleteConversationsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x15failed_analysis_count\x18\x02 \x01(\x05R\x13failedAnalysisCount\"\xbc\x01\n" +
+	"\x1eBulkDeleteConversationsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x16\n" +
 	"\x06filter\x18\x02 \x01(\tR\x06filter\x12(\n" +
 	"\x10max_delete_count\x18\x03 \x01(\x05R\x0emaxDeleteCount\x12\x14\n" +
@@ -9770,137 +9770,137 @@ const file_google_cloud_contactcenterinsights_v1_contact_center_insights_proto_r
 	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\x12_\n" +
 	"\arequest\x18\x03 \x01(\v2E.google.cloud.contactcenterinsights.v1.BulkDeleteConversationsRequestR\arequest\x129\n" +
 	"\x0epartial_errors\x18\x04 \x03(\v2\x12.google.rpc.StatusR\rpartialErrors\"!\n" +
-	"\x1fBulkDeleteConversationsResponse\"\xf3\x04\n" +
+	"\x1fBulkDeleteConversationsResponse\"\xf5\x04\n" +
 	"\x19ExportInsightsDataRequest\x12\x8a\x01\n" +
-	"\x15big_query_destination\x18\x02 \x01(\v2T.google.cloud.contactcenterinsights.v1.ExportInsightsDataRequest.BigQueryDestinationH\x00R\x13bigQueryDestination\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x15big_query_destination\x18\x02 \x01(\v2T.google.cloud.contactcenterinsights.v1.ExportInsightsDataRequest.BigQueryDestinationH\x00R\x13bigQueryDestination\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x16\n" +
 	"\x06filter\x18\x03 \x01(\tR\x06filter\x12\x17\n" +
 	"\akms_key\x18\x04 \x01(\tR\x06kmsKey\x12~\n" +
-	"\x11write_disposition\x18\x05 \x01(\x0e2Q.google.cloud.contactcenterinsights.v1.ExportInsightsDataRequest.WriteDispositionR\x10writeDisposition\x1ai\n" +
+	"\x11write_disposition\x18\x05 \x01(\x0e2Q.google.cloud.contactcenterinsights.v1.ExportInsightsDataRequest.WriteDispositionR\x10writeDisposition\x1aj\n" +
 	"\x13BigQueryDestination\x12\x1d\n" +
 	"\n" +
-	"project_id\x18\x03 \x01(\tR\tprojectId\x12\x1d\n" +
-	"\adataset\x18\x01 \x01(\tB\x03\xe0A\x02R\adataset\x12\x14\n" +
+	"project_id\x18\x03 \x01(\tR\tprojectId\x12\x1e\n" +
+	"\adataset\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\adataset\x12\x14\n" +
 	"\x05table\x18\x02 \x01(\tR\x05table\"[\n" +
 	"\x10WriteDisposition\x12!\n" +
 	"\x1dWRITE_DISPOSITION_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eWRITE_TRUNCATE\x10\x01\x12\x10\n" +
 	"\fWRITE_APPEND\x10\x02B\r\n" +
-	"\vdestination\"\xb1\x02\n" +
-	"\x1aExportInsightsDataMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12Z\n" +
+	"\vdestination\"\xb3\x02\n" +
+	"\x1aExportInsightsDataMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12Z\n" +
 	"\arequest\x18\x03 \x01(\v2@.google.cloud.contactcenterinsights.v1.ExportInsightsDataRequestR\arequest\x129\n" +
 	"\x0epartial_errors\x18\x04 \x03(\v2\x12.google.rpc.StatusR\rpartialErrors\"\x1c\n" +
-	"\x1aExportInsightsDataResponse\"\xb5\x01\n" +
-	"\x17CreateIssueModelRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12W\n" +
-	"\vissue_model\x18\x02 \x01(\v21.google.cloud.contactcenterinsights.v1.IssueModelB\x03\xe0A\x02R\n" +
-	"issueModel\"\xf2\x01\n" +
-	"\x18CreateIssueModelMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12X\n" +
-	"\arequest\x18\x03 \x01(\v2>.google.cloud.contactcenterinsights.v1.CreateIssueModelRequestR\arequest\"\xaf\x01\n" +
-	"\x17UpdateIssueModelRequest\x12W\n" +
-	"\vissue_model\x18\x01 \x01(\v21.google.cloud.contactcenterinsights.v1.IssueModelB\x03\xe0A\x02R\n" +
+	"\x1aExportInsightsDataResponse\"\xb7\x01\n" +
+	"\x17CreateIssueModelRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12X\n" +
+	"\vissue_model\x18\x02 \x01(\v21.google.cloud.contactcenterinsights.v1.IssueModelB\x04\xe2A\x01\x02R\n" +
+	"issueModel\"\xf4\x01\n" +
+	"\x18CreateIssueModelMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12X\n" +
+	"\arequest\x18\x03 \x01(\v2>.google.cloud.contactcenterinsights.v1.CreateIssueModelRequestR\arequest\"\xb0\x01\n" +
+	"\x17UpdateIssueModelRequest\x12X\n" +
+	"\vissue_model\x18\x01 \x01(\v21.google.cloud.contactcenterinsights.v1.IssueModelB\x04\xe2A\x01\x02R\n" +
 	"issueModel\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"[\n" +
-	"\x16ListIssueModelsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"updateMask\"\\\n" +
+	"\x16ListIssueModelsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\"o\n" +
 	"\x17ListIssueModelsResponse\x12T\n" +
-	"\fissue_models\x18\x01 \x03(\v21.google.cloud.contactcenterinsights.v1.IssueModelR\vissueModels\"c\n" +
-	"\x14GetIssueModelRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/contactcenterinsights.googleapis.com/IssueModelR\x04name\"f\n" +
-	"\x17DeleteIssueModelRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/contactcenterinsights.googleapis.com/IssueModelR\x04name\"\xf2\x01\n" +
-	"\x18DeleteIssueModelMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12X\n" +
-	"\arequest\x18\x03 \x01(\v2>.google.cloud.contactcenterinsights.v1.DeleteIssueModelRequestR\arequest\"f\n" +
-	"\x17DeployIssueModelRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
+	"\fissue_models\x18\x01 \x03(\v21.google.cloud.contactcenterinsights.v1.IssueModelR\vissueModels\"d\n" +
+	"\x14GetIssueModelRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/contactcenterinsights.googleapis.com/IssueModelR\x04name\"g\n" +
+	"\x17DeleteIssueModelRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/contactcenterinsights.googleapis.com/IssueModelR\x04name\"\xf4\x01\n" +
+	"\x18DeleteIssueModelMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12X\n" +
+	"\arequest\x18\x03 \x01(\v2>.google.cloud.contactcenterinsights.v1.DeleteIssueModelRequestR\arequest\"g\n" +
+	"\x17DeployIssueModelRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
 	"/contactcenterinsights.googleapis.com/IssueModelR\x04name\"\x1a\n" +
-	"\x18DeployIssueModelResponse\"\xf2\x01\n" +
-	"\x18DeployIssueModelMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12X\n" +
-	"\arequest\x18\x03 \x01(\v2>.google.cloud.contactcenterinsights.v1.DeployIssueModelRequestR\arequest\"h\n" +
-	"\x19UndeployIssueModelRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
+	"\x18DeployIssueModelResponse\"\xf4\x01\n" +
+	"\x18DeployIssueModelMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12X\n" +
+	"\arequest\x18\x03 \x01(\v2>.google.cloud.contactcenterinsights.v1.DeployIssueModelRequestR\arequest\"i\n" +
+	"\x19UndeployIssueModelRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
 	"/contactcenterinsights.googleapis.com/IssueModelR\x04name\"\x1c\n" +
-	"\x1aUndeployIssueModelResponse\"\xf6\x01\n" +
-	"\x1aUndeployIssueModelMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12Z\n" +
-	"\arequest\x18\x03 \x01(\v2@.google.cloud.contactcenterinsights.v1.UndeployIssueModelRequestR\arequest\"\xa5\x02\n" +
+	"\x1aUndeployIssueModelResponse\"\xf8\x01\n" +
+	"\x1aUndeployIssueModelMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12Z\n" +
+	"\arequest\x18\x03 \x01(\v2@.google.cloud.contactcenterinsights.v1.UndeployIssueModelRequestR\arequest\"\xa7\x02\n" +
 	"\x17ExportIssueModelRequest\x12x\n" +
-	"\x0fgcs_destination\x18\x02 \x01(\v2M.google.cloud.contactcenterinsights.v1.ExportIssueModelRequest.GcsDestinationH\x00R\x0egcsDestination\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/contactcenterinsights.googleapis.com/IssueModelR\x04name\x1a4\n" +
-	"\x0eGcsDestination\x12\"\n" +
+	"\x0fgcs_destination\x18\x02 \x01(\v2M.google.cloud.contactcenterinsights.v1.ExportIssueModelRequest.GcsDestinationH\x00R\x0egcsDestination\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/contactcenterinsights.googleapis.com/IssueModelR\x04name\x1a5\n" +
+	"\x0eGcsDestination\x12#\n" +
 	"\n" +
-	"object_uri\x18\x01 \x01(\tB\x03\xe0A\x02R\tobjectUriB\r\n" +
+	"object_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tobjectUriB\r\n" +
 	"\vDestination\"\x1a\n" +
 	"\x18ExportIssueModelResponse\"\xe8\x01\n" +
 	"\x18ExportIssueModelMetadata\x12;\n" +
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x125\n" +
 	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\x12X\n" +
-	"\arequest\x18\x03 \x01(\v2>.google.cloud.contactcenterinsights.v1.ExportIssueModelRequestR\arequest\"\xb1\x02\n" +
+	"\arequest\x18\x03 \x01(\v2>.google.cloud.contactcenterinsights.v1.ExportIssueModelRequestR\arequest\"\xb4\x02\n" +
 	"\x17ImportIssueModelRequest\x12i\n" +
 	"\n" +
-	"gcs_source\x18\x02 \x01(\v2H.google.cloud.contactcenterinsights.v1.ImportIssueModelRequest.GcsSourceH\x00R\tgcsSource\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12-\n" +
-	"\x10create_new_model\x18\x03 \x01(\bB\x03\xe0A\x01R\x0ecreateNewModel\x1a/\n" +
-	"\tGcsSource\x12\"\n" +
+	"gcs_source\x18\x02 \x01(\v2H.google.cloud.contactcenterinsights.v1.ImportIssueModelRequest.GcsSourceH\x00R\tgcsSource\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12.\n" +
+	"\x10create_new_model\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x0ecreateNewModel\x1a0\n" +
+	"\tGcsSource\x12#\n" +
 	"\n" +
-	"object_uri\x18\x01 \x01(\tB\x03\xe0A\x02R\tobjectUriB\b\n" +
+	"object_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tobjectUriB\b\n" +
 	"\x06Source\"\x1a\n" +
 	"\x18ImportIssueModelResponse\"\xe8\x01\n" +
 	"\x18ImportIssueModelMetadata\x12;\n" +
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x125\n" +
 	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\x12X\n" +
-	"\arequest\x18\x03 \x01(\v2>.google.cloud.contactcenterinsights.v1.ImportIssueModelRequestR\arequest\"Y\n" +
-	"\x0fGetIssueRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*contactcenterinsights.googleapis.com/IssueR\x04name\"d\n" +
-	"\x11ListIssuesRequest\x12O\n" +
-	"\x06parent\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
+	"\arequest\x18\x03 \x01(\v2>.google.cloud.contactcenterinsights.v1.ImportIssueModelRequestR\arequest\"Z\n" +
+	"\x0fGetIssueRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*contactcenterinsights.googleapis.com/IssueR\x04name\"e\n" +
+	"\x11ListIssuesRequest\x12P\n" +
+	"\x06parent\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
 	"/contactcenterinsights.googleapis.com/IssueModelR\x06parent\"Z\n" +
 	"\x12ListIssuesResponse\x12D\n" +
-	"\x06issues\x18\x01 \x03(\v2,.google.cloud.contactcenterinsights.v1.IssueR\x06issues\"\x9a\x01\n" +
-	"\x12UpdateIssueRequest\x12G\n" +
-	"\x05issue\x18\x01 \x01(\v2,.google.cloud.contactcenterinsights.v1.IssueB\x03\xe0A\x02R\x05issue\x12;\n" +
+	"\x06issues\x18\x01 \x03(\v2,.google.cloud.contactcenterinsights.v1.IssueR\x06issues\"\x9b\x01\n" +
+	"\x12UpdateIssueRequest\x12H\n" +
+	"\x05issue\x18\x01 \x01(\v2,.google.cloud.contactcenterinsights.v1.IssueB\x04\xe2A\x01\x02R\x05issue\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"\\\n" +
-	"\x12DeleteIssueRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*contactcenterinsights.googleapis.com/IssueR\x04name\"{\n" +
-	"\x1fCalculateIssueModelStatsRequest\x12X\n" +
-	"\vissue_model\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
+	"updateMask\"]\n" +
+	"\x12DeleteIssueRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*contactcenterinsights.googleapis.com/IssueR\x04name\"|\n" +
+	"\x1fCalculateIssueModelStatsRequest\x12Y\n" +
+	"\vissue_model\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
 	"/contactcenterinsights.googleapis.com/IssueModelR\n" +
 	"issueModel\"\x84\x01\n" +
 	" CalculateIssueModelStatsResponse\x12`\n" +
-	"\rcurrent_stats\x18\x04 \x01(\v2;.google.cloud.contactcenterinsights.v1.IssueModelLabelStatsR\fcurrentStats\"\xc1\x01\n" +
-	"\x1aCreatePhraseMatcherRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12`\n" +
-	"\x0ephrase_matcher\x18\x02 \x01(\v24.google.cloud.contactcenterinsights.v1.PhraseMatcherB\x03\xe0A\x02R\rphraseMatcher\"\xb2\x01\n" +
-	"\x19ListPhraseMatchersRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\rcurrent_stats\x18\x04 \x01(\v2;.google.cloud.contactcenterinsights.v1.IssueModelLabelStatsR\fcurrentStats\"\xc3\x01\n" +
+	"\x1aCreatePhraseMatcherRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12a\n" +
+	"\x0ephrase_matcher\x18\x02 \x01(\v24.google.cloud.contactcenterinsights.v1.PhraseMatcherB\x04\xe2A\x01\x02R\rphraseMatcher\"\xb3\x01\n" +
+	"\x19ListPhraseMatchersRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -9908,108 +9908,108 @@ const file_google_cloud_contactcenterinsights_v1_contact_center_insights_proto_r
 	"\x06filter\x18\x04 \x01(\tR\x06filter\"\xa3\x01\n" +
 	"\x1aListPhraseMatchersResponse\x12]\n" +
 	"\x0fphrase_matchers\x18\x01 \x03(\v24.google.cloud.contactcenterinsights.v1.PhraseMatcherR\x0ephraseMatchers\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"i\n" +
-	"\x17GetPhraseMatcherRequest\x12N\n" +
-	"\x04name\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\n" +
-	"2contactcenterinsights.googleapis.com/PhraseMatcherR\x04name\"l\n" +
-	"\x1aDeletePhraseMatcherRequest\x12N\n" +
-	"\x04name\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\n" +
-	"2contactcenterinsights.googleapis.com/PhraseMatcherR\x04name\"\xbb\x01\n" +
-	"\x1aUpdatePhraseMatcherRequest\x12`\n" +
-	"\x0ephrase_matcher\x18\x01 \x01(\v24.google.cloud.contactcenterinsights.v1.PhraseMatcherB\x03\xe0A\x02R\rphraseMatcher\x12;\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"j\n" +
+	"\x17GetPhraseMatcherRequest\x12O\n" +
+	"\x04name\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\n" +
+	"2contactcenterinsights.googleapis.com/PhraseMatcherR\x04name\"m\n" +
+	"\x1aDeletePhraseMatcherRequest\x12O\n" +
+	"\x04name\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\n" +
+	"2contactcenterinsights.googleapis.com/PhraseMatcherR\x04name\"\xbc\x01\n" +
+	"\x1aUpdatePhraseMatcherRequest\x12a\n" +
+	"\x0ephrase_matcher\x18\x01 \x01(\v24.google.cloud.contactcenterinsights.v1.PhraseMatcherB\x04\xe2A\x01\x02R\rphraseMatcher\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"_\n" +
-	"\x12GetSettingsRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-contactcenterinsights.googleapis.com/SettingsR\x04name\"\xab\x01\n" +
-	"\x15UpdateSettingsRequest\x12P\n" +
-	"\bsettings\x18\x01 \x01(\v2/.google.cloud.contactcenterinsights.v1.SettingsB\x03\xe0A\x02R\bsettings\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\xbd\x01\n" +
-	"\x19CreateAnalysisRuleRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12]\n" +
-	"\ranalysis_rule\x18\x02 \x01(\v23.google.cloud.contactcenterinsights.v1.AnalysisRuleB\x03\xe0A\x02R\fanalysisRule\"g\n" +
-	"\x16GetAnalysisRuleRequest\x12M\n" +
-	"\x04name\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
-	"1contactcenterinsights.googleapis.com/AnalysisRuleR\x04name\"\xbc\x01\n" +
-	"\x19UpdateAnalysisRuleRequest\x12]\n" +
-	"\ranalysis_rule\x18\x01 \x01(\v23.google.cloud.contactcenterinsights.v1.AnalysisRuleB\x03\xe0A\x02R\fanalysisRule\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"j\n" +
-	"\x19DeleteAnalysisRuleRequest\x12M\n" +
-	"\x04name\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
-	"1contactcenterinsights.googleapis.com/AnalysisRuleR\x04name\"\xa3\x01\n" +
-	"\x18ListAnalysisRulesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"updateMask\"`\n" +
+	"\x12GetSettingsRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-contactcenterinsights.googleapis.com/SettingsR\x04name\"\xad\x01\n" +
+	"\x15UpdateSettingsRequest\x12Q\n" +
+	"\bsettings\x18\x01 \x01(\v2/.google.cloud.contactcenterinsights.v1.SettingsB\x04\xe2A\x01\x02R\bsettings\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\xbf\x01\n" +
+	"\x19CreateAnalysisRuleRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12^\n" +
+	"\ranalysis_rule\x18\x02 \x01(\v23.google.cloud.contactcenterinsights.v1.AnalysisRuleB\x04\xe2A\x01\x02R\fanalysisRule\"h\n" +
+	"\x16GetAnalysisRuleRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1contactcenterinsights.googleapis.com/AnalysisRuleR\x04name\"\xbe\x01\n" +
+	"\x19UpdateAnalysisRuleRequest\x12^\n" +
+	"\ranalysis_rule\x18\x01 \x01(\v23.google.cloud.contactcenterinsights.v1.AnalysisRuleB\x04\xe2A\x01\x02R\fanalysisRule\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"k\n" +
+	"\x19DeleteAnalysisRuleRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1contactcenterinsights.googleapis.com/AnalysisRuleR\x04name\"\xa6\x01\n" +
+	"\x18ListAnalysisRulesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x9f\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x9f\x01\n" +
 	"\x19ListAnalysisRulesResponse\x12Z\n" +
 	"\x0eanalysis_rules\x18\x01 \x03(\v23.google.cloud.contactcenterinsights.v1.AnalysisRuleR\ranalysisRules\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"k\n" +
-	"\x18GetEncryptionSpecRequest\x12O\n" +
-	"\x04name\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\n" +
-	"3contactcenterinsights.googleapis.com/EncryptionSpecR\x04name\"\x86\x01\n" +
-	"\x1fInitializeEncryptionSpecRequest\x12c\n" +
-	"\x0fencryption_spec\x18\x01 \x01(\v25.google.cloud.contactcenterinsights.v1.EncryptionSpecB\x03\xe0A\x02R\x0eencryptionSpec\"\"\n" +
-	" InitializeEncryptionSpecResponse\"\xc2\x02\n" +
-	" InitializeEncryptionSpecMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12e\n" +
-	"\arequest\x18\x03 \x01(\v2F.google.cloud.contactcenterinsights.v1.InitializeEncryptionSpecRequestB\x03\xe0A\x03R\arequest\x129\n" +
-	"\x0epartial_errors\x18\x04 \x03(\v2\x12.google.rpc.StatusR\rpartialErrors\"\x9c\x01\n" +
-	"\x11CreateViewRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12D\n" +
-	"\x04view\x18\x02 \x01(\v2+.google.cloud.contactcenterinsights.v1.ViewB\x03\xe0A\x02R\x04view\"W\n" +
-	"\x0eGetViewRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")contactcenterinsights.googleapis.com/ViewR\x04name\"\x91\x01\n" +
-	"\x10ListViewsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"l\n" +
+	"\x18GetEncryptionSpecRequest\x12P\n" +
+	"\x04name\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\n" +
+	"3contactcenterinsights.googleapis.com/EncryptionSpecR\x04name\"\x87\x01\n" +
+	"\x1fInitializeEncryptionSpecRequest\x12d\n" +
+	"\x0fencryption_spec\x18\x01 \x01(\v25.google.cloud.contactcenterinsights.v1.EncryptionSpecB\x04\xe2A\x01\x02R\x0eencryptionSpec\"\"\n" +
+	" InitializeEncryptionSpecResponse\"\xc5\x02\n" +
+	" InitializeEncryptionSpecMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12f\n" +
+	"\arequest\x18\x03 \x01(\v2F.google.cloud.contactcenterinsights.v1.InitializeEncryptionSpecRequestB\x04\xe2A\x01\x03R\arequest\x129\n" +
+	"\x0epartial_errors\x18\x04 \x03(\v2\x12.google.rpc.StatusR\rpartialErrors\"\x9e\x01\n" +
+	"\x11CreateViewRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12E\n" +
+	"\x04view\x18\x02 \x01(\v2+.google.cloud.contactcenterinsights.v1.ViewB\x04\xe2A\x01\x02R\x04view\"X\n" +
+	"\x0eGetViewRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")contactcenterinsights.googleapis.com/ViewR\x04name\"\x92\x01\n" +
+	"\x10ListViewsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"~\n" +
 	"\x11ListViewsResponse\x12A\n" +
 	"\x05views\x18\x01 \x03(\v2+.google.cloud.contactcenterinsights.v1.ViewR\x05views\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x96\x01\n" +
-	"\x11UpdateViewRequest\x12D\n" +
-	"\x04view\x18\x01 \x01(\v2+.google.cloud.contactcenterinsights.v1.ViewB\x03\xe0A\x02R\x04view\x12;\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x97\x01\n" +
+	"\x11UpdateViewRequest\x12E\n" +
+	"\x04view\x18\x01 \x01(\v2+.google.cloud.contactcenterinsights.v1.ViewB\x04\xe2A\x01\x02R\x04view\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"Z\n" +
-	"\x11DeleteViewRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")contactcenterinsights.googleapis.com/ViewR\x04name\"\xfe\f\n" +
-	"\tDimension\x12\x88\x01\n" +
-	"\x18issue_dimension_metadata\x18\x02 \x01(\v2G.google.cloud.contactcenterinsights.v1.Dimension.IssueDimensionMetadataB\x03\xe0A\x03H\x00R\x16issueDimensionMetadata\x12\x88\x01\n" +
-	"\x18agent_dimension_metadata\x18\x03 \x01(\v2G.google.cloud.contactcenterinsights.v1.Dimension.AgentDimensionMetadataB\x03\xe0A\x03H\x00R\x16agentDimensionMetadata\x12\x98\x01\n" +
-	"\x1eqa_question_dimension_metadata\x18\x04 \x01(\v2L.google.cloud.contactcenterinsights.v1.Dimension.QaQuestionDimensionMetadataB\x03\xe0A\x03H\x00R\x1bqaQuestionDimensionMetadata\x12\xab\x01\n" +
-	"%qa_question_answer_dimension_metadata\x18\x05 \x01(\v2R.google.cloud.contactcenterinsights.v1.Dimension.QaQuestionAnswerDimensionMetadataB\x03\xe0A\x03H\x00R!qaQuestionAnswerDimensionMetadata\x12b\n" +
+	"updateMask\"[\n" +
+	"\x11DeleteViewRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")contactcenterinsights.googleapis.com/ViewR\x04name\"\x8c\r\n" +
+	"\tDimension\x12\x89\x01\n" +
+	"\x18issue_dimension_metadata\x18\x02 \x01(\v2G.google.cloud.contactcenterinsights.v1.Dimension.IssueDimensionMetadataB\x04\xe2A\x01\x03H\x00R\x16issueDimensionMetadata\x12\x89\x01\n" +
+	"\x18agent_dimension_metadata\x18\x03 \x01(\v2G.google.cloud.contactcenterinsights.v1.Dimension.AgentDimensionMetadataB\x04\xe2A\x01\x03H\x00R\x16agentDimensionMetadata\x12\x99\x01\n" +
+	"\x1eqa_question_dimension_metadata\x18\x04 \x01(\v2L.google.cloud.contactcenterinsights.v1.Dimension.QaQuestionDimensionMetadataB\x04\xe2A\x01\x03H\x00R\x1bqaQuestionDimensionMetadata\x12\xac\x01\n" +
+	"%qa_question_answer_dimension_metadata\x18\x05 \x01(\v2R.google.cloud.contactcenterinsights.v1.Dimension.QaQuestionAnswerDimensionMetadataB\x04\xe2A\x01\x03H\x00R!qaQuestionAnswerDimensionMetadata\x12b\n" +
 	"\rdimension_key\x18\x01 \x01(\x0e2=.google.cloud.contactcenterinsights.v1.Dimension.DimensionKeyR\fdimensionKey\x1a\xee\x01\n" +
 	"\x16IssueDimensionMetadata\x12J\n" +
 	"\bissue_id\x18\x01 \x01(\tB/\xfaA,\n" +
 	"*contactcenterinsights.googleapis.com/IssueR\aissueId\x12,\n" +
 	"\x12issue_display_name\x18\x02 \x01(\tR\x10issueDisplayName\x12Z\n" +
 	"\x0eissue_model_id\x18\x03 \x01(\tB4\xfaA1\n" +
-	"/contactcenterinsights.googleapis.com/IssueModelR\fissueModelId\x1a\x8f\x01\n" +
-	"\x16AgentDimensionMetadata\x12\x1e\n" +
-	"\bagent_id\x18\x01 \x01(\tB\x03\xe0A\x01R\aagentId\x121\n" +
-	"\x12agent_display_name\x18\x02 \x01(\tB\x03\xe0A\x01R\x10agentDisplayName\x12\"\n" +
+	"/contactcenterinsights.googleapis.com/IssueModelR\fissueModelId\x1a\x92\x01\n" +
+	"\x16AgentDimensionMetadata\x12\x1f\n" +
+	"\bagent_id\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\aagentId\x122\n" +
+	"\x12agent_display_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x10agentDisplayName\x12#\n" +
 	"\n" +
-	"agent_team\x18\x03 \x01(\tB\x03\xe0A\x01R\tagentTeam\x1a\x9f\x01\n" +
-	"\x1bQaQuestionDimensionMetadata\x12+\n" +
-	"\x0fqa_scorecard_id\x18\x01 \x01(\tB\x03\xe0A\x01R\rqaScorecardId\x12)\n" +
-	"\x0eqa_question_id\x18\x02 \x01(\tB\x03\xe0A\x01R\fqaQuestionId\x12(\n" +
-	"\rquestion_body\x18\x03 \x01(\tB\x03\xe0A\x01R\fquestionBody\x1a\xcd\x01\n" +
-	"!QaQuestionAnswerDimensionMetadata\x12+\n" +
-	"\x0fqa_scorecard_id\x18\x01 \x01(\tB\x03\xe0A\x01R\rqaScorecardId\x12)\n" +
-	"\x0eqa_question_id\x18\x02 \x01(\tB\x03\xe0A\x01R\fqaQuestionId\x12(\n" +
-	"\rquestion_body\x18\x03 \x01(\tB\x03\xe0A\x01R\fquestionBody\x12&\n" +
-	"\fanswer_value\x18\x04 \x01(\tB\x03\xe0A\x01R\vanswerValue\"\xa2\x01\n" +
+	"agent_team\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tagentTeam\x1a\xa2\x01\n" +
+	"\x1bQaQuestionDimensionMetadata\x12,\n" +
+	"\x0fqa_scorecard_id\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\rqaScorecardId\x12*\n" +
+	"\x0eqa_question_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\fqaQuestionId\x12)\n" +
+	"\rquestion_body\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\fquestionBody\x1a\xd1\x01\n" +
+	"!QaQuestionAnswerDimensionMetadata\x12,\n" +
+	"\x0fqa_scorecard_id\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\rqaScorecardId\x12*\n" +
+	"\x0eqa_question_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\fqaQuestionId\x12)\n" +
+	"\rquestion_body\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\fquestionBody\x12'\n" +
+	"\fanswer_value\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vanswerValue\"\xa2\x01\n" +
 	"\fDimensionKey\x12\x1d\n" +
 	"\x19DIMENSION_KEY_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05ISSUE\x10\x01\x12\t\n" +
@@ -10019,11 +10019,11 @@ const file_google_cloud_contactcenterinsights_v1_contact_center_insights_proto_r
 	"\x0eQA_QUESTION_ID\x10\x04\x12\x1c\n" +
 	"\x18QA_QUESTION_ANSWER_VALUE\x10\x05\x12\x1b\n" +
 	"\x17CONVERSATION_PROFILE_ID\x10\x06B\x14\n" +
-	"\x12dimension_metadata\"\x88\x04\n" +
-	"\x13QueryMetricsRequest\x12E\n" +
-	"\blocation\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\blocation\x12\x1b\n" +
-	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x02R\x06filter\x12u\n" +
+	"\x12dimension_metadata\"\x8a\x04\n" +
+	"\x13QueryMetricsRequest\x12F\n" +
+	"\blocation\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\blocation\x12\x1c\n" +
+	"\x06filter\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06filter\x12u\n" +
 	"\x10time_granularity\x18\x03 \x01(\x0e2J.google.cloud.contactcenterinsights.v1.QueryMetricsRequest.TimeGranularityR\x0ftimeGranularity\x12P\n" +
 	"\n" +
 	"dimensions\x18\x04 \x03(\v20.google.cloud.contactcenterinsights.v1.DimensionR\n" +
@@ -10038,9 +10038,9 @@ const file_google_cloud_contactcenterinsights_v1_contact_center_insights_proto_r
 	"\n" +
 	"PER_MINUTE\x10\x04\x12\x11\n" +
 	"\rPER_5_MINUTES\x10\x05\x12\v\n" +
-	"\aMONTHLY\x10\x06\"\xab\x11\n" +
-	"\x14QueryMetricsResponse\x12E\n" +
-	"\blocation\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\aMONTHLY\x10\x06\"\xac\x11\n" +
+	"\x14QueryMetricsResponse\x12F\n" +
+	"\blocation\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\blocation\x12;\n" +
 	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"updateTime\x12Y\n" +
@@ -10088,190 +10088,190 @@ const file_google_cloud_contactcenterinsights_v1_contact_center_insights_proto_r
 	"\vdata_points\x18\x04 \x03(\v2K.google.cloud.contactcenterinsights.v1.QueryMetricsResponse.Slice.DataPointR\n" +
 	"dataPointsB\x16\n" +
 	"\x14_macro_average_slice\"\x16\n" +
-	"\x14QueryMetricsMetadata\"\xf7\x01\n" +
-	"\x17CreateQaQuestionRequest\x12X\n" +
-	"\x06parent\x18\x01 \x01(\tB@\xe0A\x02\xfaA:\n" +
-	"8contactcenterinsights.googleapis.com/QaScorecardRevisionR\x06parent\x12W\n" +
-	"\vqa_question\x18\x02 \x01(\v21.google.cloud.contactcenterinsights.v1.QaQuestionB\x03\xe0A\x02R\n" +
-	"qaQuestion\x12)\n" +
-	"\x0eqa_question_id\x18\x03 \x01(\tB\x03\xe0A\x01R\fqaQuestionId\"c\n" +
-	"\x14GetQaQuestionRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/contactcenterinsights.googleapis.com/QaQuestionR\x04name\"\xb8\x01\n" +
-	"\x16ListQaQuestionsRequest\x12X\n" +
-	"\x06parent\x18\x01 \x01(\tB@\xe0A\x02\xfaA:\n" +
-	"8contactcenterinsights.googleapis.com/QaScorecardRevisionR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x14QueryMetricsMetadata\"\xfa\x01\n" +
+	"\x17CreateQaQuestionRequest\x12Y\n" +
+	"\x06parent\x18\x01 \x01(\tBA\xe2A\x01\x02\xfaA:\n" +
+	"8contactcenterinsights.googleapis.com/QaScorecardRevisionR\x06parent\x12X\n" +
+	"\vqa_question\x18\x02 \x01(\v21.google.cloud.contactcenterinsights.v1.QaQuestionB\x04\xe2A\x01\x02R\n" +
+	"qaQuestion\x12*\n" +
+	"\x0eqa_question_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\fqaQuestionId\"d\n" +
+	"\x14GetQaQuestionRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/contactcenterinsights.googleapis.com/QaQuestionR\x04name\"\xbb\x01\n" +
+	"\x16ListQaQuestionsRequest\x12Y\n" +
+	"\x06parent\x18\x01 \x01(\tBA\xe2A\x01\x02\xfaA:\n" +
+	"8contactcenterinsights.googleapis.com/QaScorecardRevisionR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x97\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x97\x01\n" +
 	"\x17ListQaQuestionsResponse\x12T\n" +
 	"\fqa_questions\x18\x01 \x03(\v21.google.cloud.contactcenterinsights.v1.QaQuestionR\vqaQuestions\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb4\x01\n" +
-	"\x17UpdateQaQuestionRequest\x12W\n" +
-	"\vqa_question\x18\x01 \x01(\v21.google.cloud.contactcenterinsights.v1.QaQuestionB\x03\xe0A\x02R\n" +
-	"qaQuestion\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"f\n" +
-	"\x17DeleteQaQuestionRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/contactcenterinsights.googleapis.com/QaQuestionR\x04name\"\xe6\x01\n" +
-	"\x18CreateQaScorecardRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12Z\n" +
-	"\fqa_scorecard\x18\x02 \x01(\v22.google.cloud.contactcenterinsights.v1.QaScorecardB\x03\xe0A\x02R\vqaScorecard\x12+\n" +
-	"\x0fqa_scorecard_id\x18\x03 \x01(\tB\x03\xe0A\x01R\rqaScorecardId\"e\n" +
-	"\x15GetQaScorecardRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0contactcenterinsights.googleapis.com/QaScorecardR\x04name\"\xb8\x01\n" +
-	"\x18UpdateQaScorecardRequest\x12Z\n" +
-	"\fqa_scorecard\x18\x01 \x01(\v22.google.cloud.contactcenterinsights.v1.QaScorecardB\x03\xe0A\x02R\vqaScorecard\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\x83\x01\n" +
-	"\x18DeleteQaScorecardRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0contactcenterinsights.googleapis.com/QaScorecardR\x04name\x12\x19\n" +
-	"\x05force\x18\x02 \x01(\bB\x03\xe0A\x01R\x05force\"\xa7\x02\n" +
-	" CreateQaScorecardRevisionRequest\x12P\n" +
-	"\x06parent\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0contactcenterinsights.googleapis.com/QaScorecardR\x06parent\x12s\n" +
-	"\x15qa_scorecard_revision\x18\x02 \x01(\v2:.google.cloud.contactcenterinsights.v1.QaScorecardRevisionB\x03\xe0A\x02R\x13qaScorecardRevision\x12<\n" +
-	"\x18qa_scorecard_revision_id\x18\x03 \x01(\tB\x03\xe0A\x01R\x15qaScorecardRevisionId\"u\n" +
-	"\x1dGetQaScorecardRevisionRequest\x12T\n" +
-	"\x04name\x18\x01 \x01(\tB@\xe0A\x02\xfaA:\n" +
-	"8contactcenterinsights.googleapis.com/QaScorecardRevisionR\x04name\"\xc1\x01\n" +
-	"\x1eTuneQaScorecardRevisionRequest\x12X\n" +
-	"\x06parent\x18\x01 \x01(\tB@\xe0A\x02\xfaA:\n" +
-	"8contactcenterinsights.googleapis.com/QaScorecardRevisionR\x06parent\x12\x1b\n" +
-	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x02R\x06filter\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"!\n" +
-	"\x1fTuneQaScorecardRevisionResponse\"\xa8\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb6\x01\n" +
+	"\x17UpdateQaQuestionRequest\x12X\n" +
+	"\vqa_question\x18\x01 \x01(\v21.google.cloud.contactcenterinsights.v1.QaQuestionB\x04\xe2A\x01\x02R\n" +
+	"qaQuestion\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"g\n" +
+	"\x17DeleteQaQuestionRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/contactcenterinsights.googleapis.com/QaQuestionR\x04name\"\xe9\x01\n" +
+	"\x18CreateQaScorecardRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12[\n" +
+	"\fqa_scorecard\x18\x02 \x01(\v22.google.cloud.contactcenterinsights.v1.QaScorecardB\x04\xe2A\x01\x02R\vqaScorecard\x12,\n" +
+	"\x0fqa_scorecard_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\rqaScorecardId\"f\n" +
+	"\x15GetQaScorecardRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0contactcenterinsights.googleapis.com/QaScorecardR\x04name\"\xba\x01\n" +
+	"\x18UpdateQaScorecardRequest\x12[\n" +
+	"\fqa_scorecard\x18\x01 \x01(\v22.google.cloud.contactcenterinsights.v1.QaScorecardB\x04\xe2A\x01\x02R\vqaScorecard\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\x85\x01\n" +
+	"\x18DeleteQaScorecardRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0contactcenterinsights.googleapis.com/QaScorecardR\x04name\x12\x1a\n" +
+	"\x05force\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x05force\"\xaa\x02\n" +
+	" CreateQaScorecardRevisionRequest\x12Q\n" +
+	"\x06parent\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0contactcenterinsights.googleapis.com/QaScorecardR\x06parent\x12t\n" +
+	"\x15qa_scorecard_revision\x18\x02 \x01(\v2:.google.cloud.contactcenterinsights.v1.QaScorecardRevisionB\x04\xe2A\x01\x02R\x13qaScorecardRevision\x12=\n" +
+	"\x18qa_scorecard_revision_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x15qaScorecardRevisionId\"v\n" +
+	"\x1dGetQaScorecardRevisionRequest\x12U\n" +
+	"\x04name\x18\x01 \x01(\tBA\xe2A\x01\x02\xfaA:\n" +
+	"8contactcenterinsights.googleapis.com/QaScorecardRevisionR\x04name\"\xc4\x01\n" +
+	"\x1eTuneQaScorecardRevisionRequest\x12Y\n" +
+	"\x06parent\x18\x01 \x01(\tBA\xe2A\x01\x02\xfaA:\n" +
+	"8contactcenterinsights.googleapis.com/QaScorecardRevisionR\x06parent\x12\x1c\n" +
+	"\x06filter\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06filter\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"!\n" +
+	"\x1fTuneQaScorecardRevisionResponse\"\xb1\n" +
 	"\n" +
-	"\x1fTuneQaScorecardRevisionMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12d\n" +
-	"\arequest\x18\x03 \x01(\v2E.google.cloud.contactcenterinsights.v1.TuneQaScorecardRevisionRequestB\x03\xe0A\x03R\arequest\x12\xc1\x01\n" +
-	"&qa_question_dataset_validation_results\x18\x04 \x03(\v2h.google.cloud.contactcenterinsights.v1.TuneQaScorecardRevisionMetadata.QaQuestionDatasetValidationResultB\x03\xe0A\x03R\"qaQuestionDatasetValidationResults\x12\xb6\x01\n" +
-	"\"qa_question_dataset_tuning_metrics\x18\x05 \x03(\v2e.google.cloud.contactcenterinsights.v1.TuneQaScorecardRevisionMetadata.QaQuestionDatasetTuningMetricsB\x03\xe0A\x03R\x1eqaQuestionDatasetTuningMetrics\x12;\n" +
-	"\x17tuning_completion_ratio\x18\x06 \x01(\x01B\x03\xe0A\x03R\x15tuningCompletionRatio\x1a\xb8\x02\n" +
-	"!QaQuestionDatasetValidationResult\x12S\n" +
-	"\bquestion\x18\x01 \x01(\tB7\xe0A\x03\xfaA1\n" +
+	"\x1fTuneQaScorecardRevisionMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12e\n" +
+	"\arequest\x18\x03 \x01(\v2E.google.cloud.contactcenterinsights.v1.TuneQaScorecardRevisionRequestB\x04\xe2A\x01\x03R\arequest\x12\xc2\x01\n" +
+	"&qa_question_dataset_validation_results\x18\x04 \x03(\v2h.google.cloud.contactcenterinsights.v1.TuneQaScorecardRevisionMetadata.QaQuestionDatasetValidationResultB\x04\xe2A\x01\x03R\"qaQuestionDatasetValidationResults\x12\xb7\x01\n" +
+	"\"qa_question_dataset_tuning_metrics\x18\x05 \x03(\v2e.google.cloud.contactcenterinsights.v1.TuneQaScorecardRevisionMetadata.QaQuestionDatasetTuningMetricsB\x04\xe2A\x01\x03R\x1eqaQuestionDatasetTuningMetrics\x12<\n" +
+	"\x17tuning_completion_ratio\x18\x06 \x01(\x01B\x04\xe2A\x01\x03R\x15tuningCompletionRatio\x1a\xb9\x02\n" +
+	"!QaQuestionDatasetValidationResult\x12T\n" +
+	"\bquestion\x18\x01 \x01(\tB8\xe2A\x01\x03\xfaA1\n" +
 	"/contactcenterinsights.googleapis.com/QaQuestionR\bquestion\x12\x7f\n" +
 	"\x1bdataset_validation_warnings\x18\x02 \x03(\x0e2?.google.cloud.contactcenterinsights.v1.DatasetValidationWarningR\x19datasetValidationWarnings\x12=\n" +
-	"\x1bvalid_feedback_labels_count\x18\x03 \x01(\x05R\x18validFeedbackLabelsCount\x1a\xab\x02\n" +
-	"\x1eQaQuestionDatasetTuningMetrics\x12S\n" +
-	"\bquestion\x18\x01 \x01(\tB7\xe0A\x03\xfaA1\n" +
-	"/contactcenterinsights.googleapis.com/QaQuestionR\bquestion\x12\x8c\x01\n" +
-	"\ametrics\x18\x02 \x01(\v2m.google.cloud.contactcenterinsights.v1.TuneQaScorecardRevisionMetadata.QaQuestionDatasetTuningMetrics.MetricsB\x03\xe0A\x03R\ametrics\x1a%\n" +
+	"\x1bvalid_feedback_labels_count\x18\x03 \x01(\x05R\x18validFeedbackLabelsCount\x1a\xad\x02\n" +
+	"\x1eQaQuestionDatasetTuningMetrics\x12T\n" +
+	"\bquestion\x18\x01 \x01(\tB8\xe2A\x01\x03\xfaA1\n" +
+	"/contactcenterinsights.googleapis.com/QaQuestionR\bquestion\x12\x8d\x01\n" +
+	"\ametrics\x18\x02 \x01(\v2m.google.cloud.contactcenterinsights.v1.TuneQaScorecardRevisionMetadata.QaQuestionDatasetTuningMetrics.MetricsB\x04\xe2A\x01\x03R\ametrics\x1a%\n" +
 	"\aMetrics\x12\x1a\n" +
-	"\baccuracy\x18\x01 \x01(\x01R\baccuracy\"x\n" +
-	" DeployQaScorecardRevisionRequest\x12T\n" +
-	"\x04name\x18\x01 \x01(\tB@\xe0A\x02\xfaA:\n" +
-	"8contactcenterinsights.googleapis.com/QaScorecardRevisionR\x04name\"z\n" +
-	"\"UndeployQaScorecardRevisionRequest\x12T\n" +
-	"\x04name\x18\x01 \x01(\tB@\xe0A\x02\xfaA:\n" +
-	"8contactcenterinsights.googleapis.com/QaScorecardRevisionR\x04name\"\x93\x01\n" +
-	" DeleteQaScorecardRevisionRequest\x12T\n" +
-	"\x04name\x18\x01 \x01(\tB@\xe0A\x02\xfaA:\n" +
-	"8contactcenterinsights.googleapis.com/QaScorecardRevisionR\x04name\x12\x19\n" +
-	"\x05force\x18\x02 \x01(\bB\x03\xe0A\x01R\x05force\"\xa2\x01\n" +
-	"\x17ListQaScorecardsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\baccuracy\x18\x01 \x01(\x01R\baccuracy\"y\n" +
+	" DeployQaScorecardRevisionRequest\x12U\n" +
+	"\x04name\x18\x01 \x01(\tBA\xe2A\x01\x02\xfaA:\n" +
+	"8contactcenterinsights.googleapis.com/QaScorecardRevisionR\x04name\"{\n" +
+	"\"UndeployQaScorecardRevisionRequest\x12U\n" +
+	"\x04name\x18\x01 \x01(\tBA\xe2A\x01\x02\xfaA:\n" +
+	"8contactcenterinsights.googleapis.com/QaScorecardRevisionR\x04name\"\x95\x01\n" +
+	" DeleteQaScorecardRevisionRequest\x12U\n" +
+	"\x04name\x18\x01 \x01(\tBA\xe2A\x01\x02\xfaA:\n" +
+	"8contactcenterinsights.googleapis.com/QaScorecardRevisionR\x04name\x12\x1a\n" +
+	"\x05force\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x05force\"\xa5\x01\n" +
+	"\x17ListQaScorecardsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x9b\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x9b\x01\n" +
 	"\x18ListQaScorecardsResponse\x12W\n" +
 	"\rqa_scorecards\x18\x01 \x03(\v22.google.cloud.contactcenterinsights.v1.QaScorecardR\fqaScorecards\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xd6\x01\n" +
-	"\x1fListQaScorecardRevisionsRequest\x12P\n" +
-	"\x06parent\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0contactcenterinsights.googleapis.com/QaScorecardR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xda\x01\n" +
+	"\x1fListQaScorecardRevisionsRequest\x12Q\n" +
+	"\x06parent\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0contactcenterinsights.googleapis.com/QaScorecardR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\xbc\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xbc\x01\n" +
 	" ListQaScorecardRevisionsResponse\x12p\n" +
 	"\x16qa_scorecard_revisions\x18\x01 \x03(\v2:.google.cloud.contactcenterinsights.v1.QaScorecardRevisionR\x14qaScorecardRevisions\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x82\x02\n" +
-	"\x1aCreateFeedbackLabelRequest\x12Q\n" +
-	"\x06parent\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
-	"1contactcenterinsights.googleapis.com/ConversationR\x06parent\x12/\n" +
-	"\x11feedback_label_id\x18\x02 \x01(\tB\x03\xe0A\x01R\x0ffeedbackLabelId\x12`\n" +
-	"\x0efeedback_label\x18\x03 \x01(\v24.google.cloud.contactcenterinsights.v1.FeedbackLabelB\x03\xe0A\x02R\rfeedbackLabel\"\xd1\x01\n" +
-	"\x19ListFeedbackLabelsRequest\x12Q\n" +
-	"\x06parent\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
-	"1contactcenterinsights.googleapis.com/ConversationR\x06parent\x12\x1b\n" +
-	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x01R\x06filter\x12 \n" +
-	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x85\x02\n" +
+	"\x1aCreateFeedbackLabelRequest\x12R\n" +
+	"\x06parent\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1contactcenterinsights.googleapis.com/ConversationR\x06parent\x120\n" +
+	"\x11feedback_label_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x0ffeedbackLabelId\x12a\n" +
+	"\x0efeedback_label\x18\x03 \x01(\v24.google.cloud.contactcenterinsights.v1.FeedbackLabelB\x04\xe2A\x01\x02R\rfeedbackLabel\"\xd5\x01\n" +
+	"\x19ListFeedbackLabelsRequest\x12R\n" +
+	"\x06parent\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1contactcenterinsights.googleapis.com/ConversationR\x06parent\x12\x1c\n" +
+	"\x06filter\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12!\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xa3\x01\n" +
+	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xa3\x01\n" +
 	"\x1aListFeedbackLabelsResponse\x12]\n" +
 	"\x0ffeedback_labels\x18\x01 \x03(\v24.google.cloud.contactcenterinsights.v1.FeedbackLabelR\x0efeedbackLabels\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"i\n" +
-	"\x17GetFeedbackLabelRequest\x12N\n" +
-	"\x04name\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\n" +
-	"2contactcenterinsights.googleapis.com/FeedbackLabelR\x04name\"\xc0\x01\n" +
-	"\x1aUpdateFeedbackLabelRequest\x12`\n" +
-	"\x0efeedback_label\x18\x01 \x01(\v24.google.cloud.contactcenterinsights.v1.FeedbackLabelB\x03\xe0A\x02R\rfeedbackLabel\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"l\n" +
-	"\x1aDeleteFeedbackLabelRequest\x12N\n" +
-	"\x04name\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\n" +
-	"2contactcenterinsights.googleapis.com/FeedbackLabelR\x04name\"\xc4\x01\n" +
-	"\x1cListAllFeedbackLabelsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"j\n" +
+	"\x17GetFeedbackLabelRequest\x12O\n" +
+	"\x04name\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\n" +
+	"2contactcenterinsights.googleapis.com/FeedbackLabelR\x04name\"\xc2\x01\n" +
+	"\x1aUpdateFeedbackLabelRequest\x12a\n" +
+	"\x0efeedback_label\x18\x01 \x01(\v24.google.cloud.contactcenterinsights.v1.FeedbackLabelB\x04\xe2A\x01\x02R\rfeedbackLabel\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"m\n" +
+	"\x1aDeleteFeedbackLabelRequest\x12O\n" +
+	"\x04name\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\n" +
+	"2contactcenterinsights.googleapis.com/FeedbackLabelR\x04name\"\xc8\x01\n" +
+	"\x1cListAllFeedbackLabelsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\xa6\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xa6\x01\n" +
 	"\x1dListAllFeedbackLabelsResponse\x12]\n" +
 	"\x0ffeedback_labels\x18\x01 \x03(\v24.google.cloud.contactcenterinsights.v1.FeedbackLabelR\x0efeedbackLabels\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xe8\x03\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xec\x03\n" +
 	"\x1fBulkUploadFeedbackLabelsRequest\x12q\n" +
 	"\n" +
-	"gcs_source\x18\x02 \x01(\v2P.google.cloud.contactcenterinsights.v1.BulkUploadFeedbackLabelsRequest.GcsSourceH\x00R\tgcsSource\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x1a\xda\x01\n" +
-	"\tGcsSource\x12t\n" +
-	"\x06format\x18\x01 \x01(\x0e2W.google.cloud.contactcenterinsights.v1.BulkUploadFeedbackLabelsRequest.GcsSource.FormatB\x03\xe0A\x02R\x06format\x12\"\n" +
+	"gcs_source\x18\x02 \x01(\v2P.google.cloud.contactcenterinsights.v1.BulkUploadFeedbackLabelsRequest.GcsSourceH\x00R\tgcsSource\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x1a\xdc\x01\n" +
+	"\tGcsSource\x12u\n" +
+	"\x06format\x18\x01 \x01(\x0e2W.google.cloud.contactcenterinsights.v1.BulkUploadFeedbackLabelsRequest.GcsSource.FormatB\x04\xe2A\x01\x02R\x06format\x12#\n" +
 	"\n" +
-	"object_uri\x18\x02 \x01(\tB\x03\xe0A\x02R\tobjectUri\"3\n" +
+	"object_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tobjectUri\"3\n" +
 	"\x06Format\x12\x16\n" +
 	"\x12FORMAT_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03CSV\x10\x01\x12\b\n" +
 	"\x04JSON\x10\x02B\b\n" +
 	"\x06source\"\"\n" +
-	" BulkUploadFeedbackLabelsResponse\"\xf5\x04\n" +
-	" BulkUploadFeedbackLabelsMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12e\n" +
-	"\arequest\x18\x03 \x01(\v2F.google.cloud.contactcenterinsights.v1.BulkUploadFeedbackLabelsRequestB\x03\xe0A\x03R\arequest\x129\n" +
-	"\x0epartial_errors\x18\x04 \x03(\v2\x12.google.rpc.StatusR\rpartialErrors\x12{\n" +
-	"\fupload_stats\x18\x05 \x01(\v2S.google.cloud.contactcenterinsights.v1.BulkUploadFeedbackLabelsMetadata.UploadStatsB\x03\xe0A\x03R\vuploadStats\x1a\xb3\x01\n" +
+	" BulkUploadFeedbackLabelsResponse\"\xf9\x04\n" +
+	" BulkUploadFeedbackLabelsMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12f\n" +
+	"\arequest\x18\x03 \x01(\v2F.google.cloud.contactcenterinsights.v1.BulkUploadFeedbackLabelsRequestB\x04\xe2A\x01\x03R\arequest\x129\n" +
+	"\x0epartial_errors\x18\x04 \x03(\v2\x12.google.rpc.StatusR\rpartialErrors\x12|\n" +
+	"\fupload_stats\x18\x05 \x01(\v2S.google.cloud.contactcenterinsights.v1.BulkUploadFeedbackLabelsMetadata.UploadStatsB\x04\xe2A\x01\x03R\vuploadStats\x1a\xb3\x01\n" +
 	"\vUploadStats\x124\n" +
 	"\x16processed_object_count\x18\x01 \x01(\x05R\x14processedObjectCount\x126\n" +
 	"\x17failed_validation_count\x18\x02 \x01(\x05R\x15failedValidationCount\x126\n" +
-	"\x17successful_upload_count\x18\x03 \x01(\x05R\x15successfulUploadCount\"\xbd\b\n" +
+	"\x17successful_upload_count\x18\x03 \x01(\x05R\x15successfulUploadCount\"\xc8\b\n" +
 	"!BulkDownloadFeedbackLabelsRequest\x12\x82\x01\n" +
-	"\x0fgcs_destination\x18\x03 \x01(\v2W.google.cloud.contactcenterinsights.v1.BulkDownloadFeedbackLabelsRequest.GcsDestinationH\x00R\x0egcsDestination\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
-	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x01R\x06filter\x121\n" +
-	"\x12max_download_count\x18\x04 \x01(\x05B\x03\xe0A\x01R\x10maxDownloadCount\x12\x8f\x01\n" +
-	"\x13feedback_label_type\x18\x05 \x01(\x0e2Z.google.cloud.contactcenterinsights.v1.BulkDownloadFeedbackLabelsRequest.FeedbackLabelTypeB\x03\xe0A\x01R\x11feedbackLabelType\x124\n" +
-	"\x13conversation_filter\x18\x06 \x01(\tB\x03\xe0A\x01R\x12conversationFilter\x12<\n" +
-	"\x18template_qa_scorecard_id\x18\a \x03(\tB\x03\xe0A\x01R\x15templateQaScorecardId\x1a\x8c\x03\n" +
-	"\x0eGcsDestination\x12{\n" +
-	"\x06format\x18\x01 \x01(\x0e2^.google.cloud.contactcenterinsights.v1.BulkDownloadFeedbackLabelsRequest.GcsDestination.FormatB\x03\xe0A\x02R\x06format\x12\"\n" +
+	"\x0fgcs_destination\x18\x03 \x01(\v2W.google.cloud.contactcenterinsights.v1.BulkDownloadFeedbackLabelsRequest.GcsDestinationH\x00R\x0egcsDestination\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12\x1c\n" +
+	"\x06filter\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x122\n" +
+	"\x12max_download_count\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\x10maxDownloadCount\x12\x90\x01\n" +
+	"\x13feedback_label_type\x18\x05 \x01(\x0e2Z.google.cloud.contactcenterinsights.v1.BulkDownloadFeedbackLabelsRequest.FeedbackLabelTypeB\x04\xe2A\x01\x01R\x11feedbackLabelType\x125\n" +
+	"\x13conversation_filter\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x12conversationFilter\x12=\n" +
+	"\x18template_qa_scorecard_id\x18\a \x03(\tB\x04\xe2A\x01\x01R\x15templateQaScorecardId\x1a\x91\x03\n" +
+	"\x0eGcsDestination\x12|\n" +
+	"\x06format\x18\x01 \x01(\x0e2^.google.cloud.contactcenterinsights.v1.BulkDownloadFeedbackLabelsRequest.GcsDestination.FormatB\x04\xe2A\x01\x02R\x06format\x12#\n" +
 	"\n" +
-	"object_uri\x18\x02 \x01(\tB\x03\xe0A\x02R\tobjectUri\x12*\n" +
-	"\x0eadd_whitespace\x18\x03 \x01(\bB\x03\xe0A\x01R\raddWhitespace\x12>\n" +
-	"\x19always_print_empty_fields\x18\x04 \x01(\bB\x03\xe0A\x01R\x16alwaysPrintEmptyFields\x128\n" +
-	"\x16records_per_file_count\x18\x05 \x01(\x03B\x03\xe0A\x01R\x13recordsPerFileCount\"3\n" +
+	"object_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tobjectUri\x12+\n" +
+	"\x0eadd_whitespace\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\raddWhitespace\x12?\n" +
+	"\x19always_print_empty_fields\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x16alwaysPrintEmptyFields\x129\n" +
+	"\x16records_per_file_count\x18\x05 \x01(\x03B\x04\xe2A\x01\x01R\x13recordsPerFileCount\"3\n" +
 	"\x06Format\x12\x16\n" +
 	"\x12FORMAT_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03CSV\x10\x01\x12\b\n" +
@@ -10282,20 +10282,20 @@ const file_google_cloud_contactcenterinsights_v1_contact_center_insights_proto_r
 	"QUALITY_AI\x10\x01\x12\x12\n" +
 	"\x0eTOPIC_MODELING\x10\x02B\r\n" +
 	"\vdestination\"$\n" +
-	"\"BulkDownloadFeedbackLabelsResponse\"\xa4\x05\n" +
-	"\"BulkDownloadFeedbackLabelsMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12g\n" +
-	"\arequest\x18\x03 \x01(\v2H.google.cloud.contactcenterinsights.v1.BulkDownloadFeedbackLabelsRequestB\x03\xe0A\x03R\arequest\x129\n" +
-	"\x0epartial_errors\x18\x04 \x03(\v2\x12.google.rpc.StatusR\rpartialErrors\x12\x83\x01\n" +
-	"\x0edownload_stats\x18\x05 \x01(\v2W.google.cloud.contactcenterinsights.v1.BulkDownloadFeedbackLabelsMetadata.DownloadStatsB\x03\xe0A\x03R\rdownloadStats\x1a\xd5\x01\n" +
+	"\"BulkDownloadFeedbackLabelsResponse\"\xa9\x05\n" +
+	"\"BulkDownloadFeedbackLabelsMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12h\n" +
+	"\arequest\x18\x03 \x01(\v2H.google.cloud.contactcenterinsights.v1.BulkDownloadFeedbackLabelsRequestB\x04\xe2A\x01\x03R\arequest\x129\n" +
+	"\x0epartial_errors\x18\x04 \x03(\v2\x12.google.rpc.StatusR\rpartialErrors\x12\x84\x01\n" +
+	"\x0edownload_stats\x18\x05 \x01(\v2W.google.cloud.contactcenterinsights.v1.BulkDownloadFeedbackLabelsMetadata.DownloadStatsB\x04\xe2A\x01\x03R\rdownloadStats\x1a\xd6\x01\n" +
 	"\rDownloadStats\x124\n" +
 	"\x16processed_object_count\x18\x01 \x01(\x05R\x14processedObjectCount\x12:\n" +
 	"\x19successful_download_count\x18\x02 \x01(\x05R\x17successfulDownloadCount\x12.\n" +
-	"\x13total_files_written\x18\x03 \x01(\x05R\x11totalFilesWritten\x12\"\n" +
+	"\x13total_files_written\x18\x03 \x01(\x05R\x11totalFilesWritten\x12#\n" +
 	"\n" +
-	"file_names\x18\x04 \x03(\tB\x03\xe0A\x03R\tfileNames*J\n" +
+	"file_names\x18\x04 \x03(\tB\x04\xe2A\x01\x03R\tfileNames*J\n" +
 	"\x10ConversationView\x12!\n" +
 	"\x1dCONVERSATION_VIEW_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04FULL\x10\x02\x12\t\n" +

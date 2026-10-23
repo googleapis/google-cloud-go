@@ -789,50 +789,50 @@ var File_google_cloud_discoveryengine_v1beta_assistant_proto protoreflect.FileDe
 
 const file_google_cloud_discoveryengine_v1beta_assistant_proto_rawDesc = "" +
 	"\n" +
-	"3google/cloud/discoveryengine/v1beta/assistant.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8f\x16\n" +
-	"\tAssistant\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12q\n" +
-	"\x11generation_config\x18\x13 \x01(\v2?.google.cloud.discoveryengine.v1beta.Assistant.GenerationConfigB\x03\xe0A\x01R\x10generationConfig\x12r\n" +
-	"\x12web_grounding_type\x18\x04 \x01(\x0e2?.google.cloud.discoveryengine.v1beta.Assistant.WebGroundingTypeB\x03\xe0A\x01R\x10webGroundingType\x12K\n" +
-	" default_web_grounding_toggle_off\x18\x16 \x01(\bB\x03\xe0A\x01R\x1cdefaultWebGroundingToggleOff\x12j\n" +
-	"\renabled_tools\x18\x12 \x03(\v2@.google.cloud.discoveryengine.v1beta.Assistant.EnabledToolsEntryB\x03\xe0A\x01R\fenabledTools\x12k\n" +
-	"\x0fcustomer_policy\x18\f \x01(\v2=.google.cloud.discoveryengine.v1beta.Assistant.CustomerPolicyB\x03\xe0A\x01R\x0ecustomerPolicy\x12@\n" +
-	"\vcreate_time\x18\x18 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x19 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x1a\xfe\x02\n" +
-	"\x10GenerationConfig\x12-\n" +
-	"\x10default_model_id\x18\x01 \x01(\tB\x03\xe0A\x01R\x0edefaultModelId\x12/\n" +
-	"\x11allowed_model_ids\x18\x02 \x03(\tB\x03\xe0A\x01R\x0fallowedModelIds\x12\x80\x01\n" +
+	"3google/cloud/discoveryengine/v1beta/assistant.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa4\x16\n" +
+	"\tAssistant\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12r\n" +
+	"\x11generation_config\x18\x13 \x01(\v2?.google.cloud.discoveryengine.v1beta.Assistant.GenerationConfigB\x04\xe2A\x01\x01R\x10generationConfig\x12s\n" +
+	"\x12web_grounding_type\x18\x04 \x01(\x0e2?.google.cloud.discoveryengine.v1beta.Assistant.WebGroundingTypeB\x04\xe2A\x01\x01R\x10webGroundingType\x12L\n" +
+	" default_web_grounding_toggle_off\x18\x16 \x01(\bB\x04\xe2A\x01\x01R\x1cdefaultWebGroundingToggleOff\x12k\n" +
+	"\renabled_tools\x18\x12 \x03(\v2@.google.cloud.discoveryengine.v1beta.Assistant.EnabledToolsEntryB\x04\xe2A\x01\x01R\fenabledTools\x12l\n" +
+	"\x0fcustomer_policy\x18\f \x01(\v2=.google.cloud.discoveryengine.v1beta.Assistant.CustomerPolicyB\x04\xe2A\x01\x01R\x0ecustomerPolicy\x12A\n" +
+	"\vcreate_time\x18\x18 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x19 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x1a\x81\x03\n" +
+	"\x10GenerationConfig\x12.\n" +
+	"\x10default_model_id\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0edefaultModelId\x120\n" +
+	"\x11allowed_model_ids\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x0fallowedModelIds\x12\x80\x01\n" +
 	"\x12system_instruction\x18\x03 \x01(\v2Q.google.cloud.discoveryengine.v1beta.Assistant.GenerationConfig.SystemInstructionR\x11systemInstruction\x12)\n" +
-	"\x10default_language\x18\x04 \x01(\tR\x0fdefaultLanguage\x1a\\\n" +
-	"\x11SystemInstruction\x12G\n" +
-	"\x1dadditional_system_instruction\x18\x02 \x01(\tB\x03\xe0A\x01R\x1badditionalSystemInstruction\x1aS\n" +
+	"\x10default_language\x18\x04 \x01(\tR\x0fdefaultLanguage\x1a]\n" +
+	"\x11SystemInstruction\x12H\n" +
+	"\x1dadditional_system_instruction\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x1badditionalSystemInstruction\x1aS\n" +
 	"\bToolInfo\x12\x1b\n" +
 	"\ttool_name\x18\x01 \x01(\tR\btoolName\x12*\n" +
 	"\x11tool_display_name\x18\x02 \x01(\tR\x0ftoolDisplayName\x1a`\n" +
 	"\bToolList\x12T\n" +
-	"\ttool_info\x18\x01 \x03(\v27.google.cloud.discoveryengine.v1beta.Assistant.ToolInfoR\btoolInfo\x1a\x8d\b\n" +
-	"\x0eCustomerPolicy\x12v\n" +
-	"\x0ebanned_phrases\x18\x01 \x03(\v2J.google.cloud.discoveryengine.v1beta.Assistant.CustomerPolicy.BannedPhraseB\x03\xe0A\x01R\rbannedPhrases\x12\x81\x01\n" +
-	"\x12model_armor_config\x18\x02 \x01(\v2N.google.cloud.discoveryengine.v1beta.Assistant.CustomerPolicy.ModelArmorConfigB\x03\xe0A\x01R\x10modelArmorConfig\x1a\xe0\x02\n" +
-	"\fBannedPhrase\x12\x1b\n" +
-	"\x06phrase\x18\x01 \x01(\tB\x03\xe0A\x02R\x06phrase\x12\x84\x01\n" +
+	"\ttool_info\x18\x01 \x03(\v27.google.cloud.discoveryengine.v1beta.Assistant.ToolInfoR\btoolInfo\x1a\x95\b\n" +
+	"\x0eCustomerPolicy\x12w\n" +
+	"\x0ebanned_phrases\x18\x01 \x03(\v2J.google.cloud.discoveryengine.v1beta.Assistant.CustomerPolicy.BannedPhraseB\x04\xe2A\x01\x01R\rbannedPhrases\x12\x82\x01\n" +
+	"\x12model_armor_config\x18\x02 \x01(\v2N.google.cloud.discoveryengine.v1beta.Assistant.CustomerPolicy.ModelArmorConfigB\x04\xe2A\x01\x01R\x10modelArmorConfig\x1a\xe3\x02\n" +
+	"\fBannedPhrase\x12\x1c\n" +
+	"\x06phrase\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06phrase\x12\x85\x01\n" +
 	"\n" +
-	"match_type\x18\x02 \x01(\x0e2`.google.cloud.discoveryengine.v1beta.Assistant.CustomerPolicy.BannedPhrase.BannedPhraseMatchTypeB\x03\xe0A\x01R\tmatchType\x120\n" +
-	"\x11ignore_diacritics\x18\x03 \x01(\bB\x03\xe0A\x01R\x10ignoreDiacritics\"z\n" +
+	"match_type\x18\x02 \x01(\x0e2`.google.cloud.discoveryengine.v1beta.Assistant.CustomerPolicy.BannedPhrase.BannedPhraseMatchTypeB\x04\xe2A\x01\x01R\tmatchType\x121\n" +
+	"\x11ignore_diacritics\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x10ignoreDiacritics\"z\n" +
 	"\x15BannedPhraseMatchType\x12(\n" +
 	"$BANNED_PHRASE_MATCH_TYPE_UNSPECIFIED\x10\x00\x12\x17\n" +
 	"\x13SIMPLE_STRING_MATCH\x10\x01\x12\x1e\n" +
-	"\x1aWORD_BOUNDARY_STRING_MATCH\x10\x02\x1a\x9b\x03\n" +
-	"\x10ModelArmorConfig\x12\\\n" +
-	"\x14user_prompt_template\x18\x01 \x01(\tB*\xe0A\x01\xfaA$\n" +
-	"\"modelarmor.googleapis.com/TemplateR\x12userPromptTemplate\x12W\n" +
-	"\x11response_template\x18\x02 \x01(\tB*\xe0A\x01\xfaA$\n" +
-	"\"modelarmor.googleapis.com/TemplateR\x10responseTemplate\x12\x82\x01\n" +
-	"\ffailure_mode\x18\x03 \x01(\x0e2Z.google.cloud.discoveryengine.v1beta.Assistant.CustomerPolicy.ModelArmorConfig.FailureModeB\x03\xe0A\x01R\vfailureMode\"K\n" +
+	"\x1aWORD_BOUNDARY_STRING_MATCH\x10\x02\x1a\x9e\x03\n" +
+	"\x10ModelArmorConfig\x12]\n" +
+	"\x14user_prompt_template\x18\x01 \x01(\tB+\xe2A\x01\x01\xfaA$\n" +
+	"\"modelarmor.googleapis.com/TemplateR\x12userPromptTemplate\x12X\n" +
+	"\x11response_template\x18\x02 \x01(\tB+\xe2A\x01\x01\xfaA$\n" +
+	"\"modelarmor.googleapis.com/TemplateR\x10responseTemplate\x12\x83\x01\n" +
+	"\ffailure_mode\x18\x03 \x01(\x0e2Z.google.cloud.discoveryengine.v1beta.Assistant.CustomerPolicy.ModelArmorConfig.FailureModeB\x04\xe2A\x01\x01R\vfailureMode\"K\n" +
 	"\vFailureMode\x12\x1c\n" +
 	"\x18FAILURE_MODE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tFAIL_OPEN\x10\x01\x12\x0f\n" +

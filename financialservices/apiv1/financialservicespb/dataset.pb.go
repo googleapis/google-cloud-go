@@ -659,19 +659,19 @@ var File_google_cloud_financialservices_v1_dataset_proto protoreflect.FileDescri
 
 const file_google_cloud_financialservices_v1_dataset_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/financialservices/v1/dataset.proto\x12!google.cloud.financialservices.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1agoogle/type/datetime.proto\x1a\x1agoogle/type/interval.proto\"\xe9\x06\n" +
-	"\aDataset\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"/google/cloud/financialservices/v1/dataset.proto\x12!google.cloud.financialservices.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1agoogle/type/datetime.proto\x1a\x1agoogle/type/interval.proto\"\xef\x06\n" +
+	"\aDataset\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12N\n" +
-	"\x06labels\x18\x04 \x03(\v26.google.cloud.financialservices.v1.Dataset.LabelsEntryR\x06labels\x12`\n" +
-	"\vtable_specs\x18\x05 \x03(\v2:.google.cloud.financialservices.v1.Dataset.TableSpecsEntryB\x03\xe0A\x02R\n" +
-	"tableSpecs\x12K\n" +
-	"\x05state\x18\a \x01(\x0e20.google.cloud.financialservices.v1.Dataset.StateB\x03\xe0A\x03R\x05state\x129\n" +
+	"\x06labels\x18\x04 \x03(\v26.google.cloud.financialservices.v1.Dataset.LabelsEntryR\x06labels\x12a\n" +
+	"\vtable_specs\x18\x05 \x03(\v2:.google.cloud.financialservices.v1.Dataset.TableSpecsEntryB\x04\xe2A\x01\x02R\n" +
+	"tableSpecs\x12L\n" +
+	"\x05state\x18\a \x01(\x0e20.google.cloud.financialservices.v1.Dataset.StateB\x04\xe2A\x01\x03R\x05state\x12:\n" +
 	"\n" +
-	"date_range\x18\b \x01(\v2\x15.google.type.IntervalB\x03\xe0A\x02R\tdateRange\x122\n" +
+	"date_range\x18\b \x01(\v2\x15.google.type.IntervalB\x04\xe2A\x01\x02R\tdateRange\x122\n" +
 	"\ttime_zone\x18\t \x01(\v2\x15.google.type.TimeZoneR\btimeZone\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -686,9 +686,9 @@ const file_google_cloud_financialservices_v1_dataset_proto_rawDesc = "" +
 	"\x06ACTIVE\x10\x02\x12\f\n" +
 	"\bUPDATING\x10\x03\x12\f\n" +
 	"\bDELETING\x10\x04:\x82\x01\xeaA\x7f\n" +
-	"(financialservices.googleapis.com/Dataset\x12Sprojects/{project_num}/locations/{location}/instances/{instance}/datasets/{dataset}\"\xcf\x01\n" +
-	"\x13ListDatasetsRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
+	"(financialservices.googleapis.com/Dataset\x12Sprojects/{project_num}/locations/{location}/instances/{instance}/datasets/{dataset}\"\xd0\x01\n" +
+	"\x13ListDatasetsRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
 	")financialservices.googleapis.com/InstanceR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -698,29 +698,29 @@ const file_google_cloud_financialservices_v1_dataset_proto_rawDesc = "" +
 	"\x14ListDatasetsResponse\x12F\n" +
 	"\bdatasets\x18\x01 \x03(\v2*.google.cloud.financialservices.v1.DatasetR\bdatasets\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"Y\n" +
-	"\x11GetDatasetRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(financialservices.googleapis.com/DatasetR\x04name\"\xf4\x01\n" +
-	"\x14CreateDatasetRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")financialservices.googleapis.com/InstanceR\x06parent\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"Z\n" +
+	"\x11GetDatasetRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(financialservices.googleapis.com/DatasetR\x04name\"\xf8\x01\n" +
+	"\x14CreateDatasetRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")financialservices.googleapis.com/InstanceR\x06parent\x12#\n" +
 	"\n" +
-	"dataset_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tdatasetId\x12I\n" +
-	"\adataset\x18\x03 \x01(\v2*.google.cloud.financialservices.v1.DatasetB\x03\xe0A\x02R\adataset\x12\"\n" +
+	"dataset_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tdatasetId\x12J\n" +
+	"\adataset\x18\x03 \x01(\v2*.google.cloud.financialservices.v1.DatasetB\x04\xe2A\x01\x02R\adataset\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xc7\x01\n" +
-	"\x14UpdateDatasetRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12I\n" +
-	"\adataset\x18\x02 \x01(\v2*.google.cloud.financialservices.v1.DatasetB\x03\xe0A\x02R\adataset\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xca\x01\n" +
+	"\x14UpdateDatasetRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12J\n" +
+	"\adataset\x18\x02 \x01(\v2*.google.cloud.financialservices.v1.DatasetB\x04\xe2A\x01\x02R\adataset\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"\x80\x01\n" +
-	"\x14DeleteDatasetRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(financialservices.googleapis.com/DatasetR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x82\x01\n" +
+	"\x14DeleteDatasetRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(financialservices.googleapis.com/DatasetR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestIdB\xfb\x01\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestIdB\xfb\x01\n" +
 	"%com.google.cloud.financialservices.v1B\fDatasetProtoP\x01ZScloud.google.com/go/financialservices/apiv1/financialservicespb;financialservicespb\xaa\x02!Google.Cloud.FinancialServices.V1\xca\x02!Google\\Cloud\\FinancialServices\\V1\xea\x02$Google::Cloud::FinancialServices::V1b\x06proto3"
 
 var (
