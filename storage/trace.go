@@ -30,6 +30,7 @@ import (
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/stats"
 	"google.golang.org/grpc/status"
 )
 
@@ -197,3 +198,62 @@ func getCommonAttributes() []attribute.KeyValue {
 func appendPackageName(spanName string) string {
 	return fmt.Sprintf("%s.%s", gcpClientArtifact, spanName)
 }
+
+// retryAttemptKey is the context key under which run records the attempt it
+// is about to make.
+type retryAttemptKey struct{}
+
+// retryAttempt describes an attempt made by run.
+type retryAttempt struct {
+	// number is the attempt number, matching the gccl-attempt-count value sent
+	// to the service. It restarts at 1 when run is given withProgressReset.
+	number int
+	// parent is the span context of the span in run's ctx, usually the
+	// operation span. It lets retryAttemptStatsHandler tell the transport's
+	// attempt span apart from it.
+	parent trace.SpanContext
+}
+
+// withRetryAttempt returns ctx annotated with the given attempt number so that
+// retryAttemptStatsHandler can record it on the gRPC attempt span.
+func withRetryAttempt(ctx context.Context, attempt int) context.Context {
+	if !isOTelTracingDevEnabled() {
+		return ctx
+	}
+	return context.WithValue(ctx, retryAttemptKey{}, retryAttempt{
+		number: attempt,
+		parent: trace.SpanContextFromContext(ctx),
+	})
+}
+
+// retryAttemptStatsHandler records gcp.client.retry.attempt_number on the
+// transport's gRPC attempt span.
+type retryAttemptStatsHandler struct{}
+
+// TagRPC implements stats.Handler.
+func (retryAttemptStatsHandler) TagRPC(ctx context.Context, _ *stats.RPCTagInfo) context.Context {
+	attempt, ok := ctx.Value(retryAttemptKey{}).(retryAttempt)
+	if !ok {
+		return ctx
+	}
+	span := trace.SpanFromContext(ctx)
+	// If the transport did not start an attempt span (for example because
+	// telemetry is disabled), the span in ctx is still the operation span,
+	// which must not be tagged.
+	if !span.IsRecording() || span.SpanContext().SpanID() == attempt.parent.SpanID() {
+		return ctx
+	}
+	span.SetAttributes(attribute.Int("gcp.client.retry.attempt_number", attempt.number))
+	return ctx
+}
+
+// HandleRPC implements stats.Handler.
+func (retryAttemptStatsHandler) HandleRPC(context.Context, stats.RPCStats) {}
+
+// TagConn implements stats.Handler.
+func (retryAttemptStatsHandler) TagConn(ctx context.Context, _ *stats.ConnTagInfo) context.Context {
+	return ctx
+}
+
+// HandleConn implements stats.Handler.
+func (retryAttemptStatsHandler) HandleConn(context.Context, stats.ConnStats) {}
