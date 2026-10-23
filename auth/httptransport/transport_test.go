@@ -15,8 +15,11 @@
 package httptransport
 
 import (
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
+	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
 )
 
@@ -63,5 +66,90 @@ func TestAuthTransport_GetClientUniverseDomain(t *testing.T) {
 				t.Errorf("got %q, want %q", got, tt.want)
 			}
 		})
+	}
+}
+
+// TestAuthTransport_CrossHostRedirectDoesNotLeakToken verifies that the
+// authTransport does not forward bearer tokens to a different host when
+// following a redirect. An attacker-controlled redirect (e.g. via an open
+// redirect on the target API) must not receive the caller's credentials.
+func TestAuthTransport_CrossHostRedirectDoesNotLeakToken(t *testing.T) {
+	const token = "super-secret-token"
+
+	// victim receives requests and records whether the auth header was present.
+	var victimSawToken bool
+	victim := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("Authorization") != "" {
+			victimSawToken = true
+		}
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer victim.Close()
+
+	// redirector redirects all requests to the victim (different host).
+	redirector := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, victim.URL+"/", http.StatusFound)
+	}))
+	defer redirector.Close()
+
+	creds := auth.NewCredentials(&auth.CredentialsOptions{
+		TokenProvider: staticTP(token),
+	})
+	client := &http.Client{
+		Transport: &authTransport{
+			creds: creds,
+			base:  http.DefaultTransport,
+		},
+	}
+
+	resp, err := client.Get(redirector.URL + "/resource")
+	if err != nil {
+		t.Fatalf("GET: %v", err)
+	}
+	resp.Body.Close()
+
+	if victimSawToken {
+		t.Error("bearer token was leaked to cross-host redirect destination")
+	}
+}
+
+// TestAuthTransport_SameHostRedirectIsAuthorized verifies that same-host
+// redirects continue to carry the bearer token.
+func TestAuthTransport_SameHostRedirectIsAuthorized(t *testing.T) {
+	const token = "super-secret-token"
+
+	var finalSawToken bool
+	mux := http.NewServeMux()
+	srv := httptest.NewServer(mux)
+	defer srv.Close()
+
+	mux.HandleFunc("/final", func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("Authorization") == "Bearer "+token {
+			finalSawToken = true
+		}
+		w.WriteHeader(http.StatusOK)
+	})
+	mux.HandleFunc("/redirect", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, srv.URL+"/final", http.StatusFound)
+	})
+
+	creds := auth.NewCredentials(&auth.CredentialsOptions{
+		TokenProvider: staticTP(token),
+	})
+	client := &http.Client{
+		Transport: &authTransport{
+			creds: creds,
+			base:  http.DefaultTransport,
+		},
+	}
+
+	resp, err := client.Get(srv.URL + "/redirect")
+	if err != nil {
+		t.Fatalf("GET: %v", err)
+	}
+	resp.Body.Close()
+
+	if !finalSawToken {
+		t.Error("bearer token was not forwarded to same-host redirect destination")
 	}
 }
