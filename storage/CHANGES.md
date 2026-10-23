@@ -1,6 +1,20 @@
 # Changes
 
 
+## [1.71.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.70.0...storage/v1.71.0) (2026-10-23)
+
+
+### Features
+
+* **storage:** Add gcp.client.retry.attempt_number to gRPC attempt spans ([#20716](https://github.com/googleapis/google-cloud-go/issues/20716)) ([5528a50](https://github.com/googleapis/google-cloud-go/commit/5528a500bbee73f8fdf42cd4c818373f3b39a490))
+* **storage:** Add RetryBackoff spans for retry backoffs ([#20715](https://github.com/googleapis/google-cloud-go/issues/20715)) ([edca405](https://github.com/googleapis/google-cloud-go/commit/edca4055ed4dc120a355ff3807653cf9802226e6))
+* **storage:** Record read and write mode trace attributes ([#20714](https://github.com/googleapis/google-cloud-go/issues/20714)) ([f41be16](https://github.com/googleapis/google-cloud-go/commit/f41be163730b8fe4d31a05b4e67895823048b576))
+
+
+### Bug Fixes
+
+* **storage:** Prevent spurious cancelled status on completed gRPC reads ([#20409](https://github.com/googleapis/google-cloud-go/issues/20409)) ([4749772](https://github.com/googleapis/google-cloud-go/commit/47497723ad3d4196398fb7e7d7ba4a79c92b53ac))
+
 ## [1.70.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.69.0...storage/v1.70.0) (2026-10-22)
 
 
