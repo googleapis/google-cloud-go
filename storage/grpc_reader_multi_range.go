@@ -663,9 +663,7 @@ sessionDrainLoop:
 		close(waiter)
 	}
 	m.attrsOnce.Do(func() { close(m.attrsReady) })
-	for id := range m.streams {
-		delete(m.streams, id)
-	}
+	clear(m.streams)
 	// Stop any session that is still being opened and make new calls to Add,
 	// Wait and Close return immediately.
 	m.cancel()

@@ -504,8 +504,8 @@ func (r *gRPCReadObjectReader) WriteTo(w io.Writer) (int64, error) {
 
 }
 
-// Close cancels the read stream's context in order for it to be closed and
-// collected, and frees any currently in use buffers.
+// Close drains a completed stream (bounded by defaultStreamDrainTimeout) so
+// the RPC ends cleanly, then cancels the context and frees buffers.
 func (r *gRPCReadObjectReader) Close() error {
 	if r.stream != nil && (r.size == r.seen || r.zeroRange) {
 		drainStreamOnCompletion(r.cancel, r.stream)
@@ -518,7 +518,14 @@ func (r *gRPCReadObjectReader) Close() error {
 	return nil
 }
 
-// drainStreamOnCompletion cleanly exhausts a finished stream to allow HTTP2 connection reuse.
+// defaultStreamDrainTimeout is the maximum duration allowed to drain trailing
+// messages and trailers from a completed gRPC read stream before cancellation.
+const defaultStreamDrainTimeout = 200 * time.Millisecond
+
+// drainStreamOnCompletion receives the remainder of a completed stream so that
+// the server's trailers are consumed and the attempt is not recorded as
+// CANCELLED. If the stream has not ended within defaultStreamDrainTimeout
+// (200 ms), cancel is called.
 func drainStreamOnCompletion(cancel context.CancelFunc, stream grpc.ClientStream) {
 	// Without cancel there is no way to bound the drain, so skip it.
 	if stream == nil || cancel == nil {

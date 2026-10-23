@@ -78,10 +78,6 @@ const (
 	directConnectivityDiagnosticHeaderKey = "direct_connectivity_diagnostic"
 	requestParamsHeaderKey                = "x-goog-request-params"
 	directPathEndpointPrefix              = "google-c2p:///"
-
-	// defaultStreamDrainTimeout is the maximum duration allowed to drain trailing
-	// messages and trailers from a completed gRPC read stream before cancellation.
-	defaultStreamDrainTimeout = 200 * time.Millisecond
 )
 
 // defaultGRPCOptions returns a set of the default client options
@@ -1902,8 +1898,8 @@ func (r *gRPCReader) WriteTo(w io.Writer) (int64, error) {
 	return r.seen - alreadySeen, finalErr
 }
 
-// Close cancels the read stream's context in order for it to be closed and
-// collected, and frees any currently in use buffers.
+// Close drains a completed stream (bounded by defaultStreamDrainTimeout) so
+// the RPC ends cleanly, then cancels the context and frees buffers.
 func (r *gRPCReader) Close() error {
 	if r.stream != nil && ((r.finalized || r.negativeOffset) && r.size == r.seen || r.zeroRange) {
 		drainStreamOnCompletion(r.cancel, r.stream)
