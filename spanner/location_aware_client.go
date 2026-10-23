@@ -88,7 +88,9 @@ type locationAwareSpannerClient struct {
 var _ spannerClient = (*locationAwareSpannerClient)(nil)
 
 // asGRPCSpannerClient extracts the underlying *grpcSpannerClient from a
-// spannerClient, handling the locationAwareSpannerClient wrapper.
+// spannerClient, handling the locationAwareSpannerClient wrapper. It does not
+// unwrap a dcpResolvingSpannerClient, whose entry can change between RPCs and
+// is resolved per RPC; requestIDHeaderProviderFromSpannerClient handles it.
 func asGRPCSpannerClient(c spannerClient) *grpcSpannerClient {
 	if gsc, ok := c.(*grpcSpannerClient); ok {
 		return gsc
