@@ -821,3 +821,380 @@ func checkRetryBackoffs(t *testing.T, spans tracetest.SpanStubs, wantBackoffs in
 		}
 	}
 }
+
+func TestRecordWriterTraceAttributes(t *testing.T) {
+	newMockObjectHandle := func() *ObjectHandle {
+		c := &Client{tc: &mockStorageClient{
+			openWriterFn: func(params *openWriterParams, _ ...storageOption) (internalWriter, error) {
+				close(params.donec)
+				return &mockInternalWriter{internalWriter: &httpInternalWriter{}}, nil
+			},
+		}}
+		return c.Bucket("bucket").Object("object")
+	}
+
+	testCases := []struct {
+		name      string
+		run       func(*testing.T, context.Context)
+		wantAttrs []attribute.KeyValue
+	}{
+		{
+			name: "resumable_multi_chunk",
+			run: func(t *testing.T, ctx context.Context) {
+				w := newMockObjectHandle().NewWriter(ctx)
+				w.ChunkSize = 256 * 1024
+				if _, err := w.Write(make([]byte, 256*1024)); err != nil {
+					t.Fatalf("Write failed: %v", err)
+				}
+				if err := w.Close(); err != nil {
+					t.Fatalf("Close failed: %v", err)
+				}
+			},
+			wantAttrs: []attribute.KeyValue{
+				attribute.String("gcp.storage.write.mode", "resumable"),
+			},
+		},
+		{
+			name: "oneshot_zero_chunk_size",
+			run: func(t *testing.T, ctx context.Context) {
+				w := newMockObjectHandle().NewWriter(ctx)
+				w.ChunkSize = 0
+				if err := w.Close(); err != nil {
+					t.Fatalf("Close failed: %v", err)
+				}
+			},
+			wantAttrs: []attribute.KeyValue{
+				attribute.String("gcp.storage.write.mode", "oneshot"),
+			},
+		},
+		{
+			name: "oneshot_small_payload_default_chunk_size",
+			run: func(t *testing.T, ctx context.Context) {
+				w := newMockObjectHandle().NewWriter(ctx)
+				if _, err := w.Write([]byte("hello")); err != nil {
+					t.Fatalf("Write failed: %v", err)
+				}
+				if err := w.Close(); err != nil {
+					t.Fatalf("Close failed: %v", err)
+				}
+			},
+			wantAttrs: []attribute.KeyValue{
+				attribute.String("gcp.storage.write.mode", "oneshot"),
+			},
+		},
+		{
+			name: "oneshot_non_aligned_chunk_size",
+			run: func(t *testing.T, ctx context.Context) {
+				w := newMockObjectHandle().NewWriter(ctx)
+				// 300 KiB rounds up to 512 KiB via gRPCChunkSize / googleapi.ChunkSize,
+				// so a 400 KiB write fits in the first chunk and runs as oneshot.
+				w.ChunkSize = 300 * 1024
+				if _, err := w.Write(make([]byte, 400*1024)); err != nil {
+					t.Fatalf("Write failed: %v", err)
+				}
+				if err := w.Close(); err != nil {
+					t.Fatalf("Close failed: %v", err)
+				}
+			},
+			wantAttrs: []attribute.KeyValue{
+				attribute.String("gcp.storage.write.mode", "oneshot"),
+			},
+		},
+		{
+			name: "oneshot_grpc_force_oneshot",
+			run: func(_ *testing.T, ctx context.Context) {
+				ctx, _ = startSpan(ctx, "Object.Writer")
+				recordWriterTraceAttributes(ctx, &Writer{
+					ChunkSize: googleapi.DefaultUploadChunkSize,
+					iw:        &gRPCWriter{forceOneShot: true},
+				})
+				endSpan(ctx, nil)
+			},
+			wantAttrs: []attribute.KeyValue{
+				attribute.String("gcp.storage.write.mode", "oneshot"),
+			},
+		},
+		{
+			name: "resumable_grpc",
+			run: func(_ *testing.T, ctx context.Context) {
+				ctx, _ = startSpan(ctx, "Object.Writer")
+				recordWriterTraceAttributes(ctx, &Writer{
+					ChunkSize: googleapi.DefaultUploadChunkSize,
+					iw:        &gRPCWriter{forceOneShot: false},
+				})
+				endSpan(ctx, nil)
+			},
+			wantAttrs: []attribute.KeyValue{
+				attribute.String("gcp.storage.write.mode", "resumable"),
+			},
+		},
+		{
+			name: "appendable",
+			run: func(t *testing.T, ctx context.Context) {
+				w := newMockObjectHandle().NewWriter(ctx)
+				w.Append = true
+				if err := w.Close(); err != nil {
+					t.Fatalf("Close failed: %v", err)
+				}
+			},
+			wantAttrs: []attribute.KeyValue{
+				attribute.String("gcp.storage.write.mode", "appendable"),
+			},
+		},
+		{
+			name: "open_writer_validation_failure",
+			run: func(t *testing.T, ctx context.Context) {
+				w := newMockObjectHandle().NewWriter(ctx)
+				w.Name = "mismatched-name"
+				if err := w.Close(); err == nil {
+					t.Fatal("Close succeeded, want validation error")
+				}
+			},
+			wantAttrs: []attribute.KeyValue{
+				attribute.String("gcp.storage.write.mode", "resumable"),
+			},
+		},
+		{
+			name: "parallel",
+			run: func(t *testing.T, ctx context.Context) {
+				c := &Client{tc: &grpcStorageClient{}}
+				w := c.Bucket("bucket").Object("object").NewWriter(ctx)
+				w.EnableParallelUpload = true
+				w.ParallelUploadConfig = ParallelUploadConfig{
+					MaxConcurrency: 4,
+				}
+				w.MD5 = []byte{1, 2, 3}
+				if err := w.Close(); err == nil {
+					t.Fatal("Close succeeded, want validation error")
+				}
+			},
+			wantAttrs: []attribute.KeyValue{
+				attribute.String("gcp.storage.write.mode", "parallel"),
+				attribute.Int("gcp.storage.write.parallel.part_size", 16*1024*1024),
+				attribute.Int("gcp.storage.write.parallel.concurrency", 4),
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := context.Background()
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() {
+				te.Unregister(ctx)
+			})
+			// TODO: Remove setting development env var upon launch.
+			t.Setenv(storageOtelTracingDevVar, "true")
+
+			tc.run(t, ctx)
+
+			verifySingleSpanAttributes(t, te.Spans(), tc.wantAttrs)
+		})
+	}
+}
+
+func TestWriterTraceWriteModeEmulated(t *testing.T) {
+	checkEmulatorEnvironment(t)
+
+	ctx := context.Background()
+	c := &Client{tc: emulatorClients["grpc"]}
+	bucket := fmt.Sprintf("grpc-trace-bucket-%d", time.Now().UnixNano())
+	if err := c.Bucket(bucket).Create(ctx, "project", nil); err != nil {
+		t.Fatalf("Bucket.Create: %v", err)
+	}
+
+	testCases := []struct {
+		name      string
+		configure func(*Writer)
+		payload   []byte
+		wantAttrs []attribute.KeyValue
+	}{
+		{
+			name:      "oneshot",
+			configure: func(_ *Writer) {},
+			payload:   make([]byte, 1024),
+			wantAttrs: []attribute.KeyValue{
+				attribute.String("gcp.storage.write.mode", "oneshot"),
+			},
+		},
+		{
+			name: "resumable",
+			configure: func(w *Writer) {
+				w.ChunkSize = 256 * 1024
+			},
+			payload: make([]byte, 1024*1024),
+			wantAttrs: []attribute.KeyValue{
+				attribute.String("gcp.storage.write.mode", "resumable"),
+			},
+		},
+		{
+			name: "appendable",
+			configure: func(w *Writer) {
+				w.Append = true
+				w.FinalizeOnClose = true
+			},
+			payload: make([]byte, 1024),
+			wantAttrs: []attribute.KeyValue{
+				attribute.String("gcp.storage.write.mode", "appendable"),
+			},
+		},
+		{
+			name: "parallel",
+			configure: func(w *Writer) {
+				w.EnableParallelUpload = true
+				w.ParallelUploadConfig = ParallelUploadConfig{
+					PartSize:       8 * 1024 * 1024,
+					MaxConcurrency: 4,
+				}
+			},
+			payload: make([]byte, 1024),
+			wantAttrs: []attribute.KeyValue{
+				attribute.String("gcp.storage.write.mode", "parallel"),
+				attribute.Int("gcp.storage.write.parallel.part_size", 8*1024*1024),
+				attribute.Int("gcp.storage.write.parallel.concurrency", 4),
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() {
+				te.Unregister(ctx)
+			})
+			// TODO: Remove setting development env var upon launch.
+			t.Setenv(storageOtelTracingDevVar, "true")
+
+			objName := fmt.Sprintf("object-%s-%d", tc.name, time.Now().UnixNano())
+			w := c.Bucket(bucket).Object(objName).NewWriter(ctx)
+			tc.configure(w)
+			if _, err := w.Write(tc.payload); err != nil {
+				t.Fatalf("Write: %v", err)
+			}
+			if err := w.Close(); err != nil {
+				t.Fatalf("Close: %v", err)
+			}
+
+			var writerSpans tracetest.SpanStubs
+			for _, s := range te.Spans() {
+				if s.Name == appendPackageName("Object.Writer") && !s.Parent.IsValid() {
+					writerSpans = append(writerSpans, s)
+				}
+			}
+			verifySingleSpanAttributes(t, writerSpans, tc.wantAttrs)
+		})
+	}
+}
+
+// TestReaderTraceReadMode verifies the read mode recorded by NewRangeReader and
+// NewMultiRangeDownloader. The ObjectHandle has no object name, so each call
+// fails validation after the span has been started and the attribute recorded,
+// before any RPC is made.
+func TestReaderTraceReadMode(t *testing.T) {
+	testCases := []struct {
+		name     string
+		read     func(context.Context, *ObjectHandle) error
+		wantMode string
+	}{
+		{
+			name: "full",
+			read: func(ctx context.Context, o *ObjectHandle) error {
+				_, err := o.NewReader(ctx)
+				return err
+			},
+			wantMode: "full",
+		},
+		{
+			name: "range",
+			read: func(ctx context.Context, o *ObjectHandle) error {
+				_, err := o.NewRangeReader(ctx, 100, 500)
+				return err
+			},
+			wantMode: "range",
+		},
+		{
+			name: "range_to_end",
+			read: func(ctx context.Context, o *ObjectHandle) error {
+				_, err := o.NewRangeReader(ctx, 100, -1)
+				return err
+			},
+			wantMode: "range",
+		},
+		{
+			name: "range_suffix",
+			read: func(ctx context.Context, o *ObjectHandle) error {
+				_, err := o.NewRangeReader(ctx, -100, -1)
+				return err
+			},
+			wantMode: "range",
+		},
+		{
+			name: "multi_range",
+			read: func(ctx context.Context, o *ObjectHandle) error {
+				_, err := o.NewMultiRangeDownloader(ctx)
+				return err
+			},
+			wantMode: "multi_range",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := context.Background()
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() {
+				te.Unregister(ctx)
+			})
+			// TODO: Remove setting development env var upon launch.
+			t.Setenv(storageOtelTracingDevVar, "true")
+
+			o := &ObjectHandle{c: &Client{}, bucket: "bucket"}
+			if err := tc.read(ctx, o); err == nil {
+				t.Fatal("read succeeded, want validation error")
+			}
+
+			verifySingleSpanAttributes(t, te.Spans(), []attribute.KeyValue{
+				attribute.String("gcp.storage.read.mode", tc.wantMode),
+			})
+		})
+	}
+}
+
+func TestRecordTraceAttributes_DevTracingDisabled(t *testing.T) {
+	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() {
+		te.Unregister(ctx)
+	})
+	t.Setenv(storageOtelTracingDevVar, "false")
+
+	wCtx, _ := startSpan(ctx, "Object.Writer")
+	recordWriterTraceAttributes(wCtx, &Writer{EnableParallelUpload: true})
+	endSpan(wCtx, nil)
+
+	for _, s := range te.Spans() {
+		for _, a := range s.Attributes {
+			switch a.Key {
+			case "gcp.storage.write.mode",
+				"gcp.storage.write.parallel.part_size",
+				"gcp.storage.write.parallel.concurrency":
+				t.Errorf("span %s has unexpected attribute %s when dev tracing is disabled", s.Name, a.Key)
+			}
+		}
+	}
+}
+
+// verifySingleSpanAttributes checks that exactly one span was exported and that
+// its attributes are exactly the common attributes plus wantAttrs.
+func verifySingleSpanAttributes(t *testing.T, spans tracetest.SpanStubs, wantAttrs []attribute.KeyValue) {
+	t.Helper()
+	if len(spans) != 1 {
+		t.Fatalf("expected one span, got %d", len(spans))
+	}
+	got := attribute.NewSet(spans[0].Attributes...)
+	want := attribute.NewSet(append(getCommonAttributes(), wantAttrs...)...)
+	if !got.Equals(&want) {
+		t.Errorf("span %s attributes mismatch:\n got: %s\nwant: %s", spans[0].Name,
+			got.Encoded(attribute.DefaultEncoder()), want.Encoded(attribute.DefaultEncoder()))
+	}
+}

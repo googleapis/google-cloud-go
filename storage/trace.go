@@ -21,6 +21,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"sync/atomic"
 	"time"
 
 	internalTrace "cloud.google.com/go/internal/trace"
@@ -273,3 +274,50 @@ func (retryAttemptStatsHandler) TagConn(ctx context.Context, _ *stats.ConnTagInf
 
 // HandleConn implements stats.Handler.
 func (retryAttemptStatsHandler) HandleConn(context.Context, stats.ConnStats) {}
+
+func recordingSpan(ctx context.Context) (trace.Span, bool) {
+	if !isOTelTracingDevEnabled() {
+		return nil, false
+	}
+	span := trace.SpanFromContext(ctx)
+	return span, span.IsRecording()
+}
+
+// recordWriterTraceAttributes attaches the upload strategy to the Object.Writer
+// span in ctx as gcp.storage.write.mode (resumable, oneshot, appendable or
+// parallel). For parallel uploads, the configured part size and concurrency are
+// also recorded.
+func recordWriterTraceAttributes(ctx context.Context, w *Writer) {
+	span, ok := recordingSpan(ctx)
+	if !ok {
+		return
+	}
+	if w.EnableParallelUpload {
+		span.SetAttributes(
+			attribute.String("gcp.storage.write.mode", "parallel"),
+			attribute.Int("gcp.storage.write.parallel.part_size", w.ParallelUploadConfig.PartSize),
+			attribute.Int("gcp.storage.write.parallel.concurrency", w.ParallelUploadConfig.MaxConcurrency),
+		)
+		return
+	}
+	writeMode := "resumable"
+	if w.Append {
+		writeMode = "appendable"
+	} else if isOneshotUpload(w) {
+		writeMode = "oneshot"
+	}
+	span.SetAttributes(attribute.String("gcp.storage.write.mode", writeMode))
+}
+
+// isOneshotUpload reports whether the Writer performs a single-request upload.
+// For HTTP, payloads smaller than the 256 KiB-aligned ChunkSize are sent in a
+// single request (matching googleapi.ChunkSize).
+func isOneshotUpload(w *Writer) bool {
+	if gw, ok := w.iw.(*gRPCWriter); ok {
+		return gw.usesOneshotSender()
+	}
+	if w.ChunkSize <= 0 {
+		return true
+	}
+	return w.opened && w.closed && atomic.LoadInt64(&w.bytesWritten) < int64(gRPCChunkSize(w.ChunkSize))
+}
