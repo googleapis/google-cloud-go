@@ -751,7 +751,8 @@ func (g *gatedAppendRowsClient) Send(*storagepb.AppendRowsRequest) error { retur
 func (g *gatedAppendRowsClient) Recv() (*storagepb.AppendRowsResponse, error) {
 	return g.recvF(g.ctx)
 }
-func (g *gatedAppendRowsClient) CloseSend() error { return nil }
+func (g *gatedAppendRowsClient) CloseSend() error         { return nil }
+func (g *gatedAppendRowsClient) Context() context.Context { return g.ctx }
 
 func openGatedArc(recvF func(ctx context.Context) (*storagepb.AppendRowsResponse, error)) func(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 	return func(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
