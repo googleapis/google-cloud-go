@@ -17,6 +17,8 @@ package datastore
 import (
 	"context"
 	"errors"
+	"maps"
+	"slices"
 	"sync"
 	"time"
 
@@ -413,7 +415,9 @@ func (c *Client) RunInTransaction(ctx context.Context, f func(tx *Transaction) e
 		// Pass this transaction's ID to the retry transaction to preserve
 		// transaction priority.
 		if !settings.readOnly {
+			tx.stateLock.Lock()
 			settings.prevID = tx.id
+			tx.stateLock.Unlock()
 		}
 	}
 	return nil, err
@@ -445,11 +449,21 @@ func (t *Transaction) Commit() (c *Commit, err error) {
 		return nil, err
 	}
 
+	t.stateLock.Lock()
+	if t.state == transactionStateExpired {
+		t.stateLock.Unlock()
+		return nil, errExpiredTransaction
+	}
+	mutations := slices.Clone(t.mutations)
+	pending := maps.Clone(t.pending)
+	txID := t.id
+	t.stateLock.Unlock()
+
 	req := &pb.CommitRequest{
 		ProjectId:           t.client.dataset,
 		DatabaseId:          t.client.databaseID,
-		TransactionSelector: &pb.CommitRequest_Transaction{Transaction: t.id},
-		Mutations:           t.mutations,
+		TransactionSelector: &pb.CommitRequest_Transaction{Transaction: txID},
+		Mutations:           mutations,
 		Mode:                pb.CommitRequest_TRANSACTIONAL,
 	}
 	resp, err := t.client.client.Commit(ctx, req)
@@ -461,12 +475,15 @@ func (t *Transaction) Commit() (c *Commit, err error) {
 	}
 
 	t.stateLock.Lock()
+	defer t.stateLock.Unlock()
+	if t.state == transactionStateExpired {
+		return nil, errExpiredTransaction
+	}
 	t.state = transactionStateExpired
-	t.stateLock.Unlock()
 
 	c = &Commit{}
 	// Copy any newly minted keys into the returned keys.
-	for i, p := range t.pending {
+	for i, p := range pending {
 		if i >= len(resp.MutationResults) || resp.MutationResults[i].Key == nil {
 			return nil, errors.New("datastore: internal error: server returned the wrong mutation results")
 		}
@@ -491,24 +508,15 @@ func (t *Transaction) rollbackWithRetry() error {
 	rollbackCtx, cancel := context.WithTimeout(context.WithoutCancel(t.ctx), 5*time.Second)
 	defer cancel()
 
-	// Temporarily override the transaction context for the rollback operation.
-	// Since Rollback and rollbackWithRetry are only called once at the end of a transaction,
-	// this is clean and safe.
-	origCtx := t.ctx
-	t.ctx = rollbackCtx
-	defer func() {
-		t.ctx = origCtx
-	}()
-
 	retryer := gax.OnCodes(rollbackRetryCodes, txnBackoff)
 	for range maxIndividualReqTxnRetry {
-		rollbackErr = t.Rollback()
+		rollbackErr = t.rollback(rollbackCtx)
 		if rollbackErr == nil {
 			return nil
 		}
 
 		// Check if Rollback should be retried
-		if backoffErr := backoffBeforeRetry(t.ctx, retryer, rollbackErr); backoffErr != nil {
+		if backoffErr := backoffBeforeRetry(rollbackCtx, retryer, rollbackErr); backoffErr != nil {
 			return backoffErr
 		}
 	}
@@ -517,82 +525,106 @@ func (t *Transaction) rollbackWithRetry() error {
 
 // Rollback abandons a pending transaction.
 func (t *Transaction) Rollback() (err error) {
-	ctx := trace.StartSpan(t.ctx, "cloud.google.com/go/datastore.Transaction.Rollback")
+	return t.rollback(t.ctx)
+}
+
+func (t *Transaction) rollback(ctx context.Context) (err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Transaction.Rollback")
 	defer func() { trace.EndSpan(ctx, err) }()
 
+	t.stateLock.Lock()
 	if t.state == transactionStateExpired {
+		t.stateLock.Unlock()
 		return errExpiredTransaction
 	}
 
 	if t.id == nil && t.state == transactionStateNotStarted {
+		t.state = transactionStateExpired
+		t.stateLock.Unlock()
 		// no transaction to rollback
 		return nil
 	}
-
-	err = t.beginLaterTransaction()
-	if err != nil {
-		return err
-	}
+	txID := t.id
+	t.stateLock.Unlock()
 
 	_, err = t.client.client.Rollback(ctx, &pb.RollbackRequest{
 		ProjectId:   t.client.dataset,
 		DatabaseId:  t.client.databaseID,
-		Transaction: t.id,
+		Transaction: txID,
 	})
 	if err != nil {
 		return err
 	}
 
+	t.stateLock.Lock()
+	if t.state == transactionStateExpired {
+		t.stateLock.Unlock()
+		return errExpiredTransaction
+	}
 	t.state = transactionStateExpired
+	t.stateLock.Unlock()
 	return nil
 }
 
-func (t *Transaction) parseReadOptions() (*pb.ReadOptions, error) {
+// acquireReadOptions returns the ReadOptions for a read RPC and a finish
+// callback that must be called once the RPC completes with the transaction ID
+// returned by the server (or nil if none).
+// When the transaction has not started yet (BeginLater), stateLock remains
+// held until finish is invoked so that concurrent reads wait for the initial
+// read to establish the transaction ID rather than starting multiple
+// server-side transactions.
+func (t *Transaction) acquireReadOptions() (*pb.ReadOptions, func(txnID []byte), error) {
 	if t.client != nil && t.client.readSettings.readTimeExists() {
-		return nil, errTxnClientReadTime
+		return nil, nil, errTxnClientReadTime
 	}
 
 	t.stateLock.Lock()
-	defer t.stateLock.Unlock()
-
-	var opts *pb.ReadOptions
 	switch t.state {
 	case transactionStateExpired:
-		return nil, errExpiredTransaction
+		t.stateLock.Unlock()
+		return nil, nil, errExpiredTransaction
 	case transactionStateInProgress:
-		opts = &pb.ReadOptions{
+		opts := &pb.ReadOptions{
 			// Use existing transaction id for this request
 			ConsistencyType: &pb.ReadOptions_Transaction{Transaction: t.id},
 		}
+		t.stateLock.Unlock()
+		return opts, func([]byte) {}, nil
 	case transactionStateNotStarted:
 		tOptionsPb, _ := t.parseTransactionOptions()
-		opts = &pb.ReadOptions{
+		opts := &pb.ReadOptions{
 			// Begin a new transaction for this request
 			ConsistencyType: &pb.ReadOptions_NewTransaction{NewTransaction: tOptionsPb},
 		}
+		var once sync.Once
+		finish := func(txnID []byte) {
+			once.Do(func() {
+				if txnID != nil && t.state == transactionStateNotStarted {
+					t.id = txnID
+					t.state = transactionStateInProgress
+				}
+				t.stateLock.Unlock()
+			})
+		}
+		return opts, finish, nil
+	default:
+		t.stateLock.Unlock()
+		return nil, func([]byte) {}, nil
 	}
-	return opts, nil
 }
 
 func (t *Transaction) get(spanName string, keys []*Key, dst interface{}) (err error) {
 	ctx := trace.StartSpan(t.ctx, spanName)
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	opts, err := t.parseReadOptions()
+	opts, finishRead, err := t.acquireReadOptions()
 	if err != nil {
 		return err
 	}
+	defer finishRead(nil)
 
 	txnID, err := t.client.get(ctx, keys, dst, opts)
-
-	if txnID != nil {
-		t.stateLock.Lock()
-		if t.state == transactionStateNotStarted {
-			t.id = txnID
-			t.state = transactionStateInProgress
-		}
-		t.stateLock.Unlock()
-	}
+	finishRead(txnID)
 	return t.client.processFieldMismatchError(err)
 }
 
@@ -665,12 +697,20 @@ func (t *Transaction) PutMultiWithOptions(reqs []*PutRequest, opts ...PutOption)
 }
 
 func (t *Transaction) putMultiInternal(keys []*Key, src interface{}, transforms [][]PropertyTransform) (ret []*PendingKey, err error) {
-	if t.state == transactionStateExpired {
+	t.stateLock.Lock()
+	expired := t.state == transactionStateExpired
+	t.stateLock.Unlock()
+	if expired {
 		return nil, errExpiredTransaction
 	}
 	mutations, err := putMutations(keys, src, transforms)
 	if err != nil {
 		return nil, err
+	}
+	t.stateLock.Lock()
+	defer t.stateLock.Unlock()
+	if t.state == transactionStateExpired {
+		return nil, errExpiredTransaction
 	}
 	origin := len(t.mutations)
 	t.mutations = append(t.mutations, mutations...)
@@ -705,12 +745,20 @@ func (t *Transaction) Delete(key *Key) error {
 // DeleteMulti is a batch version of Delete.
 // TODO(jba): rewrite in terms of Mutate.
 func (t *Transaction) DeleteMulti(keys []*Key) (err error) {
-	if t.state == transactionStateExpired {
+	t.stateLock.Lock()
+	expired := t.state == transactionStateExpired
+	t.stateLock.Unlock()
+	if expired {
 		return errExpiredTransaction
 	}
 	mutations, err := deleteMutations(keys)
 	if err != nil {
 		return err
+	}
+	t.stateLock.Lock()
+	defer t.stateLock.Unlock()
+	if t.state == transactionStateExpired {
+		return errExpiredTransaction
 	}
 	t.mutations = append(t.mutations, mutations...)
 	return nil
@@ -725,12 +773,20 @@ func (t *Transaction) DeleteMulti(keys []*Key) (err error) {
 //
 // For an example, see Client.Mutate.
 func (t *Transaction) Mutate(muts ...*Mutation) ([]*PendingKey, error) {
-	if t.state == transactionStateExpired {
+	t.stateLock.Lock()
+	expired := t.state == transactionStateExpired
+	t.stateLock.Unlock()
+	if expired {
 		return nil, errExpiredTransaction
 	}
 	pmuts, err := mutationProtos(muts)
 	if err != nil {
 		return nil, err
+	}
+	t.stateLock.Lock()
+	defer t.stateLock.Unlock()
+	if t.state == transactionStateExpired {
+		return nil, errExpiredTransaction
 	}
 	origin := len(t.mutations)
 	t.mutations = append(t.mutations, pmuts...)
