@@ -334,12 +334,12 @@ func createES256JWT(t *testing.T) (string, ecdsa.PublicKey) {
 	if err != nil {
 		t.Fatalf("unable to sign content: %v", err)
 	}
-	rb := r.Bytes()
-	lPadded := make([]byte, es256KeySize)
-	copy(lPadded[es256KeySize-len(rb):], rb)
-	var sig []byte
-	sig = append(sig, lPadded...)
-	sig = append(sig, s.Bytes()...)
+	// R and S must each be left-padded to es256KeySize bytes (RFC 7518,
+	// section 3.4); leaving S unpadded produced a short signature roughly
+	// once in every 256 runs.
+	sig := make([]byte, 2*es256KeySize)
+	r.FillBytes(sig[:es256KeySize])
+	s.FillBytes(sig[es256KeySize:])
 	signature := base64.RawURLEncoding.EncodeToString(sig)
 	return fmt.Sprintf("%s.%s.%s", header, claims, signature), privateKey.PublicKey
 }
@@ -392,3 +392,82 @@ func commonToken(t *testing.T, alg string) (string, string) {
 type RoundTripFn func(req *http.Request) *http.Response
 
 func (f RoundTripFn) RoundTrip(req *http.Request) (*http.Response, error) { return f(req), nil }
+
+// TestValidateMalformedTokens checks that attacker-controlled tokens are
+// rejected with an error rather than causing a panic.
+func TestValidateMalformedTokens(t *testing.T) {
+	enc := base64.RawURLEncoding.EncodeToString
+	_, pk := createES256JWT(t)
+	es256Header, claims := commonToken(t, "ES256")
+
+	client := &http.Client{
+		Transport: RoundTripFn(func(req *http.Request) *http.Response {
+			cr := certResponse{Keys: []jwk{{
+				Kid: keyID,
+				X:   enc(pk.X.Bytes()),
+				Y:   enc(pk.Y.Bytes()),
+			}}}
+			b, err := json.Marshal(&cr)
+			if err != nil {
+				t.Fatalf("unable to marshal response: %v", err)
+			}
+			return &http.Response{
+				StatusCode: 200,
+				Body:       io.NopCloser(bytes.NewReader(b)),
+				Header:     make(http.Header),
+			}
+		}),
+	}
+
+	tests := []struct {
+		name  string
+		token string
+	}{
+		{
+			name:  "null payload",
+			token: enc([]byte(`{"alg":"RS256"}`)) + "." + enc([]byte("null")) + "." + enc([]byte("x")),
+		},
+		{
+			name:  "null header",
+			token: enc([]byte("null")) + "." + claims + "." + enc([]byte("x")),
+		},
+		{
+			name:  "ES256 empty signature",
+			token: es256Header + "." + claims + ".",
+		},
+		{
+			name:  "ES256 short signature",
+			token: es256Header + "." + claims + "." + enc(make([]byte, 31)),
+		},
+		{
+			name:  "ES256 long signature",
+			token: es256Header + "." + claims + "." + enc(make([]byte, 65)),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			oldNow := now
+			defer func() { now = oldNow }()
+			now = beforeExp
+
+			v, err := NewValidator(&ValidatorOptions{Client: client})
+			if err != nil {
+				t.Fatalf("NewValidator(...) = %q, want nil", err)
+			}
+			if _, err := v.Validate(context.Background(), tt.token, ""); err == nil {
+				t.Fatalf("Validate(ctx, %q, \"\") = nil error, want error", tt.token)
+			}
+		})
+	}
+}
+
+// FuzzParsePayload checks that parsing arbitrary token input never panics.
+func FuzzParsePayload(f *testing.F) {
+	enc := base64.RawURLEncoding.EncodeToString
+	f.Add("aaa.bbb.ccc")
+	f.Add(enc([]byte(`{"alg":"RS256"}`)) + "." + enc([]byte("null")) + "." + enc([]byte("x")))
+	f.Add(enc([]byte("null")) + "." + enc([]byte(`{"aud":"a"}`)) + "." + enc([]byte("x")))
+	f.Fuzz(func(t *testing.T, token string) {
+		ParsePayload(token)
+	})
+}
