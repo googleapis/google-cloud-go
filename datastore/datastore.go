@@ -99,6 +99,9 @@ const resourcePrefixHeader = "google-cloud-resource-prefix"
 // reqParamsHeader is routing header required to access named databases
 const reqParamsHeader = "x-goog-request-params"
 
+// isTransactionHeader indicates whether an RPC is part of a transaction.
+const isTransactionHeader = "x-goog-is-transaction"
+
 // DefaultDatabaseID is ID of the default database denoted by an empty string
 const DefaultDatabaseID = ""
 

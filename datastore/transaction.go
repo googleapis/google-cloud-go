@@ -292,7 +292,7 @@ func (c *Client) newTransactionWithRetry(ctx context.Context, s *transactionSett
 func (c *Client) newTransaction(ctx context.Context, s *transactionSettings) (_ *Transaction, err error) {
 	t := &Transaction{
 		id:        nil,
-		ctx:       ctx,
+		ctx:       withTransactionHeader(ctx),
 		client:    c,
 		mutations: nil,
 		pending:   make(map[int]*PendingKey),
