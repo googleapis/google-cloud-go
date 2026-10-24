@@ -1094,17 +1094,24 @@ func (rt *metricsRoundTripper) addNetworkTrace(ctx context.Context, trace *httpt
 }
 
 // recordHTTPGFEMetrics records the GFE service time reported in the
-// X-Goog-Gfe-Service-Time response header, or counts a missing header. A nil
-// response (the request never reached a server) is counted as missing.
+// X-Goog-Gfe-Service-Time response header, or counts attempts positively known
+// not to have reached a Cloud Storage server (pre-request/transport failure
+// before response headers, or an intermediary response lacking
+// X-GUploader-UploadID). Ambiguous client-side cancellations and timeouts
+// before response headers arrive are not counted.
 func (cm *clientMetrics) recordHTTPGFEMetrics(ctx context.Context, resp *http.Response, logicalMethod, host, errorType string, rpcAttrs metric.MeasurementOption) {
 	if cm.gfeHeaderMissing == nil {
 		return
 	}
-	headerVal := ""
-	if resp != nil {
-		headerVal = resp.Header.Get("X-Goog-Gfe-Service-Time")
+	if resp == nil && isAmbiguousClientAbort(errorType) {
+		return
 	}
-	if headerVal == "" {
+	gfeTime, reached := "", false
+	if resp != nil {
+		gfeTime = resp.Header.Get("X-Goog-Gfe-Service-Time")
+		reached = gfeTime != "" || resp.Header.Get(uploadIDHeader) != ""
+	}
+	if !reached {
 		cm.gfeHeaderMissing.Add(ctx, 1, metric.WithAttributes(
 			attribute.String(storageOperationAttr, logicalMethod),
 			attribute.String("rpc.system.name", "http"),
@@ -1113,11 +1120,27 @@ func (cm *clientMetrics) recordHTTPGFEMetrics(ctx context.Context, resp *http.Re
 		))
 		return
 	}
-	if cm.gfeDuration != nil {
-		if ms, err := strconv.ParseFloat(headerVal, 64); err == nil {
+	if cm.gfeDuration != nil && gfeTime != "" {
+		if ms, err := strconv.ParseFloat(gfeTime, 64); err == nil {
 			cm.gfeDuration.Record(ctx, ms/1000.0, rpcAttrs)
 		}
 	}
+}
+
+// uploadIDHeader is set on every HTTP and gRPC response served by Cloud
+// Storage via GFE (for all operations, not only uploads).
+const uploadIDHeader = "X-GUploader-UploadID"
+
+// isAmbiguousClientAbort reports whether errorType is a client-side deadline,
+// timeout, or cancellation. When an attempt over an established connection ends
+// with one of these before response headers arrive, the client cannot tell
+// whether the request reached the server, so it is not counted as unreached.
+func isAmbiguousClientAbort(errorType string) bool {
+	switch errorType {
+	case errorTypeCancelled, errorTypeTimeout, "DEADLINE_EXCEEDED":
+		return true
+	}
+	return false
 }
 
 // wrappedResponseBody records the attempt metrics when the response body has
@@ -1215,8 +1238,10 @@ func grpcResponded(err error, headerMD, trailerMD metadata.MD, p *peer.Peer) boo
 }
 
 // recordGFEMetrics records the GFE service time from the
-// x-goog-gfe-service-time response metadata, or counts a missing header.
-// DirectPath responses never carry the header and are not counted as missing.
+// x-goog-gfe-service-time response metadata, or counts attempts positively
+// known not to have reached a Cloud Storage server. DirectPath responses,
+// responses carrying x-guploader-uploadid, and ambiguous client-side
+// cancellations/timeouts on an established connection are not counted.
 func (cm *clientMetrics) recordGFEMetrics(ctx context.Context, headerMD, trailerMD metadata.MD, err error, logicalMethod, target string, p *peer.Peer) {
 	if cm.gfeHeaderMissing == nil {
 		return
@@ -1230,19 +1255,21 @@ func (cm *clientMetrics) recordGFEMetrics(ctx context.Context, headerMD, trailer
 		headerVal = headerVals[0]
 	}
 	server := stripPort(target)
-	if headerVal == "" {
-		if isDirectPathPeer(p) {
+	reached := headerVal != "" || len(headerMD.Get(uploadIDHeader)) > 0 || len(trailerMD.Get(uploadIDHeader)) > 0 || isDirectPathPeer(p)
+	if !reached {
+		errType := refineCancelled(ctx, computeErrorType(err, false, 0))
+		if p != nil && p.Addr != nil && isAmbiguousClientAbort(errType) {
 			return
 		}
 		cm.gfeHeaderMissing.Add(ctx, 1, metric.WithAttributes(
 			attribute.String(storageOperationAttr, logicalMethod),
 			attribute.String("rpc.system.name", "grpc"),
 			attribute.String("server.address", server),
-			attribute.String("error.type", computeErrorType(err, false, 0)),
+			attribute.String("error.type", errType),
 		))
 		return
 	}
-	if cm.gfeDuration != nil {
+	if headerVal != "" && cm.gfeDuration != nil {
 		if ms, parseErr := strconv.ParseFloat(headerVal, 64); parseErr == nil {
 			cm.gfeDuration.Record(ctx, ms/1000.0, metric.WithAttributes(
 				attribute.String(storageOperationAttr, logicalMethod),
