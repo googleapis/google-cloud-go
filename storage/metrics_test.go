@@ -1130,6 +1130,10 @@ func TestServerDurationAndUnreached(t *testing.T) {
 		}
 	}
 	cm.recordServerMetrics(ctx, nil, md, nil, "ReadObject", "storage.googleapis.com:443", nil)
+	// gRPC response carrying x-guploader-uploadid in initial headerMD (e.g. stream cancelled mid-read) is reached.
+	cm.recordServerMetrics(ctx, metadata.Pairs("x-guploader-uploadid", "AP6rU81X"), nil, status.Error(codes.Canceled, "context canceled"), "ReadObject", "storage.googleapis.com:443", nil)
+	// Ambiguous client-side deadline before headers arrive is not counted as unreached.
+	cm.recordServerMetrics(ctx, nil, nil, status.Error(codes.DeadlineExceeded, "context deadline exceeded"), "WriteObject", "storage.googleapis.com:443", nil)
 
 	// 2. HTTP response with X-GUploader-UploadID (no X-Goog-Gfe-Service-Time) reaches GCS -> server.unreached NOT incremented.
 	// 3. HTTP response without X-GUploader-UploadID (e.g. proxy 502) -> server.unreached incremented once.

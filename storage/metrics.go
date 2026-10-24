@@ -881,8 +881,9 @@ func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, err
 				headerVal = resp.Header.Get("X-Goog-Gfe-Service-Time")
 				uploadID = resp.Header.Get("X-GUploader-UploadID")
 			}
-			if resp == nil || (uploadID == "" && headerVal == "") {
-				if rt.metrics.serverUnreached != nil {
+			reached := headerVal != "" || uploadID != ""
+			if !reached {
+				if rt.metrics.serverUnreached != nil && !(resp == nil && isAmbiguousClientAbort(errorType)) {
 					missingAttrs := metric.WithAttributes(
 						attribute.String("rpc.method", logicalMethod),
 						attribute.String("rpc.system.name", "http"),
@@ -1013,6 +1014,16 @@ func grpcServerElapsed(md metadata.MD) (time.Duration, bool) {
 	return time.Duration(binary.LittleEndian.Uint64(b[2:])), true
 }
 
+// isAmbiguousClientAbort reports whether errorType is a client-side deadline,
+// timeout, or cancellation before response headers arrive.
+func isAmbiguousClientAbort(errorType string) bool {
+	switch errorType {
+	case "CANCELLED", "TIMEOUT", "DEADLINE_EXCEEDED":
+		return true
+	}
+	return false
+}
+
 func (cm *clientMetrics) recordServerMetrics(ctx context.Context, headerMD, trailerMD metadata.MD, err error, logicalMethod, target string, rpcAttrs metric.MeasurementOption) {
 	if cm.serverUnreached == nil && cm.serverDuration == nil {
 		return
@@ -1033,18 +1044,21 @@ func (cm *clientMetrics) recordServerMetrics(ctx context.Context, headerMD, trai
 			seconds, ok = d.Seconds(), true
 		}
 	}
-	if !ok {
+	reached := ok || len(headerMD.Get("x-guploader-uploadid")) > 0 || len(trailerMD.Get("x-guploader-uploadid")) > 0
+	if !reached {
 		if cm.serverUnreached != nil {
 			errType := computeErrorType(err, false, int64(status.Code(err)))
-			missingAttrs := metric.WithAttributes(
-				attribute.String("rpc.method", logicalMethod),
-				attribute.String("rpc.system.name", "grpc"),
-				attribute.String("server.address", stripPort(target)),
-				attribute.String("error.type", errType),
-			)
-			cm.serverUnreached.Add(ctx, 1, missingAttrs)
+			if !isAmbiguousClientAbort(errType) {
+				missingAttrs := metric.WithAttributes(
+					attribute.String("rpc.method", logicalMethod),
+					attribute.String("rpc.system.name", "grpc"),
+					attribute.String("server.address", stripPort(target)),
+					attribute.String("error.type", errType),
+				)
+				cm.serverUnreached.Add(ctx, 1, missingAttrs)
+			}
 		}
-	} else if cm.serverDuration != nil {
+	} else if ok && cm.serverDuration != nil {
 		if rpcAttrs == nil {
 			rpcAttrs = metric.WithAttributes(
 				attribute.String("rpc.method", logicalMethod),
