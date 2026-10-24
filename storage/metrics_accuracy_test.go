@@ -595,3 +595,38 @@ func TestMethodAttributesHaveOneMeaningEach(t *testing.T) {
 		}
 	}
 }
+
+func TestServerUnreachedOnlyCountsProvenPreServerDrops(t *testing.T) {
+	cm, mr := accuracyMetrics(t)
+	ctx := context.Background()
+	cp := &peer.Peer{Addr: &net.TCPAddr{IP: net.ParseIP("142.250.1.1"), Port: 443}}
+	uploadIDMD := metadata.Pairs("x-guploader-uploadid", "AP6rU81XRGYSB")
+
+	// 1. gRPC CloudPath stream receives initial x-guploader-uploadid header, then cancels mid-stream: reached.
+	cm.recordGFEMetrics(ctx, uploadIDMD, nil, status.Error(codes.Canceled, "context canceled"), "ReadObject", "storage.googleapis.com:443", cp)
+
+	// 2. gRPC CloudPath attempt on an established peer aborted by client deadline before headers: ambiguous -> not counted.
+	cm.recordGFEMetrics(ctx, nil, nil, status.Error(codes.DeadlineExceeded, "context deadline exceeded"), "WriteObject", "storage.googleapis.com:443", cp)
+
+	// 3. HTTP attempt aborted by client deadline before response headers (resp == nil): ambiguous -> not counted.
+	cm.recordHTTPGFEMetrics(ctx, nil, "WriteObject", "storage.googleapis.com", "DEADLINE_EXCEEDED")
+	cm.recordHTTPGFEMetrics(ctx, nil, "ReadObject", "storage.googleapis.com", errorTypeTimeout)
+
+	// 4. gRPC attempt with no peer connection established (p == nil) timing out on dial: proven unreached.
+	stallCtx, cancel := context.WithCancelCause(ctx)
+	cancel(errReadStallTimeout)
+	cm.recordGFEMetrics(stallCtx, nil, nil, status.Error(codes.Canceled, "context canceled"), "ReadObject", "storage.googleapis.com:443", nil)
+
+	// 5. gRPC CloudPath attempt failing with pre-request credential error: proven unreached.
+	cm.recordGFEMetrics(ctx, nil, nil, status.Error(codes.Unauthenticated, "transport: per-rpc creds failed"), "GetObject", "storage.googleapis.com:443", cp)
+
+	if c, _ := metricPoints(t, mr, "gcp.storage.client.gfe.header_missing", nil); c != 2 {
+		t.Errorf("total gfe.header_missing = %d, want 2 (only unconnected peer and pre-RPC auth failure)", c)
+	}
+	if c, _ := metricPoints(t, mr, "gcp.storage.client.gfe.header_missing", map[string]string{networkPathAttr: networkPathUnknown, "error.type": errorTypeTimeout}); c != 1 {
+		t.Errorf("gfe.header_missing{network.path=unknown, error.type=TIMEOUT} = %d, want 1", c)
+	}
+	if c, _ := metricPoints(t, mr, "gcp.storage.client.gfe.header_missing", map[string]string{networkPathAttr: networkPathCloud, "error.type": errorTypeAuthenticationError}); c != 1 {
+		t.Errorf("gfe.header_missing{network.path=cloudpath, error.type=AUTHENTICATION_ERROR} = %d, want 1", c)
+	}
+}
