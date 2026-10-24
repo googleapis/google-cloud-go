@@ -371,6 +371,23 @@ func pbTypeToSQLType(pbType *btpb.Type) (SQLType, error) {
 			structFields[i] = StructSQLField{Name: f.GetFieldName(), Type: fieldSQLType}
 		}
 		return StructSQLType{Fields: structFields}, nil
+	case *btpb.Type_AggregateType:
+		statePbType := k.AggregateType.GetStateType()
+		if statePbType == nil {
+			return nil, errors.New("aggregate state type is nil")
+		}
+		stateSQLType, err := pbTypeToSQLType(statePbType)
+		if err != nil {
+			return nil, fmt.Errorf("invalid aggregate state type: %w", err)
+		}
+		var inputSQLType SQLType
+		if inputPbType := k.AggregateType.GetInputType(); inputPbType != nil {
+			inputSQLType, err = pbTypeToSQLType(inputPbType)
+			if err != nil {
+				return nil, fmt.Errorf("invalid aggregate input type: %w", err)
+			}
+		}
+		return AggregateSQLType{InputType: inputSQLType, StateType: stateSQLType}, nil
 	default:
 		return nil, fmt.Errorf("unrecognized response type kind: %T. You might need to upgrade your client", k)
 	}
@@ -443,6 +460,12 @@ func pbTypeToGoReflectTypeInternal(pbType *btpb.Type, pointerIfNullable bool) (r
 	case *btpb.Type_StructType:
 		needsPointerWrapperForNull = false
 		baseType = structType
+	case *btpb.Type_AggregateType:
+		statePbType := k.AggregateType.GetStateType()
+		if statePbType == nil {
+			return nil, errors.New("aggregate state type is nil")
+		}
+		return pbTypeToGoReflectTypeInternal(statePbType, pointerIfNullable)
 	default:
 		return nil, fmt.Errorf("unrecognized response type kind: %T. You might need to upgrade your client", k)
 	}
@@ -690,6 +713,13 @@ func pbValueToGoValue(pbVal *btpb.Value, pbType *btpb.Type) (any, error) {
 			}
 		}
 		return newStruct(structFields), nil
+
+	case *btpb.Type_AggregateType:
+		statePbType := k.AggregateType.GetStateType()
+		if statePbType == nil {
+			return nil, errors.New("aggregate state type is nil")
+		}
+		return pbValueToGoValue(pbVal, statePbType)
 
 	default:
 		return nil, fmt.Errorf("unrecognized response type  kind: %T. You might need to upgrade your client", k)
