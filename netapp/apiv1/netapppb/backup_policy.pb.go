@@ -610,20 +610,20 @@ var File_google_cloud_netapp_v1_backup_policy_proto protoreflect.FileDescriptor
 
 const file_google_cloud_netapp_v1_backup_policy_proto_rawDesc = "" +
 	"\n" +
-	"*google/cloud/netapp/v1/backup_policy.proto\x12\x16google.cloud.netapp.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc7\a\n" +
-	"\fBackupPolicy\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x121\n" +
+	"*google/cloud/netapp/v1/backup_policy.proto\x12\x16google.cloud.netapp.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcb\a\n" +
+	"\fBackupPolicy\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x121\n" +
 	"\x12daily_backup_limit\x18\x02 \x01(\x05H\x00R\x10dailyBackupLimit\x88\x01\x01\x123\n" +
 	"\x13weekly_backup_limit\x18\x03 \x01(\x05H\x01R\x11weeklyBackupLimit\x88\x01\x01\x125\n" +
 	"\x14monthly_backup_limit\x18\x04 \x01(\x05H\x02R\x12monthlyBackupLimit\x88\x01\x01\x12%\n" +
 	"\vdescription\x18\x05 \x01(\tH\x03R\vdescription\x88\x01\x01\x12\x1d\n" +
-	"\aenabled\x18\x06 \x01(\bH\x04R\aenabled\x88\x01\x01\x12<\n" +
-	"\x15assigned_volume_count\x18\a \x01(\x05B\x03\xe0A\x03H\x05R\x13assignedVolumeCount\x88\x01\x01\x12@\n" +
-	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\aenabled\x18\x06 \x01(\bH\x04R\aenabled\x88\x01\x01\x12=\n" +
+	"\x15assigned_volume_count\x18\a \x01(\x05B\x04\xe2A\x01\x03H\x05R\x13assignedVolumeCount\x88\x01\x01\x12A\n" +
+	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"createTime\x12H\n" +
-	"\x06labels\x18\t \x03(\v20.google.cloud.netapp.v1.BackupPolicy.LabelsEntryR\x06labels\x12E\n" +
+	"\x06labels\x18\t \x03(\v20.google.cloud.netapp.v1.BackupPolicy.LabelsEntryR\x06labels\x12F\n" +
 	"\x05state\x18\n" +
-	" \x01(\x0e2*.google.cloud.netapp.v1.BackupPolicy.StateB\x03\xe0A\x03R\x05state\x1a9\n" +
+	" \x01(\x0e2*.google.cloud.netapp.v1.BackupPolicy.StateB\x04\xe2A\x01\x03R\x05state\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"^\n" +
@@ -641,16 +641,16 @@ const file_google_cloud_netapp_v1_backup_policy_proto_rawDesc = "" +
 	"\f_descriptionB\n" +
 	"\n" +
 	"\b_enabledB\x18\n" +
-	"\x16_assigned_volume_count\"\xde\x01\n" +
-	"\x19CreateBackupPolicyRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"netapp.googleapis.com/BackupPolicyR\x06parent\x12N\n" +
-	"\rbackup_policy\x18\x02 \x01(\v2$.google.cloud.netapp.v1.BackupPolicyB\x03\xe0A\x02R\fbackupPolicy\x12-\n" +
-	"\x10backup_policy_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x0ebackupPolicyId\"X\n" +
-	"\x16GetBackupPolicyRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"netapp.googleapis.com/BackupPolicyR\x04name\"\xce\x01\n" +
-	"\x19ListBackupPoliciesRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"netapp.googleapis.com/BackupPolicyR\x06parent\x12\x1b\n" +
+	"\x16_assigned_volume_count\"\xe1\x01\n" +
+	"\x19CreateBackupPolicyRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"netapp.googleapis.com/BackupPolicyR\x06parent\x12O\n" +
+	"\rbackup_policy\x18\x02 \x01(\v2$.google.cloud.netapp.v1.BackupPolicyB\x04\xe2A\x01\x02R\fbackupPolicy\x12.\n" +
+	"\x10backup_policy_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x0ebackupPolicyId\"Y\n" +
+	"\x16GetBackupPolicyRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"netapp.googleapis.com/BackupPolicyR\x04name\"\xcf\x01\n" +
+	"\x19ListBackupPoliciesRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"netapp.googleapis.com/BackupPolicyR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -659,13 +659,13 @@ const file_google_cloud_netapp_v1_backup_policy_proto_rawDesc = "" +
 	"\x1aListBackupPoliciesResponse\x12M\n" +
 	"\x0fbackup_policies\x18\x01 \x03(\v2$.google.cloud.netapp.v1.BackupPolicyR\x0ebackupPolicies\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xad\x01\n" +
-	"\x19UpdateBackupPolicyRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12N\n" +
-	"\rbackup_policy\x18\x02 \x01(\v2$.google.cloud.netapp.v1.BackupPolicyB\x03\xe0A\x02R\fbackupPolicy\"[\n" +
-	"\x19DeleteBackupPolicyRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xaf\x01\n" +
+	"\x19UpdateBackupPolicyRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12O\n" +
+	"\rbackup_policy\x18\x02 \x01(\v2$.google.cloud.netapp.v1.BackupPolicyB\x04\xe2A\x01\x02R\fbackupPolicy\"\\\n" +
+	"\x19DeleteBackupPolicyRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
 	"\"netapp.googleapis.com/BackupPolicyR\x04nameB\xb3\x01\n" +
 	"\x1acom.google.cloud.netapp.v1B\x11BackupPolicyProtoP\x01Z2cloud.google.com/go/netapp/apiv1/netapppb;netapppb\xaa\x02\x16Google.Cloud.NetApp.V1\xca\x02\x16Google\\Cloud\\NetApp\\V1\xea\x02\x19Google::Cloud::NetApp::V1b\x06proto3"
 

@@ -809,55 +809,55 @@ var File_google_cloud_cloudsecuritycompliance_v1_config_proto protoreflect.FileD
 
 const file_google_cloud_cloudsecuritycompliance_v1_config_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/cloudsecuritycompliance/v1/config.proto\x12'google.cloud.cloudsecuritycompliance.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/cloudsecuritycompliance/v1/common.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xaf\x01\n" +
-	"\x15ListFrameworksRequest\x12P\n" +
-	"\x06parent\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\x120cloudsecuritycompliance.googleapis.com/FrameworkR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"4google/cloud/cloudsecuritycompliance/v1/config.proto\x12'google.cloud.cloudsecuritycompliance.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/cloudsecuritycompliance/v1/common.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xb2\x01\n" +
+	"\x15ListFrameworksRequest\x12Q\n" +
+	"\x06parent\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\x120cloudsecuritycompliance.googleapis.com/FrameworkR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x94\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x94\x01\n" +
 	"\x16ListFrameworksResponse\x12R\n" +
 	"\n" +
 	"frameworks\x18\x01 \x03(\v22.google.cloud.cloudsecuritycompliance.v1.FrameworkR\n" +
 	"frameworks\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x94\x01\n" +
-	"\x13GetFrameworkRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0cloudsecuritycompliance.googleapis.com/FrameworkR\x04name\x12/\n" +
-	"\x11major_revision_id\x18\x02 \x01(\x03B\x03\xe0A\x01R\x0fmajorRevisionId\"\xe9\x01\n" +
-	"\x16CreateFrameworkRequest\x12P\n" +
-	"\x06parent\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\x120cloudsecuritycompliance.googleapis.com/FrameworkR\x06parent\x12&\n" +
-	"\fframework_id\x18\x02 \x01(\tB\x03\xe0A\x02R\vframeworkId\x12U\n" +
-	"\tframework\x18\x03 \x01(\v22.google.cloud.cloudsecuritycompliance.v1.FrameworkB\x03\xe0A\x02R\tframework\"\xe2\x01\n" +
-	"\x16UpdateFrameworkRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12U\n" +
-	"\tframework\x18\x02 \x01(\v22.google.cloud.cloudsecuritycompliance.v1.FrameworkB\x03\xe0A\x02R\tframework\x12/\n" +
-	"\x11major_revision_id\x18\x03 \x01(\x03B\x03\xe0A\x01R\x0fmajorRevisionId\"f\n" +
-	"\x16DeleteFrameworkRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0cloudsecuritycompliance.googleapis.com/FrameworkR\x04name\"\xb5\x01\n" +
-	"\x18ListCloudControlsRequest\x12S\n" +
-	"\x06parent\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\x123cloudsecuritycompliance.googleapis.com/CloudControlR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x96\x01\n" +
+	"\x13GetFrameworkRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0cloudsecuritycompliance.googleapis.com/FrameworkR\x04name\x120\n" +
+	"\x11major_revision_id\x18\x02 \x01(\x03B\x04\xe2A\x01\x01R\x0fmajorRevisionId\"\xec\x01\n" +
+	"\x16CreateFrameworkRequest\x12Q\n" +
+	"\x06parent\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\x120cloudsecuritycompliance.googleapis.com/FrameworkR\x06parent\x12'\n" +
+	"\fframework_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vframeworkId\x12V\n" +
+	"\tframework\x18\x03 \x01(\v22.google.cloud.cloudsecuritycompliance.v1.FrameworkB\x04\xe2A\x01\x02R\tframework\"\xe5\x01\n" +
+	"\x16UpdateFrameworkRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12V\n" +
+	"\tframework\x18\x02 \x01(\v22.google.cloud.cloudsecuritycompliance.v1.FrameworkB\x04\xe2A\x01\x02R\tframework\x120\n" +
+	"\x11major_revision_id\x18\x03 \x01(\x03B\x04\xe2A\x01\x01R\x0fmajorRevisionId\"g\n" +
+	"\x16DeleteFrameworkRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0cloudsecuritycompliance.googleapis.com/FrameworkR\x04name\"\xb8\x01\n" +
+	"\x18ListCloudControlsRequest\x12T\n" +
+	"\x06parent\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\x123cloudsecuritycompliance.googleapis.com/CloudControlR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xa1\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xa1\x01\n" +
 	"\x19ListCloudControlsResponse\x12\\\n" +
 	"\x0ecloud_controls\x18\x01 \x03(\v25.google.cloud.cloudsecuritycompliance.v1.CloudControlR\rcloudControls\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x9a\x01\n" +
-	"\x16GetCloudControlRequest\x12O\n" +
-	"\x04name\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\n" +
-	"3cloudsecuritycompliance.googleapis.com/CloudControlR\x04name\x12/\n" +
-	"\x11major_revision_id\x18\x02 \x01(\x03B\x03\xe0A\x01R\x0fmajorRevisionId\"\x80\x02\n" +
-	"\x19CreateCloudControlRequest\x12S\n" +
-	"\x06parent\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\x123cloudsecuritycompliance.googleapis.com/CloudControlR\x06parent\x12-\n" +
-	"\x10cloud_control_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x0ecloudControlId\x12_\n" +
-	"\rcloud_control\x18\x03 \x01(\v25.google.cloud.cloudsecuritycompliance.v1.CloudControlB\x03\xe0A\x02R\fcloudControl\"\xbe\x01\n" +
-	"\x19UpdateCloudControlRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12_\n" +
-	"\rcloud_control\x18\x02 \x01(\v25.google.cloud.cloudsecuritycompliance.v1.CloudControlB\x03\xe0A\x02R\fcloudControl\"l\n" +
-	"\x19DeleteCloudControlRequest\x12O\n" +
-	"\x04name\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x9c\x01\n" +
+	"\x16GetCloudControlRequest\x12P\n" +
+	"\x04name\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\n" +
+	"3cloudsecuritycompliance.googleapis.com/CloudControlR\x04name\x120\n" +
+	"\x11major_revision_id\x18\x02 \x01(\x03B\x04\xe2A\x01\x01R\x0fmajorRevisionId\"\x83\x02\n" +
+	"\x19CreateCloudControlRequest\x12T\n" +
+	"\x06parent\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\x123cloudsecuritycompliance.googleapis.com/CloudControlR\x06parent\x12.\n" +
+	"\x10cloud_control_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0ecloudControlId\x12`\n" +
+	"\rcloud_control\x18\x03 \x01(\v25.google.cloud.cloudsecuritycompliance.v1.CloudControlB\x04\xe2A\x01\x02R\fcloudControl\"\xc0\x01\n" +
+	"\x19UpdateCloudControlRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12`\n" +
+	"\rcloud_control\x18\x02 \x01(\v25.google.cloud.cloudsecuritycompliance.v1.CloudControlB\x04\xe2A\x01\x02R\fcloudControl\"m\n" +
+	"\x19DeleteCloudControlRequest\x12P\n" +
+	"\x04name\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\n" +
 	"3cloudsecuritycompliance.googleapis.com/CloudControlR\x04name2\xf7\x16\n" +
 	"\x06Config\x12\x89\x02\n" +
 	"\x0eListFrameworks\x12>.google.cloud.cloudsecuritycompliance.v1.ListFrameworksRequest\x1a?.google.cloud.cloudsecuritycompliance.v1.ListFrameworksResponse\"v\xdaA\x06parent\x82\xd3\xe4\x93\x02gZ0\x12./v1/{parent=projects/*/locations/*}/frameworks\x123/v1/{parent=organizations/*/locations/*}/frameworks\x12\xf6\x01\n" +

@@ -830,26 +830,26 @@ var File_google_cloud_financialservices_v1_backtest_result_proto protoreflect.Fi
 
 const file_google_cloud_financialservices_v1_backtest_result_proto_rawDesc = "" +
 	"\n" +
-	"7google/cloud/financialservices/v1/backtest_result.proto\x12!google.cloud.financialservices.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a<google/cloud/financialservices/v1/bigquery_destination.proto\x1a8google/cloud/financialservices/v1/line_of_business.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc3\t\n" +
-	"\x0eBacktestResult\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"7google/cloud/financialservices/v1/backtest_result.proto\x12!google.cloud.financialservices.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a<google/cloud/financialservices/v1/bigquery_destination.proto\x1a8google/cloud/financialservices/v1/line_of_business.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcd\t\n" +
+	"\x0eBacktestResult\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12U\n" +
-	"\x06labels\x18\x04 \x03(\v2=.google.cloud.financialservices.v1.BacktestResult.LabelsEntryR\x06labels\x12R\n" +
-	"\x05state\x18\x05 \x01(\x0e27.google.cloud.financialservices.v1.BacktestResult.StateB\x03\xe0A\x03R\x05state\x12J\n" +
-	"\adataset\x18\x06 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(financialservices.googleapis.com/DatasetR\adataset\x12D\n" +
-	"\x05model\x18\a \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&financialservices.googleapis.com/ModelR\x05model\x12:\n" +
-	"\bend_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\aendTime\x12)\n" +
+	"\x06labels\x18\x04 \x03(\v2=.google.cloud.financialservices.v1.BacktestResult.LabelsEntryR\x06labels\x12S\n" +
+	"\x05state\x18\x05 \x01(\x0e27.google.cloud.financialservices.v1.BacktestResult.StateB\x04\xe2A\x01\x03R\x05state\x12K\n" +
+	"\adataset\x18\x06 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(financialservices.googleapis.com/DatasetR\adataset\x12E\n" +
+	"\x05model\x18\a \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&financialservices.googleapis.com/ModelR\x05model\x12;\n" +
+	"\bend_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\aendTime\x12)\n" +
 	"\x10backtest_periods\x18\n" +
-	" \x01(\x05R\x0fbacktestPeriods\x12w\n" +
-	"\x12performance_target\x18\v \x01(\v2C.google.cloud.financialservices.v1.BacktestResult.PerformanceTargetB\x03\xe0A\x02R\x11performanceTarget\x12`\n" +
-	"\x10line_of_business\x18\f \x01(\x0e21.google.cloud.financialservices.v1.LineOfBusinessB\x03\xe0A\x03R\x0elineOfBusiness\x1ah\n" +
-	"\x11PerformanceTarget\x12S\n" +
-	"$party_investigations_per_period_hint\x18\x01 \x01(\x03B\x03\xe0A\x02R partyInvestigationsPerPeriodHint\x1a9\n" +
+	" \x01(\x05R\x0fbacktestPeriods\x12x\n" +
+	"\x12performance_target\x18\v \x01(\v2C.google.cloud.financialservices.v1.BacktestResult.PerformanceTargetB\x04\xe2A\x01\x02R\x11performanceTarget\x12a\n" +
+	"\x10line_of_business\x18\f \x01(\x0e21.google.cloud.financialservices.v1.LineOfBusinessB\x04\xe2A\x01\x03R\x0elineOfBusiness\x1ai\n" +
+	"\x11PerformanceTarget\x12T\n" +
+	"$party_investigations_per_period_hint\x18\x01 \x01(\x03B\x04\xe2A\x01\x02R partyInvestigationsPerPeriodHint\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"T\n" +
@@ -860,9 +860,9 @@ const file_google_cloud_financialservices_v1_backtest_result_proto_rawDesc = "" 
 	"\x06ACTIVE\x10\x02\x12\f\n" +
 	"\bUPDATING\x10\x03\x12\f\n" +
 	"\bDELETING\x10\x04:\x99\x01\xeaA\x95\x01\n" +
-	"/financialservices.googleapis.com/BacktestResult\x12bprojects/{project_num}/locations/{location}/instances/{instance}/backtestResults/{backtest_result}\"\xd6\x01\n" +
-	"\x1aListBacktestResultsRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
+	"/financialservices.googleapis.com/BacktestResult\x12bprojects/{project_num}/locations/{location}/instances/{instance}/backtestResults/{backtest_result}\"\xd7\x01\n" +
+	"\x1aListBacktestResultsRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
 	")financialservices.googleapis.com/InstanceR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -872,32 +872,32 @@ const file_google_cloud_financialservices_v1_backtest_result_proto_rawDesc = "" 
 	"\x1bListBacktestResultsResponse\x12\\\n" +
 	"\x10backtest_results\x18\x01 \x03(\v21.google.cloud.financialservices.v1.BacktestResultR\x0fbacktestResults\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"g\n" +
-	"\x18GetBacktestResultRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/financialservices.googleapis.com/BacktestResultR\x04name\"\xa0\x02\n" +
-	"\x1bCreateBacktestResultRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")financialservices.googleapis.com/InstanceR\x06parent\x121\n" +
-	"\x12backtest_result_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x10backtestResultId\x12_\n" +
-	"\x0fbacktest_result\x18\x03 \x01(\v21.google.cloud.financialservices.v1.BacktestResultB\x03\xe0A\x02R\x0ebacktestResult\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"h\n" +
+	"\x18GetBacktestResultRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/financialservices.googleapis.com/BacktestResultR\x04name\"\xa4\x02\n" +
+	"\x1bCreateBacktestResultRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")financialservices.googleapis.com/InstanceR\x06parent\x122\n" +
+	"\x12backtest_result_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x10backtestResultId\x12`\n" +
+	"\x0fbacktest_result\x18\x03 \x01(\v21.google.cloud.financialservices.v1.BacktestResultB\x04\xe2A\x01\x02R\x0ebacktestResult\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xe4\x01\n" +
-	"\x1bUpdateBacktestResultRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12_\n" +
-	"\x0fbacktest_result\x18\x02 \x01(\v21.google.cloud.financialservices.v1.BacktestResultB\x03\xe0A\x02R\x0ebacktestResult\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xe7\x01\n" +
+	"\x1bUpdateBacktestResultRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12`\n" +
+	"\x0fbacktest_result\x18\x02 \x01(\v21.google.cloud.financialservices.v1.BacktestResultB\x04\xe2A\x01\x02R\x0ebacktestResult\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"\x8e\x01\n" +
-	"\x1bDeleteBacktestResultRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/financialservices.googleapis.com/BacktestResultR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x90\x01\n" +
+	"\x1bDeleteBacktestResultRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/financialservices.googleapis.com/BacktestResultR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\x8d\x02\n" +
-	"#ExportBacktestResultMetadataRequest\x12`\n" +
-	"\x0fbacktest_result\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/financialservices.googleapis.com/BacktestResultR\x0ebacktestResult\x12\x83\x01\n" +
-	"\x1fstructured_metadata_destination\x18\x02 \x01(\v26.google.cloud.financialservices.v1.BigQueryDestinationB\x03\xe0A\x02R\x1dstructuredMetadataDestination\"&\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x8f\x02\n" +
+	"#ExportBacktestResultMetadataRequest\x12a\n" +
+	"\x0fbacktest_result\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/financialservices.googleapis.com/BacktestResultR\x0ebacktestResult\x12\x84\x01\n" +
+	"\x1fstructured_metadata_destination\x18\x02 \x01(\v26.google.cloud.financialservices.v1.BigQueryDestinationB\x04\xe2A\x01\x02R\x1dstructuredMetadataDestination\"&\n" +
 	"$ExportBacktestResultMetadataResponseB\x82\x02\n" +
 	"%com.google.cloud.financialservices.v1B\x13BacktestResultProtoP\x01ZScloud.google.com/go/financialservices/apiv1/financialservicespb;financialservicespb\xaa\x02!Google.Cloud.FinancialServices.V1\xca\x02!Google\\Cloud\\FinancialServices\\V1\xea\x02$Google::Cloud::FinancialServices::V1b\x06proto3"
 

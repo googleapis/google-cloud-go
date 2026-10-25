@@ -20,16 +20,19 @@ import (
 	"crypto/md5"
 	"fmt"
 	"hash/crc32"
+	"io"
 	"math/rand"
 	"reflect"
 	"strings"
 	"testing"
 	"time"
 
+	"cloud.google.com/go/storage/experimental"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/go-cmp/cmp"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
@@ -460,6 +463,18 @@ func TestPrepareDirectPathMetadata(t *testing.T) {
 			want:     "direct_connectivity_diagnostic=reason",
 		},
 		{
+			desc:     "DirectPath over Interconnect target with ENFORCED",
+			enforced: true,
+			target:   "google-c2p:///storage-direct.googleapis.com?force-xds",
+			want:     "force_direct_connectivity=ENFORCED",
+		},
+		{
+			desc:     "DirectPath over Interconnect target with NOT ENFORCED",
+			enforced: false,
+			target:   "google-c2p:///storage-direct.googleapis.com?force-xds",
+			want:     "",
+		},
+		{
 			desc:     "Empty target with ENFORCED",
 			enforced: true,
 			target:   "",
@@ -498,6 +513,29 @@ func TestPrepareDirectPathMetadata(t *testing.T) {
 				t.Errorf("got metadata %q, want %q", headerValue, tc.want)
 			}
 		})
+	}
+}
+
+func TestNewGRPCStorageClient_InterconnectOption(t *testing.T) {
+	ctx := context.Background()
+	client, err := newGRPCStorageClient(ctx,
+		withClientOptions(
+			option.WithoutAuthentication(),
+			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+			experimental.WithDirectPathXdsOverInterconnect(),
+		),
+	)
+	if err != nil {
+		t.Fatalf("newGRPCStorageClient: %v", err)
+	}
+	defer client.Close()
+
+	res, err := internaloption.NewUnsafeResolver(client.settings.clientOption...)
+	if err != nil {
+		t.Fatalf("NewUnsafeResolver: %v", err)
+	}
+	if got := res.ResolvedEnableDirectPathXdsOverInterconnect(); !got {
+		t.Errorf("res.ResolvedEnableDirectPathXdsOverInterconnect() = %v, want true", got)
 	}
 }
 
@@ -943,6 +981,132 @@ func TestVerifyChecksums(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestBidiReadStreamSessionGracefulShutdown(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	session := &bidiReadStreamSession{
+		reqC:   make(chan *storagepb.BidiReadObjectRequest, 5),
+		ctx:    ctx,
+		cancel: cancel,
+	}
+
+	// Initial shutdown should close reqC and set manualShutdown.
+	session.Shutdown()
+
+	if !session.manualShutdown {
+		t.Errorf("expected session.manualShutdown to be true")
+	}
+
+	select {
+	case _, ok := <-session.reqC:
+		if ok {
+			t.Errorf("expected reqC to be closed")
+		}
+	default:
+		t.Errorf("expected reqC to be closed and readable")
+	}
+
+	// Calling Shutdown again should be idempotent and not panic.
+	session.Shutdown()
+}
+
+func TestGRPCReaderCloseDrainOnCompletion(t *testing.T) {
+	var canceled bool
+	mockCancel := func() {
+		canceled = true
+	}
+
+	fakeStream := &fakeBidiReadObjectClient{}
+	r := &gRPCReader{
+		size:      100,
+		seen:      100,
+		finalized: true,
+		cancel:    mockCancel,
+		stream:    fakeStream,
+		settings:  &settings{},
+	}
+
+	if err := r.Close(); err != nil {
+		t.Fatalf("r.Close(): %v", err)
+	}
+
+	if !fakeStream.recvd {
+		t.Errorf("expected stream.RecvMsg to be drained on completed read Close")
+	}
+	if !canceled {
+		t.Errorf("expected cancel to be called")
+	}
+	if r.stream != nil {
+		t.Errorf("expected r.stream to be nil after Close")
+	}
+}
+
+func TestGRPCReadObjectReaderCloseDrainOnCompletion(t *testing.T) {
+	var canceled bool
+	mockCancel := func() {
+		canceled = true
+	}
+
+	fakeStream := &fakeReadObjectClient{}
+	r := &gRPCReadObjectReader{
+		size:     100,
+		seen:     100,
+		cancel:   mockCancel,
+		stream:   fakeStream,
+		settings: &settings{},
+	}
+
+	if err := r.Close(); err != nil {
+		t.Fatalf("r.Close(): %v", err)
+	}
+
+	if !fakeStream.recvd {
+		t.Errorf("expected stream.RecvMsg to be drained on completed read Close")
+	}
+	if !canceled {
+		t.Errorf("expected cancel to be called")
+	}
+}
+
+type fakeBidiReadObjectClient struct {
+	grpc.ClientStream
+	recvd bool
+}
+
+func (f *fakeBidiReadObjectClient) RecvMsg(m interface{}) error {
+	f.recvd = true
+	return io.EOF
+}
+
+func (f *fakeBidiReadObjectClient) Send(*storagepb.BidiReadObjectRequest) error {
+	return nil
+}
+
+func (f *fakeBidiReadObjectClient) Recv() (*storagepb.BidiReadObjectResponse, error) {
+	f.recvd = true
+	return nil, io.EOF
+}
+
+func (f *fakeBidiReadObjectClient) CloseSend() error {
+	return nil
+}
+
+type fakeReadObjectClient struct {
+	grpc.ClientStream
+	recvd bool
+}
+
+func (f *fakeReadObjectClient) RecvMsg(m interface{}) error {
+	f.recvd = true
+	return io.EOF
+}
+
+func (f *fakeReadObjectClient) Recv() (*storagepb.ReadObjectResponse, error) {
+	f.recvd = true
+	return nil, io.EOF
 }
 
 func TestRangeReaderRemain(t *testing.T) {

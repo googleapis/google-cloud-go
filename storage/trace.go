@@ -22,6 +22,8 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"sync/atomic"
+	"time"
 
 	internalTrace "cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/storage/internal"
@@ -31,6 +33,7 @@ import (
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/stats"
 	"google.golang.org/grpc/status"
 )
 
@@ -55,6 +58,7 @@ func traceAttributesFromContext(ctx context.Context) ([]attribute.KeyValue, bool
 const (
 	defaultTracerName = "cloud.google.com/go/storage"
 	gcpClientArtifact = "cloud.google.com/go/storage"
+	gcpClientService  = "storage"
 )
 
 // isOTelTracingDevEnabled checks the development flag until experimental feature is launched.
@@ -188,6 +192,7 @@ func getCommonTraceOptions() []trace.SpanStartOption {
 // getCommonAttributes includes the common attributes used for Cloud Trace adoption tracking.
 func getCommonAttributes() []attribute.KeyValue {
 	return []attribute.KeyValue{
+		attribute.String("gcp.client.service", gcpClientService),
 		attribute.String("gcp.client.version", internal.Version),
 		attribute.String("gcp.client.artifact", gcpClientArtifact),
 	}
@@ -195,6 +200,127 @@ func getCommonAttributes() []attribute.KeyValue {
 
 func appendPackageName(spanName string) string {
 	return fmt.Sprintf("%s.%s", gcpClientArtifact, spanName)
+}
+
+// recordRetryBackoff records the backoff that started at start as a
+// RetryBackoff child span of the span in ctx. It is a no-op unless dev tracing
+// is enabled and the span in ctx is recording.
+func recordRetryBackoff(ctx context.Context, start time.Time) {
+	if !isOTelTracingDevEnabled() {
+		return
+	}
+	span := trace.SpanFromContext(ctx)
+	if !span.IsRecording() {
+		return
+	}
+	_, backoffSpan := startSpan(ctx, "RetryBackoff", trace.WithTimestamp(start))
+	backoffSpan.End()
+}
+
+// retryAttemptKey is the context key under which run records the attempt it
+// is about to make.
+type retryAttemptKey struct{}
+
+// retryAttempt describes an attempt made by run.
+type retryAttempt struct {
+	// number is the attempt number, matching the gccl-attempt-count value sent
+	// to the service. It restarts at 1 when run is given withProgressReset.
+	number int
+	// parent is the span context of the span in run's ctx, usually the
+	// operation span. It lets retryAttemptStatsHandler tell the transport's
+	// attempt span apart from it.
+	parent trace.SpanContext
+}
+
+// withRetryAttempt returns ctx annotated with the given attempt number so that
+// retryAttemptStatsHandler can record it on the gRPC attempt span.
+func withRetryAttempt(ctx context.Context, attempt int) context.Context {
+	if !isOTelTracingDevEnabled() {
+		return ctx
+	}
+	return context.WithValue(ctx, retryAttemptKey{}, retryAttempt{
+		number: attempt,
+		parent: trace.SpanContextFromContext(ctx),
+	})
+}
+
+// retryAttemptStatsHandler records gcp.client.retry.attempt_number on the
+// transport's gRPC attempt span.
+type retryAttemptStatsHandler struct{}
+
+// TagRPC implements stats.Handler.
+func (retryAttemptStatsHandler) TagRPC(ctx context.Context, _ *stats.RPCTagInfo) context.Context {
+	attempt, ok := ctx.Value(retryAttemptKey{}).(retryAttempt)
+	if !ok {
+		return ctx
+	}
+	span := trace.SpanFromContext(ctx)
+	// If the transport did not start an attempt span (for example because
+	// telemetry is disabled), the span in ctx is still the operation span,
+	// which must not be tagged.
+	if !span.IsRecording() || span.SpanContext().SpanID() == attempt.parent.SpanID() {
+		return ctx
+	}
+	span.SetAttributes(attribute.Int("gcp.client.retry.attempt_number", attempt.number))
+	return ctx
+}
+
+// HandleRPC implements stats.Handler.
+func (retryAttemptStatsHandler) HandleRPC(context.Context, stats.RPCStats) {}
+
+// TagConn implements stats.Handler.
+func (retryAttemptStatsHandler) TagConn(ctx context.Context, _ *stats.ConnTagInfo) context.Context {
+	return ctx
+}
+
+// HandleConn implements stats.Handler.
+func (retryAttemptStatsHandler) HandleConn(context.Context, stats.ConnStats) {}
+
+func recordingSpan(ctx context.Context) (trace.Span, bool) {
+	if !isOTelTracingDevEnabled() {
+		return nil, false
+	}
+	span := trace.SpanFromContext(ctx)
+	return span, span.IsRecording()
+}
+
+// recordWriterTraceAttributes attaches the upload strategy to the Object.Writer
+// span in ctx as gcp.storage.write.mode (resumable, oneshot, appendable or
+// parallel). For parallel uploads, the configured part size and concurrency are
+// also recorded.
+func recordWriterTraceAttributes(ctx context.Context, w *Writer) {
+	span, ok := recordingSpan(ctx)
+	if !ok {
+		return
+	}
+	if w.EnableParallelUpload {
+		span.SetAttributes(
+			attribute.String("gcp.storage.write.mode", "parallel"),
+			attribute.Int("gcp.storage.write.parallel.part_size", w.ParallelUploadConfig.PartSize),
+			attribute.Int("gcp.storage.write.parallel.concurrency", w.ParallelUploadConfig.MaxConcurrency),
+		)
+		return
+	}
+	writeMode := "resumable"
+	if w.Append {
+		writeMode = "appendable"
+	} else if isOneshotUpload(w) {
+		writeMode = "oneshot"
+	}
+	span.SetAttributes(attribute.String("gcp.storage.write.mode", writeMode))
+}
+
+// isOneshotUpload reports whether the Writer performs a single-request upload.
+// For HTTP, payloads smaller than the 256 KiB-aligned ChunkSize are sent in a
+// single request (matching googleapi.ChunkSize).
+func isOneshotUpload(w *Writer) bool {
+	if gw, ok := w.iw.(*gRPCWriter); ok {
+		return gw.usesOneshotSender()
+	}
+	if w.ChunkSize <= 0 {
+		return true
+	}
+	return w.opened && w.closed && atomic.LoadInt64(&w.bytesWritten) < int64(gRPCChunkSize(w.ChunkSize))
 }
 
 func setUploadIDAttribute(ctx context.Context, uploadID string) {

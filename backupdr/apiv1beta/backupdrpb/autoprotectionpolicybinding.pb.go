@@ -599,52 +599,52 @@ var File_google_cloud_backupdr_v1beta_autoprotectionpolicybinding_proto protoref
 
 const file_google_cloud_backupdr_v1beta_autoprotectionpolicybinding_proto_rawDesc = "" +
 	"\n" +
-	">google/cloud/backupdr/v1beta/autoprotectionpolicybinding.proto\x12\x1cgoogle.cloud.backupdr.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xaa\x06\n" +
-	"\x1bAutoProtectionPolicyBinding\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12Z\n" +
-	"\x05state\x18\x03 \x01(\x0e2?.google.cloud.backupdr.v1beta.AutoProtectionPolicyBinding.StateB\x03\xe0A\x03R\x05state\x12\"\n" +
-	"\x05scope\x18\x04 \x01(\tB\f\xe0A\x02\xe0A\x05\xfaA\x03\n" +
-	"\x01*R\x05scope\x12y\n" +
-	"\x1abinding_evaluation_summary\x18\x05 \x01(\v26.google.cloud.backupdr.v1beta.BindingEvaluationSummaryB\x03\xe0A\x03R\x18bindingEvaluationSummary\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x17\n" +
-	"\x04etag\x18\b \x01(\tB\x03\xe0A\x01R\x04etag\"P\n" +
+	">google/cloud/backupdr/v1beta/autoprotectionpolicybinding.proto\x12\x1cgoogle.cloud.backupdr.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb0\x06\n" +
+	"\x1bAutoProtectionPolicyBinding\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12[\n" +
+	"\x05state\x18\x03 \x01(\x0e2?.google.cloud.backupdr.v1beta.AutoProtectionPolicyBinding.StateB\x04\xe2A\x01\x03R\x05state\x12!\n" +
+	"\x05scope\x18\x04 \x01(\tB\v\xe2A\x02\x02\x05\xfaA\x03\n" +
+	"\x01*R\x05scope\x12z\n" +
+	"\x1abinding_evaluation_summary\x18\x05 \x01(\v26.google.cloud.backupdr.v1beta.BindingEvaluationSummaryB\x04\xe2A\x01\x03R\x18bindingEvaluationSummary\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x18\n" +
+	"\x04etag\x18\b \x01(\tB\x04\xe2A\x01\x01R\x04etag\"P\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bCREATING\x10\x01\x12\n" +
 	"\n" +
 	"\x06ACTIVE\x10\x02\x12\x16\n" +
 	"\x12DELETION_INITIATED\x10\x03:\xe0\x01\xeaA\xdc\x01\n" +
-	"3backupdr.googleapis.com/AutoProtectionPolicyBinding\x12jprojects/{project}/locations/{location}/autoProtectionPolicies/{auto_protection_policy}/bindings/{binding}*\x1cautoProtectionPolicyBindings2\x1bautoProtectionPolicyBinding\"\xcf\x01\n" +
-	"\x18BindingEvaluationSummary\x12;\n" +
-	"\x17matching_resource_count\x18\x01 \x01(\x03B\x03\xe0A\x03R\x15matchingResourceCount\x12=\n" +
-	"\x18protected_resource_count\x18\x02 \x01(\x03B\x03\xe0A\x03R\x16protectedResourceCount\x127\n" +
-	"\x15failed_resource_count\x18\x03 \x01(\x03B\x03\xe0A\x03R\x13failedResourceCount\"\xcd\x02\n" +
-	"(CreateAutoProtectionPolicyBindingRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",backupdr.googleapis.com/AutoProtectionPolicyR\x06parent\x12M\n" +
-	"!auto_protection_policy_binding_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x1dautoProtectionPolicyBindingId\x12\x83\x01\n" +
-	"\x1eauto_protection_policy_binding\x18\x03 \x01(\v29.google.cloud.backupdr.v1beta.AutoProtectionPolicyBindingB\x03\xe0A\x02R\x1bautoProtectionPolicyBinding\"x\n" +
-	"%GetAutoProtectionPolicyBindingRequest\x12O\n" +
-	"\x04name\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\n" +
-	"3backupdr.googleapis.com/AutoProtectionPolicyBindingR\x04name\"\xfa\x01\n" +
-	"'ListAutoProtectionPolicyBindingsRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",backupdr.googleapis.com/AutoProtectionPolicyR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"3backupdr.googleapis.com/AutoProtectionPolicyBinding\x12jprojects/{project}/locations/{location}/autoProtectionPolicies/{auto_protection_policy}/bindings/{binding}*\x1cautoProtectionPolicyBindings2\x1bautoProtectionPolicyBinding\"\xd2\x01\n" +
+	"\x18BindingEvaluationSummary\x12<\n" +
+	"\x17matching_resource_count\x18\x01 \x01(\x03B\x04\xe2A\x01\x03R\x15matchingResourceCount\x12>\n" +
+	"\x18protected_resource_count\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\x16protectedResourceCount\x128\n" +
+	"\x15failed_resource_count\x18\x03 \x01(\x03B\x04\xe2A\x01\x03R\x13failedResourceCount\"\xd0\x02\n" +
+	"(CreateAutoProtectionPolicyBindingRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",backupdr.googleapis.com/AutoProtectionPolicyR\x06parent\x12N\n" +
+	"!auto_protection_policy_binding_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x1dautoProtectionPolicyBindingId\x12\x84\x01\n" +
+	"\x1eauto_protection_policy_binding\x18\x03 \x01(\v29.google.cloud.backupdr.v1beta.AutoProtectionPolicyBindingB\x04\xe2A\x01\x02R\x1bautoProtectionPolicyBinding\"y\n" +
+	"%GetAutoProtectionPolicyBindingRequest\x12P\n" +
+	"\x04name\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\n" +
+	"3backupdr.googleapis.com/AutoProtectionPolicyBindingR\x04name\"\xff\x01\n" +
+	"'ListAutoProtectionPolicyBindingsRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",backupdr.googleapis.com/AutoProtectionPolicyR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xfc\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xfd\x01\n" +
 	"(ListAutoProtectionPolicyBindingsResponse\x12\x80\x01\n" +
 	"\x1fauto_protection_policy_bindings\x18\x01 \x03(\v29.google.cloud.backupdr.v1beta.AutoProtectionPolicyBindingR\x1cautoProtectionPolicyBindings\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"\x83\x01\n" +
-	"0InitiateDeleteAutoProtectionPolicyBindingRequest\x12O\n" +
-	"\x04name\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x06R\vunreachable\"\x84\x01\n" +
+	"0InitiateDeleteAutoProtectionPolicyBindingRequest\x12P\n" +
+	"\x04name\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\n" +
 	"3backupdr.googleapis.com/AutoProtectionPolicyBindingR\x04nameB\xe4\x01\n" +
 	" com.google.cloud.backupdr.v1betaB AutoProtectionPolicyBindingProtoP\x01Z<cloud.google.com/go/backupdr/apiv1beta/backupdrpb;backupdrpb\xaa\x02\x1cGoogle.Cloud.BackupDR.V1Beta\xca\x02\x1cGoogle\\Cloud\\BackupDR\\V1beta\xea\x02\x1fGoogle::Cloud::BackupDR::V1betab\x06proto3"
 

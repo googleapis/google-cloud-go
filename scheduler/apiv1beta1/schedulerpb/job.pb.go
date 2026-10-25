@@ -546,7 +546,7 @@ var File_google_cloud_scheduler_v1beta1_job_proto protoreflect.FileDescriptor
 
 const file_google_cloud_scheduler_v1beta1_job_proto_rawDesc = "" +
 	"\n" +
-	"(google/cloud/scheduler/v1beta1/job.proto\x12\x1egoogle.cloud.scheduler.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a+google/cloud/scheduler/v1beta1/target.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xd0\b\n" +
+	"(google/cloud/scheduler/v1beta1/job.proto\x12\x1egoogle.cloud.scheduler.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a+google/cloud/scheduler/v1beta1/target.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xd1\b\n" +
 	"\x03Job\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12S\n" +
@@ -563,8 +563,8 @@ const file_google_cloud_scheduler_v1beta1_job_proto_rawDesc = "" +
 	"\rschedule_time\x18\x11 \x01(\v2\x1a.google.protobuf.TimestampR\fscheduleTime\x12F\n" +
 	"\x11last_attempt_time\x18\x12 \x01(\v2\x1a.google.protobuf.TimestampR\x0flastAttemptTime\x12N\n" +
 	"\fretry_config\x18\x13 \x01(\v2+.google.cloud.scheduler.v1beta1.RetryConfigR\vretryConfig\x12D\n" +
-	"\x10attempt_deadline\x18\x16 \x01(\v2\x19.google.protobuf.DurationR\x0fattemptDeadline\x128\n" +
-	"\x16legacy_app_engine_cron\x18\x17 \x01(\bB\x03\xe0A\x05R\x13legacyAppEngineCron\"X\n" +
+	"\x10attempt_deadline\x18\x16 \x01(\v2\x19.google.protobuf.DurationR\x0fattemptDeadline\x129\n" +
+	"\x16legacy_app_engine_cron\x18\x17 \x01(\bB\x04\xe2A\x01\x05R\x13legacyAppEngineCron\"X\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aENABLED\x10\x01\x12\n" +

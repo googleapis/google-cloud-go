@@ -72,6 +72,7 @@ type CallOptions struct {
 	ListCertificateIssuanceConfigs  []gax.CallOption
 	GetCertificateIssuanceConfig    []gax.CallOption
 	CreateCertificateIssuanceConfig []gax.CallOption
+	UpdateCertificateIssuanceConfig []gax.CallOption
 	DeleteCertificateIssuanceConfig []gax.CallOption
 	ListTrustConfigs                []gax.CallOption
 	GetTrustConfig                  []gax.CallOption
@@ -379,6 +380,7 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		UpdateCertificateIssuanceConfig: []gax.CallOption{},
 		DeleteCertificateIssuanceConfig: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -726,6 +728,7 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		UpdateCertificateIssuanceConfig: []gax.CallOption{},
 		DeleteCertificateIssuanceConfig: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -852,6 +855,8 @@ type internalClient interface {
 	GetCertificateIssuanceConfig(context.Context, *certificatemanagerpb.GetCertificateIssuanceConfigRequest, ...gax.CallOption) (*certificatemanagerpb.CertificateIssuanceConfig, error)
 	CreateCertificateIssuanceConfig(context.Context, *certificatemanagerpb.CreateCertificateIssuanceConfigRequest, ...gax.CallOption) (*CreateCertificateIssuanceConfigOperation, error)
 	CreateCertificateIssuanceConfigOperation(name string) *CreateCertificateIssuanceConfigOperation
+	UpdateCertificateIssuanceConfig(context.Context, *certificatemanagerpb.UpdateCertificateIssuanceConfigRequest, ...gax.CallOption) (*UpdateCertificateIssuanceConfigOperation, error)
+	UpdateCertificateIssuanceConfigOperation(name string) *UpdateCertificateIssuanceConfigOperation
 	DeleteCertificateIssuanceConfig(context.Context, *certificatemanagerpb.DeleteCertificateIssuanceConfigRequest, ...gax.CallOption) (*DeleteCertificateIssuanceConfigOperation, error)
 	DeleteCertificateIssuanceConfigOperation(name string) *DeleteCertificateIssuanceConfigOperation
 	ListTrustConfigs(context.Context, *certificatemanagerpb.ListTrustConfigsRequest, ...gax.CallOption) *TrustConfigIterator
@@ -1134,6 +1139,17 @@ func (c *Client) CreateCertificateIssuanceConfigOperation(name string) *CreateCe
 	return c.internalClient.CreateCertificateIssuanceConfigOperation(name)
 }
 
+// UpdateCertificateIssuanceConfig updates a CertificateIssuanceConfig.
+func (c *Client) UpdateCertificateIssuanceConfig(ctx context.Context, req *certificatemanagerpb.UpdateCertificateIssuanceConfigRequest, opts ...gax.CallOption) (*UpdateCertificateIssuanceConfigOperation, error) {
+	return c.internalClient.UpdateCertificateIssuanceConfig(ctx, req, opts...)
+}
+
+// UpdateCertificateIssuanceConfigOperation returns a new UpdateCertificateIssuanceConfigOperation from a given name.
+// The name must be that of a previously created UpdateCertificateIssuanceConfigOperation, possibly from a different process.
+func (c *Client) UpdateCertificateIssuanceConfigOperation(name string) *UpdateCertificateIssuanceConfigOperation {
+	return c.internalClient.UpdateCertificateIssuanceConfigOperation(name)
+}
+
 // DeleteCertificateIssuanceConfig deletes a single CertificateIssuanceConfig.
 func (c *Client) DeleteCertificateIssuanceConfig(ctx context.Context, req *certificatemanagerpb.DeleteCertificateIssuanceConfigRequest, opts ...gax.CallOption) (*DeleteCertificateIssuanceConfigOperation, error) {
 	return c.internalClient.DeleteCertificateIssuanceConfig(ctx, req, opts...)
@@ -1194,6 +1210,21 @@ func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationReq
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *Client) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
@@ -1349,6 +1380,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.ListCertificateIssuanceConfigs = append(client.CallOptions.ListCertificateIssuanceConfigs, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetCertificateIssuanceConfig = append(client.CallOptions.GetCertificateIssuanceConfig, gax.WithClientMetrics(metrics))
 		client.CallOptions.CreateCertificateIssuanceConfig = append(client.CallOptions.CreateCertificateIssuanceConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateCertificateIssuanceConfig = append(client.CallOptions.UpdateCertificateIssuanceConfig, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteCertificateIssuanceConfig = append(client.CallOptions.DeleteCertificateIssuanceConfig, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListTrustConfigs = append(client.CallOptions.ListTrustConfigs, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetTrustConfig = append(client.CallOptions.GetTrustConfig, gax.WithClientMetrics(metrics))
@@ -1396,6 +1428,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.ListCertificateIssuanceConfigs = append(client.CallOptions.ListCertificateIssuanceConfigs, gax.WithClientTracing(tracing))
 		client.CallOptions.GetCertificateIssuanceConfig = append(client.CallOptions.GetCertificateIssuanceConfig, gax.WithClientTracing(tracing))
 		client.CallOptions.CreateCertificateIssuanceConfig = append(client.CallOptions.CreateCertificateIssuanceConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateCertificateIssuanceConfig = append(client.CallOptions.UpdateCertificateIssuanceConfig, gax.WithClientTracing(tracing))
 		client.CallOptions.DeleteCertificateIssuanceConfig = append(client.CallOptions.DeleteCertificateIssuanceConfig, gax.WithClientTracing(tracing))
 		client.CallOptions.ListTrustConfigs = append(client.CallOptions.ListTrustConfigs, gax.WithClientTracing(tracing))
 		client.CallOptions.GetTrustConfig = append(client.CallOptions.GetTrustConfig, gax.WithClientTracing(tracing))
@@ -1444,6 +1477,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.ListCertificateIssuanceConfigs = append(client.CallOptions.ListCertificateIssuanceConfigs, gax.WithClientLogging(logging))
 		client.CallOptions.GetCertificateIssuanceConfig = append(client.CallOptions.GetCertificateIssuanceConfig, gax.WithClientLogging(logging))
 		client.CallOptions.CreateCertificateIssuanceConfig = append(client.CallOptions.CreateCertificateIssuanceConfig, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateCertificateIssuanceConfig = append(client.CallOptions.UpdateCertificateIssuanceConfig, gax.WithClientLogging(logging))
 		client.CallOptions.DeleteCertificateIssuanceConfig = append(client.CallOptions.DeleteCertificateIssuanceConfig, gax.WithClientLogging(logging))
 		client.CallOptions.ListTrustConfigs = append(client.CallOptions.ListTrustConfigs, gax.WithClientLogging(logging))
 		client.CallOptions.GetTrustConfig = append(client.CallOptions.GetTrustConfig, gax.WithClientLogging(logging))
@@ -1614,6 +1648,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.ListCertificateIssuanceConfigs = append(callOpts.ListCertificateIssuanceConfigs, gax.WithClientMetrics(metrics))
 		callOpts.GetCertificateIssuanceConfig = append(callOpts.GetCertificateIssuanceConfig, gax.WithClientMetrics(metrics))
 		callOpts.CreateCertificateIssuanceConfig = append(callOpts.CreateCertificateIssuanceConfig, gax.WithClientMetrics(metrics))
+		callOpts.UpdateCertificateIssuanceConfig = append(callOpts.UpdateCertificateIssuanceConfig, gax.WithClientMetrics(metrics))
 		callOpts.DeleteCertificateIssuanceConfig = append(callOpts.DeleteCertificateIssuanceConfig, gax.WithClientMetrics(metrics))
 		callOpts.ListTrustConfigs = append(callOpts.ListTrustConfigs, gax.WithClientMetrics(metrics))
 		callOpts.GetTrustConfig = append(callOpts.GetTrustConfig, gax.WithClientMetrics(metrics))
@@ -1661,6 +1696,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.ListCertificateIssuanceConfigs = append(callOpts.ListCertificateIssuanceConfigs, gax.WithClientTracing(tracing))
 		callOpts.GetCertificateIssuanceConfig = append(callOpts.GetCertificateIssuanceConfig, gax.WithClientTracing(tracing))
 		callOpts.CreateCertificateIssuanceConfig = append(callOpts.CreateCertificateIssuanceConfig, gax.WithClientTracing(tracing))
+		callOpts.UpdateCertificateIssuanceConfig = append(callOpts.UpdateCertificateIssuanceConfig, gax.WithClientTracing(tracing))
 		callOpts.DeleteCertificateIssuanceConfig = append(callOpts.DeleteCertificateIssuanceConfig, gax.WithClientTracing(tracing))
 		callOpts.ListTrustConfigs = append(callOpts.ListTrustConfigs, gax.WithClientTracing(tracing))
 		callOpts.GetTrustConfig = append(callOpts.GetTrustConfig, gax.WithClientTracing(tracing))
@@ -1709,6 +1745,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.ListCertificateIssuanceConfigs = append(callOpts.ListCertificateIssuanceConfigs, gax.WithClientLogging(logging))
 		callOpts.GetCertificateIssuanceConfig = append(callOpts.GetCertificateIssuanceConfig, gax.WithClientLogging(logging))
 		callOpts.CreateCertificateIssuanceConfig = append(callOpts.CreateCertificateIssuanceConfig, gax.WithClientLogging(logging))
+		callOpts.UpdateCertificateIssuanceConfig = append(callOpts.UpdateCertificateIssuanceConfig, gax.WithClientLogging(logging))
 		callOpts.DeleteCertificateIssuanceConfig = append(callOpts.DeleteCertificateIssuanceConfig, gax.WithClientLogging(logging))
 		callOpts.ListTrustConfigs = append(callOpts.ListTrustConfigs, gax.WithClientLogging(logging))
 		callOpts.GetTrustConfig = append(callOpts.GetTrustConfig, gax.WithClientLogging(logging))
@@ -2470,6 +2507,33 @@ func (c *gRPCClient) CreateCertificateIssuanceConfig(ctx context.Context, req *c
 		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
 	}
 	return &CreateCertificateIssuanceConfigOperation{
+		lro: lro,
+	}, nil
+}
+
+func (c *gRPCClient) UpdateCertificateIssuanceConfig(ctx context.Context, req *certificatemanagerpb.UpdateCertificateIssuanceConfigRequest, opts ...gax.CallOption) (*UpdateCertificateIssuanceConfigOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "certificate_issuance_config.name", url.QueryEscape(req.GetCertificateIssuanceConfig().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/UpdateCertificateIssuanceConfig")
+	}
+	opts = append((*c.CallOptions).UpdateCertificateIssuanceConfig[0:len((*c.CallOptions).UpdateCertificateIssuanceConfig):len((*c.CallOptions).UpdateCertificateIssuanceConfig)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateCertificateIssuanceConfig, req, settings.GRPC, c.logger, "UpdateCertificateIssuanceConfig")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.UpdateCertificateIssuanceConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &UpdateCertificateIssuanceConfigOperation{
 		lro: lro,
 	}, nil
 }
@@ -4407,6 +4471,81 @@ func (c *restClient) CreateCertificateIssuanceConfig(ctx context.Context, req *c
 	}, nil
 }
 
+// UpdateCertificateIssuanceConfig updates a CertificateIssuanceConfig.
+func (c *restClient) UpdateCertificateIssuanceConfig(ctx context.Context, req *certificatemanagerpb.UpdateCertificateIssuanceConfigRequest, opts ...gax.CallOption) (*UpdateCertificateIssuanceConfigOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetCertificateIssuanceConfig()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetCertificateIssuanceConfig().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "certificate_issuance_config.name", url.QueryEscape(req.GetCertificateIssuanceConfig().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/UpdateCertificateIssuanceConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{certificate_issuance_config.name=projects/*/locations/*/certificateIssuanceConfigs/*}")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateCertificateIssuanceConfig")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.UpdateCertificateIssuanceConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &UpdateCertificateIssuanceConfigOperation{
+		lro:      lro,
+		pollPath: override,
+	}, nil
+}
+
 // DeleteCertificateIssuanceConfig deletes a single CertificateIssuanceConfig.
 func (c *restClient) DeleteCertificateIssuanceConfig(ctx context.Context, req *certificatemanagerpb.DeleteCertificateIssuanceConfigRequest, opts ...gax.CallOption) (*DeleteCertificateIssuanceConfigOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -4869,6 +5008,21 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
 	req = proto.CloneOf(req)
@@ -5401,6 +5555,24 @@ func (c *restClient) UpdateCertificateOperation(name string) *UpdateCertificateO
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateCertificateOperation{
 		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.UpdateCertificateOperation"),
+		pollPath: override,
+	}
+}
+
+// UpdateCertificateIssuanceConfigOperation returns a new UpdateCertificateIssuanceConfigOperation from a given name.
+// The name must be that of a previously created UpdateCertificateIssuanceConfigOperation, possibly from a different process.
+func (c *gRPCClient) UpdateCertificateIssuanceConfigOperation(name string) *UpdateCertificateIssuanceConfigOperation {
+	return &UpdateCertificateIssuanceConfigOperation{
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.UpdateCertificateIssuanceConfigOperation"),
+	}
+}
+
+// UpdateCertificateIssuanceConfigOperation returns a new UpdateCertificateIssuanceConfigOperation from a given name.
+// The name must be that of a previously created UpdateCertificateIssuanceConfigOperation, possibly from a different process.
+func (c *restClient) UpdateCertificateIssuanceConfigOperation(name string) *UpdateCertificateIssuanceConfigOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateCertificateIssuanceConfigOperation{
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.UpdateCertificateIssuanceConfigOperation"),
 		pollPath: override,
 	}
 }

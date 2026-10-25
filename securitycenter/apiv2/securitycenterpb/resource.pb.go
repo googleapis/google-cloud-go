@@ -1116,13 +1116,13 @@ const file_google_cloud_securitycenter_v2_resource_proto_rawDesc = "" +
 	"\rresource_path\x18\n" +
 	" \x01(\v2,.google.cloud.securitycenter.v2.ResourcePathR\fresourcePath\x120\n" +
 	"\x14resource_path_string\x18\v \x01(\tR\x12resourcePathStringB\x19\n" +
-	"\x17cloud_provider_metadata\"\x8c\x02\n" +
+	"\x17cloud_provider_metadata\"\x8d\x02\n" +
 	"\vGcpMetadata\x12\x18\n" +
 	"\aproject\x18\x01 \x01(\tR\aproject\x120\n" +
 	"\x14project_display_name\x18\x02 \x01(\tR\x12projectDisplayName\x12\x16\n" +
 	"\x06parent\x18\x03 \x01(\tR\x06parent\x12.\n" +
-	"\x13parent_display_name\x18\x04 \x01(\tR\x11parentDisplayName\x12E\n" +
-	"\afolders\x18\x05 \x03(\v2&.google.cloud.securitycenter.v2.FolderB\x03\xe0A\x03R\afolders\x12\"\n" +
+	"\x13parent_display_name\x18\x04 \x01(\tR\x11parentDisplayName\x12F\n" +
+	"\afolders\x18\x05 \x03(\v2&.google.cloud.securitycenter.v2.FolderB\x04\xe2A\x01\x03R\afolders\x12\"\n" +
 	"\forganization\x18\x06 \x01(\tR\forganization\"\xc8\x03\n" +
 	"\vAwsMetadata\x12_\n" +
 	"\forganization\x18\x01 \x01(\v2;.google.cloud.securitycenter.v2.AwsMetadata.AwsOrganizationR\forganization\x12t\n" +

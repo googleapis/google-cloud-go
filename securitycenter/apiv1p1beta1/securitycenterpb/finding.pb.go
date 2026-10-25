@@ -341,7 +341,7 @@ var File_google_cloud_securitycenter_v1p1beta1_finding_proto protoreflect.FileDe
 
 const file_google_cloud_securitycenter_v1p1beta1_finding_proto_rawDesc = "" +
 	"\n" +
-	"3google/cloud/securitycenter/v1p1beta1/finding.proto\x12%google.cloud.securitycenter.v1p1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a:google/cloud/securitycenter/v1p1beta1/security_marks.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf6\b\n" +
+	"3google/cloud/securitycenter/v1p1beta1/finding.proto\x12%google.cloud.securitycenter.v1p1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a:google/cloud/securitycenter/v1p1beta1/security_marks.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf7\b\n" +
 	"\aFinding\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x16\n" +
 	"\x06parent\x18\x02 \x01(\tR\x06parent\x12#\n" +
@@ -349,8 +349,8 @@ const file_google_cloud_securitycenter_v1p1beta1_finding_proto_rawDesc = "" +
 	"\x05state\x18\x04 \x01(\x0e24.google.cloud.securitycenter.v1p1beta1.Finding.StateR\x05state\x12\x1a\n" +
 	"\bcategory\x18\x05 \x01(\tR\bcategory\x12!\n" +
 	"\fexternal_uri\x18\x06 \x01(\tR\vexternalUri\x12q\n" +
-	"\x11source_properties\x18\a \x03(\v2D.google.cloud.securitycenter.v1p1beta1.Finding.SourcePropertiesEntryR\x10sourceProperties\x12`\n" +
-	"\x0esecurity_marks\x18\b \x01(\v24.google.cloud.securitycenter.v1p1beta1.SecurityMarksB\x03\xe0A\x03R\rsecurityMarks\x129\n" +
+	"\x11source_properties\x18\a \x03(\v2D.google.cloud.securitycenter.v1p1beta1.Finding.SourcePropertiesEntryR\x10sourceProperties\x12a\n" +
+	"\x0esecurity_marks\x18\b \x01(\v24.google.cloud.securitycenter.v1p1beta1.SecurityMarksB\x04\xe2A\x01\x03R\rsecurityMarks\x129\n" +
 	"\n" +
 	"event_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\teventTime\x12;\n" +
 	"\vcreate_time\x18\n" +

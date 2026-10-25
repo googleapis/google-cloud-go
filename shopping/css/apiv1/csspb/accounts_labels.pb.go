@@ -464,16 +464,16 @@ var File_google_shopping_css_v1_accounts_labels_proto protoreflect.FileDescripto
 
 const file_google_shopping_css_v1_accounts_labels_proto_rawDesc = "" +
 	"\n" +
-	",google/shopping/css/v1/accounts_labels.proto\x12\x16google.shopping.css.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\"\xd9\x03\n" +
-	"\fAccountLabel\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1e\n" +
-	"\blabel_id\x18\x02 \x01(\x03B\x03\xe0A\x03R\alabelId\x12\"\n" +
+	",google/shopping/css/v1/accounts_labels.proto\x12\x16google.shopping.css.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\"\xdd\x03\n" +
+	"\fAccountLabel\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x1f\n" +
+	"\blabel_id\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\alabelId\x12#\n" +
 	"\n" +
-	"account_id\x18\x03 \x01(\x03B\x03\xe0A\x03R\taccountId\x12&\n" +
+	"account_id\x18\x03 \x01(\x03B\x04\xe2A\x01\x03R\taccountId\x12&\n" +
 	"\fdisplay_name\x18\x04 \x01(\tH\x00R\vdisplayName\x88\x01\x01\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tH\x01R\vdescription\x88\x01\x01\x12R\n" +
+	"\vdescription\x18\x05 \x01(\tH\x01R\vdescription\x88\x01\x01\x12S\n" +
 	"\n" +
-	"label_type\x18\x06 \x01(\x0e2..google.shopping.css.v1.AccountLabel.LabelTypeB\x03\xe0A\x03R\tlabelType\"B\n" +
+	"label_type\x18\x06 \x01(\x0e2..google.shopping.css.v1.AccountLabel.LabelTypeB\x04\xe2A\x01\x03R\tlabelType\"B\n" +
 	"\tLabelType\x12\x1a\n" +
 	"\x16LABEL_TYPE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
@@ -481,22 +481,22 @@ const file_google_shopping_css_v1_accounts_labels_proto_rawDesc = "" +
 	"\tAUTOMATIC\x10\x02:d\xeaAa\n" +
 	"\x1fcss.googleapis.com/AccountLabel\x12!accounts/{account}/labels/{label}*\raccountLabels2\faccountLabelB\x0f\n" +
 	"\r_display_nameB\x0e\n" +
-	"\f_description\"\x97\x01\n" +
-	"\x18ListAccountLabelsRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1fcss.googleapis.com/AccountLabelR\x06parent\x12\x1b\n" +
+	"\f_description\"\x98\x01\n" +
+	"\x18ListAccountLabelsRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1fcss.googleapis.com/AccountLabelR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x90\x01\n" +
 	"\x19ListAccountLabelsResponse\x12K\n" +
 	"\x0eaccount_labels\x18\x01 \x03(\v2$.google.shopping.css.v1.AccountLabelR\raccountLabels\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xac\x01\n" +
-	"\x19CreateAccountLabelRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1fcss.googleapis.com/AccountLabelR\x06parent\x12N\n" +
-	"\raccount_label\x18\x02 \x01(\v2$.google.shopping.css.v1.AccountLabelB\x03\xe0A\x02R\faccountLabel\"k\n" +
-	"\x19UpdateAccountLabelRequest\x12N\n" +
-	"\raccount_label\x18\x01 \x01(\v2$.google.shopping.css.v1.AccountLabelB\x03\xe0A\x02R\faccountLabel\"X\n" +
-	"\x19DeleteAccountLabelRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xae\x01\n" +
+	"\x19CreateAccountLabelRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1fcss.googleapis.com/AccountLabelR\x06parent\x12O\n" +
+	"\raccount_label\x18\x02 \x01(\v2$.google.shopping.css.v1.AccountLabelB\x04\xe2A\x01\x02R\faccountLabel\"l\n" +
+	"\x19UpdateAccountLabelRequest\x12O\n" +
+	"\raccount_label\x18\x01 \x01(\v2$.google.shopping.css.v1.AccountLabelB\x04\xe2A\x01\x02R\faccountLabel\"Y\n" +
+	"\x19DeleteAccountLabelRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
 	"\x1fcss.googleapis.com/AccountLabelR\x04name2\x97\x06\n" +
 	"\x14AccountLabelsService\x12\xa9\x01\n" +
 	"\x11ListAccountLabels\x120.google.shopping.css.v1.ListAccountLabelsRequest\x1a1.google.shopping.css.v1.ListAccountLabelsResponse\"/\xdaA\x06parent\x82\xd3\xe4\x93\x02 \x12\x1e/v1/{parent=accounts/*}/labels\x12\xbb\x01\n" +

@@ -596,43 +596,43 @@ var File_google_iam_v3beta_principal_access_boundary_policies_service_proto prot
 
 const file_google_iam_v3beta_principal_access_boundary_policies_service_proto_rawDesc = "" +
 	"\n" +
-	"Bgoogle/iam/v3beta/principal_access_boundary_policies_service.proto\x12\x11google.iam.v3beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a*google/iam/v3beta/operation_metadata.proto\x1a0google/iam/v3beta/policy_binding_resources.proto\x1aBgoogle/iam/v3beta/principal_access_boundary_policy_resources.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xfb\x02\n" +
-	"*CreatePrincipalAccessBoundaryPolicyRequest\x12P\n" +
-	"\x06parent\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\x120iam.googleapis.com/PrincipalAccessBoundaryPolicyR\x06parent\x12Q\n" +
-	"#principal_access_boundary_policy_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x1fprincipalAccessBoundaryPolicyId\x12~\n" +
-	" principal_access_boundary_policy\x18\x03 \x01(\v20.google.iam.v3beta.PrincipalAccessBoundaryPolicyB\x03\xe0A\x02R\x1dprincipalAccessBoundaryPolicy\x12(\n" +
-	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"w\n" +
-	"'GetPrincipalAccessBoundaryPolicyRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0iam.googleapis.com/PrincipalAccessBoundaryPolicyR\x04name\"\x98\x02\n" +
-	"*UpdatePrincipalAccessBoundaryPolicyRequest\x12~\n" +
-	" principal_access_boundary_policy\x18\x01 \x01(\v20.google.iam.v3beta.PrincipalAccessBoundaryPolicyB\x03\xe0A\x02R\x1dprincipalAccessBoundaryPolicy\x12(\n" +
-	"\rvalidate_only\x18\x02 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12@\n" +
-	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"\xd8\x01\n" +
-	"*DeletePrincipalAccessBoundaryPolicyRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0iam.googleapis.com/PrincipalAccessBoundaryPolicyR\x04name\x12\x17\n" +
-	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x01R\x04etag\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12\x19\n" +
-	"\x05force\x18\x04 \x01(\bB\x03\xe0A\x01R\x05force\"\xc4\x01\n" +
-	"*ListPrincipalAccessBoundaryPoliciesRequest\x12P\n" +
-	"\x06parent\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\x120iam.googleapis.com/PrincipalAccessBoundaryPolicyR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"Bgoogle/iam/v3beta/principal_access_boundary_policies_service.proto\x12\x11google.iam.v3beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a*google/iam/v3beta/operation_metadata.proto\x1a0google/iam/v3beta/policy_binding_resources.proto\x1aBgoogle/iam/v3beta/principal_access_boundary_policy_resources.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xff\x02\n" +
+	"*CreatePrincipalAccessBoundaryPolicyRequest\x12Q\n" +
+	"\x06parent\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\x120iam.googleapis.com/PrincipalAccessBoundaryPolicyR\x06parent\x12R\n" +
+	"#principal_access_boundary_policy_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x1fprincipalAccessBoundaryPolicyId\x12\x7f\n" +
+	" principal_access_boundary_policy\x18\x03 \x01(\v20.google.iam.v3beta.PrincipalAccessBoundaryPolicyB\x04\xe2A\x01\x02R\x1dprincipalAccessBoundaryPolicy\x12)\n" +
+	"\rvalidate_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"x\n" +
+	"'GetPrincipalAccessBoundaryPolicyRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0iam.googleapis.com/PrincipalAccessBoundaryPolicyR\x04name\"\x9b\x02\n" +
+	"*UpdatePrincipalAccessBoundaryPolicyRequest\x12\x7f\n" +
+	" principal_access_boundary_policy\x18\x01 \x01(\v20.google.iam.v3beta.PrincipalAccessBoundaryPolicyB\x04\xe2A\x01\x02R\x1dprincipalAccessBoundaryPolicy\x12)\n" +
+	"\rvalidate_only\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12A\n" +
+	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"\xdc\x01\n" +
+	"*DeletePrincipalAccessBoundaryPolicyRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0iam.googleapis.com/PrincipalAccessBoundaryPolicyR\x04name\x12\x18\n" +
+	"\x04etag\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12\x1a\n" +
+	"\x05force\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x05force\"\xc7\x01\n" +
+	"*ListPrincipalAccessBoundaryPoliciesRequest\x12Q\n" +
+	"\x06parent\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\x120iam.googleapis.com/PrincipalAccessBoundaryPolicyR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xd9\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xda\x01\n" +
 	"+ListPrincipalAccessBoundaryPoliciesResponse\x12}\n" +
-	"\"principal_access_boundary_policies\x18\x01 \x03(\v20.google.iam.v3beta.PrincipalAccessBoundaryPolicyR\x1fprincipalAccessBoundaryPolicies\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\rnextPageToken\"\xc8\x01\n" +
-	"2SearchPrincipalAccessBoundaryPolicyBindingsRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0iam.googleapis.com/PrincipalAccessBoundaryPolicyR\x04name\x12 \n" +
-	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\"principal_access_boundary_policies\x18\x01 \x03(\v20.google.iam.v3beta.PrincipalAccessBoundaryPolicyR\x1fprincipalAccessBoundaryPolicies\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\rnextPageToken\"\xcb\x01\n" +
+	"2SearchPrincipalAccessBoundaryPolicyBindingsRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0iam.googleapis.com/PrincipalAccessBoundaryPolicyR\x04name\x12!\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xad\x01\n" +
+	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xae\x01\n" +
 	"3SearchPrincipalAccessBoundaryPolicyBindingsResponse\x12I\n" +
-	"\x0fpolicy_bindings\x18\x01 \x03(\v2 .google.iam.v3beta.PolicyBindingR\x0epolicyBindings\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\rnextPageToken2\xa8\x0f\n" +
+	"\x0fpolicy_bindings\x18\x01 \x03(\v2 .google.iam.v3beta.PolicyBindingR\x0epolicyBindings\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\rnextPageToken2\xa8\x0f\n" +
 	"\x1fPrincipalAccessBoundaryPolicies\x12\xff\x02\n" +
 	"#CreatePrincipalAccessBoundaryPolicy\x12=.google.iam.v3beta.CreatePrincipalAccessBoundaryPolicyRequest\x1a\x1d.google.longrunning.Operation\"\xf9\x01\xcaA2\n" +
 	"\x1dPrincipalAccessBoundaryPolicy\x12\x11OperationMetadata\xdaAKparent,principal_access_boundary_policy,principal_access_boundary_policy_id\x82\xd3\xe4\x93\x02p: principal_access_boundary_policy\"L/v3beta/{parent=organizations/*/locations/*}/principalAccessBoundaryPolicies\x12\xed\x01\n" +

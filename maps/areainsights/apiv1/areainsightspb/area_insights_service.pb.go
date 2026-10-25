@@ -1085,56 +1085,56 @@ var File_google_maps_areainsights_v1_area_insights_service_proto protoreflect.Fi
 
 const file_google_maps_areainsights_v1_area_insights_service_proto_rawDesc = "" +
 	"\n" +
-	"7google/maps/areainsights/v1/area_insights_service.proto\x12\x1bgoogle.maps.areainsights.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x18google/type/latlng.proto\"\xa1\x01\n" +
-	"\x16ComputeInsightsRequest\x12E\n" +
-	"\binsights\x18\x04 \x03(\x0e2$.google.maps.areainsights.v1.InsightB\x03\xe0A\x02R\binsights\x12@\n" +
-	"\x06filter\x18\x05 \x01(\v2#.google.maps.areainsights.v1.FilterB\x03\xe0A\x02R\x06filter\"\x90\x01\n" +
+	"7google/maps/areainsights/v1/area_insights_service.proto\x12\x1bgoogle.maps.areainsights.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x18google/type/latlng.proto\"\xa3\x01\n" +
+	"\x16ComputeInsightsRequest\x12F\n" +
+	"\binsights\x18\x04 \x03(\x0e2$.google.maps.areainsights.v1.InsightB\x04\xe2A\x01\x02R\binsights\x12A\n" +
+	"\x06filter\x18\x05 \x01(\v2#.google.maps.areainsights.v1.FilterB\x04\xe2A\x01\x02R\x06filter\"\x90\x01\n" +
 	"\x17ComputeInsightsResponse\x12\x19\n" +
 	"\x05count\x18\x01 \x01(\x03H\x00R\x05count\x88\x01\x01\x12P\n" +
 	"\x0eplace_insights\x18\x05 \x03(\v2).google.maps.areainsights.v1.PlaceInsightR\rplaceInsightsB\b\n" +
 	"\x06_count\"F\n" +
 	"\fPlaceInsight\x126\n" +
 	"\x05place\x18\x01 \x01(\tB \xfaA\x1d\n" +
-	"\x1bplaces.googleapis.com/PlaceR\x05place\"\xb6\x03\n" +
-	"\x06Filter\x12Y\n" +
-	"\x0flocation_filter\x18\x01 \x01(\v2+.google.maps.areainsights.v1.LocationFilterB\x03\xe0A\x02R\x0elocationFilter\x12M\n" +
-	"\vtype_filter\x18\x02 \x01(\v2'.google.maps.areainsights.v1.TypeFilterB\x03\xe0A\x02R\n" +
-	"typeFilter\x12\\\n" +
-	"\x10operating_status\x18\x03 \x03(\x0e2,.google.maps.areainsights.v1.OperatingStatusB\x03\xe0A\x01R\x0foperatingStatus\x12O\n" +
-	"\fprice_levels\x18\x04 \x03(\x0e2'.google.maps.areainsights.v1.PriceLevelB\x03\xe0A\x01R\vpriceLevels\x12S\n" +
-	"\rrating_filter\x18\x05 \x01(\v2).google.maps.areainsights.v1.RatingFilterB\x03\xe0A\x01R\fratingFilter\"\xae\x05\n" +
+	"\x1bplaces.googleapis.com/PlaceR\x05place\"\xbb\x03\n" +
+	"\x06Filter\x12Z\n" +
+	"\x0flocation_filter\x18\x01 \x01(\v2+.google.maps.areainsights.v1.LocationFilterB\x04\xe2A\x01\x02R\x0elocationFilter\x12N\n" +
+	"\vtype_filter\x18\x02 \x01(\v2'.google.maps.areainsights.v1.TypeFilterB\x04\xe2A\x01\x02R\n" +
+	"typeFilter\x12]\n" +
+	"\x10operating_status\x18\x03 \x03(\x0e2,.google.maps.areainsights.v1.OperatingStatusB\x04\xe2A\x01\x01R\x0foperatingStatus\x12P\n" +
+	"\fprice_levels\x18\x04 \x03(\x0e2'.google.maps.areainsights.v1.PriceLevelB\x04\xe2A\x01\x01R\vpriceLevels\x12T\n" +
+	"\rrating_filter\x18\x05 \x01(\v2).google.maps.areainsights.v1.RatingFilterB\x04\xe2A\x01\x01R\fratingFilter\"\xb1\x05\n" +
 	"\x0eLocationFilter\x12L\n" +
 	"\x06circle\x18\x01 \x01(\v22.google.maps.areainsights.v1.LocationFilter.CircleH\x00R\x06circle\x12L\n" +
 	"\x06region\x18\x02 \x01(\v22.google.maps.areainsights.v1.LocationFilter.RegionH\x00R\x06region\x12Y\n" +
 	"\vcustom_area\x18\x03 \x01(\v26.google.maps.areainsights.v1.LocationFilter.CustomAreaH\x00R\n" +
-	"customArea\x1a\x99\x01\n" +
+	"customArea\x1a\x9a\x01\n" +
 	"\x06Circle\x12.\n" +
 	"\alat_lng\x18\x01 \x01(\v2\x13.google.type.LatLngH\x00R\x06latLng\x128\n" +
 	"\x05place\x18\x02 \x01(\tB \xfaA\x1d\n" +
-	"\x1bplaces.googleapis.com/PlaceH\x00R\x05place\x12\x1b\n" +
-	"\x06radius\x18\x03 \x01(\x05B\x03\xe0A\x01R\x06radiusB\b\n" +
+	"\x1bplaces.googleapis.com/PlaceH\x00R\x05place\x12\x1c\n" +
+	"\x06radius\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\x06radiusB\b\n" +
 	"\x06center\x1aL\n" +
 	"\x06Region\x128\n" +
 	"\x05place\x18\x01 \x01(\tB \xfaA\x1d\n" +
 	"\x1bplaces.googleapis.com/PlaceH\x00R\x05placeB\b\n" +
-	"\x06region\x1a\xb2\x01\n" +
+	"\x06region\x1a\xb4\x01\n" +
 	"\n" +
-	"CustomArea\x12]\n" +
-	"\apolygon\x18\x01 \x01(\v2>.google.maps.areainsights.v1.LocationFilter.CustomArea.PolygonB\x03\xe0A\x02R\apolygon\x1aE\n" +
-	"\aPolygon\x12:\n" +
-	"\vcoordinates\x18\x01 \x03(\v2\x13.google.type.LatLngB\x03\xe0A\x01R\vcoordinatesB\x06\n" +
-	"\x04area\"\xda\x01\n" +
+	"CustomArea\x12^\n" +
+	"\apolygon\x18\x01 \x01(\v2>.google.maps.areainsights.v1.LocationFilter.CustomArea.PolygonB\x04\xe2A\x01\x02R\apolygon\x1aF\n" +
+	"\aPolygon\x12;\n" +
+	"\vcoordinates\x18\x01 \x03(\v2\x13.google.type.LatLngB\x04\xe2A\x01\x01R\vcoordinatesB\x06\n" +
+	"\x04area\"\xde\x01\n" +
 	"\n" +
-	"TypeFilter\x12*\n" +
-	"\x0eincluded_types\x18\x01 \x03(\tB\x03\xe0A\x01R\rincludedTypes\x12*\n" +
-	"\x0eexcluded_types\x18\x02 \x03(\tB\x03\xe0A\x01R\rexcludedTypes\x129\n" +
-	"\x16included_primary_types\x18\x03 \x03(\tB\x03\xe0A\x01R\x14includedPrimaryTypes\x129\n" +
-	"\x16excluded_primary_types\x18\x04 \x03(\tB\x03\xe0A\x01R\x14excludedPrimaryTypes\"~\n" +
-	"\fRatingFilter\x12'\n" +
+	"TypeFilter\x12+\n" +
+	"\x0eincluded_types\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\rincludedTypes\x12+\n" +
+	"\x0eexcluded_types\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\rexcludedTypes\x12:\n" +
+	"\x16included_primary_types\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x14includedPrimaryTypes\x12:\n" +
+	"\x16excluded_primary_types\x18\x04 \x03(\tB\x04\xe2A\x01\x01R\x14excludedPrimaryTypes\"\x80\x01\n" +
+	"\fRatingFilter\x12(\n" +
 	"\n" +
-	"min_rating\x18\x05 \x01(\x02B\x03\xe0A\x01H\x00R\tminRating\x88\x01\x01\x12'\n" +
+	"min_rating\x18\x05 \x01(\x02B\x04\xe2A\x01\x01H\x00R\tminRating\x88\x01\x01\x12(\n" +
 	"\n" +
-	"max_rating\x18\x06 \x01(\x02B\x03\xe0A\x01H\x01R\tmaxRating\x88\x01\x01B\r\n" +
+	"max_rating\x18\x06 \x01(\x02B\x04\xe2A\x01\x01H\x01R\tmaxRating\x88\x01\x01B\r\n" +
 	"\v_min_ratingB\r\n" +
 	"\v_max_rating*I\n" +
 	"\aInsight\x12\x17\n" +

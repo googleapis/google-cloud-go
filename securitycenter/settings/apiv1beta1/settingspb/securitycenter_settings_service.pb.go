@@ -1113,56 +1113,56 @@ var File_google_cloud_securitycenter_settings_v1beta1_securitycenter_settings_se
 
 const file_google_cloud_securitycenter_settings_v1beta1_securitycenter_settings_service_proto_rawDesc = "" +
 	"\n" +
-	"Rgoogle/cloud/securitycenter/settings/v1beta1/securitycenter_settings_service.proto\x12,google.cloud.securitycenter.settings.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1aEgoogle/cloud/securitycenter/settings/v1beta1/component_settings.proto\x1a;google/cloud/securitycenter/settings/v1beta1/detector.proto\x1a;google/cloud/securitycenter/settings/v1beta1/settings.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"d\n" +
-	"\x18GetServiceAccountRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
+	"Rgoogle/cloud/securitycenter/settings/v1beta1/securitycenter_settings_service.proto\x12,google.cloud.securitycenter.settings.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1aEgoogle/cloud/securitycenter/settings/v1beta1/component_settings.proto\x1a;google/cloud/securitycenter/settings/v1beta1/detector.proto\x1a;google/cloud/securitycenter/settings/v1beta1/settings.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"e\n" +
+	"\x18GetServiceAccountRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
 	",securitycenter.googleapis.com/ServiceAccountR\x04name\"\xad\x01\n" +
 	"\x0eServiceAccount\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12'\n" +
 	"\x0fservice_account\x18\x02 \x01(\tR\x0eserviceAccount:^\xeaA[\n" +
-	",securitycenter.googleapis.com/ServiceAccount\x12+organizations/{organization}/serviceAccount\"X\n" +
-	"\x12GetSettingsRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&securitycenter.googleapis.com/SettingsR\x04name\"\xad\x01\n" +
-	"\x15UpdateSettingsRequest\x12W\n" +
-	"\bsettings\x18\x01 \x01(\v26.google.cloud.securitycenter.settings.v1beta1.SettingsB\x03\xe0A\x02R\bsettings\x12;\n" +
+	",securitycenter.googleapis.com/ServiceAccount\x12+organizations/{organization}/serviceAccount\"Y\n" +
+	"\x12GetSettingsRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&securitycenter.googleapis.com/SettingsR\x04name\"\xae\x01\n" +
+	"\x15UpdateSettingsRequest\x12X\n" +
+	"\bsettings\x18\x01 \x01(\v26.google.cloud.securitycenter.settings.v1beta1.SettingsB\x04\xe2A\x01\x02R\bsettings\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"n\n" +
-	"\x14ResetSettingsRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
+	"updateMask\"o\n" +
+	"\x14ResetSettingsRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
 	"&securitycenter.googleapis.com/SettingsR\x04name\x12\x12\n" +
-	"\x04etag\x18\x02 \x01(\tR\x04etag\"\x81\x01\n" +
-	"\x17BatchGetSettingsRequest\x12P\n" +
-	"\x06parent\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
+	"\x04etag\x18\x02 \x01(\tR\x04etag\"\x82\x01\n" +
+	"\x17BatchGetSettingsRequest\x12Q\n" +
+	"\x06parent\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
 	"0cloudresourcemanager.googleapis.com/OrganizationR\x06parent\x12\x14\n" +
 	"\x05names\x18\x02 \x03(\tR\x05names\"n\n" +
 	"\x18BatchGetSettingsResponse\x12R\n" +
-	"\bsettings\x18\x01 \x03(\v26.google.cloud.securitycenter.settings.v1beta1.SettingsR\bsettings\"g\n" +
-	"!CalculateEffectiveSettingsRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&securitycenter.googleapis.com/SettingsR\x04name\"\xe7\x01\n" +
-	"&BatchCalculateEffectiveSettingsRequest\x12P\n" +
-	"\x06parent\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
+	"\bsettings\x18\x01 \x03(\v26.google.cloud.securitycenter.settings.v1beta1.SettingsR\bsettings\"h\n" +
+	"!CalculateEffectiveSettingsRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&securitycenter.googleapis.com/SettingsR\x04name\"\xe8\x01\n" +
+	"&BatchCalculateEffectiveSettingsRequest\x12Q\n" +
+	"\x06parent\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
 	"0cloudresourcemanager.googleapis.com/OrganizationR\x06parent\x12k\n" +
 	"\brequests\x18\x02 \x03(\v2O.google.cloud.securitycenter.settings.v1beta1.CalculateEffectiveSettingsRequestR\brequests\"}\n" +
 	"'BatchCalculateEffectiveSettingsResponse\x12R\n" +
-	"\bsettings\x18\x01 \x03(\v26.google.cloud.securitycenter.settings.v1beta1.SettingsR\bsettings\"j\n" +
-	"\x1bGetComponentSettingsRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/securitycenter.googleapis.com/ComponentSettingsR\x04name\"\xd2\x01\n" +
-	"\x1eUpdateComponentSettingsRequest\x12s\n" +
-	"\x12component_settings\x18\x01 \x01(\v2?.google.cloud.securitycenter.settings.v1beta1.ComponentSettingsB\x03\xe0A\x02R\x11componentSettings\x12;\n" +
+	"\bsettings\x18\x01 \x03(\v26.google.cloud.securitycenter.settings.v1beta1.SettingsR\bsettings\"k\n" +
+	"\x1bGetComponentSettingsRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/securitycenter.googleapis.com/ComponentSettingsR\x04name\"\xd3\x01\n" +
+	"\x1eUpdateComponentSettingsRequest\x12t\n" +
+	"\x12component_settings\x18\x01 \x01(\v2?.google.cloud.securitycenter.settings.v1beta1.ComponentSettingsB\x04\xe2A\x01\x02R\x11componentSettings\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"\x80\x01\n" +
-	"\x1dResetComponentSettingsRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
+	"updateMask\"\x81\x01\n" +
+	"\x1dResetComponentSettingsRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
 	"/securitycenter.googleapis.com/ComponentSettingsR\x04name\x12\x12\n" +
-	"\x04etag\x18\x02 \x01(\tR\x04etag\"y\n" +
-	"*CalculateEffectiveComponentSettingsRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/securitycenter.googleapis.com/ComponentSettingsR\x04name\"\xbc\x01\n" +
-	"\x14ListDetectorsRequest\x12P\n" +
-	"\x06parent\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
+	"\x04etag\x18\x02 \x01(\tR\x04etag\"z\n" +
+	"*CalculateEffectiveComponentSettingsRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/securitycenter.googleapis.com/ComponentSettingsR\x04name\"\xbd\x01\n" +
+	"\x14ListDetectorsRequest\x12Q\n" +
+	"\x06parent\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
 	"0cloudresourcemanager.googleapis.com/OrganizationR\x06parent\x12\x16\n" +
 	"\x06filter\x18\x02 \x01(\tR\x06filter\x12\x1b\n" +
 	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12\x1d\n" +
@@ -1170,9 +1170,9 @@ const file_google_cloud_securitycenter_settings_v1beta1_securitycenter_settings_
 	"page_token\x18\x04 \x01(\tR\tpageToken\"\x95\x01\n" +
 	"\x15ListDetectorsResponse\x12T\n" +
 	"\tdetectors\x18\x01 \x03(\v26.google.cloud.securitycenter.settings.v1beta1.DetectorR\tdetectors\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa5\x01\n" +
-	"\x15ListComponentsRequest\x12P\n" +
-	"\x06parent\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa6\x01\n" +
+	"\x15ListComponentsRequest\x12Q\n" +
+	"\x06parent\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
 	"0cloudresourcemanager.googleapis.com/OrganizationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +

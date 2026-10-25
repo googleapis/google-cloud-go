@@ -420,28 +420,28 @@ var File_google_iam_v3_policy_binding_resources_proto protoreflect.FileDescripto
 
 const file_google_iam_v3_policy_binding_resources_proto_rawDesc = "" +
 	"\n" +
-	",google/iam/v3/policy_binding_resources.proto\x12\rgoogle.iam.v3\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x16google/type/expr.proto\"\x94\t\n" +
-	"\rPolicyBinding\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1d\n" +
-	"\x03uid\x18\x02 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12\x17\n" +
-	"\x04etag\x18\x03 \x01(\tB\x03\xe0A\x01R\x04etag\x12&\n" +
-	"\fdisplay_name\x18\x04 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12T\n" +
-	"\vannotations\x18\x05 \x03(\v2-.google.iam.v3.PolicyBinding.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12C\n" +
-	"\x06target\x18\x06 \x01(\v2#.google.iam.v3.PolicyBinding.TargetB\x06\xe0A\x05\xe0A\x02R\x06target\x12M\n" +
-	"\vpolicy_kind\x18\v \x01(\x0e2'.google.iam.v3.PolicyBinding.PolicyKindB\x03\xe0A\x05R\n" +
-	"policyKind\x12\x1e\n" +
-	"\x06policy\x18\a \x01(\tB\x06\xe0A\x05\xe0A\x02R\x06policy\x12\"\n" +
+	",google/iam/v3/policy_binding_resources.proto\x12\rgoogle.iam.v3\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x16google/type/expr.proto\"\x9e\t\n" +
+	"\rPolicyBinding\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x1e\n" +
+	"\x03uid\x18\x02 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12\x18\n" +
+	"\x04etag\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12'\n" +
+	"\fdisplay_name\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12U\n" +
+	"\vannotations\x18\x05 \x03(\v2-.google.iam.v3.PolicyBinding.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12B\n" +
+	"\x06target\x18\x06 \x01(\v2#.google.iam.v3.PolicyBinding.TargetB\x05\xe2A\x02\x05\x02R\x06target\x12N\n" +
+	"\vpolicy_kind\x18\v \x01(\x0e2'.google.iam.v3.PolicyBinding.PolicyKindB\x04\xe2A\x01\x05R\n" +
+	"policyKind\x12\x1d\n" +
+	"\x06policy\x18\a \x01(\tB\x05\xe2A\x02\x05\x02R\x06policy\x12#\n" +
 	"\n" +
-	"policy_uid\x18\f \x01(\tB\x03\xe0A\x03R\tpolicyUid\x124\n" +
-	"\tcondition\x18\b \x01(\v2\x11.google.type.ExprB\x03\xe0A\x01R\tcondition\x12@\n" +
-	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
+	"policy_uid\x18\f \x01(\tB\x04\xe2A\x01\x03R\tpolicyUid\x125\n" +
+	"\tcondition\x18\b \x01(\v2\x11.google.type.ExprB\x04\xe2A\x01\x01R\tcondition\x12A\n" +
+	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
 	"\vupdate_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x1aa\n" +
-	"\x06Target\x12*\n" +
-	"\rprincipal_set\x18\x01 \x01(\tB\x03\xe0A\x05H\x00R\fprincipalSet\x12!\n" +
-	"\bresource\x18\x02 \x01(\tB\x03\xe0A\x05H\x00R\bresourceB\b\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x1ac\n" +
+	"\x06Target\x12+\n" +
+	"\rprincipal_set\x18\x01 \x01(\tB\x04\xe2A\x01\x05H\x00R\fprincipalSet\x12\"\n" +
+	"\bresource\x18\x02 \x01(\tB\x04\xe2A\x01\x05H\x00R\bresourceB\b\n" +
 	"\x06target\x1a>\n" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +

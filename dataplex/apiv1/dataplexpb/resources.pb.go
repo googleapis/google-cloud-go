@@ -2994,25 +2994,25 @@ var File_google_cloud_dataplex_v1_resources_proto protoreflect.FileDescriptor
 
 const file_google_cloud_dataplex_v1_resources_proto_rawDesc = "" +
 	"\n" +
-	"(google/cloud/dataplex/v1/resources.proto\x12\x18google.cloud.dataplex.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xba\t\n" +
-	"\x04Lake\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x03\xfaA\x1e\n" +
-	"\x1cdataplex.googleapis.com/LakeR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12\x15\n" +
-	"\x03uid\x18\x03 \x01(\tB\x03\xe0A\x03R\x03uid\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12G\n" +
-	"\x06labels\x18\x06 \x03(\v2*.google.cloud.dataplex.v1.Lake.LabelsEntryB\x03\xe0A\x01R\x06labels\x12%\n" +
-	"\vdescription\x18\a \x01(\tB\x03\xe0A\x01R\vdescription\x12:\n" +
-	"\x05state\x18\b \x01(\x0e2\x1f.google.cloud.dataplex.v1.StateB\x03\xe0A\x03R\x05state\x12,\n" +
-	"\x0fservice_account\x18\t \x01(\tB\x03\xe0A\x03R\x0eserviceAccount\x12K\n" +
-	"\tmetastore\x18f \x01(\v2(.google.cloud.dataplex.v1.Lake.MetastoreB\x03\xe0A\x01R\tmetastore\x12M\n" +
-	"\fasset_status\x18g \x01(\v2%.google.cloud.dataplex.v1.AssetStatusB\x03\xe0A\x03R\vassetStatus\x12^\n" +
-	"\x10metastore_status\x18h \x01(\v2..google.cloud.dataplex.v1.Lake.MetastoreStatusB\x03\xe0A\x03R\x0fmetastoreStatus\x1a*\n" +
-	"\tMetastore\x12\x1d\n" +
-	"\aservice\x18\x01 \x01(\tB\x03\xe0A\x01R\aservice\x1a\x9e\x02\n" +
+	"(google/cloud/dataplex/v1/resources.proto\x12\x18google.cloud.dataplex.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc7\t\n" +
+	"\x04Lake\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x03\xfaA\x1e\n" +
+	"\x1cdataplex.googleapis.com/LakeR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12\x16\n" +
+	"\x03uid\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12H\n" +
+	"\x06labels\x18\x06 \x03(\v2*.google.cloud.dataplex.v1.Lake.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12&\n" +
+	"\vdescription\x18\a \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12;\n" +
+	"\x05state\x18\b \x01(\x0e2\x1f.google.cloud.dataplex.v1.StateB\x04\xe2A\x01\x03R\x05state\x12-\n" +
+	"\x0fservice_account\x18\t \x01(\tB\x04\xe2A\x01\x03R\x0eserviceAccount\x12L\n" +
+	"\tmetastore\x18f \x01(\v2(.google.cloud.dataplex.v1.Lake.MetastoreB\x04\xe2A\x01\x01R\tmetastore\x12N\n" +
+	"\fasset_status\x18g \x01(\v2%.google.cloud.dataplex.v1.AssetStatusB\x04\xe2A\x01\x03R\vassetStatus\x12_\n" +
+	"\x10metastore_status\x18h \x01(\v2..google.cloud.dataplex.v1.Lake.MetastoreStatusB\x04\xe2A\x01\x03R\x0fmetastoreStatus\x1a+\n" +
+	"\tMetastore\x12\x1e\n" +
+	"\aservice\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\aservice\x1a\x9e\x02\n" +
 	"\x0fMetastoreStatus\x12J\n" +
 	"\x05state\x18\x01 \x01(\x0e24.google.cloud.dataplex.v1.Lake.MetastoreStatus.StateR\x05state\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\x12;\n" +
@@ -3033,48 +3033,48 @@ const file_google_cloud_dataplex_v1_resources_proto_rawDesc = "" +
 	"\vupdate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"updateTime\x12#\n" +
 	"\ractive_assets\x18\x02 \x01(\x05R\factiveAssets\x12E\n" +
-	"\x1fsecurity_policy_applying_assets\x18\x03 \x01(\x05R\x1csecurityPolicyApplyingAssets\"\xb0\x0e\n" +
-	"\x04Zone\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x03\xfaA\x1e\n" +
-	"\x1cdataplex.googleapis.com/ZoneR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12\x15\n" +
-	"\x03uid\x18\x03 \x01(\tB\x03\xe0A\x03R\x03uid\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12G\n" +
-	"\x06labels\x18\x06 \x03(\v2*.google.cloud.dataplex.v1.Zone.LabelsEntryB\x03\xe0A\x01R\x06labels\x12%\n" +
-	"\vdescription\x18\a \x01(\tB\x03\xe0A\x01R\vdescription\x12:\n" +
-	"\x05state\x18\b \x01(\x0e2\x1f.google.cloud.dataplex.v1.StateB\x03\xe0A\x03R\x05state\x12?\n" +
-	"\x04type\x18\t \x01(\x0e2#.google.cloud.dataplex.v1.Zone.TypeB\x06\xe0A\x02\xe0A\x05R\x04type\x12X\n" +
-	"\x0ediscovery_spec\x18g \x01(\v2,.google.cloud.dataplex.v1.Zone.DiscoverySpecB\x03\xe0A\x01R\rdiscoverySpec\x12U\n" +
-	"\rresource_spec\x18h \x01(\v2+.google.cloud.dataplex.v1.Zone.ResourceSpecB\x03\xe0A\x02R\fresourceSpec\x12M\n" +
-	"\fasset_status\x18i \x01(\v2%.google.cloud.dataplex.v1.AssetStatusB\x03\xe0A\x03R\vassetStatus\x1a\xc9\x01\n" +
-	"\fResourceSpec\x12e\n" +
-	"\rlocation_type\x18\x01 \x01(\x0e28.google.cloud.dataplex.v1.Zone.ResourceSpec.LocationTypeB\x06\xe0A\x02\xe0A\x05R\flocationType\"R\n" +
+	"\x1fsecurity_policy_applying_assets\x18\x03 \x01(\x05R\x1csecurityPolicyApplyingAssets\"\xc5\x0e\n" +
+	"\x04Zone\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x03\xfaA\x1e\n" +
+	"\x1cdataplex.googleapis.com/ZoneR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12\x16\n" +
+	"\x03uid\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12H\n" +
+	"\x06labels\x18\x06 \x03(\v2*.google.cloud.dataplex.v1.Zone.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12&\n" +
+	"\vdescription\x18\a \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12;\n" +
+	"\x05state\x18\b \x01(\x0e2\x1f.google.cloud.dataplex.v1.StateB\x04\xe2A\x01\x03R\x05state\x12>\n" +
+	"\x04type\x18\t \x01(\x0e2#.google.cloud.dataplex.v1.Zone.TypeB\x05\xe2A\x02\x02\x05R\x04type\x12Y\n" +
+	"\x0ediscovery_spec\x18g \x01(\v2,.google.cloud.dataplex.v1.Zone.DiscoverySpecB\x04\xe2A\x01\x01R\rdiscoverySpec\x12V\n" +
+	"\rresource_spec\x18h \x01(\v2+.google.cloud.dataplex.v1.Zone.ResourceSpecB\x04\xe2A\x01\x02R\fresourceSpec\x12N\n" +
+	"\fasset_status\x18i \x01(\v2%.google.cloud.dataplex.v1.AssetStatusB\x04\xe2A\x01\x03R\vassetStatus\x1a\xc8\x01\n" +
+	"\fResourceSpec\x12d\n" +
+	"\rlocation_type\x18\x01 \x01(\x0e28.google.cloud.dataplex.v1.Zone.ResourceSpec.LocationTypeB\x05\xe2A\x02\x02\x05R\flocationType\"R\n" +
 	"\fLocationType\x12\x1d\n" +
 	"\x19LOCATION_TYPE_UNSPECIFIED\x10\x00\x12\x11\n" +
 	"\rSINGLE_REGION\x10\x01\x12\x10\n" +
-	"\fMULTI_REGION\x10\x02\x1a\x9c\x05\n" +
-	"\rDiscoverySpec\x12\x1d\n" +
-	"\aenabled\x18\x01 \x01(\bB\x03\xe0A\x02R\aenabled\x12.\n" +
-	"\x10include_patterns\x18\x02 \x03(\tB\x03\xe0A\x01R\x0fincludePatterns\x12.\n" +
-	"\x10exclude_patterns\x18\x03 \x03(\tB\x03\xe0A\x01R\x0fexcludePatterns\x12]\n" +
-	"\vcsv_options\x18\x04 \x01(\v27.google.cloud.dataplex.v1.Zone.DiscoverySpec.CsvOptionsB\x03\xe0A\x01R\n" +
-	"csvOptions\x12`\n" +
-	"\fjson_options\x18\x05 \x01(\v28.google.cloud.dataplex.v1.Zone.DiscoverySpec.JsonOptionsB\x03\xe0A\x01R\vjsonOptions\x12!\n" +
+	"\fMULTI_REGION\x10\x02\x1a\xa8\x05\n" +
+	"\rDiscoverySpec\x12\x1e\n" +
+	"\aenabled\x18\x01 \x01(\bB\x04\xe2A\x01\x02R\aenabled\x12/\n" +
+	"\x10include_patterns\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x0fincludePatterns\x12/\n" +
+	"\x10exclude_patterns\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x0fexcludePatterns\x12^\n" +
+	"\vcsv_options\x18\x04 \x01(\v27.google.cloud.dataplex.v1.Zone.DiscoverySpec.CsvOptionsB\x04\xe2A\x01\x01R\n" +
+	"csvOptions\x12a\n" +
+	"\fjson_options\x18\x05 \x01(\v28.google.cloud.dataplex.v1.Zone.DiscoverySpec.JsonOptionsB\x04\xe2A\x01\x01R\vjsonOptions\x12\"\n" +
 	"\bschedule\x18\n" +
-	" \x01(\tB\x03\xe0A\x01H\x00R\bschedule\x1a\xb1\x01\n" +
+	" \x01(\tB\x04\xe2A\x01\x01H\x00R\bschedule\x1a\xb5\x01\n" +
 	"\n" +
-	"CsvOptions\x12$\n" +
-	"\vheader_rows\x18\x01 \x01(\x05B\x03\xe0A\x01R\n" +
-	"headerRows\x12!\n" +
-	"\tdelimiter\x18\x02 \x01(\tB\x03\xe0A\x01R\tdelimiter\x12\x1f\n" +
-	"\bencoding\x18\x03 \x01(\tB\x03\xe0A\x01R\bencoding\x129\n" +
-	"\x16disable_type_inference\x18\x04 \x01(\bB\x03\xe0A\x01R\x14disableTypeInference\x1ai\n" +
-	"\vJsonOptions\x12\x1f\n" +
-	"\bencoding\x18\x01 \x01(\tB\x03\xe0A\x01R\bencoding\x129\n" +
-	"\x16disable_type_inference\x18\x02 \x01(\bB\x03\xe0A\x01R\x14disableTypeInferenceB\t\n" +
+	"CsvOptions\x12%\n" +
+	"\vheader_rows\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\n" +
+	"headerRows\x12\"\n" +
+	"\tdelimiter\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\tdelimiter\x12 \n" +
+	"\bencoding\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\bencoding\x12:\n" +
+	"\x16disable_type_inference\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x14disableTypeInference\x1ak\n" +
+	"\vJsonOptions\x12 \n" +
+	"\bencoding\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\bencoding\x12:\n" +
+	"\x16disable_type_inference\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x14disableTypeInferenceB\t\n" +
 	"\atrigger\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -3083,19 +3083,19 @@ const file_google_cloud_dataplex_v1_resources_proto_rawDesc = "" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03RAW\x10\x01\x12\v\n" +
 	"\aCURATED\x10\x02:d\xeaAa\n" +
-	"\x1cdataplex.googleapis.com/Zone\x12Aprojects/{project}/locations/{location}/lakes/{lake}/zones/{zone}\"\xab\x14\n" +
+	"\x1cdataplex.googleapis.com/Zone\x12Aprojects/{project}/locations/{location}/lakes/{lake}/zones/{zone}\"\xaf\x14\n" +
 	"\x06Action\x12E\n" +
 	"\bcategory\x18\x01 \x01(\x0e2).google.cloud.dataplex.v1.Action.CategoryR\bcategory\x12\x14\n" +
 	"\x05issue\x18\x02 \x01(\tR\x05issue\x12;\n" +
 	"\vdetect_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"detectTime\x12:\n" +
-	"\x04name\x18\x05 \x01(\tB&\xe0A\x03\xfaA \n" +
-	"\x1edataplex.googleapis.com/ActionR\x04name\x128\n" +
-	"\x04lake\x18\x06 \x01(\tB$\xe0A\x03\xfaA\x1e\n" +
-	"\x1cdataplex.googleapis.com/LakeR\x04lake\x128\n" +
-	"\x04zone\x18\a \x01(\tB$\xe0A\x03\xfaA\x1e\n" +
-	"\x1cdataplex.googleapis.com/ZoneR\x04zone\x12;\n" +
-	"\x05asset\x18\b \x01(\tB%\xe0A\x03\xfaA\x1f\n" +
+	"detectTime\x12;\n" +
+	"\x04name\x18\x05 \x01(\tB'\xe2A\x01\x03\xfaA \n" +
+	"\x1edataplex.googleapis.com/ActionR\x04name\x129\n" +
+	"\x04lake\x18\x06 \x01(\tB%\xe2A\x01\x03\xfaA\x1e\n" +
+	"\x1cdataplex.googleapis.com/LakeR\x04lake\x129\n" +
+	"\x04zone\x18\a \x01(\tB%\xe2A\x01\x03\xfaA\x1e\n" +
+	"\x1cdataplex.googleapis.com/ZoneR\x04zone\x12<\n" +
+	"\x05asset\x18\b \x01(\tB&\xe2A\x01\x03\xfaA\x1f\n" +
 	"\x1ddataplex.googleapis.com/AssetR\x05asset\x12%\n" +
 	"\x0edata_locations\x18\t \x03(\tR\rdataLocations\x12d\n" +
 	"\x13invalid_data_format\x18\n" +
@@ -3141,24 +3141,24 @@ const file_google_cloud_dataplex_v1_resources_proto_rawDesc = "" +
 	"\x0fSECURITY_POLICY\x10\x02\x12\x12\n" +
 	"\x0eDATA_DISCOVERY\x10\x03:\xa2\x02\xeaA\x9e\x02\n" +
 	"\x1edataplex.googleapis.com/Action\x12Eprojects/{project}/locations/{location}/lakes/{lake}/actions/{action}\x12Rprojects/{project}/locations/{location}/lakes/{lake}/zones/{zone}/actions/{action}\x12aprojects/{project}/locations/{location}/lakes/{lake}/zones/{zone}/assets/{asset}/actions/{action}B\t\n" +
-	"\adetails\"\xc3\x19\n" +
-	"\x05Asset\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x03\xfaA\x1f\n" +
-	"\x1ddataplex.googleapis.com/AssetR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12\x15\n" +
-	"\x03uid\x18\x03 \x01(\tB\x03\xe0A\x03R\x03uid\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12H\n" +
-	"\x06labels\x18\x06 \x03(\v2+.google.cloud.dataplex.v1.Asset.LabelsEntryB\x03\xe0A\x01R\x06labels\x12%\n" +
-	"\vdescription\x18\a \x01(\tB\x03\xe0A\x01R\vdescription\x12:\n" +
-	"\x05state\x18\b \x01(\x0e2\x1f.google.cloud.dataplex.v1.StateB\x03\xe0A\x03R\x05state\x12V\n" +
-	"\rresource_spec\x18d \x01(\v2,.google.cloud.dataplex.v1.Asset.ResourceSpecB\x03\xe0A\x02R\fresourceSpec\x12\\\n" +
-	"\x0fresource_status\x18e \x01(\v2..google.cloud.dataplex.v1.Asset.ResourceStatusB\x03\xe0A\x03R\x0eresourceStatus\x12\\\n" +
-	"\x0fsecurity_status\x18g \x01(\v2..google.cloud.dataplex.v1.Asset.SecurityStatusB\x03\xe0A\x03R\x0esecurityStatus\x12Y\n" +
-	"\x0ediscovery_spec\x18j \x01(\v2-.google.cloud.dataplex.v1.Asset.DiscoverySpecB\x03\xe0A\x01R\rdiscoverySpec\x12_\n" +
-	"\x10discovery_status\x18k \x01(\v2/.google.cloud.dataplex.v1.Asset.DiscoveryStatusB\x03\xe0A\x03R\x0fdiscoveryStatus\x1a\xf7\x01\n" +
+	"\adetails\"\xde\x19\n" +
+	"\x05Asset\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x03\xfaA\x1f\n" +
+	"\x1ddataplex.googleapis.com/AssetR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12\x16\n" +
+	"\x03uid\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12I\n" +
+	"\x06labels\x18\x06 \x03(\v2+.google.cloud.dataplex.v1.Asset.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12&\n" +
+	"\vdescription\x18\a \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12;\n" +
+	"\x05state\x18\b \x01(\x0e2\x1f.google.cloud.dataplex.v1.StateB\x04\xe2A\x01\x03R\x05state\x12W\n" +
+	"\rresource_spec\x18d \x01(\v2,.google.cloud.dataplex.v1.Asset.ResourceSpecB\x04\xe2A\x01\x02R\fresourceSpec\x12]\n" +
+	"\x0fresource_status\x18e \x01(\v2..google.cloud.dataplex.v1.Asset.ResourceStatusB\x04\xe2A\x01\x03R\x0eresourceStatus\x12]\n" +
+	"\x0fsecurity_status\x18g \x01(\v2..google.cloud.dataplex.v1.Asset.SecurityStatusB\x04\xe2A\x01\x03R\x0esecurityStatus\x12Z\n" +
+	"\x0ediscovery_spec\x18j \x01(\v2-.google.cloud.dataplex.v1.Asset.DiscoverySpecB\x04\xe2A\x01\x01R\rdiscoverySpec\x12`\n" +
+	"\x10discovery_status\x18k \x01(\v2/.google.cloud.dataplex.v1.Asset.DiscoveryStatusB\x04\xe2A\x01\x03R\x0fdiscoveryStatus\x1a\xf7\x01\n" +
 	"\x0eSecurityStatus\x12J\n" +
 	"\x05state\x18\x01 \x01(\x0e24.google.cloud.dataplex.v1.Asset.SecurityStatus.StateR\x05state\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\x12;\n" +
@@ -3168,31 +3168,31 @@ const file_google_cloud_dataplex_v1_resources_proto_rawDesc = "" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05READY\x10\x01\x12\f\n" +
 	"\bAPPLYING\x10\x02\x12\t\n" +
-	"\x05ERROR\x10\x03\x1a\x9e\x05\n" +
-	"\rDiscoverySpec\x12\x1d\n" +
-	"\aenabled\x18\x01 \x01(\bB\x03\xe0A\x01R\aenabled\x12.\n" +
-	"\x10include_patterns\x18\x02 \x03(\tB\x03\xe0A\x01R\x0fincludePatterns\x12.\n" +
-	"\x10exclude_patterns\x18\x03 \x03(\tB\x03\xe0A\x01R\x0fexcludePatterns\x12^\n" +
-	"\vcsv_options\x18\x04 \x01(\v28.google.cloud.dataplex.v1.Asset.DiscoverySpec.CsvOptionsB\x03\xe0A\x01R\n" +
-	"csvOptions\x12a\n" +
-	"\fjson_options\x18\x05 \x01(\v29.google.cloud.dataplex.v1.Asset.DiscoverySpec.JsonOptionsB\x03\xe0A\x01R\vjsonOptions\x12!\n" +
+	"\x05ERROR\x10\x03\x1a\xaa\x05\n" +
+	"\rDiscoverySpec\x12\x1e\n" +
+	"\aenabled\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\aenabled\x12/\n" +
+	"\x10include_patterns\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x0fincludePatterns\x12/\n" +
+	"\x10exclude_patterns\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x0fexcludePatterns\x12_\n" +
+	"\vcsv_options\x18\x04 \x01(\v28.google.cloud.dataplex.v1.Asset.DiscoverySpec.CsvOptionsB\x04\xe2A\x01\x01R\n" +
+	"csvOptions\x12b\n" +
+	"\fjson_options\x18\x05 \x01(\v29.google.cloud.dataplex.v1.Asset.DiscoverySpec.JsonOptionsB\x04\xe2A\x01\x01R\vjsonOptions\x12\"\n" +
 	"\bschedule\x18\n" +
-	" \x01(\tB\x03\xe0A\x01H\x00R\bschedule\x1a\xb1\x01\n" +
+	" \x01(\tB\x04\xe2A\x01\x01H\x00R\bschedule\x1a\xb5\x01\n" +
 	"\n" +
-	"CsvOptions\x12$\n" +
-	"\vheader_rows\x18\x01 \x01(\x05B\x03\xe0A\x01R\n" +
-	"headerRows\x12!\n" +
-	"\tdelimiter\x18\x02 \x01(\tB\x03\xe0A\x01R\tdelimiter\x12\x1f\n" +
-	"\bencoding\x18\x03 \x01(\tB\x03\xe0A\x01R\bencoding\x129\n" +
-	"\x16disable_type_inference\x18\x04 \x01(\bB\x03\xe0A\x01R\x14disableTypeInference\x1ai\n" +
-	"\vJsonOptions\x12\x1f\n" +
-	"\bencoding\x18\x01 \x01(\tB\x03\xe0A\x01R\bencoding\x129\n" +
-	"\x16disable_type_inference\x18\x02 \x01(\bB\x03\xe0A\x01R\x14disableTypeInferenceB\t\n" +
-	"\atrigger\x1a\xea\x02\n" +
-	"\fResourceSpec\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12M\n" +
-	"\x04type\x18\x02 \x01(\x0e21.google.cloud.dataplex.v1.Asset.ResourceSpec.TypeB\x06\xe0A\x02\xe0A\x05R\x04type\x12f\n" +
-	"\x10read_access_mode\x18\x05 \x01(\x0e27.google.cloud.dataplex.v1.Asset.ResourceSpec.AccessModeB\x03\xe0A\x01R\x0ereadAccessMode\"F\n" +
+	"CsvOptions\x12%\n" +
+	"\vheader_rows\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\n" +
+	"headerRows\x12\"\n" +
+	"\tdelimiter\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\tdelimiter\x12 \n" +
+	"\bencoding\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\bencoding\x12:\n" +
+	"\x16disable_type_inference\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x14disableTypeInference\x1ak\n" +
+	"\vJsonOptions\x12 \n" +
+	"\bencoding\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\bencoding\x12:\n" +
+	"\x16disable_type_inference\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x14disableTypeInferenceB\t\n" +
+	"\atrigger\x1a\xeb\x02\n" +
+	"\fResourceSpec\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12L\n" +
+	"\x04type\x18\x02 \x01(\x0e21.google.cloud.dataplex.v1.Asset.ResourceSpec.TypeB\x05\xe2A\x02\x02\x05R\x04type\x12g\n" +
+	"\x10read_access_mode\x18\x05 \x01(\x0e27.google.cloud.dataplex.v1.Asset.ResourceSpec.AccessModeB\x04\xe2A\x01\x01R\x0ereadAccessMode\"F\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eSTORAGE_BUCKET\x10\x01\x12\x14\n" +
@@ -3202,13 +3202,13 @@ const file_google_cloud_dataplex_v1_resources_proto_rawDesc = "" +
 	"\x17ACCESS_MODE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06DIRECT\x10\x01\x12\v\n" +
-	"\aMANAGED\x10\x02\x1a\xa6\x02\n" +
+	"\aMANAGED\x10\x02\x1a\xa7\x02\n" +
 	"\x0eResourceStatus\x12J\n" +
 	"\x05state\x18\x01 \x01(\x0e24.google.cloud.dataplex.v1.Asset.ResourceStatus.StateR\x05state\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\x12;\n" +
 	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"updateTime\x12;\n" +
-	"\x17managed_access_identity\x18\x04 \x01(\tB\x03\xe0A\x03R\x15managedAccessIdentity\"4\n" +
+	"updateTime\x12<\n" +
+	"\x17managed_access_identity\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x15managedAccessIdentity\"4\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05READY\x10\x01\x12\t\n" +

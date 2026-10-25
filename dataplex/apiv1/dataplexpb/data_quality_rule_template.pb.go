@@ -235,18 +235,18 @@ var File_google_cloud_dataplex_v1_data_quality_rule_template_proto protoreflect.
 
 const file_google_cloud_dataplex_v1_data_quality_rule_template_proto_rawDesc = "" +
 	"\n" +
-	"9google/cloud/dataplex/v1/data_quality_rule_template.proto\x12\x18google.cloud.dataplex.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xf1\x04\n" +
-	"\x17DataQualityRuleTemplate\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12!\n" +
-	"\tdimension\x18\x02 \x01(\tB\x03\xe0A\x03R\tdimension\x12a\n" +
-	"\x0esql_collection\x18\x03 \x03(\v25.google.cloud.dataplex.v1.DataQualityRuleTemplate.SqlB\x03\xe0A\x03R\rsqlCollection\x12v\n" +
-	"\x10input_parameters\x18\x04 \x03(\v2F.google.cloud.dataplex.v1.DataQualityRuleTemplate.InputParametersEntryB\x03\xe0A\x03R\x0finputParameters\x12'\n" +
-	"\fcapabilities\x18\x05 \x03(\tB\x03\xe0A\x03R\fcapabilities\x1a \n" +
-	"\x03Sql\x12\x19\n" +
-	"\x05query\x18\x01 \x01(\tB\x03\xe0A\x03R\x05query\x1ag\n" +
-	"\x14ParameterDescription\x12%\n" +
-	"\vdescription\x18\x01 \x01(\tB\x03\xe0A\x03R\vdescription\x12(\n" +
-	"\rdefault_value\x18\x02 \x01(\tB\x03\xe0A\x03R\fdefaultValue\x1a\x8a\x01\n" +
+	"9google/cloud/dataplex/v1/data_quality_rule_template.proto\x12\x18google.cloud.dataplex.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xf9\x04\n" +
+	"\x17DataQualityRuleTemplate\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\"\n" +
+	"\tdimension\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\tdimension\x12b\n" +
+	"\x0esql_collection\x18\x03 \x03(\v25.google.cloud.dataplex.v1.DataQualityRuleTemplate.SqlB\x04\xe2A\x01\x03R\rsqlCollection\x12w\n" +
+	"\x10input_parameters\x18\x04 \x03(\v2F.google.cloud.dataplex.v1.DataQualityRuleTemplate.InputParametersEntryB\x04\xe2A\x01\x03R\x0finputParameters\x12(\n" +
+	"\fcapabilities\x18\x05 \x03(\tB\x04\xe2A\x01\x03R\fcapabilities\x1a!\n" +
+	"\x03Sql\x12\x1a\n" +
+	"\x05query\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x05query\x1ai\n" +
+	"\x14ParameterDescription\x12&\n" +
+	"\vdescription\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\vdescription\x12)\n" +
+	"\rdefault_value\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\fdefaultValue\x1a\x8a\x01\n" +
 	"\x14InputParametersEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\\\n" +
 	"\x05value\x18\x02 \x01(\v2F.google.cloud.dataplex.v1.DataQualityRuleTemplate.ParameterDescriptionR\x05value:\x028\x01Bx\n" +

@@ -1280,16 +1280,16 @@ const file_google_cloud_dialogflow_v2beta1_answer_record_proto_rawDesc = "" +
 	"\x0fanswer_feedback\x18\x03 \x01(\v2/.google.cloud.dialogflow.v2beta1.AnswerFeedbackR\x0eanswerFeedback\x12m\n" +
 	"\x16agent_assistant_record\x18\x04 \x01(\v25.google.cloud.dialogflow.v2beta1.AgentAssistantRecordH\x00R\x14agentAssistantRecord:\xa5\x01\xeaA\xa1\x01\n" +
 	"&dialogflow.googleapis.com/AnswerRecord\x120projects/{project}/answerRecords/{answer_record}\x12Eprojects/{project}/locations/{location}/answerRecords/{answer_record}B\b\n" +
-	"\x06record\"\xf0\x05\n" +
-	"\x14AgentAssistantRecord\x12q\n" +
-	"\x19article_suggestion_answer\x18\x05 \x01(\v2..google.cloud.dialogflow.v2beta1.ArticleAnswerB\x03\xe0A\x03H\x00R\x17articleSuggestionAnswer\x12P\n" +
+	"\x06record\"\xf6\x05\n" +
+	"\x14AgentAssistantRecord\x12r\n" +
+	"\x19article_suggestion_answer\x18\x05 \x01(\v2..google.cloud.dialogflow.v2beta1.ArticleAnswerB\x04\xe2A\x01\x03H\x00R\x17articleSuggestionAnswer\x12Q\n" +
 	"\n" +
-	"faq_answer\x18\x06 \x01(\v2*.google.cloud.dialogflow.v2beta1.FaqAnswerB\x03\xe0A\x03H\x00R\tfaqAnswer\x12x\n" +
-	"\x18dialogflow_assist_answer\x18\a \x01(\v27.google.cloud.dialogflow.v2beta1.DialogflowAssistAnswerB\x03\xe0A\x03H\x00R\x16dialogflowAssistAnswer\x12n\n" +
-	"\x14generator_suggestion\x18\b \x01(\v24.google.cloud.dialogflow.v2beta1.GeneratorSuggestionB\x03\xe0A\x03H\x00R\x13generatorSuggestion\x12n\n" +
-	"\x14companion_suggestion\x18\t \x01(\v24.google.cloud.dialogflow.v2beta1.CompanionSuggestionB\x03\xe0A\x03H\x00R\x13companionSuggestion\x12\xae\x01\n" +
+	"faq_answer\x18\x06 \x01(\v2*.google.cloud.dialogflow.v2beta1.FaqAnswerB\x04\xe2A\x01\x03H\x00R\tfaqAnswer\x12y\n" +
+	"\x18dialogflow_assist_answer\x18\a \x01(\v27.google.cloud.dialogflow.v2beta1.DialogflowAssistAnswerB\x04\xe2A\x01\x03H\x00R\x16dialogflowAssistAnswer\x12o\n" +
+	"\x14generator_suggestion\x18\b \x01(\v24.google.cloud.dialogflow.v2beta1.GeneratorSuggestionB\x04\xe2A\x01\x03H\x00R\x13generatorSuggestion\x12o\n" +
+	"\x14companion_suggestion\x18\t \x01(\v24.google.cloud.dialogflow.v2beta1.CompanionSuggestionB\x04\xe2A\x01\x03H\x00R\x13companionSuggestion\x12\xaf\x01\n" +
 	"\x1dreactive_companion_suggestion\x18\n" +
-	" \x01(\v2c.google.cloud.dialogflow.v2beta1.StreamingReactiveCompanionSuggestionsResponse.ReactiveModeResponseB\x03\xe0A\x03H\x00R\x1breactiveCompanionSuggestionB\b\n" +
+	" \x01(\v2c.google.cloud.dialogflow.v2beta1.StreamingReactiveCompanionSuggestionsResponse.ReactiveModeResponseB\x04\xe2A\x01\x03H\x00R\x1breactiveCompanionSuggestionB\b\n" +
 	"\x06answer\"\xb9\x04\n" +
 	"\x0eAnswerFeedback\x12m\n" +
 	"\x11correctness_level\x18\x01 \x01(\x0e2@.google.cloud.dialogflow.v2beta1.AnswerFeedback.CorrectnessLevelR\x10correctnessLevel\x12\x80\x01\n" +
@@ -1304,20 +1304,20 @@ const file_google_cloud_dialogflow_v2beta1_answer_record_proto_rawDesc = "" +
 	"\vNOT_CORRECT\x10\x01\x12\x15\n" +
 	"\x11PARTIALLY_CORRECT\x10\x02\x12\x11\n" +
 	"\rFULLY_CORRECT\x10\x03B\x11\n" +
-	"\x0fdetail_feedback\"\xad\x0e\n" +
+	"\x0fdetail_feedback\"\xb1\x0e\n" +
 	"\x16AgentAssistantFeedback\x12r\n" +
 	"\x10answer_relevance\x18\x01 \x01(\x0e2G.google.cloud.dialogflow.v2beta1.AgentAssistantFeedback.AnswerRelevanceR\x0fanswerRelevance\x12~\n" +
 	"\x14document_correctness\x18\x02 \x01(\x0e2K.google.cloud.dialogflow.v2beta1.AgentAssistantFeedback.DocumentCorrectnessR\x13documentCorrectness\x12{\n" +
 	"\x13document_efficiency\x18\x03 \x01(\x0e2J.google.cloud.dialogflow.v2beta1.AgentAssistantFeedback.DocumentEfficiencyR\x12documentEfficiency\x12\x84\x01\n" +
-	"\x16summarization_feedback\x18\x04 \x01(\v2M.google.cloud.dialogflow.v2beta1.AgentAssistantFeedback.SummarizationFeedbackR\x15summarizationFeedback\x12\x90\x01\n" +
-	"\x19knowledge_search_feedback\x18\x05 \x01(\v2O.google.cloud.dialogflow.v2beta1.AgentAssistantFeedback.KnowledgeSearchFeedbackB\x03\xe0A\x01R\x17knowledgeSearchFeedback\x12\x90\x01\n" +
-	"\x19knowledge_assist_feedback\x18\x06 \x01(\v2O.google.cloud.dialogflow.v2beta1.AgentAssistantFeedback.KnowledgeAssistFeedbackB\x03\xe0A\x01R\x17knowledgeAssistFeedback\x12}\n" +
-	"\x12companion_feedback\x18\b \x01(\v2I.google.cloud.dialogflow.v2beta1.AgentAssistantFeedback.CompanionFeedbackB\x03\xe0A\x01R\x11companionFeedback\x1a\x93\x03\n" +
+	"\x16summarization_feedback\x18\x04 \x01(\v2M.google.cloud.dialogflow.v2beta1.AgentAssistantFeedback.SummarizationFeedbackR\x15summarizationFeedback\x12\x91\x01\n" +
+	"\x19knowledge_search_feedback\x18\x05 \x01(\v2O.google.cloud.dialogflow.v2beta1.AgentAssistantFeedback.KnowledgeSearchFeedbackB\x04\xe2A\x01\x01R\x17knowledgeSearchFeedback\x12\x91\x01\n" +
+	"\x19knowledge_assist_feedback\x18\x06 \x01(\v2O.google.cloud.dialogflow.v2beta1.AgentAssistantFeedback.KnowledgeAssistFeedbackB\x04\xe2A\x01\x01R\x17knowledgeAssistFeedback\x12~\n" +
+	"\x12companion_feedback\x18\b \x01(\v2I.google.cloud.dialogflow.v2beta1.AgentAssistantFeedback.CompanionFeedbackB\x04\xe2A\x01\x01R\x11companionFeedback\x1a\x94\x03\n" +
 	"\x15SummarizationFeedback\x12C\n" +
 	"\x0fstart_timestamp\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\x0estartTimestamp\x12E\n" +
 	"\x10submit_timestamp\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x0fsubmitTimestamp\x12!\n" +
-	"\fsummary_text\x18\x03 \x01(\tR\vsummaryText\x12\x89\x01\n" +
-	"\rtext_sections\x18\x04 \x03(\v2_.google.cloud.dialogflow.v2beta1.AgentAssistantFeedback.SummarizationFeedback.TextSectionsEntryB\x03\xe0A\x01R\ftextSections\x1a?\n" +
+	"\fsummary_text\x18\x03 \x01(\tR\vsummaryText\x12\x8a\x01\n" +
+	"\rtext_sections\x18\x04 \x03(\v2_.google.cloud.dialogflow.v2beta1.AgentAssistantFeedback.SummarizationFeedback.TextSectionsEntryB\x04\xe2A\x01\x01R\ftextSections\x1a?\n" +
 	"\x11TextSectionsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1aa\n" +
@@ -1342,18 +1342,18 @@ const file_google_cloud_dialogflow_v2beta1_answer_record_proto_rawDesc = "" +
 	"\vINEFFICIENT\x10\x01\x12\r\n" +
 	"\tEFFICIENT\x10\x02\",\n" +
 	"\x16GetAnswerRecordRequest\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\"\xb8\x01\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\"\xb9\x01\n" +
 	"\x18ListAnswerRecordsRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xfaA(\x12&dialogflow.googleapis.com/AnswerRecordR\x06parent\x12\x1b\n" +
-	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1b\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xfaA(\x12&dialogflow.googleapis.com/AnswerRecordR\x06parent\x12\x1c\n" +
+	"\x06filter\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1b\n" +
 	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x04 \x01(\tR\tpageToken\"\x99\x01\n" +
 	"\x19ListAnswerRecordsResponse\x12T\n" +
 	"\x0eanswer_records\x18\x01 \x03(\v2-.google.cloud.dialogflow.v2beta1.AnswerRecordR\ranswerRecords\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb1\x01\n" +
-	"\x19UpdateAnswerRecordRequest\x12W\n" +
-	"\ranswer_record\x18\x01 \x01(\v2-.google.cloud.dialogflow.v2beta1.AnswerRecordB\x03\xe0A\x02R\fanswerRecord\x12;\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb2\x01\n" +
+	"\x19UpdateAnswerRecordRequest\x12X\n" +
+	"\ranswer_record\x18\x01 \x01(\v2-.google.cloud.dialogflow.v2beta1.AnswerRecordB\x04\xe2A\x01\x02R\fanswerRecord\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"updateMask2\xc2\a\n" +
 	"\rAnswerRecords\x12\xea\x01\n" +

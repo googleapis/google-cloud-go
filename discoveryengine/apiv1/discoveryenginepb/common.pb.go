@@ -957,12 +957,12 @@ const file_google_cloud_discoveryengine_v1_common_proto_rawDesc = "" +
 	"\x03max\"?\n" +
 	"\x0fCustomAttribute\x12\x12\n" +
 	"\x04text\x18\x01 \x03(\tR\x04text\x12\x18\n" +
-	"\anumbers\x18\x02 \x03(\x01R\anumbers\"d\n" +
+	"\anumbers\x18\x02 \x03(\x01R\anumbers\"e\n" +
 	"\bUserInfo\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1d\n" +
 	"\n" +
-	"user_agent\x18\x02 \x01(\tR\tuserAgent\x12 \n" +
-	"\ttime_zone\x18\x03 \x01(\tB\x03\xe0A\x01R\btimeZone\"$\n" +
+	"user_agent\x18\x02 \x01(\tR\tuserAgent\x12!\n" +
+	"\ttime_zone\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\btimeZone\"$\n" +
 	"\n" +
 	"DoubleList\x12\x16\n" +
 	"\x06values\x18\x01 \x03(\x01R\x06values\"\x80\x01\n" +
@@ -973,15 +973,15 @@ const file_google_cloud_discoveryengine_v1_common_proto_rawDesc = "" +
 	"\tprincipal\"\xaf\x01\n" +
 	"\x14HealthcareFhirConfig\x12<\n" +
 	"\x1aenable_configurable_schema\x18\x01 \x01(\bR\x18enableConfigurableSchema\x12Y\n" +
-	"*enable_static_indexing_for_batch_ingestion\x18\x02 \x01(\bR%enableStaticIndexingForBatchIngestion\"\xfc\x01\n" +
-	"\x13SearchLinkPromotion\x12\x19\n" +
-	"\x05title\x18\x01 \x01(\tB\x03\xe0A\x02R\x05title\x12\x15\n" +
-	"\x03uri\x18\x02 \x01(\tB\x03\xe0A\x01R\x03uri\x12K\n" +
-	"\bdocument\x18\x06 \x01(\tB/\xe0A\x01\xfaA)\n" +
-	"'discoveryengine.googleapis.com/DocumentR\bdocument\x12 \n" +
-	"\timage_uri\x18\x03 \x01(\tB\x03\xe0A\x01R\bimageUri\x12%\n" +
-	"\vdescription\x18\x04 \x01(\tB\x03\xe0A\x01R\vdescription\x12\x1d\n" +
-	"\aenabled\x18\x05 \x01(\bB\x03\xe0A\x01R\aenabled*b\n" +
+	"*enable_static_indexing_for_batch_ingestion\x18\x02 \x01(\bR%enableStaticIndexingForBatchIngestion\"\x82\x02\n" +
+	"\x13SearchLinkPromotion\x12\x1a\n" +
+	"\x05title\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05title\x12\x16\n" +
+	"\x03uri\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x03uri\x12L\n" +
+	"\bdocument\x18\x06 \x01(\tB0\xe2A\x01\x01\xfaA)\n" +
+	"'discoveryengine.googleapis.com/DocumentR\bdocument\x12!\n" +
+	"\timage_uri\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\bimageUri\x12&\n" +
+	"\vdescription\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\x1e\n" +
+	"\aenabled\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\aenabled*b\n" +
 	"\x10IndustryVertical\x12!\n" +
 	"\x1dINDUSTRY_VERTICAL_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aGENERIC\x10\x01\x12\t\n" +

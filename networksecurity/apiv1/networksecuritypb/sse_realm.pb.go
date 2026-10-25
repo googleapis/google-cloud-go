@@ -1192,22 +1192,22 @@ var File_google_cloud_networksecurity_v1_sse_realm_proto protoreflect.FileDescri
 
 const file_google_cloud_networksecurity_v1_sse_realm_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/networksecurity/v1/sse_realm.proto\x12\x1fgoogle.cloud.networksecurity.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/networksecurity/v1/common.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x82\b\n" +
-	"\bSACRealm\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12R\n" +
-	"\x06labels\x18\x04 \x03(\v25.google.cloud.networksecurity.v1.SACRealm.LabelsEntryB\x03\xe0A\x01R\x06labels\x12i\n" +
-	"\x10security_service\x18\x05 \x01(\x0e29.google.cloud.networksecurity.v1.SACRealm.SecurityServiceB\x03\xe0A\x05R\x0fsecurityService\x12Z\n" +
-	"\vpairing_key\x18\x06 \x01(\v24.google.cloud.networksecurity.v1.SACRealm.PairingKeyB\x03\xe0A\x03R\n" +
-	"pairingKey\x12J\n" +
-	"\x05state\x18\a \x01(\x0e2/.google.cloud.networksecurity.v1.SACRealm.StateB\x03\xe0A\x03R\x05state\x1ae\n" +
+	"/google/cloud/networksecurity/v1/sse_realm.proto\x12\x1fgoogle.cloud.networksecurity.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/networksecurity/v1/common.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8b\b\n" +
+	"\bSACRealm\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12S\n" +
+	"\x06labels\x18\x04 \x03(\v25.google.cloud.networksecurity.v1.SACRealm.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12j\n" +
+	"\x10security_service\x18\x05 \x01(\x0e29.google.cloud.networksecurity.v1.SACRealm.SecurityServiceB\x04\xe2A\x01\x05R\x0fsecurityService\x12[\n" +
+	"\vpairing_key\x18\x06 \x01(\v24.google.cloud.networksecurity.v1.SACRealm.PairingKeyB\x04\xe2A\x01\x03R\n" +
+	"pairingKey\x12K\n" +
+	"\x05state\x18\a \x01(\x0e2/.google.cloud.networksecurity.v1.SACRealm.StateB\x04\xe2A\x01\x03R\x05state\x1ag\n" +
 	"\n" +
-	"PairingKey\x12\x15\n" +
-	"\x03key\x18\x01 \x01(\tB\x03\xe0A\x03R\x03key\x12@\n" +
-	"\vexpire_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"PairingKey\x12\x16\n" +
+	"\x03key\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x03key\x12A\n" +
+	"\vexpire_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"expireTime\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -1221,46 +1221,46 @@ const file_google_cloud_networksecurity_v1_sse_realm_proto_rawDesc = "" +
 	"\x10PARTNER_ATTACHED\x10\x01\x12\x14\n" +
 	"\x10PARTNER_DETACHED\x10\x02\x12\x0f\n" +
 	"\vKEY_EXPIRED\x10\x03:\x80\x01\xeaA}\n" +
-	"'networksecurity.googleapis.com/SACRealm\x12=projects/{project}/locations/{location}/sacRealms/{sac_realm}*\tsacRealms2\bsacRealm\"\xe2\x01\n" +
-	"\x14ListSACRealmsRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\x12'networksecurity.googleapis.com/SACRealmR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"'networksecurity.googleapis.com/SACRealm\x12=projects/{project}/locations/{location}/sacRealms/{sac_realm}*\tsacRealms2\bsacRealm\"\xe7\x01\n" +
+	"\x14ListSACRealmsRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\x12'networksecurity.googleapis.com/SACRealmR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xab\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xab\x01\n" +
 	"\x15ListSACRealmsResponse\x12H\n" +
 	"\n" +
 	"sac_realms\x18\x01 \x03(\v2).google.cloud.networksecurity.v1.SACRealmR\tsacRealms\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"Y\n" +
-	"\x12GetSACRealmRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'networksecurity.googleapis.com/SACRealmR\x04name\"\x80\x02\n" +
-	"\x15CreateSACRealmRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\x12'networksecurity.googleapis.com/SACRealmR\x06parent\x12%\n" +
-	"\fsac_realm_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"sacRealmId\x12K\n" +
-	"\tsac_realm\x18\x03 \x01(\v2).google.cloud.networksecurity.v1.SACRealmB\x03\xe0A\x02R\bsacRealm\x12*\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"Z\n" +
+	"\x12GetSACRealmRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'networksecurity.googleapis.com/SACRealmR\x04name\"\x84\x02\n" +
+	"\x15CreateSACRealmRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\x12'networksecurity.googleapis.com/SACRealmR\x06parent\x12&\n" +
+	"\fsac_realm_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"sacRealmId\x12L\n" +
+	"\tsac_realm\x18\x03 \x01(\v2).google.cloud.networksecurity.v1.SACRealmB\x04\xe2A\x01\x02R\bsacRealm\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x88\x01\n" +
-	"\x15DeleteSACRealmRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'networksecurity.googleapis.com/SACRealmR\x04name\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x8a\x01\n" +
+	"\x15DeleteSACRealmRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'networksecurity.googleapis.com/SACRealmR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xe2\x05\n" +
-	"\rSACAttachment\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12W\n" +
-	"\x06labels\x18\x04 \x03(\v2:.google.cloud.networksecurity.v1.SACAttachment.LabelsEntryB\x03\xe0A\x01R\x06labels\x12 \n" +
-	"\tsac_realm\x18\x05 \x01(\tB\x03\xe0A\x02R\bsacRealm\x12$\n" +
-	"\vncc_gateway\x18\x06 \x01(\tB\x03\xe0A\x02R\n" +
-	"nccGateway\x12O\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xe9\x05\n" +
+	"\rSACAttachment\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12X\n" +
+	"\x06labels\x18\x04 \x03(\v2:.google.cloud.networksecurity.v1.SACAttachment.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12!\n" +
+	"\tsac_realm\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\bsacRealm\x12%\n" +
+	"\vncc_gateway\x18\x06 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"nccGateway\x12P\n" +
 	"\x05state\x18\n" +
-	" \x01(\x0e24.google.cloud.networksecurity.v1.SACAttachment.StateB\x03\xe0A\x03R\x05state\x1a9\n" +
+	" \x01(\x0e24.google.cloud.networksecurity.v1.SACAttachment.StateB\x04\xe2A\x01\x03R\x05state\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"j\n" +
@@ -1269,32 +1269,32 @@ const file_google_cloud_networksecurity_v1_sse_realm_proto_rawDesc = "" +
 	"\x1aPENDING_PARTNER_ATTACHMENT\x10\x01\x12\x14\n" +
 	"\x10PARTNER_ATTACHED\x10\x02\x12\x14\n" +
 	"\x10PARTNER_DETACHED\x10\x03:\x9a\x01\xeaA\x96\x01\n" +
-	",networksecurity.googleapis.com/SACAttachment\x12Gprojects/{project}/locations/{location}/sacAttachments/{sac_attachment}*\x0esacAttachments2\rsacAttachment\"\xec\x01\n" +
-	"\x19ListSACAttachmentsRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,networksecurity.googleapis.com/SACAttachmentR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	",networksecurity.googleapis.com/SACAttachment\x12Gprojects/{project}/locations/{location}/sacAttachments/{sac_attachment}*\x0esacAttachments2\rsacAttachment\"\xf1\x01\n" +
+	"\x19ListSACAttachmentsRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,networksecurity.googleapis.com/SACAttachmentR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xbf\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xbf\x01\n" +
 	"\x1aListSACAttachmentsResponse\x12W\n" +
 	"\x0fsac_attachments\x18\x01 \x03(\v2..google.cloud.networksecurity.v1.SACAttachmentR\x0esacAttachments\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"c\n" +
-	"\x17GetSACAttachmentRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",networksecurity.googleapis.com/SACAttachmentR\x04name\"\xa3\x02\n" +
-	"\x1aCreateSACAttachmentRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,networksecurity.googleapis.com/SACAttachmentR\x06parent\x12/\n" +
-	"\x11sac_attachment_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x0fsacAttachmentId\x12Z\n" +
-	"\x0esac_attachment\x18\x03 \x01(\v2..google.cloud.networksecurity.v1.SACAttachmentB\x03\xe0A\x02R\rsacAttachment\x12*\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"d\n" +
+	"\x17GetSACAttachmentRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",networksecurity.googleapis.com/SACAttachmentR\x04name\"\xa7\x02\n" +
+	"\x1aCreateSACAttachmentRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,networksecurity.googleapis.com/SACAttachmentR\x06parent\x120\n" +
+	"\x11sac_attachment_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0fsacAttachmentId\x12[\n" +
+	"\x0esac_attachment\x18\x03 \x01(\v2..google.cloud.networksecurity.v1.SACAttachmentB\x04\xe2A\x01\x02R\rsacAttachment\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x92\x01\n" +
-	"\x1aDeleteSACAttachmentRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",networksecurity.googleapis.com/SACAttachmentR\x04name\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x94\x01\n" +
+	"\x1aDeleteSACAttachmentRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",networksecurity.googleapis.com/SACAttachmentR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId2\xa3\x0f\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId2\xa3\x0f\n" +
 	"\x0fSSERealmService\x12\xbe\x01\n" +
 	"\rListSACRealms\x125.google.cloud.networksecurity.v1.ListSACRealmsRequest\x1a6.google.cloud.networksecurity.v1.ListSACRealmsResponse\">\xdaA\x06parent\x82\xd3\xe4\x93\x02/\x12-/v1/{parent=projects/*/locations/*}/sacRealms\x12\xab\x01\n" +
 	"\vGetSACRealm\x123.google.cloud.networksecurity.v1.GetSACRealmRequest\x1a).google.cloud.networksecurity.v1.SACRealm\"<\xdaA\x04name\x82\xd3\xe4\x93\x02/\x12-/v1/{name=projects/*/locations/*/sacRealms/*}\x12\x8a\x02\n" +

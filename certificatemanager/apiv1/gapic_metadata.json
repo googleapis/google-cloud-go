@@ -165,6 +165,11 @@
                 "UpdateCertificate"
               ]
             },
+            "UpdateCertificateIssuanceConfig": {
+              "methods": [
+                "UpdateCertificateIssuanceConfig"
+              ]
+            },
             "UpdateCertificateMap": {
               "methods": [
                 "UpdateCertificateMap"
@@ -343,6 +348,11 @@
             "UpdateCertificate": {
               "methods": [
                 "UpdateCertificate"
+              ]
+            },
+            "UpdateCertificateIssuanceConfig": {
+              "methods": [
+                "UpdateCertificateIssuanceConfig"
               ]
             },
             "UpdateCertificateMap": {

@@ -283,25 +283,25 @@ var File_google_cloud_geminidataanalytics_v1_data_agent_proto protoreflect.FileD
 
 const file_google_cloud_geminidataanalytics_v1_data_agent_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/geminidataanalytics/v1/data_agent.proto\x12#google.cloud.geminidataanalytics.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a>google/cloud/geminidataanalytics/v1/data_analytics_agent.proto\x1a4google/cloud/geminidataanalytics/v1/datasource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe7\b\n" +
+	"4google/cloud/geminidataanalytics/v1/data_agent.proto\x12#google.cloud.geminidataanalytics.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a>google/cloud/geminidataanalytics/v1/data_analytics_agent.proto\x1a4google/cloud/geminidataanalytics/v1/datasource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf0\b\n" +
 	"\tDataAgent\x12k\n" +
-	"\x14data_analytics_agent\x18e \x01(\v27.google.cloud.geminidataanalytics.v1.DataAnalyticsAgentH\x00R\x12dataAnalyticsAgent\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x01\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x03 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x04 \x01(\tB\x03\xe0A\x01R\vdescription\x12W\n" +
-	"\x06labels\x18\x05 \x03(\v2:.google.cloud.geminidataanalytics.v1.DataAgent.LabelsEntryB\x03\xe0A\x01R\x06labels\x12@\n" +
-	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12@\n" +
-	"\vdelete_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"deleteTime\x12>\n" +
+	"\x14data_analytics_agent\x18e \x01(\v27.google.cloud.geminidataanalytics.v1.DataAnalyticsAgentH\x00R\x12dataAnalyticsAgent\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12X\n" +
+	"\x06labels\x18\x05 \x03(\v2:.google.cloud.geminidataanalytics.v1.DataAgent.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12A\n" +
+	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12A\n" +
+	"\vdelete_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"deleteTime\x12?\n" +
 	"\n" +
-	"purge_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tpurgeTime\x12G\n" +
-	"\akms_key\x18\x0e \x01(\tB)\xe0A\x01\xfaA#\n" +
-	"!cloudkms.googleapis.com/CryptoKeyH\x01R\x06kmsKey\x88\x01\x01\x12Q\n" +
-	" bigquery_agent_analytics_enabled\x18\x12 \x01(\bB\x03\xe0A\x01H\x02R\x1dbigqueryAgentAnalyticsEnabled\x88\x01\x01\x12\x85\x01\n" +
-	"\x1ebigquery_agent_analytics_table\x18\x13 \x01(\v2;.google.cloud.geminidataanalytics.v1.BigQueryTableReferenceB\x03\xe0A\x01R\x1bbigqueryAgentAnalyticsTable\x1a9\n" +
+	"purge_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tpurgeTime\x12H\n" +
+	"\akms_key\x18\x0e \x01(\tB*\xe2A\x01\x01\xfaA#\n" +
+	"!cloudkms.googleapis.com/CryptoKeyH\x01R\x06kmsKey\x88\x01\x01\x12R\n" +
+	" bigquery_agent_analytics_enabled\x18\x12 \x01(\bB\x04\xe2A\x01\x01H\x02R\x1dbigqueryAgentAnalyticsEnabled\x88\x01\x01\x12\x86\x01\n" +
+	"\x1ebigquery_agent_analytics_table\x18\x13 \x01(\v2;.google.cloud.geminidataanalytics.v1.BigQueryTableReferenceB\x04\xe2A\x01\x01R\x1bbigqueryAgentAnalyticsTable\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x8a\x01\xeaA\x86\x01\n" +

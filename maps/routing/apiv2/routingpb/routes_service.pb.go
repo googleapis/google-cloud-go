@@ -1168,30 +1168,30 @@ var File_google_maps_routing_v2_routes_service_proto protoreflect.FileDescriptor
 
 const file_google_maps_routing_v2_routes_service_proto_rawDesc = "" +
 	"\n" +
-	"+google/maps/routing/v2/routes_service.proto\x12\x16google.maps.routing.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a*google/maps/routing/v2/fallback_info.proto\x1a.google/maps/routing/v2/geocoding_results.proto\x1a%google/maps/routing/v2/polyline.proto\x1a\"google/maps/routing/v2/route.proto\x1a,google/maps/routing/v2/route_modifiers.proto\x1a.google/maps/routing/v2/route_travel_mode.proto\x1a/google/maps/routing/v2/routing_preference.proto\x1a*google/maps/routing/v2/traffic_model.proto\x1a0google/maps/routing/v2/transit_preferences.proto\x1a\"google/maps/routing/v2/units.proto\x1a%google/maps/routing/v2/waypoint.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\x1a google/type/localized_text.proto\"\xf1\x0e\n" +
-	"\x14ComputeRoutesRequest\x12=\n" +
-	"\x06origin\x18\x01 \x01(\v2 .google.maps.routing.v2.WaypointB\x03\xe0A\x02R\x06origin\x12G\n" +
-	"\vdestination\x18\x02 \x01(\v2 .google.maps.routing.v2.WaypointB\x03\xe0A\x02R\vdestination\x12K\n" +
-	"\rintermediates\x18\x03 \x03(\v2 .google.maps.routing.v2.WaypointB\x03\xe0A\x01R\rintermediates\x12M\n" +
-	"\vtravel_mode\x18\x04 \x01(\x0e2'.google.maps.routing.v2.RouteTravelModeB\x03\xe0A\x01R\n" +
-	"travelMode\x12]\n" +
-	"\x12routing_preference\x18\x05 \x01(\x0e2).google.maps.routing.v2.RoutingPreferenceB\x03\xe0A\x01R\x11routingPreference\x12W\n" +
-	"\x10polyline_quality\x18\x06 \x01(\x0e2'.google.maps.routing.v2.PolylineQualityB\x03\xe0A\x01R\x0fpolylineQuality\x12Z\n" +
-	"\x11polyline_encoding\x18\f \x01(\x0e2(.google.maps.routing.v2.PolylineEncodingB\x03\xe0A\x01R\x10polylineEncoding\x12F\n" +
-	"\x0edeparture_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\rdepartureTime\x12B\n" +
-	"\farrival_time\x18\x13 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\varrivalTime\x12A\n" +
-	"\x1acompute_alternative_routes\x18\b \x01(\bB\x03\xe0A\x01R\x18computeAlternativeRoutes\x12T\n" +
-	"\x0froute_modifiers\x18\t \x01(\v2&.google.maps.routing.v2.RouteModifiersB\x03\xe0A\x01R\x0erouteModifiers\x12(\n" +
+	"+google/maps/routing/v2/routes_service.proto\x12\x16google.maps.routing.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a*google/maps/routing/v2/fallback_info.proto\x1a.google/maps/routing/v2/geocoding_results.proto\x1a%google/maps/routing/v2/polyline.proto\x1a\"google/maps/routing/v2/route.proto\x1a,google/maps/routing/v2/route_modifiers.proto\x1a.google/maps/routing/v2/route_travel_mode.proto\x1a/google/maps/routing/v2/routing_preference.proto\x1a*google/maps/routing/v2/traffic_model.proto\x1a0google/maps/routing/v2/transit_preferences.proto\x1a\"google/maps/routing/v2/units.proto\x1a%google/maps/routing/v2/waypoint.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\x1a google/type/localized_text.proto\"\x84\x0f\n" +
+	"\x14ComputeRoutesRequest\x12>\n" +
+	"\x06origin\x18\x01 \x01(\v2 .google.maps.routing.v2.WaypointB\x04\xe2A\x01\x02R\x06origin\x12H\n" +
+	"\vdestination\x18\x02 \x01(\v2 .google.maps.routing.v2.WaypointB\x04\xe2A\x01\x02R\vdestination\x12L\n" +
+	"\rintermediates\x18\x03 \x03(\v2 .google.maps.routing.v2.WaypointB\x04\xe2A\x01\x01R\rintermediates\x12N\n" +
+	"\vtravel_mode\x18\x04 \x01(\x0e2'.google.maps.routing.v2.RouteTravelModeB\x04\xe2A\x01\x01R\n" +
+	"travelMode\x12^\n" +
+	"\x12routing_preference\x18\x05 \x01(\x0e2).google.maps.routing.v2.RoutingPreferenceB\x04\xe2A\x01\x01R\x11routingPreference\x12X\n" +
+	"\x10polyline_quality\x18\x06 \x01(\x0e2'.google.maps.routing.v2.PolylineQualityB\x04\xe2A\x01\x01R\x0fpolylineQuality\x12[\n" +
+	"\x11polyline_encoding\x18\f \x01(\x0e2(.google.maps.routing.v2.PolylineEncodingB\x04\xe2A\x01\x01R\x10polylineEncoding\x12G\n" +
+	"\x0edeparture_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\rdepartureTime\x12C\n" +
+	"\farrival_time\x18\x13 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\varrivalTime\x12B\n" +
+	"\x1acompute_alternative_routes\x18\b \x01(\bB\x04\xe2A\x01\x01R\x18computeAlternativeRoutes\x12U\n" +
+	"\x0froute_modifiers\x18\t \x01(\v2&.google.maps.routing.v2.RouteModifiersB\x04\xe2A\x01\x01R\x0erouteModifiers\x12)\n" +
 	"\rlanguage_code\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\flanguageCode\x12$\n" +
-	"\vregion_code\x18\x10 \x01(\tB\x03\xe0A\x01R\n" +
-	"regionCode\x128\n" +
-	"\x05units\x18\v \x01(\x0e2\x1d.google.maps.routing.v2.UnitsB\x03\xe0A\x01R\x05units\x12;\n" +
-	"\x17optimize_waypoint_order\x18\r \x01(\bB\x03\xe0A\x01R\x15optimizeWaypointOrder\x12~\n" +
-	"\x1arequested_reference_routes\x18\x0e \x03(\x0e2;.google.maps.routing.v2.ComputeRoutesRequest.ReferenceRouteB\x03\xe0A\x01R\x18requestedReferenceRoutes\x12q\n" +
-	"\x12extra_computations\x18\x0f \x03(\x0e2=.google.maps.routing.v2.ComputeRoutesRequest.ExtraComputationB\x03\xe0A\x01R\x11extraComputations\x12N\n" +
-	"\rtraffic_model\x18\x12 \x01(\x0e2$.google.maps.routing.v2.TrafficModelB\x03\xe0A\x01R\ftrafficModel\x12`\n" +
-	"\x13transit_preferences\x18\x14 \x01(\v2*.google.maps.routing.v2.TransitPreferencesB\x03\xe0A\x01R\x12transitPreferences\"[\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\x12%\n" +
+	"\vregion_code\x18\x10 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"regionCode\x129\n" +
+	"\x05units\x18\v \x01(\x0e2\x1d.google.maps.routing.v2.UnitsB\x04\xe2A\x01\x01R\x05units\x12<\n" +
+	"\x17optimize_waypoint_order\x18\r \x01(\bB\x04\xe2A\x01\x01R\x15optimizeWaypointOrder\x12\x7f\n" +
+	"\x1arequested_reference_routes\x18\x0e \x03(\x0e2;.google.maps.routing.v2.ComputeRoutesRequest.ReferenceRouteB\x04\xe2A\x01\x01R\x18requestedReferenceRoutes\x12r\n" +
+	"\x12extra_computations\x18\x0f \x03(\x0e2=.google.maps.routing.v2.ComputeRoutesRequest.ExtraComputationB\x04\xe2A\x01\x01R\x11extraComputations\x12O\n" +
+	"\rtraffic_model\x18\x12 \x01(\x0e2$.google.maps.routing.v2.TrafficModelB\x04\xe2A\x01\x01R\ftrafficModel\x12a\n" +
+	"\x13transit_preferences\x18\x14 \x01(\v2*.google.maps.routing.v2.TransitPreferencesB\x04\xe2A\x01\x01R\x12transitPreferences\"[\n" +
 	"\x0eReferenceRoute\x12\x1f\n" +
 	"\x1bREFERENCE_ROUTE_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eFUEL_EFFICIENT\x10\x01\x12\x14\n" +
@@ -1211,31 +1211,31 @@ const file_google_maps_routing_v2_routes_service_proto_rawDesc = "" +
 	"\x15ComputeRoutesResponse\x125\n" +
 	"\x06routes\x18\x01 \x03(\v2\x1d.google.maps.routing.v2.RouteR\x06routes\x12I\n" +
 	"\rfallback_info\x18\x02 \x01(\v2$.google.maps.routing.v2.FallbackInfoR\ffallbackInfo\x12U\n" +
-	"\x11geocoding_results\x18\x03 \x01(\v2(.google.maps.routing.v2.GeocodingResultsR\x10geocodingResults\"\xee\a\n" +
-	"\x19ComputeRouteMatrixRequest\x12H\n" +
-	"\aorigins\x18\x01 \x03(\v2).google.maps.routing.v2.RouteMatrixOriginB\x03\xe0A\x02R\aorigins\x12W\n" +
-	"\fdestinations\x18\x02 \x03(\v2..google.maps.routing.v2.RouteMatrixDestinationB\x03\xe0A\x02R\fdestinations\x12M\n" +
-	"\vtravel_mode\x18\x03 \x01(\x0e2'.google.maps.routing.v2.RouteTravelModeB\x03\xe0A\x01R\n" +
-	"travelMode\x12]\n" +
-	"\x12routing_preference\x18\x04 \x01(\x0e2).google.maps.routing.v2.RoutingPreferenceB\x03\xe0A\x01R\x11routingPreference\x12F\n" +
-	"\x0edeparture_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\rdepartureTime\x12B\n" +
-	"\farrival_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\varrivalTime\x12(\n" +
-	"\rlanguage_code\x18\x06 \x01(\tB\x03\xe0A\x01R\flanguageCode\x12$\n" +
-	"\vregion_code\x18\t \x01(\tB\x03\xe0A\x01R\n" +
-	"regionCode\x128\n" +
-	"\x05units\x18\a \x01(\x0e2\x1d.google.maps.routing.v2.UnitsB\x03\xe0A\x01R\x05units\x12v\n" +
-	"\x12extra_computations\x18\b \x03(\x0e2B.google.maps.routing.v2.ComputeRouteMatrixRequest.ExtraComputationB\x03\xe0A\x01R\x11extraComputations\x12N\n" +
+	"\x11geocoding_results\x18\x03 \x01(\v2(.google.maps.routing.v2.GeocodingResultsR\x10geocodingResults\"\xfa\a\n" +
+	"\x19ComputeRouteMatrixRequest\x12I\n" +
+	"\aorigins\x18\x01 \x03(\v2).google.maps.routing.v2.RouteMatrixOriginB\x04\xe2A\x01\x02R\aorigins\x12X\n" +
+	"\fdestinations\x18\x02 \x03(\v2..google.maps.routing.v2.RouteMatrixDestinationB\x04\xe2A\x01\x02R\fdestinations\x12N\n" +
+	"\vtravel_mode\x18\x03 \x01(\x0e2'.google.maps.routing.v2.RouteTravelModeB\x04\xe2A\x01\x01R\n" +
+	"travelMode\x12^\n" +
+	"\x12routing_preference\x18\x04 \x01(\x0e2).google.maps.routing.v2.RoutingPreferenceB\x04\xe2A\x01\x01R\x11routingPreference\x12G\n" +
+	"\x0edeparture_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\rdepartureTime\x12C\n" +
+	"\farrival_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\varrivalTime\x12)\n" +
+	"\rlanguage_code\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\x12%\n" +
+	"\vregion_code\x18\t \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"regionCode\x129\n" +
+	"\x05units\x18\a \x01(\x0e2\x1d.google.maps.routing.v2.UnitsB\x04\xe2A\x01\x01R\x05units\x12w\n" +
+	"\x12extra_computations\x18\b \x03(\x0e2B.google.maps.routing.v2.ComputeRouteMatrixRequest.ExtraComputationB\x04\xe2A\x01\x01R\x11extraComputations\x12O\n" +
 	"\rtraffic_model\x18\n" +
-	" \x01(\x0e2$.google.maps.routing.v2.TrafficModelB\x03\xe0A\x01R\ftrafficModel\x12`\n" +
-	"\x13transit_preferences\x18\f \x01(\v2*.google.maps.routing.v2.TransitPreferencesB\x03\xe0A\x01R\x12transitPreferences\"@\n" +
+	" \x01(\x0e2$.google.maps.routing.v2.TrafficModelB\x04\xe2A\x01\x01R\ftrafficModel\x12a\n" +
+	"\x13transit_preferences\x18\f \x01(\v2*.google.maps.routing.v2.TransitPreferencesB\x04\xe2A\x01\x01R\x12transitPreferences\"@\n" +
 	"\x10ExtraComputation\x12!\n" +
 	"\x1dEXTRA_COMPUTATION_UNSPECIFIED\x10\x00\x12\t\n" +
-	"\x05TOLLS\x10\x01\"\xac\x01\n" +
-	"\x11RouteMatrixOrigin\x12A\n" +
-	"\bwaypoint\x18\x01 \x01(\v2 .google.maps.routing.v2.WaypointB\x03\xe0A\x02R\bwaypoint\x12T\n" +
-	"\x0froute_modifiers\x18\x02 \x01(\v2&.google.maps.routing.v2.RouteModifiersB\x03\xe0A\x01R\x0erouteModifiers\"[\n" +
-	"\x16RouteMatrixDestination\x12A\n" +
-	"\bwaypoint\x18\x01 \x01(\v2 .google.maps.routing.v2.WaypointB\x03\xe0A\x02R\bwaypoint\"\xc8\a\n" +
+	"\x05TOLLS\x10\x01\"\xae\x01\n" +
+	"\x11RouteMatrixOrigin\x12B\n" +
+	"\bwaypoint\x18\x01 \x01(\v2 .google.maps.routing.v2.WaypointB\x04\xe2A\x01\x02R\bwaypoint\x12U\n" +
+	"\x0froute_modifiers\x18\x02 \x01(\v2&.google.maps.routing.v2.RouteModifiersB\x04\xe2A\x01\x01R\x0erouteModifiers\"\\\n" +
+	"\x16RouteMatrixDestination\x12B\n" +
+	"\bwaypoint\x18\x01 \x01(\v2 .google.maps.routing.v2.WaypointB\x04\xe2A\x01\x02R\bwaypoint\"\xc8\a\n" +
 	"\x12RouteMatrixElement\x12&\n" +
 	"\forigin_index\x18\x01 \x01(\x05H\x00R\voriginIndex\x88\x01\x01\x120\n" +
 	"\x11destination_index\x18\x02 \x01(\x05H\x01R\x10destinationIndex\x88\x01\x01\x12*\n" +

@@ -1808,168 +1808,168 @@ var File_google_cloud_dataplex_v1_data_taxonomy_proto protoreflect.FileDescripto
 
 const file_google_cloud_dataplex_v1_data_taxonomy_proto_rawDesc = "" +
 	"\n" +
-	",google/cloud/dataplex/v1/data_taxonomy.proto\x12\x18google.cloud.dataplex.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/dataplex/v1/security.proto\x1a&google/cloud/dataplex/v1/service.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa6\x05\n" +
-	"\fDataTaxonomy\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x03\xfaA&\n" +
-	"$dataplex.googleapis.com/DataTaxonomyR\x04name\x12\x15\n" +
-	"\x03uid\x18\x02 \x01(\tB\x03\xe0A\x03R\x03uid\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tB\x03\xe0A\x01R\vdescription\x12&\n" +
-	"\fdisplay_name\x18\x06 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12O\n" +
-	"\x06labels\x18\b \x03(\v22.google.cloud.dataplex.v1.DataTaxonomy.LabelsEntryB\x03\xe0A\x01R\x06labels\x12,\n" +
-	"\x0fattribute_count\x18\t \x01(\x05B\x03\xe0A\x03R\x0eattributeCount\x12\x12\n" +
+	",google/cloud/dataplex/v1/data_taxonomy.proto\x12\x18google.cloud.dataplex.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/dataplex/v1/security.proto\x1a&google/cloud/dataplex/v1/service.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xaf\x05\n" +
+	"\fDataTaxonomy\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x03\xfaA&\n" +
+	"$dataplex.googleapis.com/DataTaxonomyR\x04name\x12\x16\n" +
+	"\x03uid\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12'\n" +
+	"\fdisplay_name\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12P\n" +
+	"\x06labels\x18\b \x03(\v22.google.cloud.dataplex.v1.DataTaxonomy.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12-\n" +
+	"\x0fattribute_count\x18\t \x01(\x05B\x04\xe2A\x01\x03R\x0eattributeCount\x12\x12\n" +
 	"\x04etag\x18\n" +
-	" \x01(\tR\x04etag\x12$\n" +
-	"\vclass_count\x18\v \x01(\x05B\x03\xe0A\x03R\n" +
+	" \x01(\tR\x04etag\x12%\n" +
+	"\vclass_count\x18\v \x01(\x05B\x04\xe2A\x01\x03R\n" +
 	"classCount\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:v\xeaAq\n" +
-	"$dataplex.googleapis.com/DataTaxonomy\x12Iprojects/{project}/locations/{location}/dataTaxonomies/{data_taxonomy_id}\x18\x01\"\xab\a\n" +
-	"\rDataAttribute\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x03\xfaA'\n" +
-	"%dataplex.googleapis.com/DataAttributeR\x04name\x12\x15\n" +
-	"\x03uid\x18\x02 \x01(\tB\x03\xe0A\x03R\x03uid\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tB\x03\xe0A\x01R\vdescription\x12&\n" +
-	"\fdisplay_name\x18\x06 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12P\n" +
-	"\x06labels\x18\a \x03(\v23.google.cloud.dataplex.v1.DataAttribute.LabelsEntryB\x03\xe0A\x01R\x06labels\x12J\n" +
-	"\tparent_id\x18\b \x01(\tB-\xe0A\x01\xfaA'\n" +
-	"%dataplex.googleapis.com/DataAttributeR\bparentId\x12,\n" +
-	"\x0fattribute_count\x18\t \x01(\x05B\x03\xe0A\x03R\x0eattributeCount\x12\x12\n" +
+	"$dataplex.googleapis.com/DataTaxonomy\x12Iprojects/{project}/locations/{location}/dataTaxonomies/{data_taxonomy_id}\x18\x01\"\xb6\a\n" +
+	"\rDataAttribute\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x03\xfaA'\n" +
+	"%dataplex.googleapis.com/DataAttributeR\x04name\x12\x16\n" +
+	"\x03uid\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12'\n" +
+	"\fdisplay_name\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12Q\n" +
+	"\x06labels\x18\a \x03(\v23.google.cloud.dataplex.v1.DataAttribute.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12K\n" +
+	"\tparent_id\x18\b \x01(\tB.\xe2A\x01\x01\xfaA'\n" +
+	"%dataplex.googleapis.com/DataAttributeR\bparentId\x12-\n" +
+	"\x0fattribute_count\x18\t \x01(\x05B\x04\xe2A\x01\x03R\x0eattributeCount\x12\x12\n" +
 	"\x04etag\x18\n" +
-	" \x01(\tR\x04etag\x12c\n" +
-	"\x14resource_access_spec\x18d \x01(\v2,.google.cloud.dataplex.v1.ResourceAccessSpecB\x03\xe0A\x01R\x12resourceAccessSpec\x12W\n" +
-	"\x10data_access_spec\x18e \x01(\v2(.google.cloud.dataplex.v1.DataAccessSpecB\x03\xe0A\x01R\x0edataAccessSpec\x1a9\n" +
+	" \x01(\tR\x04etag\x12d\n" +
+	"\x14resource_access_spec\x18d \x01(\v2,.google.cloud.dataplex.v1.ResourceAccessSpecB\x04\xe2A\x01\x01R\x12resourceAccessSpec\x12X\n" +
+	"\x10data_access_spec\x18e \x01(\v2(.google.cloud.dataplex.v1.DataAccessSpecB\x04\xe2A\x01\x01R\x0edataAccessSpec\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x93\x01\xeaA\x8d\x01\n" +
-	"%dataplex.googleapis.com/DataAttribute\x12dprojects/{project}/locations/{location}/dataTaxonomies/{dataTaxonomy}/attributes/{data_attribute_id}\x18\x01\"\xcf\a\n" +
-	"\x14DataAttributeBinding\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x03\xfaA.\n" +
-	",dataplex.googleapis.com/DataAttributeBindingR\x04name\x12\x15\n" +
-	"\x03uid\x18\x02 \x01(\tB\x03\xe0A\x03R\x03uid\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tB\x03\xe0A\x01R\vdescription\x12&\n" +
-	"\fdisplay_name\x18\x06 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12W\n" +
-	"\x06labels\x18\a \x03(\v2:.google.cloud.dataplex.v1.DataAttributeBinding.LabelsEntryB\x03\xe0A\x01R\x06labels\x12\x12\n" +
-	"\x04etag\x18\b \x01(\tR\x04etag\x12$\n" +
-	"\bresource\x18d \x01(\tB\x06\xe0A\x01\xe0A\x05H\x00R\bresource\x12M\n" +
+	"%dataplex.googleapis.com/DataAttribute\x12dprojects/{project}/locations/{location}/dataTaxonomies/{dataTaxonomy}/attributes/{data_attribute_id}\x18\x01\"\xd9\a\n" +
+	"\x14DataAttributeBinding\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x03\xfaA.\n" +
+	",dataplex.googleapis.com/DataAttributeBindingR\x04name\x12\x16\n" +
+	"\x03uid\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12'\n" +
+	"\fdisplay_name\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12X\n" +
+	"\x06labels\x18\a \x03(\v2:.google.cloud.dataplex.v1.DataAttributeBinding.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12\x12\n" +
+	"\x04etag\x18\b \x01(\tR\x04etag\x12#\n" +
+	"\bresource\x18d \x01(\tB\x05\xe2A\x02\x01\x05H\x00R\bresource\x12N\n" +
 	"\n" +
-	"attributes\x18n \x03(\tB-\xe0A\x01\xfaA'\n" +
+	"attributes\x18n \x03(\tB.\xe2A\x01\x01\xfaA'\n" +
 	"%dataplex.googleapis.com/DataAttributeR\n" +
-	"attributes\x12N\n" +
-	"\x05paths\x18x \x03(\v23.google.cloud.dataplex.v1.DataAttributeBinding.PathB\x03\xe0A\x01R\x05paths\x1an\n" +
-	"\x04Path\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12M\n" +
+	"attributes\x12O\n" +
+	"\x05paths\x18x \x03(\v23.google.cloud.dataplex.v1.DataAttributeBinding.PathB\x04\xe2A\x01\x01R\x05paths\x1ap\n" +
+	"\x04Path\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12N\n" +
 	"\n" +
-	"attributes\x18\x02 \x03(\tB-\xe0A\x01\xfaA'\n" +
+	"attributes\x18\x02 \x03(\tB.\xe2A\x01\x01\xfaA'\n" +
 	"%dataplex.googleapis.com/DataAttributeR\n" +
 	"attributes\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x8f\x01\xeaA\x89\x01\n" +
 	",dataplex.googleapis.com/DataAttributeBinding\x12Yprojects/{project}/locations/{location}/dataAttributeBindings/{data_attribute_binding_id}\x18\x01B\x14\n" +
-	"\x12resource_reference\"\x8d\x02\n" +
-	"\x19CreateDataTaxonomyRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12-\n" +
-	"\x10data_taxonomy_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x0edataTaxonomyId\x12P\n" +
-	"\rdata_taxonomy\x18\x03 \x01(\v2&.google.cloud.dataplex.v1.DataTaxonomyB\x03\xe0A\x02R\fdataTaxonomy\x12(\n" +
-	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly:\x02\x18\x01\"\xdd\x01\n" +
-	"\x19UpdateDataTaxonomyRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12P\n" +
-	"\rdata_taxonomy\x18\x02 \x01(\v2&.google.cloud.dataplex.v1.DataTaxonomyB\x03\xe0A\x02R\fdataTaxonomy\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly:\x02\x18\x01\"^\n" +
-	"\x16GetDataTaxonomyRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$dataplex.googleapis.com/DataTaxonomyR\x04name:\x02\x18\x01\"\xe1\x01\n" +
-	"\x19ListDataTaxonomiesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x12resource_reference\"\x91\x02\n" +
+	"\x19CreateDataTaxonomyRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12.\n" +
+	"\x10data_taxonomy_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0edataTaxonomyId\x12Q\n" +
+	"\rdata_taxonomy\x18\x03 \x01(\v2&.google.cloud.dataplex.v1.DataTaxonomyB\x04\xe2A\x01\x02R\fdataTaxonomy\x12)\n" +
+	"\rvalidate_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly:\x02\x18\x01\"\xe0\x01\n" +
+	"\x19UpdateDataTaxonomyRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12Q\n" +
+	"\rdata_taxonomy\x18\x02 \x01(\v2&.google.cloud.dataplex.v1.DataTaxonomyB\x04\xe2A\x01\x02R\fdataTaxonomy\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly:\x02\x18\x01\"_\n" +
+	"\x16GetDataTaxonomyRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$dataplex.googleapis.com/DataTaxonomyR\x04name:\x02\x18\x01\"\xe6\x01\n" +
+	"\x19ListDataTaxonomiesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xca\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xca\x01\n" +
 	"\x1aListDataTaxonomiesResponse\x12O\n" +
 	"\x0fdata_taxonomies\x18\x01 \x03(\v2&.google.cloud.dataplex.v1.DataTaxonomyR\x0edataTaxonomies\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x123\n" +
-	"\x15unreachable_locations\x18\x03 \x03(\tR\x14unreachableLocations\"z\n" +
-	"\x19DeleteDataTaxonomyRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$dataplex.googleapis.com/DataTaxonomyR\x04name\x12\x17\n" +
-	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x01R\x04etag:\x02\x18\x01\"\x92\x02\n" +
-	"\x1aCreateDataAttributeRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$dataplex.googleapis.com/DataTaxonomyR\x06parent\x12/\n" +
-	"\x11data_attribute_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x0fdataAttributeId\x12S\n" +
-	"\x0edata_attribute\x18\x03 \x01(\v2'.google.cloud.dataplex.v1.DataAttributeB\x03\xe0A\x02R\rdataAttribute\x12(\n" +
-	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xdd\x01\n" +
-	"\x1aUpdateDataAttributeRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12S\n" +
-	"\x0edata_attribute\x18\x02 \x01(\v2'.google.cloud.dataplex.v1.DataAttributeB\x03\xe0A\x02R\rdataAttribute\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\\\n" +
-	"\x17GetDataAttributeRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%dataplex.googleapis.com/DataAttributeR\x04name\"\xe4\x01\n" +
-	"\x19ListDataAttributesRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$dataplex.googleapis.com/DataTaxonomyR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x15unreachable_locations\x18\x03 \x03(\tR\x14unreachableLocations\"|\n" +
+	"\x19DeleteDataTaxonomyRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$dataplex.googleapis.com/DataTaxonomyR\x04name\x12\x18\n" +
+	"\x04etag\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04etag:\x02\x18\x01\"\x96\x02\n" +
+	"\x1aCreateDataAttributeRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$dataplex.googleapis.com/DataTaxonomyR\x06parent\x120\n" +
+	"\x11data_attribute_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0fdataAttributeId\x12T\n" +
+	"\x0edata_attribute\x18\x03 \x01(\v2'.google.cloud.dataplex.v1.DataAttributeB\x04\xe2A\x01\x02R\rdataAttribute\x12)\n" +
+	"\rvalidate_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xe0\x01\n" +
+	"\x1aUpdateDataAttributeRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12T\n" +
+	"\x0edata_attribute\x18\x02 \x01(\v2'.google.cloud.dataplex.v1.DataAttributeB\x04\xe2A\x01\x02R\rdataAttribute\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"]\n" +
+	"\x17GetDataAttributeRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%dataplex.googleapis.com/DataAttributeR\x04name\"\xe9\x01\n" +
+	"\x19ListDataAttributesRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$dataplex.googleapis.com/DataTaxonomyR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xcb\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xcb\x01\n" +
 	"\x1aListDataAttributesResponse\x12P\n" +
 	"\x0fdata_attributes\x18\x01 \x03(\v2'.google.cloud.dataplex.v1.DataAttributeR\x0edataAttributes\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x123\n" +
-	"\x15unreachable_locations\x18\x03 \x03(\tR\x14unreachableLocations\"x\n" +
-	"\x1aDeleteDataAttributeRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%dataplex.googleapis.com/DataAttributeR\x04name\x12\x17\n" +
-	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x01R\x04etag\"\xbb\x02\n" +
-	"!CreateDataAttributeBindingRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12>\n" +
-	"\x19data_attribute_binding_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x16dataAttributeBindingId\x12i\n" +
-	"\x16data_attribute_binding\x18\x03 \x01(\v2..google.cloud.dataplex.v1.DataAttributeBindingB\x03\xe0A\x02R\x14dataAttributeBinding\x12(\n" +
-	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xfa\x01\n" +
-	"!UpdateDataAttributeBindingRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12i\n" +
-	"\x16data_attribute_binding\x18\x02 \x01(\v2..google.cloud.dataplex.v1.DataAttributeBindingB\x03\xe0A\x02R\x14dataAttributeBinding\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"j\n" +
-	"\x1eGetDataAttributeBindingRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",dataplex.googleapis.com/DataAttributeBindingR\x04name\"\xe8\x01\n" +
-	" ListDataAttributeBindingsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x15unreachable_locations\x18\x03 \x03(\tR\x14unreachableLocations\"z\n" +
+	"\x1aDeleteDataAttributeRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%dataplex.googleapis.com/DataAttributeR\x04name\x12\x18\n" +
+	"\x04etag\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"\xbf\x02\n" +
+	"!CreateDataAttributeBindingRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12?\n" +
+	"\x19data_attribute_binding_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x16dataAttributeBindingId\x12j\n" +
+	"\x16data_attribute_binding\x18\x03 \x01(\v2..google.cloud.dataplex.v1.DataAttributeBindingB\x04\xe2A\x01\x02R\x14dataAttributeBinding\x12)\n" +
+	"\rvalidate_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xfd\x01\n" +
+	"!UpdateDataAttributeBindingRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12j\n" +
+	"\x16data_attribute_binding\x18\x02 \x01(\v2..google.cloud.dataplex.v1.DataAttributeBindingB\x04\xe2A\x01\x02R\x14dataAttributeBinding\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"k\n" +
+	"\x1eGetDataAttributeBindingRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",dataplex.googleapis.com/DataAttributeBindingR\x04name\"\xed\x01\n" +
+	" ListDataAttributeBindingsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xe8\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xe8\x01\n" +
 	"!ListDataAttributeBindingsResponse\x12f\n" +
 	"\x17data_attribute_bindings\x18\x01 \x03(\v2..google.cloud.dataplex.v1.DataAttributeBindingR\x15dataAttributeBindings\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x123\n" +
-	"\x15unreachable_locations\x18\x03 \x03(\tR\x14unreachableLocations\"\x86\x01\n" +
-	"!DeleteDataAttributeBindingRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",dataplex.googleapis.com/DataAttributeBindingR\x04name\x12\x17\n" +
-	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x02R\x04etag2\xf0\x1d\n" +
+	"\x15unreachable_locations\x18\x03 \x03(\tR\x14unreachableLocations\"\x88\x01\n" +
+	"!DeleteDataAttributeBindingRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",dataplex.googleapis.com/DataAttributeBindingR\x04name\x12\x18\n" +
+	"\x04etag\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04etag2\xf0\x1d\n" +
 	"\x13DataTaxonomyService\x12\x83\x02\n" +
 	"\x12CreateDataTaxonomy\x123.google.cloud.dataplex.v1.CreateDataTaxonomyRequest\x1a\x1d.google.longrunning.Operation\"\x98\x01\xcaA!\n" +
 	"\fDataTaxonomy\x12\x11OperationMetadata\xdaA%parent,data_taxonomy,data_taxonomy_id\x82\xd3\xe4\x93\x02C:\rdata_taxonomy\"2/v1/{parent=projects/*/locations/*}/dataTaxonomies\x88\x02\x01\x12\x85\x02\n" +

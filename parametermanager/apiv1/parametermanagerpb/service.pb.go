@@ -2793,19 +2793,19 @@ var File_google_cloud_parametermanager_v1_service_proto protoreflect.FileDescrip
 
 const file_google_cloud_parametermanager_v1_service_proto_rawDesc = "" +
 	"\n" +
-	".google/cloud/parametermanager/v1/service.proto\x12 google.cloud.parametermanager.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a*google/iam/v1/resource_policy_member.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc5\x06\n" +
-	"\tParameter\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12T\n" +
-	"\x06labels\x18\x04 \x03(\v27.google.cloud.parametermanager.v1.Parameter.LabelsEntryB\x03\xe0A\x01R\x06labels\x12N\n" +
-	"\x06format\x18\x05 \x01(\x0e21.google.cloud.parametermanager.v1.ParameterFormatB\x03\xe0A\x01R\x06format\x12M\n" +
-	"\rpolicy_member\x18\x06 \x01(\v2#.google.iam.v1.ResourcePolicyMemberB\x03\xe0A\x03R\fpolicyMember\x12G\n" +
-	"\akms_key\x18\a \x01(\tB)\xe0A\x01\xfaA#\n" +
-	"!cloudkms.googleapis.com/CryptoKeyH\x00R\x06kmsKey\x88\x01\x01\x12T\n" +
-	"\x04tags\x18\b \x03(\v25.google.cloud.parametermanager.v1.Parameter.TagsEntryB\t\xe0A\x04\xe0A\x05\xe0A\x01R\x04tags\x1a9\n" +
+	".google/cloud/parametermanager/v1/service.proto\x12 google.cloud.parametermanager.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a*google/iam/v1/resource_policy_member.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc9\x06\n" +
+	"\tParameter\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12U\n" +
+	"\x06labels\x18\x04 \x03(\v27.google.cloud.parametermanager.v1.Parameter.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12O\n" +
+	"\x06format\x18\x05 \x01(\x0e21.google.cloud.parametermanager.v1.ParameterFormatB\x04\xe2A\x01\x01R\x06format\x12N\n" +
+	"\rpolicy_member\x18\x06 \x01(\v2#.google.iam.v1.ResourcePolicyMemberB\x04\xe2A\x01\x03R\fpolicyMember\x12H\n" +
+	"\akms_key\x18\a \x01(\tB*\xe2A\x01\x01\xfaA#\n" +
+	"!cloudkms.googleapis.com/CryptoKeyH\x00R\x06kmsKey\x88\x01\x01\x12Q\n" +
+	"\x04tags\x18\b \x03(\v25.google.cloud.parametermanager.v1.Parameter.TagsEntryB\x06\xe2A\x03\x04\x05\x01R\x04tags\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a7\n" +
@@ -2815,201 +2815,201 @@ const file_google_cloud_parametermanager_v1_service_proto_rawDesc = "" +
 	")parametermanager.googleapis.com/Parameter\x12>projects/{project}/locations/{location}/parameters/{parameter}*\n" +
 	"parameters2\tparameterB\n" +
 	"\n" +
-	"\b_kms_key\"\xe5\x01\n" +
-	"\x15ListParametersRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\x12)parametermanager.googleapis.com/ParameterR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\b_kms_key\"\xea\x01\n" +
+	"\x15ListParametersRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\x12)parametermanager.googleapis.com/ParameterR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xb4\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xb5\x01\n" +
 	"\x16ListParametersResponse\x12K\n" +
 	"\n" +
 	"parameters\x18\x01 \x03(\v2+.google.cloud.parametermanager.v1.ParameterR\n" +
 	"parameters\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"\\\n" +
-	"\x13GetParameterRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")parametermanager.googleapis.com/ParameterR\x04name\"\x87\x02\n" +
-	"\x16CreateParameterRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\x12)parametermanager.googleapis.com/ParameterR\x06parent\x12&\n" +
-	"\fparameter_id\x18\x02 \x01(\tB\x03\xe0A\x02R\vparameterId\x12N\n" +
-	"\tparameter\x18\x03 \x01(\v2+.google.cloud.parametermanager.v1.ParameterB\x03\xe0A\x02R\tparameter\x12*\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x06R\vunreachable\"]\n" +
+	"\x13GetParameterRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")parametermanager.googleapis.com/ParameterR\x04name\"\x8b\x02\n" +
+	"\x16CreateParameterRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\x12)parametermanager.googleapis.com/ParameterR\x06parent\x12'\n" +
+	"\fparameter_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vparameterId\x12O\n" +
+	"\tparameter\x18\x03 \x01(\v2+.google.cloud.parametermanager.v1.ParameterB\x04\xe2A\x01\x02R\tparameter\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xd6\x01\n" +
-	"\x16UpdateParameterRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12N\n" +
-	"\tparameter\x18\x02 \x01(\v2+.google.cloud.parametermanager.v1.ParameterB\x03\xe0A\x02R\tparameter\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xd9\x01\n" +
+	"\x16UpdateParameterRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12O\n" +
+	"\tparameter\x18\x02 \x01(\v2+.google.cloud.parametermanager.v1.ParameterB\x04\xe2A\x01\x02R\tparameter\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x8b\x01\n" +
-	"\x16DeleteParameterRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")parametermanager.googleapis.com/ParameterR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x8d\x01\n" +
+	"\x16DeleteParameterRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")parametermanager.googleapis.com/ParameterR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x9b\x06\n" +
-	"\x10ParameterVersion\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x1f\n" +
-	"\bdisabled\x18\x04 \x01(\bB\x03\xe0A\x01R\bdisabled\x12[\n" +
-	"\apayload\x18\x05 \x01(\v29.google.cloud.parametermanager.v1.ParameterVersionPayloadB\x06\xe0A\x02\xe0A\x05R\apayload\x123\n" +
-	"\x0fkms_key_version\x18\x06 \x01(\tB\x06\xe0A\x03\xe0A\x01H\x00R\rkmsKeyVersion\x88\x01\x01\x12w\n" +
-	"\x0fchecksum_source\x18\a \x01(\x0e2A.google.cloud.parametermanager.v1.ParameterVersion.ChecksumSourceB\x06\xe0A\x01\xe0A\x03H\x01R\x0echecksumSource\x88\x01\x01\"[\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x9c\x06\n" +
+	"\x10ParameterVersion\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12 \n" +
+	"\bdisabled\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\bdisabled\x12Z\n" +
+	"\apayload\x18\x05 \x01(\v29.google.cloud.parametermanager.v1.ParameterVersionPayloadB\x05\xe2A\x02\x02\x05R\apayload\x122\n" +
+	"\x0fkms_key_version\x18\x06 \x01(\tB\x05\xe2A\x02\x03\x01H\x00R\rkmsKeyVersion\x88\x01\x01\x12v\n" +
+	"\x0fchecksum_source\x18\a \x01(\x0e2A.google.cloud.parametermanager.v1.ParameterVersion.ChecksumSourceB\x05\xe2A\x02\x01\x03H\x01R\x0echecksumSource\x88\x01\x01\"[\n" +
 	"\x0eChecksumSource\x12\x1f\n" +
 	"\x1bCHECKSUM_SOURCE_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10SERVER_GENERATED\x10\x01\x12\x12\n" +
 	"\x0eUSER_SPECIFIED\x10\x02:\xb8\x01\xeaA\xb4\x01\n" +
 	"0parametermanager.googleapis.com/ParameterVersion\x12[projects/{project}/locations/{location}/parameters/{parameter}/versions/{parameter_version}*\x11parameterVersions2\x10parameterVersionB\x12\n" +
 	"\x10_kms_key_versionB\x12\n" +
-	"\x10_checksum_source\"m\n" +
-	"\x17ParameterVersionPayload\x12\x17\n" +
-	"\x04data\x18\x01 \x01(\fB\x03\xe0A\x02R\x04data\x12)\n" +
-	"\vdata_crc32c\x18\x03 \x01(\x03B\x03\xe0A\x01H\x00R\n" +
+	"\x10_checksum_source\"o\n" +
+	"\x17ParameterVersionPayload\x12\x18\n" +
+	"\x04data\x18\x01 \x01(\fB\x04\xe2A\x01\x02R\x04data\x12*\n" +
+	"\vdata_crc32c\x18\x03 \x01(\x03B\x04\xe2A\x01\x01H\x00R\n" +
 	"dataCrc32c\x88\x01\x01B\x0e\n" +
-	"\f_data_crc32c\"\xf3\x01\n" +
-	"\x1cListParameterVersionsRequest\x12P\n" +
-	"\x06parent\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\x120parametermanager.googleapis.com/ParameterVersionR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\f_data_crc32c\"\xf8\x01\n" +
+	"\x1cListParameterVersionsRequest\x12Q\n" +
+	"\x06parent\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\x120parametermanager.googleapis.com/ParameterVersionR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xd1\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xd2\x01\n" +
 	"\x1dListParameterVersionsResponse\x12a\n" +
 	"\x12parameter_versions\x18\x01 \x03(\v22.google.cloud.parametermanager.v1.ParameterVersionR\x11parameterVersions\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"\xab\x01\n" +
-	"\x1aGetParameterVersionRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0parametermanager.googleapis.com/ParameterVersionR\x04name\x12?\n" +
-	"\x04view\x18\x06 \x01(\x0e2&.google.cloud.parametermanager.v1.ViewB\x03\xe0A\x01R\x04view\"m\n" +
-	"\x1dRenderParameterVersionRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0parametermanager.googleapis.com/ParameterVersionR\x04name\"\x8c\x02\n" +
-	"\x1eRenderParameterVersionResponse\x12e\n" +
-	"\x11parameter_version\x18\x01 \x01(\tB8\xe0A\x03\xfaA2\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x06R\vunreachable\"\xad\x01\n" +
+	"\x1aGetParameterVersionRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0parametermanager.googleapis.com/ParameterVersionR\x04name\x12@\n" +
+	"\x04view\x18\x06 \x01(\x0e2&.google.cloud.parametermanager.v1.ViewB\x04\xe2A\x01\x01R\x04view\"n\n" +
+	"\x1dRenderParameterVersionRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0parametermanager.googleapis.com/ParameterVersionR\x04name\"\x8e\x02\n" +
+	"\x1eRenderParameterVersionResponse\x12f\n" +
+	"\x11parameter_version\x18\x01 \x01(\tB9\xe2A\x01\x03\xfaA2\n" +
 	"0parametermanager.googleapis.com/ParameterVersionR\x10parameterVersion\x12S\n" +
-	"\apayload\x18\x02 \x01(\v29.google.cloud.parametermanager.v1.ParameterVersionPayloadR\apayload\x12.\n" +
-	"\x10rendered_payload\x18\x03 \x01(\fB\x03\xe0A\x03R\x0frenderedPayload\"\xba\x02\n" +
-	"\x1dCreateParameterVersionRequest\x12P\n" +
-	"\x06parent\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\x120parametermanager.googleapis.com/ParameterVersionR\x06parent\x125\n" +
-	"\x14parameter_version_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x12parameterVersionId\x12d\n" +
-	"\x11parameter_version\x18\x03 \x01(\v22.google.cloud.parametermanager.v1.ParameterVersionB\x03\xe0A\x02R\x10parameterVersion\x12*\n" +
+	"\apayload\x18\x02 \x01(\v29.google.cloud.parametermanager.v1.ParameterVersionPayloadR\apayload\x12/\n" +
+	"\x10rendered_payload\x18\x03 \x01(\fB\x04\xe2A\x01\x03R\x0frenderedPayload\"\xbe\x02\n" +
+	"\x1dCreateParameterVersionRequest\x12Q\n" +
+	"\x06parent\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\x120parametermanager.googleapis.com/ParameterVersionR\x06parent\x126\n" +
+	"\x14parameter_version_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x12parameterVersionId\x12e\n" +
+	"\x11parameter_version\x18\x03 \x01(\v22.google.cloud.parametermanager.v1.ParameterVersionB\x04\xe2A\x01\x02R\x10parameterVersion\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xf3\x01\n" +
-	"\x1dUpdateParameterVersionRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12d\n" +
-	"\x11parameter_version\x18\x02 \x01(\v22.google.cloud.parametermanager.v1.ParameterVersionB\x03\xe0A\x02R\x10parameterVersion\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xf6\x01\n" +
+	"\x1dUpdateParameterVersionRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12e\n" +
+	"\x11parameter_version\x18\x02 \x01(\v22.google.cloud.parametermanager.v1.ParameterVersionB\x04\xe2A\x01\x02R\x10parameterVersion\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x99\x01\n" +
-	"\x1dDeleteParameterVersionRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0parametermanager.googleapis.com/ParameterVersionR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x9b\x01\n" +
+	"\x1dDeleteParameterVersionRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0parametermanager.googleapis.com/ParameterVersionR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x89\x04\n" +
-	"\bTemplate\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12S\n" +
-	"\x06labels\x18\x04 \x03(\v26.google.cloud.parametermanager.v1.Template.LabelsEntryB\x03\xe0A\x01R\x06labels\x12M\n" +
-	"\x06format\x18\x05 \x01(\x0e20.google.cloud.parametermanager.v1.TemplateFormatB\x03\xe0A\x01R\x06format\x1a9\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x8e\x04\n" +
+	"\bTemplate\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12T\n" +
+	"\x06labels\x18\x04 \x03(\v26.google.cloud.parametermanager.v1.Template.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12N\n" +
+	"\x06format\x18\x05 \x01(\x0e20.google.cloud.parametermanager.v1.TemplateFormatB\x04\xe2A\x01\x01R\x06format\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x80\x01\xeaA}\n" +
-	"(parametermanager.googleapis.com/Template\x12<projects/{project}/locations/{location}/templates/{template}*\ttemplates2\btemplate\"\xe3\x01\n" +
-	"\x14ListTemplatesRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(parametermanager.googleapis.com/TemplateR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"(parametermanager.googleapis.com/Template\x12<projects/{project}/locations/{location}/templates/{template}*\ttemplates2\btemplate\"\xe8\x01\n" +
+	"\x14ListTemplatesRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(parametermanager.googleapis.com/TemplateR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xb0\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xb1\x01\n" +
 	"\x15ListTemplatesResponse\x12H\n" +
 	"\ttemplates\x18\x01 \x03(\v2*.google.cloud.parametermanager.v1.TemplateR\ttemplates\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"Z\n" +
-	"\x12GetTemplateRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(parametermanager.googleapis.com/TemplateR\x04name\"\x80\x02\n" +
-	"\x15CreateTemplateRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(parametermanager.googleapis.com/TemplateR\x06parent\x12$\n" +
-	"\vtemplate_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"templateId\x12K\n" +
-	"\btemplate\x18\x03 \x01(\v2*.google.cloud.parametermanager.v1.TemplateB\x03\xe0A\x02R\btemplate\x12*\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x06R\vunreachable\"[\n" +
+	"\x12GetTemplateRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(parametermanager.googleapis.com/TemplateR\x04name\"\x84\x02\n" +
+	"\x15CreateTemplateRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(parametermanager.googleapis.com/TemplateR\x06parent\x12%\n" +
+	"\vtemplate_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"templateId\x12L\n" +
+	"\btemplate\x18\x03 \x01(\v2*.google.cloud.parametermanager.v1.TemplateB\x04\xe2A\x01\x02R\btemplate\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xd2\x01\n" +
-	"\x15UpdateTemplateRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12K\n" +
-	"\btemplate\x18\x02 \x01(\v2*.google.cloud.parametermanager.v1.TemplateB\x03\xe0A\x02R\btemplate\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xd5\x01\n" +
+	"\x15UpdateTemplateRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12L\n" +
+	"\btemplate\x18\x02 \x01(\v2*.google.cloud.parametermanager.v1.TemplateB\x04\xe2A\x01\x02R\btemplate\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x89\x01\n" +
-	"\x15DeleteTemplateRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(parametermanager.googleapis.com/TemplateR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x8b\x01\n" +
+	"\x15DeleteTemplateRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(parametermanager.googleapis.com/TemplateR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xe0\x03\n" +
-	"\x0fTemplateVersion\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x1f\n" +
-	"\bdisabled\x18\x04 \x01(\bB\x03\xe0A\x01R\bdisabled\x12Z\n" +
-	"\apayload\x18\x05 \x01(\v28.google.cloud.parametermanager.v1.TemplateVersionPayloadB\x06\xe0A\x02\xe0A\x05R\apayload:\xb2\x01\xeaA\xae\x01\n" +
-	"/parametermanager.googleapis.com/TemplateVersion\x12Xprojects/{project}/locations/{location}/templates/{template}/versions/{template_version}*\x10templateVersions2\x0ftemplateVersion\"1\n" +
-	"\x16TemplateVersionPayload\x12\x17\n" +
-	"\x04data\x18\x01 \x01(\fB\x03\xe0A\x02R\x04data\"\xf1\x01\n" +
-	"\x1bListTemplateVersionsRequest\x12O\n" +
-	"\x06parent\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\x12/parametermanager.googleapis.com/TemplateVersionR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xe3\x03\n" +
+	"\x0fTemplateVersion\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12 \n" +
+	"\bdisabled\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\bdisabled\x12Y\n" +
+	"\apayload\x18\x05 \x01(\v28.google.cloud.parametermanager.v1.TemplateVersionPayloadB\x05\xe2A\x02\x02\x05R\apayload:\xb2\x01\xeaA\xae\x01\n" +
+	"/parametermanager.googleapis.com/TemplateVersion\x12Xprojects/{project}/locations/{location}/templates/{template}/versions/{template_version}*\x10templateVersions2\x0ftemplateVersion\"2\n" +
+	"\x16TemplateVersionPayload\x12\x18\n" +
+	"\x04data\x18\x01 \x01(\fB\x04\xe2A\x01\x02R\x04data\"\xf6\x01\n" +
+	"\x1bListTemplateVersionsRequest\x12P\n" +
+	"\x06parent\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\x12/parametermanager.googleapis.com/TemplateVersionR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xcd\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xce\x01\n" +
 	"\x1cListTemplateVersionsResponse\x12^\n" +
 	"\x11template_versions\x18\x01 \x03(\v21.google.cloud.parametermanager.v1.TemplateVersionR\x10templateVersions\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"\xa9\x01\n" +
-	"\x19GetTemplateVersionRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/parametermanager.googleapis.com/TemplateVersionR\x04name\x12?\n" +
-	"\x04view\x18\x02 \x01(\x0e2&.google.cloud.parametermanager.v1.ViewB\x03\xe0A\x01R\x04view\"\xb3\x02\n" +
-	"\x1cCreateTemplateVersionRequest\x12O\n" +
-	"\x06parent\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\x12/parametermanager.googleapis.com/TemplateVersionR\x06parent\x123\n" +
-	"\x13template_version_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x11templateVersionId\x12a\n" +
-	"\x10template_version\x18\x03 \x01(\v21.google.cloud.parametermanager.v1.TemplateVersionB\x03\xe0A\x02R\x0ftemplateVersion\x12*\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x06R\vunreachable\"\xab\x01\n" +
+	"\x19GetTemplateVersionRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/parametermanager.googleapis.com/TemplateVersionR\x04name\x12@\n" +
+	"\x04view\x18\x02 \x01(\x0e2&.google.cloud.parametermanager.v1.ViewB\x04\xe2A\x01\x01R\x04view\"\xb7\x02\n" +
+	"\x1cCreateTemplateVersionRequest\x12P\n" +
+	"\x06parent\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\x12/parametermanager.googleapis.com/TemplateVersionR\x06parent\x124\n" +
+	"\x13template_version_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x11templateVersionId\x12b\n" +
+	"\x10template_version\x18\x03 \x01(\v21.google.cloud.parametermanager.v1.TemplateVersionB\x04\xe2A\x01\x02R\x0ftemplateVersion\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xef\x01\n" +
-	"\x1cUpdateTemplateVersionRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12a\n" +
-	"\x10template_version\x18\x02 \x01(\v21.google.cloud.parametermanager.v1.TemplateVersionB\x03\xe0A\x02R\x0ftemplateVersion\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xf2\x01\n" +
+	"\x1cUpdateTemplateVersionRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12b\n" +
+	"\x10template_version\x18\x02 \x01(\v21.google.cloud.parametermanager.v1.TemplateVersionB\x04\xe2A\x01\x02R\x0ftemplateVersion\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x97\x01\n" +
-	"\x1cDeleteTemplateVersionRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/parametermanager.googleapis.com/TemplateVersionR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x99\x01\n" +
+	"\x1cDeleteTemplateVersionRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/parametermanager.googleapis.com/TemplateVersionR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xd2\x01\n" +
-	"\x1cRenderTemplateVersionRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/parametermanager.googleapis.com/TemplateVersionR\x04name\x12e\n" +
-	"\x11parameter_version\x18\x02 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0parametermanager.googleapis.com/ParameterVersionR\x10parameterVersion\"\xcb\x03\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xd4\x01\n" +
+	"\x1cRenderTemplateVersionRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/parametermanager.googleapis.com/TemplateVersionR\x04name\x12f\n" +
+	"\x11parameter_version\x18\x02 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0parametermanager.googleapis.com/ParameterVersionR\x10parameterVersion\"\xce\x03\n" +
 	"\x1dRenderTemplateVersionResponse\x12_\n" +
 	"\x10template_version\x18\x01 \x01(\tB4\xfaA1\n" +
 	"/parametermanager.googleapis.com/TemplateVersionR\x0ftemplateVersion\x12R\n" +
-	"\apayload\x18\x02 \x01(\v28.google.cloud.parametermanager.v1.TemplateVersionPayloadR\apayload\x12.\n" +
-	"\x10rendered_payload\x18\x03 \x01(\fB\x03\xe0A\x03R\x0frenderedPayload\x12^\n" +
-	"\x0ftemplate_format\x18\x04 \x01(\x0e20.google.cloud.parametermanager.v1.TemplateFormatB\x03\xe0A\x03R\x0etemplateFormat\x12e\n" +
-	"\x11parameter_version\x18\x05 \x01(\tB8\xe0A\x03\xfaA2\n" +
+	"\apayload\x18\x02 \x01(\v28.google.cloud.parametermanager.v1.TemplateVersionPayloadR\apayload\x12/\n" +
+	"\x10rendered_payload\x18\x03 \x01(\fB\x04\xe2A\x01\x03R\x0frenderedPayload\x12_\n" +
+	"\x0ftemplate_format\x18\x04 \x01(\x0e20.google.cloud.parametermanager.v1.TemplateFormatB\x04\xe2A\x01\x03R\x0etemplateFormat\x12f\n" +
+	"\x11parameter_version\x18\x05 \x01(\tB9\xe2A\x01\x03\xfaA2\n" +
 	"0parametermanager.googleapis.com/ParameterVersionR\x10parameterVersion*X\n" +
 	"\x0fParameterFormat\x12 \n" +
 	"\x1cPARAMETER_FORMAT_UNSPECIFIED\x10\x00\x12\x0f\n" +

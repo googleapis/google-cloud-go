@@ -1499,14 +1499,14 @@ var File_google_cloud_bigquery_storage_v1beta2_storage_proto protoreflect.FileDe
 
 const file_google_cloud_bigquery_storage_v1beta2_storage_proto_rawDesc = "" +
 	"\n" +
-	"3google/cloud/bigquery/storage/v1beta2/storage.proto\x12%google.cloud.bigquery.storage.v1beta2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a1google/cloud/bigquery/storage/v1beta2/arrow.proto\x1a0google/cloud/bigquery/storage/v1beta2/avro.proto\x1a4google/cloud/bigquery/storage/v1beta2/protobuf.proto\x1a2google/cloud/bigquery/storage/v1beta2/stream.proto\x1a1google/cloud/bigquery/storage/v1beta2/table.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x17google/rpc/status.proto\"\xed\x01\n" +
-	"\x18CreateReadSessionRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12Z\n" +
-	"\fread_session\x18\x02 \x01(\v22.google.cloud.bigquery.storage.v1beta2.ReadSessionB\x03\xe0A\x02R\vreadSession\x12(\n" +
-	"\x10max_stream_count\x18\x03 \x01(\x05R\x0emaxStreamCount\"}\n" +
-	"\x0fReadRowsRequest\x12R\n" +
-	"\vread_stream\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
+	"3google/cloud/bigquery/storage/v1beta2/storage.proto\x12%google.cloud.bigquery.storage.v1beta2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a1google/cloud/bigquery/storage/v1beta2/arrow.proto\x1a0google/cloud/bigquery/storage/v1beta2/avro.proto\x1a4google/cloud/bigquery/storage/v1beta2/protobuf.proto\x1a2google/cloud/bigquery/storage/v1beta2/stream.proto\x1a1google/cloud/bigquery/storage/v1beta2/table.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x17google/rpc/status.proto\"\xef\x01\n" +
+	"\x18CreateReadSessionRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12[\n" +
+	"\fread_session\x18\x02 \x01(\v22.google.cloud.bigquery.storage.v1beta2.ReadSessionB\x04\xe2A\x01\x02R\vreadSession\x12(\n" +
+	"\x10max_stream_count\x18\x03 \x01(\x05R\x0emaxStreamCount\"~\n" +
+	"\x0fReadRowsRequest\x12S\n" +
+	"\vread_stream\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
 	")bigquerystorage.googleapis.com/ReadStreamR\n" +
 	"readStream\x12\x16\n" +
 	"\x06offset\x18\x02 \x01(\x03R\x06offset\":\n" +
@@ -1516,31 +1516,31 @@ const file_google_cloud_bigquery_storage_v1beta2_storage_proto_rawDesc = "" +
 	"\bprogress\x18\x02 \x01(\v2;.google.cloud.bigquery.storage.v1beta2.StreamStats.ProgressR\bprogress\x1a^\n" +
 	"\bProgress\x12*\n" +
 	"\x11at_response_start\x18\x01 \x01(\x01R\x0fatResponseStart\x12&\n" +
-	"\x0fat_response_end\x18\x02 \x01(\x01R\ratResponseEnd\"\xda\x04\n" +
+	"\x0fat_response_end\x18\x02 \x01(\x01R\ratResponseEnd\"\xdc\x04\n" +
 	"\x10ReadRowsResponse\x12N\n" +
 	"\tavro_rows\x18\x03 \x01(\v2/.google.cloud.bigquery.storage.v1beta2.AvroRowsH\x00R\bavroRows\x12g\n" +
 	"\x12arrow_record_batch\x18\x04 \x01(\v27.google.cloud.bigquery.storage.v1beta2.ArrowRecordBatchH\x00R\x10arrowRecordBatch\x12\x1b\n" +
 	"\trow_count\x18\x06 \x01(\x03R\browCount\x12H\n" +
 	"\x05stats\x18\x02 \x01(\v22.google.cloud.bigquery.storage.v1beta2.StreamStatsR\x05stats\x12[\n" +
-	"\x0ethrottle_state\x18\x05 \x01(\v24.google.cloud.bigquery.storage.v1beta2.ThrottleStateR\rthrottleState\x12Y\n" +
-	"\vavro_schema\x18\a \x01(\v21.google.cloud.bigquery.storage.v1beta2.AvroSchemaB\x03\xe0A\x03H\x01R\n" +
-	"avroSchema\x12\\\n" +
-	"\farrow_schema\x18\b \x01(\v22.google.cloud.bigquery.storage.v1beta2.ArrowSchemaB\x03\xe0A\x03H\x01R\varrowSchemaB\x06\n" +
+	"\x0ethrottle_state\x18\x05 \x01(\v24.google.cloud.bigquery.storage.v1beta2.ThrottleStateR\rthrottleState\x12Z\n" +
+	"\vavro_schema\x18\a \x01(\v21.google.cloud.bigquery.storage.v1beta2.AvroSchemaB\x04\xe2A\x01\x03H\x01R\n" +
+	"avroSchema\x12]\n" +
+	"\farrow_schema\x18\b \x01(\v22.google.cloud.bigquery.storage.v1beta2.ArrowSchemaB\x04\xe2A\x01\x03H\x01R\varrowSchemaB\x06\n" +
 	"\x04rowsB\b\n" +
-	"\x06schema\"{\n" +
-	"\x16SplitReadStreamRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
+	"\x06schema\"|\n" +
+	"\x16SplitReadStreamRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
 	")bigquerystorage.googleapis.com/ReadStreamR\x04name\x12\x1a\n" +
 	"\bfraction\x18\x02 \x01(\x01R\bfraction\"\xd1\x01\n" +
 	"\x17SplitReadStreamResponse\x12X\n" +
 	"\x0eprimary_stream\x18\x01 \x01(\v21.google.cloud.bigquery.storage.v1beta2.ReadStreamR\rprimaryStream\x12\\\n" +
-	"\x10remainder_stream\x18\x02 \x01(\v21.google.cloud.bigquery.storage.v1beta2.ReadStreamR\x0fremainderStream\"\xb5\x01\n" +
-	"\x18CreateWriteStreamRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dbigquery.googleapis.com/TableR\x06parent\x12Z\n" +
-	"\fwrite_stream\x18\x02 \x01(\v22.google.cloud.bigquery.storage.v1beta2.WriteStreamB\x03\xe0A\x02R\vwriteStream\"\xd4\x03\n" +
-	"\x11AppendRowsRequest\x12U\n" +
-	"\fwrite_stream\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
+	"\x10remainder_stream\x18\x02 \x01(\v21.google.cloud.bigquery.storage.v1beta2.ReadStreamR\x0fremainderStream\"\xb7\x01\n" +
+	"\x18CreateWriteStreamRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dbigquery.googleapis.com/TableR\x06parent\x12[\n" +
+	"\fwrite_stream\x18\x02 \x01(\v22.google.cloud.bigquery.storage.v1beta2.WriteStreamB\x04\xe2A\x01\x02R\vwriteStream\"\xd5\x03\n" +
+	"\x11AppendRowsRequest\x12V\n" +
+	"\fwrite_stream\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
 	"*bigquerystorage.googleapis.com/WriteStreamR\vwriteStream\x123\n" +
 	"\x06offset\x18\x02 \x01(\v2\x1b.google.protobuf.Int64ValueR\x06offset\x12c\n" +
 	"\n" +
@@ -1557,24 +1557,24 @@ const file_google_cloud_bigquery_storage_v1beta2_storage_proto_rawDesc = "" +
 	"\fAppendResult\x123\n" +
 	"\x06offset\x18\x01 \x01(\v2\x1b.google.protobuf.Int64ValueR\x06offsetB\n" +
 	"\n" +
-	"\bresponse\"_\n" +
-	"\x15GetWriteStreamRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*bigquerystorage.googleapis.com/WriteStreamR\x04name\"g\n" +
-	"\x1eBatchCommitWriteStreamsRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12(\n" +
-	"\rwrite_streams\x18\x02 \x03(\tB\x03\xe0A\x02R\fwriteStreams\"\xb8\x01\n" +
+	"\bresponse\"`\n" +
+	"\x15GetWriteStreamRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*bigquerystorage.googleapis.com/WriteStreamR\x04name\"i\n" +
+	"\x1eBatchCommitWriteStreamsRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12)\n" +
+	"\rwrite_streams\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\fwriteStreams\"\xb8\x01\n" +
 	"\x1fBatchCommitWriteStreamsResponse\x12;\n" +
 	"\vcommit_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"commitTime\x12X\n" +
-	"\rstream_errors\x18\x02 \x03(\v23.google.cloud.bigquery.storage.v1beta2.StorageErrorR\fstreamErrors\"d\n" +
-	"\x1aFinalizeWriteStreamRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
+	"\rstream_errors\x18\x02 \x03(\v23.google.cloud.bigquery.storage.v1beta2.StorageErrorR\fstreamErrors\"e\n" +
+	"\x1aFinalizeWriteStreamRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
 	"*bigquerystorage.googleapis.com/WriteStreamR\x04name\":\n" +
 	"\x1bFinalizeWriteStreamResponse\x12\x1b\n" +
-	"\trow_count\x18\x01 \x01(\x03R\browCount\"\x9e\x01\n" +
-	"\x10FlushRowsRequest\x12U\n" +
-	"\fwrite_stream\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
+	"\trow_count\x18\x01 \x01(\x03R\browCount\"\x9f\x01\n" +
+	"\x10FlushRowsRequest\x12V\n" +
+	"\fwrite_stream\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
 	"*bigquerystorage.googleapis.com/WriteStreamR\vwriteStream\x123\n" +
 	"\x06offset\x18\x02 \x01(\v2\x1b.google.protobuf.Int64ValueR\x06offset\"+\n" +
 	"\x11FlushRowsResponse\x12\x16\n" +

@@ -2724,197 +2724,197 @@ var File_google_cloud_networkservices_v1beta1_dep_proto protoreflect.FileDescrip
 
 const file_google_cloud_networkservices_v1beta1_dep_proto_rawDesc = "" +
 	"\n" +
-	".google/cloud/networkservices/v1beta1/dep.proto\x12$google.cloud.networkservices.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a1google/cloud/networkservices/v1beta1/common.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x93\x05\n" +
-	"\x0eExtensionChain\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12q\n" +
-	"\x0fmatch_condition\x18\x02 \x01(\v2C.google.cloud.networkservices.v1beta1.ExtensionChain.MatchConditionB\x03\xe0A\x02R\x0ematchCondition\x12c\n" +
+	".google/cloud/networkservices/v1beta1/dep.proto\x12$google.cloud.networkservices.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a1google/cloud/networkservices/v1beta1/common.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x9e\x05\n" +
+	"\x0eExtensionChain\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12r\n" +
+	"\x0fmatch_condition\x18\x02 \x01(\v2C.google.cloud.networkservices.v1beta1.ExtensionChain.MatchConditionB\x04\xe2A\x01\x02R\x0ematchCondition\x12d\n" +
 	"\n" +
-	"extensions\x18\x03 \x03(\v2>.google.cloud.networkservices.v1beta1.ExtensionChain.ExtensionB\x03\xe0A\x02R\n" +
-	"extensions\x1a<\n" +
-	"\x0eMatchCondition\x12*\n" +
-	"\x0ecel_expression\x18\x01 \x01(\tB\x03\xe0A\x02R\rcelExpression\x1a\xd1\x02\n" +
-	"\tExtension\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12!\n" +
-	"\tauthority\x18\x02 \x01(\tB\x03\xe0A\x01R\tauthority\x12\x1d\n" +
-	"\aservice\x18\x03 \x01(\tB\x03\xe0A\x02R\aservice\x12_\n" +
-	"\x10supported_events\x18\x04 \x03(\x0e2/.google.cloud.networkservices.v1beta1.EventTypeB\x03\xe0A\x01R\x0fsupportedEvents\x128\n" +
-	"\atimeout\x18\x05 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\atimeout\x12 \n" +
-	"\tfail_open\x18\x06 \x01(\bB\x03\xe0A\x01R\bfailOpen\x12,\n" +
-	"\x0fforward_headers\x18\a \x03(\tB\x03\xe0A\x01R\x0eforwardHeaders\"\xba\x06\n" +
-	"\x12LbTrafficExtension\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12%\n" +
-	"\vdescription\x18\t \x01(\tB\x03\xe0A\x01R\vdescription\x12a\n" +
-	"\x06labels\x18\x04 \x03(\v2D.google.cloud.networkservices.v1beta1.LbTrafficExtension.LabelsEntryB\x03\xe0A\x01R\x06labels\x12.\n" +
-	"\x10forwarding_rules\x18\x05 \x03(\tB\x03\xe0A\x02R\x0fforwardingRules\x12d\n" +
-	"\x10extension_chains\x18\a \x03(\v24.google.cloud.networkservices.v1beta1.ExtensionChainB\x03\xe0A\x02R\x0fextensionChains\x12r\n" +
-	"\x15load_balancing_scheme\x18\b \x01(\x0e29.google.cloud.networkservices.v1beta1.LoadBalancingSchemeB\x03\xe0A\x02R\x13loadBalancingScheme\x1a9\n" +
+	"extensions\x18\x03 \x03(\v2>.google.cloud.networkservices.v1beta1.ExtensionChain.ExtensionB\x04\xe2A\x01\x02R\n" +
+	"extensions\x1a=\n" +
+	"\x0eMatchCondition\x12+\n" +
+	"\x0ecel_expression\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\rcelExpression\x1a\xd8\x02\n" +
+	"\tExtension\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12\"\n" +
+	"\tauthority\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\tauthority\x12\x1e\n" +
+	"\aservice\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\aservice\x12`\n" +
+	"\x10supported_events\x18\x04 \x03(\x0e2/.google.cloud.networkservices.v1beta1.EventTypeB\x04\xe2A\x01\x01R\x0fsupportedEvents\x129\n" +
+	"\atimeout\x18\x05 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\atimeout\x12!\n" +
+	"\tfail_open\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\bfailOpen\x12-\n" +
+	"\x0fforward_headers\x18\a \x03(\tB\x04\xe2A\x01\x01R\x0eforwardHeaders\"\xc0\x06\n" +
+	"\x12LbTrafficExtension\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x02\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12&\n" +
+	"\vdescription\x18\t \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12b\n" +
+	"\x06labels\x18\x04 \x03(\v2D.google.cloud.networkservices.v1beta1.LbTrafficExtension.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12/\n" +
+	"\x10forwarding_rules\x18\x05 \x03(\tB\x04\xe2A\x01\x02R\x0fforwardingRules\x12e\n" +
+	"\x10extension_chains\x18\a \x03(\v24.google.cloud.networkservices.v1beta1.ExtensionChainB\x04\xe2A\x01\x02R\x0fextensionChains\x12s\n" +
+	"\x15load_balancing_scheme\x18\b \x01(\x0e29.google.cloud.networkservices.v1beta1.LoadBalancingSchemeB\x04\xe2A\x01\x02R\x13loadBalancingScheme\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\xb4\x01\xeaA\xb0\x01\n" +
-	"1networkservices.googleapis.com/LbTrafficExtension\x12Rprojects/{project}/locations/{location}/lbTrafficExtensions/{lb_traffic_extension}*\x13lbTrafficExtensions2\x12lbTrafficExtension\"\xf6\x01\n" +
-	"\x1eListLbTrafficExtensionsRequest\x12Q\n" +
-	"\x06parent\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\x121networkservices.googleapis.com/LbTrafficExtensionR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"1networkservices.googleapis.com/LbTrafficExtension\x12Rprojects/{project}/locations/{location}/lbTrafficExtensions/{lb_traffic_extension}*\x13lbTrafficExtensions2\x12lbTrafficExtension\"\xfb\x01\n" +
+	"\x1eListLbTrafficExtensionsRequest\x12R\n" +
+	"\x06parent\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\x121networkservices.googleapis.com/LbTrafficExtensionR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xd9\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xd9\x01\n" +
 	"\x1fListLbTrafficExtensionsResponse\x12l\n" +
 	"\x15lb_traffic_extensions\x18\x01 \x03(\v28.google.cloud.networkservices.v1beta1.LbTrafficExtensionR\x13lbTrafficExtensions\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"m\n" +
-	"\x1cGetLbTrafficExtensionRequest\x12M\n" +
-	"\x04name\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
-	"1networkservices.googleapis.com/LbTrafficExtensionR\x04name\"\xcd\x02\n" +
-	"\x1fCreateLbTrafficExtensionRequest\x12Q\n" +
-	"\x06parent\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\x121networkservices.googleapis.com/LbTrafficExtensionR\x06parent\x12:\n" +
-	"\x17lb_traffic_extension_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x14lbTrafficExtensionId\x12o\n" +
-	"\x14lb_traffic_extension\x18\x03 \x01(\v28.google.cloud.networkservices.v1beta1.LbTrafficExtensionB\x03\xe0A\x02R\x12lbTrafficExtension\x12*\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"n\n" +
+	"\x1cGetLbTrafficExtensionRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1networkservices.googleapis.com/LbTrafficExtensionR\x04name\"\xd1\x02\n" +
+	"\x1fCreateLbTrafficExtensionRequest\x12R\n" +
+	"\x06parent\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\x121networkservices.googleapis.com/LbTrafficExtensionR\x06parent\x12;\n" +
+	"\x17lb_traffic_extension_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x14lbTrafficExtensionId\x12p\n" +
+	"\x14lb_traffic_extension\x18\x03 \x01(\v28.google.cloud.networkservices.v1beta1.LbTrafficExtensionB\x04\xe2A\x01\x02R\x12lbTrafficExtension\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x80\x02\n" +
-	"\x1fUpdateLbTrafficExtensionRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12o\n" +
-	"\x14lb_traffic_extension\x18\x02 \x01(\v28.google.cloud.networkservices.v1beta1.LbTrafficExtensionB\x03\xe0A\x02R\x12lbTrafficExtension\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x83\x02\n" +
+	"\x1fUpdateLbTrafficExtensionRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12p\n" +
+	"\x14lb_traffic_extension\x18\x02 \x01(\v28.google.cloud.networkservices.v1beta1.LbTrafficExtensionB\x04\xe2A\x01\x02R\x12lbTrafficExtension\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x9c\x01\n" +
-	"\x1fDeleteLbTrafficExtensionRequest\x12M\n" +
-	"\x04name\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
-	"1networkservices.googleapis.com/LbTrafficExtensionR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x9e\x01\n" +
+	"\x1fDeleteLbTrafficExtensionRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1networkservices.googleapis.com/LbTrafficExtensionR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xac\x06\n" +
-	"\x10LbRouteExtension\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12%\n" +
-	"\vdescription\x18\t \x01(\tB\x03\xe0A\x01R\vdescription\x12_\n" +
-	"\x06labels\x18\x04 \x03(\v2B.google.cloud.networkservices.v1beta1.LbRouteExtension.LabelsEntryB\x03\xe0A\x01R\x06labels\x12.\n" +
-	"\x10forwarding_rules\x18\x05 \x03(\tB\x03\xe0A\x02R\x0fforwardingRules\x12d\n" +
-	"\x10extension_chains\x18\a \x03(\v24.google.cloud.networkservices.v1beta1.ExtensionChainB\x03\xe0A\x02R\x0fextensionChains\x12r\n" +
-	"\x15load_balancing_scheme\x18\b \x01(\x0e29.google.cloud.networkservices.v1beta1.LoadBalancingSchemeB\x03\xe0A\x02R\x13loadBalancingScheme\x1a9\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xb2\x06\n" +
+	"\x10LbRouteExtension\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x02\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12&\n" +
+	"\vdescription\x18\t \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12`\n" +
+	"\x06labels\x18\x04 \x03(\v2B.google.cloud.networkservices.v1beta1.LbRouteExtension.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12/\n" +
+	"\x10forwarding_rules\x18\x05 \x03(\tB\x04\xe2A\x01\x02R\x0fforwardingRules\x12e\n" +
+	"\x10extension_chains\x18\a \x03(\v24.google.cloud.networkservices.v1beta1.ExtensionChainB\x04\xe2A\x01\x02R\x0fextensionChains\x12s\n" +
+	"\x15load_balancing_scheme\x18\b \x01(\x0e29.google.cloud.networkservices.v1beta1.LoadBalancingSchemeB\x04\xe2A\x01\x02R\x13loadBalancingScheme\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\xaa\x01\xeaA\xa6\x01\n" +
-	"/networkservices.googleapis.com/LbRouteExtension\x12Nprojects/{project}/locations/{location}/lbRouteExtensions/{lb_route_extension}*\x11lbRouteExtensions2\x10lbRouteExtension\"\xf2\x01\n" +
-	"\x1cListLbRouteExtensionsRequest\x12O\n" +
-	"\x06parent\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\x12/networkservices.googleapis.com/LbRouteExtensionR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"/networkservices.googleapis.com/LbRouteExtension\x12Nprojects/{project}/locations/{location}/lbRouteExtensions/{lb_route_extension}*\x11lbRouteExtensions2\x10lbRouteExtension\"\xf7\x01\n" +
+	"\x1cListLbRouteExtensionsRequest\x12P\n" +
+	"\x06parent\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\x12/networkservices.googleapis.com/LbRouteExtensionR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xd1\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xd1\x01\n" +
 	"\x1dListLbRouteExtensionsResponse\x12f\n" +
 	"\x13lb_route_extensions\x18\x01 \x03(\v26.google.cloud.networkservices.v1beta1.LbRouteExtensionR\x11lbRouteExtensions\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"i\n" +
-	"\x1aGetLbRouteExtensionRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/networkservices.googleapis.com/LbRouteExtensionR\x04name\"\xbf\x02\n" +
-	"\x1dCreateLbRouteExtensionRequest\x12O\n" +
-	"\x06parent\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\x12/networkservices.googleapis.com/LbRouteExtensionR\x06parent\x126\n" +
-	"\x15lb_route_extension_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x12lbRouteExtensionId\x12i\n" +
-	"\x12lb_route_extension\x18\x03 \x01(\v26.google.cloud.networkservices.v1beta1.LbRouteExtensionB\x03\xe0A\x02R\x10lbRouteExtension\x12*\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"j\n" +
+	"\x1aGetLbRouteExtensionRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/networkservices.googleapis.com/LbRouteExtensionR\x04name\"\xc3\x02\n" +
+	"\x1dCreateLbRouteExtensionRequest\x12P\n" +
+	"\x06parent\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\x12/networkservices.googleapis.com/LbRouteExtensionR\x06parent\x127\n" +
+	"\x15lb_route_extension_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x12lbRouteExtensionId\x12j\n" +
+	"\x12lb_route_extension\x18\x03 \x01(\v26.google.cloud.networkservices.v1beta1.LbRouteExtensionB\x04\xe2A\x01\x02R\x10lbRouteExtension\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xf8\x01\n" +
-	"\x1dUpdateLbRouteExtensionRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12i\n" +
-	"\x12lb_route_extension\x18\x02 \x01(\v26.google.cloud.networkservices.v1beta1.LbRouteExtensionB\x03\xe0A\x02R\x10lbRouteExtension\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xfb\x01\n" +
+	"\x1dUpdateLbRouteExtensionRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12j\n" +
+	"\x12lb_route_extension\x18\x02 \x01(\v26.google.cloud.networkservices.v1beta1.LbRouteExtensionB\x04\xe2A\x01\x02R\x10lbRouteExtension\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x98\x01\n" +
-	"\x1dDeleteLbRouteExtensionRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/networkservices.googleapis.com/LbRouteExtensionR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x9a\x01\n" +
+	"\x1dDeleteLbRouteExtensionRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/networkservices.googleapis.com/LbRouteExtensionR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x8c\x16\n" +
-	"\x10ExtensionBinding\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12%\n" +
-	"\vdescription\x18\x04 \x01(\tB\x03\xe0A\x01R\vdescription\x12_\n" +
-	"\x06labels\x18\x05 \x03(\v2B.google.cloud.networkservices.v1beta1.ExtensionBinding.LabelsEntryB\x03\xe0A\x01R\x06labels\x12\x17\n" +
-	"\x04etag\x18\x06 \x01(\tB\x03\xe0A\x01R\x04etag\x122\n" +
-	"\x12producer_extension\x18\a \x01(\tB\x03\xe0A\x02R\x11producerExtension\x12Z\n" +
-	"\x06target\x18\b \x01(\v2=.google.cloud.networkservices.v1beta1.ExtensionBinding.TargetB\x03\xe0A\x02R\x06target\x12u\n" +
-	"\x10match_conditions\x18\t \x03(\v2E.google.cloud.networkservices.v1beta1.ExtensionBinding.MatchConditionB\x03\xe0A\x01R\x0fmatchConditions\x12 \n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xab\x16\n" +
+	"\x10ExtensionBinding\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12&\n" +
+	"\vdescription\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12`\n" +
+	"\x06labels\x18\x05 \x03(\v2B.google.cloud.networkservices.v1beta1.ExtensionBinding.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12\x18\n" +
+	"\x04etag\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x04etag\x123\n" +
+	"\x12producer_extension\x18\a \x01(\tB\x04\xe2A\x01\x02R\x11producerExtension\x12[\n" +
+	"\x06target\x18\b \x01(\v2=.google.cloud.networkservices.v1beta1.ExtensionBinding.TargetB\x04\xe2A\x01\x02R\x06target\x12v\n" +
+	"\x10match_conditions\x18\t \x03(\v2E.google.cloud.networkservices.v1beta1.ExtensionBinding.MatchConditionB\x04\xe2A\x01\x01R\x0fmatchConditions\x12!\n" +
 	"\tfail_open\x18\n" +
-	" \x01(\bB\x03\xe0A\x01R\bfailOpen\x12~\n" +
-	"\x11producer_metadata\x18\v \x03(\v2L.google.cloud.networkservices.v1beta1.ExtensionBinding.ProducerMetadataEntryB\x03\xe0A\x01R\x10producerMetadata\x12\x1f\n" +
-	"\bpriority\x18\f \x01(\x05B\x03\xe0A\x01R\bpriority\x1a\x86\x03\n" +
-	"\x06Target\x12!\n" +
-	"\tresources\x18\x01 \x03(\tB\x03\xe0A\x01R\tresources\x12^\n" +
-	"\x05scope\x18\x02 \x01(\v2C.google.cloud.networkservices.v1beta1.ExtensionBinding.Target.ScopeB\x03\xe0A\x01R\x05scope\x1a\xf8\x01\n" +
-	"\x05Scope\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12|\n" +
-	"\x0eresource_types\x18\x02 \x03(\x0e2P.google.cloud.networkservices.v1beta1.ExtensionBinding.Target.Scope.ResourceTypeB\x03\xe0A\x02R\rresourceTypes\"T\n" +
+	" \x01(\bB\x04\xe2A\x01\x01R\bfailOpen\x12\x7f\n" +
+	"\x11producer_metadata\x18\v \x03(\v2L.google.cloud.networkservices.v1beta1.ExtensionBinding.ProducerMetadataEntryB\x04\xe2A\x01\x01R\x10producerMetadata\x12 \n" +
+	"\bpriority\x18\f \x01(\x05B\x04\xe2A\x01\x01R\bpriority\x1a\x8a\x03\n" +
+	"\x06Target\x12\"\n" +
+	"\tresources\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\tresources\x12_\n" +
+	"\x05scope\x18\x02 \x01(\v2C.google.cloud.networkservices.v1beta1.ExtensionBinding.Target.ScopeB\x04\xe2A\x01\x01R\x05scope\x1a\xfa\x01\n" +
+	"\x05Scope\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12}\n" +
+	"\x0eresource_types\x18\x02 \x03(\x0e2P.google.cloud.networkservices.v1beta1.ExtensionBinding.Target.Scope.ResourceTypeB\x04\xe2A\x01\x02R\rresourceTypes\"T\n" +
 	"\fResourceType\x12\x1d\n" +
 	"\x19RESOURCE_TYPE_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eAI_APPLICATION\x10\x01\x12\x11\n" +
-	"\rAGENT_GATEWAY\x10\x02\x1a\xba\n" +
+	"\rAGENT_GATEWAY\x10\x02\x1a\xc9\n" +
 	"\n" +
-	"\x0eMatchCondition\x12]\n" +
-	"\x02to\x18\x02 \x01(\v2H.google.cloud.networkservices.v1beta1.ExtensionBinding.MatchCondition.ToB\x03\xe0A\x01R\x02to\x1a\xc2\x01\n" +
-	"\vStringMatch\x12\x1b\n" +
-	"\x05exact\x18\x01 \x01(\tB\x03\xe0A\x01H\x00R\x05exact\x12\x1d\n" +
-	"\x06prefix\x18\x02 \x01(\tB\x03\xe0A\x01H\x00R\x06prefix\x12\x1d\n" +
-	"\x06suffix\x18\x03 \x01(\tB\x03\xe0A\x01H\x00R\x06suffix\x12!\n" +
-	"\bcontains\x18\x04 \x01(\tB\x03\xe0A\x01H\x00R\bcontains\x12$\n" +
-	"\vignore_case\x18\x05 \x01(\bB\x03\xe0A\x01R\n" +
+	"\x0eMatchCondition\x12^\n" +
+	"\x02to\x18\x02 \x01(\v2H.google.cloud.networkservices.v1beta1.ExtensionBinding.MatchCondition.ToB\x04\xe2A\x01\x01R\x02to\x1a\xc7\x01\n" +
+	"\vStringMatch\x12\x1c\n" +
+	"\x05exact\x18\x01 \x01(\tB\x04\xe2A\x01\x01H\x00R\x05exact\x12\x1e\n" +
+	"\x06prefix\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x00R\x06prefix\x12\x1e\n" +
+	"\x06suffix\x18\x03 \x01(\tB\x04\xe2A\x01\x01H\x00R\x06suffix\x12\"\n" +
+	"\bcontains\x18\x04 \x01(\tB\x04\xe2A\x01\x01H\x00R\bcontains\x12%\n" +
+	"\vignore_case\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\n" +
 	"ignoreCaseB\x0f\n" +
-	"\rmatch_pattern\x1a\x94\x01\n" +
-	"\vHeaderMatch\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12l\n" +
-	"\x05value\x18\x02 \x01(\v2Q.google.cloud.networkservices.v1beta1.ExtensionBinding.MatchCondition.StringMatchB\x03\xe0A\x01R\x05value\x1a\xec\x06\n" +
-	"\x02To\x12{\n" +
-	"\vdestination\x18\x01 \x01(\v2T.google.cloud.networkservices.v1beta1.ExtensionBinding.MatchCondition.To.DestinationB\x03\xe0A\x01R\vdestination\x12\x82\x01\n" +
-	"\x0fnot_destination\x18\x02 \x01(\v2T.google.cloud.networkservices.v1beta1.ExtensionBinding.MatchCondition.To.DestinationB\x03\xe0A\x01R\x0enotDestination\x1a\xe3\x04\n" +
-	"\vDestination\x12\x82\x01\n" +
+	"\rmatch_pattern\x1a\x96\x01\n" +
+	"\vHeaderMatch\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12m\n" +
+	"\x05value\x18\x02 \x01(\v2Q.google.cloud.networkservices.v1beta1.ExtensionBinding.MatchCondition.StringMatchB\x04\xe2A\x01\x01R\x05value\x1a\xf3\x06\n" +
+	"\x02To\x12|\n" +
+	"\vdestination\x18\x01 \x01(\v2T.google.cloud.networkservices.v1beta1.ExtensionBinding.MatchCondition.To.DestinationB\x04\xe2A\x01\x01R\vdestination\x12\x83\x01\n" +
+	"\x0fnot_destination\x18\x02 \x01(\v2T.google.cloud.networkservices.v1beta1.ExtensionBinding.MatchCondition.To.DestinationB\x04\xe2A\x01\x01R\x0enotDestination\x1a\xe8\x04\n" +
+	"\vDestination\x12\x83\x01\n" +
 	"\n" +
-	"header_set\x18\x01 \x01(\v2^.google.cloud.networkservices.v1beta1.ExtensionBinding.MatchCondition.To.Destination.HeaderSetB\x03\xe0A\x01R\theaderSet\x12t\n" +
-	"\tresources\x18\x02 \x03(\v2Q.google.cloud.networkservices.v1beta1.ExtensionBinding.MatchCondition.StringMatchB\x03\xe0A\x01R\tresources\x12l\n" +
-	"\x05hosts\x18\x03 \x03(\v2Q.google.cloud.networkservices.v1beta1.ExtensionBinding.MatchCondition.StringMatchB\x03\xe0A\x01R\x05hosts\x12l\n" +
-	"\x05paths\x18\x04 \x03(\v2Q.google.cloud.networkservices.v1beta1.ExtensionBinding.MatchCondition.StringMatchB\x03\xe0A\x01R\x05paths\x1a}\n" +
-	"\tHeaderSet\x12p\n" +
-	"\aheaders\x18\x01 \x03(\v2Q.google.cloud.networkservices.v1beta1.ExtensionBinding.MatchCondition.HeaderMatchB\x03\xe0A\x02R\aheaders\x1a9\n" +
+	"header_set\x18\x01 \x01(\v2^.google.cloud.networkservices.v1beta1.ExtensionBinding.MatchCondition.To.Destination.HeaderSetB\x04\xe2A\x01\x01R\theaderSet\x12u\n" +
+	"\tresources\x18\x02 \x03(\v2Q.google.cloud.networkservices.v1beta1.ExtensionBinding.MatchCondition.StringMatchB\x04\xe2A\x01\x01R\tresources\x12m\n" +
+	"\x05hosts\x18\x03 \x03(\v2Q.google.cloud.networkservices.v1beta1.ExtensionBinding.MatchCondition.StringMatchB\x04\xe2A\x01\x01R\x05hosts\x12m\n" +
+	"\x05paths\x18\x04 \x03(\v2Q.google.cloud.networkservices.v1beta1.ExtensionBinding.MatchCondition.StringMatchB\x04\xe2A\x01\x01R\x05paths\x1a~\n" +
+	"\tHeaderSet\x12q\n" +
+	"\aheaders\x18\x01 \x03(\v2Q.google.cloud.networkservices.v1beta1.ExtensionBinding.MatchCondition.HeaderMatchB\x04\xe2A\x01\x02R\aheaders\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1aC\n" +
 	"\x15ProducerMetadataEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\xa9\x01\xeaA\xa5\x01\n" +
-	"/networkservices.googleapis.com/ExtensionBinding\x12Mprojects/{project}/locations/{location}/extensionBindings/{extension_binding}*\x11extensionBindings2\x10extensionBinding\"\xb5\x01\n" +
-	"\x1cListExtensionBindingsRequest\x12O\n" +
-	"\x06parent\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\x12/networkservices.googleapis.com/ExtensionBindingR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"/networkservices.googleapis.com/ExtensionBinding\x12Mprojects/{project}/locations/{location}/extensionBindings/{extension_binding}*\x11extensionBindings2\x10extensionBinding\"\xb8\x01\n" +
+	"\x1cListExtensionBindingsRequest\x12P\n" +
+	"\x06parent\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\x12/networkservices.googleapis.com/ExtensionBindingR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xd5\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xd6\x01\n" +
 	"\x1dListExtensionBindingsResponse\x12e\n" +
 	"\x12extension_bindings\x18\x01 \x03(\v26.google.cloud.networkservices.v1beta1.ExtensionBindingR\x11extensionBindings\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"i\n" +
-	"\x1aGetExtensionBindingRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/networkservices.googleapis.com/ExtensionBindingR\x04name\"\x91\x02\n" +
-	"\x1dCreateExtensionBindingRequest\x12O\n" +
-	"\x06parent\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\x12/networkservices.googleapis.com/ExtensionBindingR\x06parent\x125\n" +
-	"\x14extension_binding_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x12extensionBindingId\x12h\n" +
-	"\x11extension_binding\x18\x03 \x01(\v26.google.cloud.networkservices.v1beta1.ExtensionBindingB\x03\xe0A\x02R\x10extensionBinding\"\xcb\x01\n" +
-	"\x1dUpdateExtensionBindingRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12h\n" +
-	"\x11extension_binding\x18\x02 \x01(\v26.google.cloud.networkservices.v1beta1.ExtensionBindingB\x03\xe0A\x02R\x10extensionBinding\"\x85\x01\n" +
-	"\x1dDeleteExtensionBindingRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/networkservices.googleapis.com/ExtensionBindingR\x04name\x12\x17\n" +
-	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x01R\x04etag*\xa4\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x06R\vunreachable\"j\n" +
+	"\x1aGetExtensionBindingRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/networkservices.googleapis.com/ExtensionBindingR\x04name\"\x94\x02\n" +
+	"\x1dCreateExtensionBindingRequest\x12P\n" +
+	"\x06parent\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\x12/networkservices.googleapis.com/ExtensionBindingR\x06parent\x126\n" +
+	"\x14extension_binding_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x12extensionBindingId\x12i\n" +
+	"\x11extension_binding\x18\x03 \x01(\v26.google.cloud.networkservices.v1beta1.ExtensionBindingB\x04\xe2A\x01\x02R\x10extensionBinding\"\xcd\x01\n" +
+	"\x1dUpdateExtensionBindingRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12i\n" +
+	"\x11extension_binding\x18\x02 \x01(\v26.google.cloud.networkservices.v1beta1.ExtensionBindingB\x04\xe2A\x01\x02R\x10extensionBinding\"\x87\x01\n" +
+	"\x1dDeleteExtensionBindingRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/networkservices.googleapis.com/ExtensionBindingR\x04name\x12\x18\n" +
+	"\x04etag\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04etag*\xa4\x01\n" +
 	"\tEventType\x12\x1a\n" +
 	"\x16EVENT_TYPE_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fREQUEST_HEADERS\x10\x01\x12\x10\n" +

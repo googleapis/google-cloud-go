@@ -2589,9 +2589,9 @@ var File_google_cloud_edgenetwork_v1_service_proto protoreflect.FileDescriptor
 
 const file_google_cloud_edgenetwork_v1_service_proto_rawDesc = "" +
 	"\n" +
-	")google/cloud/edgenetwork/v1/service.proto\x12\x1bgoogle.cloud.edgenetwork.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a+google/cloud/edgenetwork/v1/resources.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc6\x01\n" +
-	"\x10ListZonesRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1fedgenetwork.googleapis.com/ZoneR\x06parent\x12\x1b\n" +
+	")google/cloud/edgenetwork/v1/service.proto\x12\x1bgoogle.cloud.edgenetwork.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a+google/cloud/edgenetwork/v1/resources.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc7\x01\n" +
+	"\x10ListZonesRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1fedgenetwork.googleapis.com/ZoneR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -2600,12 +2600,12 @@ const file_google_cloud_edgenetwork_v1_service_proto_rawDesc = "" +
 	"\x11ListZonesResponse\x127\n" +
 	"\x05zones\x18\x01 \x03(\v2!.google.cloud.edgenetwork.v1.ZoneR\x05zones\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable:\x02\x18\x01\"Q\n" +
-	"\x0eGetZoneRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fedgenetwork.googleapis.com/ZoneR\x04name:\x02\x18\x01\"\xc8\x01\n" +
-	"\x13ListNetworksRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"edgenetwork.googleapis.com/NetworkR\x06parent\x12\x1b\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable:\x02\x18\x01\"R\n" +
+	"\x0eGetZoneRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fedgenetwork.googleapis.com/ZoneR\x04name:\x02\x18\x01\"\xc9\x01\n" +
+	"\x13ListNetworksRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"edgenetwork.googleapis.com/NetworkR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -2614,24 +2614,24 @@ const file_google_cloud_edgenetwork_v1_service_proto_rawDesc = "" +
 	"\x14ListNetworksResponse\x12@\n" +
 	"\bnetworks\x18\x01 \x03(\v2$.google.cloud.edgenetwork.v1.NetworkR\bnetworks\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"S\n" +
-	"\x11GetNetworkRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"edgenetwork.googleapis.com/NetworkR\x04name\"\xe7\x01\n" +
-	"\x14CreateNetworkRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"edgenetwork.googleapis.com/NetworkR\x06parent\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"T\n" +
+	"\x11GetNetworkRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"edgenetwork.googleapis.com/NetworkR\x04name\"\xeb\x01\n" +
+	"\x14CreateNetworkRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"edgenetwork.googleapis.com/NetworkR\x06parent\x12#\n" +
 	"\n" +
-	"network_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tnetworkId\x12C\n" +
-	"\anetwork\x18\x03 \x01(\v2$.google.cloud.edgenetwork.v1.NetworkB\x03\xe0A\x02R\anetwork\x12\"\n" +
+	"network_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tnetworkId\x12D\n" +
+	"\anetwork\x18\x03 \x01(\v2$.google.cloud.edgenetwork.v1.NetworkB\x04\xe2A\x01\x02R\anetwork\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"z\n" +
-	"\x14DeleteNetworkRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"edgenetwork.googleapis.com/NetworkR\x04name\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"|\n" +
+	"\x14DeleteNetworkRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"edgenetwork.googleapis.com/NetworkR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\xc6\x01\n" +
-	"\x12ListSubnetsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!edgenetwork.googleapis.com/SubnetR\x06parent\x12\x1b\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xc7\x01\n" +
+	"\x12ListSubnetsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!edgenetwork.googleapis.com/SubnetR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -2640,29 +2640,29 @@ const file_google_cloud_edgenetwork_v1_service_proto_rawDesc = "" +
 	"\x13ListSubnetsResponse\x12=\n" +
 	"\asubnets\x18\x01 \x03(\v2#.google.cloud.edgenetwork.v1.SubnetR\asubnets\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"Q\n" +
-	"\x10GetSubnetRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!edgenetwork.googleapis.com/SubnetR\x04name\"\xe0\x01\n" +
-	"\x13CreateSubnetRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!edgenetwork.googleapis.com/SubnetR\x06parent\x12 \n" +
-	"\tsubnet_id\x18\x02 \x01(\tB\x03\xe0A\x02R\bsubnetId\x12@\n" +
-	"\x06subnet\x18\x03 \x01(\v2#.google.cloud.edgenetwork.v1.SubnetB\x03\xe0A\x02R\x06subnet\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"R\n" +
+	"\x10GetSubnetRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!edgenetwork.googleapis.com/SubnetR\x04name\"\xe4\x01\n" +
+	"\x13CreateSubnetRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!edgenetwork.googleapis.com/SubnetR\x06parent\x12!\n" +
+	"\tsubnet_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\bsubnetId\x12A\n" +
+	"\x06subnet\x18\x03 \x01(\v2#.google.cloud.edgenetwork.v1.SubnetB\x04\xe2A\x01\x02R\x06subnet\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xbd\x01\n" +
-	"\x13UpdateSubnetRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12@\n" +
-	"\x06subnet\x18\x02 \x01(\v2#.google.cloud.edgenetwork.v1.SubnetB\x03\xe0A\x02R\x06subnet\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xc0\x01\n" +
+	"\x13UpdateSubnetRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12A\n" +
+	"\x06subnet\x18\x02 \x01(\v2#.google.cloud.edgenetwork.v1.SubnetB\x04\xe2A\x01\x02R\x06subnet\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"x\n" +
-	"\x13DeleteSubnetRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!edgenetwork.googleapis.com/SubnetR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"z\n" +
+	"\x13DeleteSubnetRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!edgenetwork.googleapis.com/SubnetR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\xd2\x01\n" +
-	"\x18ListInterconnectsRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\x12'edgenetwork.googleapis.com/InterconnectR\x06parent\x12\x1b\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xd3\x01\n" +
+	"\x18ListInterconnectsRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\x12'edgenetwork.googleapis.com/InterconnectR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -2671,12 +2671,12 @@ const file_google_cloud_edgenetwork_v1_service_proto_rawDesc = "" +
 	"\x19ListInterconnectsResponse\x12O\n" +
 	"\rinterconnects\x18\x01 \x03(\v2).google.cloud.edgenetwork.v1.InterconnectR\rinterconnects\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"]\n" +
-	"\x16GetInterconnectRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'edgenetwork.googleapis.com/InterconnectR\x04name\"\xe6\x01\n" +
-	"\"ListInterconnectAttachmentsRequest\x12Q\n" +
-	"\x06parent\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\x121edgenetwork.googleapis.com/InterconnectAttachmentR\x06parent\x12\x1b\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"^\n" +
+	"\x16GetInterconnectRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'edgenetwork.googleapis.com/InterconnectR\x04name\"\xe7\x01\n" +
+	"\"ListInterconnectAttachmentsRequest\x12R\n" +
+	"\x06parent\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\x121edgenetwork.googleapis.com/InterconnectAttachmentR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -2685,23 +2685,23 @@ const file_google_cloud_edgenetwork_v1_service_proto_rawDesc = "" +
 	"#ListInterconnectAttachmentsResponse\x12n\n" +
 	"\x18interconnect_attachments\x18\x01 \x03(\v23.google.cloud.edgenetwork.v1.InterconnectAttachmentR\x17interconnectAttachments\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"q\n" +
-	" GetInterconnectAttachmentRequest\x12M\n" +
-	"\x04name\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
-	"1edgenetwork.googleapis.com/InterconnectAttachmentR\x04name\"\xd2\x02\n" +
-	"#CreateInterconnectAttachmentRequest\x12Q\n" +
-	"\x06parent\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\x121edgenetwork.googleapis.com/InterconnectAttachmentR\x06parent\x12A\n" +
-	"\x1ainterconnect_attachment_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x18interconnectAttachmentId\x12q\n" +
-	"\x17interconnect_attachment\x18\x03 \x01(\v23.google.cloud.edgenetwork.v1.InterconnectAttachmentB\x03\xe0A\x02R\x16interconnectAttachment\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"r\n" +
+	" GetInterconnectAttachmentRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1edgenetwork.googleapis.com/InterconnectAttachmentR\x04name\"\xd6\x02\n" +
+	"#CreateInterconnectAttachmentRequest\x12R\n" +
+	"\x06parent\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\x121edgenetwork.googleapis.com/InterconnectAttachmentR\x06parent\x12B\n" +
+	"\x1ainterconnect_attachment_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x18interconnectAttachmentId\x12r\n" +
+	"\x17interconnect_attachment\x18\x03 \x01(\v23.google.cloud.edgenetwork.v1.InterconnectAttachmentB\x04\xe2A\x01\x02R\x16interconnectAttachment\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\x98\x01\n" +
-	"#DeleteInterconnectAttachmentRequest\x12M\n" +
-	"\x04name\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
-	"1edgenetwork.googleapis.com/InterconnectAttachmentR\x04name\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x9a\x01\n" +
+	"#DeleteInterconnectAttachmentRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1edgenetwork.googleapis.com/InterconnectAttachmentR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\xc6\x01\n" +
-	"\x12ListRoutersRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!edgenetwork.googleapis.com/RouterR\x06parent\x12\x1b\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xc7\x01\n" +
+	"\x12ListRoutersRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!edgenetwork.googleapis.com/RouterR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -2710,39 +2710,39 @@ const file_google_cloud_edgenetwork_v1_service_proto_rawDesc = "" +
 	"\x13ListRoutersResponse\x12=\n" +
 	"\arouters\x18\x01 \x03(\v2#.google.cloud.edgenetwork.v1.RouterR\arouters\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"Q\n" +
-	"\x10GetRouterRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!edgenetwork.googleapis.com/RouterR\x04name\"\xe0\x01\n" +
-	"\x13CreateRouterRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!edgenetwork.googleapis.com/RouterR\x06parent\x12 \n" +
-	"\trouter_id\x18\x02 \x01(\tB\x03\xe0A\x02R\brouterId\x12@\n" +
-	"\x06router\x18\x03 \x01(\v2#.google.cloud.edgenetwork.v1.RouterB\x03\xe0A\x02R\x06router\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"R\n" +
+	"\x10GetRouterRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!edgenetwork.googleapis.com/RouterR\x04name\"\xe4\x01\n" +
+	"\x13CreateRouterRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!edgenetwork.googleapis.com/RouterR\x06parent\x12!\n" +
+	"\trouter_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\brouterId\x12A\n" +
+	"\x06router\x18\x03 \x01(\v2#.google.cloud.edgenetwork.v1.RouterB\x04\xe2A\x01\x02R\x06router\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xbd\x01\n" +
-	"\x13UpdateRouterRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12@\n" +
-	"\x06router\x18\x02 \x01(\v2#.google.cloud.edgenetwork.v1.RouterB\x03\xe0A\x02R\x06router\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xc0\x01\n" +
+	"\x13UpdateRouterRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12A\n" +
+	"\x06router\x18\x02 \x01(\v2#.google.cloud.edgenetwork.v1.RouterB\x04\xe2A\x01\x02R\x06router\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"x\n" +
-	"\x13DeleteRouterRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!edgenetwork.googleapis.com/RouterR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"z\n" +
+	"\x13DeleteRouterRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!edgenetwork.googleapis.com/RouterR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\xd5\x02\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion\"X\n" +
-	"\x16DiagnoseNetworkRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xdc\x02\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"apiVersion\"Y\n" +
+	"\x16DiagnoseNetworkRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
 	"\"edgenetwork.googleapis.com/NetworkR\x04name\"\xf0\x03\n" +
 	"\x17DiagnoseNetworkResponse\x12;\n" +
 	"\vupdate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
@@ -2755,23 +2755,23 @@ const file_google_cloud_edgenetwork_v1_service_proto_rawDesc = "" +
 	"\x19MACSEC_STATUS_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06SECURE\x10\x01\x12\f\n" +
-	"\bUNSECURE\x10\x02\"b\n" +
-	"\x1bDiagnoseInterconnectRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
+	"\bUNSECURE\x10\x02\"c\n" +
+	"\x1bDiagnoseInterconnectRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
 	"'edgenetwork.googleapis.com/InterconnectR\x04name\"\xa9\x01\n" +
 	"\x1cDiagnoseInterconnectResponse\x12;\n" +
 	"\vupdate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"updateTime\x12L\n" +
-	"\x06result\x18\x02 \x01(\v24.google.cloud.edgenetwork.v1.InterconnectDiagnosticsR\x06result\"V\n" +
-	"\x15DiagnoseRouterRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x06result\x18\x02 \x01(\v24.google.cloud.edgenetwork.v1.InterconnectDiagnosticsR\x06result\"W\n" +
+	"\x15DiagnoseRouterRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!edgenetwork.googleapis.com/RouterR\x04name\"\x98\x01\n" +
 	"\x16DiagnoseRouterResponse\x12;\n" +
 	"\vupdate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"updateTime\x12A\n" +
-	"\x06result\x18\x02 \x01(\v2).google.cloud.edgenetwork.v1.RouterStatusR\x06result\"T\n" +
-	"\x15InitializeZoneRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
+	"\x06result\x18\x02 \x01(\v2).google.cloud.edgenetwork.v1.RouterStatusR\x06result\"U\n" +
+	"\x15InitializeZoneRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
 	"\x1fedgenetwork.googleapis.com/ZoneR\x04name\"\x18\n" +
 	"\x16InitializeZoneResponse2\xa9+\n" +
 	"\vEdgeNetwork\x12\xc1\x01\n" +

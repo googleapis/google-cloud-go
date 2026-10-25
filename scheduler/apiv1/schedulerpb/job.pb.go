@@ -537,7 +537,7 @@ var File_google_cloud_scheduler_v1_job_proto protoreflect.FileDescriptor
 
 const file_google_cloud_scheduler_v1_job_proto_rawDesc = "" +
 	"\n" +
-	"#google/cloud/scheduler/v1/job.proto\x12\x19google.cloud.scheduler.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a&google/cloud/scheduler/v1/target.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xa1\b\n" +
+	"#google/cloud/scheduler/v1/job.proto\x12\x19google.cloud.scheduler.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a&google/cloud/scheduler/v1/target.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xa6\b\n" +
 	"\x03Job\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12N\n" +
@@ -546,13 +546,13 @@ const file_google_cloud_scheduler_v1_job_proto_rawDesc = "" +
 	"\vhttp_target\x18\x06 \x01(\v2%.google.cloud.scheduler.v1.HttpTargetH\x00R\n" +
 	"httpTarget\x12\x1a\n" +
 	"\bschedule\x18\x14 \x01(\tR\bschedule\x12\x1b\n" +
-	"\ttime_zone\x18\x15 \x01(\tR\btimeZone\x12I\n" +
-	"\x10user_update_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0euserUpdateTime\x12?\n" +
+	"\ttime_zone\x18\x15 \x01(\tR\btimeZone\x12J\n" +
+	"\x10user_update_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x0euserUpdateTime\x12@\n" +
 	"\x05state\x18\n" +
-	" \x01(\x0e2$.google.cloud.scheduler.v1.Job.StateB\x03\xe0A\x03R\x05state\x12/\n" +
-	"\x06status\x18\v \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x06status\x12D\n" +
-	"\rschedule_time\x18\x11 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\fscheduleTime\x12K\n" +
-	"\x11last_attempt_time\x18\x12 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0flastAttemptTime\x12I\n" +
+	" \x01(\x0e2$.google.cloud.scheduler.v1.Job.StateB\x04\xe2A\x01\x03R\x05state\x120\n" +
+	"\x06status\x18\v \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\x06status\x12E\n" +
+	"\rschedule_time\x18\x11 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\fscheduleTime\x12L\n" +
+	"\x11last_attempt_time\x18\x12 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x0flastAttemptTime\x12I\n" +
 	"\fretry_config\x18\x13 \x01(\v2&.google.cloud.scheduler.v1.RetryConfigR\vretryConfig\x12D\n" +
 	"\x10attempt_deadline\x18\x16 \x01(\v2\x19.google.protobuf.DurationR\x0fattemptDeadline\"X\n" +
 	"\x05State\x12\x15\n" +

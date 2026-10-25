@@ -1427,30 +1427,30 @@ var File_google_cloud_networksecurity_v1_firewall_activation_proto protoreflect.
 
 const file_google_cloud_networksecurity_v1_firewall_activation_proto_rawDesc = "" +
 	"\n" +
-	"9google/cloud/networksecurity/v1/firewall_activation.proto\x12\x1fgoogle.cloud.networksecurity.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/networksecurity/v1/common.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x9b\f\n" +
-	"\x10FirewallEndpoint\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x05\xe0A\bR\x04name\x12%\n" +
-	"\vdescription\x18\t \x01(\tB\x03\xe0A\x01R\vdescription\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12Z\n" +
-	"\x06labels\x18\x04 \x03(\v2=.google.cloud.networksecurity.v1.FirewallEndpoint.LabelsEntryB\x03\xe0A\x01R\x06labels\x12R\n" +
-	"\x05state\x18\x05 \x01(\x0e27.google.cloud.networksecurity.v1.FirewallEndpoint.StateB\x03\xe0A\x03R\x05state\x12%\n" +
-	"\vreconciling\x18\x06 \x01(\bB\x03\xe0A\x03R\vreconciling\x126\n" +
-	"\x13associated_networks\x18\a \x03(\tB\x05\xe0A\x03\x18\x01R\x12associatedNetworks\x12o\n" +
-	"\fassociations\x18\r \x03(\v2F.google.cloud.networksecurity.v1.FirewallEndpoint.AssociationReferenceB\x03\xe0A\x03R\fassociations\x12-\n" +
-	"\rsatisfies_pzs\x18\x0e \x01(\bB\x03\xe0A\x03H\x00R\fsatisfiesPzs\x88\x01\x01\x12-\n" +
-	"\rsatisfies_pzi\x18\x0f \x01(\bB\x03\xe0A\x03H\x01R\fsatisfiesPzi\x88\x01\x01\x121\n" +
-	"\x12billing_project_id\x18\b \x01(\tB\x03\xe0A\x01R\x10billingProjectId\x12t\n" +
-	"\x11endpoint_settings\x18\x13 \x01(\v2B.google.cloud.networksecurity.v1.FirewallEndpoint.EndpointSettingsB\x03\xe0A\x01R\x10endpointSettings\x1a\xb0\x01\n" +
-	"\x14AssociationReference\x12V\n" +
-	"\x04name\x18\x01 \x01(\tBB\xe0A\x03\xfaA<\n" +
-	":networksecurity.googleapis.com/FirewallEndpointAssociationR\x04name\x12@\n" +
-	"\anetwork\x18\x02 \x01(\tB&\xe0A\x03\xfaA \n" +
-	"\x1ecompute.googleapis.com/NetworkR\anetwork\x1aL\n" +
-	"\x10EndpointSettings\x128\n" +
-	"\x14jumbo_frames_enabled\x18\x01 \x01(\bB\x06\xe0A\x01\xe0A\x05R\x12jumboFramesEnabled\x1a9\n" +
+	"9google/cloud/networksecurity/v1/firewall_activation.proto\x12\x1fgoogle.cloud.networksecurity.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/networksecurity/v1/common.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa7\f\n" +
+	"\x10FirewallEndpoint\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x05\bR\x04name\x12&\n" +
+	"\vdescription\x18\t \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12[\n" +
+	"\x06labels\x18\x04 \x03(\v2=.google.cloud.networksecurity.v1.FirewallEndpoint.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12S\n" +
+	"\x05state\x18\x05 \x01(\x0e27.google.cloud.networksecurity.v1.FirewallEndpoint.StateB\x04\xe2A\x01\x03R\x05state\x12&\n" +
+	"\vreconciling\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x127\n" +
+	"\x13associated_networks\x18\a \x03(\tB\x06\xe2A\x01\x03\x18\x01R\x12associatedNetworks\x12p\n" +
+	"\fassociations\x18\r \x03(\v2F.google.cloud.networksecurity.v1.FirewallEndpoint.AssociationReferenceB\x04\xe2A\x01\x03R\fassociations\x12.\n" +
+	"\rsatisfies_pzs\x18\x0e \x01(\bB\x04\xe2A\x01\x03H\x00R\fsatisfiesPzs\x88\x01\x01\x12.\n" +
+	"\rsatisfies_pzi\x18\x0f \x01(\bB\x04\xe2A\x01\x03H\x01R\fsatisfiesPzi\x88\x01\x01\x122\n" +
+	"\x12billing_project_id\x18\b \x01(\tB\x04\xe2A\x01\x01R\x10billingProjectId\x12u\n" +
+	"\x11endpoint_settings\x18\x13 \x01(\v2B.google.cloud.networksecurity.v1.FirewallEndpoint.EndpointSettingsB\x04\xe2A\x01\x01R\x10endpointSettings\x1a\xb2\x01\n" +
+	"\x14AssociationReference\x12W\n" +
+	"\x04name\x18\x01 \x01(\tBC\xe2A\x01\x03\xfaA<\n" +
+	":networksecurity.googleapis.com/FirewallEndpointAssociationR\x04name\x12A\n" +
+	"\anetwork\x18\x02 \x01(\tB'\xe2A\x01\x03\xfaA \n" +
+	"\x1ecompute.googleapis.com/NetworkR\anetwork\x1aK\n" +
+	"\x10EndpointSettings\x127\n" +
+	"\x14jumbo_frames_enabled\x18\x01 \x01(\bB\x05\xe2A\x02\x01\x05R\x12jumboFramesEnabled\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"T\n" +
@@ -1463,53 +1463,53 @@ const file_google_cloud_networksecurity_v1_firewall_activation_proto_rawDesc = "
 	"\bINACTIVE\x10\x04:\x82\x02\xeaA\xfe\x01\n" +
 	"/networksecurity.googleapis.com/FirewallEndpoint\x12Worganizations/{organization}/locations/{location}/firewallEndpoints/{firewall_endpoint}\x12Mprojects/{project}/locations/{location}/firewallEndpoints/{firewall_endpoint}*\x11firewallEndpoints2\x10firewallEndpointB\x10\n" +
 	"\x0e_satisfies_pzsB\x10\n" +
-	"\x0e_satisfies_pzi\"\xe8\x01\n" +
-	"\x1cListFirewallEndpointsRequest\x12O\n" +
-	"\x06parent\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\x12/networksecurity.googleapis.com/FirewallEndpointR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\x1d\n" +
+	"\x0e_satisfies_pzi\"\xeb\x01\n" +
+	"\x1cListFirewallEndpointsRequest\x12P\n" +
+	"\x06parent\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\x12/networksecurity.googleapis.com/FirewallEndpointR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12\x1d\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x19\n" +
+	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x19\n" +
 	"\border_by\x18\x05 \x01(\tR\aorderBy\"\xcb\x01\n" +
 	"\x1dListFirewallEndpointsResponse\x12`\n" +
 	"\x12firewall_endpoints\x18\x01 \x03(\v21.google.cloud.networksecurity.v1.FirewallEndpointR\x11firewallEndpoints\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"i\n" +
-	"\x1aGetFirewallEndpointRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/networksecurity.googleapis.com/FirewallEndpointR\x04name\"\xb0\x02\n" +
-	"\x1dCreateFirewallEndpointRequest\x12O\n" +
-	"\x06parent\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\x12/networksecurity.googleapis.com/FirewallEndpointR\x06parent\x125\n" +
-	"\x14firewall_endpoint_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x12firewallEndpointId\x12c\n" +
-	"\x11firewall_endpoint\x18\x03 \x01(\v21.google.cloud.networksecurity.v1.FirewallEndpointB\x03\xe0A\x02R\x10firewallEndpoint\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"j\n" +
+	"\x1aGetFirewallEndpointRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/networksecurity.googleapis.com/FirewallEndpointR\x04name\"\xb4\x02\n" +
+	"\x1dCreateFirewallEndpointRequest\x12P\n" +
+	"\x06parent\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\x12/networksecurity.googleapis.com/FirewallEndpointR\x06parent\x126\n" +
+	"\x14firewall_endpoint_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x12firewallEndpointId\x12d\n" +
+	"\x11firewall_endpoint\x18\x03 \x01(\v21.google.cloud.networksecurity.v1.FirewallEndpointB\x04\xe2A\x01\x02R\x10firewallEndpoint\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xea\x01\n" +
-	"\x1dUpdateFirewallEndpointRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12c\n" +
-	"\x11firewall_endpoint\x18\x02 \x01(\v21.google.cloud.networksecurity.v1.FirewallEndpointB\x03\xe0A\x02R\x10firewallEndpoint\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xed\x01\n" +
+	"\x1dUpdateFirewallEndpointRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12d\n" +
+	"\x11firewall_endpoint\x18\x02 \x01(\v21.google.cloud.networksecurity.v1.FirewallEndpointB\x04\xe2A\x01\x02R\x10firewallEndpoint\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"\x90\x01\n" +
-	"\x1dDeleteFirewallEndpointRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/networksecurity.googleapis.com/FirewallEndpointR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x92\x01\n" +
+	"\x1dDeleteFirewallEndpointRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/networksecurity.googleapis.com/FirewallEndpointR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\xd2\a\n" +
-	"\x1bFirewallEndpointAssociation\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x05\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12e\n" +
-	"\x06labels\x18\x04 \x03(\v2H.google.cloud.networksecurity.v1.FirewallEndpointAssociation.LabelsEntryB\x03\xe0A\x01R\x06labels\x12]\n" +
-	"\x05state\x18\x05 \x01(\x0e2B.google.cloud.networksecurity.v1.FirewallEndpointAssociation.StateB\x03\xe0A\x03R\x05state\x12\x1d\n" +
-	"\anetwork\x18\x06 \x01(\tB\x03\xe0A\x02R\anetwork\x120\n" +
-	"\x11firewall_endpoint\x18\a \x01(\tB\x03\xe0A\x02R\x10firewallEndpoint\x12n\n" +
-	"\x15tls_inspection_policy\x18\b \x01(\tB:\xe0A\x01\xfaA4\n" +
-	"2networksecurity.googleapis.com/TlsInspectionPolicyR\x13tlsInspectionPolicy\x12%\n" +
-	"\vreconciling\x18\t \x01(\bB\x03\xe0A\x03R\vreconciling\x12\x1f\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xda\a\n" +
+	"\x1bFirewallEndpointAssociation\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x05\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12f\n" +
+	"\x06labels\x18\x04 \x03(\v2H.google.cloud.networksecurity.v1.FirewallEndpointAssociation.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12^\n" +
+	"\x05state\x18\x05 \x01(\x0e2B.google.cloud.networksecurity.v1.FirewallEndpointAssociation.StateB\x04\xe2A\x01\x03R\x05state\x12\x1e\n" +
+	"\anetwork\x18\x06 \x01(\tB\x04\xe2A\x01\x02R\anetwork\x121\n" +
+	"\x11firewall_endpoint\x18\a \x01(\tB\x04\xe2A\x01\x02R\x10firewallEndpoint\x12o\n" +
+	"\x15tls_inspection_policy\x18\b \x01(\tB;\xe2A\x01\x01\xfaA4\n" +
+	"2networksecurity.googleapis.com/TlsInspectionPolicyR\x13tlsInspectionPolicy\x12&\n" +
+	"\vreconciling\x18\t \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12 \n" +
 	"\bdisabled\x18\n" +
-	" \x01(\bB\x03\xe0A\x01R\bdisabled\x1a9\n" +
+	" \x01(\bB\x04\xe2A\x01\x01R\bdisabled\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"`\n" +
@@ -1522,38 +1522,38 @@ const file_google_cloud_networksecurity_v1_firewall_activation_proto_rawDesc = "
 	"\bINACTIVE\x10\x04\x12\n" +
 	"\n" +
 	"\x06ORPHAN\x10\x05:\xa6\x01\xeaA\xa2\x01\n" +
-	":networksecurity.googleapis.com/FirewallEndpointAssociation\x12dprojects/{project}/locations/{location}/firewallEndpointAssociations/{firewall_endpoint_association}\"\xfe\x01\n" +
-	"'ListFirewallEndpointAssociationsRequest\x12Z\n" +
-	"\x06parent\x18\x01 \x01(\tBB\xe0A\x02\xfaA<\x12:networksecurity.googleapis.com/FirewallEndpointAssociationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\x1d\n" +
+	":networksecurity.googleapis.com/FirewallEndpointAssociation\x12dprojects/{project}/locations/{location}/firewallEndpointAssociations/{firewall_endpoint_association}\"\x81\x02\n" +
+	"'ListFirewallEndpointAssociationsRequest\x12[\n" +
+	"\x06parent\x18\x01 \x01(\tBC\xe2A\x01\x02\xfaA<\x12:networksecurity.googleapis.com/FirewallEndpointAssociationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12\x1d\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x19\n" +
+	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x19\n" +
 	"\border_by\x18\x05 \x01(\tR\aorderBy\"\xf9\x01\n" +
 	"(ListFirewallEndpointAssociationsResponse\x12\x82\x01\n" +
 	"\x1efirewall_endpoint_associations\x18\x01 \x03(\v2<.google.cloud.networksecurity.v1.FirewallEndpointAssociationR\x1cfirewallEndpointAssociations\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\x7f\n" +
-	"%GetFirewallEndpointAssociationRequest\x12V\n" +
-	"\x04name\x18\x01 \x01(\tBB\xe0A\x02\xfaA<\n" +
-	":networksecurity.googleapis.com/FirewallEndpointAssociationR\x04name\"\x80\x03\n" +
-	"(CreateFirewallEndpointAssociationRequest\x12Z\n" +
-	"\x06parent\x18\x01 \x01(\tBB\xe0A\x02\xfaA<\x12:networksecurity.googleapis.com/FirewallEndpointAssociationR\x06parent\x12L\n" +
-	" firewall_endpoint_association_id\x18\x02 \x01(\tB\x03\xe0A\x01R\x1dfirewallEndpointAssociationId\x12\x85\x01\n" +
-	"\x1dfirewall_endpoint_association\x18\x03 \x01(\v2<.google.cloud.networksecurity.v1.FirewallEndpointAssociationB\x03\xe0A\x02R\x1bfirewallEndpointAssociation\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\x80\x01\n" +
+	"%GetFirewallEndpointAssociationRequest\x12W\n" +
+	"\x04name\x18\x01 \x01(\tBC\xe2A\x01\x02\xfaA<\n" +
+	":networksecurity.googleapis.com/FirewallEndpointAssociationR\x04name\"\x84\x03\n" +
+	"(CreateFirewallEndpointAssociationRequest\x12[\n" +
+	"\x06parent\x18\x01 \x01(\tBC\xe2A\x01\x02\xfaA<\x12:networksecurity.googleapis.com/FirewallEndpointAssociationR\x06parent\x12M\n" +
+	" firewall_endpoint_association_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x1dfirewallEndpointAssociationId\x12\x86\x01\n" +
+	"\x1dfirewall_endpoint_association\x18\x03 \x01(\v2<.google.cloud.networksecurity.v1.FirewallEndpointAssociationB\x04\xe2A\x01\x02R\x1bfirewallEndpointAssociation\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xa6\x01\n" +
-	"(DeleteFirewallEndpointAssociationRequest\x12V\n" +
-	"\x04name\x18\x01 \x01(\tBB\xe0A\x02\xfaA<\n" +
-	":networksecurity.googleapis.com/FirewallEndpointAssociationR\x04name\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xa8\x01\n" +
+	"(DeleteFirewallEndpointAssociationRequest\x12W\n" +
+	"\x04name\x18\x01 \x01(\tBC\xe2A\x01\x02\xfaA<\n" +
+	":networksecurity.googleapis.com/FirewallEndpointAssociationR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\x98\x02\n" +
-	"(UpdateFirewallEndpointAssociationRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12\x85\x01\n" +
-	"\x1dfirewall_endpoint_association\x18\x02 \x01(\v2<.google.cloud.networksecurity.v1.FirewallEndpointAssociationB\x03\xe0A\x02R\x1bfirewallEndpointAssociation\x12\"\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x9b\x02\n" +
+	"(UpdateFirewallEndpointAssociationRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12\x86\x01\n" +
+	"\x1dfirewall_endpoint_association\x18\x02 \x01(\v2<.google.cloud.networksecurity.v1.FirewallEndpointAssociationB\x04\xe2A\x01\x02R\x1bfirewallEndpointAssociation\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId2\x98#\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId2\x98#\n" +
 	"\x12FirewallActivation\x12\xe3\x01\n" +
 	"\x15ListFirewallEndpoints\x12=.google.cloud.networksecurity.v1.ListFirewallEndpointsRequest\x1a>.google.cloud.networksecurity.v1.ListFirewallEndpointsResponse\"K\xdaA\x06parent\x82\xd3\xe4\x93\x02<\x12:/v1/{parent=organizations/*/locations/*}/firewallEndpoints\x12\xe5\x01\n" +
 	"\x1cListProjectFirewallEndpoints\x12=.google.cloud.networksecurity.v1.ListFirewallEndpointsRequest\x1a>.google.cloud.networksecurity.v1.ListFirewallEndpointsResponse\"F\xdaA\x06parent\x82\xd3\xe4\x93\x027\x125/v1/{parent=projects/*/locations/*}/firewallEndpoints\x12\xd0\x01\n" +

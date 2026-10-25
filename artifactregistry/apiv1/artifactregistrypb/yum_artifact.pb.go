@@ -473,12 +473,12 @@ var File_google_devtools_artifactregistry_v1_yum_artifact_proto protoreflect.Fil
 
 const file_google_devtools_artifactregistry_v1_yum_artifact_proto_rawDesc = "" +
 	"\n" +
-	"6google/devtools/artifactregistry/v1/yum_artifact.proto\x12#google.devtools.artifactregistry.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x17google/rpc/status.proto\"\xb5\x03\n" +
-	"\vYumArtifact\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12&\n" +
-	"\fpackage_name\x18\x02 \x01(\tB\x03\xe0A\x03R\vpackageName\x12d\n" +
-	"\fpackage_type\x18\x03 \x01(\x0e2<.google.devtools.artifactregistry.v1.YumArtifact.PackageTypeB\x03\xe0A\x03R\vpackageType\x12'\n" +
-	"\farchitecture\x18\x04 \x01(\tB\x03\xe0A\x03R\farchitecture\"C\n" +
+	"6google/devtools/artifactregistry/v1/yum_artifact.proto\x12#google.devtools.artifactregistry.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x17google/rpc/status.proto\"\xb9\x03\n" +
+	"\vYumArtifact\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12'\n" +
+	"\fpackage_name\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vpackageName\x12e\n" +
+	"\fpackage_type\x18\x03 \x01(\x0e2<.google.devtools.artifactregistry.v1.YumArtifact.PackageTypeB\x04\xe2A\x01\x03R\vpackageType\x12(\n" +
+	"\farchitecture\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\farchitecture\"C\n" +
 	"\vPackageType\x12\x1c\n" +
 	"\x18PACKAGE_TYPE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +

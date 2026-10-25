@@ -633,22 +633,22 @@ var File_google_api_apikeys_v2_resources_proto protoreflect.FileDescriptor
 
 const file_google_api_apikeys_v2_resources_proto_rawDesc = "" +
 	"\n" +
-	"%google/api/apikeys/v2/resources.proto\x12\x15google.api.apikeys.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x96\x05\n" +
-	"\x03Key\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x15\n" +
-	"\x03uid\x18\x05 \x01(\tB\x03\xe0A\x03R\x03uid\x12!\n" +
-	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\"\n" +
+	"%google/api/apikeys/v2/resources.proto\x12\x15google.api.apikeys.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x9d\x05\n" +
+	"\x03Key\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x16\n" +
+	"\x03uid\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12!\n" +
+	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12#\n" +
 	"\n" +
-	"key_string\x18\x03 \x01(\tB\x03\xe0A\x03R\tkeyString\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12@\n" +
-	"\vdelete_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"key_string\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\tkeyString\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12A\n" +
+	"\vdelete_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"deleteTime\x12M\n" +
 	"\vannotations\x18\b \x03(\v2+.google.api.apikeys.v2.Key.AnnotationsEntryR\vannotations\x12G\n" +
-	"\frestrictions\x18\t \x01(\v2#.google.api.apikeys.v2.RestrictionsR\frestrictions\x12\x17\n" +
-	"\x04etag\x18\v \x01(\tB\x03\xe0A\x03R\x04etag\x1a>\n" +
+	"\frestrictions\x18\t \x01(\v2#.google.api.apikeys.v2.RestrictionsR\frestrictions\x12\x18\n" +
+	"\x04etag\x18\v \x01(\tB\x04\xe2A\x01\x03R\x04etag\x1a>\n" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:a\xeaA^\n" +
@@ -672,10 +672,10 @@ const file_google_api_apikeys_v2_resources_proto_rawDesc = "" +
 	"\x10sha1_fingerprint\x18\x01 \x01(\tR\x0fsha1Fingerprint\x12!\n" +
 	"\fpackage_name\x18\x02 \x01(\tR\vpackageName\"B\n" +
 	"\x12IosKeyRestrictions\x12,\n" +
-	"\x12allowed_bundle_ids\x18\x01 \x03(\tR\x10allowedBundleIds\"D\n" +
+	"\x12allowed_bundle_ids\x18\x01 \x03(\tR\x10allowedBundleIds\"E\n" +
 	"\tApiTarget\x12\x18\n" +
-	"\aservice\x18\x01 \x01(\tR\aservice\x12\x1d\n" +
-	"\amethods\x18\x02 \x03(\tB\x03\xe0A\x01R\amethodsB\xb5\x01\n" +
+	"\aservice\x18\x01 \x01(\tR\aservice\x12\x1e\n" +
+	"\amethods\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\amethodsB\xb5\x01\n" +
 	"\x19com.google.api.apikeys.v2B\x0eResourcesProtoP\x01Z5cloud.google.com/go/apikeys/apiv2/apikeyspb;apikeyspb\xaa\x02\x17Google.Cloud.ApiKeys.V2\xca\x02\x17Google\\Cloud\\ApiKeys\\V2\xea\x02\x1aGoogle::Cloud::ApiKeys::V2b\x06proto3"
 
 var (

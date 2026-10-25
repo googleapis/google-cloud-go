@@ -974,7 +974,7 @@ var File_google_cloud_securitycenter_v1_resource_proto protoreflect.FileDescript
 
 const file_google_cloud_securitycenter_v1_resource_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/securitycenter/v1/resource.proto\x12\x1egoogle.cloud.securitycenter.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a+google/cloud/securitycenter/v1/folder.proto\"\xaa\x06\n" +
+	"-google/cloud/securitycenter/v1/resource.proto\x12\x1egoogle.cloud.securitycenter.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a+google/cloud/securitycenter/v1/folder.proto\"\xab\x06\n" +
 	"\bResource\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12!\n" +
 	"\fdisplay_name\x18\b \x01(\tR\vdisplayName\x12\x12\n" +
@@ -982,8 +982,8 @@ const file_google_cloud_securitycenter_v1_resource_proto_rawDesc = "" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x120\n" +
 	"\x14project_display_name\x18\x03 \x01(\tR\x12projectDisplayName\x12\x16\n" +
 	"\x06parent\x18\x04 \x01(\tR\x06parent\x12.\n" +
-	"\x13parent_display_name\x18\x05 \x01(\tR\x11parentDisplayName\x12E\n" +
-	"\afolders\x18\a \x03(\v2&.google.cloud.securitycenter.v1.FolderB\x03\xe0A\x03R\afolders\x12T\n" +
+	"\x13parent_display_name\x18\x05 \x01(\tR\x11parentDisplayName\x12F\n" +
+	"\afolders\x18\a \x03(\v2&.google.cloud.securitycenter.v1.FolderB\x04\xe2A\x01\x03R\afolders\x12T\n" +
 	"\x0ecloud_provider\x18\t \x01(\x0e2-.google.cloud.securitycenter.v1.CloudProviderR\rcloudProvider\x12\"\n" +
 	"\forganization\x18\n" +
 	" \x01(\tR\forganization\x12\x18\n" +
