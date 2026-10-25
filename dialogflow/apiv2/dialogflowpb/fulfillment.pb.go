@@ -465,19 +465,19 @@ var File_google_cloud_dialogflow_v2_fulfillment_proto protoreflect.FileDescripto
 
 const file_google_cloud_dialogflow_v2_fulfillment_proto_rawDesc = "" +
 	"\n" +
-	",google/cloud/dialogflow/v2/fulfillment.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\"\xaf\a\n" +
-	"\vFulfillment\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12k\n" +
-	"\x13generic_web_service\x18\x03 \x01(\v29.google.cloud.dialogflow.v2.Fulfillment.GenericWebServiceH\x00R\x11genericWebService\x12\x1d\n" +
-	"\aenabled\x18\x04 \x01(\bB\x03\xe0A\x01R\aenabled\x12P\n" +
-	"\bfeatures\x18\x05 \x03(\v2/.google.cloud.dialogflow.v2.Fulfillment.FeatureB\x03\xe0A\x01R\bfeatures\x1a\xdf\x02\n" +
-	"\x11GenericWebService\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x02R\x03uri\x12\x1f\n" +
-	"\busername\x18\x02 \x01(\tB\x03\xe0A\x01R\busername\x12\x1f\n" +
-	"\bpassword\x18\x03 \x01(\tB\x03\xe0A\x01R\bpassword\x12{\n" +
-	"\x0frequest_headers\x18\x04 \x03(\v2M.google.cloud.dialogflow.v2.Fulfillment.GenericWebService.RequestHeadersEntryB\x03\xe0A\x01R\x0erequestHeaders\x121\n" +
-	"\x11is_cloud_function\x18\x05 \x01(\bB\x05\xe0A\x01\x18\x01R\x0fisCloudFunction\x1aA\n" +
+	",google/cloud/dialogflow/v2/fulfillment.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\"\xb8\a\n" +
+	"\vFulfillment\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12k\n" +
+	"\x13generic_web_service\x18\x03 \x01(\v29.google.cloud.dialogflow.v2.Fulfillment.GenericWebServiceH\x00R\x11genericWebService\x12\x1e\n" +
+	"\aenabled\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\aenabled\x12Q\n" +
+	"\bfeatures\x18\x05 \x03(\v2/.google.cloud.dialogflow.v2.Fulfillment.FeatureB\x04\xe2A\x01\x01R\bfeatures\x1a\xe4\x02\n" +
+	"\x11GenericWebService\x12\x16\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03uri\x12 \n" +
+	"\busername\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\busername\x12 \n" +
+	"\bpassword\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\bpassword\x12|\n" +
+	"\x0frequest_headers\x18\x04 \x03(\v2M.google.cloud.dialogflow.v2.Fulfillment.GenericWebService.RequestHeadersEntryB\x04\xe2A\x01\x01R\x0erequestHeaders\x122\n" +
+	"\x11is_cloud_function\x18\x05 \x01(\bB\x06\xe2A\x01\x01\x18\x01R\x0fisCloudFunction\x1aA\n" +
 	"\x13RequestHeadersEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a\x80\x01\n" +
@@ -487,13 +487,13 @@ const file_google_cloud_dialogflow_v2_fulfillment_proto_rawDesc = "" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tSMALLTALK\x10\x01:\x8c\x01\xeaA\x88\x01\n" +
 	"%dialogflow.googleapis.com/Fulfillment\x12$projects/{project}/agent/fulfillment\x129projects/{project}/locations/{location}/agent/fulfillmentB\r\n" +
-	"\vfulfillment\"Z\n" +
-	"\x15GetFulfillmentRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%dialogflow.googleapis.com/FulfillmentR\x04name\"\xac\x01\n" +
-	"\x18UpdateFulfillmentRequest\x12N\n" +
-	"\vfulfillment\x18\x01 \x01(\v2'.google.cloud.dialogflow.v2.FulfillmentB\x03\xe0A\x02R\vfulfillment\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
+	"\vfulfillment\"[\n" +
+	"\x15GetFulfillmentRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%dialogflow.googleapis.com/FulfillmentR\x04name\"\xae\x01\n" +
+	"\x18UpdateFulfillmentRequest\x12O\n" +
+	"\vfulfillment\x18\x01 \x01(\v2'.google.cloud.dialogflow.v2.FulfillmentB\x04\xe2A\x01\x02R\vfulfillment\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
 	"updateMask2\x91\x05\n" +
 	"\fFulfillments\x12\xdb\x01\n" +
 	"\x0eGetFulfillment\x121.google.cloud.dialogflow.v2.GetFulfillmentRequest\x1a'.google.cloud.dialogflow.v2.Fulfillment\"m\xdaA\x04name\x82\xd3\xe4\x93\x02`Z5\x123/v2/{name=projects/*/locations/*/agent/fulfillment}\x12'/v2/{name=projects/*/agent/fulfillment}\x12\xa8\x02\n" +

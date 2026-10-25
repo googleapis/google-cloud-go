@@ -150,7 +150,9 @@ type Writer struct {
 	// continue until the ChunkRetryDeadline is reached.
 	//
 	// For gRPC clients, ChunkTransferTimeout applies to resumable and appendable
-	// uploads. It is not supported for one-shot uploads, which send the whole
+	// uploads. For gRPC resumable uploads, a non-zero value also enables adaptive
+	// BidiWriteObject stream rotation between flushed chunks when chunk latency
+	// degrades. It is not supported for one-shot uploads, which send the whole
 	// object in a single request. A non-appendable upload is one-shot when
 	// ChunkSize is 0 or the object's total size is at most ChunkSize.
 	//
@@ -471,11 +473,17 @@ func (w *Writer) markClosed(err error) error {
 			state.record(closingErr)
 		}
 	}
+	// Update write mode on close once it is known whether the payload fit in a
+	// single chunk (oneshot) or used a resumable session.
+	recordWriterTraceAttributes(w.ctx, w)
 	endSpan(w.ctx, closingErr)
 	return closingErr
 }
 
 func (w *Writer) openWriter() (err error) {
+	// Record initial write mode before validation so spans on failed opens still
+	// carry the configured attribute.
+	recordWriterTraceAttributes(w.ctx, w)
 	if err := w.validateWriteAttrs(); err != nil {
 		return err
 	}

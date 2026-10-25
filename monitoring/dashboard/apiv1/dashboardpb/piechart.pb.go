@@ -233,17 +233,17 @@ var File_google_monitoring_dashboard_v1_piechart_proto protoreflect.FileDescript
 
 const file_google_monitoring_dashboard_v1_piechart_proto_rawDesc = "" +
 	"\n" +
-	"-google/monitoring/dashboard/v1/piechart.proto\x12\x1egoogle.monitoring.dashboard.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a,google/monitoring/dashboard/v1/metrics.proto\x1a\x1egoogle/protobuf/duration.proto\"\xa8\x04\n" +
-	"\bPieChart\x12Z\n" +
-	"\tdata_sets\x18\x01 \x03(\v28.google.monitoring.dashboard.v1.PieChart.PieChartDataSetB\x03\xe0A\x02R\bdataSets\x12Y\n" +
+	"-google/monitoring/dashboard/v1/piechart.proto\x12\x1egoogle.monitoring.dashboard.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a,google/monitoring/dashboard/v1/metrics.proto\x1a\x1egoogle/protobuf/duration.proto\"\xae\x04\n" +
+	"\bPieChart\x12[\n" +
+	"\tdata_sets\x18\x01 \x03(\v28.google.monitoring.dashboard.v1.PieChart.PieChartDataSetB\x04\xe2A\x01\x02R\bdataSets\x12Z\n" +
 	"\n" +
-	"chart_type\x18\x02 \x01(\x0e25.google.monitoring.dashboard.v1.PieChart.PieChartTypeB\x03\xe0A\x02R\tchartType\x12$\n" +
-	"\vshow_labels\x18\x04 \x01(\bB\x03\xe0A\x01R\n" +
-	"showLabels\x1a\xfa\x01\n" +
-	"\x0fPieChartDataSet\x12`\n" +
-	"\x11time_series_query\x18\x01 \x01(\v2/.google.monitoring.dashboard.v1.TimeSeriesQueryB\x03\xe0A\x02R\x0ftimeSeriesQuery\x123\n" +
-	"\x13slice_name_template\x18\x02 \x01(\tB\x03\xe0A\x01R\x11sliceNameTemplate\x12P\n" +
-	"\x14min_alignment_period\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x12minAlignmentPeriod\"B\n" +
+	"chart_type\x18\x02 \x01(\x0e25.google.monitoring.dashboard.v1.PieChart.PieChartTypeB\x04\xe2A\x01\x02R\tchartType\x12%\n" +
+	"\vshow_labels\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\n" +
+	"showLabels\x1a\xfd\x01\n" +
+	"\x0fPieChartDataSet\x12a\n" +
+	"\x11time_series_query\x18\x01 \x01(\v2/.google.monitoring.dashboard.v1.TimeSeriesQueryB\x04\xe2A\x01\x02R\x0ftimeSeriesQuery\x124\n" +
+	"\x13slice_name_template\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x11sliceNameTemplate\x12Q\n" +
+	"\x14min_alignment_period\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x12minAlignmentPeriod\"B\n" +
 	"\fPieChartType\x12\x1e\n" +
 	"\x1aPIE_CHART_TYPE_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03PIE\x10\x01\x12\t\n" +

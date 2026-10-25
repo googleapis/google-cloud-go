@@ -3120,20 +3120,20 @@ var File_google_cloud_video_livestream_v1_service_proto protoreflect.FileDescrip
 
 const file_google_cloud_video_livestream_v1_service_proto_rawDesc = "" +
 	"\n" +
-	".google/cloud/video/livestream/v1/service.proto\x12 google.cloud.video.livestream.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/video/livestream/v1/resources.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd8\x01\n" +
-	"\x12CreateAssetRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1flivestream.googleapis.com/AssetR\x06parent\x12B\n" +
-	"\x05asset\x18\x02 \x01(\v2'.google.cloud.video.livestream.v1.AssetB\x03\xe0A\x02R\x05asset\x12\x1e\n" +
-	"\basset_id\x18\x03 \x01(\tB\x03\xe0A\x02R\aassetId\x12\x1d\n" +
+	".google/cloud/video/livestream/v1/service.proto\x12 google.cloud.video.livestream.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/video/livestream/v1/resources.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdb\x01\n" +
+	"\x12CreateAssetRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1flivestream.googleapis.com/AssetR\x06parent\x12C\n" +
+	"\x05asset\x18\x02 \x01(\v2'.google.cloud.video.livestream.v1.AssetB\x04\xe2A\x01\x02R\x05asset\x12\x1f\n" +
+	"\basset_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\aassetId\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tR\trequestId\"p\n" +
-	"\x12DeleteAssetRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
+	"request_id\x18\x04 \x01(\tR\trequestId\"q\n" +
+	"\x12DeleteAssetRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
 	"\x1flivestream.googleapis.com/AssetR\x04name\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tR\trequestId\"\xc3\x01\n" +
-	"\x11ListAssetsRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1flivestream.googleapis.com/AssetR\x06parent\x12\x1b\n" +
+	"request_id\x18\x02 \x01(\tR\trequestId\"\xc4\x01\n" +
+	"\x11ListAssetsRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1flivestream.googleapis.com/AssetR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -3142,19 +3142,19 @@ const file_google_cloud_video_livestream_v1_service_proto_rawDesc = "" +
 	"\x12ListAssetsResponse\x12?\n" +
 	"\x06assets\x18\x01 \x03(\v2'.google.cloud.video.livestream.v1.AssetR\x06assets\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"N\n" +
-	"\x0fGetAssetRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1flivestream.googleapis.com/AssetR\x04name\"\xe6\x01\n" +
-	"\x14CreateChannelRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!livestream.googleapis.com/ChannelR\x06parent\x12H\n" +
-	"\achannel\x18\x02 \x01(\v2).google.cloud.video.livestream.v1.ChannelB\x03\xe0A\x02R\achannel\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"O\n" +
+	"\x0fGetAssetRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1flivestream.googleapis.com/AssetR\x04name\"\xe9\x01\n" +
+	"\x14CreateChannelRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!livestream.googleapis.com/ChannelR\x06parent\x12I\n" +
+	"\achannel\x18\x02 \x01(\v2).google.cloud.video.livestream.v1.ChannelB\x04\xe2A\x01\x02R\achannel\x12#\n" +
 	"\n" +
-	"channel_id\x18\x03 \x01(\tB\x03\xe0A\x02R\tchannelId\x12\x1d\n" +
+	"channel_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\tchannelId\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tR\trequestId\"\xc7\x01\n" +
-	"\x13ListChannelsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!livestream.googleapis.com/ChannelR\x06parent\x12\x1b\n" +
+	"request_id\x18\x04 \x01(\tR\trequestId\"\xc8\x01\n" +
+	"\x13ListChannelsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!livestream.googleapis.com/ChannelR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -3163,52 +3163,52 @@ const file_google_cloud_video_livestream_v1_service_proto_rawDesc = "" +
 	"\x14ListChannelsResponse\x12E\n" +
 	"\bchannels\x18\x01 \x03(\v2).google.cloud.video.livestream.v1.ChannelR\bchannels\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"R\n" +
-	"\x11GetChannelRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!livestream.googleapis.com/ChannelR\x04name\"\x8a\x01\n" +
-	"\x14DeleteChannelRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"S\n" +
+	"\x11GetChannelRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!livestream.googleapis.com/ChannelR\x04name\"\x8b\x01\n" +
+	"\x14DeleteChannelRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!livestream.googleapis.com/ChannelR\x04name\x12\x1d\n" +
 	"\n" +
 	"request_id\x18\x02 \x01(\tR\trequestId\x12\x14\n" +
-	"\x05force\x18\x03 \x01(\bR\x05force\"\xbc\x01\n" +
+	"\x05force\x18\x03 \x01(\bR\x05force\"\xbd\x01\n" +
 	"\x14UpdateChannelRequest\x12;\n" +
 	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\x12H\n" +
-	"\achannel\x18\x02 \x01(\v2).google.cloud.video.livestream.v1.ChannelB\x03\xe0A\x02R\achannel\x12\x1d\n" +
+	"updateMask\x12I\n" +
+	"\achannel\x18\x02 \x01(\v2).google.cloud.video.livestream.v1.ChannelB\x04\xe2A\x01\x02R\achannel\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tR\trequestId\"s\n" +
-	"\x13StartChannelRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"request_id\x18\x03 \x01(\tR\trequestId\"t\n" +
+	"\x13StartChannelRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!livestream.googleapis.com/ChannelR\x04name\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tR\trequestId\"r\n" +
-	"\x12StopChannelRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"request_id\x18\x02 \x01(\tR\trequestId\"s\n" +
+	"\x12StopChannelRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!livestream.googleapis.com/ChannelR\x04name\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tR\trequestId\"\xb7\x01\n" +
-	"\x18StartDistributionRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!livestream.googleapis.com/ChannelR\x04name\x120\n" +
-	"\x11distribution_keys\x18\x02 \x03(\tB\x03\xe0A\x01R\x10distributionKeys\x12*\n" +
+	"request_id\x18\x02 \x01(\tR\trequestId\"\xba\x01\n" +
+	"\x18StartDistributionRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!livestream.googleapis.com/ChannelR\x04name\x121\n" +
+	"\x11distribution_keys\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x10distributionKeys\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xb6\x01\n" +
-	"\x17StopDistributionRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!livestream.googleapis.com/ChannelR\x04name\x120\n" +
-	"\x11distribution_keys\x18\x02 \x03(\tB\x03\xe0A\x01R\x10distributionKeys\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xb9\x01\n" +
+	"\x17StopDistributionRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!livestream.googleapis.com/ChannelR\x04name\x121\n" +
+	"\x11distribution_keys\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x10distributionKeys\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xd8\x01\n" +
-	"\x12CreateInputRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1flivestream.googleapis.com/InputR\x06parent\x12B\n" +
-	"\x05input\x18\x02 \x01(\v2'.google.cloud.video.livestream.v1.InputB\x03\xe0A\x02R\x05input\x12\x1e\n" +
-	"\binput_id\x18\x03 \x01(\tB\x03\xe0A\x02R\ainputId\x12\x1d\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xdb\x01\n" +
+	"\x12CreateInputRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1flivestream.googleapis.com/InputR\x06parent\x12C\n" +
+	"\x05input\x18\x02 \x01(\v2'.google.cloud.video.livestream.v1.InputB\x04\xe2A\x01\x02R\x05input\x12\x1f\n" +
+	"\binput_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\ainputId\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tR\trequestId\"\xc3\x01\n" +
-	"\x11ListInputsRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1flivestream.googleapis.com/InputR\x06parent\x12\x1b\n" +
+	"request_id\x18\x04 \x01(\tR\trequestId\"\xc4\x01\n" +
+	"\x11ListInputsRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1flivestream.googleapis.com/InputR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -3217,29 +3217,29 @@ const file_google_cloud_video_livestream_v1_service_proto_rawDesc = "" +
 	"\x12ListInputsResponse\x12?\n" +
 	"\x06inputs\x18\x01 \x03(\v2'.google.cloud.video.livestream.v1.InputR\x06inputs\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"N\n" +
-	"\x0fGetInputRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1flivestream.googleapis.com/InputR\x04name\"p\n" +
-	"\x12DeleteInputRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"O\n" +
+	"\x0fGetInputRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1flivestream.googleapis.com/InputR\x04name\"q\n" +
+	"\x12DeleteInputRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
 	"\x1flivestream.googleapis.com/InputR\x04name\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tR\trequestId\"\xb4\x01\n" +
+	"request_id\x18\x02 \x01(\tR\trequestId\"\xb5\x01\n" +
 	"\x12UpdateInputRequest\x12;\n" +
 	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\x12B\n" +
-	"\x05input\x18\x02 \x01(\v2'.google.cloud.video.livestream.v1.InputB\x03\xe0A\x02R\x05input\x12\x1d\n" +
+	"updateMask\x12C\n" +
+	"\x05input\x18\x02 \x01(\v2'.google.cloud.video.livestream.v1.InputB\x04\xe2A\x01\x02R\x05input\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tR\trequestId\"\xd8\x01\n" +
-	"\x12CreateEventRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1flivestream.googleapis.com/EventR\x06parent\x12B\n" +
-	"\x05event\x18\x02 \x01(\v2'.google.cloud.video.livestream.v1.EventB\x03\xe0A\x02R\x05event\x12\x1e\n" +
-	"\bevent_id\x18\x03 \x01(\tB\x03\xe0A\x02R\aeventId\x12\x1d\n" +
+	"request_id\x18\x03 \x01(\tR\trequestId\"\xdb\x01\n" +
+	"\x12CreateEventRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1flivestream.googleapis.com/EventR\x06parent\x12C\n" +
+	"\x05event\x18\x02 \x01(\v2'.google.cloud.video.livestream.v1.EventB\x04\xe2A\x01\x02R\x05event\x12\x1f\n" +
+	"\bevent_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\aeventId\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tR\trequestId\"\xc3\x01\n" +
-	"\x11ListEventsRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1flivestream.googleapis.com/EventR\x06parent\x12\x1b\n" +
+	"request_id\x18\x04 \x01(\tR\trequestId\"\xc4\x01\n" +
+	"\x11ListEventsRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1flivestream.googleapis.com/EventR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -3248,18 +3248,18 @@ const file_google_cloud_video_livestream_v1_service_proto_rawDesc = "" +
 	"\x12ListEventsResponse\x12?\n" +
 	"\x06events\x18\x01 \x03(\v2'.google.cloud.video.livestream.v1.EventR\x06events\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"N\n" +
-	"\x0fGetEventRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1flivestream.googleapis.com/EventR\x04name\"p\n" +
-	"\x12DeleteEventRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"O\n" +
+	"\x0fGetEventRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1flivestream.googleapis.com/EventR\x04name\"q\n" +
+	"\x12DeleteEventRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
 	"\x1flivestream.googleapis.com/EventR\x04name\x12\x1d\n" +
 	"\n" +
 	"request_id\x18\x02 \x01(\tR\trequestId\"\x1a\n" +
-	"\x18ChannelOperationResponse\"\xc1\x01\n" +
-	"\x10ListClipsRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \x12\x1elivestream.googleapis.com/ClipR\x06parent\x12\x1b\n" +
+	"\x18ChannelOperationResponse\"\xc2\x01\n" +
+	"\x10ListClipsRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \x12\x1elivestream.googleapis.com/ClipR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -3268,74 +3268,74 @@ const file_google_cloud_video_livestream_v1_service_proto_rawDesc = "" +
 	"\x11ListClipsResponse\x12<\n" +
 	"\x05clips\x18\x01 \x03(\v2&.google.cloud.video.livestream.v1.ClipR\x05clips\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"L\n" +
-	"\x0eGetClipRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1elivestream.googleapis.com/ClipR\x04name\"\xd6\x01\n" +
-	"\x11CreateClipRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \x12\x1elivestream.googleapis.com/ClipR\x06parent\x12\x1c\n" +
-	"\aclip_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x06clipId\x12?\n" +
-	"\x04clip\x18\x03 \x01(\v2&.google.cloud.video.livestream.v1.ClipB\x03\xe0A\x02R\x04clip\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"M\n" +
+	"\x0eGetClipRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1elivestream.googleapis.com/ClipR\x04name\"\xda\x01\n" +
+	"\x11CreateClipRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \x12\x1elivestream.googleapis.com/ClipR\x06parent\x12\x1d\n" +
+	"\aclip_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06clipId\x12@\n" +
+	"\x04clip\x18\x03 \x01(\v2&.google.cloud.video.livestream.v1.ClipB\x04\xe2A\x01\x02R\x04clip\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"{\n" +
-	"\x11DeleteClipRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1elivestream.googleapis.com/ClipR\x04name\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"}\n" +
+	"\x11DeleteClipRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1elivestream.googleapis.com/ClipR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xe1\x01\n" +
-	"\x16ListDvrSessionsRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$livestream.googleapis.com/DvrSessionR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xe6\x01\n" +
+	"\x16ListDvrSessionsRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$livestream.googleapis.com/DvrSessionR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xb4\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xb4\x01\n" +
 	"\x17ListDvrSessionsResponse\x12O\n" +
 	"\fdvr_sessions\x18\x01 \x03(\v2,.google.cloud.video.livestream.v1.DvrSessionR\vdvrSessions\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"X\n" +
-	"\x14GetDvrSessionRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$livestream.googleapis.com/DvrSessionR\x04name\"\x8a\x02\n" +
-	"\x17CreateDvrSessionRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$livestream.googleapis.com/DvrSessionR\x06parent\x12)\n" +
-	"\x0edvr_session_id\x18\x02 \x01(\tB\x03\xe0A\x02R\fdvrSessionId\x12R\n" +
-	"\vdvr_session\x18\x03 \x01(\v2,.google.cloud.video.livestream.v1.DvrSessionB\x03\xe0A\x02R\n" +
-	"dvrSession\x12*\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"Y\n" +
+	"\x14GetDvrSessionRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$livestream.googleapis.com/DvrSessionR\x04name\"\x8e\x02\n" +
+	"\x17CreateDvrSessionRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$livestream.googleapis.com/DvrSessionR\x06parent\x12*\n" +
+	"\x0edvr_session_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\fdvrSessionId\x12S\n" +
+	"\vdvr_session\x18\x03 \x01(\v2,.google.cloud.video.livestream.v1.DvrSessionB\x04\xe2A\x01\x02R\n" +
+	"dvrSession\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x87\x01\n" +
-	"\x17DeleteDvrSessionRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$livestream.googleapis.com/DvrSessionR\x04name\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x89\x01\n" +
+	"\x17DeleteDvrSessionRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$livestream.googleapis.com/DvrSessionR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xdb\x01\n" +
-	"\x17UpdateDvrSessionRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12R\n" +
-	"\vdvr_session\x18\x02 \x01(\v2,.google.cloud.video.livestream.v1.DvrSessionB\x03\xe0A\x02R\n" +
-	"dvrSession\x12*\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xde\x01\n" +
+	"\x17UpdateDvrSessionRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12S\n" +
+	"\vdvr_session\x18\x02 \x01(\v2,.google.cloud.video.livestream.v1.DvrSessionB\x04\xe2A\x01\x02R\n" +
+	"dvrSession\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xa9\x02\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12:\n" +
-	"\x16requested_cancellation\x18\x05 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\x06 \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion\"L\n" +
-	"\x0eGetPoolRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1elivestream.googleapis.com/PoolR\x04name\"\xb0\x01\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xaf\x02\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12;\n" +
+	"\x16requested_cancellation\x18\x05 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"apiVersion\"M\n" +
+	"\x0eGetPoolRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1elivestream.googleapis.com/PoolR\x04name\"\xb1\x01\n" +
 	"\x11UpdatePoolRequest\x12;\n" +
 	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\x12?\n" +
-	"\x04pool\x18\x02 \x01(\v2&.google.cloud.video.livestream.v1.PoolB\x03\xe0A\x02R\x04pool\x12\x1d\n" +
+	"updateMask\x12@\n" +
+	"\x04pool\x18\x02 \x01(\v2&.google.cloud.video.livestream.v1.PoolB\x04\xe2A\x01\x02R\x04pool\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tR\trequestId\"R\n" +
-	"\x13PreviewInputRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
+	"request_id\x18\x03 \x01(\tR\trequestId\"S\n" +
+	"\x13PreviewInputRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
 	"\x1flivestream.googleapis.com/InputR\x04name\"K\n" +
 	"\x14PreviewInputResponse\x12\x10\n" +
 	"\x03uri\x18\x01 \x01(\tR\x03uri\x12!\n" +

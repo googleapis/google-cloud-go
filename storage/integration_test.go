@@ -2433,6 +2433,7 @@ func TestIntegration_MultiChunkWrite(t *testing.T) {
 		w.CRC32C = crc32c
 		// Use a 1 MB chunk size.
 		w.ChunkSize = 1 << 20
+		w.ChunkTransferTimeout = 30 * time.Second
 		w.ProgressFunc = func(p int64) {
 			t.Logf("%s: committed %d\n", t.Name(), p)
 		}

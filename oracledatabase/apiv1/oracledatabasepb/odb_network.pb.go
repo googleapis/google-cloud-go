@@ -552,18 +552,18 @@ var File_google_cloud_oracledatabase_v1_odb_network_proto protoreflect.FileDescr
 
 const file_google_cloud_oracledatabase_v1_odb_network_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/oracledatabase/v1/odb_network.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xca\x05\n" +
+	"0google/cloud/oracledatabase/v1/odb_network.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd1\x05\n" +
 	"\n" +
-	"OdbNetwork\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\anetwork\x18\x02 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12S\n" +
-	"\x06labels\x18\x03 \x03(\v26.google.cloud.oracledatabase.v1.OdbNetwork.LabelsEntryB\x03\xe0A\x01R\x06labels\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12K\n" +
-	"\x05state\x18\x05 \x01(\x0e20.google.cloud.oracledatabase.v1.OdbNetwork.StateB\x03\xe0A\x03R\x05state\x12*\n" +
-	"\x0eentitlement_id\x18\x06 \x01(\tB\x03\xe0A\x03R\rentitlementId\x12+\n" +
-	"\x0fgcp_oracle_zone\x18\a \x01(\tB\x03\xe0A\x01R\rgcpOracleZone\x1a9\n" +
+	"OdbNetwork\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\anetwork\x18\x02 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12T\n" +
+	"\x06labels\x18\x03 \x03(\v26.google.cloud.oracledatabase.v1.OdbNetwork.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12L\n" +
+	"\x05state\x18\x05 \x01(\x0e20.google.cloud.oracledatabase.v1.OdbNetwork.StateB\x04\xe2A\x01\x03R\x05state\x12+\n" +
+	"\x0eentitlement_id\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\rentitlementId\x12,\n" +
+	"\x0fgcp_oracle_zone\x18\a \x01(\tB\x04\xe2A\x01\x01R\rgcpOracleZone\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\\\n" +
@@ -575,32 +575,32 @@ const file_google_cloud_oracledatabase_v1_odb_network_proto_rawDesc = "" +
 	"\n" +
 	"\x06FAILED\x10\x04:\x8a\x01\xeaA\x86\x01\n" +
 	"(oracledatabase.googleapis.com/OdbNetwork\x12Aprojects/{project}/locations/{location}/odbNetworks/{odb_network}*\vodbNetworks2\n" +
-	"odbNetwork\"\x8c\x02\n" +
-	"\x17CreateOdbNetworkRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(oracledatabase.googleapis.com/OdbNetworkR\x06parent\x12)\n" +
-	"\x0eodb_network_id\x18\x02 \x01(\tB\x03\xe0A\x02R\fodbNetworkId\x12P\n" +
-	"\vodb_network\x18\x03 \x01(\v2*.google.cloud.oracledatabase.v1.OdbNetworkB\x03\xe0A\x02R\n" +
-	"odbNetwork\x12*\n" +
+	"odbNetwork\"\x90\x02\n" +
+	"\x17CreateOdbNetworkRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(oracledatabase.googleapis.com/OdbNetworkR\x06parent\x12*\n" +
+	"\x0eodb_network_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\fodbNetworkId\x12Q\n" +
+	"\vodb_network\x18\x03 \x01(\v2*.google.cloud.oracledatabase.v1.OdbNetworkB\x04\xe2A\x01\x02R\n" +
+	"odbNetwork\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x8b\x01\n" +
-	"\x17DeleteOdbNetworkRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(oracledatabase.googleapis.com/OdbNetworkR\x04name\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x8d\x01\n" +
+	"\x17DeleteOdbNetworkRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(oracledatabase.googleapis.com/OdbNetworkR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xe5\x01\n" +
-	"\x16ListOdbNetworksRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(oracledatabase.googleapis.com/OdbNetworkR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xea\x01\n" +
+	"\x16ListOdbNetworksRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(oracledatabase.googleapis.com/OdbNetworkR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xb2\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xb2\x01\n" +
 	"\x17ListOdbNetworksResponse\x12M\n" +
 	"\fodb_networks\x18\x01 \x03(\v2*.google.cloud.oracledatabase.v1.OdbNetworkR\vodbNetworks\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\\\n" +
-	"\x14GetOdbNetworkRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"]\n" +
+	"\x14GetOdbNetworkRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
 	"(oracledatabase.googleapis.com/OdbNetworkR\x04nameB\xe9\x01\n" +
 	"\"com.google.cloud.oracledatabase.v1B\x0fOdbNetworkProtoP\x01ZJcloud.google.com/go/oracledatabase/apiv1/oracledatabasepb;oracledatabasepb\xaa\x02\x1eGoogle.Cloud.OracleDatabase.V1\xca\x02\x1eGoogle\\Cloud\\OracleDatabase\\V1\xea\x02!Google::Cloud::OracleDatabase::V1b\x06proto3"
 

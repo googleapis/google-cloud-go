@@ -684,14 +684,14 @@ var File_google_cloud_sql_v1beta4_cloud_sql_connect_proto protoreflect.FileDescr
 
 const file_google_cloud_sql_v1beta4_cloud_sql_connect_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/sql/v1beta4/cloud_sql_connect.proto\x12\x18google.cloud.sql.v1beta4\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a2google/cloud/sql/v1beta4/cloud_sql_resources.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8f\x01\n" +
+	"0google/cloud/sql/v1beta4/cloud_sql_connect.proto\x12\x18google.cloud.sql.v1beta4\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a2google/cloud/sql/v1beta4/cloud_sql_resources.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x90\x01\n" +
 	"\x19GetConnectSettingsRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x02 \x01(\tR\aproject\x12<\n" +
-	"\tread_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\breadTime\"`\n" +
-	"\x1dResolveConnectSettingsRequest\x12\x1e\n" +
-	"\bdns_name\x18\x01 \x01(\tB\x03\xe0A\x02R\adnsName\x12\x1f\n" +
-	"\blocation\x18\x02 \x01(\tB\x03\xe0A\x02R\blocation\"\xb2\v\n" +
+	"\aproject\x18\x02 \x01(\tR\aproject\x12=\n" +
+	"\tread_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\breadTime\"b\n" +
+	"\x1dResolveConnectSettingsRequest\x12\x1f\n" +
+	"\bdns_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\adnsName\x12 \n" +
+	"\blocation\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\blocation\"\xb6\v\n" +
 	"\x0fConnectSettings\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12G\n" +
 	"\x0eserver_ca_cert\x18\x02 \x01(\v2!.google.cloud.sql.v1beta4.SslCertR\fserverCaCert\x12F\n" +
@@ -703,18 +703,18 @@ const file_google_cloud_sql_v1beta4_cloud_sql_connect_proto_rawDesc = "" +
 	"pscEnabled\x12\x19\n" +
 	"\bdns_name\x18\" \x01(\tR\adnsName\x12V\n" +
 	"\x0eserver_ca_mode\x18# \x01(\x0e20.google.cloud.sql.v1beta4.ConnectSettings.CaModeR\fserverCaMode\x12G\n" +
-	" custom_subject_alternative_names\x18% \x03(\tR\x1dcustomSubjectAlternativeNames\x12J\n" +
-	"\tdns_names\x18& \x03(\v2(.google.cloud.sql.v1beta4.DnsNameMappingB\x03\xe0A\x03R\bdnsNames\x12\"\n" +
+	" custom_subject_alternative_names\x18% \x03(\tR\x1dcustomSubjectAlternativeNames\x12K\n" +
+	"\tdns_names\x18& \x03(\v2(.google.cloud.sql.v1beta4.DnsNameMappingB\x04\xe2A\x01\x03R\bdnsNames\x12\"\n" +
 	"\n" +
-	"node_count\x18? \x01(\x05H\x00R\tnodeCount\x88\x01\x01\x12Z\n" +
-	"\x05nodes\x18@ \x03(\v2?.google.cloud.sql.v1beta4.ConnectSettings.ConnectPoolNodeConfigB\x03\xe0A\x03R\x05nodes\x12v\n" +
-	"\x14mdx_protocol_support\x18' \x03(\x0e2<.google.cloud.sql.v1beta4.ConnectSettings.MdxProtocolSupportB\x06\xe0A\x03\xe0A\x01R\x12mdxProtocolSupport\x12/\n" +
-	"\x0fconnection_name\x18( \x01(\tB\x06\xe0A\x03\xe0A\x01R\x0econnectionName\x1a\x89\x02\n" +
-	"\x15ConnectPoolNodeConfig\x12\x1c\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03H\x00R\x04name\x88\x01\x01\x12K\n" +
-	"\fip_addresses\x18\x02 \x03(\v2#.google.cloud.sql.v1beta4.IpMappingB\x03\xe0A\x03R\vipAddresses\x12#\n" +
-	"\bdns_name\x18\x03 \x01(\tB\x03\xe0A\x03H\x01R\adnsName\x88\x01\x01\x12J\n" +
-	"\tdns_names\x18\x04 \x03(\v2(.google.cloud.sql.v1beta4.DnsNameMappingB\x03\xe0A\x03R\bdnsNamesB\a\n" +
+	"node_count\x18? \x01(\x05H\x00R\tnodeCount\x88\x01\x01\x12[\n" +
+	"\x05nodes\x18@ \x03(\v2?.google.cloud.sql.v1beta4.ConnectSettings.ConnectPoolNodeConfigB\x04\xe2A\x01\x03R\x05nodes\x12u\n" +
+	"\x14mdx_protocol_support\x18' \x03(\x0e2<.google.cloud.sql.v1beta4.ConnectSettings.MdxProtocolSupportB\x05\xe2A\x02\x03\x01R\x12mdxProtocolSupport\x12.\n" +
+	"\x0fconnection_name\x18( \x01(\tB\x05\xe2A\x02\x03\x01R\x0econnectionName\x1a\x8d\x02\n" +
+	"\x15ConnectPoolNodeConfig\x12\x1d\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03H\x00R\x04name\x88\x01\x01\x12L\n" +
+	"\fip_addresses\x18\x02 \x03(\v2#.google.cloud.sql.v1beta4.IpMappingB\x04\xe2A\x01\x03R\vipAddresses\x12$\n" +
+	"\bdns_name\x18\x03 \x01(\tB\x04\xe2A\x01\x03H\x01R\adnsName\x88\x01\x01\x12K\n" +
+	"\tdns_names\x18\x04 \x03(\v2(.google.cloud.sql.v1beta4.DnsNameMappingB\x04\xe2A\x01\x03R\bdnsNamesB\a\n" +
 	"\x05_nameB\v\n" +
 	"\t_dns_name\"y\n" +
 	"\x06CaMode\x12\x17\n" +
@@ -725,16 +725,16 @@ const file_google_cloud_sql_v1beta4_cloud_sql_connect_proto_rawDesc = "" +
 	"\x12MdxProtocolSupport\x12$\n" +
 	" MDX_PROTOCOL_SUPPORT_UNSPECIFIED\x10\x00\x12\x18\n" +
 	"\x14CLIENT_PROTOCOL_TYPE\x10\x01B\r\n" +
-	"\v_node_count\"\xa2\x02\n" +
+	"\v_node_count\"\xa5\x02\n" +
 	"\x1cGenerateEphemeralCertRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12\x1e\n" +
 	"\n" +
 	"public_key\x18\x03 \x01(\tR\n" +
-	"public_key\x12'\n" +
-	"\faccess_token\x18\x04 \x01(\tB\x03\xe0A\x01R\faccess_token\x12<\n" +
-	"\tread_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\breadTime\x12E\n" +
-	"\x0evalid_duration\x18\f \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\rvalidDuration\"i\n" +
+	"public_key\x12(\n" +
+	"\faccess_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\faccess_token\x12=\n" +
+	"\tread_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\breadTime\x12F\n" +
+	"\x0evalid_duration\x18\f \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\rvalidDuration\"i\n" +
 	"\x1dGenerateEphemeralCertResponse\x12H\n" +
 	"\x0eephemeral_cert\x18\x01 \x01(\v2!.google.cloud.sql.v1beta4.SslCertR\rephemeralCert2\x88\x06\n" +
 	"\x11SqlConnectService\x12\xc2\x01\n" +

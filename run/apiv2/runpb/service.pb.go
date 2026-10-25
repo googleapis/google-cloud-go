@@ -988,91 +988,91 @@ var File_google_cloud_run_v2_service_proto protoreflect.FileDescriptor
 
 const file_google_cloud_run_v2_service_proto_rawDesc = "" +
 	"\n" +
-	"!google/cloud/run/v2/service.proto\x12\x13google.cloud.run.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1dgoogle/api/launch_stage.proto\x1a\x19google/api/resource.proto\x1a\x18google/api/routing.proto\x1a#google/cloud/run/v2/condition.proto\x1a+google/cloud/run/v2/revision_template.proto\x1a(google/cloud/run/v2/traffic_target.proto\x1a)google/cloud/run/v2/vendor_settings.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd8\x01\n" +
-	"\x14CreateServiceRequest\x12:\n" +
-	"\x06parent\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\x12\x1arun.googleapis.com/ServiceR\x06parent\x12;\n" +
-	"\aservice\x18\x02 \x01(\v2\x1c.google.cloud.run.v2.ServiceB\x03\xe0A\x02R\aservice\x12\"\n" +
+	"!google/cloud/run/v2/service.proto\x12\x13google.cloud.run.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1dgoogle/api/launch_stage.proto\x1a\x19google/api/resource.proto\x1a\x18google/api/routing.proto\x1a#google/cloud/run/v2/condition.proto\x1a+google/cloud/run/v2/revision_template.proto\x1a(google/cloud/run/v2/traffic_target.proto\x1a)google/cloud/run/v2/vendor_settings.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdb\x01\n" +
+	"\x14CreateServiceRequest\x12;\n" +
+	"\x06parent\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\x12\x1arun.googleapis.com/ServiceR\x06parent\x12<\n" +
+	"\aservice\x18\x02 \x01(\v2\x1c.google.cloud.run.v2.ServiceB\x04\xe2A\x01\x02R\aservice\x12#\n" +
 	"\n" +
-	"service_id\x18\x03 \x01(\tB\x03\xe0A\x02R\tserviceId\x12#\n" +
-	"\rvalidate_only\x18\x04 \x01(\bR\fvalidateOnly\"\xe4\x01\n" +
-	"\x14UpdateServiceRequest\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12;\n" +
-	"\aservice\x18\x01 \x01(\v2\x1c.google.cloud.run.v2.ServiceB\x03\xe0A\x02R\aservice\x12#\n" +
-	"\rvalidate_only\x18\x03 \x01(\bR\fvalidateOnly\x12(\n" +
-	"\rallow_missing\x18\x04 \x01(\bB\x03\xe0A\x01R\fallowMissing\"\xb0\x01\n" +
-	"\x13ListServicesRequest\x12:\n" +
-	"\x06parent\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\x12\x1arun.googleapis.com/ServiceR\x06parent\x12\x1b\n" +
+	"service_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\tserviceId\x12#\n" +
+	"\rvalidate_only\x18\x04 \x01(\bR\fvalidateOnly\"\xe7\x01\n" +
+	"\x14UpdateServiceRequest\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12<\n" +
+	"\aservice\x18\x01 \x01(\v2\x1c.google.cloud.run.v2.ServiceB\x04\xe2A\x01\x02R\aservice\x12#\n" +
+	"\rvalidate_only\x18\x03 \x01(\bR\fvalidateOnly\x12)\n" +
+	"\rallow_missing\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fallowMissing\"\xb1\x01\n" +
+	"\x13ListServicesRequest\x12;\n" +
+	"\x06parent\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\x12\x1arun.googleapis.com/ServiceR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12!\n" +
-	"\fshow_deleted\x18\x04 \x01(\bR\vshowDeleted\"\x9f\x01\n" +
+	"\fshow_deleted\x18\x04 \x01(\bR\vshowDeleted\"\xa0\x01\n" +
 	"\x14ListServicesResponse\x128\n" +
 	"\bservices\x18\x01 \x03(\v2\x1c.google.cloud.run.v2.ServiceR\bservices\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x03R\vunreachable\"K\n" +
-	"\x11GetServiceRequest\x126\n" +
-	"\x04name\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
-	"\x1arun.googleapis.com/ServiceR\x04name\"\x87\x01\n" +
-	"\x14DeleteServiceRequest\x126\n" +
-	"\x04name\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x03R\vunreachable\"L\n" +
+	"\x11GetServiceRequest\x127\n" +
+	"\x04name\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\n" +
+	"\x1arun.googleapis.com/ServiceR\x04name\"\x88\x01\n" +
+	"\x14DeleteServiceRequest\x127\n" +
+	"\x04name\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\n" +
 	"\x1arun.googleapis.com/ServiceR\x04name\x12#\n" +
 	"\rvalidate_only\x18\x02 \x01(\bR\fvalidateOnly\x12\x12\n" +
-	"\x04etag\x18\x03 \x01(\tR\x04etag\"\xcd\x13\n" +
-	"\aService\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12 \n" +
-	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x15\n" +
-	"\x03uid\x18\x03 \x01(\tB\x03\xe0A\x03R\x03uid\x12#\n" +
+	"\x04etag\x18\x03 \x01(\tR\x04etag\"\xf1\x13\n" +
+	"\aService\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12 \n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x16\n" +
+	"\x03uid\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12$\n" +
 	"\n" +
-	"generation\x18\x04 \x01(\x03B\x03\xe0A\x03R\n" +
-	"generation\x12E\n" +
-	"\x06labels\x18\x05 \x03(\v2(.google.cloud.run.v2.Service.LabelsEntryB\x03\xe0A\x01R\x06labels\x12T\n" +
-	"\vannotations\x18\x06 \x03(\v2-.google.cloud.run.v2.Service.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12@\n" +
-	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12@\n" +
-	"\vdelete_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"deleteTime\x12@\n" +
+	"generation\x18\x04 \x01(\x03B\x04\xe2A\x01\x03R\n" +
+	"generation\x12F\n" +
+	"\x06labels\x18\x05 \x03(\v2(.google.cloud.run.v2.Service.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12U\n" +
+	"\vannotations\x18\x06 \x03(\v2-.google.cloud.run.v2.Service.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12A\n" +
+	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12A\n" +
+	"\vdelete_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"deleteTime\x12A\n" +
 	"\vexpire_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"expireTime\x12\x1d\n" +
-	"\acreator\x18\v \x01(\tB\x03\xe0A\x03R\acreator\x12(\n" +
-	"\rlast_modifier\x18\f \x01(\tB\x03\xe0A\x03R\flastModifier\x12\x16\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"expireTime\x12\x1e\n" +
+	"\acreator\x18\v \x01(\tB\x04\xe2A\x01\x03R\acreator\x12)\n" +
+	"\rlast_modifier\x18\f \x01(\tB\x04\xe2A\x01\x03R\flastModifier\x12\x16\n" +
 	"\x06client\x18\r \x01(\tR\x06client\x12%\n" +
-	"\x0eclient_version\x18\x0e \x01(\tR\rclientVersion\x12B\n" +
-	"\aingress\x18\x0f \x01(\x0e2#.google.cloud.run.v2.IngressTrafficB\x03\xe0A\x01R\aingress\x12?\n" +
-	"\flaunch_stage\x18\x10 \x01(\x0e2\x17.google.api.LaunchStageB\x03\xe0A\x01R\vlaunchStage\x12`\n" +
-	"\x14binary_authorization\x18\x11 \x01(\v2(.google.cloud.run.v2.BinaryAuthorizationB\x03\xe0A\x01R\x13binaryAuthorization\x12F\n" +
-	"\btemplate\x18\x12 \x01(\v2%.google.cloud.run.v2.RevisionTemplateB\x03\xe0A\x02R\btemplate\x12A\n" +
-	"\atraffic\x18\x13 \x03(\v2\".google.cloud.run.v2.TrafficTargetB\x03\xe0A\x01R\atraffic\x12B\n" +
-	"\ascaling\x18\x14 \x01(\v2#.google.cloud.run.v2.ServiceScalingB\x03\xe0A\x01R\ascaling\x125\n" +
-	"\x14invoker_iam_disabled\x18\x15 \x01(\bB\x03\xe0A\x01R\x12invokerIamDisabled\x125\n" +
-	"\x14default_uri_disabled\x18\x16 \x01(\bB\x03\xe0A\x01R\x12defaultUriDisabled\x12\x17\n" +
-	"\x04urls\x18\x18 \x03(\tB\x03\xe0A\x03R\x04urls\x12$\n" +
-	"\viap_enabled\x18\x19 \x01(\bB\x03\xe0A\x01R\n" +
-	"iapEnabled\x12i\n" +
-	"\x15multi_region_settings\x18\x1a \x01(\v20.google.cloud.run.v2.Service.MultiRegionSettingsB\x03\xe0A\x01R\x13multiRegionSettings\x12)\n" +
-	"\x10custom_audiences\x18% \x03(\tR\x0fcustomAudiences\x124\n" +
-	"\x13observed_generation\x18\x1e \x01(\x03B\x03\xe0A\x03R\x12observedGeneration\x12R\n" +
-	"\x12terminal_condition\x18\x1f \x01(\v2\x1e.google.cloud.run.v2.ConditionB\x03\xe0A\x03R\x11terminalCondition\x12C\n" +
+	"\x0eclient_version\x18\x0e \x01(\tR\rclientVersion\x12C\n" +
+	"\aingress\x18\x0f \x01(\x0e2#.google.cloud.run.v2.IngressTrafficB\x04\xe2A\x01\x01R\aingress\x12@\n" +
+	"\flaunch_stage\x18\x10 \x01(\x0e2\x17.google.api.LaunchStageB\x04\xe2A\x01\x01R\vlaunchStage\x12a\n" +
+	"\x14binary_authorization\x18\x11 \x01(\v2(.google.cloud.run.v2.BinaryAuthorizationB\x04\xe2A\x01\x01R\x13binaryAuthorization\x12G\n" +
+	"\btemplate\x18\x12 \x01(\v2%.google.cloud.run.v2.RevisionTemplateB\x04\xe2A\x01\x02R\btemplate\x12B\n" +
+	"\atraffic\x18\x13 \x03(\v2\".google.cloud.run.v2.TrafficTargetB\x04\xe2A\x01\x01R\atraffic\x12C\n" +
+	"\ascaling\x18\x14 \x01(\v2#.google.cloud.run.v2.ServiceScalingB\x04\xe2A\x01\x01R\ascaling\x126\n" +
+	"\x14invoker_iam_disabled\x18\x15 \x01(\bB\x04\xe2A\x01\x01R\x12invokerIamDisabled\x126\n" +
+	"\x14default_uri_disabled\x18\x16 \x01(\bB\x04\xe2A\x01\x01R\x12defaultUriDisabled\x12\x18\n" +
+	"\x04urls\x18\x18 \x03(\tB\x04\xe2A\x01\x03R\x04urls\x12%\n" +
+	"\viap_enabled\x18\x19 \x01(\bB\x04\xe2A\x01\x01R\n" +
+	"iapEnabled\x12j\n" +
+	"\x15multi_region_settings\x18\x1a \x01(\v20.google.cloud.run.v2.Service.MultiRegionSettingsB\x04\xe2A\x01\x01R\x13multiRegionSettings\x12)\n" +
+	"\x10custom_audiences\x18% \x03(\tR\x0fcustomAudiences\x125\n" +
+	"\x13observed_generation\x18\x1e \x01(\x03B\x04\xe2A\x01\x03R\x12observedGeneration\x12S\n" +
+	"\x12terminal_condition\x18\x1f \x01(\v2\x1e.google.cloud.run.v2.ConditionB\x04\xe2A\x01\x03R\x11terminalCondition\x12D\n" +
 	"\n" +
-	"conditions\x18  \x03(\v2\x1e.google.cloud.run.v2.ConditionB\x03\xe0A\x03R\n" +
-	"conditions\x12W\n" +
-	"\x15latest_ready_revision\x18! \x01(\tB#\xe0A\x03\xfaA\x1d\n" +
-	"\x1brun.googleapis.com/RevisionR\x13latestReadyRevision\x12[\n" +
-	"\x17latest_created_revision\x18\" \x01(\tB#\xe0A\x03\xfaA\x1d\n" +
-	"\x1brun.googleapis.com/RevisionR\x15latestCreatedRevision\x12X\n" +
-	"\x10traffic_statuses\x18# \x03(\v2(.google.cloud.run.v2.TrafficTargetStatusB\x03\xe0A\x03R\x0ftrafficStatuses\x12\x15\n" +
-	"\x03uri\x18$ \x01(\tB\x03\xe0A\x03R\x03uri\x12(\n" +
-	"\rsatisfies_pzs\x18& \x01(\bB\x03\xe0A\x03R\fsatisfiesPzs\x12=\n" +
-	"\x18threat_detection_enabled\x18( \x01(\bB\x03\xe0A\x03R\x16threatDetectionEnabled\x12H\n" +
-	"\fbuild_config\x18) \x01(\v2 .google.cloud.run.v2.BuildConfigB\x03\xe0A\x01R\vbuildConfig\x12%\n" +
-	"\vreconciling\x18b \x01(\bB\x03\xe0A\x03R\vreconciling\x12\x17\n" +
-	"\x04etag\x18c \x01(\tB\x03\xe0A\x01R\x04etag\x1aa\n" +
-	"\x13MultiRegionSettings\x12\x1d\n" +
-	"\aregions\x18\x01 \x03(\tB\x03\xe0A\x02R\aregions\x12+\n" +
-	"\x0fmulti_region_id\x18\x02 \x01(\tB\x03\xe0A\x01R\rmultiRegionId\x1a9\n" +
+	"conditions\x18  \x03(\v2\x1e.google.cloud.run.v2.ConditionB\x04\xe2A\x01\x03R\n" +
+	"conditions\x12X\n" +
+	"\x15latest_ready_revision\x18! \x01(\tB$\xe2A\x01\x03\xfaA\x1d\n" +
+	"\x1brun.googleapis.com/RevisionR\x13latestReadyRevision\x12\\\n" +
+	"\x17latest_created_revision\x18\" \x01(\tB$\xe2A\x01\x03\xfaA\x1d\n" +
+	"\x1brun.googleapis.com/RevisionR\x15latestCreatedRevision\x12Y\n" +
+	"\x10traffic_statuses\x18# \x03(\v2(.google.cloud.run.v2.TrafficTargetStatusB\x04\xe2A\x01\x03R\x0ftrafficStatuses\x12\x16\n" +
+	"\x03uri\x18$ \x01(\tB\x04\xe2A\x01\x03R\x03uri\x12)\n" +
+	"\rsatisfies_pzs\x18& \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzs\x12>\n" +
+	"\x18threat_detection_enabled\x18( \x01(\bB\x04\xe2A\x01\x03R\x16threatDetectionEnabled\x12I\n" +
+	"\fbuild_config\x18) \x01(\v2 .google.cloud.run.v2.BuildConfigB\x04\xe2A\x01\x01R\vbuildConfig\x12&\n" +
+	"\vreconciling\x18b \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12\x18\n" +
+	"\x04etag\x18c \x01(\tB\x04\xe2A\x01\x01R\x04etag\x1ac\n" +
+	"\x13MultiRegionSettings\x12\x1e\n" +
+	"\aregions\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\aregions\x12,\n" +
+	"\x0fmulti_region_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\rmultiRegionId\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a>\n" +

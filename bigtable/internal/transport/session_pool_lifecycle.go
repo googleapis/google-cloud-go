@@ -280,7 +280,16 @@ func (p *SessionPoolImpl) onActive(sh *SessionHandle) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 
+	// The delete is the single-fire gate shared with onClose's starting
+	// branch: both paths delete sh from startingSessions under p.mu, so
+	// exactly one executes. Release the budget only when we win the delete,
+	// so onClose's penalty path can't also fire (it would find sh gone and
+	// take the non-starting branch).
+	_, wasStarting := p.startingSessions[sh]
 	delete(p.startingSessions, sh)
+	if wasStarting {
+		p.budget.Release(true)
+	}
 
 	if p.closed {
 		// Dispatch async so we release p.mu before the onClose chain
@@ -356,6 +365,12 @@ func (p *SessionPoolImpl) onClose(sh *SessionHandle, err error) {
 	if _, starting := p.startingSessions[sh]; starting {
 		delete(p.startingSessions, sh)
 		p.mu.Unlock()
+		// Session died before reaching Ready. Apply the failure penalty so
+		// repeated fast rejections throttle the retry loop. The
+		// startingSessions delete above (under p.mu) is the single-fire
+		// gate: onActive also deletes under p.mu and releases only when
+		// it wins, so at most one side releases.
+		p.budget.Release(false)
 		p.bumpStartingClose(sh.session)
 		p.noteAbnormalCloseIfAny(sh)
 		// Re-drive creation after a session died before ever reaching

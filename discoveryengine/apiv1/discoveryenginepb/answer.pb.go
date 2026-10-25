@@ -1767,15 +1767,15 @@ var File_google_cloud_discoveryengine_v1_answer_proto protoreflect.FileDescripto
 
 const file_google_cloud_discoveryengine_v1_answer_proto_rawDesc = "" +
 	"\n" +
-	",google/cloud/discoveryengine/v1/answer.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/discoveryengine/v1/safety.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa8.\n" +
-	"\x06Answer\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12C\n" +
+	",google/cloud/discoveryengine/v1/answer.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/discoveryengine/v1/safety.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb2.\n" +
+	"\x06Answer\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12C\n" +
 	"\x05state\x18\x02 \x01(\x0e2-.google.cloud.discoveryengine.v1.Answer.StateR\x05state\x12\x1f\n" +
 	"\vanswer_text\x18\x03 \x01(\tR\n" +
 	"answerText\x12,\n" +
 	"\x0fgrounding_score\x18\f \x01(\x01H\x00R\x0egroundingScore\x88\x01\x01\x12N\n" +
-	"\tcitations\x18\x04 \x03(\v20.google.cloud.discoveryengine.v1.Answer.CitationR\tcitations\x12l\n" +
-	"\x12grounding_supports\x18\r \x03(\v28.google.cloud.discoveryengine.v1.Answer.GroundingSupportB\x03\xe0A\x01R\x11groundingSupports\x12Q\n" +
+	"\tcitations\x18\x04 \x03(\v20.google.cloud.discoveryengine.v1.Answer.CitationR\tcitations\x12m\n" +
+	"\x12grounding_supports\x18\r \x03(\v28.google.cloud.discoveryengine.v1.Answer.GroundingSupportB\x04\xe2A\x01\x01R\x11groundingSupports\x12Q\n" +
 	"\n" +
 	"references\x18\x05 \x03(\v21.google.cloud.discoveryengine.v1.Answer.ReferenceR\n" +
 	"references\x12+\n" +
@@ -1783,27 +1783,27 @@ const file_google_cloud_discoveryengine_v1_answer_proto_rawDesc = "" +
 	"\x05steps\x18\a \x03(\v2,.google.cloud.discoveryengine.v1.Answer.StepR\x05steps\x12x\n" +
 	"\x18query_understanding_info\x18\n" +
 	" \x01(\v2>.google.cloud.discoveryengine.v1.Answer.QueryUnderstandingInfoR\x16queryUnderstandingInfo\x12q\n" +
-	"\x16answer_skipped_reasons\x18\v \x03(\x0e2;.google.cloud.discoveryengine.v1.Answer.AnswerSkippedReasonR\x14answerSkippedReasons\x12@\n" +
-	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12D\n" +
-	"\rcomplete_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\fcompleteTime\x12Y\n" +
-	"\x0esafety_ratings\x18\x0e \x03(\v2-.google.cloud.discoveryengine.v1.SafetyRatingB\x03\xe0A\x01R\rsafetyRatings\x1a\x9a\x01\n" +
+	"\x16answer_skipped_reasons\x18\v \x03(\x0e2;.google.cloud.discoveryengine.v1.Answer.AnswerSkippedReasonR\x14answerSkippedReasons\x12A\n" +
+	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12E\n" +
+	"\rcomplete_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\fcompleteTime\x12Z\n" +
+	"\x0esafety_ratings\x18\x0e \x03(\v2-.google.cloud.discoveryengine.v1.SafetyRatingB\x04\xe2A\x01\x01R\rsafetyRatings\x1a\x9a\x01\n" +
 	"\bCitation\x12\x1f\n" +
 	"\vstart_index\x18\x01 \x01(\x03R\n" +
 	"startIndex\x12\x1b\n" +
 	"\tend_index\x18\x02 \x01(\x03R\bendIndex\x12P\n" +
 	"\asources\x18\x03 \x03(\v26.google.cloud.discoveryengine.v1.Answer.CitationSourceR\asources\x1a3\n" +
 	"\x0eCitationSource\x12!\n" +
-	"\freference_id\x18\x01 \x01(\tR\vreferenceId\x1a\xcf\x02\n" +
-	"\x10GroundingSupport\x12$\n" +
-	"\vstart_index\x18\x01 \x01(\x03B\x03\xe0A\x02R\n" +
-	"startIndex\x12 \n" +
-	"\tend_index\x18\x02 \x01(\x03B\x03\xe0A\x02R\bendIndex\x12,\n" +
+	"\freference_id\x18\x01 \x01(\tR\vreferenceId\x1a\xd2\x02\n" +
+	"\x10GroundingSupport\x12%\n" +
+	"\vstart_index\x18\x01 \x01(\x03B\x04\xe2A\x01\x02R\n" +
+	"startIndex\x12!\n" +
+	"\tend_index\x18\x02 \x01(\x03B\x04\xe2A\x01\x02R\bendIndex\x12,\n" +
 	"\x0fgrounding_score\x18\x03 \x01(\x01H\x00R\x0egroundingScore\x88\x01\x01\x12=\n" +
-	"\x18grounding_check_required\x18\x04 \x01(\bH\x01R\x16groundingCheckRequired\x88\x01\x01\x12U\n" +
-	"\asources\x18\x05 \x03(\v26.google.cloud.discoveryengine.v1.Answer.CitationSourceB\x03\xe0A\x01R\asourcesB\x12\n" +
+	"\x18grounding_check_required\x18\x04 \x01(\bH\x01R\x16groundingCheckRequired\x88\x01\x01\x12V\n" +
+	"\asources\x18\x05 \x03(\v26.google.cloud.discoveryengine.v1.Answer.CitationSourceB\x04\xe2A\x01\x01R\asourcesB\x12\n" +
 	"\x10_grounding_scoreB\x1b\n" +
-	"\x19_grounding_check_required\x1a\xc8\f\n" +
+	"\x19_grounding_check_required\x1a\xca\f\n" +
 	"\tReference\x12\x8a\x01\n" +
 	"\x1aunstructured_document_info\x18\x01 \x01(\v2J.google.cloud.discoveryengine.v1.Answer.Reference.UnstructuredDocumentInfoH\x00R\x18unstructuredDocumentInfo\x12\\\n" +
 	"\n" +
@@ -1836,14 +1836,14 @@ const file_google_cloud_discoveryengine_v1_answer_proto_rawDesc = "" +
 	"\x0fpage_identifier\x18\x04 \x01(\tR\x0epageIdentifier\x128\n" +
 	"\vstruct_data\x18\x05 \x01(\v2\x17.google.protobuf.StructR\n" +
 	"structDataB\x12\n" +
-	"\x10_relevance_score\x1a\xce\x01\n" +
+	"\x10_relevance_score\x1a\xd0\x01\n" +
 	"\x16StructuredDocumentInfo\x12H\n" +
 	"\bdocument\x18\x01 \x01(\tB,\xfaA)\n" +
 	"'discoveryengine.googleapis.com/DocumentR\bdocument\x128\n" +
 	"\vstruct_data\x18\x02 \x01(\v2\x17.google.protobuf.StructR\n" +
-	"structData\x12\x19\n" +
-	"\x05title\x18\x03 \x01(\tB\x03\xe0A\x03R\x05title\x12\x15\n" +
-	"\x03uri\x18\x04 \x01(\tB\x03\xe0A\x03R\x03uriB\t\n" +
+	"structData\x12\x1a\n" +
+	"\x05title\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x05title\x12\x16\n" +
+	"\x03uri\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x03uriB\t\n" +
 	"\acontent\x1a\x85\n" +
 	"\n" +
 	"\x04Step\x12H\n" +

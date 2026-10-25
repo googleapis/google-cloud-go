@@ -1360,19 +1360,19 @@ var File_google_cloud_dialogflow_cx_v3_environment_proto protoreflect.FileDescri
 
 const file_google_cloud_dialogflow_cx_v3_environment_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/dialogflow/cx/v3/environment.proto\x12\x1dgoogle.cloud.dialogflow.cx.v3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/dialogflow/cx/v3/test_case.proto\x1a+google/cloud/dialogflow/cx/v3/webhook.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xde\a\n" +
+	"/google/cloud/dialogflow/cx/v3/environment.proto\x12\x1dgoogle.cloud.dialogflow.cx.v3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/dialogflow/cx/v3/test_case.proto\x1a+google/cloud/dialogflow/cx/v3/webhook.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe1\a\n" +
 	"\vEnvironment\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12 \n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12 \n" +
 	"\vdescription\x18\x03 \x01(\tR\vdescription\x12a\n" +
-	"\x0fversion_configs\x18\x06 \x03(\v28.google.cloud.dialogflow.cx.v3.Environment.VersionConfigR\x0eversionConfigs\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x0fversion_configs\x18\x06 \x03(\v28.google.cloud.dialogflow.cx.v3.Environment.VersionConfigR\x0eversionConfigs\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12f\n" +
 	"\x11test_cases_config\x18\a \x01(\v2:.google.cloud.dialogflow.cx.v3.Environment.TestCasesConfigR\x0ftestCasesConfig\x12_\n" +
 	"\x0ewebhook_config\x18\n" +
-	" \x01(\v28.google.cloud.dialogflow.cx.v3.Environment.WebhookConfigR\rwebhookConfig\x1aT\n" +
-	"\rVersionConfig\x12C\n" +
-	"\aversion\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	" \x01(\v28.google.cloud.dialogflow.cx.v3.Environment.WebhookConfigR\rwebhookConfig\x1aU\n" +
+	"\rVersionConfig\x12D\n" +
+	"\aversion\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!dialogflow.googleapis.com/VersionR\aversion\x1a\xc7\x01\n" +
 	"\x0fTestCasesConfig\x12F\n" +
 	"\n" +
@@ -1382,30 +1382,30 @@ const file_google_cloud_dialogflow_cx_v3_environment_proto_rawDesc = "" +
 	"\x18enable_predeployment_run\x18\x03 \x01(\bR\x16enablePredeploymentRun\x1ad\n" +
 	"\rWebhookConfig\x12S\n" +
 	"\x11webhook_overrides\x18\x01 \x03(\v2&.google.cloud.dialogflow.cx.v3.WebhookR\x10webhookOverrides:}\xeaAz\n" +
-	"%dialogflow.googleapis.com/Environment\x12Qprojects/{project}/locations/{location}/agents/{agent}/environments/{environment}\"\x9c\x01\n" +
-	"\x17ListEnvironmentsRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\x12%dialogflow.googleapis.com/EnvironmentR\x06parent\x12\x1b\n" +
+	"%dialogflow.googleapis.com/Environment\x12Qprojects/{project}/locations/{location}/agents/{agent}/environments/{environment}\"\x9d\x01\n" +
+	"\x17ListEnvironmentsRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\x12%dialogflow.googleapis.com/EnvironmentR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x92\x01\n" +
 	"\x18ListEnvironmentsResponse\x12N\n" +
 	"\fenvironments\x18\x01 \x03(\v2*.google.cloud.dialogflow.cx.v3.EnvironmentR\fenvironments\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"Z\n" +
-	"\x15GetEnvironmentRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%dialogflow.googleapis.com/EnvironmentR\x04name\"\xb4\x01\n" +
-	"\x18CreateEnvironmentRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\x12%dialogflow.googleapis.com/EnvironmentR\x06parent\x12Q\n" +
-	"\venvironment\x18\x02 \x01(\v2*.google.cloud.dialogflow.cx.v3.EnvironmentB\x03\xe0A\x02R\venvironment\"\xaf\x01\n" +
-	"\x18UpdateEnvironmentRequest\x12Q\n" +
-	"\venvironment\x18\x01 \x01(\v2*.google.cloud.dialogflow.cx.v3.EnvironmentB\x03\xe0A\x02R\venvironment\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"]\n" +
-	"\x18DeleteEnvironmentRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%dialogflow.googleapis.com/EnvironmentR\x04name\"\xa0\x01\n" +
-	"\x1fLookupEnvironmentHistoryRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"[\n" +
+	"\x15GetEnvironmentRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%dialogflow.googleapis.com/EnvironmentR\x04name\"\xb6\x01\n" +
+	"\x18CreateEnvironmentRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\x12%dialogflow.googleapis.com/EnvironmentR\x06parent\x12R\n" +
+	"\venvironment\x18\x02 \x01(\v2*.google.cloud.dialogflow.cx.v3.EnvironmentB\x04\xe2A\x01\x02R\venvironment\"\xb1\x01\n" +
+	"\x18UpdateEnvironmentRequest\x12R\n" +
+	"\venvironment\x18\x01 \x01(\v2*.google.cloud.dialogflow.cx.v3.EnvironmentB\x04\xe2A\x01\x02R\venvironment\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"^\n" +
+	"\x18DeleteEnvironmentRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%dialogflow.googleapis.com/EnvironmentR\x04name\"\xa1\x01\n" +
+	"\x1fLookupEnvironmentHistoryRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
 	"%dialogflow.googleapis.com/EnvironmentR\x04name\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -1425,26 +1425,26 @@ const file_google_cloud_dialogflow_cx_v3_environment_proto_rawDesc = "" +
 	"\x06PASSED\x10\x01\x12\n" +
 	"\n" +
 	"\x06FAILED\x10\x02:\xb7\x01\xeaA\xb3\x01\n" +
-	".dialogflow.googleapis.com/ContinuousTestResult\x12\x80\x01projects/{project}/locations/{location}/agents/{agent}/environments/{environment}/continuousTestResults/{continuous_test_result}\"k\n" +
-	"\x18RunContinuousTestRequest\x12O\n" +
-	"\venvironment\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
+	".dialogflow.googleapis.com/ContinuousTestResult\x12\x80\x01projects/{project}/locations/{location}/agents/{agent}/environments/{environment}/continuousTestResults/{continuous_test_result}\"l\n" +
+	"\x18RunContinuousTestRequest\x12P\n" +
+	"\venvironment\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
 	"%dialogflow.googleapis.com/EnvironmentR\venvironment\"\x86\x01\n" +
 	"\x19RunContinuousTestResponse\x12i\n" +
 	"\x16continuous_test_result\x18\x01 \x01(\v23.google.cloud.dialogflow.cx.v3.ContinuousTestResultR\x14continuousTestResult\"]\n" +
 	"\x19RunContinuousTestMetadata\x12@\n" +
-	"\x06errors\x18\x01 \x03(\v2(.google.cloud.dialogflow.cx.v3.TestErrorR\x06errors\"\xae\x01\n" +
-	" ListContinuousTestResultsRequest\x12N\n" +
-	"\x06parent\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\x12.dialogflow.googleapis.com/ContinuousTestResultR\x06parent\x12\x1b\n" +
+	"\x06errors\x18\x01 \x03(\v2(.google.cloud.dialogflow.cx.v3.TestErrorR\x06errors\"\xaf\x01\n" +
+	" ListContinuousTestResultsRequest\x12O\n" +
+	"\x06parent\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\x12.dialogflow.googleapis.com/ContinuousTestResultR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xb8\x01\n" +
 	"!ListContinuousTestResultsResponse\x12k\n" +
 	"\x17continuous_test_results\x18\x01 \x03(\v23.google.cloud.dialogflow.cx.v3.ContinuousTestResultR\x15continuousTestResults\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb2\x01\n" +
-	"\x11DeployFlowRequest\x12O\n" +
-	"\venvironment\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%dialogflow.googleapis.com/EnvironmentR\venvironment\x12L\n" +
-	"\fflow_version\x18\x02 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb4\x01\n" +
+	"\x11DeployFlowRequest\x12P\n" +
+	"\venvironment\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%dialogflow.googleapis.com/EnvironmentR\venvironment\x12M\n" +
+	"\fflow_version\x18\x02 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!dialogflow.googleapis.com/VersionR\vflowVersion\"\x82\x01\n" +
 	"\x12DeployFlowResponse\x12L\n" +
 	"\venvironment\x18\x01 \x01(\v2*.google.cloud.dialogflow.cx.v3.EnvironmentR\venvironment\x12\x1e\n" +

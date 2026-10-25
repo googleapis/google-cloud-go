@@ -368,15 +368,15 @@ var File_google_cloud_ces_v1_connector_tool_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1_connector_tool_proto_rawDesc = "" +
 	"\n" +
-	"(google/cloud/ces/v1/connector_tool.proto\x12\x13google.cloud.ces.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/cloud/ces/v1/auth.proto\"\xf3\x03\n" +
+	"(google/cloud/ces/v1/connector_tool.proto\x12\x13google.cloud.ces.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/cloud/ces/v1/auth.proto\"\xf7\x03\n" +
 	"\x06Action\x122\n" +
 	"\x14connection_action_id\x18\x04 \x01(\tH\x00R\x12connectionActionId\x12X\n" +
-	"\x10entity_operation\x18\x05 \x01(\v2+.google.cloud.ces.v1.Action.EntityOperationH\x00R\x0fentityOperation\x12&\n" +
-	"\finput_fields\x18\x02 \x03(\tB\x03\xe0A\x01R\vinputFields\x12(\n" +
-	"\routput_fields\x18\x03 \x03(\tB\x03\xe0A\x01R\foutputFields\x1a\xf9\x01\n" +
-	"\x0fEntityOperation\x12 \n" +
-	"\tentity_id\x18\x01 \x01(\tB\x03\xe0A\x02R\bentityId\x12\\\n" +
-	"\toperation\x18\x02 \x01(\x0e29.google.cloud.ces.v1.Action.EntityOperation.OperationTypeB\x03\xe0A\x02R\toperation\"f\n" +
+	"\x10entity_operation\x18\x05 \x01(\v2+.google.cloud.ces.v1.Action.EntityOperationH\x00R\x0fentityOperation\x12'\n" +
+	"\finput_fields\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\vinputFields\x12)\n" +
+	"\routput_fields\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\foutputFields\x1a\xfb\x01\n" +
+	"\x0fEntityOperation\x12!\n" +
+	"\tentity_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bentityId\x12]\n" +
+	"\toperation\x18\x02 \x01(\x0e29.google.cloud.ces.v1.Action.EntityOperation.OperationTypeB\x04\xe2A\x01\x02R\toperation\"f\n" +
 	"\rOperationType\x12\x1e\n" +
 	"\x1aOPERATION_TYPE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04LIST\x10\x01\x12\a\n" +
@@ -387,16 +387,16 @@ const file_google_cloud_ces_v1_connector_tool_proto_rawDesc = "" +
 	"\x06UPDATE\x10\x04\x12\n" +
 	"\n" +
 	"\x06DELETE\x10\x05B\r\n" +
-	"\vaction_spec\"\xfc\x01\n" +
-	"\rConnectorTool\x12#\n" +
+	"\vaction_spec\"\x81\x02\n" +
+	"\rConnectorTool\x12$\n" +
 	"\n" +
-	"connection\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"connection\x128\n" +
-	"\x06action\x18\x02 \x01(\v2\x1b.google.cloud.ces.v1.ActionB\x03\xe0A\x02R\x06action\x12L\n" +
-	"\vauth_config\x18\x03 \x01(\v2&.google.cloud.ces.v1.EndUserAuthConfigB\x03\xe0A\x01R\n" +
-	"authConfig\x12\x17\n" +
-	"\x04name\x18\x04 \x01(\tB\x03\xe0A\x01R\x04name\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tB\x03\xe0A\x01R\vdescriptionBZ\n" +
+	"connection\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"connection\x129\n" +
+	"\x06action\x18\x02 \x01(\v2\x1b.google.cloud.ces.v1.ActionB\x04\xe2A\x01\x02R\x06action\x12M\n" +
+	"\vauth_config\x18\x03 \x01(\v2&.google.cloud.ces.v1.EndUserAuthConfigB\x04\xe2A\x01\x01R\n" +
+	"authConfig\x12\x18\n" +
+	"\x04name\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x04name\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescriptionBZ\n" +
 	"\x17com.google.cloud.ces.v1B\x12ConnectorToolProtoP\x01Z)cloud.google.com/go/ces/apiv1/cespb;cespbb\x06proto3"
 
 var (

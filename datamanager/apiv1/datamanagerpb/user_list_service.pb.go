@@ -448,33 +448,33 @@ var File_google_ads_datamanager_v1_user_list_service_proto protoreflect.FileDesc
 
 const file_google_ads_datamanager_v1_user_list_service_proto_rawDesc = "" +
 	"\n" +
-	"1google/ads/datamanager/v1/user_list_service.proto\x12\x19google.ads.datamanager.v1\x1a)google/ads/datamanager/v1/user_list.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"U\n" +
-	"\x12GetUserListRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#datamanager.googleapis.com/UserListR\x04name\"\xbe\x01\n" +
-	"\x14ListUserListsRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\x12#datamanager.googleapis.com/UserListR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"1google/ads/datamanager/v1/user_list_service.proto\x12\x19google.ads.datamanager.v1\x1a)google/ads/datamanager/v1/user_list.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"V\n" +
+	"\x12GetUserListRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#datamanager.googleapis.com/UserListR\x04name\"\xc2\x01\n" +
+	"\x14ListUserListsRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\x12#datamanager.googleapis.com/UserListR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\x83\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x83\x01\n" +
 	"\x15ListUserListsResponse\x12B\n" +
 	"\n" +
 	"user_lists\x18\x01 \x03(\v2#.google.ads.datamanager.v1.UserListR\tuserLists\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xcd\x01\n" +
-	"\x15CreateUserListRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\x12#datamanager.googleapis.com/UserListR\x06parent\x12E\n" +
-	"\tuser_list\x18\x02 \x01(\v2#.google.ads.datamanager.v1.UserListB\x03\xe0A\x02R\buserList\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xca\x01\n" +
-	"\x15UpdateUserListRequest\x12E\n" +
-	"\tuser_list\x18\x01 \x01(\v2#.google.ads.datamanager.v1.UserListB\x03\xe0A\x02R\buserList\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\x82\x01\n" +
-	"\x15DeleteUserListRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#datamanager.googleapis.com/UserListR\x04name\x12(\n" +
-	"\rvalidate_only\x18\x02 \x01(\bB\x03\xe0A\x01R\fvalidateOnly2\xec\a\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xd0\x01\n" +
+	"\x15CreateUserListRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\x12#datamanager.googleapis.com/UserListR\x06parent\x12F\n" +
+	"\tuser_list\x18\x02 \x01(\v2#.google.ads.datamanager.v1.UserListB\x04\xe2A\x01\x02R\buserList\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xcd\x01\n" +
+	"\x15UpdateUserListRequest\x12F\n" +
+	"\tuser_list\x18\x01 \x01(\v2#.google.ads.datamanager.v1.UserListB\x04\xe2A\x01\x02R\buserList\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\x84\x01\n" +
+	"\x15DeleteUserListRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#datamanager.googleapis.com/UserListR\x04name\x12)\n" +
+	"\rvalidate_only\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly2\xec\a\n" +
 	"\x0fUserListService\x12\xa2\x01\n" +
 	"\vGetUserList\x12-.google.ads.datamanager.v1.GetUserListRequest\x1a#.google.ads.datamanager.v1.UserList\"?\xdaA\x04name\x82\xd3\xe4\x93\x022\x120/v1/{name=accountTypes/*/accounts/*/userLists/*}\x12\xb5\x01\n" +
 	"\rListUserLists\x12/.google.ads.datamanager.v1.ListUserListsRequest\x1a0.google.ads.datamanager.v1.ListUserListsResponse\"A\xdaA\x06parent\x82\xd3\xe4\x93\x022\x120/v1/{parent=accountTypes/*/accounts/*}/userLists\x12\xbf\x01\n" +

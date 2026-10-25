@@ -7432,27 +7432,27 @@ const file_google_cloud_visionai_v1_platform_proto_rawDesc = "" +
 	"'google/cloud/visionai/v1/platform.proto\x12\x18google.cloud.visionai.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a*google/cloud/visionai/v1/annotations.proto\x1a%google/cloud/visionai/v1/common.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"$\n" +
 	"\"DeleteApplicationInstancesResponse\"$\n" +
 	"\"CreateApplicationInstancesResponse\"$\n" +
-	"\"UpdateApplicationInstancesResponse\"\xf1\x01\n" +
-	"!CreateApplicationInstancesRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#visionai.googleapis.com/ApplicationR\x04name\x12g\n" +
-	"\x15application_instances\x18\x02 \x03(\v2-.google.cloud.visionai.v1.ApplicationInstanceB\x03\xe0A\x02R\x14applicationInstances\x12\"\n" +
+	"\"UpdateApplicationInstancesResponse\"\xf4\x01\n" +
+	"!CreateApplicationInstancesRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#visionai.googleapis.com/ApplicationR\x04name\x12h\n" +
+	"\x15application_instances\x18\x02 \x03(\v2-.google.cloud.visionai.v1.ApplicationInstanceB\x04\xe2A\x01\x02R\x14applicationInstances\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xd5\x01\n" +
-	"!DeleteApplicationInstancesRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#visionai.googleapis.com/ApplicationR\x04name\x12K\n" +
-	"\finstance_ids\x18\x02 \x03(\tB(\xe0A\x02\xfaA\"\n" +
-	" visionai.googleapis.com/InstanceR\vinstanceIds\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xd8\x01\n" +
+	"!DeleteApplicationInstancesRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#visionai.googleapis.com/ApplicationR\x04name\x12L\n" +
+	"\finstance_ids\x18\x02 \x03(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" visionai.googleapis.com/InstanceR\vinstanceIds\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"\x1b\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x1b\n" +
 	"\x19DeployApplicationResponse\"\x1d\n" +
 	"\x1bUndeployApplicationResponse\"&\n" +
 	"$RemoveApplicationStreamInputResponse\"#\n" +
 	"!AddApplicationStreamInputResponse\"&\n" +
-	"$UpdateApplicationStreamInputResponse\"\xcd\x01\n" +
-	"\x17ListApplicationsRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\x12#visionai.googleapis.com/ApplicationR\x06parent\x12\x1b\n" +
+	"$UpdateApplicationStreamInputResponse\"\xce\x01\n" +
+	"\x17ListApplicationsRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\x12#visionai.googleapis.com/ApplicationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -7461,66 +7461,66 @@ const file_google_cloud_visionai_v1_platform_proto_rawDesc = "" +
 	"\x18ListApplicationsResponse\x12I\n" +
 	"\fapplications\x18\x01 \x03(\v2%.google.cloud.visionai.v1.ApplicationR\fapplications\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"X\n" +
-	"\x15GetApplicationRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#visionai.googleapis.com/ApplicationR\x04name\"\xfd\x01\n" +
-	"\x18CreateApplicationRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\x12#visionai.googleapis.com/ApplicationR\x06parent\x12*\n" +
-	"\x0eapplication_id\x18\x02 \x01(\tB\x03\xe0A\x02R\rapplicationId\x12L\n" +
-	"\vapplication\x18\x03 \x01(\v2%.google.cloud.visionai.v1.ApplicationB\x03\xe0A\x02R\vapplication\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"Y\n" +
+	"\x15GetApplicationRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#visionai.googleapis.com/ApplicationR\x04name\"\x81\x02\n" +
+	"\x18CreateApplicationRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\x12#visionai.googleapis.com/ApplicationR\x06parent\x12+\n" +
+	"\x0eapplication_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\rapplicationId\x12M\n" +
+	"\vapplication\x18\x03 \x01(\v2%.google.cloud.visionai.v1.ApplicationB\x04\xe2A\x01\x02R\vapplication\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xce\x01\n" +
-	"\x18UpdateApplicationRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12L\n" +
-	"\vapplication\x18\x02 \x01(\v2%.google.cloud.visionai.v1.ApplicationB\x03\xe0A\x02R\vapplication\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xd1\x01\n" +
+	"\x18UpdateApplicationRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12M\n" +
+	"\vapplication\x18\x02 \x01(\v2%.google.cloud.visionai.v1.ApplicationB\x04\xe2A\x01\x02R\vapplication\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"\x9a\x01\n" +
-	"\x18DeleteApplicationRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#visionai.googleapis.com/ApplicationR\x04name\x12\"\n" +
-	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\x12\x19\n" +
-	"\x05force\x18\x03 \x01(\bB\x03\xe0A\x01R\x05force\"\xd6\x01\n" +
-	"\x18DeployApplicationRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x9d\x01\n" +
+	"\x18DeleteApplicationRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
 	"#visionai.googleapis.com/ApplicationR\x04name\x12#\n" +
-	"\rvalidate_only\x18\x02 \x01(\bR\fvalidateOnly\x12\"\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\x120\n" +
-	"\x11enable_monitoring\x18\x04 \x01(\bB\x03\xe0A\x01R\x10enableMonitoring\"\x81\x01\n" +
-	"\x1aUndeployApplicationRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#visionai.googleapis.com/ApplicationR\x04name\x12\"\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12\x1a\n" +
+	"\x05force\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x05force\"\xd9\x01\n" +
+	"\x18DeployApplicationRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#visionai.googleapis.com/ApplicationR\x04name\x12#\n" +
+	"\rvalidate_only\x18\x02 \x01(\bR\fvalidateOnly\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"~\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x121\n" +
+	"\x11enable_monitoring\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x10enableMonitoring\"\x83\x01\n" +
+	"\x1aUndeployApplicationRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#visionai.googleapis.com/ApplicationR\x04name\x12#\n" +
+	"\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"~\n" +
 	"\x16ApplicationStreamInput\x12d\n" +
-	"\x16stream_with_annotation\x18\x01 \x01(\v2..google.cloud.visionai.v1.StreamWithAnnotationR\x14streamWithAnnotation\"\xf5\x01\n" +
-	" AddApplicationStreamInputRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
+	"\x16stream_with_annotation\x18\x01 \x01(\v2..google.cloud.visionai.v1.StreamWithAnnotationR\x14streamWithAnnotation\"\xf7\x01\n" +
+	" AddApplicationStreamInputRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
 	"#visionai.googleapis.com/ApplicationR\x04name\x12l\n" +
-	"\x19application_stream_inputs\x18\x02 \x03(\v20.google.cloud.visionai.v1.ApplicationStreamInputR\x17applicationStreamInputs\x12\"\n" +
+	"\x19application_stream_inputs\x18\x02 \x03(\v20.google.cloud.visionai.v1.ApplicationStreamInputR\x17applicationStreamInputs\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"\x9d\x02\n" +
-	"#UpdateApplicationStreamInputRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x9f\x02\n" +
+	"#UpdateApplicationStreamInputRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
 	"#visionai.googleapis.com/ApplicationR\x04name\x12l\n" +
-	"\x19application_stream_inputs\x18\x02 \x03(\v20.google.cloud.visionai.v1.ApplicationStreamInputR\x17applicationStreamInputs\x12\"\n" +
+	"\x19application_stream_inputs\x18\x02 \x03(\v20.google.cloud.visionai.v1.ApplicationStreamInputR\x17applicationStreamInputs\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\x12#\n" +
-	"\rallow_missing\x18\x04 \x01(\bR\fallowMissing\"\xe0\x02\n" +
-	"#RemoveApplicationStreamInputRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12#\n" +
+	"\rallow_missing\x18\x04 \x01(\bR\fallowMissing\"\xe2\x02\n" +
+	"#RemoveApplicationStreamInputRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
 	"#visionai.googleapis.com/ApplicationR\x04name\x12\x81\x01\n" +
-	"\x14target_stream_inputs\x18\x02 \x03(\v2O.google.cloud.visionai.v1.RemoveApplicationStreamInputRequest.TargetStreamInputR\x12targetStreamInputs\x12\"\n" +
+	"\x14target_stream_inputs\x18\x02 \x03(\v2O.google.cloud.visionai.v1.RemoveApplicationStreamInputRequest.TargetStreamInputR\x12targetStreamInputs\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\x1aP\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x1aP\n" +
 	"\x11TargetStreamInput\x12;\n" +
 	"\x06stream\x18\x01 \x01(\tB#\xfaA \n" +
-	"\x1evisionai.googleapis.com/StreamR\x06stream\"\xc7\x01\n" +
-	"\x14ListInstancesRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\x12 visionai.googleapis.com/InstanceR\x06parent\x12\x1b\n" +
+	"\x1evisionai.googleapis.com/StreamR\x06stream\"\xc8\x01\n" +
+	"\x14ListInstancesRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\x12 visionai.googleapis.com/InstanceR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -7529,12 +7529,12 @@ const file_google_cloud_visionai_v1_platform_proto_rawDesc = "" +
 	"\x15ListInstancesResponse\x12@\n" +
 	"\tinstances\x18\x01 \x03(\v2\".google.cloud.visionai.v1.InstanceR\tinstances\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"R\n" +
-	"\x12GetInstanceRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" visionai.googleapis.com/InstanceR\x04name\"\xc1\x01\n" +
-	"\x11ListDraftsRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\x12\x1dvisionai.googleapis.com/DraftR\x06parent\x12\x1b\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"S\n" +
+	"\x12GetInstanceRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" visionai.googleapis.com/InstanceR\x04name\"\xc2\x01\n" +
+	"\x11ListDraftsRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\x12\x1dvisionai.googleapis.com/DraftR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -7543,43 +7543,43 @@ const file_google_cloud_visionai_v1_platform_proto_rawDesc = "" +
 	"\x12ListDraftsResponse\x127\n" +
 	"\x06drafts\x18\x01 \x03(\v2\x1f.google.cloud.visionai.v1.DraftR\x06drafts\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"L\n" +
-	"\x0fGetDraftRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dvisionai.googleapis.com/DraftR\x04name\"\xd3\x01\n" +
-	"\x12CreateDraftRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\x12\x1dvisionai.googleapis.com/DraftR\x06parent\x12\x1e\n" +
-	"\bdraft_id\x18\x02 \x01(\tB\x03\xe0A\x02R\adraftId\x12:\n" +
-	"\x05draft\x18\x03 \x01(\v2\x1f.google.cloud.visionai.v1.DraftB\x03\xe0A\x02R\x05draft\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"M\n" +
+	"\x0fGetDraftRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dvisionai.googleapis.com/DraftR\x04name\"\xd7\x01\n" +
+	"\x12CreateDraftRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\x12\x1dvisionai.googleapis.com/DraftR\x06parent\x12\x1f\n" +
+	"\bdraft_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\adraftId\x12;\n" +
+	"\x05draft\x18\x03 \x01(\v2\x1f.google.cloud.visionai.v1.DraftB\x04\xe2A\x01\x02R\x05draft\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xdb\x01\n" +
-	"\x12UpdateDraftRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12:\n" +
-	"\x05draft\x18\x02 \x01(\v2\x1f.google.cloud.visionai.v1.DraftB\x03\xe0A\x02R\x05draft\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xde\x01\n" +
+	"\x12UpdateDraftRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12;\n" +
+	"\x05draft\x18\x02 \x01(\v2\x1f.google.cloud.visionai.v1.DraftB\x04\xe2A\x01\x02R\x05draft\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\x12#\n" +
-	"\rallow_missing\x18\x04 \x01(\bR\fallowMissing\"\x85\x04\n" +
-	"!UpdateApplicationInstancesRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12#\n" +
+	"\rallow_missing\x18\x04 \x01(\bR\fallowMissing\"\x8a\x04\n" +
+	"!UpdateApplicationInstancesRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
 	"#visionai.googleapis.com/ApplicationR\x04name\x12\x8a\x01\n" +
-	"\x15application_instances\x18\x02 \x03(\v2U.google.cloud.visionai.v1.UpdateApplicationInstancesRequest.UpdateApplicationInstanceR\x14applicationInstances\x12\"\n" +
+	"\x15application_instances\x18\x02 \x03(\v2U.google.cloud.visionai.v1.UpdateApplicationInstancesRequest.UpdateApplicationInstanceR\x14applicationInstances\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\x12#\n" +
-	"\rallow_missing\x18\x04 \x01(\bR\fallowMissing\x1a\xc8\x01\n" +
-	"\x19UpdateApplicationInstance\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12C\n" +
-	"\binstance\x18\x02 \x01(\v2\".google.cloud.visionai.v1.InstanceB\x03\xe0A\x02R\binstance\x12$\n" +
-	"\vinstance_id\x18\x03 \x01(\tB\x03\xe0A\x02R\n" +
-	"instanceId\"s\n" +
-	"\x12DeleteDraftRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dvisionai.googleapis.com/DraftR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12#\n" +
+	"\rallow_missing\x18\x04 \x01(\bR\fallowMissing\x1a\xcb\x01\n" +
+	"\x19UpdateApplicationInstance\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12D\n" +
+	"\binstance\x18\x02 \x01(\v2\".google.cloud.visionai.v1.InstanceB\x04\xe2A\x01\x02R\binstance\x12%\n" +
+	"\vinstance_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"instanceId\"u\n" +
+	"\x12DeleteDraftRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dvisionai.googleapis.com/DraftR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\xc9\x01\n" +
-	"\x15ListProcessorsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!visionai.googleapis.com/ProcessorR\x06parent\x12\x1b\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xca\x01\n" +
+	"\x15ListProcessorsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!visionai.googleapis.com/ProcessorR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -7590,45 +7590,45 @@ const file_google_cloud_visionai_v1_platform_proto_rawDesc = "" +
 	"processors\x18\x01 \x03(\v2#.google.cloud.visionai.v1.ProcessorR\n" +
 	"processors\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"b\n" +
-	"\x1dListPrebuiltProcessorsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!visionai.googleapis.com/ProcessorR\x06parent\"e\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"c\n" +
+	"\x1dListPrebuiltProcessorsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!visionai.googleapis.com/ProcessorR\x06parent\"e\n" +
 	"\x1eListPrebuiltProcessorsResponse\x12C\n" +
 	"\n" +
 	"processors\x18\x01 \x03(\v2#.google.cloud.visionai.v1.ProcessorR\n" +
-	"processors\"T\n" +
-	"\x13GetProcessorRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!visionai.googleapis.com/ProcessorR\x04name\"\xef\x01\n" +
-	"\x16CreateProcessorRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!visionai.googleapis.com/ProcessorR\x06parent\x12&\n" +
-	"\fprocessor_id\x18\x02 \x01(\tB\x03\xe0A\x02R\vprocessorId\x12F\n" +
-	"\tprocessor\x18\x03 \x01(\v2#.google.cloud.visionai.v1.ProcessorB\x03\xe0A\x02R\tprocessor\x12\"\n" +
+	"processors\"U\n" +
+	"\x13GetProcessorRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!visionai.googleapis.com/ProcessorR\x04name\"\xf3\x01\n" +
+	"\x16CreateProcessorRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!visionai.googleapis.com/ProcessorR\x06parent\x12'\n" +
+	"\fprocessor_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vprocessorId\x12G\n" +
+	"\tprocessor\x18\x03 \x01(\v2#.google.cloud.visionai.v1.ProcessorB\x04\xe2A\x01\x02R\tprocessor\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xc6\x01\n" +
-	"\x16UpdateProcessorRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12F\n" +
-	"\tprocessor\x18\x02 \x01(\v2#.google.cloud.visionai.v1.ProcessorB\x03\xe0A\x02R\tprocessor\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xc9\x01\n" +
+	"\x16UpdateProcessorRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12G\n" +
+	"\tprocessor\x18\x02 \x01(\v2#.google.cloud.visionai.v1.ProcessorB\x04\xe2A\x01\x02R\tprocessor\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"{\n" +
-	"\x16DeleteProcessorRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!visionai.googleapis.com/ProcessorR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"}\n" +
+	"\x16DeleteProcessorRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!visionai.googleapis.com/ProcessorR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\xbd\f\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xc2\f\n" +
 	"\vApplication\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12I\n" +
-	"\x06labels\x18\x04 \x03(\v21.google.cloud.visionai.v1.Application.LabelsEntryR\x06labels\x12&\n" +
-	"\fdisplay_name\x18\x05 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12 \n" +
+	"\x06labels\x18\x04 \x03(\v21.google.cloud.visionai.v1.Application.LabelsEntryR\x06labels\x12'\n" +
+	"\fdisplay_name\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12 \n" +
 	"\vdescription\x18\x06 \x01(\tR\vdescription\x12]\n" +
-	"\x13application_configs\x18\a \x01(\v2,.google.cloud.visionai.v1.ApplicationConfigsR\x12applicationConfigs\x12d\n" +
-	"\fruntime_info\x18\b \x01(\v2<.google.cloud.visionai.v1.Application.ApplicationRuntimeInfoB\x03\xe0A\x03R\vruntimeInfo\x12F\n" +
-	"\x05state\x18\t \x01(\x0e2+.google.cloud.visionai.v1.Application.StateB\x03\xe0A\x03R\x05state\x12T\n" +
+	"\x13application_configs\x18\a \x01(\v2,.google.cloud.visionai.v1.ApplicationConfigsR\x12applicationConfigs\x12e\n" +
+	"\fruntime_info\x18\b \x01(\v2<.google.cloud.visionai.v1.Application.ApplicationRuntimeInfoB\x04\xe2A\x01\x03R\vruntimeInfo\x12G\n" +
+	"\x05state\x18\t \x01(\x0e2+.google.cloud.visionai.v1.Application.StateB\x04\xe2A\x01\x03R\x05state\x12T\n" +
 	"\fbilling_mode\x18\f \x01(\x0e21.google.cloud.visionai.v1.Application.BillingModeR\vbillingMode\x1a\x83\x04\n" +
 	"\x16ApplicationRuntimeInfo\x12;\n" +
 	"\vdeploy_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
@@ -7668,10 +7668,10 @@ const file_google_cloud_visionai_v1_platform_proto_rawDesc = "" +
 	"\x15event_delivery_config\x18\x03 \x01(\v2@.google.cloud.visionai.v1.ApplicationConfigs.EventDeliveryConfigR\x13eventDeliveryConfig\x1a\x86\x01\n" +
 	"\x13EventDeliveryConfig\x12\x18\n" +
 	"\achannel\x18\x01 \x01(\tR\achannel\x12U\n" +
-	"\x19minimal_delivery_interval\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\x17minimalDeliveryInterval\"\xf4\x03\n" +
+	"\x19minimal_delivery_interval\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\x17minimalDeliveryInterval\"\xf5\x03\n" +
 	"\x04Node\x12O\n" +
-	"$output_all_output_channels_to_stream\x18\x06 \x01(\bH\x00R\x1foutputAllOutputChannelsToStream\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12!\n" +
+	"$output_all_output_channels_to_stream\x18\x06 \x01(\bH\x00R\x1foutputAllOutputChannelsToStream\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12J\n" +
 	"\vnode_config\x18\x03 \x01(\v2).google.cloud.visionai.v1.ProcessorConfigR\n" +
 	"nodeConfig\x12\x1c\n" +
@@ -7682,29 +7682,29 @@ const file_google_cloud_visionai_v1_platform_proto_rawDesc = "" +
 	"parentNode\x122\n" +
 	"\x15parent_output_channel\x18\x02 \x01(\tR\x13parentOutputChannel\x126\n" +
 	"\x17connected_input_channel\x18\x03 \x01(\tR\x15connectedInputChannelB\x16\n" +
-	"\x14stream_output_config\"\xcd\x04\n" +
+	"\x14stream_output_config\"\xd0\x04\n" +
 	"\x05Draft\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12C\n" +
-	"\x06labels\x18\x03 \x03(\v2+.google.cloud.visionai.v1.Draft.LabelsEntryR\x06labels\x12&\n" +
-	"\fdisplay_name\x18\x04 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12 \n" +
+	"\x06labels\x18\x03 \x03(\v2+.google.cloud.visionai.v1.Draft.LabelsEntryR\x06labels\x12'\n" +
+	"\fdisplay_name\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12 \n" +
 	"\vdescription\x18\x05 \x01(\tR\vdescription\x12h\n" +
 	"\x19draft_application_configs\x18\x06 \x01(\v2,.google.cloud.visionai.v1.ApplicationConfigsR\x17draftApplicationConfigs\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:x\xeaAu\n" +
-	"\x1dvisionai.googleapis.com/Draft\x12Qprojects/{project}/locations/{location}/applications/{application}/drafts/{draft}R\x01\x01\"\xfc\r\n" +
-	"\bInstance\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x1dvisionai.googleapis.com/Draft\x12Qprojects/{project}/locations/{location}/applications/{application}/drafts/{draft}R\x01\x01\"\x82\x0e\n" +
+	"\bInstance\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12F\n" +
-	"\x06labels\x18\x03 \x03(\v2..google.cloud.visionai.v1.Instance.LabelsEntryR\x06labels\x12&\n" +
-	"\fdisplay_name\x18\x04 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12 \n" +
+	"\x06labels\x18\x03 \x03(\v2..google.cloud.visionai.v1.Instance.LabelsEntryR\x06labels\x12'\n" +
+	"\fdisplay_name\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12 \n" +
 	"\vdescription\x18\x05 \x01(\tR\vdescription\x12T\n" +
 	"\rinstance_type\x18\n" +
 	" \x01(\x0e2/.google.cloud.visionai.v1.Instance.InstanceTypeR\finstanceType\x12Y\n" +
@@ -7718,13 +7718,13 @@ const file_google_cloud_visionai_v1_platform_proto_rawDesc = "" +
 	"\rconsumer_node\x18\x02 \x01(\tR\fconsumerNode\x124\n" +
 	"\x16input_resource_binding\x18\x03 \x01(\tR\x14inputResourceBinding\x12O\n" +
 	"\vannotations\x18\x05 \x01(\v2-.google.cloud.visionai.v1.ResourceAnnotationsR\vannotationsB\x1c\n" +
-	"\x1ainput_resource_information\x1a\xdd\x01\n" +
+	"\x1ainput_resource_information\x1a\xdf\x01\n" +
 	"\x0eOutputResource\x12'\n" +
 	"\x0foutput_resource\x18\x01 \x01(\tR\x0eoutputResource\x12#\n" +
 	"\rproducer_node\x18\x02 \x01(\tR\fproducerNode\x126\n" +
-	"\x17output_resource_binding\x18\x04 \x01(\tR\x15outputResourceBinding\x12&\n" +
-	"\fis_temporary\x18\x03 \x01(\bB\x03\xe0A\x03R\visTemporary\x12\x1d\n" +
-	"\aautogen\x18\x05 \x01(\bB\x03\xe0A\x03R\aautogen\x1a9\n" +
+	"\x17output_resource_binding\x18\x04 \x01(\tR\x15outputResourceBinding\x12'\n" +
+	"\fis_temporary\x18\x03 \x01(\bB\x04\xe2A\x01\x03R\visTemporary\x12\x1e\n" +
+	"\aautogen\x18\x05 \x01(\bB\x04\xe2A\x01\x03R\aautogen\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"t\n" +
@@ -7748,29 +7748,29 @@ const file_google_cloud_visionai_v1_platform_proto_rawDesc = "" +
 	"\x06FIXING\x10\n" +
 	"\x12\f\n" +
 	"\bFINISHED\x10\v:\x81\x01\xeaA~\n" +
-	" visionai.googleapis.com/Instance\x12Wprojects/{project}/locations/{location}/applications/{application}/instances/{instance}R\x01\x01\"\x80\x01\n" +
-	"\x13ApplicationInstance\x12$\n" +
-	"\vinstance_id\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"instanceId\x12C\n" +
-	"\binstance\x18\x02 \x01(\v2\".google.cloud.visionai.v1.InstanceB\x03\xe0A\x02R\binstance\"\xb5\v\n" +
+	" visionai.googleapis.com/Instance\x12Wprojects/{project}/locations/{location}/applications/{application}/instances/{instance}R\x01\x01\"\x82\x01\n" +
+	"\x13ApplicationInstance\x12%\n" +
+	"\vinstance_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"instanceId\x12D\n" +
+	"\binstance\x18\x02 \x01(\v2\".google.cloud.visionai.v1.InstanceB\x04\xe2A\x01\x02R\binstance\"\xbd\v\n" +
 	"\tProcessor\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12G\n" +
-	"\x06labels\x18\x04 \x03(\v2/.google.cloud.visionai.v1.Processor.LabelsEntryR\x06labels\x12&\n" +
-	"\fdisplay_name\x18\x05 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12 \n" +
+	"\x06labels\x18\x04 \x03(\v2/.google.cloud.visionai.v1.Processor.LabelsEntryR\x06labels\x12'\n" +
+	"\fdisplay_name\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12 \n" +
 	"\vdescription\x18\n" +
-	" \x01(\tR\vdescription\x12]\n" +
-	"\x0eprocessor_type\x18\x06 \x01(\x0e21.google.cloud.visionai.v1.Processor.ProcessorTypeB\x03\xe0A\x03R\rprocessorType\x12B\n" +
+	" \x01(\tR\vdescription\x12^\n" +
+	"\x0eprocessor_type\x18\x06 \x01(\x0e21.google.cloud.visionai.v1.Processor.ProcessorTypeB\x04\xe2A\x01\x03R\rprocessorType\x12B\n" +
 	"\n" +
 	"model_type\x18\r \x01(\x0e2#.google.cloud.visionai.v1.ModelTypeR\tmodelType\x12t\n" +
-	"\x1ccustom_processor_source_info\x18\a \x01(\v23.google.cloud.visionai.v1.CustomProcessorSourceInfoR\x19customProcessorSourceInfo\x12M\n" +
-	"\x05state\x18\b \x01(\x0e22.google.cloud.visionai.v1.Processor.ProcessorStateB\x03\xe0A\x03R\x05state\x12Z\n" +
-	"\x11processor_io_spec\x18\v \x01(\v2).google.cloud.visionai.v1.ProcessorIOSpecB\x03\xe0A\x03R\x0fprocessorIoSpec\x128\n" +
-	"\x15configuration_typeurl\x18\x0e \x01(\tB\x03\xe0A\x03R\x14configurationTypeurl\x12q\n" +
-	"\x1asupported_annotation_types\x18\x0f \x03(\x0e2..google.cloud.visionai.v1.StreamAnnotationTypeB\x03\xe0A\x03R\x18supportedAnnotationTypes\x128\n" +
+	"\x1ccustom_processor_source_info\x18\a \x01(\v23.google.cloud.visionai.v1.CustomProcessorSourceInfoR\x19customProcessorSourceInfo\x12N\n" +
+	"\x05state\x18\b \x01(\x0e22.google.cloud.visionai.v1.Processor.ProcessorStateB\x04\xe2A\x01\x03R\x05state\x12[\n" +
+	"\x11processor_io_spec\x18\v \x01(\v2).google.cloud.visionai.v1.ProcessorIOSpecB\x04\xe2A\x01\x03R\x0fprocessorIoSpec\x129\n" +
+	"\x15configuration_typeurl\x18\x0e \x01(\tB\x04\xe2A\x01\x03R\x14configurationTypeurl\x12r\n" +
+	"\x1asupported_annotation_types\x18\x0f \x03(\x0e2..google.cloud.visionai.v1.StreamAnnotationTypeB\x04\xe2A\x01\x03R\x18supportedAnnotationTypes\x128\n" +
 	"\x18supports_post_processing\x18\x11 \x01(\bR\x16supportsPostProcessing\x12i\n" +
 	"\x18supported_instance_types\x18\x12 \x03(\x0e2/.google.cloud.visionai.v1.Instance.InstanceTypeR\x16supportedInstanceTypes\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
@@ -7815,17 +7815,17 @@ const file_google_cloud_visionai_v1_platform_proto_rawDesc = "" +
 	"!InstanceResourceOutputBindingSpec\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12*\n" +
 	"\x11resource_type_uri\x18\x02 \x01(\tR\x0fresourceTypeUri\x12\x1a\n" +
-	"\bexplicit\x18\x03 \x01(\bR\bexplicit\"\xe5\b\n" +
+	"\bexplicit\x18\x03 \x01(\bR\bexplicit\"\xe8\b\n" +
 	"\x19CustomProcessorSourceInfo\x12#\n" +
 	"\fvertex_model\x18\x02 \x01(\tH\x00R\vvertexModel\x12\x8f\x01\n" +
 	"\x1bproduct_recognizer_artifact\x18\x03 \x01(\v2M.google.cloud.visionai.v1.CustomProcessorSourceInfo.ProductRecognizerArtifactH\x00R\x19productRecognizerArtifact\x12_\n" +
 	"\vsource_type\x18\x01 \x01(\x0e2>.google.cloud.visionai.v1.CustomProcessorSourceInfo.SourceTypeR\n" +
-	"sourceType\x12u\n" +
-	"\x0fadditional_info\x18\x04 \x03(\v2G.google.cloud.visionai.v1.CustomProcessorSourceInfo.AdditionalInfoEntryB\x03\xe0A\x03R\x0eadditionalInfo\x12b\n" +
-	"\fmodel_schema\x18\x05 \x01(\v2?.google.cloud.visionai.v1.CustomProcessorSourceInfo.ModelSchemaR\vmodelSchema\x1a\x91\x01\n" +
-	"\x19ProductRecognizerArtifact\x12L\n" +
-	" retail_product_recognition_index\x18\x01 \x01(\tB\x03\xe0A\x02R\x1dretailProductRecognitionIndex\x12&\n" +
-	"\fvertex_model\x18\x02 \x01(\tB\x03\xe0A\x01R\vvertexModel\x1a\x83\x02\n" +
+	"sourceType\x12v\n" +
+	"\x0fadditional_info\x18\x04 \x03(\v2G.google.cloud.visionai.v1.CustomProcessorSourceInfo.AdditionalInfoEntryB\x04\xe2A\x01\x03R\x0eadditionalInfo\x12b\n" +
+	"\fmodel_schema\x18\x05 \x01(\v2?.google.cloud.visionai.v1.CustomProcessorSourceInfo.ModelSchemaR\vmodelSchema\x1a\x93\x01\n" +
+	"\x19ProductRecognizerArtifact\x12M\n" +
+	" retail_product_recognition_index\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x1dretailProductRecognitionIndex\x12'\n" +
+	"\fvertex_model\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vvertexModel\x1a\x83\x02\n" +
 	"\vModelSchema\x12N\n" +
 	"\x10instances_schema\x18\x01 \x01(\v2#.google.cloud.visionai.v1.GcsSourceR\x0finstancesSchema\x12P\n" +
 	"\x11parameters_schema\x18\x02 \x01(\v2#.google.cloud.visionai.v1.GcsSourceR\x10parametersSchema\x12R\n" +
@@ -7916,42 +7916,42 @@ const file_google_cloud_visionai_v1_platform_proto_rawDesc = "" +
 	"\x14confidence_threshold\x18\x01 \x01(\x02R\x13confidenceThreshold\x12%\n" +
 	"\x0eblocked_labels\x18\x02 \x03(\tR\rblockedLabels\x12'\n" +
 	"\x0fmax_predictions\x18\x03 \x01(\x05R\x0emaxPredictions\x125\n" +
-	"\x17bounding_box_size_limit\x18\x04 \x01(\x02R\x14boundingBoxSizeLimit\"\x8c\x03\n" +
+	"\x17bounding_box_size_limit\x18\x04 \x01(\x02R\x14boundingBoxSizeLimit\"\x8d\x03\n" +
 	"\x12VertexCustomConfig\x12,\n" +
 	"\x12max_prediction_fps\x18\x01 \x01(\x05R\x10maxPredictionFps\x12]\n" +
 	"\x13dedicated_resources\x18\x02 \x01(\v2,.google.cloud.visionai.v1.DedicatedResourcesR\x12dedicatedResources\x12C\n" +
 	"\x1epost_processing_cloud_function\x18\x03 \x01(\tR\x1bpostProcessingCloudFunction\x12>\n" +
-	"\x1battach_application_metadata\x18\x04 \x01(\bR\x19attachApplicationMetadata\x12E\n" +
-	"\x1adynamic_config_input_topic\x18\x06 \x01(\tB\x03\xe0A\x01H\x00R\x17dynamicConfigInputTopic\x88\x01\x01B\x1d\n" +
+	"\x1battach_application_metadata\x18\x04 \x01(\bR\x19attachApplicationMetadata\x12F\n" +
+	"\x1adynamic_config_input_topic\x18\x06 \x01(\tB\x04\xe2A\x01\x01H\x00R\x17dynamicConfigInputTopic\x88\x01\x01B\x1d\n" +
 	"\x1b_dynamic_config_input_topic\",\n" +
 	"\x0fGcsOutputConfig\x12\x19\n" +
 	"\bgcs_path\x18\x01 \x01(\tR\agcsPath\"\x16\n" +
-	"\x14UniversalInputConfig\"\xbd\x01\n" +
-	"\vMachineSpec\x12&\n" +
-	"\fmachine_type\x18\x01 \x01(\tB\x03\xe0A\x05R\vmachineType\x12Y\n" +
-	"\x10accelerator_type\x18\x02 \x01(\x0e2).google.cloud.visionai.v1.AcceleratorTypeB\x03\xe0A\x05R\x0facceleratorType\x12+\n" +
-	"\x11accelerator_count\x18\x03 \x01(\x05R\x10acceleratorCount\"U\n" +
-	"\x15AutoscalingMetricSpec\x12$\n" +
-	"\vmetric_name\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
+	"\x14UniversalInputConfig\"\xbf\x01\n" +
+	"\vMachineSpec\x12'\n" +
+	"\fmachine_type\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\vmachineType\x12Z\n" +
+	"\x10accelerator_type\x18\x02 \x01(\x0e2).google.cloud.visionai.v1.AcceleratorTypeB\x04\xe2A\x01\x05R\x0facceleratorType\x12+\n" +
+	"\x11accelerator_count\x18\x03 \x01(\x05R\x10acceleratorCount\"V\n" +
+	"\x15AutoscalingMetricSpec\x12%\n" +
+	"\vmetric_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
 	"metricName\x12\x16\n" +
 	"\x06target\x18\x02 \x01(\x05R\x06target\"\xbb\x02\n" +
-	"\x12DedicatedResources\x12P\n" +
-	"\fmachine_spec\x18\x01 \x01(\v2%.google.cloud.visionai.v1.MachineSpecB\x06\xe0A\x02\xe0A\x05R\vmachineSpec\x122\n" +
-	"\x11min_replica_count\x18\x02 \x01(\x05B\x06\xe0A\x02\xe0A\x05R\x0fminReplicaCount\x12/\n" +
-	"\x11max_replica_count\x18\x03 \x01(\x05B\x03\xe0A\x05R\x0fmaxReplicaCount\x12n\n" +
-	"\x18autoscaling_metric_specs\x18\x04 \x03(\v2/.google.cloud.visionai.v1.AutoscalingMetricSpecB\x03\xe0A\x05R\x16autoscalingMetricSpecs\"\x8c\x01\n" +
+	"\x12DedicatedResources\x12O\n" +
+	"\fmachine_spec\x18\x01 \x01(\v2%.google.cloud.visionai.v1.MachineSpecB\x05\xe2A\x02\x02\x05R\vmachineSpec\x121\n" +
+	"\x11min_replica_count\x18\x02 \x01(\x05B\x05\xe2A\x02\x02\x05R\x0fminReplicaCount\x120\n" +
+	"\x11max_replica_count\x18\x03 \x01(\x05B\x04\xe2A\x01\x05R\x0fmaxReplicaCount\x12o\n" +
+	"\x18autoscaling_metric_specs\x18\x04 \x03(\v2/.google.cloud.visionai.v1.AutoscalingMetricSpecB\x04\xe2A\x01\x05R\x16autoscalingMetricSpecs\"\x8c\x01\n" +
 	"\x17ProductRecognizerConfig\x12'\n" +
 	"\x0fretail_endpoint\x18\x01 \x01(\tR\x0eretailEndpoint\x12H\n" +
 	" recognition_confidence_threshold\x18\x02 \x01(\x02R\x1erecognitionConfidenceThreshold\"\xc2\x01\n" +
 	"\x13TagRecognizerConfig\x12Q\n" +
 	"%entity_detection_confidence_threshold\x18\x01 \x01(\x02R\"entityDetectionConfidenceThreshold\x12X\n" +
-	"\x12tag_parsing_config\x18\x02 \x01(\v2*.google.cloud.visionai.v1.TagParsingConfigR\x10tagParsingConfig\"\xed\x03\n" +
+	"\x12tag_parsing_config\x18\x02 \x01(\v2*.google.cloud.visionai.v1.TagParsingConfigR\x10tagParsingConfig\"\xf0\x03\n" +
 	"\x10TagParsingConfig\x12t\n" +
-	"\x16entity_parsing_configs\x18\x01 \x03(\v2>.google.cloud.visionai.v1.TagParsingConfig.EntityParsingConfigR\x14entityParsingConfigs\x1a\xe2\x02\n" +
-	"\x13EntityParsingConfig\x12&\n" +
-	"\fentity_class\x18\x01 \x01(\tB\x03\xe0A\x02R\ventityClass\x12\x19\n" +
-	"\x05regex\x18\x02 \x01(\tB\x03\xe0A\x01R\x05regex\x12\x94\x01\n" +
-	"\x18entity_matching_strategy\x18\x03 \x01(\x0e2U.google.cloud.visionai.v1.TagParsingConfig.EntityParsingConfig.EntityMatchingStrategyB\x03\xe0A\x01R\x16entityMatchingStrategy\"q\n" +
+	"\x16entity_parsing_configs\x18\x01 \x03(\v2>.google.cloud.visionai.v1.TagParsingConfig.EntityParsingConfigR\x14entityParsingConfigs\x1a\xe5\x02\n" +
+	"\x13EntityParsingConfig\x12'\n" +
+	"\fentity_class\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\ventityClass\x12\x1a\n" +
+	"\x05regex\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x05regex\x12\x95\x01\n" +
+	"\x18entity_matching_strategy\x18\x03 \x01(\x0e2U.google.cloud.visionai.v1.TagParsingConfig.EntityParsingConfig.EntityMatchingStrategyB\x04\xe2A\x01\x01R\x16entityMatchingStrategy\"q\n" +
 	"\x16EntityMatchingStrategy\x12(\n" +
 	"$ENTITY_MATCHING_STRATEGY_UNSPECIFIED\x10\x00\x12\x17\n" +
 	"\x13MULTI_LINE_MATCHING\x10\x01\x12\x14\n" +

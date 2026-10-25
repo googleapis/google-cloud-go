@@ -461,9 +461,9 @@ var File_google_cloud_bigquery_v2_standard_sql_proto protoreflect.FileDescriptor
 
 const file_google_cloud_bigquery_v2_standard_sql_proto_rawDesc = "" +
 	"\n" +
-	"+google/cloud/bigquery/v2/standard_sql.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\"\x85\x05\n" +
-	"\x13StandardSqlDataType\x12X\n" +
-	"\ttype_kind\x18\x01 \x01(\x0e26.google.cloud.bigquery.v2.StandardSqlDataType.TypeKindB\x03\xe0A\x02R\btypeKind\x12]\n" +
+	"+google/cloud/bigquery/v2/standard_sql.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\"\x86\x05\n" +
+	"\x13StandardSqlDataType\x12Y\n" +
+	"\ttype_kind\x18\x01 \x01(\x0e26.google.cloud.bigquery.v2.StandardSqlDataType.TypeKindB\x04\xe2A\x01\x02R\btypeKind\x12]\n" +
 	"\x12array_element_type\x18\x02 \x01(\v2-.google.cloud.bigquery.v2.StandardSqlDataTypeH\x00R\x10arrayElementType\x12R\n" +
 	"\vstruct_type\x18\x03 \x01(\v2/.google.cloud.bigquery.v2.StandardSqlStructTypeH\x00R\n" +
 	"structType\x12]\n" +
@@ -492,10 +492,10 @@ const file_google_cloud_bigquery_v2_standard_sql_proto_rawDesc = "" +
 	"\x06STRUCT\x10\x11\x12\t\n" +
 	"\x05RANGE\x10\x1dB\n" +
 	"\n" +
-	"\bsub_type\"s\n" +
-	"\x10StandardSqlField\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x01R\x04name\x12F\n" +
-	"\x04type\x18\x02 \x01(\v2-.google.cloud.bigquery.v2.StandardSqlDataTypeB\x03\xe0A\x01R\x04type\"[\n" +
+	"\bsub_type\"u\n" +
+	"\x10StandardSqlField\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04name\x12G\n" +
+	"\x04type\x18\x02 \x01(\v2-.google.cloud.bigquery.v2.StandardSqlDataTypeB\x04\xe2A\x01\x01R\x04type\"[\n" +
 	"\x15StandardSqlStructType\x12B\n" +
 	"\x06fields\x18\x01 \x03(\v2*.google.cloud.bigquery.v2.StandardSqlFieldR\x06fields\"\\\n" +
 	"\x14StandardSqlTableType\x12D\n" +

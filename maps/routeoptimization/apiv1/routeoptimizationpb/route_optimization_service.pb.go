@@ -6712,26 +6712,26 @@ const file_google_maps_routeoptimization_v1_route_optimization_service_proto_raw
 	"\n" +
 	"Agoogle/maps/routeoptimization/v1/route_optimization_service.proto\x12 google.maps.routeoptimization.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x18google/type/latlng.proto\"\x17\n" +
 	"\x03Uri\x12\x10\n" +
-	"\x03uri\x18\x01 \x01(\tR\x03uri\"\xbc\x01\n" +
-	"\x17OptimizeToursUriRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12@\n" +
-	"\x05input\x18\x02 \x01(\v2%.google.maps.routeoptimization.v1.UriB\x03\xe0A\x02R\x05input\x12B\n" +
-	"\x06output\x18\x03 \x01(\v2%.google.maps.routeoptimization.v1.UriB\x03\xe0A\x02R\x06output\"^\n" +
-	"\x18OptimizeToursUriResponse\x12B\n" +
-	"\x06output\x18\x01 \x01(\v2%.google.maps.routeoptimization.v1.UriB\x03\xe0A\x01R\x06output\"\x1a\n" +
-	"\x18OptimizeToursUriMetadata\"\x9e\x03\n" +
-	"\x19BatchOptimizeToursRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12v\n" +
-	"\rmodel_configs\x18\x02 \x03(\v2L.google.maps.routeoptimization.v1.BatchOptimizeToursRequest.AsyncModelConfigB\x03\xe0A\x02R\fmodelConfigs\x1a\xeb\x01\n" +
-	"\x10AsyncModelConfig\x12&\n" +
-	"\fdisplay_name\x18\x01 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12U\n" +
-	"\finput_config\x18\x02 \x01(\v2-.google.maps.routeoptimization.v1.InputConfigB\x03\xe0A\x02R\vinputConfig\x12X\n" +
-	"\routput_config\x18\x03 \x01(\v2..google.maps.routeoptimization.v1.OutputConfigB\x03\xe0A\x02R\foutputConfig\"\x1c\n" +
+	"\x03uri\x18\x01 \x01(\tR\x03uri\"\xbf\x01\n" +
+	"\x17OptimizeToursUriRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12A\n" +
+	"\x05input\x18\x02 \x01(\v2%.google.maps.routeoptimization.v1.UriB\x04\xe2A\x01\x02R\x05input\x12C\n" +
+	"\x06output\x18\x03 \x01(\v2%.google.maps.routeoptimization.v1.UriB\x04\xe2A\x01\x02R\x06output\"_\n" +
+	"\x18OptimizeToursUriResponse\x12C\n" +
+	"\x06output\x18\x01 \x01(\v2%.google.maps.routeoptimization.v1.UriB\x04\xe2A\x01\x01R\x06output\"\x1a\n" +
+	"\x18OptimizeToursUriMetadata\"\xa3\x03\n" +
+	"\x19BatchOptimizeToursRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12w\n" +
+	"\rmodel_configs\x18\x02 \x03(\v2L.google.maps.routeoptimization.v1.BatchOptimizeToursRequest.AsyncModelConfigB\x04\xe2A\x01\x02R\fmodelConfigs\x1a\xee\x01\n" +
+	"\x10AsyncModelConfig\x12'\n" +
+	"\fdisplay_name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12V\n" +
+	"\finput_config\x18\x02 \x01(\v2-.google.maps.routeoptimization.v1.InputConfigB\x04\xe2A\x01\x02R\vinputConfig\x12Y\n" +
+	"\routput_config\x18\x03 \x01(\v2..google.maps.routeoptimization.v1.OutputConfigB\x04\xe2A\x01\x02R\foutputConfig\"\x1c\n" +
 	"\x1aBatchOptimizeToursResponse\"\x1c\n" +
 	"\x1aBatchOptimizeToursMetadata\"\"\n" +
-	" OptimizeToursLongRunningMetadata\"\x94\f\n" +
-	"\x14OptimizeToursRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x123\n" +
+	" OptimizeToursLongRunningMetadata\"\x95\f\n" +
+	"\x14OptimizeToursRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x123\n" +
 	"\atimeout\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\atimeout\x12E\n" +
 	"\x05model\x18\x03 \x01(\v2/.google.maps.routeoptimization.v1.ShipmentModelR\x05model\x12e\n" +
 	"\fsolving_mode\x18\x04 \x01(\x0e2B.google.maps.routeoptimization.v1.OptimizeToursRequest.SolvingModeR\vsolvingMode\x12b\n" +
@@ -6888,13 +6888,13 @@ const file_google_maps_routeoptimization_v1_route_optimization_service_proto_raw
 	"\x1cREQUIREMENT_MODE_UNSPECIFIED\x10\x00\x12\x1d\n" +
 	"\x19PERFORMED_BY_SAME_VEHICLE\x10\x01\x12\"\n" +
 	"\x1eIN_SAME_VEHICLE_AT_PICKUP_TIME\x10\x02\x12$\n" +
-	" IN_SAME_VEHICLE_AT_DELIVERY_TIME\x10\x03\"\xa5\x01\n" +
+	" IN_SAME_VEHICLE_AT_DELIVERY_TIME\x10\x03\"\xa6\x01\n" +
 	"\x0eRouteModifiers\x12\x1f\n" +
 	"\vavoid_tolls\x18\x02 \x01(\bR\n" +
 	"avoidTolls\x12%\n" +
 	"\x0eavoid_highways\x18\x03 \x01(\bR\ravoidHighways\x12#\n" +
-	"\ravoid_ferries\x18\x04 \x01(\bR\favoidFerries\x12&\n" +
-	"\favoid_indoor\x18\x05 \x01(\bB\x03\xe0A\x01R\vavoidIndoor\"\x8f\x1d\n" +
+	"\ravoid_ferries\x18\x04 \x01(\bR\favoidFerries\x12'\n" +
+	"\favoid_indoor\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\vavoidIndoor\"\x8f\x1d\n" +
 	"\aVehicle\x12!\n" +
 	"\fdisplay_name\x18  \x01(\tR\vdisplayName\x12U\n" +
 	"\vtravel_mode\x18\x01 \x01(\x0e24.google.maps.routeoptimization.v1.Vehicle.TravelModeR\n" +
@@ -7003,11 +7003,11 @@ const file_google_maps_routeoptimization_v1_route_optimization_service_proto_raw
 	"\x04cost\x18\x05 \x01(\x01R\x04cost\x12,\n" +
 	"\x12cost_per_kilometer\x18\x06 \x01(\x01R\x10costPerKilometer\x12V\n" +
 	"\x0edistance_limit\x18\a \x01(\v2/.google.maps.routeoptimization.v1.DistanceLimitR\rdistanceLimit\x12/\n" +
-	"\x05delay\x18\b \x01(\v2\x19.google.protobuf.DurationR\x05delay\"\xd4\x01\n" +
+	"\x05delay\x18\b \x01(\v2\x19.google.protobuf.DurationR\x05delay\"\xd5\x01\n" +
 	"\bWaypoint\x12H\n" +
 	"\blocation\x18\x01 \x01(\v2*.google.maps.routeoptimization.v1.LocationH\x00R\blocation\x12\x1b\n" +
-	"\bplace_id\x18\x02 \x01(\tH\x00R\aplaceId\x12%\n" +
-	"\fside_of_road\x18\x03 \x01(\bB\x03\xe0A\x01R\n" +
+	"\bplace_id\x18\x02 \x01(\tH\x00R\aplaceId\x12&\n" +
+	"\fside_of_road\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\n" +
 	"sideOfRoad\x12)\n" +
 	"\x10vehicle_stopover\x18\x04 \x01(\bR\x0fvehicleStopoverB\x0f\n" +
 	"\rlocation_type\"c\n" +
@@ -7015,17 +7015,17 @@ const file_google_maps_routeoptimization_v1_route_optimization_service_proto_raw
 	"\alat_lng\x18\x01 \x01(\v2\x13.google.type.LatLngR\x06latLng\x12\x1d\n" +
 	"\aheading\x18\x02 \x01(\x05H\x00R\aheading\x88\x01\x01B\n" +
 	"\n" +
-	"\b_heading\"\x93\x05\n" +
+	"\b_heading\"\x98\x05\n" +
 	"\tBreakRule\x12_\n" +
 	"\x0ebreak_requests\x18\x01 \x03(\v28.google.maps.routeoptimization.v1.BreakRule.BreakRequestR\rbreakRequests\x12t\n" +
-	"\x15frequency_constraints\x18\x02 \x03(\v2?.google.maps.routeoptimization.v1.BreakRule.FrequencyConstraintR\x14frequencyConstraints\x1a\xef\x01\n" +
-	"\fBreakRequest\x12O\n" +
-	"\x13earliest_start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\x11earliestStartTime\x12K\n" +
-	"\x11latest_start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\x0flatestStartTime\x12A\n" +
-	"\fmin_duration\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x02R\vminDuration\x1a\xbc\x01\n" +
-	"\x13FrequencyConstraint\x12L\n" +
-	"\x12min_break_duration\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x02R\x10minBreakDuration\x12W\n" +
-	"\x18max_inter_break_duration\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x02R\x15maxInterBreakDuration\"\xd8\x15\n" +
+	"\x15frequency_constraints\x18\x02 \x03(\v2?.google.maps.routeoptimization.v1.BreakRule.FrequencyConstraintR\x14frequencyConstraints\x1a\xf2\x01\n" +
+	"\fBreakRequest\x12P\n" +
+	"\x13earliest_start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\x11earliestStartTime\x12L\n" +
+	"\x11latest_start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\x0flatestStartTime\x12B\n" +
+	"\fmin_duration\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x02R\vminDuration\x1a\xbe\x01\n" +
+	"\x13FrequencyConstraint\x12M\n" +
+	"\x12min_break_duration\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x02R\x10minBreakDuration\x12X\n" +
+	"\x18max_inter_break_duration\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x02R\x15maxInterBreakDuration\"\xd9\x15\n" +
 	"\rShipmentRoute\x12#\n" +
 	"\rvehicle_index\x18\x01 \x01(\x05R\fvehicleIndex\x12#\n" +
 	"\rvehicle_label\x18\x02 \x01(\tR\fvehicleLabel\x12H\n" +
@@ -7057,7 +7057,7 @@ const file_google_maps_routeoptimization_v1_route_optimization_service_proto_raw
 	"\x10LoadDemandsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12E\n" +
 	"\x05value\x18\x02 \x01(\v2/.google.maps.routeoptimization.v1.Shipment.LoadR\x05value:\x028\x01B#\n" +
-	"!_injected_solution_location_token\x1a\x80\a\n" +
+	"!_injected_solution_location_token\x1a\x81\a\n" +
 	"\n" +
 	"Transition\x12B\n" +
 	"\x0ftravel_duration\x18\x01 \x01(\v2\x19.google.protobuf.DurationR\x0etravelDuration\x124\n" +
@@ -7069,8 +7069,8 @@ const file_google_maps_routeoptimization_v1_route_optimization_service_proto_raw
 	"\x0etotal_duration\x18\a \x01(\v2\x19.google.protobuf.DurationR\rtotalDuration\x129\n" +
 	"\n" +
 	"start_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x12f\n" +
-	"\x0eroute_polyline\x18\t \x01(\v2?.google.maps.routeoptimization.v1.ShipmentRoute.EncodedPolylineR\rroutePolyline\x12$\n" +
-	"\vroute_token\x18\f \x01(\tB\x03\xe0A\x03R\n" +
+	"\x0eroute_polyline\x18\t \x01(\v2?.google.maps.routeoptimization.v1.ShipmentRoute.EncodedPolylineR\rroutePolyline\x12%\n" +
+	"\vroute_token\x18\f \x01(\tB\x04\xe2A\x01\x03R\n" +
 	"routeToken\x12q\n" +
 	"\rvehicle_loads\x18\v \x03(\v2L.google.maps.routeoptimization.v1.ShipmentRoute.Transition.VehicleLoadsEntryR\fvehicleLoads\x1a|\n" +
 	"\x11VehicleLoadsEntry\x12\x10\n" +
@@ -7176,22 +7176,22 @@ const file_google_maps_routeoptimization_v1_route_optimization_service_proto_raw
 	"\x05index\x18\x02 \x01(\x05H\x00R\x05index\x12\x12\n" +
 	"\x03key\x18\x04 \x01(\tH\x00R\x03key\x12j\n" +
 	"\tsub_field\x18\x03 \x01(\v2M.google.maps.routeoptimization.v1.OptimizeToursValidationError.FieldReferenceR\bsubFieldB\x0e\n" +
-	"\findex_or_key\"\xb9\x01\n" +
+	"\findex_or_key\"\xba\x01\n" +
 	"\vInputConfig\x12L\n" +
 	"\n" +
-	"gcs_source\x18\x01 \x01(\v2+.google.maps.routeoptimization.v1.GcsSourceH\x00R\tgcsSource\x12R\n" +
-	"\vdata_format\x18\x02 \x01(\x0e2,.google.maps.routeoptimization.v1.DataFormatB\x03\xe0A\x02R\n" +
+	"gcs_source\x18\x01 \x01(\v2+.google.maps.routeoptimization.v1.GcsSourceH\x00R\tgcsSource\x12S\n" +
+	"\vdata_format\x18\x02 \x01(\x0e2,.google.maps.routeoptimization.v1.DataFormatB\x04\xe2A\x01\x02R\n" +
 	"dataFormatB\b\n" +
-	"\x06source\"\xce\x01\n" +
+	"\x06source\"\xcf\x01\n" +
 	"\fOutputConfig\x12[\n" +
-	"\x0fgcs_destination\x18\x01 \x01(\v20.google.maps.routeoptimization.v1.GcsDestinationH\x00R\x0egcsDestination\x12R\n" +
-	"\vdata_format\x18\x02 \x01(\x0e2,.google.maps.routeoptimization.v1.DataFormatB\x03\xe0A\x02R\n" +
+	"\x0fgcs_destination\x18\x01 \x01(\v20.google.maps.routeoptimization.v1.GcsDestinationH\x00R\x0egcsDestination\x12S\n" +
+	"\vdata_format\x18\x02 \x01(\x0e2,.google.maps.routeoptimization.v1.DataFormatB\x04\xe2A\x01\x02R\n" +
 	"dataFormatB\r\n" +
-	"\vdestination\"\"\n" +
-	"\tGcsSource\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x02R\x03uri\"'\n" +
-	"\x0eGcsDestination\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x02R\x03uri*C\n" +
+	"\vdestination\"#\n" +
+	"\tGcsSource\x12\x16\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03uri\"(\n" +
+	"\x0eGcsDestination\x12\x16\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03uri*C\n" +
 	"\n" +
 	"DataFormat\x12\x1b\n" +
 	"\x17DATA_FORMAT_UNSPECIFIED\x10\x00\x12\b\n" +

@@ -1186,76 +1186,76 @@ var File_google_cloud_managedkafka_v1_managed_kafka_connect_proto protoreflect.F
 
 const file_google_cloud_managedkafka_v1_managed_kafka_connect_proto_rawDesc = "" +
 	"\n" +
-	"8google/cloud/managedkafka/v1/managed_kafka_connect.proto\x12\x1cgoogle.cloud.managedkafka.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/managedkafka/v1/resources.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"b\n" +
-	"\x18GetConnectClusterRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*managedkafka.googleapis.com/ConnectClusterR\x04name\"\xa4\x02\n" +
-	"\x1bCreateConnectClusterRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*managedkafka.googleapis.com/ConnectClusterR\x06parent\x121\n" +
-	"\x12connect_cluster_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x10connectClusterId\x12Z\n" +
-	"\x0fconnect_cluster\x18\x03 \x01(\v2,.google.cloud.managedkafka.v1.ConnectClusterB\x03\xe0A\x02R\x0econnectCluster\x12*\n" +
+	"8google/cloud/managedkafka/v1/managed_kafka_connect.proto\x12\x1cgoogle.cloud.managedkafka.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/managedkafka/v1/resources.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"c\n" +
+	"\x18GetConnectClusterRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*managedkafka.googleapis.com/ConnectClusterR\x04name\"\xa8\x02\n" +
+	"\x1bCreateConnectClusterRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*managedkafka.googleapis.com/ConnectClusterR\x06parent\x122\n" +
+	"\x12connect_cluster_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x10connectClusterId\x12[\n" +
+	"\x0fconnect_cluster\x18\x03 \x01(\v2,.google.cloud.managedkafka.v1.ConnectClusterB\x04\xe2A\x01\x02R\x0econnectCluster\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xe7\x01\n" +
-	"\x1bUpdateConnectClusterRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12Z\n" +
-	"\x0fconnect_cluster\x18\x02 \x01(\v2,.google.cloud.managedkafka.v1.ConnectClusterB\x03\xe0A\x02R\x0econnectCluster\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xea\x01\n" +
+	"\x1bUpdateConnectClusterRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12[\n" +
+	"\x0fconnect_cluster\x18\x02 \x01(\v2,.google.cloud.managedkafka.v1.ConnectClusterB\x04\xe2A\x01\x02R\x0econnectCluster\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x91\x01\n" +
-	"\x1bDeleteConnectClusterRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*managedkafka.googleapis.com/ConnectClusterR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x93\x01\n" +
+	"\x1bDeleteConnectClusterRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*managedkafka.googleapis.com/ConnectClusterR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xeb\x01\n" +
-	"\x1aListConnectClustersRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*managedkafka.googleapis.com/ConnectClusterR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xf0\x01\n" +
+	"\x1aListConnectClustersRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*managedkafka.googleapis.com/ConnectClusterR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xc0\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xc0\x01\n" +
 	"\x1bListConnectClustersResponse\x12W\n" +
 	"\x10connect_clusters\x18\x01 \x03(\v2,.google.cloud.managedkafka.v1.ConnectClusterR\x0fconnectClusters\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"X\n" +
-	"\x13GetConnectorRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%managedkafka.googleapis.com/ConnectorR\x04name\"\xd3\x01\n" +
-	"\x16CreateConnectorRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\x12%managedkafka.googleapis.com/ConnectorR\x06parent\x12&\n" +
-	"\fconnector_id\x18\x02 \x01(\tB\x03\xe0A\x02R\vconnectorId\x12J\n" +
-	"\tconnector\x18\x03 \x01(\v2'.google.cloud.managedkafka.v1.ConnectorB\x03\xe0A\x02R\tconnector\"\xa6\x01\n" +
-	"\x16UpdateConnectorRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12J\n" +
-	"\tconnector\x18\x02 \x01(\v2'.google.cloud.managedkafka.v1.ConnectorB\x03\xe0A\x02R\tconnector\"[\n" +
-	"\x16DeleteConnectorRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%managedkafka.googleapis.com/ConnectorR\x04name\"\xa4\x01\n" +
-	"\x15ListConnectorsRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\x12%managedkafka.googleapis.com/ConnectorR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"Y\n" +
+	"\x13GetConnectorRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%managedkafka.googleapis.com/ConnectorR\x04name\"\xd6\x01\n" +
+	"\x16CreateConnectorRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\x12%managedkafka.googleapis.com/ConnectorR\x06parent\x12'\n" +
+	"\fconnector_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vconnectorId\x12K\n" +
+	"\tconnector\x18\x03 \x01(\v2'.google.cloud.managedkafka.v1.ConnectorB\x04\xe2A\x01\x02R\tconnector\"\xa8\x01\n" +
+	"\x16UpdateConnectorRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12K\n" +
+	"\tconnector\x18\x02 \x01(\v2'.google.cloud.managedkafka.v1.ConnectorB\x04\xe2A\x01\x02R\tconnector\"\\\n" +
+	"\x16DeleteConnectorRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%managedkafka.googleapis.com/ConnectorR\x04name\"\xa7\x01\n" +
+	"\x15ListConnectorsRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\x12%managedkafka.googleapis.com/ConnectorR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x89\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x89\x01\n" +
 	"\x16ListConnectorsResponse\x12G\n" +
 	"\n" +
 	"connectors\x18\x01 \x03(\v2'.google.cloud.managedkafka.v1.ConnectorR\n" +
 	"connectors\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"Z\n" +
-	"\x15PauseConnectorRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"[\n" +
+	"\x15PauseConnectorRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
 	"%managedkafka.googleapis.com/ConnectorR\x04name\"\x18\n" +
-	"\x16PauseConnectorResponse\"[\n" +
-	"\x16ResumeConnectorRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
+	"\x16PauseConnectorResponse\"\\\n" +
+	"\x16ResumeConnectorRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
 	"%managedkafka.googleapis.com/ConnectorR\x04name\"\x19\n" +
-	"\x17ResumeConnectorResponse\"\\\n" +
-	"\x17RestartConnectorRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
+	"\x17ResumeConnectorResponse\"]\n" +
+	"\x17RestartConnectorRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
 	"%managedkafka.googleapis.com/ConnectorR\x04name\"\x1a\n" +
-	"\x18RestartConnectorResponse\"Y\n" +
-	"\x14StopConnectorRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
+	"\x18RestartConnectorResponse\"Z\n" +
+	"\x14StopConnectorRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
 	"%managedkafka.googleapis.com/ConnectorR\x04name\"\x17\n" +
 	"\x15StopConnectorResponse2\x83\x19\n" +
 	"\x13ManagedKafkaConnect\x12\xd0\x01\n" +

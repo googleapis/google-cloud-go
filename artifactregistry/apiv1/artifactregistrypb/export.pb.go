@@ -361,16 +361,16 @@ var File_google_devtools_artifactregistry_v1_export_proto protoreflect.FileDescr
 
 const file_google_devtools_artifactregistry_v1_export_proto_rawDesc = "" +
 	"\n" +
-	"0google/devtools/artifactregistry/v1/export.proto\x12#google.devtools.artifactregistry.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a.google/devtools/artifactregistry/v1/file.proto\x1a1google/devtools/artifactregistry/v1/version.proto\"\xcc\x02\n" +
+	"0google/devtools/artifactregistry/v1/export.proto\x12#google.devtools.artifactregistry.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a.google/devtools/artifactregistry/v1/file.proto\x1a1google/devtools/artifactregistry/v1/version.proto\"\xcd\x02\n" +
 	"\x15ExportArtifactRequest\x12U\n" +
 	"\x0esource_version\x18\x02 \x01(\tB,\xfaA)\n" +
 	"'artifactregistry.googleapis.com/VersionH\x00R\rsourceVersion\x12I\n" +
 	"\n" +
 	"source_tag\x18\x04 \x01(\tB(\xfaA%\n" +
 	"#artifactregistry.googleapis.com/TagH\x00R\tsourceTag\x12\x1b\n" +
-	"\bgcs_path\x18\x03 \x01(\tH\x01R\agcsPath\x12R\n" +
+	"\bgcs_path\x18\x03 \x01(\tH\x01R\agcsPath\x12S\n" +
 	"\n" +
-	"repository\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
+	"repository\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
 	"*artifactregistry.googleapis.com/RepositoryR\n" +
 	"repositoryB\x11\n" +
 	"\x0fsource_artifactB\r\n" +

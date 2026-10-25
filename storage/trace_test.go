@@ -16,8 +16,13 @@ package storage
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"io"
+	"net"
 	"net/http"
+	"strconv"
+	"sync"
 	"testing"
 	"time"
 
@@ -25,7 +30,9 @@ import (
 	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/storage/internal"
+	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/go-cmp/cmp"
+	gax "github.com/googleapis/gax-go/v2"
 	"go.opentelemetry.io/otel/attribute"
 	otcodes "go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/sdk/instrumentation"
@@ -34,7 +41,10 @@ import (
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/stats"
+	"google.golang.org/grpc/status"
 )
 
 func TestStorageTraceStartEndSpan(t *testing.T) {
@@ -598,6 +608,98 @@ func TestStorageURIAttribute(t *testing.T) {
 	}
 }
 
+// retryAttemptNumber returns the value of gcp.client.retry.attempt_number in
+// attrs and whether it is present.
+func retryAttemptNumber(attrs []attribute.KeyValue) (int64, bool) {
+	for _, a := range attrs {
+		if a.Key == "gcp.client.retry.attempt_number" {
+			return a.Value.AsInt64(), true
+		}
+	}
+	return 0, false
+}
+
+func TestRetryAttemptStatsHandlerTagRPC(t *testing.T) {
+	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+	for _, tc := range []struct {
+		name string
+		// start returns the ctx handed to TagRPC, mimicking the ctx the
+		// transport's stats handler produces, and ends any spans it started.
+		start func(ctx context.Context) (tagCtx context.Context, end func())
+		// wantAttempts maps span names to the attempt number they must carry.
+		// Spans not listed must not carry one.
+		wantAttempts map[string]int64
+	}{
+		{
+			name: "attempt span under operation span",
+			start: func(ctx context.Context) (context.Context, func()) {
+				opCtx, opSpan := tracer().Start(ctx, "op")
+				attemptCtx, attemptSpan := tracer().Start(withRetryAttempt(opCtx, 2), "attempt")
+				return attemptCtx, func() { attemptSpan.End(); opSpan.End() }
+			},
+			wantAttempts: map[string]int64{"attempt": 2},
+		},
+		{
+			name: "attempt span without operation span",
+			start: func(ctx context.Context) (context.Context, func()) {
+				attemptCtx, attemptSpan := tracer().Start(withRetryAttempt(ctx, 1), "attempt")
+				return attemptCtx, func() { attemptSpan.End() }
+			},
+			wantAttempts: map[string]int64{"attempt": 1},
+		},
+		{
+			name: "no attempt in context",
+			start: func(ctx context.Context) (context.Context, func()) {
+				opCtx, opSpan := tracer().Start(ctx, "op")
+				attemptCtx, attemptSpan := tracer().Start(opCtx, "attempt")
+				return attemptCtx, func() { attemptSpan.End(); opSpan.End() }
+			},
+		},
+		{
+			// With no transport span the span in ctx is the operation span,
+			// which must be left alone.
+			name: "no attempt span",
+			start: func(ctx context.Context) (context.Context, func()) {
+				opCtx, opSpan := tracer().Start(ctx, "op")
+				return withRetryAttempt(opCtx, 2), func() { opSpan.End() }
+			},
+		},
+		{
+			name: "no span at all",
+			start: func(ctx context.Context) (context.Context, func()) {
+				return withRetryAttempt(ctx, 2), func() {}
+			},
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := context.Background()
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() {
+				te.Unregister(ctx)
+			})
+
+			tagCtx, end := tc.start(ctx)
+			retryAttemptStatsHandler{}.TagRPC(tagCtx, &stats.RPCTagInfo{})
+			end()
+
+			// Left nil when no span carries the attribute so that it compares
+			// equal to an unset wantAttempts.
+			var gotAttempts map[string]int64
+			for _, s := range te.Spans() {
+				if n, ok := retryAttemptNumber(s.Attributes); ok {
+					if gotAttempts == nil {
+						gotAttempts = map[string]int64{}
+					}
+					gotAttempts[s.Name] = n
+				}
+			}
+			if diff := cmp.Diff(tc.wantAttempts, gotAttempts); diff != "" {
+				t.Errorf("attempt numbers mismatch (-want +got):\n%s", diff)
+			}
+		})
+	}
+}
+
 func TestStorageURIAttributeDevTracingDisabled(t *testing.T) {
 	t.Setenv(storageOtelTracingDevVar, "false")
 	t.Setenv(storageBucketMetadataDisabledVar, "true")
@@ -609,5 +711,761 @@ func TestStorageURIAttributeDevTracingDisabled(t *testing.T) {
 
 	if got, ok := storageURIAttr(t, te.Spans(), "Object.Attrs"); ok {
 		t.Errorf("%s = %q, want it absent when dev tracing is disabled", storageURIAttrKey, got)
+	}
+}
+
+// startFakeStorageServer starts an in-process gRPC server for srv, points
+// STORAGE_EMULATOR_HOST_GRPC at it for the duration of t, and returns the
+// listener address.
+func startFakeStorageServer(t *testing.T, srv storagepb.StorageServer) string {
+	t.Helper()
+	lis, err := net.Listen("tcp", "localhost:0")
+	if err != nil {
+		t.Fatalf("net.Listen: %v", err)
+	}
+	grpcSrv := grpc.NewServer()
+	storagepb.RegisterStorageServer(grpcSrv, srv)
+	go grpcSrv.Serve(lis)
+	t.Cleanup(grpcSrv.Stop)
+	addr := lis.Addr().String()
+	t.Setenv("STORAGE_EMULATOR_HOST_GRPC", addr)
+	return addr
+}
+
+// retryAttemptTestServer is a fake storage server whose GetBucket and
+// BidiReadObject fail with UNAVAILABLE for the first failures calls and
+// succeed afterwards.
+type retryAttemptTestServer struct {
+	storagepb.UnimplementedStorageServer
+	mu       sync.Mutex
+	failures int
+	calls    int
+}
+
+func (s *retryAttemptTestServer) nextShouldFail() bool {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.calls++
+	return s.calls <= s.failures
+}
+
+func (s *retryAttemptTestServer) GetBucket(_ context.Context, req *storagepb.GetBucketRequest) (*storagepb.Bucket, error) {
+	if s.nextShouldFail() {
+		return nil, status.Error(codes.Unavailable, "retry me")
+	}
+	return &storagepb.Bucket{Name: req.GetName()}, nil
+}
+
+func (s *retryAttemptTestServer) BidiReadObject(stream storagepb.Storage_BidiReadObjectServer) error {
+	if _, err := stream.Recv(); err != nil {
+		return err
+	}
+	if s.nextShouldFail() {
+		return status.Error(codes.Unavailable, "retry me")
+	}
+	if err := stream.Send(&storagepb.BidiReadObjectResponse{
+		Metadata: &storagepb.Object{Size: 1},
+	}); err != nil {
+		return err
+	}
+	_, err := stream.Recv()
+	if errors.Is(err, io.EOF) {
+		return nil
+	}
+	return err
+}
+
+func TestGRPCRetryAttemptNumberTracing(t *testing.T) {
+	const (
+		getBucketSpan      = "google.storage.v2.Storage/GetBucket"
+		bidiReadObjectSpan = "google.storage.v2.Storage/BidiReadObject"
+	)
+
+	getBucketCall := func(t *testing.T, ctx context.Context, client *Client) {
+		t.Helper()
+		if _, err := client.Bucket("bucket").Attrs(ctx); err != nil {
+			t.Fatalf("Bucket.Attrs: %v", err)
+		}
+	}
+	mrdCall := func(t *testing.T, ctx context.Context, client *Client) {
+		t.Helper()
+		mrd, err := client.Bucket("bucket").Object("object").NewMultiRangeDownloader(ctx)
+		if err != nil {
+			t.Fatalf("NewMultiRangeDownloader: %v", err)
+		}
+		if err := mrd.Close(); err != nil {
+			t.Fatalf("mrd.Close: %v", err)
+		}
+	}
+
+	for _, tc := range []struct {
+		name        string
+		devTracing  bool
+		failures    int
+		opSpan      string
+		attemptSpan string
+		call        func(t *testing.T, ctx context.Context, client *Client)
+		// wantAttempts are the attempt numbers expected on the attempt spans,
+		// in order. nil means the spans carry none.
+		wantAttempts []int64
+	}{
+		{
+			name:         "single attempt",
+			devTracing:   true,
+			opSpan:       "Bucket.Attrs",
+			attemptSpan:  getBucketSpan,
+			call:         getBucketCall,
+			wantAttempts: []int64{1},
+		},
+		{
+			name:         "retried",
+			devTracing:   true,
+			failures:     2,
+			opSpan:       "Bucket.Attrs",
+			attemptSpan:  getBucketSpan,
+			call:         getBucketCall,
+			wantAttempts: []int64{1, 2, 3},
+		},
+		{
+			name:         "retried MRD BidiReadObject",
+			devTracing:   true,
+			failures:     2,
+			opSpan:       "Object.MultiRangeDownloader",
+			attemptSpan:  bidiReadObjectSpan,
+			call:         mrdCall,
+			wantAttempts: []int64{1, 2, 3},
+		},
+		{
+			name:        "dev tracing disabled",
+			failures:    1,
+			opSpan:      "Bucket.Attrs",
+			attemptSpan: getBucketSpan,
+			call:        getBucketCall,
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := context.Background()
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() {
+				te.Unregister(ctx)
+			})
+			t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", strconv.FormatBool(tc.devTracing))
+			// The background bucket metadata fetch would issue an extra,
+			// untraced GetBucket that also consumes the server's failures.
+			t.Setenv("GO_OTEL_BUCKETMETADATA_DISABLED", "true")
+
+			startFakeStorageServer(t, &retryAttemptTestServer{failures: tc.failures})
+
+			client, err := NewGRPCClient(ctx, WithGRPCBidiReads())
+			if err != nil {
+				t.Fatalf("NewGRPCClient: %v", err)
+			}
+			t.Cleanup(func() { client.Close() })
+			client.SetRetry(WithBackoff(gax.Backoff{Initial: time.Millisecond, Max: time.Millisecond}))
+
+			tc.call(t, ctx, client)
+
+			spans := te.Spans()
+			var opSpan *tracetest.SpanStub
+			for i := range spans {
+				if spans[i].Name == appendPackageName(tc.opSpan) {
+					if opSpan != nil {
+						t.Fatalf("got more than one %s span", tc.opSpan)
+					}
+					opSpan = &spans[i]
+				}
+			}
+			if opSpan == nil {
+				t.Fatalf("%s span not found", tc.opSpan)
+			}
+
+			var gotAttempts []int64
+			attemptSpans := 0
+			for _, s := range spans {
+				if s.Name != tc.attemptSpan {
+					continue
+				}
+				attemptSpans++
+				if got, want := s.Parent.SpanID(), opSpan.SpanContext.SpanID(); got != want {
+					t.Errorf("%s span parent ID = %v, want %v", tc.attemptSpan, got, want)
+				}
+				if n, ok := retryAttemptNumber(s.Attributes); ok {
+					gotAttempts = append(gotAttempts, n)
+				}
+			}
+			if want := tc.failures + 1; attemptSpans != want {
+				t.Errorf("got %d %s spans, want %d", attemptSpans, tc.attemptSpan, want)
+			}
+			if diff := cmp.Diff(tc.wantAttempts, gotAttempts); diff != "" {
+				t.Errorf("attempt numbers on %s spans mismatch (-want +got):\n%s", tc.attemptSpan, diff)
+			}
+		})
+	}
+}
+
+func TestRecordRetryBackoffNoParentSpan(t *testing.T) {
+	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() {
+		te.Unregister(ctx)
+	})
+	t.Setenv(storageOtelTracingDevVar, "true")
+
+	recordRetryBackoff(ctx, time.Now())
+
+	if got := len(te.Spans()); got != 0 {
+		t.Errorf("recordRetryBackoff() without a parent span exported %d spans, want 0", got)
+	}
+}
+
+func TestRunRetryBackoffTracing(t *testing.T) {
+	fastBackoff := &gax.Backoff{Initial: time.Millisecond, Max: time.Millisecond}
+	maxAttempts := 2
+	retryableErr := &googleapi.Error{Code: http.StatusServiceUnavailable}
+	nonRetryableErr := &googleapi.Error{Code: http.StatusBadRequest}
+
+	for _, tc := range []struct {
+		name  string
+		retry *retryConfig
+		// errs[i] is returned by attempt i+1. Later attempts succeed.
+		errs []error
+		// timeout, if set, is applied to the context passed to run.
+		timeout time.Duration
+		wantErr bool
+		// wantBackoffs is the number of RetryBackoff spans expected.
+		wantBackoffs int
+	}{
+		{
+			name:  "success on first attempt",
+			retry: &retryConfig{backoff: fastBackoff},
+		},
+		{
+			name:         "one retry",
+			retry:        &retryConfig{backoff: fastBackoff},
+			errs:         []error{retryableErr},
+			wantBackoffs: 1,
+		},
+		{
+			name:         "two retries",
+			retry:        &retryConfig{backoff: fastBackoff},
+			errs:         []error{retryableErr, retryableErr},
+			wantBackoffs: 2,
+		},
+		{
+			name:    "non-retryable error",
+			retry:   &retryConfig{backoff: fastBackoff},
+			errs:    []error{nonRetryableErr},
+			wantErr: true,
+		},
+		{
+			name:         "max attempts reached",
+			retry:        &retryConfig{backoff: fastBackoff, maxAttempts: &maxAttempts},
+			errs:         []error{retryableErr, retryableErr},
+			wantErr:      true,
+			wantBackoffs: 1,
+		},
+		{
+			name: "context done during backoff",
+			// gax picks a random pause in [1ns, Initial], so a huge Initial makes
+			// a pause shorter than the timeout practically impossible.
+			retry:        &retryConfig{backoff: &gax.Backoff{Initial: 1000 * time.Hour, Max: 1000 * time.Hour}},
+			errs:         []error{retryableErr},
+			timeout:      50 * time.Millisecond,
+			wantErr:      true,
+			wantBackoffs: 1,
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := context.Background()
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() {
+				te.Unregister(ctx)
+			})
+			t.Setenv(storageOtelTracingDevVar, "true")
+
+			spanCtx, _ := startSpan(ctx, "Bucket.Attrs")
+			runCtx := spanCtx
+			if tc.timeout > 0 {
+				var cancel context.CancelFunc
+				runCtx, cancel = context.WithTimeout(spanCtx, tc.timeout)
+				defer cancel()
+			}
+			attempt := 0
+			err := run(runCtx, func(context.Context) error {
+				attempt++
+				if attempt <= len(tc.errs) {
+					return tc.errs[attempt-1]
+				}
+				return nil
+			}, tc.retry, true)
+			endSpan(spanCtx, err)
+
+			if gotErr := err != nil; gotErr != tc.wantErr {
+				t.Fatalf("run() = %v, want error: %t", err, tc.wantErr)
+			}
+			checkRetryBackoffs(t, te.Spans(), tc.wantBackoffs, tc.timeout)
+		})
+	}
+}
+
+func TestRunRetryBackoffTracingDisabled(t *testing.T) {
+	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() {
+		te.Unregister(ctx)
+	})
+	t.Setenv(storageOtelTracingDevVar, "false")
+
+	// The span is started directly so that it is recording even though dev
+	// tracing is disabled, proving that the environment gate alone prevents
+	// the backoff from being recorded.
+	spanCtx, span := tracer().Start(ctx, "Bucket.Attrs")
+	attempt := 0
+	err := run(spanCtx, func(context.Context) error {
+		attempt++
+		if attempt == 1 {
+			return &googleapi.Error{Code: http.StatusServiceUnavailable}
+		}
+		return nil
+	}, &retryConfig{backoff: &gax.Backoff{Initial: time.Millisecond, Max: time.Millisecond}}, true)
+	span.End()
+
+	if err != nil {
+		t.Fatalf("run() = %v, want nil", err)
+	}
+	spans := te.Spans()
+	if len(spans) != 1 {
+		t.Errorf("run() produced %d spans, want 1", len(spans))
+	}
+}
+
+// findSpans returns the spans in spans named with the package-qualified form
+// of name.
+func findSpans(spans tracetest.SpanStubs, name string) tracetest.SpanStubs {
+	want := appendPackageName(name)
+	var found tracetest.SpanStubs
+	for _, s := range spans {
+		if s.Name == want {
+			found = append(found, s)
+		}
+	}
+	return found
+}
+
+// checkRetryBackoffs checks that the single Bucket.Attrs span in spans has
+// wantBackoffs RetryBackoff child spans, each lying within the parent span's
+// time range and lasting at least minDuration.
+func checkRetryBackoffs(t *testing.T, spans tracetest.SpanStubs, wantBackoffs int, minDuration time.Duration) {
+	t.Helper()
+	parents := findSpans(spans, "Bucket.Attrs")
+	if len(parents) != 1 {
+		t.Fatalf("got %d Bucket.Attrs spans, want 1", len(parents))
+	}
+	parent := parents[0]
+	backoffs := findSpans(spans, "RetryBackoff")
+	if len(backoffs) != wantBackoffs {
+		t.Errorf("got %d RetryBackoff spans, want %d", len(backoffs), wantBackoffs)
+	}
+	for _, s := range backoffs {
+		if got, want := s.Parent.SpanID(), parent.SpanContext.SpanID(); got != want {
+			t.Errorf("RetryBackoff span parent ID = %v, want %v", got, want)
+		}
+		if s.StartTime.After(s.EndTime) {
+			t.Errorf("RetryBackoff span start time %v is after end time %v", s.StartTime, s.EndTime)
+		}
+		if got := s.EndTime.Sub(s.StartTime); got < minDuration {
+			t.Errorf("RetryBackoff span duration = %v, want >= %v", got, minDuration)
+		}
+		if s.StartTime.Before(parent.StartTime) || s.EndTime.After(parent.EndTime) {
+			t.Errorf("RetryBackoff span [%v, %v] is outside parent span [%v, %v]", s.StartTime, s.EndTime, parent.StartTime, parent.EndTime)
+		}
+	}
+}
+
+func TestRecordWriterTraceAttributes(t *testing.T) {
+	newMockObjectHandle := func() *ObjectHandle {
+		c := &Client{tc: &mockStorageClient{
+			openWriterFn: func(params *openWriterParams, _ ...storageOption) (internalWriter, error) {
+				close(params.donec)
+				return &mockInternalWriter{internalWriter: &httpInternalWriter{}}, nil
+			},
+		}}
+		return c.Bucket("bucket").Object("object")
+	}
+	// Spans started via NewWriter also carry the object's storage URI.
+	uriAttr := attribute.String(storageURIAttrKey, "gs://bucket/object")
+
+	testCases := []struct {
+		name      string
+		run       func(*testing.T, context.Context)
+		wantAttrs []attribute.KeyValue
+	}{
+		{
+			name: "resumable_multi_chunk",
+			run: func(t *testing.T, ctx context.Context) {
+				w := newMockObjectHandle().NewWriter(ctx)
+				w.ChunkSize = 256 * 1024
+				if _, err := w.Write(make([]byte, 256*1024)); err != nil {
+					t.Fatalf("Write failed: %v", err)
+				}
+				if err := w.Close(); err != nil {
+					t.Fatalf("Close failed: %v", err)
+				}
+			},
+			wantAttrs: []attribute.KeyValue{
+				attribute.String("gcp.storage.write.mode", "resumable"),
+				uriAttr,
+			},
+		},
+		{
+			name: "oneshot_zero_chunk_size",
+			run: func(t *testing.T, ctx context.Context) {
+				w := newMockObjectHandle().NewWriter(ctx)
+				w.ChunkSize = 0
+				if err := w.Close(); err != nil {
+					t.Fatalf("Close failed: %v", err)
+				}
+			},
+			wantAttrs: []attribute.KeyValue{
+				attribute.String("gcp.storage.write.mode", "oneshot"),
+				uriAttr,
+			},
+		},
+		{
+			name: "oneshot_small_payload_default_chunk_size",
+			run: func(t *testing.T, ctx context.Context) {
+				w := newMockObjectHandle().NewWriter(ctx)
+				if _, err := w.Write([]byte("hello")); err != nil {
+					t.Fatalf("Write failed: %v", err)
+				}
+				if err := w.Close(); err != nil {
+					t.Fatalf("Close failed: %v", err)
+				}
+			},
+			wantAttrs: []attribute.KeyValue{
+				attribute.String("gcp.storage.write.mode", "oneshot"),
+				uriAttr,
+			},
+		},
+		{
+			name: "oneshot_non_aligned_chunk_size",
+			run: func(t *testing.T, ctx context.Context) {
+				w := newMockObjectHandle().NewWriter(ctx)
+				// 300 KiB rounds up to 512 KiB via gRPCChunkSize / googleapi.ChunkSize,
+				// so a 400 KiB write fits in the first chunk and runs as oneshot.
+				w.ChunkSize = 300 * 1024
+				if _, err := w.Write(make([]byte, 400*1024)); err != nil {
+					t.Fatalf("Write failed: %v", err)
+				}
+				if err := w.Close(); err != nil {
+					t.Fatalf("Close failed: %v", err)
+				}
+			},
+			wantAttrs: []attribute.KeyValue{
+				attribute.String("gcp.storage.write.mode", "oneshot"),
+				uriAttr,
+			},
+		},
+		{
+			name: "oneshot_grpc_force_oneshot",
+			run: func(_ *testing.T, ctx context.Context) {
+				ctx, _ = startSpan(ctx, "Object.Writer")
+				recordWriterTraceAttributes(ctx, &Writer{
+					ChunkSize: googleapi.DefaultUploadChunkSize,
+					iw:        &gRPCWriter{forceOneShot: true},
+				})
+				endSpan(ctx, nil)
+			},
+			wantAttrs: []attribute.KeyValue{
+				attribute.String("gcp.storage.write.mode", "oneshot"),
+			},
+		},
+		{
+			name: "resumable_grpc",
+			run: func(_ *testing.T, ctx context.Context) {
+				ctx, _ = startSpan(ctx, "Object.Writer")
+				recordWriterTraceAttributes(ctx, &Writer{
+					ChunkSize: googleapi.DefaultUploadChunkSize,
+					iw:        &gRPCWriter{forceOneShot: false},
+				})
+				endSpan(ctx, nil)
+			},
+			wantAttrs: []attribute.KeyValue{
+				attribute.String("gcp.storage.write.mode", "resumable"),
+			},
+		},
+		{
+			name: "appendable",
+			run: func(t *testing.T, ctx context.Context) {
+				w := newMockObjectHandle().NewWriter(ctx)
+				w.Append = true
+				if err := w.Close(); err != nil {
+					t.Fatalf("Close failed: %v", err)
+				}
+			},
+			wantAttrs: []attribute.KeyValue{
+				attribute.String("gcp.storage.write.mode", "appendable"),
+				uriAttr,
+			},
+		},
+		{
+			name: "open_writer_validation_failure",
+			run: func(t *testing.T, ctx context.Context) {
+				w := newMockObjectHandle().NewWriter(ctx)
+				w.Name = "mismatched-name"
+				if err := w.Close(); err == nil {
+					t.Fatal("Close succeeded, want validation error")
+				}
+			},
+			wantAttrs: []attribute.KeyValue{
+				attribute.String("gcp.storage.write.mode", "resumable"),
+				uriAttr,
+			},
+		},
+		{
+			name: "parallel",
+			run: func(t *testing.T, ctx context.Context) {
+				c := &Client{tc: &grpcStorageClient{}}
+				w := c.Bucket("bucket").Object("object").NewWriter(ctx)
+				w.EnableParallelUpload = true
+				w.ParallelUploadConfig = ParallelUploadConfig{
+					MaxConcurrency: 4,
+				}
+				w.MD5 = []byte{1, 2, 3}
+				if err := w.Close(); err == nil {
+					t.Fatal("Close succeeded, want validation error")
+				}
+			},
+			wantAttrs: []attribute.KeyValue{
+				attribute.String("gcp.storage.write.mode", "parallel"),
+				attribute.Int("gcp.storage.write.parallel.part_size", 16*1024*1024),
+				attribute.Int("gcp.storage.write.parallel.concurrency", 4),
+				uriAttr,
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := context.Background()
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() {
+				te.Unregister(ctx)
+			})
+			// TODO: Remove setting development env var upon launch.
+			t.Setenv(storageOtelTracingDevVar, "true")
+
+			tc.run(t, ctx)
+
+			verifySingleSpanAttributes(t, te.Spans(), tc.wantAttrs)
+		})
+	}
+}
+
+func TestWriterTraceWriteModeEmulated(t *testing.T) {
+	checkEmulatorEnvironment(t)
+
+	ctx := context.Background()
+	c := &Client{tc: emulatorClients["grpc"]}
+	bucket := fmt.Sprintf("grpc-trace-bucket-%d", time.Now().UnixNano())
+	if err := c.Bucket(bucket).Create(ctx, "project", nil); err != nil {
+		t.Fatalf("Bucket.Create: %v", err)
+	}
+
+	testCases := []struct {
+		name      string
+		configure func(*Writer)
+		payload   []byte
+		wantAttrs []attribute.KeyValue
+	}{
+		{
+			name:      "oneshot",
+			configure: func(_ *Writer) {},
+			payload:   make([]byte, 1024),
+			wantAttrs: []attribute.KeyValue{
+				attribute.String("gcp.storage.write.mode", "oneshot"),
+			},
+		},
+		{
+			name: "resumable",
+			configure: func(w *Writer) {
+				w.ChunkSize = 256 * 1024
+			},
+			payload: make([]byte, 1024*1024),
+			wantAttrs: []attribute.KeyValue{
+				attribute.String("gcp.storage.write.mode", "resumable"),
+			},
+		},
+		{
+			name: "appendable",
+			configure: func(w *Writer) {
+				w.Append = true
+				w.FinalizeOnClose = true
+			},
+			payload: make([]byte, 1024),
+			wantAttrs: []attribute.KeyValue{
+				attribute.String("gcp.storage.write.mode", "appendable"),
+			},
+		},
+		{
+			name: "parallel",
+			configure: func(w *Writer) {
+				w.EnableParallelUpload = true
+				w.ParallelUploadConfig = ParallelUploadConfig{
+					PartSize:       8 * 1024 * 1024,
+					MaxConcurrency: 4,
+				}
+			},
+			payload: make([]byte, 1024),
+			wantAttrs: []attribute.KeyValue{
+				attribute.String("gcp.storage.write.mode", "parallel"),
+				attribute.Int("gcp.storage.write.parallel.part_size", 8*1024*1024),
+				attribute.Int("gcp.storage.write.parallel.concurrency", 4),
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() {
+				te.Unregister(ctx)
+			})
+			// TODO: Remove setting development env var upon launch.
+			t.Setenv(storageOtelTracingDevVar, "true")
+
+			objName := fmt.Sprintf("object-%s-%d", tc.name, time.Now().UnixNano())
+			w := c.Bucket(bucket).Object(objName).NewWriter(ctx)
+			tc.configure(w)
+			if _, err := w.Write(tc.payload); err != nil {
+				t.Fatalf("Write: %v", err)
+			}
+			if err := w.Close(); err != nil {
+				t.Fatalf("Close: %v", err)
+			}
+
+			var writerSpans tracetest.SpanStubs
+			for _, s := range te.Spans() {
+				if s.Name == appendPackageName("Object.Writer") && !s.Parent.IsValid() {
+					writerSpans = append(writerSpans, s)
+				}
+			}
+			verifySingleSpanAttributes(t, writerSpans, append(tc.wantAttrs,
+				attribute.String(storageURIAttrKey, "gs://"+bucket+"/"+objName)))
+		})
+	}
+}
+
+// TestReaderTraceReadMode verifies the read mode recorded by NewRangeReader and
+// NewMultiRangeDownloader. The ObjectHandle has no object name, so each call
+// fails validation after the span has been started and the attribute recorded,
+// before any RPC is made.
+func TestReaderTraceReadMode(t *testing.T) {
+	testCases := []struct {
+		name     string
+		read     func(context.Context, *ObjectHandle) error
+		wantMode string
+	}{
+		{
+			name: "full",
+			read: func(ctx context.Context, o *ObjectHandle) error {
+				_, err := o.NewReader(ctx)
+				return err
+			},
+			wantMode: "full",
+		},
+		{
+			name: "range",
+			read: func(ctx context.Context, o *ObjectHandle) error {
+				_, err := o.NewRangeReader(ctx, 100, 500)
+				return err
+			},
+			wantMode: "range",
+		},
+		{
+			name: "range_to_end",
+			read: func(ctx context.Context, o *ObjectHandle) error {
+				_, err := o.NewRangeReader(ctx, 100, -1)
+				return err
+			},
+			wantMode: "range",
+		},
+		{
+			name: "range_suffix",
+			read: func(ctx context.Context, o *ObjectHandle) error {
+				_, err := o.NewRangeReader(ctx, -100, -1)
+				return err
+			},
+			wantMode: "range",
+		},
+		{
+			name: "multi_range",
+			read: func(ctx context.Context, o *ObjectHandle) error {
+				_, err := o.NewMultiRangeDownloader(ctx)
+				return err
+			},
+			wantMode: "multi_range",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := context.Background()
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() {
+				te.Unregister(ctx)
+			})
+			// TODO: Remove setting development env var upon launch.
+			t.Setenv(storageOtelTracingDevVar, "true")
+
+			o := &ObjectHandle{c: &Client{}, bucket: "bucket"}
+			if err := tc.read(ctx, o); err == nil {
+				t.Fatal("read succeeded, want validation error")
+			}
+
+			verifySingleSpanAttributes(t, te.Spans(), []attribute.KeyValue{
+				attribute.String("gcp.storage.read.mode", tc.wantMode),
+				attribute.String(storageURIAttrKey, "gs://bucket/"),
+			})
+		})
+	}
+}
+
+func TestRecordTraceAttributes_DevTracingDisabled(t *testing.T) {
+	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() {
+		te.Unregister(ctx)
+	})
+	t.Setenv(storageOtelTracingDevVar, "false")
+
+	wCtx, _ := startSpan(ctx, "Object.Writer")
+	recordWriterTraceAttributes(wCtx, &Writer{EnableParallelUpload: true})
+	endSpan(wCtx, nil)
+
+	for _, s := range te.Spans() {
+		for _, a := range s.Attributes {
+			switch a.Key {
+			case "gcp.storage.write.mode",
+				"gcp.storage.write.parallel.part_size",
+				"gcp.storage.write.parallel.concurrency":
+				t.Errorf("span %s has unexpected attribute %s when dev tracing is disabled", s.Name, a.Key)
+			}
+		}
+	}
+}
+
+// verifySingleSpanAttributes checks that exactly one span was exported and that
+// its attributes are exactly the common attributes plus wantAttrs.
+func verifySingleSpanAttributes(t *testing.T, spans tracetest.SpanStubs, wantAttrs []attribute.KeyValue) {
+	t.Helper()
+	if len(spans) != 1 {
+		t.Fatalf("expected one span, got %d", len(spans))
+	}
+	got := attribute.NewSet(spans[0].Attributes...)
+	want := attribute.NewSet(append(getCommonAttributes(), wantAttrs...)...)
+	if !got.Equals(&want) {
+		t.Errorf("span %s attributes mismatch:\n got: %s\nwant: %s", spans[0].Name,
+			got.Encoded(attribute.DefaultEncoder()), want.Encoded(attribute.DefaultEncoder()))
 	}
 }

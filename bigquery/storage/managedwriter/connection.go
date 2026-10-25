@@ -272,10 +272,7 @@ func computeLoadThresholds(fc *flowController) (countLimit, byteLimit int) {
 		}
 		if fc.maxInsertCount > 0 {
 			// MIN(1, 20% of insert limit)
-			countLimit = int(float64(fc.maxInsertCount) * 0.2)
-			if countLimit < 1 {
-				countLimit = 1
-			}
+			countLimit = max(int(float64(fc.maxInsertCount)*0.2), 1)
 		}
 	}
 	return

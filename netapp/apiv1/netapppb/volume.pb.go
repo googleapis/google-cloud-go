@@ -4186,9 +4186,9 @@ var File_google_cloud_netapp_v1_volume_proto protoreflect.FileDescriptor
 
 const file_google_cloud_netapp_v1_volume_proto_rawDesc = "" +
 	"\n" +
-	"#google/cloud/netapp/v1/volume.proto\x12\x16google.cloud.netapp.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a#google/cloud/netapp/v1/common.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc1\x01\n" +
-	"\x12ListVolumesRequest\x12<\n" +
-	"\x06parent\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\x12\x1cnetapp.googleapis.com/VolumeR\x06parent\x12\x1b\n" +
+	"#google/cloud/netapp/v1/volume.proto\x12\x16google.cloud.netapp.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a#google/cloud/netapp/v1/common.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc2\x01\n" +
+	"\x12ListVolumesRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\x12\x1cnetapp.googleapis.com/VolumeR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -4197,114 +4197,114 @@ const file_google_cloud_netapp_v1_volume_proto_rawDesc = "" +
 	"\x13ListVolumesResponse\x128\n" +
 	"\avolumes\x18\x01 \x03(\v2\x1e.google.cloud.netapp.v1.VolumeR\avolumes\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xe0\x01\n" +
-	"\x18ListBackupConfigsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!netapp.googleapis.com/StoragePoolR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xe5\x01\n" +
+	"\x18ListBackupConfigsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!netapp.googleapis.com/StoragePoolR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1e\n" +
-	"\border_by\x18\x04 \x01(\tB\x03\xe0A\x01R\aorderBy\x12\x1b\n" +
-	"\x06filter\x18\x05 \x01(\tB\x03\xe0A\x01R\x06filter\"\xca\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1f\n" +
+	"\border_by\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\x12\x1c\n" +
+	"\x06filter\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xcb\x01\n" +
 	"\x19ListBackupConfigsResponse\x12^\n" +
 	"\x15volume_backup_configs\x18\x01 \x03(\v2*.google.cloud.netapp.v1.VolumeBackupConfigR\x13volumeBackupConfigs\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"\x80\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x06R\vunreachable\"\x80\x01\n" +
 	"\x12VolumeBackupConfig\x12\x1f\n" +
 	"\vvolume_uuid\x18\x01 \x01(\tR\n" +
 	"volumeUuid\x12I\n" +
-	"\rbackup_config\x18\x02 \x01(\v2$.google.cloud.netapp.v1.BackupConfigR\fbackupConfig\"L\n" +
-	"\x10GetVolumeRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cnetapp.googleapis.com/VolumeR\x04name\"\xb2\x01\n" +
-	"\x13CreateVolumeRequest\x12<\n" +
-	"\x06parent\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\x12\x1cnetapp.googleapis.com/VolumeR\x06parent\x12 \n" +
-	"\tvolume_id\x18\x02 \x01(\tB\x03\xe0A\x02R\bvolumeId\x12;\n" +
-	"\x06volume\x18\x03 \x01(\v2\x1e.google.cloud.netapp.v1.VolumeB\x03\xe0A\x02R\x06volume\"\x94\x01\n" +
-	"\x13UpdateVolumeRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12;\n" +
-	"\x06volume\x18\x02 \x01(\v2\x1e.google.cloud.netapp.v1.VolumeB\x03\xe0A\x02R\x06volume\"e\n" +
-	"\x13DeleteVolumeRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
+	"\rbackup_config\x18\x02 \x01(\v2$.google.cloud.netapp.v1.BackupConfigR\fbackupConfig\"M\n" +
+	"\x10GetVolumeRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cnetapp.googleapis.com/VolumeR\x04name\"\xb5\x01\n" +
+	"\x13CreateVolumeRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\x12\x1cnetapp.googleapis.com/VolumeR\x06parent\x12!\n" +
+	"\tvolume_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\bvolumeId\x12<\n" +
+	"\x06volume\x18\x03 \x01(\v2\x1e.google.cloud.netapp.v1.VolumeB\x04\xe2A\x01\x02R\x06volume\"\x96\x01\n" +
+	"\x13UpdateVolumeRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12<\n" +
+	"\x06volume\x18\x02 \x01(\v2\x1e.google.cloud.netapp.v1.VolumeB\x04\xe2A\x01\x02R\x06volume\"f\n" +
+	"\x13DeleteVolumeRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
 	"\x1cnetapp.googleapis.com/VolumeR\x04name\x12\x14\n" +
-	"\x05force\x18\x02 \x01(\bR\x05force\"u\n" +
-	"\x13RevertVolumeRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cnetapp.googleapis.com/VolumeR\x04name\x12$\n" +
-	"\vsnapshot_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"snapshotId\"M\n" +
-	"\x11StartSplitRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cnetapp.googleapis.com/VolumeR\x04name\"Q\n" +
-	"\x15GetSplitStatusRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cnetapp.googleapis.com/VolumeR\x04name\"\xb1\x01\n" +
-	"\vSplitStatus\x12H\n" +
-	"\vsplit_state\x18\x01 \x01(\x0e2\".google.cloud.netapp.v1.SplitStateB\x03\xe0A\x03R\n" +
-	"splitState\x12(\n" +
-	"\rstate_details\x18\x02 \x01(\tB\x03\xe0A\x03R\fstateDetails\x12.\n" +
-	"\x10progress_percent\x18\x03 \x01(\x05B\x03\xe0A\x03R\x0fprogressPercent\"\xa0\x1b\n" +
-	"\x06Volume\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12?\n" +
-	"\x05state\x18\x02 \x01(\x0e2$.google.cloud.netapp.v1.Volume.StateB\x03\xe0A\x03R\x05state\x12(\n" +
-	"\rstate_details\x18\x03 \x01(\tB\x03\xe0A\x03R\fstateDetails\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12\"\n" +
+	"\x05force\x18\x02 \x01(\bR\x05force\"w\n" +
+	"\x13RevertVolumeRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cnetapp.googleapis.com/VolumeR\x04name\x12%\n" +
+	"\vsnapshot_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"snapshotId\"N\n" +
+	"\x11StartSplitRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cnetapp.googleapis.com/VolumeR\x04name\"R\n" +
+	"\x15GetSplitStatusRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cnetapp.googleapis.com/VolumeR\x04name\"\xb4\x01\n" +
+	"\vSplitStatus\x12I\n" +
+	"\vsplit_state\x18\x01 \x01(\x0e2\".google.cloud.netapp.v1.SplitStateB\x04\xe2A\x01\x03R\n" +
+	"splitState\x12)\n" +
+	"\rstate_details\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\fstateDetails\x12/\n" +
+	"\x10progress_percent\x18\x03 \x01(\x05B\x04\xe2A\x01\x03R\x0fprogressPercent\"\xce\x1b\n" +
+	"\x06Volume\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12@\n" +
+	"\x05state\x18\x02 \x01(\x0e2$.google.cloud.netapp.v1.Volume.StateB\x04\xe2A\x01\x03R\x05state\x12)\n" +
+	"\rstate_details\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\fstateDetails\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12#\n" +
 	"\n" +
-	"share_name\x18\x05 \x01(\tB\x03\xe0A\x02R\tshareName\x12 \n" +
-	"\tpsa_range\x18\x06 \x01(\tB\x03\xe0A\x03R\bpsaRange\x12L\n" +
-	"\fstorage_pool\x18\a \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!netapp.googleapis.com/StoragePoolR\vstoragePool\x12@\n" +
-	"\anetwork\x18\b \x01(\tB&\xe0A\x03\xfaA \n" +
-	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12N\n" +
-	"\rservice_level\x18\t \x01(\x0e2$.google.cloud.netapp.v1.ServiceLevelB\x03\xe0A\x03R\fserviceLevel\x12&\n" +
+	"share_name\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\tshareName\x12!\n" +
+	"\tpsa_range\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\bpsaRange\x12M\n" +
+	"\fstorage_pool\x18\a \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!netapp.googleapis.com/StoragePoolR\vstoragePool\x12A\n" +
+	"\anetwork\x18\b \x01(\tB'\xe2A\x01\x03\xfaA \n" +
+	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12O\n" +
+	"\rservice_level\x18\t \x01(\x0e2$.google.cloud.netapp.v1.ServiceLevelB\x04\xe2A\x01\x03R\fserviceLevel\x12'\n" +
 	"\fcapacity_gib\x18\n" +
-	" \x01(\x03B\x03\xe0A\x02R\vcapacityGib\x12N\n" +
-	"\rexport_policy\x18\v \x01(\v2$.google.cloud.netapp.v1.ExportPolicyB\x03\xe0A\x01R\fexportPolicy\x12D\n" +
-	"\tprotocols\x18\f \x03(\x0e2!.google.cloud.netapp.v1.ProtocolsB\x03\xe0A\x02R\tprotocols\x12K\n" +
-	"\fsmb_settings\x18\r \x03(\x0e2#.google.cloud.netapp.v1.SMBSettingsB\x03\xe0A\x01R\vsmbSettings\x12M\n" +
-	"\rmount_options\x18\x0e \x03(\v2#.google.cloud.netapp.v1.MountOptionB\x03\xe0A\x03R\fmountOptions\x12.\n" +
-	"\x10unix_permissions\x18\x0f \x01(\tB\x03\xe0A\x01R\x0funixPermissions\x12G\n" +
-	"\x06labels\x18\x10 \x03(\v2*.google.cloud.netapp.v1.Volume.LabelsEntryB\x03\xe0A\x01R\x06labels\x12%\n" +
-	"\vdescription\x18\x11 \x01(\tB\x03\xe0A\x01R\vdescription\x12T\n" +
-	"\x0fsnapshot_policy\x18\x12 \x01(\v2&.google.cloud.netapp.v1.SnapshotPolicyB\x03\xe0A\x01R\x0esnapshotPolicy\x12&\n" +
-	"\fsnap_reserve\x18\x13 \x01(\x01B\x03\xe0A\x01R\vsnapReserve\x122\n" +
-	"\x12snapshot_directory\x18\x14 \x01(\bB\x03\xe0A\x01R\x11snapshotDirectory\x12\x1e\n" +
-	"\bused_gib\x18\x15 \x01(\x03B\x03\xe0A\x03R\ausedGib\x12Q\n" +
-	"\x0esecurity_style\x18\x16 \x01(\x0e2%.google.cloud.netapp.v1.SecurityStyleB\x03\xe0A\x01R\rsecurityStyle\x12.\n" +
-	"\x10kerberos_enabled\x18\x17 \x01(\bB\x03\xe0A\x01R\x0fkerberosEnabled\x12&\n" +
-	"\fldap_enabled\x18\x18 \x01(\bB\x03\xe0A\x03R\vldapEnabled\x12X\n" +
-	"\x10active_directory\x18\x19 \x01(\tB-\xe0A\x03\xfaA'\n" +
-	"%netapp.googleapis.com/ActiveDirectoryR\x0factiveDirectory\x12]\n" +
-	"\x12restore_parameters\x18\x1a \x01(\v2).google.cloud.netapp.v1.RestoreParametersB\x03\xe0A\x01R\x11restoreParameters\x12F\n" +
+	" \x01(\x03B\x04\xe2A\x01\x02R\vcapacityGib\x12O\n" +
+	"\rexport_policy\x18\v \x01(\v2$.google.cloud.netapp.v1.ExportPolicyB\x04\xe2A\x01\x01R\fexportPolicy\x12E\n" +
+	"\tprotocols\x18\f \x03(\x0e2!.google.cloud.netapp.v1.ProtocolsB\x04\xe2A\x01\x02R\tprotocols\x12L\n" +
+	"\fsmb_settings\x18\r \x03(\x0e2#.google.cloud.netapp.v1.SMBSettingsB\x04\xe2A\x01\x01R\vsmbSettings\x12N\n" +
+	"\rmount_options\x18\x0e \x03(\v2#.google.cloud.netapp.v1.MountOptionB\x04\xe2A\x01\x03R\fmountOptions\x12/\n" +
+	"\x10unix_permissions\x18\x0f \x01(\tB\x04\xe2A\x01\x01R\x0funixPermissions\x12H\n" +
+	"\x06labels\x18\x10 \x03(\v2*.google.cloud.netapp.v1.Volume.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12&\n" +
+	"\vdescription\x18\x11 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12U\n" +
+	"\x0fsnapshot_policy\x18\x12 \x01(\v2&.google.cloud.netapp.v1.SnapshotPolicyB\x04\xe2A\x01\x01R\x0esnapshotPolicy\x12'\n" +
+	"\fsnap_reserve\x18\x13 \x01(\x01B\x04\xe2A\x01\x01R\vsnapReserve\x123\n" +
+	"\x12snapshot_directory\x18\x14 \x01(\bB\x04\xe2A\x01\x01R\x11snapshotDirectory\x12\x1f\n" +
+	"\bused_gib\x18\x15 \x01(\x03B\x04\xe2A\x01\x03R\ausedGib\x12R\n" +
+	"\x0esecurity_style\x18\x16 \x01(\x0e2%.google.cloud.netapp.v1.SecurityStyleB\x04\xe2A\x01\x01R\rsecurityStyle\x12/\n" +
+	"\x10kerberos_enabled\x18\x17 \x01(\bB\x04\xe2A\x01\x01R\x0fkerberosEnabled\x12'\n" +
+	"\fldap_enabled\x18\x18 \x01(\bB\x04\xe2A\x01\x03R\vldapEnabled\x12Y\n" +
+	"\x10active_directory\x18\x19 \x01(\tB.\xe2A\x01\x03\xfaA'\n" +
+	"%netapp.googleapis.com/ActiveDirectoryR\x0factiveDirectory\x12^\n" +
+	"\x12restore_parameters\x18\x1a \x01(\v2).google.cloud.netapp.v1.RestoreParametersB\x04\xe2A\x01\x01R\x11restoreParameters\x12G\n" +
 	"\n" +
-	"kms_config\x18\x1b \x01(\tB'\xe0A\x03\xfaA!\n" +
-	"\x1fnetapp.googleapis.com/KmsConfigR\tkmsConfig\x12T\n" +
-	"\x0fencryption_type\x18\x1c \x01(\x0e2&.google.cloud.netapp.v1.EncryptionTypeB\x03\xe0A\x03R\x0eencryptionType\x12,\n" +
-	"\x0fhas_replication\x18\x1d \x01(\bB\x03\xe0A\x03R\x0ehasReplication\x12N\n" +
-	"\rbackup_config\x18\x1e \x01(\v2$.google.cloud.netapp.v1.BackupConfigH\x00R\fbackupConfig\x88\x01\x01\x12\\\n" +
-	"\x12restricted_actions\x18\x1f \x03(\x0e2(.google.cloud.netapp.v1.RestrictedActionB\x03\xe0A\x01R\x11restrictedActions\x12*\n" +
-	"\x0elarge_capacity\x18  \x01(\bB\x03\xe0A\x01R\rlargeCapacity\x122\n" +
-	"\x12multiple_endpoints\x18! \x01(\bB\x03\xe0A\x01R\x11multipleEndpoints\x12Q\n" +
-	"\x0etiering_policy\x18\" \x01(\v2%.google.cloud.netapp.v1.TieringPolicyH\x01R\rtieringPolicy\x88\x01\x01\x12&\n" +
-	"\freplica_zone\x18$ \x01(\tB\x03\xe0A\x03R\vreplicaZone\x12\x17\n" +
-	"\x04zone\x18% \x01(\tB\x03\xe0A\x03R\x04zone\x120\n" +
-	"\x12cold_tier_size_gib\x18' \x01(\x03B\x03\xe0A\x03R\x0fcoldTierSizeGib\x12|\n" +
-	"\x1dhybrid_replication_parameters\x18( \x01(\v23.google.cloud.netapp.v1.HybridReplicationParametersB\x03\xe0A\x01R\x1bhybridReplicationParameters\x12.\n" +
-	"\x10throughput_mibps\x18) \x01(\x01B\x03\xe0A\x01R\x0fthroughputMibps\x12W\n" +
-	"\x10cache_parameters\x18* \x01(\v2'.google.cloud.netapp.v1.CacheParametersB\x03\xe0A\x01R\x0fcacheParameters\x127\n" +
-	"\x16hot_tier_size_used_gib\x18, \x01(\x03B\x03\xe0A\x03R\x12hotTierSizeUsedGib\x12M\n" +
-	"\rblock_devices\x18- \x03(\v2#.google.cloud.netapp.v1.BlockDeviceB\x03\xe0A\x01R\fblockDevices\x12d\n" +
-	"\x15large_capacity_config\x18. \x01(\v2+.google.cloud.netapp.v1.LargeCapacityConfigB\x03\xe0A\x01R\x13largeCapacityConfig\x12U\n" +
-	"\rclone_details\x18/ \x01(\v2+.google.cloud.netapp.v1.Volume.CloneDetailsB\x03\xe0A\x03R\fcloneDetails\x1a\xa3\x02\n" +
-	"\fCloneDetails\x12O\n" +
-	"\x0fsource_snapshot\x18\x01 \x01(\tB&\xe0A\x03\xfaA \n" +
-	"\x1enetapp.googleapis.com/SnapshotR\x0esourceSnapshot\x12I\n" +
-	"\rsource_volume\x18\x02 \x01(\tB$\xe0A\x03\xfaA\x1e\n" +
-	"\x1cnetapp.googleapis.com/VolumeR\fsourceVolume\x12-\n" +
-	"\x10shared_space_gib\x18\x03 \x01(\x03B\x03\xe0A\x03R\x0esharedSpaceGib\x12H\n" +
-	"\vsplit_state\x18\x04 \x01(\x0e2\".google.cloud.netapp.v1.SplitStateB\x03\xe0A\x03R\n" +
+	"kms_config\x18\x1b \x01(\tB(\xe2A\x01\x03\xfaA!\n" +
+	"\x1fnetapp.googleapis.com/KmsConfigR\tkmsConfig\x12U\n" +
+	"\x0fencryption_type\x18\x1c \x01(\x0e2&.google.cloud.netapp.v1.EncryptionTypeB\x04\xe2A\x01\x03R\x0eencryptionType\x12-\n" +
+	"\x0fhas_replication\x18\x1d \x01(\bB\x04\xe2A\x01\x03R\x0ehasReplication\x12N\n" +
+	"\rbackup_config\x18\x1e \x01(\v2$.google.cloud.netapp.v1.BackupConfigH\x00R\fbackupConfig\x88\x01\x01\x12]\n" +
+	"\x12restricted_actions\x18\x1f \x03(\x0e2(.google.cloud.netapp.v1.RestrictedActionB\x04\xe2A\x01\x01R\x11restrictedActions\x12+\n" +
+	"\x0elarge_capacity\x18  \x01(\bB\x04\xe2A\x01\x01R\rlargeCapacity\x123\n" +
+	"\x12multiple_endpoints\x18! \x01(\bB\x04\xe2A\x01\x01R\x11multipleEndpoints\x12Q\n" +
+	"\x0etiering_policy\x18\" \x01(\v2%.google.cloud.netapp.v1.TieringPolicyH\x01R\rtieringPolicy\x88\x01\x01\x12'\n" +
+	"\freplica_zone\x18$ \x01(\tB\x04\xe2A\x01\x03R\vreplicaZone\x12\x18\n" +
+	"\x04zone\x18% \x01(\tB\x04\xe2A\x01\x03R\x04zone\x121\n" +
+	"\x12cold_tier_size_gib\x18' \x01(\x03B\x04\xe2A\x01\x03R\x0fcoldTierSizeGib\x12}\n" +
+	"\x1dhybrid_replication_parameters\x18( \x01(\v23.google.cloud.netapp.v1.HybridReplicationParametersB\x04\xe2A\x01\x01R\x1bhybridReplicationParameters\x12/\n" +
+	"\x10throughput_mibps\x18) \x01(\x01B\x04\xe2A\x01\x01R\x0fthroughputMibps\x12X\n" +
+	"\x10cache_parameters\x18* \x01(\v2'.google.cloud.netapp.v1.CacheParametersB\x04\xe2A\x01\x01R\x0fcacheParameters\x128\n" +
+	"\x16hot_tier_size_used_gib\x18, \x01(\x03B\x04\xe2A\x01\x03R\x12hotTierSizeUsedGib\x12N\n" +
+	"\rblock_devices\x18- \x03(\v2#.google.cloud.netapp.v1.BlockDeviceB\x04\xe2A\x01\x01R\fblockDevices\x12e\n" +
+	"\x15large_capacity_config\x18. \x01(\v2+.google.cloud.netapp.v1.LargeCapacityConfigB\x04\xe2A\x01\x01R\x13largeCapacityConfig\x12V\n" +
+	"\rclone_details\x18/ \x01(\v2+.google.cloud.netapp.v1.Volume.CloneDetailsB\x04\xe2A\x01\x03R\fcloneDetails\x1a\xa7\x02\n" +
+	"\fCloneDetails\x12P\n" +
+	"\x0fsource_snapshot\x18\x01 \x01(\tB'\xe2A\x01\x03\xfaA \n" +
+	"\x1enetapp.googleapis.com/SnapshotR\x0esourceSnapshot\x12J\n" +
+	"\rsource_volume\x18\x02 \x01(\tB%\xe2A\x01\x03\xfaA\x1e\n" +
+	"\x1cnetapp.googleapis.com/VolumeR\fsourceVolume\x12.\n" +
+	"\x10shared_space_gib\x18\x03 \x01(\x03B\x04\xe2A\x01\x03R\x0esharedSpaceGib\x12I\n" +
+	"\vsplit_state\x18\x04 \x01(\x0e2\".google.cloud.netapp.v1.SplitStateB\x04\xe2A\x01\x03R\n" +
 	"splitState\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -4322,11 +4322,11 @@ const file_google_cloud_netapp_v1_volume_proto_rawDesc = "" +
 	"\tREAD_ONLY\x10\t:l\xeaAi\n" +
 	"\x1cnetapp.googleapis.com/Volume\x128projects/{project}/locations/{location}/volumes/{volume}*\avolumes2\x06volumeB\x10\n" +
 	"\x0e_backup_configB\x11\n" +
-	"\x0f_tiering_policy\"G\n" +
-	"\x13LargeCapacityConfig\x120\n" +
-	"\x11constituent_count\x18\x01 \x01(\x05B\x03\xe0A\x01R\x10constituentCount\"Y\n" +
-	"\fExportPolicy\x12I\n" +
-	"\x05rules\x18\x01 \x03(\v2..google.cloud.netapp.v1.SimpleExportPolicyRuleB\x03\xe0A\x02R\x05rules\"\xb6\b\n" +
+	"\x0f_tiering_policy\"H\n" +
+	"\x13LargeCapacityConfig\x121\n" +
+	"\x11constituent_count\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\x10constituentCount\"Z\n" +
+	"\fExportPolicy\x12J\n" +
+	"\x05rules\x18\x01 \x03(\v2..google.cloud.netapp.v1.SimpleExportPolicyRuleB\x04\xe2A\x01\x02R\x05rules\"\xb8\b\n" +
 	"\x16SimpleExportPolicyRule\x12,\n" +
 	"\x0fallowed_clients\x18\x01 \x01(\tH\x00R\x0eallowedClients\x88\x01\x01\x12+\n" +
 	"\x0fhas_root_access\x18\x02 \x01(\tH\x01R\rhasRootAccess\x88\x01\x01\x12H\n" +
@@ -4341,10 +4341,10 @@ const file_google_cloud_netapp_v1_volume_proto_rawDesc = "" +
 	"\x15kerberos_5p_read_only\x18\n" +
 	" \x01(\bH\tR\x12kerberos5pReadOnly\x88\x01\x01\x128\n" +
 	"\x16kerberos_5p_read_write\x18\v \x01(\bH\n" +
-	"R\x13kerberos5pReadWrite\x88\x01\x01\x12d\n" +
-	"\vsquash_mode\x18\f \x01(\x0e29.google.cloud.netapp.v1.SimpleExportPolicyRule.SquashModeB\x03\xe0A\x01H\vR\n" +
-	"squashMode\x88\x01\x01\x12#\n" +
-	"\banon_uid\x18\r \x01(\x03B\x03\xe0A\x01H\fR\aanonUid\x88\x01\x01\"^\n" +
+	"R\x13kerberos5pReadWrite\x88\x01\x01\x12e\n" +
+	"\vsquash_mode\x18\f \x01(\x0e29.google.cloud.netapp.v1.SimpleExportPolicyRule.SquashModeB\x04\xe2A\x01\x01H\vR\n" +
+	"squashMode\x88\x01\x01\x12$\n" +
+	"\banon_uid\x18\r \x01(\x03B\x04\xe2A\x01\x01H\fR\aanonUid\x88\x01\x01\"^\n" +
 	"\n" +
 	"SquashMode\x12\x1b\n" +
 	"\x17SQUASH_MODE_UNSPECIFIED\x10\x00\x12\x12\n" +
@@ -4406,34 +4406,34 @@ const file_google_cloud_netapp_v1_volume_proto_rawDesc = "" +
 	"\x12_snapshots_to_keepB\t\n" +
 	"\a_minuteB\a\n" +
 	"\x05_hourB\x10\n" +
-	"\x0e_days_of_month\"\xd5\x01\n" +
+	"\x0e_days_of_month\"\xd6\x01\n" +
 	"\vMountOption\x12\x16\n" +
 	"\x06export\x18\x01 \x01(\tR\x06export\x12\x1f\n" +
 	"\vexport_full\x18\x02 \x01(\tR\n" +
 	"exportFull\x12=\n" +
 	"\bprotocol\x18\x03 \x01(\x0e2!.google.cloud.netapp.v1.ProtocolsR\bprotocol\x12\"\n" +
-	"\finstructions\x18\x04 \x01(\tR\finstructions\x12*\n" +
+	"\finstructions\x18\x04 \x01(\tR\finstructions\x12+\n" +
 	"\n" +
-	"ip_address\x18\x05 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x02R\tipAddress\"\x92\x01\n" +
+	"ip_address\x18\x05 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x02R\tipAddress\"\x92\x01\n" +
 	"\x11RestoreParameters\x12)\n" +
 	"\x0fsource_snapshot\x18\x01 \x01(\tH\x00R\x0esourceSnapshot\x12H\n" +
 	"\rsource_backup\x18\x02 \x01(\tB!\xfaA\x1e\n" +
 	"\x1cnetapp.googleapis.com/BackupH\x00R\fsourceBackupB\b\n" +
-	"\x06source\"\xe1\x02\n" +
-	"\fBackupConfig\x12S\n" +
-	"\x0fbackup_policies\x18\x01 \x03(\tB*\xe0A\x01\xfaA$\n" +
-	"\"netapp.googleapis.com/BackupPolicyR\x0ebackupPolicies\x12L\n" +
-	"\fbackup_vault\x18\x02 \x01(\tB)\xe0A\x01\xfaA#\n" +
-	"!netapp.googleapis.com/BackupVaultR\vbackupVault\x12B\n" +
-	"\x18scheduled_backup_enabled\x18\x03 \x01(\bB\x03\xe0A\x01H\x00R\x16scheduledBackupEnabled\x88\x01\x01\x126\n" +
-	"\x12backup_chain_bytes\x18\x04 \x01(\x03B\x03\xe0A\x03H\x01R\x10backupChainBytes\x88\x01\x01B\x1b\n" +
+	"\x06source\"\xe5\x02\n" +
+	"\fBackupConfig\x12T\n" +
+	"\x0fbackup_policies\x18\x01 \x03(\tB+\xe2A\x01\x01\xfaA$\n" +
+	"\"netapp.googleapis.com/BackupPolicyR\x0ebackupPolicies\x12M\n" +
+	"\fbackup_vault\x18\x02 \x01(\tB*\xe2A\x01\x01\xfaA#\n" +
+	"!netapp.googleapis.com/BackupVaultR\vbackupVault\x12C\n" +
+	"\x18scheduled_backup_enabled\x18\x03 \x01(\bB\x04\xe2A\x01\x01H\x00R\x16scheduledBackupEnabled\x88\x01\x01\x127\n" +
+	"\x12backup_chain_bytes\x18\x04 \x01(\x03B\x04\xe2A\x01\x03H\x01R\x10backupChainBytes\x88\x01\x01B\x1b\n" +
 	"\x19_scheduled_backup_enabledB\x15\n" +
-	"\x13_backup_chain_bytes\"\x86\x03\n" +
-	"\rTieringPolicy\x12[\n" +
-	"\vtier_action\x18\x01 \x01(\x0e20.google.cloud.netapp.v1.TieringPolicy.TierActionB\x03\xe0A\x01H\x00R\n" +
-	"tierAction\x88\x01\x01\x12>\n" +
-	"\x16cooling_threshold_days\x18\x02 \x01(\x05B\x03\xe0A\x01H\x01R\x14coolingThresholdDays\x88\x01\x01\x12H\n" +
-	"\x1chot_tier_bypass_mode_enabled\x18\x03 \x01(\bB\x03\xe0A\x01H\x02R\x18hotTierBypassModeEnabled\x88\x01\x01\"B\n" +
+	"\x13_backup_chain_bytes\"\x89\x03\n" +
+	"\rTieringPolicy\x12\\\n" +
+	"\vtier_action\x18\x01 \x01(\x0e20.google.cloud.netapp.v1.TieringPolicy.TierActionB\x04\xe2A\x01\x01H\x00R\n" +
+	"tierAction\x88\x01\x01\x12?\n" +
+	"\x16cooling_threshold_days\x18\x02 \x01(\x05B\x04\xe2A\x01\x01H\x01R\x14coolingThresholdDays\x88\x01\x01\x12I\n" +
+	"\x1chot_tier_bypass_mode_enabled\x18\x03 \x01(\bB\x04\xe2A\x01\x01H\x02R\x18hotTierBypassModeEnabled\x88\x01\x01\"B\n" +
 	"\n" +
 	"TierAction\x12\x1b\n" +
 	"\x17TIER_ACTION_UNSPECIFIED\x10\x00\x12\v\n" +
@@ -4442,21 +4442,21 @@ const file_google_cloud_netapp_v1_volume_proto_rawDesc = "" +
 	"\x06PAUSED\x10\x02B\x0e\n" +
 	"\f_tier_actionB\x19\n" +
 	"\x17_cooling_threshold_daysB\x1f\n" +
-	"\x1d_hot_tier_bypass_mode_enabled\"\x8b\b\n" +
-	"\x1bHybridReplicationParameters\x12K\n" +
-	"\vreplication\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!netapp.googleapis.com/ReplicationR\vreplication\x12-\n" +
-	"\x10peer_volume_name\x18\x02 \x01(\tB\x03\xe0A\x02R\x0epeerVolumeName\x12/\n" +
-	"\x11peer_cluster_name\x18\x03 \x01(\tB\x03\xe0A\x02R\x0fpeerClusterName\x12'\n" +
-	"\rpeer_svm_name\x18\x04 \x01(\tB\x03\xe0A\x02R\vpeerSvmName\x12/\n" +
-	"\x11peer_ip_addresses\x18\x05 \x03(\tB\x03\xe0A\x02R\x0fpeerIpAddresses\x12.\n" +
-	"\x10cluster_location\x18\x06 \x01(\tB\x03\xe0A\x01R\x0fclusterLocation\x12%\n" +
-	"\vdescription\x18\a \x01(\tB\x03\xe0A\x01R\vdescription\x12\\\n" +
-	"\x06labels\x18\b \x03(\v2?.google.cloud.netapp.v1.HybridReplicationParameters.LabelsEntryB\x03\xe0A\x01R\x06labels\x12i\n" +
-	"\x14replication_schedule\x18\t \x01(\x0e21.google.cloud.netapp.v1.HybridReplicationScheduleB\x03\xe0A\x01R\x13replicationSchedule\x12\x8c\x01\n" +
+	"\x1d_hot_tier_bypass_mode_enabled\"\x96\b\n" +
+	"\x1bHybridReplicationParameters\x12L\n" +
+	"\vreplication\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!netapp.googleapis.com/ReplicationR\vreplication\x12.\n" +
+	"\x10peer_volume_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0epeerVolumeName\x120\n" +
+	"\x11peer_cluster_name\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x0fpeerClusterName\x12(\n" +
+	"\rpeer_svm_name\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\vpeerSvmName\x120\n" +
+	"\x11peer_ip_addresses\x18\x05 \x03(\tB\x04\xe2A\x01\x02R\x0fpeerIpAddresses\x12/\n" +
+	"\x10cluster_location\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x0fclusterLocation\x12&\n" +
+	"\vdescription\x18\a \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12]\n" +
+	"\x06labels\x18\b \x03(\v2?.google.cloud.netapp.v1.HybridReplicationParameters.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12j\n" +
+	"\x14replication_schedule\x18\t \x01(\x0e21.google.cloud.netapp.v1.HybridReplicationScheduleB\x04\xe2A\x01\x01R\x13replicationSchedule\x12\x8d\x01\n" +
 	"\x17hybrid_replication_type\x18\n" +
-	" \x01(\x0e2O.google.cloud.netapp.v1.HybridReplicationParameters.VolumeHybridReplicationTypeB\x03\xe0A\x01R\x15hybridReplicationType\x12H\n" +
-	"\x1elarge_volume_constituent_count\x18\v \x01(\x05B\x03\xe0A\x01R\x1blargeVolumeConstituentCount\x1a9\n" +
+	" \x01(\x0e2O.google.cloud.netapp.v1.HybridReplicationParameters.VolumeHybridReplicationTypeB\x04\xe2A\x01\x01R\x15hybridReplicationType\x12I\n" +
+	"\x1elarge_volume_constituent_count\x18\v \x01(\x05B\x04\xe2A\x01\x01R\x1blargeVolumeConstituentCount\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xb0\x01\n" +
@@ -4465,23 +4465,23 @@ const file_google_cloud_netapp_v1_volume_proto_rawDesc = "" +
 	"\tMIGRATION\x10\x01\x12\x1a\n" +
 	"\x16CONTINUOUS_REPLICATION\x10\x02\x12\x16\n" +
 	"\x12ONPREM_REPLICATION\x10\x03\x12\x1e\n" +
-	"\x1aREVERSE_ONPREM_REPLICATION\x10\x04\"\x95\x06\n" +
-	"\x0fCacheParameters\x12-\n" +
-	"\x10peer_volume_name\x18\x01 \x01(\tB\x03\xe0A\x02R\x0epeerVolumeName\x12/\n" +
-	"\x11peer_cluster_name\x18\x02 \x01(\tB\x03\xe0A\x02R\x0fpeerClusterName\x12'\n" +
-	"\rpeer_svm_name\x18\x03 \x01(\tB\x03\xe0A\x02R\vpeerSvmName\x12/\n" +
-	"\x11peer_ip_addresses\x18\x04 \x03(\tB\x03\xe0A\x02R\x0fpeerIpAddresses\x12?\n" +
-	"\x17enable_global_file_lock\x18\x05 \x01(\bB\x03\xe0A\x01H\x00R\x14enableGlobalFileLock\x88\x01\x01\x12K\n" +
-	"\fcache_config\x18\x06 \x01(\v2#.google.cloud.netapp.v1.CacheConfigB\x03\xe0A\x01R\vcacheConfig\x12X\n" +
-	"\vcache_state\x18\a \x01(\x0e22.google.cloud.netapp.v1.CacheParameters.CacheStateB\x03\xe0A\x03R\n" +
-	"cacheState\x12\x1d\n" +
-	"\acommand\x18\b \x01(\tB\x03\xe0A\x03R\acommand\x12^\n" +
-	"\x1bpeering_command_expiry_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\x18peeringCommandExpiryTime\x12#\n" +
+	"\x1aREVERSE_ONPREM_REPLICATION\x10\x04\"\xa0\x06\n" +
+	"\x0fCacheParameters\x12.\n" +
+	"\x10peer_volume_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x0epeerVolumeName\x120\n" +
+	"\x11peer_cluster_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0fpeerClusterName\x12(\n" +
+	"\rpeer_svm_name\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\vpeerSvmName\x120\n" +
+	"\x11peer_ip_addresses\x18\x04 \x03(\tB\x04\xe2A\x01\x02R\x0fpeerIpAddresses\x12@\n" +
+	"\x17enable_global_file_lock\x18\x05 \x01(\bB\x04\xe2A\x01\x01H\x00R\x14enableGlobalFileLock\x88\x01\x01\x12L\n" +
+	"\fcache_config\x18\x06 \x01(\v2#.google.cloud.netapp.v1.CacheConfigB\x04\xe2A\x01\x01R\vcacheConfig\x12Y\n" +
+	"\vcache_state\x18\a \x01(\x0e22.google.cloud.netapp.v1.CacheParameters.CacheStateB\x04\xe2A\x01\x03R\n" +
+	"cacheState\x12\x1e\n" +
+	"\acommand\x18\b \x01(\tB\x04\xe2A\x01\x03R\acommand\x12_\n" +
+	"\x1bpeering_command_expiry_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\x18peeringCommandExpiryTime\x12$\n" +
 	"\n" +
 	"passphrase\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R\n" +
-	"passphrase\x12(\n" +
-	"\rstate_details\x18\f \x01(\tB\x03\xe0A\x03R\fstateDetails\"v\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"passphrase\x12)\n" +
+	"\rstate_details\x18\f \x01(\tB\x04\xe2A\x01\x03R\fstateDetails\"v\n" +
 	"\n" +
 	"CacheState\x12\x1b\n" +
 	"\x17CACHE_STATE_UNSPECIFIED\x10\x00\x12\x1b\n" +
@@ -4490,12 +4490,12 @@ const file_google_cloud_netapp_v1_volume_proto_rawDesc = "" +
 	"\n" +
 	"\x06PEERED\x10\x03\x12\t\n" +
 	"\x05ERROR\x10\x04B\x1a\n" +
-	"\x18_enable_global_file_lock\"\x93\x04\n" +
-	"\vCacheConfig\x12[\n" +
-	"\x12cache_pre_populate\x18\x01 \x01(\v2(.google.cloud.netapp.v1.CachePrePopulateB\x03\xe0A\x01R\x10cachePrePopulate\x125\n" +
-	"\x11writeback_enabled\x18\x02 \x01(\bB\x03\xe0A\x01H\x00R\x10writebackEnabled\x88\x01\x01\x12E\n" +
-	"\x1acifs_change_notify_enabled\x18\x05 \x01(\bB\x03\xe0A\x01H\x01R\x17cifsChangeNotifyEnabled\x88\x01\x01\x12w\n" +
-	"\x18cache_pre_populate_state\x18\x06 \x01(\x0e29.google.cloud.netapp.v1.CacheConfig.CachePrePopulateStateB\x03\xe0A\x03R\x15cachePrePopulateState\"{\n" +
+	"\x18_enable_global_file_lock\"\x97\x04\n" +
+	"\vCacheConfig\x12\\\n" +
+	"\x12cache_pre_populate\x18\x01 \x01(\v2(.google.cloud.netapp.v1.CachePrePopulateB\x04\xe2A\x01\x01R\x10cachePrePopulate\x126\n" +
+	"\x11writeback_enabled\x18\x02 \x01(\bB\x04\xe2A\x01\x01H\x00R\x10writebackEnabled\x88\x01\x01\x12F\n" +
+	"\x1acifs_change_notify_enabled\x18\x05 \x01(\bB\x04\xe2A\x01\x01H\x01R\x17cifsChangeNotifyEnabled\x88\x01\x01\x12x\n" +
+	"\x18cache_pre_populate_state\x18\x06 \x01(\x0e29.google.cloud.netapp.v1.CacheConfig.CachePrePopulateStateB\x04\xe2A\x01\x03R\x15cachePrePopulateState\"{\n" +
 	"\x15CachePrePopulateState\x12(\n" +
 	"$CACHE_PRE_POPULATE_STATE_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +
@@ -4504,63 +4504,63 @@ const file_google_cloud_netapp_v1_volume_proto_rawDesc = "" +
 	"\bCOMPLETE\x10\x03\x12\t\n" +
 	"\x05ERROR\x10\x04B\x14\n" +
 	"\x12_writeback_enabledB\x1d\n" +
-	"\x1b_cifs_change_notify_enabled\"\x9b\x01\n" +
-	"\x10CachePrePopulate\x12 \n" +
-	"\tpath_list\x18\x01 \x03(\tB\x03\xe0A\x01R\bpathList\x12/\n" +
-	"\x11exclude_path_list\x18\x02 \x03(\tB\x03\xe0A\x01R\x0fexcludePathList\x12&\n" +
-	"\trecursion\x18\x03 \x01(\bB\x03\xe0A\x01H\x00R\trecursion\x88\x01\x01B\f\n" +
+	"\x1b_cifs_change_notify_enabled\"\x9e\x01\n" +
+	"\x10CachePrePopulate\x12!\n" +
+	"\tpath_list\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\bpathList\x120\n" +
+	"\x11exclude_path_list\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x0fexcludePathList\x12'\n" +
+	"\trecursion\x18\x03 \x01(\bB\x04\xe2A\x01\x01H\x00R\trecursion\x88\x01\x01B\f\n" +
 	"\n" +
-	"_recursion\"\x96\x02\n" +
-	"\vBlockDevice\x12\x1c\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x01H\x00R\x04name\x88\x01\x01\x12H\n" +
-	"\vhost_groups\x18\x02 \x03(\tB'\xe0A\x01\xfaA!\n" +
+	"_recursion\"\x99\x02\n" +
+	"\vBlockDevice\x12\x1d\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x01H\x00R\x04name\x88\x01\x01\x12I\n" +
+	"\vhost_groups\x18\x02 \x03(\tB(\xe2A\x01\x01\xfaA!\n" +
 	"\x1fnetapp.googleapis.com/HostGroupR\n" +
-	"hostGroups\x12#\n" +
+	"hostGroups\x12$\n" +
 	"\n" +
-	"identifier\x18\x03 \x01(\tB\x03\xe0A\x03R\n" +
-	"identifier\x12#\n" +
-	"\bsize_gib\x18\x04 \x01(\x03B\x03\xe0A\x01H\x01R\asizeGib\x88\x01\x01\x12?\n" +
-	"\aos_type\x18\x05 \x01(\x0e2\x1e.google.cloud.netapp.v1.OsTypeB\x06\xe0A\x02\xe0A\x05R\x06osTypeB\a\n" +
+	"identifier\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"identifier\x12$\n" +
+	"\bsize_gib\x18\x04 \x01(\x03B\x04\xe2A\x01\x01H\x01R\asizeGib\x88\x01\x01\x12>\n" +
+	"\aos_type\x18\x05 \x01(\x0e2\x1e.google.cloud.netapp.v1.OsTypeB\x05\xe2A\x02\x02\x05R\x06osTypeB\a\n" +
 	"\x05_nameB\v\n" +
-	"\t_size_gib\"\xf4\x01\n" +
-	"\x19RestoreBackupFilesRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cnetapp.googleapis.com/VolumeR\x04name\x12<\n" +
-	"\x06backup\x18\x02 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cnetapp.googleapis.com/BackupR\x06backup\x12 \n" +
-	"\tfile_list\x18\x03 \x03(\tB\x03\xe0A\x02R\bfileList\x12=\n" +
-	"\x18restore_destination_path\x18\x04 \x01(\tB\x03\xe0A\x01R\x16restoreDestinationPath\"\x1c\n" +
-	"\x1aRestoreBackupFilesResponse\"\x93\x02\n" +
+	"\t_size_gib\"\xf8\x01\n" +
+	"\x19RestoreBackupFilesRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cnetapp.googleapis.com/VolumeR\x04name\x12=\n" +
+	"\x06backup\x18\x02 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cnetapp.googleapis.com/BackupR\x06backup\x12!\n" +
+	"\tfile_list\x18\x03 \x03(\tB\x04\xe2A\x01\x02R\bfileList\x12>\n" +
+	"\x18restore_destination_path\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x16restoreDestinationPath\"\x1c\n" +
+	"\x1aRestoreBackupFilesResponse\"\x94\x02\n" +
 	"\x14RestoreVolumeRequest\x12K\n" +
 	"\rbackup_source\x18\x02 \x01(\v2$.google.cloud.netapp.v1.BackupSourceH\x00R\fbackupSource\x12[\n" +
-	"\x13ontap_volume_target\x18\x03 \x01(\v2).google.cloud.netapp.v1.OntapVolumeTargetH\x01R\x11ontapVolumeTarget\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x13ontap_volume_target\x18\x03 \x01(\v2).google.cloud.netapp.v1.OntapVolumeTargetH\x01R\x11ontapVolumeTarget\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!netapp.googleapis.com/StoragePoolR\x04nameB\b\n" +
 	"\x06sourceB\b\n" +
-	"\x06target\"n\n" +
-	"\fBackupSource\x12<\n" +
-	"\x06backup\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cnetapp.googleapis.com/BackupR\x06backup\x12 \n" +
-	"\tfile_list\x18\x02 \x03(\tB\x03\xe0A\x01R\bfileList\"x\n" +
-	"\x11OntapVolumeTarget\x12$\n" +
-	"\vvolume_uuid\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"volumeUuid\x12=\n" +
-	"\x18restore_destination_path\x18\x02 \x01(\tB\x03\xe0A\x01R\x16restoreDestinationPath\"\x17\n" +
-	"\x15RestoreVolumeResponse\"\x93\x02\n" +
-	"\x1dEstablishVolumePeeringRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cnetapp.googleapis.com/VolumeR\x04name\x12/\n" +
-	"\x11peer_cluster_name\x18\x02 \x01(\tB\x03\xe0A\x02R\x0fpeerClusterName\x12'\n" +
-	"\rpeer_svm_name\x18\x03 \x01(\tB\x03\xe0A\x02R\vpeerSvmName\x12/\n" +
-	"\x11peer_ip_addresses\x18\x04 \x03(\tB\x03\xe0A\x01R\x0fpeerIpAddresses\x12-\n" +
-	"\x10peer_volume_name\x18\x05 \x01(\tB\x03\xe0A\x02R\x0epeerVolumeName\"\x92\x02\n" +
-	"\x19UpdateBackupConfigRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!netapp.googleapis.com/StoragePoolR\x04name\x12$\n" +
-	"\vvolume_uuid\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"volumeUuid\x12N\n" +
-	"\rbackup_config\x18\x03 \x01(\v2$.google.cloud.netapp.v1.BackupConfigB\x03\xe0A\x02R\fbackupConfig\x12@\n" +
-	"\vupdate_mask\x18\x04 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
+	"\x06target\"p\n" +
+	"\fBackupSource\x12=\n" +
+	"\x06backup\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cnetapp.googleapis.com/BackupR\x06backup\x12!\n" +
+	"\tfile_list\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\bfileList\"z\n" +
+	"\x11OntapVolumeTarget\x12%\n" +
+	"\vvolume_uuid\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"volumeUuid\x12>\n" +
+	"\x18restore_destination_path\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x16restoreDestinationPath\"\x17\n" +
+	"\x15RestoreVolumeResponse\"\x98\x02\n" +
+	"\x1dEstablishVolumePeeringRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cnetapp.googleapis.com/VolumeR\x04name\x120\n" +
+	"\x11peer_cluster_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0fpeerClusterName\x12(\n" +
+	"\rpeer_svm_name\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\vpeerSvmName\x120\n" +
+	"\x11peer_ip_addresses\x18\x04 \x03(\tB\x04\xe2A\x01\x01R\x0fpeerIpAddresses\x12.\n" +
+	"\x10peer_volume_name\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\x0epeerVolumeName\"\x96\x02\n" +
+	"\x19UpdateBackupConfigRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!netapp.googleapis.com/StoragePoolR\x04name\x12%\n" +
+	"\vvolume_uuid\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"volumeUuid\x12O\n" +
+	"\rbackup_config\x18\x03 \x01(\v2$.google.cloud.netapp.v1.BackupConfigB\x04\xe2A\x01\x02R\fbackupConfig\x12A\n" +
+	"\vupdate_mask\x18\x04 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
 	"updateMask\"\x88\x01\n" +
 	"\x1aUpdateBackupConfigResponse\x12\x1f\n" +
 	"\vvolume_uuid\x18\x01 \x01(\tR\n" +

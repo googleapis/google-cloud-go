@@ -5436,13 +5436,13 @@ var File_google_cloud_documentai_v1_document_proto protoreflect.FileDescriptor
 
 const file_google_cloud_documentai_v1_document_proto_rawDesc = "" +
 	"\n" +
-	")google/cloud/documentai/v1/document.proto\x12\x1agoogle.cloud.documentai.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/documentai/v1/barcode.proto\x1a)google/cloud/documentai/v1/geometry.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\x1a\x17google/type/color.proto\x1a\x16google/type/date.proto\x1a\x1agoogle/type/datetime.proto\x1a\x17google/type/money.proto\x1a google/type/postal_address.proto\"݁\x01\n" +
-	"\bDocument\x12\x17\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x01H\x00R\x03uri\x12\x1f\n" +
-	"\acontent\x18\x02 \x01(\fB\x03\xe0A\x01H\x00R\acontent\x12\x19\n" +
-	"\x05docid\x18\x0f \x01(\tB\x03\xe0A\x01R\x05docid\x12\x1b\n" +
-	"\tmime_type\x18\x03 \x01(\tR\bmimeType\x12\x17\n" +
-	"\x04text\x18\x04 \x01(\tB\x03\xe0A\x01R\x04text\x12O\n" +
+	")google/cloud/documentai/v1/document.proto\x12\x1agoogle.cloud.documentai.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/documentai/v1/barcode.proto\x1a)google/cloud/documentai/v1/geometry.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\x1a\x17google/type/color.proto\x1a\x16google/type/date.proto\x1a\x1agoogle/type/datetime.proto\x1a\x17google/type/money.proto\x1a google/type/postal_address.proto\"\xfc\x81\x01\n" +
+	"\bDocument\x12\x18\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x01H\x00R\x03uri\x12 \n" +
+	"\acontent\x18\x02 \x01(\fB\x04\xe2A\x01\x01H\x00R\acontent\x12\x1a\n" +
+	"\x05docid\x18\x0f \x01(\tB\x04\xe2A\x01\x01R\x05docid\x12\x1b\n" +
+	"\tmime_type\x18\x03 \x01(\tR\bmimeType\x12\x18\n" +
+	"\x04text\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x04text\x12O\n" +
 	"\vtext_styles\x18\x05 \x03(\v2*.google.cloud.documentai.v1.Document.StyleB\x02\x18\x01R\n" +
 	"textStyles\x12?\n" +
 	"\x05pages\x18\x06 \x03(\v2).google.cloud.documentai.v1.Document.PageR\x05pages\x12G\n" +
@@ -5455,8 +5455,8 @@ const file_google_cloud_documentai_v1_document_proto_rawDesc = "" +
 	" \x01(\v2\x12.google.rpc.StatusR\x05error\x12K\n" +
 	"\trevisions\x18\r \x03(\v2-.google.cloud.documentai.v1.Document.RevisionR\trevisions\x12\\\n" +
 	"\x0fdocument_layout\x18\x11 \x01(\v23.google.cloud.documentai.v1.Document.DocumentLayoutR\x0edocumentLayout\x12_\n" +
-	"\x10chunked_document\x18\x12 \x01(\v24.google.cloud.documentai.v1.Document.ChunkedDocumentR\x0fchunkedDocument\x12T\n" +
-	"\vblob_assets\x18\x13 \x03(\v2..google.cloud.documentai.v1.Document.BlobAssetB\x03\xe0A\x01R\n" +
+	"\x10chunked_document\x18\x12 \x01(\v24.google.cloud.documentai.v1.Document.ChunkedDocumentR\x0fchunkedDocument\x12U\n" +
+	"\vblob_assets\x18\x13 \x03(\v2..google.cloud.documentai.v1.Document.BlobAssetB\x04\xe2A\x01\x01R\n" +
 	"blobAssets\x12u\n" +
 	"\x18entity_validation_output\x18\x15 \x01(\v2;.google.cloud.documentai.v1.Document.EntityValidationOutputR\x16entityValidationOutput\x12d\n" +
 	"\x12entities_revisions\x18\x16 \x03(\v25.google.cloud.documentai.v1.Document.EntitiesRevisionR\x11entitiesRevisions\x120\n" +
@@ -5649,30 +5649,30 @@ const file_google_cloud_documentai_v1_document_proto_rawDesc = "" +
 	"\x04type\x18\x01 \x01(\tR\x04type\x12\x1e\n" +
 	"\n" +
 	"confidence\x18\x02 \x01(\x02R\n" +
-	"confidence\x1a\xe2\t\n" +
-	"\x06Entity\x12U\n" +
-	"\vtext_anchor\x18\x01 \x01(\v2/.google.cloud.documentai.v1.Document.TextAnchorB\x03\xe0A\x01R\n" +
-	"textAnchor\x12\x17\n" +
-	"\x04type\x18\x02 \x01(\tB\x03\xe0A\x02R\x04type\x12&\n" +
-	"\fmention_text\x18\x03 \x01(\tB\x03\xe0A\x01R\vmentionText\x12\"\n" +
+	"confidence\x1a\xef\t\n" +
+	"\x06Entity\x12V\n" +
+	"\vtext_anchor\x18\x01 \x01(\v2/.google.cloud.documentai.v1.Document.TextAnchorB\x04\xe2A\x01\x01R\n" +
+	"textAnchor\x12\x18\n" +
+	"\x04type\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04type\x12'\n" +
+	"\fmention_text\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vmentionText\x12#\n" +
 	"\n" +
-	"mention_id\x18\x04 \x01(\tB\x03\xe0A\x01R\tmentionId\x12#\n" +
+	"mention_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tmentionId\x12$\n" +
 	"\n" +
-	"confidence\x18\x05 \x01(\x02B\x03\xe0A\x01R\n" +
-	"confidence\x12U\n" +
-	"\vpage_anchor\x18\x06 \x01(\v2/.google.cloud.documentai.v1.Document.PageAnchorB\x03\xe0A\x01R\n" +
-	"pageAnchor\x12\x13\n" +
-	"\x02id\x18\a \x01(\tB\x03\xe0A\x01R\x02id\x12k\n" +
-	"\x10normalized_value\x18\t \x01(\v2;.google.cloud.documentai.v1.Document.Entity.NormalizedValueB\x03\xe0A\x01R\x0fnormalizedValue\x12P\n" +
+	"confidence\x18\x05 \x01(\x02B\x04\xe2A\x01\x01R\n" +
+	"confidence\x12V\n" +
+	"\vpage_anchor\x18\x06 \x01(\v2/.google.cloud.documentai.v1.Document.PageAnchorB\x04\xe2A\x01\x01R\n" +
+	"pageAnchor\x12\x14\n" +
+	"\x02id\x18\a \x01(\tB\x04\xe2A\x01\x01R\x02id\x12l\n" +
+	"\x10normalized_value\x18\t \x01(\v2;.google.cloud.documentai.v1.Document.Entity.NormalizedValueB\x04\xe2A\x01\x01R\x0fnormalizedValue\x12Q\n" +
 	"\n" +
 	"properties\x18\n" +
-	" \x03(\v2+.google.cloud.documentai.v1.Document.EntityB\x03\xe0A\x01R\n" +
-	"properties\x12T\n" +
+	" \x03(\v2+.google.cloud.documentai.v1.Document.EntityB\x04\xe2A\x01\x01R\n" +
+	"properties\x12U\n" +
 	"\n" +
-	"provenance\x18\v \x01(\v2/.google.cloud.documentai.v1.Document.ProvenanceB\x03\xe0A\x01R\n" +
-	"provenance\x12\x1f\n" +
-	"\bredacted\x18\f \x01(\bB\x03\xe0A\x01R\bredacted\x12O\n" +
-	"\x06method\x18\x0f \x01(\x0e22.google.cloud.documentai.v1.Document.Entity.MethodB\x03\xe0A\x01R\x06method\x1a\xc8\x03\n" +
+	"provenance\x18\v \x01(\v2/.google.cloud.documentai.v1.Document.ProvenanceB\x04\xe2A\x01\x01R\n" +
+	"provenance\x12 \n" +
+	"\bredacted\x18\f \x01(\bB\x04\xe2A\x01\x01R\bredacted\x12P\n" +
+	"\x06method\x18\x0f \x01(\x0e22.google.cloud.documentai.v1.Document.Entity.MethodB\x04\xe2A\x01\x01R\x06method\x1a\xc9\x03\n" +
 	"\x0fNormalizedValue\x125\n" +
 	"\vmoney_value\x18\x02 \x01(\v2\x12.google.type.MoneyH\x00R\n" +
 	"moneyValue\x122\n" +
@@ -5685,8 +5685,8 @@ const file_google_cloud_documentai_v1_document_proto_rawDesc = "" +
 	"\vfloat_value\x18\b \x01(\x02H\x00R\n" +
 	"floatValue\x12)\n" +
 	"\x0fsignature_value\x18\n" +
-	" \x01(\bH\x00R\x0esignatureValue\x12\x17\n" +
-	"\x04text\x18\x01 \x01(\tB\x03\xe0A\x01R\x04textB\x12\n" +
+	" \x01(\bH\x00R\x0esignatureValue\x12\x18\n" +
+	"\x04text\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04textB\x12\n" +
 	"\x10structured_value\"9\n" +
 	"\x06Method\x12\x16\n" +
 	"\x12METHOD_UNSPECIFIED\x10\x00\x12\v\n" +
@@ -5705,18 +5705,18 @@ const file_google_cloud_documentai_v1_document_proto_rawDesc = "" +
 	"\vTextSegment\x12\x1f\n" +
 	"\vstart_index\x18\x01 \x01(\x03R\n" +
 	"startIndex\x12\x1b\n" +
-	"\tend_index\x18\x02 \x01(\x03R\bendIndex\x1a\x98\x04\n" +
+	"\tend_index\x18\x02 \x01(\x03R\bendIndex\x1a\x9d\x04\n" +
 	"\n" +
 	"PageAnchor\x12T\n" +
-	"\tpage_refs\x18\x01 \x03(\v27.google.cloud.documentai.v1.Document.PageAnchor.PageRefR\bpageRefs\x1a\xb3\x03\n" +
-	"\aPageRef\x12\x17\n" +
-	"\x04page\x18\x01 \x01(\x03B\x03\xe0A\x02R\x04page\x12h\n" +
-	"\vlayout_type\x18\x02 \x01(\x0e2B.google.cloud.documentai.v1.Document.PageAnchor.PageRef.LayoutTypeB\x03\xe0A\x01R\n" +
-	"layoutType\x12\"\n" +
-	"\tlayout_id\x18\x03 \x01(\tB\x05\xe0A\x01\x18\x01R\blayoutId\x12R\n" +
-	"\rbounding_poly\x18\x04 \x01(\v2(.google.cloud.documentai.v1.BoundingPolyB\x03\xe0A\x01R\fboundingPoly\x12#\n" +
+	"\tpage_refs\x18\x01 \x03(\v27.google.cloud.documentai.v1.Document.PageAnchor.PageRefR\bpageRefs\x1a\xb8\x03\n" +
+	"\aPageRef\x12\x18\n" +
+	"\x04page\x18\x01 \x01(\x03B\x04\xe2A\x01\x02R\x04page\x12i\n" +
+	"\vlayout_type\x18\x02 \x01(\x0e2B.google.cloud.documentai.v1.Document.PageAnchor.PageRef.LayoutTypeB\x04\xe2A\x01\x01R\n" +
+	"layoutType\x12#\n" +
+	"\tlayout_id\x18\x03 \x01(\tB\x06\xe2A\x01\x01\x18\x01R\blayoutId\x12S\n" +
+	"\rbounding_poly\x18\x04 \x01(\v2(.google.cloud.documentai.v1.BoundingPolyB\x04\xe2A\x01\x01R\fboundingPoly\x12$\n" +
 	"\n" +
-	"confidence\x18\x05 \x01(\x02B\x03\xe0A\x01R\n" +
+	"confidence\x18\x05 \x01(\x02B\x04\xe2A\x01\x01R\n" +
 	"confidence\"\x87\x01\n" +
 	"\n" +
 	"LayoutType\x12\x1b\n" +
@@ -5773,9 +5773,9 @@ const file_google_cloud_documentai_v1_document_proto_rawDesc = "" +
 	"provenance\x18\x03 \x03(\v2/.google.cloud.documentai.v1.Document.ProvenanceB\x02\x18\x01R\n" +
 	"provenance\x1a/\n" +
 	"\vAnnotations\x12 \n" +
-	"\vdescription\x18\x01 \x01(\tR\vdescription\x1a\xf1\x12\n" +
+	"\vdescription\x18\x01 \x01(\tR\vdescription\x1a\xf4\x12\n" +
 	"\x0eDocumentLayout\x12_\n" +
-	"\x06blocks\x18\x01 \x03(\v2G.google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlockR\x06blocks\x1a\xfd\x11\n" +
+	"\x06blocks\x18\x01 \x03(\v2G.google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlockR\x06blocks\x1a\x80\x12\n" +
 	"\x13DocumentLayoutBlock\x12x\n" +
 	"\n" +
 	"text_block\x18\x02 \x01(\v2W.google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutTextBlockH\x00R\ttextBlock\x12{\n" +
@@ -5813,19 +5813,19 @@ const file_google_cloud_documentai_v1_document_proto_rawDesc = "" +
 	"\flist_entries\x18\x01 \x03(\v2W.google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutListEntryR\vlistEntries\x12\x12\n" +
 	"\x04type\x18\x02 \x01(\tR\x04type\x1ar\n" +
 	"\x0fLayoutListEntry\x12_\n" +
-	"\x06blocks\x18\x01 \x03(\v2G.google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlockR\x06blocks\x1a\x9f\x02\n" +
-	"\x10LayoutImageBlock\x12)\n" +
-	"\rblob_asset_id\x18\x04 \x01(\tB\x03\xe0A\x01H\x00R\vblobAssetId\x12\x1e\n" +
-	"\agcs_uri\x18\x05 \x01(\tB\x03\xe0A\x01H\x00R\x06gcsUri\x12 \n" +
-	"\bdata_uri\x18\x06 \x01(\tB\x03\xe0A\x01H\x00R\adataUri\x12\x1b\n" +
+	"\x06blocks\x18\x01 \x03(\v2G.google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlockR\x06blocks\x1a\xa2\x02\n" +
+	"\x10LayoutImageBlock\x12*\n" +
+	"\rblob_asset_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01H\x00R\vblobAssetId\x12\x1f\n" +
+	"\agcs_uri\x18\x05 \x01(\tB\x04\xe2A\x01\x01H\x00R\x06gcsUri\x12!\n" +
+	"\bdata_uri\x18\x06 \x01(\tB\x04\xe2A\x01\x01H\x00R\adataUri\x12\x1b\n" +
 	"\tmime_type\x18\x01 \x01(\tR\bmimeType\x12\x1d\n" +
 	"\n" +
 	"image_text\x18\x02 \x01(\tR\timageText\x12R\n" +
 	"\vannotations\x18\x03 \x01(\v20.google.cloud.documentai.v1.Document.AnnotationsR\vannotationsB\x0e\n" +
 	"\fimage_sourceB\a\n" +
-	"\x05block\x1a\xc3\f\n" +
+	"\x05block\x1a\xc6\f\n" +
 	"\x0fChunkedDocument\x12R\n" +
-	"\x06chunks\x18\x01 \x03(\v2:.google.cloud.documentai.v1.Document.ChunkedDocument.ChunkR\x06chunks\x1a\xdb\v\n" +
+	"\x06chunks\x18\x01 \x03(\v2:.google.cloud.documentai.v1.Document.ChunkedDocument.ChunkR\x06chunks\x1a\xde\v\n" +
 	"\x05Chunk\x12\x19\n" +
 	"\bchunk_id\x18\x01 \x01(\tR\achunkId\x12(\n" +
 	"\x10source_block_ids\x18\x02 \x03(\tR\x0esourceBlockIds\x12\x18\n" +
@@ -5843,11 +5843,11 @@ const file_google_cloud_documentai_v1_document_proto_rawDesc = "" +
 	"\tpage_span\x18\x02 \x01(\v2H.google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.ChunkPageSpanR\bpageSpan\x1a\x8c\x01\n" +
 	"\x0fChunkPageFooter\x12\x12\n" +
 	"\x04text\x18\x01 \x01(\tR\x04text\x12e\n" +
-	"\tpage_span\x18\x02 \x01(\v2H.google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.ChunkPageSpanR\bpageSpan\x1a\xe2\x01\n" +
-	"\x0fImageChunkField\x12)\n" +
-	"\rblob_asset_id\x18\x01 \x01(\tB\x03\xe0A\x01H\x00R\vblobAssetId\x12\x1e\n" +
-	"\agcs_uri\x18\x02 \x01(\tB\x03\xe0A\x01H\x00R\x06gcsUri\x12 \n" +
-	"\bdata_uri\x18\x03 \x01(\tB\x03\xe0A\x01H\x00R\adataUri\x12R\n" +
+	"\tpage_span\x18\x02 \x01(\v2H.google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.ChunkPageSpanR\bpageSpan\x1a\xe5\x01\n" +
+	"\x0fImageChunkField\x12*\n" +
+	"\rblob_asset_id\x18\x01 \x01(\tB\x04\xe2A\x01\x01H\x00R\vblobAssetId\x12\x1f\n" +
+	"\agcs_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x00R\x06gcsUri\x12!\n" +
+	"\bdata_uri\x18\x03 \x01(\tB\x04\xe2A\x01\x01H\x00R\adataUri\x12R\n" +
 	"\vannotations\x18\x04 \x01(\v20.google.cloud.documentai.v1.Document.AnnotationsR\vannotationsB\x0e\n" +
 	"\fimage_source\x1ae\n" +
 	"\x0fTableChunkField\x12R\n" +
@@ -5857,10 +5857,10 @@ const file_google_cloud_documentai_v1_document_proto_rawDesc = "" +
 	"\x11image_chunk_field\x18\x01 \x01(\v2J.google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.ImageChunkFieldH\x00R\x0fimageChunkField\x12x\n" +
 	"\x11table_chunk_field\x18\x02 \x01(\v2J.google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.TableChunkFieldH\x00R\x0ftableChunkFieldB\f\n" +
 	"\n" +
-	"field_type\x1ag\n" +
-	"\tBlobAsset\x12\x1e\n" +
-	"\basset_id\x18\x01 \x01(\tB\x03\xe0A\x01R\aassetId\x12\x1d\n" +
-	"\acontent\x18\x02 \x01(\fB\x03\xe0A\x01R\acontent\x12\x1b\n" +
+	"field_type\x1ai\n" +
+	"\tBlobAsset\x12\x1f\n" +
+	"\basset_id\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\aassetId\x12\x1e\n" +
+	"\acontent\x18\x02 \x01(\fB\x04\xe2A\x01\x01R\acontent\x12\x1b\n" +
 	"\tmime_type\x18\x03 \x01(\tR\bmimeType\x1a\xb7\x05\n" +
 	"\x16EntityValidationOutput\x12{\n" +
 	"\x12validation_results\x18\x01 \x03(\v2L.google.cloud.documentai.v1.Document.EntityValidationOutput.ValidationResultR\x11validationResults\x12$\n" +

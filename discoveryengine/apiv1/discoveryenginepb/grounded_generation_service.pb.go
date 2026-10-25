@@ -2159,9 +2159,9 @@ const file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_raw
 	"\x05parts\x18\x02 \x03(\v2?.google.cloud.discoveryengine.v1.GroundedGenerationContent.PartR\x05parts\x1a$\n" +
 	"\x04Part\x12\x14\n" +
 	"\x04text\x18\x01 \x01(\tH\x00R\x04textB\x06\n" +
-	"\x04data\"\xdc\x18\n" +
-	"\x1eGenerateGroundedContentRequest\x12K\n" +
-	"\blocation\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
+	"\x04data\"\xde\x18\n" +
+	"\x1eGenerateGroundedContentRequest\x12L\n" +
+	"\blocation\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
 	"'discoveryengine.googleapis.com/LocationR\blocation\x12i\n" +
 	"\x12system_instruction\x18\x05 \x01(\v2:.google.cloud.discoveryengine.v1.GroundedGenerationContentR\x11systemInstruction\x12V\n" +
 	"\bcontents\x18\x02 \x03(\v2:.google.cloud.discoveryengine.v1.GroundedGenerationContentR\bcontents\x12w\n" +
@@ -2196,7 +2196,7 @@ const file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_raw
 	"\x13VERSION_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eV1_INDEPENDENT\x10\x01B\f\n" +
 	"\n" +
-	"_threshold\x1a\xd4\n" +
+	"_threshold\x1a\xd5\n" +
 	"\n" +
 	"\x0fGroundingSource\x12\x83\x01\n" +
 	"\rinline_source\x18\x01 \x01(\v2\\.google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.GroundingSource.InlineSourceH\x00R\finlineSource\x12\x83\x01\n" +
@@ -2217,9 +2217,9 @@ const file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_raw
 	"\x10max_result_count\x18\x02 \x01(\x05R\x0emaxResultCount\x12\x16\n" +
 	"\x06filter\x18\x03 \x01(\tR\x06filter\x12\x1f\n" +
 	"\vsafe_search\x18\x05 \x01(\bR\n" +
-	"safeSearch\x1a\xb3\x01\n" +
-	"\x12GoogleSearchSource\x12\x9c\x01\n" +
-	"\x18dynamic_retrieval_config\x18\x02 \x01(\v2].google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.DynamicRetrievalConfigurationB\x03\xe0A\x01R\x16dynamicRetrievalConfig\x1a\x1e\n" +
+	"safeSearch\x1a\xb4\x01\n" +
+	"\x12GoogleSearchSource\x12\x9d\x01\n" +
+	"\x18dynamic_retrieval_config\x18\x02 \x01(\v2].google.cloud.discoveryengine.v1.GenerateGroundedContentRequest.DynamicRetrievalConfigurationB\x04\xe2A\x01\x01R\x16dynamicRetrievalConfig\x1a\x1e\n" +
 	"\x1cEnterpriseWebRetrievalSourceB\b\n" +
 	"\x06source\x1a\x8d\x01\n" +
 	"\rGroundingSpec\x12|\n" +
@@ -2288,9 +2288,9 @@ const file_google_cloud_discoveryengine_v1_grounded_generation_service_proto_raw
 	"\x12citation_threshold\x18\x01 \x01(\x01H\x00R\x11citationThreshold\x88\x01\x01\x12<\n" +
 	"\x18enable_claim_level_score\x18\x04 \x01(\bH\x01R\x15enableClaimLevelScore\x88\x01\x01B\x15\n" +
 	"\x13_citation_thresholdB\x1b\n" +
-	"\x19_enable_claim_level_score\"\xef\x03\n" +
-	"\x15CheckGroundingRequest\x12a\n" +
-	"\x10grounding_config\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
+	"\x19_enable_claim_level_score\"\xf0\x03\n" +
+	"\x15CheckGroundingRequest\x12b\n" +
+	"\x10grounding_config\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
 	".discoveryengine.googleapis.com/GroundingConfigR\x0fgroundingConfig\x12)\n" +
 	"\x10answer_candidate\x18\x02 \x01(\tR\x0fanswerCandidate\x12D\n" +
 	"\x05facts\x18\x03 \x03(\v2..google.cloud.discoveryengine.v1.GroundingFactR\x05facts\x12Z\n" +

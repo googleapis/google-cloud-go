@@ -110,11 +110,11 @@ var File_google_appengine_v1_location_proto protoreflect.FileDescriptor
 
 const file_google_appengine_v1_location_proto_rawDesc = "" +
 	"\n" +
-	"\"google/appengine/v1/location.proto\x12\x13google.appengine.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xd5\x01\n" +
+	"\"google/appengine/v1/location.proto\x12\x13google.appengine.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xd6\x01\n" +
 	"\x10LocationMetadata\x12D\n" +
 	"\x1estandard_environment_available\x18\x02 \x01(\bR\x1cstandardEnvironmentAvailable\x12D\n" +
-	"\x1eflexible_environment_available\x18\x04 \x01(\bR\x1cflexibleEnvironmentAvailable\x125\n" +
-	"\x14search_api_available\x18\x06 \x01(\bB\x03\xe0A\x03R\x12searchApiAvailableB\xbe\x01\n" +
+	"\x1eflexible_environment_available\x18\x04 \x01(\bR\x1cflexibleEnvironmentAvailable\x126\n" +
+	"\x14search_api_available\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x12searchApiAvailableB\xbe\x01\n" +
 	"\x17com.google.appengine.v1B\rLocationProtoP\x01Z;cloud.google.com/go/appengine/apiv1/appenginepb;appenginepb\xaa\x02\x19Google.Cloud.AppEngine.V1\xca\x02\x19Google\\Cloud\\AppEngine\\V1\xea\x02\x1cGoogle::Cloud::AppEngine::V1b\x06proto3"
 
 var (

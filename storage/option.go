@@ -46,6 +46,7 @@ func init() {
 	storageinternal.WithOtelMetrics = withOtelMetrics
 	storageinternal.WithOtelDebugMetrics = withOtelDebugMetrics
 	storageinternal.WithBufferPool = withBufferPool
+	storageinternal.WithGRPCKeepalive = withGRPCKeepalive
 }
 
 // getDynamicReadReqIncreaseRateFromEnv returns the value set in the env variable.
@@ -94,6 +95,7 @@ type storageConfig struct {
 	grpcAppendableUploads  bool
 	grpcDirectPathEnforced bool
 	bufferPool             experimental.BufferPool
+	grpcKeepalive          *experimental.GRPCKeepaliveConfig
 }
 
 // newStorageConfig generates a new storageConfig with all the given
@@ -313,6 +315,20 @@ type withGRPCAppendableUploadsConfig struct {
 
 func (w *withGRPCAppendableUploadsConfig) ApplyStorageOpt(config *storageConfig) {
 	config.grpcAppendableUploads = true
+}
+
+// withGRPCKeepalive is the implementation of experimental.WithGRPCKeepalive.
+func withGRPCKeepalive(cfg experimental.GRPCKeepaliveConfig) option.ClientOption {
+	return &withGRPCKeepaliveConfig{cfg: cfg}
+}
+
+type withGRPCKeepaliveConfig struct {
+	internaloption.EmbeddableAdapter
+	cfg experimental.GRPCKeepaliveConfig
+}
+
+func (w *withGRPCKeepaliveConfig) ApplyStorageOpt(config *storageConfig) {
+	config.grpcKeepalive = &w.cfg
 }
 
 func withOtelMetrics() option.ClientOption {

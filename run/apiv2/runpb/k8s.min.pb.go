@@ -1834,11 +1834,11 @@ var File_google_cloud_run_v2_k8s_min_proto protoreflect.FileDescriptor
 
 const file_google_cloud_run_v2_k8s_min_proto_rawDesc = "" +
 	"\n" +
-	"!google/cloud/run/v2/k8s.min.proto\x12\x13google.cloud.run.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x9b\x06\n" +
+	"!google/cloud/run/v2/k8s.min.proto\x12\x13google.cloud.run.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x9e\x06\n" +
 	"\tContainer\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12\x19\n" +
-	"\x05image\x18\x02 \x01(\tB\x03\xe0A\x02R\x05image\x12E\n" +
-	"\vsource_code\x18\x11 \x01(\v2\x1f.google.cloud.run.v2.SourceCodeB\x03\xe0A\x01R\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1a\n" +
+	"\x05image\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05image\x12F\n" +
+	"\vsource_code\x18\x11 \x01(\v2\x1f.google.cloud.run.v2.SourceCodeB\x04\xe2A\x01\x01R\n" +
 	"sourceCode\x12\x18\n" +
 	"\acommand\x18\x03 \x03(\tR\acommand\x12\x12\n" +
 	"\x04args\x18\x04 \x03(\tR\x04args\x12-\n" +
@@ -1854,50 +1854,50 @@ const file_google_cloud_run_v2_k8s_min_proto_rawDesc = "" +
 	"\x0freadiness_probe\x18\x0e \x01(\v2\x1a.google.cloud.run.v2.ProbeR\x0ereadinessProbe\x12\x1d\n" +
 	"\n" +
 	"depends_on\x18\f \x03(\tR\tdependsOn\x12$\n" +
-	"\x0ebase_image_uri\x18\r \x01(\tR\fbaseImageUri\x12B\n" +
+	"\x0ebase_image_uri\x18\r \x01(\tR\fbaseImageUri\x12C\n" +
 	"\n" +
-	"build_info\x18\x0f \x01(\v2\x1e.google.cloud.run.v2.BuildInfoB\x03\xe0A\x03R\tbuildInfo\"\xe7\x01\n" +
+	"build_info\x18\x0f \x01(\v2\x1e.google.cloud.run.v2.BuildInfoB\x04\xe2A\x01\x03R\tbuildInfo\"\xe7\x01\n" +
 	"\x14ResourceRequirements\x12M\n" +
 	"\x06limits\x18\x01 \x03(\v25.google.cloud.run.v2.ResourceRequirements.LimitsEntryR\x06limits\x12\x19\n" +
 	"\bcpu_idle\x18\x02 \x01(\bR\acpuIdle\x12*\n" +
 	"\x11startup_cpu_boost\x18\x03 \x01(\bR\x0fstartupCpuBoost\x1a9\n" +
 	"\vLimitsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x8b\x01\n" +
-	"\x06EnvVar\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x16\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x8c\x01\n" +
+	"\x06EnvVar\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12\x16\n" +
 	"\x05value\x18\x02 \x01(\tH\x00R\x05value\x12F\n" +
 	"\fvalue_source\x18\x03 \x01(\v2!.google.cloud.run.v2.EnvVarSourceH\x00R\vvalueSourceB\b\n" +
 	"\x06values\"\\\n" +
 	"\fEnvVarSource\x12L\n" +
-	"\x0esecret_key_ref\x18\x01 \x01(\v2&.google.cloud.run.v2.SecretKeySelectorR\fsecretKeyRef\"\xa3\x01\n" +
-	"\x11SecretKeySelector\x12C\n" +
-	"\x06secret\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
+	"\x0esecret_key_ref\x18\x01 \x01(\v2&.google.cloud.run.v2.SecretKeySelectorR\fsecretKeyRef\"\xa4\x01\n" +
+	"\x11SecretKeySelector\x12D\n" +
+	"\x06secret\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
 	"#secretmanager.googleapis.com/SecretR\x06secret\x12I\n" +
 	"\aversion\x18\x02 \x01(\tB/\xfaA,\n" +
 	"*secretmanager.googleapis.com/SecretVersionR\aversion\"J\n" +
 	"\rContainerPort\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12%\n" +
-	"\x0econtainer_port\x18\x03 \x01(\x05R\rcontainerPort\"j\n" +
-	"\vVolumeMount\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\"\n" +
+	"\x0econtainer_port\x18\x03 \x01(\x05R\rcontainerPort\"m\n" +
+	"\vVolumeMount\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12#\n" +
 	"\n" +
-	"mount_path\x18\x03 \x01(\tB\x03\xe0A\x02R\tmountPath\x12\x1e\n" +
-	"\bsub_path\x18\x04 \x01(\tB\x03\xe0A\x01R\asubPath\"\x88\x03\n" +
-	"\x06Volume\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12A\n" +
+	"mount_path\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\tmountPath\x12\x1f\n" +
+	"\bsub_path\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\asubPath\"\x89\x03\n" +
+	"\x06Volume\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12A\n" +
 	"\x06secret\x18\x02 \x01(\v2'.google.cloud.run.v2.SecretVolumeSourceH\x00R\x06secret\x12U\n" +
 	"\x12cloud_sql_instance\x18\x03 \x01(\v2%.google.cloud.run.v2.CloudSqlInstanceH\x00R\x10cloudSqlInstance\x12H\n" +
 	"\tempty_dir\x18\x04 \x01(\v2).google.cloud.run.v2.EmptyDirVolumeSourceH\x00R\bemptyDir\x128\n" +
 	"\x03nfs\x18\x05 \x01(\v2$.google.cloud.run.v2.NFSVolumeSourceH\x00R\x03nfs\x128\n" +
 	"\x03gcs\x18\x06 \x01(\v2$.google.cloud.run.v2.GCSVolumeSourceH\x00R\x03gcsB\r\n" +
-	"\vvolume_type\"\x8e\x01\n" +
-	"\x12SecretVolumeSource\x12\x1b\n" +
-	"\x06secret\x18\x01 \x01(\tB\x03\xe0A\x02R\x06secret\x128\n" +
+	"\vvolume_type\"\x8f\x01\n" +
+	"\x12SecretVolumeSource\x12\x1c\n" +
+	"\x06secret\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06secret\x128\n" +
 	"\x05items\x18\x02 \x03(\v2\".google.cloud.run.v2.VersionToPathR\x05items\x12!\n" +
-	"\fdefault_mode\x18\x03 \x01(\x05R\vdefaultMode\"V\n" +
-	"\rVersionToPath\x12\x17\n" +
-	"\x04path\x18\x01 \x01(\tB\x03\xe0A\x02R\x04path\x12\x18\n" +
+	"\fdefault_mode\x18\x03 \x01(\x05R\vdefaultMode\"W\n" +
+	"\rVersionToPath\x12\x18\n" +
+	"\x04path\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04path\x12\x18\n" +
 	"\aversion\x18\x02 \x01(\tR\aversion\x12\x12\n" +
 	"\x04mode\x18\x03 \x01(\x05R\x04mode\"0\n" +
 	"\x10CloudSqlInstance\x12\x1c\n" +
@@ -1917,43 +1917,43 @@ const file_google_cloud_run_v2_k8s_min_proto_rawDesc = "" +
 	"\x0fGCSVolumeSource\x12\x16\n" +
 	"\x06bucket\x18\x01 \x01(\tR\x06bucket\x12\x1b\n" +
 	"\tread_only\x18\x02 \x01(\bR\breadOnly\x12#\n" +
-	"\rmount_options\x18\x03 \x03(\tR\fmountOptions\"\xa8\x03\n" +
-	"\x05Probe\x127\n" +
-	"\x15initial_delay_seconds\x18\x01 \x01(\x05B\x03\xe0A\x01R\x13initialDelaySeconds\x12,\n" +
-	"\x0ftimeout_seconds\x18\x02 \x01(\x05B\x03\xe0A\x01R\x0etimeoutSeconds\x12*\n" +
-	"\x0eperiod_seconds\x18\x03 \x01(\x05B\x03\xe0A\x01R\rperiodSeconds\x120\n" +
-	"\x11failure_threshold\x18\x04 \x01(\x05B\x03\xe0A\x01R\x10failureThreshold\x12D\n" +
-	"\bhttp_get\x18\x05 \x01(\v2\".google.cloud.run.v2.HTTPGetActionB\x03\xe0A\x01H\x00R\ahttpGet\x12J\n" +
+	"\rmount_options\x18\x03 \x03(\tR\fmountOptions\"\xaf\x03\n" +
+	"\x05Probe\x128\n" +
+	"\x15initial_delay_seconds\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\x13initialDelaySeconds\x12-\n" +
+	"\x0ftimeout_seconds\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x0etimeoutSeconds\x12+\n" +
+	"\x0eperiod_seconds\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\rperiodSeconds\x121\n" +
+	"\x11failure_threshold\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\x10failureThreshold\x12E\n" +
+	"\bhttp_get\x18\x05 \x01(\v2\".google.cloud.run.v2.HTTPGetActionB\x04\xe2A\x01\x01H\x00R\ahttpGet\x12K\n" +
 	"\n" +
-	"tcp_socket\x18\x06 \x01(\v2$.google.cloud.run.v2.TCPSocketActionB\x03\xe0A\x01H\x00R\ttcpSocket\x12:\n" +
-	"\x04grpc\x18\a \x01(\v2\x1f.google.cloud.run.v2.GRPCActionB\x03\xe0A\x01H\x00R\x04grpcB\f\n" +
+	"tcp_socket\x18\x06 \x01(\v2$.google.cloud.run.v2.TCPSocketActionB\x04\xe2A\x01\x01H\x00R\ttcpSocket\x12;\n" +
+	"\x04grpc\x18\a \x01(\v2\x1f.google.cloud.run.v2.GRPCActionB\x04\xe2A\x01\x01H\x00R\x04grpcB\f\n" +
 	"\n" +
-	"probe_type\"\x8a\x01\n" +
-	"\rHTTPGetAction\x12\x17\n" +
-	"\x04path\x18\x01 \x01(\tB\x03\xe0A\x01R\x04path\x12G\n" +
-	"\fhttp_headers\x18\x04 \x03(\v2\x1f.google.cloud.run.v2.HTTPHeaderB\x03\xe0A\x01R\vhttpHeaders\x12\x17\n" +
-	"\x04port\x18\x05 \x01(\x05B\x03\xe0A\x01R\x04port\"@\n" +
+	"probe_type\"\x8d\x01\n" +
+	"\rHTTPGetAction\x12\x18\n" +
+	"\x04path\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04path\x12H\n" +
+	"\fhttp_headers\x18\x04 \x03(\v2\x1f.google.cloud.run.v2.HTTPHeaderB\x04\xe2A\x01\x01R\vhttpHeaders\x12\x18\n" +
+	"\x04port\x18\x05 \x01(\x05B\x04\xe2A\x01\x01R\x04port\"B\n" +
 	"\n" +
-	"HTTPHeader\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x19\n" +
-	"\x05value\x18\x02 \x01(\tB\x03\xe0A\x01R\x05value\"*\n" +
-	"\x0fTCPSocketAction\x12\x17\n" +
-	"\x04port\x18\x01 \x01(\x05B\x03\xe0A\x01R\x04port\"D\n" +
+	"HTTPHeader\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12\x1a\n" +
+	"\x05value\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x05value\"+\n" +
+	"\x0fTCPSocketAction\x12\x18\n" +
+	"\x04port\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\x04port\"F\n" +
 	"\n" +
-	"GRPCAction\x12\x17\n" +
-	"\x04port\x18\x01 \x01(\x05B\x03\xe0A\x01R\x04port\x12\x1d\n" +
-	"\aservice\x18\x02 \x01(\tB\x03\xe0A\x01R\aservice\"g\n" +
-	"\tBuildInfo\x12,\n" +
-	"\x0ffunction_target\x18\x01 \x01(\tB\x03\xe0A\x03R\x0efunctionTarget\x12,\n" +
-	"\x0fsource_location\x18\x02 \x01(\tB\x03\xe0A\x03R\x0esourceLocation\"\xf8\x01\n" +
+	"GRPCAction\x12\x18\n" +
+	"\x04port\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\x04port\x12\x1e\n" +
+	"\aservice\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\aservice\"i\n" +
+	"\tBuildInfo\x12-\n" +
+	"\x0ffunction_target\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x0efunctionTarget\x12-\n" +
+	"\x0fsource_location\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x0esourceLocation\"\xfb\x01\n" +
 	"\n" +
 	"SourceCode\x12f\n" +
-	"\x14cloud_storage_source\x18\x01 \x01(\v22.google.cloud.run.v2.SourceCode.CloudStorageSourceH\x00R\x12cloudStorageSource\x1as\n" +
-	"\x12CloudStorageSource\x12\x1b\n" +
-	"\x06bucket\x18\x01 \x01(\tB\x03\xe0A\x02R\x06bucket\x12\x1b\n" +
-	"\x06object\x18\x02 \x01(\tB\x03\xe0A\x02R\x06object\x12#\n" +
+	"\x14cloud_storage_source\x18\x01 \x01(\v22.google.cloud.run.v2.SourceCode.CloudStorageSourceH\x00R\x12cloudStorageSource\x1av\n" +
+	"\x12CloudStorageSource\x12\x1c\n" +
+	"\x06bucket\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06bucket\x12\x1c\n" +
+	"\x06object\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06object\x12$\n" +
 	"\n" +
-	"generation\x18\x03 \x01(\x03B\x03\xe0A\x01R\n" +
+	"generation\x18\x03 \x01(\x03B\x04\xe2A\x01\x01R\n" +
 	"generationB\r\n" +
 	"\vsource_typeB\xe9\x03\xeaAx\n" +
 	"!cloudkms.googleapis.com/CryptoKey\x12Sprojects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}\xeaAJ\n" +

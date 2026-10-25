@@ -731,25 +731,25 @@ var File_google_cloud_discoveryengine_v1alpha_data_store_service_proto protorefl
 
 const file_google_cloud_discoveryengine_v1alpha_data_store_service_proto_rawDesc = "" +
 	"\n" +
-	"=google/cloud/discoveryengine/v1alpha/data_store_service.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a5google/cloud/discoveryengine/v1alpha/data_store.proto\x1aEgoogle/cloud/discoveryengine/v1alpha/document_processing_config.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe1\x02\n" +
-	"\x16CreateDataStoreRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")discoveryengine.googleapis.com/CollectionR\x06parent\x12S\n" +
+	"=google/cloud/discoveryengine/v1alpha/data_store_service.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a5google/cloud/discoveryengine/v1alpha/data_store.proto\x1aEgoogle/cloud/discoveryengine/v1alpha/document_processing_config.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe4\x02\n" +
+	"\x16CreateDataStoreRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")discoveryengine.googleapis.com/CollectionR\x06parent\x12T\n" +
 	"\n" +
-	"data_store\x18\x02 \x01(\v2/.google.cloud.discoveryengine.v1alpha.DataStoreB\x03\xe0A\x02R\tdataStore\x12'\n" +
-	"\rdata_store_id\x18\x03 \x01(\tB\x03\xe0A\x02R\vdataStoreId\x12=\n" +
+	"data_store\x18\x02 \x01(\v2/.google.cloud.discoveryengine.v1alpha.DataStoreB\x04\xe2A\x01\x02R\tdataStore\x12(\n" +
+	"\rdata_store_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\vdataStoreId\x12=\n" +
 	"\x1bcreate_advanced_site_search\x18\x04 \x01(\bR\x18createAdvancedSiteSearch\x12?\n" +
-	"\x1cskip_default_schema_creation\x18\a \x01(\bR\x19skipDefaultSchemaCreation\"[\n" +
-	"\x13GetDataStoreRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"\x1cskip_default_schema_creation\x18\a \x01(\bR\x19skipDefaultSchemaCreation\"\\\n" +
+	"\x13GetDataStoreRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
 	"(discoveryengine.googleapis.com/DataStoreR\x04name\"\x93\x01\n" +
 	"\x17CreateDataStoreMetadata\x12;\n" +
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12;\n" +
 	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"updateTime\"\xb6\x01\n" +
-	"\x15ListDataStoresRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
+	"updateTime\"\xb7\x01\n" +
+	"\x15ListDataStoresRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
 	")discoveryengine.googleapis.com/CollectionR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -758,25 +758,25 @@ const file_google_cloud_discoveryengine_v1alpha_data_store_service_proto_rawDesc
 	"\x16ListDataStoresResponse\x12P\n" +
 	"\vdata_stores\x18\x01 \x03(\v2/.google.cloud.discoveryengine.v1alpha.DataStoreR\n" +
 	"dataStores\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"^\n" +
-	"\x16DeleteDataStoreRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(discoveryengine.googleapis.com/DataStoreR\x04name\"\xaa\x01\n" +
-	"\x16UpdateDataStoreRequest\x12S\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"_\n" +
+	"\x16DeleteDataStoreRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(discoveryengine.googleapis.com/DataStoreR\x04name\"\xab\x01\n" +
+	"\x16UpdateDataStoreRequest\x12T\n" +
 	"\n" +
-	"data_store\x18\x01 \x01(\v2/.google.cloud.discoveryengine.v1alpha.DataStoreB\x03\xe0A\x02R\tdataStore\x12;\n" +
+	"data_store\x18\x01 \x01(\v2/.google.cloud.discoveryengine.v1alpha.DataStoreB\x04\xe2A\x01\x02R\tdataStore\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"updateMask\"\x93\x01\n" +
 	"\x17DeleteDataStoreMetadata\x12;\n" +
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12;\n" +
 	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"updateTime\"y\n" +
-	"\"GetDocumentProcessingConfigRequest\x12S\n" +
-	"\x04name\x18\x01 \x01(\tB?\xe0A\x02\xfaA9\n" +
-	"7discoveryengine.googleapis.com/DocumentProcessingConfigR\x04name\"\xe8\x01\n" +
-	"%UpdateDocumentProcessingConfigRequest\x12\x81\x01\n" +
-	"\x1adocument_processing_config\x18\x01 \x01(\v2>.google.cloud.discoveryengine.v1alpha.DocumentProcessingConfigB\x03\xe0A\x02R\x18documentProcessingConfig\x12;\n" +
+	"updateTime\"z\n" +
+	"\"GetDocumentProcessingConfigRequest\x12T\n" +
+	"\x04name\x18\x01 \x01(\tB@\xe2A\x01\x02\xfaA9\n" +
+	"7discoveryengine.googleapis.com/DocumentProcessingConfigR\x04name\"\xe9\x01\n" +
+	"%UpdateDocumentProcessingConfigRequest\x12\x82\x01\n" +
+	"\x1adocument_processing_config\x18\x01 \x01(\v2>.google.cloud.discoveryengine.v1alpha.DocumentProcessingConfigB\x04\xe2A\x01\x02R\x18documentProcessingConfig\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"updateMask2\xad\x14\n" +
 	"\x10DataStoreService\x12\x9d\x03\n" +

@@ -424,26 +424,26 @@ var File_google_ai_generativelanguage_v1beta_file_service_proto protoreflect.Fil
 
 const file_google_ai_generativelanguage_v1beta_file_service_proto_rawDesc = "" +
 	"\n" +
-	"6google/ai/generativelanguage/v1beta/file_service.proto\x12#google.ai.generativelanguage.v1beta\x1a.google/ai/generativelanguage/v1beta/file.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\"W\n" +
-	"\x11CreateFileRequest\x12B\n" +
-	"\x04file\x18\x01 \x01(\v2).google.ai.generativelanguage.v1beta.FileB\x03\xe0A\x01R\x04file\"S\n" +
+	"6google/ai/generativelanguage/v1beta/file_service.proto\x12#google.ai.generativelanguage.v1beta\x1a.google/ai/generativelanguage/v1beta/file.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\"X\n" +
+	"\x11CreateFileRequest\x12C\n" +
+	"\x04file\x18\x01 \x01(\v2).google.ai.generativelanguage.v1beta.FileB\x04\xe2A\x01\x01R\x04file\"S\n" +
 	"\x12CreateFileResponse\x12=\n" +
-	"\x04file\x18\x01 \x01(\v2).google.ai.generativelanguage.v1beta.FileR\x04file\"X\n" +
-	"\x10ListFilesRequest\x12 \n" +
-	"\tpage_size\x18\x01 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x04file\x18\x01 \x01(\v2).google.ai.generativelanguage.v1beta.FileR\x04file\"Z\n" +
+	"\x10ListFilesRequest\x12!\n" +
+	"\tpage_size\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"|\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"|\n" +
 	"\x11ListFilesResponse\x12?\n" +
 	"\x05files\x18\x01 \x03(\v2).google.ai.generativelanguage.v1beta.FileR\x05files\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"T\n" +
-	"\x0eGetFileRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&generativelanguage.googleapis.com/FileR\x04name\"W\n" +
-	"\x11DeleteFileRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&generativelanguage.googleapis.com/FileR\x04name\"Y\n" +
-	"\x13DownloadFileRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"U\n" +
+	"\x0eGetFileRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&generativelanguage.googleapis.com/FileR\x04name\"X\n" +
+	"\x11DeleteFileRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&generativelanguage.googleapis.com/FileR\x04name\"Z\n" +
+	"\x13DownloadFileRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
 	"&generativelanguage.googleapis.com/FileR\x04name\"\x16\n" +
 	"\x14DownloadFileResponse2\xb0\x06\n" +
 	"\vFileService\x12\x97\x01\n" +

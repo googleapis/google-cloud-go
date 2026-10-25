@@ -426,34 +426,34 @@ var File_google_shopping_merchant_reviews_v1beta_productreviews_proto protorefle
 
 const file_google_shopping_merchant_reviews_v1beta_productreviews_proto_rawDesc = "" +
 	"\n" +
-	"<google/shopping/merchant/reviews/v1beta/productreviews.proto\x12'google.shopping.merchant.reviews.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1aCgoogle/shopping/merchant/reviews/v1beta/productreviews_common.proto\x1a google/shopping/type/types.proto\"_\n" +
-	"\x17GetProductReviewRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(merchantapi.googleapis.com/ProductReviewR\x04name\"b\n" +
-	"\x1aDeleteProductReviewRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(merchantapi.googleapis.com/ProductReviewR\x04name\"\xab\x01\n" +
-	"\x19ListProductReviewsRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(merchantapi.googleapis.com/ProductReviewR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"<google/shopping/merchant/reviews/v1beta/productreviews.proto\x12'google.shopping.merchant.reviews.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1aCgoogle/shopping/merchant/reviews/v1beta/productreviews_common.proto\x1a google/shopping/type/types.proto\"`\n" +
+	"\x17GetProductReviewRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(merchantapi.googleapis.com/ProductReviewR\x04name\"c\n" +
+	"\x1aDeleteProductReviewRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(merchantapi.googleapis.com/ProductReviewR\x04name\"\xae\x01\n" +
+	"\x19ListProductReviewsRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(merchantapi.googleapis.com/ProductReviewR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xc3\x01\n" +
-	"\x1aInsertProductReviewRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12b\n" +
-	"\x0eproduct_review\x18\x02 \x01(\v26.google.shopping.merchant.reviews.v1beta.ProductReviewB\x03\xe0A\x02R\rproductReview\x12$\n" +
-	"\vdata_source\x18\x03 \x01(\tB\x03\xe0A\x02R\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xc6\x01\n" +
+	"\x1aInsertProductReviewRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12c\n" +
+	"\x0eproduct_review\x18\x02 \x01(\v26.google.shopping.merchant.reviews.v1beta.ProductReviewB\x04\xe2A\x01\x02R\rproductReview\x12%\n" +
+	"\vdata_source\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\n" +
 	"dataSource\"\xa5\x01\n" +
 	"\x1aListProductReviewsResponse\x12_\n" +
 	"\x0fproduct_reviews\x18\x01 \x03(\v26.google.shopping.merchant.reviews.v1beta.ProductReviewR\x0eproductReviews\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xd4\x04\n" +
-	"\rProductReview\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12/\n" +
-	"\x11product_review_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x0fproductReviewId\x12\x81\x01\n" +
-	"\x19product_review_attributes\x18\x03 \x01(\v2@.google.shopping.merchant.reviews.v1beta.ProductReviewAttributesB\x03\xe0A\x01R\x17productReviewAttributes\x12W\n" +
-	"\x11custom_attributes\x18\x04 \x03(\v2%.google.shopping.type.CustomAttributeB\x03\xe0A\x01R\x10customAttributes\x12$\n" +
-	"\vdata_source\x18\x05 \x01(\tB\x03\xe0A\x03R\n" +
-	"dataSource\x12u\n" +
-	"\x15product_review_status\x18\x06 \x01(\v2<.google.shopping.merchant.reviews.v1beta.ProductReviewStatusB\x03\xe0A\x03R\x13productReviewStatus:\x7f\xeaA|\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xda\x04\n" +
+	"\rProductReview\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x120\n" +
+	"\x11product_review_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0fproductReviewId\x12\x82\x01\n" +
+	"\x19product_review_attributes\x18\x03 \x01(\v2@.google.shopping.merchant.reviews.v1beta.ProductReviewAttributesB\x04\xe2A\x01\x01R\x17productReviewAttributes\x12X\n" +
+	"\x11custom_attributes\x18\x04 \x03(\v2%.google.shopping.type.CustomAttributeB\x04\xe2A\x01\x01R\x10customAttributes\x12%\n" +
+	"\vdata_source\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"dataSource\x12v\n" +
+	"\x15product_review_status\x18\x06 \x01(\v2<.google.shopping.merchant.reviews.v1beta.ProductReviewStatusB\x04\xe2A\x01\x03R\x13productReviewStatus:\x7f\xeaA|\n" +
 	"(merchantapi.googleapis.com/ProductReview\x121accounts/{account}/productReviews/{productreview}*\x0eproductReviews2\rproductReview2\xb7\a\n" +
 	"\x15ProductReviewsService\x12\xcf\x01\n" +
 	"\x10GetProductReview\x12@.google.shopping.merchant.reviews.v1beta.GetProductReviewRequest\x1a6.google.shopping.merchant.reviews.v1beta.ProductReview\"A\xdaA\x04name\x82\xd3\xe4\x93\x024\x122/reviews/v1beta/{name=accounts/*/productReviews/*}\x12\xe2\x01\n" +

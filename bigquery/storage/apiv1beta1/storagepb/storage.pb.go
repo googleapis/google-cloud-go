@@ -1225,18 +1225,18 @@ const file_google_cloud_bigquery_storage_v1beta1_storage_proto_rawDesc = "" +
 	"\x0ftable_modifiers\x18\b \x01(\v25.google.cloud.bigquery.storage.v1beta1.TableModifiersR\x0etableModifiers\x12d\n" +
 	"\x11sharding_strategy\x18\t \x01(\x0e27.google.cloud.bigquery.storage.v1beta1.ShardingStrategyR\x10shardingStrategy:k\xeaAh\n" +
 	"*bigquerystorage.googleapis.com/ReadSession\x12:projects/{project}/locations/{location}/sessions/{session}B\b\n" +
-	"\x06schema\"\xe6\x04\n" +
-	"\x18CreateReadSessionRequest\x12c\n" +
-	"\x0ftable_reference\x18\x01 \x01(\v25.google.cloud.bigquery.storage.v1beta1.TableReferenceB\x03\xe0A\x02R\x0etableReference\x12K\n" +
-	"\x06parent\x18\x06 \x01(\tB3\xe0A\x02\xfaA-\n" +
+	"\x06schema\"\xe8\x04\n" +
+	"\x18CreateReadSessionRequest\x12d\n" +
+	"\x0ftable_reference\x18\x01 \x01(\v25.google.cloud.bigquery.storage.v1beta1.TableReferenceB\x04\xe2A\x01\x02R\x0etableReference\x12L\n" +
+	"\x06parent\x18\x06 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
 	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12^\n" +
 	"\x0ftable_modifiers\x18\x02 \x01(\v25.google.cloud.bigquery.storage.v1beta1.TableModifiersR\x0etableModifiers\x12+\n" +
 	"\x11requested_streams\x18\x03 \x01(\x05R\x10requestedStreams\x12Z\n" +
 	"\fread_options\x18\x04 \x01(\v27.google.cloud.bigquery.storage.v1beta1.TableReadOptionsR\vreadOptions\x12I\n" +
 	"\x06format\x18\x05 \x01(\x0e21.google.cloud.bigquery.storage.v1beta1.DataFormatR\x06format\x12d\n" +
-	"\x11sharding_strategy\x18\a \x01(\x0e27.google.cloud.bigquery.storage.v1beta1.ShardingStrategyR\x10shardingStrategy\"r\n" +
-	"\x0fReadRowsRequest\x12_\n" +
-	"\rread_position\x18\x01 \x01(\v25.google.cloud.bigquery.storage.v1beta1.StreamPositionB\x03\xe0A\x02R\freadPosition\"\xdd\x01\n" +
+	"\x11sharding_strategy\x18\a \x01(\x0e27.google.cloud.bigquery.storage.v1beta1.ShardingStrategyR\x10shardingStrategy\"s\n" +
+	"\x0fReadRowsRequest\x12`\n" +
+	"\rread_position\x18\x01 \x01(\v25.google.cloud.bigquery.storage.v1beta1.StreamPositionB\x04\xe2A\x01\x02R\freadPosition\"\xdd\x01\n" +
 	"\fStreamStatus\x12.\n" +
 	"\x13estimated_row_count\x18\x01 \x01(\x03R\x11estimatedRowCount\x12+\n" +
 	"\x11fraction_consumed\x18\x02 \x01(\x02R\x10fractionConsumed\x12K\n" +
@@ -1246,27 +1246,27 @@ const file_google_cloud_bigquery_storage_v1beta1_storage_proto_rawDesc = "" +
 	"\x11at_response_start\x18\x01 \x01(\x02R\x0fatResponseStart\x12&\n" +
 	"\x0fat_response_end\x18\x02 \x01(\x02R\ratResponseEnd\";\n" +
 	"\x0eThrottleStatus\x12)\n" +
-	"\x10throttle_percent\x18\x01 \x01(\x05R\x0fthrottlePercent\"\xe0\x04\n" +
+	"\x10throttle_percent\x18\x01 \x01(\x05R\x0fthrottlePercent\"\xe2\x04\n" +
 	"\x10ReadRowsResponse\x12N\n" +
 	"\tavro_rows\x18\x03 \x01(\v2/.google.cloud.bigquery.storage.v1beta1.AvroRowsH\x00R\bavroRows\x12g\n" +
 	"\x12arrow_record_batch\x18\x04 \x01(\v27.google.cloud.bigquery.storage.v1beta1.ArrowRecordBatchH\x00R\x10arrowRecordBatch\x12\x1b\n" +
 	"\trow_count\x18\x06 \x01(\x03R\browCount\x12K\n" +
 	"\x06status\x18\x02 \x01(\v23.google.cloud.bigquery.storage.v1beta1.StreamStatusR\x06status\x12^\n" +
-	"\x0fthrottle_status\x18\x05 \x01(\v25.google.cloud.bigquery.storage.v1beta1.ThrottleStatusR\x0ethrottleStatus\x12Y\n" +
-	"\vavro_schema\x18\a \x01(\v21.google.cloud.bigquery.storage.v1beta1.AvroSchemaB\x03\xe0A\x03H\x01R\n" +
-	"avroSchema\x12\\\n" +
-	"\farrow_schema\x18\b \x01(\v22.google.cloud.bigquery.storage.v1beta1.ArrowSchemaB\x03\xe0A\x03H\x01R\varrowSchemaB\x06\n" +
+	"\x0fthrottle_status\x18\x05 \x01(\v25.google.cloud.bigquery.storage.v1beta1.ThrottleStatusR\x0ethrottleStatus\x12Z\n" +
+	"\vavro_schema\x18\a \x01(\v21.google.cloud.bigquery.storage.v1beta1.AvroSchemaB\x04\xe2A\x01\x03H\x01R\n" +
+	"avroSchema\x12]\n" +
+	"\farrow_schema\x18\b \x01(\v22.google.cloud.bigquery.storage.v1beta1.ArrowSchemaB\x04\xe2A\x01\x03H\x01R\varrowSchemaB\x06\n" +
 	"\x04rowsB\b\n" +
-	"\x06schema\"\xab\x01\n" +
-	"$BatchCreateReadSessionStreamsRequest\x12Q\n" +
-	"\asession\x18\x01 \x01(\v22.google.cloud.bigquery.storage.v1beta1.ReadSessionB\x03\xe0A\x02R\asession\x120\n" +
-	"\x11requested_streams\x18\x02 \x01(\x05B\x03\xe0A\x02R\x10requestedStreams\"p\n" +
+	"\x06schema\"\xad\x01\n" +
+	"$BatchCreateReadSessionStreamsRequest\x12R\n" +
+	"\asession\x18\x01 \x01(\v22.google.cloud.bigquery.storage.v1beta1.ReadSessionB\x04\xe2A\x01\x02R\asession\x121\n" +
+	"\x11requested_streams\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\x10requestedStreams\"p\n" +
 	"%BatchCreateReadSessionStreamsResponse\x12G\n" +
-	"\astreams\x18\x01 \x03(\v2-.google.cloud.bigquery.storage.v1beta1.StreamR\astreams\"c\n" +
-	"\x15FinalizeStreamRequest\x12J\n" +
-	"\x06stream\x18\x02 \x01(\v2-.google.cloud.bigquery.storage.v1beta1.StreamB\x03\xe0A\x02R\x06stream\"\x91\x01\n" +
-	"\x16SplitReadStreamRequest\x12[\n" +
-	"\x0foriginal_stream\x18\x01 \x01(\v2-.google.cloud.bigquery.storage.v1beta1.StreamB\x03\xe0A\x02R\x0eoriginalStream\x12\x1a\n" +
+	"\astreams\x18\x01 \x03(\v2-.google.cloud.bigquery.storage.v1beta1.StreamR\astreams\"d\n" +
+	"\x15FinalizeStreamRequest\x12K\n" +
+	"\x06stream\x18\x02 \x01(\v2-.google.cloud.bigquery.storage.v1beta1.StreamB\x04\xe2A\x01\x02R\x06stream\"\x92\x01\n" +
+	"\x16SplitReadStreamRequest\x12\\\n" +
+	"\x0foriginal_stream\x18\x01 \x01(\v2-.google.cloud.bigquery.storage.v1beta1.StreamB\x04\xe2A\x01\x02R\x0eoriginalStream\x12\x1a\n" +
 	"\bfraction\x18\x02 \x01(\x02R\bfraction\"\xc9\x01\n" +
 	"\x17SplitReadStreamResponse\x12T\n" +
 	"\x0eprimary_stream\x18\x01 \x01(\v2-.google.cloud.bigquery.storage.v1beta1.StreamR\rprimaryStream\x12X\n" +

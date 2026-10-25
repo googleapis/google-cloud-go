@@ -109,12 +109,12 @@ var File_google_cloud_apphub_v1_extended_metadata_schema_proto protoreflect.File
 
 const file_google_cloud_apphub_v1_extended_metadata_schema_proto_rawDesc = "" +
 	"\n" +
-	"5google/cloud/apphub/v1/extended_metadata_schema.proto\x12\x16google.cloud.apphub.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xc5\x02\n" +
-	"\x16ExtendedMetadataSchema\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12$\n" +
-	"\vjson_schema\x18\x02 \x01(\tB\x03\xe0A\x03R\n" +
-	"jsonSchema\x12*\n" +
-	"\x0eschema_version\x18\x03 \x01(\x03B\x03\xe0A\x03R\rschemaVersion:\xbf\x01\xeaA\xbb\x01\n" +
+	"5google/cloud/apphub/v1/extended_metadata_schema.proto\x12\x16google.cloud.apphub.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xc8\x02\n" +
+	"\x16ExtendedMetadataSchema\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12%\n" +
+	"\vjson_schema\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"jsonSchema\x12+\n" +
+	"\x0eschema_version\x18\x03 \x01(\x03B\x04\xe2A\x01\x03R\rschemaVersion:\xbf\x01\xeaA\xbb\x01\n" +
 	",apphub.googleapis.com/ExtendedMetadataSchema\x12Zprojects/{project}/locations/{location}/extendedMetadataSchemas/{extended_metadata_schema}*\x17extendedMetadataSchemas2\x16extendedMetadataSchemaB\xbd\x01\n" +
 	"\x1acom.google.cloud.apphub.v1B\x1bExtendedMetadataSchemaProtoP\x01Z2cloud.google.com/go/apphub/apiv1/apphubpb;apphubpb\xaa\x02\x16Google.Cloud.AppHub.V1\xca\x02\x16Google\\Cloud\\AppHub\\V1\xea\x02\x19Google::Cloud::AppHub::V1b\x06proto3"
 

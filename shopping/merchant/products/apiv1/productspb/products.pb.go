@@ -474,31 +474,31 @@ var File_google_shopping_merchant_products_v1_products_proto protoreflect.FileDe
 
 const file_google_shopping_merchant_products_v1_products_proto_rawDesc = "" +
 	"\n" +
-	"3google/shopping/merchant/products/v1/products.proto\x12$google.shopping.merchant.products.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a:google/shopping/merchant/products/v1/products_common.proto\x1a google/shopping/type/types.proto\"\xe0\x06\n" +
+	"3google/shopping/merchant/products/v1/products.proto\x12$google.shopping.merchant.products.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a:google/shopping/merchant/products/v1/products_common.proto\x1a google/shopping/type/types.proto\"\xec\x06\n" +
 	"\aProduct\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x123\n" +
-	"\x13base64_encoded_name\x18\x0f \x01(\tB\x03\xe0A\x03R\x11base64EncodedName\x12&\n" +
-	"\flegacy_local\x18\v \x01(\bB\x03\xe0A\x03R\vlegacyLocal\x12\x1e\n" +
-	"\boffer_id\x18\x03 \x01(\tB\x03\xe0A\x03R\aofferId\x12.\n" +
-	"\x10content_language\x18\x04 \x01(\tB\x03\xe0A\x03R\x0fcontentLanguage\x12\"\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x124\n" +
+	"\x13base64_encoded_name\x18\x0f \x01(\tB\x04\xe2A\x01\x03R\x11base64EncodedName\x12'\n" +
+	"\flegacy_local\x18\v \x01(\bB\x04\xe2A\x01\x03R\vlegacyLocal\x12\x1f\n" +
+	"\boffer_id\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\aofferId\x12/\n" +
+	"\x10content_language\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x0fcontentLanguage\x12#\n" +
 	"\n" +
-	"feed_label\x18\x05 \x01(\tB\x03\xe0A\x03R\tfeedLabel\x12$\n" +
-	"\vdata_source\x18\x06 \x01(\tB\x03\xe0A\x03R\n" +
-	"dataSource\x12/\n" +
-	"\x0eversion_number\x18\a \x01(\x03B\x03\xe0A\x03H\x00R\rversionNumber\x88\x01\x01\x12k\n" +
-	"\x12product_attributes\x18\r \x01(\v27.google.shopping.merchant.products.v1.ProductAttributesB\x03\xe0A\x03R\x11productAttributes\x12W\n" +
-	"\x11custom_attributes\x18\t \x03(\v2%.google.shopping.type.CustomAttributeB\x03\xe0A\x03R\x10customAttributes\x12_\n" +
+	"feed_label\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\tfeedLabel\x12%\n" +
+	"\vdata_source\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"dataSource\x120\n" +
+	"\x0eversion_number\x18\a \x01(\x03B\x04\xe2A\x01\x03H\x00R\rversionNumber\x88\x01\x01\x12l\n" +
+	"\x12product_attributes\x18\r \x01(\v27.google.shopping.merchant.products.v1.ProductAttributesB\x04\xe2A\x01\x03R\x11productAttributes\x12X\n" +
+	"\x11custom_attributes\x18\t \x03(\v2%.google.shopping.type.CustomAttributeB\x04\xe2A\x01\x03R\x10customAttributes\x12`\n" +
 	"\x0eproduct_status\x18\n" +
-	" \x01(\v23.google.shopping.merchant.products.v1.ProductStatusB\x03\xe0A\x03R\rproductStatus\x12n\n" +
-	"\x13automated_discounts\x18\f \x01(\v28.google.shopping.merchant.products.v1.AutomatedDiscountsB\x03\xe0A\x03R\x12automatedDiscounts\x12\x1f\n" +
-	"\barchived\x18\x0e \x01(\bB\x03\xe0A\x03R\barchived:N\xeaAK\n" +
+	" \x01(\v23.google.shopping.merchant.products.v1.ProductStatusB\x04\xe2A\x01\x03R\rproductStatus\x12o\n" +
+	"\x13automated_discounts\x18\f \x01(\v28.google.shopping.merchant.products.v1.AutomatedDiscountsB\x04\xe2A\x01\x03R\x12automatedDiscounts\x12 \n" +
+	"\barchived\x18\x0e \x01(\bB\x04\xe2A\x01\x03R\barchived:N\xeaAK\n" +
 	"\"merchantapi.googleapis.com/Product\x12%accounts/{account}/products/{product}B\x11\n" +
-	"\x0f_version_number\"S\n" +
-	"\x11GetProductRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"merchantapi.googleapis.com/ProductR\x04name\"\x95\x01\n" +
-	"\x13ListProductsRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"merchantapi.googleapis.com/ProductR\x06parent\x12\x1b\n" +
+	"\x0f_version_number\"T\n" +
+	"\x11GetProductRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"merchantapi.googleapis.com/ProductR\x04name\"\x96\x01\n" +
+	"\x13ListProductsRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"merchantapi.googleapis.com/ProductR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x89\x01\n" +

@@ -162,13 +162,13 @@ var File_google_cloud_dataplex_v1_security_proto protoreflect.FileDescriptor
 
 const file_google_cloud_dataplex_v1_security_proto_rawDesc = "" +
 	"\n" +
-	"'google/cloud/dataplex/v1/security.proto\x12\x18google.cloud.dataplex.v1\x1a\x1fgoogle/api/field_behavior.proto\"o\n" +
-	"\x12ResourceAccessSpec\x12\x1d\n" +
-	"\areaders\x18\x01 \x03(\tB\x03\xe0A\x01R\areaders\x12\x1d\n" +
-	"\awriters\x18\x02 \x03(\tB\x03\xe0A\x01R\awriters\x12\x1b\n" +
-	"\x06owners\x18\x03 \x03(\tB\x03\xe0A\x01R\x06owners\"/\n" +
-	"\x0eDataAccessSpec\x12\x1d\n" +
-	"\areaders\x18\x01 \x03(\tB\x03\xe0A\x01R\areadersBi\n" +
+	"'google/cloud/dataplex/v1/security.proto\x12\x18google.cloud.dataplex.v1\x1a\x1fgoogle/api/field_behavior.proto\"r\n" +
+	"\x12ResourceAccessSpec\x12\x1e\n" +
+	"\areaders\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\areaders\x12\x1e\n" +
+	"\awriters\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\awriters\x12\x1c\n" +
+	"\x06owners\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x06owners\"0\n" +
+	"\x0eDataAccessSpec\x12\x1e\n" +
+	"\areaders\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\areadersBi\n" +
 	"\x1ccom.google.cloud.dataplex.v1B\rSecurityProtoP\x01Z8cloud.google.com/go/dataplex/apiv1/dataplexpb;dataplexpbb\x06proto3"
 
 var (

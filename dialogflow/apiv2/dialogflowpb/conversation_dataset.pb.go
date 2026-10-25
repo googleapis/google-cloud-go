@@ -843,48 +843,48 @@ var File_google_cloud_dialogflow_v2_conversation_dataset_proto protoreflect.File
 
 const file_google_cloud_dialogflow_v2_conversation_dataset_proto_rawDesc = "" +
 	"\n" +
-	"5google/cloud/dialogflow/v2/conversation_dataset.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a$google/cloud/dialogflow/v2/gcs.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"<\n" +
-	"\x10ConversationInfo\x12(\n" +
-	"\rlanguage_code\x18\x01 \x01(\tB\x03\xe0A\x01R\flanguageCode\"`\n" +
+	"5google/cloud/dialogflow/v2/conversation_dataset.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a$google/cloud/dialogflow/v2/gcs.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"=\n" +
+	"\x10ConversationInfo\x12)\n" +
+	"\rlanguage_code\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\"`\n" +
 	"\vInputConfig\x12G\n" +
 	"\n" +
 	"gcs_source\x18\x01 \x01(\v2&.google.cloud.dialogflow.v2.GcsSourcesH\x00R\tgcsSourceB\b\n" +
-	"\x06source\"\xb1\x05\n" +
-	"\x13ConversationDataset\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12O\n" +
-	"\finput_config\x18\x05 \x01(\v2'.google.cloud.dialogflow.v2.InputConfigB\x03\xe0A\x03R\vinputConfig\x12^\n" +
-	"\x11conversation_info\x18\x06 \x01(\v2,.google.cloud.dialogflow.v2.ConversationInfoB\x03\xe0A\x03R\x10conversationInfo\x122\n" +
-	"\x12conversation_count\x18\a \x01(\x03B\x03\xe0A\x03R\x11conversationCount\x12-\n" +
-	"\rsatisfies_pzi\x18\b \x01(\bB\x03\xe0A\x03H\x00R\fsatisfiesPzi\x88\x01\x01\x12-\n" +
-	"\rsatisfies_pzs\x18\t \x01(\bB\x03\xe0A\x03H\x01R\fsatisfiesPzs\x88\x01\x01:\x88\x01\xeaA\x84\x01\n" +
+	"\x06source\"\xba\x05\n" +
+	"\x13ConversationDataset\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12P\n" +
+	"\finput_config\x18\x05 \x01(\v2'.google.cloud.dialogflow.v2.InputConfigB\x04\xe2A\x01\x03R\vinputConfig\x12_\n" +
+	"\x11conversation_info\x18\x06 \x01(\v2,.google.cloud.dialogflow.v2.ConversationInfoB\x04\xe2A\x01\x03R\x10conversationInfo\x123\n" +
+	"\x12conversation_count\x18\a \x01(\x03B\x04\xe2A\x01\x03R\x11conversationCount\x12.\n" +
+	"\rsatisfies_pzi\x18\b \x01(\bB\x04\xe2A\x01\x03H\x00R\fsatisfiesPzi\x88\x01\x01\x12.\n" +
+	"\rsatisfies_pzs\x18\t \x01(\bB\x04\xe2A\x01\x03H\x01R\fsatisfiesPzs\x88\x01\x01:\x88\x01\xeaA\x84\x01\n" +
 	"-dialogflow.googleapis.com/ConversationDataset\x12Sprojects/{project}/locations/{location}/conversationDatasets/{conversation_dataset}B\x10\n" +
 	"\x0e_satisfies_pziB\x10\n" +
-	"\x0e_satisfies_pzs\"\xa8\x01\n" +
-	" CreateConversationDatasetRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12g\n" +
-	"\x14conversation_dataset\x18\x02 \x01(\v2/.google.cloud.dialogflow.v2.ConversationDatasetB\x03\xe0A\x02R\x13conversationDataset\"j\n" +
-	"\x1dGetConversationDatasetRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-dialogflow.googleapis.com/ConversationDatasetR\x04name\"\xb6\x01\n" +
-	"\x1fListConversationDatasetsRequest\x12M\n" +
-	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\x12-dialogflow.googleapis.com/ConversationDatasetR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0e_satisfies_pzs\"\xaa\x01\n" +
+	" CreateConversationDatasetRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12h\n" +
+	"\x14conversation_dataset\x18\x02 \x01(\v2/.google.cloud.dialogflow.v2.ConversationDatasetB\x04\xe2A\x01\x02R\x13conversationDataset\"k\n" +
+	"\x1dGetConversationDatasetRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-dialogflow.googleapis.com/ConversationDatasetR\x04name\"\xb9\x01\n" +
+	"\x1fListConversationDatasetsRequest\x12N\n" +
+	"\x06parent\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\x12-dialogflow.googleapis.com/ConversationDatasetR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xb0\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xb0\x01\n" +
 	" ListConversationDatasetsResponse\x12d\n" +
 	"\x15conversation_datasets\x18\x01 \x03(\v2/.google.cloud.dialogflow.v2.ConversationDatasetR\x14conversationDatasets\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"m\n" +
-	" DeleteConversationDatasetRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-dialogflow.googleapis.com/ConversationDatasetR\x04name\"\xbb\x01\n" +
-	"\x1dImportConversationDataRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-dialogflow.googleapis.com/ConversationDatasetR\x04name\x12O\n" +
-	"\finput_config\x18\x02 \x01(\v2'.google.cloud.dialogflow.v2.InputConfigB\x03\xe0A\x02R\vinputConfig\"\x8c\x02\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"n\n" +
+	" DeleteConversationDatasetRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-dialogflow.googleapis.com/ConversationDatasetR\x04name\"\xbd\x01\n" +
+	"\x1dImportConversationDataRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-dialogflow.googleapis.com/ConversationDatasetR\x04name\x12P\n" +
+	"\finput_config\x18\x02 \x01(\v2'.google.cloud.dialogflow.v2.InputConfigB\x04\xe2A\x01\x02R\vinputConfig\"\x8c\x02\n" +
 	"'ImportConversationDataOperationMetadata\x12e\n" +
 	"\x14conversation_dataset\x18\x01 \x01(\tB2\xfaA/\n" +
 	"-dialogflow.googleapis.com/ConversationDatasetR\x13conversationDataset\x12=\n" +
