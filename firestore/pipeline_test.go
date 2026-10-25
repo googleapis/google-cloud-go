@@ -996,6 +996,13 @@ func TestPipeline_ExecuteOptions(t *testing.T) {
 		if _, exists := req.GetStructuredPipeline().GetOptions()["atomic"]; exists {
 			t.Errorf("expected StructuredPipeline.Options not to contain \"atomic\"")
 		}
+
+		snap := c.Pipeline().Collection("books").Execute(context.Background(), WithAtomic(true))
+		streamIter := snap.iter.iter.(*streamPipelineResultIterator)
+		md, _ := metadata.FromOutgoingContext(streamIter.ctx)
+		if got := md.Get(isTransactionHeader); len(got) != 1 || got[0] != "true" {
+			t.Errorf("WithAtomic(true) header: got %v, want [true]", got)
+		}
 	})
 
 	t.Run("WithAtomic_False", func(t *testing.T) {
@@ -1011,6 +1018,24 @@ func TestPipeline_ExecuteOptions(t *testing.T) {
 		}
 		if req.GetAutoCommitTransaction() {
 			t.Errorf("expected AutoCommitTransaction = false, got true")
+		}
+
+		snap := c.Pipeline().Collection("books").Execute(context.Background(), WithAtomic(false))
+		streamIter := snap.iter.iter.(*streamPipelineResultIterator)
+		md, _ := metadata.FromOutgoingContext(streamIter.ctx)
+		if got := md.Get(isTransactionHeader); len(got) != 1 || got[0] != "false" {
+			t.Errorf("WithAtomic(false) header: got %v, want [false]", got)
+		}
+	})
+
+	t.Run("Transaction_RoutingHeader", func(t *testing.T) {
+		p := c.Pipeline().Collection("books")
+		p.tx = &Transaction{id: []byte("tx-1")}
+		snap := p.Execute(context.Background())
+		streamIter := snap.iter.iter.(*streamPipelineResultIterator)
+		md, _ := metadata.FromOutgoingContext(streamIter.ctx)
+		if got := md.Get(isTransactionHeader); len(got) != 1 || got[0] != "true" {
+			t.Errorf("transactional pipeline header: got %v, want [true]", got)
 		}
 	})
 
