@@ -38,8 +38,7 @@ import (
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/testing/protocmp"
-	proto3 "google.golang.org/protobuf/types/known/structpb"
-	structpb "google.golang.org/protobuf/types/known/structpb"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 var (
@@ -324,7 +323,7 @@ func TestEncodeValue(t *testing.T) {
 	)
 	for i, test := range []struct {
 		in       interface{}
-		want     *proto3.Value
+		want     *structpb.Value
 		wantType *sppb.Type
 		name     string
 	}{
@@ -643,12 +642,13 @@ func TestEncodeInvalidValues(t *testing.T) {
 type encodeTest struct {
 	desc     string
 	in       interface{}
-	want     *proto3.Value
+	want     *structpb.Value
 	wantType *sppb.Type
 }
 
-func checkStructEncoding(desc string, got *proto3.Value, gotType *sppb.Type,
-	want *proto3.Value, wantType *sppb.Type, t *testing.T) {
+func checkStructEncoding(desc string, got *structpb.Value, gotType *sppb.Type,
+	want *structpb.Value, wantType *sppb.Type, t *testing.T,
+) {
 	if !testEqual(got, want) {
 		t.Errorf("Test %s: got encode result: %v, want %v", desc, got, want)
 	}
@@ -831,7 +831,7 @@ func TestEncodeStructValueArrayStructFields(t *testing.T) {
 				Intf       int
 				ArrStructf []structf
 			}{10, []structf{}},
-			listProto(intProto(10), listProto([]*proto3.Value{}...)),
+			listProto(intProto(10), listProto([]*structpb.Value{}...)),
 			structType(
 				mkField("Intf", intType()),
 				mkField("ArrStructf", listType(structfType))),
@@ -915,7 +915,7 @@ func TestEncodeStructValueStructFields(t *testing.T) {
 				Intf    int
 				Structf struct{}
 			}{10, struct{}{}},
-			listProto(intProto(10), listProto([]*proto3.Value{}...)),
+			listProto(intProto(10), listProto([]*structpb.Value{}...)),
 			structType(
 				mkField("Intf", intType()),
 				mkField("Structf", structType([]*sppb.StructType_Field{}...))),
@@ -1585,7 +1585,7 @@ func TestDecodeValue(t *testing.T) {
 
 	for _, test := range []struct {
 		desc      string
-		proto     *proto3.Value
+		proto     *structpb.Value
 		protoType *sppb.Type
 		want      interface{}
 		wantErr   bool
@@ -1611,7 +1611,7 @@ func TestDecodeValue(t *testing.T) {
 		// BYTES ARRAY
 		{desc: "decode ARRAY<BYTES> to [][]byte", proto: listProto(bytesProto([]byte("ab")), nullProto()), protoType: listType(bytesType()), want: [][]byte{[]byte("ab"), nil}},
 		{desc: "decode NULL to [][]byte", proto: nullProto(), protoType: listType(bytesType()), want: [][]byte(nil)},
-		//INT64
+		// INT64
 		{desc: "decode INT64 to int64", proto: intProto(15), protoType: intType(), want: int64(15)},
 		{desc: "decode NULL to int64", proto: nullProto(), protoType: intType(), want: int64(0), wantErr: true},
 		{desc: "decode INT64 to *int64", proto: intProto(15), protoType: intType(), want: &iValue},
@@ -1823,7 +1823,7 @@ func TestDecodeValue(t *testing.T) {
 								),
 							),
 						},
-						vals: []*proto3.Value{
+						vals: []*structpb.Value{
 							intProto(3),
 							listProto(
 								listProto(floatProto(3.14), stringProto("this")),
@@ -1847,7 +1847,7 @@ func TestDecodeValue(t *testing.T) {
 								),
 							),
 						},
-						vals: []*proto3.Value{
+						vals: []*structpb.Value{
 							nullProto(),
 							nullProto(),
 						},
@@ -2128,7 +2128,7 @@ func TestDecodeValue(t *testing.T) {
 func TestDecodeValueErrors(t *testing.T) {
 	var s string
 	for i, test := range []struct {
-		in *proto3.Value
+		in *structpb.Value
 		t  *sppb.Type
 		v  interface{}
 	}{
@@ -2302,7 +2302,7 @@ func TestNaN(t *testing.T) {
 	if err != nil {
 		t.Errorf("encodeValue returns %q for NaN, want nil", err)
 	}
-	x, ok := v.GetKind().(*proto3.Value_NumberValue)
+	x, ok := v.GetKind().(*structpb.Value_NumberValue)
 	if !ok {
 		t.Errorf("incorrect type for v.GetKind(): %T, want *proto3.Value_NumberValue", v.GetKind())
 	}
@@ -2314,7 +2314,7 @@ func TestNaN(t *testing.T) {
 	if err != nil {
 		t.Errorf("encodeValue returns %q for NaN, want nil", err)
 	}
-	x, ok = v.GetKind().(*proto3.Value_NumberValue)
+	x, ok = v.GetKind().(*structpb.Value_NumberValue)
 	if !ok {
 		t.Errorf("incorrect type for v.GetKind(): %T, want *proto3.Value_NumberValue", v.GetKind())
 	}
@@ -2348,7 +2348,7 @@ func TestFloat32NaN(t *testing.T) {
 	if err != nil {
 		t.Errorf("encodeValue returns %q for NaN, want nil", err)
 	}
-	x, ok := v.GetKind().(*proto3.Value_NumberValue)
+	x, ok := v.GetKind().(*structpb.Value_NumberValue)
 	if !ok {
 		t.Errorf("incorrect type for v.GetKind(): %T, want *proto3.Value_NumberValue", v.GetKind())
 	}
@@ -2360,7 +2360,7 @@ func TestFloat32NaN(t *testing.T) {
 	if err != nil {
 		t.Errorf("encodeValue returns %q for NaN, want nil", err)
 	}
-	x, ok = v.GetKind().(*proto3.Value_NumberValue)
+	x, ok = v.GetKind().(*structpb.Value_NumberValue)
 	if !ok {
 		t.Errorf("incorrect type for v.GetKind(): %T, want *proto3.Value_NumberValue", v.GetKind())
 	}
@@ -2537,7 +2537,7 @@ func TestDecodeStructWithPointers(t *testing.T) {
 		{Name: "TimeArray", Type: listType(timeType())},
 		{Name: "DateArray", Type: listType(dateType())},
 	}}
-	lv := []*proto3.ListValue{
+	lv := []*structpb.ListValue{
 		listValueProto(
 			stringProto("id"),
 			intProto(15),
@@ -2740,7 +2740,7 @@ func TestEncodeStructValueDynamicStructs(t *testing.T) {
 		{
 			"Empty array of dynamic structs.",
 			reflect.MakeSlice(dynStructArrType, 0, 0).Interface(),
-			listProto([]*proto3.Value{}...),
+			listProto([]*structpb.Value{}...),
 			arrProtoType,
 		},
 		{
@@ -2769,7 +2769,7 @@ func TestEncodeStructValueDynamicStructs(t *testing.T) {
 }
 
 func TestEncodeStructValueEmptyStruct(t *testing.T) {
-	emptyListValue := listProto([]*proto3.Value{}...)
+	emptyListValue := listProto([]*structpb.Value{}...)
 	emptyStructType := structType([]*sppb.StructType_Field{}...)
 	emptyStruct := struct{}{}
 	nullEmptyStruct := (*struct{})(nil)
@@ -2885,8 +2885,8 @@ func TestBindParamsDynamic(t *testing.T) {
 		Params: map[string]interface{}{"var": nil},
 	}
 	want := &sppb.ExecuteSqlRequest{
-		Params: &proto3.Struct{
-			Fields: map[string]*proto3.Value{"var": nil},
+		Params: &structpb.Struct{
+			Fields: map[string]*structpb.Value{"var": nil},
 		},
 		ParamTypes: map[string]*sppb.Type{"var": nil},
 	}
@@ -2920,7 +2920,7 @@ func TestBindParamsDynamic(t *testing.T) {
 
 	for _, test := range []struct {
 		val       interface{}
-		wantField *proto3.Value
+		wantField *structpb.Value
 		wantType  *sppb.Type
 	}{
 		{
@@ -3622,7 +3622,7 @@ func TestInterval(t *testing.T) {
 	tests := []struct {
 		name     string
 		interval Interval
-		want     *proto3.Value
+		want     *structpb.Value
 		wantType *sppb.Type
 	}{
 		{
@@ -3632,8 +3632,8 @@ func TestInterval(t *testing.T) {
 				Days:   3,
 				Nanos:  big.NewInt(43926789000123),
 			},
-			want: &proto3.Value{
-				Kind: &proto3.Value_StringValue{
+			want: &structpb.Value{
+				Kind: &structpb.Value_StringValue{
 					StringValue: "P1Y2M3DT12H12M6.789000123S",
 				},
 			},
@@ -3648,8 +3648,8 @@ func TestInterval(t *testing.T) {
 				Days:   0,
 				Nanos:  big.NewInt(0),
 			},
-			want: &proto3.Value{
-				Kind: &proto3.Value_StringValue{
+			want: &structpb.Value{
+				Kind: &structpb.Value_StringValue{
 					StringValue: "P10M",
 				},
 			},
@@ -3664,8 +3664,8 @@ func TestInterval(t *testing.T) {
 				Days:   10,
 				Nanos:  big.NewInt(0),
 			},
-			want: &proto3.Value{
-				Kind: &proto3.Value_StringValue{
+			want: &structpb.Value{
+				Kind: &structpb.Value_StringValue{
 					StringValue: "P10D",
 				},
 			},
@@ -3680,8 +3680,8 @@ func TestInterval(t *testing.T) {
 				Days:   0,
 				Nanos:  big.NewInt(10000000000),
 			},
-			want: &proto3.Value{
-				Kind: &proto3.Value_StringValue{
+			want: &structpb.Value{
+				Kind: &structpb.Value_StringValue{
 					StringValue: "PT10S",
 				},
 			},
@@ -3696,8 +3696,8 @@ func TestInterval(t *testing.T) {
 				Days:   0,
 				Nanos:  big.NewInt(10000000),
 			},
-			want: &proto3.Value{
-				Kind: &proto3.Value_StringValue{
+			want: &structpb.Value{
+				Kind: &structpb.Value_StringValue{
 					StringValue: "PT0.010S",
 				},
 			},
@@ -3712,8 +3712,8 @@ func TestInterval(t *testing.T) {
 				Days:   0,
 				Nanos:  big.NewInt(10000),
 			},
-			want: &proto3.Value{
-				Kind: &proto3.Value_StringValue{
+			want: &structpb.Value{
+				Kind: &structpb.Value_StringValue{
 					StringValue: "PT0.000010S",
 				},
 			},
@@ -3728,8 +3728,8 @@ func TestInterval(t *testing.T) {
 				Days:   0,
 				Nanos:  big.NewInt(10),
 			},
-			want: &proto3.Value{
-				Kind: &proto3.Value_StringValue{
+			want: &structpb.Value{
+				Kind: &structpb.Value_StringValue{
 					StringValue: "PT0.000000010S",
 				},
 			},
@@ -3744,8 +3744,8 @@ func TestInterval(t *testing.T) {
 				Days:   20,
 				Nanos:  big.NewInt(1030),
 			},
-			want: &proto3.Value{
-				Kind: &proto3.Value_StringValue{
+			want: &structpb.Value{
+				Kind: &structpb.Value_StringValue{
 					StringValue: "P10M20DT0.000001030S",
 				},
 			},
@@ -3760,8 +3760,8 @@ func TestInterval(t *testing.T) {
 				Days:   20,
 				Nanos:  big.NewInt(-1030),
 			},
-			want: &proto3.Value{
-				Kind: &proto3.Value_StringValue{
+			want: &structpb.Value{
+				Kind: &structpb.Value_StringValue{
 					StringValue: "P10M20DT-0.000001030S",
 				},
 			},
@@ -3776,8 +3776,8 @@ func TestInterval(t *testing.T) {
 				Days:   -3,
 				Nanos:  big.NewInt(-43926789000123),
 			},
-			want: &proto3.Value{
-				Kind: &proto3.Value_StringValue{
+			want: &structpb.Value{
+				Kind: &structpb.Value_StringValue{
 					StringValue: "P-1Y-2M-3DT-12H-12M-6.789000123S",
 				},
 			},
@@ -3792,8 +3792,8 @@ func TestInterval(t *testing.T) {
 				Days:   3,
 				Nanos:  big.NewInt(-41401234000000),
 			},
-			want: &proto3.Value{
-				Kind: &proto3.Value_StringValue{
+			want: &structpb.Value{
+				Kind: &structpb.Value_StringValue{
 					StringValue: "P10M3DT-11H-30M-1.234S",
 				},
 			},
@@ -3808,8 +3808,8 @@ func TestInterval(t *testing.T) {
 				Days:   15,
 				Nanos:  func() *big.Int { n, _ := new(big.Int).SetString("316223999999999999999", 10); return n }(),
 			},
-			want: &proto3.Value{
-				Kind: &proto3.Value_StringValue{
+			want: &structpb.Value{
+				Kind: &structpb.Value_StringValue{
 					StringValue: "P2Y1M15DT87839999H59M59.999999999S",
 				},
 			},
@@ -3824,8 +3824,8 @@ func TestInterval(t *testing.T) {
 				Days:   0,
 				Nanos:  big.NewInt(0),
 			},
-			want: &proto3.Value{
-				Kind: &proto3.Value_StringValue{
+			want: &structpb.Value{
+				Kind: &structpb.Value_StringValue{
 					StringValue: "P0Y",
 				},
 			},
@@ -3858,7 +3858,7 @@ func TestNullInterval(t *testing.T) {
 	tests := []struct {
 		name     string
 		interval NullInterval
-		want     *proto3.Value
+		want     *structpb.Value
 		wantType *sppb.Type
 	}{
 		{
@@ -3871,8 +3871,8 @@ func TestNullInterval(t *testing.T) {
 				},
 				Valid: true,
 			},
-			want: &proto3.Value{
-				Kind: &proto3.Value_StringValue{
+			want: &structpb.Value{
+				Kind: &structpb.Value_StringValue{
 					StringValue: "P1Y2M3DT4H5M6S",
 				},
 			},
@@ -3886,8 +3886,8 @@ func TestNullInterval(t *testing.T) {
 				Interval: Interval{},
 				Valid:    false,
 			},
-			want: &proto3.Value{
-				Kind: &proto3.Value_NullValue{},
+			want: &structpb.Value{
+				Kind: &structpb.Value_NullValue{},
 			},
 			wantType: &sppb.Type{
 				Code: sppb.TypeCode_INTERVAL,

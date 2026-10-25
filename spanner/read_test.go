@@ -45,8 +45,7 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/durationpb"
-	proto3 "google.golang.org/protobuf/types/known/structpb"
-	structpb "google.golang.org/protobuf/types/known/structpb"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 var (
@@ -179,17 +178,17 @@ func describeRows(l []*Row) string {
 
 // Helper for generating proto3 Value_ListValue instances, making test code
 // shorter and readable.
-func genProtoListValue(v ...string) *proto3.Value_ListValue {
-	r := &proto3.Value_ListValue{
-		ListValue: &proto3.ListValue{
-			Values: []*proto3.Value{},
+func genProtoListValue(v ...string) *structpb.Value_ListValue {
+	r := &structpb.Value_ListValue{
+		ListValue: &structpb.ListValue{
+			Values: []*structpb.Value{},
 		},
 	}
 	for _, e := range v {
 		r.ListValue.Values = append(
 			r.ListValue.Values,
-			&proto3.Value{
-				Kind: &proto3.Value_StringValue{StringValue: e},
+			&structpb.Value{
+				Kind: &structpb.Value_StringValue{StringValue: e},
 			},
 		)
 	}
@@ -219,18 +218,18 @@ func partialResultSetDecoderTests() []partialResultSetDecoderTest {
 			input: []*sppb.PartialResultSet{
 				{
 					Metadata: kvMeta,
-					Values: []*proto3.Value{
-						{Kind: &proto3.Value_StringValue{StringValue: "foo"}},
-						{Kind: &proto3.Value_StringValue{StringValue: "bar"}},
+					Values: []*structpb.Value{
+						{Kind: &structpb.Value_StringValue{StringValue: "foo"}},
+						{Kind: &structpb.Value_StringValue{StringValue: "bar"}},
 					},
 				},
 			},
 			wantF: []*Row{
 				{
 					fields: kvMeta.RowType.Fields,
-					vals: []*proto3.Value{
-						{Kind: &proto3.Value_StringValue{StringValue: "foo"}},
-						{Kind: &proto3.Value_StringValue{StringValue: "bar"}},
+					vals: []*structpb.Value{
+						{Kind: &structpb.Value_StringValue{StringValue: "foo"}},
+						{Kind: &structpb.Value_StringValue{StringValue: "bar"}},
 					},
 				},
 			},
@@ -242,8 +241,8 @@ func partialResultSetDecoderTests() []partialResultSetDecoderTest {
 			input: []*sppb.PartialResultSet{
 				{
 					Metadata: kvMeta,
-					Values: []*proto3.Value{
-						{Kind: &proto3.Value_StringValue{StringValue: "foo"}},
+					Values: []*structpb.Value{
+						{Kind: &structpb.Value_StringValue{StringValue: "foo"}},
 					},
 				},
 			},
@@ -255,22 +254,22 @@ func partialResultSetDecoderTests() []partialResultSetDecoderTest {
 			input: []*sppb.PartialResultSet{
 				{
 					Metadata: kvMeta,
-					Values: []*proto3.Value{
-						{Kind: &proto3.Value_StringValue{StringValue: "foo"}},
+					Values: []*structpb.Value{
+						{Kind: &structpb.Value_StringValue{StringValue: "foo"}},
 					},
 				},
 				{
-					Values: []*proto3.Value{
-						{Kind: &proto3.Value_StringValue{StringValue: "bar"}},
+					Values: []*structpb.Value{
+						{Kind: &structpb.Value_StringValue{StringValue: "bar"}},
 					},
 				},
 			},
 			wantF: []*Row{
 				{
 					fields: kvMeta.RowType.Fields,
-					vals: []*proto3.Value{
-						{Kind: &proto3.Value_StringValue{StringValue: "foo"}},
-						{Kind: &proto3.Value_StringValue{StringValue: "bar"}},
+					vals: []*structpb.Value{
+						{Kind: &structpb.Value_StringValue{StringValue: "foo"}},
+						{Kind: &structpb.Value_StringValue{StringValue: "bar"}},
 					},
 				},
 			},
@@ -282,40 +281,40 @@ func partialResultSetDecoderTests() []partialResultSetDecoderTest {
 			input: []*sppb.PartialResultSet{
 				{
 					Metadata: kvMeta,
-					Values: []*proto3.Value{
-						{Kind: &proto3.Value_StringValue{StringValue: "foo"}},
-						{Kind: &proto3.Value_StringValue{StringValue: "bar"}},
-						{Kind: &proto3.Value_StringValue{StringValue: "A"}},
+					Values: []*structpb.Value{
+						{Kind: &structpb.Value_StringValue{StringValue: "foo"}},
+						{Kind: &structpb.Value_StringValue{StringValue: "bar"}},
+						{Kind: &structpb.Value_StringValue{StringValue: "A"}},
 					},
 				},
 				{
-					Values: []*proto3.Value{
-						{Kind: &proto3.Value_StringValue{StringValue: "1"}},
-						{Kind: &proto3.Value_StringValue{StringValue: "B"}},
-						{Kind: &proto3.Value_StringValue{StringValue: "2"}},
+					Values: []*structpb.Value{
+						{Kind: &structpb.Value_StringValue{StringValue: "1"}},
+						{Kind: &structpb.Value_StringValue{StringValue: "B"}},
+						{Kind: &structpb.Value_StringValue{StringValue: "2"}},
 					},
 				},
 			},
 			wantF: []*Row{
 				{
 					fields: kvMeta.RowType.Fields,
-					vals: []*proto3.Value{
-						{Kind: &proto3.Value_StringValue{StringValue: "foo"}},
-						{Kind: &proto3.Value_StringValue{StringValue: "bar"}},
+					vals: []*structpb.Value{
+						{Kind: &structpb.Value_StringValue{StringValue: "foo"}},
+						{Kind: &structpb.Value_StringValue{StringValue: "bar"}},
 					},
 				},
 				{
 					fields: kvMeta.RowType.Fields,
-					vals: []*proto3.Value{
-						{Kind: &proto3.Value_StringValue{StringValue: "A"}},
-						{Kind: &proto3.Value_StringValue{StringValue: "1"}},
+					vals: []*structpb.Value{
+						{Kind: &structpb.Value_StringValue{StringValue: "A"}},
+						{Kind: &structpb.Value_StringValue{StringValue: "1"}},
 					},
 				},
 				{
 					fields: kvMeta.RowType.Fields,
-					vals: []*proto3.Value{
-						{Kind: &proto3.Value_StringValue{StringValue: "B"}},
-						{Kind: &proto3.Value_StringValue{StringValue: "2"}},
+					vals: []*structpb.Value{
+						{Kind: &structpb.Value_StringValue{StringValue: "B"}},
+						{Kind: &structpb.Value_StringValue{StringValue: "2"}},
 					},
 				},
 			},
@@ -327,30 +326,30 @@ func partialResultSetDecoderTests() []partialResultSetDecoderTest {
 			input: []*sppb.PartialResultSet{
 				{
 					Metadata: kvMeta,
-					Values: []*proto3.Value{
-						{Kind: &proto3.Value_StringValue{StringValue: "Hello"}},
-						{Kind: &proto3.Value_StringValue{StringValue: "W"}},
+					Values: []*structpb.Value{
+						{Kind: &structpb.Value_StringValue{StringValue: "Hello"}},
+						{Kind: &structpb.Value_StringValue{StringValue: "W"}},
 					},
 					ChunkedValue: true,
 				},
 				{
-					Values: []*proto3.Value{
-						{Kind: &proto3.Value_StringValue{StringValue: "orl"}},
+					Values: []*structpb.Value{
+						{Kind: &structpb.Value_StringValue{StringValue: "orl"}},
 					},
 					ChunkedValue: true,
 				},
 				{
-					Values: []*proto3.Value{
-						{Kind: &proto3.Value_StringValue{StringValue: "d"}},
+					Values: []*structpb.Value{
+						{Kind: &structpb.Value_StringValue{StringValue: "d"}},
 					},
 				},
 			},
 			wantF: []*Row{
 				{
 					fields: kvMeta.RowType.Fields,
-					vals: []*proto3.Value{
-						{Kind: &proto3.Value_StringValue{StringValue: "Hello"}},
-						{Kind: &proto3.Value_StringValue{StringValue: "World"}},
+					vals: []*structpb.Value{
+						{Kind: &structpb.Value_StringValue{StringValue: "Hello"}},
+						{Kind: &structpb.Value_StringValue{StringValue: "World"}},
 					},
 				},
 			},
@@ -363,54 +362,54 @@ func partialResultSetDecoderTests() []partialResultSetDecoderTest {
 			input: []*sppb.PartialResultSet{
 				{
 					Metadata: kvMeta,
-					Values: []*proto3.Value{
-						{Kind: &proto3.Value_StringValue{StringValue: "Hello"}},
-						{Kind: &proto3.Value_StringValue{StringValue: "W"}}, // start split in value
+					Values: []*structpb.Value{
+						{Kind: &structpb.Value_StringValue{StringValue: "Hello"}},
+						{Kind: &structpb.Value_StringValue{StringValue: "W"}}, // start split in value
 					},
 					ChunkedValue: true,
 				},
 				{
-					Values: []*proto3.Value{
-						{Kind: &proto3.Value_StringValue{StringValue: "orld"}}, // complete value
-						{Kind: &proto3.Value_StringValue{StringValue: "i"}},    // start split in key
+					Values: []*structpb.Value{
+						{Kind: &structpb.Value_StringValue{StringValue: "orld"}}, // complete value
+						{Kind: &structpb.Value_StringValue{StringValue: "i"}},    // start split in key
 					},
 					ChunkedValue: true,
 				},
 				{
-					Values: []*proto3.Value{
-						{Kind: &proto3.Value_StringValue{StringValue: "s"}}, // complete key
-						{Kind: &proto3.Value_StringValue{StringValue: "not"}},
-						{Kind: &proto3.Value_StringValue{StringValue: "a"}},
-						{Kind: &proto3.Value_StringValue{StringValue: "qu"}}, // split in value
+					Values: []*structpb.Value{
+						{Kind: &structpb.Value_StringValue{StringValue: "s"}}, // complete key
+						{Kind: &structpb.Value_StringValue{StringValue: "not"}},
+						{Kind: &structpb.Value_StringValue{StringValue: "a"}},
+						{Kind: &structpb.Value_StringValue{StringValue: "qu"}}, // split in value
 					},
 					ChunkedValue: true,
 				},
 				{
-					Values: []*proto3.Value{
-						{Kind: &proto3.Value_StringValue{StringValue: "estion"}}, // complete value
+					Values: []*structpb.Value{
+						{Kind: &structpb.Value_StringValue{StringValue: "estion"}}, // complete value
 					},
 				},
 			},
 			wantF: []*Row{
 				{
 					fields: kvMeta.RowType.Fields,
-					vals: []*proto3.Value{
-						{Kind: &proto3.Value_StringValue{StringValue: "Hello"}},
-						{Kind: &proto3.Value_StringValue{StringValue: "World"}},
+					vals: []*structpb.Value{
+						{Kind: &structpb.Value_StringValue{StringValue: "Hello"}},
+						{Kind: &structpb.Value_StringValue{StringValue: "World"}},
 					},
 				},
 				{
 					fields: kvMeta.RowType.Fields,
-					vals: []*proto3.Value{
-						{Kind: &proto3.Value_StringValue{StringValue: "is"}},
-						{Kind: &proto3.Value_StringValue{StringValue: "not"}},
+					vals: []*structpb.Value{
+						{Kind: &structpb.Value_StringValue{StringValue: "is"}},
+						{Kind: &structpb.Value_StringValue{StringValue: "not"}},
 					},
 				},
 				{
 					fields: kvMeta.RowType.Fields,
-					vals: []*proto3.Value{
-						{Kind: &proto3.Value_StringValue{StringValue: "a"}},
-						{Kind: &proto3.Value_StringValue{StringValue: "question"}},
+					vals: []*structpb.Value{
+						{Kind: &structpb.Value_StringValue{StringValue: "a"}},
+						{Kind: &structpb.Value_StringValue{StringValue: "question"}},
 					},
 				},
 			},
@@ -423,14 +422,14 @@ func partialResultSetDecoderTests() []partialResultSetDecoderTest {
 			input: []*sppb.PartialResultSet{
 				{
 					Metadata: kvListMeta,
-					Values: []*proto3.Value{
+					Values: []*structpb.Value{
 						{
 							Kind: genProtoListValue("foo-1", "foo-2"),
 						},
 					},
 				},
 				{
-					Values: []*proto3.Value{
+					Values: []*structpb.Value{
 						{
 							Kind: genProtoListValue("bar-1", "bar-2"),
 						},
@@ -440,7 +439,7 @@ func partialResultSetDecoderTests() []partialResultSetDecoderTest {
 			wantF: []*Row{
 				{
 					fields: kvListMeta.RowType.Fields,
-					vals: []*proto3.Value{
+					vals: []*structpb.Value{
 						{
 							Kind: genProtoListValue("foo-1", "foo-2"),
 						},
@@ -459,7 +458,7 @@ func partialResultSetDecoderTests() []partialResultSetDecoderTest {
 			input: []*sppb.PartialResultSet{
 				{
 					Metadata: kvListMeta,
-					Values: []*proto3.Value{
+					Values: []*structpb.Value{
 						{
 							Kind: genProtoListValue("foo-1", "foo-"),
 						},
@@ -467,14 +466,14 @@ func partialResultSetDecoderTests() []partialResultSetDecoderTest {
 					ChunkedValue: true,
 				},
 				{
-					Values: []*proto3.Value{
+					Values: []*structpb.Value{
 						{
 							Kind: genProtoListValue("2"),
 						},
 					},
 				},
 				{
-					Values: []*proto3.Value{
+					Values: []*structpb.Value{
 						{
 							Kind: genProtoListValue("bar-1", "bar-2"),
 						},
@@ -484,7 +483,7 @@ func partialResultSetDecoderTests() []partialResultSetDecoderTest {
 			wantF: []*Row{
 				{
 					fields: kvListMeta.RowType.Fields,
-					vals: []*proto3.Value{
+					vals: []*structpb.Value{
 						{
 							Kind: genProtoListValue("foo-1", "foo-2"),
 						},
@@ -504,12 +503,12 @@ func partialResultSetDecoderTests() []partialResultSetDecoderTest {
 			input: []*sppb.PartialResultSet{
 				{
 					Metadata: kvObjectMeta,
-					Values: []*proto3.Value{
+					Values: []*structpb.Value{
 						{
-							Kind: &proto3.Value_ListValue{
-								ListValue: &proto3.ListValue{
-									Values: []*proto3.Value{
-										{Kind: &proto3.Value_NumberValue{NumberValue: 23}},
+							Kind: &structpb.Value_ListValue{
+								ListValue: &structpb.ListValue{
+									Values: []*structpb.Value{
+										{Kind: &structpb.Value_NumberValue{NumberValue: 23}},
 										{Kind: genProtoListValue("foo-1", "fo")},
 									},
 								},
@@ -519,11 +518,11 @@ func partialResultSetDecoderTests() []partialResultSetDecoderTest {
 					ChunkedValue: true,
 				},
 				{
-					Values: []*proto3.Value{
+					Values: []*structpb.Value{
 						{
-							Kind: &proto3.Value_ListValue{
-								ListValue: &proto3.ListValue{
-									Values: []*proto3.Value{
+							Kind: &structpb.Value_ListValue{
+								ListValue: &structpb.ListValue{
+									Values: []*structpb.Value{
 										{Kind: genProtoListValue("o-2", "f")},
 									},
 								},
@@ -533,21 +532,21 @@ func partialResultSetDecoderTests() []partialResultSetDecoderTest {
 					ChunkedValue: true,
 				},
 				{
-					Values: []*proto3.Value{
+					Values: []*structpb.Value{
 						{
-							Kind: &proto3.Value_ListValue{
-								ListValue: &proto3.ListValue{
-									Values: []*proto3.Value{
+							Kind: &structpb.Value_ListValue{
+								ListValue: &structpb.ListValue{
+									Values: []*structpb.Value{
 										{Kind: genProtoListValue("oo-3")},
 									},
 								},
 							},
 						},
 						{
-							Kind: &proto3.Value_ListValue{
-								ListValue: &proto3.ListValue{
-									Values: []*proto3.Value{
-										{Kind: &proto3.Value_NumberValue{NumberValue: 45}},
+							Kind: &structpb.Value_ListValue{
+								ListValue: &structpb.ListValue{
+									Values: []*structpb.Value{
+										{Kind: &structpb.Value_NumberValue{NumberValue: 45}},
 										{Kind: genProtoListValue("bar-1")},
 									},
 								},
@@ -559,22 +558,22 @@ func partialResultSetDecoderTests() []partialResultSetDecoderTest {
 			wantF: []*Row{
 				{
 					fields: kvObjectMeta.RowType.Fields,
-					vals: []*proto3.Value{
+					vals: []*structpb.Value{
 						{
-							Kind: &proto3.Value_ListValue{
-								ListValue: &proto3.ListValue{
-									Values: []*proto3.Value{
-										{Kind: &proto3.Value_NumberValue{NumberValue: 23}},
+							Kind: &structpb.Value_ListValue{
+								ListValue: &structpb.ListValue{
+									Values: []*structpb.Value{
+										{Kind: &structpb.Value_NumberValue{NumberValue: 23}},
 										{Kind: genProtoListValue("foo-1", "foo-2", "foo-3")},
 									},
 								},
 							},
 						},
 						{
-							Kind: &proto3.Value_ListValue{
-								ListValue: &proto3.ListValue{
-									Values: []*proto3.Value{
-										{Kind: &proto3.Value_NumberValue{NumberValue: 45}},
+							Kind: &structpb.Value_ListValue{
+								ListValue: &structpb.ListValue{
+									Values: []*structpb.Value{
+										{Kind: &structpb.Value_NumberValue{NumberValue: 45}},
 										{Kind: genProtoListValue("bar-1")},
 									},
 								},
@@ -628,9 +627,9 @@ func setMaxBytesBetweenResumeTokens() func() {
 	o := atomic.LoadInt32(&maxBytesBetweenResumeTokens)
 	atomic.StoreInt32(&maxBytesBetweenResumeTokens, int32(maxBuffers*proto.Size(&sppb.PartialResultSet{
 		Metadata: kvMeta,
-		Values: []*proto3.Value{
-			{Kind: &proto3.Value_StringValue{StringValue: keyStr(0)}},
-			{Kind: &proto3.Value_StringValue{StringValue: valStr(0)}},
+		Values: []*structpb.Value{
+			{Kind: &structpb.Value_StringValue{StringValue: keyStr(0)}},
+			{Kind: &structpb.Value_StringValue{StringValue: valStr(0)}},
 		},
 	})))
 	return func() {
@@ -677,18 +676,18 @@ func TestRsdNonblockingStates(t *testing.T) {
 			want: []*sppb.PartialResultSet{
 				{
 					Metadata: kvMeta,
-					Values: []*proto3.Value{
-						{Kind: &proto3.Value_StringValue{StringValue: keyStr(0)}},
-						{Kind: &proto3.Value_StringValue{StringValue: valStr(0)}},
+					Values: []*structpb.Value{
+						{Kind: &structpb.Value_StringValue{StringValue: keyStr(0)}},
+						{Kind: &structpb.Value_StringValue{StringValue: valStr(0)}},
 					},
 				},
 			},
 			queue: []*sppb.PartialResultSet{
 				{
 					Metadata: kvMeta,
-					Values: []*proto3.Value{
-						{Kind: &proto3.Value_StringValue{StringValue: keyStr(1)}},
-						{Kind: &proto3.Value_StringValue{StringValue: valStr(1)}},
+					Values: []*structpb.Value{
+						{Kind: &structpb.Value_StringValue{StringValue: keyStr(1)}},
+						{Kind: &structpb.Value_StringValue{StringValue: valStr(1)}},
 					},
 				},
 			},
@@ -711,16 +710,16 @@ func TestRsdNonblockingStates(t *testing.T) {
 			want: []*sppb.PartialResultSet{
 				{
 					Metadata: kvMeta,
-					Values: []*proto3.Value{
-						{Kind: &proto3.Value_StringValue{StringValue: keyStr(0)}},
-						{Kind: &proto3.Value_StringValue{StringValue: valStr(0)}},
+					Values: []*structpb.Value{
+						{Kind: &structpb.Value_StringValue{StringValue: keyStr(0)}},
+						{Kind: &structpb.Value_StringValue{StringValue: valStr(0)}},
 					},
 				},
 				{
 					Metadata: kvMeta,
-					Values: []*proto3.Value{
-						{Kind: &proto3.Value_StringValue{StringValue: keyStr(1)}},
-						{Kind: &proto3.Value_StringValue{StringValue: valStr(1)}},
+					Values: []*structpb.Value{
+						{Kind: &structpb.Value_StringValue{StringValue: keyStr(1)}},
+						{Kind: &structpb.Value_StringValue{StringValue: valStr(1)}},
 					},
 					ResumeToken: EncodeResumeToken(1),
 				},
@@ -744,9 +743,9 @@ func TestRsdNonblockingStates(t *testing.T) {
 				for i := 0; i < maxBuffers+1; i++ {
 					s = append(s, &sppb.PartialResultSet{
 						Metadata: kvMeta,
-						Values: []*proto3.Value{
-							{Kind: &proto3.Value_StringValue{StringValue: keyStr(i)}},
-							{Kind: &proto3.Value_StringValue{StringValue: valStr(i)}},
+						Values: []*structpb.Value{
+							{Kind: &structpb.Value_StringValue{StringValue: keyStr(i)}},
+							{Kind: &structpb.Value_StringValue{StringValue: valStr(i)}},
 						},
 					})
 				}
@@ -781,9 +780,9 @@ func TestRsdNonblockingStates(t *testing.T) {
 				for i := 0; i < maxBuffers; i++ {
 					s = append(s, &sppb.PartialResultSet{
 						Metadata: kvMeta,
-						Values: []*proto3.Value{
-							{Kind: &proto3.Value_StringValue{StringValue: keyStr(i)}},
-							{Kind: &proto3.Value_StringValue{StringValue: valStr(i)}},
+						Values: []*structpb.Value{
+							{Kind: &structpb.Value_StringValue{StringValue: keyStr(i)}},
+							{Kind: &structpb.Value_StringValue{StringValue: valStr(i)}},
 						},
 					})
 				}
@@ -967,24 +966,24 @@ func TestRsdBlockingStates(t *testing.T) {
 			want: []*sppb.PartialResultSet{
 				{
 					Metadata: kvMeta,
-					Values: []*proto3.Value{
-						{Kind: &proto3.Value_StringValue{StringValue: keyStr(0)}},
-						{Kind: &proto3.Value_StringValue{StringValue: valStr(0)}},
+					Values: []*structpb.Value{
+						{Kind: &structpb.Value_StringValue{StringValue: keyStr(0)}},
+						{Kind: &structpb.Value_StringValue{StringValue: valStr(0)}},
 					},
 				},
 				{
 					Metadata: kvMeta,
-					Values: []*proto3.Value{
-						{Kind: &proto3.Value_StringValue{StringValue: keyStr(1)}},
-						{Kind: &proto3.Value_StringValue{StringValue: valStr(1)}},
+					Values: []*structpb.Value{
+						{Kind: &structpb.Value_StringValue{StringValue: keyStr(1)}},
+						{Kind: &structpb.Value_StringValue{StringValue: valStr(1)}},
 					},
 					ResumeToken: EncodeResumeToken(1),
 				},
 				{
 					Metadata: kvMeta,
-					Values: []*proto3.Value{
-						{Kind: &proto3.Value_StringValue{StringValue: keyStr(2)}},
-						{Kind: &proto3.Value_StringValue{StringValue: valStr(2)}},
+					Values: []*structpb.Value{
+						{Kind: &structpb.Value_StringValue{StringValue: keyStr(2)}},
+						{Kind: &structpb.Value_StringValue{StringValue: valStr(2)}},
 					},
 					ResumeToken: EncodeResumeToken(2),
 				},
@@ -992,18 +991,18 @@ func TestRsdBlockingStates(t *testing.T) {
 				// flush out all messages in the internal queue.
 				{
 					Metadata: kvMeta,
-					Values: []*proto3.Value{
-						{Kind: &proto3.Value_StringValue{StringValue: keyStr(3)}},
-						{Kind: &proto3.Value_StringValue{StringValue: valStr(3)}},
+					Values: []*structpb.Value{
+						{Kind: &structpb.Value_StringValue{StringValue: keyStr(3)}},
+						{Kind: &structpb.Value_StringValue{StringValue: valStr(3)}},
 					},
 				},
 			},
 			queue: []*sppb.PartialResultSet{
 				{
 					Metadata: kvMeta,
-					Values: []*proto3.Value{
-						{Kind: &proto3.Value_StringValue{StringValue: keyStr(3)}},
-						{Kind: &proto3.Value_StringValue{StringValue: valStr(3)}},
+					Values: []*structpb.Value{
+						{Kind: &structpb.Value_StringValue{StringValue: keyStr(3)}},
+						{Kind: &structpb.Value_StringValue{StringValue: valStr(3)}},
 					},
 				},
 			},
@@ -1037,9 +1036,9 @@ func TestRsdBlockingStates(t *testing.T) {
 				for i := 0; i < maxBuffers+3; i++ {
 					s = append(s, &sppb.PartialResultSet{
 						Metadata: kvMeta,
-						Values: []*proto3.Value{
-							{Kind: &proto3.Value_StringValue{StringValue: keyStr(i)}},
-							{Kind: &proto3.Value_StringValue{StringValue: valStr(i)}},
+						Values: []*structpb.Value{
+							{Kind: &structpb.Value_StringValue{StringValue: keyStr(i)}},
+							{Kind: &structpb.Value_StringValue{StringValue: valStr(i)}},
 						},
 					})
 				}
@@ -1050,9 +1049,9 @@ func TestRsdBlockingStates(t *testing.T) {
 			queue: []*sppb.PartialResultSet{
 				{
 					Metadata: kvMeta,
-					Values: []*proto3.Value{
-						{Kind: &proto3.Value_StringValue{StringValue: keyStr(maxBuffers + 2)}},
-						{Kind: &proto3.Value_StringValue{StringValue: valStr(maxBuffers + 2)}},
+					Values: []*structpb.Value{
+						{Kind: &structpb.Value_StringValue{StringValue: keyStr(maxBuffers + 2)}},
+						{Kind: &structpb.Value_StringValue{StringValue: valStr(maxBuffers + 2)}},
 					},
 				},
 			},
@@ -1082,9 +1081,9 @@ func TestRsdBlockingStates(t *testing.T) {
 				for i := 0; i < maxBuffers; i++ {
 					s = append(s, &sppb.PartialResultSet{
 						Metadata: kvMeta,
-						Values: []*proto3.Value{
-							{Kind: &proto3.Value_StringValue{StringValue: keyStr(i)}},
-							{Kind: &proto3.Value_StringValue{StringValue: valStr(i)}},
+						Values: []*structpb.Value{
+							{Kind: &structpb.Value_StringValue{StringValue: keyStr(i)}},
+							{Kind: &structpb.Value_StringValue{StringValue: valStr(i)}},
 						},
 					})
 				}
@@ -1177,7 +1176,7 @@ func TestRsdBlockingStates(t *testing.T) {
 			if err != nil {
 				t.Fatalf("failed to set up a result for a statement: %v", err)
 			}
-			var mutex = &sync.Mutex{}
+			mutex := &sync.Mutex{}
 			var rs []*sppb.PartialResultSet
 			rowsFetched := make(chan int)
 			go func() {
@@ -1324,9 +1323,9 @@ func TestQueueBytes(t *testing.T) {
 
 	sizeOfPRS := proto.Size(&sppb.PartialResultSet{
 		Metadata: kvMeta,
-		Values: []*proto3.Value{
-			{Kind: &proto3.Value_StringValue{StringValue: keyStr(0)}},
-			{Kind: &proto3.Value_StringValue{StringValue: valStr(0)}},
+		Values: []*structpb.Value{
+			{Kind: &structpb.Value_StringValue{StringValue: keyStr(0)}},
+			{Kind: &structpb.Value_StringValue{StringValue: valStr(0)}},
 		},
 		ResumeToken: rt1,
 	})
@@ -1440,23 +1439,23 @@ func TestResumeToken(t *testing.T) {
 	want := []*Row{
 		{
 			fields: kvMeta.RowType.Fields,
-			vals: []*proto3.Value{
-				{Kind: &proto3.Value_StringValue{StringValue: keyStr(0)}},
-				{Kind: &proto3.Value_StringValue{StringValue: valStr(0)}},
+			vals: []*structpb.Value{
+				{Kind: &structpb.Value_StringValue{StringValue: keyStr(0)}},
+				{Kind: &structpb.Value_StringValue{StringValue: valStr(0)}},
 			},
 		},
 		{
 			fields: kvMeta.RowType.Fields,
-			vals: []*proto3.Value{
-				{Kind: &proto3.Value_StringValue{StringValue: keyStr(1)}},
-				{Kind: &proto3.Value_StringValue{StringValue: valStr(1)}},
+			vals: []*structpb.Value{
+				{Kind: &structpb.Value_StringValue{StringValue: keyStr(1)}},
+				{Kind: &structpb.Value_StringValue{StringValue: valStr(1)}},
 			},
 		},
 		{
 			fields: kvMeta.RowType.Fields,
-			vals: []*proto3.Value{
-				{Kind: &proto3.Value_StringValue{StringValue: keyStr(2)}},
-				{Kind: &proto3.Value_StringValue{StringValue: valStr(2)}},
+			vals: []*structpb.Value{
+				{Kind: &structpb.Value_StringValue{StringValue: keyStr(2)}},
+				{Kind: &structpb.Value_StringValue{StringValue: valStr(2)}},
 			},
 		},
 	}
@@ -1505,16 +1504,16 @@ func TestResumeToken(t *testing.T) {
 	want = []*Row{
 		{
 			fields: kvMeta.RowType.Fields,
-			vals: []*proto3.Value{
-				{Kind: &proto3.Value_StringValue{StringValue: keyStr(0)}},
-				{Kind: &proto3.Value_StringValue{StringValue: valStr(0)}},
+			vals: []*structpb.Value{
+				{Kind: &structpb.Value_StringValue{StringValue: keyStr(0)}},
+				{Kind: &structpb.Value_StringValue{StringValue: valStr(0)}},
 			},
 		},
 		{
 			fields: kvMeta.RowType.Fields,
-			vals: []*proto3.Value{
-				{Kind: &proto3.Value_StringValue{StringValue: keyStr(1)}},
-				{Kind: &proto3.Value_StringValue{StringValue: valStr(1)}},
+			vals: []*structpb.Value{
+				{Kind: &structpb.Value_StringValue{StringValue: keyStr(1)}},
+				{Kind: &structpb.Value_StringValue{StringValue: valStr(1)}},
 			},
 		},
 	}
@@ -1564,7 +1563,6 @@ func TestGrpcReconnect(t *testing.T) {
 				Sql:         SelectSingerIDAlbumIDAlbumTitleFromAlbums,
 				ResumeToken: resumeToken,
 			}, opts...)
-
 		},
 		nil,
 		func(error) {}, mc.(*grpcSpannerClient))
@@ -1623,7 +1621,6 @@ func TestRetryResourceExhaustedWithoutRetryInfo(t *testing.T) {
 				Sql:         SelectSingerIDAlbumIDAlbumTitleFromAlbums,
 				ResumeToken: resumeToken,
 			}, opts...)
-
 		},
 		nil,
 		func(error) {}, mc.(*grpcSpannerClient))
@@ -1689,7 +1686,6 @@ func TestRetryResourceExhaustedWithRetryInfo(t *testing.T) {
 				Sql:         SelectSingerIDAlbumIDAlbumTitleFromAlbums,
 				ResumeToken: resumeToken,
 			}, opts...)
-
 		},
 		nil,
 		func(error) {}, mc.(*grpcSpannerClient))
