@@ -19,6 +19,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 
@@ -197,7 +198,35 @@ func appendPackageName(spanName string) string {
 }
 
 func setUploadIDAttribute(ctx context.Context, uploadID string) {
-	if !isOTelTracingDevEnabled() || uploadID == "" {
+	if !isOTelTracingDevEnabled() {
+		return
+	}
+	recordUploadID(ctx, uploadID)
+}
+
+// setUploadIDFromHeader records the upload ID from the "upload_id" query
+// parameter of the Location header returned when a resumable upload session is
+// initiated over HTTP. It is a no-op if dev tracing is disabled or the header
+// does not contain an upload ID.
+func setUploadIDFromHeader(ctx context.Context, h http.Header) {
+	if !isOTelTracingDevEnabled() || h == nil {
+		return
+	}
+	loc := h.Get("Location")
+	if loc == "" {
+		return
+	}
+	u, err := url.Parse(loc)
+	if err != nil {
+		return
+	}
+	recordUploadID(ctx, u.Query().Get("upload_id"))
+}
+
+// recordUploadID sets the gcp.storage.upload.id attribute on the span in ctx.
+// Callers are responsible for checking isOTelTracingDevEnabled.
+func recordUploadID(ctx context.Context, uploadID string) {
+	if uploadID == "" {
 		return
 	}
 	trace.SpanFromContext(ctx).SetAttributes(attribute.String("gcp.storage.upload.id", uploadID))
