@@ -56,9 +56,13 @@ const (
 	gcpClientArtifact = "cloud.google.com/go/storage"
 )
 
+// rpcSystemNameKey is the OTel semantic convention attribute key for the RPC
+// system used by a span.
+const rpcSystemNameKey = attribute.Key("rpc.system.name")
+
 var (
-	rpcSystemHTTP = attribute.String("rpc.system.name", "http")
-	rpcSystemGRPC = attribute.String("rpc.system.name", "grpc")
+	rpcSystemHTTP = rpcSystemNameKey.String("http")
+	rpcSystemGRPC = rpcSystemNameKey.String("grpc")
 )
 
 // isOTelTracingDevEnabled checks the development flag until experimental feature is launched.
@@ -79,8 +83,8 @@ func startSpanWithBucket(ctx context.Context, client *Client, bucket string, nam
 	if !isOTelTracingDevEnabled() {
 		return startSpan(ctx, name, opts...)
 	}
-	if client != nil && client.rpcSystem != "" {
-		opts = append(opts, trace.WithAttributes(attribute.String("rpc.system.name", client.rpcSystem)))
+	if client != nil && client.rpcSystem.Valid() {
+		opts = append(opts, trace.WithAttributes(client.rpcSystem))
 	}
 	if client != nil && client.bucketMetadataCache != nil && bucket != "" {
 		ctx = context.WithValue(ctx, cacheContextKey, client.bucketMetadataCache)
