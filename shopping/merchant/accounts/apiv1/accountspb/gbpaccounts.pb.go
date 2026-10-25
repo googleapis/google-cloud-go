@@ -411,10 +411,10 @@ var File_google_shopping_merchant_accounts_v1_gbpaccounts_proto protoreflect.Fil
 
 const file_google_shopping_merchant_accounts_v1_gbpaccounts_proto_rawDesc = "" +
 	"\n" +
-	"6google/shopping/merchant/accounts/v1/gbpaccounts.proto\x12$google.shopping.merchant.accounts.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\"\x96\x03\n" +
+	"6google/shopping/merchant/accounts/v1/gbpaccounts.proto\x12$google.shopping.merchant.accounts.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\"\x97\x03\n" +
 	"\n" +
-	"GbpAccount\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12$\n" +
+	"GbpAccount\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12$\n" +
 	"\x0egbp_account_id\x18\x02 \x01(\tR\fgbpAccountId\x12I\n" +
 	"\x04type\x18\x03 \x01(\x0e25.google.shopping.merchant.accounts.v1.GbpAccount.TypeR\x04type\x12(\n" +
 	"\x10gbp_account_name\x18\x05 \x01(\tR\x0egbpAccountName\x12#\n" +
@@ -424,20 +424,20 @@ const file_google_shopping_merchant_accounts_v1_gbpaccounts_proto_rawDesc = "" +
 	"\x04USER\x10\x01\x12\x14\n" +
 	"\x10BUSINESS_ACCOUNT\x10\x02:q\xeaAn\n" +
 	"%merchantapi.googleapis.com/GbpAccount\x12,accounts/{account}/gbpAccounts/{gbp_account}*\vgbpAccounts2\n" +
-	"gbpAccount\"\xa2\x01\n" +
-	"\x16ListGbpAccountsRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"merchantapi.googleapis.com/AccountR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"gbpAccount\"\xa5\x01\n" +
+	"\x16ListGbpAccountsRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"merchantapi.googleapis.com/AccountR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x96\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x96\x01\n" +
 	"\x17ListGbpAccountsResponse\x12S\n" +
 	"\fgbp_accounts\x18\x01 \x03(\v20.google.shopping.merchant.accounts.v1.GbpAccountR\vgbpAccounts\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"}\n" +
-	"\x15LinkGbpAccountRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"merchantapi.googleapis.com/AccountR\x06parent\x12 \n" +
-	"\tgbp_email\x18\x02 \x01(\tB\x03\xe0A\x02R\bgbpEmail\"L\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x7f\n" +
+	"\x15LinkGbpAccountRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"merchantapi.googleapis.com/AccountR\x06parent\x12!\n" +
+	"\tgbp_email\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\bgbpEmail\"L\n" +
 	"\x16LinkGbpAccountResponse\x122\n" +
 	"\bresponse\x18\x01 \x01(\v2\x16.google.protobuf.EmptyR\bresponse2\x8c\x04\n" +
 	"\x12GbpAccountsService\x12\xcd\x01\n" +

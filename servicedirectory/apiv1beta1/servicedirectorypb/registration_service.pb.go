@@ -1266,88 +1266,88 @@ var File_google_cloud_servicedirectory_v1beta1_registration_service_proto protor
 
 const file_google_cloud_servicedirectory_v1beta1_registration_service_proto_rawDesc = "" +
 	"\n" +
-	"@google/cloud/servicedirectory/v1beta1/registration_service.proto\x12%google.cloud.servicedirectory.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/servicedirectory/v1beta1/endpoint.proto\x1a5google/cloud/servicedirectory/v1beta1/namespace.proto\x1a3google/cloud/servicedirectory/v1beta1/service.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xd8\x01\n" +
-	"\x16CreateNamespaceRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12&\n" +
-	"\fnamespace_id\x18\x02 \x01(\tB\x03\xe0A\x02R\vnamespaceId\x12S\n" +
-	"\tnamespace\x18\x03 \x01(\v20.google.cloud.servicedirectory.v1beta1.NamespaceB\x03\xe0A\x02R\tnamespace\"\xdd\x01\n" +
-	"\x15ListNamespacesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"@google/cloud/servicedirectory/v1beta1/registration_service.proto\x12%google.cloud.servicedirectory.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/servicedirectory/v1beta1/endpoint.proto\x1a5google/cloud/servicedirectory/v1beta1/namespace.proto\x1a3google/cloud/servicedirectory/v1beta1/service.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xdb\x01\n" +
+	"\x16CreateNamespaceRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12'\n" +
+	"\fnamespace_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vnamespaceId\x12T\n" +
+	"\tnamespace\x18\x03 \x01(\v20.google.cloud.servicedirectory.v1beta1.NamespaceB\x04\xe2A\x01\x02R\tnamespace\"\xe2\x01\n" +
+	"\x15ListNamespacesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\x92\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\x92\x01\n" +
 	"\x16ListNamespacesResponse\x12P\n" +
 	"\n" +
 	"namespaces\x18\x01 \x03(\v20.google.cloud.servicedirectory.v1beta1.NamespaceR\n" +
 	"namespaces\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\\\n" +
-	"\x13GetNamespaceRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")servicedirectory.googleapis.com/NamespaceR\x04name\"\xaf\x01\n" +
-	"\x16UpdateNamespaceRequest\x12S\n" +
-	"\tnamespace\x18\x01 \x01(\v20.google.cloud.servicedirectory.v1beta1.NamespaceB\x03\xe0A\x02R\tnamespace\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"_\n" +
-	"\x16DeleteNamespaceRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")servicedirectory.googleapis.com/NamespaceR\x04name\"\xd4\x01\n" +
-	"\x14CreateServiceRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")servicedirectory.googleapis.com/NamespaceR\x06parent\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"]\n" +
+	"\x13GetNamespaceRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")servicedirectory.googleapis.com/NamespaceR\x04name\"\xb1\x01\n" +
+	"\x16UpdateNamespaceRequest\x12T\n" +
+	"\tnamespace\x18\x01 \x01(\v20.google.cloud.servicedirectory.v1beta1.NamespaceB\x04\xe2A\x01\x02R\tnamespace\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"`\n" +
+	"\x16DeleteNamespaceRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")servicedirectory.googleapis.com/NamespaceR\x04name\"\xd7\x01\n" +
+	"\x14CreateServiceRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")servicedirectory.googleapis.com/NamespaceR\x06parent\x12#\n" +
 	"\n" +
-	"service_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tserviceId\x12M\n" +
-	"\aservice\x18\x03 \x01(\v2..google.cloud.servicedirectory.v1beta1.ServiceB\x03\xe0A\x02R\aservice\"\xe3\x01\n" +
-	"\x13ListServicesRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")servicedirectory.googleapis.com/NamespaceR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"service_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tserviceId\x12N\n" +
+	"\aservice\x18\x03 \x01(\v2..google.cloud.servicedirectory.v1beta1.ServiceB\x04\xe2A\x01\x02R\aservice\"\xe8\x01\n" +
+	"\x13ListServicesRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")servicedirectory.googleapis.com/NamespaceR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\x8a\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\x8a\x01\n" +
 	"\x14ListServicesResponse\x12J\n" +
 	"\bservices\x18\x01 \x03(\v2..google.cloud.servicedirectory.v1beta1.ServiceR\bservices\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"X\n" +
-	"\x11GetServiceRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'servicedirectory.googleapis.com/ServiceR\x04name\"\xa7\x01\n" +
-	"\x14UpdateServiceRequest\x12M\n" +
-	"\aservice\x18\x01 \x01(\v2..google.cloud.servicedirectory.v1beta1.ServiceB\x03\xe0A\x02R\aservice\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"[\n" +
-	"\x14DeleteServiceRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'servicedirectory.googleapis.com/ServiceR\x04name\"\xd8\x01\n" +
-	"\x15CreateEndpointRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'servicedirectory.googleapis.com/ServiceR\x06parent\x12$\n" +
-	"\vendpoint_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"endpointId\x12P\n" +
-	"\bendpoint\x18\x03 \x01(\v2/.google.cloud.servicedirectory.v1beta1.EndpointB\x03\xe0A\x02R\bendpoint\"\xe2\x01\n" +
-	"\x14ListEndpointsRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'servicedirectory.googleapis.com/ServiceR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"Y\n" +
+	"\x11GetServiceRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'servicedirectory.googleapis.com/ServiceR\x04name\"\xa9\x01\n" +
+	"\x14UpdateServiceRequest\x12N\n" +
+	"\aservice\x18\x01 \x01(\v2..google.cloud.servicedirectory.v1beta1.ServiceB\x04\xe2A\x01\x02R\aservice\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\\\n" +
+	"\x14DeleteServiceRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'servicedirectory.googleapis.com/ServiceR\x04name\"\xdb\x01\n" +
+	"\x15CreateEndpointRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'servicedirectory.googleapis.com/ServiceR\x06parent\x12%\n" +
+	"\vendpoint_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"endpointId\x12Q\n" +
+	"\bendpoint\x18\x03 \x01(\v2/.google.cloud.servicedirectory.v1beta1.EndpointB\x04\xe2A\x01\x02R\bendpoint\"\xe7\x01\n" +
+	"\x14ListEndpointsRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'servicedirectory.googleapis.com/ServiceR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\x8e\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\x8e\x01\n" +
 	"\x15ListEndpointsResponse\x12M\n" +
 	"\tendpoints\x18\x01 \x03(\v2/.google.cloud.servicedirectory.v1beta1.EndpointR\tendpoints\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"Z\n" +
-	"\x12GetEndpointRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(servicedirectory.googleapis.com/EndpointR\x04name\"\xab\x01\n" +
-	"\x15UpdateEndpointRequest\x12P\n" +
-	"\bendpoint\x18\x01 \x01(\v2/.google.cloud.servicedirectory.v1beta1.EndpointB\x03\xe0A\x02R\bendpoint\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"]\n" +
-	"\x15DeleteEndpointRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"[\n" +
+	"\x12GetEndpointRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(servicedirectory.googleapis.com/EndpointR\x04name\"\xad\x01\n" +
+	"\x15UpdateEndpointRequest\x12Q\n" +
+	"\bendpoint\x18\x01 \x01(\v2/.google.cloud.servicedirectory.v1beta1.EndpointB\x04\xe2A\x01\x02R\bendpoint\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"^\n" +
+	"\x15DeleteEndpointRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
 	"(servicedirectory.googleapis.com/EndpointR\x04name2\xda\"\n" +
 	"\x13RegistrationService\x12\xea\x01\n" +
 	"\x0fCreateNamespace\x12=.google.cloud.servicedirectory.v1beta1.CreateNamespaceRequest\x1a0.google.cloud.servicedirectory.v1beta1.Namespace\"f\xdaA\x1dparent,namespace,namespace_id\x82\xd3\xe4\x93\x02@:\tnamespace\"3/v1beta1/{parent=projects/*/locations/*}/namespaces\x12\xd3\x01\n" +

@@ -16,9 +16,10 @@ package firestore
 
 import (
 	"bytes"
+	"cmp"
 	"fmt"
 	"math"
-	"sort"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -119,17 +120,7 @@ func compareValues(a, b *pb.Value) int {
 
 // Treats NaN as less than any non-NaN.
 func compareNumbers(a, b float64) int {
-	switch {
-	case math.IsNaN(a):
-		if math.IsNaN(b) {
-			return 0
-		}
-		return -1
-	case math.IsNaN(b):
-		return 1
-	default:
-		return compareFloat64s(a, b)
-	}
+	return cmp.Compare(a, b)
 }
 
 // Return v as a float64, assuming it's an Integer or Double.
@@ -141,41 +132,52 @@ func toFloat(v *pb.Value) float64 {
 }
 
 func compareTimestamps(a, b *tspb.Timestamp) int {
-	if c := compareInt64s(a.Seconds, b.Seconds); c != 0 {
+	if c := cmp.Compare(a.Seconds, b.Seconds); c != 0 {
 		return c
 	}
-	return compareInt64s(int64(a.Nanos), int64(b.Nanos))
+	return cmp.Compare(a.Nanos, b.Nanos)
 }
 
 func compareReferences(a, b string) int {
-	// Compare path components lexicographically.
-	pa := strings.Split(a, "/")
-	pb := strings.Split(b, "/")
-	return compareSequences(len(pa), len(pb), func(i int) int {
-		return strings.Compare(pa[i], pb[i])
-	})
+	// Compare path components lexicographically without allocating slices.
+	for {
+		segA, restA, okA := strings.Cut(a, "/")
+		segB, restB, okB := strings.Cut(b, "/")
+		if c := cmp.Compare(segA, segB); c != 0 {
+			return c
+		}
+		if !okA || !okB {
+			switch {
+			case !okA && okB:
+				return -1
+			case okA && !okB:
+				return 1
+			default:
+				return 0
+			}
+		}
+		a, b = restA, restB
+	}
 }
 
 func compareArrays(a, b []*pb.Value) int {
-	return compareSequences(len(a), len(b), func(i int) int {
-		return compareValues(a[i], b[i])
-	})
+	return slices.CompareFunc(a, b, compareValues)
 }
 
 func compareMaps(a, b map[string]*pb.Value) int {
 	sortedKeys := func(m map[string]*pb.Value) []string {
-		var ks []string
+		ks := make([]string, 0, len(m))
 		for k := range m {
 			ks = append(ks, k)
 		}
-		sort.Strings(ks)
+		slices.Sort(ks)
 		return ks
 	}
 
 	aks := sortedKeys(a)
 	bks := sortedKeys(b)
 	return compareSequences(len(aks), len(bks), func(i int) int {
-		if c := strings.Compare(aks[i], bks[i]); c != 0 {
+		if c := cmp.Compare(aks[i], bks[i]); c != 0 {
 			return c
 		}
 		k := aks[i]
@@ -189,29 +191,15 @@ func compareSequences(len1, len2 int, compare func(int) int) int {
 			return c
 		}
 	}
-	return compareInt64s(int64(len1), int64(len2))
+	return cmp.Compare(len1, len2)
 }
 
 func compareFloat64s(a, b float64) int {
-	switch {
-	case a < b:
-		return -1
-	case a > b:
-		return 1
-	default:
-		return 0
-	}
+	return cmp.Compare(a, b)
 }
 
 func compareInt64s(a, b int64) int {
-	switch {
-	case a < b:
-		return -1
-	case a > b:
-		return 1
-	default:
-		return 0
-	}
+	return cmp.Compare(a, b)
 }
 
 // Return an integer corresponding to the type of value stored in v, such that

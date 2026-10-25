@@ -140,14 +140,14 @@ var File_google_cloud_notebooks_v2_diagnostic_config_proto protoreflect.FileDesc
 
 const file_google_cloud_notebooks_v2_diagnostic_config_proto_rawDesc = "" +
 	"\n" +
-	"1google/cloud/notebooks/v2/diagnostic_config.proto\x12\x19google.cloud.notebooks.v2\x1a\x1fgoogle/api/field_behavior.proto\"\x98\x02\n" +
-	"\x10DiagnosticConfig\x12\"\n" +
+	"1google/cloud/notebooks/v2/diagnostic_config.proto\x12\x19google.cloud.notebooks.v2\x1a\x1fgoogle/api/field_behavior.proto\"\x9d\x02\n" +
+	"\x10DiagnosticConfig\x12#\n" +
 	"\n" +
-	"gcs_bucket\x18\x01 \x01(\tB\x03\xe0A\x02R\tgcsBucket\x12(\n" +
-	"\rrelative_path\x18\x02 \x01(\tB\x03\xe0A\x01R\frelativePath\x121\n" +
-	"\x12enable_repair_flag\x18\x03 \x01(\bB\x03\xe0A\x01R\x10enableRepairFlag\x12@\n" +
-	"\x1aenable_packet_capture_flag\x18\x04 \x01(\bB\x03\xe0A\x01R\x17enablePacketCaptureFlag\x12A\n" +
-	"\x1benable_copy_home_files_flag\x18\x05 \x01(\bB\x03\xe0A\x01R\x17enableCopyHomeFilesFlagB\xcc\x01\n" +
+	"gcs_bucket\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tgcsBucket\x12)\n" +
+	"\rrelative_path\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\frelativePath\x122\n" +
+	"\x12enable_repair_flag\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x10enableRepairFlag\x12A\n" +
+	"\x1aenable_packet_capture_flag\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x17enablePacketCaptureFlag\x12B\n" +
+	"\x1benable_copy_home_files_flag\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\x17enableCopyHomeFilesFlagB\xcc\x01\n" +
 	"\x1dcom.google.cloud.notebooks.v2B\x15DiagnosticConfigProtoP\x01Z;cloud.google.com/go/notebooks/apiv2/notebookspb;notebookspb\xaa\x02\x19Google.Cloud.Notebooks.V2\xca\x02\x19Google\\Cloud\\Notebooks\\V2\xea\x02\x1cGoogle::Cloud::Notebooks::V2b\x06proto3"
 
 var (

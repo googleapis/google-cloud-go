@@ -712,18 +712,18 @@ var File_google_cloud_netapp_v1_common_proto protoreflect.FileDescriptor
 
 const file_google_cloud_netapp_v1_common_proto_rawDesc = "" +
 	"\n" +
-	"#google/cloud/netapp/v1/common.proto\x12\x16google.cloud.netapp.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xf0\x03\n" +
-	"\x10LocationMetadata\x12c\n" +
-	"\x18supported_service_levels\x18\x01 \x03(\x0e2$.google.cloud.netapp.v1.ServiceLevelB\x03\xe0A\x03R\x16supportedServiceLevels\x12j\n" +
-	"\x1asupported_flex_performance\x18\x02 \x03(\x0e2'.google.cloud.netapp.v1.FlexPerformanceB\x03\xe0A\x03R\x18supportedFlexPerformance\x12\x1c\n" +
-	"\ahas_vcp\x18\x03 \x01(\bB\x03\xe0A\x03R\x06hasVcp\x12+\n" +
-	"\x0fhas_ontap_proxy\x18\x04 \x01(\bB\x03\xe0A\x03R\rhasOntapProxy\x12u\n" +
-	"\x15flex_performance_tier\x18\x05 \x01(\x0e2<.google.cloud.netapp.v1.LocationMetadata.FlexPerformanceTierB\x03\xe0A\x03R\x13flexPerformanceTier\"I\n" +
+	"#google/cloud/netapp/v1/common.proto\x12\x16google.cloud.netapp.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xf5\x03\n" +
+	"\x10LocationMetadata\x12d\n" +
+	"\x18supported_service_levels\x18\x01 \x03(\x0e2$.google.cloud.netapp.v1.ServiceLevelB\x04\xe2A\x01\x03R\x16supportedServiceLevels\x12k\n" +
+	"\x1asupported_flex_performance\x18\x02 \x03(\x0e2'.google.cloud.netapp.v1.FlexPerformanceB\x04\xe2A\x01\x03R\x18supportedFlexPerformance\x12\x1d\n" +
+	"\ahas_vcp\x18\x03 \x01(\bB\x04\xe2A\x01\x03R\x06hasVcp\x12,\n" +
+	"\x0fhas_ontap_proxy\x18\x04 \x01(\bB\x04\xe2A\x01\x03R\rhasOntapProxy\x12v\n" +
+	"\x15flex_performance_tier\x18\x05 \x01(\x0e2<.google.cloud.netapp.v1.LocationMetadata.FlexPerformanceTierB\x04\xe2A\x01\x03R\x13flexPerformanceTier\"I\n" +
 	"\x13FlexPerformanceTier\x12%\n" +
 	"!FLEX_PERFORMANCE_TIER_UNSPECIFIED\x10\x00\x12\v\n" +
-	"\aLIMITED\x10\x01\"/\n" +
-	"\fUserCommands\x12\x1f\n" +
-	"\bcommands\x18\x01 \x03(\tB\x03\xe0A\x03R\bcommands*_\n" +
+	"\aLIMITED\x10\x01\"0\n" +
+	"\fUserCommands\x12 \n" +
+	"\bcommands\x18\x01 \x03(\tB\x04\xe2A\x01\x03R\bcommands*_\n" +
 	"\fServiceLevel\x12\x1d\n" +
 	"\x19SERVICE_LEVEL_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aPREMIUM\x10\x01\x12\v\n" +

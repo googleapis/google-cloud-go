@@ -160,9 +160,9 @@ var File_google_cloud_dataqna_v1alpha_user_feedback_proto protoreflect.FileDescr
 
 const file_google_cloud_dataqna_v1alpha_user_feedback_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/dataqna/v1alpha/user_feedback.proto\x12\x1cgoogle.cloud.dataqna.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xf9\x02\n" +
-	"\fUserFeedback\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12,\n" +
+	"0google/cloud/dataqna/v1alpha/user_feedback.proto\x12\x1cgoogle.cloud.dataqna.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xfa\x02\n" +
+	"\fUserFeedback\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12,\n" +
 	"\x12free_form_feedback\x18\x02 \x01(\tR\x10freeFormFeedback\x12U\n" +
 	"\x06rating\x18\x03 \x01(\x0e2=.google.cloud.dataqna.v1alpha.UserFeedback.UserFeedbackRatingR\x06rating\"V\n" +
 	"\x12UserFeedbackRating\x12$\n" +

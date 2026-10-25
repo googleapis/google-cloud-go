@@ -776,30 +776,30 @@ var File_google_cloud_discoveryengine_v1_data_store_proto protoreflect.FileDescr
 
 const file_google_cloud_discoveryengine_v1_data_store_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/discoveryengine/v1/data_store.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a9google/cloud/discoveryengine/v1/cmek_config_service.proto\x1a,google/cloud/discoveryengine/v1/common.proto\x1a@google/cloud/discoveryengine/v1/document_processing_config.proto\x1a,google/cloud/discoveryengine/v1/schema.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb5\x12\n" +
-	"\tDataStore\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x05\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12c\n" +
-	"\x11industry_vertical\x18\x03 \x01(\x0e21.google.cloud.discoveryengine.v1.IndustryVerticalB\x03\xe0A\x05R\x10industryVertical\x12T\n" +
-	"\x0esolution_types\x18\x05 \x03(\x0e2-.google.cloud.discoveryengine.v1.SolutionTypeR\rsolutionTypes\x12/\n" +
-	"\x11default_schema_id\x18\a \x01(\tB\x03\xe0A\x03R\x0fdefaultSchemaId\x12d\n" +
-	"\x0econtent_config\x18\x06 \x01(\x0e28.google.cloud.discoveryengine.v1.DataStore.ContentConfigB\x03\xe0A\x05R\rcontentConfig\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12}\n" +
-	"\x1badvanced_site_search_config\x18\f \x01(\v29.google.cloud.discoveryengine.v1.AdvancedSiteSearchConfigB\x03\xe0A\x01R\x18advancedSiteSearchConfig\x12\xab\x01\n" +
-	"+natural_language_query_understanding_config\x18\" \x01(\v2H.google.cloud.discoveryengine.v1.NaturalLanguageQueryUnderstandingConfigB\x03\xe0A\x01R'naturalLanguageQueryUnderstandingConfig\x12%\n" +
-	"\fkms_key_name\x18  \x01(\tB\x03\xe0A\x04R\n" +
-	"kmsKeyName\x12Q\n" +
-	"\vcmek_config\x18\x12 \x01(\v2+.google.cloud.discoveryengine.v1.CmekConfigB\x03\xe0A\x03R\n" +
-	"cmekConfig\x12p\n" +
-	"\x12billing_estimation\x18\x17 \x01(\v2<.google.cloud.discoveryengine.v1.DataStore.BillingEstimationB\x03\xe0A\x03R\x11billingEstimation\x12$\n" +
-	"\vacl_enabled\x18\x18 \x01(\bB\x03\xe0A\x05R\n" +
+	"0google/cloud/discoveryengine/v1/data_store.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a9google/cloud/discoveryengine/v1/cmek_config_service.proto\x1a,google/cloud/discoveryengine/v1/common.proto\x1a@google/cloud/discoveryengine/v1/document_processing_config.proto\x1a,google/cloud/discoveryengine/v1/schema.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc1\x12\n" +
+	"\tDataStore\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x05\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12d\n" +
+	"\x11industry_vertical\x18\x03 \x01(\x0e21.google.cloud.discoveryengine.v1.IndustryVerticalB\x04\xe2A\x01\x05R\x10industryVertical\x12T\n" +
+	"\x0esolution_types\x18\x05 \x03(\x0e2-.google.cloud.discoveryengine.v1.SolutionTypeR\rsolutionTypes\x120\n" +
+	"\x11default_schema_id\x18\a \x01(\tB\x04\xe2A\x01\x03R\x0fdefaultSchemaId\x12e\n" +
+	"\x0econtent_config\x18\x06 \x01(\x0e28.google.cloud.discoveryengine.v1.DataStore.ContentConfigB\x04\xe2A\x01\x05R\rcontentConfig\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12~\n" +
+	"\x1badvanced_site_search_config\x18\f \x01(\v29.google.cloud.discoveryengine.v1.AdvancedSiteSearchConfigB\x04\xe2A\x01\x01R\x18advancedSiteSearchConfig\x12\xac\x01\n" +
+	"+natural_language_query_understanding_config\x18\" \x01(\v2H.google.cloud.discoveryengine.v1.NaturalLanguageQueryUnderstandingConfigB\x04\xe2A\x01\x01R'naturalLanguageQueryUnderstandingConfig\x12&\n" +
+	"\fkms_key_name\x18  \x01(\tB\x04\xe2A\x01\x04R\n" +
+	"kmsKeyName\x12R\n" +
+	"\vcmek_config\x18\x12 \x01(\v2+.google.cloud.discoveryengine.v1.CmekConfigB\x04\xe2A\x01\x03R\n" +
+	"cmekConfig\x12q\n" +
+	"\x12billing_estimation\x18\x17 \x01(\v2<.google.cloud.discoveryengine.v1.DataStore.BillingEstimationB\x04\xe2A\x01\x03R\x11billingEstimation\x12%\n" +
+	"\vacl_enabled\x18\x18 \x01(\bB\x04\xe2A\x01\x05R\n" +
 	"aclEnabled\x12[\n" +
 	"\x10workspace_config\x18\x19 \x01(\v20.google.cloud.discoveryengine.v1.WorkspaceConfigR\x0fworkspaceConfig\x12w\n" +
 	"\x1adocument_processing_config\x18\x1b \x01(\v29.google.cloud.discoveryengine.v1.DocumentProcessingConfigR\x18documentProcessingConfig\x12P\n" +
-	"\x0fstarting_schema\x18\x1c \x01(\v2'.google.cloud.discoveryengine.v1.SchemaR\x0estartingSchema\x12p\n" +
-	"\x16healthcare_fhir_config\x18\x1d \x01(\v25.google.cloud.discoveryengine.v1.HealthcareFhirConfigB\x03\xe0A\x01R\x14healthcareFhirConfig\x12q\n" +
-	"\x16identity_mapping_store\x18\x1f \x01(\tB;\xe0A\x05\xfaA5\n" +
+	"\x0fstarting_schema\x18\x1c \x01(\v2'.google.cloud.discoveryengine.v1.SchemaR\x0estartingSchema\x12q\n" +
+	"\x16healthcare_fhir_config\x18\x1d \x01(\v25.google.cloud.discoveryengine.v1.HealthcareFhirConfigB\x04\xe2A\x01\x01R\x14healthcareFhirConfig\x12r\n" +
+	"\x16identity_mapping_store\x18\x1f \x01(\tB<\xe2A\x01\x05\xfaA5\n" +
 	"3discoveryengine.googleapis.com/IdentityMappingStoreR\x14identityMappingStore\x1a\xb6\x03\n" +
 	"\x11BillingEstimation\x120\n" +
 	"\x14structured_data_size\x18\x01 \x01(\x03R\x12structuredDataSize\x124\n" +
@@ -826,12 +826,12 @@ const file_google_cloud_discoveryengine_v1_data_store_proto_rawDesc = "" +
 	"\x04Mode\x12\x14\n" +
 	"\x10MODE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDISABLED\x10\x01\x12\v\n" +
-	"\aENABLED\x10\x02\"\xbf\x03\n" +
+	"\aENABLED\x10\x02\"\xc1\x03\n" +
 	"\x0fWorkspaceConfig\x12I\n" +
 	"\x04type\x18\x01 \x01(\x0e25.google.cloud.discoveryengine.v1.WorkspaceConfig.TypeR\x04type\x12,\n" +
-	"\x12dasher_customer_id\x18\x02 \x01(\tR\x10dasherCustomerId\x12B\n" +
-	"\x1bsuper_admin_service_account\x18\x04 \x01(\tB\x03\xe0A\x01R\x18superAdminServiceAccount\x12>\n" +
-	"\x19super_admin_email_address\x18\x05 \x01(\tB\x03\xe0A\x01R\x16superAdminEmailAddress\"\xae\x01\n" +
+	"\x12dasher_customer_id\x18\x02 \x01(\tR\x10dasherCustomerId\x12C\n" +
+	"\x1bsuper_admin_service_account\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x18superAdminServiceAccount\x12?\n" +
+	"\x19super_admin_email_address\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x16superAdminEmailAddress\"\xae\x01\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x10\n" +
 	"\fGOOGLE_DRIVE\x10\x01\x12\x0f\n" +

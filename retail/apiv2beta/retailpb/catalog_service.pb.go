@@ -1011,18 +1011,18 @@ var File_google_cloud_retail_v2beta_catalog_service_proto protoreflect.FileDescr
 
 const file_google_cloud_retail_v2beta_catalog_service_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/retail/v2beta/catalog_service.proto\x12\x1agoogle.cloud.retail.v2beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/retail/v2beta/catalog.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x94\x01\n" +
-	"\x13ListCatalogsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"0google/cloud/retail/v2beta/catalog_service.proto\x12\x1agoogle.cloud.retail.v2beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/retail/v2beta/catalog.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x95\x01\n" +
+	"\x13ListCatalogsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x7f\n" +
 	"\x14ListCatalogsResponse\x12?\n" +
 	"\bcatalogs\x18\x01 \x03(\v2#.google.cloud.retail.v2beta.CatalogR\bcatalogs\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x97\x01\n" +
-	"\x14UpdateCatalogRequest\x12B\n" +
-	"\acatalog\x18\x01 \x01(\v2#.google.cloud.retail.v2beta.CatalogB\x03\xe0A\x02R\acatalog\x12;\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x98\x01\n" +
+	"\x14UpdateCatalogRequest\x12C\n" +
+	"\acatalog\x18\x01 \x01(\v2#.google.cloud.retail.v2beta.CatalogB\x04\xe2A\x01\x02R\acatalog\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"updateMask\"\xc1\x01\n" +
 	"\x17SetDefaultBranchRequest\x12<\n" +
@@ -1039,40 +1039,40 @@ const file_google_cloud_retail_v2beta_catalog_service_proto_rawDesc = "" +
 	"\x06branch\x18\x01 \x01(\tB!\xfaA\x1e\n" +
 	"\x1cretail.googleapis.com/BranchR\x06branch\x125\n" +
 	"\bset_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\asetTime\x12\x12\n" +
-	"\x04note\x18\x03 \x01(\tR\x04note\"`\n" +
-	"\x1aGetCompletionConfigRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&retail.googleapis.com/CompletionConfigR\x04name\"\xbc\x01\n" +
-	"\x1dUpdateCompletionConfigRequest\x12^\n" +
-	"\x11completion_config\x18\x01 \x01(\v2,.google.cloud.retail.v2beta.CompletionConfigB\x03\xe0A\x02R\x10completionConfig\x12;\n" +
+	"\x04note\x18\x03 \x01(\tR\x04note\"a\n" +
+	"\x1aGetCompletionConfigRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&retail.googleapis.com/CompletionConfigR\x04name\"\xbd\x01\n" +
+	"\x1dUpdateCompletionConfigRequest\x12_\n" +
+	"\x11completion_config\x18\x01 \x01(\v2,.google.cloud.retail.v2beta.CompletionConfigB\x04\xe2A\x01\x02R\x10completionConfig\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"`\n" +
-	"\x1aGetAttributesConfigRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&retail.googleapis.com/AttributesConfigR\x04name\"\xbc\x01\n" +
-	"\x1dUpdateAttributesConfigRequest\x12^\n" +
-	"\x11attributes_config\x18\x01 \x01(\v2,.google.cloud.retail.v2beta.AttributesConfigB\x03\xe0A\x02R\x10attributesConfig\x12;\n" +
+	"updateMask\"a\n" +
+	"\x1aGetAttributesConfigRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&retail.googleapis.com/AttributesConfigR\x04name\"\xbd\x01\n" +
+	"\x1dUpdateAttributesConfigRequest\x12_\n" +
+	"\x11attributes_config\x18\x01 \x01(\v2,.google.cloud.retail.v2beta.AttributesConfigB\x04\xe2A\x01\x02R\x10attributesConfig\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"\xd9\x01\n" +
-	"\x1aAddCatalogAttributeRequest\x12[\n" +
-	"\x11attributes_config\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&retail.googleapis.com/AttributesConfigR\x10attributesConfig\x12^\n" +
-	"\x11catalog_attribute\x18\x02 \x01(\v2,.google.cloud.retail.v2beta.CatalogAttributeB\x03\xe0A\x02R\x10catalogAttribute\"\x93\x01\n" +
-	"\x1dRemoveCatalogAttributeRequest\x12[\n" +
-	"\x11attributes_config\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&retail.googleapis.com/AttributesConfigR\x10attributesConfig\x12\x15\n" +
-	"\x03key\x18\x02 \x01(\tB\x03\xe0A\x02R\x03key\"\xae\x01\n" +
-	"#BatchRemoveCatalogAttributesRequest\x12[\n" +
-	"\x11attributes_config\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&retail.googleapis.com/AttributesConfigR\x10attributesConfig\x12*\n" +
-	"\x0eattribute_keys\x18\x02 \x03(\tB\x03\xe0A\x02R\rattributeKeys\"\x9e\x01\n" +
+	"updateMask\"\xdb\x01\n" +
+	"\x1aAddCatalogAttributeRequest\x12\\\n" +
+	"\x11attributes_config\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&retail.googleapis.com/AttributesConfigR\x10attributesConfig\x12_\n" +
+	"\x11catalog_attribute\x18\x02 \x01(\v2,.google.cloud.retail.v2beta.CatalogAttributeB\x04\xe2A\x01\x02R\x10catalogAttribute\"\x95\x01\n" +
+	"\x1dRemoveCatalogAttributeRequest\x12\\\n" +
+	"\x11attributes_config\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&retail.googleapis.com/AttributesConfigR\x10attributesConfig\x12\x16\n" +
+	"\x03key\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x03key\"\xb0\x01\n" +
+	"#BatchRemoveCatalogAttributesRequest\x12\\\n" +
+	"\x11attributes_config\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&retail.googleapis.com/AttributesConfigR\x10attributesConfig\x12+\n" +
+	"\x0eattribute_keys\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\rattributeKeys\"\x9e\x01\n" +
 	"$BatchRemoveCatalogAttributesResponse\x12<\n" +
 	"\x1adeleted_catalog_attributes\x18\x01 \x03(\tR\x18deletedCatalogAttributes\x128\n" +
-	"\x18reset_catalog_attributes\x18\x02 \x03(\tR\x16resetCatalogAttributes\"\x9a\x02\n" +
-	"\x1eReplaceCatalogAttributeRequest\x12[\n" +
-	"\x11attributes_config\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&retail.googleapis.com/AttributesConfigR\x10attributesConfig\x12^\n" +
-	"\x11catalog_attribute\x18\x02 \x01(\v2,.google.cloud.retail.v2beta.CatalogAttributeB\x03\xe0A\x02R\x10catalogAttribute\x12;\n" +
+	"\x18reset_catalog_attributes\x18\x02 \x03(\tR\x16resetCatalogAttributes\"\x9c\x02\n" +
+	"\x1eReplaceCatalogAttributeRequest\x12\\\n" +
+	"\x11attributes_config\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&retail.googleapis.com/AttributesConfigR\x10attributesConfig\x12_\n" +
+	"\x11catalog_attribute\x18\x02 \x01(\v2,.google.cloud.retail.v2beta.CatalogAttributeB\x04\xe2A\x01\x02R\x10catalogAttribute\x12;\n" +
 	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"updateMask2\xb3\x16\n" +
 	"\x0eCatalogService\x12\xb4\x01\n" +

@@ -6118,39 +6118,39 @@ var File_google_cloud_ces_v1beta_agent_service_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1beta_agent_service_proto_rawDesc = "" +
 	"\n" +
-	"+google/cloud/ces/v1beta/agent_service.proto\x12\x17google.cloud.ces.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/cloud/ces/v1beta/agent.proto\x1a!google/cloud/ces/v1beta/app.proto\x1a)google/cloud/ces/v1beta/app_version.proto\x1a'google/cloud/ces/v1beta/changelog.proto\x1a*google/cloud/ces/v1beta/conversation.proto\x1a(google/cloud/ces/v1beta/deployment.proto\x1a(google/cloud/ces/v1beta/evaluation.proto\x1a%google/cloud/ces/v1beta/example.proto\x1a*google/cloud/ces/v1beta/file_context.proto\x1a'google/cloud/ces/v1beta/guardrail.proto\x1a/google/cloud/ces/v1beta/security_settings.proto\x1a\"google/cloud/ces/v1beta/tool.proto\x1a%google/cloud/ces/v1beta/toolset.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xcc\x01\n" +
-	"\x0fListAppsRequest\x126\n" +
-	"\x06parent\x18\x01 \x01(\tB\x1e\xe0A\x02\xfaA\x18\x12\x16ces.googleapis.com/AppR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"+google/cloud/ces/v1beta/agent_service.proto\x12\x17google.cloud.ces.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/cloud/ces/v1beta/agent.proto\x1a!google/cloud/ces/v1beta/app.proto\x1a)google/cloud/ces/v1beta/app_version.proto\x1a'google/cloud/ces/v1beta/changelog.proto\x1a*google/cloud/ces/v1beta/conversation.proto\x1a(google/cloud/ces/v1beta/deployment.proto\x1a(google/cloud/ces/v1beta/evaluation.proto\x1a%google/cloud/ces/v1beta/example.proto\x1a*google/cloud/ces/v1beta/file_context.proto\x1a'google/cloud/ces/v1beta/guardrail.proto\x1a/google/cloud/ces/v1beta/security_settings.proto\x1a\"google/cloud/ces/v1beta/tool.proto\x1a%google/cloud/ces/v1beta/toolset.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xd1\x01\n" +
+	"\x0fListAppsRequest\x127\n" +
+	"\x06parent\x18\x01 \x01(\tB\x1f\xe2A\x01\x02\xfaA\x18\x12\x16ces.googleapis.com/AppR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\x93\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\x94\x01\n" +
 	"\x10ListAppsResponse\x120\n" +
 	"\x04apps\x18\x01 \x03(\v2\x1c.google.cloud.ces.v1beta.AppR\x04apps\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"C\n" +
-	"\rGetAppRequest\x122\n" +
-	"\x04name\x18\x01 \x01(\tB\x1e\xe0A\x02\xfaA\x18\n" +
-	"\x16ces.googleapis.com/AppR\x04name\"\x9b\x01\n" +
-	"\x10CreateAppRequest\x126\n" +
-	"\x06parent\x18\x01 \x01(\tB\x1e\xe0A\x02\xfaA\x18\x12\x16ces.googleapis.com/AppR\x06parent\x12\x1a\n" +
-	"\x06app_id\x18\x02 \x01(\tB\x03\xe0A\x01R\x05appId\x123\n" +
-	"\x03app\x18\x03 \x01(\v2\x1c.google.cloud.ces.v1beta.AppB\x03\xe0A\x02R\x03app\"\x89\x01\n" +
-	"\x10UpdateAppRequest\x123\n" +
-	"\x03app\x18\x01 \x01(\v2\x1c.google.cloud.ces.v1beta.AppB\x03\xe0A\x02R\x03app\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"_\n" +
-	"\x10DeleteAppRequest\x122\n" +
-	"\x04name\x18\x01 \x01(\tB\x1e\xe0A\x02\xfaA\x18\n" +
-	"\x16ces.googleapis.com/AppR\x04name\x12\x17\n" +
-	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x01R\x04etag\"\xd1\x02\n" +
-	"\x10ExportAppRequest\x122\n" +
-	"\x04name\x18\x01 \x01(\tB\x1e\xe0A\x02\xfaA\x18\n" +
-	"\x16ces.googleapis.com/AppR\x04name\x12`\n" +
-	"\rexport_format\x18\x02 \x01(\x0e26.google.cloud.ces.v1beta.ExportAppRequest.ExportFormatB\x03\xe0A\x02R\fexportFormat\x12\x1c\n" +
-	"\agcs_uri\x18\x03 \x01(\tB\x03\xe0A\x01R\x06gcsUri\x12F\n" +
-	"\vapp_version\x18\x04 \x01(\tB%\xe0A\x01\xfaA\x1f\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x06R\vunreachable\"D\n" +
+	"\rGetAppRequest\x123\n" +
+	"\x04name\x18\x01 \x01(\tB\x1f\xe2A\x01\x02\xfaA\x18\n" +
+	"\x16ces.googleapis.com/AppR\x04name\"\x9e\x01\n" +
+	"\x10CreateAppRequest\x127\n" +
+	"\x06parent\x18\x01 \x01(\tB\x1f\xe2A\x01\x02\xfaA\x18\x12\x16ces.googleapis.com/AppR\x06parent\x12\x1b\n" +
+	"\x06app_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x05appId\x124\n" +
+	"\x03app\x18\x03 \x01(\v2\x1c.google.cloud.ces.v1beta.AppB\x04\xe2A\x01\x02R\x03app\"\x8b\x01\n" +
+	"\x10UpdateAppRequest\x124\n" +
+	"\x03app\x18\x01 \x01(\v2\x1c.google.cloud.ces.v1beta.AppB\x04\xe2A\x01\x02R\x03app\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"a\n" +
+	"\x10DeleteAppRequest\x123\n" +
+	"\x04name\x18\x01 \x01(\tB\x1f\xe2A\x01\x02\xfaA\x18\n" +
+	"\x16ces.googleapis.com/AppR\x04name\x12\x18\n" +
+	"\x04etag\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"\xd5\x02\n" +
+	"\x10ExportAppRequest\x123\n" +
+	"\x04name\x18\x01 \x01(\tB\x1f\xe2A\x01\x02\xfaA\x18\n" +
+	"\x16ces.googleapis.com/AppR\x04name\x12a\n" +
+	"\rexport_format\x18\x02 \x01(\x0e26.google.cloud.ces.v1beta.ExportAppRequest.ExportFormatB\x04\xe2A\x01\x02R\fexportFormat\x12\x1d\n" +
+	"\agcs_uri\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x06gcsUri\x12G\n" +
+	"\vapp_version\x18\x04 \x01(\tB&\xe2A\x01\x01\xfaA\x1f\n" +
 	"\x1dces.googleapis.com/AppVersionR\n" +
 	"appVersion\"A\n" +
 	"\fExportFormat\x12\x1d\n" +
@@ -6161,18 +6161,18 @@ const file_google_cloud_ces_v1beta_agent_service_proto_rawDesc = "" +
 	"\vapp_content\x18\x01 \x01(\fH\x00R\n" +
 	"appContent\x12\x19\n" +
 	"\aapp_uri\x18\x02 \x01(\tH\x00R\x06appUriB\x05\n" +
-	"\x03app\"\xfb\x04\n" +
+	"\x03app\"\x81\x05\n" +
 	"\x10ImportAppRequest\x12\x19\n" +
 	"\agcs_uri\x18\x04 \x01(\tH\x00R\x06gcsUri\x12!\n" +
 	"\vapp_content\x18\x05 \x01(\fH\x00R\n" +
-	"appContent\x126\n" +
-	"\x06parent\x18\x01 \x01(\tB\x1e\xe0A\x02\xfaA\x18\x12\x16ces.googleapis.com/AppR\x06parent\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12\x1a\n" +
-	"\x06app_id\x18\x03 \x01(\tB\x03\xe0A\x01R\x05appId\x12c\n" +
-	"\x0eimport_options\x18\x06 \x01(\v27.google.cloud.ces.v1beta.ImportAppRequest.ImportOptionsB\x03\xe0A\x01R\rimportOptions\x12+\n" +
-	"\x0fignore_app_lock\x18\a \x01(\bB\x03\xe0A\x01R\rignoreAppLock\x1a\x93\x02\n" +
-	"\rImportOptions\x12\x99\x01\n" +
-	"\x1cconflict_resolution_strategy\x18\x01 \x01(\x0e2R.google.cloud.ces.v1beta.ImportAppRequest.ImportOptions.ConflictResolutionStrategyB\x03\xe0A\x01R\x1aconflictResolutionStrategy\"f\n" +
+	"appContent\x127\n" +
+	"\x06parent\x18\x01 \x01(\tB\x1f\xe2A\x01\x02\xfaA\x18\x12\x16ces.googleapis.com/AppR\x06parent\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12\x1b\n" +
+	"\x06app_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x05appId\x12d\n" +
+	"\x0eimport_options\x18\x06 \x01(\v27.google.cloud.ces.v1beta.ImportAppRequest.ImportOptionsB\x04\xe2A\x01\x01R\rimportOptions\x12,\n" +
+	"\x0fignore_app_lock\x18\a \x01(\bB\x04\xe2A\x01\x01R\rignoreAppLock\x1a\x94\x02\n" +
+	"\rImportOptions\x12\x9a\x01\n" +
+	"\x1cconflict_resolution_strategy\x18\x01 \x01(\x0e2R.google.cloud.ces.v1beta.ImportAppRequest.ImportOptions.ConflictResolutionStrategyB\x04\xe2A\x01\x01R\x1aconflictResolutionStrategy\"f\n" +
 	"\x1aConflictResolutionStrategy\x12,\n" +
 	"(CONFLICT_RESOLUTION_STRATEGY_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aREPLACE\x10\x01\x12\r\n" +
@@ -6181,290 +6181,290 @@ const file_google_cloud_ces_v1beta_agent_service_proto_rawDesc = "" +
 	"\x11ImportAppResponse\x12/\n" +
 	"\x04name\x18\x01 \x01(\tB\x1b\xfaA\x18\n" +
 	"\x16ces.googleapis.com/AppR\x04name\x12\x1a\n" +
-	"\bwarnings\x18\x02 \x03(\tR\bwarnings\"\xd0\x01\n" +
-	"\x11ListAgentsRequest\x128\n" +
-	"\x06parent\x18\x01 \x01(\tB \xe0A\x02\xfaA\x1a\x12\x18ces.googleapis.com/AgentR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\bwarnings\x18\x02 \x03(\tR\bwarnings\"\xd5\x01\n" +
+	"\x11ListAgentsRequest\x129\n" +
+	"\x06parent\x18\x01 \x01(\tB!\xe2A\x01\x02\xfaA\x1a\x12\x18ces.googleapis.com/AgentR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"t\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"t\n" +
 	"\x12ListAgentsResponse\x126\n" +
 	"\x06agents\x18\x01 \x03(\v2\x1e.google.cloud.ces.v1beta.AgentR\x06agents\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"G\n" +
-	"\x0fGetAgentRequest\x124\n" +
-	"\x04name\x18\x01 \x01(\tB \xe0A\x02\xfaA\x1a\n" +
-	"\x18ces.googleapis.com/AgentR\x04name\"\xa9\x01\n" +
-	"\x12CreateAgentRequest\x128\n" +
-	"\x06parent\x18\x01 \x01(\tB \xe0A\x02\xfaA\x1a\x12\x18ces.googleapis.com/AgentR\x06parent\x12\x1e\n" +
-	"\bagent_id\x18\x02 \x01(\tB\x03\xe0A\x01R\aagentId\x129\n" +
-	"\x05agent\x18\x03 \x01(\v2\x1e.google.cloud.ces.v1beta.AgentB\x03\xe0A\x02R\x05agent\"\x91\x01\n" +
-	"\x12UpdateAgentRequest\x129\n" +
-	"\x05agent\x18\x01 \x01(\v2\x1e.google.cloud.ces.v1beta.AgentB\x03\xe0A\x02R\x05agent\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"~\n" +
-	"\x12DeleteAgentRequest\x124\n" +
-	"\x04name\x18\x01 \x01(\tB \xe0A\x02\xfaA\x1a\n" +
-	"\x18ces.googleapis.com/AgentR\x04name\x12\x19\n" +
-	"\x05force\x18\x02 \x01(\bB\x03\xe0A\x01R\x05force\x12\x17\n" +
-	"\x04etag\x18\x03 \x01(\tB\x03\xe0A\x01R\x04etag\"\xf9\x01\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12*\n" +
-	"\x0estatus_message\x18\x03 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x04 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\"\xd4\x01\n" +
-	"\x13ListExamplesRequest\x12:\n" +
-	"\x06parent\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\x12\x1aces.googleapis.com/ExampleR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"H\n" +
+	"\x0fGetAgentRequest\x125\n" +
+	"\x04name\x18\x01 \x01(\tB!\xe2A\x01\x02\xfaA\x1a\n" +
+	"\x18ces.googleapis.com/AgentR\x04name\"\xac\x01\n" +
+	"\x12CreateAgentRequest\x129\n" +
+	"\x06parent\x18\x01 \x01(\tB!\xe2A\x01\x02\xfaA\x1a\x12\x18ces.googleapis.com/AgentR\x06parent\x12\x1f\n" +
+	"\bagent_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\aagentId\x12:\n" +
+	"\x05agent\x18\x03 \x01(\v2\x1e.google.cloud.ces.v1beta.AgentB\x04\xe2A\x01\x02R\x05agent\"\x93\x01\n" +
+	"\x12UpdateAgentRequest\x12:\n" +
+	"\x05agent\x18\x01 \x01(\v2\x1e.google.cloud.ces.v1beta.AgentB\x04\xe2A\x01\x02R\x05agent\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"\x81\x01\n" +
+	"\x12DeleteAgentRequest\x125\n" +
+	"\x04name\x18\x01 \x01(\tB!\xe2A\x01\x02\xfaA\x1a\n" +
+	"\x18ces.googleapis.com/AgentR\x04name\x12\x1a\n" +
+	"\x05force\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x05force\x12\x18\n" +
+	"\x04etag\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"\xfd\x01\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12+\n" +
+	"\x0estatus_message\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x04 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\"\xd9\x01\n" +
+	"\x13ListExamplesRequest\x12;\n" +
+	"\x06parent\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\x12\x1aces.googleapis.com/ExampleR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"|\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"|\n" +
 	"\x14ListExamplesResponse\x12<\n" +
 	"\bexamples\x18\x01 \x03(\v2 .google.cloud.ces.v1beta.ExampleR\bexamples\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"K\n" +
-	"\x11GetExampleRequest\x126\n" +
-	"\x04name\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
-	"\x1aces.googleapis.com/ExampleR\x04name\"\xb7\x01\n" +
-	"\x14CreateExampleRequest\x12:\n" +
-	"\x06parent\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\x12\x1aces.googleapis.com/ExampleR\x06parent\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"L\n" +
+	"\x11GetExampleRequest\x127\n" +
+	"\x04name\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\n" +
+	"\x1aces.googleapis.com/ExampleR\x04name\"\xba\x01\n" +
+	"\x14CreateExampleRequest\x12;\n" +
+	"\x06parent\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\x12\x1aces.googleapis.com/ExampleR\x06parent\x12#\n" +
 	"\n" +
-	"example_id\x18\x02 \x01(\tB\x03\xe0A\x01R\texampleId\x12?\n" +
-	"\aexample\x18\x03 \x01(\v2 .google.cloud.ces.v1beta.ExampleB\x03\xe0A\x02R\aexample\"\x99\x01\n" +
-	"\x14UpdateExampleRequest\x12?\n" +
-	"\aexample\x18\x01 \x01(\v2 .google.cloud.ces.v1beta.ExampleB\x03\xe0A\x02R\aexample\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"g\n" +
-	"\x14DeleteExampleRequest\x126\n" +
-	"\x04name\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
-	"\x1aces.googleapis.com/ExampleR\x04name\x12\x17\n" +
-	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x01R\x04etag\"\xce\x01\n" +
-	"\x10ListToolsRequest\x127\n" +
-	"\x06parent\x18\x01 \x01(\tB\x1f\xe0A\x02\xfaA\x19\x12\x17ces.googleapis.com/ToolR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"example_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\texampleId\x12@\n" +
+	"\aexample\x18\x03 \x01(\v2 .google.cloud.ces.v1beta.ExampleB\x04\xe2A\x01\x02R\aexample\"\x9b\x01\n" +
+	"\x14UpdateExampleRequest\x12@\n" +
+	"\aexample\x18\x01 \x01(\v2 .google.cloud.ces.v1beta.ExampleB\x04\xe2A\x01\x02R\aexample\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"i\n" +
+	"\x14DeleteExampleRequest\x127\n" +
+	"\x04name\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\n" +
+	"\x1aces.googleapis.com/ExampleR\x04name\x12\x18\n" +
+	"\x04etag\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"\xd3\x01\n" +
+	"\x10ListToolsRequest\x128\n" +
+	"\x06parent\x18\x01 \x01(\tB \xe2A\x01\x02\xfaA\x19\x12\x17ces.googleapis.com/ToolR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"p\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"p\n" +
 	"\x11ListToolsResponse\x123\n" +
 	"\x05tools\x18\x01 \x03(\v2\x1d.google.cloud.ces.v1beta.ToolR\x05tools\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"E\n" +
-	"\x0eGetToolRequest\x123\n" +
-	"\x04name\x18\x01 \x01(\tB\x1f\xe0A\x02\xfaA\x19\n" +
-	"\x17ces.googleapis.com/ToolR\x04name\"\xa2\x01\n" +
-	"\x11CreateToolRequest\x127\n" +
-	"\x06parent\x18\x01 \x01(\tB\x1f\xe0A\x02\xfaA\x19\x12\x17ces.googleapis.com/ToolR\x06parent\x12\x1c\n" +
-	"\atool_id\x18\x02 \x01(\tB\x03\xe0A\x01R\x06toolId\x126\n" +
-	"\x04tool\x18\x03 \x01(\v2\x1d.google.cloud.ces.v1beta.ToolB\x03\xe0A\x02R\x04tool\"\x8d\x01\n" +
-	"\x11UpdateToolRequest\x126\n" +
-	"\x04tool\x18\x01 \x01(\v2\x1d.google.cloud.ces.v1beta.ToolB\x03\xe0A\x02R\x04tool\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"|\n" +
-	"\x11DeleteToolRequest\x123\n" +
-	"\x04name\x18\x01 \x01(\tB\x1f\xe0A\x02\xfaA\x19\n" +
-	"\x17ces.googleapis.com/ToolR\x04name\x12\x19\n" +
-	"\x05force\x18\x02 \x01(\bB\x03\xe0A\x01R\x05force\x12\x17\n" +
-	"\x04etag\x18\x03 \x01(\tB\x03\xe0A\x01R\x04etag\"\xd6\x02\n" +
-	"\x18ListConversationsRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1fces.googleapis.com/ConversationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"F\n" +
+	"\x0eGetToolRequest\x124\n" +
+	"\x04name\x18\x01 \x01(\tB \xe2A\x01\x02\xfaA\x19\n" +
+	"\x17ces.googleapis.com/ToolR\x04name\"\xa5\x01\n" +
+	"\x11CreateToolRequest\x128\n" +
+	"\x06parent\x18\x01 \x01(\tB \xe2A\x01\x02\xfaA\x19\x12\x17ces.googleapis.com/ToolR\x06parent\x12\x1d\n" +
+	"\atool_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06toolId\x127\n" +
+	"\x04tool\x18\x03 \x01(\v2\x1d.google.cloud.ces.v1beta.ToolB\x04\xe2A\x01\x02R\x04tool\"\x8f\x01\n" +
+	"\x11UpdateToolRequest\x127\n" +
+	"\x04tool\x18\x01 \x01(\v2\x1d.google.cloud.ces.v1beta.ToolB\x04\xe2A\x01\x02R\x04tool\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"\x7f\n" +
+	"\x11DeleteToolRequest\x124\n" +
+	"\x04name\x18\x01 \x01(\tB \xe2A\x01\x02\xfaA\x19\n" +
+	"\x17ces.googleapis.com/ToolR\x04name\x12\x1a\n" +
+	"\x05force\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x05force\x12\x18\n" +
+	"\x04etag\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"\xdc\x02\n" +
+	"\x18ListConversationsRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1fces.googleapis.com/ConversationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12I\n" +
-	"\x06source\x18\x05 \x01(\x0e2,.google.cloud.ces.v1beta.Conversation.SourceB\x03\xe0A\x01R\x06source\x12K\n" +
-	"\asources\x18\x06 \x03(\x0e2,.google.cloud.ces.v1beta.Conversation.SourceB\x03\xe0A\x01R\asources\"\x90\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12J\n" +
+	"\x06source\x18\x05 \x01(\x0e2,.google.cloud.ces.v1beta.Conversation.SourceB\x04\xe2A\x01\x01R\x06source\x12L\n" +
+	"\asources\x18\x06 \x03(\x0e2,.google.cloud.ces.v1beta.Conversation.SourceB\x04\xe2A\x01\x01R\asources\"\x90\x01\n" +
 	"\x19ListConversationsResponse\x12K\n" +
 	"\rconversations\x18\x01 \x03(\v2%.google.cloud.ces.v1beta.ConversationR\rconversations\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa2\x01\n" +
-	"\x16GetConversationRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fces.googleapis.com/ConversationR\x04name\x12K\n" +
-	"\x06source\x18\x02 \x01(\x0e2,.google.cloud.ces.v1beta.Conversation.SourceB\x05\xe0A\x01\x18\x01R\x06source\"\xa5\x01\n" +
-	"\x19DeleteConversationRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fces.googleapis.com/ConversationR\x04name\x12K\n" +
-	"\x06source\x18\x02 \x01(\x0e2,.google.cloud.ces.v1beta.Conversation.SourceB\x05\xe0A\x01\x18\x01R\x06source\"\xb1\x01\n" +
-	"\x1fBatchDeleteConversationsRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1fces.googleapis.com/ConversationR\x06parent\x12M\n" +
-	"\rconversations\x18\x02 \x03(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fces.googleapis.com/ConversationR\rconversations\"\xb6\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa4\x01\n" +
+	"\x16GetConversationRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fces.googleapis.com/ConversationR\x04name\x12L\n" +
+	"\x06source\x18\x02 \x01(\x0e2,.google.cloud.ces.v1beta.Conversation.SourceB\x06\xe2A\x01\x01\x18\x01R\x06source\"\xa7\x01\n" +
+	"\x19DeleteConversationRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fces.googleapis.com/ConversationR\x04name\x12L\n" +
+	"\x06source\x18\x02 \x01(\x0e2,.google.cloud.ces.v1beta.Conversation.SourceB\x06\xe2A\x01\x01\x18\x01R\x06source\"\xb3\x01\n" +
+	"\x1fBatchDeleteConversationsRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1fces.googleapis.com/ConversationR\x06parent\x12N\n" +
+	"\rconversations\x18\x02 \x03(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fces.googleapis.com/ConversationR\rconversations\"\xb7\x01\n" +
 	" BatchDeleteConversationsResponse\x123\n" +
 	"\x15deleted_conversations\x18\x01 \x03(\tR\x14deletedConversations\x121\n" +
-	"\x14failed_conversations\x18\x02 \x03(\tR\x13failedConversations\x12*\n" +
-	"\x0eerror_messages\x18\x03 \x03(\tB\x03\xe0A\x01R\rerrorMessages\"\xd8\x01\n" +
-	"\x15ListGuardrailsRequest\x12<\n" +
-	"\x06parent\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\x12\x1cces.googleapis.com/GuardrailR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x14failed_conversations\x18\x02 \x03(\tR\x13failedConversations\x12+\n" +
+	"\x0eerror_messages\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\rerrorMessages\"\xdd\x01\n" +
+	"\x15ListGuardrailsRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\x12\x1cces.googleapis.com/GuardrailR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\x84\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\x84\x01\n" +
 	"\x16ListGuardrailsResponse\x12B\n" +
 	"\n" +
 	"guardrails\x18\x01 \x03(\v2\".google.cloud.ces.v1beta.GuardrailR\n" +
 	"guardrails\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"O\n" +
-	"\x13GetGuardrailRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cces.googleapis.com/GuardrailR\x04name\"\xc5\x01\n" +
-	"\x16CreateGuardrailRequest\x12<\n" +
-	"\x06parent\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\x12\x1cces.googleapis.com/GuardrailR\x06parent\x12&\n" +
-	"\fguardrail_id\x18\x02 \x01(\tB\x03\xe0A\x01R\vguardrailId\x12E\n" +
-	"\tguardrail\x18\x03 \x01(\v2\".google.cloud.ces.v1beta.GuardrailB\x03\xe0A\x02R\tguardrail\"\xa1\x01\n" +
-	"\x16UpdateGuardrailRequest\x12E\n" +
-	"\tguardrail\x18\x01 \x01(\v2\".google.cloud.ces.v1beta.GuardrailB\x03\xe0A\x02R\tguardrail\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"\x86\x01\n" +
-	"\x16DeleteGuardrailRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cces.googleapis.com/GuardrailR\x04name\x12\x19\n" +
-	"\x05force\x18\x02 \x01(\bB\x03\xe0A\x01R\x05force\x12\x17\n" +
-	"\x04etag\x18\x03 \x01(\tB\x03\xe0A\x01R\x04etag\"\xbd\x01\n" +
-	"\x16ListDeploymentsRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\x12\x1dces.googleapis.com/DeploymentR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"P\n" +
+	"\x13GetGuardrailRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cces.googleapis.com/GuardrailR\x04name\"\xc8\x01\n" +
+	"\x16CreateGuardrailRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\x12\x1cces.googleapis.com/GuardrailR\x06parent\x12'\n" +
+	"\fguardrail_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vguardrailId\x12F\n" +
+	"\tguardrail\x18\x03 \x01(\v2\".google.cloud.ces.v1beta.GuardrailB\x04\xe2A\x01\x02R\tguardrail\"\xa3\x01\n" +
+	"\x16UpdateGuardrailRequest\x12F\n" +
+	"\tguardrail\x18\x01 \x01(\v2\".google.cloud.ces.v1beta.GuardrailB\x04\xe2A\x01\x02R\tguardrail\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"\x89\x01\n" +
+	"\x16DeleteGuardrailRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cces.googleapis.com/GuardrailR\x04name\x12\x1a\n" +
+	"\x05force\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x05force\x12\x18\n" +
+	"\x04etag\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"\xc1\x01\n" +
+	"\x16ListDeploymentsRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\x12\x1dces.googleapis.com/DeploymentR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1e\n" +
-	"\border_by\x18\x04 \x01(\tB\x03\xe0A\x01R\aorderBy\"\x88\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1f\n" +
+	"\border_by\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\x88\x01\n" +
 	"\x17ListDeploymentsResponse\x12E\n" +
 	"\vdeployments\x18\x01 \x03(\v2#.google.cloud.ces.v1beta.DeploymentR\vdeployments\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"Q\n" +
-	"\x14GetDeploymentRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dces.googleapis.com/DeploymentR\x04name\"\xcc\x01\n" +
-	"\x17CreateDeploymentRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\x12\x1dces.googleapis.com/DeploymentR\x06parent\x12(\n" +
-	"\rdeployment_id\x18\x03 \x01(\tB\x03\xe0A\x01R\fdeploymentId\x12H\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"R\n" +
+	"\x14GetDeploymentRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dces.googleapis.com/DeploymentR\x04name\"\xcf\x01\n" +
+	"\x17CreateDeploymentRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\x12\x1dces.googleapis.com/DeploymentR\x06parent\x12)\n" +
+	"\rdeployment_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\fdeploymentId\x12I\n" +
 	"\n" +
-	"deployment\x18\x02 \x01(\v2#.google.cloud.ces.v1beta.DeploymentB\x03\xe0A\x02R\n" +
-	"deployment\"\xa5\x01\n" +
-	"\x17UpdateDeploymentRequest\x12H\n" +
+	"deployment\x18\x02 \x01(\v2#.google.cloud.ces.v1beta.DeploymentB\x04\xe2A\x01\x02R\n" +
+	"deployment\"\xa7\x01\n" +
+	"\x17UpdateDeploymentRequest\x12I\n" +
 	"\n" +
-	"deployment\x18\x01 \x01(\v2#.google.cloud.ces.v1beta.DeploymentB\x03\xe0A\x02R\n" +
-	"deployment\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"m\n" +
-	"\x17DeleteDeploymentRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dces.googleapis.com/DeploymentR\x04name\x12\x17\n" +
-	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x01R\x04etag\"\xd4\x01\n" +
-	"\x13ListToolsetsRequest\x12:\n" +
-	"\x06parent\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\x12\x1aces.googleapis.com/ToolsetR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"deployment\x18\x01 \x01(\v2#.google.cloud.ces.v1beta.DeploymentB\x04\xe2A\x01\x02R\n" +
+	"deployment\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"o\n" +
+	"\x17DeleteDeploymentRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dces.googleapis.com/DeploymentR\x04name\x12\x18\n" +
+	"\x04etag\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"\xd9\x01\n" +
+	"\x13ListToolsetsRequest\x12;\n" +
+	"\x06parent\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\x12\x1aces.googleapis.com/ToolsetR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"|\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"|\n" +
 	"\x14ListToolsetsResponse\x12<\n" +
 	"\btoolsets\x18\x01 \x03(\v2 .google.cloud.ces.v1beta.ToolsetR\btoolsets\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"K\n" +
-	"\x11GetToolsetRequest\x126\n" +
-	"\x04name\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
-	"\x1aces.googleapis.com/ToolsetR\x04name\"\xb7\x01\n" +
-	"\x14CreateToolsetRequest\x12:\n" +
-	"\x06parent\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\x12\x1aces.googleapis.com/ToolsetR\x06parent\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"L\n" +
+	"\x11GetToolsetRequest\x127\n" +
+	"\x04name\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\n" +
+	"\x1aces.googleapis.com/ToolsetR\x04name\"\xba\x01\n" +
+	"\x14CreateToolsetRequest\x12;\n" +
+	"\x06parent\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\x12\x1aces.googleapis.com/ToolsetR\x06parent\x12#\n" +
 	"\n" +
-	"toolset_id\x18\x02 \x01(\tB\x03\xe0A\x01R\ttoolsetId\x12?\n" +
-	"\atoolset\x18\x03 \x01(\v2 .google.cloud.ces.v1beta.ToolsetB\x03\xe0A\x02R\atoolset\"\x99\x01\n" +
-	"\x14UpdateToolsetRequest\x12?\n" +
-	"\atoolset\x18\x01 \x01(\v2 .google.cloud.ces.v1beta.ToolsetB\x03\xe0A\x02R\atoolset\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"\x82\x01\n" +
-	"\x14DeleteToolsetRequest\x126\n" +
-	"\x04name\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
-	"\x1aces.googleapis.com/ToolsetR\x04name\x12\x19\n" +
-	"\x05force\x18\x02 \x01(\bB\x03\xe0A\x01R\x05force\x12\x17\n" +
-	"\x04etag\x18\x03 \x01(\tB\x03\xe0A\x01R\x04etag\"\xda\x01\n" +
-	"\x16ListAppVersionsRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\x12\x1dces.googleapis.com/AppVersionR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"toolset_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\ttoolsetId\x12@\n" +
+	"\atoolset\x18\x03 \x01(\v2 .google.cloud.ces.v1beta.ToolsetB\x04\xe2A\x01\x02R\atoolset\"\x9b\x01\n" +
+	"\x14UpdateToolsetRequest\x12@\n" +
+	"\atoolset\x18\x01 \x01(\v2 .google.cloud.ces.v1beta.ToolsetB\x04\xe2A\x01\x02R\atoolset\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"\x85\x01\n" +
+	"\x14DeleteToolsetRequest\x127\n" +
+	"\x04name\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\n" +
+	"\x1aces.googleapis.com/ToolsetR\x04name\x12\x1a\n" +
+	"\x05force\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x05force\x12\x18\n" +
+	"\x04etag\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"\xdf\x01\n" +
+	"\x16ListAppVersionsRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\x12\x1dces.googleapis.com/AppVersionR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\x89\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\x89\x01\n" +
 	"\x17ListAppVersionsResponse\x12F\n" +
 	"\fapp_versions\x18\x01 \x03(\v2#.google.cloud.ces.v1beta.AppVersionR\vappVersions\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"Q\n" +
-	"\x14GetAppVersionRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dces.googleapis.com/AppVersionR\x04name\"m\n" +
-	"\x17DeleteAppVersionRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dces.googleapis.com/AppVersionR\x04name\x12\x17\n" +
-	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x01R\x04etag\"\xce\x01\n" +
-	"\x17CreateAppVersionRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\x12\x1dces.googleapis.com/AppVersionR\x06parent\x12)\n" +
-	"\x0eapp_version_id\x18\x02 \x01(\tB\x03\xe0A\x01R\fappVersionId\x12I\n" +
-	"\vapp_version\x18\x03 \x01(\v2#.google.cloud.ces.v1beta.AppVersionB\x03\xe0A\x02R\n" +
-	"appVersion\"U\n" +
-	"\x18RestoreAppVersionRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"R\n" +
+	"\x14GetAppVersionRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dces.googleapis.com/AppVersionR\x04name\"o\n" +
+	"\x17DeleteAppVersionRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dces.googleapis.com/AppVersionR\x04name\x12\x18\n" +
+	"\x04etag\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"\xd1\x01\n" +
+	"\x17CreateAppVersionRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\x12\x1dces.googleapis.com/AppVersionR\x06parent\x12*\n" +
+	"\x0eapp_version_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\fappVersionId\x12J\n" +
+	"\vapp_version\x18\x03 \x01(\v2#.google.cloud.ces.v1beta.AppVersionB\x04\xe2A\x01\x02R\n" +
+	"appVersion\"V\n" +
+	"\x18RestoreAppVersionRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
 	"\x1dces.googleapis.com/AppVersionR\x04name\"\x1b\n" +
-	"\x19RestoreAppVersionResponse\"\x92\x1b\n" +
+	"\x19RestoreAppVersionResponse\"\xb0\x1b\n" +
 	"\x1aGenerateAppResourceRequest\x126\n" +
 	"\x05agent\x18\x02 \x01(\v2\x1e.google.cloud.ces.v1beta.AgentH\x00R\x05agent\x123\n" +
 	"\x04tool\x18\x04 \x01(\v2\x1d.google.cloud.ces.v1beta.ToolH\x00R\x04tool\x12<\n" +
 	"\atoolset\x18\x06 \x01(\v2 .google.cloud.ces.v1beta.ToolsetH\x00R\atoolset\x12w\n" +
-	"\x13app_version_context\x18\f \x01(\v2E.google.cloud.ces.v1beta.GenerateAppResourceRequest.AppVersionContextH\x00R\x11appVersionContext\x126\n" +
-	"\x06parent\x18\x01 \x01(\tB\x1e\xe0A\x02\xfaA\x18\n" +
-	"\x16ces.googleapis.com/AppR\x06parent\x12|\n" +
-	"\x13refine_instructions\x18\x03 \x03(\v2F.google.cloud.ces.v1beta.GenerateAppResourceRequest.RefineInstructionsB\x03\xe0A\x01R\x12refineInstructions\x12\x83\x01\n" +
-	"\x16tool_generation_config\x18\x05 \x01(\v2H.google.cloud.ces.v1beta.GenerateAppResourceRequest.ToolGenerationConfigB\x03\xe0A\x01R\x14toolGenerationConfig\x12\x80\x01\n" +
-	"\x15app_generation_config\x18\a \x01(\v2G.google.cloud.ces.v1beta.GenerateAppResourceRequest.AppGenerationConfigB\x03\xe0A\x01R\x13appGenerationConfig\x12\x95\x01\n" +
-	"\x1cevaluation_generation_config\x18\b \x01(\v2N.google.cloud.ces.v1beta.GenerateAppResourceRequest.EvaluationGenerationConfigB\x03\xe0A\x01R\x1aevaluationGenerationConfig\x12\xae\x01\n" +
-	"%evaluation_personas_generation_config\x18\t \x01(\v2V.google.cloud.ces.v1beta.GenerateAppResourceRequest.EvaluationPersonasGenerationConfigB\x03\xe0A\x01R\"evaluationPersonasGenerationConfig\x12\x9f\x01\n" +
+	"\x13app_version_context\x18\f \x01(\v2E.google.cloud.ces.v1beta.GenerateAppResourceRequest.AppVersionContextH\x00R\x11appVersionContext\x127\n" +
+	"\x06parent\x18\x01 \x01(\tB\x1f\xe2A\x01\x02\xfaA\x18\n" +
+	"\x16ces.googleapis.com/AppR\x06parent\x12}\n" +
+	"\x13refine_instructions\x18\x03 \x03(\v2F.google.cloud.ces.v1beta.GenerateAppResourceRequest.RefineInstructionsB\x04\xe2A\x01\x01R\x12refineInstructions\x12\x84\x01\n" +
+	"\x16tool_generation_config\x18\x05 \x01(\v2H.google.cloud.ces.v1beta.GenerateAppResourceRequest.ToolGenerationConfigB\x04\xe2A\x01\x01R\x14toolGenerationConfig\x12\x81\x01\n" +
+	"\x15app_generation_config\x18\a \x01(\v2G.google.cloud.ces.v1beta.GenerateAppResourceRequest.AppGenerationConfigB\x04\xe2A\x01\x01R\x13appGenerationConfig\x12\x96\x01\n" +
+	"\x1cevaluation_generation_config\x18\b \x01(\v2N.google.cloud.ces.v1beta.GenerateAppResourceRequest.EvaluationGenerationConfigB\x04\xe2A\x01\x01R\x1aevaluationGenerationConfig\x12\xaf\x01\n" +
+	"%evaluation_personas_generation_config\x18\t \x01(\v2V.google.cloud.ces.v1beta.GenerateAppResourceRequest.EvaluationPersonasGenerationConfigB\x04\xe2A\x01\x01R\"evaluationPersonasGenerationConfig\x12\xa0\x01\n" +
 	" quality_report_generation_config\x18\n" +
-	" \x01(\v2Q.google.cloud.ces.v1beta.GenerateAppResourceRequest.QualityReportGenerationConfigB\x03\xe0A\x01R\x1dqualityReportGenerationConfig\x12\x87\x01\n" +
-	"\x18hill_climbing_fix_config\x18\v \x01(\v2I.google.cloud.ces.v1beta.GenerateAppResourceRequest.HillClimbingFixConfigB\x03\xe0A\x01R\x15hillClimbingFixConfig\x1a\xa7\x01\n" +
+	" \x01(\v2Q.google.cloud.ces.v1beta.GenerateAppResourceRequest.QualityReportGenerationConfigB\x04\xe2A\x01\x01R\x1dqualityReportGenerationConfig\x12\x88\x01\n" +
+	"\x18hill_climbing_fix_config\x18\v \x01(\v2I.google.cloud.ces.v1beta.GenerateAppResourceRequest.HillClimbingFixConfigB\x04\xe2A\x01\x01R\x15hillClimbingFixConfig\x1a\xa7\x01\n" +
 	"\x11AppVersionContext\x12C\n" +
 	"\vapp_version\x18\x01 \x01(\tB\"\xfaA\x1f\n" +
 	"\x1dces.googleapis.com/AppVersionR\n" +
 	"appVersion\x12M\n" +
 	"\x13agent_resource_name\x18\x02 \x01(\tB\x1d\xfaA\x1a\n" +
-	"\x18ces.googleapis.com/AgentR\x11agentResourceName\x1a\xc5\x01\n" +
-	"\x12RefineInstructions\x12$\n" +
-	"\vstart_index\x18\x01 \x01(\x03B\x03\xe0A\x02R\n" +
-	"startIndex\x12 \n" +
-	"\tend_index\x18\x02 \x01(\x03B\x03\xe0A\x02R\bendIndex\x12>\n" +
+	"\x18ces.googleapis.com/AgentR\x11agentResourceName\x1a\xc9\x01\n" +
+	"\x12RefineInstructions\x12%\n" +
+	"\vstart_index\x18\x01 \x01(\x03B\x04\xe2A\x01\x02R\n" +
+	"startIndex\x12!\n" +
+	"\tend_index\x18\x02 \x01(\x03B\x04\xe2A\x01\x02R\bendIndex\x12?\n" +
 	"\n" +
-	"field_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\tfieldMask\x12'\n" +
-	"\finstructions\x18\x04 \x01(\tB\x03\xe0A\x02R\finstructions\x1a\xec\x05\n" +
-	"\x14ToolGenerationConfig\x12\x1d\n" +
-	"\acontext\x18\x01 \x01(\tB\x03\xe0A\x01R\acontext\x12N\n" +
-	"\rfile_contexts\x18\x03 \x03(\v2$.google.cloud.ces.v1beta.FileContextB\x03\xe0A\x01R\ffileContexts\x12\xb8\x01\n" +
-	"\"open_api_toolset_generation_config\x18\x02 \x01(\v2g.google.cloud.ces.v1beta.GenerateAppResourceRequest.ToolGenerationConfig.OpenApiToolsetGenerationConfigB\x03\xe0A\x01R\x1eopenApiToolsetGenerationConfig\x1a\xa9\x03\n" +
-	"\x1eOpenApiToolsetGenerationConfig\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x02R\x03uri\x12\xc9\x01\n" +
-	"\x1coperation_generation_configs\x18\x02 \x03(\v2\x81\x01.google.cloud.ces.v1beta.GenerateAppResourceRequest.ToolGenerationConfig.OpenApiToolsetGenerationConfig.OperationGenerationConfigB\x03\xe0A\x02R\x1aoperationGenerationConfigs\x1a\xa3\x01\n" +
-	"\x19OperationGenerationConfig\x12\x1b\n" +
-	"\x06method\x18\x01 \x01(\tB\x03\xe0A\x02R\x06method\x12\x17\n" +
-	"\x04path\x18\x02 \x01(\tB\x03\xe0A\x02R\x04path\x12&\n" +
-	"\frequest_json\x18\x03 \x01(\tB\x03\xe0A\x02R\vrequestJson\x12(\n" +
-	"\rresponse_json\x18\x04 \x01(\tB\x03\xe0A\x02R\fresponseJson\x1a\xb9\x02\n" +
-	"\x13AppGenerationConfig\x12\x1d\n" +
-	"\acontext\x18\x01 \x01(\tB\x03\xe0A\x01R\acontext\x12N\n" +
-	"\rfile_contexts\x18\x02 \x03(\v2$.google.cloud.ces.v1beta.FileContextB\x03\xe0A\x01R\ffileContexts\x12S\n" +
+	"field_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\tfieldMask\x12(\n" +
+	"\finstructions\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\finstructions\x1a\xf5\x05\n" +
+	"\x14ToolGenerationConfig\x12\x1e\n" +
+	"\acontext\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\acontext\x12O\n" +
+	"\rfile_contexts\x18\x03 \x03(\v2$.google.cloud.ces.v1beta.FileContextB\x04\xe2A\x01\x01R\ffileContexts\x12\xb9\x01\n" +
+	"\"open_api_toolset_generation_config\x18\x02 \x01(\v2g.google.cloud.ces.v1beta.GenerateAppResourceRequest.ToolGenerationConfig.OpenApiToolsetGenerationConfigB\x04\xe2A\x01\x01R\x1eopenApiToolsetGenerationConfig\x1a\xaf\x03\n" +
+	"\x1eOpenApiToolsetGenerationConfig\x12\x16\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03uri\x12\xca\x01\n" +
+	"\x1coperation_generation_configs\x18\x02 \x03(\v2\x81\x01.google.cloud.ces.v1beta.GenerateAppResourceRequest.ToolGenerationConfig.OpenApiToolsetGenerationConfig.OperationGenerationConfigB\x04\xe2A\x01\x02R\x1aoperationGenerationConfigs\x1a\xa7\x01\n" +
+	"\x19OperationGenerationConfig\x12\x1c\n" +
+	"\x06method\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06method\x12\x18\n" +
+	"\x04path\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04path\x12'\n" +
+	"\frequest_json\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\vrequestJson\x12)\n" +
+	"\rresponse_json\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\fresponseJson\x1a\xbe\x02\n" +
+	"\x13AppGenerationConfig\x12\x1e\n" +
+	"\acontext\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\acontext\x12O\n" +
+	"\rfile_contexts\x18\x02 \x03(\v2$.google.cloud.ces.v1beta.FileContextB\x04\xe2A\x01\x01R\ffileContexts\x12T\n" +
 	"\n" +
-	"dataset_id\x18\x03 \x01(\tB4\xe0A\x01\xfaA.\n" +
-	",contactcenterinsights.googleapis.com/DatasetR\tdatasetId\x126\n" +
-	"\x14generate_evaluations\x18\x04 \x01(\bB\x03\xe0A\x01R\x13generateEvaluations\x12&\n" +
-	"\fgcs_location\x18\x05 \x01(\tB\x03\xe0A\x01R\vgcsLocation\x1aq\n" +
-	"\x1aEvaluationGenerationConfig\x12S\n" +
+	"dataset_id\x18\x03 \x01(\tB5\xe2A\x01\x01\xfaA.\n" +
+	",contactcenterinsights.googleapis.com/DatasetR\tdatasetId\x127\n" +
+	"\x14generate_evaluations\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x13generateEvaluations\x12'\n" +
+	"\fgcs_location\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vgcsLocation\x1ar\n" +
+	"\x1aEvaluationGenerationConfig\x12T\n" +
 	"\n" +
-	"dataset_id\x18\x01 \x01(\tB4\xe0A\x01\xfaA.\n" +
+	"dataset_id\x18\x01 \x01(\tB5\xe2A\x01\x01\xfaA.\n" +
 	",contactcenterinsights.googleapis.com/DatasetR\tdatasetId\x1a$\n" +
-	"\"EvaluationPersonasGenerationConfig\x1a\xec\x02\n" +
-	"\x1dQualityReportGenerationConfig\x12O\n" +
-	"\x0eevaluation_run\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" ces.googleapis.com/EvaluationRunR\revaluationRun\x12\x8d\x01\n" +
-	"\talgorithm\x18\x02 \x01(\x0e2j.google.cloud.ces.v1beta.GenerateAppResourceRequest.QualityReportGenerationConfig.LossAttributionAlgorithmB\x03\xe0A\x01R\talgorithm\"j\n" +
+	"\"EvaluationPersonasGenerationConfig\x1a\xee\x02\n" +
+	"\x1dQualityReportGenerationConfig\x12P\n" +
+	"\x0eevaluation_run\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" ces.googleapis.com/EvaluationRunR\revaluationRun\x12\x8e\x01\n" +
+	"\talgorithm\x18\x02 \x01(\x0e2j.google.cloud.ces.v1beta.GenerateAppResourceRequest.QualityReportGenerationConfig.LossAttributionAlgorithmB\x04\xe2A\x01\x01R\talgorithm\"j\n" +
 	"\x18LossAttributionAlgorithm\x12*\n" +
 	"&LOSS_ATTRIBUTION_ALGORITHM_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vAPP_CENTRIC\x10\x01\x12\x11\n" +
-	"\rAGENT_CENTRIC\x10\x02\x1ak\n" +
-	"\x15HillClimbingFixConfig\x12R\n" +
-	"\x0equality_report\x18\x01 \x01(\v2&.google.cloud.ces.v1beta.QualityReportB\x03\xe0A\x02R\rqualityReportB\n" +
+	"\rAGENT_CENTRIC\x10\x02\x1al\n" +
+	"\x15HillClimbingFixConfig\x12S\n" +
+	"\x0equality_report\x18\x01 \x01(\v2&.google.cloud.ces.v1beta.QualityReportB\x04\xe2A\x01\x02R\rqualityReportB\n" +
 	"\n" +
 	"\bresource\"\xd1\b\n" +
 	"\x1bGenerateAppResourceResponse\x126\n" +
@@ -6485,26 +6485,26 @@ const file_google_cloud_ces_v1beta_agent_service_proto_rawDesc = "" +
 	"\vevaluations\x18\x02 \x03(\v2#.google.cloud.ces.v1beta.EvaluationR\vevaluations\x1a6\n" +
 	"\x12GenerateResultInfo\x12 \n" +
 	"\vexplanation\x18\x01 \x01(\tR\vexplanationB\x14\n" +
-	"\x12generated_resource\"\xf0\x03\n" +
-	"\rQualityReport\x12O\n" +
-	"\x06issues\x18\x01 \x03(\v22.google.cloud.ces.v1beta.QualityReport.AgentIssuesB\x03\xe0A\x01R\x06issues\x12,\n" +
-	"\x0fevaluation_runs\x18\x02 \x03(\tB\x03\xe0A\x01R\x0eevaluationRuns\x12X\n" +
-	"\x0egeneral_issues\x18\x03 \x03(\v2,.google.cloud.ces.v1beta.QualityReport.IssueB\x03\xe0A\x01R\rgeneralIssues\x1a\x90\x01\n" +
-	"\x05Issue\x12%\n" +
-	"\vdescription\x18\x01 \x01(\tB\x03\xe0A\x01R\vdescription\x12.\n" +
-	"\x10occurrence_count\x18\x02 \x01(\x05B\x03\xe0A\x01R\x0foccurrenceCount\x120\n" +
-	"\x11proposed_solution\x18\x03 \x01(\tB\x03\xe0A\x01R\x10proposedSolution\x1as\n" +
-	"\vAgentIssues\x12\x19\n" +
-	"\x05agent\x18\x01 \x01(\tB\x03\xe0A\x01R\x05agent\x12I\n" +
-	"\x06issues\x18\x02 \x03(\v2,.google.cloud.ces.v1beta.QualityReport.IssueB\x03\xe0A\x01R\x06issues\"\xb0\x05\n" +
-	"$GenerateAppResourceOperationMetadata\x12z\n" +
-	"\x0fgeneration_type\x18\x01 \x01(\x0e2L.google.cloud.ces.v1beta.GenerateAppResourceOperationMetadata.GenerationTypeB\x03\xe0A\x03R\x0egenerationType\x12\x1d\n" +
-	"\amessage\x18\x02 \x01(\tB\x03\xe0A\x03R\amessage\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x05 \x01(\tB\x03\xe0A\x03R\x06target\x12>\n" +
-	"\x0epartial_errors\x18\x06 \x03(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\rpartialErrors\"\x91\x02\n" +
+	"\x12generated_resource\"\xf8\x03\n" +
+	"\rQualityReport\x12P\n" +
+	"\x06issues\x18\x01 \x03(\v22.google.cloud.ces.v1beta.QualityReport.AgentIssuesB\x04\xe2A\x01\x01R\x06issues\x12-\n" +
+	"\x0fevaluation_runs\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x0eevaluationRuns\x12Y\n" +
+	"\x0egeneral_issues\x18\x03 \x03(\v2,.google.cloud.ces.v1beta.QualityReport.IssueB\x04\xe2A\x01\x01R\rgeneralIssues\x1a\x93\x01\n" +
+	"\x05Issue\x12&\n" +
+	"\vdescription\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12/\n" +
+	"\x10occurrence_count\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x0foccurrenceCount\x121\n" +
+	"\x11proposed_solution\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x10proposedSolution\x1au\n" +
+	"\vAgentIssues\x12\x1a\n" +
+	"\x05agent\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x05agent\x12J\n" +
+	"\x06issues\x18\x02 \x03(\v2,.google.cloud.ces.v1beta.QualityReport.IssueB\x04\xe2A\x01\x01R\x06issues\"\xb6\x05\n" +
+	"$GenerateAppResourceOperationMetadata\x12{\n" +
+	"\x0fgeneration_type\x18\x01 \x01(\x0e2L.google.cloud.ces.v1beta.GenerateAppResourceOperationMetadata.GenerationTypeB\x04\xe2A\x01\x03R\x0egenerationType\x12\x1e\n" +
+	"\amessage\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\amessage\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12?\n" +
+	"\x0epartial_errors\x18\x06 \x03(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\rpartialErrors\"\x91\x02\n" +
 	"\x0eGenerationType\x12\x1f\n" +
 	"\x1bGENERATION_TYPE_UNSPECIFIED\x10\x00\x12\x15\n" +
 	"\x11AGENT_RESTRUCTURE\x10\x01\x12\x10\n" +
@@ -6515,28 +6515,28 @@ const file_google_cloud_ces_v1beta_agent_service_proto_rawDesc = "" +
 	" SCENARIO_CREATE_FROM_TRANSCRIPTS\x10\a\x12\x1d\n" +
 	"\x19EVALUATION_PERSONA_CREATE\x10\x06\x12\x19\n" +
 	"\x15QUALITY_REPORT_CREATE\x10\b\x12\x1d\n" +
-	"\x19INSTRUCTION_FOLLOWING_FIX\x10\t\"\xd8\x01\n" +
-	"\x15ListChangelogsRequest\x12<\n" +
-	"\x06parent\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\x12\x1cces.googleapis.com/ChangelogR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x19INSTRUCTION_FOLLOWING_FIX\x10\t\"\xdd\x01\n" +
+	"\x15ListChangelogsRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\x12\x1cces.googleapis.com/ChangelogR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\x84\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\x84\x01\n" +
 	"\x16ListChangelogsResponse\x12B\n" +
 	"\n" +
 	"changelogs\x18\x01 \x03(\v2\".google.cloud.ces.v1beta.ChangelogR\n" +
 	"changelogs\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"O\n" +
-	"\x13GetChangelogRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cces.googleapis.com/ChangelogR\x04name\"]\n" +
-	"\x1aGetSecuritySettingsRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#ces.googleapis.com/SecuritySettingsR\x04name\"\xbe\x01\n" +
-	"\x1dUpdateSecuritySettingsRequest\x12[\n" +
-	"\x11security_settings\x18\x01 \x01(\v2).google.cloud.ces.v1beta.SecuritySettingsB\x03\xe0A\x02R\x10securitySettings\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"P\n" +
+	"\x13GetChangelogRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cces.googleapis.com/ChangelogR\x04name\"^\n" +
+	"\x1aGetSecuritySettingsRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#ces.googleapis.com/SecuritySettingsR\x04name\"\xc0\x01\n" +
+	"\x1dUpdateSecuritySettingsRequest\x12\\\n" +
+	"\x11security_settings\x18\x01 \x01(\v2).google.cloud.ces.v1beta.SecuritySettingsB\x04\xe2A\x01\x02R\x10securitySettings\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
 	"updateMask2\xd6M\n" +
 	"\fAgentService\x12\x9e\x01\n" +
 	"\bListApps\x12(.google.cloud.ces.v1beta.ListAppsRequest\x1a).google.cloud.ces.v1beta.ListAppsResponse\"=\xdaA\x06parent\x82\xd3\xe4\x93\x02.\x12,/v1beta/{parent=projects/*/locations/*}/apps\x12\x8b\x01\n" +

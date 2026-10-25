@@ -912,51 +912,51 @@ var File_google_cloud_appoptimize_v1beta_app_optimize_proto protoreflect.FileDes
 
 const file_google_cloud_appoptimize_v1beta_app_optimize_proto_rawDesc = "" +
 	"\n" +
-	"2google/cloud/appoptimize/v1beta/app_optimize.proto\x12\x1fgoogle.cloud.appoptimize.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc0\x01\n" +
-	"\x13CreateReportRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!appoptimize.googleapis.com/ReportR\x06parent\x12 \n" +
-	"\treport_id\x18\x02 \x01(\tB\x03\xe0A\x02R\breportId\x12D\n" +
-	"\x06report\x18\x03 \x01(\v2'.google.cloud.appoptimize.v1beta.ReportB\x03\xe0A\x02R\x06report\"\x8c\x03\n" +
-	"\x06Report\x12B\n" +
-	"\vexpire_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03H\x00R\n" +
-	"expireTime\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12#\n" +
+	"2google/cloud/appoptimize/v1beta/app_optimize.proto\x12\x1fgoogle.cloud.appoptimize.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc3\x01\n" +
+	"\x13CreateReportRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!appoptimize.googleapis.com/ReportR\x06parent\x12!\n" +
+	"\treport_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\breportId\x12E\n" +
+	"\x06report\x18\x03 \x01(\v2'.google.cloud.appoptimize.v1beta.ReportB\x04\xe2A\x01\x02R\x06report\"\x92\x03\n" +
+	"\x06Report\x12C\n" +
+	"\vexpire_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03H\x00R\n" +
+	"expireTime\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12$\n" +
 	"\n" +
-	"dimensions\x18\x02 \x03(\tB\x03\xe0A\x02R\n" +
-	"dimensions\x12\x1d\n" +
-	"\ametrics\x18\a \x03(\tB\x03\xe0A\x02R\ametrics\x12C\n" +
-	"\x06scopes\x18\x03 \x03(\v2&.google.cloud.appoptimize.v1beta.ScopeB\x03\xe0A\x01R\x06scopes\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter:q\xeaAn\n" +
+	"dimensions\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\n" +
+	"dimensions\x12\x1e\n" +
+	"\ametrics\x18\a \x03(\tB\x04\xe2A\x01\x02R\ametrics\x12D\n" +
+	"\x06scopes\x18\x03 \x03(\v2&.google.cloud.appoptimize.v1beta.ScopeB\x04\xe2A\x01\x01R\x06scopes\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter:q\xeaAn\n" +
 	"!appoptimize.googleapis.com/Report\x128projects/{project}/locations/{location}/reports/{report}*\areports2\x06reportB\f\n" +
 	"\n" +
-	"expiration\"\xb0\x01\n" +
-	"\x05Scope\x12O\n" +
-	"\aproject\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectH\x00R\aproject\x12M\n" +
-	"\vapplication\x18\x02 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"expiration\"\xb2\x01\n" +
+	"\x05Scope\x12P\n" +
+	"\aproject\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectH\x00R\aproject\x12N\n" +
+	"\vapplication\x18\x02 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!apphub.googleapis.com/ApplicationH\x00R\vapplicationB\a\n" +
-	"\x05scope\"Q\n" +
-	"\x10GetReportRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!appoptimize.googleapis.com/ReportR\x04name\"\x9d\x01\n" +
-	"\x12ListReportsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!appoptimize.googleapis.com/ReportR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x05scope\"R\n" +
+	"\x10GetReportRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!appoptimize.googleapis.com/ReportR\x04name\"\xa0\x01\n" +
+	"\x12ListReportsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!appoptimize.googleapis.com/ReportR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x80\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x80\x01\n" +
 	"\x13ListReportsResponse\x12A\n" +
 	"\areports\x18\x01 \x03(\v2'.google.cloud.appoptimize.v1beta.ReportR\areports\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"~\n" +
-	"\x13DeleteReportRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!appoptimize.googleapis.com/ReportR\x04name\x12(\n" +
-	"\rallow_missing\x18\x02 \x01(\bB\x03\xe0A\x01R\fallowMissing\"\x98\x01\n" +
-	"\x11ReadReportRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!appoptimize.googleapis.com/ReportR\x04name\x12 \n" +
-	"\tpage_size\x18\x04 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x80\x01\n" +
+	"\x13DeleteReportRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!appoptimize.googleapis.com/ReportR\x04name\x12)\n" +
+	"\rallow_missing\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\fallowMissing\"\x9b\x01\n" +
+	"\x11ReadReportRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!appoptimize.googleapis.com/ReportR\x04name\x12!\n" +
+	"\tpage_size\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x05 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xaf\x01\n" +
+	"page_token\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xaf\x01\n" +
 	"\x12ReadReportResponse\x12.\n" +
 	"\x04rows\x18\x01 \x03(\v2\x1a.google.protobuf.ListValueR\x04rows\x12A\n" +
 	"\acolumns\x18\x05 \x03(\v2'.google.cloud.appoptimize.v1beta.ColumnR\acolumns\x12&\n" +

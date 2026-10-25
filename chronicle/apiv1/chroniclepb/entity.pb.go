@@ -757,57 +757,57 @@ var File_google_cloud_chronicle_v1_entity_proto protoreflect.FileDescriptor
 
 const file_google_cloud_chronicle_v1_entity_proto_rawDesc = "" +
 	"\n" +
-	"&google/cloud/chronicle/v1/entity.proto\x12\x19google.cloud.chronicle.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf8\a\n" +
-	"\tWatchlist\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x122\n" +
-	"\x12multiplying_factor\x18\x05 \x01(\x02B\x03\xe0A\x01R\x11multiplyingFactor\x12\x83\x01\n" +
-	"\x1bentity_population_mechanism\x18\x06 \x01(\v2>.google.cloud.chronicle.v1.Watchlist.EntityPopulationMechanismB\x03\xe0A\x02R\x19entityPopulationMechanism\x12X\n" +
-	"\fentity_count\x18\a \x01(\v20.google.cloud.chronicle.v1.Watchlist.EntityCountB\x03\xe0A\x03R\ventityCount\x12@\n" +
-	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12v\n" +
+	"&google/cloud/chronicle/v1/entity.proto\x12\x19google.cloud.chronicle.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x84\b\n" +
+	"\tWatchlist\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x123\n" +
+	"\x12multiplying_factor\x18\x05 \x01(\x02B\x04\xe2A\x01\x01R\x11multiplyingFactor\x12\x84\x01\n" +
+	"\x1bentity_population_mechanism\x18\x06 \x01(\v2>.google.cloud.chronicle.v1.Watchlist.EntityPopulationMechanismB\x04\xe2A\x01\x02R\x19entityPopulationMechanism\x12Y\n" +
+	"\fentity_count\x18\a \x01(\v20.google.cloud.chronicle.v1.Watchlist.EntityCountB\x04\xe2A\x01\x03R\ventityCount\x12A\n" +
+	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12w\n" +
 	"\x1awatchlist_user_preferences\x18\n" +
-	" \x01(\v23.google.cloud.chronicle.v1.WatchlistUserPreferencesB\x03\xe0A\x01R\x18watchlistUserPreferences\x1a\x98\x01\n" +
-	"\x19EntityPopulationMechanism\x12d\n" +
-	"\x06manual\x18\x01 \x01(\v2E.google.cloud.chronicle.v1.Watchlist.EntityPopulationMechanism.ManualB\x03\xe0A\x01H\x00R\x06manual\x1a\b\n" +
+	" \x01(\v23.google.cloud.chronicle.v1.WatchlistUserPreferencesB\x04\xe2A\x01\x01R\x18watchlistUserPreferences\x1a\x99\x01\n" +
+	"\x19EntityPopulationMechanism\x12e\n" +
+	"\x06manual\x18\x01 \x01(\v2E.google.cloud.chronicle.v1.Watchlist.EntityPopulationMechanism.ManualB\x04\xe2A\x01\x01H\x00R\x06manual\x1a\b\n" +
 	"\x06ManualB\v\n" +
-	"\tmechanism\x1aA\n" +
-	"\vEntityCount\x12\x17\n" +
-	"\x04user\x18\x01 \x01(\x05B\x03\xe0A\x03R\x04user\x12\x19\n" +
-	"\x05asset\x18\x02 \x01(\x05B\x03\xe0A\x03R\x05asset:\x94\x01\xeaA\x90\x01\n" +
+	"\tmechanism\x1aC\n" +
+	"\vEntityCount\x12\x18\n" +
+	"\x04user\x18\x01 \x01(\x05B\x04\xe2A\x01\x03R\x04user\x12\x1a\n" +
+	"\x05asset\x18\x02 \x01(\x05B\x04\xe2A\x01\x03R\x05asset:\x94\x01\xeaA\x90\x01\n" +
 	"\"chronicle.googleapis.com/Watchlist\x12Sprojects/{project}/locations/{location}/instances/{instance}/watchlists/{watchlist}*\n" +
-	"watchlists2\twatchlist\"7\n" +
-	"\x18WatchlistUserPreferences\x12\x1b\n" +
-	"\x06pinned\x18\x01 \x01(\bB\x03\xe0A\x01R\x06pinned\"U\n" +
-	"\x13GetWatchlistRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"chronicle.googleapis.com/WatchlistR\x04name\"\xbe\x01\n" +
-	"\x15ListWatchlistsRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"chronicle.googleapis.com/WatchlistR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"watchlists2\twatchlist\"8\n" +
+	"\x18WatchlistUserPreferences\x12\x1c\n" +
+	"\x06pinned\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x06pinned\"V\n" +
+	"\x13GetWatchlistRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"chronicle.googleapis.com/WatchlistR\x04name\"\xc2\x01\n" +
+	"\x15ListWatchlistsRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"chronicle.googleapis.com/WatchlistR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\x90\x01\n" +
-	"\x16ListWatchlistsResponse\x12I\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x92\x01\n" +
+	"\x16ListWatchlistsResponse\x12J\n" +
 	"\n" +
-	"watchlists\x18\x01 \x03(\v2$.google.cloud.chronicle.v1.WatchlistB\x03\xe0A\x01R\n" +
-	"watchlists\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\rnextPageToken\"\xcd\x01\n" +
-	"\x16CreateWatchlistRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"chronicle.googleapis.com/WatchlistR\x06parent\x12&\n" +
-	"\fwatchlist_id\x18\x02 \x01(\tB\x03\xe0A\x01R\vwatchlistId\x12G\n" +
-	"\twatchlist\x18\x03 \x01(\v2$.google.cloud.chronicle.v1.WatchlistB\x03\xe0A\x02R\twatchlist\"\xa3\x01\n" +
-	"\x16UpdateWatchlistRequest\x12G\n" +
-	"\twatchlist\x18\x01 \x01(\v2$.google.cloud.chronicle.v1.WatchlistB\x03\xe0A\x02R\twatchlist\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"s\n" +
-	"\x16DeleteWatchlistRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"chronicle.googleapis.com/WatchlistR\x04name\x12\x19\n" +
-	"\x05force\x18\x02 \x01(\bB\x03\xe0A\x01R\x05force2\xbe\b\n" +
+	"watchlists\x18\x01 \x03(\v2$.google.cloud.chronicle.v1.WatchlistB\x04\xe2A\x01\x01R\n" +
+	"watchlists\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\rnextPageToken\"\xd0\x01\n" +
+	"\x16CreateWatchlistRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"chronicle.googleapis.com/WatchlistR\x06parent\x12'\n" +
+	"\fwatchlist_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vwatchlistId\x12H\n" +
+	"\twatchlist\x18\x03 \x01(\v2$.google.cloud.chronicle.v1.WatchlistB\x04\xe2A\x01\x02R\twatchlist\"\xa5\x01\n" +
+	"\x16UpdateWatchlistRequest\x12H\n" +
+	"\twatchlist\x18\x01 \x01(\v2$.google.cloud.chronicle.v1.WatchlistB\x04\xe2A\x01\x02R\twatchlist\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"u\n" +
+	"\x16DeleteWatchlistRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"chronicle.googleapis.com/WatchlistR\x04name\x12\x1a\n" +
+	"\x05force\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x05force2\xbe\b\n" +
 	"\rEntityService\x12\xaf\x01\n" +
 	"\fGetWatchlist\x12..google.cloud.chronicle.v1.GetWatchlistRequest\x1a$.google.cloud.chronicle.v1.Watchlist\"I\xdaA\x04name\x82\xd3\xe4\x93\x02<\x12:/v1/{name=projects/*/locations/*/instances/*/watchlists/*}\x12\xc2\x01\n" +
 	"\x0eListWatchlists\x120.google.cloud.chronicle.v1.ListWatchlistsRequest\x1a1.google.cloud.chronicle.v1.ListWatchlistsResponse\"K\xdaA\x06parent\x82\xd3\xe4\x93\x02<\x12:/v1/{parent=projects/*/locations/*/instances/*}/watchlists\x12\xd9\x01\n" +

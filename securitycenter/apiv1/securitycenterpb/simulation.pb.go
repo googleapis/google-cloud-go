@@ -117,11 +117,11 @@ var File_google_cloud_securitycenter_v1_simulation_proto protoreflect.FileDescri
 
 const file_google_cloud_securitycenter_v1_simulation_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/securitycenter/v1/simulation.proto\x12\x1egoogle.cloud.securitycenter.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/securitycenter/v1/resource.proto\x1a4google/cloud/securitycenter/v1/valued_resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbc\x03\n" +
+	"/google/cloud/securitycenter/v1/simulation.proto\x12\x1egoogle.cloud.securitycenter.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/securitycenter/v1/resource.proto\x1a4google/cloud/securitycenter/v1/valued_resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbd\x03\n" +
 	"\n" +
 	"Simulation\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"createTime\x12\x82\x01\n" +
 	"\x1fresource_value_configs_metadata\x18\x03 \x03(\v2;.google.cloud.securitycenter.v1.ResourceValueConfigMetadataR\x1cresourceValueConfigsMetadata\x12T\n" +
 	"\x0ecloud_provider\x18\x04 \x01(\x0e2-.google.cloud.securitycenter.v1.CloudProviderR\rcloudProvider:}\xeaAz\n" +

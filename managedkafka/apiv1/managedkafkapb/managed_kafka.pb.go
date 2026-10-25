@@ -1770,113 +1770,113 @@ var File_google_cloud_managedkafka_v1_managed_kafka_proto protoreflect.FileDescr
 
 const file_google_cloud_managedkafka_v1_managed_kafka_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/managedkafka/v1/managed_kafka.proto\x12\x1cgoogle.cloud.managedkafka.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/managedkafka/v1/resources.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xdd\x01\n" +
-	"\x13ListClustersRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\x12#managedkafka.googleapis.com/ClusterR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"0google/cloud/managedkafka/v1/managed_kafka.proto\x12\x1cgoogle.cloud.managedkafka.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/managedkafka/v1/resources.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xe2\x01\n" +
+	"\x13ListClustersRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\x12#managedkafka.googleapis.com/ClusterR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xa3\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xa3\x01\n" +
 	"\x14ListClustersResponse\x12A\n" +
 	"\bclusters\x18\x01 \x03(\v2%.google.cloud.managedkafka.v1.ClusterR\bclusters\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"T\n" +
-	"\x11GetClusterRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#managedkafka.googleapis.com/ClusterR\x04name\"\xf1\x01\n" +
-	"\x14CreateClusterRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\x12#managedkafka.googleapis.com/ClusterR\x06parent\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"U\n" +
+	"\x11GetClusterRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#managedkafka.googleapis.com/ClusterR\x04name\"\xf5\x01\n" +
+	"\x14CreateClusterRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\x12#managedkafka.googleapis.com/ClusterR\x06parent\x12#\n" +
 	"\n" +
-	"cluster_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tclusterId\x12D\n" +
-	"\acluster\x18\x03 \x01(\v2%.google.cloud.managedkafka.v1.ClusterB\x03\xe0A\x02R\acluster\x12*\n" +
+	"cluster_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tclusterId\x12E\n" +
+	"\acluster\x18\x03 \x01(\v2%.google.cloud.managedkafka.v1.ClusterB\x04\xe2A\x01\x02R\acluster\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xca\x01\n" +
-	"\x14UpdateClusterRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12D\n" +
-	"\acluster\x18\x02 \x01(\v2%.google.cloud.managedkafka.v1.ClusterB\x03\xe0A\x02R\acluster\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xcd\x01\n" +
+	"\x14UpdateClusterRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12E\n" +
+	"\acluster\x18\x02 \x01(\v2%.google.cloud.managedkafka.v1.ClusterB\x04\xe2A\x01\x02R\acluster\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x83\x01\n" +
-	"\x14DeleteClusterRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#managedkafka.googleapis.com/ClusterR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x85\x01\n" +
+	"\x14DeleteClusterRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#managedkafka.googleapis.com/ClusterR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x9c\x01\n" +
-	"\x11ListTopicsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!managedkafka.googleapis.com/TopicR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x9f\x01\n" +
+	"\x11ListTopicsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!managedkafka.googleapis.com/TopicR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"y\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"y\n" +
 	"\x12ListTopicsResponse\x12;\n" +
 	"\x06topics\x18\x01 \x03(\v2#.google.cloud.managedkafka.v1.TopicR\x06topics\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"P\n" +
-	"\x0fGetTopicRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!managedkafka.googleapis.com/TopicR\x04name\"\xb7\x01\n" +
-	"\x12CreateTopicRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!managedkafka.googleapis.com/TopicR\x06parent\x12\x1e\n" +
-	"\btopic_id\x18\x02 \x01(\tB\x03\xe0A\x02R\atopicId\x12>\n" +
-	"\x05topic\x18\x03 \x01(\v2#.google.cloud.managedkafka.v1.TopicB\x03\xe0A\x02R\x05topic\"\x96\x01\n" +
-	"\x12UpdateTopicRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12>\n" +
-	"\x05topic\x18\x02 \x01(\v2#.google.cloud.managedkafka.v1.TopicB\x03\xe0A\x02R\x05topic\"S\n" +
-	"\x12DeleteTopicRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!managedkafka.googleapis.com/TopicR\x04name\"\xac\x01\n" +
-	"\x19ListConsumerGroupsRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\x12)managedkafka.googleapis.com/ConsumerGroupR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"Q\n" +
+	"\x0fGetTopicRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!managedkafka.googleapis.com/TopicR\x04name\"\xba\x01\n" +
+	"\x12CreateTopicRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!managedkafka.googleapis.com/TopicR\x06parent\x12\x1f\n" +
+	"\btopic_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\atopicId\x12?\n" +
+	"\x05topic\x18\x03 \x01(\v2#.google.cloud.managedkafka.v1.TopicB\x04\xe2A\x01\x02R\x05topic\"\x98\x01\n" +
+	"\x12UpdateTopicRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12?\n" +
+	"\x05topic\x18\x02 \x01(\v2#.google.cloud.managedkafka.v1.TopicB\x04\xe2A\x01\x02R\x05topic\"T\n" +
+	"\x12DeleteTopicRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!managedkafka.googleapis.com/TopicR\x04name\"\xaf\x01\n" +
+	"\x19ListConsumerGroupsRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\x12)managedkafka.googleapis.com/ConsumerGroupR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x9a\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x9a\x01\n" +
 	"\x1aListConsumerGroupsResponse\x12T\n" +
 	"\x0fconsumer_groups\x18\x01 \x03(\v2+.google.cloud.managedkafka.v1.ConsumerGroupR\x0econsumerGroups\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"`\n" +
-	"\x17GetConsumerGroupRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")managedkafka.googleapis.com/ConsumerGroupR\x04name\"\xb7\x01\n" +
-	"\x1aUpdateConsumerGroupRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12W\n" +
-	"\x0econsumer_group\x18\x02 \x01(\v2+.google.cloud.managedkafka.v1.ConsumerGroupB\x03\xe0A\x02R\rconsumerGroup\"c\n" +
-	"\x1aDeleteConsumerGroupRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")managedkafka.googleapis.com/ConsumerGroupR\x04name\"\x98\x01\n" +
-	"\x0fListAclsRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1fmanagedkafka.googleapis.com/AclR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"a\n" +
+	"\x17GetConsumerGroupRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")managedkafka.googleapis.com/ConsumerGroupR\x04name\"\xb9\x01\n" +
+	"\x1aUpdateConsumerGroupRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12X\n" +
+	"\x0econsumer_group\x18\x02 \x01(\v2+.google.cloud.managedkafka.v1.ConsumerGroupB\x04\xe2A\x01\x02R\rconsumerGroup\"d\n" +
+	"\x1aDeleteConsumerGroupRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")managedkafka.googleapis.com/ConsumerGroupR\x04name\"\x9b\x01\n" +
+	"\x0fListAclsRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1fmanagedkafka.googleapis.com/AclR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"q\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"q\n" +
 	"\x10ListAclsResponse\x125\n" +
 	"\x04acls\x18\x01 \x03(\v2!.google.cloud.managedkafka.v1.AclR\x04acls\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"L\n" +
-	"\rGetAclRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fmanagedkafka.googleapis.com/AclR\x04name\"\xa9\x01\n" +
-	"\x10CreateAclRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1fmanagedkafka.googleapis.com/AclR\x06parent\x12\x1a\n" +
-	"\x06acl_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x05aclId\x128\n" +
-	"\x03acl\x18\x03 \x01(\v2!.google.cloud.managedkafka.v1.AclB\x03\xe0A\x02R\x03acl\"\x8e\x01\n" +
-	"\x10UpdateAclRequest\x128\n" +
-	"\x03acl\x18\x01 \x01(\v2!.google.cloud.managedkafka.v1.AclB\x03\xe0A\x02R\x03acl\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"O\n" +
-	"\x10DeleteAclRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fmanagedkafka.googleapis.com/AclR\x04name\"\x99\x01\n" +
-	"\x12AddAclEntryRequest\x129\n" +
-	"\x03acl\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fmanagedkafka.googleapis.com/AclR\x03acl\x12H\n" +
-	"\tacl_entry\x18\x02 \x01(\v2&.google.cloud.managedkafka.v1.AclEntryB\x03\xe0A\x02R\baclEntry\"k\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"M\n" +
+	"\rGetAclRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fmanagedkafka.googleapis.com/AclR\x04name\"\xac\x01\n" +
+	"\x10CreateAclRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1fmanagedkafka.googleapis.com/AclR\x06parent\x12\x1b\n" +
+	"\x06acl_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05aclId\x129\n" +
+	"\x03acl\x18\x03 \x01(\v2!.google.cloud.managedkafka.v1.AclB\x04\xe2A\x01\x02R\x03acl\"\x90\x01\n" +
+	"\x10UpdateAclRequest\x129\n" +
+	"\x03acl\x18\x01 \x01(\v2!.google.cloud.managedkafka.v1.AclB\x04\xe2A\x01\x02R\x03acl\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"P\n" +
+	"\x10DeleteAclRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fmanagedkafka.googleapis.com/AclR\x04name\"\x9b\x01\n" +
+	"\x12AddAclEntryRequest\x12:\n" +
+	"\x03acl\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fmanagedkafka.googleapis.com/AclR\x03acl\x12I\n" +
+	"\tacl_entry\x18\x02 \x01(\v2&.google.cloud.managedkafka.v1.AclEntryB\x04\xe2A\x01\x02R\baclEntry\"k\n" +
 	"\x13AddAclEntryResponse\x123\n" +
 	"\x03acl\x18\x01 \x01(\v2!.google.cloud.managedkafka.v1.AclR\x03acl\x12\x1f\n" +
 	"\vacl_created\x18\x02 \x01(\bR\n" +
-	"aclCreated\"\x9c\x01\n" +
-	"\x15RemoveAclEntryRequest\x129\n" +
-	"\x03acl\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fmanagedkafka.googleapis.com/AclR\x03acl\x12H\n" +
-	"\tacl_entry\x18\x02 \x01(\v2&.google.cloud.managedkafka.v1.AclEntryB\x03\xe0A\x02R\baclEntry\"|\n" +
+	"aclCreated\"\x9e\x01\n" +
+	"\x15RemoveAclEntryRequest\x12:\n" +
+	"\x03acl\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fmanagedkafka.googleapis.com/AclR\x03acl\x12I\n" +
+	"\tacl_entry\x18\x02 \x01(\v2&.google.cloud.managedkafka.v1.AclEntryB\x04\xe2A\x01\x02R\baclEntry\"|\n" +
 	"\x16RemoveAclEntryResponse\x125\n" +
 	"\x03acl\x18\x01 \x01(\v2!.google.cloud.managedkafka.v1.AclH\x00R\x03acl\x12!\n" +
 	"\vacl_deleted\x18\x02 \x01(\bH\x00R\n" +

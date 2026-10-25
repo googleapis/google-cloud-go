@@ -528,39 +528,39 @@ var File_google_shopping_merchant_accounts_v1beta_programs_proto protoreflect.Fi
 
 const file_google_shopping_merchant_accounts_v1beta_programs_proto_rawDesc = "" +
 	"\n" +
-	"7google/shopping/merchant/accounts/v1beta/programs.proto\x12(google.shopping.merchant.accounts.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x96\x05\n" +
-	"\aProgram\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x120\n" +
-	"\x11documentation_uri\x18\x02 \x01(\tB\x03\xe0A\x03R\x10documentationUri\x12R\n" +
-	"\x05state\x18\x03 \x01(\x0e27.google.shopping.merchant.accounts.v1beta.Program.StateB\x03\xe0A\x03R\x05state\x123\n" +
-	"\x13active_region_codes\x18\x04 \x03(\tB\x03\xe0A\x03R\x11activeRegionCodes\x12q\n" +
-	"\x12unmet_requirements\x18\x05 \x03(\v2=.google.shopping.merchant.accounts.v1beta.Program.RequirementB\x03\xe0A\x03R\x11unmetRequirements\x1a\x93\x01\n" +
-	"\vRequirement\x12\x19\n" +
-	"\x05title\x18\x01 \x01(\tB\x03\xe0A\x03R\x05title\x120\n" +
-	"\x11documentation_uri\x18\x02 \x01(\tB\x03\xe0A\x03R\x10documentationUri\x127\n" +
-	"\x15affected_region_codes\x18\x03 \x03(\tB\x03\xe0A\x03R\x13affectedRegionCodes\"K\n" +
+	"7google/shopping/merchant/accounts/v1beta/programs.proto\x12(google.shopping.merchant.accounts.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x9e\x05\n" +
+	"\aProgram\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x121\n" +
+	"\x11documentation_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x10documentationUri\x12S\n" +
+	"\x05state\x18\x03 \x01(\x0e27.google.shopping.merchant.accounts.v1beta.Program.StateB\x04\xe2A\x01\x03R\x05state\x124\n" +
+	"\x13active_region_codes\x18\x04 \x03(\tB\x04\xe2A\x01\x03R\x11activeRegionCodes\x12r\n" +
+	"\x12unmet_requirements\x18\x05 \x03(\v2=.google.shopping.merchant.accounts.v1beta.Program.RequirementB\x04\xe2A\x01\x03R\x11unmetRequirements\x1a\x96\x01\n" +
+	"\vRequirement\x12\x1a\n" +
+	"\x05title\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x05title\x121\n" +
+	"\x11documentation_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x10documentationUri\x128\n" +
+	"\x15affected_region_codes\x18\x03 \x03(\tB\x04\xe2A\x01\x03R\x13affectedRegionCodes\"K\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\x10\n" +
 	"\fNOT_ELIGIBLE\x10\x01\x12\f\n" +
 	"\bELIGIBLE\x10\x02\x12\v\n" +
 	"\aENABLED\x10\x03:a\xeaA^\n" +
-	"\"merchantapi.googleapis.com/Program\x12%accounts/{account}/programs/{program}*\bprograms2\aprogram\"S\n" +
-	"\x11GetProgramRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"merchantapi.googleapis.com/ProgramR\x04name\"\x9f\x01\n" +
-	"\x13ListProgramsRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"merchantapi.googleapis.com/ProgramR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\"merchantapi.googleapis.com/Program\x12%accounts/{account}/programs/{program}*\bprograms2\aprogram\"T\n" +
+	"\x11GetProgramRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"merchantapi.googleapis.com/ProgramR\x04name\"\xa2\x01\n" +
+	"\x13ListProgramsRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"merchantapi.googleapis.com/ProgramR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x8d\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x8d\x01\n" +
 	"\x14ListProgramsResponse\x12M\n" +
 	"\bprograms\x18\x01 \x03(\v21.google.shopping.merchant.accounts.v1beta.ProgramR\bprograms\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"V\n" +
-	"\x14EnableProgramRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"merchantapi.googleapis.com/ProgramR\x04name\"W\n" +
-	"\x15DisableProgramRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"W\n" +
+	"\x14EnableProgramRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"merchantapi.googleapis.com/ProgramR\x04name\"X\n" +
+	"\x15DisableProgramRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
 	"\"merchantapi.googleapis.com/ProgramR\x04name2\x84\a\n" +
 	"\x0fProgramsService\x12\xba\x01\n" +
 	"\n" +

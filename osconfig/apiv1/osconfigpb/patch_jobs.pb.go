@@ -2435,22 +2435,22 @@ var File_google_cloud_osconfig_v1_patch_jobs_proto protoreflect.FileDescriptor
 
 const file_google_cloud_osconfig_v1_patch_jobs_proto_rawDesc = "" +
 	"\n" +
-	")google/cloud/osconfig/v1/patch_jobs.proto\x12\x18google.cloud.osconfig.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a.google/cloud/osconfig/v1/osconfig_common.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe3\x03\n" +
-	"\x16ExecutePatchJobRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
+	")google/cloud/osconfig/v1/patch_jobs.proto\x12\x18google.cloud.osconfig.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a.google/cloud/osconfig/v1/osconfig_common.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe5\x03\n" +
+	"\x16ExecutePatchJobRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
 	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12 \n" +
-	"\vdescription\x18\x02 \x01(\tR\vdescription\x12[\n" +
-	"\x0finstance_filter\x18\a \x01(\v2-.google.cloud.osconfig.v1.PatchInstanceFilterB\x03\xe0A\x02R\x0einstanceFilter\x12H\n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\\\n" +
+	"\x0finstance_filter\x18\a \x01(\v2-.google.cloud.osconfig.v1.PatchInstanceFilterB\x04\xe2A\x01\x02R\x0einstanceFilter\x12H\n" +
 	"\fpatch_config\x18\x04 \x01(\v2%.google.cloud.osconfig.v1.PatchConfigR\vpatchConfig\x125\n" +
 	"\bduration\x18\x05 \x01(\v2\x19.google.protobuf.DurationR\bduration\x12\x17\n" +
 	"\adry_run\x18\x06 \x01(\bR\x06dryRun\x12!\n" +
 	"\fdisplay_name\x18\b \x01(\tR\vdisplayName\x12@\n" +
-	"\arollout\x18\t \x01(\v2&.google.cloud.osconfig.v1.PatchRolloutR\arollout\"R\n" +
-	"\x12GetPatchJobRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" osconfig.googleapis.com/PatchJobR\x04name\"\xba\x01\n" +
-	"\"ListPatchJobInstanceDetailsRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
+	"\arollout\x18\t \x01(\v2&.google.cloud.osconfig.v1.PatchRolloutR\arollout\"S\n" +
+	"\x12GetPatchJobRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" osconfig.googleapis.com/PatchJobR\x04name\"\xbb\x01\n" +
+	"\"ListPatchJobInstanceDetailsRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
 	" osconfig.googleapis.com/PatchJobR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -2465,9 +2465,9 @@ const file_google_cloud_osconfig_v1_patch_jobs_proto_rawDesc = "" +
 	"\x12instance_system_id\x18\x02 \x01(\tR\x10instanceSystemId\x12C\n" +
 	"\x05state\x18\x03 \x01(\x0e2-.google.cloud.osconfig.v1.Instance.PatchStateR\x05state\x12%\n" +
 	"\x0efailure_reason\x18\x04 \x01(\tR\rfailureReason\x12#\n" +
-	"\rattempt_count\x18\x05 \x01(\x03R\fattemptCount\"\xb7\x01\n" +
-	"\x14ListPatchJobsRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
+	"\rattempt_count\x18\x05 \x01(\x03R\fattemptCount\"\xb8\x01\n" +
+	"\x14ListPatchJobsRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
 	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -2476,7 +2476,7 @@ const file_google_cloud_osconfig_v1_patch_jobs_proto_rawDesc = "" +
 	"\x15ListPatchJobsResponse\x12A\n" +
 	"\n" +
 	"patch_jobs\x18\x01 \x03(\v2\".google.cloud.osconfig.v1.PatchJobR\tpatchJobs\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x9f\x10\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa0\x10\n" +
 	"\bPatchJob\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12!\n" +
 	"\fdisplay_name\x18\x0e \x01(\tR\vdisplayName\x12 \n" +
@@ -2493,8 +2493,8 @@ const file_google_cloud_osconfig_v1_patch_jobs_proto_rawDesc = "" +
 	"\adry_run\x18\n" +
 	" \x01(\bR\x06dryRun\x12#\n" +
 	"\rerror_message\x18\v \x01(\tR\ferrorMessage\x12)\n" +
-	"\x10percent_complete\x18\f \x01(\x01R\x0fpercentComplete\x12Z\n" +
-	"\x10patch_deployment\x18\x0f \x01(\tB/\xe0A\x03\xfaA)\n" +
+	"\x10percent_complete\x18\f \x01(\x01R\x0fpercentComplete\x12[\n" +
+	"\x10patch_deployment\x18\x0f \x01(\tB0\xe2A\x01\x03\xfaA)\n" +
 	"'osconfig.googleapis.com/PatchDeploymentR\x0fpatchDeployment\x12@\n" +
 	"\arollout\x18\x10 \x01(\v2&.google.cloud.osconfig.v1.PatchRolloutR\arollout\x1a\xc1\a\n" +
 	"\x16InstanceDetailsSummary\x124\n" +
@@ -2561,9 +2561,9 @@ const file_google_cloud_osconfig_v1_patch_jobs_proto_rawDesc = "" +
 	"\tTIMED_OUT\x10\f\x12\x1a\n" +
 	"\x16RUNNING_PRE_PATCH_STEP\x10\r\x12\x1b\n" +
 	"\x17RUNNING_POST_PATCH_STEP\x10\x0e\x12\x15\n" +
-	"\x11NO_AGENT_DETECTED\x10\x0f\"U\n" +
-	"\x15CancelPatchJobRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
+	"\x11NO_AGENT_DETECTED\x10\x0f\"V\n" +
+	"\x15CancelPatchJobRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
 	" osconfig.googleapis.com/PatchJobR\x04name\"\xcd\x01\n" +
 	"\vAptSettings\x12>\n" +
 	"\x04type\x18\x01 \x01(\x0e2*.google.cloud.osconfig.v1.AptSettings.TypeR\x04type\x12\x1a\n" +
@@ -2625,11 +2625,11 @@ const file_google_cloud_osconfig_v1_patch_jobs_proto_rawDesc = "" +
 	"\n" +
 	"POWERSHELL\x10\x02B\f\n" +
 	"\n" +
-	"executable\"w\n" +
-	"\tGcsObject\x12\x1b\n" +
-	"\x06bucket\x18\x01 \x01(\tB\x03\xe0A\x02R\x06bucket\x12\x1b\n" +
-	"\x06object\x18\x02 \x01(\tB\x03\xe0A\x02R\x06object\x120\n" +
-	"\x11generation_number\x18\x03 \x01(\x03B\x03\xe0A\x02R\x10generationNumber\"\x96\x03\n" +
+	"executable\"z\n" +
+	"\tGcsObject\x12\x1c\n" +
+	"\x06bucket\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06bucket\x12\x1c\n" +
+	"\x06object\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06object\x121\n" +
+	"\x11generation_number\x18\x03 \x01(\x03B\x04\xe2A\x01\x02R\x10generationNumber\"\x96\x03\n" +
 	"\x13PatchInstanceFilter\x12\x10\n" +
 	"\x03all\x18\x01 \x01(\bR\x03all\x12[\n" +
 	"\fgroup_labels\x18\x02 \x03(\v28.google.cloud.osconfig.v1.PatchInstanceFilter.GroupLabelR\vgroupLabels\x12\x14\n" +

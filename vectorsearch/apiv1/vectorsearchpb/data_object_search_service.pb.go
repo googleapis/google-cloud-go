@@ -1854,23 +1854,23 @@ var File_google_cloud_vectorsearch_v1_data_object_search_service_proto protorefl
 
 const file_google_cloud_vectorsearch_v1_data_object_search_service_proto_rawDesc = "" +
 	"\n" +
-	"=google/cloud/vectorsearch/v1/data_object_search_service.proto\x12\x1cgoogle.cloud.vectorsearch.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a)google/cloud/vectorsearch/v1/common.proto\x1a.google/cloud/vectorsearch/v1/data_object.proto\x1a3google/cloud/vectorsearch/v1/embedding_config.proto\x1a\x1cgoogle/protobuf/struct.proto\"\x8c\x01\n" +
-	"\fOutputFields\x12$\n" +
-	"\vdata_fields\x18\x01 \x03(\tB\x03\xe0A\x01R\n" +
-	"dataFields\x12(\n" +
-	"\rvector_fields\x18\x02 \x03(\tB\x03\xe0A\x01R\fvectorFields\x12,\n" +
-	"\x0fmetadata_fields\x18\x03 \x03(\tB\x03\xe0A\x01R\x0emetadataFields\"\xf9\x03\n" +
+	"=google/cloud/vectorsearch/v1/data_object_search_service.proto\x12\x1cgoogle.cloud.vectorsearch.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a)google/cloud/vectorsearch/v1/common.proto\x1a.google/cloud/vectorsearch/v1/data_object.proto\x1a3google/cloud/vectorsearch/v1/embedding_config.proto\x1a\x1cgoogle/protobuf/struct.proto\"\x8f\x01\n" +
+	"\fOutputFields\x12%\n" +
+	"\vdata_fields\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\n" +
+	"dataFields\x12)\n" +
+	"\rvector_fields\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\fvectorFields\x12-\n" +
+	"\x0fmetadata_fields\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x0emetadataFields\"\xfe\x03\n" +
 	"\n" +
-	"SearchHint\x12R\n" +
-	"\bknn_hint\x18\x03 \x01(\v20.google.cloud.vectorsearch.v1.SearchHint.KnnHintB\x03\xe0A\x01H\x00R\aknnHint\x12X\n" +
+	"SearchHint\x12S\n" +
+	"\bknn_hint\x18\x03 \x01(\v20.google.cloud.vectorsearch.v1.SearchHint.KnnHintB\x04\xe2A\x01\x01H\x00R\aknnHint\x12Y\n" +
 	"\n" +
-	"index_hint\x18\x04 \x01(\v22.google.cloud.vectorsearch.v1.SearchHint.IndexHintB\x03\xe0A\x01H\x00R\tindexHint\x1a\xa3\x02\n" +
-	"\tIndexHint\x12x\n" +
-	"\x12dense_scann_params\x18\x02 \x01(\v2C.google.cloud.vectorsearch.v1.SearchHint.IndexHint.DenseScannParamsB\x03\xe0A\x01H\x00R\x10denseScannParams\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!vectorsearch.googleapis.com/IndexR\x04name\x1aS\n" +
-	"\x10DenseScannParams\x12-\n" +
-	"\rtarget_recall\x18\x03 \x01(\x01B\x03\xe0A\x01H\x00R\ftargetRecall\x88\x01\x01B\x10\n" +
+	"index_hint\x18\x04 \x01(\v22.google.cloud.vectorsearch.v1.SearchHint.IndexHintB\x04\xe2A\x01\x01H\x00R\tindexHint\x1a\xa6\x02\n" +
+	"\tIndexHint\x12y\n" +
+	"\x12dense_scann_params\x18\x02 \x01(\v2C.google.cloud.vectorsearch.v1.SearchHint.IndexHint.DenseScannParamsB\x04\xe2A\x01\x01H\x00R\x10denseScannParams\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!vectorsearch.googleapis.com/IndexR\x04name\x1aT\n" +
+	"\x10DenseScannParams\x12.\n" +
+	"\rtarget_recall\x18\x03 \x01(\x01B\x04\xe2A\x01\x01H\x00R\ftargetRecall\x88\x01\x01B\x10\n" +
 	"\x0e_target_recallB\b\n" +
 	"\x06params\x1a\t\n" +
 	"\aKnnHintB\f\n" +
@@ -1881,104 +1881,104 @@ const file_google_cloud_vectorsearch_v1_data_object_search_service_proto_rawDesc
 	"\x0fsemantic_search\x18\x02 \x01(\v2,.google.cloud.vectorsearch.v1.SemanticSearchH\x00R\x0esemanticSearch\x12K\n" +
 	"\vtext_search\x18\x03 \x01(\v2(.google.cloud.vectorsearch.v1.TextSearchH\x00R\n" +
 	"textSearchB\r\n" +
-	"\vsearch_type\"\xbe\x04\n" +
+	"\vsearch_type\"\xc4\x04\n" +
 	"\fVectorSearch\x12C\n" +
 	"\x06vector\x18\x01 \x01(\v2).google.cloud.vectorsearch.v1.DenseVectorH\x00R\x06vector\x12Q\n" +
-	"\rsparse_vector\x18\x02 \x01(\v2*.google.cloud.vectorsearch.v1.SparseVectorH\x00R\fsparseVector\x12&\n" +
-	"\fsearch_field\x18\b \x01(\tB\x03\xe0A\x02R\vsearchField\x124\n" +
-	"\x06filter\x18\x04 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x06filter\x12\x1d\n" +
-	"\x05top_k\x18\x05 \x01(\x05B\x03\xe0A\x01H\x01R\x04topK\x88\x01\x01\x12T\n" +
-	"\routput_fields\x18\a \x01(\v2*.google.cloud.vectorsearch.v1.OutputFieldsB\x03\xe0A\x01R\foutputFields\x12N\n" +
-	"\vsearch_hint\x18\t \x01(\v2(.google.cloud.vectorsearch.v1.SearchHintB\x03\xe0A\x01R\n" +
-	"searchHint\x12Z\n" +
-	"\x0fdistance_metric\x18\v \x01(\x0e2,.google.cloud.vectorsearch.v1.DistanceMetricB\x03\xe0A\x01R\x0edistanceMetricB\r\n" +
+	"\rsparse_vector\x18\x02 \x01(\v2*.google.cloud.vectorsearch.v1.SparseVectorH\x00R\fsparseVector\x12'\n" +
+	"\fsearch_field\x18\b \x01(\tB\x04\xe2A\x01\x02R\vsearchField\x125\n" +
+	"\x06filter\x18\x04 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\x06filter\x12\x1e\n" +
+	"\x05top_k\x18\x05 \x01(\x05B\x04\xe2A\x01\x01H\x01R\x04topK\x88\x01\x01\x12U\n" +
+	"\routput_fields\x18\a \x01(\v2*.google.cloud.vectorsearch.v1.OutputFieldsB\x04\xe2A\x01\x01R\foutputFields\x12O\n" +
+	"\vsearch_hint\x18\t \x01(\v2(.google.cloud.vectorsearch.v1.SearchHintB\x04\xe2A\x01\x01R\n" +
+	"searchHint\x12[\n" +
+	"\x0fdistance_metric\x18\v \x01(\x0e2,.google.cloud.vectorsearch.v1.DistanceMetricB\x04\xe2A\x01\x01R\x0edistanceMetricB\r\n" +
 	"\vvector_typeB\b\n" +
-	"\x06_top_k\"\xb6\x03\n" +
-	"\x0eSemanticSearch\x12$\n" +
-	"\vsearch_text\x18\x01 \x01(\tB\x03\xe0A\x01R\n" +
-	"searchText\x12&\n" +
-	"\fsearch_field\x18\x02 \x01(\tB\x03\xe0A\x02R\vsearchField\x12Q\n" +
-	"\ttask_type\x18\x05 \x01(\x0e2/.google.cloud.vectorsearch.v1.EmbeddingTaskTypeB\x03\xe0A\x01R\btaskType\x12T\n" +
-	"\routput_fields\x18\x03 \x01(\v2*.google.cloud.vectorsearch.v1.OutputFieldsB\x03\xe0A\x01R\foutputFields\x124\n" +
-	"\x06filter\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x06filter\x12\x1d\n" +
-	"\x05top_k\x18\x04 \x01(\x05B\x03\xe0A\x01H\x00R\x04topK\x88\x01\x01\x12N\n" +
-	"\vsearch_hint\x18\a \x01(\v2(.google.cloud.vectorsearch.v1.SearchHintB\x03\xe0A\x01R\n" +
+	"\x06_top_k\"\xbd\x03\n" +
+	"\x0eSemanticSearch\x12%\n" +
+	"\vsearch_text\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"searchText\x12'\n" +
+	"\fsearch_field\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vsearchField\x12R\n" +
+	"\ttask_type\x18\x05 \x01(\x0e2/.google.cloud.vectorsearch.v1.EmbeddingTaskTypeB\x04\xe2A\x01\x01R\btaskType\x12U\n" +
+	"\routput_fields\x18\x03 \x01(\v2*.google.cloud.vectorsearch.v1.OutputFieldsB\x04\xe2A\x01\x01R\foutputFields\x125\n" +
+	"\x06filter\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\x06filter\x12\x1e\n" +
+	"\x05top_k\x18\x04 \x01(\x05B\x04\xe2A\x01\x01H\x00R\x04topK\x88\x01\x01\x12O\n" +
+	"\vsearch_hint\x18\a \x01(\v2(.google.cloud.vectorsearch.v1.SearchHintB\x04\xe2A\x01\x01R\n" +
 	"searchHintB\b\n" +
-	"\x06_top_k\"\x96\x02\n" +
+	"\x06_top_k\"\x9b\x02\n" +
 	"\n" +
-	"TextSearch\x12$\n" +
-	"\vsearch_text\x18\x01 \x01(\tB\x03\xe0A\x01R\n" +
-	"searchText\x12-\n" +
-	"\x10data_field_names\x18\x02 \x03(\tB\x03\xe0A\x01R\x0edataFieldNames\x12T\n" +
-	"\routput_fields\x18\x03 \x01(\v2*.google.cloud.vectorsearch.v1.OutputFieldsB\x03\xe0A\x01R\foutputFields\x12\x1d\n" +
-	"\x05top_k\x18\x04 \x01(\x05B\x03\xe0A\x01H\x00R\x04topK\x88\x01\x01\x124\n" +
-	"\x06filter\x18\x05 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x06filterB\b\n" +
-	"\x06_top_k\"\xb5\x03\n" +
+	"TextSearch\x12%\n" +
+	"\vsearch_text\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"searchText\x12.\n" +
+	"\x10data_field_names\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x0edataFieldNames\x12U\n" +
+	"\routput_fields\x18\x03 \x01(\v2*.google.cloud.vectorsearch.v1.OutputFieldsB\x04\xe2A\x01\x01R\foutputFields\x12\x1e\n" +
+	"\x05top_k\x18\x04 \x01(\x05B\x04\xe2A\x01\x01H\x00R\x04topK\x88\x01\x01\x125\n" +
+	"\x06filter\x18\x05 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\x06filterB\b\n" +
+	"\x06_top_k\"\xb9\x03\n" +
 	"\x18SearchDataObjectsRequest\x12Q\n" +
 	"\rvector_search\x18\x02 \x01(\v2*.google.cloud.vectorsearch.v1.VectorSearchH\x00R\fvectorSearch\x12W\n" +
-	"\x0fsemantic_search\x18\x04 \x01(\v2,.google.cloud.vectorsearch.v1.SemanticSearchH\x00R\x0esemanticSearch\x12P\n" +
-	"\vtext_search\x18\a \x01(\v2(.google.cloud.vectorsearch.v1.TextSearchB\x03\xe0A\x01H\x00R\n" +
-	"textSearch\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&vectorsearch.googleapis.com/CollectionR\x06parent\x12 \n" +
-	"\tpage_size\x18\x05 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fsemantic_search\x18\x04 \x01(\v2,.google.cloud.vectorsearch.v1.SemanticSearchH\x00R\x0esemanticSearch\x12Q\n" +
+	"\vtext_search\x18\a \x01(\v2(.google.cloud.vectorsearch.v1.TextSearchB\x04\xe2A\x01\x01H\x00R\n" +
+	"textSearch\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&vectorsearch.googleapis.com/CollectionR\x06parent\x12!\n" +
+	"\tpage_size\x18\x05 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x06 \x01(\tB\x03\xe0A\x01R\tpageTokenB\r\n" +
-	"\vsearch_type\"\x91\x01\n" +
-	"\fSearchResult\x12N\n" +
-	"\vdata_object\x18\x01 \x01(\v2(.google.cloud.vectorsearch.v1.DataObjectB\x03\xe0A\x03R\n" +
-	"dataObject\x12$\n" +
-	"\bdistance\x18\x02 \x01(\x01B\x03\xe0A\x03H\x00R\bdistance\x88\x01\x01B\v\n" +
-	"\t_distance\"\x93\x01\n" +
-	"\x19SearchDataObjectsResponse\x12I\n" +
-	"\aresults\x18\x01 \x03(\v2*.google.cloud.vectorsearch.v1.SearchResultB\x03\xe0A\x03R\aresults\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageToken\"\xef\x01\n" +
-	"\x1bAggregateDataObjectsRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&vectorsearch.googleapis.com/CollectionR\x06parent\x124\n" +
-	"\x06filter\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x06filter\x12R\n" +
-	"\taggregate\x18\x03 \x01(\x0e2/.google.cloud.vectorsearch.v1.AggregationMethodB\x03\xe0A\x02R\taggregate\"i\n" +
-	"\x1cAggregateDataObjectsResponse\x12I\n" +
-	"\x11aggregate_results\x18\x01 \x03(\v2\x17.google.protobuf.StructB\x03\xe0A\x03R\x10aggregateResults\"\xb3\x02\n" +
-	"\x17QueryDataObjectsRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&vectorsearch.googleapis.com/CollectionR\x06parent\x124\n" +
-	"\x06filter\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x06filter\x12T\n" +
-	"\routput_fields\x18\a \x01(\v2*.google.cloud.vectorsearch.v1.OutputFieldsB\x03\xe0A\x01R\foutputFields\x12 \n" +
-	"\tpage_size\x18\x05 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"page_token\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\tpageTokenB\r\n" +
+	"\vsearch_type\"\x93\x01\n" +
+	"\fSearchResult\x12O\n" +
+	"\vdata_object\x18\x01 \x01(\v2(.google.cloud.vectorsearch.v1.DataObjectB\x04\xe2A\x01\x03R\n" +
+	"dataObject\x12%\n" +
+	"\bdistance\x18\x02 \x01(\x01B\x04\xe2A\x01\x03H\x00R\bdistance\x88\x01\x01B\v\n" +
+	"\t_distance\"\x95\x01\n" +
+	"\x19SearchDataObjectsResponse\x12J\n" +
+	"\aresults\x18\x01 \x03(\v2*.google.cloud.vectorsearch.v1.SearchResultB\x04\xe2A\x01\x03R\aresults\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\"\xf2\x01\n" +
+	"\x1bAggregateDataObjectsRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&vectorsearch.googleapis.com/CollectionR\x06parent\x125\n" +
+	"\x06filter\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\x06filter\x12S\n" +
+	"\taggregate\x18\x03 \x01(\x0e2/.google.cloud.vectorsearch.v1.AggregationMethodB\x04\xe2A\x01\x02R\taggregate\"j\n" +
+	"\x1cAggregateDataObjectsResponse\x12J\n" +
+	"\x11aggregate_results\x18\x01 \x03(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x03R\x10aggregateResults\"\xb8\x02\n" +
+	"\x17QueryDataObjectsRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&vectorsearch.googleapis.com/CollectionR\x06parent\x125\n" +
+	"\x06filter\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\x06filter\x12U\n" +
+	"\routput_fields\x18\a \x01(\v2*.google.cloud.vectorsearch.v1.OutputFieldsB\x04\xe2A\x01\x01R\foutputFields\x12!\n" +
+	"\tpage_size\x18\x05 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x06 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x99\x01\n" +
-	"\x18QueryDataObjectsResponse\x12P\n" +
-	"\fdata_objects\x18\x04 \x03(\v2(.google.cloud.vectorsearch.v1.DataObjectB\x03\xe0A\x03R\vdataObjects\x12+\n" +
-	"\x0fnext_page_token\x18\x03 \x01(\tB\x03\xe0A\x03R\rnextPageToken\"\xed\x03\n" +
-	"\x1dBatchSearchDataObjectsRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&vectorsearch.googleapis.com/CollectionR\x06parent\x12E\n" +
-	"\bsearches\x18\x02 \x03(\v2$.google.cloud.vectorsearch.v1.SearchB\x03\xe0A\x02R\bsearches\x12p\n" +
-	"\acombine\x18\x03 \x01(\v2Q.google.cloud.vectorsearch.v1.BatchSearchDataObjectsRequest.CombineResultsOptionsB\x03\xe0A\x01R\acombine\x1a\xca\x01\n" +
-	"\x15CombineResultsOptions\x12A\n" +
-	"\x06ranker\x18\x01 \x01(\v2$.google.cloud.vectorsearch.v1.RankerB\x03\xe0A\x02R\x06ranker\x12T\n" +
-	"\routput_fields\x18\x02 \x01(\v2*.google.cloud.vectorsearch.v1.OutputFieldsB\x03\xe0A\x01R\foutputFields\x12\x18\n" +
-	"\x05top_k\x18\x03 \x01(\x05B\x03\xe0A\x01R\x04topK\"\xbe\x01\n" +
+	"page_token\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x9b\x01\n" +
+	"\x18QueryDataObjectsResponse\x12Q\n" +
+	"\fdata_objects\x18\x04 \x03(\v2(.google.cloud.vectorsearch.v1.DataObjectB\x04\xe2A\x01\x03R\vdataObjects\x12,\n" +
+	"\x0fnext_page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\"\xf3\x03\n" +
+	"\x1dBatchSearchDataObjectsRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&vectorsearch.googleapis.com/CollectionR\x06parent\x12F\n" +
+	"\bsearches\x18\x02 \x03(\v2$.google.cloud.vectorsearch.v1.SearchB\x04\xe2A\x01\x02R\bsearches\x12q\n" +
+	"\acombine\x18\x03 \x01(\v2Q.google.cloud.vectorsearch.v1.BatchSearchDataObjectsRequest.CombineResultsOptionsB\x04\xe2A\x01\x01R\acombine\x1a\xcd\x01\n" +
+	"\x15CombineResultsOptions\x12B\n" +
+	"\x06ranker\x18\x01 \x01(\v2$.google.cloud.vectorsearch.v1.RankerB\x04\xe2A\x01\x02R\x06ranker\x12U\n" +
+	"\routput_fields\x18\x02 \x01(\v2*.google.cloud.vectorsearch.v1.OutputFieldsB\x04\xe2A\x01\x01R\foutputFields\x12\x19\n" +
+	"\x05top_k\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\x04topK\"\xbf\x01\n" +
 	"\x06Ranker\x12F\n" +
-	"\x03rrf\x18\x01 \x01(\v22.google.cloud.vectorsearch.v1.ReciprocalRankFusionH\x00R\x03rrf\x12V\n" +
-	"\rvertex_ranker\x18\x02 \x01(\v2*.google.cloud.vectorsearch.v1.VertexRankerB\x03\xe0A\x01H\x01R\fvertexRankerB\b\n" +
+	"\x03rrf\x18\x01 \x01(\v22.google.cloud.vectorsearch.v1.ReciprocalRankFusionH\x00R\x03rrf\x12W\n" +
+	"\rvertex_ranker\x18\x02 \x01(\v2*.google.cloud.vectorsearch.v1.VertexRankerB\x04\xe2A\x01\x01H\x01R\fvertexRankerB\b\n" +
 	"\x06rankerB\n" +
 	"\n" +
-	"\breranker\"5\n" +
-	"\x14ReciprocalRankFusion\x12\x1d\n" +
-	"\aweights\x18\x01 \x03(\x01B\x03\xe0A\x02R\aweights\"\xc3\x02\n" +
+	"\breranker\"6\n" +
+	"\x14ReciprocalRankFusion\x12\x1e\n" +
+	"\aweights\x18\x01 \x03(\x01B\x04\xe2A\x01\x02R\aweights\"\xc8\x02\n" +
 	"\fVertexRanker\x12e\n" +
-	"\x10text_record_spec\x18\x06 \x01(\v29.google.cloud.vectorsearch.v1.VertexRanker.TextRecordSpecH\x00R\x0etextRecordSpec\x12\x19\n" +
-	"\x05model\x18\x04 \x01(\tB\x03\xe0A\x02R\x05model\x12\x18\n" +
-	"\x05top_n\x18\x05 \x01(\x05B\x03\xe0A\x02R\x04topN\x1a\x87\x01\n" +
-	"\x0eTextRecordSpec\x12\x19\n" +
-	"\x05query\x18\x01 \x01(\tB\x03\xe0A\x02R\x05query\x12*\n" +
-	"\x0etitle_template\x18\x02 \x01(\tB\x03\xe0A\x01R\rtitleTemplate\x12.\n" +
-	"\x10content_template\x18\x03 \x01(\tB\x03\xe0A\x01R\x0fcontentTemplateB\r\n" +
-	"\vrecord_spec\"x\n" +
-	"\x1eBatchSearchDataObjectsResponse\x12V\n" +
-	"\aresults\x18\x01 \x03(\v27.google.cloud.vectorsearch.v1.SearchDataObjectsResponseB\x03\xe0A\x03R\aresults*B\n" +
+	"\x10text_record_spec\x18\x06 \x01(\v29.google.cloud.vectorsearch.v1.VertexRanker.TextRecordSpecH\x00R\x0etextRecordSpec\x12\x1a\n" +
+	"\x05model\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\x05model\x12\x19\n" +
+	"\x05top_n\x18\x05 \x01(\x05B\x04\xe2A\x01\x02R\x04topN\x1a\x8a\x01\n" +
+	"\x0eTextRecordSpec\x12\x1a\n" +
+	"\x05query\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05query\x12+\n" +
+	"\x0etitle_template\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\rtitleTemplate\x12/\n" +
+	"\x10content_template\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x0fcontentTemplateB\r\n" +
+	"\vrecord_spec\"y\n" +
+	"\x1eBatchSearchDataObjectsResponse\x12W\n" +
+	"\aresults\x18\x01 \x03(\v27.google.cloud.vectorsearch.v1.SearchDataObjectsResponseB\x04\xe2A\x01\x03R\aresults*B\n" +
 	"\x11AggregationMethod\x12\"\n" +
 	"\x1eAGGREGATION_METHOD_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05COUNT\x10\x012\xe6\a\n" +

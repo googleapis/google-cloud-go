@@ -932,26 +932,26 @@ var File_google_cloud_documentai_v1beta3_processor_proto protoreflect.FileDescri
 
 const file_google_cloud_documentai_v1beta3_processor_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/documentai/v1beta3/processor.proto\x12\x1fgoogle.cloud.documentai.v1beta3\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a5google/cloud/documentai/v1beta3/document_schema.proto\x1a0google/cloud/documentai/v1beta3/evaluation.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcc\x12\n" +
-	"\x10ProcessorVersion\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12!\n" +
-	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12]\n" +
-	"\x0fdocument_schema\x18\f \x01(\v2/.google.cloud.documentai.v1beta3.DocumentSchemaB\x03\xe0A\x03R\x0edocumentSchema\x12R\n" +
-	"\x05state\x18\x06 \x01(\x0e27.google.cloud.documentai.v1beta3.ProcessorVersion.StateB\x03\xe0A\x03R\x05state\x12@\n" +
-	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12f\n" +
-	"\x11latest_evaluation\x18\b \x01(\v24.google.cloud.documentai.v1beta3.EvaluationReferenceB\x03\xe0A\x03R\x10latestEvaluation\x12%\n" +
-	"\fkms_key_name\x18\t \x01(\tB\x03\xe0A\x03R\n" +
-	"kmsKeyName\x124\n" +
+	"/google/cloud/documentai/v1beta3/processor.proto\x12\x1fgoogle.cloud.documentai.v1beta3\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a5google/cloud/documentai/v1beta3/document_schema.proto\x1a0google/cloud/documentai/v1beta3/evaluation.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd9\x12\n" +
+	"\x10ProcessorVersion\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12!\n" +
+	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12^\n" +
+	"\x0fdocument_schema\x18\f \x01(\v2/.google.cloud.documentai.v1beta3.DocumentSchemaB\x04\xe2A\x01\x03R\x0edocumentSchema\x12S\n" +
+	"\x05state\x18\x06 \x01(\x0e27.google.cloud.documentai.v1beta3.ProcessorVersion.StateB\x04\xe2A\x01\x03R\x05state\x12A\n" +
+	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12g\n" +
+	"\x11latest_evaluation\x18\b \x01(\v24.google.cloud.documentai.v1beta3.EvaluationReferenceB\x04\xe2A\x01\x03R\x10latestEvaluation\x12&\n" +
+	"\fkms_key_name\x18\t \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"kmsKeyName\x125\n" +
 	"\x14kms_key_version_name\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R\x11kmsKeyVersionName\x12*\n" +
-	"\x0egoogle_managed\x18\v \x01(\bB\x03\xe0A\x03R\rgoogleManaged\x12q\n" +
-	"\x10deprecation_info\x18\r \x01(\v2A.google.cloud.documentai.v1beta3.ProcessorVersion.DeprecationInfoB\x03\xe0A\x03R\x0fdeprecationInfo\x12_\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R\x11kmsKeyVersionName\x12+\n" +
+	"\x0egoogle_managed\x18\v \x01(\bB\x04\xe2A\x01\x03R\rgoogleManaged\x12r\n" +
+	"\x10deprecation_info\x18\r \x01(\v2A.google.cloud.documentai.v1beta3.ProcessorVersion.DeprecationInfoB\x04\xe2A\x01\x03R\x0fdeprecationInfo\x12`\n" +
 	"\n" +
-	"model_type\x18\x0f \x01(\x0e2;.google.cloud.documentai.v1beta3.ProcessorVersion.ModelTypeB\x03\xe0A\x03R\tmodelType\x12(\n" +
-	"\rsatisfies_pzs\x18\x10 \x01(\bB\x03\xe0A\x03R\fsatisfiesPzs\x12(\n" +
-	"\rsatisfies_pzi\x18\x11 \x01(\bB\x03\xe0A\x03R\fsatisfiesPzi\x12p\n" +
-	"\x11gen_ai_model_info\x18\x12 \x01(\v2@.google.cloud.documentai.v1beta3.ProcessorVersion.GenAiModelInfoB\x03\xe0A\x03R\x0egenAiModelInfo\x1a\xcd\x01\n" +
+	"model_type\x18\x0f \x01(\x0e2;.google.cloud.documentai.v1beta3.ProcessorVersion.ModelTypeB\x04\xe2A\x01\x03R\tmodelType\x12)\n" +
+	"\rsatisfies_pzs\x18\x10 \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzs\x12)\n" +
+	"\rsatisfies_pzi\x18\x11 \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzi\x12q\n" +
+	"\x11gen_ai_model_info\x18\x12 \x01(\v2@.google.cloud.documentai.v1beta3.ProcessorVersion.GenAiModelInfoB\x04\xe2A\x01\x03R\x0egenAiModelInfo\x1a\xcd\x01\n" +
 	"\x0fDeprecationInfo\x12E\n" +
 	"\x10deprecation_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\x0fdeprecationTime\x12s\n" +
 	"\x1dreplacement_processor_version\x18\x02 \x01(\tB/\xfaA,\n" +
@@ -992,23 +992,23 @@ const file_google_cloud_documentai_v1beta3_processor_proto_rawDesc = "" +
 	"\x15ProcessorVersionAlias\x12\x14\n" +
 	"\x05alias\x18\x01 \x01(\tR\x05alias\x12\\\n" +
 	"\x11processor_version\x18\x02 \x01(\tB/\xfaA,\n" +
-	"*documentai.googleapis.com/ProcessorVersionR\x10processorVersion\"\xe6\x06\n" +
-	"\tProcessor\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x05\xe0A\x03R\x04name\x12\x12\n" +
+	"*documentai.googleapis.com/ProcessorVersionR\x10processorVersion\"\xe9\x06\n" +
+	"\tProcessor\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x05\x03R\x04name\x12\x12\n" +
 	"\x04type\x18\x02 \x01(\tR\x04type\x12!\n" +
-	"\fdisplay_name\x18\x03 \x01(\tR\vdisplayName\x12K\n" +
-	"\x05state\x18\x04 \x01(\x0e20.google.cloud.documentai.v1beta3.Processor.StateB\x03\xe0A\x03R\x05state\x12k\n" +
+	"\fdisplay_name\x18\x03 \x01(\tR\vdisplayName\x12L\n" +
+	"\x05state\x18\x04 \x01(\x0e20.google.cloud.documentai.v1beta3.Processor.StateB\x04\xe2A\x01\x03R\x05state\x12k\n" +
 	"\x19default_processor_version\x18\t \x01(\tB/\xfaA,\n" +
-	"*documentai.googleapis.com/ProcessorVersionR\x17defaultProcessorVersion\x12w\n" +
+	"*documentai.googleapis.com/ProcessorVersionR\x17defaultProcessorVersion\x12x\n" +
 	"\x19processor_version_aliases\x18\n" +
-	" \x03(\v26.google.cloud.documentai.v1beta3.ProcessorVersionAliasB\x03\xe0A\x03R\x17processorVersionAliases\x121\n" +
-	"\x10process_endpoint\x18\x06 \x01(\tB\x06\xe0A\x03\xe0A\x05R\x0fprocessEndpoint\x12@\n" +
-	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	" \x03(\v26.google.cloud.documentai.v1beta3.ProcessorVersionAliasB\x04\xe2A\x01\x03R\x17processorVersionAliases\x120\n" +
+	"\x10process_endpoint\x18\x06 \x01(\tB\x05\xe2A\x02\x03\x05R\x0fprocessEndpoint\x12A\n" +
+	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"createTime\x12 \n" +
 	"\fkms_key_name\x18\b \x01(\tR\n" +
-	"kmsKeyName\x12(\n" +
-	"\rsatisfies_pzs\x18\f \x01(\bB\x03\xe0A\x03R\fsatisfiesPzs\x12(\n" +
-	"\rsatisfies_pzi\x18\r \x01(\bB\x03\xe0A\x03R\fsatisfiesPzi\"~\n" +
+	"kmsKeyName\x12)\n" +
+	"\rsatisfies_pzs\x18\f \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzs\x12)\n" +
+	"\rsatisfies_pzi\x18\r \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzi\"~\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aENABLED\x10\x01\x12\f\n" +

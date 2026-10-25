@@ -3671,34 +3671,34 @@ var File_google_cloud_dialogflow_cx_v3_session_proto protoreflect.FileDescriptor
 
 const file_google_cloud_dialogflow_cx_v3_session_proto_rawDesc = "" +
 	"\n" +
-	"+google/cloud/dialogflow/cx/v3/session.proto\x12\x1dgoogle.cloud.dialogflow.cx.v3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a5google/cloud/dialogflow/cx/v3/advanced_settings.proto\x1a0google/cloud/dialogflow/cx/v3/audio_config.proto\x1a9google/cloud/dialogflow/cx/v3/data_store_connection.proto\x1a(google/cloud/dialogflow/cx/v3/flow.proto\x1a7google/cloud/dialogflow/cx/v3/generative_settings.proto\x1a*google/cloud/dialogflow/cx/v3/intent.proto\x1a(google/cloud/dialogflow/cx/v3/page.proto\x1a4google/cloud/dialogflow/cx/v3/response_message.proto\x1a7google/cloud/dialogflow/cx/v3/session_entity_type.proto\x1a-google/cloud/dialogflow/cx/v3/tool_call.proto\x1a)google/cloud/dialogflow/cx/v3/trace.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x17google/rpc/status.proto\x1a\x18google/type/latlng.proto\"\x90\x03\n" +
-	"\x0eAnswerFeedback\x12Q\n" +
-	"\x06rating\x18\x01 \x01(\x0e24.google.cloud.dialogflow.cx.v3.AnswerFeedback.RatingB\x03\xe0A\x01R\x06rating\x12d\n" +
-	"\rrating_reason\x18\x02 \x01(\v2:.google.cloud.dialogflow.cx.v3.AnswerFeedback.RatingReasonB\x03\xe0A\x01R\fratingReason\x12(\n" +
-	"\rcustom_rating\x18\x03 \x01(\tB\x03\xe0A\x01R\fcustomRating\x1aY\n" +
-	"\fRatingReason\x12(\n" +
-	"\rreason_labels\x18\x03 \x03(\tB\x03\xe0A\x01R\freasonLabels\x12\x1f\n" +
-	"\bfeedback\x18\x02 \x01(\tB\x03\xe0A\x01R\bfeedback\"@\n" +
+	"+google/cloud/dialogflow/cx/v3/session.proto\x12\x1dgoogle.cloud.dialogflow.cx.v3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a5google/cloud/dialogflow/cx/v3/advanced_settings.proto\x1a0google/cloud/dialogflow/cx/v3/audio_config.proto\x1a9google/cloud/dialogflow/cx/v3/data_store_connection.proto\x1a(google/cloud/dialogflow/cx/v3/flow.proto\x1a7google/cloud/dialogflow/cx/v3/generative_settings.proto\x1a*google/cloud/dialogflow/cx/v3/intent.proto\x1a(google/cloud/dialogflow/cx/v3/page.proto\x1a4google/cloud/dialogflow/cx/v3/response_message.proto\x1a7google/cloud/dialogflow/cx/v3/session_entity_type.proto\x1a-google/cloud/dialogflow/cx/v3/tool_call.proto\x1a)google/cloud/dialogflow/cx/v3/trace.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x17google/rpc/status.proto\x1a\x18google/type/latlng.proto\"\x95\x03\n" +
+	"\x0eAnswerFeedback\x12R\n" +
+	"\x06rating\x18\x01 \x01(\x0e24.google.cloud.dialogflow.cx.v3.AnswerFeedback.RatingB\x04\xe2A\x01\x01R\x06rating\x12e\n" +
+	"\rrating_reason\x18\x02 \x01(\v2:.google.cloud.dialogflow.cx.v3.AnswerFeedback.RatingReasonB\x04\xe2A\x01\x01R\fratingReason\x12)\n" +
+	"\rcustom_rating\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\fcustomRating\x1a[\n" +
+	"\fRatingReason\x12)\n" +
+	"\rreason_labels\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\freasonLabels\x12 \n" +
+	"\bfeedback\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\bfeedback\"@\n" +
 	"\x06Rating\x12\x16\n" +
 	"\x12RATING_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tTHUMBS_UP\x10\x01\x12\x0f\n" +
-	"\vTHUMBS_DOWN\x10\x02\"\xa7\x02\n" +
-	"\x1bSubmitAnswerFeedbackRequest\x12C\n" +
-	"\asession\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!dialogflow.googleapis.com/SessionR\asession\x12$\n" +
-	"\vresponse_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"responseId\x12[\n" +
-	"\x0fanswer_feedback\x18\x03 \x01(\v2-.google.cloud.dialogflow.cx.v3.AnswerFeedbackB\x03\xe0A\x02R\x0eanswerFeedback\x12@\n" +
-	"\vupdate_mask\x18\x04 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"\xc3\x03\n" +
-	"\x13DetectIntentRequest\x12C\n" +
-	"\asession\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\vTHUMBS_DOWN\x10\x02\"\xab\x02\n" +
+	"\x1bSubmitAnswerFeedbackRequest\x12D\n" +
+	"\asession\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!dialogflow.googleapis.com/SessionR\asession\x12%\n" +
+	"\vresponse_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"responseId\x12\\\n" +
+	"\x0fanswer_feedback\x18\x03 \x01(\v2-.google.cloud.dialogflow.cx.v3.AnswerFeedbackB\x04\xe2A\x01\x02R\x0eanswerFeedback\x12A\n" +
+	"\vupdate_mask\x18\x04 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"\xc6\x03\n" +
+	"\x13DetectIntentRequest\x12D\n" +
+	"\asession\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!dialogflow.googleapis.com/SessionR\asession\x12Q\n" +
-	"\fquery_params\x18\x02 \x01(\v2..google.cloud.dialogflow.cx.v3.QueryParametersR\vqueryParams\x12O\n" +
-	"\vquery_input\x18\x03 \x01(\v2).google.cloud.dialogflow.cx.v3.QueryInputB\x03\xe0A\x02R\n" +
+	"\fquery_params\x18\x02 \x01(\v2..google.cloud.dialogflow.cx.v3.QueryParametersR\vqueryParams\x12P\n" +
+	"\vquery_input\x18\x03 \x01(\v2).google.cloud.dialogflow.cx.v3.QueryInputB\x04\xe2A\x01\x02R\n" +
 	"queryInput\x12`\n" +
-	"\x13output_audio_config\x18\x04 \x01(\v20.google.cloud.dialogflow.cx.v3.OutputAudioConfigR\x11outputAudioConfig\x12a\n" +
-	"\rresponse_view\x18\t \x01(\x0e27.google.cloud.dialogflow.cx.v3.DetectIntentResponseViewB\x03\xe0A\x01R\fresponseView\"\xe8\x03\n" +
+	"\x13output_audio_config\x18\x04 \x01(\v20.google.cloud.dialogflow.cx.v3.OutputAudioConfigR\x11outputAudioConfig\x12b\n" +
+	"\rresponse_view\x18\t \x01(\x0e27.google.cloud.dialogflow.cx.v3.DetectIntentResponseViewB\x04\xe2A\x01\x01R\fresponseView\"\xe8\x03\n" +
 	"\x14DetectIntentResponse\x12\x1f\n" +
 	"\vresponse_id\x18\x01 \x01(\tR\n" +
 	"responseId\x12M\n" +
@@ -3710,17 +3710,17 @@ const file_google_cloud_dialogflow_cx_v3_session_proto_rawDesc = "" +
 	"\fResponseType\x12\x1d\n" +
 	"\x19RESPONSE_TYPE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aPARTIAL\x10\x01\x12\t\n" +
-	"\x05FINAL\x10\x02\"\xb5\x04\n" +
+	"\x05FINAL\x10\x02\"\xb7\x04\n" +
 	"\x1cStreamingDetectIntentRequest\x12@\n" +
 	"\asession\x18\x01 \x01(\tB&\xfaA#\n" +
 	"!dialogflow.googleapis.com/SessionR\asession\x12Q\n" +
-	"\fquery_params\x18\x02 \x01(\v2..google.cloud.dialogflow.cx.v3.QueryParametersR\vqueryParams\x12O\n" +
-	"\vquery_input\x18\x03 \x01(\v2).google.cloud.dialogflow.cx.v3.QueryInputB\x03\xe0A\x02R\n" +
+	"\fquery_params\x18\x02 \x01(\v2..google.cloud.dialogflow.cx.v3.QueryParametersR\vqueryParams\x12P\n" +
+	"\vquery_input\x18\x03 \x01(\v2).google.cloud.dialogflow.cx.v3.QueryInputB\x04\xe2A\x01\x02R\n" +
 	"queryInput\x12`\n" +
 	"\x13output_audio_config\x18\x04 \x01(\v20.google.cloud.dialogflow.cx.v3.OutputAudioConfigR\x11outputAudioConfig\x126\n" +
 	"\x17enable_partial_response\x18\x05 \x01(\bR\x15enablePartialResponse\x122\n" +
-	"\x15enable_debugging_info\x18\b \x01(\bR\x13enableDebuggingInfo\x12a\n" +
-	"\rresponse_view\x18\x10 \x01(\x0e27.google.cloud.dialogflow.cx.v3.DetectIntentResponseViewB\x03\xe0A\x01R\fresponseView\"\xd5\n" +
+	"\x15enable_debugging_info\x18\b \x01(\bR\x13enableDebuggingInfo\x12b\n" +
+	"\rresponse_view\x18\x10 \x01(\x0e27.google.cloud.dialogflow.cx.v3.DetectIntentResponseViewB\x04\xe2A\x01\x01R\fresponseView\"\xd5\n" +
 	"\n" +
 	"\x1eCloudConversationDebuggingInfo\x12*\n" +
 	"\x11audio_data_chunks\x18\x01 \x01(\x05R\x0faudioDataChunks\x12N\n" +
@@ -3766,7 +3766,7 @@ const file_google_cloud_dialogflow_cx_v3_session_proto_rawDesc = "" +
 	"\x18MESSAGE_TYPE_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +
 	"TRANSCRIPT\x10\x01\x12\x1b\n" +
-	"\x17END_OF_SINGLE_UTTERANCE\x10\x02\"\xa0\n" +
+	"\x17END_OF_SINGLE_UTTERANCE\x10\x02\"\xa6\n" +
 	"\n" +
 	"\x0fQueryParameters\x12\x1b\n" +
 	"\ttime_zone\x18\x01 \x01(\tR\btimeZone\x126\n" +
@@ -3784,38 +3784,38 @@ const file_google_cloud_dialogflow_cx_v3_session_proto_rawDesc = "" +
 	"\x0fwebhook_headers\x18\n" +
 	" \x03(\v2B.google.cloud.dialogflow.cx.v3.QueryParameters.WebhookHeadersEntryR\x0ewebhookHeaders\x12K\n" +
 	"\rflow_versions\x18\x0e \x03(\tB&\xfaA#\n" +
-	"!dialogflow.googleapis.com/VersionR\fflowVersions\x12U\n" +
-	"\x10current_playbook\x18\x13 \x01(\tB*\xe0A\x01\xfaA$\n" +
-	"\"dialogflow.googleapis.com/PlaybookR\x0fcurrentPlaybook\x12b\n" +
-	"\x12llm_model_settings\x18\x15 \x01(\v2/.google.cloud.dialogflow.cx.v3.LlmModelSettingsB\x03\xe0A\x01R\x10llmModelSettings\x12\x18\n" +
-	"\achannel\x18\x0f \x01(\tR\achannel\x12?\n" +
-	"\vsession_ttl\x18\x10 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\n" +
-	"sessionTtl\x12H\n" +
-	"\x11end_user_metadata\x18\x12 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x0fendUserMetadata\x12U\n" +
-	"\rsearch_config\x18\x14 \x01(\v2+.google.cloud.dialogflow.cx.v3.SearchConfigB\x03\xe0A\x01R\fsearchConfig\x12Y\n" +
-	"&populate_data_store_connection_signals\x18\x19 \x01(\bB\x05\xe0A\x01\x18\x01R\"populateDataStoreConnectionSignals\x1aA\n" +
+	"!dialogflow.googleapis.com/VersionR\fflowVersions\x12V\n" +
+	"\x10current_playbook\x18\x13 \x01(\tB+\xe2A\x01\x01\xfaA$\n" +
+	"\"dialogflow.googleapis.com/PlaybookR\x0fcurrentPlaybook\x12c\n" +
+	"\x12llm_model_settings\x18\x15 \x01(\v2/.google.cloud.dialogflow.cx.v3.LlmModelSettingsB\x04\xe2A\x01\x01R\x10llmModelSettings\x12\x18\n" +
+	"\achannel\x18\x0f \x01(\tR\achannel\x12@\n" +
+	"\vsession_ttl\x18\x10 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\n" +
+	"sessionTtl\x12I\n" +
+	"\x11end_user_metadata\x18\x12 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\x0fendUserMetadata\x12V\n" +
+	"\rsearch_config\x18\x14 \x01(\v2+.google.cloud.dialogflow.cx.v3.SearchConfigB\x04\xe2A\x01\x01R\fsearchConfig\x12Z\n" +
+	"&populate_data_store_connection_signals\x18\x19 \x01(\bB\x06\xe2A\x01\x01\x18\x01R\"populateDataStoreConnectionSignals\x1aA\n" +
 	"\x13WebhookHeadersEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xb3\x01\n" +
-	"\fSearchConfig\x12O\n" +
-	"\vboost_specs\x18\x01 \x03(\v2).google.cloud.dialogflow.cx.v3.BoostSpecsB\x03\xe0A\x01R\n" +
-	"boostSpecs\x12R\n" +
-	"\ffilter_specs\x18\x02 \x03(\v2*.google.cloud.dialogflow.cx.v3.FilterSpecsB\x03\xe0A\x01R\vfilterSpecs\"\xb0\b\n" +
-	"\tBoostSpec\x12t\n" +
-	"\x15condition_boost_specs\x18\x01 \x03(\v2;.google.cloud.dialogflow.cx.v3.BoostSpec.ConditionBoostSpecB\x03\xe0A\x01R\x13conditionBoostSpecs\x1a\xac\a\n" +
-	"\x12ConditionBoostSpec\x12!\n" +
-	"\tcondition\x18\x01 \x01(\tB\x03\xe0A\x01R\tcondition\x12\x19\n" +
-	"\x05boost\x18\x02 \x01(\x02B\x03\xe0A\x01R\x05boost\x12\x7f\n" +
-	"\x12boost_control_spec\x18\x04 \x01(\v2L.google.cloud.dialogflow.cx.v3.BoostSpec.ConditionBoostSpec.BoostControlSpecB\x03\xe0A\x01R\x10boostControlSpec\x1a\xd6\x05\n" +
-	"\x10BoostControlSpec\x12\"\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xb5\x01\n" +
+	"\fSearchConfig\x12P\n" +
+	"\vboost_specs\x18\x01 \x03(\v2).google.cloud.dialogflow.cx.v3.BoostSpecsB\x04\xe2A\x01\x01R\n" +
+	"boostSpecs\x12S\n" +
+	"\ffilter_specs\x18\x02 \x03(\v2*.google.cloud.dialogflow.cx.v3.FilterSpecsB\x04\xe2A\x01\x01R\vfilterSpecs\"\xbb\b\n" +
+	"\tBoostSpec\x12u\n" +
+	"\x15condition_boost_specs\x18\x01 \x03(\v2;.google.cloud.dialogflow.cx.v3.BoostSpec.ConditionBoostSpecB\x04\xe2A\x01\x01R\x13conditionBoostSpecs\x1a\xb6\a\n" +
+	"\x12ConditionBoostSpec\x12\"\n" +
+	"\tcondition\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\tcondition\x12\x1a\n" +
+	"\x05boost\x18\x02 \x01(\x02B\x04\xe2A\x01\x01R\x05boost\x12\x80\x01\n" +
+	"\x12boost_control_spec\x18\x04 \x01(\v2L.google.cloud.dialogflow.cx.v3.BoostSpec.ConditionBoostSpec.BoostControlSpecB\x04\xe2A\x01\x01R\x10boostControlSpec\x1a\xdc\x05\n" +
+	"\x10BoostControlSpec\x12#\n" +
 	"\n" +
-	"field_name\x18\x01 \x01(\tB\x03\xe0A\x01R\tfieldName\x12\x86\x01\n" +
-	"\x0eattribute_type\x18\x02 \x01(\x0e2Z.google.cloud.dialogflow.cx.v3.BoostSpec.ConditionBoostSpec.BoostControlSpec.AttributeTypeB\x03\xe0A\x01R\rattributeType\x12\x92\x01\n" +
-	"\x12interpolation_type\x18\x03 \x01(\x0e2^.google.cloud.dialogflow.cx.v3.BoostSpec.ConditionBoostSpec.BoostControlSpec.InterpolationTypeB\x03\xe0A\x01R\x11interpolationType\x12\x85\x01\n" +
-	"\x0econtrol_points\x18\x04 \x03(\v2Y.google.cloud.dialogflow.cx.v3.BoostSpec.ConditionBoostSpec.BoostControlSpec.ControlPointB\x03\xe0A\x01R\rcontrolPoints\x1ad\n" +
-	"\fControlPoint\x12,\n" +
-	"\x0fattribute_value\x18\x01 \x01(\tB\x03\xe0A\x01R\x0eattributeValue\x12&\n" +
-	"\fboost_amount\x18\x02 \x01(\x02B\x03\xe0A\x01R\vboostAmount\"M\n" +
+	"field_name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\tfieldName\x12\x87\x01\n" +
+	"\x0eattribute_type\x18\x02 \x01(\x0e2Z.google.cloud.dialogflow.cx.v3.BoostSpec.ConditionBoostSpec.BoostControlSpec.AttributeTypeB\x04\xe2A\x01\x01R\rattributeType\x12\x93\x01\n" +
+	"\x12interpolation_type\x18\x03 \x01(\x0e2^.google.cloud.dialogflow.cx.v3.BoostSpec.ConditionBoostSpec.BoostControlSpec.InterpolationTypeB\x04\xe2A\x01\x01R\x11interpolationType\x12\x86\x01\n" +
+	"\x0econtrol_points\x18\x04 \x03(\v2Y.google.cloud.dialogflow.cx.v3.BoostSpec.ConditionBoostSpec.BoostControlSpec.ControlPointB\x04\xe2A\x01\x01R\rcontrolPoints\x1af\n" +
+	"\fControlPoint\x12-\n" +
+	"\x0fattribute_value\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0eattributeValue\x12'\n" +
+	"\fboost_amount\x18\x02 \x01(\x02B\x04\xe2A\x01\x01R\vboostAmount\"M\n" +
 	"\rAttributeType\x12\x1e\n" +
 	"\x1aATTRIBUTE_TYPE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tNUMERICAL\x10\x01\x12\r\n" +
@@ -3823,18 +3823,18 @@ const file_google_cloud_dialogflow_cx_v3_session_proto_rawDesc = "" +
 	"\x11InterpolationType\x12\"\n" +
 	"\x1eINTERPOLATION_TYPE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
-	"\x06LINEAR\x10\x01\"\xa2\x01\n" +
+	"\x06LINEAR\x10\x01\"\xa4\x01\n" +
 	"\n" +
-	"BoostSpecs\x12Q\n" +
-	"\vdata_stores\x18\x01 \x03(\tB0\xe0A\x01\xfaA*\n" +
+	"BoostSpecs\x12R\n" +
+	"\vdata_stores\x18\x01 \x03(\tB1\xe2A\x01\x01\xfaA*\n" +
 	"(discoveryengine.googleapis.com/DataStoreR\n" +
-	"dataStores\x12A\n" +
-	"\x04spec\x18\x02 \x03(\v2(.google.cloud.dialogflow.cx.v3.BoostSpecB\x03\xe0A\x01R\x04spec\"}\n" +
-	"\vFilterSpecs\x12Q\n" +
-	"\vdata_stores\x18\x01 \x03(\tB0\xe0A\x01\xfaA*\n" +
+	"dataStores\x12B\n" +
+	"\x04spec\x18\x02 \x03(\v2(.google.cloud.dialogflow.cx.v3.BoostSpecB\x04\xe2A\x01\x01R\x04spec\"\x7f\n" +
+	"\vFilterSpecs\x12R\n" +
+	"\vdata_stores\x18\x01 \x03(\tB1\xe2A\x01\x01\xfaA*\n" +
 	"(discoveryengine.googleapis.com/DataStoreR\n" +
-	"dataStores\x12\x1b\n" +
-	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x01R\x06filter\"\xe6\x03\n" +
+	"dataStores\x12\x1c\n" +
+	"\x06filter\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xe7\x03\n" +
 	"\n" +
 	"QueryInput\x12>\n" +
 	"\x04text\x18\x02 \x01(\v2(.google.cloud.dialogflow.cx.v3.TextInputH\x00R\x04text\x12D\n" +
@@ -3842,9 +3842,9 @@ const file_google_cloud_dialogflow_cx_v3_session_proto_rawDesc = "" +
 	"\x05audio\x18\x05 \x01(\v2).google.cloud.dialogflow.cx.v3.AudioInputH\x00R\x05audio\x12A\n" +
 	"\x05event\x18\x06 \x01(\v2).google.cloud.dialogflow.cx.v3.EventInputH\x00R\x05event\x12>\n" +
 	"\x04dtmf\x18\a \x01(\v2(.google.cloud.dialogflow.cx.v3.DtmfInputH\x00R\x04dtmf\x12Y\n" +
-	"\x10tool_call_result\x18\v \x01(\v2-.google.cloud.dialogflow.cx.v3.ToolCallResultH\x00R\x0etoolCallResult\x12(\n" +
-	"\rlanguage_code\x18\x04 \x01(\tB\x03\xe0A\x02R\flanguageCodeB\a\n" +
-	"\x05input\"\xb5\v\n" +
+	"\x10tool_call_result\x18\v \x01(\v2-.google.cloud.dialogflow.cx.v3.ToolCallResultH\x00R\x0etoolCallResult\x12)\n" +
+	"\rlanguage_code\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\flanguageCodeB\a\n" +
+	"\x05input\"\xb7\v\n" +
 	"\vQueryResult\x12\x14\n" +
 	"\x04text\x18\x01 \x01(\tH\x00R\x04text\x12N\n" +
 	"\x0etrigger_intent\x18\v \x01(\tB%\xfaA\"\n" +
@@ -3870,18 +3870,18 @@ const file_google_cloud_dialogflow_cx_v3_session_proto_rawDesc = "" +
 	" \x01(\v2\x17.google.protobuf.StructR\x0ediagnosticInfo\x12r\n" +
 	"\x19sentiment_analysis_result\x18\x11 \x01(\v26.google.cloud.dialogflow.cx.v3.SentimentAnalysisResultR\x17sentimentAnalysisResult\x12\\\n" +
 	"\x11advanced_settings\x18\x15 \x01(\v2/.google.cloud.dialogflow.cx.v3.AdvancedSettingsR\x10advancedSettings\x122\n" +
-	"\x15allow_answer_feedback\x18  \x01(\bR\x13allowAnswerFeedback\x12\x81\x01\n" +
-	"\x1ddata_store_connection_signals\x18# \x01(\v29.google.cloud.dialogflow.cx.v3.DataStoreConnectionSignalsB\x03\xe0A\x01R\x1adataStoreConnectionSignals\x12Q\n" +
-	"\ftrace_blocks\x18% \x03(\v2).google.cloud.dialogflow.cx.v3.TraceBlockB\x03\xe0A\x01R\vtraceBlocksB\a\n" +
-	"\x05query\"$\n" +
-	"\tTextInput\x12\x17\n" +
-	"\x04text\x18\x01 \x01(\tB\x03\xe0A\x02R\x04text\"O\n" +
-	"\vIntentInput\x12@\n" +
-	"\x06intent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" dialogflow.googleapis.com/IntentR\x06intent\"p\n" +
+	"\x15allow_answer_feedback\x18  \x01(\bR\x13allowAnswerFeedback\x12\x82\x01\n" +
+	"\x1ddata_store_connection_signals\x18# \x01(\v29.google.cloud.dialogflow.cx.v3.DataStoreConnectionSignalsB\x04\xe2A\x01\x01R\x1adataStoreConnectionSignals\x12R\n" +
+	"\ftrace_blocks\x18% \x03(\v2).google.cloud.dialogflow.cx.v3.TraceBlockB\x04\xe2A\x01\x01R\vtraceBlocksB\a\n" +
+	"\x05query\"%\n" +
+	"\tTextInput\x12\x18\n" +
+	"\x04text\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04text\"P\n" +
+	"\vIntentInput\x12A\n" +
+	"\x06intent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" dialogflow.googleapis.com/IntentR\x06intent\"q\n" +
 	"\n" +
-	"AudioInput\x12L\n" +
-	"\x06config\x18\x01 \x01(\v2/.google.cloud.dialogflow.cx.v3.InputAudioConfigB\x03\xe0A\x02R\x06config\x12\x14\n" +
+	"AudioInput\x12M\n" +
+	"\x06config\x18\x01 \x01(\v2/.google.cloud.dialogflow.cx.v3.InputAudioConfigB\x04\xe2A\x01\x02R\x06config\x12\x14\n" +
 	"\x05audio\x18\x02 \x01(\fR\x05audio\"\"\n" +
 	"\n" +
 	"EventInput\x12\x14\n" +
@@ -3911,12 +3911,12 @@ const file_google_cloud_dialogflow_cx_v3_session_proto_rawDesc = "" +
 	"\bNO_INPUT\x10\x05\x12\t\n" +
 	"\x05EVENT\x10\x06\x12\x17\n" +
 	"\x13KNOWLEDGE_CONNECTOR\x10\b\x12\f\n" +
-	"\bPLAYBOOK\x10\t\"\xb9\x02\n" +
-	"\x12MatchIntentRequest\x12C\n" +
-	"\asession\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\bPLAYBOOK\x10\t\"\xbb\x02\n" +
+	"\x12MatchIntentRequest\x12D\n" +
+	"\asession\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!dialogflow.googleapis.com/SessionR\asession\x12Q\n" +
-	"\fquery_params\x18\x02 \x01(\v2..google.cloud.dialogflow.cx.v3.QueryParametersR\vqueryParams\x12O\n" +
-	"\vquery_input\x18\x03 \x01(\v2).google.cloud.dialogflow.cx.v3.QueryInputB\x03\xe0A\x02R\n" +
+	"\fquery_params\x18\x02 \x01(\v2..google.cloud.dialogflow.cx.v3.QueryParametersR\vqueryParams\x12P\n" +
+	"\vquery_input\x18\x03 \x01(\v2).google.cloud.dialogflow.cx.v3.QueryInputB\x04\xe2A\x01\x02R\n" +
 	"queryInput\x12:\n" +
 	"\x19persist_parameter_changes\x18\x05 \x01(\bR\x17persistParameterChanges\"\xd5\x02\n" +
 	"\x13MatchIntentResponse\x12\x14\n" +

@@ -798,23 +798,23 @@ var File_google_cloud_documentai_v1beta3_dataset_proto protoreflect.FileDescript
 
 const file_google_cloud_documentai_v1beta3_dataset_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/documentai/v1beta3/dataset.proto\x12\x1fgoogle.cloud.documentai.v1beta3\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a.google/cloud/documentai/v1beta3/document.proto\x1a1google/cloud/documentai/v1beta3/document_io.proto\x1a5google/cloud/documentai/v1beta3/document_schema.proto\"\x96\b\n" +
-	"\aDataset\x12n\n" +
-	"\x12gcs_managed_config\x18\x03 \x01(\v29.google.cloud.documentai.v1beta3.Dataset.GCSManagedConfigB\x03\xe0A\x01H\x00R\x10gcsManagedConfig\x12\x85\x01\n" +
-	"\x19document_warehouse_config\x18\x05 \x01(\v2@.google.cloud.documentai.v1beta3.Dataset.DocumentWarehouseConfigB\x05\xe0A\x01\x18\x01H\x00R\x17documentWarehouseConfig\x12\x80\x01\n" +
-	"\x18unmanaged_dataset_config\x18\x06 \x01(\v2?.google.cloud.documentai.v1beta3.Dataset.UnmanagedDatasetConfigB\x03\xe0A\x01H\x00R\x16unmanagedDatasetConfig\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12I\n" +
-	"\x05state\x18\x02 \x01(\x0e2..google.cloud.documentai.v1beta3.Dataset.StateB\x03\xe0A\x02R\x05state\x12(\n" +
-	"\rsatisfies_pzs\x18\b \x01(\bB\x03\xe0A\x03R\fsatisfiesPzs\x12(\n" +
-	"\rsatisfies_pzi\x18\t \x01(\bB\x03\xe0A\x03R\fsatisfiesPzi\x1ab\n" +
-	"\x10GCSManagedConfig\x12N\n" +
+	"-google/cloud/documentai/v1beta3/dataset.proto\x12\x1fgoogle.cloud.documentai.v1beta3\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a.google/cloud/documentai/v1beta3/document.proto\x1a1google/cloud/documentai/v1beta3/document_io.proto\x1a5google/cloud/documentai/v1beta3/document_schema.proto\"\x9f\b\n" +
+	"\aDataset\x12o\n" +
+	"\x12gcs_managed_config\x18\x03 \x01(\v29.google.cloud.documentai.v1beta3.Dataset.GCSManagedConfigB\x04\xe2A\x01\x01H\x00R\x10gcsManagedConfig\x12\x86\x01\n" +
+	"\x19document_warehouse_config\x18\x05 \x01(\v2@.google.cloud.documentai.v1beta3.Dataset.DocumentWarehouseConfigB\x06\xe2A\x01\x01\x18\x01H\x00R\x17documentWarehouseConfig\x12\x81\x01\n" +
+	"\x18unmanaged_dataset_config\x18\x06 \x01(\v2?.google.cloud.documentai.v1beta3.Dataset.UnmanagedDatasetConfigB\x04\xe2A\x01\x01H\x00R\x16unmanagedDatasetConfig\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12J\n" +
+	"\x05state\x18\x02 \x01(\x0e2..google.cloud.documentai.v1beta3.Dataset.StateB\x04\xe2A\x01\x02R\x05state\x12)\n" +
+	"\rsatisfies_pzs\x18\b \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzs\x12)\n" +
+	"\rsatisfies_pzi\x18\t \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzi\x1ac\n" +
+	"\x10GCSManagedConfig\x12O\n" +
 	"\n" +
-	"gcs_prefix\x18\x01 \x01(\v2*.google.cloud.documentai.v1beta3.GcsPrefixB\x03\xe0A\x02R\tgcsPrefix\x1a\x86\x01\n" +
-	"\x17DocumentWarehouseConfig\x12#\n" +
+	"gcs_prefix\x18\x01 \x01(\v2*.google.cloud.documentai.v1beta3.GcsPrefixB\x04\xe2A\x01\x02R\tgcsPrefix\x1a\x88\x01\n" +
+	"\x17DocumentWarehouseConfig\x12$\n" +
 	"\n" +
-	"collection\x18\x01 \x01(\tB\x03\xe0A\x03R\n" +
-	"collection\x12F\n" +
-	"\x06schema\x18\x02 \x01(\tB.\xe0A\x03\xfaA(\n" +
+	"collection\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"collection\x12G\n" +
+	"\x06schema\x18\x02 \x01(\tB/\xe2A\x01\x03\xfaA(\n" +
 	"&contentwarehouse.googleapis.com/SchemaR\x06schema\x1a\x18\n" +
 	"\x16UnmanagedDatasetConfig\"T\n" +
 	"\x05State\x12\x15\n" +
@@ -823,29 +823,29 @@ const file_google_cloud_documentai_v1beta3_dataset_proto_rawDesc = "" +
 	"\fINITIALIZING\x10\x02\x12\x0f\n" +
 	"\vINITIALIZED\x10\x03:n\xeaAk\n" +
 	"!documentai.googleapis.com/Dataset\x12Fprojects/{project}/locations/{location}/processors/{processor}/datasetB\x10\n" +
-	"\x0estorage_source\"\xcc\x03\n" +
+	"\x0estorage_source\"\xce\x03\n" +
 	"\n" +
 	"DocumentId\x12o\n" +
 	"\x12gcs_managed_doc_id\x18\x01 \x01(\v2@.google.cloud.documentai.v1beta3.DocumentId.GCSManagedDocumentIdH\x00R\x0fgcsManagedDocId\x12k\n" +
 	"\x10unmanaged_doc_id\x18\x04 \x01(\v2?.google.cloud.documentai.v1beta3.DocumentId.UnmanagedDocumentIdH\x00R\x0eunmanagedDocId\x12O\n" +
-	"\frevision_ref\x18\x03 \x01(\v2,.google.cloud.documentai.v1beta3.RevisionRefR\vrevisionRef\x1aT\n" +
-	"\x14GCSManagedDocumentId\x12\x1c\n" +
-	"\agcs_uri\x18\x01 \x01(\tB\x03\xe0A\x02R\x06gcsUri\x12\x1e\n" +
-	"\tcw_doc_id\x18\x02 \x01(\tB\x02\x18\x01R\acwDocId\x1a1\n" +
-	"\x13UnmanagedDocumentId\x12\x1a\n" +
-	"\x06doc_id\x18\x01 \x01(\tB\x03\xe0A\x02R\x05docIdB\x06\n" +
-	"\x04type\"\xdb\x02\n" +
+	"\frevision_ref\x18\x03 \x01(\v2,.google.cloud.documentai.v1beta3.RevisionRefR\vrevisionRef\x1aU\n" +
+	"\x14GCSManagedDocumentId\x12\x1d\n" +
+	"\agcs_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06gcsUri\x12\x1e\n" +
+	"\tcw_doc_id\x18\x02 \x01(\tB\x02\x18\x01R\acwDocId\x1a2\n" +
+	"\x13UnmanagedDocumentId\x12\x1b\n" +
+	"\x06doc_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05docIdB\x06\n" +
+	"\x04type\"\xde\x02\n" +
 	"\rDatasetSchema\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12]\n" +
-	"\x0fdocument_schema\x18\x03 \x01(\v2/.google.cloud.documentai.v1beta3.DocumentSchemaB\x03\xe0A\x01R\x0edocumentSchema\x12(\n" +
-	"\rsatisfies_pzs\x18\x04 \x01(\bB\x03\xe0A\x03R\fsatisfiesPzs\x12(\n" +
-	"\rsatisfies_pzi\x18\x05 \x01(\bB\x03\xe0A\x03R\fsatisfiesPzi:\x82\x01\xeaA\x7f\n" +
-	"'documentai.googleapis.com/DatasetSchema\x12Tprojects/{project}/locations/{location}/processors/{processor}/dataset/datasetSchema\"\xb4\x02\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12^\n" +
+	"\x0fdocument_schema\x18\x03 \x01(\v2/.google.cloud.documentai.v1beta3.DocumentSchemaB\x04\xe2A\x01\x01R\x0edocumentSchema\x12)\n" +
+	"\rsatisfies_pzs\x18\x04 \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzs\x12)\n" +
+	"\rsatisfies_pzi\x18\x05 \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzi:\x82\x01\xeaA\x7f\n" +
+	"'documentai.googleapis.com/DatasetSchema\x12Tprojects/{project}/locations/{location}/processors/{processor}/dataset/datasetSchema\"\xb5\x02\n" +
 	"\x15BatchDatasetDocuments\x12\x86\x01\n" +
 	"\x17individual_document_ids\x18\x01 \x01(\v2L.google.cloud.documentai.v1beta3.BatchDatasetDocuments.IndividualDocumentIdsH\x00R\x15individualDocumentIds\x12\x18\n" +
-	"\x06filter\x18\x02 \x01(\tH\x00R\x06filter\x1al\n" +
-	"\x15IndividualDocumentIds\x12S\n" +
-	"\fdocument_ids\x18\x01 \x03(\v2+.google.cloud.documentai.v1beta3.DocumentIdB\x03\xe0A\x02R\vdocumentIdsB\n" +
+	"\x06filter\x18\x02 \x01(\tH\x00R\x06filter\x1am\n" +
+	"\x15IndividualDocumentIds\x12T\n" +
+	"\fdocument_ids\x18\x01 \x03(\v2+.google.cloud.documentai.v1beta3.DocumentIdB\x04\xe2A\x01\x02R\vdocumentIdsB\n" +
 	"\n" +
 	"\bcriteriaB\xc8\x02\xeaAb\n" +
 	"&contentwarehouse.googleapis.com/Schema\x128projects/{project}/locations/{location}/schemas/{schema}\n" +

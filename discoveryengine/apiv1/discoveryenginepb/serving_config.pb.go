@@ -582,20 +582,20 @@ var File_google_cloud_discoveryengine_v1_serving_config_proto protoreflect.FileD
 
 const file_google_cloud_discoveryengine_v1_serving_config_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/discoveryengine/v1/serving_config.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/discoveryengine/v1/common.proto\x1a4google/cloud/discoveryengine/v1/search_service.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd8\x0f\n" +
+	"4google/cloud/discoveryengine/v1/serving_config.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/discoveryengine/v1/common.proto\x1a4google/cloud/discoveryengine/v1/search_service.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdc\x0f\n" +
 	"\rServingConfig\x12_\n" +
 	"\fmedia_config\x18\a \x01(\v2:.google.cloud.discoveryengine.v1.ServingConfig.MediaConfigH\x00R\vmediaConfig\x12e\n" +
 	"\x0egeneric_config\x18\n" +
-	" \x01(\v2<.google.cloud.discoveryengine.v1.ServingConfig.GenericConfigH\x00R\rgenericConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12Z\n" +
-	"\rsolution_type\x18\x03 \x01(\x0e2-.google.cloud.discoveryengine.v1.SolutionTypeB\x06\xe0A\x02\xe0A\x05R\fsolutionType\x12\x19\n" +
+	" \x01(\v2<.google.cloud.discoveryengine.v1.ServingConfig.GenericConfigH\x00R\rgenericConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12Y\n" +
+	"\rsolution_type\x18\x03 \x01(\x0e2-.google.cloud.discoveryengine.v1.SolutionTypeB\x05\xe2A\x02\x02\x05R\fsolutionType\x12\x19\n" +
 	"\bmodel_id\x18\x04 \x01(\tR\amodelId\x12'\n" +
 	"\x0fdiversity_level\x18\x05 \x01(\tR\x0ediversityLevel\x12-\n" +
-	"\x12ranking_expression\x18\x15 \x01(\tR\x11rankingExpression\x12@\n" +
-	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x12ranking_expression\x18\x15 \x01(\tR\x11rankingExpression\x12A\n" +
+	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12,\n" +
 	"\x12filter_control_ids\x18\v \x03(\tR\x10filterControlIds\x12*\n" +
 	"\x11boost_control_ids\x18\f \x03(\tR\x0fboostControlIds\x120\n" +
@@ -605,12 +605,12 @@ const file_google_cloud_discoveryengine_v1_serving_config_proto_rawDesc = "" +
 	"\x16dissociate_control_ids\x18\x11 \x03(\tR\x14dissociateControlIds\x126\n" +
 	"\x17replacement_control_ids\x18\x12 \x03(\tR\x15replacementControlIds\x12,\n" +
 	"\x12ignore_control_ids\x18\x13 \x03(\tR\x10ignoreControlIds\x12.\n" +
-	"\x13promote_control_ids\x18\x1a \x03(\tR\x11promoteControlIds\x1a\x87\x03\n" +
+	"\x13promote_control_ids\x18\x1a \x03(\tR\x11promoteControlIds\x1a\x88\x03\n" +
 	"\vMediaConfig\x12Q\n" +
 	"$content_watched_percentage_threshold\x18\x02 \x01(\x02H\x00R!contentWatchedPercentageThreshold\x12K\n" +
 	"!content_watched_seconds_threshold\x18\x05 \x01(\x02H\x00R\x1econtentWatchedSecondsThreshold\x12.\n" +
-	"\x13demotion_event_type\x18\x01 \x01(\tR\x11demotionEventType\x12K\n" +
-	" demote_content_watched_past_days\x18% \x01(\x05B\x03\xe0A\x01R\x1cdemoteContentWatchedPastDays\x12A\n" +
+	"\x13demotion_event_type\x18\x01 \x01(\tR\x11demotionEventType\x12L\n" +
+	" demote_content_watched_past_days\x18% \x01(\x05B\x04\xe2A\x01\x01R\x1cdemoteContentWatchedPastDays\x12A\n" +
 	"\x1dcontent_freshness_cutoff_days\x18\x04 \x01(\x05R\x1acontentFreshnessCutoffDaysB\x18\n" +
 	"\x16demote_content_watched\x1a\x81\x01\n" +
 	"\rGenericConfig\x12p\n" +

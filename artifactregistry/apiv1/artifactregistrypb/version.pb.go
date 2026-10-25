@@ -694,7 +694,7 @@ var File_google_devtools_artifactregistry_v1_version_proto protoreflect.FileDesc
 
 const file_google_devtools_artifactregistry_v1_version_proto_rawDesc = "" +
 	"\n" +
-	"1google/devtools/artifactregistry/v1/version.proto\x12#google.devtools.artifactregistry.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a.google/devtools/artifactregistry/v1/file.proto\x1a-google/devtools/artifactregistry/v1/tag.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd3\x05\n" +
+	"1google/devtools/artifactregistry/v1/version.proto\x12#google.devtools.artifactregistry.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a.google/devtools/artifactregistry/v1/file.proto\x1a-google/devtools/artifactregistry/v1/tag.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd6\x05\n" +
 	"\aVersion\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x03 \x01(\tR\vdescription\x12;\n" +
@@ -702,23 +702,23 @@ const file_google_devtools_artifactregistry_v1_version_proto_rawDesc = "" +
 	"createTime\x12;\n" +
 	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"updateTime\x12K\n" +
-	"\frelated_tags\x18\a \x03(\v2(.google.devtools.artifactregistry.v1.TagR\vrelatedTags\x128\n" +
-	"\bmetadata\x18\b \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x03R\bmetadata\x12d\n" +
-	"\vannotations\x18\t \x03(\v2=.google.devtools.artifactregistry.v1.Version.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12R\n" +
+	"\frelated_tags\x18\a \x03(\v2(.google.devtools.artifactregistry.v1.TagR\vrelatedTags\x129\n" +
+	"\bmetadata\x18\b \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x03R\bmetadata\x12e\n" +
+	"\vannotations\x18\t \x03(\v2=.google.devtools.artifactregistry.v1.Version.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12S\n" +
 	"\ffingerprints\x18\n" +
-	" \x03(\v2).google.devtools.artifactregistry.v1.HashB\x03\xe0A\x03R\ffingerprints\x1a>\n" +
+	" \x03(\v2).google.devtools.artifactregistry.v1.HashB\x04\xe2A\x01\x03R\ffingerprints\x1a>\n" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x96\x01\xeaA\x92\x01\n" +
-	"'artifactregistry.googleapis.com/Version\x12gprojects/{project}/locations/{location}/repositories/{repository}/packages/{package}/versions/{version}\"\xec\x01\n" +
+	"'artifactregistry.googleapis.com/Version\x12gprojects/{project}/locations/{location}/repositories/{repository}/packages/{package}/versions/{version}\"\xee\x01\n" +
 	"\x13ListVersionsRequest\x12\x16\n" +
 	"\x06parent\x18\x01 \x01(\tR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12D\n" +
-	"\x04view\x18\x04 \x01(\x0e20.google.devtools.artifactregistry.v1.VersionViewR\x04view\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\x12\x1b\n" +
-	"\x06filter\x18\x06 \x01(\tB\x03\xe0A\x01R\x06filter\"\x88\x01\n" +
+	"\x04view\x18\x04 \x01(\x0e20.google.devtools.artifactregistry.v1.VersionViewR\x04view\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\x12\x1c\n" +
+	"\x06filter\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x88\x01\n" +
 	"\x14ListVersionsResponse\x12H\n" +
 	"\bversions\x18\x01 \x03(\v2,.google.devtools.artifactregistry.v1.VersionR\bversions\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"m\n" +
@@ -727,16 +727,16 @@ const file_google_devtools_artifactregistry_v1_version_proto_rawDesc = "" +
 	"\x04view\x18\x02 \x01(\x0e20.google.devtools.artifactregistry.v1.VersionViewR\x04view\"@\n" +
 	"\x14DeleteVersionRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x14\n" +
-	"\x05force\x18\x02 \x01(\bR\x05force\"\xce\x01\n" +
+	"\x05force\x18\x02 \x01(\bR\x05force\"\xcf\x01\n" +
 	"\x1aBatchDeleteVersionsRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xfaA)\x12'artifactregistry.googleapis.com/VersionR\x06parent\x12E\n" +
-	"\x05names\x18\x02 \x03(\tB/\xe0A\x02\xfaA)\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xfaA)\x12'artifactregistry.googleapis.com/VersionR\x06parent\x12F\n" +
+	"\x05names\x18\x02 \x03(\tB0\xe2A\x01\x02\xfaA)\n" +
 	"'artifactregistry.googleapis.com/VersionR\x05names\x12#\n" +
 	"\rvalidate_only\x18\x03 \x01(\bR\fvalidateOnly\"F\n" +
 	"\x1bBatchDeleteVersionsMetadata\x12'\n" +
-	"\x0ffailed_versions\x18\x02 \x03(\tR\x0efailedVersions\"\xa0\x01\n" +
-	"\x14UpdateVersionRequest\x12K\n" +
-	"\aversion\x18\x01 \x01(\v2,.google.devtools.artifactregistry.v1.VersionB\x03\xe0A\x02R\aversion\x12;\n" +
+	"\x0ffailed_versions\x18\x02 \x03(\tR\x0efailedVersions\"\xa1\x01\n" +
+	"\x14UpdateVersionRequest\x12L\n" +
+	"\aversion\x18\x01 \x01(\v2,.google.devtools.artifactregistry.v1.VersionB\x04\xe2A\x01\x02R\aversion\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"updateMask*@\n" +
 	"\vVersionView\x12\x1c\n" +

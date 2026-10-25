@@ -653,9 +653,9 @@ var File_google_ai_generativelanguage_v1beta_model_service_proto protoreflect.Fi
 
 const file_google_ai_generativelanguage_v1beta_model_service_proto_rawDesc = "" +
 	"\n" +
-	"7google/ai/generativelanguage/v1beta/model_service.proto\x12#google.ai.generativelanguage.v1beta\x1a/google/ai/generativelanguage/v1beta/model.proto\x1a5google/ai/generativelanguage/v1beta/tuned_model.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"V\n" +
-	"\x0fGetModelRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
+	"7google/ai/generativelanguage/v1beta/model_service.proto\x12#google.ai.generativelanguage.v1beta\x1a/google/ai/generativelanguage/v1beta/model.proto\x1a5google/ai/generativelanguage/v1beta/tuned_model.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"W\n" +
+	"\x0fGetModelRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
 	"'generativelanguage.googleapis.com/ModelR\x04name\"O\n" +
 	"\x11ListModelsRequest\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
@@ -663,21 +663,21 @@ const file_google_ai_generativelanguage_v1beta_model_service_proto_rawDesc = "" 
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x80\x01\n" +
 	"\x12ListModelsResponse\x12B\n" +
 	"\x06models\x18\x01 \x03(\v2*.google.ai.generativelanguage.v1beta.ModelR\x06models\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"`\n" +
-	"\x14GetTunedModelRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",generativelanguage.googleapis.com/TunedModelR\x04name\"{\n" +
-	"\x16ListTunedModelsRequest\x12 \n" +
-	"\tpage_size\x18\x01 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"a\n" +
+	"\x14GetTunedModelRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",generativelanguage.googleapis.com/TunedModelR\x04name\"~\n" +
+	"\x16ListTunedModelsRequest\x12!\n" +
+	"\tpage_size\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x03 \x01(\tB\x03\xe0A\x01R\x06filter\"\x95\x01\n" +
+	"page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x95\x01\n" +
 	"\x17ListTunedModelsResponse\x12R\n" +
 	"\ftuned_models\x18\x01 \x03(\v2/.google.ai.generativelanguage.v1beta.TunedModelR\vtunedModels\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb3\x01\n" +
-	"\x17CreateTunedModelRequest\x12.\n" +
-	"\x0etuned_model_id\x18\x01 \x01(\tB\x03\xe0A\x01H\x00R\ftunedModelId\x88\x01\x01\x12U\n" +
-	"\vtuned_model\x18\x02 \x01(\v2/.google.ai.generativelanguage.v1beta.TunedModelB\x03\xe0A\x02R\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb5\x01\n" +
+	"\x17CreateTunedModelRequest\x12/\n" +
+	"\x0etuned_model_id\x18\x01 \x01(\tB\x04\xe2A\x01\x01H\x00R\ftunedModelId\x88\x01\x01\x12V\n" +
+	"\vtuned_model\x18\x02 \x01(\v2/.google.ai.generativelanguage.v1beta.TunedModelB\x04\xe2A\x01\x02R\n" +
 	"tunedModelB\x11\n" +
 	"\x0f_tuned_model_id\"\xb8\x02\n" +
 	"\x18CreateTunedModelMetadata\x12R\n" +
@@ -688,14 +688,14 @@ const file_google_ai_generativelanguage_v1beta_model_service_proto_rawDesc = "" 
 	"totalSteps\x12'\n" +
 	"\x0fcompleted_steps\x18\x02 \x01(\x05R\x0ecompletedSteps\x12+\n" +
 	"\x11completed_percent\x18\x03 \x01(\x02R\x10completedPercent\x12Q\n" +
-	"\tsnapshots\x18\x04 \x03(\v23.google.ai.generativelanguage.v1beta.TuningSnapshotR\tsnapshots\"\xb2\x01\n" +
-	"\x17UpdateTunedModelRequest\x12U\n" +
-	"\vtuned_model\x18\x01 \x01(\v2/.google.ai.generativelanguage.v1beta.TunedModelB\x03\xe0A\x02R\n" +
-	"tunedModel\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"c\n" +
-	"\x17DeleteTunedModelRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
+	"\tsnapshots\x18\x04 \x03(\v23.google.ai.generativelanguage.v1beta.TuningSnapshotR\tsnapshots\"\xb4\x01\n" +
+	"\x17UpdateTunedModelRequest\x12V\n" +
+	"\vtuned_model\x18\x01 \x01(\v2/.google.ai.generativelanguage.v1beta.TunedModelB\x04\xe2A\x01\x02R\n" +
+	"tunedModel\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"d\n" +
+	"\x17DeleteTunedModelRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
 	",generativelanguage.googleapis.com/TunedModelR\x04name2\xcd\n" +
 	"\n" +
 	"\fModelService\x12\x94\x01\n" +

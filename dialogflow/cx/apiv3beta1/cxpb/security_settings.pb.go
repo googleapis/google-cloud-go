@@ -1024,31 +1024,31 @@ var File_google_cloud_dialogflow_cx_v3beta1_security_settings_proto protoreflect
 
 const file_google_cloud_dialogflow_cx_v3beta1_security_settings_proto_rawDesc = "" +
 	"\n" +
-	":google/cloud/dialogflow/cx/v3beta1/security_settings.proto\x12\"google.cloud.dialogflow.cx.v3beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"d\n" +
-	"\x1aGetSecuritySettingsRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*dialogflow.googleapis.com/SecuritySettingsR\x04name\"\xc9\x01\n" +
-	"\x1dUpdateSecuritySettingsRequest\x12f\n" +
-	"\x11security_settings\x18\x01 \x01(\v24.google.cloud.dialogflow.cx.v3beta1.SecuritySettingsB\x03\xe0A\x02R\x10securitySettings\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\xa5\x01\n" +
-	"\x1bListSecuritySettingsRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*dialogflow.googleapis.com/SecuritySettingsR\x06parent\x12\x1b\n" +
+	":google/cloud/dialogflow/cx/v3beta1/security_settings.proto\x12\"google.cloud.dialogflow.cx.v3beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"e\n" +
+	"\x1aGetSecuritySettingsRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*dialogflow.googleapis.com/SecuritySettingsR\x04name\"\xcb\x01\n" +
+	"\x1dUpdateSecuritySettingsRequest\x12g\n" +
+	"\x11security_settings\x18\x01 \x01(\v24.google.cloud.dialogflow.cx.v3beta1.SecuritySettingsB\x04\xe2A\x01\x02R\x10securitySettings\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\xa6\x01\n" +
+	"\x1bListSecuritySettingsRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*dialogflow.googleapis.com/SecuritySettingsR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xa9\x01\n" +
 	"\x1cListSecuritySettingsResponse\x12a\n" +
 	"\x11security_settings\x18\x01 \x03(\v24.google.cloud.dialogflow.cx.v3beta1.SecuritySettingsR\x10securitySettings\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xd3\x01\n" +
-	"\x1dCreateSecuritySettingsRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*dialogflow.googleapis.com/SecuritySettingsR\x06parent\x12f\n" +
-	"\x11security_settings\x18\x02 \x01(\v24.google.cloud.dialogflow.cx.v3beta1.SecuritySettingsB\x03\xe0A\x02R\x10securitySettings\"g\n" +
-	"\x1dDeleteSecuritySettingsRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*dialogflow.googleapis.com/SecuritySettingsR\x04name\"\xb2\x0f\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xd5\x01\n" +
+	"\x1dCreateSecuritySettingsRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*dialogflow.googleapis.com/SecuritySettingsR\x06parent\x12g\n" +
+	"\x11security_settings\x18\x02 \x01(\v24.google.cloud.dialogflow.cx.v3beta1.SecuritySettingsB\x04\xe2A\x01\x02R\x10securitySettings\"h\n" +
+	"\x1dDeleteSecuritySettingsRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*dialogflow.googleapis.com/SecuritySettingsR\x04name\"\xb3\x0f\n" +
 	"\x10SecuritySettings\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12u\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12u\n" +
 	"\x12redaction_strategy\x18\x03 \x01(\x0e2F.google.cloud.dialogflow.cx.v3beta1.SecuritySettings.RedactionStrategyR\x11redactionStrategy\x12l\n" +
 	"\x0fredaction_scope\x18\x04 \x01(\x0e2C.google.cloud.dialogflow.cx.v3beta1.SecuritySettings.RedactionScopeR\x0eredactionScope\x12R\n" +
 	"\x10inspect_template\x18\t \x01(\tB'\xfaA$\n" +

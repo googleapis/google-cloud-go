@@ -26,6 +26,7 @@ import (
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	tspb "google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -493,7 +494,7 @@ func TestGetAllErrors(t *testing.T) {
 	}
 
 	// Internal server error.
-	for i := 0; i < 5; i++ {
+	for range 5 {
 		srv.addRPC(
 			&pb.BatchGetDocumentsRequest{
 				Database:  dbPath,
@@ -729,5 +730,19 @@ func TestIsRetryableStreamError(t *testing.T) {
 		if got != tc.want {
 			t.Errorf("isRetryableStreamError(%v) = %t; want %t", tc.err, got, tc.want)
 		}
+	}
+}
+
+func TestTransactionRoutingHeader(t *testing.T) {
+	ctx := withResourceHeader(context.Background(), "projects/p/databases/d")
+	md, _ := metadata.FromOutgoingContext(ctx)
+	if got := md.Get(isTransactionHeader); len(got) != 1 || got[0] != "false" {
+		t.Fatalf("non-transactional context: got %v, want [false]", got)
+	}
+
+	txCtx := withResourceHeader(withTransactionHeader(context.Background()), "projects/p/databases/d")
+	txMD, _ := metadata.FromOutgoingContext(txCtx)
+	if got := txMD.Get(isTransactionHeader); len(got) != 1 || got[0] != "true" {
+		t.Fatalf("transactional context: got %v, want [true]", got)
 	}
 }

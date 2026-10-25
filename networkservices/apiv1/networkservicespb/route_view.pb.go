@@ -581,36 +581,36 @@ var File_google_cloud_networkservices_v1_route_view_proto protoreflect.FileDescr
 
 const file_google_cloud_networkservices_v1_route_view_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/networkservices/v1/route_view.proto\x12\x1fgoogle.cloud.networkservices.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x86\x03\n" +
-	"\x10GatewayRouteView\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x125\n" +
-	"\x14route_project_number\x18\x02 \x01(\x03B\x03\xe0A\x03R\x12routeProjectNumber\x12*\n" +
-	"\x0eroute_location\x18\x03 \x01(\tB\x03\xe0A\x03R\rrouteLocation\x12\"\n" +
+	"0google/cloud/networkservices/v1/route_view.proto\x12\x1fgoogle.cloud.networkservices.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x89\x03\n" +
+	"\x10GatewayRouteView\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\bR\x04name\x126\n" +
+	"\x14route_project_number\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\x12routeProjectNumber\x12+\n" +
+	"\x0eroute_location\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\rrouteLocation\x12#\n" +
 	"\n" +
-	"route_type\x18\x04 \x01(\tB\x03\xe0A\x03R\trouteType\x12\x1e\n" +
-	"\broute_id\x18\x05 \x01(\tB\x03\xe0A\x03R\arouteId:\xae\x01\xeaA\xaa\x01\n" +
-	"/networkservices.googleapis.com/GatewayRouteView\x12Rprojects/{project}/locations/{location}/gateways/{gateway}/routeViews/{route_view}*\x11gatewayRouteViews2\x10gatewayRouteView\"\xf5\x02\n" +
-	"\rMeshRouteView\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x125\n" +
-	"\x14route_project_number\x18\x02 \x01(\x03B\x03\xe0A\x03R\x12routeProjectNumber\x12*\n" +
-	"\x0eroute_location\x18\x03 \x01(\tB\x03\xe0A\x03R\rrouteLocation\x12\"\n" +
+	"route_type\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\trouteType\x12\x1f\n" +
+	"\broute_id\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\arouteId:\xae\x01\xeaA\xaa\x01\n" +
+	"/networkservices.googleapis.com/GatewayRouteView\x12Rprojects/{project}/locations/{location}/gateways/{gateway}/routeViews/{route_view}*\x11gatewayRouteViews2\x10gatewayRouteView\"\xf8\x02\n" +
+	"\rMeshRouteView\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\bR\x04name\x126\n" +
+	"\x14route_project_number\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\x12routeProjectNumber\x12+\n" +
+	"\x0eroute_location\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\rrouteLocation\x12#\n" +
 	"\n" +
-	"route_type\x18\x04 \x01(\tB\x03\xe0A\x03R\trouteType\x12\x1e\n" +
-	"\broute_id\x18\x05 \x01(\tB\x03\xe0A\x03R\arouteId:\xa0\x01\xeaA\x9c\x01\n" +
-	",networkservices.googleapis.com/MeshRouteView\x12Mprojects/{project}/locations/{location}/meshes/{mesh}/routeViews/{route_view}*\x0emeshRouteViews2\rmeshRouteView\"i\n" +
-	"\x1aGetGatewayRouteViewRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/networkservices.googleapis.com/GatewayRouteViewR\x04name\"c\n" +
-	"\x17GetMeshRouteViewRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",networkservices.googleapis.com/MeshRouteViewR\x04name\"\xab\x01\n" +
-	"\x1cListGatewayRouteViewsRequest\x12O\n" +
-	"\x06parent\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\x12/networkservices.googleapis.com/GatewayRouteViewR\x06parent\x12\x1b\n" +
+	"route_type\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\trouteType\x12\x1f\n" +
+	"\broute_id\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\arouteId:\xa0\x01\xeaA\x9c\x01\n" +
+	",networkservices.googleapis.com/MeshRouteView\x12Mprojects/{project}/locations/{location}/meshes/{mesh}/routeViews/{route_view}*\x0emeshRouteViews2\rmeshRouteView\"j\n" +
+	"\x1aGetGatewayRouteViewRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/networkservices.googleapis.com/GatewayRouteViewR\x04name\"d\n" +
+	"\x17GetMeshRouteViewRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",networkservices.googleapis.com/MeshRouteViewR\x04name\"\xac\x01\n" +
+	"\x1cListGatewayRouteViewsRequest\x12P\n" +
+	"\x06parent\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\x12/networkservices.googleapis.com/GatewayRouteViewR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\"\xa5\x01\n" +
-	"\x19ListMeshRouteViewsRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,networkservices.googleapis.com/MeshRouteViewR\x06parent\x12\x1b\n" +
+	"page_token\x18\x03 \x01(\tR\tpageToken\"\xa6\x01\n" +
+	"\x19ListMeshRouteViewsRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,networkservices.googleapis.com/MeshRouteViewR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xcc\x01\n" +

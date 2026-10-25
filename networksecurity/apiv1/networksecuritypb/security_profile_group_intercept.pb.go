@@ -90,9 +90,9 @@ var File_google_cloud_networksecurity_v1_security_profile_group_intercept_proto 
 
 const file_google_cloud_networksecurity_v1_security_profile_group_intercept_proto_rawDesc = "" +
 	"\n" +
-	"Fgoogle/cloud/networksecurity/v1/security_profile_group_intercept.proto\x12\x1fgoogle.cloud.networksecurity.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x91\x01\n" +
-	"\x16CustomInterceptProfile\x12w\n" +
-	"\x18intercept_endpoint_group\x18\x01 \x01(\tB=\xe0A\x02\xfaA7\n" +
+	"Fgoogle/cloud/networksecurity/v1/security_profile_group_intercept.proto\x12\x1fgoogle.cloud.networksecurity.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x92\x01\n" +
+	"\x16CustomInterceptProfile\x12x\n" +
+	"\x18intercept_endpoint_group\x18\x01 \x01(\tB>\xe2A\x01\x02\xfaA7\n" +
 	"5networksecurity.googleapis.com/InterceptEndpointGroupR\x16interceptEndpointGroupB\x83\x02\n" +
 	"#com.google.cloud.networksecurity.v1B\"SecurityProfileGroupInterceptProtoP\x01ZMcloud.google.com/go/networksecurity/apiv1/networksecuritypb;networksecuritypb\xaa\x02\x1fGoogle.Cloud.NetworkSecurity.V1\xca\x02\x1fGoogle\\Cloud\\NetworkSecurity\\V1\xea\x02\"Google::Cloud::NetworkSecurity::V1b\x06proto3"
 

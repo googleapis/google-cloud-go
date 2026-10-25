@@ -243,18 +243,18 @@ var File_google_cloud_oracledatabase_v1_minor_version_proto protoreflect.FileDes
 
 const file_google_cloud_oracledatabase_v1_minor_version_proto_rawDesc = "" +
 	"\n" +
-	"2google/cloud/oracledatabase/v1/minor_version.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x9e\x02\n" +
-	"\fMinorVersion\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12'\n" +
-	"\rgrid_image_id\x18\x02 \x01(\tB\x03\xe0A\x01R\vgridImageId\x12\x1d\n" +
-	"\aversion\x18\x03 \x01(\tB\x03\xe0A\x01R\aversion:\xac\x01\xeaA\xa8\x01\n" +
-	"*oracledatabase.googleapis.com/MinorVersion\x12]projects/{project}/locations/{location}/giVersions/{gi_version}/minorVersions/{minor_version}*\rminorVersions2\fminorVersion\"\xc9\x01\n" +
-	"\x18ListMinorVersionsRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*oracledatabase.googleapis.com/MinorVersionR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"2google/cloud/oracledatabase/v1/minor_version.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xa1\x02\n" +
+	"\fMinorVersion\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12(\n" +
+	"\rgrid_image_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vgridImageId\x12\x1e\n" +
+	"\aversion\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\aversion:\xac\x01\xeaA\xa8\x01\n" +
+	"*oracledatabase.googleapis.com/MinorVersion\x12]projects/{project}/locations/{location}/giVersions/{gi_version}/minorVersions/{minor_version}*\rminorVersions2\fminorVersion\"\xcd\x01\n" +
+	"\x18ListMinorVersionsRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*oracledatabase.googleapis.com/MinorVersionR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\x98\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x98\x01\n" +
 	"\x19ListMinorVersionsResponse\x12S\n" +
 	"\x0eminor_versions\x18\x01 \x03(\v2,.google.cloud.oracledatabase.v1.MinorVersionR\rminorVersions\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageTokenB\xeb\x01\n" +

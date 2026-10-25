@@ -111,11 +111,11 @@ var File_google_cloud_security_publicca_v1beta1_resources_proto protoreflect.Fil
 
 const file_google_cloud_security_publicca_v1beta1_resources_proto_rawDesc = "" +
 	"\n" +
-	"6google/cloud/security/publicca/v1beta1/resources.proto\x12&google.cloud.security.publicca.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xf5\x01\n" +
-	"\x12ExternalAccountKey\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x1a\n" +
-	"\x06key_id\x18\x02 \x01(\tB\x03\xe0A\x03R\x05keyId\x12#\n" +
-	"\vb64_mac_key\x18\x03 \x01(\fB\x03\xe0A\x03R\tb64MacKey:\x84\x01\xeaA\x80\x01\n" +
+	"6google/cloud/security/publicca/v1beta1/resources.proto\x12&google.cloud.security.publicca.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xf8\x01\n" +
+	"\x12ExternalAccountKey\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x1b\n" +
+	"\x06key_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x05keyId\x12$\n" +
+	"\vb64_mac_key\x18\x03 \x01(\fB\x04\xe2A\x01\x03R\tb64MacKey:\x84\x01\xeaA\x80\x01\n" +
 	"*publicca.googleapis.com/ExternalAccountKey\x12Rprojects/{project}/locations/{location}/externalAccountKeys/{external_account_key}B\x85\x02\n" +
 	"*com.google.cloud.security.publicca.v1beta1B\x0eResourcesProtoP\x01ZFcloud.google.com/go/security/publicca/apiv1beta1/publiccapb;publiccapb\xaa\x02&Google.Cloud.Security.PublicCA.V1Beta1\xca\x02&Google\\Cloud\\Security\\PublicCA\\V1beta1\xea\x02*Google::Cloud::Security::PublicCA::V1beta1b\x06proto3"
 

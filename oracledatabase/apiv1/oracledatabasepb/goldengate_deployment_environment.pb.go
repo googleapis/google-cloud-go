@@ -427,20 +427,20 @@ var File_google_cloud_oracledatabase_v1_goldengate_deployment_environment_proto 
 
 const file_google_cloud_oracledatabase_v1_goldengate_deployment_environment_proto_rawDesc = "" +
 	"\n" +
-	"Fgoogle/cloud/oracledatabase/v1/goldengate_deployment_environment.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xf4\t\n" +
-	"\x1fGoldengateDeploymentEnvironment\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12s\n" +
-	"\bcategory\x18\x02 \x01(\x0e2R.google.cloud.oracledatabase.v1.GoldengateDeploymentEnvironment.DeploymentCategoryB\x03\xe0A\x03R\bcategory\x12!\n" +
-	"\fdisplay_name\x18\x03 \x01(\tR\vdisplayName\x128\n" +
-	"\x16default_cpu_core_count\x18\x04 \x01(\x05B\x03\xe0A\x03R\x13defaultCpuCoreCount\x12\x89\x01\n" +
-	"\x10environment_type\x18\x05 \x01(\x0e2Y.google.cloud.oracledatabase.v1.GoldengateDeploymentEnvironment.DeploymentEnvironmentTypeB\x03\xe0A\x03R\x0fenvironmentType\x125\n" +
-	"\x14auto_scaling_enabled\x18\x06 \x01(\bB\x03\xe0A\x03R\x12autoScalingEnabled\x120\n" +
-	"\x12max_cpu_core_count\x18\a \x01(\x05B\x03\xe0A\x03R\x0fmaxCpuCoreCount\x127\n" +
-	"\x16memory_gb_per_cpu_core\x18\b \x01(\x05B\x03\xe0A\x03R\x12memoryGbPerCpuCore\x120\n" +
-	"\x12min_cpu_core_count\x18\t \x01(\x05B\x03\xe0A\x03R\x0fminCpuCoreCount\x12P\n" +
+	"Fgoogle/cloud/oracledatabase/v1/goldengate_deployment_environment.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xfe\t\n" +
+	"\x1fGoldengateDeploymentEnvironment\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12t\n" +
+	"\bcategory\x18\x02 \x01(\x0e2R.google.cloud.oracledatabase.v1.GoldengateDeploymentEnvironment.DeploymentCategoryB\x04\xe2A\x01\x03R\bcategory\x12!\n" +
+	"\fdisplay_name\x18\x03 \x01(\tR\vdisplayName\x129\n" +
+	"\x16default_cpu_core_count\x18\x04 \x01(\x05B\x04\xe2A\x01\x03R\x13defaultCpuCoreCount\x12\x8a\x01\n" +
+	"\x10environment_type\x18\x05 \x01(\x0e2Y.google.cloud.oracledatabase.v1.GoldengateDeploymentEnvironment.DeploymentEnvironmentTypeB\x04\xe2A\x01\x03R\x0fenvironmentType\x126\n" +
+	"\x14auto_scaling_enabled\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x12autoScalingEnabled\x121\n" +
+	"\x12max_cpu_core_count\x18\a \x01(\x05B\x04\xe2A\x01\x03R\x0fmaxCpuCoreCount\x128\n" +
+	"\x16memory_gb_per_cpu_core\x18\b \x01(\x05B\x04\xe2A\x01\x03R\x12memoryGbPerCpuCore\x121\n" +
+	"\x12min_cpu_core_count\x18\t \x01(\x05B\x04\xe2A\x01\x03R\x0fminCpuCoreCount\x12Q\n" +
 	"#network_bandwidth_gbps_per_cpu_core\x18\n" +
-	" \x01(\x05B\x03\xe0A\x03R\x1enetworkBandwidthGbpsPerCpuCore\x12O\n" +
-	"#storage_usage_limit_gb_per_cpu_core\x18\v \x01(\x05B\x03\xe0A\x03R\x1dstorageUsageLimitGbPerCpuCore\"v\n" +
+	" \x01(\x05B\x04\xe2A\x01\x03R\x1enetworkBandwidthGbpsPerCpuCore\x12P\n" +
+	"#storage_usage_limit_gb_per_cpu_core\x18\v \x01(\x05B\x04\xe2A\x01\x03R\x1dstorageUsageLimitGbPerCpuCore\"v\n" +
 	"\x12DeploymentCategory\x12#\n" +
 	"\x1fDEPLOYMENT_CATEGORY_UNSPECIFIED\x10\x00\x12\x1d\n" +
 	"\x19DATA_REPLICATION_CATEGORY\x10\x01\x12\x1c\n" +
@@ -450,16 +450,16 @@ const file_google_cloud_oracledatabase_v1_goldengate_deployment_environment_prot
 	"\n" +
 	"PRODUCTION\x10\x01\x12\x1a\n" +
 	"\x16DEVELOPMENT_OR_TESTING\x10\x02:\xf4\x01\xeaA\xf0\x01\n" +
-	"=oracledatabase.googleapis.com/GoldengateDeploymentEnvironment\x12lprojects/{project}/locations/{location}/goldengateDeploymentEnvironments/{goldengate_deployment_environment}* goldengateDeploymentEnvironments2\x1fgoldengateDeploymentEnvironment\"\xd2\x01\n" +
-	"+ListGoldengateDeploymentEnvironmentsRequest\x12]\n" +
-	"\x06parent\x18\x01 \x01(\tBE\xe0A\x02\xfaA?\x12=oracledatabase.googleapis.com/GoldengateDeploymentEnvironmentR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"=oracledatabase.googleapis.com/GoldengateDeploymentEnvironment\x12lprojects/{project}/locations/{location}/goldengateDeploymentEnvironments/{goldengate_deployment_environment}* goldengateDeploymentEnvironments2\x1fgoldengateDeploymentEnvironment\"\xd5\x01\n" +
+	"+ListGoldengateDeploymentEnvironmentsRequest\x12^\n" +
+	"\x06parent\x18\x01 \x01(\tBF\xe2A\x01\x02\xfaA?\x12=oracledatabase.googleapis.com/GoldengateDeploymentEnvironmentR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x8d\x02\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x8e\x02\n" +
 	",ListGoldengateDeploymentEnvironmentsResponse\x12\x8d\x01\n" +
 	"\"goldengate_deployment_environments\x18\x01 \x03(\v2?.google.cloud.oracledatabase.v1.GoldengateDeploymentEnvironmentR goldengateDeploymentEnvironments\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachableB\xfe\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x06R\vunreachableB\xfe\x01\n" +
 	"\"com.google.cloud.oracledatabase.v1B$GoldengateDeploymentEnvironmentProtoP\x01ZJcloud.google.com/go/oracledatabase/apiv1/oracledatabasepb;oracledatabasepb\xaa\x02\x1eGoogle.Cloud.OracleDatabase.V1\xca\x02\x1eGoogle\\Cloud\\OracleDatabase\\V1\xea\x02!Google::Cloud::OracleDatabase::V1b\x06proto3"
 
 var (

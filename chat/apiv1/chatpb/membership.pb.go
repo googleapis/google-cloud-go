@@ -1025,19 +1025,19 @@ var File_google_chat_v1_membership_proto protoreflect.FileDescriptor
 
 const file_google_chat_v1_membership_proto_rawDesc = "" +
 	"\n" +
-	"\x1fgoogle/chat/v1/membership.proto\x12\x0egoogle.chat.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1agoogle/chat/v1/group.proto\x1a\x19google/chat/v1/user.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x83\a\n" +
+	"\x1fgoogle/chat/v1/membership.proto\x12\x0egoogle.chat.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1agoogle/chat/v1/group.proto\x1a\x19google/chat/v1/user.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x87\a\n" +
 	"\n" +
-	"Membership\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12E\n" +
-	"\x05state\x18\x02 \x01(\x0e2*.google.chat.v1.Membership.MembershipStateB\x03\xe0A\x03R\x05state\x12B\n" +
-	"\x04role\x18\a \x01(\x0e2).google.chat.v1.Membership.MembershipRoleB\x03\xe0A\x01R\x04role\x123\n" +
-	"\x06member\x18\x03 \x01(\v2\x14.google.chat.v1.UserB\x03\xe0A\x01H\x00R\x06member\x12?\n" +
-	"\fgroup_member\x18\x05 \x01(\v2\x15.google.chat.v1.GroupB\x03\xe0A\x01H\x00R\vgroupMember\x12C\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x06\xe0A\x05\xe0A\x01R\n" +
-	"createTime\x12C\n" +
-	"\vdelete_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x06\xe0A\x05\xe0A\x01R\n" +
-	"deleteTime\x12M\n" +
-	"\vaffiliation\x18\t \x01(\x0e2&.google.chat.v1.Membership.AffiliationB\x03\xe0A\x03R\vaffiliation\"^\n" +
+	"Membership\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12F\n" +
+	"\x05state\x18\x02 \x01(\x0e2*.google.chat.v1.Membership.MembershipStateB\x04\xe2A\x01\x03R\x05state\x12C\n" +
+	"\x04role\x18\a \x01(\x0e2).google.chat.v1.Membership.MembershipRoleB\x04\xe2A\x01\x01R\x04role\x124\n" +
+	"\x06member\x18\x03 \x01(\v2\x14.google.chat.v1.UserB\x04\xe2A\x01\x01H\x00R\x06member\x12@\n" +
+	"\fgroup_member\x18\x05 \x01(\v2\x15.google.chat.v1.GroupB\x04\xe2A\x01\x01H\x00R\vgroupMember\x12B\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x05\xe2A\x02\x05\x01R\n" +
+	"createTime\x12B\n" +
+	"\vdelete_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x05\xe2A\x02\x05\x01R\n" +
+	"deleteTime\x12N\n" +
+	"\vaffiliation\x18\t \x01(\x0e2&.google.chat.v1.Membership.AffiliationB\x04\xe2A\x01\x03R\vaffiliation\"^\n" +
 	"\x0fMembershipState\x12 \n" +
 	"\x1cMEMBERSHIP_STATE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
@@ -1056,41 +1056,41 @@ const file_google_chat_v1_membership_proto_rawDesc = "" +
 	"\x10MANAGED_EXTERNAL\x10\x03:D\xeaAA\n" +
 	"\x1echat.googleapis.com/Membership\x12\x1fspaces/{space}/members/{member}B\f\n" +
 	"\n" +
-	"memberType\"\xc9\x01\n" +
-	"\x17CreateMembershipRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \x12\x1echat.googleapis.com/MembershipR\x06parent\x12?\n" +
+	"memberType\"\xcc\x01\n" +
+	"\x17CreateMembershipRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \x12\x1echat.googleapis.com/MembershipR\x06parent\x12@\n" +
 	"\n" +
-	"membership\x18\x02 \x01(\v2\x1a.google.chat.v1.MembershipB\x03\xe0A\x02R\n" +
-	"membership\x12-\n" +
-	"\x10use_admin_access\x18\x05 \x01(\bB\x03\xe0A\x01R\x0euseAdminAccess\"\xcb\x01\n" +
-	"\x17UpdateMembershipRequest\x12?\n" +
+	"membership\x18\x02 \x01(\v2\x1a.google.chat.v1.MembershipB\x04\xe2A\x01\x02R\n" +
+	"membership\x12.\n" +
+	"\x10use_admin_access\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\x0euseAdminAccess\"\xce\x01\n" +
+	"\x17UpdateMembershipRequest\x12@\n" +
 	"\n" +
-	"membership\x18\x01 \x01(\v2\x1a.google.chat.v1.MembershipB\x03\xe0A\x02R\n" +
-	"membership\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12-\n" +
-	"\x10use_admin_access\x18\x03 \x01(\bB\x03\xe0A\x01R\x0euseAdminAccess\"\xb8\x02\n" +
-	"\x16ListMembershipsRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \x12\x1echat.googleapis.com/MembershipR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"membership\x18\x01 \x01(\v2\x1a.google.chat.v1.MembershipB\x04\xe2A\x01\x02R\n" +
+	"membership\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12.\n" +
+	"\x10use_admin_access\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x0euseAdminAccess\"\xbf\x02\n" +
+	"\x16ListMembershipsRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \x12\x1echat.googleapis.com/MembershipR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x05 \x01(\tB\x03\xe0A\x01R\x06filter\x12$\n" +
-	"\vshow_groups\x18\x06 \x01(\bB\x03\xe0A\x01R\n" +
-	"showGroups\x12&\n" +
-	"\fshow_invited\x18\a \x01(\bB\x03\xe0A\x01R\vshowInvited\x12-\n" +
-	"\x10use_admin_access\x18\b \x01(\bB\x03\xe0A\x01R\x0euseAdminAccess\"\x84\x01\n" +
-	"\x17ListMembershipsResponse\x12A\n" +
-	"\vmemberships\x18\x01 \x03(\v2\x1a.google.chat.v1.MembershipB\x03\xe0A\x06R\vmemberships\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x81\x01\n" +
-	"\x14GetMembershipRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1echat.googleapis.com/MembershipR\x04name\x12-\n" +
-	"\x10use_admin_access\x18\x03 \x01(\bB\x03\xe0A\x01R\x0euseAdminAccess\"\x84\x01\n" +
-	"\x17DeleteMembershipRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1echat.googleapis.com/MembershipR\x04name\x12-\n" +
-	"\x10use_admin_access\x18\x02 \x01(\bB\x03\xe0A\x01R\x0euseAdminAccessB\xa8\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12%\n" +
+	"\vshow_groups\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\n" +
+	"showGroups\x12'\n" +
+	"\fshow_invited\x18\a \x01(\bB\x04\xe2A\x01\x01R\vshowInvited\x12.\n" +
+	"\x10use_admin_access\x18\b \x01(\bB\x04\xe2A\x01\x01R\x0euseAdminAccess\"\x85\x01\n" +
+	"\x17ListMembershipsResponse\x12B\n" +
+	"\vmemberships\x18\x01 \x03(\v2\x1a.google.chat.v1.MembershipB\x04\xe2A\x01\x06R\vmemberships\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x83\x01\n" +
+	"\x14GetMembershipRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1echat.googleapis.com/MembershipR\x04name\x12.\n" +
+	"\x10use_admin_access\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x0euseAdminAccess\"\x86\x01\n" +
+	"\x17DeleteMembershipRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1echat.googleapis.com/MembershipR\x04name\x12.\n" +
+	"\x10use_admin_access\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x0euseAdminAccessB\xa8\x01\n" +
 	"\x12com.google.chat.v1B\x0fMembershipProtoP\x01Z,cloud.google.com/go/chat/apiv1/chatpb;chatpb\xa2\x02\vDYNAPIProto\xaa\x02\x13Google.Apps.Chat.V1\xca\x02\x13Google\\Apps\\Chat\\V1\xea\x02\x16Google::Apps::Chat::V1b\x06proto3"
 
 var (

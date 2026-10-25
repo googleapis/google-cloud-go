@@ -274,19 +274,19 @@ var File_google_cloud_alloydb_connectors_v1_resources_proto protoreflect.FileDes
 
 const file_google_cloud_alloydb_connectors_v1_resources_proto_rawDesc = "" +
 	"\n" +
-	"2google/cloud/alloydb/connectors/v1/resources.proto\x12\"google.cloud.alloydb.connectors.v1\x1a\x1fgoogle/api/field_behavior.proto\"\x87\x02\n" +
-	"\x17MetadataExchangeRequest\x12\"\n" +
+	"2google/cloud/alloydb/connectors/v1/resources.proto\x12\"google.cloud.alloydb.connectors.v1\x1a\x1fgoogle/api/field_behavior.proto\"\x88\x02\n" +
+	"\x17MetadataExchangeRequest\x12#\n" +
 	"\n" +
-	"user_agent\x18\x01 \x01(\tB\x03\xe0A\x01R\tuserAgent\x12a\n" +
+	"user_agent\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\tuserAgent\x12a\n" +
 	"\tauth_type\x18\x02 \x01(\x0e2D.google.cloud.alloydb.connectors.v1.MetadataExchangeRequest.AuthTypeR\bauthType\x12!\n" +
 	"\foauth2_token\x18\x03 \x01(\tR\voauth2Token\"B\n" +
 	"\bAuthType\x12\x19\n" +
 	"\x15AUTH_TYPE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tDB_NATIVE\x10\x01\x12\f\n" +
-	"\bAUTO_IAM\x10\x02\"\xe7\x01\n" +
+	"\bAUTO_IAM\x10\x02\"\xe8\x01\n" +
 	"\x18MetadataExchangeResponse\x12n\n" +
-	"\rresponse_code\x18\x01 \x01(\x0e2I.google.cloud.alloydb.connectors.v1.MetadataExchangeResponse.ResponseCodeR\fresponseCode\x12\x19\n" +
-	"\x05error\x18\x02 \x01(\tB\x03\xe0A\x01R\x05error\"@\n" +
+	"\rresponse_code\x18\x01 \x01(\x0e2I.google.cloud.alloydb.connectors.v1.MetadataExchangeResponse.ResponseCodeR\fresponseCode\x12\x1a\n" +
+	"\x05error\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x05error\"@\n" +
 	"\fResponseCode\x12\x1d\n" +
 	"\x19RESPONSE_CODE_UNSPECIFIED\x10\x00\x12\x06\n" +
 	"\x02OK\x10\x01\x12\t\n" +

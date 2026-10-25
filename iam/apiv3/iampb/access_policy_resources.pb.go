@@ -491,39 +491,39 @@ var File_google_iam_v3_access_policy_resources_proto protoreflect.FileDescriptor
 
 const file_google_iam_v3_access_policy_resources_proto_rawDesc = "" +
 	"\n" +
-	"+google/iam/v3/access_policy_resources.proto\x12\rgoogle.iam.v3\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x16google/type/expr.proto\"\x89\x06\n" +
-	"\fAccessPolicy\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1d\n" +
-	"\x03uid\x18\x02 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12\x17\n" +
-	"\x04etag\x18\x03 \x01(\tB\x03\xe0A\x01R\x04etag\x12&\n" +
-	"\fdisplay_name\x18\x04 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12S\n" +
-	"\vannotations\x18\x05 \x03(\v2,.google.iam.v3.AccessPolicy.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12A\n" +
-	"\adetails\x18\b \x01(\v2\".google.iam.v3.AccessPolicyDetailsB\x03\xe0A\x01R\adetails\x1a>\n" +
+	"+google/iam/v3/access_policy_resources.proto\x12\rgoogle.iam.v3\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x16google/type/expr.proto\"\x91\x06\n" +
+	"\fAccessPolicy\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x1e\n" +
+	"\x03uid\x18\x02 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12\x18\n" +
+	"\x04etag\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12'\n" +
+	"\fdisplay_name\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12T\n" +
+	"\vannotations\x18\x05 \x03(\v2,.google.iam.v3.AccessPolicy.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12B\n" +
+	"\adetails\x18\b \x01(\v2\".google.iam.v3.AccessPolicyDetailsB\x04\xe2A\x01\x01R\adetails\x1a>\n" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\xa3\x02\xeaA\x9f\x02\n" +
-	"\x1fiam.googleapis.com/AccessPolicy\x12Porganizations/{organization}/locations/{location}/accessPolicies/{access_policy}\x12Dfolders/{folder}/locations/{location}/accessPolicies/{access_policy}\x12Fprojects/{project}/locations/{location}/accessPolicies/{access_policy}*\x0eaccessPolicies2\faccessPolicy\"Q\n" +
-	"\x13AccessPolicyDetails\x12:\n" +
-	"\x05rules\x18\x01 \x03(\v2\x1f.google.iam.v3.AccessPolicyRuleB\x03\xe0A\x02R\x05rules\"\x97\x05\n" +
-	"\x10AccessPolicyRule\x12*\n" +
-	"\vdescription\x18\x01 \x01(\tB\x03\xe0A\x01H\x00R\vdescription\x88\x01\x01\x12H\n" +
-	"\x06effect\x18\x02 \x01(\x0e2&.google.iam.v3.AccessPolicyRule.EffectB\x03\xe0A\x02H\x01R\x06effect\x88\x01\x01\x12#\n" +
+	"\x1fiam.googleapis.com/AccessPolicy\x12Porganizations/{organization}/locations/{location}/accessPolicies/{access_policy}\x12Dfolders/{folder}/locations/{location}/accessPolicies/{access_policy}\x12Fprojects/{project}/locations/{location}/accessPolicies/{access_policy}*\x0eaccessPolicies2\faccessPolicy\"R\n" +
+	"\x13AccessPolicyDetails\x12;\n" +
+	"\x05rules\x18\x01 \x03(\v2\x1f.google.iam.v3.AccessPolicyRuleB\x04\xe2A\x01\x02R\x05rules\"\x9f\x05\n" +
+	"\x10AccessPolicyRule\x12+\n" +
+	"\vdescription\x18\x01 \x01(\tB\x04\xe2A\x01\x01H\x00R\vdescription\x88\x01\x01\x12I\n" +
+	"\x06effect\x18\x02 \x01(\x0e2&.google.iam.v3.AccessPolicyRule.EffectB\x04\xe2A\x01\x02H\x01R\x06effect\x88\x01\x01\x12$\n" +
 	"\n" +
-	"principals\x18\x03 \x03(\tB\x03\xe0A\x02R\n" +
-	"principals\x124\n" +
-	"\x13excluded_principals\x18\x04 \x03(\tB\x03\xe0A\x01R\x12excludedPrincipals\x12L\n" +
+	"principals\x18\x03 \x03(\tB\x04\xe2A\x01\x02R\n" +
+	"principals\x125\n" +
+	"\x13excluded_principals\x18\x04 \x03(\tB\x04\xe2A\x01\x01R\x12excludedPrincipals\x12M\n" +
 	"\toperation\x18\n" +
-	" \x01(\v2).google.iam.v3.AccessPolicyRule.OperationB\x03\xe0A\x02R\toperation\x12T\n" +
+	" \x01(\v2).google.iam.v3.AccessPolicyRule.OperationB\x04\xe2A\x01\x02R\toperation\x12U\n" +
 	"\n" +
-	"conditions\x18\t \x03(\v2/.google.iam.v3.AccessPolicyRule.ConditionsEntryB\x03\xe0A\x01R\n" +
-	"conditions\x1aj\n" +
-	"\tOperation\x12%\n" +
-	"\vpermissions\x18\x01 \x03(\tB\x03\xe0A\x01R\vpermissions\x126\n" +
-	"\x14excluded_permissions\x18\x02 \x03(\tB\x03\xe0A\x01R\x13excludedPermissions\x1aP\n" +
+	"conditions\x18\t \x03(\v2/.google.iam.v3.AccessPolicyRule.ConditionsEntryB\x04\xe2A\x01\x01R\n" +
+	"conditions\x1al\n" +
+	"\tOperation\x12&\n" +
+	"\vpermissions\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\vpermissions\x127\n" +
+	"\x14excluded_permissions\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x13excludedPermissions\x1aP\n" +
 	"\x0fConditionsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12'\n" +
 	"\x05value\x18\x02 \x01(\v2\x11.google.type.ExprR\x05value:\x028\x01\"5\n" +
