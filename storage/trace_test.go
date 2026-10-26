@@ -1823,7 +1823,7 @@ func TestStorageTraceRPCSystemNameAttribute(t *testing.T) {
 		name     string // Test name; defaults to spanName.
 		spanName string
 		op       func(t *testing.T, ctx context.Context)
-		want     string // Expected attribute value; "" means the attribute must be absent.
+		want     string // "" means the attribute must not be set.
 	}{
 		{
 			name:     "HTTP operation span",
