@@ -147,7 +147,27 @@ func TestAPIKeyTransport_Redirect(t *testing.T) {
 	const key = "secret"
 	addrA, received := redirectHarness(t)
 
-	client := &http.Client{Transport: &apiKeyTransport{Key: key, Transport: http.DefaultTransport}}
+	tr := &apiKeyTransport{Key: key, Transport: http.DefaultTransport}
+
+	// Per the RoundTripper contract the caller's request stays untouched: the
+	// key goes on a copy of the URL, not on the one the caller holds.
+	req, err := http.NewRequest(http.MethodGet, addrA+"/direct", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	resp, err := tr.RoundTrip(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	resp.Body.Close()
+	if _, k := received("/direct"); k != key {
+		t.Errorf("the request carried key %q, want %q", k, key)
+	}
+	if req.URL.Query().Get("key") != "" {
+		t.Errorf("RoundTrip added the key to the caller's URL: %s", req.URL)
+	}
+
+	client := &http.Client{Transport: tr}
 	for _, tc := range redirectCases {
 		resp, err := client.Get(addrA + tc.path)
 		if err != nil {
