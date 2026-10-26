@@ -124,6 +124,12 @@ type CheckAndMutateRowArgs struct {
 	FalseMutations  []*btpb.Mutation
 }
 
+// ReadModifyWriteRowArgs contains arguments required for a virtual RPC ReadModifyWriteRow call.
+type ReadModifyWriteRowArgs struct {
+	RowKey string
+	Rules  []*btpb.ReadModifyWriteRule
+}
+
 func encodeReadRow(args ReadRowArgs) *btpb.SessionReadRowRequest {
 	return &btpb.SessionReadRowRequest{
 		Key:    []byte(args.RowKey),
@@ -144,6 +150,13 @@ func encodeCheckAndMutateRow(args CheckAndMutateRowArgs) *btpb.SessionCheckAndMu
 		PredicateFilter: args.PredicateFilter,
 		TrueMutations:   args.TrueMutations,
 		FalseMutations:  args.FalseMutations,
+	}
+}
+
+func encodeReadModifyWriteRow(args ReadModifyWriteRowArgs) *btpb.SessionReadModifyWriteRowRequest {
+	return &btpb.SessionReadModifyWriteRowRequest{
+		Key:   []byte(args.RowKey),
+		Rules: args.Rules,
 	}
 }
 
@@ -190,6 +203,20 @@ var (
 		}),
 	}
 
+	// READ_MODIFY_WRITE_ROW executes ReadModifyWrite operations on standard tables.
+	READ_MODIFY_WRITE_ROW = &VRpcDescriptorImpl{
+		MethodName: "ReadModifyWriteRow",
+		EncodeFn: createTableEncoder(func(req interface{}, env *btpb.TableRequest) {
+			args := req.(ReadModifyWriteRowArgs)
+			env.Payload = &btpb.TableRequest_ReadModifyWriteRow{
+				ReadModifyWriteRow: encodeReadModifyWriteRow(args),
+			}
+		}),
+		DecodeFn: createTableDecoder(func(env *btpb.TableResponse) interface{} {
+			return env.GetReadModifyWriteRow()
+		}),
+	}
+
 	// READ_ROW_AUTH_VIEW executes Point Reads on Authorized Views.
 	READ_ROW_AUTH_VIEW = &VRpcDescriptorImpl{
 		MethodName: "ReadRow",
@@ -229,6 +256,20 @@ var (
 		}),
 		DecodeFn: createAuthViewDecoder(func(env *btpb.AuthorizedViewResponse) interface{} {
 			return env.GetCheckAndMutateRow()
+		}),
+	}
+
+	// READ_MODIFY_WRITE_ROW_AUTH_VIEW executes ReadModifyWrite operations on Authorized Views.
+	READ_MODIFY_WRITE_ROW_AUTH_VIEW = &VRpcDescriptorImpl{
+		MethodName: "ReadModifyWriteRow",
+		EncodeFn: createAuthViewEncoder(func(req interface{}, env *btpb.AuthorizedViewRequest) {
+			args := req.(ReadModifyWriteRowArgs)
+			env.Payload = &btpb.AuthorizedViewRequest_ReadModifyWriteRow{
+				ReadModifyWriteRow: encodeReadModifyWriteRow(args),
+			}
+		}),
+		DecodeFn: createAuthViewDecoder(func(env *btpb.AuthorizedViewResponse) interface{} {
+			return env.GetReadModifyWriteRow()
 		}),
 	}
 

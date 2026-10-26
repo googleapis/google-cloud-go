@@ -58,15 +58,16 @@ type sessionTable struct {
 	//   materialized view → "" (classic never sets Table.table for MV)
 	// Must NOT be the fully-qualified resource name; that would break
 	// dashboards that group by short table id across classic + session.
-	tableID                   string
-	readPool                  *lazyPool
-	writePool                 *lazyPool
-	readWritePool             *lazyPool
-	readVRpcDesc              btransport.VRpcDescriptor
-	writeVRpcDesc             btransport.VRpcDescriptor
-	checkAndMutateRowVRpcDesc btransport.VRpcDescriptor
-	md                        metadata.MD
-	metricsFactory            *metrics.Factory
+	tableID                    string
+	readPool                   *lazyPool
+	writePool                  *lazyPool
+	readWritePool              *lazyPool
+	readVRpcDesc               btransport.VRpcDescriptor
+	writeVRpcDesc              btransport.VRpcDescriptor
+	checkAndMutateRowVRpcDesc  btransport.VRpcDescriptor
+	readModifyWriteRowVRpcDesc btransport.VRpcDescriptor
+	md                         metadata.MD
+	metricsFactory             *metrics.Factory
 	// closeRead / closeWrite / closeReadWrite tear down the specific pools this
 	// sessionTable's openers created, on its Close(). All are supplied by
 	// sessionClient as a per-owner poolCloser.Close (see client.go's
@@ -105,26 +106,29 @@ func newSessionTable(
 	md metadata.MD,
 	metricsFactory *metrics.Factory,
 ) *sessionTable {
-	var checkAndMutateDesc btransport.VRpcDescriptor
+	var checkAndMutateDesc, rmwDesc btransport.VRpcDescriptor
 	switch writeVRpcDesc {
 	case nil:
 		// Materialized view (read-only) — no write descriptors.
 	case btransport.MUTATE_ROW_AUTH_VIEW:
 		checkAndMutateDesc = btransport.CHECK_AND_MUTATE_ROW_AUTH_VIEW
+		rmwDesc = btransport.READ_MODIFY_WRITE_ROW_AUTH_VIEW
 	default:
 		checkAndMutateDesc = btransport.CHECK_AND_MUTATE_ROW
+		rmwDesc = btransport.READ_MODIFY_WRITE_ROW
 	}
 
 	t := &sessionTable{
-		tableID:                   tableID,
-		readVRpcDesc:              readVRpcDesc,
-		writeVRpcDesc:             writeVRpcDesc,
-		checkAndMutateRowVRpcDesc: checkAndMutateDesc,
-		md:                        md,
-		metricsFactory:            metricsFactory,
-		closeRead:                 closeRead,
-		closeWrite:                closeWrite,
-		closeReadWrite:            closeReadWrite,
+		tableID:                    tableID,
+		readVRpcDesc:               readVRpcDesc,
+		writeVRpcDesc:              writeVRpcDesc,
+		checkAndMutateRowVRpcDesc:  checkAndMutateDesc,
+		readModifyWriteRowVRpcDesc: rmwDesc,
+		md:                         md,
+		metricsFactory:             metricsFactory,
+		closeRead:                  closeRead,
+		closeWrite:                 closeWrite,
+		closeReadWrite:             closeReadWrite,
 	}
 	// Wrap the raw openers with a closed-bit guard so an open racing
 	// with Close either bails early or cleans up its own insert. Nil
@@ -245,6 +249,28 @@ func (t *sessionTable) CheckAndMutateRow(ctx context.Context, req *btpb.SessionC
 			PredicateFilter: req.GetPredicateFilter(),
 			TrueMutations:   req.GetTrueMutations(),
 			FalseMutations:  req.GetFalseMutations(),
+		},
+		errNoPool: ErrWriteNotSupported,
+	})
+}
+
+// ReadModifyWriteRow dispatches a proto-native ReadModifyWriteRow through a
+// lazily-opened READ_WRITE session pool. Errors with ErrWriteNotSupported when
+// the resource has no read-write pool (materialized views).
+//
+// ReadModifyWrite operations (increment/append) are never idempotent.
+func (t *sessionTable) ReadModifyWriteRow(ctx context.Context, req *btpb.SessionReadModifyWriteRowRequest) (*btpb.SessionReadModifyWriteRowResponse, error) {
+	if req == nil {
+		return nil, errors.New("bigtable/session: SessionReadModifyWriteRowRequest is nil")
+	}
+	return dispatch[btransport.ReadModifyWriteRowArgs, btpb.SessionReadModifyWriteRowResponse, *btpb.SessionReadModifyWriteRowResponse](ctx, t, opSpec[btransport.ReadModifyWriteRowArgs, btpb.SessionReadModifyWriteRowResponse, *btpb.SessionReadModifyWriteRowResponse]{
+		method:     "ReadModifyWriteRow",
+		pool:       t.readWritePool,
+		desc:       t.readModifyWriteRowVRpcDesc,
+		idempotent: false,
+		args: btransport.ReadModifyWriteRowArgs{
+			RowKey: string(req.GetKey()),
+			Rules:  req.GetRules(),
 		},
 		errNoPool: ErrWriteNotSupported,
 	})
