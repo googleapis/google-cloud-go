@@ -21,6 +21,7 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"slices"
 	"strconv"
 	"sync"
 	"testing"
@@ -1592,6 +1593,9 @@ func TestWriterTraceWriteModeEmulated(t *testing.T) {
 		configure func(*Writer)
 		payload   []byte
 		wantAttrs []attribute.KeyValue
+		// wantUploadID is set when the upload creates a resumable session, whose
+		// server-generated ID must be recorded as gcp.storage.upload.id.
+		wantUploadID bool
 	}{
 		{
 			name:      "oneshot",
@@ -1610,6 +1614,7 @@ func TestWriterTraceWriteModeEmulated(t *testing.T) {
 			wantAttrs: []attribute.KeyValue{
 				attribute.String("gcp.storage.write.mode", "resumable"),
 			},
+			wantUploadID: true,
 		},
 		{
 			name: "appendable",
@@ -1665,8 +1670,22 @@ func TestWriterTraceWriteModeEmulated(t *testing.T) {
 					writerSpans = append(writerSpans, s)
 				}
 			}
-			verifySingleSpanAttributes(t, writerSpans, append(tc.wantAttrs,
-				attribute.String(storageURIAttrKey, "gs://"+bucket+"/"+objName)))
+			wantAttrs := append(slices.Clone(tc.wantAttrs),
+				attribute.String(storageURIAttrKey, "gs://"+bucket+"/"+objName))
+			if tc.wantUploadID && len(writerSpans) == 1 {
+				// The upload ID is server-generated, so only check that it is present.
+				var uploadID string
+				for _, a := range writerSpans[0].Attributes {
+					if a.Key == "gcp.storage.upload.id" {
+						uploadID = a.Value.AsString()
+					}
+				}
+				if uploadID == "" {
+					t.Errorf("Object.Writer span missing non-empty gcp.storage.upload.id")
+				}
+				wantAttrs = append(wantAttrs, attribute.String("gcp.storage.upload.id", uploadID))
+			}
+			verifySingleSpanAttributes(t, writerSpans, wantAttrs)
 		})
 	}
 }
@@ -1789,97 +1808,65 @@ func verifySingleSpanAttributes(t *testing.T, spans tracetest.SpanStubs, wantAtt
 	}
 }
 
-func TestSetUploadIDAttribute(t *testing.T) {
-	const sampleUploadID = "AJjja9aXX4R20FIZ2ddLnYddhJmD9Xm_Y2B_NEu5G2a6PzJiGRgPKLp6hEQpM"
-	spanName := "Object.Writer"
-
-	tests := []struct {
-		name       string
-		devTracing string
-		uploadID   string
-		wantAttrs  []attribute.KeyValue
-	}{
-		{
-			name:       "Records upload.id when dev tracing enabled",
-			devTracing: "true",
-			uploadID:   sampleUploadID,
-			wantAttrs:  append(getCommonAttributes(), attribute.String("gcp.storage.upload.id", sampleUploadID)),
-		},
-		{
-			name:       "Omits upload.id when upload_id is empty",
-			devTracing: "true",
-			uploadID:   "",
-			wantAttrs:  getCommonAttributes(),
-		},
-		{
-			name:       "Omits upload.id when dev tracing disabled",
-			devTracing: "false",
-			uploadID:   sampleUploadID,
-			wantAttrs:  nil,
-		},
+func TestRecordUploadID(t *testing.T) {
+	const uploadID = "AJjja9aXX4R20FIZ2ddLnYddhJmD9Xm_Y2B_NEu5G2a6PzJiGRgPKLp6hEQpM"
+	location := func(query string) http.Header {
+		return http.Header{"Location": {"https://storage.googleapis.com/upload/storage/v1/b/my-bucket/o?" + query}}
 	}
 
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			ctx := context.Background()
-			te := testutil.NewOpenTelemetryTestExporter()
-			t.Cleanup(func() {
-				te.Unregister(ctx)
-			})
-
-			// TODO: Remove setting development env var upon launch.
-			t.Setenv(storageOtelTracingDevVar, tc.devTracing)
-
-			ctx, _ = startSpan(ctx, spanName)
-			setUploadIDAttribute(ctx, tc.uploadID)
-			endSpan(ctx, nil)
-
-			spans := te.Spans()
-			if len(spans) != 1 {
-				t.Fatalf("expected one span, got %d", len(spans))
-			}
-			gotSpan := spans[0]
-			if got, want := gotSpan.Name, appendPackageName(spanName); got != want {
-				t.Fatalf("got %s, want %s", got, want)
-			}
-
-			if tc.devTracing == "true" {
-				wantSpan := createWantSpanStub(spanName, tc.wantAttrs)
-				opts := []cmp.Option{
-					cmp.Comparer(spanAttributesComparer),
+	tests := []struct {
+		name          string
+		devTracingOff bool
+		record        func(ctx context.Context)
+		wantUploadID  string
+	}{
+		{
+			name:         "direct ID",
+			record:       func(ctx context.Context) { recordUploadID(ctx, uploadID) },
+			wantUploadID: uploadID,
+		},
+		{
+			name:   "empty ID",
+			record: func(ctx context.Context) { recordUploadID(ctx, "") },
+		},
+		{
+			name: "header with upload_id",
+			record: func(ctx context.Context) {
+				recordUploadIDFromHeader(ctx, location("uploadType=resumable&upload_id="+uploadID))
+			},
+			wantUploadID: uploadID,
+		},
+		{
+			name:   "header without upload_id",
+			record: func(ctx context.Context) { recordUploadIDFromHeader(ctx, location("uploadType=resumable")) },
+		},
+		{
+			name:   "unparseable Location",
+			record: func(ctx context.Context) { recordUploadIDFromHeader(ctx, http.Header{"Location": {"://bad-url"}}) },
+		},
+		{
+			name:   "nil header",
+			record: func(ctx context.Context) { recordUploadIDFromHeader(ctx, nil) },
+		},
+		{
+			name: "trackingTransport records ID from response",
+			record: func(ctx context.Context) {
+				mock := &mockTransport{}
+				mock.addResult(&http.Response{Status: "200 OK", Header: location("upload_id=" + uploadID)}, nil)
+				req, err := http.NewRequestWithContext(ctx, "POST", "https://storage.googleapis.com/upload/storage/v1/b/my-bucket/o?uploadType=resumable", nil)
+				if err != nil {
+					t.Fatalf("NewRequestWithContext: %v", err)
 				}
-				if diff := testutil.Diff(gotSpan, wantSpan, opts...); diff != "" {
-					t.Errorf("diff: -got, +want:\n%s\n", diff)
+				if _, err := (&trackingTransport{base: mock}).RoundTrip(req); err != nil {
+					t.Fatalf("RoundTrip: %v", err)
 				}
-			} else if len(gotSpan.Attributes) != 0 {
-				t.Errorf("expected no attributes when dev tracing is disabled, got %v", gotSpan.Attributes)
-			}
-		})
-	}
-}
-
-func TestTrackingTransportUploadID(t *testing.T) {
-	const sampleUploadID = "AJjja9aXX4R20FIZ2ddLnYddhJmD9Xm_Y2B_NEu5G2a6PzJiGRgPKLp6hEQpM"
-	spanName := "Object.Writer"
-
-	tests := []struct {
-		name       string
-		reqURL     string
-		respHeader http.Header
-		wantAttrs  []attribute.KeyValue
-	}{
-		{
-			name:   "Extracts upload_id from Location response header",
-			reqURL: "http://example.com/upload/storage/v1/b/my-bucket/o?uploadType=resumable",
-			respHeader: http.Header{
-				"Location": {"http://example.com/upload/storage/v1/b/my-bucket/o?uploadType=resumable&upload_id=" + sampleUploadID},
 			},
-			wantAttrs: append(getCommonAttributes(), attribute.String("gcp.storage.upload.id", sampleUploadID)),
+			wantUploadID: uploadID,
 		},
 		{
-			name:      "Omits upload.id when Location header not present",
-			reqURL:    "http://example.com/storage/v1/b/my-bucket/o",
-			wantAttrs: getCommonAttributes(),
+			name:          "dev tracing off",
+			devTracingOff: true,
+			record:        func(ctx context.Context) { recordUploadID(ctx, uploadID) },
 		},
 	}
 
@@ -1890,122 +1877,28 @@ func TestTrackingTransportUploadID(t *testing.T) {
 			t.Cleanup(func() {
 				te.Unregister(ctx)
 			})
-
 			// TODO: Remove setting development env var upon launch.
-			t.Setenv(storageOtelTracingDevVar, "true")
+			t.Setenv(storageOtelTracingDevVar, strconv.FormatBool(!tc.devTracingOff))
 
-			mock := &mockTransport{}
-			mock.addResult(&http.Response{Status: "200 OK", Header: tc.respHeader}, nil)
-			tt := &trackingTransport{base: mock}
-
-			ctx, _ = startSpan(ctx, spanName)
-			req, err := http.NewRequestWithContext(ctx, "POST", tc.reqURL, nil)
-			if err != nil {
-				t.Fatalf("NewRequestWithContext failed: %v", err)
-			}
-			if _, err := tt.RoundTrip(req); err != nil {
-				t.Fatalf("RoundTrip failed: %v", err)
-			}
+			ctx, _ = startSpan(ctx, "Object.Writer")
+			tc.record(ctx)
 			endSpan(ctx, nil)
 
-			spans := te.Spans()
-			if len(spans) != 1 {
-				t.Fatalf("expected one span, got %d", len(spans))
-			}
-			gotSpan := spans[0]
-			wantSpan := createWantSpanStub(spanName, tc.wantAttrs)
-			opts := []cmp.Option{
-				cmp.Comparer(spanAttributesComparer),
-			}
-			if diff := testutil.Diff(gotSpan, wantSpan, opts...); diff != "" {
-				t.Errorf("diff: -got, +want:\n%s\n", diff)
-			}
-		})
-	}
-}
-
-func TestSetUploadIDFromHeader(t *testing.T) {
-	const sampleUploadID = "AJjja9aXX4R20FIZ2ddLnYddhJmD9Xm_Y2B_NEu5G2a6PzJiGRgPKLp6hEQpM"
-	spanName := "Object.Writer"
-
-	tests := []struct {
-		name       string
-		devTracing string
-		header     http.Header
-		wantAttrs  []attribute.KeyValue
-	}{
-		{
-			name:       "Records upload.id from Location header",
-			devTracing: "true",
-			header: http.Header{
-				"Location": {"https://storage.googleapis.com/upload/storage/v1/b/my-bucket/o?uploadType=resumable&upload_id=" + sampleUploadID},
-			},
-			wantAttrs: append(getCommonAttributes(), attribute.String("gcp.storage.upload.id", sampleUploadID)),
-		},
-		{
-			name:       "Omits upload.id when Location has no upload_id",
-			devTracing: "true",
-			header: http.Header{
-				"Location": {"https://storage.googleapis.com/upload/storage/v1/b/my-bucket/o?uploadType=resumable"},
-			},
-			wantAttrs: getCommonAttributes(),
-		},
-		{
-			name:       "Omits upload.id when Location is unparseable",
-			devTracing: "true",
-			header: http.Header{
-				"Location": {"://bad-url"},
-			},
-			wantAttrs: getCommonAttributes(),
-		},
-		{
-			name:       "Omits upload.id when header is nil",
-			devTracing: "true",
-			wantAttrs:  getCommonAttributes(),
-		},
-		{
-			name:       "Omits upload.id when dev tracing disabled",
-			devTracing: "false",
-			header: http.Header{
-				"Location": {"https://storage.googleapis.com/upload/storage/v1/b/my-bucket/o?upload_id=" + sampleUploadID},
-			},
-			wantAttrs: nil,
-		},
-	}
-
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			ctx := context.Background()
-			te := testutil.NewOpenTelemetryTestExporter()
-			t.Cleanup(func() {
-				te.Unregister(ctx)
-			})
-
-			// TODO: Remove setting development env var upon launch.
-			t.Setenv(storageOtelTracingDevVar, tc.devTracing)
-
-			ctx, _ = startSpan(ctx, spanName)
-			setUploadIDFromHeader(ctx, tc.header)
-			endSpan(ctx, nil)
-
-			spans := te.Spans()
-			if len(spans) != 1 {
-				t.Fatalf("expected one span, got %d", len(spans))
-			}
-			gotSpan := spans[0]
-			if tc.devTracing != "true" {
-				if len(gotSpan.Attributes) != 0 {
-					t.Errorf("expected no attributes when dev tracing is disabled, got %v", gotSpan.Attributes)
+			if tc.devTracingOff {
+				for _, s := range te.Spans() {
+					for _, a := range s.Attributes {
+						if a.Key == "gcp.storage.upload.id" {
+							t.Errorf("span %s has gcp.storage.upload.id when dev tracing is disabled", s.Name)
+						}
+					}
 				}
 				return
 			}
-			wantSpan := createWantSpanStub(spanName, tc.wantAttrs)
-			opts := []cmp.Option{
-				cmp.Comparer(spanAttributesComparer),
+			var wantAttrs []attribute.KeyValue
+			if tc.wantUploadID != "" {
+				wantAttrs = append(wantAttrs, attribute.String("gcp.storage.upload.id", tc.wantUploadID))
 			}
-			if diff := testutil.Diff(gotSpan, wantSpan, opts...); diff != "" {
-				t.Errorf("diff: -got, +want:\n%s\n", diff)
-			}
+			verifySingleSpanAttributes(t, te.Spans(), wantAttrs)
 		})
 	}
 }

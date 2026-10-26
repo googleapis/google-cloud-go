@@ -392,37 +392,19 @@ func isOneshotUpload(w *Writer) bool {
 	return w.opened && w.closed && atomic.LoadInt64(&w.bytesWritten) < int64(gRPCChunkSize(w.ChunkSize))
 }
 
-func setUploadIDAttribute(ctx context.Context, uploadID string) {
-	if !isOTelTracingDevEnabled() {
-		return
-	}
-	recordUploadID(ctx, uploadID)
-}
-
-// setUploadIDFromHeader records the upload ID from the "upload_id" query
-// parameter of the Location header returned when a resumable upload session is
-// initiated over HTTP. It is a no-op if dev tracing is disabled or the header
-// does not contain an upload ID.
-func setUploadIDFromHeader(ctx context.Context, h http.Header) {
-	if !isOTelTracingDevEnabled() || h == nil {
-		return
-	}
-	loc := h.Get("Location")
-	if loc == "" {
-		return
-	}
-	u, err := url.Parse(loc)
-	if err != nil {
-		return
-	}
-	recordUploadID(ctx, u.Query().Get("upload_id"))
-}
-
-// recordUploadID sets the gcp.storage.upload.id attribute on the span in ctx.
-// Callers are responsible for checking isOTelTracingDevEnabled.
+// recordUploadID sets gcp.storage.upload.id on the span in ctx.
 func recordUploadID(ctx context.Context, uploadID string) {
-	if uploadID == "" {
-		return
+	if span, ok := recordingSpan(ctx); ok && uploadID != "" {
+		span.SetAttributes(attribute.String("gcp.storage.upload.id", uploadID))
 	}
-	trace.SpanFromContext(ctx).SetAttributes(attribute.String("gcp.storage.upload.id", uploadID))
+}
+
+// recordUploadIDFromHeader records the upload_id query parameter of a
+// resumable-session Location header, if present.
+func recordUploadIDFromHeader(ctx context.Context, h http.Header) {
+	if loc := h.Get("Location"); loc != "" {
+		if u, err := url.Parse(loc); err == nil {
+			recordUploadID(ctx, u.Query().Get("upload_id"))
+		}
+	}
 }

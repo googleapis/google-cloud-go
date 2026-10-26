@@ -1605,7 +1605,7 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 		cs.completions <- gRPCBidiWriteCompletion{flushOffset: q.GetPersistedSize()}
 	}
 	// Record the upload ID for both new and resumed uploads.
-	setUploadIDAttribute(ctx, s.upid)
+	recordUploadID(ctx, s.upid)
 
 	var rotate atomic.Bool
 

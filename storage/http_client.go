@@ -245,7 +245,7 @@ func (t *trackingTransport) RoundTrip(req *http.Request) (*http.Response, error)
 		resp, err = baseRT.RoundTrip(req)
 	}
 	if resp != nil {
-		setUploadIDFromHeader(req.Context(), resp.Header)
+		recordUploadIDFromHeader(req.Context(), resp.Header)
 	}
 	return resp, err
 }
