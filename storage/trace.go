@@ -448,4 +448,3 @@ func httpUploadChunkError(resp *http.Response, err error) error {
 	}
 	return nil
 }
-
