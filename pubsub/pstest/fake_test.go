@@ -211,7 +211,7 @@ func TestSubscriptions(t *testing.T) {
 	ctx := context.Background()
 	topic := mustCreateTopic(context.TODO(), t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
 	var subs []*pb.Subscription
-	for i := 0; i < 3; i++ {
+	for i := range 3 {
 		subs = append(subs, mustCreateSubscription(context.TODO(), t, sclient, &pb.Subscription{
 			Name:               fmt.Sprintf("projects/P/subscriptions/S%d", i),
 			Topic:              topic.Name,
@@ -398,7 +398,7 @@ func TestSubscriptionDeadLetter(t *testing.T) {
 	}
 	rand.Seed(time.Now().UTC().UnixNano())
 	maxAttempts := rand.Intn(5) + retries
-	for i := 0; i < maxAttempts; i++ {
+	for i := range maxAttempts {
 		pull, err := server.GServer.Pull(ctx, &pb.PullRequest{
 			Subscription: sub.Name,
 			MaxMessages:  10,
@@ -488,7 +488,7 @@ func TestPublish(t *testing.T) {
 	defer s.Close()
 
 	var ids []string
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		ids = append(ids, s.Publish("projects/p/topics/t", []byte("hello"), nil))
 	}
 	s.Wait()
@@ -514,7 +514,7 @@ func TestPublishOrdered(t *testing.T) {
 
 	const orderingKey = "ordering-key"
 	var ids []string
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		ids = append(ids, s.PublishOrdered("projects/p/topics/t", []byte("hello"), nil, orderingKey))
 	}
 	s.Wait()
@@ -548,7 +548,7 @@ func TestClearMessages(t *testing.T) {
 		AckDeadlineSeconds: 10,
 	})
 
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		s.Publish(top.Name, []byte("hello"), nil)
 	}
 	msgs := s.Messages()
@@ -687,7 +687,7 @@ func TestStreamingPullAck(t *testing.T) {
 	spc := mustStartStreamingPull(ctx, t, sclient, sub)
 	time.AfterFunc(time.Duration(2*minAckDeadlineSecs)*time.Second, cancel)
 
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		res, err := spc.Recv()
 		if errors.Is(err, io.EOF) {
 			break
@@ -874,8 +874,7 @@ func TestMultiSubs(t *testing.T) {
 // stream when one stream is already busy, though, so we're unable to test
 // strict round robin behavior.
 func TestMultiStreams(t *testing.T) {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 	pclient, sclient, srv, cleanup := newFake(ctx, t)
 	defer cleanup()
 
@@ -1320,7 +1319,7 @@ func pullN(ctx context.Context, t *testing.T, n int, sc pb.SubscriberClient, sub
 func streamingPullN(ctx context.Context, t *testing.T, n int, sc pb.SubscriberClient, sub *pb.Subscription) map[string]*pb.ReceivedMessage {
 	spc := mustStartStreamingPull(ctx, t, sc, sub)
 	got := map[string]*pb.ReceivedMessage{}
-	for i := 0; i < n; i++ {
+	for range n {
 		res, err := spc.Recv()
 		if err != nil {
 			t.Fatal(err)
@@ -1398,7 +1397,7 @@ func newFake(ctx context.Context, t *testing.T, opts ...ServerReactorOption) (pb
 func TestErrorInjection(t *testing.T) {
 	testcases := []struct {
 		funcName string
-		param    interface{}
+		param    any
 		code     codes.Code
 	}{
 		{
@@ -1724,7 +1723,7 @@ func TestSubscriptionMessageOrdering(t *testing.T) {
 
 	const orderingKey = "ordering-key"
 	var ids []string
-	for i := 0; i < 1000; i++ {
+	for range 1000 {
 		ids = append(ids, s.PublishOrdered("projects/p/topics/t", []byte("hello"), nil, orderingKey))
 	}
 	for len(ids) > 0 {
