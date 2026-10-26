@@ -1808,6 +1808,178 @@ func verifySingleSpanAttributes(t *testing.T, spans tracetest.SpanStubs, wantAtt
 	}
 }
 
+func TestStorageTraceRPCSystemNameAttribute(t *testing.T) {
+	t.Setenv(storageOtelTracingDevVar, "true")
+	// Disable the bucket metadata cache so no background fetch shares the
+	// mock transport or emits extra spans.
+	t.Setenv(storageBucketMetadataDisabledVar, "true")
+
+	const bucket = "my-bucket"
+	rangeParams := &newRangeReaderParams{
+		bucket: bucket,
+		object: "my-object",
+	}
+
+	// newHTTPClient returns a client built by NewClient whose requests fail
+	// immediately via the mock transport.
+	newHTTPClient := func(t *testing.T) *Client {
+		return mockClient(t, &mockTransport{})
+	}
+	// newGRPCClient returns a client built by NewGRPCClient pointing at an
+	// unreachable endpoint, so requests fail fast without network access.
+	newGRPCClient := func(t *testing.T, ctx context.Context) *Client {
+		c, err := NewGRPCClient(ctx,
+			option.WithEndpoint("localhost:1"),
+			option.WithoutAuthentication(),
+			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+		)
+		if err != nil {
+			t.Fatalf("NewGRPCClient: %v", err)
+		}
+		t.Cleanup(func() { c.Close() })
+		return c
+	}
+
+	tests := []struct {
+		name     string // Test name; defaults to spanName.
+		spanName string
+		op       func(t *testing.T, ctx context.Context)
+		want     string // "" means the attribute must not be set.
+	}{
+		{
+			name:     "HTTP operation span",
+			spanName: "Bucket.Attrs",
+			op: func(t *testing.T, ctx context.Context) {
+				newHTTPClient(t).Bucket(bucket).Retryer(WithPolicy(RetryNever)).Attrs(ctx)
+			},
+			want: "http",
+		},
+		{
+			name:     "gRPC operation span",
+			spanName: "Bucket.Attrs",
+			op: func(t *testing.T, ctx context.Context) {
+				newGRPCClient(t, ctx).Bucket(bucket).Retryer(WithPolicy(RetryNever)).Attrs(ctx)
+			},
+			want: "grpc",
+		},
+		{
+			spanName: "httpStorageClient.ObjectsListCall",
+			op: func(t *testing.T, ctx context.Context) {
+				newHTTPClient(t).Bucket(bucket).Retryer(WithPolicy(RetryNever)).Objects(ctx, nil).Next()
+			},
+			want: "http",
+		},
+		{
+			spanName: "grpcStorageClient.ObjectsListCall",
+			op: func(t *testing.T, ctx context.Context) {
+				newGRPCClient(t, ctx).Bucket(bucket).Retryer(WithPolicy(RetryNever)).Objects(ctx, nil).Next()
+			},
+			want: "grpc",
+		},
+		{
+			spanName: "httpStorageClient.NewRangeReader",
+			op: func(t *testing.T, ctx context.Context) {
+				hc := &httpStorageClient{
+					settings: &settings{},
+					config:   &storageConfig{},
+				}
+				canceledCtx, cancel := context.WithCancel(ctx)
+				cancel()
+				hc.NewRangeReader(canceledCtx, rangeParams)
+			},
+			want: "http",
+		},
+		{
+			spanName: "grpcStorageClient.NewRangeReader",
+			op: func(t *testing.T, ctx context.Context) {
+				gc := &grpcStorageClient{
+					settings: &settings{},
+					config:   &storageConfig{grpcBidiReads: true},
+				}
+				canceledCtx, cancel := context.WithCancel(ctx)
+				cancel()
+				gc.NewRangeReader(canceledCtx, rangeParams)
+			},
+			want: "grpc",
+		},
+		{
+			spanName: "grpcStorageClient.NewRangeReaderReadObject",
+			op: func(t *testing.T, ctx context.Context) {
+				gc := &grpcStorageClient{
+					settings: &settings{},
+					config:   &storageConfig{grpcBidiReads: false},
+				}
+				canceledCtx, cancel := context.WithCancel(ctx)
+				cancel()
+				gc.NewRangeReader(canceledCtx, rangeParams)
+			},
+			want: "grpc",
+		},
+		{
+			name:     "dev tracing disabled omits attribute",
+			spanName: "Bucket.Attrs",
+			op: func(t *testing.T, ctx context.Context) {
+				t.Setenv(storageOtelTracingDevVar, "false")
+				newHTTPClient(t).Bucket(bucket).Retryer(WithPolicy(RetryNever)).Attrs(ctx)
+			},
+			want: "",
+		},
+		{
+			name:     "zero-value rpcSystem omits attribute",
+			spanName: "Bucket.Attrs",
+			op: func(t *testing.T, ctx context.Context) {
+				sCtx, _ := startSpanWithBucket(ctx, &Client{}, bucket, "Bucket.Attrs")
+				endSpan(sCtx, nil)
+			},
+			want: "",
+		},
+	}
+
+	for _, tc := range tests {
+		name := tc.name
+		if name == "" {
+			name = tc.spanName
+		}
+		t.Run(name, func(t *testing.T) {
+			ctx := context.Background()
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() {
+				te.Unregister(ctx)
+			})
+
+			tc.op(t, ctx)
+
+			got, ok := spanStringAttribute(t, te.Spans(), tc.spanName, rpcSystemNameKey)
+			switch {
+			case tc.want == "" && ok:
+				t.Errorf("%s: %s = %q, want attribute absent", tc.spanName, rpcSystemNameKey, got)
+			case tc.want != "" && got != tc.want:
+				t.Errorf("%s: %s = %q (present: %v), want %q", tc.spanName, rpcSystemNameKey, got, ok, tc.want)
+			}
+		})
+	}
+}
+
+// spanStringAttribute returns the string value of attribute key on the span
+// named spanName and whether the attribute is set. It fails the test if no
+// such span was recorded.
+func spanStringAttribute(t *testing.T, spans tracetest.SpanStubs, spanName string, key attribute.Key) (string, bool) {
+	t.Helper()
+	for _, s := range spans {
+		if s.Name != appendPackageName(spanName) {
+			continue
+		}
+		for _, attr := range s.Attributes {
+			if attr.Key == key {
+				return attr.Value.AsString(), true
+			}
+		}
+		return "", false
+	}
+	t.Fatalf("span %q not found", spanName)
+	return "", false
+}
+
 func TestRecordUploadID(t *testing.T) {
 	const uploadID = "AJjja9aXX4R20FIZ2ddLnYddhJmD9Xm_Y2B_NEu5G2a6PzJiGRgPKLp6hEQpM"
 	location := func(query string) http.Header {
