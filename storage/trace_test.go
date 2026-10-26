@@ -382,6 +382,10 @@ func TestErrorAttributes(t *testing.T) {
 		Body:    `{"error":{"code":403,"message":"Permission denied.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com"}]}}`,
 	}
 
+	grpcWithoutErrorInfo, err := status.New(codes.ResourceExhausted, "Rate limit exceeded.").WithDetails(&errdetails.RetryInfo{})
+	if err != nil {
+		t.Fatalf("WithDetails: %v", err)
+	}
 	// The generated JSON client returns a googleapi.Error wrapping an APIError.
 	generatedHTTPErr := &googleapi.Error{
 		Code:    http.StatusForbidden,
@@ -408,7 +412,7 @@ func TestErrorAttributes(t *testing.T) {
 		{
 			name:     "HTTP precondition failed",
 			err:      &googleapi.Error{Code: http.StatusPreconditionFailed, Message: "At least one of the pre-conditions you specified did not hold."},
-			wantType: "412",
+			wantType: "FAILED_PRECONDITION",
 		},
 		{
 			name: "HTTP XML error",
@@ -507,6 +511,61 @@ func TestErrorAttributes(t *testing.T) {
 			name:     "gRPC unavailable from the service",
 			err:      status.Error(codes.Unavailable, "The service is currently unavailable."),
 			wantType: "UNAVAILABLE",
+		},
+		{
+			name:     "googleapi.Error without an HTTP code",
+			err:      &googleapi.Error{Message: "something went wrong"},
+			wantType: "UNKNOWN",
+		},
+		{
+			name:     "wrapped deadline exceeded",
+			err:      fmt.Errorf("storage: read failed: %w", context.DeadlineExceeded),
+			wantType: "TIMEOUT",
+		},
+		{
+			name:     "gRPC deadline exceeded from the service",
+			err:      status.Error(codes.DeadlineExceeded, "Deadline exceeded."),
+			wantType: "DEADLINE_EXCEEDED",
+		},
+		{
+			name:     "gRPC client-side deadline",
+			err:      status.Error(codes.DeadlineExceeded, "context deadline exceeded"),
+			wantType: "TIMEOUT",
+		},
+		{
+			name:     "gRPC error with details but no ErrorInfo",
+			err:      grpcWithoutErrorInfo.Err(),
+			wantType: "RESOURCE_EXHAUSTED",
+		},
+		{
+			name:     "gRPC crc32c mismatch on upload",
+			err:      status.Error(codes.InvalidArgument, "Object crc32c mismatch: server computed 1234, client provided 5678."),
+			wantType: "CHECKSUM_MISMATCH",
+		},
+		{
+			name:     "HTTP crc32c mismatch on upload",
+			err:      &googleapi.Error{Code: http.StatusBadRequest, Message: `Provided CRC32C "AAAAAA==" doesn't match calculated CRC32C "BBBBBB==".`},
+			wantType: "CHECKSUM_MISMATCH",
+		},
+		{
+			name:     "CRC mismatch on read",
+			err:      fmt.Errorf("%w: bad CRC on read: got %d, want %d", errChecksumMismatch, 1, 2),
+			wantType: "CHECKSUM_MISMATCH",
+		},
+		{
+			name:     "wrapped CRC mismatch on read",
+			err:      fmt.Errorf("storage: read failed: %w", fmt.Errorf("%w: bad CRC on chunk read: got %d, want %d", errChecksumMismatch, 1, 2)),
+			wantType: "CHECKSUM_MISMATCH",
+		},
+		{
+			name:     "invalid argument mentioning crc32c is not a checksum mismatch",
+			err:      status.Error(codes.InvalidArgument, "crc32c must be set when finishing a write."),
+			wantType: "INVALID_ARGUMENT",
+		},
+		{
+			name:     "wrapped io.EOF sets no attributes",
+			err:      fmt.Errorf("storage: read: %w", io.EOF),
+			wantType: "",
 		},
 		{
 			name:     "nil error sets no attributes",

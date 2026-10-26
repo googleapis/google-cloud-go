@@ -518,6 +518,24 @@ func grpcCodeToString(code codes.Code) string {
 	}
 }
 
+// isServerChecksumError reports whether err is the service rejecting a
+// request because a CRC32C or MD5 checksum did not match, for example
+// "Object crc32c mismatch: ..." (gRPC InvalidArgument) or
+// "Provided CRC32C \"...\" doesn't match calculated CRC32C \"...\"" (HTTP 400).
+func isServerChecksumError(err error, errStr string) bool {
+	if !(strings.Contains(errStr, "crc32c") || strings.Contains(errStr, "md5")) || !strings.Contains(errStr, "match") {
+		return false
+	}
+	var apiErr *googleapi.Error
+	if errors.As(err, &apiErr) && apiErr.Code == http.StatusBadRequest {
+		return true
+	}
+	if st, ok := status.FromError(err); ok {
+		return st.Code() == codes.InvalidArgument || st.Code() == codes.DataLoss
+	}
+	return false
+}
+
 // computeErrorType maps the request result to the standard error.type values.
 func computeErrorType(err error, isHTTP bool, statusCode int64) string {
 	if err == nil {
@@ -527,7 +545,7 @@ func computeErrorType(err error, isHTTP bool, statusCode int64) string {
 		return "OK"
 	}
 
-	if err == io.EOF {
+	if errors.Is(err, io.EOF) {
 		return "OK"
 	}
 
@@ -537,7 +555,9 @@ func computeErrorType(err error, isHTTP bool, statusCode int64) string {
 		return "CANCELLED"
 	}
 
-	if errors.Is(err, context.DeadlineExceeded) || strings.Contains(errStr, "deadline exceeded") {
+	// gRPC reports a client-side deadline as a DeadlineExceeded status with
+	// this message; other DeadlineExceeded statuses come from the service.
+	if errors.Is(err, context.DeadlineExceeded) || strings.Contains(errStr, "context deadline exceeded") {
 		return "TIMEOUT"
 	}
 
@@ -545,6 +565,10 @@ func computeErrorType(err error, isHTTP bool, statusCode int64) string {
 	// example by the HTTP XML reader on a 404 response.
 	if errors.Is(err, ErrObjectNotExist) || errors.Is(err, ErrBucketNotExist) {
 		return "NOT_FOUND"
+	}
+
+	if errors.Is(err, errChecksumMismatch) || isServerChecksumError(err, errStr) {
+		return "CHECKSUM_MISMATCH"
 	}
 
 	// Prefer the status returned by the service over matching the error text,
@@ -611,8 +635,12 @@ func mapHTTPStatusCode(code int) string {
 		return "PERMISSION_DENIED"
 	case 404:
 		return "NOT_FOUND"
+	case 408:
+		return "DEADLINE_EXCEEDED"
 	case 409:
 		return "ABORTED"
+	case 412:
+		return "FAILED_PRECONDITION"
 	case 416:
 		return "OUT_OF_RANGE"
 	case 429:

@@ -33,6 +33,7 @@ import (
 	otelcodes "go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/googleapi"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/stats"
 	"google.golang.org/grpc/status"
@@ -175,7 +176,7 @@ func isNotFoundError(err error) bool {
 // metric attribute, so spans and metrics report the same value for a failure.
 // gcp.errors.domain is the google.rpc.ErrorInfo domain of the error response.
 func errorAttributes(err error) []attribute.KeyValue {
-	if err == nil || err == io.EOF {
+	if err == nil || errors.Is(err, io.EOF) {
 		return nil
 	}
 	// Infer the transport from the error, since endSpan does not know it:
@@ -196,13 +197,26 @@ func errorDomain(err error) string {
 	// a googleapi.Error wrapping an APIError, and ParseError on that prefers
 	// the APIError's mapped gRPC status, which carries no ErrorInfo.
 	var apiErr *apierror.APIError
-	if !errors.As(err, &apiErr) {
-		var ok bool
-		if apiErr, ok = apierror.ParseError(err, false); !ok {
-			return ""
+	if errors.As(err, &apiErr) {
+		return apiErr.Domain()
+	}
+	var httpErr *googleapi.Error
+	if errors.As(err, &httpErr) {
+		if apiErr, ok := apierror.ParseError(httpErr, false); ok {
+			return apiErr.Domain()
+		}
+		return ""
+	}
+	// For gRPC, read the ErrorInfo directly instead of parsing every detail
+	// with apierror.ParseError.
+	if st, ok := status.FromError(err); ok {
+		for _, d := range st.Details() {
+			if info, ok := d.(*errdetails.ErrorInfo); ok {
+				return info.GetDomain()
+			}
 		}
 	}
-	return apiErr.Domain()
+	return ""
 }
 
 // endSpan retrieves the current span from ctx and completes the span.
