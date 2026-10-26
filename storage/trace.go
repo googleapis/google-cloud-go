@@ -392,13 +392,9 @@ func isOneshotUpload(w *Writer) bool {
 	return w.opened && w.closed && atomic.LoadInt64(&w.bytesWritten) < int64(gRPCChunkSize(w.ChunkSize))
 }
 
-// tracedTokenProvider wraps an auth.TokenProvider to record an
-// Auth.RefreshAccessToken span, as a child of the recording span in ctx, when
-// a token fetch blocks a request (the first fetch, a fetch after expiry, or a
-// failed fetch). No span is recorded for cache hits, which return the same
-// *auth.Token, or when ctx has no recording span: the auth library refreshes
-// stale tokens asynchronously on a background goroutine with its own context,
-// and those refreshes do not block any request.
+// tracedTokenProvider records an Auth.RefreshAccessToken span for token fetches
+// that block a request. Cache hits and background refreshes (no recording span
+// in ctx) are skipped.
 type tracedTokenProvider struct {
 	base auth.TokenProvider
 	last atomic.Pointer[auth.Token] // cache hits return the same *auth.Token

@@ -2025,8 +2025,6 @@ func TestTracedTokenProviderDevTracingDisabled(t *testing.T) {
 		te.Unregister(ctx)
 	})
 	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "false")
-	// newHTTPStorageClient prepends WithoutAuthentication under the emulator,
-	// which conflicts with WithAuthCredentials.
 	t.Setenv("STORAGE_EMULATOR_HOST", "")
 
 	baseCreds := &auth.Credentials{
