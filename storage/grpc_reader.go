@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/googleapis/gax-go/v2"
-	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/encoding"
 	"google.golang.org/grpc/mem"
@@ -84,7 +83,7 @@ func (bytesCodecReadObject) Name() string {
 
 // NewRangeReaderReadObject is the legacy (non-bidi) implementation of reads.
 func (c *grpcStorageClient) NewRangeReaderReadObject(ctx context.Context, params *newRangeReaderParams, opts ...storageOption) (r *Reader, err error) {
-	ctx, _ = startSpan(ctx, "grpcStorageClient.NewRangeReaderReadObject", trace.WithAttributes(rpcSystemGRPC))
+	ctx, _ = startSpan(ctx, "grpcStorageClient.NewRangeReaderReadObject", rpcSystemGRPCOpt)
 	defer func() { endSpan(ctx, err) }()
 
 	s := callSettings(c.settings, opts...)

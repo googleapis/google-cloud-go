@@ -71,6 +71,11 @@ const rpcSystemNameKey = attribute.Key("rpc.system.name")
 var (
 	rpcSystemHTTP = rpcSystemNameKey.String("http")
 	rpcSystemGRPC = rpcSystemNameKey.String("grpc")
+
+	// Pre-built span start options for transport-level spans, so starting
+	// those spans does not allocate a new option each time.
+	rpcSystemHTTPOpt = trace.WithAttributes(rpcSystemHTTP)
+	rpcSystemGRPCOpt = trace.WithAttributes(rpcSystemGRPC)
 )
 
 // isOTelTracingDevEnabled checks the development flag until experimental feature is launched.

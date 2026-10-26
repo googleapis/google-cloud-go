@@ -32,7 +32,6 @@ import (
 	gapic "cloud.google.com/go/storage/internal/apiv2"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/googleapis/gax-go/v2"
-	"go.opentelemetry.io/otel/trace"
 
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -673,7 +672,7 @@ func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		defer func() { record(err) }()
 		// Add trace span around List API call within the fetch.
 		// Bucket.Objects has no operation span, so gcp.storage.uri is recorded on each per-page ObjectsListCall span.
-		ctx, _ = startSpan(ctx, "grpcStorageClient.ObjectsListCall", withStorageURI(bucket, ""), trace.WithAttributes(rpcSystemGRPC))
+		ctx, _ = startSpan(ctx, "grpcStorageClient.ObjectsListCall", withStorageURI(bucket, ""), rpcSystemGRPCOpt)
 		defer func() { endSpan(ctx, err) }()
 		var objects []*storagepb.Object
 		var gitr *gapic.ObjectIterator
@@ -1310,7 +1309,7 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 		return c.NewRangeReaderReadObject(ctx, params, opts...)
 	}
 
-	ctx, _ = startSpan(ctx, "grpcStorageClient.NewRangeReader", trace.WithAttributes(rpcSystemGRPC))
+	ctx, _ = startSpan(ctx, "grpcStorageClient.NewRangeReader", rpcSystemGRPCOpt)
 	defer func() { endSpan(ctx, err) }()
 
 	s := callSettings(c.settings, opts...)

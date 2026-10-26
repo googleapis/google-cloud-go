@@ -34,7 +34,6 @@ import (
 	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/internal/optional"
 	"github.com/googleapis/gax-go/v2/callctx"
-	"go.opentelemetry.io/otel/trace"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -450,7 +449,7 @@ func (c *httpStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		defer func() { record(err) }()
 		// Add trace span around List API call within the fetch.
 		// Bucket.Objects has no operation span, so gcp.storage.uri is recorded on each per-page ObjectsListCall span.
-		ctx, _ = startSpan(ctx, "httpStorageClient.ObjectsListCall", withStorageURI(bucket, ""), trace.WithAttributes(rpcSystemHTTP))
+		ctx, _ = startSpan(ctx, "httpStorageClient.ObjectsListCall", withStorageURI(bucket, ""), rpcSystemHTTPOpt)
 		defer func() { endSpan(ctx, err) }()
 		req := c.raw.Objects.List(bucket)
 		if it.query.SoftDeleted {
@@ -973,7 +972,7 @@ func (c *httpStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 }
 
 func (c *httpStorageClient) NewRangeReader(ctx context.Context, params *newRangeReaderParams, opts ...storageOption) (r *Reader, err error) {
-	ctx, _ = startSpan(ctx, "httpStorageClient.NewRangeReader", trace.WithAttributes(rpcSystemHTTP))
+	ctx, _ = startSpan(ctx, "httpStorageClient.NewRangeReader", rpcSystemHTTPOpt)
 	defer func() { endSpan(ctx, err) }()
 
 	s := callSettings(c.settings, opts...)

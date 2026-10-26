@@ -1823,7 +1823,7 @@ func TestStorageTraceRPCSystemNameAttribute(t *testing.T) {
 		name     string // Test name; defaults to spanName.
 		spanName string
 		op       func(t *testing.T, ctx context.Context)
-		want     string
+		want     string // Expected attribute value; "" means the attribute must be absent.
 	}{
 		{
 			name:     "HTTP operation span",
@@ -1894,6 +1894,24 @@ func TestStorageTraceRPCSystemNameAttribute(t *testing.T) {
 			},
 			want: "grpc",
 		},
+		{
+			name:     "dev tracing disabled omits attribute",
+			spanName: "Bucket.Attrs",
+			op: func(t *testing.T, ctx context.Context) {
+				t.Setenv(storageOtelTracingDevVar, "false")
+				newHTTPClient(t).Bucket(bucket).Retryer(WithPolicy(RetryNever)).Attrs(ctx)
+			},
+			want: "",
+		},
+		{
+			name:     "zero-value rpcSystem omits attribute",
+			spanName: "Bucket.Attrs",
+			op: func(t *testing.T, ctx context.Context) {
+				sCtx, _ := startSpanWithBucket(ctx, &Client{}, bucket, "Bucket.Attrs")
+				endSpan(sCtx, nil)
+			},
+			want: "",
+		},
 	}
 
 	for _, tc := range tests {
@@ -1910,17 +1928,21 @@ func TestStorageTraceRPCSystemNameAttribute(t *testing.T) {
 
 			tc.op(t, ctx)
 
-			if got := spanStringAttribute(t, te.Spans(), tc.spanName, rpcSystemNameKey); got != tc.want {
-				t.Errorf("%s: %s = %q, want %q", tc.spanName, rpcSystemNameKey, got, tc.want)
+			got, ok := spanStringAttribute(t, te.Spans(), tc.spanName, rpcSystemNameKey)
+			switch {
+			case tc.want == "" && ok:
+				t.Errorf("%s: %s = %q, want attribute absent", tc.spanName, rpcSystemNameKey, got)
+			case tc.want != "" && got != tc.want:
+				t.Errorf("%s: %s = %q (present: %v), want %q", tc.spanName, rpcSystemNameKey, got, ok, tc.want)
 			}
 		})
 	}
 }
 
 // spanStringAttribute returns the string value of attribute key on the span
-// named spanName, or "" if the attribute is not set. It fails the test if no
+// named spanName and whether the attribute is set. It fails the test if no
 // such span was recorded.
-func spanStringAttribute(t *testing.T, spans tracetest.SpanStubs, spanName string, key attribute.Key) string {
+func spanStringAttribute(t *testing.T, spans tracetest.SpanStubs, spanName string, key attribute.Key) (string, bool) {
 	t.Helper()
 	for _, s := range spans {
 		if s.Name != appendPackageName(spanName) {
@@ -1928,11 +1950,11 @@ func spanStringAttribute(t *testing.T, spans tracetest.SpanStubs, spanName strin
 		}
 		for _, attr := range s.Attributes {
 			if attr.Key == key {
-				return attr.Value.AsString()
+				return attr.Value.AsString(), true
 			}
 		}
-		return ""
+		return "", false
 	}
 	t.Fatalf("span %q not found", spanName)
-	return ""
+	return "", false
 }
