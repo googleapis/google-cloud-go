@@ -94,12 +94,6 @@ type Config struct {
 	// server rejects OpenSession with INVALID_ARGUMENT on mismatch).
 	FeatureFlagsProto *btpb.FeatureFlags
 
-	// SessionLoadListener is invoked whenever the server-driven
-	// ClientConfigurationManager reports a new session-load ratio. The
-	// bigtable Client wires this to Diverter.SetSessionLoad so the
-	// classic/session traffic split follows the server's directive.
-	SessionLoadListener func(load float64)
-
 	// BackgroundCtx is the parent context for the Client's own
 	// process-lifetime loops (today: ClientConfigurationManager polling).
 	// Cancelled by Client teardown.
@@ -298,7 +292,7 @@ type sessionClient struct {
 	metricsFactory *metrics.Factory
 	// configManager runs the server-driven GetClientConfiguration poll
 	// loop for the lifetime of this Client. Production runtime state
-	// (not debug/test) — its output drives Diverter.SetSessionLoad,
+	// (not debug/test) — its output drives Diverter.ApplySessionClientConfiguration,
 	// per-pool UpdateConfig reshapes (bounds, picker, load-balancing
 	// strategy), and future eager-scale directives. Also surfaced on
 	// /debug/configz for operator visibility.
@@ -351,7 +345,7 @@ type sessionClient struct {
 // polls, which reshape live pools via SessionPoolImpl.UpdateConfig.
 //
 // The load-balancing hook for a mixed-mode setup lives at
-// AddSessionLoadListener — call it after construction if you're
+// AddSessionDiversionListener — call it after construction if you're
 // composing this Client with a bigtable.Client Diverter.
 //
 // clientName sets the client_name attribute on exported client-side metrics.
@@ -485,17 +479,13 @@ func newSessionClientFromParts(channelPool ChannelPool, stub btpb.BigtableClient
 	// path (unit tests wiring a fake ChannelPool without a real gRPC stub).
 	// In that mode we do NOT construct a ClientConfigurationManager, do
 	// NOT poll GetClientConfiguration, and do NOT fall back to any
-	// default config — pools open with whatever seed the test supplies,
-	// and SessionLoadListener never fires. Production NewClient always
-	// supplies a stub.
+	// default config — pools open with whatever seed the test supplies.
+	// Production NewClient always supplies a stub.
 	if stub != nil {
 		sc.configManager = btransport.NewClientConfigurationManager(
 			stub, sc.fullInstanceName(), cfg.AppProfile, cfg.ConfigMD, nil,
 		)
 		sc.configManager.Start(cfg.BackgroundCtx)
-		if cfg.SessionLoadListener != nil {
-			sc.configManager.AddSessionLoadListener(cfg.SessionLoadListener)
-		}
 	}
 	return sc
 }
@@ -505,16 +495,6 @@ func (sc *sessionClient) MeterProvider() otelmetric.MeterProvider {
 		return nil
 	}
 	return sc.metricsFactory.OtelMeterProvider
-}
-
-// AddSessionLoadListener forwards to the internal
-// ClientConfigurationManager. Returns a no-op unregister when no
-// manager is wired (stub == nil at construction).
-func (sc *sessionClient) AddSessionLoadListener(fn func(load float64)) func() {
-	if sc.configManager == nil {
-		return func() {}
-	}
-	return sc.configManager.AddSessionLoadListener(fn)
 }
 
 // AddSessionDiversionListener forwards to the internal

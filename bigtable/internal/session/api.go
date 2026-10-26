@@ -113,18 +113,12 @@ type Client interface {
 	ChannelDebug() btransport.ChannelDebugProvider
 	ConfigDebug() btransport.ConfigDebugProvider
 
-	// AddSessionLoadListener registers a listener invoked every time
-	// the server-driven ClientConfigurationManager reports a new
-	// session-load ratio (0.0 = classic-only, 1.0 = session-only).
-	// Returns an unregister thunk. Used by mixed-mode bigtable.Client
-	// to feed its Diverter; standalone session.Client callers can
-	// ignore this method.
-	AddSessionLoadListener(func(load float64)) func()
-
 	// AddSessionDiversionListener registers a listener invoked every
 	// time the server-driven ClientConfigurationManager reports updated
 	// session diversion settings (SessionLoad or
 	// SessionDiversionConfiguration). Returns an unregister thunk.
+	// Used by mixed-mode bigtable.Client to feed its Diverter; standalone
+	// session.Client callers can ignore this method.
 	AddSessionDiversionListener(func(cfg *btpb.SessionClientConfiguration)) func()
 
 	// Close closes the underlying channel pool. TableAPI

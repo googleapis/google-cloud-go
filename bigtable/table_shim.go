@@ -46,8 +46,8 @@ import (
 // ApplyReadModifyWrite pass their session call's error to
 // session.UnimplementedBreaker.ShouldFallback: a codes.Unimplemented
 // response falls back to classic, and after enough consecutive
-// Unimplementeds the breaker's sticky trip gates useSession() so future
-// calls skip session entirely.
+// Unimplementeds the breaker's sticky trip gates useSessionForMethod so
+// future calls skip session entirely.
 type TableShim struct {
 	classic  TableAPI
 	session  session.TableAPI
@@ -436,16 +436,6 @@ func (t *TableShim) ApplyReadModifyWrite(ctx context.Context, row string, m *Rea
 		decodeFamilyProto(r, row, fam)
 	}
 	return r, nil
-}
-
-// useSession returns true when session + diverter are configured, the
-// Unimplemented breaker hasn't tripped, and the diverter says a call
-// should go over session under its default load.
-func (t *TableShim) useSession() bool {
-	return t.session != nil &&
-		t.diverter != nil &&
-		!t.breaker.Bypass() &&
-		t.diverter.UseSession()
 }
 
 // useSessionForMethod returns true when session + diverter are configured,

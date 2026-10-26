@@ -416,11 +416,11 @@ func TestOpenTable_ProducesNilSessionShim(t *testing.T) {
 	if inner.materializedView != "" {
 		t.Errorf("classic inner Table.materializedView = %q, want empty", inner.materializedView)
 	}
-	// useSession() must be false because session is nil, even with
+	// useSessionForMethod must be false because session is nil, even with
 	// SessionLoad=1.0 on the diverter — proves the nil-session
 	// short-circuit runs before the diverter is consulted.
-	if shim.useSession() {
-		t.Errorf("useSession() = true, want false (session is nil so we must not consult the diverter)")
+	if shim.useSessionForMethod(btransport.ScopeMethodReadRow) {
+		t.Errorf("useSessionForMethod(ReadRow) = true, want false (session is nil so we must not consult the diverter)")
 	}
 }
 
@@ -500,8 +500,8 @@ func TestOpenFactories_ShareOneClientDiverter(t *testing.T) {
 	// Flip the client's diverter to prove the reference is live, not
 	// a copy.
 	c.diverter.SetSessionLoad(0.42)
-	if got := tbl.diverter.SessionLoad(); got != 0.42 {
-		t.Errorf("after SetSessionLoad(0.42), tbl.diverter.SessionLoad() = %v, want 0.42", got)
+	if got := tbl.diverter.SessionLoadForMethod(btransport.ScopeMethodReadRow); got != 0.42 {
+		t.Errorf("after SetSessionLoad(0.42), tbl.diverter.SessionLoadForMethod(ReadRow) = %v, want 0.42", got)
 	}
 }
 
@@ -564,10 +564,6 @@ func (f *fakeSessionClient) MeterProvider() metric.MeterProvider           { ret
 func (f *fakeSessionClient) SessionDebug() btransport.SessionDebugProvider { return nil }
 func (f *fakeSessionClient) ChannelDebug() btransport.ChannelDebugProvider { return nil }
 func (f *fakeSessionClient) ConfigDebug() btransport.ConfigDebugProvider   { return nil }
-func (f *fakeSessionClient) AddSessionLoadListener(_ func(load float64)) func() {
-	f.loadListenerSet = true
-	return func() {}
-}
 func (f *fakeSessionClient) AddSessionDiversionListener(_ func(cfg *btpb.SessionClientConfiguration)) func() {
 	f.loadListenerSet = true
 	return func() {}

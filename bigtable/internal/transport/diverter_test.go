@@ -53,8 +53,8 @@ func TestDiverterZeroAndOne(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			d := NewDiverter(tc.sessionLoad)
 			for i := 0; i < 1000; i++ {
-				if got := d.UseSession(); got != tc.expectedRes {
-					t.Errorf("UseSession() = %v, want %v for load %f", got, tc.expectedRes, tc.sessionLoad)
+				if got := d.UseSessionForMethod(ScopeMethodReadRow); got != tc.expectedRes {
+					t.Errorf("UseSessionForMethod(ReadRow) = %v, want %v for load %f", got, tc.expectedRes, tc.sessionLoad)
 				}
 			}
 		})
@@ -63,13 +63,13 @@ func TestDiverterZeroAndOne(t *testing.T) {
 
 func TestDiverterSetSessionLoad(t *testing.T) {
 	d := NewDiverter(0.0)
-	if got := d.UseSession(); got != false {
-		t.Errorf("Expected initial UseSession() to be false, got %v", got)
+	if got := d.UseSessionForMethod(ScopeMethodReadRow); got != false {
+		t.Errorf("Expected initial UseSessionForMethod(ReadRow) to be false, got %v", got)
 	}
 
 	d.SetSessionLoad(1.0)
-	if got := d.UseSession(); got != true {
-		t.Errorf("Expected UseSession() to be true after SetSessionLoad(1.0), got %v", got)
+	if got := d.UseSessionForMethod(ScopeMethodReadRow); got != true {
+		t.Errorf("Expected UseSessionForMethod(ReadRow) to be true after SetSessionLoad(1.0), got %v", got)
 	}
 }
 
@@ -80,7 +80,7 @@ func TestDiverterProbabilistic(t *testing.T) {
 	trueCount := 0
 
 	for i := 0; i < iterations; i++ {
-		if d.UseSession() {
+		if d.UseSessionForMethod(ScopeMethodReadRow) {
 			trueCount++
 		}
 	}
@@ -107,7 +107,7 @@ func TestDiverterConcurrentAccess(t *testing.T) {
 				if j%10 == 0 {
 					d.SetSessionLoad(float64(workerID) / float64(numWorkers))
 				}
-				_ = d.UseSession()
+				_ = d.UseSessionForMethod(ScopeMethodReadRow)
 			}
 		}(i)
 	}
@@ -135,16 +135,16 @@ func TestDiverterApplySessionClientConfiguration(t *testing.T) {
 		}
 	})
 
-	t.Run("deprecated session_load applies only to ReadRow and MutateRow", func(t *testing.T) {
+	t.Run("deprecated session_load applies only to ReadRow and MutateRow when diversion config is absent", func(t *testing.T) {
 		d := NewDiverter(0.0)
 		d.ApplySessionClientConfiguration(&bigtablepb.SessionClientConfiguration{
 			SessionLoad: 1.0,
 		})
-		if got := d.SessionLoadForMethod("ReadRow"); got != 1.0 {
-			t.Errorf("SessionLoadForMethod(ReadRow) = %v, want 1.0", got)
+		if got := d.SessionLoadForMethod(ScopeMethodReadRow); got != 1.0 {
+			t.Errorf("SessionLoadForMethod(%q) = %v, want 1.0", ScopeMethodReadRow, got)
 		}
-		if got := d.SessionLoadForMethod("Bigtable.MutateRow"); got != 1.0 {
-			t.Errorf("SessionLoadForMethod(MutateRow) = %v, want 1.0", got)
+		if got := d.SessionLoadForMethod(ScopeMethodMutateRow); got != 1.0 {
+			t.Errorf("SessionLoadForMethod(%q) = %v, want 1.0", ScopeMethodMutateRow, got)
 		}
 		for _, m := range []string{
 			ScopeMethodCheckAndMutateRow,
@@ -160,7 +160,61 @@ func TestDiverterApplySessionClientConfiguration(t *testing.T) {
 		}
 	})
 
-	t.Run("global_diversion overrides deprecated session_load for all methods", func(t *testing.T) {
+	t.Run("diversion config present ignores deprecated session_load completely", func(t *testing.T) {
+		d := NewDiverter(0.0)
+		d.ApplySessionClientConfiguration(&bigtablepb.SessionClientConfiguration{
+			SessionLoad: 1.0,
+			SessionDiversionConfiguration: &bigtablepb.SessionDiversionConfiguration{
+				DiversionStrategy: &bigtablepb.SessionDiversionConfiguration_PerScopeDiversion_{
+					PerScopeDiversion: &bigtablepb.SessionDiversionConfiguration_PerScopeDiversion{
+						ScopeDiversions: map[string]*bigtablepb.SessionScopeDiversionConfiguration{
+							ScopeMethodCheckAndMutateRow: {SessionLoad: 1.0},
+						},
+					},
+				},
+			},
+		})
+		if got := d.SessionLoadForMethod(ScopeMethodCheckAndMutateRow); got != 1.0 {
+			t.Errorf("SessionLoadForMethod(%q) = %v, want 1.0", ScopeMethodCheckAndMutateRow, got)
+		}
+		for _, m := range []string{
+			ScopeMethodReadRow,
+			ScopeMethodMutateRow,
+			ScopeMethodReadModifyWriteRow,
+			ScopeMethodMutateRows,
+		} {
+			if got := d.SessionLoadForMethod(m); got != 0 {
+				t.Errorf("SessionLoadForMethod(%q) = %v, want 0", m, got)
+			}
+			if d.UseSessionForMethod(m) {
+				t.Errorf("UseSessionForMethod(%q) = true, want false", m)
+			}
+		}
+	})
+
+	t.Run("empty diversion config resolves to zero for all scopes", func(t *testing.T) {
+		d := NewDiverter(1.0)
+		d.ApplySessionClientConfiguration(&bigtablepb.SessionClientConfiguration{
+			SessionLoad:                   1.0,
+			SessionDiversionConfiguration: &bigtablepb.SessionDiversionConfiguration{},
+		})
+		for _, m := range []string{
+			ScopeMethodReadRow,
+			ScopeMethodMutateRow,
+			ScopeMethodCheckAndMutateRow,
+			ScopeMethodReadModifyWriteRow,
+			ScopeMethodMutateRows,
+		} {
+			if got := d.SessionLoadForMethod(m); got != 0 {
+				t.Errorf("SessionLoadForMethod(%q) = %v, want 0", m, got)
+			}
+			if d.UseSessionForMethod(m) {
+				t.Errorf("UseSessionForMethod(%q) = true, want false", m)
+			}
+		}
+	})
+
+	t.Run("global_diversion sets uniform load across all served methods", func(t *testing.T) {
 		d := NewDiverter(0.0)
 		d.ApplySessionClientConfiguration(&bigtablepb.SessionClientConfiguration{
 			SessionLoad: 0.0,
@@ -188,7 +242,7 @@ func TestDiverterApplySessionClientConfiguration(t *testing.T) {
 		}
 	})
 
-	t.Run("per_scope_diversion sets method-specific loads and overrides session_load", func(t *testing.T) {
+	t.Run("per_scope_diversion sets method-specific loads and ignores unserved scopes", func(t *testing.T) {
 		d := NewDiverter(0.0)
 		d.ApplySessionClientConfiguration(&bigtablepb.SessionClientConfiguration{
 			SessionLoad: 0.5,
@@ -196,11 +250,12 @@ func TestDiverterApplySessionClientConfiguration(t *testing.T) {
 				DiversionStrategy: &bigtablepb.SessionDiversionConfiguration_PerScopeDiversion_{
 					PerScopeDiversion: &bigtablepb.SessionDiversionConfiguration_PerScopeDiversion{
 						ScopeDiversions: map[string]*bigtablepb.SessionScopeDiversionConfiguration{
-							"method:Bigtable.ReadRow":           {SessionLoad: 1.0},
-							"method:Bigtable.MutateRow":         {SessionLoad: 0.0},
-							"method:Bigtable.CheckAndMutateRow": {SessionLoad: 1.0},
-							"method:Bigtable.MutateRows":        {SessionLoad: 0.25},
-							// Unsupported scopes must be ignored:
+							ScopeMethodReadRow:           {SessionLoad: 1.0},
+							ScopeMethodMutateRow:         {SessionLoad: 0.0},
+							ScopeMethodCheckAndMutateRow: {SessionLoad: 1.0},
+							ScopeMethodMutateRows:        {SessionLoad: 0.25},
+							// Unserved / unsupported scopes must be ignored:
+							"method:Bigtable.SampleRowKeys":              {SessionLoad: 1.0},
 							"table:my_table":                             {SessionLoad: 1.0},
 							"method:Bigtable.ReadModifyWriteRow,table:t": {SessionLoad: 1.0},
 						},
@@ -221,22 +276,29 @@ func TestDiverterApplySessionClientConfiguration(t *testing.T) {
 				t.Errorf("SessionLoadForMethod(%q) = %v, want %v", scope, got, want)
 			}
 		}
-		if !d.UseSessionForMethod("ReadRow") {
-			t.Errorf("UseSessionForMethod(ReadRow) = false, want true")
+		if !d.UseSessionForMethod(ScopeMethodReadRow) {
+			t.Errorf("UseSessionForMethod(%q) = false, want true", ScopeMethodReadRow)
 		}
-		if d.UseSessionForMethod("MutateRow") {
-			t.Errorf("UseSessionForMethod(MutateRow) = true, want false")
+		if d.UseSessionForMethod(ScopeMethodMutateRow) {
+			t.Errorf("UseSessionForMethod(%q) = true, want false", ScopeMethodMutateRow)
 		}
-		if !d.UseSessionForMethod("CheckAndMutateRow") {
-			t.Errorf("UseSessionForMethod(CheckAndMutateRow) = false, want true")
+		if !d.UseSessionForMethod(ScopeMethodCheckAndMutateRow) {
+			t.Errorf("UseSessionForMethod(%q) = false, want true", ScopeMethodCheckAndMutateRow)
 		}
-		if d.UseSessionForMethod("ReadModifyWriteRow") {
-			t.Errorf("UseSessionForMethod(ReadModifyWriteRow) = true, want false")
+		if d.UseSessionForMethod(ScopeMethodReadModifyWriteRow) {
+			t.Errorf("UseSessionForMethod(%q) = true, want false", ScopeMethodReadModifyWriteRow)
+		}
+		if got := d.SessionLoadForMethod("method:Bigtable.SampleRowKeys"); got != 0 {
+			t.Errorf("SessionLoadForMethod(unserved SampleRowKeys) = %v, want 0", got)
+		}
+		// Shorthand method names without "method:Bigtable." prefix must not match.
+		if got := d.SessionLoadForMethod("ReadRow"); got != 0 {
+			t.Errorf("SessionLoadForMethod(\"ReadRow\") = %v, want 0 (canonical key required)", got)
 		}
 
 		snap := d.Snapshot()
-		if snap.ScopeLoads == nil {
-			t.Fatal("Snapshot().ScopeLoads = nil, want non-nil map")
+		if len(snap.ScopeLoads) != len(wantLoads) {
+			t.Fatalf("len(Snapshot().ScopeLoads) = %d, want %d", len(snap.ScopeLoads), len(wantLoads))
 		}
 		if got := snap.ScopeLoads[ScopeMethodCheckAndMutateRow]; got != 1.0 {
 			t.Errorf("Snapshot().ScopeLoads[%q] = %v, want 1.0", ScopeMethodCheckAndMutateRow, got)
@@ -244,6 +306,8 @@ func TestDiverterApplySessionClientConfiguration(t *testing.T) {
 		if _, exists := snap.ScopeLoads["table:my_table"]; exists {
 			t.Errorf("Snapshot().ScopeLoads unexpectedly contains unsupported scope 'table:my_table'")
 		}
+		if _, exists := snap.ScopeLoads["method:Bigtable.SampleRowKeys"]; exists {
+			t.Errorf("Snapshot().ScopeLoads unexpectedly contains unserved scope 'method:Bigtable.SampleRowKeys'")
+		}
 	})
 }
-

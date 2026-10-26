@@ -142,8 +142,8 @@ Every rule is a MUST. Violations are bugs, not preferences.
 - **Adding a 4th method to `SessionDebugProvider`?** Update **every** fake in `afez/afez_test.go`, `flightz/flightz_test.go`, `sessionz/sessionz_test.go`, and any new debug-page tests — the interface is defensive by design.
 
 ### B4. `Diverter` evaluates global and per-scope (`method`) session load ratios
-- `Diverter` stores a uniform `SessionLoad` plus optional per-scope (`"method:Bigtable.<Method>"`) session load overrides (`scopeLoads`), exposes `UseSession() bool` / `UseSessionForMethod(method string) bool`, and maintains two counters (`SessionPicks`, `ClassicPicks`).
-- Only the `method` scope dimension (`"method:Bigtable.<Method>"`) is supported; `TableShim` determines which method scope a given `TableAPI` call maps to (e.g., `ReadRow` and single-row `ReadRows` → `method:Bigtable.ReadRow`; non-conditional `Apply` → `method:Bigtable.MutateRow`; conditional `Apply` → `method:Bigtable.CheckAndMutateRow`; `ApplyBulk` → `method:Bigtable.MutateRows`; `ApplyReadModifyWrite` → `method:Bigtable.ReadModifyWriteRow`).
+- `Diverter` stores an immutable per-scope (`"method:Bigtable.<Method>"`) session load map (`scopeLoads`) across the client's served method scopes, exposes `UseSessionForMethod(scope string) bool` / `SessionLoadForMethod(scope string) float64`, and maintains two counters (`SessionPicks`, `ClassicPicks`).
+- Only the `method` scope dimension (`"method:Bigtable.<Method>"`) for served RPC methods is supported (`ScopeMethodReadRow`, `ScopeMethodMutateRow`, `ScopeMethodCheckAndMutateRow`, `ScopeMethodReadModifyWriteRow`, `ScopeMethodMutateRows`); `TableShim` determines which canonical method scope a given `TableAPI` call maps to (e.g., `ReadRow` and single-row `ReadRows` → `method:Bigtable.ReadRow`; non-conditional `Apply` → `method:Bigtable.MutateRow`; conditional `Apply` → `method:Bigtable.CheckAndMutateRow`; `ApplyBulk` → `method:Bigtable.MutateRows`; `ApplyReadModifyWrite` → `method:Bigtable.ReadModifyWriteRow`).
 - MUST NOT gain per-row/per-key stickiness. It is a stochastic gate, not a router. Any invariant that assumes "the same call went to the same place last time" MUST NOT rely on `Diverter`.
 
 ### B5. `TableShim` MUST NOT reach into `Session` or pool internals
@@ -205,7 +205,7 @@ Every rule is a MUST. Violations are bugs, not preferences.
 | Session pool composition (min/max/waiters) | `SessionPoolImpl` | driven by `ClientConfigurationManager.UpdateConfig` |
 | Pool sizing formula + `ScaleDecision` | `PoolSizer` (`pool_sizer.go:154`) | `session_pool_scaling.go`, z-pages, tests MUST consume `Decide()`/`ScaleDecision`; MUST NOT recompute `EffectivePending`/`IdleHeadroom`/`DesiredCapacity` from raw `PoolStats` |
 | Sizer inputs (`PoolStats`) | `SessionPoolImpl` via injected `StatsFetcher` | `PoolSizer` reads via fetcher closure; MUST NOT touch pool internals directly |
-| Traffic split ratio (session vs classic) | `Diverter.sessionLoadBits` (atomic float64) + `Diverter.scopeLoads` (atomic pointer to per-scope map) | driven by `ClientConfigurationManager.AddSessionDiversionListener` / `AddSessionLoadListener` |
+| Traffic split ratio (session vs classic) | `Diverter.scopeLoads` (atomic pointer to per-scope map across served `"method:Bigtable.<Method>"` scopes) | driven by `ClientConfigurationManager.AddSessionDiversionListener` |
 | Server-driven config | `ClientConfigurationManager.currentConfig` (RW-mutex) | pools subscribe via listener |
 | Retry classification (`AttemptState`) | `session_vrpc.go` tag sites | `RetryingVRpc` reads via `ClassifyErr`; MUST NOT re-classify |
 | Retry policy (max attempts, backoff) | `RetryingVRpc` | Session and pool MUST NOT enforce their own retry caps |

@@ -335,7 +335,7 @@ func (m *ClientConfigurationManager) Snapshot() ConfigSnapshot {
 // As a consequence, the listener callback runs under m.mu. Listeners
 // must not call back into the manager (e.g. getConfig, or any other
 // method that takes m.mu) from within the callback or they will
-// deadlock. The wrappers AddSessionPoolListener / AddSessionLoadListener
+// deadlock. The wrappers AddSessionPoolListener / AddSessionDiversionListener
 // and their downstream consumers stay self-contained, so the invariant
 // holds today.
 func (m *ClientConfigurationManager) addListener(listener configListener) func() {
@@ -399,53 +399,15 @@ func (m *ClientConfigurationManager) AddSessionPoolListener(listener func(*bigta
 // ClientConfiguration proto also carries a TelemetryConfiguration message
 // (see google/bigtable/v2/session.proto) that we currently ignore. Once the
 // telemetry surface stabilizes, add an AddTelemetryConfigurationListener
-// sibling of AddSessionPoolListener / AddSessionLoadListener and route the
+// sibling of AddSessionPoolListener / AddSessionDiversionListener and route the
 // server-supplied value through it. Raised by mutianf on PR #19986.
-
-// AddSessionLoadListener registers a callback that receives the server-driven
-// SessionLoad value (0.0 = all-classic, 1.0 = all-session) on every
-// configuration update from a successful poll. Returns an unregister thunk.
-//
-// Unlike AddSessionPoolListener, this skips the immediate registration-time
-// fire that would otherwise deliver the default config (seq=0). Callers rely
-// on the bootstrap value they passed to NewDiverter remaining in effect until
-// the control plane actually responds — firing with seq=0's default
-// SessionLoad=0 would silently clobber that bootstrap.
-//
-// Subsequent fires are filtered by per-listener load diff: if the polled
-// SessionLoad equals the value last delivered to this listener, the inner
-// callback is skipped so SessionLoad reassignment doesn't ripple to the
-// Diverter on polls where only unrelated fields (e.g., PollingInterval)
-// changed.
-func (m *ClientConfigurationManager) AddSessionLoadListener(listener func(load float64)) func() {
-	var (
-		diffMu  sync.Mutex
-		hasPrev bool
-		prev    float64
-	)
-	return m.addListener(func(cfg *bigtablepb.ClientConfiguration, seq int64) {
-		if seq == 0 {
-			return
-		}
-		load := float64(cfg.GetSessionConfiguration().GetSessionLoad())
-		diffMu.Lock()
-		if hasPrev && prev == load {
-			diffMu.Unlock()
-			return
-		}
-		hasPrev = true
-		prev = load
-		diffMu.Unlock()
-		listener(load)
-	})
-}
 
 // AddSessionDiversionListener registers a callback that receives the
 // server-driven SessionClientConfiguration whenever session diversion
 // settings (SessionLoad or SessionDiversionConfiguration) change on a
 // successful poll. Returns an unregister thunk.
 //
-// Like AddSessionLoadListener, this skips the immediate registration-time
+// Unlike AddSessionPoolListener, this skips the immediate registration-time
 // fire (seq=0) so the Diverter's bootstrap configuration remains in effect
 // until the control plane responds.
 func (m *ClientConfigurationManager) AddSessionDiversionListener(listener func(*bigtablepb.SessionClientConfiguration)) func() {
@@ -479,37 +441,15 @@ func (m *ClientConfigurationManager) AddSessionDiversionListener(listener func(*
 	})
 }
 
-// isSessionLoadZero reports whether sc results in zero session load across all
-// supported scopes once both deprecated SessionLoad and
-// SessionDiversionConfiguration are evaluated.
+// isSessionLoadZero reports whether sc diverts zero traffic across all served
+// method scopes using the shared resolveScopeSessionLoads rule.
 func isSessionLoadZero(sc *bigtablepb.SessionClientConfiguration) bool {
-	if sc == nil {
-		return true
-	}
-	if divCfg := sc.GetSessionDiversionConfiguration(); divCfg != nil {
-		switch strategy := divCfg.GetDiversionStrategy().(type) {
-		case *bigtablepb.SessionDiversionConfiguration_GlobalDiversion:
-			return strategy.GlobalDiversion.GetSessionLoad() <= 0
-		case *bigtablepb.SessionDiversionConfiguration_PerScopeDiversion_:
-			loads := make(map[string]float64)
-			if baseLoad := float64(sc.GetSessionLoad()); baseLoad > 0 {
-				loads[ScopeMethodReadRow] = baseLoad
-				loads[ScopeMethodMutateRow] = baseLoad
-			}
-			for scope, scopeCfg := range strategy.PerScopeDiversion.GetScopeDiversions() {
-				if isSupportedMethodScope(scope) {
-					loads[normalizeMethodScope(scope)] = float64(scopeCfg.GetSessionLoad())
-				}
-			}
-			for _, v := range loads {
-				if v > 0 {
-					return false
-				}
-			}
-			return true
+	for _, load := range resolveScopeSessionLoads(sc) {
+		if load > 0 {
+			return false
 		}
 	}
-	return sc.GetSessionLoad() <= 0
+	return true
 }
 
 // pollingLoop continuously polls the Bigtable control plane at the configured interval.

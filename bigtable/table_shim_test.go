@@ -1113,7 +1113,7 @@ func TestTableShim_Apply_UnimplementedFallsBackToClassic(t *testing.T) {
 
 // TestTableShim_BreakerTrippedSkipsSession: once the counter hits
 // the breaker's configured threshold, subsequent ReadRow /
-// Apply skip the session path outright at useSession(). Threshold
+// Apply skip the session path outright at useSessionForMethod. Threshold
 // overridden to 1 so one Unimplemented trips.
 func TestTableShim_BreakerTrippedSkipsSession(t *testing.T) {
 	classic := &mockClassicTable{}
