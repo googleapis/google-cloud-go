@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"os"
@@ -27,11 +28,13 @@ import (
 
 	internalTrace "cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/storage/internal"
+	"github.com/googleapis/gax-go/v2/apierror"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	otelcodes "go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/googleapi"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/stats"
 	"google.golang.org/grpc/status"
@@ -59,6 +62,7 @@ const (
 	defaultTracerName = "cloud.google.com/go/storage"
 	gcpClientArtifact = "cloud.google.com/go/storage"
 	gcpClientService  = "storage"
+	storageURIAttrKey = "gcp.storage.uri"
 )
 
 // isOTelTracingDevEnabled checks the development flag until experimental feature is launched.
@@ -75,10 +79,22 @@ func tracer() trace.Tracer {
 	return otel.Tracer(defaultTracerName, trace.WithInstrumentationVersion(internal.Version))
 }
 
-func startSpanWithBucket(ctx context.Context, client *Client, bucket string, name string, opts ...trace.SpanStartOption) (context.Context, trace.Span) {
+func withStorageURI(bucket, object string) trace.SpanStartOption {
+	if !isOTelTracingDevEnabled() || bucket == "" {
+		return trace.WithAttributes()
+	}
+	return trace.WithAttributes(attribute.String(storageURIAttrKey, "gs://"+bucket+"/"+object))
+}
+
+func startSpanWithBucket(ctx context.Context, client *Client, bucket, name string, opts ...trace.SpanStartOption) (context.Context, trace.Span) {
+	return startSpanWithObject(ctx, client, bucket, "", name, opts...)
+}
+
+func startSpanWithObject(ctx context.Context, client *Client, bucket, object, name string, opts ...trace.SpanStartOption) (context.Context, trace.Span) {
 	if !isOTelTracingDevEnabled() {
 		return startSpan(ctx, name, opts...)
 	}
+	opts = append(opts, withStorageURI(bucket, object))
 	if client != nil && client.bucketMetadataCache != nil && bucket != "" {
 		ctx = context.WithValue(ctx, cacheContextKey, client.bucketMetadataCache)
 		ctx = context.WithValue(ctx, bucketContextKey, bucket)
@@ -154,9 +170,61 @@ func isNotFoundError(err error) bool {
 	return false
 }
 
+// errorAttributes returns the error.type and, when known, gcp.errors.domain
+// span attributes for err. It returns no attributes for a nil error or io.EOF.
+//
+// error.type reuses computeErrorType, the classifier behind the error.type
+// metric attribute, so spans and metrics report the same value for a failure.
+// gcp.errors.domain is the google.rpc.ErrorInfo domain of the error response.
+func errorAttributes(err error) []attribute.KeyValue {
+	if err == nil || errors.Is(err, io.EOF) {
+		return nil
+	}
+	// Infer the transport from the error, since endSpan does not know it:
+	// HTTP errors always carry a *googleapi.Error.
+	var httpErr *googleapi.Error
+	isHTTP := errors.As(err, &httpErr)
+	attrs := []attribute.KeyValue{attribute.String("error.type", computeErrorType(err, isHTTP, 0))}
+	if domain := errorDomain(err); domain != "" {
+		attrs = append(attrs, attribute.String("gcp.errors.domain", domain))
+	}
+	return attrs
+}
+
+// errorDomain returns the google.rpc.ErrorInfo domain of err, or "" if the
+// error response carried no ErrorInfo.
+func errorDomain(err error) string {
+	// Check for an existing APIError first: the generated JSON client returns
+	// a googleapi.Error wrapping an APIError, and ParseError on that prefers
+	// the APIError's mapped gRPC status, which carries no ErrorInfo.
+	var apiErr *apierror.APIError
+	if errors.As(err, &apiErr) {
+		return apiErr.Domain()
+	}
+	var httpErr *googleapi.Error
+	if errors.As(err, &httpErr) {
+		if apiErr, ok := apierror.ParseError(httpErr, false); ok {
+			return apiErr.Domain()
+		}
+		return ""
+	}
+	// For gRPC, read the ErrorInfo directly instead of parsing every detail
+	// with apierror.ParseError.
+	if st, ok := status.FromError(err); ok {
+		for _, d := range st.Details() {
+			if info, ok := d.(*errdetails.ErrorInfo); ok {
+				return info.GetDomain()
+			}
+		}
+	}
+	return ""
+}
+
 // endSpan retrieves the current span from ctx and completes the span.
-// If an error occurs, the error is recorded as an exception span event for this span,
-// and the span status is set in the form of a code and a description.
+// If an error occurs, the error.type and, when known, gcp.errors.domain
+// attributes are set, the error is recorded as an exception span event for
+// this span, and the span status is set in the form of a code and a
+// description.
 func endSpan(ctx context.Context, err error) {
 	if err != nil && isNotFoundError(err) {
 		isBucket, _ := ctx.Value(isBucketContextKey).(bool)
@@ -174,6 +242,7 @@ func endSpan(ctx context.Context, err error) {
 	} else {
 		span := trace.SpanFromContext(ctx)
 		if err != nil {
+			span.SetAttributes(errorAttributes(err)...)
 			span.SetStatus(otelcodes.Error, err.Error())
 			span.RecordError(err)
 		}

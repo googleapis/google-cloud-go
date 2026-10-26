@@ -26,12 +26,15 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/iam"
+	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/storage/internal"
 	gapic "cloud.google.com/go/storage/internal/apiv2"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/go-cmp/cmp"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/apierror"
 	"go.opentelemetry.io/otel/attribute"
 	otcodes "go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/sdk/instrumentation"
@@ -39,6 +42,7 @@ import (
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
@@ -366,6 +370,559 @@ func TestEndSpanEviction(t *testing.T) {
 	}
 }
 
+func TestErrorAttributes(t *testing.T) {
+	grpcWithErrorInfo, err := status.New(codes.Unimplemented, "Appendable objects are not supported for this request.").WithDetails(&errdetails.ErrorInfo{
+		Reason: "GRPC_APPENDABLE_OBJECT_NOT_SUPPORTED",
+		Domain: "storage.googleapis.com",
+	})
+	if err != nil {
+		t.Fatalf("WithDetails: %v", err)
+	}
+	httpWithErrorInfo := &googleapi.Error{
+		Code:    http.StatusForbidden,
+		Message: "Permission denied.",
+		Body:    `{"error":{"code":403,"message":"Permission denied.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com"}]}}`,
+	}
+
+	grpcWithoutErrorInfo, err := status.New(codes.ResourceExhausted, "Rate limit exceeded.").WithDetails(&errdetails.RetryInfo{})
+	if err != nil {
+		t.Fatalf("WithDetails: %v", err)
+	}
+	// The generated JSON client returns a googleapi.Error wrapping an APIError.
+	generatedHTTPErr := &googleapi.Error{
+		Code:    http.StatusForbidden,
+		Message: "Permission denied.",
+		Body:    `{"error":{"code":403,"message":"Permission denied.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"storage.googleapis.com"}]}}`,
+	}
+	apiErr, ok := apierror.ParseError(generatedHTTPErr, false)
+	if !ok {
+		t.Fatal("apierror.ParseError failed")
+	}
+	generatedHTTPErr.Wrap(apiErr)
+
+	tests := []struct {
+		name       string
+		err        error
+		wantType   string // "" means the attribute must not be set.
+		wantDomain string // "" means the attribute must not be set.
+	}{
+		{
+			name:     "HTTP not found",
+			err:      fmt.Errorf("%w: %w", ErrBucketNotExist, &googleapi.Error{Code: http.StatusNotFound, Message: "The specified bucket does not exist."}),
+			wantType: "NOT_FOUND",
+		},
+		{
+			name:     "HTTP precondition failed",
+			err:      &googleapi.Error{Code: http.StatusPreconditionFailed, Message: "At least one of the pre-conditions you specified did not hold."},
+			wantType: "FAILED_PRECONDITION",
+		},
+		{
+			name: "HTTP XML error",
+			err: &googleapi.Error{
+				Code: http.StatusRequestedRangeNotSatisfiable,
+				Body: "<?xml version='1.0' encoding='UTF-8'?><Error><Code>InvalidRange</Code><Message>The requested range cannot be satisfied.</Message></Error>",
+			},
+			wantType: "OUT_OF_RANGE",
+		},
+		{
+			name:       "HTTP error with ErrorInfo",
+			err:        httpWithErrorInfo,
+			wantType:   "PERMISSION_DENIED",
+			wantDomain: "googleapis.com",
+		},
+		{
+			name:     "gRPC not found",
+			err:      fmt.Errorf("%w: %w", ErrObjectNotExist, status.Error(codes.NotFound, "No such object: bucket/obj")),
+			wantType: "NOT_FOUND",
+		},
+		{
+			name:       "gRPC error with ErrorInfo",
+			err:        grpcWithErrorInfo.Err(),
+			wantType:   "UNIMPLEMENTED",
+			wantDomain: "storage.googleapis.com",
+		},
+		{
+			name:       "wrapped gRPC error with ErrorInfo",
+			err:        fmt.Errorf("storage: write failed: %w", grpcWithErrorInfo.Err()),
+			wantType:   "UNIMPLEMENTED",
+			wantDomain: "storage.googleapis.com",
+		},
+		{
+			name:     "context canceled",
+			err:      context.Canceled,
+			wantType: "CANCELLED",
+		},
+		{
+			name:     "deadline exceeded",
+			err:      context.DeadlineExceeded,
+			wantType: "TIMEOUT",
+		},
+		{
+			name:     "client-side error",
+			err:      errors.New("storage: bucket name is empty"),
+			wantType: "UNKNOWN",
+		},
+		{
+			name:       "HTTP error with ErrorInfo from the generated client",
+			err:        generatedHTTPErr,
+			wantType:   "PERMISSION_DENIED",
+			wantDomain: "storage.googleapis.com",
+		},
+		{
+			name:       "wrapped HTTP error with ErrorInfo from the generated client",
+			err:        fmt.Errorf("%w: %w", ErrBucketNotExist, generatedHTTPErr),
+			wantType:   "NOT_FOUND",
+			wantDomain: "storage.googleapis.com",
+		},
+		{
+			name:     "bare ErrObjectNotExist",
+			err:      ErrObjectNotExist,
+			wantType: "NOT_FOUND",
+		},
+		{
+			name:     "bare ErrBucketNotExist",
+			err:      ErrBucketNotExist,
+			wantType: "NOT_FOUND",
+		},
+		{
+			name:     "gRPC not found with key in object name",
+			err:      fmt.Errorf("%w: %w", ErrObjectNotExist, status.Error(codes.NotFound, "No such object: bucket/my-key")),
+			wantType: "NOT_FOUND",
+		},
+		{
+			name:     "gRPC not found with timeout in object name",
+			err:      status.Error(codes.NotFound, "No such object: bucket/timeout.log"),
+			wantType: "NOT_FOUND",
+		},
+		{
+			name:     "HTTP not found with eof in object name",
+			err:      &googleapi.Error{Code: http.StatusNotFound, Message: "No such object: bucket/geofence.json"},
+			wantType: "NOT_FOUND",
+		},
+		{
+			name:     "gRPC invalid page token",
+			err:      status.Error(codes.InvalidArgument, "Invalid page token."),
+			wantType: "INVALID_ARGUMENT",
+		},
+		{
+			name:     "gRPC unavailable with network error message",
+			err:      status.Error(codes.Unavailable, "connection error: dial tcp: connection refused"),
+			wantType: "CONNECTION_ERROR",
+		},
+		{
+			name:     "gRPC unavailable from the service",
+			err:      status.Error(codes.Unavailable, "The service is currently unavailable."),
+			wantType: "UNAVAILABLE",
+		},
+		{
+			name:     "googleapi.Error without an HTTP code",
+			err:      &googleapi.Error{Message: "something went wrong"},
+			wantType: "UNKNOWN",
+		},
+		{
+			name:     "wrapped deadline exceeded",
+			err:      fmt.Errorf("storage: read failed: %w", context.DeadlineExceeded),
+			wantType: "TIMEOUT",
+		},
+		{
+			name:     "gRPC deadline exceeded from the service",
+			err:      status.Error(codes.DeadlineExceeded, "Deadline exceeded."),
+			wantType: "DEADLINE_EXCEEDED",
+		},
+		{
+			name:     "gRPC client-side deadline",
+			err:      status.Error(codes.DeadlineExceeded, "context deadline exceeded"),
+			wantType: "TIMEOUT",
+		},
+		{
+			name:     "gRPC error with details but no ErrorInfo",
+			err:      grpcWithoutErrorInfo.Err(),
+			wantType: "RESOURCE_EXHAUSTED",
+		},
+		{
+			name:     "gRPC crc32c mismatch on upload",
+			err:      status.Error(codes.InvalidArgument, "Object crc32c mismatch: server computed 1234, client provided 5678."),
+			wantType: "CHECKSUM_MISMATCH",
+		},
+		{
+			name:     "HTTP crc32c mismatch on upload",
+			err:      &googleapi.Error{Code: http.StatusBadRequest, Message: `Provided CRC32C "AAAAAA==" doesn't match calculated CRC32C "BBBBBB==".`},
+			wantType: "CHECKSUM_MISMATCH",
+		},
+		{
+			name:     "CRC mismatch on read",
+			err:      fmt.Errorf("%w: bad CRC on read: got %d, want %d", errChecksumMismatch, 1, 2),
+			wantType: "CHECKSUM_MISMATCH",
+		},
+		{
+			name:     "wrapped CRC mismatch on read",
+			err:      fmt.Errorf("storage: read failed: %w", fmt.Errorf("%w: bad CRC on chunk read: got %d, want %d", errChecksumMismatch, 1, 2)),
+			wantType: "CHECKSUM_MISMATCH",
+		},
+		{
+			name:     "invalid argument mentioning crc32c is not a checksum mismatch",
+			err:      status.Error(codes.InvalidArgument, "crc32c must be set when finishing a write."),
+			wantType: "INVALID_ARGUMENT",
+		},
+		{
+			name:     "wrapped io.EOF sets no attributes",
+			err:      fmt.Errorf("storage: read: %w", io.EOF),
+			wantType: "",
+		},
+		{
+			name:     "nil error sets no attributes",
+			err:      nil,
+			wantType: "",
+		},
+		{
+			name:     "io.EOF does not set error.type",
+			err:      io.EOF,
+			wantType: "",
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			got := map[attribute.Key]string{}
+			for _, kv := range errorAttributes(tc.err) {
+				got[kv.Key] = kv.Value.AsString()
+			}
+			want := map[attribute.Key]string{}
+			if tc.wantType != "" {
+				want["error.type"] = tc.wantType
+			}
+			if tc.wantDomain != "" {
+				want["gcp.errors.domain"] = tc.wantDomain
+			}
+			if diff := cmp.Diff(want, got); diff != "" {
+				t.Errorf("errorAttributes(%v) mismatch (-want +got):\n%s", tc.err, diff)
+			}
+		})
+	}
+}
+
+func TestStorageTraceEndSpanErrorAttributes(t *testing.T) {
+	ctx := context.Background()
+	grpcWithErrorInfo, err := status.New(codes.PermissionDenied, "Permission denied.").WithDetails(&errdetails.ErrorInfo{
+		Reason: "SERVICE_DISABLED",
+		Domain: "storage.googleapis.com",
+	})
+	if err != nil {
+		t.Fatalf("WithDetails: %v", err)
+	}
+
+	tests := []struct {
+		name      string
+		otelOn    bool
+		err       error
+		wantAttrs map[attribute.Key]string
+	}{
+		{
+			name:      "error sets error.type and gcp.errors.domain",
+			otelOn:    true,
+			err:       grpcWithErrorInfo.Err(),
+			wantAttrs: map[attribute.Key]string{"error.type": "PERMISSION_DENIED", "gcp.errors.domain": "storage.googleapis.com"},
+		},
+		{
+			name:      "gRPC not found error sets error.type",
+			otelOn:    true,
+			err:       status.Error(codes.NotFound, "No such object: bucket/obj"),
+			wantAttrs: map[attribute.Key]string{"error.type": "NOT_FOUND"},
+		},
+		{
+			name:      "HTTP not found error sets error.type",
+			otelOn:    true,
+			err:       fmt.Errorf("%w: %w", ErrBucketNotExist, &googleapi.Error{Code: http.StatusNotFound, Message: "The specified bucket does not exist."}),
+			wantAttrs: map[attribute.Key]string{"error.type": "NOT_FOUND"},
+		},
+		{
+			name:      "nil error sets no error attributes",
+			otelOn:    true,
+			err:       nil,
+			wantAttrs: map[attribute.Key]string{},
+		},
+		{
+			// The legacy internalTrace path still ends a span through the
+			// global provider; it must not get the new attributes.
+			name:      "legacy internalTrace path unchanged",
+			otelOn:    false,
+			err:       grpcWithErrorInfo.Err(),
+			wantAttrs: map[attribute.Key]string{},
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if tc.otelOn {
+				t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+			} else {
+				t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "false")
+			}
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() {
+				te.Unregister(ctx)
+			})
+
+			spanCtx, _ := startSpan(ctx, "Object.Attrs")
+			endSpan(spanCtx, tc.err)
+
+			spans := te.Spans()
+			if len(spans) != 1 {
+				t.Fatalf("expected 1 span, got %d", len(spans))
+			}
+			got := map[attribute.Key]string{}
+			for _, kv := range spans[0].Attributes {
+				if kv.Key == "error.type" || kv.Key == "gcp.errors.domain" {
+					got[kv.Key] = kv.Value.AsString()
+				}
+			}
+			if diff := cmp.Diff(tc.wantAttrs, got); diff != "" {
+				t.Errorf("error attributes mismatch (-want +got):\n%s", diff)
+			}
+		})
+	}
+}
+
+// storageURIAttr returns the gcp.storage.uri value on the span named spanName,
+// and whether it was set.
+func storageURIAttr(t *testing.T, spans tracetest.SpanStubs, spanName string) (string, bool) {
+	t.Helper()
+	for _, s := range spans {
+		if s.Name != appendPackageName(spanName) {
+			continue
+		}
+		for _, a := range s.Attributes {
+			if a.Key == storageURIAttrKey {
+				return a.Value.AsString(), true
+			}
+		}
+		return "", false
+	}
+	t.Fatalf("span %q not found", spanName)
+	return "", false
+}
+
+func TestStorageURIAttribute(t *testing.T) {
+	const (
+		bucket    = "my-bucket"
+		object    = "dir/my object.txt"
+		dstBucket = "dst-bucket"
+		dstObject = "dst/object.txt"
+	)
+	wantObjURI := "gs://" + bucket + "/" + object
+	wantDstURI := "gs://" + dstBucket + "/" + dstObject
+	wantBucketURI := "gs://" + bucket + "/"
+
+	tests := []struct {
+		name     string // Test name; defaults to spanName.
+		spanName string
+		op       func(ctx context.Context, c *Client)
+		wantURI  string
+	}{
+		// Object-scoped operations.
+		{
+			spanName: "Object.Attrs",
+			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).Object(object).Attrs(ctx) },
+			wantURI:  wantObjURI,
+		},
+		{
+			spanName: "Object.Update",
+			op: func(ctx context.Context, c *Client) {
+				c.Bucket(bucket).Object(object).Update(ctx, ObjectAttrsToUpdate{ContentType: "text/plain"})
+			},
+			wantURI: wantObjURI,
+		},
+		{
+			spanName: "Object.Delete",
+			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).Object(object).Delete(ctx) },
+			wantURI:  wantObjURI,
+		},
+		{
+			spanName: "Object.Reader",
+			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).Object(object).NewReader(ctx) },
+			wantURI:  wantObjURI,
+		},
+		{
+			spanName: "Object.Writer",
+			op: func(ctx context.Context, c *Client) {
+				w := c.Bucket(bucket).Object(object).NewWriter(ctx)
+				w.Write([]byte("data"))
+				w.Close()
+			},
+			wantURI: wantObjURI,
+		},
+		{
+			spanName: "Object.MultiRangeDownloader",
+			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).Object(object).NewMultiRangeDownloader(ctx) },
+			wantURI:  wantObjURI,
+		},
+		{
+			spanName: "Object.WriterFromAppendableObject",
+			op: func(ctx context.Context, c *Client) {
+				c.Bucket(bucket).Object(object).Generation(1).NewWriterFromAppendableObject(ctx, nil)
+			},
+			wantURI: wantObjURI,
+		},
+		{
+			name:     "Copier.Run uses destination",
+			spanName: "Copier.Run",
+			op: func(ctx context.Context, c *Client) {
+				c.Bucket(dstBucket).Object(dstObject).CopierFrom(c.Bucket(bucket).Object(object)).Run(ctx)
+			},
+			wantURI: wantDstURI,
+		},
+		{
+			name:     "Composer.Run uses destination",
+			spanName: "Composer.Run",
+			op: func(ctx context.Context, c *Client) {
+				c.Bucket(dstBucket).Object(dstObject).ComposerFrom(c.Bucket(dstBucket).Object("src1")).Run(ctx)
+			},
+			wantURI: wantDstURI,
+		},
+		{
+			name:     "object ACL.List",
+			spanName: "ACL.List",
+			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).Object(object).ACL().List(ctx) },
+			wantURI:  wantObjURI,
+		},
+		{
+			name:     "object ACL.Set",
+			spanName: "ACL.Set",
+			op: func(ctx context.Context, c *Client) {
+				c.Bucket(bucket).Object(object).ACL().Set(ctx, AllUsers, RoleReader)
+			},
+			wantURI: wantObjURI,
+		},
+		{
+			name:     "object ACL.Delete",
+			spanName: "ACL.Delete",
+			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).Object(object).ACL().Delete(ctx, AllUsers) },
+			wantURI:  wantObjURI,
+		},
+		// Bucket-scoped operations.
+		{
+			name:     "bucket ACL.List",
+			spanName: "ACL.List",
+			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).ACL().List(ctx) },
+			wantURI:  wantBucketURI,
+		},
+		{
+			spanName: "Bucket.Create",
+			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).Create(ctx, "my-project", nil) },
+			wantURI:  wantBucketURI,
+		},
+		{
+			spanName: "Bucket.Delete",
+			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).Delete(ctx) },
+			wantURI:  wantBucketURI,
+		},
+		{
+			spanName: "Bucket.Attrs",
+			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).Attrs(ctx) },
+			wantURI:  wantBucketURI,
+		},
+		{
+			spanName: "Bucket.Update",
+			op: func(ctx context.Context, c *Client) {
+				c.Bucket(bucket).Update(ctx, BucketAttrsToUpdate{StorageClass: "STANDARD"})
+			},
+			wantURI: wantBucketURI,
+		},
+		{
+			spanName: "Bucket.AddNotification",
+			op: func(ctx context.Context, c *Client) {
+				c.Bucket(bucket).AddNotification(ctx, &Notification{TopicProjectID: "p", TopicID: "t"})
+			},
+			wantURI: wantBucketURI,
+		},
+		{
+			spanName: "Bucket.Notifications",
+			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).Notifications(ctx) },
+			wantURI:  wantBucketURI,
+		},
+		{
+			spanName: "Bucket.DeleteNotification",
+			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).DeleteNotification(ctx, "n") },
+			wantURI:  wantBucketURI,
+		},
+		{
+			spanName: "storage.IAM.Get",
+			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).IAM().Policy(ctx) },
+			wantURI:  wantBucketURI,
+		},
+		{
+			spanName: "storage.IAM.Set",
+			op: func(ctx context.Context, c *Client) {
+				c.Bucket(bucket).IAM().SetPolicy(ctx, &iam.Policy{InternalProto: &iampb.Policy{}})
+			},
+			wantURI: wantBucketURI,
+		},
+		{
+			spanName: "storage.IAM.Test",
+			op: func(ctx context.Context, c *Client) {
+				c.Bucket(bucket).IAM().TestPermissions(ctx, []string{"storage.buckets.get"})
+			},
+			wantURI: wantBucketURI,
+		},
+		{
+			spanName: "httpStorageClient.ObjectsListCall",
+			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).Objects(ctx, nil).Next() },
+			wantURI:  wantBucketURI,
+		},
+		{
+			spanName: "grpcStorageClient.ObjectsListCall",
+			op: func(ctx context.Context, _ *Client) {
+				gc, err := NewGRPCClient(ctx,
+					option.WithEndpoint("localhost:1"),
+					option.WithoutAuthentication(),
+					option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+				)
+				if err != nil {
+					t.Fatalf("NewGRPCClient: %v", err)
+				}
+				defer gc.Close()
+				gc.Bucket(bucket).Retryer(WithPolicy(RetryNever)).Objects(ctx, nil).Next()
+			},
+			wantURI: wantBucketURI,
+		},
+		{
+			name:     "empty bucket omits attribute",
+			spanName: "Bucket.Attrs",
+			op:       func(ctx context.Context, c *Client) { c.Bucket("").Attrs(ctx) },
+			wantURI:  "",
+		},
+	}
+
+	for _, tc := range tests {
+		name := tc.name
+		if name == "" {
+			name = tc.spanName
+		}
+		t.Run(name, func(t *testing.T) {
+			t.Setenv(storageOtelTracingDevVar, "true")
+			// Disable the bucket metadata cache so no background fetch runs.
+			t.Setenv(storageBucketMetadataDisabledVar, "true")
+			ctx := context.Background()
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() { te.Unregister(ctx) })
+
+			tc.op(ctx, mockClient(t, &mockTransport{}))
+
+			got, ok := storageURIAttr(t, te.Spans(), tc.spanName)
+			if tc.wantURI == "" {
+				if ok {
+					t.Errorf("%s = %q, want it absent when bucket is empty", storageURIAttrKey, got)
+				}
+				return
+			}
+			if !ok {
+				t.Fatalf("%s not found on span %q", storageURIAttrKey, tc.spanName)
+			}
+			if got != tc.wantURI {
+				t.Errorf("%s = %q, want %q", storageURIAttrKey, got, tc.wantURI)
+			}
+		})
+	}
+}
+
 // retryAttemptNumber returns the value of gcp.client.retry.attempt_number in
 // attrs and whether it is present.
 func retryAttemptNumber(attrs []attribute.KeyValue) (int64, bool) {
@@ -455,6 +1012,20 @@ func TestRetryAttemptStatsHandlerTagRPC(t *testing.T) {
 				t.Errorf("attempt numbers mismatch (-want +got):\n%s", diff)
 			}
 		})
+	}
+}
+
+func TestStorageURIAttributeDevTracingDisabled(t *testing.T) {
+	t.Setenv(storageOtelTracingDevVar, "false")
+	t.Setenv(storageBucketMetadataDisabledVar, "true")
+	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() { te.Unregister(ctx) })
+
+	mockClient(t, &mockTransport{}).Bucket("b").Object("o").Attrs(ctx)
+
+	if got, ok := storageURIAttr(t, te.Spans(), "Object.Attrs"); ok {
+		t.Errorf("%s = %q, want it absent when dev tracing is disabled", storageURIAttrKey, got)
 	}
 }
 
@@ -836,6 +1407,8 @@ func TestRecordWriterTraceAttributes(t *testing.T) {
 		}}
 		return c.Bucket("bucket").Object("object")
 	}
+	// Spans started via NewWriter also carry the object's storage URI.
+	uriAttr := attribute.String(storageURIAttrKey, "gs://bucket/object")
 
 	testCases := []struct {
 		name      string
@@ -856,6 +1429,7 @@ func TestRecordWriterTraceAttributes(t *testing.T) {
 			},
 			wantAttrs: []attribute.KeyValue{
 				attribute.String("gcp.storage.write.mode", "resumable"),
+				uriAttr,
 			},
 		},
 		{
@@ -869,6 +1443,7 @@ func TestRecordWriterTraceAttributes(t *testing.T) {
 			},
 			wantAttrs: []attribute.KeyValue{
 				attribute.String("gcp.storage.write.mode", "oneshot"),
+				uriAttr,
 			},
 		},
 		{
@@ -884,6 +1459,7 @@ func TestRecordWriterTraceAttributes(t *testing.T) {
 			},
 			wantAttrs: []attribute.KeyValue{
 				attribute.String("gcp.storage.write.mode", "oneshot"),
+				uriAttr,
 			},
 		},
 		{
@@ -902,6 +1478,7 @@ func TestRecordWriterTraceAttributes(t *testing.T) {
 			},
 			wantAttrs: []attribute.KeyValue{
 				attribute.String("gcp.storage.write.mode", "oneshot"),
+				uriAttr,
 			},
 		},
 		{
@@ -943,6 +1520,7 @@ func TestRecordWriterTraceAttributes(t *testing.T) {
 			},
 			wantAttrs: []attribute.KeyValue{
 				attribute.String("gcp.storage.write.mode", "appendable"),
+				uriAttr,
 			},
 		},
 		{
@@ -956,6 +1534,7 @@ func TestRecordWriterTraceAttributes(t *testing.T) {
 			},
 			wantAttrs: []attribute.KeyValue{
 				attribute.String("gcp.storage.write.mode", "resumable"),
+				uriAttr,
 			},
 		},
 		{
@@ -976,6 +1555,7 @@ func TestRecordWriterTraceAttributes(t *testing.T) {
 				attribute.String("gcp.storage.write.mode", "parallel"),
 				attribute.Int("gcp.storage.write.parallel.part_size", 16*1024*1024),
 				attribute.Int("gcp.storage.write.parallel.concurrency", 4),
+				uriAttr,
 			},
 		},
 	}
@@ -1085,7 +1665,8 @@ func TestWriterTraceWriteModeEmulated(t *testing.T) {
 					writerSpans = append(writerSpans, s)
 				}
 			}
-			verifySingleSpanAttributes(t, writerSpans, tc.wantAttrs)
+			verifySingleSpanAttributes(t, writerSpans, append(tc.wantAttrs,
+				attribute.String(storageURIAttrKey, "gs://"+bucket+"/"+objName)))
 		})
 	}
 }
@@ -1159,6 +1740,7 @@ func TestReaderTraceReadMode(t *testing.T) {
 
 			verifySingleSpanAttributes(t, te.Spans(), []attribute.KeyValue{
 				attribute.String("gcp.storage.read.mode", tc.wantMode),
+				attribute.String(storageURIAttrKey, "gs://bucket/"),
 			})
 		})
 	}
@@ -1195,7 +1777,11 @@ func verifySingleSpanAttributes(t *testing.T, spans tracetest.SpanStubs, wantAtt
 	if len(spans) != 1 {
 		t.Fatalf("expected one span, got %d", len(spans))
 	}
-	got := attribute.NewSet(spans[0].Attributes...)
+	// Error attributes depend on the error that ended the span and are covered
+	// by TestErrorAttributes, so they are not compared here.
+	got, _ := attribute.NewSetWithFiltered(spans[0].Attributes, func(kv attribute.KeyValue) bool {
+		return kv.Key != "error.type" && kv.Key != "gcp.errors.domain"
+	})
 	want := attribute.NewSet(append(getCommonAttributes(), wantAttrs...)...)
 	if !got.Equals(&want) {
 		t.Errorf("span %s attributes mismatch:\n got: %s\nwant: %s", spans[0].Name,
