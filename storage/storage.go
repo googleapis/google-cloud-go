@@ -1066,7 +1066,7 @@ func (o *ObjectHandle) Key(encryptionKey []byte) *ObjectHandle {
 // Attrs returns meta information about the object.
 // ErrObjectNotExist will be returned if the object is not found.
 func (o *ObjectHandle) Attrs(ctx context.Context) (attrs *ObjectAttrs, err error) {
-	ctx, _ = startSpanWithBucket(ctx, o.c, o.bucket, "Object.Attrs")
+	ctx, _ = startSpanWithObject(ctx, o.c, o.bucket, o.object, "Object.Attrs")
 	defer func() { endSpan(ctx, err) }()
 
 	if err := o.validate(); err != nil {
@@ -1080,7 +1080,7 @@ func (o *ObjectHandle) Attrs(ctx context.Context) (attrs *ObjectAttrs, err error
 // ObjectAttrsToUpdate docs for details on treatment of zero values.
 // ErrObjectNotExist will be returned if the object is not found.
 func (o *ObjectHandle) Update(ctx context.Context, uattrs ObjectAttrsToUpdate) (oa *ObjectAttrs, err error) {
-	ctx, _ = startSpanWithBucket(ctx, o.c, o.bucket, "Object.Update")
+	ctx, _ = startSpanWithObject(ctx, o.c, o.bucket, o.object, "Object.Update")
 	defer func() { endSpan(ctx, err) }()
 
 	if err := o.validate(); err != nil {
@@ -1158,7 +1158,7 @@ type ObjectAttrsToUpdate struct {
 
 // Delete deletes the single specified object.
 func (o *ObjectHandle) Delete(ctx context.Context) (err error) {
-	ctx, _ = startSpanWithBucket(ctx, o.c, o.bucket, "Object.Delete")
+	ctx, _ = startSpanWithObject(ctx, o.c, o.bucket, o.object, "Object.Delete")
 	defer func() { endSpan(ctx, err) }()
 	if err := o.validate(); err != nil {
 		return err
@@ -1280,7 +1280,7 @@ type MoveObjectDestination struct {
 // It is the caller's responsibility to call Close when writing is done. To
 // stop writing without saving the data, cancel the context.
 func (o *ObjectHandle) NewWriter(ctx context.Context) *Writer {
-	ctx, _ = startSpanWithBucket(ctx, o.c, o.bucket, "Object.Writer")
+	ctx, _ = startSpanWithObject(ctx, o.c, o.bucket, o.object, "Object.Writer")
 	return &Writer{
 		ctx:         ctx,
 		o:           o,
@@ -1314,8 +1314,13 @@ func (o *ObjectHandle) NewWriter(ctx context.Context) *Writer {
 //
 // NewWriterFromAppendableObject is supported only for gRPC clients and only for
 // objects which were created append semantics and not finalized.
-func (o *ObjectHandle) NewWriterFromAppendableObject(ctx context.Context, opts *AppendableWriterOpts) (*Writer, int64, error) {
-	ctx, _ = startSpanWithBucket(ctx, o.c, o.bucket, "Object.WriterFromAppendableObject")
+func (o *ObjectHandle) NewWriterFromAppendableObject(ctx context.Context, opts *AppendableWriterOpts) (_ *Writer, _ int64, err error) {
+	ctx, _ = startSpanWithObject(ctx, o.c, o.bucket, o.object, "Object.WriterFromAppendableObject")
+	defer func() {
+		if err != nil {
+			endSpan(ctx, err)
+		}
+	}()
 	if o.gen < 0 {
 		return nil, 0, errors.New("storage: ObjectHandle.Generation must be set to use NewWriterFromAppendableObject")
 	}
@@ -1335,8 +1340,7 @@ func (o *ObjectHandle) NewWriterFromAppendableObject(ctx context.Context, opts *
 	if w.ChunkRetryDeadline == 0 {
 		w.ChunkRetryDeadline = defaultWriteChunkRetryDeadline
 	}
-	err := w.openWriter()
-	if err != nil {
+	if err := w.openWriter(); err != nil {
 		return nil, 0, err
 	}
 	// Block until we discover the takeover offset, or the stream fails

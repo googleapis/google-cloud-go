@@ -58,6 +58,7 @@ const (
 	defaultTracerName = "cloud.google.com/go/storage"
 	gcpClientArtifact = "cloud.google.com/go/storage"
 	gcpClientService  = "storage"
+	storageURIAttrKey = "gcp.storage.uri"
 )
 
 // isOTelTracingDevEnabled checks the development flag until experimental feature is launched.
@@ -74,10 +75,22 @@ func tracer() trace.Tracer {
 	return otel.Tracer(defaultTracerName, trace.WithInstrumentationVersion(internal.Version))
 }
 
-func startSpanWithBucket(ctx context.Context, client *Client, bucket string, name string, opts ...trace.SpanStartOption) (context.Context, trace.Span) {
+func withStorageURI(bucket, object string) trace.SpanStartOption {
+	if !isOTelTracingDevEnabled() || bucket == "" {
+		return trace.WithAttributes()
+	}
+	return trace.WithAttributes(attribute.String(storageURIAttrKey, "gs://"+bucket+"/"+object))
+}
+
+func startSpanWithBucket(ctx context.Context, client *Client, bucket, name string, opts ...trace.SpanStartOption) (context.Context, trace.Span) {
+	return startSpanWithObject(ctx, client, bucket, "", name, opts...)
+}
+
+func startSpanWithObject(ctx context.Context, client *Client, bucket, object, name string, opts ...trace.SpanStartOption) (context.Context, trace.Span) {
 	if !isOTelTracingDevEnabled() {
 		return startSpan(ctx, name, opts...)
 	}
+	opts = append(opts, withStorageURI(bucket, object))
 	if client != nil && client.bucketMetadataCache != nil && bucket != "" {
 		ctx = context.WithValue(ctx, cacheContextKey, client.bucketMetadataCache)
 		ctx = context.WithValue(ctx, bucketContextKey, bucket)
