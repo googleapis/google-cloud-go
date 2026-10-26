@@ -439,9 +439,6 @@ func withHTTPUploadChunkSize(ctx context.Context, chunkSize int) context.Context
 // A zero-byte finalization request ("bytes */<size>") does not upload a chunk
 // and returns false.
 func httpUploadChunkInfo(ctx context.Context, h http.Header) (int64, int64, int64, bool) {
-	if !isOTelTracingDevEnabled() {
-		return 0, 0, 0, false
-	}
 	cr := h.Get("Content-Range")
 	if !strings.HasPrefix(cr, "bytes ") {
 		return 0, 0, 0, false

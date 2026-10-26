@@ -578,14 +578,14 @@ type uploadChunkSpan struct {
 	// ctx holds the span and is never used for RPCs.
 	ctx  context.Context
 	span trace.Span
-	// end is the byte offset just past the chunk.
-	end int64
-	// size is the number of bytes sent for this chunk.
-	size int64
+	// endOffset is the byte offset just past the chunk.
+	endOffset int64
+	// sizeBytes is the number of bytes sent for this chunk.
+	sizeBytes int64
 }
 
 func (s uploadChunkSpan) finish(err error) {
-	s.span.SetAttributes(attribute.Int64(payloadSizeBytesAttr, s.size))
+	s.span.SetAttributes(attribute.Int64(payloadSizeBytesAttr, s.sizeBytes))
 	finishSpan(s.ctx, err)
 }
 
@@ -596,8 +596,8 @@ func (w *gRPCWriter) traceChunkRequest(req gRPCBidiWriteRequest) {
 	if !w.chunkSpansEnabled || len(req.buf) == 0 {
 		return
 	}
-	if n := len(w.chunkSpans); n > 0 && req.offset < w.chunkSpans[n-1].end {
-		w.chunkSpans[n-1].size += int64(len(req.buf))
+	if n := len(w.chunkSpans); n > 0 && req.offset < w.chunkSpans[n-1].endOffset {
+		w.chunkSpans[n-1].sizeBytes += int64(len(req.buf))
 		return // The chunk already has an open span.
 	}
 	number := req.offset/int64(w.chunkSize) + 1
@@ -607,17 +607,17 @@ func (w *gRPCWriter) traceChunkRequest(req gRPCBidiWriteRequest) {
 			attribute.Int64(payloadOffsetAttr, req.offset),
 		))
 	w.chunkSpans = append(w.chunkSpans, uploadChunkSpan{
-		ctx:  ctx,
-		span: span,
-		end:  number * int64(w.chunkSize),
-		size: int64(len(req.buf)),
+		ctx:       ctx,
+		span:      span,
+		endOffset: number * int64(w.chunkSize),
+		sizeBytes: int64(len(req.buf)),
 	})
 }
 
 // traceChunkCompletion ends the spans of the chunks confirmed by c. A returned
 // object means every byte sent has been persisted, including a short last chunk.
 func (w *gRPCWriter) traceChunkCompletion(c gRPCBidiWriteCompletion) {
-	for len(w.chunkSpans) > 0 && (c.resource != nil || c.flushOffset >= w.chunkSpans[0].end) {
+	for len(w.chunkSpans) > 0 && (c.resource != nil || c.flushOffset >= w.chunkSpans[0].endOffset) {
 		w.chunkSpans[0].finish(nil)
 		w.chunkSpans = w.chunkSpans[1:]
 	}

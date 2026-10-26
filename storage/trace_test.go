@@ -1922,10 +1922,10 @@ func (s *chunkTraceTestServer) BidiWriteObject(stream storagepb.Storage_BidiWrit
 
 // uploadChunkSpanInfo describes an exported Storage.UploadChunk span.
 type uploadChunkSpanInfo struct {
-	Number int64
-	Offset int64
-	Size   int64
-	Failed bool
+	Number    int64
+	Offset    int64
+	SizeBytes int64
+	Failed    bool
 }
 
 // extractAndVerifyUploadChunkSpans returns the Storage.UploadChunk spans in
@@ -1950,7 +1950,7 @@ func extractAndVerifyUploadChunkSpans(t *testing.T, spans tracetest.SpanStubs) [
 		if gotID, wantID := s.Parent.SpanID(), writer.SpanContext.SpanID(); gotID != wantID {
 			t.Errorf("%s span parent = %v, want Object.Writer span %v", uploadChunkSpanName, gotID, wantID)
 		}
-		info := uploadChunkSpanInfo{Number: -1, Offset: -1, Size: -1, Failed: s.Status.Code == otcodes.Error}
+		info := uploadChunkSpanInfo{Number: -1, Offset: -1, SizeBytes: -1, Failed: s.Status.Code == otcodes.Error}
 		for _, a := range s.Attributes {
 			switch a.Key {
 			case uploadChunkNumberAttr:
@@ -1958,7 +1958,7 @@ func extractAndVerifyUploadChunkSpans(t *testing.T, spans tracetest.SpanStubs) [
 			case payloadOffsetAttr:
 				info.Offset = a.Value.AsInt64()
 			case payloadSizeBytesAttr:
-				info.Size = a.Value.AsInt64()
+				info.SizeBytes = a.Value.AsInt64()
 			}
 		}
 		got = append(got, info)
@@ -1995,10 +1995,10 @@ func commonUploadChunkSpanTestCases() []uploadChunkSpanTestCase {
 			chunkSize:   256 * kib,
 			payloadSize: mib,
 			want: []uploadChunkSpanInfo{
-				{Number: 1, Offset: 0, Size: 256 * kib},
-				{Number: 2, Offset: 256 * kib, Size: 256 * kib},
-				{Number: 3, Offset: 512 * kib, Size: 256 * kib},
-				{Number: 4, Offset: 768 * kib, Size: 256 * kib},
+				{Number: 1, Offset: 0, SizeBytes: 256 * kib},
+				{Number: 2, Offset: 256 * kib, SizeBytes: 256 * kib},
+				{Number: 3, Offset: 512 * kib, SizeBytes: 256 * kib},
+				{Number: 4, Offset: 768 * kib, SizeBytes: 256 * kib},
 			},
 		},
 		{
@@ -2007,11 +2007,11 @@ func commonUploadChunkSpanTestCases() []uploadChunkSpanTestCase {
 			chunkSize:   256 * kib,
 			payloadSize: mib + 100*kib,
 			want: []uploadChunkSpanInfo{
-				{Number: 1, Offset: 0, Size: 256 * kib},
-				{Number: 2, Offset: 256 * kib, Size: 256 * kib},
-				{Number: 3, Offset: 512 * kib, Size: 256 * kib},
-				{Number: 4, Offset: 768 * kib, Size: 256 * kib},
-				{Number: 5, Offset: mib, Size: 100 * kib},
+				{Number: 1, Offset: 0, SizeBytes: 256 * kib},
+				{Number: 2, Offset: 256 * kib, SizeBytes: 256 * kib},
+				{Number: 3, Offset: 512 * kib, SizeBytes: 256 * kib},
+				{Number: 4, Offset: 768 * kib, SizeBytes: 256 * kib},
+				{Number: 5, Offset: mib, SizeBytes: 100 * kib},
 			},
 		},
 		{
@@ -2046,9 +2046,9 @@ func TestGRPCWriterUploadChunkSpans(t *testing.T) {
 		chunkSize:   4 * mib, // Two 2 MiB messages per chunk; one span each.
 		payloadSize: 10 * mib,
 		want: []uploadChunkSpanInfo{
-			{Number: 1, Offset: 0, Size: 4 * mib},
-			{Number: 2, Offset: 4 * mib, Size: 4 * mib},
-			{Number: 3, Offset: 8 * mib, Size: 2 * mib},
+			{Number: 1, Offset: 0, SizeBytes: 4 * mib},
+			{Number: 2, Offset: 4 * mib, SizeBytes: 4 * mib},
+			{Number: 3, Offset: 8 * mib, SizeBytes: 2 * mib},
 		},
 	})
 
@@ -2083,15 +2083,15 @@ func TestGRPCWriterUploadChunkSpansRetry(t *testing.T) {
 		}
 	}
 	wantOK := []uploadChunkSpanInfo{
-		{Number: 1, Offset: 0, Size: 256 * kib},
-		{Number: 2, Offset: 256 * kib, Size: 256 * kib},
-		{Number: 3, Offset: 512 * kib, Size: 256 * kib},
-		{Number: 4, Offset: 768 * kib, Size: 256 * kib},
+		{Number: 1, Offset: 0, SizeBytes: 256 * kib},
+		{Number: 2, Offset: 256 * kib, SizeBytes: 256 * kib},
+		{Number: 3, Offset: 512 * kib, SizeBytes: 256 * kib},
+		{Number: 4, Offset: 768 * kib, SizeBytes: 256 * kib},
 	}
 	if diff := cmp.Diff(wantOK, okSpans); diff != "" {
 		t.Errorf("successful %s spans mismatch (-want +got):\n%s", uploadChunkSpanName, diff)
 	}
-	wantFailed3 := uploadChunkSpanInfo{Number: 3, Offset: 512 * kib, Size: 256 * kib, Failed: true}
+	wantFailed3 := uploadChunkSpanInfo{Number: 3, Offset: 512 * kib, SizeBytes: 256 * kib, Failed: true}
 	if diff := cmp.Diff(wantFailed3, failedSpans[3]); diff != "" {
 		t.Errorf("failed chunk 3 span mismatch (-want +got):\n%s", diff)
 	}
@@ -2114,13 +2114,23 @@ func TestGRPCWriterUploadChunkSpansTerminalFailure(t *testing.T) {
 	te := runChunkTraceUpload(t, srv, true, 256*kib, 1024*kib, true)
 
 	got := extractAndVerifyUploadChunkSpans(t, te.Spans())
+	var okSpans []uploadChunkSpanInfo
 	failedSpans := map[int64]uploadChunkSpanInfo{}
 	for _, s := range got {
 		if s.Failed {
 			failedSpans[s.Number] = s
+		} else {
+			okSpans = append(okSpans, s)
 		}
 	}
-	wantFailed3 := uploadChunkSpanInfo{Number: 3, Offset: 512 * kib, Size: 256 * kib, Failed: true}
+	wantOK := []uploadChunkSpanInfo{
+		{Number: 1, Offset: 0, SizeBytes: 256 * kib},
+		{Number: 2, Offset: 256 * kib, SizeBytes: 256 * kib},
+	}
+	if diff := cmp.Diff(wantOK, okSpans); diff != "" {
+		t.Errorf("successful %s spans mismatch (-want +got):\n%s", uploadChunkSpanName, diff)
+	}
+	wantFailed3 := uploadChunkSpanInfo{Number: 3, Offset: 512 * kib, SizeBytes: 256 * kib, Failed: true}
 	if diff := cmp.Diff(wantFailed3, failedSpans[3]); diff != "" {
 		t.Errorf("failed chunk 3 span mismatch (-want +got):\n%s", diff)
 	}
@@ -2176,11 +2186,11 @@ func TestHTTPWriterUploadChunkSpansRetry(t *testing.T) {
 
 	got := extractAndVerifyUploadChunkSpans(t, te.Spans())
 	want := []uploadChunkSpanInfo{
-		{Number: 1, Offset: 0, Size: 256 * kib},
-		{Number: 2, Offset: 256 * kib, Size: 256 * kib},
-		{Number: 3, Offset: 512 * kib, Size: 256 * kib, Failed: true},
-		{Number: 3, Offset: 512 * kib, Size: 256 * kib},
-		{Number: 4, Offset: 768 * kib, Size: 256 * kib},
+		{Number: 1, Offset: 0, SizeBytes: 256 * kib},
+		{Number: 2, Offset: 256 * kib, SizeBytes: 256 * kib},
+		{Number: 3, Offset: 512 * kib, SizeBytes: 256 * kib, Failed: true},
+		{Number: 3, Offset: 512 * kib, SizeBytes: 256 * kib},
+		{Number: 4, Offset: 768 * kib, SizeBytes: 256 * kib},
 	}
 	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("%s spans mismatch (-want +got):\n%s", uploadChunkSpanName, diff)
@@ -2194,9 +2204,9 @@ func TestHTTPWriterUploadChunkSpansTerminalFailure(t *testing.T) {
 
 	got := extractAndVerifyUploadChunkSpans(t, te.Spans())
 	want := []uploadChunkSpanInfo{
-		{Number: 1, Offset: 0, Size: 256 * kib},
-		{Number: 2, Offset: 256 * kib, Size: 256 * kib},
-		{Number: 3, Offset: 512 * kib, Size: 256 * kib, Failed: true},
+		{Number: 1, Offset: 0, SizeBytes: 256 * kib},
+		{Number: 2, Offset: 256 * kib, SizeBytes: 256 * kib},
+		{Number: 3, Offset: 512 * kib, SizeBytes: 256 * kib, Failed: true},
 	}
 	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("%s spans mismatch (-want +got):\n%s", uploadChunkSpanName, diff)
