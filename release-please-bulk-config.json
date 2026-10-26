@@ -1659,6 +1659,16 @@
         }
       ]
     },
+    "observability": {
+      "component": "observability",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.observability.v1.json",
+          "type": "json"
+        }
+      ]
+    },
     "optimization": {
       "component": "optimization",
       "extra-files": [
