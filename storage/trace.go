@@ -64,6 +64,20 @@ const (
 	storageURIAttrKey = "gcp.storage.uri"
 )
 
+// rpcSystemNameKey is the OTel semantic convention attribute key for the RPC
+// system used by a span.
+const rpcSystemNameKey = attribute.Key("rpc.system.name")
+
+var (
+	rpcSystemHTTP = rpcSystemNameKey.String("http")
+	rpcSystemGRPC = rpcSystemNameKey.String("grpc")
+
+	// Pre-built span start options for transport-level spans, so starting
+	// those spans does not allocate a new option each time.
+	rpcSystemHTTPOpt = trace.WithAttributes(rpcSystemHTTP)
+	rpcSystemGRPCOpt = trace.WithAttributes(rpcSystemGRPC)
+)
+
 // isOTelTracingDevEnabled checks the development flag until experimental feature is launched.
 // TODO: Remove development flag upon experimental launch.
 func isOTelTracingDevEnabled() bool {
@@ -94,6 +108,9 @@ func startSpanWithObject(ctx context.Context, client *Client, bucket, object, na
 		return startSpan(ctx, name, opts...)
 	}
 	opts = append(opts, withStorageURI(bucket, object))
+	if client != nil && client.rpcSystem.Valid() {
+		opts = append(opts, trace.WithAttributes(client.rpcSystem))
+	}
 	if client != nil && client.bucketMetadataCache != nil && bucket != "" {
 		ctx = context.WithValue(ctx, cacheContextKey, client.bucketMetadataCache)
 		ctx = context.WithValue(ctx, bucketContextKey, bucket)
