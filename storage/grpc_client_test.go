@@ -20,6 +20,7 @@ import (
 	"crypto/md5"
 	"fmt"
 	"hash/crc32"
+	"io"
 	"math/rand"
 	"reflect"
 	"strings"
@@ -718,7 +719,7 @@ func TestVerifyChecksums(t *testing.T) {
 			},
 			databufs: mem.BufferSlice{},
 			wantErrs: map[int64]string{
-				1: "storage: bad CRC on chunk read: got",
+				1: "storage: checksum mismatch: bad CRC on chunk read: got",
 			},
 		},
 		{
@@ -795,7 +796,7 @@ func TestVerifyChecksums(t *testing.T) {
 				1: {startBuf: 0, endBuf: 0, startOff: 0, endOff: 11},
 			},
 			wantErrs: map[int64]string{
-				1: "storage: bad CRC on chunk read: got",
+				1: "storage: checksum mismatch: bad CRC on chunk read: got",
 			},
 		},
 		{
@@ -841,7 +842,7 @@ func TestVerifyChecksums(t *testing.T) {
 				1: {startBuf: 0, endBuf: 1, startOff: 7, endOff: 6},
 			},
 			wantErrs: map[int64]string{
-				1: "storage: bad CRC on chunk read: got",
+				1: "storage: checksum mismatch: bad CRC on chunk read: got",
 			},
 		},
 		{
@@ -894,7 +895,7 @@ func TestVerifyChecksums(t *testing.T) {
 				30: {startBuf: 0, endBuf: 0, startOff: 0, endOff: 11},
 			},
 			wantErrs: map[int64]string{
-				20: "storage: bad CRC on chunk read: got",
+				20: "storage: checksum mismatch: bad CRC on chunk read: got",
 			},
 		},
 		{
@@ -980,6 +981,132 @@ func TestVerifyChecksums(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestBidiReadStreamSessionGracefulShutdown(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	session := &bidiReadStreamSession{
+		reqC:   make(chan *storagepb.BidiReadObjectRequest, 5),
+		ctx:    ctx,
+		cancel: cancel,
+	}
+
+	// Initial shutdown should close reqC and set manualShutdown.
+	session.Shutdown()
+
+	if !session.manualShutdown {
+		t.Errorf("expected session.manualShutdown to be true")
+	}
+
+	select {
+	case _, ok := <-session.reqC:
+		if ok {
+			t.Errorf("expected reqC to be closed")
+		}
+	default:
+		t.Errorf("expected reqC to be closed and readable")
+	}
+
+	// Calling Shutdown again should be idempotent and not panic.
+	session.Shutdown()
+}
+
+func TestGRPCReaderCloseDrainOnCompletion(t *testing.T) {
+	var canceled bool
+	mockCancel := func() {
+		canceled = true
+	}
+
+	fakeStream := &fakeBidiReadObjectClient{}
+	r := &gRPCReader{
+		size:      100,
+		seen:      100,
+		finalized: true,
+		cancel:    mockCancel,
+		stream:    fakeStream,
+		settings:  &settings{},
+	}
+
+	if err := r.Close(); err != nil {
+		t.Fatalf("r.Close(): %v", err)
+	}
+
+	if !fakeStream.recvd {
+		t.Errorf("expected stream.RecvMsg to be drained on completed read Close")
+	}
+	if !canceled {
+		t.Errorf("expected cancel to be called")
+	}
+	if r.stream != nil {
+		t.Errorf("expected r.stream to be nil after Close")
+	}
+}
+
+func TestGRPCReadObjectReaderCloseDrainOnCompletion(t *testing.T) {
+	var canceled bool
+	mockCancel := func() {
+		canceled = true
+	}
+
+	fakeStream := &fakeReadObjectClient{}
+	r := &gRPCReadObjectReader{
+		size:     100,
+		seen:     100,
+		cancel:   mockCancel,
+		stream:   fakeStream,
+		settings: &settings{},
+	}
+
+	if err := r.Close(); err != nil {
+		t.Fatalf("r.Close(): %v", err)
+	}
+
+	if !fakeStream.recvd {
+		t.Errorf("expected stream.RecvMsg to be drained on completed read Close")
+	}
+	if !canceled {
+		t.Errorf("expected cancel to be called")
+	}
+}
+
+type fakeBidiReadObjectClient struct {
+	grpc.ClientStream
+	recvd bool
+}
+
+func (f *fakeBidiReadObjectClient) RecvMsg(m interface{}) error {
+	f.recvd = true
+	return io.EOF
+}
+
+func (f *fakeBidiReadObjectClient) Send(*storagepb.BidiReadObjectRequest) error {
+	return nil
+}
+
+func (f *fakeBidiReadObjectClient) Recv() (*storagepb.BidiReadObjectResponse, error) {
+	f.recvd = true
+	return nil, io.EOF
+}
+
+func (f *fakeBidiReadObjectClient) CloseSend() error {
+	return nil
+}
+
+type fakeReadObjectClient struct {
+	grpc.ClientStream
+	recvd bool
+}
+
+func (f *fakeReadObjectClient) RecvMsg(m interface{}) error {
+	f.recvd = true
+	return io.EOF
+}
+
+func (f *fakeReadObjectClient) Recv() (*storagepb.ReadObjectResponse, error) {
+	f.recvd = true
+	return nil, io.EOF
 }
 
 func TestRangeReaderRemain(t *testing.T) {

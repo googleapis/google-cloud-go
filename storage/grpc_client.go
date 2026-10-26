@@ -241,6 +241,15 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 		option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(ui)),
 		option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(si)),
 	)
+	if isOTelTracingDevEnabled() {
+		// Registered after the transport's OpenTelemetry stats handler so
+		// that it sees the attempt span: both google.golang.org/api/transport/grpc
+		// (dial.go) and cloud.google.com/go/auth/grpctransport (grpctransport.go)
+		// add their otelgrpc handler before the caller's dial options.
+		// See retryAttemptStatsHandler.
+		s.clientOption = append(s.clientOption,
+			option.WithGRPCDialOption(grpc.WithStatsHandler(retryAttemptStatsHandler{})))
+	}
 	c.dpDiag = directPathDiagnostic(ctx, s.clientOption...)
 	g, err := gapic.NewClient(ctx, s.clientOption...)
 	if err != nil {
@@ -662,7 +671,8 @@ func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		ctx, record := startMetricsOp(it.ctx, "ListObjects", false)
 		defer func() { record(err) }()
 		// Add trace span around List API call within the fetch.
-		ctx, _ = startSpan(ctx, "grpcStorageClient.ObjectsListCall")
+		// Bucket.Objects has no operation span, so gcp.storage.uri is recorded on each per-page ObjectsListCall span.
+		ctx, _ = startSpan(ctx, "grpcStorageClient.ObjectsListCall", withStorageURI(bucket, ""))
 		defer func() { endSpan(ctx, err) }()
 		var objects []*storagepb.Object
 		var gitr *gapic.ObjectIterator
@@ -1729,7 +1739,7 @@ func (r *gRPCReader) updateCRC(b []byte) {
 // Checks whether the CRC matches at the conclusion of a read, if CRC checking was enabled.
 func (r *gRPCReader) runCRCCheck() error {
 	if r.checkCRC && r.gotCRC != r.wantCRC {
-		return fmt.Errorf("storage: bad CRC on read: got %d, want %d", r.gotCRC, r.wantCRC)
+		return fmt.Errorf("%w: bad CRC on read: got %d, want %d", errChecksumMismatch, r.gotCRC, r.wantCRC)
 	}
 	return nil
 }
@@ -1737,7 +1747,7 @@ func (r *gRPCReader) runCRCCheck() error {
 // checkAndResetChunkCRC verifies the chunk CRC if present, and resets the chunk CRC state.
 func (r *gRPCReader) checkAndResetChunkCRC() error {
 	if r.chunkCRCPresent && r.gotChunkCRC != r.wantChunkCRC {
-		return fmt.Errorf("storage: bad CRC on chunk read: got %d, want %d", r.gotChunkCRC, r.wantChunkCRC)
+		return fmt.Errorf("%w: bad CRC on chunk read: got %d, want %d", errChecksumMismatch, r.gotChunkCRC, r.wantChunkCRC)
 	}
 	r.gotChunkCRC = 0
 	r.chunkCRCPresent = false
@@ -1898,13 +1908,17 @@ func (r *gRPCReader) WriteTo(w io.Writer) (int64, error) {
 	return r.seen - alreadySeen, finalErr
 }
 
-// Close cancels the read stream's context in order for it to be closed and
-// collected, and frees any currently in use buffers.
+// Close drains a completed stream (bounded by defaultStreamDrainTimeout) so
+// the RPC ends cleanly, then cancels the context and frees buffers.
 func (r *gRPCReader) Close() error {
+	if r.stream != nil && ((r.finalized || r.negativeOffset) && r.size == r.seen || r.zeroRange) {
+		drainStreamOnCompletion(r.cancel, r.stream)
+	}
 	if r.cancel != nil {
 		r.cancel()
 	}
 
+	r.stream = nil
 	r.currMsg = nil
 	return nil
 }
@@ -1926,7 +1940,7 @@ func (r *gRPCReader) recv() error {
 	err := r.stream.RecvMsg(&databufs)
 	// If we get a mid-stream error on a recv call, reopen the stream.
 	// ABORTED could indicate a redirect so should also trigger a reopen.
-	if err != nil && (r.settings.retry.runShouldRetry(err, nil) || status.Code(err) == codes.Aborted) {
+	if err != nil && ((r.settings != nil && r.settings.retry.runShouldRetry(err, nil)) || status.Code(err) == codes.Aborted) {
 		// This will "close" the existing stream and immediately attempt to
 		// reopen the stream, but will backoff if further attempts are necessary.
 		// Reopening the stream Recvs the first message, so if retrying is
@@ -2138,7 +2152,7 @@ func (d *readResponseDecoder) verifyChecksums() {
 			if d.crcErrs == nil {
 				d.crcErrs = make(map[int64]error)
 			}
-			d.crcErrs[readID] = fmt.Errorf("storage: bad CRC on chunk read: got %d, want %d", gotCRC, wantCRC)
+			d.crcErrs[readID] = fmt.Errorf("%w: bad CRC on chunk read: got %d, want %d", errChecksumMismatch, gotCRC, wantCRC)
 		}
 	}
 }
