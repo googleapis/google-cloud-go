@@ -370,6 +370,23 @@ func TestEndSpanEviction(t *testing.T) {
 	}
 }
 
+func TestFinishSpanNoEviction(t *testing.T) {
+	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+	bucketName := "evict-bucket"
+	cache := newBucketMetadataCache(10, &mockMetadataFetcher{})
+	client := &Client{bucketMetadataCache: cache}
+	cache.put(bucketName, bucketMetadata{resource: "res", location: "loc"})
+
+	ctx, _ := startSpanWithBucket(context.Background(), client, bucketName, "Bucket.Attrs")
+	childCtx, _ := startSpan(ctx, "Auth.RefreshAccessToken")
+	finishSpan(childCtx, ErrBucketNotExist)
+
+	if _, found := cache.get(bucketName); !found {
+		t.Errorf("finishSpan evicted the operation's bucket; want it to remain in cache")
+	}
+}
+
 func TestErrorAttributes(t *testing.T) {
 	grpcWithErrorInfo, err := status.New(codes.Unimplemented, "Appendable objects are not supported for this request.").WithDetails(&errdetails.ErrorInfo{
 		Reason: "GRPC_APPENDABLE_OBJECT_NOT_SUPPORTED",

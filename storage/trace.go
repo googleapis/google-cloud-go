@@ -237,11 +237,9 @@ func errorDomain(err error) string {
 	return ""
 }
 
-// endSpan retrieves the current span from ctx and completes the span.
-// If an error occurs, the error.type and, when known, gcp.errors.domain
-// attributes are set, the error is recorded as an exception span event for
-// this span, and the span status is set in the form of a code and a
-// description.
+// endSpan ends the operation span in ctx. On a not-found error it also evicts
+// the operation's bucket from the bucket metadata cache, then calls finishSpan.
+// Non-operation spans should call finishSpan directly.
 func endSpan(ctx context.Context, err error) {
 	if err != nil && isNotFoundError(err) {
 		isBucket, _ := ctx.Value(isBucketContextKey).(bool)
@@ -252,7 +250,15 @@ func endSpan(ctx context.Context, err error) {
 			cache.evict(bucket)
 		}
 	}
+	finishSpan(ctx, err)
+}
 
+// finishSpan retrieves the current span from ctx and completes the span.
+// If an error occurs, the error.type and, when known, gcp.errors.domain
+// attributes are set, the error is recorded as an exception span event for
+// this span, and the span status is set in the form of a code and a
+// description.
+func finishSpan(ctx context.Context, err error) {
 	// TODO: Remove internalTrace upon experimental launch.
 	if !isOTelTracingDevEnabled() {
 		internalTrace.EndSpan(ctx, err)
@@ -299,8 +305,8 @@ func recordRetryBackoff(ctx context.Context, start time.Time) {
 	if !span.IsRecording() {
 		return
 	}
-	_, backoffSpan := startSpan(ctx, "RetryBackoff", trace.WithTimestamp(start))
-	backoffSpan.End()
+	backoffCtx, _ := startSpan(ctx, "RetryBackoff", trace.WithTimestamp(start))
+	finishSpan(backoffCtx, nil)
 }
 
 // retryAttemptKey is the context key under which run records the attempt it
@@ -429,7 +435,7 @@ func (p *tracedTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 		return tok, err
 	}
 	ctx, _ = startSpan(ctx, "Auth.RefreshAccessToken", trace.WithTimestamp(start))
-	endSpan(ctx, err)
+	finishSpan(ctx, err)
 	return tok, err
 }
 
