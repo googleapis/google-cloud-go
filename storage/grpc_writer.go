@@ -466,7 +466,7 @@ func (w *gRPCWriter) pickBufferSender() gRPCBidiWriteBufferSender {
 		w.progress = func(int64) {}
 		return w.newGRPCOneshotBidiWriteBufferSender()
 	}
-	// Resumable write semantics
+	// Resumable write semantics.
 	_, w.chunkSpansEnabled = recordingSpan(w.preRunCtx)
 	return w.newGRPCResumableBidiWriteBufferSender()
 }
@@ -501,10 +501,10 @@ func (w *gRPCWriter) sendBufferToTarget(cs gRPCWriterCommandHandleChans, buf []b
 		if req.flush && w.watchdog != nil {
 			w.watchdog.resume()
 		}
-		w.traceChunkRequest(req)
 		if !cs.deliverRequestUnlessCompleted(req, handleCompletion) {
 			return baseOffset + int64(sent), false
 		}
+		w.traceChunkRequest(req)
 		buf = buf[q:]
 		sent += q
 	}
@@ -575,10 +575,18 @@ const (
 // uploadChunkSpan is the Storage.UploadChunk span of one logical chunk of a
 // resumable upload, which is usually sent as several messages.
 type uploadChunkSpan struct {
-	ctx  context.Context // holds the span; never used for RPCs
+	// ctx holds the span and is never used for RPCs.
+	ctx  context.Context
 	span trace.Span
-	end  int64 // offset just past the chunk
-	size int64 // bytes sent for this chunk
+	// end is the byte offset just past the chunk.
+	end int64
+	// size is the number of bytes sent for this chunk.
+	size int64
+}
+
+func (s uploadChunkSpan) finish(err error) {
+	s.span.SetAttributes(attribute.Int64(payloadSizeBytesAttr, s.size))
+	finishSpan(s.ctx, err)
 }
 
 // traceChunkRequest starts a Storage.UploadChunk span if req carries the first
@@ -610,9 +618,7 @@ func (w *gRPCWriter) traceChunkRequest(req gRPCBidiWriteRequest) {
 // object means every byte sent has been persisted, including a short last chunk.
 func (w *gRPCWriter) traceChunkCompletion(c gRPCBidiWriteCompletion) {
 	for len(w.chunkSpans) > 0 && (c.resource != nil || c.flushOffset >= w.chunkSpans[0].end) {
-		s := w.chunkSpans[0]
-		s.span.SetAttributes(attribute.Int64(payloadSizeBytesAttr, s.size))
-		finishSpan(s.ctx, nil)
+		w.chunkSpans[0].finish(nil)
 		w.chunkSpans = w.chunkSpans[1:]
 	}
 }
@@ -621,8 +627,7 @@ func (w *gRPCWriter) traceChunkCompletion(c gRPCBidiWriteCompletion) {
 // writeLoop attempt ends.
 func (w *gRPCWriter) failChunkSpans(err error) {
 	for _, s := range w.chunkSpans {
-		s.span.SetAttributes(attribute.Int64(payloadSizeBytesAttr, s.size))
-		finishSpan(s.ctx, err)
+		s.finish(err)
 	}
 	w.chunkSpans = nil
 }
@@ -832,10 +837,10 @@ Loop:
 			finishWrite: true,
 		}
 		finalOffset = req.offset + int64(len(req.buf))
-		w.traceChunkRequest(req)
 		if !chcs.deliverRequestUnlessCompleted(req, w.handleCompletion) {
 			return w.streamSender.err()
 		}
+		w.traceChunkRequest(req)
 	} else {
 		// Unclean shutdown. Cancel the context so we clean up expeditiously.
 		attemptCancel()

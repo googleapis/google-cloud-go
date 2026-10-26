@@ -93,7 +93,7 @@ func TestStorageTraceStartEndSpan(t *testing.T) {
 	childCtx, _ := startSpan(ctx, uploadChunkSpanName)
 	finishSpan(childCtx, nil)
 	if got := childCtx.Value(apiMethodKey{}); got != spanName {
-		t.Errorf("child startSpan apiMethodKey = %v, want %q", got, spanName)
+		t.Errorf("child startSpan apiMethodKey = %v, want %v", got, spanName)
 	}
 }
 func TestStorageTraceStartSpanOption(t *testing.T) {
@@ -1849,10 +1849,12 @@ func verifySingleSpanAttributes(t *testing.T, spans tracetest.SpanStubs, wantAtt
 
 // chunkTraceTestServer is a fake storage server for resumable and oneshot
 // BidiWriteObject uploads. If failAt is positive, the first stream to receive
-// data past offset failAt fails with UNAVAILABLE before persisting it.
+// data past offset failAt fails with failCode (defaulting to UNAVAILABLE)
+// before persisting it.
 type chunkTraceTestServer struct {
 	storagepb.UnimplementedStorageServer
-	failAt int64
+	failAt   int64
+	failCode codes.Code
 
 	mu        sync.Mutex
 	persisted int64
@@ -1886,8 +1888,12 @@ func (s *chunkTraceTestServer) BidiWriteObject(stream storagepb.Storage_BidiWrit
 		s.mu.Lock()
 		if s.failAt > 0 && !s.failed && size > s.failAt {
 			s.failed = true
+			code := s.failCode
+			if code == codes.OK {
+				code = codes.Unavailable
+			}
 			s.mu.Unlock()
-			return status.Error(codes.Unavailable, "injected stream failure")
+			return status.Error(code, "injected stream failure")
 		}
 		if req.GetFlush() || req.GetFinishWrite() {
 			if size > s.persisted {
@@ -1922,10 +1928,10 @@ type uploadChunkSpanInfo struct {
 	Failed bool
 }
 
-// uploadChunkSpans returns the Storage.UploadChunk spans in spans in the order
-// they ended. It fails the test if one is not a child of the Object.Writer
-// span.
-func uploadChunkSpans(t *testing.T, spans tracetest.SpanStubs) []uploadChunkSpanInfo {
+// extractAndVerifyUploadChunkSpans returns the Storage.UploadChunk spans in
+// spans in the order they ended, and verifies that each is a child of the
+// Object.Writer span and that no other span carries chunk attributes.
+func extractAndVerifyUploadChunkSpans(t *testing.T, spans tracetest.SpanStubs) []uploadChunkSpanInfo {
 	t.Helper()
 	var writer *tracetest.SpanStub
 	for i := range spans {
@@ -1971,23 +1977,23 @@ func uploadChunkSpans(t *testing.T, spans tracetest.SpanStubs) []uploadChunkSpan
 	return got
 }
 
-func TestGRPCWriterUploadChunkSpans(t *testing.T) {
+type uploadChunkSpanTestCase struct {
+	name        string
+	devTracing  bool
+	chunkSize   int
+	payloadSize int
+	want        []uploadChunkSpanInfo
+}
+
+func commonUploadChunkSpanTestCases() []uploadChunkSpanTestCase {
 	const kib = 1024
 	const mib = 1024 * kib
-
-	for _, tc := range []struct {
-		name       string
-		devTracing bool
-		chunkSize  int
-		// write uploads the object through w. Write errors fail the test.
-		write func(t *testing.T, w *Writer)
-		want  []uploadChunkSpanInfo
-	}{
+	return []uploadChunkSpanTestCase{
 		{
-			name:       "multiple chunks",
-			devTracing: true,
-			chunkSize:  256 * kib,
-			write:      writeBytes(mib),
+			name:        "multiple chunks",
+			devTracing:  true,
+			chunkSize:   256 * kib,
+			payloadSize: mib,
 			want: []uploadChunkSpanInfo{
 				{Number: 1, Offset: 0, Size: 256 * kib},
 				{Number: 2, Offset: 256 * kib, Size: 256 * kib},
@@ -1996,10 +2002,10 @@ func TestGRPCWriterUploadChunkSpans(t *testing.T) {
 			},
 		},
 		{
-			name:       "final partial chunk",
-			devTracing: true,
-			chunkSize:  256 * kib,
-			write:      writeBytes(mib + 100*kib),
+			name:        "final partial chunk",
+			devTracing:  true,
+			chunkSize:   256 * kib,
+			payloadSize: mib + 100*kib,
 			want: []uploadChunkSpanInfo{
 				{Number: 1, Offset: 0, Size: 256 * kib},
 				{Number: 2, Offset: 256 * kib, Size: 256 * kib},
@@ -2009,42 +2015,49 @@ func TestGRPCWriterUploadChunkSpans(t *testing.T) {
 			},
 		},
 		{
-			name:       "chunk sent as several messages",
-			devTracing: true,
-			chunkSize:  4 * mib, // Two 2 MiB messages per chunk; one span each.
-			write:      writeBytes(10 * mib),
-			want: []uploadChunkSpanInfo{
-				{Number: 1, Offset: 0, Size: 4 * mib},
-				{Number: 2, Offset: 4 * mib, Size: 4 * mib},
-				{Number: 3, Offset: 8 * mib, Size: 2 * mib},
-			},
+			name:        "dev tracing disabled",
+			devTracing:  false,
+			chunkSize:   256 * kib,
+			payloadSize: mib,
 		},
 		{
-			name:       "dev tracing disabled",
-			devTracing: false,
-			chunkSize:  256 * kib,
-			write:      writeBytes(mib),
-		},
-		{
-			name:       "oneshot",
-			devTracing: true,
-			chunkSize:  0,
-			write:      writeBytes(mib),
+			name:        "oneshot",
+			devTracing:  true,
+			chunkSize:   0,
+			payloadSize: mib,
 		},
 		{
 			// An object that fits in one chunk is sent as a oneshot upload
 			// (see gatherFirstBuffer), so no chunk spans are recorded.
-			name:       "payload smaller than one chunk",
-			devTracing: true,
-			chunkSize:  256 * kib,
-			write:      writeBytes(100 * kib),
+			name:        "payload smaller than one chunk",
+			devTracing:  true,
+			chunkSize:   256 * kib,
+			payloadSize: 100 * kib,
 		},
-	} {
+	}
+}
+
+func TestGRPCWriterUploadChunkSpans(t *testing.T) {
+	const mib = 1024 * 1024
+
+	cases := append(commonUploadChunkSpanTestCases(), uploadChunkSpanTestCase{
+		name:        "chunk sent as several messages",
+		devTracing:  true,
+		chunkSize:   4 * mib, // Two 2 MiB messages per chunk; one span each.
+		payloadSize: 10 * mib,
+		want: []uploadChunkSpanInfo{
+			{Number: 1, Offset: 0, Size: 4 * mib},
+			{Number: 2, Offset: 4 * mib, Size: 4 * mib},
+			{Number: 3, Offset: 8 * mib, Size: 2 * mib},
+		},
+	})
+
+	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
 			srv := &chunkTraceTestServer{}
-			te := runChunkTraceUpload(t, srv, tc.devTracing, tc.chunkSize, tc.write)
+			te := runChunkTraceUpload(t, srv, tc.devTracing, tc.chunkSize, tc.payloadSize, false)
 
-			got := uploadChunkSpans(t, te.Spans())
+			got := extractAndVerifyUploadChunkSpans(t, te.Spans())
 			if diff := cmp.Diff(tc.want, got); diff != "" {
 				t.Errorf("%s spans mismatch (-want +got):\n%s", uploadChunkSpanName, diff)
 			}
@@ -2057,9 +2070,9 @@ func TestGRPCWriterUploadChunkSpansRetry(t *testing.T) {
 	// Chunk 3 covers [512 KiB, 768 KiB). Its stream fails mid-chunk, before
 	// GCS persists it, and the upload resumes from 512 KiB.
 	srv := &chunkTraceTestServer{failAt: 600 * kib}
-	te := runChunkTraceUpload(t, srv, true, 256*kib, writeBytes(1024*kib))
+	te := runChunkTraceUpload(t, srv, true, 256*kib, 1024*kib, false)
 
-	got := uploadChunkSpans(t, te.Spans())
+	got := extractAndVerifyUploadChunkSpans(t, te.Spans())
 	var okSpans []uploadChunkSpanInfo
 	failedSpans := map[int64]uploadChunkSpanInfo{}
 	for _, s := range got {
@@ -2095,24 +2108,31 @@ func TestGRPCWriterUploadChunkSpansRetry(t *testing.T) {
 	}
 }
 
-// writeBytes returns a write func that writes n bytes in one call.
-func writeBytes(n int) func(*testing.T, *Writer) {
-	return func(t *testing.T, w *Writer) {
-		t.Helper()
-		if _, err := w.Write(make([]byte, n)); err != nil {
-			t.Fatalf("Write: %v", err)
+func TestGRPCWriterUploadChunkSpansTerminalFailure(t *testing.T) {
+	const kib = 1024
+	srv := &chunkTraceTestServer{failAt: 600 * kib, failCode: codes.PermissionDenied}
+	te := runChunkTraceUpload(t, srv, true, 256*kib, 1024*kib, true)
+
+	got := extractAndVerifyUploadChunkSpans(t, te.Spans())
+	failedSpans := map[int64]uploadChunkSpanInfo{}
+	for _, s := range got {
+		if s.Failed {
+			failedSpans[s.Number] = s
 		}
+	}
+	wantFailed3 := uploadChunkSpanInfo{Number: 3, Offset: 512 * kib, Size: 256 * kib, Failed: true}
+	if diff := cmp.Diff(wantFailed3, failedSpans[3]); diff != "" {
+		t.Errorf("failed chunk 3 span mismatch (-want +got):\n%s", diff)
 	}
 }
 
-// runChunkTraceUpload uploads an object to srv over gRPC with the given chunk
-// size and returns the exporter holding the recorded spans.
-func runChunkTraceUpload(t *testing.T, srv *chunkTraceTestServer, devTracing bool, chunkSize int, write func(*testing.T, *Writer)) *testutil.OpenTelemetryTestExporter {
+// runChunkTraceUpload uploads an object of payloadSize bytes to srv over gRPC
+// with the given chunk size and returns the exporter holding the recorded spans.
+func runChunkTraceUpload(t *testing.T, srv *chunkTraceTestServer, devTracing bool, chunkSize, payloadSize int, wantErr bool) *testutil.OpenTelemetryTestExporter {
 	t.Helper()
-	ctx := context.Background()
+	ctx := t.Context()
 	te := testutil.NewOpenTelemetryTestExporter()
-	t.Cleanup(func() { te.Unregister(ctx) })
-	// TODO: Remove setting development env var upon launch.
+	t.Cleanup(func() { te.Unregister(context.Background()) })
 	t.Setenv(storageOtelTracingDevVar, strconv.FormatBool(devTracing))
 	t.Setenv(storageBucketMetadataDisabledVar, "true")
 	startFakeStorageServer(t, srv)
@@ -2127,72 +2147,21 @@ func runChunkTraceUpload(t *testing.T, srv *chunkTraceTestServer, devTracing boo
 	w := client.Bucket("bucket").Object("object").NewWriter(ctx)
 	w.ChunkSize = chunkSize
 	w.DisableAutoChecksum = true
-	write(t, w)
-	if err := w.Close(); err != nil {
-		t.Fatalf("Close: %v", err)
+	_, writeErr := w.Write(make([]byte, payloadSize))
+	closeErr := w.Close()
+	err = errors.Join(writeErr, closeErr)
+	if (err != nil) != wantErr {
+		t.Fatalf("upload error = %v, wantErr %v", err, wantErr)
 	}
 	return te
 }
 
 func TestHTTPWriterUploadChunkSpans(t *testing.T) {
-	const kib = 1024
-	const mib = 1024 * kib
-
-	for _, tc := range []struct {
-		name       string
-		devTracing bool
-		chunkSize  int
-		write      func(t *testing.T, w *Writer)
-		want       []uploadChunkSpanInfo
-	}{
-		{
-			name:       "multiple chunks",
-			devTracing: true,
-			chunkSize:  256 * kib,
-			write:      writeBytes(mib),
-			want: []uploadChunkSpanInfo{
-				{Number: 1, Offset: 0, Size: 256 * kib},
-				{Number: 2, Offset: 256 * kib, Size: 256 * kib},
-				{Number: 3, Offset: 512 * kib, Size: 256 * kib},
-				{Number: 4, Offset: 768 * kib, Size: 256 * kib},
-			},
-		},
-		{
-			name:       "final partial chunk",
-			devTracing: true,
-			chunkSize:  256 * kib,
-			write:      writeBytes(mib + 100*kib),
-			want: []uploadChunkSpanInfo{
-				{Number: 1, Offset: 0, Size: 256 * kib},
-				{Number: 2, Offset: 256 * kib, Size: 256 * kib},
-				{Number: 3, Offset: 512 * kib, Size: 256 * kib},
-				{Number: 4, Offset: 768 * kib, Size: 256 * kib},
-				{Number: 5, Offset: mib, Size: 100 * kib},
-			},
-		},
-		{
-			name:       "dev tracing disabled",
-			devTracing: false,
-			chunkSize:  256 * kib,
-			write:      writeBytes(mib),
-		},
-		{
-			name:       "oneshot",
-			devTracing: true,
-			chunkSize:  0,
-			write:      writeBytes(mib),
-		},
-		{
-			name:       "payload smaller than one chunk",
-			devTracing: true,
-			chunkSize:  256 * kib,
-			write:      writeBytes(100 * kib),
-		},
-	} {
+	for _, tc := range commonUploadChunkSpanTestCases() {
 		t.Run(tc.name, func(t *testing.T) {
-			te := runHTTPChunkTraceUpload(t, 0, tc.devTracing, tc.chunkSize, tc.write)
+			te := runHTTPChunkTraceUpload(t, 0, 0, tc.devTracing, tc.chunkSize, tc.payloadSize, false)
 
-			got := uploadChunkSpans(t, te.Spans())
+			got := extractAndVerifyUploadChunkSpans(t, te.Spans())
 			if diff := cmp.Diff(tc.want, got); diff != "" {
 				t.Errorf("%s spans mismatch (-want +got):\n%s", uploadChunkSpanName, diff)
 			}
@@ -2203,9 +2172,9 @@ func TestHTTPWriterUploadChunkSpans(t *testing.T) {
 func TestHTTPWriterUploadChunkSpansRetry(t *testing.T) {
 	const kib = 1024
 	// Fail the first attempt of chunk 3 (offset 512 KiB).
-	te := runHTTPChunkTraceUpload(t, 512*kib, true, 256*kib, writeBytes(1024*kib))
+	te := runHTTPChunkTraceUpload(t, 512*kib, http.StatusServiceUnavailable, true, 256*kib, 1024*kib, false)
 
-	got := uploadChunkSpans(t, te.Spans())
+	got := extractAndVerifyUploadChunkSpans(t, te.Spans())
 	want := []uploadChunkSpanInfo{
 		{Number: 1, Offset: 0, Size: 256 * kib},
 		{Number: 2, Offset: 256 * kib, Size: 256 * kib},
@@ -2218,11 +2187,27 @@ func TestHTTPWriterUploadChunkSpansRetry(t *testing.T) {
 	}
 }
 
-func runHTTPChunkTraceUpload(t *testing.T, failOffset int64, devTracing bool, chunkSize int, write func(*testing.T, *Writer)) *testutil.OpenTelemetryTestExporter {
+func TestHTTPWriterUploadChunkSpansTerminalFailure(t *testing.T) {
+	const kib = 1024
+	// Permanently fail chunk 3 (offset 512 KiB) with 403 Forbidden.
+	te := runHTTPChunkTraceUpload(t, 512*kib, http.StatusForbidden, true, 256*kib, 1024*kib, true)
+
+	got := extractAndVerifyUploadChunkSpans(t, te.Spans())
+	want := []uploadChunkSpanInfo{
+		{Number: 1, Offset: 0, Size: 256 * kib},
+		{Number: 2, Offset: 256 * kib, Size: 256 * kib},
+		{Number: 3, Offset: 512 * kib, Size: 256 * kib, Failed: true},
+	}
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("%s spans mismatch (-want +got):\n%s", uploadChunkSpanName, diff)
+	}
+}
+
+func runHTTPChunkTraceUpload(t *testing.T, failOffset int64, failStatus int, devTracing bool, chunkSize, payloadSize int, wantErr bool) *testutil.OpenTelemetryTestExporter {
 	t.Helper()
-	ctx := context.Background()
+	ctx := t.Context()
 	te := testutil.NewOpenTelemetryTestExporter()
-	t.Cleanup(func() { te.Unregister(ctx) })
+	t.Cleanup(func() { te.Unregister(context.Background()) })
 	t.Setenv(storageOtelTracingDevVar, strconv.FormatBool(devTracing))
 	t.Setenv(storageBucketMetadataDisabledVar, "true")
 
@@ -2242,7 +2227,7 @@ func runHTTPChunkTraceUpload(t *testing.T, failOffset int64, devTracing bool, ch
 			if failOffset > 0 && !failedOnce && strings.HasPrefix(cr, fmt.Sprintf("bytes %d-", failOffset)) {
 				failedOnce = true
 				mu.Unlock()
-				w.WriteHeader(http.StatusServiceUnavailable)
+				w.WriteHeader(failStatus)
 				return
 			}
 			mu.Unlock()
@@ -2263,14 +2248,20 @@ func runHTTPChunkTraceUpload(t *testing.T, failOffset int64, devTracing bool, ch
 		t.Fatalf("NewClient: %v", err)
 	}
 	t.Cleanup(func() { client.Close() })
-	client.SetRetry(WithBackoff(gax.Backoff{Initial: time.Millisecond, Max: time.Millisecond}), WithPolicy(RetryAlways))
+	retryOpts := []RetryOption{WithBackoff(gax.Backoff{Initial: time.Millisecond, Max: time.Millisecond})}
+	if !wantErr {
+		retryOpts = append(retryOpts, WithPolicy(RetryAlways))
+	}
+	client.SetRetry(retryOpts...)
 
 	w := client.Bucket("bucket").Object("object").NewWriter(ctx)
 	w.ChunkSize = chunkSize
 	w.DisableAutoChecksum = true
-	write(t, w)
-	if err := w.Close(); err != nil {
-		t.Fatalf("Close: %v", err)
+	_, writeErr := w.Write(make([]byte, payloadSize))
+	closeErr := w.Close()
+	err = errors.Join(writeErr, closeErr)
+	if (err != nil) != wantErr {
+		t.Fatalf("upload error = %v, wantErr %v", err, wantErr)
 	}
 	return te
 }
