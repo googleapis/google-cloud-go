@@ -1582,11 +1582,6 @@ func TestWriterTraceWriteModeEmulated(t *testing.T) {
 	checkEmulatorEnvironment(t)
 
 	ctx := context.Background()
-	c := &Client{tc: emulatorClients["grpc"]}
-	bucket := fmt.Sprintf("grpc-trace-bucket-%d", time.Now().UnixNano())
-	if err := c.Bucket(bucket).Create(ctx, "project", nil); err != nil {
-		t.Fatalf("Bucket.Create: %v", err)
-	}
 
 	testCases := []struct {
 		name      string
@@ -1596,6 +1591,8 @@ func TestWriterTraceWriteModeEmulated(t *testing.T) {
 		// wantUploadID is set when the upload creates a resumable session, whose
 		// server-generated ID must be recorded as gcp.storage.upload.id.
 		wantUploadID bool
+		// grpcOnly is set for upload modes that are not supported over HTTP.
+		grpcOnly bool
 	}{
 		{
 			name:      "oneshot",
@@ -1626,6 +1623,7 @@ func TestWriterTraceWriteModeEmulated(t *testing.T) {
 			wantAttrs: []attribute.KeyValue{
 				attribute.String("gcp.storage.write.mode", "appendable"),
 			},
+			grpcOnly: true,
 		},
 		{
 			name: "parallel",
@@ -1642,50 +1640,64 @@ func TestWriterTraceWriteModeEmulated(t *testing.T) {
 				attribute.Int("gcp.storage.write.parallel.part_size", 8*1024*1024),
 				attribute.Int("gcp.storage.write.parallel.concurrency", 4),
 			},
+			grpcOnly: true,
 		},
 	}
 
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			te := testutil.NewOpenTelemetryTestExporter()
-			t.Cleanup(func() {
-				te.Unregister(ctx)
-			})
-			// TODO: Remove setting development env var upon launch.
-			t.Setenv(storageOtelTracingDevVar, "true")
-
-			objName := fmt.Sprintf("object-%s-%d", tc.name, time.Now().UnixNano())
-			w := c.Bucket(bucket).Object(objName).NewWriter(ctx)
-			tc.configure(w)
-			if _, err := w.Write(tc.payload); err != nil {
-				t.Fatalf("Write: %v", err)
-			}
-			if err := w.Close(); err != nil {
-				t.Fatalf("Close: %v", err)
+	for _, transport := range []string{"grpc", "http"} {
+		t.Run(transport, func(t *testing.T) {
+			c := &Client{tc: emulatorClients[transport]}
+			bucket := fmt.Sprintf("%s-trace-bucket-%d", transport, time.Now().UnixNano())
+			if err := c.Bucket(bucket).Create(ctx, "project", nil); err != nil {
+				t.Fatalf("Bucket.Create: %v", err)
 			}
 
-			var writerSpans tracetest.SpanStubs
-			for _, s := range te.Spans() {
-				if s.Name == appendPackageName("Object.Writer") && !s.Parent.IsValid() {
-					writerSpans = append(writerSpans, s)
-				}
-			}
-			wantAttrs := append(slices.Clone(tc.wantAttrs),
-				attribute.String(storageURIAttrKey, "gs://"+bucket+"/"+objName))
-			if tc.wantUploadID && len(writerSpans) == 1 {
-				// The upload ID is server-generated, so only check that it is present.
-				var uploadID string
-				for _, a := range writerSpans[0].Attributes {
-					if a.Key == "gcp.storage.upload.id" {
-						uploadID = a.Value.AsString()
+			for _, tc := range testCases {
+				t.Run(tc.name, func(t *testing.T) {
+					if tc.grpcOnly && transport != "grpc" {
+						t.Skipf("%s uploads are gRPC-only", tc.name)
 					}
-				}
-				if uploadID == "" {
-					t.Errorf("Object.Writer span missing non-empty gcp.storage.upload.id")
-				}
-				wantAttrs = append(wantAttrs, attribute.String("gcp.storage.upload.id", uploadID))
+					te := testutil.NewOpenTelemetryTestExporter()
+					t.Cleanup(func() {
+						te.Unregister(ctx)
+					})
+					// TODO: Remove setting development env var upon launch.
+					t.Setenv(storageOtelTracingDevVar, "true")
+
+					objName := fmt.Sprintf("object-%s-%d", tc.name, time.Now().UnixNano())
+					w := c.Bucket(bucket).Object(objName).NewWriter(ctx)
+					tc.configure(w)
+					if _, err := w.Write(tc.payload); err != nil {
+						t.Fatalf("Write: %v", err)
+					}
+					if err := w.Close(); err != nil {
+						t.Fatalf("Close: %v", err)
+					}
+
+					var writerSpans tracetest.SpanStubs
+					for _, s := range te.Spans() {
+						if s.Name == appendPackageName("Object.Writer") && !s.Parent.IsValid() {
+							writerSpans = append(writerSpans, s)
+						}
+					}
+					wantAttrs := append(slices.Clone(tc.wantAttrs),
+						attribute.String(storageURIAttrKey, "gs://"+bucket+"/"+objName))
+					if tc.wantUploadID && len(writerSpans) == 1 {
+						// The upload ID is server-generated, so only check that it is present.
+						var uploadID string
+						for _, a := range writerSpans[0].Attributes {
+							if a.Key == "gcp.storage.upload.id" {
+								uploadID = a.Value.AsString()
+							}
+						}
+						if uploadID == "" {
+							t.Errorf("Object.Writer span missing non-empty gcp.storage.upload.id")
+						}
+						wantAttrs = append(wantAttrs, attribute.String("gcp.storage.upload.id", uploadID))
+					}
+					verifySingleSpanAttributes(t, writerSpans, wantAttrs)
+				})
 			}
-			verifySingleSpanAttributes(t, writerSpans, wantAttrs)
 		})
 	}
 }
