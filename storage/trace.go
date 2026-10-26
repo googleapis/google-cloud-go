@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 	"sync/atomic"
@@ -467,4 +468,21 @@ func hasTracedTokenProvider(tp auth.TokenProvider) bool {
 		}
 	}
 	return false
+}
+
+// recordUploadID sets gcp.storage.upload.id on the span in ctx.
+func recordUploadID(ctx context.Context, uploadID string) {
+	if span, ok := recordingSpan(ctx); ok && uploadID != "" {
+		span.SetAttributes(attribute.String("gcp.storage.upload.id", uploadID))
+	}
+}
+
+// recordUploadIDFromHeader records the upload_id query parameter of a
+// resumable-session Location header, if present.
+func recordUploadIDFromHeader(ctx context.Context, h http.Header) {
+	if loc := h.Get("Location"); loc != "" {
+		if u, err := url.Parse(loc); err == nil {
+			recordUploadID(ctx, u.Query().Get("upload_id"))
+		}
+	}
 }
