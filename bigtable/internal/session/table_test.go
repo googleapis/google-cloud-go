@@ -747,6 +747,25 @@ func TestSessionTableCheckAndMutateRow_NonIdempotentDoesNotRetryTransportFailure
 	}
 }
 
+func TestSessionTableReadModifyWriteRow_NonIdempotentDoesNotRetryTransportFailure(t *testing.T) {
+	transportErr := btransport.TagErr(btransport.StateTransportFailure, status.Error(codes.Unavailable, "wire error"))
+	inv := &fakeInvoker{errBefore: 1000, err: transportErr}
+	tbl, _ := newTestTable(t, nil, inv)
+
+	_, err := tbl.ReadModifyWriteRow(context.Background(), &btpb.SessionReadModifyWriteRowRequest{
+		Key: []byte("row1"),
+		Rules: []*btpb.ReadModifyWriteRule{
+			{FamilyName: "cf", ColumnQualifier: []byte("q"), Rule: &btpb.ReadModifyWriteRule_IncrementAmount{IncrementAmount: 1}},
+		},
+	})
+	if err == nil {
+		t.Fatal("ReadModifyWriteRow returned nil; want error")
+	}
+	if got := inv.callCount(); got != 1 {
+		t.Errorf("invoker calls = %d, want 1 (ReadModifyWriteRow is non-idempotent)", got)
+	}
+}
+
 func TestSessionTable_MatView_WriteVRpcsReturnErrWriteNotSupported(t *testing.T) {
 	readInv := &fakeInvoker{result: btransport.InvokeResult{Response: &btpb.SessionReadRowResponse{}}}
 	tbl, _ := newTestTable(t, readInv, nil)
@@ -754,10 +773,14 @@ func TestSessionTable_MatView_WriteVRpcsReturnErrWriteNotSupported(t *testing.T)
 	if _, err := tbl.CheckAndMutateRow(context.Background(), &btpb.SessionCheckAndMutateRowRequest{Key: []byte("r1")}); err != ErrWriteNotSupported {
 		t.Errorf("CheckAndMutateRow on MatView = %v, want ErrWriteNotSupported", err)
 	}
+	if _, err := tbl.ReadModifyWriteRow(context.Background(), &btpb.SessionReadModifyWriteRowRequest{Key: []byte("r1")}); err != ErrWriteNotSupported {
+		t.Errorf("ReadModifyWriteRow on MatView = %v, want ErrWriteNotSupported", err)
+	}
 }
 
 // TestSessionTable_PoolSelection verifies that ReadRow routes to readPool,
-// MutateRow routes to writePool, and CheckAndMutateRow routes to readWritePool.
+// MutateRow routes to writePool, and CheckAndMutateRow and ReadModifyWriteRow
+// route to readWritePool.
 func TestSessionTable_PoolSelection(t *testing.T) {
 	readInv := &fakeInvoker{result: btransport.InvokeResult{Response: &btpb.SessionReadRowResponse{}}}
 	writeInv := &fakeInvoker{result: btransport.InvokeResult{Response: &btpb.SessionMutateRowResponse{}}}
@@ -789,6 +812,16 @@ func TestSessionTable_PoolSelection(t *testing.T) {
 	}
 	if readInv.callCount() != 1 || writeInv.callCount() != 1 || readWriteInv.callCount() != 1 {
 		t.Errorf("after CheckAndMutateRow: calls=(read=%d, write=%d, rw=%d), want (1,1,1)",
+			readInv.callCount(), writeInv.callCount(), readWriteInv.callCount())
+	}
+
+	// 4. ReadModifyWriteRow routes to readWritePool only
+	readWriteInv.result = btransport.InvokeResult{Response: &btpb.SessionReadModifyWriteRowResponse{}}
+	if _, err := tbl.ReadModifyWriteRow(context.Background(), &btpb.SessionReadModifyWriteRowRequest{Key: []byte("k")}); err != nil {
+		t.Fatalf("ReadModifyWriteRow: %v", err)
+	}
+	if readInv.callCount() != 1 || writeInv.callCount() != 1 || readWriteInv.callCount() != 2 {
+		t.Errorf("after ReadModifyWriteRow: calls=(read=%d, write=%d, rw=%d), want (1,1,2)",
 			readInv.callCount(), writeInv.callCount(), readWriteInv.callCount())
 	}
 }

@@ -30,19 +30,20 @@ import (
 // Diverter's SessionLoad ratio. TableShim owns the proto ↔
 // bigtable.Row conversion so the session package can stay proto-native.
 //
-// Methods with no session equivalent (SampleRowKeys, ApplyBulk,
-// ApplyReadModifyWrite) always delegate to classic. ReadRows delegates
-// to classic for the general multi-row case; the single-key shape
-// (see singleRowKey) is served by the session ReadRow vRPC since it is
-// semantically identical to Table.ReadRow. Apply routes non-conditional
-// mutations to the session MutateRow vRPC and conditional mutations to
-// the session CheckAndMutateRow vRPC.
+// Methods with no session equivalent (SampleRowKeys, ApplyBulk) always
+// delegate to classic. ReadRows delegates to classic for the general
+// multi-row case; the single-key shape (see singleRowKey) is served by
+// the session ReadRow vRPC since it is semantically identical to
+// Table.ReadRow. Apply routes non-conditional mutations to the session
+// MutateRow vRPC and conditional mutations to the session
+// CheckAndMutateRow vRPC. ApplyReadModifyWrite routes to the session
+// ReadModifyWriteRow vRPC.
 //
-// ReadRow, single-key ReadRows, and Apply pass their session call's
-// error to session.UnimplementedBreaker.ShouldFallback: a
-// codes.Unimplemented response falls back to classic, and after enough
-// consecutive Unimplementeds the breaker's sticky trip gates
-// useSession() so future calls skip session entirely.
+// ReadRow, single-key ReadRows, Apply, and ApplyReadModifyWrite pass
+// their session call's error to session.UnimplementedBreaker.ShouldFallback:
+// a codes.Unimplemented response falls back to classic, and after enough
+// consecutive Unimplementeds the breaker's sticky trip gates useSession()
+// so future calls skip session entirely.
 type TableShim struct {
 	classic  TableAPI
 	session  session.TableAPI
@@ -270,9 +271,31 @@ func (t *TableShim) ApplyBulk(ctx context.Context, rowKeys []string, muts []*Mut
 	return t.classic.ApplyBulk(ctx, rowKeys, muts, opts...)
 }
 
-// ApplyReadModifyWrite delegates to classic.
+// ApplyReadModifyWrite implements TableAPI. Routes ReadModifyWrite
+// operations over the session ReadModifyWriteRow vRPC when the diverter
+// allows, or delegates to classic.
 func (t *TableShim) ApplyReadModifyWrite(ctx context.Context, row string, m *ReadModifyWrite) (Row, error) {
-	return t.classic.ApplyReadModifyWrite(ctx, row, m)
+	if m == nil || !t.useSession() {
+		return t.classic.ApplyReadModifyWrite(ctx, row, m)
+	}
+	resp, err := t.session.ReadModifyWriteRow(ctx, &btpb.SessionReadModifyWriteRowRequest{
+		Key:   []byte(row),
+		Rules: m.ops,
+	})
+	if t.breaker.ShouldFallback(err) {
+		return t.classic.ApplyReadModifyWrite(ctx, row, m)
+	}
+	if err != nil {
+		return nil, err
+	}
+	if resp.GetRow() == nil {
+		return nil, errors.New("unable to apply ReadModifyWrite: res.Row=nil")
+	}
+	r := make(Row)
+	for _, fam := range resp.GetRow().GetFamilies() {
+		decodeFamilyProto(r, row, fam)
+	}
+	return r, nil
 }
 
 // useSession returns true when session + diverter are configured, the
