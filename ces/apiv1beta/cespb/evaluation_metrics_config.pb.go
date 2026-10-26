@@ -528,27 +528,27 @@ var File_google_cloud_ces_v1beta_evaluation_metrics_config_proto protoreflect.Fi
 
 const file_google_cloud_ces_v1beta_evaluation_metrics_config_proto_rawDesc = "" +
 	"\n" +
-	"7google/cloud/ces/v1beta/evaluation_metrics_config.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\"\xdc\r\n" +
-	"\x17EvaluationMetricsConfig\x12}\n" +
-	"\x15golden_metrics_config\x18\x01 \x01(\v2D.google.cloud.ces.v1beta.EvaluationMetricsConfig.GoldenMetricsConfigB\x03\xe0A\x01R\x13goldenMetricsConfig\x12\x83\x01\n" +
-	"\x17scenario_metrics_config\x18\x02 \x01(\v2F.google.cloud.ces.v1beta.EvaluationMetricsConfig.ScenarioMetricsConfigB\x03\xe0A\x01R\x15scenarioMetricsConfig\x1as\n" +
-	"\x1fSemanticSimilarityMetricsConfig\x12P\n" +
-	"\"enable_semantic_similarity_metrics\x18\x01 \x01(\bB\x03\xe0A\x01R\x1fenableSemanticSimilarityMetrics\x1aj\n" +
-	"\x1cToolCorrectnessMetricsConfig\x12J\n" +
-	"\x1fenable_tool_correctness_metrics\x18\x01 \x01(\bB\x03\xe0A\x01R\x1cenableToolCorrectnessMetrics\x1ac\n" +
-	"\x1aHallucinationMetricsConfig\x12E\n" +
-	"\x1cenable_hallucination_metrics\x18\x01 \x01(\bB\x03\xe0A\x01R\x1aenableHallucinationMetrics\x1a_\n" +
-	"\x18UserGoalMetMetricsConfig\x12C\n" +
-	"\x1cenable_user_goal_met_metrics\x18\x01 \x01(\bB\x03\xe0A\x01R\x18enableUserGoalMetMetrics\x1aj\n" +
-	"\x1cExpectationsMetMetricsConfig\x12J\n" +
-	"\x1fenable_expectations_met_metrics\x18\x01 \x01(\bB\x03\xe0A\x01R\x1cenableExpectationsMetMetrics\x1a\xfb\x03\n" +
-	"\x13GoldenMetricsConfig\x12\xa2\x01\n" +
-	"\"semantic_similarity_metrics_config\x18\x01 \x01(\v2P.google.cloud.ces.v1beta.EvaluationMetricsConfig.SemanticSimilarityMetricsConfigB\x03\xe0A\x01R\x1fsemanticSimilarityMetricsConfig\x12\x99\x01\n" +
-	"\x1ftool_correctness_metrics_config\x18\x02 \x01(\v2M.google.cloud.ces.v1beta.EvaluationMetricsConfig.ToolCorrectnessMetricsConfigB\x03\xe0A\x01R\x1ctoolCorrectnessMetricsConfig\x12\xa2\x01\n" +
-	"$step_tool_correctness_metrics_config\x18\x06 \x01(\v2M.google.cloud.ces.v1beta.EvaluationMetricsConfig.ToolCorrectnessMetricsConfigB\x03\xe0A\x01R stepToolCorrectnessMetricsConfig\x1a\xc4\x02\n" +
-	"\x15ScenarioMetricsConfig\x12\x8e\x01\n" +
-	"\x1cuser_goal_met_metrics_config\x18\x02 \x01(\v2I.google.cloud.ces.v1beta.EvaluationMetricsConfig.UserGoalMetMetricsConfigB\x03\xe0A\x01R\x18userGoalMetMetricsConfig\x12\x99\x01\n" +
-	"\x1fexpectations_met_metrics_config\x18\x03 \x01(\v2M.google.cloud.ces.v1beta.EvaluationMetricsConfig.ExpectationsMetMetricsConfigB\x03\xe0A\x01R\x1cexpectationsMetMetricsConfig\"d\n" +
+	"7google/cloud/ces/v1beta/evaluation_metrics_config.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\"\xe8\r\n" +
+	"\x17EvaluationMetricsConfig\x12~\n" +
+	"\x15golden_metrics_config\x18\x01 \x01(\v2D.google.cloud.ces.v1beta.EvaluationMetricsConfig.GoldenMetricsConfigB\x04\xe2A\x01\x01R\x13goldenMetricsConfig\x12\x84\x01\n" +
+	"\x17scenario_metrics_config\x18\x02 \x01(\v2F.google.cloud.ces.v1beta.EvaluationMetricsConfig.ScenarioMetricsConfigB\x04\xe2A\x01\x01R\x15scenarioMetricsConfig\x1at\n" +
+	"\x1fSemanticSimilarityMetricsConfig\x12Q\n" +
+	"\"enable_semantic_similarity_metrics\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x1fenableSemanticSimilarityMetrics\x1ak\n" +
+	"\x1cToolCorrectnessMetricsConfig\x12K\n" +
+	"\x1fenable_tool_correctness_metrics\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x1cenableToolCorrectnessMetrics\x1ad\n" +
+	"\x1aHallucinationMetricsConfig\x12F\n" +
+	"\x1cenable_hallucination_metrics\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x1aenableHallucinationMetrics\x1a`\n" +
+	"\x18UserGoalMetMetricsConfig\x12D\n" +
+	"\x1cenable_user_goal_met_metrics\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x18enableUserGoalMetMetrics\x1ak\n" +
+	"\x1cExpectationsMetMetricsConfig\x12K\n" +
+	"\x1fenable_expectations_met_metrics\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x1cenableExpectationsMetMetrics\x1a\xfe\x03\n" +
+	"\x13GoldenMetricsConfig\x12\xa3\x01\n" +
+	"\"semantic_similarity_metrics_config\x18\x01 \x01(\v2P.google.cloud.ces.v1beta.EvaluationMetricsConfig.SemanticSimilarityMetricsConfigB\x04\xe2A\x01\x01R\x1fsemanticSimilarityMetricsConfig\x12\x9a\x01\n" +
+	"\x1ftool_correctness_metrics_config\x18\x02 \x01(\v2M.google.cloud.ces.v1beta.EvaluationMetricsConfig.ToolCorrectnessMetricsConfigB\x04\xe2A\x01\x01R\x1ctoolCorrectnessMetricsConfig\x12\xa3\x01\n" +
+	"$step_tool_correctness_metrics_config\x18\x06 \x01(\v2M.google.cloud.ces.v1beta.EvaluationMetricsConfig.ToolCorrectnessMetricsConfigB\x04\xe2A\x01\x01R stepToolCorrectnessMetricsConfig\x1a\xc6\x02\n" +
+	"\x15ScenarioMetricsConfig\x12\x8f\x01\n" +
+	"\x1cuser_goal_met_metrics_config\x18\x02 \x01(\v2I.google.cloud.ces.v1beta.EvaluationMetricsConfig.UserGoalMetMetricsConfigB\x04\xe2A\x01\x01R\x18userGoalMetMetricsConfig\x12\x9a\x01\n" +
+	"\x1fexpectations_met_metrics_config\x18\x03 \x01(\v2M.google.cloud.ces.v1beta.EvaluationMetricsConfig.ExpectationsMetMetricsConfigB\x04\xe2A\x01\x01R\x1cexpectationsMetMetricsConfig\"d\n" +
 	"\x0eComparisonType\x12\x1f\n" +
 	"\x1bCOMPARISON_TYPE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +

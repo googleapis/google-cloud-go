@@ -116,13 +116,13 @@ var File_google_cloud_ces_v1_omnichannel_service_proto protoreflect.FileDescript
 
 const file_google_cloud_ces_v1_omnichannel_service_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/ces/v1/omnichannel_service.proto\x12\x13google.cloud.ces.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x84\x02\n" +
-	"\x1cOmnichannelOperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12*\n" +
-	"\x0estatus_message\x18\x03 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x04 \x01(\bB\x03\xe0A\x03R\x15requestedCancellationB_\n" +
+	"-google/cloud/ces/v1/omnichannel_service.proto\x12\x13google.cloud.ces.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x88\x02\n" +
+	"\x1cOmnichannelOperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12+\n" +
+	"\x0estatus_message\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x04 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellationB_\n" +
 	"\x17com.google.cloud.ces.v1B\x17OmnichannelServiceProtoP\x01Z)cloud.google.com/go/ces/apiv1/cespb;cespbb\x06proto3"
 
 var (

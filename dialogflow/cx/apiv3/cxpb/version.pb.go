@@ -795,51 +795,51 @@ const file_google_cloud_dialogflow_cx_v3_version_proto_rawDesc = "" +
 	"+google/cloud/dialogflow/cx/v3/version.proto\x12\x1dgoogle.cloud.dialogflow.cx.v3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/dialogflow/cx/v3/flow.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"b\n" +
 	"\x1eCreateVersionOperationMetadata\x12@\n" +
 	"\aversion\x18\x01 \x01(\tB&\xfaA#\n" +
-	"!dialogflow.googleapis.com/VersionR\aversion\"\x8e\x04\n" +
+	"!dialogflow.googleapis.com/VersionR\aversion\"\x92\x04\n" +
 	"\aVersion\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12 \n" +
-	"\vdescription\x18\x03 \x01(\tR\vdescription\x12R\n" +
-	"\fnlu_settings\x18\x04 \x01(\v2*.google.cloud.dialogflow.cx.v3.NluSettingsB\x03\xe0A\x03R\vnluSettings\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12G\n" +
-	"\x05state\x18\x06 \x01(\x0e2,.google.cloud.dialogflow.cx.v3.Version.StateB\x03\xe0A\x03R\x05state\"F\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12 \n" +
+	"\vdescription\x18\x03 \x01(\tR\vdescription\x12S\n" +
+	"\fnlu_settings\x18\x04 \x01(\v2*.google.cloud.dialogflow.cx.v3.NluSettingsB\x04\xe2A\x01\x03R\vnluSettings\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12H\n" +
+	"\x05state\x18\x06 \x01(\x0e2,.google.cloud.dialogflow.cx.v3.Version.StateB\x04\xe2A\x01\x03R\x05state\"F\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aRUNNING\x10\x01\x12\r\n" +
 	"\tSUCCEEDED\x10\x02\x12\n" +
 	"\n" +
 	"\x06FAILED\x10\x03:~\xeaA{\n" +
-	"!dialogflow.googleapis.com/Version\x12Vprojects/{project}/locations/{location}/agents/{agent}/flows/{flow}/versions/{version}\"\x94\x01\n" +
-	"\x13ListVersionsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!dialogflow.googleapis.com/VersionR\x06parent\x12\x1b\n" +
+	"!dialogflow.googleapis.com/Version\x12Vprojects/{project}/locations/{location}/agents/{agent}/flows/{flow}/versions/{version}\"\x95\x01\n" +
+	"\x13ListVersionsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!dialogflow.googleapis.com/VersionR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x82\x01\n" +
 	"\x14ListVersionsResponse\x12B\n" +
 	"\bversions\x18\x01 \x03(\v2&.google.cloud.dialogflow.cx.v3.VersionR\bversions\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"R\n" +
-	"\x11GetVersionRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!dialogflow.googleapis.com/VersionR\x04name\"\xa0\x01\n" +
-	"\x14CreateVersionRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!dialogflow.googleapis.com/VersionR\x06parent\x12E\n" +
-	"\aversion\x18\x02 \x01(\v2&.google.cloud.dialogflow.cx.v3.VersionB\x03\xe0A\x02R\aversion\"\x9f\x01\n" +
-	"\x14UpdateVersionRequest\x12E\n" +
-	"\aversion\x18\x01 \x01(\v2&.google.cloud.dialogflow.cx.v3.VersionB\x03\xe0A\x02R\aversion\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"U\n" +
-	"\x14DeleteVersionRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!dialogflow.googleapis.com/VersionR\x04name\"\x98\x01\n" +
-	"\x12LoadVersionRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"S\n" +
+	"\x11GetVersionRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!dialogflow.googleapis.com/VersionR\x04name\"\xa2\x01\n" +
+	"\x14CreateVersionRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!dialogflow.googleapis.com/VersionR\x06parent\x12F\n" +
+	"\aversion\x18\x02 \x01(\v2&.google.cloud.dialogflow.cx.v3.VersionB\x04\xe2A\x01\x02R\aversion\"\xa1\x01\n" +
+	"\x14UpdateVersionRequest\x12F\n" +
+	"\aversion\x18\x01 \x01(\v2&.google.cloud.dialogflow.cx.v3.VersionB\x04\xe2A\x01\x02R\aversion\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"V\n" +
+	"\x14DeleteVersionRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!dialogflow.googleapis.com/VersionR\x04name\"\x99\x01\n" +
+	"\x12LoadVersionRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!dialogflow.googleapis.com/VersionR\x04name\x12C\n" +
-	"\x1eallow_override_agent_resources\x18\x02 \x01(\bR\x1ballowOverrideAgentResources\"\xdd\x01\n" +
-	"\x16CompareVersionsRequest\x12L\n" +
-	"\fbase_version\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!dialogflow.googleapis.com/VersionR\vbaseVersion\x12P\n" +
-	"\x0etarget_version\x18\x02 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x1eallow_override_agent_resources\x18\x02 \x01(\bR\x1ballowOverrideAgentResources\"\xdf\x01\n" +
+	"\x16CompareVersionsRequest\x12M\n" +
+	"\fbase_version\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!dialogflow.googleapis.com/VersionR\vbaseVersion\x12Q\n" +
+	"\x0etarget_version\x18\x02 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!dialogflow.googleapis.com/VersionR\rtargetVersion\x12#\n" +
 	"\rlanguage_code\x18\x03 \x01(\tR\flanguageCode\"\xd2\x01\n" +
 	"\x17CompareVersionsResponse\x129\n" +

@@ -1,6 +1,20 @@
 # Changes
 
 
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/beyondcorp/v1.10.0...beyondcorp/v1.11.0) (2026-10-22)
+
+
+### Features
+
+* Update API sources and regenerate ([#20728](https://github.com/googleapis/google-cloud-go/issues/20728)) ([ab1da9d](https://github.com/googleapis/google-cloud-go/commit/ab1da9d200416594ae18fa7a2944961f1c92c928))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/beyondcorp/v1.9.0...beyondcorp/v1.10.0) (2026-10-08)
+
+
+### Features
+
+* Update API sources and regenerate ([#20646](https://github.com/googleapis/google-cloud-go/issues/20646)) ([4ad5d50](https://github.com/googleapis/google-cloud-go/commit/4ad5d50aaf4392d19fd391ee71eec1c5029ecd1d))
+
 ## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/beyondcorp/v1.8.0...beyondcorp/v1.9.0) (2026-09-23)
 
 

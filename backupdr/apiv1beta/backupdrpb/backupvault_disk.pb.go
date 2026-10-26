@@ -946,41 +946,41 @@ var File_google_cloud_backupdr_v1beta_backupvault_disk_proto protoreflect.FileDe
 
 const file_google_cloud_backupdr_v1beta_backupvault_disk_proto_rawDesc = "" +
 	"\n" +
-	"3google/cloud/backupdr/v1beta/backupvault_disk.proto\x12\x1cgoogle.cloud.backupdr.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a2google/cloud/backupdr/v1beta/backupvault_gce.proto\"\xb8\x01\n" +
-	"\x15DiskTargetEnvironment\x12\x1d\n" +
-	"\aproject\x18\x01 \x01(\tB\x03\xe0A\x02R\aproject\x12\x17\n" +
-	"\x04zone\x18\x02 \x01(\tB\x03\xe0A\x02R\x04zone\x12G\n" +
-	"\x1buse_project_service_account\x18\x03 \x01(\bB\x03\xe0A\x01H\x00R\x18useProjectServiceAccount\x88\x01\x01B\x1e\n" +
-	"\x1c_use_project_service_account\"\xec\x01\n" +
-	"\x1bRegionDiskTargetEnvironment\x12\x1d\n" +
-	"\aproject\x18\x01 \x01(\tB\x03\xe0A\x02R\aproject\x12\x1b\n" +
-	"\x06region\x18\x02 \x01(\tB\x03\xe0A\x02R\x06region\x12(\n" +
-	"\rreplica_zones\x18\x03 \x03(\tB\x03\xe0A\x02R\freplicaZones\x12G\n" +
-	"\x1buse_project_service_account\x18\x04 \x01(\bB\x03\xe0A\x01H\x00R\x18useProjectServiceAccount\x88\x01\x01B\x1e\n" +
-	"\x1c_use_project_service_account\"\xdb\x0e\n" +
+	"3google/cloud/backupdr/v1beta/backupvault_disk.proto\x12\x1cgoogle.cloud.backupdr.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a2google/cloud/backupdr/v1beta/backupvault_gce.proto\"\xbb\x01\n" +
+	"\x15DiskTargetEnvironment\x12\x1e\n" +
+	"\aproject\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x18\n" +
+	"\x04zone\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04zone\x12H\n" +
+	"\x1buse_project_service_account\x18\x03 \x01(\bB\x04\xe2A\x01\x01H\x00R\x18useProjectServiceAccount\x88\x01\x01B\x1e\n" +
+	"\x1c_use_project_service_account\"\xf0\x01\n" +
+	"\x1bRegionDiskTargetEnvironment\x12\x1e\n" +
+	"\aproject\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x1c\n" +
+	"\x06region\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06region\x12)\n" +
+	"\rreplica_zones\x18\x03 \x03(\tB\x04\xe2A\x01\x02R\freplicaZones\x12H\n" +
+	"\x1buse_project_service_account\x18\x04 \x01(\bB\x04\xe2A\x01\x01H\x00R\x18useProjectServiceAccount\x88\x01\x01B\x1e\n" +
+	"\x1c_use_project_service_account\"\xec\x0e\n" +
 	"\x15DiskRestoreProperties\x12t\n" +
-	"\x16instance_backup_source\x18\x13 \x01(\v2<.google.cloud.backupdr.v1beta.RestoreDiskFromInstanceOptionsH\x00R\x14instanceBackupSource\x12\x1c\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02H\x01R\x04name\x88\x01\x01\x12*\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01H\x02R\vdescription\x88\x01\x01\x12!\n" +
-	"\asize_gb\x18\x03 \x01(\x03B\x03\xe0A\x02H\x03R\x06sizeGb\x88\x01\x01\x12\x1f\n" +
-	"\blicenses\x18\x04 \x03(\tB\x03\xe0A\x01R\blicenses\x12[\n" +
-	"\x10guest_os_feature\x18\x05 \x03(\v2,.google.cloud.backupdr.v1beta.GuestOsFeatureB\x03\xe0A\x01R\x0eguestOsFeature\x12m\n" +
-	"\x13disk_encryption_key\x18\x06 \x01(\v23.google.cloud.backupdr.v1beta.CustomerEncryptionKeyB\x03\xe0A\x01H\x04R\x11diskEncryptionKey\x88\x01\x01\x12C\n" +
-	"\x19physical_block_size_bytes\x18\a \x01(\x03B\x03\xe0A\x01H\x05R\x16physicalBlockSizeBytes\x88\x01\x01\x123\n" +
-	"\x10provisioned_iops\x18\b \x01(\x03B\x03\xe0A\x01H\x06R\x0fprovisionedIops\x88\x01\x01\x12?\n" +
-	"\x16provisioned_throughput\x18\t \x01(\x03B\x03\xe0A\x01H\aR\x15provisionedThroughput\x88\x01\x01\x12H\n" +
+	"\x16instance_backup_source\x18\x13 \x01(\v2<.google.cloud.backupdr.v1beta.RestoreDiskFromInstanceOptionsH\x00R\x14instanceBackupSource\x12\x1d\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02H\x01R\x04name\x88\x01\x01\x12+\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x02R\vdescription\x88\x01\x01\x12\"\n" +
+	"\asize_gb\x18\x03 \x01(\x03B\x04\xe2A\x01\x02H\x03R\x06sizeGb\x88\x01\x01\x12 \n" +
+	"\blicenses\x18\x04 \x03(\tB\x04\xe2A\x01\x01R\blicenses\x12\\\n" +
+	"\x10guest_os_feature\x18\x05 \x03(\v2,.google.cloud.backupdr.v1beta.GuestOsFeatureB\x04\xe2A\x01\x01R\x0eguestOsFeature\x12n\n" +
+	"\x13disk_encryption_key\x18\x06 \x01(\v23.google.cloud.backupdr.v1beta.CustomerEncryptionKeyB\x04\xe2A\x01\x01H\x04R\x11diskEncryptionKey\x88\x01\x01\x12D\n" +
+	"\x19physical_block_size_bytes\x18\a \x01(\x03B\x04\xe2A\x01\x01H\x05R\x16physicalBlockSizeBytes\x88\x01\x01\x124\n" +
+	"\x10provisioned_iops\x18\b \x01(\x03B\x04\xe2A\x01\x01H\x06R\x0fprovisionedIops\x88\x01\x01\x12@\n" +
+	"\x16provisioned_throughput\x18\t \x01(\x03B\x04\xe2A\x01\x01H\aR\x15provisionedThroughput\x88\x01\x01\x12I\n" +
 	"\x1benable_confidential_compute\x18\n" +
-	" \x01(\bB\x03\xe0A\x01H\bR\x19enableConfidentialCompute\x88\x01\x01\x12R\n" +
-	"\fstorage_pool\x18\v \x01(\tB*\xe0A\x01\xfaA$\n" +
-	"\"compute.googleapis.com/StoragePoolH\tR\vstoragePool\x88\x01\x01\x12i\n" +
-	"\vaccess_mode\x18\f \x01(\x0e2>.google.cloud.backupdr.v1beta.DiskRestoreProperties.AccessModeB\x03\xe0A\x01H\n" +
+	" \x01(\bB\x04\xe2A\x01\x01H\bR\x19enableConfidentialCompute\x88\x01\x01\x12S\n" +
+	"\fstorage_pool\x18\v \x01(\tB+\xe2A\x01\x01\xfaA$\n" +
+	"\"compute.googleapis.com/StoragePoolH\tR\vstoragePool\x88\x01\x01\x12j\n" +
+	"\vaccess_mode\x18\f \x01(\x0e2>.google.cloud.backupdr.v1beta.DiskRestoreProperties.AccessModeB\x04\xe2A\x01\x01H\n" +
 	"R\n" +
-	"accessMode\x88\x01\x01\x12n\n" +
-	"\farchitecture\x18\x0e \x01(\x0e2@.google.cloud.backupdr.v1beta.DiskRestoreProperties.ArchitectureB\x03\xe0A\x01H\vR\farchitecture\x88\x01\x01\x12,\n" +
-	"\x0fresource_policy\x18\x0f \x03(\tB\x03\xe0A\x01R\x0eresourcePolicy\x12\x1c\n" +
-	"\x04type\x18\x10 \x01(\tB\x03\xe0A\x02H\fR\x04type\x88\x01\x01\x12\\\n" +
-	"\x06labels\x18\x11 \x03(\v2?.google.cloud.backupdr.v1beta.DiskRestoreProperties.LabelsEntryB\x03\xe0A\x01R\x06labels\x12\x85\x01\n" +
-	"\x15resource_manager_tags\x18\x12 \x03(\v2L.google.cloud.backupdr.v1beta.DiskRestoreProperties.ResourceManagerTagsEntryB\x03\xe0A\x01R\x13resourceManagerTags\x1a9\n" +
+	"accessMode\x88\x01\x01\x12o\n" +
+	"\farchitecture\x18\x0e \x01(\x0e2@.google.cloud.backupdr.v1beta.DiskRestoreProperties.ArchitectureB\x04\xe2A\x01\x01H\vR\farchitecture\x88\x01\x01\x12-\n" +
+	"\x0fresource_policy\x18\x0f \x03(\tB\x04\xe2A\x01\x01R\x0eresourcePolicy\x12\x1d\n" +
+	"\x04type\x18\x10 \x01(\tB\x04\xe2A\x01\x02H\fR\x04type\x88\x01\x01\x12]\n" +
+	"\x06labels\x18\x11 \x03(\v2?.google.cloud.backupdr.v1beta.DiskRestoreProperties.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12\x86\x01\n" +
+	"\x15resource_manager_tags\x18\x12 \x03(\v2L.google.cloud.backupdr.v1beta.DiskRestoreProperties.ResourceManagerTagsEntryB\x04\xe2A\x01\x01R\x13resourceManagerTags\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1aF\n" +
@@ -1014,7 +1014,7 @@ const file_google_cloud_backupdr_v1beta_backupvault_disk_proto_rawDesc = "" +
 	"\x1eRestoreDiskFromInstanceOptions\x12.\n" +
 	"\x12source_device_name\x18\x01 \x01(\tH\x00R\x10sourceDeviceName\x12\x1d\n" +
 	"\tboot_disk\x18\x02 \x01(\bH\x00R\bbootDiskB\r\n" +
-	"\vsource_disk\"\xf9\t\n" +
+	"\vsource_disk\"\xfa\t\n" +
 	"\x14DiskBackupProperties\x12%\n" +
 	"\vdescription\x18\x01 \x01(\tH\x00R\vdescription\x88\x01\x01\x12\x1a\n" +
 	"\blicenses\x18\x02 \x03(\tR\blicenses\x12V\n" +
@@ -1036,8 +1036,8 @@ const file_google_cloud_backupdr_v1beta_backupvault_disk_proto_rawDesc = "" +
 	"R\x16physicalBlockSizeBytes\x88\x01\x01\x12C\n" +
 	"\x1benable_confidential_compute\x18\x0f \x01(\bH\vR\x19enableConfidentialCompute\x88\x01\x01\x12&\n" +
 	"\fstorage_pool\x18\x10 \x01(\tH\fR\vstoragePool\x88\x01\x01\x12V\n" +
-	"\x06labels\x18\x11 \x03(\v2>.google.cloud.backupdr.v1beta.DiskBackupProperties.LabelsEntryR\x06labels\x12$\n" +
-	"\vguest_flush\x18\x12 \x01(\bB\x03\xe0A\x01R\n" +
+	"\x06labels\x18\x11 \x03(\v2>.google.cloud.backupdr.v1beta.DiskBackupProperties.LabelsEntryR\x06labels\x12%\n" +
+	"\vguest_flush\x18\x12 \x01(\bB\x04\xe2A\x01\x01R\n" +
 	"guestFlush\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +

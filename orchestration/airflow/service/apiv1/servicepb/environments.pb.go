@@ -5961,81 +5961,81 @@ const file_google_cloud_orchestration_airflow_service_v1_environments_proto_rawD
 	"\acontent\x18\x02 \x01(\tR\acontent\x1a=\n" +
 	"\bExitInfo\x12\x1b\n" +
 	"\texit_code\x18\x01 \x01(\x05R\bexitCode\x12\x14\n" +
-	"\x05error\x18\x02 \x01(\tR\x05error\"\xe4\x01\n" +
-	" CreateUserWorkloadsSecretRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#composer.googleapis.com/EnvironmentR\x06parent\x12{\n" +
-	"\x15user_workloads_secret\x18\x02 \x01(\v2B.google.cloud.orchestration.airflow.service.v1.UserWorkloadsSecretB\x03\xe0A\x02R\x13userWorkloadsSecret\"h\n" +
-	"\x1dGetUserWorkloadsSecretRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+composer.googleapis.com/UserWorkloadsSecretR\x04name\"\xac\x01\n" +
-	"\x1fListUserWorkloadsSecretsRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#composer.googleapis.com/EnvironmentR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x05error\x18\x02 \x01(\tR\x05error\"\xe6\x01\n" +
+	" CreateUserWorkloadsSecretRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#composer.googleapis.com/EnvironmentR\x06parent\x12|\n" +
+	"\x15user_workloads_secret\x18\x02 \x01(\v2B.google.cloud.orchestration.airflow.service.v1.UserWorkloadsSecretB\x04\xe2A\x01\x02R\x13userWorkloadsSecret\"i\n" +
+	"\x1dGetUserWorkloadsSecretRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+composer.googleapis.com/UserWorkloadsSecretR\x04name\"\xaf\x01\n" +
+	"\x1fListUserWorkloadsSecretsRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#composer.googleapis.com/EnvironmentR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x9f\x01\n" +
-	" UpdateUserWorkloadsSecretRequest\x12{\n" +
-	"\x15user_workloads_secret\x18\x01 \x01(\v2B.google.cloud.orchestration.airflow.service.v1.UserWorkloadsSecretB\x03\xe0A\x01R\x13userWorkloadsSecret\"k\n" +
-	" DeleteUserWorkloadsSecretRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+composer.googleapis.com/UserWorkloadsSecretR\x04name\"\xf2\x01\n" +
-	"#CreateUserWorkloadsConfigMapRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#composer.googleapis.com/EnvironmentR\x06parent\x12\x85\x01\n" +
-	"\x19user_workloads_config_map\x18\x02 \x01(\v2E.google.cloud.orchestration.airflow.service.v1.UserWorkloadsConfigMapB\x03\xe0A\x02R\x16userWorkloadsConfigMap\"n\n" +
-	" GetUserWorkloadsConfigMapRequest\x12J\n" +
-	"\x04name\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".composer.googleapis.com/UserWorkloadsConfigMapR\x04name\"\xaf\x01\n" +
-	"\"ListUserWorkloadsConfigMapsRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#composer.googleapis.com/EnvironmentR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xa0\x01\n" +
+	" UpdateUserWorkloadsSecretRequest\x12|\n" +
+	"\x15user_workloads_secret\x18\x01 \x01(\v2B.google.cloud.orchestration.airflow.service.v1.UserWorkloadsSecretB\x04\xe2A\x01\x01R\x13userWorkloadsSecret\"l\n" +
+	" DeleteUserWorkloadsSecretRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+composer.googleapis.com/UserWorkloadsSecretR\x04name\"\xf4\x01\n" +
+	"#CreateUserWorkloadsConfigMapRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#composer.googleapis.com/EnvironmentR\x06parent\x12\x86\x01\n" +
+	"\x19user_workloads_config_map\x18\x02 \x01(\v2E.google.cloud.orchestration.airflow.service.v1.UserWorkloadsConfigMapB\x04\xe2A\x01\x02R\x16userWorkloadsConfigMap\"o\n" +
+	" GetUserWorkloadsConfigMapRequest\x12K\n" +
+	"\x04name\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".composer.googleapis.com/UserWorkloadsConfigMapR\x04name\"\xb2\x01\n" +
+	"\"ListUserWorkloadsConfigMapsRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#composer.googleapis.com/EnvironmentR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xad\x01\n" +
-	"#UpdateUserWorkloadsConfigMapRequest\x12\x85\x01\n" +
-	"\x19user_workloads_config_map\x18\x01 \x01(\v2E.google.cloud.orchestration.airflow.service.v1.UserWorkloadsConfigMapB\x03\xe0A\x01R\x16userWorkloadsConfigMap\"q\n" +
-	"#DeleteUserWorkloadsConfigMapRequest\x12J\n" +
-	"\x04name\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".composer.googleapis.com/UserWorkloadsConfigMapR\x04name\"\x9e\x03\n" +
-	"\x13UserWorkloadsSecret\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12e\n" +
-	"\x04data\x18\x02 \x03(\v2L.google.cloud.orchestration.airflow.service.v1.UserWorkloadsSecret.DataEntryB\x03\xe0A\x01R\x04data\x1a7\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xae\x01\n" +
+	"#UpdateUserWorkloadsConfigMapRequest\x12\x86\x01\n" +
+	"\x19user_workloads_config_map\x18\x01 \x01(\v2E.google.cloud.orchestration.airflow.service.v1.UserWorkloadsConfigMapB\x04\xe2A\x01\x01R\x16userWorkloadsConfigMap\"r\n" +
+	"#DeleteUserWorkloadsConfigMapRequest\x12K\n" +
+	"\x04name\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".composer.googleapis.com/UserWorkloadsConfigMapR\x04name\"\xa0\x03\n" +
+	"\x13UserWorkloadsSecret\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12f\n" +
+	"\x04data\x18\x02 \x03(\v2L.google.cloud.orchestration.airflow.service.v1.UserWorkloadsSecret.DataEntryB\x04\xe2A\x01\x01R\x04data\x1a7\n" +
 	"\tDataEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\xcd\x01\xeaA\xc9\x01\n" +
 	"+composer.googleapis.com/UserWorkloadsSecret\x12oprojects/{project}/locations/{location}/environments/{environment}/userWorkloadsSecrets/{user_workloads_secret}*\x14userWorkloadsSecrets2\x13userWorkloadsSecret\"\xc4\x01\n" +
 	" ListUserWorkloadsSecretsResponse\x12x\n" +
 	"\x16user_workloads_secrets\x18\x01 \x03(\v2B.google.cloud.orchestration.airflow.service.v1.UserWorkloadsSecretR\x14userWorkloadsSecrets\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb4\x03\n" +
-	"\x16UserWorkloadsConfigMap\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12h\n" +
-	"\x04data\x18\x02 \x03(\v2O.google.cloud.orchestration.airflow.service.v1.UserWorkloadsConfigMap.DataEntryB\x03\xe0A\x01R\x04data\x1a7\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb6\x03\n" +
+	"\x16UserWorkloadsConfigMap\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12i\n" +
+	"\x04data\x18\x02 \x03(\v2O.google.cloud.orchestration.airflow.service.v1.UserWorkloadsConfigMap.DataEntryB\x04\xe2A\x01\x01R\x04data\x1a7\n" +
 	"\tDataEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\xdd\x01\xeaA\xd9\x01\n" +
 	".composer.googleapis.com/UserWorkloadsConfigMap\x12vprojects/{project}/locations/{location}/environments/{environment}/userWorkloadsConfigMaps/{user_workloads_config_map}*\x17userWorkloadsConfigMaps2\x16userWorkloadsConfigMap\"\xd2\x01\n" +
 	"#ListUserWorkloadsConfigMapsResponse\x12\x82\x01\n" +
 	"\x1auser_workloads_config_maps\x18\x01 \x03(\v2E.google.cloud.orchestration.airflow.service.v1.UserWorkloadsConfigMapR\x17userWorkloadsConfigMaps\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xbe\x01\n" +
-	"\x14ListWorkloadsRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#composer.googleapis.com/EnvironmentR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xc2\x01\n" +
+	"\x14ListWorkloadsRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#composer.googleapis.com/EnvironmentR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\xa0\b\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xa4\b\n" +
 	"\x15ListWorkloadsResponse\x12s\n" +
 	"\tworkloads\x18\x01 \x03(\v2U.google.cloud.orchestration.airflow.service.v1.ListWorkloadsResponse.ComposerWorkloadR\tworkloads\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x1a\x8f\x02\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x1a\x90\x02\n" +
 	"\x10ComposerWorkload\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12m\n" +
-	"\x04type\x18\x02 \x01(\x0e2Y.google.cloud.orchestration.airflow.service.v1.ListWorkloadsResponse.ComposerWorkloadTypeR\x04type\x12x\n" +
-	"\x06status\x18\x03 \x01(\v2[.google.cloud.orchestration.airflow.service.v1.ListWorkloadsResponse.ComposerWorkloadStatusB\x03\xe0A\x03R\x06status\x1a\xf8\x01\n" +
-	"\x16ComposerWorkloadStatus\x12u\n" +
-	"\x05state\x18\x01 \x01(\x0e2Z.google.cloud.orchestration.airflow.service.v1.ListWorkloadsResponse.ComposerWorkloadStateB\x03\xe0A\x03R\x05state\x12*\n" +
-	"\x0estatus_message\x18\x02 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12;\n" +
-	"\x17detailed_status_message\x18\x03 \x01(\tB\x03\xe0A\x03R\x15detailedStatusMessage\"\xd1\x01\n" +
+	"\x04type\x18\x02 \x01(\x0e2Y.google.cloud.orchestration.airflow.service.v1.ListWorkloadsResponse.ComposerWorkloadTypeR\x04type\x12y\n" +
+	"\x06status\x18\x03 \x01(\v2[.google.cloud.orchestration.airflow.service.v1.ListWorkloadsResponse.ComposerWorkloadStatusB\x04\xe2A\x01\x03R\x06status\x1a\xfb\x01\n" +
+	"\x16ComposerWorkloadStatus\x12v\n" +
+	"\x05state\x18\x01 \x01(\x0e2Z.google.cloud.orchestration.airflow.service.v1.ListWorkloadsResponse.ComposerWorkloadStateB\x04\xe2A\x01\x03R\x05state\x12+\n" +
+	"\x0estatus_message\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12<\n" +
+	"\x17detailed_status_message\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x15detailedStatusMessage\"\xd1\x01\n" +
 	"\x14ComposerWorkloadType\x12&\n" +
 	"\"COMPOSER_WORKLOAD_TYPE_UNSPECIFIED\x10\x00\x12\x11\n" +
 	"\rCELERY_WORKER\x10\x01\x12\x15\n" +
@@ -6071,41 +6071,41 @@ const file_google_cloud_orchestration_airflow_service_v1_environments_proto_rawD
 	"\x14LoadSnapshotResponse\";\n" +
 	"\x17DatabaseFailoverRequest\x12 \n" +
 	"\venvironment\x18\x01 \x01(\tR\venvironment\"\x1a\n" +
-	"\x18DatabaseFailoverResponse\"o\n" +
-	"\x1eFetchDatabasePropertiesRequest\x12M\n" +
-	"\venvironment\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
+	"\x18DatabaseFailoverResponse\"p\n" +
+	"\x1eFetchDatabasePropertiesRequest\x12N\n" +
+	"\venvironment\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
 	"#composer.googleapis.com/EnvironmentR\venvironment\"\xbc\x01\n" +
 	"\x1fFetchDatabasePropertiesResponse\x12(\n" +
 	"\x10primary_gce_zone\x18\x01 \x01(\tR\x0eprimaryGceZone\x12,\n" +
 	"\x12secondary_gce_zone\x18\x02 \x01(\tR\x10secondaryGceZone\x12A\n" +
-	"\x1dis_failover_replica_available\x18\x03 \x01(\bR\x1aisFailoverReplicaAvailable\",\n" +
-	"\rStorageConfig\x12\x1b\n" +
-	"\x06bucket\x18\x01 \x01(\tB\x03\xe0A\x01R\x06bucket\"\xda\x10\n" +
+	"\x1dis_failover_replica_available\x18\x03 \x01(\bR\x1aisFailoverReplicaAvailable\"-\n" +
+	"\rStorageConfig\x12\x1c\n" +
+	"\x06bucket\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x06bucket\"\xe9\x10\n" +
 	"\x11EnvironmentConfig\x12\x1f\n" +
 	"\vgke_cluster\x18\x01 \x01(\tR\n" +
 	"gkeCluster\x12$\n" +
 	"\x0edag_gcs_prefix\x18\x02 \x01(\tR\fdagGcsPrefix\x12\x1d\n" +
 	"\n" +
-	"node_count\x18\x03 \x01(\x05R\tnodeCount\x12k\n" +
-	"\x0fsoftware_config\x18\x04 \x01(\v2=.google.cloud.orchestration.airflow.service.v1.SoftwareConfigB\x03\xe0A\x01R\x0esoftwareConfig\x12_\n" +
-	"\vnode_config\x18\x05 \x01(\v29.google.cloud.orchestration.airflow.service.v1.NodeConfigB\x03\xe0A\x01R\n" +
-	"nodeConfig\x12\x8a\x01\n" +
-	"\x1aprivate_environment_config\x18\a \x01(\v2G.google.cloud.orchestration.airflow.service.v1.PrivateEnvironmentConfigB\x03\xe0A\x01R\x18privateEnvironmentConfig\x12\x9b\x01\n" +
-	"!web_server_network_access_control\x18\b \x01(\v2L.google.cloud.orchestration.airflow.service.v1.WebServerNetworkAccessControlB\x03\xe0A\x01R\x1dwebServerNetworkAccessControl\x12k\n" +
-	"\x0fdatabase_config\x18\t \x01(\v2=.google.cloud.orchestration.airflow.service.v1.DatabaseConfigB\x03\xe0A\x01R\x0edatabaseConfig\x12o\n" +
+	"node_count\x18\x03 \x01(\x05R\tnodeCount\x12l\n" +
+	"\x0fsoftware_config\x18\x04 \x01(\v2=.google.cloud.orchestration.airflow.service.v1.SoftwareConfigB\x04\xe2A\x01\x01R\x0esoftwareConfig\x12`\n" +
+	"\vnode_config\x18\x05 \x01(\v29.google.cloud.orchestration.airflow.service.v1.NodeConfigB\x04\xe2A\x01\x01R\n" +
+	"nodeConfig\x12\x8b\x01\n" +
+	"\x1aprivate_environment_config\x18\a \x01(\v2G.google.cloud.orchestration.airflow.service.v1.PrivateEnvironmentConfigB\x04\xe2A\x01\x01R\x18privateEnvironmentConfig\x12\x9c\x01\n" +
+	"!web_server_network_access_control\x18\b \x01(\v2L.google.cloud.orchestration.airflow.service.v1.WebServerNetworkAccessControlB\x04\xe2A\x01\x01R\x1dwebServerNetworkAccessControl\x12l\n" +
+	"\x0fdatabase_config\x18\t \x01(\v2=.google.cloud.orchestration.airflow.service.v1.DatabaseConfigB\x04\xe2A\x01\x01R\x0edatabaseConfig\x12p\n" +
 	"\x11web_server_config\x18\n" +
-	" \x01(\v2>.google.cloud.orchestration.airflow.service.v1.WebServerConfigB\x03\xe0A\x01R\x0fwebServerConfig\x12q\n" +
-	"\x11encryption_config\x18\v \x01(\v2?.google.cloud.orchestration.airflow.service.v1.EncryptionConfigB\x03\xe0A\x01R\x10encryptionConfig\x12t\n" +
-	"\x12maintenance_window\x18\f \x01(\v2@.google.cloud.orchestration.airflow.service.v1.MaintenanceWindowB\x03\xe0A\x01R\x11maintenanceWindow\x12n\n" +
-	"\x10workloads_config\x18\x0f \x01(\v2>.google.cloud.orchestration.airflow.service.v1.WorkloadsConfigB\x03\xe0A\x01R\x0fworkloadsConfig\x12\x80\x01\n" +
-	"\x10environment_size\x18\x10 \x01(\x0e2P.google.cloud.orchestration.airflow.service.v1.EnvironmentConfig.EnvironmentSizeB\x03\xe0A\x01R\x0fenvironmentSize\x12\x1f\n" +
+	" \x01(\v2>.google.cloud.orchestration.airflow.service.v1.WebServerConfigB\x04\xe2A\x01\x01R\x0fwebServerConfig\x12r\n" +
+	"\x11encryption_config\x18\v \x01(\v2?.google.cloud.orchestration.airflow.service.v1.EncryptionConfigB\x04\xe2A\x01\x01R\x10encryptionConfig\x12u\n" +
+	"\x12maintenance_window\x18\f \x01(\v2@.google.cloud.orchestration.airflow.service.v1.MaintenanceWindowB\x04\xe2A\x01\x01R\x11maintenanceWindow\x12o\n" +
+	"\x10workloads_config\x18\x0f \x01(\v2>.google.cloud.orchestration.airflow.service.v1.WorkloadsConfigB\x04\xe2A\x01\x01R\x0fworkloadsConfig\x12\x81\x01\n" +
+	"\x10environment_size\x18\x10 \x01(\x0e2P.google.cloud.orchestration.airflow.service.v1.EnvironmentConfig.EnvironmentSizeB\x04\xe2A\x01\x01R\x0fenvironmentSize\x12\x1f\n" +
 	"\vairflow_uri\x18\x06 \x01(\tR\n" +
-	"airflowUri\x12/\n" +
-	"\x11airflow_byoid_uri\x18\x14 \x01(\tB\x03\xe0A\x03R\x0fairflowByoidUri\x12\x9d\x01\n" +
-	"!master_authorized_networks_config\x18\x11 \x01(\v2M.google.cloud.orchestration.airflow.service.v1.MasterAuthorizedNetworksConfigB\x03\xe0A\x01R\x1emasterAuthorizedNetworksConfig\x12k\n" +
-	"\x0frecovery_config\x18\x12 \x01(\v2=.google.cloud.orchestration.airflow.service.v1.RecoveryConfigB\x03\xe0A\x01R\x0erecoveryConfig\x12}\n" +
-	"\x0fresilience_mode\x18\x13 \x01(\x0e2O.google.cloud.orchestration.airflow.service.v1.EnvironmentConfig.ResilienceModeB\x03\xe0A\x01R\x0eresilienceMode\x12{\n" +
-	"\x15data_retention_config\x18\x15 \x01(\v2B.google.cloud.orchestration.airflow.service.v1.DataRetentionConfigB\x03\xe0A\x01R\x13dataRetentionConfig\"\x88\x01\n" +
+	"airflowUri\x120\n" +
+	"\x11airflow_byoid_uri\x18\x14 \x01(\tB\x04\xe2A\x01\x03R\x0fairflowByoidUri\x12\x9e\x01\n" +
+	"!master_authorized_networks_config\x18\x11 \x01(\v2M.google.cloud.orchestration.airflow.service.v1.MasterAuthorizedNetworksConfigB\x04\xe2A\x01\x01R\x1emasterAuthorizedNetworksConfig\x12l\n" +
+	"\x0frecovery_config\x18\x12 \x01(\v2=.google.cloud.orchestration.airflow.service.v1.RecoveryConfigB\x04\xe2A\x01\x01R\x0erecoveryConfig\x12~\n" +
+	"\x0fresilience_mode\x18\x13 \x01(\x0e2O.google.cloud.orchestration.airflow.service.v1.EnvironmentConfig.ResilienceModeB\x04\xe2A\x01\x01R\x0eresilienceMode\x12|\n" +
+	"\x15data_retention_config\x18\x15 \x01(\v2B.google.cloud.orchestration.airflow.service.v1.DataRetentionConfigB\x04\xe2A\x01\x01R\x13dataRetentionConfig\"\x88\x01\n" +
 	"\x0fEnvironmentSize\x12 \n" +
 	"\x1cENVIRONMENT_SIZE_UNSPECIFIED\x10\x00\x12\x1a\n" +
 	"\x16ENVIRONMENT_SIZE_SMALL\x10\x01\x12\x1b\n" +
@@ -6113,37 +6113,37 @@ const file_google_cloud_orchestration_airflow_service_v1_environments_proto_rawD
 	"\x16ENVIRONMENT_SIZE_LARGE\x10\x03\"F\n" +
 	"\x0eResilienceMode\x12\x1f\n" +
 	"\x1bRESILIENCE_MODE_UNSPECIFIED\x10\x00\x12\x13\n" +
-	"\x0fHIGH_RESILIENCE\x10\x01\"\xf8\x01\n" +
+	"\x0fHIGH_RESILIENCE\x10\x01\"\xf9\x01\n" +
 	"\x1dWebServerNetworkAccessControl\x12\x87\x01\n" +
-	"\x11allowed_ip_ranges\x18\x01 \x03(\v2[.google.cloud.orchestration.airflow.service.v1.WebServerNetworkAccessControl.AllowedIpRangeR\x0fallowedIpRanges\x1aM\n" +
+	"\x11allowed_ip_ranges\x18\x01 \x03(\v2[.google.cloud.orchestration.airflow.service.v1.WebServerNetworkAccessControl.AllowedIpRangeR\x0fallowedIpRanges\x1aN\n" +
 	"\x0eAllowedIpRange\x12\x14\n" +
-	"\x05value\x18\x01 \x01(\tR\x05value\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\"Q\n" +
-	"\x0eDatabaseConfig\x12&\n" +
-	"\fmachine_type\x18\x01 \x01(\tB\x03\xe0A\x01R\vmachineType\x12\x17\n" +
-	"\x04zone\x18\x02 \x01(\tB\x03\xe0A\x01R\x04zone\"9\n" +
-	"\x0fWebServerConfig\x12&\n" +
-	"\fmachine_type\x18\x01 \x01(\tB\x03\xe0A\x01R\vmachineType\"9\n" +
-	"\x10EncryptionConfig\x12%\n" +
-	"\fkms_key_name\x18\x01 \x01(\tB\x03\xe0A\x01R\n" +
-	"kmsKeyName\"\xb4\x01\n" +
-	"\x11MaintenanceWindow\x12>\n" +
+	"\x05value\x18\x01 \x01(\tR\x05value\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\"S\n" +
+	"\x0eDatabaseConfig\x12'\n" +
+	"\fmachine_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\vmachineType\x12\x18\n" +
+	"\x04zone\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04zone\":\n" +
+	"\x0fWebServerConfig\x12'\n" +
+	"\fmachine_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\vmachineType\":\n" +
+	"\x10EncryptionConfig\x12&\n" +
+	"\fkms_key_name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"kmsKeyName\"\xb7\x01\n" +
+	"\x11MaintenanceWindow\x12?\n" +
 	"\n" +
-	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\tstartTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\aendTime\x12#\n" +
+	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\tstartTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\aendTime\x12$\n" +
 	"\n" +
-	"recurrence\x18\x03 \x01(\tB\x03\xe0A\x02R\n" +
-	"recurrence\"\xf2\b\n" +
-	"\x0eSoftwareConfig\x12(\n" +
-	"\rimage_version\x18\x01 \x01(\tB\x03\xe0A\x01R\fimageVersion\x12\x93\x01\n" +
+	"recurrence\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"recurrence\"\xf6\b\n" +
+	"\x0eSoftwareConfig\x12)\n" +
+	"\rimage_version\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\fimageVersion\x12\x93\x01\n" +
 	"\x18airflow_config_overrides\x18\x02 \x03(\v2Y.google.cloud.orchestration.airflow.service.v1.SoftwareConfig.AirflowConfigOverridesEntryR\x16airflowConfigOverrides\x12t\n" +
 	"\rpypi_packages\x18\x03 \x03(\v2O.google.cloud.orchestration.airflow.service.v1.SoftwareConfig.PypiPackagesEntryR\fpypiPackages\x12t\n" +
 	"\renv_variables\x18\x04 \x03(\v2O.google.cloud.orchestration.airflow.service.v1.SoftwareConfig.EnvVariablesEntryR\fenvVariables\x12%\n" +
-	"\x0epython_version\x18\x06 \x01(\tR\rpythonVersion\x12,\n" +
-	"\x0fscheduler_count\x18\a \x01(\x05B\x03\xe0A\x01R\x0eschedulerCount\x12\x94\x01\n" +
-	"\x1ecloud_data_lineage_integration\x18\b \x01(\v2J.google.cloud.orchestration.airflow.service.v1.CloudDataLineageIntegrationB\x03\xe0A\x01R\x1bcloudDataLineageIntegration\x12\x8e\x01\n" +
+	"\x0epython_version\x18\x06 \x01(\tR\rpythonVersion\x12-\n" +
+	"\x0fscheduler_count\x18\a \x01(\x05B\x04\xe2A\x01\x01R\x0eschedulerCount\x12\x95\x01\n" +
+	"\x1ecloud_data_lineage_integration\x18\b \x01(\v2J.google.cloud.orchestration.airflow.service.v1.CloudDataLineageIntegrationB\x04\xe2A\x01\x01R\x1bcloudDataLineageIntegration\x12\x8f\x01\n" +
 	"\x17web_server_plugins_mode\x18\n" +
-	" \x01(\x0e2R.google.cloud.orchestration.airflow.service.v1.SoftwareConfig.WebServerPluginsModeB\x03\xe0A\x01R\x14webServerPluginsMode\x1aI\n" +
+	" \x01(\x0e2R.google.cloud.orchestration.airflow.service.v1.SoftwareConfig.WebServerPluginsModeB\x04\xe2A\x01\x01R\x14webServerPluginsMode\x1aI\n" +
 	"\x1bAirflowConfigOverridesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a?\n" +
@@ -6156,122 +6156,122 @@ const file_google_cloud_orchestration_airflow_service_v1_environments_proto_rawD
 	"\x14WebServerPluginsMode\x12'\n" +
 	"#WEB_SERVER_PLUGINS_MODE_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10PLUGINS_DISABLED\x10\x01\x12\x13\n" +
-	"\x0fPLUGINS_ENABLED\x10\x02\"\x82\x03\n" +
-	"\x12IPAllocationPolicy\x12)\n" +
-	"\x0euse_ip_aliases\x18\x01 \x01(\bB\x03\xe0A\x01R\fuseIpAliases\x12F\n" +
-	"\x1ccluster_secondary_range_name\x18\x02 \x01(\tB\x03\xe0A\x01H\x00R\x19clusterSecondaryRangeName\x12<\n" +
-	"\x17cluster_ipv4_cidr_block\x18\x04 \x01(\tB\x03\xe0A\x01H\x00R\x14clusterIpv4CidrBlock\x12H\n" +
-	"\x1dservices_secondary_range_name\x18\x03 \x01(\tB\x03\xe0A\x01H\x01R\x1aservicesSecondaryRangeName\x12>\n" +
-	"\x18services_ipv4_cidr_block\x18\x05 \x01(\tB\x03\xe0A\x01H\x01R\x15servicesIpv4CidrBlockB\x17\n" +
+	"\x0fPLUGINS_ENABLED\x10\x02\"\x87\x03\n" +
+	"\x12IPAllocationPolicy\x12*\n" +
+	"\x0euse_ip_aliases\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\fuseIpAliases\x12G\n" +
+	"\x1ccluster_secondary_range_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x00R\x19clusterSecondaryRangeName\x12=\n" +
+	"\x17cluster_ipv4_cidr_block\x18\x04 \x01(\tB\x04\xe2A\x01\x01H\x00R\x14clusterIpv4CidrBlock\x12I\n" +
+	"\x1dservices_secondary_range_name\x18\x03 \x01(\tB\x04\xe2A\x01\x01H\x01R\x1aservicesSecondaryRangeName\x12?\n" +
+	"\x18services_ipv4_cidr_block\x18\x05 \x01(\tB\x04\xe2A\x01\x01H\x01R\x15servicesIpv4CidrBlockB\x17\n" +
 	"\x15cluster_ip_allocationB\x18\n" +
-	"\x16services_ip_allocation\"\xda\x04\n" +
+	"\x16services_ip_allocation\"\xe1\x04\n" +
 	"\n" +
 	"NodeConfig\x12\x1a\n" +
 	"\blocation\x18\x01 \x01(\tR\blocation\x12!\n" +
-	"\fmachine_type\x18\x02 \x01(\tR\vmachineType\x12\x1d\n" +
-	"\anetwork\x18\x03 \x01(\tB\x03\xe0A\x01R\anetwork\x12#\n" +
+	"\fmachine_type\x18\x02 \x01(\tR\vmachineType\x12\x1e\n" +
+	"\anetwork\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\anetwork\x12$\n" +
 	"\n" +
-	"subnetwork\x18\x04 \x01(\tB\x03\xe0A\x01R\n" +
+	"subnetwork\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\n" +
 	"subnetwork\x12 \n" +
 	"\fdisk_size_gb\x18\x05 \x01(\x05R\n" +
 	"diskSizeGb\x12!\n" +
-	"\foauth_scopes\x18\x06 \x03(\tR\voauthScopes\x12,\n" +
-	"\x0fservice_account\x18\a \x01(\tB\x03\xe0A\x01R\x0eserviceAccount\x12\x12\n" +
-	"\x04tags\x18\b \x03(\tR\x04tags\x12x\n" +
-	"\x14ip_allocation_policy\x18\t \x01(\v2A.google.cloud.orchestration.airflow.service.v1.IPAllocationPolicyB\x03\xe0A\x01R\x12ipAllocationPolicy\x124\n" +
-	"\x14enable_ip_masq_agent\x18\v \x01(\bB\x03\xe0A\x01R\x11enableIpMasqAgent\x12C\n" +
-	"\x1bcomposer_network_attachment\x18\f \x01(\tB\x03\xe0A\x01R\x19composerNetworkAttachment\x12M\n" +
-	"!composer_internal_ipv4_cidr_block\x18\r \x01(\tB\x03\xe0A\x01R\x1dcomposerInternalIpv4CidrBlock\"\xcf\x01\n" +
-	"\x14PrivateClusterConfig\x12;\n" +
-	"\x17enable_private_endpoint\x18\x01 \x01(\bB\x03\xe0A\x01R\x15enablePrivateEndpoint\x128\n" +
-	"\x16master_ipv4_cidr_block\x18\x02 \x01(\tB\x03\xe0A\x01R\x13masterIpv4CidrBlock\x12@\n" +
-	"\x1amaster_ipv4_reserved_range\x18\x03 \x01(\tB\x03\xe0A\x03R\x17masterIpv4ReservedRange\"\xf1\x01\n" +
-	"\x10NetworkingConfig\x12|\n" +
-	"\x0fconnection_type\x18\x01 \x01(\x0e2N.google.cloud.orchestration.airflow.service.v1.NetworkingConfig.ConnectionTypeB\x03\xe0A\x01R\x0econnectionType\"_\n" +
+	"\foauth_scopes\x18\x06 \x03(\tR\voauthScopes\x12-\n" +
+	"\x0fservice_account\x18\a \x01(\tB\x04\xe2A\x01\x01R\x0eserviceAccount\x12\x12\n" +
+	"\x04tags\x18\b \x03(\tR\x04tags\x12y\n" +
+	"\x14ip_allocation_policy\x18\t \x01(\v2A.google.cloud.orchestration.airflow.service.v1.IPAllocationPolicyB\x04\xe2A\x01\x01R\x12ipAllocationPolicy\x125\n" +
+	"\x14enable_ip_masq_agent\x18\v \x01(\bB\x04\xe2A\x01\x01R\x11enableIpMasqAgent\x12D\n" +
+	"\x1bcomposer_network_attachment\x18\f \x01(\tB\x04\xe2A\x01\x01R\x19composerNetworkAttachment\x12N\n" +
+	"!composer_internal_ipv4_cidr_block\x18\r \x01(\tB\x04\xe2A\x01\x01R\x1dcomposerInternalIpv4CidrBlock\"\xd2\x01\n" +
+	"\x14PrivateClusterConfig\x12<\n" +
+	"\x17enable_private_endpoint\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x15enablePrivateEndpoint\x129\n" +
+	"\x16master_ipv4_cidr_block\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x13masterIpv4CidrBlock\x12A\n" +
+	"\x1amaster_ipv4_reserved_range\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x17masterIpv4ReservedRange\"\xf2\x01\n" +
+	"\x10NetworkingConfig\x12}\n" +
+	"\x0fconnection_type\x18\x01 \x01(\x0e2N.google.cloud.orchestration.airflow.service.v1.NetworkingConfig.ConnectionTypeB\x04\xe2A\x01\x01R\x0econnectionType\"_\n" +
 	"\x0eConnectionType\x12\x1f\n" +
 	"\x1bCONNECTION_TYPE_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vVPC_PEERING\x10\x01\x12\x1b\n" +
-	"\x17PRIVATE_SERVICE_CONNECT\x10\x02\"\xb6\a\n" +
-	"\x18PrivateEnvironmentConfig\x12A\n" +
-	"\x1aenable_private_environment\x18\x01 \x01(\bB\x03\xe0A\x01R\x18enablePrivateEnvironment\x12@\n" +
-	"\x1aenable_private_builds_only\x18\v \x01(\bB\x03\xe0A\x01R\x17enablePrivateBuildsOnly\x12~\n" +
-	"\x16private_cluster_config\x18\x02 \x01(\v2C.google.cloud.orchestration.airflow.service.v1.PrivateClusterConfigB\x03\xe0A\x01R\x14privateClusterConfig\x12?\n" +
-	"\x1aweb_server_ipv4_cidr_block\x18\x03 \x01(\tB\x03\xe0A\x01R\x16webServerIpv4CidrBlock\x12=\n" +
-	"\x19cloud_sql_ipv4_cidr_block\x18\x04 \x01(\tB\x03\xe0A\x01R\x15cloudSqlIpv4CidrBlock\x12G\n" +
-	"\x1eweb_server_ipv4_reserved_range\x18\x05 \x01(\tB\x03\xe0A\x03R\x1awebServerIpv4ReservedRange\x12V\n" +
-	"&cloud_composer_network_ipv4_cidr_block\x18\a \x01(\tB\x03\xe0A\x01R!cloudComposerNetworkIpv4CidrBlock\x12^\n" +
-	"*cloud_composer_network_ipv4_reserved_range\x18\b \x01(\tB\x03\xe0A\x03R%cloudComposerNetworkIpv4ReservedRange\x12K\n" +
-	" enable_privately_used_public_ips\x18\x06 \x01(\bB\x03\xe0A\x01R\x1cenablePrivatelyUsedPublicIps\x12T\n" +
-	"$cloud_composer_connection_subnetwork\x18\t \x01(\tB\x03\xe0A\x01R!cloudComposerConnectionSubnetwork\x12q\n" +
+	"\x17PRIVATE_SERVICE_CONNECT\x10\x02\"\xc1\a\n" +
+	"\x18PrivateEnvironmentConfig\x12B\n" +
+	"\x1aenable_private_environment\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x18enablePrivateEnvironment\x12A\n" +
+	"\x1aenable_private_builds_only\x18\v \x01(\bB\x04\xe2A\x01\x01R\x17enablePrivateBuildsOnly\x12\x7f\n" +
+	"\x16private_cluster_config\x18\x02 \x01(\v2C.google.cloud.orchestration.airflow.service.v1.PrivateClusterConfigB\x04\xe2A\x01\x01R\x14privateClusterConfig\x12@\n" +
+	"\x1aweb_server_ipv4_cidr_block\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x16webServerIpv4CidrBlock\x12>\n" +
+	"\x19cloud_sql_ipv4_cidr_block\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x15cloudSqlIpv4CidrBlock\x12H\n" +
+	"\x1eweb_server_ipv4_reserved_range\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x1awebServerIpv4ReservedRange\x12W\n" +
+	"&cloud_composer_network_ipv4_cidr_block\x18\a \x01(\tB\x04\xe2A\x01\x01R!cloudComposerNetworkIpv4CidrBlock\x12_\n" +
+	"*cloud_composer_network_ipv4_reserved_range\x18\b \x01(\tB\x04\xe2A\x01\x03R%cloudComposerNetworkIpv4ReservedRange\x12L\n" +
+	" enable_privately_used_public_ips\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\x1cenablePrivatelyUsedPublicIps\x12U\n" +
+	"$cloud_composer_connection_subnetwork\x18\t \x01(\tB\x04\xe2A\x01\x01R!cloudComposerConnectionSubnetwork\x12r\n" +
 	"\x11networking_config\x18\n" +
-	" \x01(\v2?.google.cloud.orchestration.airflow.service.v1.NetworkingConfigB\x03\xe0A\x01R\x10networkingConfig\"\x8a\n" +
+	" \x01(\v2?.google.cloud.orchestration.airflow.service.v1.NetworkingConfigB\x04\xe2A\x01\x01R\x10networkingConfig\"\xa2\n" +
 	"\n" +
-	"\x0fWorkloadsConfig\x12s\n" +
-	"\tscheduler\x18\x01 \x01(\v2P.google.cloud.orchestration.airflow.service.v1.WorkloadsConfig.SchedulerResourceB\x03\xe0A\x01R\tscheduler\x12t\n" +
+	"\x0fWorkloadsConfig\x12t\n" +
+	"\tscheduler\x18\x01 \x01(\v2P.google.cloud.orchestration.airflow.service.v1.WorkloadsConfig.SchedulerResourceB\x04\xe2A\x01\x01R\tscheduler\x12u\n" +
 	"\n" +
-	"web_server\x18\x02 \x01(\v2P.google.cloud.orchestration.airflow.service.v1.WorkloadsConfig.WebServerResourceB\x03\xe0A\x01R\twebServer\x12j\n" +
-	"\x06worker\x18\x03 \x01(\v2M.google.cloud.orchestration.airflow.service.v1.WorkloadsConfig.WorkerResourceB\x03\xe0A\x01R\x06worker\x12s\n" +
-	"\ttriggerer\x18\x04 \x01(\v2P.google.cloud.orchestration.airflow.service.v1.WorkloadsConfig.TriggererResourceB\x03\xe0A\x01R\ttriggerer\x12}\n" +
-	"\rdag_processor\x18\x05 \x01(\v2S.google.cloud.orchestration.airflow.service.v1.WorkloadsConfig.DagProcessorResourceB\x03\xe0A\x01R\fdagProcessor\x1a\x8b\x01\n" +
-	"\x11SchedulerResource\x12\x15\n" +
-	"\x03cpu\x18\x01 \x01(\x02B\x03\xe0A\x01R\x03cpu\x12 \n" +
-	"\tmemory_gb\x18\x02 \x01(\x02B\x03\xe0A\x01R\bmemoryGb\x12\"\n" +
+	"web_server\x18\x02 \x01(\v2P.google.cloud.orchestration.airflow.service.v1.WorkloadsConfig.WebServerResourceB\x04\xe2A\x01\x01R\twebServer\x12k\n" +
+	"\x06worker\x18\x03 \x01(\v2M.google.cloud.orchestration.airflow.service.v1.WorkloadsConfig.WorkerResourceB\x04\xe2A\x01\x01R\x06worker\x12t\n" +
+	"\ttriggerer\x18\x04 \x01(\v2P.google.cloud.orchestration.airflow.service.v1.WorkloadsConfig.TriggererResourceB\x04\xe2A\x01\x01R\ttriggerer\x12~\n" +
+	"\rdag_processor\x18\x05 \x01(\v2S.google.cloud.orchestration.airflow.service.v1.WorkloadsConfig.DagProcessorResourceB\x04\xe2A\x01\x01R\fdagProcessor\x1a\x8f\x01\n" +
+	"\x11SchedulerResource\x12\x16\n" +
+	"\x03cpu\x18\x01 \x01(\x02B\x04\xe2A\x01\x01R\x03cpu\x12!\n" +
+	"\tmemory_gb\x18\x02 \x01(\x02B\x04\xe2A\x01\x01R\bmemoryGb\x12#\n" +
 	"\n" +
-	"storage_gb\x18\x03 \x01(\x02B\x03\xe0A\x01R\tstorageGb\x12\x19\n" +
-	"\x05count\x18\x04 \x01(\x05B\x03\xe0A\x01R\x05count\x1ap\n" +
-	"\x11WebServerResource\x12\x15\n" +
-	"\x03cpu\x18\x01 \x01(\x02B\x03\xe0A\x01R\x03cpu\x12 \n" +
-	"\tmemory_gb\x18\x02 \x01(\x02B\x03\xe0A\x01R\bmemoryGb\x12\"\n" +
+	"storage_gb\x18\x03 \x01(\x02B\x04\xe2A\x01\x01R\tstorageGb\x12\x1a\n" +
+	"\x05count\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\x05count\x1as\n" +
+	"\x11WebServerResource\x12\x16\n" +
+	"\x03cpu\x18\x01 \x01(\x02B\x04\xe2A\x01\x01R\x03cpu\x12!\n" +
+	"\tmemory_gb\x18\x02 \x01(\x02B\x04\xe2A\x01\x01R\bmemoryGb\x12#\n" +
 	"\n" +
-	"storage_gb\x18\x03 \x01(\x02B\x03\xe0A\x01R\tstorageGb\x1a\xb1\x01\n" +
-	"\x0eWorkerResource\x12\x15\n" +
-	"\x03cpu\x18\x01 \x01(\x02B\x03\xe0A\x01R\x03cpu\x12 \n" +
-	"\tmemory_gb\x18\x02 \x01(\x02B\x03\xe0A\x01R\bmemoryGb\x12\"\n" +
+	"storage_gb\x18\x03 \x01(\x02B\x04\xe2A\x01\x01R\tstorageGb\x1a\xb6\x01\n" +
+	"\x0eWorkerResource\x12\x16\n" +
+	"\x03cpu\x18\x01 \x01(\x02B\x04\xe2A\x01\x01R\x03cpu\x12!\n" +
+	"\tmemory_gb\x18\x02 \x01(\x02B\x04\xe2A\x01\x01R\bmemoryGb\x12#\n" +
 	"\n" +
-	"storage_gb\x18\x03 \x01(\x02B\x03\xe0A\x01R\tstorageGb\x12 \n" +
-	"\tmin_count\x18\x04 \x01(\x05B\x03\xe0A\x01R\bminCount\x12 \n" +
-	"\tmax_count\x18\x05 \x01(\x05B\x03\xe0A\x01R\bmaxCount\x1ag\n" +
-	"\x11TriggererResource\x12\x19\n" +
-	"\x05count\x18\x01 \x01(\x05B\x03\xe0A\x01R\x05count\x12\x15\n" +
-	"\x03cpu\x18\x02 \x01(\x02B\x03\xe0A\x01R\x03cpu\x12 \n" +
-	"\tmemory_gb\x18\x03 \x01(\x02B\x03\xe0A\x01R\bmemoryGb\x1a\x8e\x01\n" +
-	"\x14DagProcessorResource\x12\x15\n" +
-	"\x03cpu\x18\x01 \x01(\x02B\x03\xe0A\x01R\x03cpu\x12 \n" +
-	"\tmemory_gb\x18\x02 \x01(\x02B\x03\xe0A\x01R\bmemoryGb\x12\"\n" +
+	"storage_gb\x18\x03 \x01(\x02B\x04\xe2A\x01\x01R\tstorageGb\x12!\n" +
+	"\tmin_count\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\bminCount\x12!\n" +
+	"\tmax_count\x18\x05 \x01(\x05B\x04\xe2A\x01\x01R\bmaxCount\x1aj\n" +
+	"\x11TriggererResource\x12\x1a\n" +
+	"\x05count\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\x05count\x12\x16\n" +
+	"\x03cpu\x18\x02 \x01(\x02B\x04\xe2A\x01\x01R\x03cpu\x12!\n" +
+	"\tmemory_gb\x18\x03 \x01(\x02B\x04\xe2A\x01\x01R\bmemoryGb\x1a\x92\x01\n" +
+	"\x14DagProcessorResource\x12\x16\n" +
+	"\x03cpu\x18\x01 \x01(\x02B\x04\xe2A\x01\x01R\x03cpu\x12!\n" +
+	"\tmemory_gb\x18\x02 \x01(\x02B\x04\xe2A\x01\x01R\bmemoryGb\x12#\n" +
 	"\n" +
-	"storage_gb\x18\x03 \x01(\x02B\x03\xe0A\x01R\tstorageGb\x12\x19\n" +
-	"\x05count\x18\x04 \x01(\x05B\x03\xe0A\x01R\x05count\"\x9d\x01\n" +
-	"\x0eRecoveryConfig\x12\x8a\x01\n" +
-	"\x1ascheduled_snapshots_config\x18\x01 \x01(\v2G.google.cloud.orchestration.airflow.service.v1.ScheduledSnapshotsConfigB\x03\xe0A\x01R\x18scheduledSnapshotsConfig\"\xd0\x01\n" +
-	"\x18ScheduledSnapshotsConfig\x12\x1d\n" +
-	"\aenabled\x18\x01 \x01(\bB\x03\xe0A\x01R\aenabled\x120\n" +
-	"\x11snapshot_location\x18\x06 \x01(\tB\x03\xe0A\x01R\x10snapshotLocation\x12A\n" +
-	"\x1asnapshot_creation_schedule\x18\x03 \x01(\tB\x03\xe0A\x01R\x18snapshotCreationSchedule\x12 \n" +
-	"\ttime_zone\x18\x05 \x01(\tB\x03\xe0A\x01R\btimeZone\"\x88\x02\n" +
-	"\x1eMasterAuthorizedNetworksConfig\x12\x1d\n" +
-	"\aenabled\x18\x01 \x01(\bB\x03\xe0A\x01R\aenabled\x12x\n" +
+	"storage_gb\x18\x03 \x01(\x02B\x04\xe2A\x01\x01R\tstorageGb\x12\x1a\n" +
+	"\x05count\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\x05count\"\x9e\x01\n" +
+	"\x0eRecoveryConfig\x12\x8b\x01\n" +
+	"\x1ascheduled_snapshots_config\x18\x01 \x01(\v2G.google.cloud.orchestration.airflow.service.v1.ScheduledSnapshotsConfigB\x04\xe2A\x01\x01R\x18scheduledSnapshotsConfig\"\xd4\x01\n" +
+	"\x18ScheduledSnapshotsConfig\x12\x1e\n" +
+	"\aenabled\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\aenabled\x121\n" +
+	"\x11snapshot_location\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x10snapshotLocation\x12B\n" +
+	"\x1asnapshot_creation_schedule\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x18snapshotCreationSchedule\x12!\n" +
+	"\ttime_zone\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\btimeZone\"\x89\x02\n" +
+	"\x1eMasterAuthorizedNetworksConfig\x12\x1e\n" +
+	"\aenabled\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\aenabled\x12x\n" +
 	"\vcidr_blocks\x18\x02 \x03(\v2W.google.cloud.orchestration.airflow.service.v1.MasterAuthorizedNetworksConfig.CidrBlockR\n" +
 	"cidrBlocks\x1aM\n" +
 	"\tCidrBlock\x12!\n" +
 	"\fdisplay_name\x18\x01 \x01(\tR\vdisplayName\x12\x1d\n" +
 	"\n" +
-	"cidr_block\x18\x02 \x01(\tR\tcidrBlock\"<\n" +
-	"\x1bCloudDataLineageIntegration\x12\x1d\n" +
-	"\aenabled\x18\x01 \x01(\bB\x03\xe0A\x01R\aenabled\"\x99\a\n" +
-	"\vEnvironment\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12]\n" +
-	"\x06config\x18\x02 \x01(\v2@.google.cloud.orchestration.airflow.service.v1.EnvironmentConfigB\x03\xe0A\x01R\x06config\x12\x12\n" +
+	"cidr_block\x18\x02 \x01(\tR\tcidrBlock\"=\n" +
+	"\x1bCloudDataLineageIntegration\x12\x1e\n" +
+	"\aenabled\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\aenabled\"\x9f\a\n" +
+	"\vEnvironment\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12^\n" +
+	"\x06config\x18\x02 \x01(\v2@.google.cloud.orchestration.airflow.service.v1.EnvironmentConfigB\x04\xe2A\x01\x01R\x06config\x12\x12\n" +
 	"\x04uuid\x18\x03 \x01(\tR\x04uuid\x12V\n" +
 	"\x05state\x18\x04 \x01(\x0e2@.google.cloud.orchestration.airflow.service.v1.Environment.StateR\x05state\x12;\n" +
 	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12;\n" +
 	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"updateTime\x12c\n" +
-	"\x06labels\x18\a \x03(\v2F.google.cloud.orchestration.airflow.service.v1.Environment.LabelsEntryB\x03\xe0A\x01R\x06labels\x12(\n" +
-	"\rsatisfies_pzs\x18\b \x01(\bB\x03\xe0A\x03R\fsatisfiesPzs\x12(\n" +
+	"updateTime\x12d\n" +
+	"\x06labels\x18\a \x03(\v2F.google.cloud.orchestration.airflow.service.v1.Environment.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12)\n" +
+	"\rsatisfies_pzs\x18\b \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzs\x12)\n" +
 	"\rsatisfies_pzi\x18\n" +
-	" \x01(\bB\x03\xe0A\x03R\fsatisfiesPzi\x12h\n" +
-	"\x0estorage_config\x18\t \x01(\v2<.google.cloud.orchestration.airflow.service.v1.StorageConfigB\x03\xe0A\x01R\rstorageConfig\x1a9\n" +
+	" \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzi\x12i\n" +
+	"\x0estorage_config\x18\t \x01(\v2<.google.cloud.orchestration.airflow.service.v1.StorageConfigB\x04\xe2A\x01\x01R\rstorageConfig\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"`\n" +
@@ -6282,14 +6282,14 @@ const file_google_cloud_orchestration_airflow_service_v1_environments_proto_rawD
 	"\bUPDATING\x10\x03\x12\f\n" +
 	"\bDELETING\x10\x04\x12\t\n" +
 	"\x05ERROR\x10\x05:l\xeaAi\n" +
-	"#composer.googleapis.com/Environment\x12Bprojects/{project}/locations/{location}/environments/{environment}\"f\n" +
-	"\x13CheckUpgradeRequest\x12%\n" +
-	"\venvironment\x18\x01 \x01(\tB\x03\xe0A\x02R\venvironment\x12(\n" +
-	"\rimage_version\x18\x02 \x01(\tB\x03\xe0A\x01R\fimageVersion\"\xee\x04\n" +
-	"\x14CheckUpgradeResponse\x12'\n" +
-	"\rbuild_log_uri\x18\x01 \x01(\tB\x03\xe0A\x03R\vbuildLogUri\x12\x9c\x01\n" +
-	"\x1econtains_pypi_modules_conflict\x18\x04 \x01(\x0e2R.google.cloud.orchestration.airflow.service.v1.CheckUpgradeResponse.ConflictResultB\x03\xe0A\x03R\x1bcontainsPypiModulesConflict\x12I\n" +
-	"\x1fpypi_conflict_build_log_extract\x18\x03 \x01(\tB\x03\xe0A\x03R\x1bpypiConflictBuildLogExtract\x12#\n" +
+	"#composer.googleapis.com/Environment\x12Bprojects/{project}/locations/{location}/environments/{environment}\"h\n" +
+	"\x13CheckUpgradeRequest\x12&\n" +
+	"\venvironment\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\venvironment\x12)\n" +
+	"\rimage_version\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\fimageVersion\"\xf1\x04\n" +
+	"\x14CheckUpgradeResponse\x12(\n" +
+	"\rbuild_log_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\vbuildLogUri\x12\x9d\x01\n" +
+	"\x1econtains_pypi_modules_conflict\x18\x04 \x01(\x0e2R.google.cloud.orchestration.airflow.service.v1.CheckUpgradeResponse.ConflictResultB\x04\xe2A\x01\x03R\x1bcontainsPypiModulesConflict\x12J\n" +
+	"\x1fpypi_conflict_build_log_extract\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x1bpypiConflictBuildLogExtract\x12#\n" +
 	"\rimage_version\x18\x05 \x01(\tR\fimageVersion\x12\x86\x01\n" +
 	"\x11pypi_dependencies\x18\x06 \x03(\v2Y.google.cloud.orchestration.airflow.service.v1.CheckUpgradeResponse.PypiDependenciesEntryR\x10pypiDependencies\x1aC\n" +
 	"\x15PypiDependenciesEntry\x12\x10\n" +
@@ -6298,19 +6298,19 @@ const file_google_cloud_orchestration_airflow_service_v1_environments_proto_rawD
 	"\x0eConflictResult\x12\x1f\n" +
 	"\x1bCONFLICT_RESULT_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bCONFLICT\x10\x01\x12\x0f\n" +
-	"\vNO_CONFLICT\x10\x02\"\xc6\x02\n" +
-	"\x13DataRetentionConfig\x12\xa3\x01\n" +
-	"!airflow_metadata_retention_config\x18\x01 \x01(\v2S.google.cloud.orchestration.airflow.service.v1.AirflowMetadataRetentionPolicyConfigB\x03\xe0A\x01R\x1eairflowMetadataRetentionConfig\x12\x88\x01\n" +
-	"\x1atask_logs_retention_config\x18\x02 \x01(\v2F.google.cloud.orchestration.airflow.service.v1.TaskLogsRetentionConfigB\x03\xe0A\x01R\x17taskLogsRetentionConfig\"\x9a\x02\n" +
-	"\x17TaskLogsRetentionConfig\x12\x82\x01\n" +
-	"\fstorage_mode\x18\x02 \x01(\x0e2Z.google.cloud.orchestration.airflow.service.v1.TaskLogsRetentionConfig.TaskLogsStorageModeB\x03\xe0A\x01R\vstorageMode\"z\n" +
+	"\vNO_CONFLICT\x10\x02\"\xc8\x02\n" +
+	"\x13DataRetentionConfig\x12\xa4\x01\n" +
+	"!airflow_metadata_retention_config\x18\x01 \x01(\v2S.google.cloud.orchestration.airflow.service.v1.AirflowMetadataRetentionPolicyConfigB\x04\xe2A\x01\x01R\x1eairflowMetadataRetentionConfig\x12\x89\x01\n" +
+	"\x1atask_logs_retention_config\x18\x02 \x01(\v2F.google.cloud.orchestration.airflow.service.v1.TaskLogsRetentionConfigB\x04\xe2A\x01\x01R\x17taskLogsRetentionConfig\"\x9b\x02\n" +
+	"\x17TaskLogsRetentionConfig\x12\x83\x01\n" +
+	"\fstorage_mode\x18\x02 \x01(\x0e2Z.google.cloud.orchestration.airflow.service.v1.TaskLogsRetentionConfig.TaskLogsStorageModeB\x04\xe2A\x01\x01R\vstorageMode\"z\n" +
 	"\x13TaskLogsStorageMode\x12&\n" +
 	"\"TASK_LOGS_STORAGE_MODE_UNSPECIFIED\x10\x00\x12#\n" +
 	"\x1fCLOUD_LOGGING_AND_CLOUD_STORAGE\x10\x01\x12\x16\n" +
-	"\x12CLOUD_LOGGING_ONLY\x10\x02\"\xcc\x02\n" +
-	"$AirflowMetadataRetentionPolicyConfig\x12\x8d\x01\n" +
-	"\x0eretention_mode\x18\x01 \x01(\x0e2a.google.cloud.orchestration.airflow.service.v1.AirflowMetadataRetentionPolicyConfig.RetentionModeB\x03\xe0A\x01R\rretentionMode\x12*\n" +
-	"\x0eretention_days\x18\x02 \x01(\x05B\x03\xe0A\x01R\rretentionDays\"h\n" +
+	"\x12CLOUD_LOGGING_ONLY\x10\x02\"\xce\x02\n" +
+	"$AirflowMetadataRetentionPolicyConfig\x12\x8e\x01\n" +
+	"\x0eretention_mode\x18\x01 \x01(\x0e2a.google.cloud.orchestration.airflow.service.v1.AirflowMetadataRetentionPolicyConfig.RetentionModeB\x04\xe2A\x01\x01R\rretentionMode\x12+\n" +
+	"\x0eretention_days\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\rretentionDays\"h\n" +
 	"\rRetentionMode\x12\x1e\n" +
 	"\x1aRETENTION_MODE_UNSPECIFIED\x10\x00\x12\x1a\n" +
 	"\x16RETENTION_MODE_ENABLED\x10\x01\x12\x1b\n" +

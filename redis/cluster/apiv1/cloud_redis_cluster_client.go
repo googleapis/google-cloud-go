@@ -49,10 +49,17 @@ var newCloudRedisClusterClientHook clientHook
 // CloudRedisClusterCallOptions contains the retry settings for each method of CloudRedisClusterClient.
 type CloudRedisClusterCallOptions struct {
 	ListClusters                          []gax.CallOption
+	ListAclPolicies                       []gax.CallOption
 	GetCluster                            []gax.CallOption
+	GetAclPolicy                          []gax.CallOption
 	UpdateCluster                         []gax.CallOption
+	UpdateAclPolicy                       []gax.CallOption
 	DeleteCluster                         []gax.CallOption
+	DeleteAclPolicy                       []gax.CallOption
+	GetAclPolicyRevision                  []gax.CallOption
+	ListAclPolicyRevisions                []gax.CallOption
 	CreateCluster                         []gax.CallOption
+	CreateAclPolicy                       []gax.CallOption
 	GetClusterCertificateAuthority        []gax.CallOption
 	GetSharedRegionalCertificateAuthority []gax.CallOption
 	RescheduleClusterMaintenance          []gax.CallOption
@@ -63,6 +70,14 @@ type CloudRedisClusterCallOptions struct {
 	DeleteBackup                          []gax.CallOption
 	ExportBackup                          []gax.CallOption
 	BackupCluster                         []gax.CallOption
+	ListTokenAuthUsers                    []gax.CallOption
+	GetTokenAuthUser                      []gax.CallOption
+	ListAuthTokens                        []gax.CallOption
+	GetAuthToken                          []gax.CallOption
+	AddTokenAuthUser                      []gax.CallOption
+	DeleteTokenAuthUser                   []gax.CallOption
+	AddAuthToken                          []gax.CallOption
+	DeleteAuthToken                       []gax.CallOption
 	GetLocation                           []gax.CallOption
 	ListLocations                         []gax.CallOption
 	CancelOperation                       []gax.CallOption
@@ -91,16 +106,33 @@ func defaultCloudRedisClusterCallOptions() *CloudRedisClusterCallOptions {
 		ListClusters: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		ListAclPolicies: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		GetCluster: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		GetAclPolicy: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
 		UpdateCluster: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		UpdateAclPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		DeleteCluster: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		DeleteAclPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		GetAclPolicyRevision:   []gax.CallOption{},
+		ListAclPolicyRevisions: []gax.CallOption{},
 		CreateCluster: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		CreateAclPolicy: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
 		GetClusterCertificateAuthority: []gax.CallOption{
@@ -131,12 +163,20 @@ func defaultCloudRedisClusterCallOptions() *CloudRedisClusterCallOptions {
 		BackupCluster: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
-		GetLocation:     []gax.CallOption{},
-		ListLocations:   []gax.CallOption{},
-		CancelOperation: []gax.CallOption{},
-		DeleteOperation: []gax.CallOption{},
-		GetOperation:    []gax.CallOption{},
-		ListOperations:  []gax.CallOption{},
+		ListTokenAuthUsers:  []gax.CallOption{},
+		GetTokenAuthUser:    []gax.CallOption{},
+		ListAuthTokens:      []gax.CallOption{},
+		GetAuthToken:        []gax.CallOption{},
+		AddTokenAuthUser:    []gax.CallOption{},
+		DeleteTokenAuthUser: []gax.CallOption{},
+		AddAuthToken:        []gax.CallOption{},
+		DeleteAuthToken:     []gax.CallOption{},
+		GetLocation:         []gax.CallOption{},
+		ListLocations:       []gax.CallOption{},
+		CancelOperation:     []gax.CallOption{},
+		DeleteOperation:     []gax.CallOption{},
+		GetOperation:        []gax.CallOption{},
+		ListOperations:      []gax.CallOption{},
 	}
 }
 
@@ -145,16 +185,33 @@ func defaultCloudRedisClusterRESTCallOptions() *CloudRedisClusterCallOptions {
 		ListClusters: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		ListAclPolicies: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		GetCluster: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		GetAclPolicy: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
 		UpdateCluster: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		UpdateAclPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		DeleteCluster: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		DeleteAclPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		GetAclPolicyRevision:   []gax.CallOption{},
+		ListAclPolicyRevisions: []gax.CallOption{},
 		CreateCluster: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		CreateAclPolicy: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
 		GetClusterCertificateAuthority: []gax.CallOption{
@@ -185,12 +242,20 @@ func defaultCloudRedisClusterRESTCallOptions() *CloudRedisClusterCallOptions {
 		BackupCluster: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
-		GetLocation:     []gax.CallOption{},
-		ListLocations:   []gax.CallOption{},
-		CancelOperation: []gax.CallOption{},
-		DeleteOperation: []gax.CallOption{},
-		GetOperation:    []gax.CallOption{},
-		ListOperations:  []gax.CallOption{},
+		ListTokenAuthUsers:  []gax.CallOption{},
+		GetTokenAuthUser:    []gax.CallOption{},
+		ListAuthTokens:      []gax.CallOption{},
+		GetAuthToken:        []gax.CallOption{},
+		AddTokenAuthUser:    []gax.CallOption{},
+		DeleteTokenAuthUser: []gax.CallOption{},
+		AddAuthToken:        []gax.CallOption{},
+		DeleteAuthToken:     []gax.CallOption{},
+		GetLocation:         []gax.CallOption{},
+		ListLocations:       []gax.CallOption{},
+		CancelOperation:     []gax.CallOption{},
+		DeleteOperation:     []gax.CallOption{},
+		GetOperation:        []gax.CallOption{},
+		ListOperations:      []gax.CallOption{},
 	}
 }
 
@@ -200,13 +265,22 @@ type internalCloudRedisClusterClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	ListClusters(context.Context, *clusterpb.ListClustersRequest, ...gax.CallOption) *ClusterIterator
+	ListAclPolicies(context.Context, *clusterpb.ListAclPoliciesRequest, ...gax.CallOption) *AclPolicyIterator
 	GetCluster(context.Context, *clusterpb.GetClusterRequest, ...gax.CallOption) (*clusterpb.Cluster, error)
+	GetAclPolicy(context.Context, *clusterpb.GetAclPolicyRequest, ...gax.CallOption) (*clusterpb.AclPolicy, error)
 	UpdateCluster(context.Context, *clusterpb.UpdateClusterRequest, ...gax.CallOption) (*UpdateClusterOperation, error)
 	UpdateClusterOperation(name string) *UpdateClusterOperation
+	UpdateAclPolicy(context.Context, *clusterpb.UpdateAclPolicyRequest, ...gax.CallOption) (*UpdateAclPolicyOperation, error)
+	UpdateAclPolicyOperation(name string) *UpdateAclPolicyOperation
 	DeleteCluster(context.Context, *clusterpb.DeleteClusterRequest, ...gax.CallOption) (*DeleteClusterOperation, error)
 	DeleteClusterOperation(name string) *DeleteClusterOperation
+	DeleteAclPolicy(context.Context, *clusterpb.DeleteAclPolicyRequest, ...gax.CallOption) (*DeleteAclPolicyOperation, error)
+	DeleteAclPolicyOperation(name string) *DeleteAclPolicyOperation
+	GetAclPolicyRevision(context.Context, *clusterpb.GetAclPolicyRevisionRequest, ...gax.CallOption) (*clusterpb.AclPolicyRevision, error)
+	ListAclPolicyRevisions(context.Context, *clusterpb.ListAclPolicyRevisionsRequest, ...gax.CallOption) *AclPolicyRevisionIterator
 	CreateCluster(context.Context, *clusterpb.CreateClusterRequest, ...gax.CallOption) (*CreateClusterOperation, error)
 	CreateClusterOperation(name string) *CreateClusterOperation
+	CreateAclPolicy(context.Context, *clusterpb.CreateAclPolicyRequest, ...gax.CallOption) (*clusterpb.AclPolicy, error)
 	GetClusterCertificateAuthority(context.Context, *clusterpb.GetClusterCertificateAuthorityRequest, ...gax.CallOption) (*clusterpb.CertificateAuthority, error)
 	GetSharedRegionalCertificateAuthority(context.Context, *clusterpb.GetSharedRegionalCertificateAuthorityRequest, ...gax.CallOption) (*clusterpb.SharedRegionalCertificateAuthority, error)
 	RescheduleClusterMaintenance(context.Context, *clusterpb.RescheduleClusterMaintenanceRequest, ...gax.CallOption) (*RescheduleClusterMaintenanceOperation, error)
@@ -221,6 +295,18 @@ type internalCloudRedisClusterClient interface {
 	ExportBackupOperation(name string) *ExportBackupOperation
 	BackupCluster(context.Context, *clusterpb.BackupClusterRequest, ...gax.CallOption) (*BackupClusterOperation, error)
 	BackupClusterOperation(name string) *BackupClusterOperation
+	ListTokenAuthUsers(context.Context, *clusterpb.ListTokenAuthUsersRequest, ...gax.CallOption) *TokenAuthUserIterator
+	GetTokenAuthUser(context.Context, *clusterpb.GetTokenAuthUserRequest, ...gax.CallOption) (*clusterpb.TokenAuthUser, error)
+	ListAuthTokens(context.Context, *clusterpb.ListAuthTokensRequest, ...gax.CallOption) *AuthTokenIterator
+	GetAuthToken(context.Context, *clusterpb.GetAuthTokenRequest, ...gax.CallOption) (*clusterpb.AuthToken, error)
+	AddTokenAuthUser(context.Context, *clusterpb.AddTokenAuthUserRequest, ...gax.CallOption) (*AddTokenAuthUserOperation, error)
+	AddTokenAuthUserOperation(name string) *AddTokenAuthUserOperation
+	DeleteTokenAuthUser(context.Context, *clusterpb.DeleteTokenAuthUserRequest, ...gax.CallOption) (*DeleteTokenAuthUserOperation, error)
+	DeleteTokenAuthUserOperation(name string) *DeleteTokenAuthUserOperation
+	AddAuthToken(context.Context, *clusterpb.AddAuthTokenRequest, ...gax.CallOption) (*AddAuthTokenOperation, error)
+	AddAuthTokenOperation(name string) *AddAuthTokenOperation
+	DeleteAuthToken(context.Context, *clusterpb.DeleteAuthTokenRequest, ...gax.CallOption) (*DeleteAuthTokenOperation, error)
+	DeleteAuthTokenOperation(name string) *DeleteAuthTokenOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -301,9 +387,27 @@ func (c *CloudRedisClusterClient) ListClusters(ctx context.Context, req *cluster
 	return c.internalClient.ListClusters(ctx, req, opts...)
 }
 
+// ListAclPolicies lists all ACL policies owned by a project in either the specified
+// location (region) or all locations.
+//
+// The location should have the following format:
+//
+//	projects/{project_id}/locations/{location_id}
+//
+// If location_id is specified as - (wildcard), then all regions
+// available to the project are queried, and the results are aggregated.
+func (c *CloudRedisClusterClient) ListAclPolicies(ctx context.Context, req *clusterpb.ListAclPoliciesRequest, opts ...gax.CallOption) *AclPolicyIterator {
+	return c.internalClient.ListAclPolicies(ctx, req, opts...)
+}
+
 // GetCluster gets the details of a specific Redis cluster.
 func (c *CloudRedisClusterClient) GetCluster(ctx context.Context, req *clusterpb.GetClusterRequest, opts ...gax.CallOption) (*clusterpb.Cluster, error) {
 	return c.internalClient.GetCluster(ctx, req, opts...)
+}
+
+// GetAclPolicy gets the details of a specific Redis Cluster ACL policy.
+func (c *CloudRedisClusterClient) GetAclPolicy(ctx context.Context, req *clusterpb.GetAclPolicyRequest, opts ...gax.CallOption) (*clusterpb.AclPolicy, error) {
+	return c.internalClient.GetAclPolicy(ctx, req, opts...)
 }
 
 // UpdateCluster updates the metadata and configuration of a specific Redis cluster.
@@ -321,6 +425,26 @@ func (c *CloudRedisClusterClient) UpdateClusterOperation(name string) *UpdateClu
 	return c.internalClient.UpdateClusterOperation(name)
 }
 
+// UpdateAclPolicy updates the ACL policy.
+//
+// The operation applies the updated ACL policy to all of the linked clusters.
+// If Memorystore can apply the policy to all clusters, then the operation
+// returns a SUCCESS status. If Memorystore can’t apply the policy to all
+// clusters, then to ensure eventual consistency, Memorystore uses
+// reconciliation to apply the policy to the failed clusters.
+//
+// Completed longrunning.Operation will contain the new ACL policy object in
+// the response field.
+func (c *CloudRedisClusterClient) UpdateAclPolicy(ctx context.Context, req *clusterpb.UpdateAclPolicyRequest, opts ...gax.CallOption) (*UpdateAclPolicyOperation, error) {
+	return c.internalClient.UpdateAclPolicy(ctx, req, opts...)
+}
+
+// UpdateAclPolicyOperation returns a new UpdateAclPolicyOperation from a given name.
+// The name must be that of a previously created UpdateAclPolicyOperation, possibly from a different process.
+func (c *CloudRedisClusterClient) UpdateAclPolicyOperation(name string) *UpdateAclPolicyOperation {
+	return c.internalClient.UpdateAclPolicyOperation(name)
+}
+
 // DeleteCluster deletes a specific Redis cluster. Cluster stops serving and data is
 // deleted.
 func (c *CloudRedisClusterClient) DeleteCluster(ctx context.Context, req *clusterpb.DeleteClusterRequest, opts ...gax.CallOption) (*DeleteClusterOperation, error) {
@@ -331,6 +455,29 @@ func (c *CloudRedisClusterClient) DeleteCluster(ctx context.Context, req *cluste
 // The name must be that of a previously created DeleteClusterOperation, possibly from a different process.
 func (c *CloudRedisClusterClient) DeleteClusterOperation(name string) *DeleteClusterOperation {
 	return c.internalClient.DeleteClusterOperation(name)
+}
+
+// DeleteAclPolicy deletes a specific ACL policy. This action will delete the ACL policy and
+// all the rules associated with it. An ACL policy cannot be deleted if it is
+// attached to a cluster.
+func (c *CloudRedisClusterClient) DeleteAclPolicy(ctx context.Context, req *clusterpb.DeleteAclPolicyRequest, opts ...gax.CallOption) (*DeleteAclPolicyOperation, error) {
+	return c.internalClient.DeleteAclPolicy(ctx, req, opts...)
+}
+
+// DeleteAclPolicyOperation returns a new DeleteAclPolicyOperation from a given name.
+// The name must be that of a previously created DeleteAclPolicyOperation, possibly from a different process.
+func (c *CloudRedisClusterClient) DeleteAclPolicyOperation(name string) *DeleteAclPolicyOperation {
+	return c.internalClient.DeleteAclPolicyOperation(name)
+}
+
+// GetAclPolicyRevision gets details of a specific ACL policy revision.
+func (c *CloudRedisClusterClient) GetAclPolicyRevision(ctx context.Context, req *clusterpb.GetAclPolicyRevisionRequest, opts ...gax.CallOption) (*clusterpb.AclPolicyRevision, error) {
+	return c.internalClient.GetAclPolicyRevision(ctx, req, opts...)
+}
+
+// ListAclPolicyRevisions lists all ACL policy revisions in a given ACL policy.
+func (c *CloudRedisClusterClient) ListAclPolicyRevisions(ctx context.Context, req *clusterpb.ListAclPolicyRevisionsRequest, opts ...gax.CallOption) *AclPolicyRevisionIterator {
+	return c.internalClient.ListAclPolicyRevisions(ctx, req, opts...)
 }
 
 // CreateCluster creates a Redis cluster based on the specified properties.
@@ -349,6 +496,13 @@ func (c *CloudRedisClusterClient) CreateCluster(ctx context.Context, req *cluste
 // The name must be that of a previously created CreateClusterOperation, possibly from a different process.
 func (c *CloudRedisClusterClient) CreateClusterOperation(name string) *CreateClusterOperation {
 	return c.internalClient.CreateClusterOperation(name)
+}
+
+// CreateAclPolicy creates an ACL policy.
+// The creation is executed synchronously and the policy is available for use
+// immediately after the RPC returns.
+func (c *CloudRedisClusterClient) CreateAclPolicy(ctx context.Context, req *clusterpb.CreateAclPolicyRequest, opts ...gax.CallOption) (*clusterpb.AclPolicy, error) {
+	return c.internalClient.CreateAclPolicy(ctx, req, opts...)
 }
 
 // GetClusterCertificateAuthority gets the details of certificate authority information for Redis cluster.
@@ -439,6 +593,70 @@ func (c *CloudRedisClusterClient) BackupCluster(ctx context.Context, req *cluste
 // The name must be that of a previously created BackupClusterOperation, possibly from a different process.
 func (c *CloudRedisClusterClient) BackupClusterOperation(name string) *BackupClusterOperation {
 	return c.internalClient.BackupClusterOperation(name)
+}
+
+// ListTokenAuthUsers lists all the token auth users for a token based auth enabled cluster.
+func (c *CloudRedisClusterClient) ListTokenAuthUsers(ctx context.Context, req *clusterpb.ListTokenAuthUsersRequest, opts ...gax.CallOption) *TokenAuthUserIterator {
+	return c.internalClient.ListTokenAuthUsers(ctx, req, opts...)
+}
+
+// GetTokenAuthUser gets a specific token auth user for a basic auth enabled cluster.
+func (c *CloudRedisClusterClient) GetTokenAuthUser(ctx context.Context, req *clusterpb.GetTokenAuthUserRequest, opts ...gax.CallOption) (*clusterpb.TokenAuthUser, error) {
+	return c.internalClient.GetTokenAuthUser(ctx, req, opts...)
+}
+
+// ListAuthTokens lists all the auth tokens for a specific token auth user.
+func (c *CloudRedisClusterClient) ListAuthTokens(ctx context.Context, req *clusterpb.ListAuthTokensRequest, opts ...gax.CallOption) *AuthTokenIterator {
+	return c.internalClient.ListAuthTokens(ctx, req, opts...)
+}
+
+// GetAuthToken gets a specific auth token for a specific token auth user.
+func (c *CloudRedisClusterClient) GetAuthToken(ctx context.Context, req *clusterpb.GetAuthTokenRequest, opts ...gax.CallOption) (*clusterpb.AuthToken, error) {
+	return c.internalClient.GetAuthToken(ctx, req, opts...)
+}
+
+// AddTokenAuthUser adds a token auth user for a token based auth enabled cluster.
+func (c *CloudRedisClusterClient) AddTokenAuthUser(ctx context.Context, req *clusterpb.AddTokenAuthUserRequest, opts ...gax.CallOption) (*AddTokenAuthUserOperation, error) {
+	return c.internalClient.AddTokenAuthUser(ctx, req, opts...)
+}
+
+// AddTokenAuthUserOperation returns a new AddTokenAuthUserOperation from a given name.
+// The name must be that of a previously created AddTokenAuthUserOperation, possibly from a different process.
+func (c *CloudRedisClusterClient) AddTokenAuthUserOperation(name string) *AddTokenAuthUserOperation {
+	return c.internalClient.AddTokenAuthUserOperation(name)
+}
+
+// DeleteTokenAuthUser deletes a token auth user for a token based auth enabled cluster.
+func (c *CloudRedisClusterClient) DeleteTokenAuthUser(ctx context.Context, req *clusterpb.DeleteTokenAuthUserRequest, opts ...gax.CallOption) (*DeleteTokenAuthUserOperation, error) {
+	return c.internalClient.DeleteTokenAuthUser(ctx, req, opts...)
+}
+
+// DeleteTokenAuthUserOperation returns a new DeleteTokenAuthUserOperation from a given name.
+// The name must be that of a previously created DeleteTokenAuthUserOperation, possibly from a different process.
+func (c *CloudRedisClusterClient) DeleteTokenAuthUserOperation(name string) *DeleteTokenAuthUserOperation {
+	return c.internalClient.DeleteTokenAuthUserOperation(name)
+}
+
+// AddAuthToken adds a auth token for a user of a token based auth enabled cluster.
+func (c *CloudRedisClusterClient) AddAuthToken(ctx context.Context, req *clusterpb.AddAuthTokenRequest, opts ...gax.CallOption) (*AddAuthTokenOperation, error) {
+	return c.internalClient.AddAuthToken(ctx, req, opts...)
+}
+
+// AddAuthTokenOperation returns a new AddAuthTokenOperation from a given name.
+// The name must be that of a previously created AddAuthTokenOperation, possibly from a different process.
+func (c *CloudRedisClusterClient) AddAuthTokenOperation(name string) *AddAuthTokenOperation {
+	return c.internalClient.AddAuthTokenOperation(name)
+}
+
+// DeleteAuthToken removes a auth token for a user of a token based auth enabled instance.
+func (c *CloudRedisClusterClient) DeleteAuthToken(ctx context.Context, req *clusterpb.DeleteAuthTokenRequest, opts ...gax.CallOption) (*DeleteAuthTokenOperation, error) {
+	return c.internalClient.DeleteAuthToken(ctx, req, opts...)
+}
+
+// DeleteAuthTokenOperation returns a new DeleteAuthTokenOperation from a given name.
+// The name must be that of a previously created DeleteAuthTokenOperation, possibly from a different process.
+func (c *CloudRedisClusterClient) DeleteAuthTokenOperation(name string) *DeleteAuthTokenOperation {
+	return c.internalClient.DeleteAuthTokenOperation(name)
 }
 
 // GetLocation gets information about a location.
@@ -570,10 +788,17 @@ func NewCloudRedisClusterClient(ctx context.Context, opts ...option.ClientOption
 		)
 
 		client.CallOptions.ListClusters = append(client.CallOptions.ListClusters, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAclPolicies = append(client.CallOptions.ListAclPolicies, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetCluster = append(client.CallOptions.GetCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAclPolicy = append(client.CallOptions.GetAclPolicy, gax.WithClientMetrics(metrics))
 		client.CallOptions.UpdateCluster = append(client.CallOptions.UpdateCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateAclPolicy = append(client.CallOptions.UpdateAclPolicy, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteCluster = append(client.CallOptions.DeleteCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteAclPolicy = append(client.CallOptions.DeleteAclPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAclPolicyRevision = append(client.CallOptions.GetAclPolicyRevision, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAclPolicyRevisions = append(client.CallOptions.ListAclPolicyRevisions, gax.WithClientMetrics(metrics))
 		client.CallOptions.CreateCluster = append(client.CallOptions.CreateCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateAclPolicy = append(client.CallOptions.CreateAclPolicy, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetClusterCertificateAuthority = append(client.CallOptions.GetClusterCertificateAuthority, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetSharedRegionalCertificateAuthority = append(client.CallOptions.GetSharedRegionalCertificateAuthority, gax.WithClientMetrics(metrics))
 		client.CallOptions.RescheduleClusterMaintenance = append(client.CallOptions.RescheduleClusterMaintenance, gax.WithClientMetrics(metrics))
@@ -584,6 +809,14 @@ func NewCloudRedisClusterClient(ctx context.Context, opts ...option.ClientOption
 		client.CallOptions.DeleteBackup = append(client.CallOptions.DeleteBackup, gax.WithClientMetrics(metrics))
 		client.CallOptions.ExportBackup = append(client.CallOptions.ExportBackup, gax.WithClientMetrics(metrics))
 		client.CallOptions.BackupCluster = append(client.CallOptions.BackupCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListTokenAuthUsers = append(client.CallOptions.ListTokenAuthUsers, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetTokenAuthUser = append(client.CallOptions.GetTokenAuthUser, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAuthTokens = append(client.CallOptions.ListAuthTokens, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAuthToken = append(client.CallOptions.GetAuthToken, gax.WithClientMetrics(metrics))
+		client.CallOptions.AddTokenAuthUser = append(client.CallOptions.AddTokenAuthUser, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteTokenAuthUser = append(client.CallOptions.DeleteTokenAuthUser, gax.WithClientMetrics(metrics))
+		client.CallOptions.AddAuthToken = append(client.CallOptions.AddAuthToken, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteAuthToken = append(client.CallOptions.DeleteAuthToken, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
 		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
@@ -603,10 +836,17 @@ func NewCloudRedisClusterClient(ctx context.Context, opts ...option.ClientOption
 		)
 
 		client.CallOptions.ListClusters = append(client.CallOptions.ListClusters, gax.WithClientTracing(tracing))
+		client.CallOptions.ListAclPolicies = append(client.CallOptions.ListAclPolicies, gax.WithClientTracing(tracing))
 		client.CallOptions.GetCluster = append(client.CallOptions.GetCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAclPolicy = append(client.CallOptions.GetAclPolicy, gax.WithClientTracing(tracing))
 		client.CallOptions.UpdateCluster = append(client.CallOptions.UpdateCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateAclPolicy = append(client.CallOptions.UpdateAclPolicy, gax.WithClientTracing(tracing))
 		client.CallOptions.DeleteCluster = append(client.CallOptions.DeleteCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteAclPolicy = append(client.CallOptions.DeleteAclPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAclPolicyRevision = append(client.CallOptions.GetAclPolicyRevision, gax.WithClientTracing(tracing))
+		client.CallOptions.ListAclPolicyRevisions = append(client.CallOptions.ListAclPolicyRevisions, gax.WithClientTracing(tracing))
 		client.CallOptions.CreateCluster = append(client.CallOptions.CreateCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateAclPolicy = append(client.CallOptions.CreateAclPolicy, gax.WithClientTracing(tracing))
 		client.CallOptions.GetClusterCertificateAuthority = append(client.CallOptions.GetClusterCertificateAuthority, gax.WithClientTracing(tracing))
 		client.CallOptions.GetSharedRegionalCertificateAuthority = append(client.CallOptions.GetSharedRegionalCertificateAuthority, gax.WithClientTracing(tracing))
 		client.CallOptions.RescheduleClusterMaintenance = append(client.CallOptions.RescheduleClusterMaintenance, gax.WithClientTracing(tracing))
@@ -617,6 +857,14 @@ func NewCloudRedisClusterClient(ctx context.Context, opts ...option.ClientOption
 		client.CallOptions.DeleteBackup = append(client.CallOptions.DeleteBackup, gax.WithClientTracing(tracing))
 		client.CallOptions.ExportBackup = append(client.CallOptions.ExportBackup, gax.WithClientTracing(tracing))
 		client.CallOptions.BackupCluster = append(client.CallOptions.BackupCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.ListTokenAuthUsers = append(client.CallOptions.ListTokenAuthUsers, gax.WithClientTracing(tracing))
+		client.CallOptions.GetTokenAuthUser = append(client.CallOptions.GetTokenAuthUser, gax.WithClientTracing(tracing))
+		client.CallOptions.ListAuthTokens = append(client.CallOptions.ListAuthTokens, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAuthToken = append(client.CallOptions.GetAuthToken, gax.WithClientTracing(tracing))
+		client.CallOptions.AddTokenAuthUser = append(client.CallOptions.AddTokenAuthUser, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteTokenAuthUser = append(client.CallOptions.DeleteTokenAuthUser, gax.WithClientTracing(tracing))
+		client.CallOptions.AddAuthToken = append(client.CallOptions.AddAuthToken, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteAuthToken = append(client.CallOptions.DeleteAuthToken, gax.WithClientTracing(tracing))
 		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
 		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
 		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
@@ -637,10 +885,17 @@ func NewCloudRedisClusterClient(ctx context.Context, opts ...option.ClientOption
 		)
 
 		client.CallOptions.ListClusters = append(client.CallOptions.ListClusters, gax.WithClientLogging(logging))
+		client.CallOptions.ListAclPolicies = append(client.CallOptions.ListAclPolicies, gax.WithClientLogging(logging))
 		client.CallOptions.GetCluster = append(client.CallOptions.GetCluster, gax.WithClientLogging(logging))
+		client.CallOptions.GetAclPolicy = append(client.CallOptions.GetAclPolicy, gax.WithClientLogging(logging))
 		client.CallOptions.UpdateCluster = append(client.CallOptions.UpdateCluster, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateAclPolicy = append(client.CallOptions.UpdateAclPolicy, gax.WithClientLogging(logging))
 		client.CallOptions.DeleteCluster = append(client.CallOptions.DeleteCluster, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteAclPolicy = append(client.CallOptions.DeleteAclPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.GetAclPolicyRevision = append(client.CallOptions.GetAclPolicyRevision, gax.WithClientLogging(logging))
+		client.CallOptions.ListAclPolicyRevisions = append(client.CallOptions.ListAclPolicyRevisions, gax.WithClientLogging(logging))
 		client.CallOptions.CreateCluster = append(client.CallOptions.CreateCluster, gax.WithClientLogging(logging))
+		client.CallOptions.CreateAclPolicy = append(client.CallOptions.CreateAclPolicy, gax.WithClientLogging(logging))
 		client.CallOptions.GetClusterCertificateAuthority = append(client.CallOptions.GetClusterCertificateAuthority, gax.WithClientLogging(logging))
 		client.CallOptions.GetSharedRegionalCertificateAuthority = append(client.CallOptions.GetSharedRegionalCertificateAuthority, gax.WithClientLogging(logging))
 		client.CallOptions.RescheduleClusterMaintenance = append(client.CallOptions.RescheduleClusterMaintenance, gax.WithClientLogging(logging))
@@ -651,6 +906,14 @@ func NewCloudRedisClusterClient(ctx context.Context, opts ...option.ClientOption
 		client.CallOptions.DeleteBackup = append(client.CallOptions.DeleteBackup, gax.WithClientLogging(logging))
 		client.CallOptions.ExportBackup = append(client.CallOptions.ExportBackup, gax.WithClientLogging(logging))
 		client.CallOptions.BackupCluster = append(client.CallOptions.BackupCluster, gax.WithClientLogging(logging))
+		client.CallOptions.ListTokenAuthUsers = append(client.CallOptions.ListTokenAuthUsers, gax.WithClientLogging(logging))
+		client.CallOptions.GetTokenAuthUser = append(client.CallOptions.GetTokenAuthUser, gax.WithClientLogging(logging))
+		client.CallOptions.ListAuthTokens = append(client.CallOptions.ListAuthTokens, gax.WithClientLogging(logging))
+		client.CallOptions.GetAuthToken = append(client.CallOptions.GetAuthToken, gax.WithClientLogging(logging))
+		client.CallOptions.AddTokenAuthUser = append(client.CallOptions.AddTokenAuthUser, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteTokenAuthUser = append(client.CallOptions.DeleteTokenAuthUser, gax.WithClientLogging(logging))
+		client.CallOptions.AddAuthToken = append(client.CallOptions.AddAuthToken, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteAuthToken = append(client.CallOptions.DeleteAuthToken, gax.WithClientLogging(logging))
 		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
 		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
 		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
@@ -783,10 +1046,17 @@ func NewCloudRedisClusterRESTClient(ctx context.Context, opts ...option.ClientOp
 		)
 
 		callOpts.ListClusters = append(callOpts.ListClusters, gax.WithClientMetrics(metrics))
+		callOpts.ListAclPolicies = append(callOpts.ListAclPolicies, gax.WithClientMetrics(metrics))
 		callOpts.GetCluster = append(callOpts.GetCluster, gax.WithClientMetrics(metrics))
+		callOpts.GetAclPolicy = append(callOpts.GetAclPolicy, gax.WithClientMetrics(metrics))
 		callOpts.UpdateCluster = append(callOpts.UpdateCluster, gax.WithClientMetrics(metrics))
+		callOpts.UpdateAclPolicy = append(callOpts.UpdateAclPolicy, gax.WithClientMetrics(metrics))
 		callOpts.DeleteCluster = append(callOpts.DeleteCluster, gax.WithClientMetrics(metrics))
+		callOpts.DeleteAclPolicy = append(callOpts.DeleteAclPolicy, gax.WithClientMetrics(metrics))
+		callOpts.GetAclPolicyRevision = append(callOpts.GetAclPolicyRevision, gax.WithClientMetrics(metrics))
+		callOpts.ListAclPolicyRevisions = append(callOpts.ListAclPolicyRevisions, gax.WithClientMetrics(metrics))
 		callOpts.CreateCluster = append(callOpts.CreateCluster, gax.WithClientMetrics(metrics))
+		callOpts.CreateAclPolicy = append(callOpts.CreateAclPolicy, gax.WithClientMetrics(metrics))
 		callOpts.GetClusterCertificateAuthority = append(callOpts.GetClusterCertificateAuthority, gax.WithClientMetrics(metrics))
 		callOpts.GetSharedRegionalCertificateAuthority = append(callOpts.GetSharedRegionalCertificateAuthority, gax.WithClientMetrics(metrics))
 		callOpts.RescheduleClusterMaintenance = append(callOpts.RescheduleClusterMaintenance, gax.WithClientMetrics(metrics))
@@ -797,6 +1067,14 @@ func NewCloudRedisClusterRESTClient(ctx context.Context, opts ...option.ClientOp
 		callOpts.DeleteBackup = append(callOpts.DeleteBackup, gax.WithClientMetrics(metrics))
 		callOpts.ExportBackup = append(callOpts.ExportBackup, gax.WithClientMetrics(metrics))
 		callOpts.BackupCluster = append(callOpts.BackupCluster, gax.WithClientMetrics(metrics))
+		callOpts.ListTokenAuthUsers = append(callOpts.ListTokenAuthUsers, gax.WithClientMetrics(metrics))
+		callOpts.GetTokenAuthUser = append(callOpts.GetTokenAuthUser, gax.WithClientMetrics(metrics))
+		callOpts.ListAuthTokens = append(callOpts.ListAuthTokens, gax.WithClientMetrics(metrics))
+		callOpts.GetAuthToken = append(callOpts.GetAuthToken, gax.WithClientMetrics(metrics))
+		callOpts.AddTokenAuthUser = append(callOpts.AddTokenAuthUser, gax.WithClientMetrics(metrics))
+		callOpts.DeleteTokenAuthUser = append(callOpts.DeleteTokenAuthUser, gax.WithClientMetrics(metrics))
+		callOpts.AddAuthToken = append(callOpts.AddAuthToken, gax.WithClientMetrics(metrics))
+		callOpts.DeleteAuthToken = append(callOpts.DeleteAuthToken, gax.WithClientMetrics(metrics))
 		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
 		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
 		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
@@ -816,10 +1094,17 @@ func NewCloudRedisClusterRESTClient(ctx context.Context, opts ...option.ClientOp
 		)
 
 		callOpts.ListClusters = append(callOpts.ListClusters, gax.WithClientTracing(tracing))
+		callOpts.ListAclPolicies = append(callOpts.ListAclPolicies, gax.WithClientTracing(tracing))
 		callOpts.GetCluster = append(callOpts.GetCluster, gax.WithClientTracing(tracing))
+		callOpts.GetAclPolicy = append(callOpts.GetAclPolicy, gax.WithClientTracing(tracing))
 		callOpts.UpdateCluster = append(callOpts.UpdateCluster, gax.WithClientTracing(tracing))
+		callOpts.UpdateAclPolicy = append(callOpts.UpdateAclPolicy, gax.WithClientTracing(tracing))
 		callOpts.DeleteCluster = append(callOpts.DeleteCluster, gax.WithClientTracing(tracing))
+		callOpts.DeleteAclPolicy = append(callOpts.DeleteAclPolicy, gax.WithClientTracing(tracing))
+		callOpts.GetAclPolicyRevision = append(callOpts.GetAclPolicyRevision, gax.WithClientTracing(tracing))
+		callOpts.ListAclPolicyRevisions = append(callOpts.ListAclPolicyRevisions, gax.WithClientTracing(tracing))
 		callOpts.CreateCluster = append(callOpts.CreateCluster, gax.WithClientTracing(tracing))
+		callOpts.CreateAclPolicy = append(callOpts.CreateAclPolicy, gax.WithClientTracing(tracing))
 		callOpts.GetClusterCertificateAuthority = append(callOpts.GetClusterCertificateAuthority, gax.WithClientTracing(tracing))
 		callOpts.GetSharedRegionalCertificateAuthority = append(callOpts.GetSharedRegionalCertificateAuthority, gax.WithClientTracing(tracing))
 		callOpts.RescheduleClusterMaintenance = append(callOpts.RescheduleClusterMaintenance, gax.WithClientTracing(tracing))
@@ -830,6 +1115,14 @@ func NewCloudRedisClusterRESTClient(ctx context.Context, opts ...option.ClientOp
 		callOpts.DeleteBackup = append(callOpts.DeleteBackup, gax.WithClientTracing(tracing))
 		callOpts.ExportBackup = append(callOpts.ExportBackup, gax.WithClientTracing(tracing))
 		callOpts.BackupCluster = append(callOpts.BackupCluster, gax.WithClientTracing(tracing))
+		callOpts.ListTokenAuthUsers = append(callOpts.ListTokenAuthUsers, gax.WithClientTracing(tracing))
+		callOpts.GetTokenAuthUser = append(callOpts.GetTokenAuthUser, gax.WithClientTracing(tracing))
+		callOpts.ListAuthTokens = append(callOpts.ListAuthTokens, gax.WithClientTracing(tracing))
+		callOpts.GetAuthToken = append(callOpts.GetAuthToken, gax.WithClientTracing(tracing))
+		callOpts.AddTokenAuthUser = append(callOpts.AddTokenAuthUser, gax.WithClientTracing(tracing))
+		callOpts.DeleteTokenAuthUser = append(callOpts.DeleteTokenAuthUser, gax.WithClientTracing(tracing))
+		callOpts.AddAuthToken = append(callOpts.AddAuthToken, gax.WithClientTracing(tracing))
+		callOpts.DeleteAuthToken = append(callOpts.DeleteAuthToken, gax.WithClientTracing(tracing))
 		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
 		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
 		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
@@ -850,10 +1143,17 @@ func NewCloudRedisClusterRESTClient(ctx context.Context, opts ...option.ClientOp
 		)
 
 		callOpts.ListClusters = append(callOpts.ListClusters, gax.WithClientLogging(logging))
+		callOpts.ListAclPolicies = append(callOpts.ListAclPolicies, gax.WithClientLogging(logging))
 		callOpts.GetCluster = append(callOpts.GetCluster, gax.WithClientLogging(logging))
+		callOpts.GetAclPolicy = append(callOpts.GetAclPolicy, gax.WithClientLogging(logging))
 		callOpts.UpdateCluster = append(callOpts.UpdateCluster, gax.WithClientLogging(logging))
+		callOpts.UpdateAclPolicy = append(callOpts.UpdateAclPolicy, gax.WithClientLogging(logging))
 		callOpts.DeleteCluster = append(callOpts.DeleteCluster, gax.WithClientLogging(logging))
+		callOpts.DeleteAclPolicy = append(callOpts.DeleteAclPolicy, gax.WithClientLogging(logging))
+		callOpts.GetAclPolicyRevision = append(callOpts.GetAclPolicyRevision, gax.WithClientLogging(logging))
+		callOpts.ListAclPolicyRevisions = append(callOpts.ListAclPolicyRevisions, gax.WithClientLogging(logging))
 		callOpts.CreateCluster = append(callOpts.CreateCluster, gax.WithClientLogging(logging))
+		callOpts.CreateAclPolicy = append(callOpts.CreateAclPolicy, gax.WithClientLogging(logging))
 		callOpts.GetClusterCertificateAuthority = append(callOpts.GetClusterCertificateAuthority, gax.WithClientLogging(logging))
 		callOpts.GetSharedRegionalCertificateAuthority = append(callOpts.GetSharedRegionalCertificateAuthority, gax.WithClientLogging(logging))
 		callOpts.RescheduleClusterMaintenance = append(callOpts.RescheduleClusterMaintenance, gax.WithClientLogging(logging))
@@ -864,6 +1164,14 @@ func NewCloudRedisClusterRESTClient(ctx context.Context, opts ...option.ClientOp
 		callOpts.DeleteBackup = append(callOpts.DeleteBackup, gax.WithClientLogging(logging))
 		callOpts.ExportBackup = append(callOpts.ExportBackup, gax.WithClientLogging(logging))
 		callOpts.BackupCluster = append(callOpts.BackupCluster, gax.WithClientLogging(logging))
+		callOpts.ListTokenAuthUsers = append(callOpts.ListTokenAuthUsers, gax.WithClientLogging(logging))
+		callOpts.GetTokenAuthUser = append(callOpts.GetTokenAuthUser, gax.WithClientLogging(logging))
+		callOpts.ListAuthTokens = append(callOpts.ListAuthTokens, gax.WithClientLogging(logging))
+		callOpts.GetAuthToken = append(callOpts.GetAuthToken, gax.WithClientLogging(logging))
+		callOpts.AddTokenAuthUser = append(callOpts.AddTokenAuthUser, gax.WithClientLogging(logging))
+		callOpts.DeleteTokenAuthUser = append(callOpts.DeleteTokenAuthUser, gax.WithClientLogging(logging))
+		callOpts.AddAuthToken = append(callOpts.AddAuthToken, gax.WithClientLogging(logging))
+		callOpts.DeleteAuthToken = append(callOpts.DeleteAuthToken, gax.WithClientLogging(logging))
 		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
 		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
 		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
@@ -971,6 +1279,55 @@ func (c *cloudRedisClusterGRPCClient) ListClusters(ctx context.Context, req *clu
 	return it
 }
 
+func (c *cloudRedisClusterGRPCClient) ListAclPolicies(ctx context.Context, req *clusterpb.ListAclPoliciesRequest, opts ...gax.CallOption) *AclPolicyIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.redis.cluster.v1.CloudRedisCluster/ListAclPolicies")
+	}
+	opts = append((*c.CallOptions).ListAclPolicies[0:len((*c.CallOptions).ListAclPolicies):len((*c.CallOptions).ListAclPolicies)], opts...)
+	it := &AclPolicyIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*clusterpb.AclPolicy, string, error) {
+		resp := &clusterpb.ListAclPoliciesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.cloudRedisClusterClient.ListAclPolicies, req, settings.GRPC, c.logger, "ListAclPolicies")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetAclPolicies(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 func (c *cloudRedisClusterGRPCClient) GetCluster(ctx context.Context, req *clusterpb.GetClusterRequest, opts ...gax.CallOption) (*clusterpb.Cluster, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -984,6 +1341,27 @@ func (c *cloudRedisClusterGRPCClient) GetCluster(ctx context.Context, req *clust
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = executeRPC(ctx, c.cloudRedisClusterClient.GetCluster, req, settings.GRPC, c.logger, "GetCluster")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *cloudRedisClusterGRPCClient) GetAclPolicy(ctx context.Context, req *clusterpb.GetAclPolicyRequest, opts ...gax.CallOption) (*clusterpb.AclPolicy, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.redis.cluster.v1.CloudRedisCluster/GetAclPolicy")
+	}
+	opts = append((*c.CallOptions).GetAclPolicy[0:len((*c.CallOptions).GetAclPolicy):len((*c.CallOptions).GetAclPolicy)], opts...)
+	var resp *clusterpb.AclPolicy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.cloudRedisClusterClient.GetAclPolicy, req, settings.GRPC, c.logger, "GetAclPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1019,6 +1397,33 @@ func (c *cloudRedisClusterGRPCClient) UpdateCluster(ctx context.Context, req *cl
 	}, nil
 }
 
+func (c *cloudRedisClusterGRPCClient) UpdateAclPolicy(ctx context.Context, req *clusterpb.UpdateAclPolicyRequest, opts ...gax.CallOption) (*UpdateAclPolicyOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "acl_policy.name", url.QueryEscape(req.GetAclPolicy().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.redis.cluster.v1.CloudRedisCluster/UpdateAclPolicy")
+	}
+	opts = append((*c.CallOptions).UpdateAclPolicy[0:len((*c.CallOptions).UpdateAclPolicy):len((*c.CallOptions).UpdateAclPolicy)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.cloudRedisClusterClient.UpdateAclPolicy, req, settings.GRPC, c.logger, "UpdateAclPolicy")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cluster.UpdateAclPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &UpdateAclPolicyOperation{
+		lro: lro,
+	}, nil
+}
+
 func (c *cloudRedisClusterGRPCClient) DeleteCluster(ctx context.Context, req *clusterpb.DeleteClusterRequest, opts ...gax.CallOption) (*DeleteClusterOperation, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1046,6 +1451,103 @@ func (c *cloudRedisClusterGRPCClient) DeleteCluster(ctx context.Context, req *cl
 	}, nil
 }
 
+func (c *cloudRedisClusterGRPCClient) DeleteAclPolicy(ctx context.Context, req *clusterpb.DeleteAclPolicyRequest, opts ...gax.CallOption) (*DeleteAclPolicyOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.redis.cluster.v1.CloudRedisCluster/DeleteAclPolicy")
+	}
+	opts = append((*c.CallOptions).DeleteAclPolicy[0:len((*c.CallOptions).DeleteAclPolicy):len((*c.CallOptions).DeleteAclPolicy)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.cloudRedisClusterClient.DeleteAclPolicy, req, settings.GRPC, c.logger, "DeleteAclPolicy")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cluster.DeleteAclPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &DeleteAclPolicyOperation{
+		lro: lro,
+	}, nil
+}
+
+func (c *cloudRedisClusterGRPCClient) GetAclPolicyRevision(ctx context.Context, req *clusterpb.GetAclPolicyRevisionRequest, opts ...gax.CallOption) (*clusterpb.AclPolicyRevision, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.redis.cluster.v1.CloudRedisCluster/GetAclPolicyRevision")
+	}
+	opts = append((*c.CallOptions).GetAclPolicyRevision[0:len((*c.CallOptions).GetAclPolicyRevision):len((*c.CallOptions).GetAclPolicyRevision)], opts...)
+	var resp *clusterpb.AclPolicyRevision
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.cloudRedisClusterClient.GetAclPolicyRevision, req, settings.GRPC, c.logger, "GetAclPolicyRevision")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *cloudRedisClusterGRPCClient) ListAclPolicyRevisions(ctx context.Context, req *clusterpb.ListAclPolicyRevisionsRequest, opts ...gax.CallOption) *AclPolicyRevisionIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.redis.cluster.v1.CloudRedisCluster/ListAclPolicyRevisions")
+	}
+	opts = append((*c.CallOptions).ListAclPolicyRevisions[0:len((*c.CallOptions).ListAclPolicyRevisions):len((*c.CallOptions).ListAclPolicyRevisions)], opts...)
+	it := &AclPolicyRevisionIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*clusterpb.AclPolicyRevision, string, error) {
+		resp := &clusterpb.ListAclPolicyRevisionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.cloudRedisClusterClient.ListAclPolicyRevisions, req, settings.GRPC, c.logger, "ListAclPolicyRevisions")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetAclPolicyRevisions(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 func (c *cloudRedisClusterGRPCClient) CreateCluster(ctx context.Context, req *clusterpb.CreateClusterRequest, opts ...gax.CallOption) (*CreateClusterOperation, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
@@ -1071,6 +1573,27 @@ func (c *cloudRedisClusterGRPCClient) CreateCluster(ctx context.Context, req *cl
 	return &CreateClusterOperation{
 		lro: lro,
 	}, nil
+}
+
+func (c *cloudRedisClusterGRPCClient) CreateAclPolicy(ctx context.Context, req *clusterpb.CreateAclPolicyRequest, opts ...gax.CallOption) (*clusterpb.AclPolicy, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.redis.cluster.v1.CloudRedisCluster/CreateAclPolicy")
+	}
+	opts = append((*c.CallOptions).CreateAclPolicy[0:len((*c.CallOptions).CreateAclPolicy):len((*c.CallOptions).CreateAclPolicy)], opts...)
+	var resp *clusterpb.AclPolicy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.cloudRedisClusterClient.CreateAclPolicy, req, settings.GRPC, c.logger, "CreateAclPolicy")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *cloudRedisClusterGRPCClient) GetClusterCertificateAuthority(ctx context.Context, req *clusterpb.GetClusterCertificateAuthorityRequest, opts ...gax.CallOption) (*clusterpb.CertificateAuthority, error) {
@@ -1363,6 +1886,254 @@ func (c *cloudRedisClusterGRPCClient) BackupCluster(ctx context.Context, req *cl
 	}, nil
 }
 
+func (c *cloudRedisClusterGRPCClient) ListTokenAuthUsers(ctx context.Context, req *clusterpb.ListTokenAuthUsersRequest, opts ...gax.CallOption) *TokenAuthUserIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.redis.cluster.v1.CloudRedisCluster/ListTokenAuthUsers")
+	}
+	opts = append((*c.CallOptions).ListTokenAuthUsers[0:len((*c.CallOptions).ListTokenAuthUsers):len((*c.CallOptions).ListTokenAuthUsers)], opts...)
+	it := &TokenAuthUserIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*clusterpb.TokenAuthUser, string, error) {
+		resp := &clusterpb.ListTokenAuthUsersResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.cloudRedisClusterClient.ListTokenAuthUsers, req, settings.GRPC, c.logger, "ListTokenAuthUsers")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetTokenAuthUsers(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *cloudRedisClusterGRPCClient) GetTokenAuthUser(ctx context.Context, req *clusterpb.GetTokenAuthUserRequest, opts ...gax.CallOption) (*clusterpb.TokenAuthUser, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.redis.cluster.v1.CloudRedisCluster/GetTokenAuthUser")
+	}
+	opts = append((*c.CallOptions).GetTokenAuthUser[0:len((*c.CallOptions).GetTokenAuthUser):len((*c.CallOptions).GetTokenAuthUser)], opts...)
+	var resp *clusterpb.TokenAuthUser
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.cloudRedisClusterClient.GetTokenAuthUser, req, settings.GRPC, c.logger, "GetTokenAuthUser")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *cloudRedisClusterGRPCClient) ListAuthTokens(ctx context.Context, req *clusterpb.ListAuthTokensRequest, opts ...gax.CallOption) *AuthTokenIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.redis.cluster.v1.CloudRedisCluster/ListAuthTokens")
+	}
+	opts = append((*c.CallOptions).ListAuthTokens[0:len((*c.CallOptions).ListAuthTokens):len((*c.CallOptions).ListAuthTokens)], opts...)
+	it := &AuthTokenIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*clusterpb.AuthToken, string, error) {
+		resp := &clusterpb.ListAuthTokensResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.cloudRedisClusterClient.ListAuthTokens, req, settings.GRPC, c.logger, "ListAuthTokens")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetAuthTokens(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *cloudRedisClusterGRPCClient) GetAuthToken(ctx context.Context, req *clusterpb.GetAuthTokenRequest, opts ...gax.CallOption) (*clusterpb.AuthToken, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.redis.cluster.v1.CloudRedisCluster/GetAuthToken")
+	}
+	opts = append((*c.CallOptions).GetAuthToken[0:len((*c.CallOptions).GetAuthToken):len((*c.CallOptions).GetAuthToken)], opts...)
+	var resp *clusterpb.AuthToken
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.cloudRedisClusterClient.GetAuthToken, req, settings.GRPC, c.logger, "GetAuthToken")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *cloudRedisClusterGRPCClient) AddTokenAuthUser(ctx context.Context, req *clusterpb.AddTokenAuthUserRequest, opts ...gax.CallOption) (*AddTokenAuthUserOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "cluster", url.QueryEscape(req.GetCluster()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.redis.cluster.v1.CloudRedisCluster/AddTokenAuthUser")
+	}
+	opts = append((*c.CallOptions).AddTokenAuthUser[0:len((*c.CallOptions).AddTokenAuthUser):len((*c.CallOptions).AddTokenAuthUser)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.cloudRedisClusterClient.AddTokenAuthUser, req, settings.GRPC, c.logger, "AddTokenAuthUser")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cluster.AddTokenAuthUserOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &AddTokenAuthUserOperation{
+		lro: lro,
+	}, nil
+}
+
+func (c *cloudRedisClusterGRPCClient) DeleteTokenAuthUser(ctx context.Context, req *clusterpb.DeleteTokenAuthUserRequest, opts ...gax.CallOption) (*DeleteTokenAuthUserOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.redis.cluster.v1.CloudRedisCluster/DeleteTokenAuthUser")
+	}
+	opts = append((*c.CallOptions).DeleteTokenAuthUser[0:len((*c.CallOptions).DeleteTokenAuthUser):len((*c.CallOptions).DeleteTokenAuthUser)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.cloudRedisClusterClient.DeleteTokenAuthUser, req, settings.GRPC, c.logger, "DeleteTokenAuthUser")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cluster.DeleteTokenAuthUserOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &DeleteTokenAuthUserOperation{
+		lro: lro,
+	}, nil
+}
+
+func (c *cloudRedisClusterGRPCClient) AddAuthToken(ctx context.Context, req *clusterpb.AddAuthTokenRequest, opts ...gax.CallOption) (*AddAuthTokenOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "token_auth_user", url.QueryEscape(req.GetTokenAuthUser()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.redis.cluster.v1.CloudRedisCluster/AddAuthToken")
+	}
+	opts = append((*c.CallOptions).AddAuthToken[0:len((*c.CallOptions).AddAuthToken):len((*c.CallOptions).AddAuthToken)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.cloudRedisClusterClient.AddAuthToken, req, settings.GRPC, c.logger, "AddAuthToken")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cluster.AddAuthTokenOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &AddAuthTokenOperation{
+		lro: lro,
+	}, nil
+}
+
+func (c *cloudRedisClusterGRPCClient) DeleteAuthToken(ctx context.Context, req *clusterpb.DeleteAuthTokenRequest, opts ...gax.CallOption) (*DeleteAuthTokenOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.redis.cluster.v1.CloudRedisCluster/DeleteAuthToken")
+	}
+	opts = append((*c.CallOptions).DeleteAuthToken[0:len((*c.CallOptions).DeleteAuthToken):len((*c.CallOptions).DeleteAuthToken)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.cloudRedisClusterClient.DeleteAuthToken, req, settings.GRPC, c.logger, "DeleteAuthToken")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cluster.DeleteAuthTokenOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &DeleteAuthTokenOperation{
+		lro: lro,
+	}, nil
+}
+
 func (c *cloudRedisClusterGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1623,6 +2394,92 @@ func (c *cloudRedisClusterRESTClient) ListClusters(ctx context.Context, req *clu
 	return it
 }
 
+// ListAclPolicies lists all ACL policies owned by a project in either the specified
+// location (region) or all locations.
+//
+// The location should have the following format:
+//
+//	projects/{project_id}/locations/{location_id}
+//
+// If location_id is specified as - (wildcard), then all regions
+// available to the project are queried, and the results are aggregated.
+func (c *cloudRedisClusterRESTClient) ListAclPolicies(ctx context.Context, req *clusterpb.ListAclPoliciesRequest, opts ...gax.CallOption) *AclPolicyIterator {
+	it := &AclPolicyIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*clusterpb.AclPolicy, string, error) {
+		resp := &clusterpb.ListAclPoliciesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/aclPolicies", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAclPolicies")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetAclPolicies(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // GetCluster gets the details of a specific Redis cluster.
 func (c *cloudRedisClusterRESTClient) GetCluster(ctx context.Context, req *clusterpb.GetClusterRequest, opts ...gax.CallOption) (*clusterpb.Cluster, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -1661,6 +2518,60 @@ func (c *cloudRedisClusterRESTClient) GetCluster(ctx context.Context, req *clust
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCluster")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetAclPolicy gets the details of a specific Redis Cluster ACL policy.
+func (c *cloudRedisClusterRESTClient) GetAclPolicy(ctx context.Context, req *clusterpb.GetAclPolicyRequest, opts ...gax.CallOption) (*clusterpb.AclPolicy, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.redis.cluster.v1.CloudRedisCluster/GetAclPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/aclPolicies/*}")
+	}
+	opts = append((*c.CallOptions).GetAclPolicy[0:len((*c.CallOptions).GetAclPolicy):len((*c.CallOptions).GetAclPolicy)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &clusterpb.AclPolicy{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAclPolicy")
 		if err != nil {
 			return err
 		}
@@ -1759,6 +2670,93 @@ func (c *cloudRedisClusterRESTClient) UpdateCluster(ctx context.Context, req *cl
 	}, nil
 }
 
+// UpdateAclPolicy updates the ACL policy.
+//
+// The operation applies the updated ACL policy to all of the linked clusters.
+// If Memorystore can apply the policy to all clusters, then the operation
+// returns a SUCCESS status. If Memorystore can’t apply the policy to all
+// clusters, then to ensure eventual consistency, Memorystore uses
+// reconciliation to apply the policy to the failed clusters.
+//
+// Completed longrunning.Operation will contain the new ACL policy object in
+// the response field.
+func (c *cloudRedisClusterRESTClient) UpdateAclPolicy(ctx context.Context, req *clusterpb.UpdateAclPolicyRequest, opts ...gax.CallOption) (*UpdateAclPolicyOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetAclPolicy()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetAclPolicy().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "acl_policy.name", url.QueryEscape(req.GetAclPolicy().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.redis.cluster.v1.CloudRedisCluster/UpdateAclPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{acl_policy.name=projects/*/locations/*/aclPolicies/*}")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateAclPolicy")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cluster.UpdateAclPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &UpdateAclPolicyOperation{
+		lro:      lro,
+		pollPath: override,
+	}, nil
+}
+
 // DeleteCluster deletes a specific Redis cluster. Cluster stops serving and data is
 // deleted.
 func (c *cloudRedisClusterRESTClient) DeleteCluster(ctx context.Context, req *clusterpb.DeleteClusterRequest, opts ...gax.CallOption) (*DeleteClusterOperation, error) {
@@ -1822,6 +2820,207 @@ func (c *cloudRedisClusterRESTClient) DeleteCluster(ctx context.Context, req *cl
 		lro:      lro,
 		pollPath: override,
 	}, nil
+}
+
+// DeleteAclPolicy deletes a specific ACL policy. This action will delete the ACL policy and
+// all the rules associated with it. An ACL policy cannot be deleted if it is
+// attached to a cluster.
+func (c *cloudRedisClusterRESTClient) DeleteAclPolicy(ctx context.Context, req *clusterpb.DeleteAclPolicyRequest, opts ...gax.CallOption) (*DeleteAclPolicyOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetEtag() != "" {
+		params.Add("etag", fmt.Sprintf("%v", req.GetEtag()))
+	}
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.redis.cluster.v1.CloudRedisCluster/DeleteAclPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/aclPolicies/*}")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteAclPolicy")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cluster.DeleteAclPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &DeleteAclPolicyOperation{
+		lro:      lro,
+		pollPath: override,
+	}, nil
+}
+
+// GetAclPolicyRevision gets details of a specific ACL policy revision.
+func (c *cloudRedisClusterRESTClient) GetAclPolicyRevision(ctx context.Context, req *clusterpb.GetAclPolicyRevisionRequest, opts ...gax.CallOption) (*clusterpb.AclPolicyRevision, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.redis.cluster.v1.CloudRedisCluster/GetAclPolicyRevision")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/aclPolicies/*/revisions/*}")
+	}
+	opts = append((*c.CallOptions).GetAclPolicyRevision[0:len((*c.CallOptions).GetAclPolicyRevision):len((*c.CallOptions).GetAclPolicyRevision)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &clusterpb.AclPolicyRevision{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAclPolicyRevision")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListAclPolicyRevisions lists all ACL policy revisions in a given ACL policy.
+func (c *cloudRedisClusterRESTClient) ListAclPolicyRevisions(ctx context.Context, req *clusterpb.ListAclPolicyRevisionsRequest, opts ...gax.CallOption) *AclPolicyRevisionIterator {
+	it := &AclPolicyRevisionIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*clusterpb.AclPolicyRevision, string, error) {
+		resp := &clusterpb.ListAclPolicyRevisionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/revisions", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAclPolicyRevisions")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetAclPolicyRevisions(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // CreateCluster creates a Redis cluster based on the specified properties.
@@ -1901,6 +3100,73 @@ func (c *cloudRedisClusterRESTClient) CreateCluster(ctx context.Context, req *cl
 		lro:      lro,
 		pollPath: override,
 	}, nil
+}
+
+// CreateAclPolicy creates an ACL policy.
+// The creation is executed synchronously and the policy is available for use
+// immediately after the RPC returns.
+func (c *cloudRedisClusterRESTClient) CreateAclPolicy(ctx context.Context, req *clusterpb.CreateAclPolicyRequest, opts ...gax.CallOption) (*clusterpb.AclPolicy, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetAclPolicy()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/aclPolicies", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("aclPolicyId", fmt.Sprintf("%v", req.GetAclPolicyId()))
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.redis.cluster.v1.CloudRedisCluster/CreateAclPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/aclPolicies")
+	}
+	opts = append((*c.CallOptions).CreateAclPolicy[0:len((*c.CallOptions).CreateAclPolicy):len((*c.CallOptions).CreateAclPolicy)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &clusterpb.AclPolicy{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateAclPolicy")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // GetClusterCertificateAuthority gets the details of certificate authority information for Redis cluster.
@@ -2556,6 +3822,544 @@ func (c *cloudRedisClusterRESTClient) BackupCluster(ctx context.Context, req *cl
 	}, nil
 }
 
+// ListTokenAuthUsers lists all the token auth users for a token based auth enabled cluster.
+func (c *cloudRedisClusterRESTClient) ListTokenAuthUsers(ctx context.Context, req *clusterpb.ListTokenAuthUsersRequest, opts ...gax.CallOption) *TokenAuthUserIterator {
+	it := &TokenAuthUserIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*clusterpb.TokenAuthUser, string, error) {
+		resp := &clusterpb.ListTokenAuthUsersResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/tokenAuthUsers", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListTokenAuthUsers")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetTokenAuthUsers(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetTokenAuthUser gets a specific token auth user for a basic auth enabled cluster.
+func (c *cloudRedisClusterRESTClient) GetTokenAuthUser(ctx context.Context, req *clusterpb.GetTokenAuthUserRequest, opts ...gax.CallOption) (*clusterpb.TokenAuthUser, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.redis.cluster.v1.CloudRedisCluster/GetTokenAuthUser")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*/tokenAuthUsers/*}")
+	}
+	opts = append((*c.CallOptions).GetTokenAuthUser[0:len((*c.CallOptions).GetTokenAuthUser):len((*c.CallOptions).GetTokenAuthUser)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &clusterpb.TokenAuthUser{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetTokenAuthUser")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListAuthTokens lists all the auth tokens for a specific token auth user.
+func (c *cloudRedisClusterRESTClient) ListAuthTokens(ctx context.Context, req *clusterpb.ListAuthTokensRequest, opts ...gax.CallOption) *AuthTokenIterator {
+	it := &AuthTokenIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*clusterpb.AuthToken, string, error) {
+		resp := &clusterpb.ListAuthTokensResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/authTokens", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAuthTokens")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetAuthTokens(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetAuthToken gets a specific auth token for a specific token auth user.
+func (c *cloudRedisClusterRESTClient) GetAuthToken(ctx context.Context, req *clusterpb.GetAuthTokenRequest, opts ...gax.CallOption) (*clusterpb.AuthToken, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.redis.cluster.v1.CloudRedisCluster/GetAuthToken")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*/tokenAuthUsers/*/authTokens/*}")
+	}
+	opts = append((*c.CallOptions).GetAuthToken[0:len((*c.CallOptions).GetAuthToken):len((*c.CallOptions).GetAuthToken)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &clusterpb.AuthToken{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAuthToken")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// AddTokenAuthUser adds a token auth user for a token based auth enabled cluster.
+func (c *cloudRedisClusterRESTClient) AddTokenAuthUser(ctx context.Context, req *clusterpb.AddTokenAuthUserRequest, opts ...gax.CallOption) (*AddTokenAuthUserOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:addTokenAuthUser", req.GetCluster())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "cluster", url.QueryEscape(req.GetCluster()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.redis.cluster.v1.CloudRedisCluster/AddTokenAuthUser")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{cluster=projects/*/locations/*/clusters/*}:addTokenAuthUser")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AddTokenAuthUser")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cluster.AddTokenAuthUserOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &AddTokenAuthUserOperation{
+		lro:      lro,
+		pollPath: override,
+	}, nil
+}
+
+// DeleteTokenAuthUser deletes a token auth user for a token based auth enabled cluster.
+func (c *cloudRedisClusterRESTClient) DeleteTokenAuthUser(ctx context.Context, req *clusterpb.DeleteTokenAuthUserRequest, opts ...gax.CallOption) (*DeleteTokenAuthUserOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetForce() {
+		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
+	}
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.redis.cluster.v1.CloudRedisCluster/DeleteTokenAuthUser")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*/tokenAuthUsers/*}")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteTokenAuthUser")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cluster.DeleteTokenAuthUserOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &DeleteTokenAuthUserOperation{
+		lro:      lro,
+		pollPath: override,
+	}, nil
+}
+
+// AddAuthToken adds a auth token for a user of a token based auth enabled cluster.
+func (c *cloudRedisClusterRESTClient) AddAuthToken(ctx context.Context, req *clusterpb.AddAuthTokenRequest, opts ...gax.CallOption) (*AddAuthTokenOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:addAuthToken", req.GetTokenAuthUser())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "token_auth_user", url.QueryEscape(req.GetTokenAuthUser()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.redis.cluster.v1.CloudRedisCluster/AddAuthToken")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{token_auth_user=projects/*/locations/*/clusters/*/tokenAuthUsers/*}:addAuthToken")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AddAuthToken")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cluster.AddAuthTokenOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &AddAuthTokenOperation{
+		lro:      lro,
+		pollPath: override,
+	}, nil
+}
+
+// DeleteAuthToken removes a auth token for a user of a token based auth enabled instance.
+func (c *cloudRedisClusterRESTClient) DeleteAuthToken(ctx context.Context, req *clusterpb.DeleteAuthTokenRequest, opts ...gax.CallOption) (*DeleteAuthTokenOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.redis.cluster.v1.CloudRedisCluster/DeleteAuthToken")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*/tokenAuthUsers/*/authTokens/*}")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteAuthToken")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cluster.DeleteAuthTokenOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &DeleteAuthTokenOperation{
+		lro:      lro,
+		pollPath: override,
+	}, nil
+}
+
 // GetLocation gets information about a location.
 func (c *cloudRedisClusterRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -2907,6 +4711,42 @@ func (c *cloudRedisClusterRESTClient) ListOperations(ctx context.Context, req *l
 	return it
 }
 
+// AddAuthTokenOperation returns a new AddAuthTokenOperation from a given name.
+// The name must be that of a previously created AddAuthTokenOperation, possibly from a different process.
+func (c *cloudRedisClusterGRPCClient) AddAuthTokenOperation(name string) *AddAuthTokenOperation {
+	return &AddAuthTokenOperation{
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cluster.AddAuthTokenOperation"),
+	}
+}
+
+// AddAuthTokenOperation returns a new AddAuthTokenOperation from a given name.
+// The name must be that of a previously created AddAuthTokenOperation, possibly from a different process.
+func (c *cloudRedisClusterRESTClient) AddAuthTokenOperation(name string) *AddAuthTokenOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &AddAuthTokenOperation{
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cluster.AddAuthTokenOperation"),
+		pollPath: override,
+	}
+}
+
+// AddTokenAuthUserOperation returns a new AddTokenAuthUserOperation from a given name.
+// The name must be that of a previously created AddTokenAuthUserOperation, possibly from a different process.
+func (c *cloudRedisClusterGRPCClient) AddTokenAuthUserOperation(name string) *AddTokenAuthUserOperation {
+	return &AddTokenAuthUserOperation{
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cluster.AddTokenAuthUserOperation"),
+	}
+}
+
+// AddTokenAuthUserOperation returns a new AddTokenAuthUserOperation from a given name.
+// The name must be that of a previously created AddTokenAuthUserOperation, possibly from a different process.
+func (c *cloudRedisClusterRESTClient) AddTokenAuthUserOperation(name string) *AddTokenAuthUserOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &AddTokenAuthUserOperation{
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cluster.AddTokenAuthUserOperation"),
+		pollPath: override,
+	}
+}
+
 // BackupClusterOperation returns a new BackupClusterOperation from a given name.
 // The name must be that of a previously created BackupClusterOperation, possibly from a different process.
 func (c *cloudRedisClusterGRPCClient) BackupClusterOperation(name string) *BackupClusterOperation {
@@ -2939,6 +4779,42 @@ func (c *cloudRedisClusterRESTClient) CreateClusterOperation(name string) *Creat
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateClusterOperation{
 		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cluster.CreateClusterOperation"),
+		pollPath: override,
+	}
+}
+
+// DeleteAclPolicyOperation returns a new DeleteAclPolicyOperation from a given name.
+// The name must be that of a previously created DeleteAclPolicyOperation, possibly from a different process.
+func (c *cloudRedisClusterGRPCClient) DeleteAclPolicyOperation(name string) *DeleteAclPolicyOperation {
+	return &DeleteAclPolicyOperation{
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cluster.DeleteAclPolicyOperation"),
+	}
+}
+
+// DeleteAclPolicyOperation returns a new DeleteAclPolicyOperation from a given name.
+// The name must be that of a previously created DeleteAclPolicyOperation, possibly from a different process.
+func (c *cloudRedisClusterRESTClient) DeleteAclPolicyOperation(name string) *DeleteAclPolicyOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteAclPolicyOperation{
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cluster.DeleteAclPolicyOperation"),
+		pollPath: override,
+	}
+}
+
+// DeleteAuthTokenOperation returns a new DeleteAuthTokenOperation from a given name.
+// The name must be that of a previously created DeleteAuthTokenOperation, possibly from a different process.
+func (c *cloudRedisClusterGRPCClient) DeleteAuthTokenOperation(name string) *DeleteAuthTokenOperation {
+	return &DeleteAuthTokenOperation{
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cluster.DeleteAuthTokenOperation"),
+	}
+}
+
+// DeleteAuthTokenOperation returns a new DeleteAuthTokenOperation from a given name.
+// The name must be that of a previously created DeleteAuthTokenOperation, possibly from a different process.
+func (c *cloudRedisClusterRESTClient) DeleteAuthTokenOperation(name string) *DeleteAuthTokenOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteAuthTokenOperation{
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cluster.DeleteAuthTokenOperation"),
 		pollPath: override,
 	}
 }
@@ -2979,6 +4855,24 @@ func (c *cloudRedisClusterRESTClient) DeleteClusterOperation(name string) *Delet
 	}
 }
 
+// DeleteTokenAuthUserOperation returns a new DeleteTokenAuthUserOperation from a given name.
+// The name must be that of a previously created DeleteTokenAuthUserOperation, possibly from a different process.
+func (c *cloudRedisClusterGRPCClient) DeleteTokenAuthUserOperation(name string) *DeleteTokenAuthUserOperation {
+	return &DeleteTokenAuthUserOperation{
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cluster.DeleteTokenAuthUserOperation"),
+	}
+}
+
+// DeleteTokenAuthUserOperation returns a new DeleteTokenAuthUserOperation from a given name.
+// The name must be that of a previously created DeleteTokenAuthUserOperation, possibly from a different process.
+func (c *cloudRedisClusterRESTClient) DeleteTokenAuthUserOperation(name string) *DeleteTokenAuthUserOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteTokenAuthUserOperation{
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cluster.DeleteTokenAuthUserOperation"),
+		pollPath: override,
+	}
+}
+
 // ExportBackupOperation returns a new ExportBackupOperation from a given name.
 // The name must be that of a previously created ExportBackupOperation, possibly from a different process.
 func (c *cloudRedisClusterGRPCClient) ExportBackupOperation(name string) *ExportBackupOperation {
@@ -3011,6 +4905,24 @@ func (c *cloudRedisClusterRESTClient) RescheduleClusterMaintenanceOperation(name
 	override := fmt.Sprintf("/v1/%s", name)
 	return &RescheduleClusterMaintenanceOperation{
 		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cluster.RescheduleClusterMaintenanceOperation"),
+		pollPath: override,
+	}
+}
+
+// UpdateAclPolicyOperation returns a new UpdateAclPolicyOperation from a given name.
+// The name must be that of a previously created UpdateAclPolicyOperation, possibly from a different process.
+func (c *cloudRedisClusterGRPCClient) UpdateAclPolicyOperation(name string) *UpdateAclPolicyOperation {
+	return &UpdateAclPolicyOperation{
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cluster.UpdateAclPolicyOperation"),
+	}
+}
+
+// UpdateAclPolicyOperation returns a new UpdateAclPolicyOperation from a given name.
+// The name must be that of a previously created UpdateAclPolicyOperation, possibly from a different process.
+func (c *cloudRedisClusterRESTClient) UpdateAclPolicyOperation(name string) *UpdateAclPolicyOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateAclPolicyOperation{
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cluster.UpdateAclPolicyOperation"),
 		pollPath: override,
 	}
 }

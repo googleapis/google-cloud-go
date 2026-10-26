@@ -3529,257 +3529,257 @@ var File_google_cloud_gkebackup_v1_gkebackup_proto protoreflect.FileDescriptor
 
 const file_google_cloud_gkebackup_v1_gkebackup_proto_rawDesc = "" +
 	"\n" +
-	")google/cloud/gkebackup/v1/gkebackup.proto\x12\x19google.cloud.gkebackup.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a&google/cloud/gkebackup/v1/backup.proto\x1a.google/cloud/gkebackup/v1/backup_channel.proto\x1a+google/cloud/gkebackup/v1/backup_plan.proto\x1a3google/cloud/gkebackup/v1/backup_plan_binding.proto\x1a'google/cloud/gkebackup/v1/restore.proto\x1a/google/cloud/gkebackup/v1/restore_channel.proto\x1a,google/cloud/gkebackup/v1/restore_plan.proto\x1a4google/cloud/gkebackup/v1/restore_plan_binding.proto\x1a&google/cloud/gkebackup/v1/volume.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd5\x02\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion\"\xd4\x01\n" +
-	"\x17CreateBackupPlanRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12K\n" +
-	"\vbackup_plan\x18\x02 \x01(\v2%.google.cloud.gkebackup.v1.BackupPlanB\x03\xe0A\x02R\n" +
-	"backupPlan\x12)\n" +
-	"\x0ebackup_plan_id\x18\x03 \x01(\tB\x03\xe0A\x02R\fbackupPlanId\"\xde\x01\n" +
-	"\x16ListBackupPlansRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	")google/cloud/gkebackup/v1/gkebackup.proto\x12\x19google.cloud.gkebackup.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a&google/cloud/gkebackup/v1/backup.proto\x1a.google/cloud/gkebackup/v1/backup_channel.proto\x1a+google/cloud/gkebackup/v1/backup_plan.proto\x1a3google/cloud/gkebackup/v1/backup_plan_binding.proto\x1a'google/cloud/gkebackup/v1/restore.proto\x1a/google/cloud/gkebackup/v1/restore_channel.proto\x1a,google/cloud/gkebackup/v1/restore_plan.proto\x1a4google/cloud/gkebackup/v1/restore_plan_binding.proto\x1a&google/cloud/gkebackup/v1/volume.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdc\x02\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"apiVersion\"\xd7\x01\n" +
+	"\x17CreateBackupPlanRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12L\n" +
+	"\vbackup_plan\x18\x02 \x01(\v2%.google.cloud.gkebackup.v1.BackupPlanB\x04\xe2A\x01\x02R\n" +
+	"backupPlan\x12*\n" +
+	"\x0ebackup_plan_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\fbackupPlanId\"\xe3\x01\n" +
+	"\x16ListBackupPlansRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xad\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xad\x01\n" +
 	"\x17ListBackupPlansResponse\x12H\n" +
 	"\fbackup_plans\x18\x01 \x03(\v2%.google.cloud.gkebackup.v1.BackupPlanR\vbackupPlans\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"W\n" +
-	"\x14GetBackupPlanRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#gkebackup.googleapis.com/BackupPlanR\x04name\"\xa8\x01\n" +
-	"\x17UpdateBackupPlanRequest\x12K\n" +
-	"\vbackup_plan\x18\x01 \x01(\v2%.google.cloud.gkebackup.v1.BackupPlanB\x03\xe0A\x02R\n" +
-	"backupPlan\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"s\n" +
-	"\x17DeleteBackupPlanRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#gkebackup.googleapis.com/BackupPlanR\x04name\x12\x17\n" +
-	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x01R\x04etag\"\xe6\x01\n" +
-	"\x1aCreateBackupChannelRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12T\n" +
-	"\x0ebackup_channel\x18\x02 \x01(\v2(.google.cloud.gkebackup.v1.BackupChannelB\x03\xe0A\x02R\rbackupChannel\x12/\n" +
-	"\x11backup_channel_id\x18\x03 \x01(\tB\x03\xe0A\x01R\x0fbackupChannelId\"\xe1\x01\n" +
-	"\x19ListBackupChannelsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"X\n" +
+	"\x14GetBackupPlanRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#gkebackup.googleapis.com/BackupPlanR\x04name\"\xaa\x01\n" +
+	"\x17UpdateBackupPlanRequest\x12L\n" +
+	"\vbackup_plan\x18\x01 \x01(\v2%.google.cloud.gkebackup.v1.BackupPlanB\x04\xe2A\x01\x02R\n" +
+	"backupPlan\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"u\n" +
+	"\x17DeleteBackupPlanRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#gkebackup.googleapis.com/BackupPlanR\x04name\x12\x18\n" +
+	"\x04etag\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"\xe9\x01\n" +
+	"\x1aCreateBackupChannelRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12U\n" +
+	"\x0ebackup_channel\x18\x02 \x01(\v2(.google.cloud.gkebackup.v1.BackupChannelB\x04\xe2A\x01\x02R\rbackupChannel\x120\n" +
+	"\x11backup_channel_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x0fbackupChannelId\"\xe6\x01\n" +
+	"\x19ListBackupChannelsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xb9\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xb9\x01\n" +
 	"\x1aListBackupChannelsResponse\x12Q\n" +
 	"\x0fbackup_channels\x18\x01 \x03(\v2(.google.cloud.gkebackup.v1.BackupChannelR\x0ebackupChannels\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"]\n" +
-	"\x17GetBackupChannelRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&gkebackup.googleapis.com/BackupChannelR\x04name\"\xb4\x01\n" +
-	"\x1aUpdateBackupChannelRequest\x12T\n" +
-	"\x0ebackup_channel\x18\x01 \x01(\v2(.google.cloud.gkebackup.v1.BackupChannelB\x03\xe0A\x02R\rbackupChannel\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"\x94\x01\n" +
-	"\x1aDeleteBackupChannelRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&gkebackup.googleapis.com/BackupChannelR\x04name\x12\x17\n" +
-	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x01R\x04etag\x12\x19\n" +
-	"\x05force\x18\x03 \x01(\bB\x03\xe0A\x01R\x05force\"\xea\x01\n" +
-	"\x1dListBackupPlanBindingsRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&gkebackup.googleapis.com/BackupChannelR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"^\n" +
+	"\x17GetBackupChannelRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&gkebackup.googleapis.com/BackupChannelR\x04name\"\xb6\x01\n" +
+	"\x1aUpdateBackupChannelRequest\x12U\n" +
+	"\x0ebackup_channel\x18\x01 \x01(\v2(.google.cloud.gkebackup.v1.BackupChannelB\x04\xe2A\x01\x02R\rbackupChannel\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"\x97\x01\n" +
+	"\x1aDeleteBackupChannelRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&gkebackup.googleapis.com/BackupChannelR\x04name\x12\x18\n" +
+	"\x04etag\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12\x1a\n" +
+	"\x05force\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x05force\"\xef\x01\n" +
+	"\x1dListBackupPlanBindingsRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&gkebackup.googleapis.com/BackupChannelR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xca\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xca\x01\n" +
 	"\x1eListBackupPlanBindingsResponse\x12^\n" +
 	"\x14backup_plan_bindings\x18\x01 \x03(\v2,.google.cloud.gkebackup.v1.BackupPlanBindingR\x12backupPlanBindings\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"e\n" +
-	"\x1bGetBackupPlanBindingRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*gkebackup.googleapis.com/BackupPlanBindingR\x04name\"\xbc\x01\n" +
-	"\x13CreateBackupRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#gkebackup.googleapis.com/BackupPlanR\x06parent\x12>\n" +
-	"\x06backup\x18\x02 \x01(\v2!.google.cloud.gkebackup.v1.BackupB\x03\xe0A\x01R\x06backup\x12 \n" +
-	"\tbackup_id\x18\x03 \x01(\tB\x03\xe0A\x01R\bbackupId\"\x97\x02\n" +
-	"\x12ListBackupsRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#gkebackup.googleapis.com/BackupPlanR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"f\n" +
+	"\x1bGetBackupPlanBindingRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*gkebackup.googleapis.com/BackupPlanBindingR\x04name\"\xbf\x01\n" +
+	"\x13CreateBackupRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#gkebackup.googleapis.com/BackupPlanR\x06parent\x12?\n" +
+	"\x06backup\x18\x02 \x01(\v2!.google.cloud.gkebackup.v1.BackupB\x04\xe2A\x01\x01R\x06backup\x12!\n" +
+	"\tbackup_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\bbackupId\"\x9d\x02\n" +
+	"\x12ListBackupsRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#gkebackup.googleapis.com/BackupPlanR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\x129\n" +
-	"\x16return_partial_success\x18\x06 \x01(\bB\x03\xe0A\x01R\x14returnPartialSuccess\"\x9c\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\x12:\n" +
+	"\x16return_partial_success\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\x14returnPartialSuccess\"\x9c\x01\n" +
 	"\x13ListBackupsResponse\x12;\n" +
 	"\abackups\x18\x01 \x03(\v2!.google.cloud.gkebackup.v1.BackupR\abackups\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"O\n" +
-	"\x10GetBackupRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fgkebackup.googleapis.com/BackupR\x04name\"\x97\x01\n" +
-	"\x13UpdateBackupRequest\x12>\n" +
-	"\x06backup\x18\x01 \x01(\v2!.google.cloud.gkebackup.v1.BackupB\x03\xe0A\x02R\x06backup\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"\x86\x01\n" +
-	"\x13DeleteBackupRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fgkebackup.googleapis.com/BackupR\x04name\x12\x17\n" +
-	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x01R\x04etag\x12\x19\n" +
-	"\x05force\x18\x03 \x01(\bB\x03\xe0A\x01R\x05force\"\xde\x01\n" +
-	"\x18ListVolumeBackupsRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fgkebackup.googleapis.com/BackupR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"P\n" +
+	"\x10GetBackupRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fgkebackup.googleapis.com/BackupR\x04name\"\x99\x01\n" +
+	"\x13UpdateBackupRequest\x12?\n" +
+	"\x06backup\x18\x01 \x01(\v2!.google.cloud.gkebackup.v1.BackupB\x04\xe2A\x01\x02R\x06backup\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"\x89\x01\n" +
+	"\x13DeleteBackupRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fgkebackup.googleapis.com/BackupR\x04name\x12\x18\n" +
+	"\x04etag\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12\x1a\n" +
+	"\x05force\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x05force\"\xe3\x01\n" +
+	"\x18ListVolumeBackupsRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fgkebackup.googleapis.com/BackupR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\x93\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\x93\x01\n" +
 	"\x19ListVolumeBackupsResponse\x12N\n" +
 	"\x0evolume_backups\x18\x01 \x03(\v2'.google.cloud.gkebackup.v1.VolumeBackupR\rvolumeBackups\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"[\n" +
-	"\x16GetVolumeBackupRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%gkebackup.googleapis.com/VolumeBackupR\x04name\"\xda\x01\n" +
-	"\x18CreateRestorePlanRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12N\n" +
-	"\frestore_plan\x18\x02 \x01(\v2&.google.cloud.gkebackup.v1.RestorePlanB\x03\xe0A\x02R\vrestorePlan\x12+\n" +
-	"\x0frestore_plan_id\x18\x03 \x01(\tB\x03\xe0A\x02R\rrestorePlanId\"\xdf\x01\n" +
-	"\x17ListRestorePlansRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\\\n" +
+	"\x16GetVolumeBackupRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%gkebackup.googleapis.com/VolumeBackupR\x04name\"\xdd\x01\n" +
+	"\x18CreateRestorePlanRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12O\n" +
+	"\frestore_plan\x18\x02 \x01(\v2&.google.cloud.gkebackup.v1.RestorePlanB\x04\xe2A\x01\x02R\vrestorePlan\x12,\n" +
+	"\x0frestore_plan_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\rrestorePlanId\"\xe4\x01\n" +
+	"\x17ListRestorePlansRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xb1\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xb1\x01\n" +
 	"\x18ListRestorePlansResponse\x12K\n" +
 	"\rrestore_plans\x18\x01 \x03(\v2&.google.cloud.gkebackup.v1.RestorePlanR\frestorePlans\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"Y\n" +
-	"\x15GetRestorePlanRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$gkebackup.googleapis.com/RestorePlanR\x04name\"\xac\x01\n" +
-	"\x18UpdateRestorePlanRequest\x12N\n" +
-	"\frestore_plan\x18\x01 \x01(\v2&.google.cloud.gkebackup.v1.RestorePlanB\x03\xe0A\x02R\vrestorePlan\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"\x90\x01\n" +
-	"\x18DeleteRestorePlanRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$gkebackup.googleapis.com/RestorePlanR\x04name\x12\x17\n" +
-	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x01R\x04etag\x12\x19\n" +
-	"\x05force\x18\x03 \x01(\bB\x03\xe0A\x01R\x05force\"\xec\x01\n" +
-	"\x1bCreateRestoreChannelRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12W\n" +
-	"\x0frestore_channel\x18\x02 \x01(\v2).google.cloud.gkebackup.v1.RestoreChannelB\x03\xe0A\x02R\x0erestoreChannel\x121\n" +
-	"\x12restore_channel_id\x18\x03 \x01(\tB\x03\xe0A\x01R\x10restoreChannelId\"\xe2\x01\n" +
-	"\x1aListRestoreChannelsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"Z\n" +
+	"\x15GetRestorePlanRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$gkebackup.googleapis.com/RestorePlanR\x04name\"\xae\x01\n" +
+	"\x18UpdateRestorePlanRequest\x12O\n" +
+	"\frestore_plan\x18\x01 \x01(\v2&.google.cloud.gkebackup.v1.RestorePlanB\x04\xe2A\x01\x02R\vrestorePlan\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"\x93\x01\n" +
+	"\x18DeleteRestorePlanRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$gkebackup.googleapis.com/RestorePlanR\x04name\x12\x18\n" +
+	"\x04etag\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12\x1a\n" +
+	"\x05force\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x05force\"\xef\x01\n" +
+	"\x1bCreateRestoreChannelRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12X\n" +
+	"\x0frestore_channel\x18\x02 \x01(\v2).google.cloud.gkebackup.v1.RestoreChannelB\x04\xe2A\x01\x02R\x0erestoreChannel\x122\n" +
+	"\x12restore_channel_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x10restoreChannelId\"\xe7\x01\n" +
+	"\x1aListRestoreChannelsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xbd\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xbd\x01\n" +
 	"\x1bListRestoreChannelsResponse\x12T\n" +
 	"\x10restore_channels\x18\x01 \x03(\v2).google.cloud.gkebackup.v1.RestoreChannelR\x0frestoreChannels\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"_\n" +
-	"\x18GetRestoreChannelRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'gkebackup.googleapis.com/RestoreChannelR\x04name\"\xb8\x01\n" +
-	"\x1bUpdateRestoreChannelRequest\x12W\n" +
-	"\x0frestore_channel\x18\x01 \x01(\v2).google.cloud.gkebackup.v1.RestoreChannelB\x03\xe0A\x02R\x0erestoreChannel\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"{\n" +
-	"\x1bDeleteRestoreChannelRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'gkebackup.googleapis.com/RestoreChannelR\x04name\x12\x17\n" +
-	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x01R\x04etag\"\xec\x01\n" +
-	"\x1eListRestorePlanBindingsRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'gkebackup.googleapis.com/RestoreChannelR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"`\n" +
+	"\x18GetRestoreChannelRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'gkebackup.googleapis.com/RestoreChannelR\x04name\"\xba\x01\n" +
+	"\x1bUpdateRestoreChannelRequest\x12X\n" +
+	"\x0frestore_channel\x18\x01 \x01(\v2).google.cloud.gkebackup.v1.RestoreChannelB\x04\xe2A\x01\x02R\x0erestoreChannel\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"}\n" +
+	"\x1bDeleteRestoreChannelRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'gkebackup.googleapis.com/RestoreChannelR\x04name\x12\x18\n" +
+	"\x04etag\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"\xf1\x01\n" +
+	"\x1eListRestorePlanBindingsRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'gkebackup.googleapis.com/RestoreChannelR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xd3\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xd4\x01\n" +
 	"\x1fListRestorePlanBindingsResponse\x12a\n" +
 	"\x15restore_plan_bindings\x18\x01 \x03(\v2-.google.cloud.gkebackup.v1.RestorePlanBindingR\x13restorePlanBindings\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"g\n" +
-	"\x1cGetRestorePlanBindingRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+gkebackup.googleapis.com/RestorePlanBindingR\x04name\"\xc3\x01\n" +
-	"\x14CreateRestoreRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$gkebackup.googleapis.com/RestorePlanR\x06parent\x12A\n" +
-	"\arestore\x18\x02 \x01(\v2\".google.cloud.gkebackup.v1.RestoreB\x03\xe0A\x02R\arestore\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x06R\vunreachable\"h\n" +
+	"\x1cGetRestorePlanBindingRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+gkebackup.googleapis.com/RestorePlanBindingR\x04name\"\xc6\x01\n" +
+	"\x14CreateRestoreRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$gkebackup.googleapis.com/RestorePlanR\x06parent\x12B\n" +
+	"\arestore\x18\x02 \x01(\v2\".google.cloud.gkebackup.v1.RestoreB\x04\xe2A\x01\x02R\arestore\x12#\n" +
 	"\n" +
-	"restore_id\x18\x03 \x01(\tB\x03\xe0A\x02R\trestoreId\"\xde\x01\n" +
-	"\x13ListRestoresRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$gkebackup.googleapis.com/RestorePlanR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"restore_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\trestoreId\"\xe3\x01\n" +
+	"\x13ListRestoresRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$gkebackup.googleapis.com/RestorePlanR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xa0\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xa0\x01\n" +
 	"\x14ListRestoresResponse\x12>\n" +
 	"\brestores\x18\x01 \x03(\v2\".google.cloud.gkebackup.v1.RestoreR\brestores\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"Q\n" +
-	"\x11GetRestoreRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" gkebackup.googleapis.com/RestoreR\x04name\"\x9b\x01\n" +
-	"\x14UpdateRestoreRequest\x12A\n" +
-	"\arestore\x18\x01 \x01(\v2\".google.cloud.gkebackup.v1.RestoreB\x03\xe0A\x02R\arestore\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"\x88\x01\n" +
-	"\x14DeleteRestoreRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" gkebackup.googleapis.com/RestoreR\x04name\x12\x17\n" +
-	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x01R\x04etag\x12\x19\n" +
-	"\x05force\x18\x03 \x01(\bB\x03\xe0A\x01R\x05force\"\xe0\x01\n" +
-	"\x19ListVolumeRestoresRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" gkebackup.googleapis.com/RestoreR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"R\n" +
+	"\x11GetRestoreRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" gkebackup.googleapis.com/RestoreR\x04name\"\x9d\x01\n" +
+	"\x14UpdateRestoreRequest\x12B\n" +
+	"\arestore\x18\x01 \x01(\v2\".google.cloud.gkebackup.v1.RestoreB\x04\xe2A\x01\x02R\arestore\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"\x8b\x01\n" +
+	"\x14DeleteRestoreRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" gkebackup.googleapis.com/RestoreR\x04name\x12\x18\n" +
+	"\x04etag\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12\x1a\n" +
+	"\x05force\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x05force\"\xe5\x01\n" +
+	"\x19ListVolumeRestoresRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" gkebackup.googleapis.com/RestoreR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\x97\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\x97\x01\n" +
 	"\x1aListVolumeRestoresResponse\x12Q\n" +
 	"\x0fvolume_restores\x18\x01 \x03(\v2(.google.cloud.gkebackup.v1.VolumeRestoreR\x0evolumeRestores\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"]\n" +
-	"\x17GetVolumeRestoreRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&gkebackup.googleapis.com/VolumeRestoreR\x04name\"c\n" +
-	" GetBackupIndexDownloadUrlRequest\x12?\n" +
-	"\x06backup\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fgkebackup.googleapis.com/BackupR\x06backup\"G\n" +
-	"!GetBackupIndexDownloadUrlResponse\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"^\n" +
+	"\x17GetVolumeRestoreRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&gkebackup.googleapis.com/VolumeRestoreR\x04name\"d\n" +
+	" GetBackupIndexDownloadUrlRequest\x12@\n" +
+	"\x06backup\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fgkebackup.googleapis.com/BackupR\x06backup\"H\n" +
+	"!GetBackupIndexDownloadUrlResponse\x12#\n" +
 	"\n" +
-	"signed_url\x18\x01 \x01(\tB\x03\xe0A\x02R\tsignedUrl2\xd1C\n" +
+	"signed_url\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tsignedUrl2\xd1C\n" +
 	"\fBackupForGKE\x12\xf2\x01\n" +
 	"\x10CreateBackupPlan\x122.google.cloud.gkebackup.v1.CreateBackupPlanRequest\x1a\x1d.google.longrunning.Operation\"\x8a\x01\xcaA\x1f\n" +
 	"\n" +

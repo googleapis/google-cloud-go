@@ -1229,37 +1229,37 @@ var File_google_cloud_workflows_v1_workflows_proto protoreflect.FileDescriptor
 
 const file_google_cloud_workflows_v1_workflows_proto_rawDesc = "" +
 	"\n" +
-	")google/cloud/workflows/v1/workflows.proto\x12\x19google.cloud.workflows.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbf\x0f\n" +
+	")google/cloud/workflows/v1/workflows.proto\x12\x19google.cloud.workflows.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc9\x0f\n" +
 	"\bWorkflow\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
-	"\vdescription\x18\x02 \x01(\tR\vdescription\x12D\n" +
-	"\x05state\x18\x03 \x01(\x0e2).google.cloud.workflows.v1.Workflow.StateB\x03\xe0A\x03R\x05state\x12$\n" +
-	"\vrevision_id\x18\x04 \x01(\tB\x03\xe0A\x03R\n" +
-	"revisionId\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12Q\n" +
-	"\x14revision_create_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x12revisionCreateTime\x12G\n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\x12E\n" +
+	"\x05state\x18\x03 \x01(\x0e2).google.cloud.workflows.v1.Workflow.StateB\x04\xe2A\x01\x03R\x05state\x12%\n" +
+	"\vrevision_id\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"revisionId\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12R\n" +
+	"\x14revision_create_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x12revisionCreateTime\x12G\n" +
 	"\x06labels\x18\b \x03(\v2/.google.cloud.workflows.v1.Workflow.LabelsEntryR\x06labels\x12'\n" +
 	"\x0fservice_account\x18\t \x01(\tR\x0eserviceAccount\x12)\n" +
 	"\x0fsource_contents\x18\n" +
-	" \x01(\tH\x00R\x0esourceContents\x12Q\n" +
-	"\x0fcrypto_key_name\x18\v \x01(\tB)\xe0A\x01\xfaA#\n" +
-	"!cloudkms.googleapis.com/CryptoKeyR\rcryptoKeyName\x12T\n" +
-	"\vstate_error\x18\f \x01(\v2..google.cloud.workflows.v1.Workflow.StateErrorB\x03\xe0A\x03R\n" +
-	"stateError\x12[\n" +
-	"\x0ecall_log_level\x18\r \x01(\x0e20.google.cloud.workflows.v1.Workflow.CallLogLevelB\x03\xe0A\x01R\fcallLogLevel\x12]\n" +
-	"\ruser_env_vars\x18\x0e \x03(\v24.google.cloud.workflows.v1.Workflow.UserEnvVarsEntryB\x03\xe0A\x01R\vuserEnvVars\x12m\n" +
-	"\x17execution_history_level\x18\x0f \x01(\x0e20.google.cloud.workflows.v1.ExecutionHistoryLevelB\x03\xe0A\x01R\x15executionHistoryLevel\x12K\n" +
-	"\fall_kms_keys\x18\x10 \x03(\tB)\xe0A\x03\xfaA#\n" +
+	" \x01(\tH\x00R\x0esourceContents\x12R\n" +
+	"\x0fcrypto_key_name\x18\v \x01(\tB*\xe2A\x01\x01\xfaA#\n" +
+	"!cloudkms.googleapis.com/CryptoKeyR\rcryptoKeyName\x12U\n" +
+	"\vstate_error\x18\f \x01(\v2..google.cloud.workflows.v1.Workflow.StateErrorB\x04\xe2A\x01\x03R\n" +
+	"stateError\x12\\\n" +
+	"\x0ecall_log_level\x18\r \x01(\x0e20.google.cloud.workflows.v1.Workflow.CallLogLevelB\x04\xe2A\x01\x01R\fcallLogLevel\x12^\n" +
+	"\ruser_env_vars\x18\x0e \x03(\v24.google.cloud.workflows.v1.Workflow.UserEnvVarsEntryB\x04\xe2A\x01\x01R\vuserEnvVars\x12n\n" +
+	"\x17execution_history_level\x18\x0f \x01(\x0e20.google.cloud.workflows.v1.ExecutionHistoryLevelB\x04\xe2A\x01\x01R\x15executionHistoryLevel\x12L\n" +
+	"\fall_kms_keys\x18\x10 \x03(\tB*\xe2A\x01\x03\xfaA#\n" +
 	"!cloudkms.googleapis.com/CryptoKeyR\n" +
-	"allKmsKeys\x12c\n" +
-	"\x15all_kms_keys_versions\x18\x11 \x03(\tB0\xe0A\x03\xfaA*\n" +
-	"(cloudkms.googleapis.com/CryptoKeyVersionR\x12allKmsKeysVersions\x12^\n" +
-	"\x12crypto_key_version\x18\x12 \x01(\tB0\xe0A\x03\xfaA*\n" +
-	"(cloudkms.googleapis.com/CryptoKeyVersionR\x10cryptoKeyVersion\x12L\n" +
-	"\x04tags\x18\x13 \x03(\v2-.google.cloud.workflows.v1.Workflow.TagsEntryB\t\xe0A\x04\xe0A\x05\xe0A\x01R\x04tags\x1a\x9c\x01\n" +
+	"allKmsKeys\x12d\n" +
+	"\x15all_kms_keys_versions\x18\x11 \x03(\tB1\xe2A\x01\x03\xfaA*\n" +
+	"(cloudkms.googleapis.com/CryptoKeyVersionR\x12allKmsKeysVersions\x12_\n" +
+	"\x12crypto_key_version\x18\x12 \x01(\tB1\xe2A\x01\x03\xfaA*\n" +
+	"(cloudkms.googleapis.com/CryptoKeyVersionR\x10cryptoKeyVersion\x12I\n" +
+	"\x04tags\x18\x13 \x03(\v2-.google.cloud.workflows.v1.Workflow.TagsEntryB\x06\xe2A\x03\x04\x05\x01R\x04tags\x1a\x9c\x01\n" +
 	"\n" +
 	"StateError\x12\x18\n" +
 	"\adetails\x18\x01 \x01(\tR\adetails\x12G\n" +
@@ -1287,9 +1287,9 @@ const file_google_cloud_workflows_v1_workflows_proto_rawDesc = "" +
 	"\x0fLOG_ERRORS_ONLY\x10\x02\x12\f\n" +
 	"\bLOG_NONE\x10\x03:d\xeaAa\n" +
 	"!workflows.googleapis.com/Workflow\x12<projects/{project}/locations/{location}/workflows/{workflow}B\r\n" +
-	"\vsource_code\"\xc8\x01\n" +
-	"\x14ListWorkflowsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\vsource_code\"\xc9\x01\n" +
+	"\x14ListWorkflowsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -1299,23 +1299,23 @@ const file_google_cloud_workflows_v1_workflows_proto_rawDesc = "" +
 	"\x15ListWorkflowsResponse\x12A\n" +
 	"\tworkflows\x18\x01 \x03(\v2#.google.cloud.workflows.v1.WorkflowR\tworkflows\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"y\n" +
-	"\x12GetWorkflowRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!workflows.googleapis.com/WorkflowR\x04name\x12$\n" +
-	"\vrevision_id\x18\x02 \x01(\tB\x03\xe0A\x01R\n" +
-	"revisionId\"\xc6\x01\n" +
-	"\x15CreateWorkflowRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12D\n" +
-	"\bworkflow\x18\x02 \x01(\v2#.google.cloud.workflows.v1.WorkflowB\x03\xe0A\x02R\bworkflow\x12$\n" +
-	"\vworkflow_id\x18\x03 \x01(\tB\x03\xe0A\x02R\n" +
-	"workflowId\"V\n" +
-	"\x15DeleteWorkflowRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!workflows.googleapis.com/WorkflowR\x04name\"\x9a\x01\n" +
-	"\x15UpdateWorkflowRequest\x12D\n" +
-	"\bworkflow\x18\x01 \x01(\v2#.google.cloud.workflows.v1.WorkflowB\x03\xe0A\x02R\bworkflow\x12;\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"{\n" +
+	"\x12GetWorkflowRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!workflows.googleapis.com/WorkflowR\x04name\x12%\n" +
+	"\vrevision_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"revisionId\"\xc9\x01\n" +
+	"\x15CreateWorkflowRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12E\n" +
+	"\bworkflow\x18\x02 \x01(\v2#.google.cloud.workflows.v1.WorkflowB\x04\xe2A\x01\x02R\bworkflow\x12%\n" +
+	"\vworkflow_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"workflowId\"W\n" +
+	"\x15DeleteWorkflowRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!workflows.googleapis.com/WorkflowR\x04name\"\x9b\x01\n" +
+	"\x15UpdateWorkflowRequest\x12E\n" +
+	"\bworkflow\x18\x01 \x01(\v2#.google.cloud.workflows.v1.WorkflowB\x04\xe2A\x01\x02R\bworkflow\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"updateMask\"\xd4\x01\n" +
 	"\x11OperationMetadata\x12;\n" +
@@ -1325,9 +1325,9 @@ const file_google_cloud_workflows_v1_workflows_proto_rawDesc = "" +
 	"\x06target\x18\x03 \x01(\tR\x06target\x12\x12\n" +
 	"\x04verb\x18\x04 \x01(\tR\x04verb\x12\x1f\n" +
 	"\vapi_version\x18\x05 \x01(\tR\n" +
-	"apiVersion\"\x99\x01\n" +
-	"\x1cListWorkflowRevisionsRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"apiVersion\"\x9a\x01\n" +
+	"\x1cListWorkflowRevisionsRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!workflows.googleapis.com/WorkflowR\x04name\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +

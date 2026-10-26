@@ -2352,12 +2352,12 @@ const file_google_cloud_talent_v4beta1_common_proto_rawDesc = "" +
 	"\x12SpellingCorrection\x12\x1c\n" +
 	"\tcorrected\x18\x01 \x01(\bR\tcorrected\x12%\n" +
 	"\x0ecorrected_text\x18\x02 \x01(\tR\rcorrectedText\x12%\n" +
-	"\x0ecorrected_html\x18\x03 \x01(\tR\rcorrectedHtml\"\xd5\n" +
+	"\x0ecorrected_html\x18\x03 \x01(\tR\rcorrectedHtml\"\xd7\n" +
 	"\n" +
 	"\x10CompensationInfo\x12Y\n" +
-	"\aentries\x18\x01 \x03(\v2?.google.cloud.talent.v4beta1.CompensationInfo.CompensationEntryR\aentries\x12\x91\x01\n" +
-	"\"annualized_base_compensation_range\x18\x02 \x01(\v2?.google.cloud.talent.v4beta1.CompensationInfo.CompensationRangeB\x03\xe0A\x03R\x1fannualizedBaseCompensationRange\x12\x93\x01\n" +
-	"#annualized_total_compensation_range\x18\x03 \x01(\v2?.google.cloud.talent.v4beta1.CompensationInfo.CompensationRangeB\x03\xe0A\x03R annualizedTotalCompensationRange\x1a\xd0\x03\n" +
+	"\aentries\x18\x01 \x03(\v2?.google.cloud.talent.v4beta1.CompensationInfo.CompensationEntryR\aentries\x12\x92\x01\n" +
+	"\"annualized_base_compensation_range\x18\x02 \x01(\v2?.google.cloud.talent.v4beta1.CompensationInfo.CompensationRangeB\x04\xe2A\x01\x03R\x1fannualizedBaseCompensationRange\x12\x94\x01\n" +
+	"#annualized_total_compensation_range\x18\x03 \x01(\v2?.google.cloud.talent.v4beta1.CompensationInfo.CompensationRangeB\x04\xe2A\x01\x03R annualizedTotalCompensationRange\x1a\xd0\x03\n" +
 	"\x11CompensationEntry\x12R\n" +
 	"\x04type\x18\x01 \x01(\x0e2>.google.cloud.talent.v4beta1.CompensationInfo.CompensationTypeR\x04type\x12R\n" +
 	"\x04unit\x18\x02 \x01(\x0e2>.google.cloud.talent.v4beta1.CompensationInfo.CompensationUnitR\x04unit\x12,\n" +

@@ -102,10 +102,10 @@ var File_google_monitoring_dashboard_v1_incident_list_proto protoreflect.FileDes
 
 const file_google_monitoring_dashboard_v1_incident_list_proto_rawDesc = "" +
 	"\n" +
-	"2google/monitoring/dashboard/v1/incident_list.proto\x12\x1egoogle.monitoring.dashboard.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a#google/api/monitored_resource.proto\"\x8b\x01\n" +
-	"\fIncidentList\x12S\n" +
-	"\x13monitored_resources\x18\x01 \x03(\v2\x1d.google.api.MonitoredResourceB\x03\xe0A\x01R\x12monitoredResources\x12&\n" +
-	"\fpolicy_names\x18\x02 \x03(\tB\x03\xe0A\x01R\vpolicyNamesB\xfa\x01\n" +
+	"2google/monitoring/dashboard/v1/incident_list.proto\x12\x1egoogle.monitoring.dashboard.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a#google/api/monitored_resource.proto\"\x8d\x01\n" +
+	"\fIncidentList\x12T\n" +
+	"\x13monitored_resources\x18\x01 \x03(\v2\x1d.google.api.MonitoredResourceB\x04\xe2A\x01\x01R\x12monitoredResources\x12'\n" +
+	"\fpolicy_names\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\vpolicyNamesB\xfa\x01\n" +
 	"\"com.google.monitoring.dashboard.v1B\x11IncidentListProtoP\x01ZFcloud.google.com/go/monitoring/dashboard/apiv1/dashboardpb;dashboardpb\xaa\x02$Google.Cloud.Monitoring.Dashboard.V1\xca\x02$Google\\Cloud\\Monitoring\\Dashboard\\V1\xea\x02(Google::Cloud::Monitoring::Dashboard::V1b\x06proto3"
 
 var (

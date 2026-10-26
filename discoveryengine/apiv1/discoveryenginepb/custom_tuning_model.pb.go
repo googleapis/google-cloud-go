@@ -233,9 +233,9 @@ var File_google_cloud_discoveryengine_v1_custom_tuning_model_proto protoreflect.
 
 const file_google_cloud_discoveryengine_v1_custom_tuning_model_proto_rawDesc = "" +
 	"\n" +
-	"9google/cloud/discoveryengine/v1/custom_tuning_model.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbc\b\n" +
-	"\x11CustomTuningModel\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
+	"9google/cloud/discoveryengine/v1/custom_tuning_model.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbd\b\n" +
+	"\x11CustomTuningModel\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
 	"0discoveryengine.googleapis.com/CustomTuningModelR\x04name\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12#\n" +
 	"\rmodel_version\x18\x03 \x01(\x03R\fmodelVersion\x12^\n" +

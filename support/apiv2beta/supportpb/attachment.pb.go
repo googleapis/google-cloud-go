@@ -141,17 +141,17 @@ var File_google_cloud_support_v2beta_attachment_proto protoreflect.FileDescripto
 
 const file_google_cloud_support_v2beta_attachment_proto_rawDesc = "" +
 	"\n" +
-	",google/cloud/support/v2beta/attachment.proto\x12\x1bgoogle.cloud.support.v2beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/support/v2beta/actor.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc2\x03\n" +
+	",google/cloud/support/v2beta/attachment.proto\x12\x1bgoogle.cloud.support.v2beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/support/v2beta/actor.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc5\x03\n" +
 	"\n" +
-	"Attachment\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12A\n" +
-	"\acreator\x18\x03 \x01(\v2\".google.cloud.support.v2beta.ActorB\x03\xe0A\x03R\acreator\x12\x1a\n" +
-	"\bfilename\x18\x04 \x01(\tR\bfilename\x12 \n" +
-	"\tmime_type\x18\x05 \x01(\tB\x03\xe0A\x03R\bmimeType\x12\"\n" +
+	"Attachment\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12B\n" +
+	"\acreator\x18\x03 \x01(\v2\".google.cloud.support.v2beta.ActorB\x04\xe2A\x01\x03R\acreator\x12\x1a\n" +
+	"\bfilename\x18\x04 \x01(\tR\bfilename\x12!\n" +
+	"\tmime_type\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\bmimeType\x12#\n" +
 	"\n" +
-	"size_bytes\x18\x06 \x01(\x03B\x03\xe0A\x03R\tsizeBytes:\xb0\x01\xeaA\xac\x01\n" +
+	"size_bytes\x18\x06 \x01(\x03B\x04\xe2A\x01\x03R\tsizeBytes:\xb0\x01\xeaA\xac\x01\n" +
 	"&cloudsupport.googleapis.com/Attachment\x12Eorganizations/{organization}/cases/{case}/attachments/{attachment_id}\x12;projects/{project}/cases/{case}/attachments/{attachment_id}B\xcc\x01\n" +
 	"\x1fcom.google.cloud.support.v2betaB\x0fAttachmentProtoP\x01Z9cloud.google.com/go/support/apiv2beta/supportpb;supportpb\xaa\x02\x1bGoogle.Cloud.Support.V2Beta\xca\x02\x1bGoogle\\Cloud\\Support\\V2beta\xea\x02\x1eGoogle::Cloud::Support::V2betab\x06proto3"
 

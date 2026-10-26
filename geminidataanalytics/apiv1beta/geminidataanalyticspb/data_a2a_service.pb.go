@@ -3048,145 +3048,145 @@ var File_google_cloud_geminidataanalytics_v1beta_data_a2a_service_proto protoref
 
 const file_google_cloud_geminidataanalytics_v1beta_data_a2a_service_proto_rawDesc = "" +
 	"\n" +
-	">google/cloud/geminidataanalytics/v1beta/data_a2a_service.proto\x12'google.cloud.geminidataanalytics.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x93\x02\n" +
-	"\x18SendMessageConfiguration\x127\n" +
-	"\x15accepted_output_modes\x18\x01 \x03(\tB\x03\xe0A\x01R\x13acceptedOutputModes\x12q\n" +
-	"\x11push_notification\x18\x02 \x01(\v2?.google.cloud.geminidataanalytics.v1beta.PushNotificationConfigB\x03\xe0A\x01R\x10pushNotification\x12*\n" +
-	"\x0ehistory_length\x18\x03 \x01(\x05B\x03\xe0A\x01R\rhistoryLength\x12\x1f\n" +
-	"\bblocking\x18\x04 \x01(\bB\x03\xe0A\x01R\bblocking\"\xfb\x02\n" +
-	"\aA2ATask\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x01R\x02id\x12\"\n" +
+	">google/cloud/geminidataanalytics/v1beta/data_a2a_service.proto\x12'google.cloud.geminidataanalytics.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x97\x02\n" +
+	"\x18SendMessageConfiguration\x128\n" +
+	"\x15accepted_output_modes\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\x13acceptedOutputModes\x12r\n" +
+	"\x11push_notification\x18\x02 \x01(\v2?.google.cloud.geminidataanalytics.v1beta.PushNotificationConfigB\x04\xe2A\x01\x01R\x10pushNotification\x12+\n" +
+	"\x0ehistory_length\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\rhistoryLength\x12 \n" +
+	"\bblocking\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\bblocking\"\x81\x03\n" +
+	"\aA2ATask\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x02id\x12#\n" +
 	"\n" +
-	"context_id\x18\x02 \x01(\tB\x03\xe0A\x01R\tcontextId\x12P\n" +
-	"\x06status\x18\x03 \x01(\v23.google.cloud.geminidataanalytics.v1beta.TaskStatusB\x03\xe0A\x01R\x06status\x12W\n" +
-	"\tartifacts\x18\x04 \x03(\v24.google.cloud.geminidataanalytics.v1beta.A2AArtifactB\x03\xe0A\x01R\tartifacts\x12R\n" +
-	"\ahistory\x18\x05 \x03(\v23.google.cloud.geminidataanalytics.v1beta.A2AMessageB\x03\xe0A\x01R\ahistory\x128\n" +
-	"\bmetadata\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\bmetadata\"\xed\x01\n" +
+	"context_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\tcontextId\x12Q\n" +
+	"\x06status\x18\x03 \x01(\v23.google.cloud.geminidataanalytics.v1beta.TaskStatusB\x04\xe2A\x01\x01R\x06status\x12X\n" +
+	"\tartifacts\x18\x04 \x03(\v24.google.cloud.geminidataanalytics.v1beta.A2AArtifactB\x04\xe2A\x01\x01R\tartifacts\x12S\n" +
+	"\ahistory\x18\x05 \x03(\v23.google.cloud.geminidataanalytics.v1beta.A2AMessageB\x04\xe2A\x01\x01R\ahistory\x129\n" +
+	"\bmetadata\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\bmetadata\"\xf0\x01\n" +
 	"\n" +
-	"TaskStatus\x12M\n" +
-	"\x05state\x18\x01 \x01(\x0e22.google.cloud.geminidataanalytics.v1beta.TaskStateB\x03\xe0A\x03R\x05state\x12Q\n" +
-	"\x06update\x18\x02 \x01(\v23.google.cloud.geminidataanalytics.v1beta.A2AMessageB\x03\xe0A\x01R\amessage\x12=\n" +
-	"\ttimestamp\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\ttimestamp\"\xf0\x01\n" +
+	"TaskStatus\x12N\n" +
+	"\x05state\x18\x01 \x01(\x0e22.google.cloud.geminidataanalytics.v1beta.TaskStateB\x04\xe2A\x01\x03R\x05state\x12R\n" +
+	"\x06update\x18\x02 \x01(\v23.google.cloud.geminidataanalytics.v1beta.A2AMessageB\x04\xe2A\x01\x01R\amessage\x12>\n" +
+	"\ttimestamp\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\ttimestamp\"\xf1\x01\n" +
 	"\x04Part\x12\x14\n" +
 	"\x04text\x18\x01 \x01(\tH\x00R\x04text\x12G\n" +
 	"\x04file\x18\x02 \x01(\v21.google.cloud.geminidataanalytics.v1beta.FilePartH\x00R\x04file\x12G\n" +
-	"\x04data\x18\x03 \x01(\v21.google.cloud.geminidataanalytics.v1beta.DataPartH\x00R\x04data\x128\n" +
-	"\bmetadata\x18\x04 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\bmetadataB\x06\n" +
-	"\x04part\"\x9d\x01\n" +
+	"\x04data\x18\x03 \x01(\v21.google.cloud.geminidataanalytics.v1beta.DataPartH\x00R\x04data\x129\n" +
+	"\bmetadata\x18\x04 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\bmetadataB\x06\n" +
+	"\x04part\"\x9f\x01\n" +
 	"\bFilePart\x12$\n" +
 	"\rfile_with_uri\x18\x01 \x01(\tH\x00R\vfileWithUri\x12(\n" +
-	"\x0ffile_with_bytes\x18\x02 \x01(\fH\x00R\rfileWithBytes\x12 \n" +
-	"\tmime_type\x18\x03 \x01(\tB\x03\xe0A\x01R\bmimeType\x12\x17\n" +
-	"\x04name\x18\x04 \x01(\tB\x03\xe0A\x01R\x04nameB\x06\n" +
-	"\x04file\"<\n" +
-	"\bDataPart\x120\n" +
-	"\x04data\x18\x01 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x04data\"\xe7\x02\n" +
+	"\x0ffile_with_bytes\x18\x02 \x01(\fH\x00R\rfileWithBytes\x12!\n" +
+	"\tmime_type\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\bmimeType\x12\x18\n" +
+	"\x04name\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x04nameB\x06\n" +
+	"\x04file\"=\n" +
+	"\bDataPart\x121\n" +
+	"\x04data\x18\x01 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\x04data\"\xee\x02\n" +
 	"\n" +
-	"A2AMessage\x12\"\n" +
+	"A2AMessage\x12#\n" +
 	"\n" +
-	"message_id\x18\x01 \x01(\tB\x03\xe0A\x01R\tmessageId\x12\"\n" +
+	"message_id\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\tmessageId\x12#\n" +
 	"\n" +
-	"context_id\x18\x02 \x01(\tB\x03\xe0A\x01R\tcontextId\x12\x1c\n" +
-	"\atask_id\x18\x03 \x01(\tB\x03\xe0A\x01R\x06taskId\x12F\n" +
-	"\x04role\x18\x04 \x01(\x0e2-.google.cloud.geminidataanalytics.v1beta.RoleB\x03\xe0A\x01R\x04role\x12L\n" +
-	"\acontent\x18\x05 \x03(\v2-.google.cloud.geminidataanalytics.v1beta.PartB\x03\xe0A\x01R\acontent\x128\n" +
-	"\bmetadata\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\bmetadata\x12#\n" +
+	"context_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\tcontextId\x12\x1d\n" +
+	"\atask_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x06taskId\x12G\n" +
+	"\x04role\x18\x04 \x01(\x0e2-.google.cloud.geminidataanalytics.v1beta.RoleB\x04\xe2A\x01\x01R\x04role\x12M\n" +
+	"\acontent\x18\x05 \x03(\v2-.google.cloud.geminidataanalytics.v1beta.PartB\x04\xe2A\x01\x01R\acontent\x129\n" +
+	"\bmetadata\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\bmetadata\x12$\n" +
 	"\n" +
-	"extensions\x18\a \x03(\tB\x03\xe0A\x01R\n" +
-	"extensions\"\x9c\x02\n" +
-	"\vA2AArtifact\x12$\n" +
-	"\vartifact_id\x18\x01 \x01(\tB\x03\xe0A\x01R\n" +
-	"artifactId\x12\x17\n" +
-	"\x04name\x18\x03 \x01(\tB\x03\xe0A\x01R\x04name\x12%\n" +
-	"\vdescription\x18\x04 \x01(\tB\x03\xe0A\x01R\vdescription\x12H\n" +
-	"\x05parts\x18\x05 \x03(\v2-.google.cloud.geminidataanalytics.v1beta.PartB\x03\xe0A\x01R\x05parts\x128\n" +
-	"\bmetadata\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\bmetadata\x12#\n" +
+	"extensions\x18\a \x03(\tB\x04\xe2A\x01\x01R\n" +
+	"extensions\"\xa2\x02\n" +
+	"\vA2AArtifact\x12%\n" +
+	"\vartifact_id\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"artifactId\x12\x18\n" +
+	"\x04name\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04name\x12&\n" +
+	"\vdescription\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12I\n" +
+	"\x05parts\x18\x05 \x03(\v2-.google.cloud.geminidataanalytics.v1beta.PartB\x04\xe2A\x01\x01R\x05parts\x129\n" +
+	"\bmetadata\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\bmetadata\x12$\n" +
 	"\n" +
-	"extensions\x18\a \x03(\tB\x03\xe0A\x01R\n" +
-	"extensions\"\x80\x02\n" +
-	"\x15TaskStatusUpdateEvent\x12\x1c\n" +
-	"\atask_id\x18\x01 \x01(\tB\x03\xe0A\x01R\x06taskId\x12\"\n" +
+	"extensions\x18\a \x03(\tB\x04\xe2A\x01\x01R\n" +
+	"extensions\"\x85\x02\n" +
+	"\x15TaskStatusUpdateEvent\x12\x1d\n" +
+	"\atask_id\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x06taskId\x12#\n" +
 	"\n" +
-	"context_id\x18\x02 \x01(\tB\x03\xe0A\x01R\tcontextId\x12P\n" +
-	"\x06status\x18\x03 \x01(\v23.google.cloud.geminidataanalytics.v1beta.TaskStatusB\x03\xe0A\x01R\x06status\x12\x19\n" +
-	"\x05final\x18\x04 \x01(\bB\x03\xe0A\x01R\x05final\x128\n" +
-	"\bmetadata\x18\x05 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\bmetadata\"\xad\x02\n" +
-	"\x17TaskArtifactUpdateEvent\x12\x1c\n" +
-	"\atask_id\x18\x01 \x01(\tB\x03\xe0A\x01R\x06taskId\x12\"\n" +
+	"context_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\tcontextId\x12Q\n" +
+	"\x06status\x18\x03 \x01(\v23.google.cloud.geminidataanalytics.v1beta.TaskStatusB\x04\xe2A\x01\x01R\x06status\x12\x1a\n" +
+	"\x05final\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x05final\x129\n" +
+	"\bmetadata\x18\x05 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\bmetadata\"\xb3\x02\n" +
+	"\x17TaskArtifactUpdateEvent\x12\x1d\n" +
+	"\atask_id\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x06taskId\x12#\n" +
 	"\n" +
-	"context_id\x18\x02 \x01(\tB\x03\xe0A\x01R\tcontextId\x12U\n" +
-	"\bartifact\x18\x03 \x01(\v24.google.cloud.geminidataanalytics.v1beta.A2AArtifactB\x03\xe0A\x01R\bartifact\x12\x1b\n" +
-	"\x06append\x18\x04 \x01(\bB\x03\xe0A\x01R\x06append\x12\"\n" +
+	"context_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\tcontextId\x12V\n" +
+	"\bartifact\x18\x03 \x01(\v24.google.cloud.geminidataanalytics.v1beta.A2AArtifactB\x04\xe2A\x01\x01R\bartifact\x12\x1c\n" +
+	"\x06append\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x06append\x12#\n" +
 	"\n" +
-	"last_chunk\x18\x05 \x01(\bB\x03\xe0A\x01R\tlastChunk\x128\n" +
-	"\bmetadata\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\bmetadata\"\xc9\x01\n" +
-	"\x16PushNotificationConfig\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x01R\x02id\x12\x15\n" +
-	"\x03url\x18\x02 \x01(\tB\x03\xe0A\x01R\x03url\x12\x19\n" +
-	"\x05token\x18\x03 \x01(\tB\x03\xe0A\x01R\x05token\x12h\n" +
-	"\x0eauthentication\x18\x04 \x01(\v2;.google.cloud.geminidataanalytics.v1beta.AuthenticationInfoB\x03\xe0A\x01R\x0eauthentication\"Z\n" +
-	"\x12AuthenticationInfo\x12\x1d\n" +
-	"\aschemes\x18\x01 \x03(\tB\x03\xe0A\x01R\aschemes\x12%\n" +
-	"\vcredentials\x18\x02 \x01(\tB\x03\xe0A\x01R\vcredentials\"g\n" +
-	"\x0eAgentInterface\x12\x15\n" +
-	"\x03url\x18\x01 \x01(\tB\x03\xe0A\x01R\x03url\x12!\n" +
-	"\ttransport\x18\x02 \x01(\tB\x03\xe0A\x01R\ttransport\x12\x1b\n" +
-	"\x06tenant\x18\x03 \x01(\tB\x03\xe0A\x01R\x06tenant\"\xa0\n" +
+	"last_chunk\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\tlastChunk\x129\n" +
+	"\bmetadata\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\bmetadata\"\xcd\x01\n" +
+	"\x16PushNotificationConfig\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x02id\x12\x16\n" +
+	"\x03url\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x03url\x12\x1a\n" +
+	"\x05token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x05token\x12i\n" +
+	"\x0eauthentication\x18\x04 \x01(\v2;.google.cloud.geminidataanalytics.v1beta.AuthenticationInfoB\x04\xe2A\x01\x01R\x0eauthentication\"\\\n" +
+	"\x12AuthenticationInfo\x12\x1e\n" +
+	"\aschemes\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\aschemes\x12&\n" +
+	"\vcredentials\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vcredentials\"j\n" +
+	"\x0eAgentInterface\x12\x16\n" +
+	"\x03url\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x03url\x12\"\n" +
+	"\ttransport\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\ttransport\x12\x1c\n" +
+	"\x06tenant\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x06tenant\"\xb0\n" +
 	"\n" +
-	"\tAgentCard\x12.\n" +
-	"\x10protocol_version\x18\x10 \x01(\tB\x03\xe0A\x01R\x0fprotocolVersion\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x01R\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12\x15\n" +
-	"\x03url\x18\x03 \x01(\tB\x03\xe0A\x01R\x03url\x124\n" +
-	"\x13preferred_transport\x18\x0e \x01(\tB\x03\xe0A\x01R\x12preferredTransport\x12q\n" +
-	"\x15additional_interfaces\x18\x0f \x03(\v27.google.cloud.geminidataanalytics.v1beta.AgentInterfaceB\x03\xe0A\x01R\x14additionalInterfaces\x12W\n" +
-	"\bprovider\x18\x04 \x01(\v26.google.cloud.geminidataanalytics.v1beta.AgentProviderB\x03\xe0A\x01R\bprovider\x12\x1d\n" +
-	"\aversion\x18\x05 \x01(\tB\x03\xe0A\x01R\aversion\x120\n" +
-	"\x11documentation_url\x18\x06 \x01(\tB\x03\xe0A\x01R\x10documentationUrl\x12c\n" +
-	"\fcapabilities\x18\a \x01(\v2:.google.cloud.geminidataanalytics.v1beta.AgentCapabilitiesB\x03\xe0A\x01R\fcapabilities\x12r\n" +
+	"\tAgentCard\x12/\n" +
+	"\x10protocol_version\x18\x10 \x01(\tB\x04\xe2A\x01\x01R\x0fprotocolVersion\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\x16\n" +
+	"\x03url\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x03url\x125\n" +
+	"\x13preferred_transport\x18\x0e \x01(\tB\x04\xe2A\x01\x01R\x12preferredTransport\x12r\n" +
+	"\x15additional_interfaces\x18\x0f \x03(\v27.google.cloud.geminidataanalytics.v1beta.AgentInterfaceB\x04\xe2A\x01\x01R\x14additionalInterfaces\x12X\n" +
+	"\bprovider\x18\x04 \x01(\v26.google.cloud.geminidataanalytics.v1beta.AgentProviderB\x04\xe2A\x01\x01R\bprovider\x12\x1e\n" +
+	"\aversion\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aversion\x121\n" +
+	"\x11documentation_url\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x10documentationUrl\x12d\n" +
+	"\fcapabilities\x18\a \x01(\v2:.google.cloud.geminidataanalytics.v1beta.AgentCapabilitiesB\x04\xe2A\x01\x01R\fcapabilities\x12r\n" +
 	"\x10security_schemes\x18\b \x03(\v2G.google.cloud.geminidataanalytics.v1beta.AgentCard.SecuritySchemesEntryR\x0fsecuritySchemes\x12M\n" +
-	"\bsecurity\x18\t \x03(\v21.google.cloud.geminidataanalytics.v1beta.SecurityR\bsecurity\x123\n" +
+	"\bsecurity\x18\t \x03(\v21.google.cloud.geminidataanalytics.v1beta.SecurityR\bsecurity\x124\n" +
 	"\x13default_input_modes\x18\n" +
-	" \x03(\tB\x03\xe0A\x01R\x11defaultInputModes\x125\n" +
-	"\x14default_output_modes\x18\v \x03(\tB\x03\xe0A\x01R\x12defaultOutputModes\x12P\n" +
-	"\x06skills\x18\f \x03(\v23.google.cloud.geminidataanalytics.v1beta.AgentSkillB\x03\xe0A\x01R\x06skills\x12T\n" +
-	"$supports_authenticated_extended_card\x18\r \x01(\bB\x03\xe0A\x01R!supportsAuthenticatedExtendedCard\x12`\n" +
+	" \x03(\tB\x04\xe2A\x01\x01R\x11defaultInputModes\x126\n" +
+	"\x14default_output_modes\x18\v \x03(\tB\x04\xe2A\x01\x01R\x12defaultOutputModes\x12Q\n" +
+	"\x06skills\x18\f \x03(\v23.google.cloud.geminidataanalytics.v1beta.AgentSkillB\x04\xe2A\x01\x01R\x06skills\x12U\n" +
+	"$supports_authenticated_extended_card\x18\r \x01(\bB\x04\xe2A\x01\x01R!supportsAuthenticatedExtendedCard\x12a\n" +
 	"\n" +
-	"signatures\x18\x11 \x03(\v2;.google.cloud.geminidataanalytics.v1beta.AgentCardSignatureB\x03\xe0A\x01R\n" +
-	"signatures\x12\x1e\n" +
-	"\bicon_url\x18\x12 \x01(\tB\x03\xe0A\x01R\aiconUrl\x1a{\n" +
+	"signatures\x18\x11 \x03(\v2;.google.cloud.geminidataanalytics.v1beta.AgentCardSignatureB\x04\xe2A\x01\x01R\n" +
+	"signatures\x12\x1f\n" +
+	"\bicon_url\x18\x12 \x01(\tB\x04\xe2A\x01\x01R\aiconUrl\x1a{\n" +
 	"\x14SecuritySchemesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12M\n" +
-	"\x05value\x18\x02 \x01(\v27.google.cloud.geminidataanalytics.v1beta.SecuritySchemeR\x05value:\x028\x01\"O\n" +
-	"\rAgentProvider\x12\x15\n" +
-	"\x03url\x18\x01 \x01(\tB\x03\xe0A\x01R\x03url\x12'\n" +
-	"\forganization\x18\x02 \x01(\tB\x03\xe0A\x01R\forganization\"\xc8\x01\n" +
-	"\x11AgentCapabilities\x12!\n" +
-	"\tstreaming\x18\x01 \x01(\bB\x03\xe0A\x01R\tstreaming\x122\n" +
-	"\x12push_notifications\x18\x02 \x01(\bB\x03\xe0A\x01R\x11pushNotifications\x12\\\n" +
+	"\x05value\x18\x02 \x01(\v27.google.cloud.geminidataanalytics.v1beta.SecuritySchemeR\x05value:\x028\x01\"Q\n" +
+	"\rAgentProvider\x12\x16\n" +
+	"\x03url\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x03url\x12(\n" +
+	"\forganization\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\forganization\"\xcb\x01\n" +
+	"\x11AgentCapabilities\x12\"\n" +
+	"\tstreaming\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\tstreaming\x123\n" +
+	"\x12push_notifications\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x11pushNotifications\x12]\n" +
 	"\n" +
-	"extensions\x18\x03 \x03(\v27.google.cloud.geminidataanalytics.v1beta.AgentExtensionB\x03\xe0A\x01R\n" +
-	"extensions\"\xa5\x01\n" +
-	"\x0eAgentExtension\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x01R\x03uri\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12\x1f\n" +
-	"\brequired\x18\x03 \x01(\bB\x03\xe0A\x01R\brequired\x124\n" +
-	"\x06params\x18\x04 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x06params\"\xb8\x02\n" +
+	"extensions\x18\x03 \x03(\v27.google.cloud.geminidataanalytics.v1beta.AgentExtensionB\x04\xe2A\x01\x01R\n" +
+	"extensions\"\xa9\x01\n" +
+	"\x0eAgentExtension\x12\x16\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x03uri\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12 \n" +
+	"\brequired\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\brequired\x125\n" +
+	"\x06params\x18\x04 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\x06params\"\xbf\x02\n" +
 	"\n" +
-	"AgentSkill\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x01R\x02id\x12\x17\n" +
-	"\x04name\x18\x02 \x01(\tB\x03\xe0A\x01R\x04name\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12\x17\n" +
-	"\x04tags\x18\x04 \x03(\tB\x03\xe0A\x01R\x04tags\x12\x1f\n" +
-	"\bexamples\x18\x05 \x03(\tB\x03\xe0A\x01R\bexamples\x12$\n" +
-	"\vinput_modes\x18\x06 \x03(\tB\x03\xe0A\x01R\n" +
-	"inputModes\x12&\n" +
-	"\foutput_modes\x18\a \x03(\tB\x03\xe0A\x01R\voutputModes\x12M\n" +
-	"\bsecurity\x18\b \x03(\v21.google.cloud.geminidataanalytics.v1beta.SecurityR\bsecurity\"\x90\x01\n" +
-	"\x12AgentCardSignature\x12!\n" +
-	"\tprotected\x18\x01 \x01(\tB\x03\xe0A\x02R\tprotected\x12!\n" +
-	"\tsignature\x18\x02 \x01(\tB\x03\xe0A\x02R\tsignature\x124\n" +
-	"\x06header\x18\x03 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x06header\" \n" +
+	"AgentSkill\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x02id\x12\x18\n" +
+	"\x04name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04name\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\x18\n" +
+	"\x04tags\x18\x04 \x03(\tB\x04\xe2A\x01\x01R\x04tags\x12 \n" +
+	"\bexamples\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\bexamples\x12%\n" +
+	"\vinput_modes\x18\x06 \x03(\tB\x04\xe2A\x01\x01R\n" +
+	"inputModes\x12'\n" +
+	"\foutput_modes\x18\a \x03(\tB\x04\xe2A\x01\x01R\voutputModes\x12M\n" +
+	"\bsecurity\x18\b \x03(\v21.google.cloud.geminidataanalytics.v1beta.SecurityR\bsecurity\"\x93\x01\n" +
+	"\x12AgentCardSignature\x12\"\n" +
+	"\tprotected\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprotected\x12\"\n" +
+	"\tsignature\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tsignature\x125\n" +
+	"\x06header\x18\x03 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\x06header\" \n" +
 	"\n" +
 	"StringList\x12\x12\n" +
 	"\x04list\x18\x01 \x03(\tR\x04list\"\xd5\x01\n" +
@@ -3201,71 +3201,71 @@ const file_google_cloud_geminidataanalytics_v1beta_data_a2a_service_proto_rawDes
 	"\x16oauth2_security_scheme\x18\x03 \x01(\v2=.google.cloud.geminidataanalytics.v1beta.OAuth2SecuritySchemeH\x00R\x14oauth2SecurityScheme\x12\x8c\x01\n" +
 	"\x1fopen_id_connect_security_scheme\x18\x04 \x01(\v2D.google.cloud.geminidataanalytics.v1beta.OpenIdConnectSecuritySchemeH\x00R\x1bopenIdConnectSecurityScheme\x12t\n" +
 	"\x14mtls_security_scheme\x18\x05 \x01(\v2@.google.cloud.geminidataanalytics.v1beta.MutualTlsSecuritySchemeH\x00R\x12mtlsSecuritySchemeB\b\n" +
-	"\x06scheme\"w\n" +
-	"\x14APIKeySecurityScheme\x12%\n" +
-	"\vdescription\x18\x01 \x01(\tB\x03\xe0A\x01R\vdescription\x12\x1f\n" +
-	"\blocation\x18\x02 \x01(\tB\x03\xe0A\x01R\blocation\x12\x17\n" +
-	"\x04name\x18\x03 \x01(\tB\x03\xe0A\x01R\x04name\"\x86\x01\n" +
-	"\x16HTTPAuthSecurityScheme\x12%\n" +
-	"\vdescription\x18\x01 \x01(\tB\x03\xe0A\x01R\vdescription\x12\x1b\n" +
-	"\x06scheme\x18\x02 \x01(\tB\x03\xe0A\x01R\x06scheme\x12(\n" +
-	"\rbearer_format\x18\x03 \x01(\tB\x03\xe0A\x01R\fbearerFormat\"\xc2\x01\n" +
-	"\x14OAuth2SecurityScheme\x12%\n" +
-	"\vdescription\x18\x01 \x01(\tB\x03\xe0A\x01R\vdescription\x12N\n" +
-	"\x05flows\x18\x02 \x01(\v23.google.cloud.geminidataanalytics.v1beta.OAuthFlowsB\x03\xe0A\x01R\x05flows\x123\n" +
-	"\x13oauth2_metadata_url\x18\x03 \x01(\tB\x03\xe0A\x01R\x11oauth2MetadataUrl\"x\n" +
-	"\x1bOpenIdConnectSecurityScheme\x12%\n" +
-	"\vdescription\x18\x01 \x01(\tB\x03\xe0A\x01R\vdescription\x122\n" +
-	"\x13open_id_connect_url\x18\x02 \x01(\tB\x03\xe0A\x01R\x10openIdConnectUrl\"@\n" +
-	"\x17MutualTlsSecurityScheme\x12%\n" +
-	"\vdescription\x18\x01 \x01(\tB\x03\xe0A\x01R\vdescription\"\xb4\x03\n" +
+	"\x06scheme\"z\n" +
+	"\x14APIKeySecurityScheme\x12&\n" +
+	"\vdescription\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12 \n" +
+	"\blocation\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\blocation\x12\x18\n" +
+	"\x04name\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04name\"\x89\x01\n" +
+	"\x16HTTPAuthSecurityScheme\x12&\n" +
+	"\vdescription\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\x1c\n" +
+	"\x06scheme\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06scheme\x12)\n" +
+	"\rbearer_format\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\fbearerFormat\"\xc5\x01\n" +
+	"\x14OAuth2SecurityScheme\x12&\n" +
+	"\vdescription\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12O\n" +
+	"\x05flows\x18\x02 \x01(\v23.google.cloud.geminidataanalytics.v1beta.OAuthFlowsB\x04\xe2A\x01\x01R\x05flows\x124\n" +
+	"\x13oauth2_metadata_url\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x11oauth2MetadataUrl\"z\n" +
+	"\x1bOpenIdConnectSecurityScheme\x12&\n" +
+	"\vdescription\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x123\n" +
+	"\x13open_id_connect_url\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x10openIdConnectUrl\"A\n" +
+	"\x17MutualTlsSecurityScheme\x12&\n" +
+	"\vdescription\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\vdescription\"\xb4\x03\n" +
 	"\n" +
 	"OAuthFlows\x12t\n" +
 	"\x12authorization_code\x18\x01 \x01(\v2C.google.cloud.geminidataanalytics.v1beta.AuthorizationCodeOAuthFlowH\x00R\x11authorizationCode\x12t\n" +
 	"\x12client_credentials\x18\x02 \x01(\v2C.google.cloud.geminidataanalytics.v1beta.ClientCredentialsOAuthFlowH\x00R\x11clientCredentials\x12X\n" +
 	"\bimplicit\x18\x03 \x01(\v2:.google.cloud.geminidataanalytics.v1beta.ImplicitOAuthFlowH\x00R\bimplicit\x12X\n" +
 	"\bpassword\x18\x04 \x01(\v2:.google.cloud.geminidataanalytics.v1beta.PasswordOAuthFlowH\x00R\bpasswordB\x06\n" +
-	"\x04flow\"\xba\x02\n" +
-	"\x1aAuthorizationCodeOAuthFlow\x120\n" +
-	"\x11authorization_url\x18\x01 \x01(\tB\x03\xe0A\x01R\x10authorizationUrl\x12 \n" +
-	"\ttoken_url\x18\x02 \x01(\tB\x03\xe0A\x01R\btokenUrl\x12$\n" +
-	"\vrefresh_url\x18\x03 \x01(\tB\x03\xe0A\x01R\n" +
+	"\x04flow\"\xbd\x02\n" +
+	"\x1aAuthorizationCodeOAuthFlow\x121\n" +
+	"\x11authorization_url\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x10authorizationUrl\x12!\n" +
+	"\ttoken_url\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\btokenUrl\x12%\n" +
+	"\vrefresh_url\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\n" +
 	"refreshUrl\x12g\n" +
 	"\x06scopes\x18\x04 \x03(\v2O.google.cloud.geminidataanalytics.v1beta.AuthorizationCodeOAuthFlow.ScopesEntryR\x06scopes\x1a9\n" +
 	"\vScopesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x88\x02\n" +
-	"\x1aClientCredentialsOAuthFlow\x12 \n" +
-	"\ttoken_url\x18\x01 \x01(\tB\x03\xe0A\x01R\btokenUrl\x12$\n" +
-	"\vrefresh_url\x18\x02 \x01(\tB\x03\xe0A\x01R\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x8a\x02\n" +
+	"\x1aClientCredentialsOAuthFlow\x12!\n" +
+	"\ttoken_url\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\btokenUrl\x12%\n" +
+	"\vrefresh_url\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\n" +
 	"refreshUrl\x12g\n" +
 	"\x06scopes\x18\x03 \x03(\v2O.google.cloud.geminidataanalytics.v1beta.ClientCredentialsOAuthFlow.ScopesEntryR\x06scopes\x1a9\n" +
 	"\vScopesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x86\x02\n" +
-	"\x11ImplicitOAuthFlow\x120\n" +
-	"\x11authorization_url\x18\x01 \x01(\tB\x03\xe0A\x01R\x10authorizationUrl\x12$\n" +
-	"\vrefresh_url\x18\x02 \x01(\tB\x03\xe0A\x01R\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x88\x02\n" +
+	"\x11ImplicitOAuthFlow\x121\n" +
+	"\x11authorization_url\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x10authorizationUrl\x12%\n" +
+	"\vrefresh_url\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\n" +
 	"refreshUrl\x12^\n" +
 	"\x06scopes\x18\x03 \x03(\v2F.google.cloud.geminidataanalytics.v1beta.ImplicitOAuthFlow.ScopesEntryR\x06scopes\x1a9\n" +
 	"\vScopesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xf6\x01\n" +
-	"\x11PasswordOAuthFlow\x12 \n" +
-	"\ttoken_url\x18\x01 \x01(\tB\x03\xe0A\x01R\btokenUrl\x12$\n" +
-	"\vrefresh_url\x18\x02 \x01(\tB\x03\xe0A\x01R\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xf8\x01\n" +
+	"\x11PasswordOAuthFlow\x12!\n" +
+	"\ttoken_url\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\btokenUrl\x12%\n" +
+	"\vrefresh_url\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\n" +
 	"refreshUrl\x12^\n" +
 	"\x06scopes\x18\x03 \x03(\v2F.google.cloud.geminidataanalytics.v1beta.PasswordOAuthFlow.ScopesEntryR\x06scopes\x1a9\n" +
 	"\vScopesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xad\x02\n" +
-	"\x12SendMessageRequest\x12R\n" +
-	"\amessage\x18\x01 \x01(\v23.google.cloud.geminidataanalytics.v1beta.A2AMessageB\x03\xe0A\x02R\amessage\x12l\n" +
-	"\rconfiguration\x18\x02 \x01(\v2A.google.cloud.geminidataanalytics.v1beta.SendMessageConfigurationB\x03\xe0A\x01R\rconfiguration\x128\n" +
-	"\bmetadata\x18\x03 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\bmetadata\x12\x1b\n" +
-	"\x06tenant\x18\x04 \x01(\tB\x03\xe0A\x01R\x06tenant\"2\n" +
-	"\x13GetAgentCardRequest\x12\x1b\n" +
-	"\x06tenant\x18\x01 \x01(\tB\x03\xe0A\x01R\x06tenant\"\xb5\x01\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xb1\x02\n" +
+	"\x12SendMessageRequest\x12S\n" +
+	"\amessage\x18\x01 \x01(\v23.google.cloud.geminidataanalytics.v1beta.A2AMessageB\x04\xe2A\x01\x02R\amessage\x12m\n" +
+	"\rconfiguration\x18\x02 \x01(\v2A.google.cloud.geminidataanalytics.v1beta.SendMessageConfigurationB\x04\xe2A\x01\x01R\rconfiguration\x129\n" +
+	"\bmetadata\x18\x03 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\bmetadata\x12\x1c\n" +
+	"\x06tenant\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06tenant\"3\n" +
+	"\x13GetAgentCardRequest\x12\x1c\n" +
+	"\x06tenant\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x06tenant\"\xb5\x01\n" +
 	"\x13SendMessageResponse\x12F\n" +
 	"\x04task\x18\x01 \x01(\v20.google.cloud.geminidataanalytics.v1beta.A2ATaskH\x00R\x04task\x12K\n" +
 	"\x03msg\x18\x02 \x01(\v23.google.cloud.geminidataanalytics.v1beta.A2AMessageH\x00R\amessageB\t\n" +

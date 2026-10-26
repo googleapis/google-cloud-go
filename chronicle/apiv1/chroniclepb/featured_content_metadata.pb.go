@@ -237,24 +237,24 @@ var File_google_cloud_chronicle_v1_featured_content_metadata_proto protoreflect.
 
 const file_google_cloud_chronicle_v1_featured_content_metadata_proto_rawDesc = "" +
 	"\n" +
-	"9google/cloud/chronicle/v1/featured_content_metadata.proto\x12\x19google.cloud.chronicle.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x86\x05\n" +
-	"\x17FeaturedContentMetadata\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x1b\n" +
-	"\x06author\x18\x05 \x01(\tB\x03\xe0A\x03R\x06author\x12!\n" +
-	"\tcertified\x18\x06 \x01(\bB\x03\xe0A\x03R\tcertified\x12%\n" +
-	"\vdescription\x18\a \x01(\tB\x03\xe0A\x03R\vdescription\x12#\n" +
+	"9google/cloud/chronicle/v1/featured_content_metadata.proto\x12\x19google.cloud.chronicle.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x91\x05\n" +
+	"\x17FeaturedContentMetadata\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x02id\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x1c\n" +
+	"\x06author\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x06author\x12\"\n" +
+	"\tcertified\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\tcertified\x12&\n" +
+	"\vdescription\x18\a \x01(\tB\x04\xe2A\x01\x03R\vdescription\x12$\n" +
 	"\n" +
-	"categories\x18\b \x03(\tB\x03\xe0A\x03R\n" +
-	"categories\x12\x1d\n" +
-	"\aversion\x18\t \x01(\tB\x03\xe0A\x03R\aversion\x12$\n" +
+	"categories\x18\b \x03(\tB\x04\xe2A\x01\x03R\n" +
+	"categories\x12\x1e\n" +
+	"\aversion\x18\t \x01(\tB\x04\xe2A\x01\x03R\aversion\x12%\n" +
 	"\bverified\x18\n" +
-	" \x01(\bB\x03\xe0A\x03H\x00R\bverified\x88\x01\x01\x12j\n" +
-	"\vsource_type\x18\v \x01(\x0e2D.google.cloud.chronicle.v1.FeaturedContentMetadata.ContentSourceTypeB\x03\xe0A\x03R\n" +
+	" \x01(\bB\x04\xe2A\x01\x03H\x00R\bverified\x88\x01\x01\x12k\n" +
+	"\vsource_type\x18\v \x01(\x0e2D.google.cloud.chronicle.v1.FeaturedContentMetadata.ContentSourceTypeB\x04\xe2A\x01\x03R\n" +
 	"sourceType\"`\n" +
 	"\x11ContentSourceType\x12#\n" +
 	"\x1fCONTENT_SOURCE_TYPE_UNSPECIFIED\x10\x00\x12\n" +

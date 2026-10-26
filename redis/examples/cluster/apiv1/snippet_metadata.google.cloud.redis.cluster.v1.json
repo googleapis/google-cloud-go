@@ -8,9 +8,101 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/redis/cluster/apiv1",
-    "version": "1.26.0"
+    "version": "1.28.0"
   },
   "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient",
+          "shortName": "CloudRedisClusterClient"
+        },
+        "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient.AddAuthToken",
+        "method": {
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster.AddAuthToken",
+          "service": {
+            "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster",
+            "shortName": "CloudRedisCluster"
+          },
+          "shortName": "AddAuthToken"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "clusterpb.AddAuthTokenRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "AddAuthTokenOperation",
+        "shortName": "AddAuthToken"
+      },
+      "description": "AddAuthToken adds a auth token for a user of a token based auth enabled cluster.",
+      "file": "CloudRedisClusterClient/AddAuthToken/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "redis_v1_generated_CloudRedisCluster_AddAuthToken_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "redis AddAuthToken Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient",
+          "shortName": "CloudRedisClusterClient"
+        },
+        "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient.AddTokenAuthUser",
+        "method": {
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster.AddTokenAuthUser",
+          "service": {
+            "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster",
+            "shortName": "CloudRedisCluster"
+          },
+          "shortName": "AddTokenAuthUser"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "clusterpb.AddTokenAuthUserRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "AddTokenAuthUserOperation",
+        "shortName": "AddTokenAuthUser"
+      },
+      "description": "AddTokenAuthUser adds a token auth user for a token based auth enabled cluster.",
+      "file": "CloudRedisClusterClient/AddTokenAuthUser/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "redis_v1_generated_CloudRedisCluster_AddTokenAuthUser_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "redis AddTokenAuthUser Sample"
+    },
     {
       "clientMethod": {
         "client": {
@@ -108,6 +200,52 @@
           "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient",
           "shortName": "CloudRedisClusterClient"
         },
+        "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient.CreateAclPolicy",
+        "method": {
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster.CreateAclPolicy",
+          "service": {
+            "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster",
+            "shortName": "CloudRedisCluster"
+          },
+          "shortName": "CreateAclPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "clusterpb.CreateAclPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*clusterpb.AclPolicy",
+        "shortName": "CreateAclPolicy"
+      },
+      "description": "CreateAclPolicy creates an ACL policy.\nThe creation is executed synchronously and the policy is available for use\nimmediately after the RPC returns.",
+      "file": "CloudRedisClusterClient/CreateAclPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "redis_v1_generated_CloudRedisCluster_CreateAclPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "redis CreateAclPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient",
+          "shortName": "CloudRedisClusterClient"
+        },
         "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient.CreateCluster",
         "method": {
           "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster.CreateCluster",
@@ -147,6 +285,98 @@
         }
       ],
       "title": "redis CreateCluster Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient",
+          "shortName": "CloudRedisClusterClient"
+        },
+        "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient.DeleteAclPolicy",
+        "method": {
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster.DeleteAclPolicy",
+          "service": {
+            "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster",
+            "shortName": "CloudRedisCluster"
+          },
+          "shortName": "DeleteAclPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "clusterpb.DeleteAclPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteAclPolicyOperation",
+        "shortName": "DeleteAclPolicy"
+      },
+      "description": "DeleteAclPolicy deletes a specific ACL policy. This action will delete the ACL policy and\nall the rules associated with it. An ACL policy cannot be deleted if it is\nattached to a cluster.",
+      "file": "CloudRedisClusterClient/DeleteAclPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "redis_v1_generated_CloudRedisCluster_DeleteAclPolicy_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "redis DeleteAclPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient",
+          "shortName": "CloudRedisClusterClient"
+        },
+        "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient.DeleteAuthToken",
+        "method": {
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster.DeleteAuthToken",
+          "service": {
+            "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster",
+            "shortName": "CloudRedisCluster"
+          },
+          "shortName": "DeleteAuthToken"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "clusterpb.DeleteAuthTokenRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteAuthTokenOperation",
+        "shortName": "DeleteAuthToken"
+      },
+      "description": "DeleteAuthToken removes a auth token for a user of a token based auth enabled instance.",
+      "file": "CloudRedisClusterClient/DeleteAuthToken/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "redis_v1_generated_CloudRedisCluster_DeleteAuthToken_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "redis DeleteAuthToken Sample"
     },
     {
       "clientMethod": {
@@ -291,6 +521,52 @@
           "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient",
           "shortName": "CloudRedisClusterClient"
         },
+        "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient.DeleteTokenAuthUser",
+        "method": {
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster.DeleteTokenAuthUser",
+          "service": {
+            "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster",
+            "shortName": "CloudRedisCluster"
+          },
+          "shortName": "DeleteTokenAuthUser"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "clusterpb.DeleteTokenAuthUserRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteTokenAuthUserOperation",
+        "shortName": "DeleteTokenAuthUser"
+      },
+      "description": "DeleteTokenAuthUser deletes a token auth user for a token based auth enabled cluster.",
+      "file": "CloudRedisClusterClient/DeleteTokenAuthUser/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "redis_v1_generated_CloudRedisCluster_DeleteTokenAuthUser_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "redis DeleteTokenAuthUser Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient",
+          "shortName": "CloudRedisClusterClient"
+        },
         "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient.ExportBackup",
         "method": {
           "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster.ExportBackup",
@@ -330,6 +606,144 @@
         }
       ],
       "title": "redis ExportBackup Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient",
+          "shortName": "CloudRedisClusterClient"
+        },
+        "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient.GetAclPolicy",
+        "method": {
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster.GetAclPolicy",
+          "service": {
+            "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster",
+            "shortName": "CloudRedisCluster"
+          },
+          "shortName": "GetAclPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "clusterpb.GetAclPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*clusterpb.AclPolicy",
+        "shortName": "GetAclPolicy"
+      },
+      "description": "GetAclPolicy gets the details of a specific Redis Cluster ACL policy.",
+      "file": "CloudRedisClusterClient/GetAclPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "redis_v1_generated_CloudRedisCluster_GetAclPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "redis GetAclPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient",
+          "shortName": "CloudRedisClusterClient"
+        },
+        "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient.GetAclPolicyRevision",
+        "method": {
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster.GetAclPolicyRevision",
+          "service": {
+            "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster",
+            "shortName": "CloudRedisCluster"
+          },
+          "shortName": "GetAclPolicyRevision"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "clusterpb.GetAclPolicyRevisionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*clusterpb.AclPolicyRevision",
+        "shortName": "GetAclPolicyRevision"
+      },
+      "description": "GetAclPolicyRevision gets details of a specific ACL policy revision.",
+      "file": "CloudRedisClusterClient/GetAclPolicyRevision/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "redis_v1_generated_CloudRedisCluster_GetAclPolicyRevision_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "redis GetAclPolicyRevision Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient",
+          "shortName": "CloudRedisClusterClient"
+        },
+        "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient.GetAuthToken",
+        "method": {
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster.GetAuthToken",
+          "service": {
+            "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster",
+            "shortName": "CloudRedisCluster"
+          },
+          "shortName": "GetAuthToken"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "clusterpb.GetAuthTokenRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*clusterpb.AuthToken",
+        "shortName": "GetAuthToken"
+      },
+      "description": "GetAuthToken gets a specific auth token for a specific token auth user.",
+      "file": "CloudRedisClusterClient/GetAuthToken/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "redis_v1_generated_CloudRedisCluster_GetAuthToken_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "redis GetAuthToken Sample"
     },
     {
       "clientMethod": {
@@ -659,6 +1073,190 @@
           "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient",
           "shortName": "CloudRedisClusterClient"
         },
+        "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient.GetTokenAuthUser",
+        "method": {
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster.GetTokenAuthUser",
+          "service": {
+            "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster",
+            "shortName": "CloudRedisCluster"
+          },
+          "shortName": "GetTokenAuthUser"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "clusterpb.GetTokenAuthUserRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*clusterpb.TokenAuthUser",
+        "shortName": "GetTokenAuthUser"
+      },
+      "description": "GetTokenAuthUser gets a specific token auth user for a basic auth enabled cluster.",
+      "file": "CloudRedisClusterClient/GetTokenAuthUser/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "redis_v1_generated_CloudRedisCluster_GetTokenAuthUser_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "redis GetTokenAuthUser Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient",
+          "shortName": "CloudRedisClusterClient"
+        },
+        "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient.ListAclPolicies",
+        "method": {
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster.ListAclPolicies",
+          "service": {
+            "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster",
+            "shortName": "CloudRedisCluster"
+          },
+          "shortName": "ListAclPolicies"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "clusterpb.ListAclPoliciesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "AclPolicyIterator",
+        "shortName": "ListAclPolicies"
+      },
+      "description": "ListAclPolicies lists all ACL policies owned by a project in either the specified\nlocation (region) or all locations.\n\nThe location should have the following format: \n\n* `projects/{project_id}/locations/{location_id}`\n\nIf `location_id` is specified as `-` (wildcard), then all regions\navailable to the project are queried, and the results are aggregated.",
+      "file": "CloudRedisClusterClient/ListAclPolicies/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "redis_v1_generated_CloudRedisCluster_ListAclPolicies_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "redis ListAclPolicies Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient",
+          "shortName": "CloudRedisClusterClient"
+        },
+        "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient.ListAclPolicyRevisions",
+        "method": {
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster.ListAclPolicyRevisions",
+          "service": {
+            "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster",
+            "shortName": "CloudRedisCluster"
+          },
+          "shortName": "ListAclPolicyRevisions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "clusterpb.ListAclPolicyRevisionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "AclPolicyRevisionIterator",
+        "shortName": "ListAclPolicyRevisions"
+      },
+      "description": "ListAclPolicyRevisions lists all ACL policy revisions in a given ACL policy.",
+      "file": "CloudRedisClusterClient/ListAclPolicyRevisions/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "redis_v1_generated_CloudRedisCluster_ListAclPolicyRevisions_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "redis ListAclPolicyRevisions Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient",
+          "shortName": "CloudRedisClusterClient"
+        },
+        "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient.ListAuthTokens",
+        "method": {
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster.ListAuthTokens",
+          "service": {
+            "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster",
+            "shortName": "CloudRedisCluster"
+          },
+          "shortName": "ListAuthTokens"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "clusterpb.ListAuthTokensRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "AuthTokenIterator",
+        "shortName": "ListAuthTokens"
+      },
+      "description": "ListAuthTokens lists all the auth tokens for a specific token auth user.",
+      "file": "CloudRedisClusterClient/ListAuthTokens/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "redis_v1_generated_CloudRedisCluster_ListAuthTokens_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "redis ListAuthTokens Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient",
+          "shortName": "CloudRedisClusterClient"
+        },
         "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient.ListBackupCollections",
         "method": {
           "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster.ListBackupCollections",
@@ -889,6 +1487,52 @@
           "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient",
           "shortName": "CloudRedisClusterClient"
         },
+        "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient.ListTokenAuthUsers",
+        "method": {
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster.ListTokenAuthUsers",
+          "service": {
+            "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster",
+            "shortName": "CloudRedisCluster"
+          },
+          "shortName": "ListTokenAuthUsers"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "clusterpb.ListTokenAuthUsersRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "TokenAuthUserIterator",
+        "shortName": "ListTokenAuthUsers"
+      },
+      "description": "ListTokenAuthUsers lists all the token auth users for a token based auth enabled cluster.",
+      "file": "CloudRedisClusterClient/ListTokenAuthUsers/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "redis_v1_generated_CloudRedisCluster_ListTokenAuthUsers_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "redis ListTokenAuthUsers Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient",
+          "shortName": "CloudRedisClusterClient"
+        },
         "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient.RescheduleClusterMaintenance",
         "method": {
           "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster.RescheduleClusterMaintenance",
@@ -928,6 +1572,52 @@
         }
       ],
       "title": "redis RescheduleClusterMaintenance Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient",
+          "shortName": "CloudRedisClusterClient"
+        },
+        "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient.UpdateAclPolicy",
+        "method": {
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster.UpdateAclPolicy",
+          "service": {
+            "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster",
+            "shortName": "CloudRedisCluster"
+          },
+          "shortName": "UpdateAclPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "clusterpb.UpdateAclPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "UpdateAclPolicyOperation",
+        "shortName": "UpdateAclPolicy"
+      },
+      "description": "UpdateAclPolicy updates the ACL policy.\n\nThe operation applies the updated ACL policy to all of the linked clusters.\nIf Memorystore can apply the policy to all clusters, then the operation\nreturns a SUCCESS status. If Memorystore can't apply the policy to all\nclusters, then to ensure eventual consistency, Memorystore uses\nreconciliation to apply the policy to the failed clusters.\n\nCompleted longrunning.Operation will contain the new ACL policy object in\nthe response field.",
+      "file": "CloudRedisClusterClient/UpdateAclPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "redis_v1_generated_CloudRedisCluster_UpdateAclPolicy_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "redis UpdateAclPolicy Sample"
     },
     {
       "clientMethod": {

@@ -1030,41 +1030,41 @@ var File_google_cloud_retail_v2_conversational_search_service_proto protoreflect
 
 const file_google_cloud_retail_v2_conversational_search_service_proto_rawDesc = "" +
 	"\n" +
-	":google/cloud/retail/v2/conversational_search_service.proto\x12\x16google.cloud.retail.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/cloud/retail/v2/common.proto\x1a#google/cloud/retail/v2/safety.proto\x1a+google/cloud/retail/v2/search_service.proto\"\xb9\x0e\n" +
-	"\x1bConversationalSearchRequest\x12!\n" +
-	"\tplacement\x18\x01 \x01(\tB\x03\xe0A\x02R\tplacement\x12<\n" +
-	"\x06branch\x18\x02 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cretail.googleapis.com/BranchR\x06branch\x12\x19\n" +
-	"\x05query\x18\x03 \x01(\tB\x03\xe0A\x01R\x05query\x12,\n" +
-	"\x0fpage_categories\x18\x04 \x03(\tB\x03\xe0A\x01R\x0epageCategories\x12,\n" +
-	"\x0fconversation_id\x18\x05 \x01(\tB\x03\xe0A\x01R\x0econversationId\x12j\n" +
-	"\rsearch_params\x18\x06 \x01(\v2@.google.cloud.retail.v2.ConversationalSearchRequest.SearchParamsB\x03\xe0A\x01R\fsearchParams\x12\"\n" +
+	":google/cloud/retail/v2/conversational_search_service.proto\x12\x16google.cloud.retail.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/cloud/retail/v2/common.proto\x1a#google/cloud/retail/v2/safety.proto\x1a+google/cloud/retail/v2/search_service.proto\"\xcd\x0e\n" +
+	"\x1bConversationalSearchRequest\x12\"\n" +
+	"\tplacement\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tplacement\x12=\n" +
+	"\x06branch\x18\x02 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cretail.googleapis.com/BranchR\x06branch\x12\x1a\n" +
+	"\x05query\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x05query\x12-\n" +
+	"\x0fpage_categories\x18\x04 \x03(\tB\x04\xe2A\x01\x01R\x0epageCategories\x12-\n" +
+	"\x0fconversation_id\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x0econversationId\x12k\n" +
+	"\rsearch_params\x18\x06 \x01(\v2@.google.cloud.retail.v2.ConversationalSearchRequest.SearchParamsB\x04\xe2A\x01\x01R\fsearchParams\x12#\n" +
 	"\n" +
-	"visitor_id\x18\t \x01(\tB\x03\xe0A\x02R\tvisitorId\x12B\n" +
-	"\tuser_info\x18\a \x01(\v2 .google.cloud.retail.v2.UserInfoB\x03\xe0A\x01R\buserInfo\x12\x98\x01\n" +
-	"\x1dconversational_filtering_spec\x18\b \x01(\v2O.google.cloud.retail.v2.ConversationalSearchRequest.ConversationalFilteringSpecB\x03\xe0A\x01R\x1bconversationalFilteringSpec\x12i\n" +
-	"\vuser_labels\x18\f \x03(\v2C.google.cloud.retail.v2.ConversationalSearchRequest.UserLabelsEntryB\x03\xe0A\x01R\n" +
-	"userLabels\x12S\n" +
-	"\x0fsafety_settings\x18\x0e \x03(\v2%.google.cloud.retail.v2.SafetySettingB\x03\xe0A\x01R\x0esafetySettings\x1a\xce\x01\n" +
-	"\fSearchParams\x12\x1b\n" +
-	"\x06filter\x18\x01 \x01(\tB\x03\xe0A\x01R\x06filter\x12.\n" +
-	"\x10canonical_filter\x18\x02 \x01(\tB\x03\xe0A\x01R\x0fcanonicalFilter\x12\x1c\n" +
-	"\asort_by\x18\x03 \x01(\tB\x03\xe0A\x01R\x06sortBy\x12S\n" +
+	"visitor_id\x18\t \x01(\tB\x04\xe2A\x01\x02R\tvisitorId\x12C\n" +
+	"\tuser_info\x18\a \x01(\v2 .google.cloud.retail.v2.UserInfoB\x04\xe2A\x01\x01R\buserInfo\x12\x99\x01\n" +
+	"\x1dconversational_filtering_spec\x18\b \x01(\v2O.google.cloud.retail.v2.ConversationalSearchRequest.ConversationalFilteringSpecB\x04\xe2A\x01\x01R\x1bconversationalFilteringSpec\x12j\n" +
+	"\vuser_labels\x18\f \x03(\v2C.google.cloud.retail.v2.ConversationalSearchRequest.UserLabelsEntryB\x04\xe2A\x01\x01R\n" +
+	"userLabels\x12T\n" +
+	"\x0fsafety_settings\x18\x0e \x03(\v2%.google.cloud.retail.v2.SafetySettingB\x04\xe2A\x01\x01R\x0esafetySettings\x1a\xd2\x01\n" +
+	"\fSearchParams\x12\x1c\n" +
+	"\x06filter\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12/\n" +
+	"\x10canonical_filter\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x0fcanonicalFilter\x12\x1d\n" +
+	"\asort_by\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x06sortBy\x12T\n" +
 	"\n" +
-	"boost_spec\x18\x04 \x01(\v2/.google.cloud.retail.v2.SearchRequest.BoostSpecB\x03\xe0A\x01R\tboostSpec\x1a\xb4\x02\n" +
+	"boost_spec\x18\x04 \x01(\v2/.google.cloud.retail.v2.SearchRequest.BoostSpecB\x04\xe2A\x01\x01R\tboostSpec\x1a\xb6\x02\n" +
 	"\n" +
 	"UserAnswer\x12!\n" +
 	"\vtext_answer\x18\x01 \x01(\tH\x00R\n" +
-	"textAnswer\x12}\n" +
-	"\x0fselected_answer\x18\x02 \x01(\v2M.google.cloud.retail.v2.ConversationalSearchRequest.UserAnswer.SelectedAnswerB\x03\xe0A\x01H\x00R\x0eselectedAnswer\x1a|\n" +
-	"\x0eSelectedAnswer\x12j\n" +
-	"\x17product_attribute_value\x18\x01 \x01(\v2-.google.cloud.retail.v2.ProductAttributeValueB\x03\xe0A\x01R\x15productAttributeValueB\x06\n" +
-	"\x04type\x1a\xcb\x03\n" +
-	"\x1bConversationalFilteringSpec\x12M\n" +
-	"\x1fenable_conversational_filtering\x18\x01 \x01(\bB\x05\xe0A\x01\x18\x01R\x1denableConversationalFiltering\x12d\n" +
-	"\vuser_answer\x18\x02 \x01(\v2>.google.cloud.retail.v2.ConversationalSearchRequest.UserAnswerB\x03\xe0A\x01R\n" +
-	"userAnswer\x12\x9d\x01\n" +
-	"\x1dconversational_filtering_mode\x18\x04 \x01(\x0e2T.google.cloud.retail.v2.ConversationalSearchRequest.ConversationalFilteringSpec.ModeB\x03\xe0A\x01R\x1bconversationalFilteringMode\"W\n" +
+	"textAnswer\x12~\n" +
+	"\x0fselected_answer\x18\x02 \x01(\v2M.google.cloud.retail.v2.ConversationalSearchRequest.UserAnswer.SelectedAnswerB\x04\xe2A\x01\x01H\x00R\x0eselectedAnswer\x1a}\n" +
+	"\x0eSelectedAnswer\x12k\n" +
+	"\x17product_attribute_value\x18\x01 \x01(\v2-.google.cloud.retail.v2.ProductAttributeValueB\x04\xe2A\x01\x01R\x15productAttributeValueB\x06\n" +
+	"\x04type\x1a\xce\x03\n" +
+	"\x1bConversationalFilteringSpec\x12N\n" +
+	"\x1fenable_conversational_filtering\x18\x01 \x01(\bB\x06\xe2A\x01\x01\x18\x01R\x1denableConversationalFiltering\x12e\n" +
+	"\vuser_answer\x18\x02 \x01(\v2>.google.cloud.retail.v2.ConversationalSearchRequest.UserAnswerB\x04\xe2A\x01\x01R\n" +
+	"userAnswer\x12\x9e\x01\n" +
+	"\x1dconversational_filtering_mode\x18\x04 \x01(\x0e2T.google.cloud.retail.v2.ConversationalSearchRequest.ConversationalFilteringSpec.ModeB\x04\xe2A\x01\x01R\x1bconversationalFilteringMode\"W\n" +
 	"\x04Mode\x12\x14\n" +
 	"\x10MODE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDISABLED\x10\x01\x12\v\n" +
@@ -1072,7 +1072,7 @@ const file_google_cloud_retail_v2_conversational_search_service_proto_rawDesc = 
 	"\x1aCONVERSATIONAL_FILTER_ONLY\x10\x03\x1a=\n" +
 	"\x0fUserLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xd0\v\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xd1\v\n" +
 	"\x1cConversationalSearchResponse\x12(\n" +
 	"\x10user_query_types\x18\n" +
 	" \x03(\tR\x0euserQueryTypes\x12@\n" +
@@ -1080,8 +1080,8 @@ const file_google_cloud_retail_v2_conversational_search_service_proto_rawDesc = 
 	"\x11followup_question\x18\x03 \x01(\v2E.google.cloud.retail.v2.ConversationalSearchResponse.FollowupQuestionR\x10followupQuestion\x12'\n" +
 	"\x0fconversation_id\x18\x04 \x01(\tR\x0econversationId\x12i\n" +
 	"\x0erefined_search\x18\x06 \x03(\v2B.google.cloud.retail.v2.ConversationalSearchResponse.RefinedSearchR\rrefinedSearch\x12\x9a\x01\n" +
-	"\x1fconversational_filtering_result\x18\a \x01(\v2R.google.cloud.retail.v2.ConversationalSearchResponse.ConversationalFilteringResultR\x1dconversationalFilteringResult\x12U\n" +
-	"\x05state\x18\t \x01(\x0e2:.google.cloud.retail.v2.ConversationalSearchResponse.StateB\x03\xe0A\x03R\x05state\x1a\xbe\x02\n" +
+	"\x1fconversational_filtering_result\x18\a \x01(\v2R.google.cloud.retail.v2.ConversationalSearchResponse.ConversationalFilteringResultR\x1dconversationalFilteringResult\x12V\n" +
+	"\x05state\x18\t \x01(\x0e2:.google.cloud.retail.v2.ConversationalSearchResponse.StateB\x04\xe2A\x01\x03R\x05state\x1a\xbe\x02\n" +
 	"\x10FollowupQuestion\x12+\n" +
 	"\x11followup_question\x18\x01 \x01(\tR\x10followupQuestion\x12\x82\x01\n" +
 	"\x11suggested_answers\x18\x02 \x03(\v2U.google.cloud.retail.v2.ConversationalSearchResponse.FollowupQuestion.SuggestedAnswerR\x10suggestedAnswers\x1ax\n" +

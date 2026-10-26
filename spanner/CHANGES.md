@@ -1,5 +1,12 @@
 # Changes
 
+## [1.96.1](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.96.0...spanner/v1.96.1) (2026-10-08)
+
+
+### Bug Fixes
+
+* **spanner:** Disable DirectPath fallback by default ([#20648](https://github.com/googleapis/google-cloud-go/issues/20648)) ([00f8c41](https://github.com/googleapis/google-cloud-go/commit/00f8c4132a1f056a8d8b03ea7624ea2b61f7ad10)), refs [#14414](https://github.com/googleapis/google-cloud-go/issues/14414)
+
 ## [1.96.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.95.1...spanner/v1.96.0) (2026-10-07)
 
 

@@ -33,6 +33,7 @@ import (
 	"time"
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
+	btopt "cloud.google.com/go/bigtable/internal/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
@@ -157,6 +158,14 @@ func (s *Server) Start() error {
 	s.grpcServer = grpc.NewServer(
 		grpc.ChainUnaryInterceptor(unaryInterceptors...),
 		grpc.ChainStreamInterceptor(streamInterceptors...),
+		// gRPC's 4 MiB default receive limit is there to bound what an
+		// untrusted remote peer can make a server allocate. This server's only
+		// peer is the SDK process that spawned it, over a Unix socket it alone
+		// can reach, so the limit only serves to reject large mutations the
+		// native client would have sent straight to the service. The send
+		// direction is left alone: its default is already math.MaxInt32, and
+		// pinning it to MaxMessageSize would lower it.
+		grpc.MaxRecvMsgSize(btopt.MaxMessageSize),
 	)
 
 	// Register the empty bigtableServerStub. gRPC requires a typed

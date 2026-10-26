@@ -397,28 +397,28 @@ var File_google_cloud_apihub_v1_discovery_service_proto protoreflect.FileDescrip
 
 const file_google_cloud_apihub_v1_discovery_service_proto_rawDesc = "" +
 	"\n" +
-	".google/cloud/apihub/v1/discovery_service.proto\x12\x16google.cloud.apihub.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a*google/cloud/apihub/v1/common_fields.proto\"\xbc\x01\n" +
-	"$ListDiscoveredApiObservationsRequest\x12N\n" +
-	"\x06parent\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\x12.apihub.googleapis.com/DiscoveredApiObservationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	".google/cloud/apihub/v1/discovery_service.proto\x12\x16google.cloud.apihub.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a*google/cloud/apihub/v1/common_fields.proto\"\xbf\x01\n" +
+	"$ListDiscoveredApiObservationsRequest\x12O\n" +
+	"\x06parent\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\x12.apihub.googleapis.com/DiscoveredApiObservationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xc1\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xc1\x01\n" +
 	"%ListDiscoveredApiObservationsResponse\x12p\n" +
 	"\x1bdiscovered_api_observations\x18\x01 \x03(\v20.google.cloud.apihub.v1.DiscoveredApiObservationR\x19discoveredApiObservations\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb8\x01\n" +
-	"\"ListDiscoveredApiOperationsRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,apihub.googleapis.com/DiscoveredApiOperationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xbb\x01\n" +
+	"\"ListDiscoveredApiOperationsRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,apihub.googleapis.com/DiscoveredApiOperationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xb9\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xb9\x01\n" +
 	"#ListDiscoveredApiOperationsResponse\x12j\n" +
 	"\x19discovered_api_operations\x18\x01 \x03(\v2..google.cloud.apihub.v1.DiscoveredApiOperationR\x17discoveredApiOperations\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"p\n" +
-	"\"GetDiscoveredApiObservationRequest\x12J\n" +
-	"\x04name\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".apihub.googleapis.com/DiscoveredApiObservationR\x04name\"l\n" +
-	" GetDiscoveredApiOperationRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"q\n" +
+	"\"GetDiscoveredApiObservationRequest\x12K\n" +
+	"\x04name\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".apihub.googleapis.com/DiscoveredApiObservationR\x04name\"m\n" +
+	" GetDiscoveredApiOperationRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
 	",apihub.googleapis.com/DiscoveredApiOperationR\x04name2\x9a\b\n" +
 	"\x0fApiHubDiscovery\x12\xec\x01\n" +
 	"\x1dListDiscoveredApiObservations\x12<.google.cloud.apihub.v1.ListDiscoveredApiObservationsRequest\x1a=.google.cloud.apihub.v1.ListDiscoveredApiObservationsResponse\"N\xdaA\x06parent\x82\xd3\xe4\x93\x02?\x12=/v1/{parent=projects/*/locations/*}/discoveredApiObservations\x12\xd9\x01\n" +

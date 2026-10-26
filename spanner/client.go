@@ -749,7 +749,12 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	var endpointClientOpts []option.ClientOption
 	var sc *sessionClient
 
-	isFallbackEnabled := true
+	// DirectPath to CloudPath fallback is disabled by default, because the
+	// fallback connection pool does not keep the requests of a read-write
+	// transaction on the same channel. Set GOOGLE_SPANNER_ENABLE_GCP_FALLBACK=true
+	// to enable it. See https://github.com/googleapis/google-cloud-go/pull/14414,
+	// which originally enabled it by default.
+	isFallbackEnabled := false
 	if val, ok := os.LookupEnv("GOOGLE_SPANNER_ENABLE_GCP_FALLBACK"); ok {
 		if b, err := strconv.ParseBool(val); err == nil {
 			isFallbackEnabled = b

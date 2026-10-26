@@ -155,6 +155,36 @@
       },
       "apiVersion": "2026-10-01-preview"
     },
+    "AliasNetworkEndpoints": {
+      "clients": {
+        "rest": {
+          "libraryClient": "AliasNetworkEndpointsClient",
+          "rpcs": {
+            "Delete": {
+              "methods": [
+                "Delete"
+              ]
+            },
+            "Get": {
+              "methods": [
+                "Get"
+              ]
+            },
+            "Insert": {
+              "methods": [
+                "Insert"
+              ]
+            },
+            "List": {
+              "methods": [
+                "List"
+              ]
+            }
+          }
+        }
+      },
+      "apiVersion": "2026-10-01-preview"
+    },
     "Autoscalers": {
       "clients": {
         "rest": {

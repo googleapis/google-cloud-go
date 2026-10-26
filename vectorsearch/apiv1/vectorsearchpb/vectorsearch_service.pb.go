@@ -2512,22 +2512,22 @@ var File_google_cloud_vectorsearch_v1_vectorsearch_service_proto protoreflect.Fi
 
 const file_google_cloud_vectorsearch_v1_vectorsearch_service_proto_rawDesc = "" +
 	"\n" +
-	"7google/cloud/vectorsearch/v1/vectorsearch_service.proto\x12\x1cgoogle.cloud.vectorsearch.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a)google/cloud/vectorsearch/v1/common.proto\x1a3google/cloud/vectorsearch/v1/embedding_config.proto\x1a2google/cloud/vectorsearch/v1/encryption_spec.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\x80\a\n" +
+	"7google/cloud/vectorsearch/v1/vectorsearch_service.proto\x12\x1cgoogle.cloud.vectorsearch.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a)google/cloud/vectorsearch/v1/common.proto\x1a3google/cloud/vectorsearch/v1/embedding_config.proto\x1a2google/cloud/vectorsearch/v1/encryption_spec.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\x87\a\n" +
 	"\n" +
-	"Collection\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\b \x01(\tB\x03\xe0A\x01R\vdisplayName\x12%\n" +
-	"\vdescription\x18\t \x01(\tB\x03\xe0A\x01R\vdescription\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12Q\n" +
-	"\x06labels\x18\x04 \x03(\v24.google.cloud.vectorsearch.v1.Collection.LabelsEntryB\x03\xe0A\x01R\x06labels\x12d\n" +
-	"\rvector_schema\x18\a \x03(\v2:.google.cloud.vectorsearch.v1.Collection.VectorSchemaEntryB\x03\xe0A\x01R\fvectorSchema\x12=\n" +
+	"Collection\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\b \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12&\n" +
+	"\vdescription\x18\t \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12R\n" +
+	"\x06labels\x18\x04 \x03(\v24.google.cloud.vectorsearch.v1.Collection.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12e\n" +
+	"\rvector_schema\x18\a \x03(\v2:.google.cloud.vectorsearch.v1.Collection.VectorSchemaEntryB\x04\xe2A\x01\x01R\fvectorSchema\x12>\n" +
 	"\vdata_schema\x18\n" +
-	" \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\n" +
-	"dataSchema\x12]\n" +
-	"\x0fencryption_spec\x18\v \x01(\v2,.google.cloud.vectorsearch.v1.EncryptionSpecB\x06\xe0A\x05\xe0A\x01R\x0eencryptionSpec\x1a9\n" +
+	" \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\n" +
+	"dataSchema\x12\\\n" +
+	"\x0fencryption_spec\x18\v \x01(\v2,.google.cloud.vectorsearch.v1.EncryptionSpecB\x05\xe2A\x02\x05\x01R\x0eencryptionSpec\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1aj\n" +
@@ -2539,67 +2539,67 @@ const file_google_cloud_vectorsearch_v1_vectorsearch_service_proto_rawDesc = "" 
 	"\vVectorField\x12S\n" +
 	"\fdense_vector\x18\x03 \x01(\v2..google.cloud.vectorsearch.v1.DenseVectorFieldH\x00R\vdenseVector\x12V\n" +
 	"\rsparse_vector\x18\x04 \x01(\v2/.google.cloud.vectorsearch.v1.SparseVectorFieldH\x00R\fsparseVectorB\x14\n" +
-	"\x12vector_type_config\"\xa4\x01\n" +
+	"\x12vector_type_config\"\xa5\x01\n" +
 	"\x10DenseVectorField\x12\x1e\n" +
 	"\n" +
 	"dimensions\x18\x01 \x01(\x05R\n" +
-	"dimensions\x12p\n" +
-	"\x17vertex_embedding_config\x18\x03 \x01(\v23.google.cloud.vectorsearch.v1.VertexEmbeddingConfigB\x03\xe0A\x01R\x15vertexEmbeddingConfig\"\x13\n" +
-	"\x11SparseVectorField\"\xe3\x01\n" +
-	"\x16ListCollectionsRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&vectorsearch.googleapis.com/CollectionR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"dimensions\x12q\n" +
+	"\x17vertex_embedding_config\x18\x03 \x01(\v23.google.cloud.vectorsearch.v1.VertexEmbeddingConfigB\x04\xe2A\x01\x01R\x15vertexEmbeddingConfig\"\x13\n" +
+	"\x11SparseVectorField\"\xe8\x01\n" +
+	"\x16ListCollectionsRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\x12&vectorsearch.googleapis.com/CollectionR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xb4\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xb5\x01\n" +
 	"\x17ListCollectionsResponse\x12J\n" +
 	"\vcollections\x18\x01 \x03(\v2(.google.cloud.vectorsearch.v1.CollectionR\vcollections\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"Z\n" +
-	"\x14GetCollectionRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&vectorsearch.googleapis.com/CollectionR\x04name\"\x86\x02\n" +
-	"\x17CreateCollectionRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&vectorsearch.googleapis.com/CollectionR\x06parent\x12(\n" +
-	"\rcollection_id\x18\x02 \x01(\tB\x03\xe0A\x02R\fcollectionId\x12M\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x06R\vunreachable\"[\n" +
+	"\x14GetCollectionRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&vectorsearch.googleapis.com/CollectionR\x04name\"\x8a\x02\n" +
+	"\x17CreateCollectionRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\x12&vectorsearch.googleapis.com/CollectionR\x06parent\x12)\n" +
+	"\rcollection_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\fcollectionId\x12N\n" +
 	"\n" +
-	"collection\x18\x03 \x01(\v2(.google.cloud.vectorsearch.v1.CollectionB\x03\xe0A\x02R\n" +
-	"collection\x12*\n" +
+	"collection\x18\x03 \x01(\v2(.google.cloud.vectorsearch.v1.CollectionB\x04\xe2A\x01\x02R\n" +
+	"collection\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xd6\x01\n" +
-	"\x17UpdateCollectionRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12M\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xd9\x01\n" +
+	"\x17UpdateCollectionRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12N\n" +
 	"\n" +
-	"collection\x18\x02 \x01(\v2(.google.cloud.vectorsearch.v1.CollectionB\x03\xe0A\x02R\n" +
-	"collection\x12*\n" +
+	"collection\x18\x02 \x01(\v2(.google.cloud.vectorsearch.v1.CollectionB\x04\xe2A\x01\x02R\n" +
+	"collection\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xa4\x01\n" +
-	"\x17DeleteCollectionRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&vectorsearch.googleapis.com/CollectionR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xa7\x01\n" +
+	"\x17DeleteCollectionRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&vectorsearch.googleapis.com/CollectionR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12\x19\n" +
-	"\x05force\x18\x03 \x01(\bB\x03\xe0A\x01R\x05force\"\xc8\a\n" +
-	"\x05Index\x12w\n" +
-	"\x18dedicated_infrastructure\x18\v \x01(\v25.google.cloud.vectorsearch.v1.DedicatedInfrastructureB\x03\xe0A\x01H\x00R\x17dedicatedInfrastructure\x12U\n" +
-	"\vdense_scann\x18\f \x01(\v2-.google.cloud.vectorsearch.v1.DenseScannIndexB\x03\xe0A\x01H\x01R\n" +
-	"denseScann\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\b \x01(\tB\x03\xe0A\x01R\vdisplayName\x12%\n" +
-	"\vdescription\x18\t \x01(\tB\x03\xe0A\x01R\vdescription\x12L\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12\x1a\n" +
+	"\x05force\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x05force\"\xd4\a\n" +
+	"\x05Index\x12x\n" +
+	"\x18dedicated_infrastructure\x18\v \x01(\v25.google.cloud.vectorsearch.v1.DedicatedInfrastructureB\x04\xe2A\x01\x01H\x00R\x17dedicatedInfrastructure\x12V\n" +
+	"\vdense_scann\x18\f \x01(\v2-.google.cloud.vectorsearch.v1.DenseScannIndexB\x04\xe2A\x01\x01H\x01R\n" +
+	"denseScann\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\b \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12&\n" +
+	"\vdescription\x18\t \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12M\n" +
 	"\x06labels\x18\n" +
-	" \x03(\v2/.google.cloud.vectorsearch.v1.Index.LabelsEntryB\x03\xe0A\x01R\x06labels\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12Z\n" +
-	"\x0fdistance_metric\x18\x04 \x01(\x0e2,.google.cloud.vectorsearch.v1.DistanceMetricB\x03\xe0A\x01R\x0edistanceMetric\x12$\n" +
-	"\vindex_field\x18\x05 \x01(\tB\x03\xe0A\x02R\n" +
-	"indexField\x12(\n" +
-	"\rfilter_fields\x18\x06 \x03(\tB\x03\xe0A\x01R\ffilterFields\x12&\n" +
-	"\fstore_fields\x18\a \x03(\tB\x03\xe0A\x01R\vstoreFields\x1a9\n" +
+	" \x03(\v2/.google.cloud.vectorsearch.v1.Index.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12[\n" +
+	"\x0fdistance_metric\x18\x04 \x01(\x0e2,.google.cloud.vectorsearch.v1.DistanceMetricB\x04\xe2A\x01\x01R\x0edistanceMetric\x12%\n" +
+	"\vindex_field\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"indexField\x12)\n" +
+	"\rfilter_fields\x18\x06 \x03(\tB\x04\xe2A\x01\x01R\ffilterFields\x12'\n" +
+	"\fstore_fields\x18\a \x03(\tB\x04\xe2A\x01\x01R\vstoreFields\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x89\x01\xeaA\x85\x01\n" +
@@ -2607,107 +2607,107 @@ const file_google_cloud_vectorsearch_v1_vectorsearch_service_proto_rawDesc = "" 
 	"\n" +
 	"infra_typeB\f\n" +
 	"\n" +
-	"index_type\"\xe8\x01\n" +
-	"\x12CreateIndexRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&vectorsearch.googleapis.com/CollectionR\x06parent\x12\x1e\n" +
-	"\bindex_id\x18\x02 \x01(\tB\x03\xe0A\x02R\aindexId\x12>\n" +
-	"\x05index\x18\x03 \x01(\v2#.google.cloud.vectorsearch.v1.IndexB\x03\xe0A\x02R\x05index\x12*\n" +
+	"index_type\"\xec\x01\n" +
+	"\x12CreateIndexRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&vectorsearch.googleapis.com/CollectionR\x06parent\x12\x1f\n" +
+	"\bindex_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\aindexId\x12?\n" +
+	"\x05index\x18\x03 \x01(\v2#.google.cloud.vectorsearch.v1.IndexB\x04\xe2A\x01\x02R\x05index\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xc2\x01\n" +
-	"\x12UpdateIndexRequest\x12>\n" +
-	"\x05index\x18\x01 \x01(\v2#.google.cloud.vectorsearch.v1.IndexB\x03\xe0A\x02R\x05index\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xc5\x01\n" +
+	"\x12UpdateIndexRequest\x12?\n" +
+	"\x05index\x18\x01 \x01(\v2#.google.cloud.vectorsearch.v1.IndexB\x04\xe2A\x01\x02R\x05index\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x7f\n" +
-	"\x12DeleteIndexRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!vectorsearch.googleapis.com/IndexR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x81\x01\n" +
+	"\x12DeleteIndexRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!vectorsearch.googleapis.com/IndexR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xda\x01\n" +
-	"\x12ListIndexesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!vectorsearch.googleapis.com/IndexR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xdf\x01\n" +
+	"\x12ListIndexesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!vectorsearch.googleapis.com/IndexR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"|\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"|\n" +
 	"\x13ListIndexesResponse\x12=\n" +
 	"\aindexes\x18\x01 \x03(\v2#.google.cloud.vectorsearch.v1.IndexR\aindexes\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"P\n" +
-	"\x0fGetIndexRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!vectorsearch.googleapis.com/IndexR\x04name\"\xd5\x02\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion\"\xd2\x02\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"Q\n" +
+	"\x0fGetIndexRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!vectorsearch.googleapis.com/IndexR\x04name\"\xdc\x02\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"apiVersion\"\xd7\x02\n" +
 	"\x18ImportDataObjectsRequest\x12g\n" +
 	"\n" +
-	"gcs_import\x18\x02 \x01(\v2F.google.cloud.vectorsearch.v1.ImportDataObjectsRequest.GcsImportConfigH\x00R\tgcsImport\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&vectorsearch.googleapis.com/CollectionR\x04name\x1a\x7f\n" +
-	"\x0fGcsImportConfig\x12&\n" +
-	"\fcontents_uri\x18\x01 \x01(\tB\x03\xe0A\x02R\vcontentsUri\x12 \n" +
-	"\terror_uri\x18\x02 \x01(\tB\x03\xe0A\x02R\berrorUri\x12\"\n" +
+	"gcs_import\x18\x02 \x01(\v2F.google.cloud.vectorsearch.v1.ImportDataObjectsRequest.GcsImportConfigH\x00R\tgcsImport\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&vectorsearch.googleapis.com/CollectionR\x04name\x1a\x82\x01\n" +
+	"\x0fGcsImportConfig\x12'\n" +
+	"\fcontents_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vcontentsUri\x12!\n" +
+	"\terror_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\berrorUri\x12#\n" +
 	"\n" +
-	"output_uri\x18\x03 \x01(\tB\x03\xe0A\x01R\toutputUriB\b\n" +
-	"\x06config\"\xf3\x01\n" +
-	"\x19ImportDataObjectsMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12(\n" +
-	"\rsuccess_count\x18\x03 \x01(\x03B\x03\xe0A\x03R\fsuccessCount\x12(\n" +
-	"\rfailure_count\x18\x04 \x01(\x03B\x03\xe0A\x03R\ffailureCount\"G\n" +
+	"output_uri\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\toutputUriB\b\n" +
+	"\x06config\"\xf7\x01\n" +
+	"\x19ImportDataObjectsMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12)\n" +
+	"\rsuccess_count\x18\x03 \x01(\x03B\x04\xe2A\x01\x03R\fsuccessCount\x12)\n" +
+	"\rfailure_count\x18\x04 \x01(\x03B\x04\xe2A\x01\x03R\ffailureCount\"G\n" +
 	"\x19ImportDataObjectsResponse\x12*\n" +
-	"\x06status\x18\x01 \x01(\v2\x12.google.rpc.StatusR\x06status\"\xee\x06\n" +
+	"\x06status\x18\x01 \x01(\v2\x12.google.rpc.StatusR\x06status\"\xf5\x06\n" +
 	"\x18ExportDataObjectsRequest\x12v\n" +
-	"\x0fgcs_destination\x18\x02 \x01(\v2K.google.cloud.vectorsearch.v1.ExportDataObjectsRequest.GcsExportDestinationH\x00R\x0egcsDestination\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&vectorsearch.googleapis.com/CollectionR\x04name\x12j\n" +
-	"\ffield_filter\x18\x03 \x01(\v2B.google.cloud.vectorsearch.v1.ExportDataObjectsRequest.FieldFilterB\x03\xe0A\x01R\vfieldFilter\x1a\xd8\x01\n" +
-	"\x14GcsExportDestination\x12\"\n" +
+	"\x0fgcs_destination\x18\x02 \x01(\v2K.google.cloud.vectorsearch.v1.ExportDataObjectsRequest.GcsExportDestinationH\x00R\x0egcsDestination\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&vectorsearch.googleapis.com/CollectionR\x04name\x12k\n" +
+	"\ffield_filter\x18\x03 \x01(\v2B.google.cloud.vectorsearch.v1.ExportDataObjectsRequest.FieldFilterB\x04\xe2A\x01\x01R\vfieldFilter\x1a\xda\x01\n" +
+	"\x14GcsExportDestination\x12#\n" +
 	"\n" +
-	"export_uri\x18\x01 \x01(\tB\x03\xe0A\x02R\texportUri\x12o\n" +
-	"\x06format\x18\x02 \x01(\x0e2R.google.cloud.vectorsearch.v1.ExportDataObjectsRequest.GcsExportDestination.FormatB\x03\xe0A\x02R\x06format\"+\n" +
+	"export_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\texportUri\x12p\n" +
+	"\x06format\x18\x02 \x01(\x0e2R.google.cloud.vectorsearch.v1.ExportDataObjectsRequest.GcsExportDestination.FormatB\x04\xe2A\x01\x02R\x06format\"+\n" +
 	"\x06Format\x12\x16\n" +
 	"\x12FORMAT_UNSPECIFIED\x10\x00\x12\t\n" +
-	"\x05JSONL\x10\x02\x1a\xbf\x02\n" +
-	"\vFieldFilter\x12|\n" +
-	"\x0fincluded_fields\x18\x01 \x01(\v2L.google.cloud.vectorsearch.v1.ExportDataObjectsRequest.FieldFilter.FieldListB\x03\xe0A\x01H\x00R\x0eincludedFields\x12|\n" +
-	"\x0fexcluded_fields\x18\x02 \x01(\v2L.google.cloud.vectorsearch.v1.ExportDataObjectsRequest.FieldFilter.FieldListB\x03\xe0A\x01H\x00R\x0eexcludedFields\x1a(\n" +
-	"\tFieldList\x12\x1b\n" +
-	"\x06fields\x18\x01 \x03(\tB\x03\xe0A\x02R\x06fieldsB\n" +
+	"\x05JSONL\x10\x02\x1a\xc2\x02\n" +
+	"\vFieldFilter\x12}\n" +
+	"\x0fincluded_fields\x18\x01 \x01(\v2L.google.cloud.vectorsearch.v1.ExportDataObjectsRequest.FieldFilter.FieldListB\x04\xe2A\x01\x01H\x00R\x0eincludedFields\x12}\n" +
+	"\x0fexcluded_fields\x18\x02 \x01(\v2L.google.cloud.vectorsearch.v1.ExportDataObjectsRequest.FieldFilter.FieldListB\x04\xe2A\x01\x01H\x00R\x0eexcludedFields\x1a)\n" +
+	"\tFieldList\x12\x1c\n" +
+	"\x06fields\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\x06fieldsB\n" +
 	"\n" +
 	"\bselectorB\r\n" +
-	"\vdestination\"\x9f\x01\n" +
-	"\x19ExportDataObjectsMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vfinish_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\vdestination\"\xa1\x01\n" +
+	"\x19ExportDataObjectsMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vfinish_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"finishTime\"\x1b\n" +
-	"\x19ExportDataObjectsResponse\"\xb8\x03\n" +
-	"\x17DedicatedInfrastructure\x12X\n" +
-	"\x04mode\x18\x01 \x01(\x0e2:.google.cloud.vectorsearch.v1.DedicatedInfrastructure.ModeB\x03\xe0A\x01H\x00R\x04mode\x88\x01\x01\x12u\n" +
-	"\x10autoscaling_spec\x18\x02 \x01(\v2E.google.cloud.vectorsearch.v1.DedicatedInfrastructure.AutoscalingSpecB\x03\xe0A\x01R\x0fautoscalingSpec\x1as\n" +
-	"\x0fAutoscalingSpec\x12/\n" +
-	"\x11min_replica_count\x18\x01 \x01(\x05B\x03\xe0A\x01R\x0fminReplicaCount\x12/\n" +
-	"\x11max_replica_count\x18\x02 \x01(\x05B\x03\xe0A\x01R\x0fmaxReplicaCount\"N\n" +
+	"\x19ExportDataObjectsResponse\"\xbc\x03\n" +
+	"\x17DedicatedInfrastructure\x12Y\n" +
+	"\x04mode\x18\x01 \x01(\x0e2:.google.cloud.vectorsearch.v1.DedicatedInfrastructure.ModeB\x04\xe2A\x01\x01H\x00R\x04mode\x88\x01\x01\x12v\n" +
+	"\x10autoscaling_spec\x18\x02 \x01(\v2E.google.cloud.vectorsearch.v1.DedicatedInfrastructure.AutoscalingSpecB\x04\xe2A\x01\x01R\x0fautoscalingSpec\x1au\n" +
+	"\x0fAutoscalingSpec\x120\n" +
+	"\x11min_replica_count\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\x0fminReplicaCount\x120\n" +
+	"\x11max_replica_count\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x0fmaxReplicaCount\"N\n" +
 	"\x04Mode\x12\x14\n" +
 	"\x10MODE_UNSPECIFIED\x10\x00\x12\x15\n" +
 	"\x11STORAGE_OPTIMIZED\x10\x01\x12\x19\n" +
 	"\x15PERFORMANCE_OPTIMIZED\x10\x02B\a\n" +
-	"\x05_mode\"\xd3\x01\n" +
-	"\x0fDenseScannIndex\x12n\n" +
-	"\x11feature_norm_type\x18\x02 \x01(\x0e2=.google.cloud.vectorsearch.v1.DenseScannIndex.FeatureNormTypeB\x03\xe0A\x01R\x0ffeatureNormType\"P\n" +
+	"\x05_mode\"\xd4\x01\n" +
+	"\x0fDenseScannIndex\x12o\n" +
+	"\x11feature_norm_type\x18\x02 \x01(\x0e2=.google.cloud.vectorsearch.v1.DenseScannIndex.FeatureNormTypeB\x04\xe2A\x01\x01R\x0ffeatureNormType\"P\n" +
 	"\x0fFeatureNormType\x12!\n" +
 	"\x1dFEATURE_NORM_TYPE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04NONE\x10\x01\x12\x10\n" +

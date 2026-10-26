@@ -372,38 +372,38 @@ var File_google_cloud_channel_v1_customers_proto protoreflect.FileDescriptor
 
 const file_google_cloud_channel_v1_customers_proto_rawDesc = "" +
 	"\n" +
-	"'google/cloud/channel/v1/customers.proto\x12\x17google.cloud.channel.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a$google/cloud/channel/v1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/type/postal_address.proto\"\xa2\b\n" +
-	"\bCustomer\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12-\n" +
-	"\x10org_display_name\x18\x02 \x01(\tB\x03\xe0A\x02R\x0eorgDisplayName\x12M\n" +
-	"\x12org_postal_address\x18\x03 \x01(\v2\x1a.google.type.PostalAddressB\x03\xe0A\x02R\x10orgPostalAddress\x12V\n" +
+	"'google/cloud/channel/v1/customers.proto\x12\x17google.cloud.channel.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a$google/cloud/channel/v1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/type/postal_address.proto\"\xad\b\n" +
+	"\bCustomer\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12.\n" +
+	"\x10org_display_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0eorgDisplayName\x12N\n" +
+	"\x12org_postal_address\x18\x03 \x01(\v2\x1a.google.type.PostalAddressB\x04\xe2A\x01\x02R\x10orgPostalAddress\x12V\n" +
 	"\x14primary_contact_info\x18\x04 \x01(\v2$.google.cloud.channel.v1.ContactInfoR\x12primaryContactInfo\x12'\n" +
-	"\x0falternate_email\x18\x05 \x01(\tR\x0ealternateEmail\x12\x1b\n" +
-	"\x06domain\x18\x06 \x01(\tB\x03\xe0A\x02R\x06domain\x12@\n" +
-	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12/\n" +
-	"\x11cloud_identity_id\x18\t \x01(\tB\x03\xe0A\x03R\x0fcloudIdentityId\x12(\n" +
+	"\x0falternate_email\x18\x05 \x01(\tR\x0ealternateEmail\x12\x1c\n" +
+	"\x06domain\x18\x06 \x01(\tB\x04\xe2A\x01\x02R\x06domain\x12A\n" +
+	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x120\n" +
+	"\x11cloud_identity_id\x18\t \x01(\tB\x04\xe2A\x01\x03R\x0fcloudIdentityId\x12)\n" +
 	"\rlanguage_code\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\flanguageCode\x12_\n" +
-	"\x13cloud_identity_info\x18\f \x01(\v2*.google.cloud.channel.v1.CloudIdentityInfoB\x03\xe0A\x03R\x11cloudIdentityInfo\x12,\n" +
-	"\x12channel_partner_id\x18\r \x01(\tR\x10channelPartnerId\x12*\n" +
-	"\x0ecorrelation_id\x18\x0e \x01(\tB\x03\xe0A\x01R\rcorrelationId\x12}\n" +
-	"\x1acustomer_attestation_state\x18\x10 \x01(\x0e2:.google.cloud.channel.v1.Customer.CustomerAttestationStateB\x03\xe0A\x01R\x18customerAttestationState\"t\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\x12`\n" +
+	"\x13cloud_identity_info\x18\f \x01(\v2*.google.cloud.channel.v1.CloudIdentityInfoB\x04\xe2A\x01\x03R\x11cloudIdentityInfo\x12,\n" +
+	"\x12channel_partner_id\x18\r \x01(\tR\x10channelPartnerId\x12+\n" +
+	"\x0ecorrelation_id\x18\x0e \x01(\tB\x04\xe2A\x01\x01R\rcorrelationId\x12~\n" +
+	"\x1acustomer_attestation_state\x18\x10 \x01(\x0e2:.google.cloud.channel.v1.Customer.CustomerAttestationStateB\x04\xe2A\x01\x01R\x18customerAttestationState\"t\n" +
 	"\x18CustomerAttestationState\x12*\n" +
 	"&CUSTOMER_ATTESTATION_STATE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06EXEMPT\x10\x01\x12 \n" +
 	"\x1cNON_EXEMPT_AND_INFO_VERIFIED\x10\x02:R\xeaAO\n" +
-	"$cloudchannel.googleapis.com/Customer\x12'accounts/{account}/customers/{customer}\"\xb8\x01\n" +
+	"$cloudchannel.googleapis.com/Customer\x12'accounts/{account}/customers/{customer}\"\xba\x01\n" +
 	"\vContactInfo\x12\x1d\n" +
 	"\n" +
 	"first_name\x18\x01 \x01(\tR\tfirstName\x12\x1b\n" +
-	"\tlast_name\x18\x02 \x01(\tR\blastName\x12&\n" +
-	"\fdisplay_name\x18\x04 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12\x14\n" +
-	"\x05email\x18\x05 \x01(\tR\x05email\x12\x19\n" +
-	"\x05title\x18\x06 \x01(\tB\x03\xe0A\x01R\x05title\x12\x14\n" +
+	"\tlast_name\x18\x02 \x01(\tR\blastName\x12'\n" +
+	"\fdisplay_name\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12\x14\n" +
+	"\x05email\x18\x05 \x01(\tR\x05email\x12\x1a\n" +
+	"\x05title\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x05title\x12\x14\n" +
 	"\x05phone\x18\a \x01(\tR\x05phoneBf\n" +
 	"\x1bcom.google.cloud.channel.v1B\x0eCustomersProtoP\x01Z5cloud.google.com/go/channel/apiv1/channelpb;channelpbb\x06proto3"
 

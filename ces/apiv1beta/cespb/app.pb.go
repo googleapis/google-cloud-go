@@ -2923,50 +2923,50 @@ var File_google_cloud_ces_v1beta_app_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1beta_app_proto_rawDesc = "" +
 	"\n" +
-	"!google/cloud/ces/v1beta/app.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/ces/v1beta/bigquery_export.proto\x1a$google/cloud/ces/v1beta/common.proto\x1a7google/cloud/ces/v1beta/evaluation_metrics_config.proto\x1a#google/cloud/ces/v1beta/fakes.proto\x1a(google/cloud/ces/v1beta/golden_run.proto\x1a$google/cloud/ces/v1beta/schema.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa3\x15\n" +
-	"\x03App\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12\x1b\n" +
-	"\x06pinned\x18\x1f \x01(\bB\x03\xe0A\x01R\x06pinned\x12?\n" +
+	"!google/cloud/ces/v1beta/app.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/ces/v1beta/bigquery_export.proto\x1a$google/cloud/ces/v1beta/common.proto\x1a7google/cloud/ces/v1beta/evaluation_metrics_config.proto\x1a#google/cloud/ces/v1beta/fakes.proto\x1a(google/cloud/ces/v1beta/golden_run.proto\x1a$google/cloud/ces/v1beta/schema.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc5\x15\n" +
+	"\x03App\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\x1c\n" +
+	"\x06pinned\x18\x1f \x01(\bB\x04\xe2A\x01\x01R\x06pinned\x12@\n" +
 	"\n" +
-	"root_agent\x18\x04 \x01(\tB \xe0A\x01\xfaA\x1a\n" +
-	"\x18ces.googleapis.com/AgentR\trootAgent\x12[\n" +
-	"\x11language_settings\x18\x12 \x01(\v2).google.cloud.ces.v1beta.LanguageSettingsB\x03\xe0A\x01R\x10languageSettings\x12\\\n" +
-	"\x12time_zone_settings\x18\x1b \x01(\v2).google.cloud.ces.v1beta.TimeZoneSettingsB\x03\xe0A\x01R\x10timeZoneSettings\x12k\n" +
-	"\x17audio_processing_config\x18\a \x01(\v2..google.cloud.ces.v1beta.AudioProcessingConfigB\x03\xe0A\x01R\x15audioProcessingConfig\x12X\n" +
-	"\x10logging_settings\x18\b \x01(\v2(.google.cloud.ces.v1beta.LoggingSettingsB\x03\xe0A\x01R\x0floggingSettings\x12k\n" +
-	"\x17error_handling_settings\x18\" \x01(\v2..google.cloud.ces.v1beta.ErrorHandlingSettingsB\x03\xe0A\x01R\x15errorHandlingSettings\x12R\n" +
-	"\x0emodel_settings\x18\r \x01(\v2&.google.cloud.ces.v1beta.ModelSettingsB\x03\xe0A\x01R\rmodelSettings\x12c\n" +
-	"\x13tool_execution_mode\x18  \x01(\x0e2..google.cloud.ces.v1beta.App.ToolExecutionModeB\x03\xe0A\x01R\x11toolExecutionMode\x12}\n" +
-	"\x1devaluation_metrics_thresholds\x18\x18 \x01(\v24.google.cloud.ces.v1beta.EvaluationMetricsThresholdsB\x03\xe0A\x01R\x1bevaluationMetricsThresholds\x12j\n" +
-	"\x15variable_declarations\x18\x0e \x03(\v20.google.cloud.ces.v1beta.App.VariableDeclarationB\x03\xe0A\x01R\x14variableDeclarations\x12\x7f\n" +
-	" predefined_variable_declarations\x18\x1c \x03(\v20.google.cloud.ces.v1beta.App.VariableDeclarationB\x03\xe0A\x03R\x1epredefinedVariableDeclarations\x122\n" +
-	"\x12global_instruction\x18\x11 \x01(\tB\x03\xe0A\x01R\x11globalInstruction\x12D\n" +
+	"root_agent\x18\x04 \x01(\tB!\xe2A\x01\x01\xfaA\x1a\n" +
+	"\x18ces.googleapis.com/AgentR\trootAgent\x12\\\n" +
+	"\x11language_settings\x18\x12 \x01(\v2).google.cloud.ces.v1beta.LanguageSettingsB\x04\xe2A\x01\x01R\x10languageSettings\x12]\n" +
+	"\x12time_zone_settings\x18\x1b \x01(\v2).google.cloud.ces.v1beta.TimeZoneSettingsB\x04\xe2A\x01\x01R\x10timeZoneSettings\x12l\n" +
+	"\x17audio_processing_config\x18\a \x01(\v2..google.cloud.ces.v1beta.AudioProcessingConfigB\x04\xe2A\x01\x01R\x15audioProcessingConfig\x12Y\n" +
+	"\x10logging_settings\x18\b \x01(\v2(.google.cloud.ces.v1beta.LoggingSettingsB\x04\xe2A\x01\x01R\x0floggingSettings\x12l\n" +
+	"\x17error_handling_settings\x18\" \x01(\v2..google.cloud.ces.v1beta.ErrorHandlingSettingsB\x04\xe2A\x01\x01R\x15errorHandlingSettings\x12S\n" +
+	"\x0emodel_settings\x18\r \x01(\v2&.google.cloud.ces.v1beta.ModelSettingsB\x04\xe2A\x01\x01R\rmodelSettings\x12d\n" +
+	"\x13tool_execution_mode\x18  \x01(\x0e2..google.cloud.ces.v1beta.App.ToolExecutionModeB\x04\xe2A\x01\x01R\x11toolExecutionMode\x12~\n" +
+	"\x1devaluation_metrics_thresholds\x18\x18 \x01(\v24.google.cloud.ces.v1beta.EvaluationMetricsThresholdsB\x04\xe2A\x01\x01R\x1bevaluationMetricsThresholds\x12k\n" +
+	"\x15variable_declarations\x18\x0e \x03(\v20.google.cloud.ces.v1beta.App.VariableDeclarationB\x04\xe2A\x01\x01R\x14variableDeclarations\x12\x80\x01\n" +
+	" predefined_variable_declarations\x18\x1c \x03(\v20.google.cloud.ces.v1beta.App.VariableDeclarationB\x04\xe2A\x01\x03R\x1epredefinedVariableDeclarations\x123\n" +
+	"\x12global_instruction\x18\x11 \x01(\tB\x04\xe2A\x01\x01R\x11globalInstruction\x12E\n" +
 	"\n" +
 	"guardrails\x18\n" +
-	" \x03(\tB$\xe0A\x01\xfaA\x1e\n" +
+	" \x03(\tB%\xe2A\x01\x01\xfaA\x1e\n" +
 	"\x1cces.googleapis.com/GuardrailR\n" +
-	"guardrails\x12_\n" +
-	"\x13data_store_settings\x18\x0f \x01(\v2*.google.cloud.ces.v1beta.DataStoreSettingsB\x03\xe0A\x01R\x11dataStoreSettings\x12d\n" +
-	"\x17default_channel_profile\x18\x16 \x01(\v2'.google.cloud.ces.v1beta.ChannelProfileB\x03\xe0A\x01R\x15defaultChannelProfile\x12K\n" +
-	"\bmetadata\x18\v \x03(\v2*.google.cloud.ces.v1beta.App.MetadataEntryB\x03\xe0A\x01R\bmetadata\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x17\n" +
-	"\x04etag\x18\f \x01(\tB\x03\xe0A\x03R\x04etag\x12.\n" +
-	"\x10deployment_count\x18\x17 \x01(\x05B\x03\xe0A\x03R\x0fdeploymentCount\x12w\n" +
-	"\x1bclient_certificate_settings\x18\x19 \x01(\v22.google.cloud.ces.v1beta.ClientCertificateSettingsB\x03\xe0A\x01R\x19clientCertificateSettings\x12S\n" +
-	"\x0fvpc_sc_settings\x18\x1a \x01(\v2&.google.cloud.ces.v1beta.VpcScSettingsB\x03\xe0A\x01R\rvpcScSettings\x12\x1b\n" +
-	"\x06locked\x18\x1d \x01(\bB\x03\xe0A\x01R\x06locked\x12`\n" +
-	"\x13evaluation_personas\x18\x1e \x03(\v2*.google.cloud.ces.v1beta.EvaluationPersonaB\x03\xe0A\x01R\x12evaluationPersonas\x12a\n" +
-	"\x13evaluation_settings\x18! \x01(\v2+.google.cloud.ces.v1beta.EvaluationSettingsB\x03\xe0A\x01R\x12evaluationSettings\x120\n" +
-	"\x11validation_errors\x18' \x03(\tB\x03\xe0A\x03R\x10validationErrors\x1a\x93\x01\n" +
-	"\x13VariableDeclaration\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x02R\vdescription\x12<\n" +
-	"\x06schema\x18\x03 \x01(\v2\x1f.google.cloud.ces.v1beta.SchemaB\x03\xe0A\x02R\x06schema\x1a;\n" +
+	"guardrails\x12`\n" +
+	"\x13data_store_settings\x18\x0f \x01(\v2*.google.cloud.ces.v1beta.DataStoreSettingsB\x04\xe2A\x01\x01R\x11dataStoreSettings\x12e\n" +
+	"\x17default_channel_profile\x18\x16 \x01(\v2'.google.cloud.ces.v1beta.ChannelProfileB\x04\xe2A\x01\x01R\x15defaultChannelProfile\x12L\n" +
+	"\bmetadata\x18\v \x03(\v2*.google.cloud.ces.v1beta.App.MetadataEntryB\x04\xe2A\x01\x01R\bmetadata\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x18\n" +
+	"\x04etag\x18\f \x01(\tB\x04\xe2A\x01\x03R\x04etag\x12/\n" +
+	"\x10deployment_count\x18\x17 \x01(\x05B\x04\xe2A\x01\x03R\x0fdeploymentCount\x12x\n" +
+	"\x1bclient_certificate_settings\x18\x19 \x01(\v22.google.cloud.ces.v1beta.ClientCertificateSettingsB\x04\xe2A\x01\x01R\x19clientCertificateSettings\x12T\n" +
+	"\x0fvpc_sc_settings\x18\x1a \x01(\v2&.google.cloud.ces.v1beta.VpcScSettingsB\x04\xe2A\x01\x01R\rvpcScSettings\x12\x1c\n" +
+	"\x06locked\x18\x1d \x01(\bB\x04\xe2A\x01\x01R\x06locked\x12a\n" +
+	"\x13evaluation_personas\x18\x1e \x03(\v2*.google.cloud.ces.v1beta.EvaluationPersonaB\x04\xe2A\x01\x01R\x12evaluationPersonas\x12b\n" +
+	"\x13evaluation_settings\x18! \x01(\v2+.google.cloud.ces.v1beta.EvaluationSettingsB\x04\xe2A\x01\x01R\x12evaluationSettings\x121\n" +
+	"\x11validation_errors\x18' \x03(\tB\x04\xe2A\x01\x03R\x10validationErrors\x1a\x96\x01\n" +
+	"\x13VariableDeclaration\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdescription\x12=\n" +
+	"\x06schema\x18\x03 \x01(\v2\x1f.google.cloud.ces.v1beta.SchemaB\x04\xe2A\x01\x02R\x06schema\x1a;\n" +
 	"\rMetadataEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"V\n" +
@@ -2975,97 +2975,97 @@ const file_google_cloud_ces_v1beta_app_proto_rawDesc = "" +
 	"\bPARALLEL\x10\x01\x12\x0e\n" +
 	"\n" +
 	"SEQUENTIAL\x10\x02:Z\xeaAW\n" +
-	"\x16ces.googleapis.com/App\x122projects/{project}/locations/{location}/apps/{app}*\x04apps2\x03app\"4\n" +
-	"\x10TimeZoneSettings\x12 \n" +
-	"\ttime_zone\x18\x01 \x01(\tB\x03\xe0A\x01R\btimeZone\"\xff\x01\n" +
-	"\x10LanguageSettings\x127\n" +
-	"\x15default_language_code\x18\x01 \x01(\tB\x03\xe0A\x01R\x13defaultLanguageCode\x12=\n" +
-	"\x18supported_language_codes\x18\x02 \x03(\tB\x03\xe0A\x01R\x16supportedLanguageCodes\x12C\n" +
-	"\x1benable_multilingual_support\x18\x03 \x01(\bB\x03\xe0A\x01R\x19enableMultilingualSupport\x12.\n" +
-	"\x0ffallback_action\x18\x04 \x01(\tB\x05\xe0A\x01\x18\x01R\x0efallbackAction\"\xab\x04\n" +
-	"\x15AudioProcessingConfig\x12\x8c\x01\n" +
-	"\x19synthesize_speech_configs\x18\x01 \x03(\v2K.google.cloud.ces.v1beta.AudioProcessingConfig.SynthesizeSpeechConfigsEntryB\x03\xe0A\x01R\x17synthesizeSpeechConfigs\x12S\n" +
-	"\x0fbarge_in_config\x18\x03 \x01(\v2&.google.cloud.ces.v1beta.BargeInConfigB\x03\xe0A\x01R\rbargeInConfig\x12M\n" +
-	"\x12inactivity_timeout\x18\x04 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x11inactivityTimeout\x12b\n" +
-	"\x14ambient_sound_config\x18\x05 \x01(\v2+.google.cloud.ces.v1beta.AmbientSoundConfigB\x03\xe0A\x01R\x12ambientSoundConfig\x1a{\n" +
+	"\x16ces.googleapis.com/App\x122projects/{project}/locations/{location}/apps/{app}*\x04apps2\x03app\"5\n" +
+	"\x10TimeZoneSettings\x12!\n" +
+	"\ttime_zone\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\btimeZone\"\x83\x02\n" +
+	"\x10LanguageSettings\x128\n" +
+	"\x15default_language_code\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x13defaultLanguageCode\x12>\n" +
+	"\x18supported_language_codes\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x16supportedLanguageCodes\x12D\n" +
+	"\x1benable_multilingual_support\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x19enableMultilingualSupport\x12/\n" +
+	"\x0ffallback_action\x18\x04 \x01(\tB\x06\xe2A\x01\x01\x18\x01R\x0efallbackAction\"\xaf\x04\n" +
+	"\x15AudioProcessingConfig\x12\x8d\x01\n" +
+	"\x19synthesize_speech_configs\x18\x01 \x03(\v2K.google.cloud.ces.v1beta.AudioProcessingConfig.SynthesizeSpeechConfigsEntryB\x04\xe2A\x01\x01R\x17synthesizeSpeechConfigs\x12T\n" +
+	"\x0fbarge_in_config\x18\x03 \x01(\v2&.google.cloud.ces.v1beta.BargeInConfigB\x04\xe2A\x01\x01R\rbargeInConfig\x12N\n" +
+	"\x12inactivity_timeout\x18\x04 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x11inactivityTimeout\x12c\n" +
+	"\x14ambient_sound_config\x18\x05 \x01(\v2+.google.cloud.ces.v1beta.AmbientSoundConfigB\x04\xe2A\x01\x01R\x12ambientSoundConfig\x1a{\n" +
 	"\x1cSynthesizeSpeechConfigsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12E\n" +
-	"\x05value\x18\x02 \x01(\v2/.google.cloud.ces.v1beta.SynthesizeSpeechConfigR\x05value:\x028\x01\"\x9b\x03\n" +
-	"\x12AmbientSoundConfig\x12\x7f\n" +
-	"\x16prebuilt_ambient_noise\x18\x01 \x01(\x0e2@.google.cloud.ces.v1beta.AmbientSoundConfig.PrebuiltAmbientNoiseB\x05\xe0A\x01\x18\x01H\x00R\x14prebuiltAmbientNoise\x12\x1e\n" +
-	"\agcs_uri\x18\x02 \x01(\tB\x03\xe0A\x01H\x00R\x06gcsUri\x12;\n" +
-	"\x16prebuilt_ambient_sound\x18\x04 \x01(\tB\x03\xe0A\x01H\x00R\x14prebuiltAmbientSound\x12)\n" +
-	"\x0evolume_gain_db\x18\x03 \x01(\x01B\x03\xe0A\x01R\fvolumeGainDb\"r\n" +
+	"\x05value\x18\x02 \x01(\v2/.google.cloud.ces.v1beta.SynthesizeSpeechConfigR\x05value:\x028\x01\"\xa0\x03\n" +
+	"\x12AmbientSoundConfig\x12\x80\x01\n" +
+	"\x16prebuilt_ambient_noise\x18\x01 \x01(\x0e2@.google.cloud.ces.v1beta.AmbientSoundConfig.PrebuiltAmbientNoiseB\x06\xe2A\x01\x01\x18\x01H\x00R\x14prebuiltAmbientNoise\x12\x1f\n" +
+	"\agcs_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x00R\x06gcsUri\x12<\n" +
+	"\x16prebuilt_ambient_sound\x18\x04 \x01(\tB\x04\xe2A\x01\x01H\x00R\x14prebuiltAmbientSound\x12*\n" +
+	"\x0evolume_gain_db\x18\x03 \x01(\x01B\x04\xe2A\x01\x01R\fvolumeGainDb\"r\n" +
 	"\x14PrebuiltAmbientNoise\x12&\n" +
 	"\"PREBUILT_AMBIENT_NOISE_UNSPECIFIED\x10\x00\x12\x10\n" +
 	"\fRETAIL_STORE\x10\x01\x12\x13\n" +
 	"\x0fCONVENTION_HALL\x10\x02\x12\v\n" +
 	"\aOUTDOOR\x10\x03B\b\n" +
-	"\x06source\"s\n" +
-	"\rBargeInConfig\x12/\n" +
-	"\x10disable_barge_in\x18\x01 \x01(\bB\x05\xe0A\x01\x18\x01R\x0edisableBargeIn\x121\n" +
-	"\x12barge_in_awareness\x18\x02 \x01(\bB\x03\xe0A\x01R\x10bargeInAwareness\"\xd5\x01\n" +
-	"\x16SynthesizeSpeechConfig\x12\x19\n" +
-	"\x05voice\x18\x01 \x01(\tB\x03\xe0A\x01R\x05voice\x124\n" +
-	"\x14voice_sample_gcs_uri\x18\x03 \x01(\tB\x03\xe0A\x01R\x11voiceSampleGcsUri\x12(\n" +
-	"\rspeaking_rate\x18\x02 \x01(\x01B\x03\xe0A\x01R\fspeakingRate\x12\x19\n" +
-	"\x05model\x18\x04 \x01(\tB\x03\xe0A\x01R\x05model\x12%\n" +
-	"\vinstruction\x18\x05 \x01(\tB\x03\xe0A\x01R\vinstruction\"P\n" +
-	"\x16MetricAnalysisSettings\x126\n" +
-	"\x15llm_metrics_opted_out\x18\x01 \x01(\bB\x03\xe0A\x01R\x12llmMetricsOptedOut\"\xa2\b\n" +
-	"\x0fLoggingSettings\x12X\n" +
-	"\x10redaction_config\x18\x01 \x01(\v2(.google.cloud.ces.v1beta.RedactionConfigB\x03\xe0A\x01R\x0fredactionConfig\x12h\n" +
-	"\x16audio_recording_config\x18\x02 \x01(\v2-.google.cloud.ces.v1beta.AudioRecordingConfigB\x03\xe0A\x01R\x14audioRecordingConfig\x12}\n" +
-	"!unredacted_audio_recording_config\x18\b \x01(\v2-.google.cloud.ces.v1beta.AudioRecordingConfigB\x03\xe0A\x01R\x1eunredactedAudioRecordingConfig\x12n\n" +
-	"\x18bigquery_export_settings\x18\x03 \x01(\v2/.google.cloud.ces.v1beta.BigQueryExportSettingsB\x03\xe0A\x01R\x16bigqueryExportSettings\x12\x83\x01\n" +
-	"#unredacted_bigquery_export_settings\x18\t \x01(\v2/.google.cloud.ces.v1beta.BigQueryExportSettingsB\x03\xe0A\x01R unredactedBigqueryExportSettings\x12h\n" +
-	"\x16cloud_logging_settings\x18\x04 \x01(\v2-.google.cloud.ces.v1beta.CloudLoggingSettingsB\x03\xe0A\x01R\x14cloudLoggingSettings\x12}\n" +
-	"\x1dconversation_logging_settings\x18\x05 \x01(\v24.google.cloud.ces.v1beta.ConversationLoggingSettingsB\x03\xe0A\x01R\x1bconversationLoggingSettings\x12}\n" +
-	"!evaluation_audio_recording_config\x18\x06 \x01(\v2-.google.cloud.ces.v1beta.AudioRecordingConfigB\x03\xe0A\x01R\x1eevaluationAudioRecordingConfig\x12n\n" +
-	"\x18metric_analysis_settings\x18\a \x01(\v2/.google.cloud.ces.v1beta.MetricAnalysisSettingsB\x03\xe0A\x01R\x16metricAnalysisSettings\"\xaa\a\n" +
-	"\x15ErrorHandlingSettings\x12\x81\x01\n" +
-	"\x17error_handling_strategy\x18\x01 \x01(\x0e2D.google.cloud.ces.v1beta.ErrorHandlingSettings.ErrorHandlingStrategyB\x03\xe0A\x01R\x15errorHandlingStrategy\x12\x84\x01\n" +
-	"\x18fallback_response_config\x18\x02 \x01(\v2E.google.cloud.ces.v1beta.ErrorHandlingSettings.FallbackResponseConfigB\x03\xe0A\x01R\x16fallbackResponseConfig\x12r\n" +
-	"\x12end_session_config\x18\x03 \x01(\v2?.google.cloud.ces.v1beta.ErrorHandlingSettings.EndSessionConfigB\x03\xe0A\x01R\x10endSessionConfig\x1a\xbf\x02\n" +
-	"\x16FallbackResponseConfig\x12\xa0\x01\n" +
-	"\x18custom_fallback_messages\x18\x01 \x03(\v2a.google.cloud.ces.v1beta.ErrorHandlingSettings.FallbackResponseConfig.CustomFallbackMessagesEntryB\x03\xe0A\x01R\x16customFallbackMessages\x127\n" +
-	"\x15max_fallback_attempts\x18\x02 \x01(\x05B\x03\xe0A\x01R\x13maxFallbackAttempts\x1aI\n" +
+	"\x06source\"u\n" +
+	"\rBargeInConfig\x120\n" +
+	"\x10disable_barge_in\x18\x01 \x01(\bB\x06\xe2A\x01\x01\x18\x01R\x0edisableBargeIn\x122\n" +
+	"\x12barge_in_awareness\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x10bargeInAwareness\"\xda\x01\n" +
+	"\x16SynthesizeSpeechConfig\x12\x1a\n" +
+	"\x05voice\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x05voice\x125\n" +
+	"\x14voice_sample_gcs_uri\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x11voiceSampleGcsUri\x12)\n" +
+	"\rspeaking_rate\x18\x02 \x01(\x01B\x04\xe2A\x01\x01R\fspeakingRate\x12\x1a\n" +
+	"\x05model\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x05model\x12&\n" +
+	"\vinstruction\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vinstruction\"Q\n" +
+	"\x16MetricAnalysisSettings\x127\n" +
+	"\x15llm_metrics_opted_out\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x12llmMetricsOptedOut\"\xab\b\n" +
+	"\x0fLoggingSettings\x12Y\n" +
+	"\x10redaction_config\x18\x01 \x01(\v2(.google.cloud.ces.v1beta.RedactionConfigB\x04\xe2A\x01\x01R\x0fredactionConfig\x12i\n" +
+	"\x16audio_recording_config\x18\x02 \x01(\v2-.google.cloud.ces.v1beta.AudioRecordingConfigB\x04\xe2A\x01\x01R\x14audioRecordingConfig\x12~\n" +
+	"!unredacted_audio_recording_config\x18\b \x01(\v2-.google.cloud.ces.v1beta.AudioRecordingConfigB\x04\xe2A\x01\x01R\x1eunredactedAudioRecordingConfig\x12o\n" +
+	"\x18bigquery_export_settings\x18\x03 \x01(\v2/.google.cloud.ces.v1beta.BigQueryExportSettingsB\x04\xe2A\x01\x01R\x16bigqueryExportSettings\x12\x84\x01\n" +
+	"#unredacted_bigquery_export_settings\x18\t \x01(\v2/.google.cloud.ces.v1beta.BigQueryExportSettingsB\x04\xe2A\x01\x01R unredactedBigqueryExportSettings\x12i\n" +
+	"\x16cloud_logging_settings\x18\x04 \x01(\v2-.google.cloud.ces.v1beta.CloudLoggingSettingsB\x04\xe2A\x01\x01R\x14cloudLoggingSettings\x12~\n" +
+	"\x1dconversation_logging_settings\x18\x05 \x01(\v24.google.cloud.ces.v1beta.ConversationLoggingSettingsB\x04\xe2A\x01\x01R\x1bconversationLoggingSettings\x12~\n" +
+	"!evaluation_audio_recording_config\x18\x06 \x01(\v2-.google.cloud.ces.v1beta.AudioRecordingConfigB\x04\xe2A\x01\x01R\x1eevaluationAudioRecordingConfig\x12o\n" +
+	"\x18metric_analysis_settings\x18\a \x01(\v2/.google.cloud.ces.v1beta.MetricAnalysisSettingsB\x04\xe2A\x01\x01R\x16metricAnalysisSettings\"\xb0\a\n" +
+	"\x15ErrorHandlingSettings\x12\x82\x01\n" +
+	"\x17error_handling_strategy\x18\x01 \x01(\x0e2D.google.cloud.ces.v1beta.ErrorHandlingSettings.ErrorHandlingStrategyB\x04\xe2A\x01\x01R\x15errorHandlingStrategy\x12\x85\x01\n" +
+	"\x18fallback_response_config\x18\x02 \x01(\v2E.google.cloud.ces.v1beta.ErrorHandlingSettings.FallbackResponseConfigB\x04\xe2A\x01\x01R\x16fallbackResponseConfig\x12s\n" +
+	"\x12end_session_config\x18\x03 \x01(\v2?.google.cloud.ces.v1beta.ErrorHandlingSettings.EndSessionConfigB\x04\xe2A\x01\x01R\x10endSessionConfig\x1a\xc1\x02\n" +
+	"\x16FallbackResponseConfig\x12\xa1\x01\n" +
+	"\x18custom_fallback_messages\x18\x01 \x03(\v2a.google.cloud.ces.v1beta.ErrorHandlingSettings.FallbackResponseConfig.CustomFallbackMessagesEntryB\x04\xe2A\x01\x01R\x16customFallbackMessages\x128\n" +
+	"\x15max_fallback_attempts\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x13maxFallbackAttempts\x1aI\n" +
 	"\x1bCustomFallbackMessagesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a\\\n" +
-	"\x10EndSessionConfig\x123\n" +
-	"\x10escalate_session\x18\x01 \x01(\bB\x03\xe0A\x01H\x00R\x0fescalateSession\x88\x01\x01B\x13\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a]\n" +
+	"\x10EndSessionConfig\x124\n" +
+	"\x10escalate_session\x18\x01 \x01(\bB\x04\xe2A\x01\x01H\x00R\x0fescalateSession\x88\x01\x01B\x13\n" +
 	"\x11_escalate_session\"r\n" +
 	"\x15ErrorHandlingStrategy\x12'\n" +
 	"#ERROR_HANDLING_STRATEGY_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04NONE\x10\x01\x12\x15\n" +
 	"\x11FALLBACK_RESPONSE\x10\x02\x12\x0f\n" +
-	"\vEND_SESSION\x10\x03\"\xb5\x13\n" +
-	"\x1bEvaluationMetricsThresholds\x12\xac\x01\n" +
-	"$golden_evaluation_metrics_thresholds\x18\x01 \x01(\v2V.google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholdsB\x03\xe0A\x01R!goldenEvaluationMetricsThresholds\x12\x9b\x01\n" +
-	"\x1dhallucination_metric_behavior\x18\x03 \x01(\x0e2P.google.cloud.ces.v1beta.EvaluationMetricsThresholds.HallucinationMetricBehaviorB\x05\xe0A\x01\x18\x01R\x1bhallucinationMetricBehavior\x12\xa6\x01\n" +
-	"$golden_hallucination_metric_behavior\x18\x05 \x01(\x0e2P.google.cloud.ces.v1beta.EvaluationMetricsThresholds.HallucinationMetricBehaviorB\x03\xe0A\x01R!goldenHallucinationMetricBehavior\x12\xaa\x01\n" +
-	"&scenario_hallucination_metric_behavior\x18\x04 \x01(\x0e2P.google.cloud.ces.v1beta.EvaluationMetricsThresholds.HallucinationMetricBehaviorB\x03\xe0A\x01R#scenarioHallucinationMetricBehavior\x1a\xf8\n" +
+	"\vEND_SESSION\x10\x03\"\xc1\x13\n" +
+	"\x1bEvaluationMetricsThresholds\x12\xad\x01\n" +
+	"$golden_evaluation_metrics_thresholds\x18\x01 \x01(\v2V.google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholdsB\x04\xe2A\x01\x01R!goldenEvaluationMetricsThresholds\x12\x9c\x01\n" +
+	"\x1dhallucination_metric_behavior\x18\x03 \x01(\x0e2P.google.cloud.ces.v1beta.EvaluationMetricsThresholds.HallucinationMetricBehaviorB\x06\xe2A\x01\x01\x18\x01R\x1bhallucinationMetricBehavior\x12\xa7\x01\n" +
+	"$golden_hallucination_metric_behavior\x18\x05 \x01(\x0e2P.google.cloud.ces.v1beta.EvaluationMetricsThresholds.HallucinationMetricBehaviorB\x04\xe2A\x01\x01R!goldenHallucinationMetricBehavior\x12\xab\x01\n" +
+	"&scenario_hallucination_metric_behavior\x18\x04 \x01(\x0e2P.google.cloud.ces.v1beta.EvaluationMetricsThresholds.HallucinationMetricBehaviorB\x04\xe2A\x01\x01R#scenarioHallucinationMetricBehavior\x1a\xff\n" +
 	"\n" +
-	"!GoldenEvaluationMetricsThresholds\x12\xb9\x01\n" +
-	"\x1dturn_level_metrics_thresholds\x18\x01 \x01(\v2q.google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.TurnLevelMetricsThresholdsB\x03\xe0A\x01R\x1aturnLevelMetricsThresholds\x12\xce\x01\n" +
-	"$expectation_level_metrics_thresholds\x18\x02 \x01(\v2x.google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.ExpectationLevelMetricsThresholdsB\x03\xe0A\x01R!expectationLevelMetricsThresholds\x12\x84\x01\n" +
-	"\x16tool_matching_settings\x18\x03 \x01(\v2I.google.cloud.ces.v1beta.EvaluationMetricsThresholds.ToolMatchingSettingsB\x03\xe0A\x01R\x14toolMatchingSettings\x1a\xf4\x04\n" +
-	"\x1aTurnLevelMetricsThresholds\x12[\n" +
-	"%semantic_similarity_success_threshold\x18\x01 \x01(\x05B\x03\xe0A\x01H\x00R\"semanticSimilaritySuccessThreshold\x88\x01\x01\x12j\n" +
-	"-overall_tool_invocation_correctness_threshold\x18\x02 \x01(\x02B\x03\xe0A\x01H\x01R)overallToolInvocationCorrectnessThreshold\x88\x01\x01\x12\xd1\x01\n" +
-	"\x1bsemantic_similarity_channel\x18\x03 \x01(\x0e2\x8b\x01.google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.TurnLevelMetricsThresholds.SemanticSimilarityChannelB\x03\xe0A\x01R\x19semanticSimilarityChannel\"]\n" +
+	"!GoldenEvaluationMetricsThresholds\x12\xba\x01\n" +
+	"\x1dturn_level_metrics_thresholds\x18\x01 \x01(\v2q.google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.TurnLevelMetricsThresholdsB\x04\xe2A\x01\x01R\x1aturnLevelMetricsThresholds\x12\xcf\x01\n" +
+	"$expectation_level_metrics_thresholds\x18\x02 \x01(\v2x.google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.ExpectationLevelMetricsThresholdsB\x04\xe2A\x01\x01R!expectationLevelMetricsThresholds\x12\x85\x01\n" +
+	"\x16tool_matching_settings\x18\x03 \x01(\v2I.google.cloud.ces.v1beta.EvaluationMetricsThresholds.ToolMatchingSettingsB\x04\xe2A\x01\x01R\x14toolMatchingSettings\x1a\xf7\x04\n" +
+	"\x1aTurnLevelMetricsThresholds\x12\\\n" +
+	"%semantic_similarity_success_threshold\x18\x01 \x01(\x05B\x04\xe2A\x01\x01H\x00R\"semanticSimilaritySuccessThreshold\x88\x01\x01\x12k\n" +
+	"-overall_tool_invocation_correctness_threshold\x18\x02 \x01(\x02B\x04\xe2A\x01\x01H\x01R)overallToolInvocationCorrectnessThreshold\x88\x01\x01\x12\xd2\x01\n" +
+	"\x1bsemantic_similarity_channel\x18\x03 \x01(\x0e2\x8b\x01.google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.TurnLevelMetricsThresholds.SemanticSimilarityChannelB\x04\xe2A\x01\x01R\x19semanticSimilarityChannel\"]\n" +
 	"\x19SemanticSimilarityChannel\x12+\n" +
 	"'SEMANTIC_SIMILARITY_CHANNEL_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04TEXT\x10\x01\x12\t\n" +
 	"\x05AUDIO\x10\x02B(\n" +
 	"&_semantic_similarity_success_thresholdB0\n" +
-	"._overall_tool_invocation_correctness_threshold\x1a\xc7\x01\n" +
-	"!ExpectationLevelMetricsThresholds\x12n\n" +
-	"/tool_invocation_parameter_correctness_threshold\x18\x01 \x01(\x02B\x03\xe0A\x01H\x00R+toolInvocationParameterCorrectnessThreshold\x88\x01\x01B2\n" +
-	"0_tool_invocation_parameter_correctness_threshold\x1a\x8e\x02\n" +
-	"\x14ToolMatchingSettings\x12\x9d\x01\n" +
-	"\x18extra_tool_call_behavior\x18\x01 \x01(\x0e2_.google.cloud.ces.v1beta.EvaluationMetricsThresholds.ToolMatchingSettings.ExtraToolCallBehaviorB\x03\xe0A\x01R\x15extraToolCallBehavior\"V\n" +
+	"._overall_tool_invocation_correctness_threshold\x1a\xc8\x01\n" +
+	"!ExpectationLevelMetricsThresholds\x12o\n" +
+	"/tool_invocation_parameter_correctness_threshold\x18\x01 \x01(\x02B\x04\xe2A\x01\x01H\x00R+toolInvocationParameterCorrectnessThreshold\x88\x01\x01B2\n" +
+	"0_tool_invocation_parameter_correctness_threshold\x1a\x8f\x02\n" +
+	"\x14ToolMatchingSettings\x12\x9e\x01\n" +
+	"\x18extra_tool_call_behavior\x18\x01 \x01(\x0e2_.google.cloud.ces.v1beta.EvaluationMetricsThresholds.ToolMatchingSettings.ExtraToolCallBehaviorB\x04\xe2A\x01\x01R\x15extraToolCallBehavior\"V\n" +
 	"\x15ExtraToolCallBehavior\x12(\n" +
 	"$EXTRA_TOOL_CALL_BEHAVIOR_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04FAIL\x10\x01\x12\t\n" +
@@ -3073,15 +3073,15 @@ const file_google_cloud_ces_v1beta_app_proto_rawDesc = "" +
 	"\x1bHallucinationMetricBehavior\x12-\n" +
 	")HALLUCINATION_METRIC_BEHAVIOR_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDISABLED\x10\x01\x12\v\n" +
-	"\aENABLED\x10\x02\"\xdf\b\n" +
-	"\x12EvaluationSettings\x12\x96\x01\n" +
-	"\x1fscenario_conversation_initiator\x18\x01 \x01(\x0e2I.google.cloud.ces.v1beta.EvaluationSettings.ScenarioConversationInitiatorB\x03\xe0A\x01R\x1dscenarioConversationInitiator\x12Y\n" +
-	"\x11golden_run_method\x18\x04 \x01(\x0e2(.google.cloud.ces.v1beta.GoldenRunMethodB\x03\xe0A\x01R\x0fgoldenRunMethod\x12\x8b\x01\n" +
-	"%golden_evaluation_tool_call_behaviour\x18\x02 \x01(\x0e24.google.cloud.ces.v1beta.EvaluationToolCallBehaviourB\x03\xe0A\x01R!goldenEvaluationToolCallBehaviour\x12\x8f\x01\n" +
-	"'scenario_evaluation_tool_call_behaviour\x18\x03 \x01(\x0e24.google.cloud.ces.v1beta.EvaluationToolCallBehaviourB\x03\xe0A\x01R#scenarioEvaluationToolCallBehaviour\x12\\\n" +
-	"\x0emetrics_config\x18\x05 \x01(\v20.google.cloud.ces.v1beta.EvaluationMetricsConfigB\x03\xe0A\x01R\rmetricsConfig\x12~\n" +
-	"\x17scenario_execution_mode\x18\x06 \x01(\x0e2A.google.cloud.ces.v1beta.EvaluationSettings.ScenarioExecutionModeB\x03\xe0A\x01R\x15scenarioExecutionMode\x12\x81\x01\n" +
-	"\x1fevaluation_run_caching_settings\x18\a \x01(\v25.google.cloud.ces.v1beta.EvaluationRunCachingSettingsB\x03\xe0A\x01R\x1cevaluationRunCachingSettings\"e\n" +
+	"\aENABLED\x10\x02\"\xe6\b\n" +
+	"\x12EvaluationSettings\x12\x97\x01\n" +
+	"\x1fscenario_conversation_initiator\x18\x01 \x01(\x0e2I.google.cloud.ces.v1beta.EvaluationSettings.ScenarioConversationInitiatorB\x04\xe2A\x01\x01R\x1dscenarioConversationInitiator\x12Z\n" +
+	"\x11golden_run_method\x18\x04 \x01(\x0e2(.google.cloud.ces.v1beta.GoldenRunMethodB\x04\xe2A\x01\x01R\x0fgoldenRunMethod\x12\x8c\x01\n" +
+	"%golden_evaluation_tool_call_behaviour\x18\x02 \x01(\x0e24.google.cloud.ces.v1beta.EvaluationToolCallBehaviourB\x04\xe2A\x01\x01R!goldenEvaluationToolCallBehaviour\x12\x90\x01\n" +
+	"'scenario_evaluation_tool_call_behaviour\x18\x03 \x01(\x0e24.google.cloud.ces.v1beta.EvaluationToolCallBehaviourB\x04\xe2A\x01\x01R#scenarioEvaluationToolCallBehaviour\x12]\n" +
+	"\x0emetrics_config\x18\x05 \x01(\v20.google.cloud.ces.v1beta.EvaluationMetricsConfigB\x04\xe2A\x01\x01R\rmetricsConfig\x12\x7f\n" +
+	"\x17scenario_execution_mode\x18\x06 \x01(\x0e2A.google.cloud.ces.v1beta.EvaluationSettings.ScenarioExecutionModeB\x04\xe2A\x01\x01R\x15scenarioExecutionMode\x12\x82\x01\n" +
+	"\x1fevaluation_run_caching_settings\x18\a \x01(\v25.google.cloud.ces.v1beta.EvaluationRunCachingSettingsB\x04\xe2A\x01\x01R\x1cevaluationRunCachingSettings\"e\n" +
 	"\x1dScenarioConversationInitiator\x12/\n" +
 	"+SCENARIO_CONVERSATION_INITIATOR_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04USER\x10\x01\x12\t\n" +
@@ -3089,52 +3089,52 @@ const file_google_cloud_ces_v1beta_app_proto_rawDesc = "" +
 	"\x15ScenarioExecutionMode\x12'\n" +
 	"#SCENARIO_EXECUTION_MODE_UNSPECIFIED\x10\x00\x12\x15\n" +
 	"\x11QUALITY_OPTIMIZED\x10\x01\x12\x13\n" +
-	"\x0fSPEED_OPTIMIZED\x10\x02\"\xc3\x01\n" +
-	"\x19ClientCertificateSettings\x12,\n" +
-	"\x0ftls_certificate\x18\x01 \x01(\tB\x03\xe0A\x02R\x0etlsCertificate\x12S\n" +
-	"\vprivate_key\x18\x02 \x01(\tB2\xe0A\x02\xfaA,\n" +
+	"\x0fSPEED_OPTIMIZED\x10\x02\"\xc6\x01\n" +
+	"\x19ClientCertificateSettings\x12-\n" +
+	"\x0ftls_certificate\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x0etlsCertificate\x12T\n" +
+	"\vprivate_key\x18\x02 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
 	"*secretmanager.googleapis.com/SecretVersionR\n" +
-	"privateKey\x12#\n" +
+	"privateKey\x12$\n" +
 	"\n" +
-	"passphrase\x18\x03 \x01(\tB\x03\xe0A\x01R\n" +
-	"passphrase\"=\n" +
-	"\rVpcScSettings\x12,\n" +
-	"\x0fallowed_origins\x18\x01 \x03(\tB\x03\xe0A\x01R\x0eallowedOrigins\"\xaf\x01\n" +
-	"\x1bConversationLoggingSettings\x12E\n" +
-	"\x1cdisable_conversation_logging\x18\x01 \x01(\bB\x03\xe0A\x01R\x1adisableConversationLogging\x12I\n" +
-	"\x10retention_window\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x0fretentionWindow\"M\n" +
-	"\x14CloudLoggingSettings\x125\n" +
-	"\x14enable_cloud_logging\x18\x01 \x01(\bB\x03\xe0A\x01R\x12enableCloudLogging\"g\n" +
-	"\x14AudioRecordingConfig\x12\"\n" +
+	"passphrase\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"passphrase\">\n" +
+	"\rVpcScSettings\x12-\n" +
+	"\x0fallowed_origins\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\x0eallowedOrigins\"\xb1\x01\n" +
+	"\x1bConversationLoggingSettings\x12F\n" +
+	"\x1cdisable_conversation_logging\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x1adisableConversationLogging\x12J\n" +
+	"\x10retention_window\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x0fretentionWindow\"N\n" +
+	"\x14CloudLoggingSettings\x126\n" +
+	"\x14enable_cloud_logging\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x12enableCloudLogging\"i\n" +
+	"\x14AudioRecordingConfig\x12#\n" +
 	"\n" +
-	"gcs_bucket\x18\x01 \x01(\tB\x03\xe0A\x01R\tgcsBucket\x12+\n" +
-	"\x0fgcs_path_prefix\x18\x02 \x01(\tB\x03\xe0A\x01R\rgcsPathPrefix\"\xf8\x01\n" +
-	"\x0fRedactionConfig\x12.\n" +
-	"\x10enable_redaction\x18\x01 \x01(\bB\x03\xe0A\x01R\x0fenableRedaction\x12U\n" +
-	"\x10inspect_template\x18\x02 \x01(\tB*\xe0A\x01\xfaA$\n" +
-	"\"dlp.googleapis.com/InspectTemplateR\x0finspectTemplate\x12^\n" +
-	"\x13deidentify_template\x18\x03 \x01(\tB-\xe0A\x01\xfaA'\n" +
-	"%dlp.googleapis.com/DeidentifyTemplateR\x12deidentifyTemplate\"\xd0\x02\n" +
-	"\x11DataStoreSettings\x12P\n" +
-	"\aengines\x18\x03 \x03(\v21.google.cloud.ces.v1beta.DataStoreSettings.EngineB\x03\xe0A\x03R\aengines\x1a\xe8\x01\n" +
-	"\x06Engine\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x03\xfaA'\n" +
-	"%discoveryengine.googleapis.com/EngineR\x04name\x12O\n" +
-	"\x04type\x18\x02 \x01(\x0e26.google.cloud.ces.v1beta.DataStoreSettings.Engine.TypeB\x03\xe0A\x03R\x04type\"J\n" +
+	"gcs_bucket\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\tgcsBucket\x12,\n" +
+	"\x0fgcs_path_prefix\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\rgcsPathPrefix\"\xfb\x01\n" +
+	"\x0fRedactionConfig\x12/\n" +
+	"\x10enable_redaction\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x0fenableRedaction\x12V\n" +
+	"\x10inspect_template\x18\x02 \x01(\tB+\xe2A\x01\x01\xfaA$\n" +
+	"\"dlp.googleapis.com/InspectTemplateR\x0finspectTemplate\x12_\n" +
+	"\x13deidentify_template\x18\x03 \x01(\tB.\xe2A\x01\x01\xfaA'\n" +
+	"%dlp.googleapis.com/DeidentifyTemplateR\x12deidentifyTemplate\"\xd3\x02\n" +
+	"\x11DataStoreSettings\x12Q\n" +
+	"\aengines\x18\x03 \x03(\v21.google.cloud.ces.v1beta.DataStoreSettings.EngineB\x04\xe2A\x01\x03R\aengines\x1a\xea\x01\n" +
+	"\x06Engine\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x03\xfaA'\n" +
+	"%discoveryengine.googleapis.com/EngineR\x04name\x12P\n" +
+	"\x04type\x18\x02 \x01(\x0e26.google.cloud.ces.v1beta.DataStoreSettings.Engine.TypeB\x04\xe2A\x01\x03R\x04type\"J\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x16\n" +
 	"\x12ENGINE_TYPE_SEARCH\x10\x01\x12\x14\n" +
-	"\x10ENGINE_TYPE_CHAT\x10\x02\"\xcf\x04\n" +
-	"\x11EvaluationPersona\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12&\n" +
-	"\fdisplay_name\x18\x03 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12%\n" +
-	"\vpersonality\x18\x04 \x01(\tB\x03\xe0A\x02R\vpersonality\x12a\n" +
-	"\rspeech_config\x18\x05 \x01(\v27.google.cloud.ces.v1beta.EvaluationPersona.SpeechConfigB\x03\xe0A\x01R\fspeechConfig\x1a\xc7\x02\n" +
-	"\fSpeechConfig\x12(\n" +
-	"\rspeaking_rate\x18\x01 \x01(\x01B\x03\xe0A\x01R\fspeakingRate\x12t\n" +
-	"\venvironment\x18\x02 \x01(\x0e2M.google.cloud.ces.v1beta.EvaluationPersona.SpeechConfig.BackgroundEnvironmentB\x03\xe0A\x01R\venvironment\x12\x1e\n" +
-	"\bvoice_id\x18\x03 \x01(\tB\x03\xe0A\x01R\avoiceId\"w\n" +
+	"\x10ENGINE_TYPE_CHAT\x10\x02\"\xd7\x04\n" +
+	"\x11EvaluationPersona\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12'\n" +
+	"\fdisplay_name\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12&\n" +
+	"\vpersonality\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\vpersonality\x12b\n" +
+	"\rspeech_config\x18\x05 \x01(\v27.google.cloud.ces.v1beta.EvaluationPersona.SpeechConfigB\x04\xe2A\x01\x01R\fspeechConfig\x1a\xca\x02\n" +
+	"\fSpeechConfig\x12)\n" +
+	"\rspeaking_rate\x18\x01 \x01(\x01B\x04\xe2A\x01\x01R\fspeakingRate\x12u\n" +
+	"\venvironment\x18\x02 \x01(\x0e2M.google.cloud.ces.v1beta.EvaluationPersona.SpeechConfig.BackgroundEnvironmentB\x04\xe2A\x01\x01R\venvironment\x12\x1f\n" +
+	"\bvoice_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\avoiceId\"w\n" +
 	"\x15BackgroundEnvironment\x12&\n" +
 	"\"BACKGROUND_ENVIRONMENT_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vCALL_CENTER\x10\x03\x12\v\n" +

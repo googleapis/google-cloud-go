@@ -2185,12 +2185,12 @@ var File_google_cloud_edgenetwork_v1_resources_proto protoreflect.FileDescriptor
 
 const file_google_cloud_edgenetwork_v1_resources_proto_rawDesc = "" +
 	"\n" +
-	"+google/cloud/edgenetwork/v1/resources.proto\x12\x1bgoogle.cloud.edgenetwork.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xaa\x03\n" +
-	"\x04Zone\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"+google/cloud/edgenetwork/v1/resources.proto\x12\x1bgoogle.cloud.edgenetwork.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xad\x03\n" +
+	"\x04Zone\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12I\n" +
 	"\x06labels\x18\x04 \x03(\v2-.google.cloud.edgenetwork.v1.Zone.LabelsEntryB\x02\x18\x01R\x06labels\x12#\n" +
 	"\vlayout_name\x18\x05 \x01(\tB\x02\x18\x01R\n" +
@@ -2198,36 +2198,36 @@ const file_google_cloud_edgenetwork_v1_resources_proto_rawDesc = "" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:Z\xeaAW\n" +
-	"\x1fedgenetwork.googleapis.com/Zone\x124projects/{project}/locations/{location}/zones/{zone}\"\xd6\x03\n" +
-	"\aNetwork\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x1fedgenetwork.googleapis.com/Zone\x124projects/{project}/locations/{location}/zones/{zone}\"\xda\x03\n" +
+	"\aNetwork\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12H\n" +
-	"\x06labels\x18\x04 \x03(\v20.google.cloud.edgenetwork.v1.Network.LabelsEntryR\x06labels\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tB\x03\xe0A\x01R\vdescription\x12\x10\n" +
+	"\x06labels\x18\x04 \x03(\v20.google.cloud.edgenetwork.v1.Network.LabelsEntryR\x06labels\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\x10\n" +
 	"\x03mtu\x18\x06 \x01(\x05R\x03mtu\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:p\xeaAm\n" +
-	"\"edgenetwork.googleapis.com/Network\x12Gprojects/{project}/locations/{location}/zones/{zone}/networks/{network}\"\xc6\x06\n" +
-	"\x06Subnet\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\"edgenetwork.googleapis.com/Network\x12Gprojects/{project}/locations/{location}/zones/{zone}/networks/{network}\"\xce\x06\n" +
+	"\x06Subnet\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12G\n" +
-	"\x06labels\x18\x04 \x03(\v2/.google.cloud.edgenetwork.v1.Subnet.LabelsEntryR\x06labels\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tB\x03\xe0A\x01R\vdescription\x12D\n" +
-	"\anetwork\x18\x06 \x01(\tB*\xe0A\x02\xfaA$\n" +
+	"\x06labels\x18\x04 \x03(\v2/.google.cloud.edgenetwork.v1.Subnet.LabelsEntryR\x06labels\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12E\n" +
+	"\anetwork\x18\x06 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
 	"\"edgenetwork.googleapis.com/NetworkR\anetwork\x12\x1b\n" +
 	"\tipv4_cidr\x18\a \x03(\tR\bipv4Cidr\x12\x1b\n" +
-	"\tipv6_cidr\x18\b \x03(\tR\bipv6Cidr\x12\x1c\n" +
-	"\avlan_id\x18\t \x01(\x05B\x03\xe0A\x01R\x06vlanId\x12W\n" +
-	"\fbonding_type\x18\v \x01(\x0e2/.google.cloud.edgenetwork.v1.Subnet.BondingTypeB\x03\xe0A\x01R\vbondingType\x12E\n" +
+	"\tipv6_cidr\x18\b \x03(\tR\bipv6Cidr\x12\x1d\n" +
+	"\avlan_id\x18\t \x01(\x05B\x04\xe2A\x01\x01R\x06vlanId\x12X\n" +
+	"\fbonding_type\x18\v \x01(\x0e2/.google.cloud.edgenetwork.v1.Subnet.BondingTypeB\x04\xe2A\x01\x01R\vbondingType\x12F\n" +
 	"\x05state\x18\n" +
-	" \x01(\x0e2*.google.cloud.edgenetwork.v1.ResourceStateB\x03\xe0A\x03R\x05state\x1a9\n" +
+	" \x01(\x0e2*.google.cloud.edgenetwork.v1.ResourceStateB\x04\xe2A\x01\x03R\x05state\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"G\n" +
@@ -2237,65 +2237,65 @@ const file_google_cloud_edgenetwork_v1_resources_proto_rawDesc = "" +
 	"\x06BONDED\x10\x01\x12\x0e\n" +
 	"\n" +
 	"NON_BONDED\x10\x02:m\xeaAj\n" +
-	"!edgenetwork.googleapis.com/Subnet\x12Eprojects/{project}/locations/{location}/zones/{zone}/subnets/{subnet}\"\x93\a\n" +
-	"\fInterconnect\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"!edgenetwork.googleapis.com/Subnet\x12Eprojects/{project}/locations/{location}/zones/{zone}/subnets/{subnet}\"\x9c\a\n" +
+	"\fInterconnect\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12M\n" +
-	"\x06labels\x18\x04 \x03(\v25.google.cloud.edgenetwork.v1.Interconnect.LabelsEntryR\x06labels\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tB\x03\xe0A\x01R\vdescription\x12l\n" +
-	"\x11interconnect_type\x18\x06 \x01(\x0e2:.google.cloud.edgenetwork.v1.Interconnect.InterconnectTypeB\x03\xe0A\x01R\x10interconnectType\x12\x17\n" +
-	"\x04uuid\x18\a \x01(\tB\x03\xe0A\x03R\x04uuid\x12@\n" +
-	"\x1adevice_cloud_resource_name\x18\b \x01(\tB\x03\xe0A\x03R\x17deviceCloudResourceName\x12*\n" +
-	"\x0ephysical_ports\x18\t \x03(\tB\x03\xe0A\x03R\rphysicalPorts\x12y\n" +
+	"\x06labels\x18\x04 \x03(\v25.google.cloud.edgenetwork.v1.Interconnect.LabelsEntryR\x06labels\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12m\n" +
+	"\x11interconnect_type\x18\x06 \x01(\x0e2:.google.cloud.edgenetwork.v1.Interconnect.InterconnectTypeB\x04\xe2A\x01\x01R\x10interconnectType\x12\x18\n" +
+	"\x04uuid\x18\a \x01(\tB\x04\xe2A\x01\x03R\x04uuid\x12A\n" +
+	"\x1adevice_cloud_resource_name\x18\b \x01(\tB\x04\xe2A\x01\x03R\x17deviceCloudResourceName\x12+\n" +
+	"\x0ephysical_ports\x18\t \x03(\tB\x04\xe2A\x01\x03R\rphysicalPorts\x12z\n" +
 	"\x1bremote_peering_network_type\x18\n" +
-	" \x01(\x0e25.google.cloud.edgenetwork.v1.RemotePeeringNetworkTypeB\x03\xe0A\x01R\x18remotePeeringNetworkType\x1a9\n" +
+	" \x01(\x0e25.google.cloud.edgenetwork.v1.RemotePeeringNetworkTypeB\x04\xe2A\x01\x01R\x18remotePeeringNetworkType\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"D\n" +
 	"\x10InterconnectType\x12!\n" +
 	"\x1dINTERCONNECT_TYPE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tDEDICATED\x10\x01:\x7f\xeaA|\n" +
-	"'edgenetwork.googleapis.com/Interconnect\x12Qprojects/{project}/locations/{location}/zones/{zone}/interconnects/{interconnect}\"\x83\a\n" +
-	"\x16InterconnectAttachment\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"'edgenetwork.googleapis.com/Interconnect\x12Qprojects/{project}/locations/{location}/zones/{zone}/interconnects/{interconnect}\"\x8c\a\n" +
+	"\x16InterconnectAttachment\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12W\n" +
-	"\x06labels\x18\x04 \x03(\v2?.google.cloud.edgenetwork.v1.InterconnectAttachment.LabelsEntryR\x06labels\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tB\x03\xe0A\x01R\vdescription\x12S\n" +
-	"\finterconnect\x18\x06 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'edgenetwork.googleapis.com/InterconnectR\finterconnect\x12D\n" +
-	"\anetwork\x18\v \x01(\tB*\xe0A\x01\xfaA$\n" +
-	"\"edgenetwork.googleapis.com/NetworkR\anetwork\x12\x1c\n" +
-	"\avlan_id\x18\b \x01(\x05B\x03\xe0A\x02R\x06vlanId\x12\x10\n" +
-	"\x03mtu\x18\t \x01(\x05R\x03mtu\x12E\n" +
+	"\x06labels\x18\x04 \x03(\v2?.google.cloud.edgenetwork.v1.InterconnectAttachment.LabelsEntryR\x06labels\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12T\n" +
+	"\finterconnect\x18\x06 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'edgenetwork.googleapis.com/InterconnectR\finterconnect\x12E\n" +
+	"\anetwork\x18\v \x01(\tB+\xe2A\x01\x01\xfaA$\n" +
+	"\"edgenetwork.googleapis.com/NetworkR\anetwork\x12\x1d\n" +
+	"\avlan_id\x18\b \x01(\x05B\x04\xe2A\x01\x02R\x06vlanId\x12\x10\n" +
+	"\x03mtu\x18\t \x01(\x05R\x03mtu\x12F\n" +
 	"\x05state\x18\n" +
-	" \x01(\x0e2*.google.cloud.edgenetwork.v1.ResourceStateB\x03\xe0A\x03R\x05state\x12]\n" +
-	"\fpeering_type\x18\f \x01(\x0e25.google.cloud.edgenetwork.v1.RemotePeeringNetworkTypeB\x03\xe0A\x01R\vpeeringType\x1a9\n" +
+	" \x01(\x0e2*.google.cloud.edgenetwork.v1.ResourceStateB\x04\xe2A\x01\x03R\x05state\x12^\n" +
+	"\fpeering_type\x18\f \x01(\x0e25.google.cloud.edgenetwork.v1.RemotePeeringNetworkTypeB\x04\xe2A\x01\x01R\vpeeringType\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x9f\x01\xeaA\x9b\x01\n" +
-	"1edgenetwork.googleapis.com/InterconnectAttachment\x12fprojects/{project}/locations/{location}/zones/{zone}/interconnectAttachments/{interconnect_attachment}\"\xcd\v\n" +
-	"\x06Router\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"1edgenetwork.googleapis.com/InterconnectAttachment\x12fprojects/{project}/locations/{location}/zones/{zone}/interconnectAttachments/{interconnect_attachment}\"\xd5\v\n" +
+	"\x06Router\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12G\n" +
-	"\x06labels\x18\x04 \x03(\v2/.google.cloud.edgenetwork.v1.Router.LabelsEntryR\x06labels\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tB\x03\xe0A\x01R\vdescription\x12D\n" +
-	"\anetwork\x18\x06 \x01(\tB*\xe0A\x02\xfaA$\n" +
+	"\x06labels\x18\x04 \x03(\v2/.google.cloud.edgenetwork.v1.Router.LabelsEntryR\x06labels\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12E\n" +
+	"\anetwork\x18\x06 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
 	"\"edgenetwork.googleapis.com/NetworkR\anetwork\x12K\n" +
 	"\tinterface\x18\a \x03(\v2-.google.cloud.edgenetwork.v1.Router.InterfaceR\tinterface\x12F\n" +
 	"\bbgp_peer\x18\b \x03(\v2+.google.cloud.edgenetwork.v1.Router.BgpPeerR\abgpPeer\x129\n" +
-	"\x03bgp\x18\t \x01(\v2'.google.cloud.edgenetwork.v1.Router.BgpR\x03bgp\x12E\n" +
+	"\x03bgp\x18\t \x01(\v2'.google.cloud.edgenetwork.v1.Router.BgpR\x03bgp\x12F\n" +
 	"\x05state\x18\n" +
-	" \x01(\x0e2*.google.cloud.edgenetwork.v1.ResourceStateB\x03\xe0A\x03R\x05state\x126\n" +
-	"\x14route_advertisements\x18\v \x03(\tB\x03\xe0A\x01R\x13routeAdvertisements\x1a\xf3\x01\n" +
+	" \x01(\x0e2*.google.cloud.edgenetwork.v1.ResourceStateB\x04\xe2A\x01\x03R\x05state\x127\n" +
+	"\x14route_advertisements\x18\v \x03(\tB\x04\xe2A\x01\x01R\x13routeAdvertisements\x1a\xf3\x01\n" +
 	"\tInterface\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1b\n" +
 	"\tipv4_cidr\x18\x03 \x01(\tR\bipv4Cidr\x12\x1b\n" +
@@ -2304,7 +2304,7 @@ const file_google_cloud_edgenetwork_v1_resources_proto_rawDesc = "" +
 	"\n" +
 	"subnetwork\x18\x04 \x01(\tR\n" +
 	"subnetwork\x122\n" +
-	"\x15loopback_ip_addresses\x18\x05 \x03(\tR\x13loopbackIpAddresses\x1a\xa4\x02\n" +
+	"\x15loopback_ip_addresses\x18\x05 \x03(\tR\x13loopbackIpAddresses\x1a\xa5\x02\n" +
 	"\aBgpPeer\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1c\n" +
 	"\tinterface\x18\x02 \x01(\tR\tinterface\x12.\n" +
@@ -2312,8 +2312,8 @@ const file_google_cloud_edgenetwork_v1_resources_proto_rawDesc = "" +
 	"\x13interface_ipv6_cidr\x18\a \x01(\tR\x11interfaceIpv6Cidr\x12$\n" +
 	"\x0epeer_ipv4_cidr\x18\x04 \x01(\tR\fpeerIpv4Cidr\x12$\n" +
 	"\x0epeer_ipv6_cidr\x18\x06 \x01(\tR\fpeerIpv6Cidr\x12\x19\n" +
-	"\bpeer_asn\x18\x05 \x01(\rR\apeerAsn\x12 \n" +
-	"\tlocal_asn\x18\b \x01(\rB\x03\xe0A\x03R\blocalAsn\x1aZ\n" +
+	"\bpeer_asn\x18\x05 \x01(\rR\apeerAsn\x12!\n" +
+	"\tlocal_asn\x18\b \x01(\rB\x04\xe2A\x01\x03R\blocalAsn\x1aZ\n" +
 	"\x03Bgp\x12\x10\n" +
 	"\x03asn\x18\x01 \x01(\rR\x03asn\x12A\n" +
 	"\x1dkeepalive_interval_in_seconds\x18\x02 \x01(\rR\x1akeepaliveIntervalInSeconds\x1a9\n" +

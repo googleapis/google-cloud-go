@@ -790,27 +790,27 @@ var File_google_cloud_channel_v1_repricing_proto protoreflect.FileDescriptor
 
 const file_google_cloud_channel_v1_repricing_proto_rawDesc = "" +
 	"\n" +
-	"'google/cloud/channel/v1/repricing.proto\x12\x17google.cloud.channel.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x16google/type/date.proto\x1a\x19google/type/decimal.proto\"\xe8\x02\n" +
-	"\x17CustomerRepricingConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12X\n" +
-	"\x10repricing_config\x18\x02 \x01(\v2(.google.cloud.channel.v1.RepricingConfigB\x03\xe0A\x02R\x0frepricingConfig\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"'google/cloud/channel/v1/repricing.proto\x12\x17google.cloud.channel.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x16google/type/date.proto\x1a\x19google/type/decimal.proto\"\xeb\x02\n" +
+	"\x17CustomerRepricingConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12Y\n" +
+	"\x10repricing_config\x18\x02 \x01(\v2(.google.cloud.channel.v1.RepricingConfigB\x04\xe2A\x01\x02R\x0frepricingConfig\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime:\x97\x01\xeaA\x93\x01\n" +
-	"3cloudchannel.googleapis.com/CustomerRepricingConfig\x12\\accounts/{account}/customers/{customer}/customerRepricingConfigs/{customer_repricing_config}\"\x92\x03\n" +
-	"\x1dChannelPartnerRepricingConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12X\n" +
-	"\x10repricing_config\x18\x02 \x01(\v2(.google.cloud.channel.v1.RepricingConfigB\x03\xe0A\x02R\x0frepricingConfig\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"3cloudchannel.googleapis.com/CustomerRepricingConfig\x12\\accounts/{account}/customers/{customer}/customerRepricingConfigs/{customer_repricing_config}\"\x95\x03\n" +
+	"\x1dChannelPartnerRepricingConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12Y\n" +
+	"\x10repricing_config\x18\x02 \x01(\v2(.google.cloud.channel.v1.RepricingConfigB\x04\xe2A\x01\x02R\x0frepricingConfig\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime:\xbb\x01\xeaA\xb7\x01\n" +
-	"9cloudchannel.googleapis.com/ChannelPartnerRepricingConfig\x12zaccounts/{account}/channelPartnerLinks/{channel_partner}/channelPartnerRepricingConfigs/{channel_partner_repricing_config}\"\x94\x06\n" +
-	"\x0fRepricingConfig\x12\x7f\n" +
-	"\x17entitlement_granularity\x18\x04 \x01(\v2?.google.cloud.channel.v1.RepricingConfig.EntitlementGranularityB\x03\xe0A\x02H\x00R\x16entitlementGranularity\x12\x88\x01\n" +
-	"\x1bchannel_partner_granularity\x18\x05 \x01(\v2B.google.cloud.channel.v1.RepricingConfig.ChannelPartnerGranularityB\x02\x18\x01H\x00R\x19channelPartnerGranularity\x12N\n" +
-	"\x17effective_invoice_month\x18\x01 \x01(\v2\x11.google.type.DateB\x03\xe0A\x02R\x15effectiveInvoiceMonth\x12Q\n" +
+	"9cloudchannel.googleapis.com/ChannelPartnerRepricingConfig\x12zaccounts/{account}/channelPartnerLinks/{channel_partner}/channelPartnerRepricingConfigs/{channel_partner_repricing_config}\"\x99\x06\n" +
+	"\x0fRepricingConfig\x12\x80\x01\n" +
+	"\x17entitlement_granularity\x18\x04 \x01(\v2?.google.cloud.channel.v1.RepricingConfig.EntitlementGranularityB\x04\xe2A\x01\x02H\x00R\x16entitlementGranularity\x12\x88\x01\n" +
+	"\x1bchannel_partner_granularity\x18\x05 \x01(\v2B.google.cloud.channel.v1.RepricingConfig.ChannelPartnerGranularityB\x02\x18\x01H\x00R\x19channelPartnerGranularity\x12O\n" +
+	"\x17effective_invoice_month\x18\x01 \x01(\v2\x11.google.type.DateB\x04\xe2A\x01\x02R\x15effectiveInvoiceMonth\x12R\n" +
 	"\n" +
-	"adjustment\x18\x02 \x01(\v2,.google.cloud.channel.v1.RepricingAdjustmentB\x03\xe0A\x02R\n" +
-	"adjustment\x12U\n" +
-	"\x0frebilling_basis\x18\x03 \x01(\x0e2'.google.cloud.channel.v1.RebillingBasisB\x03\xe0A\x02R\x0erebillingBasis\x12a\n" +
+	"adjustment\x18\x02 \x01(\v2,.google.cloud.channel.v1.RepricingAdjustmentB\x04\xe2A\x01\x02R\n" +
+	"adjustment\x12V\n" +
+	"\x0frebilling_basis\x18\x03 \x01(\x0e2'.google.cloud.channel.v1.RebillingBasisB\x04\xe2A\x01\x02R\x0erebillingBasis\x12a\n" +
 	"\x15conditional_overrides\x18\x06 \x03(\v2,.google.cloud.channel.v1.ConditionalOverrideR\x14conditionalOverrides\x1ah\n" +
 	"\x16EntitlementGranularity\x12N\n" +
 	"\ventitlement\x18\x01 \x01(\tB,\xfaA)\n" +
@@ -824,13 +824,13 @@ const file_google_cloud_channel_v1_repricing_proto_rawDesc = "" +
 	"\x14PercentageAdjustment\x124\n" +
 	"\n" +
 	"percentage\x18\x02 \x01(\v2\x14.google.type.DecimalR\n" +
-	"percentage\"\xa2\x02\n" +
-	"\x13ConditionalOverride\x12Q\n" +
+	"percentage\"\xa5\x02\n" +
+	"\x13ConditionalOverride\x12R\n" +
 	"\n" +
-	"adjustment\x18\x01 \x01(\v2,.google.cloud.channel.v1.RepricingAdjustmentB\x03\xe0A\x02R\n" +
-	"adjustment\x12U\n" +
-	"\x0frebilling_basis\x18\x02 \x01(\x0e2'.google.cloud.channel.v1.RebillingBasisB\x03\xe0A\x02R\x0erebillingBasis\x12a\n" +
-	"\x13repricing_condition\x18\x03 \x01(\v2+.google.cloud.channel.v1.RepricingConditionB\x03\xe0A\x02R\x12repricingCondition\"\x7f\n" +
+	"adjustment\x18\x01 \x01(\v2,.google.cloud.channel.v1.RepricingAdjustmentB\x04\xe2A\x01\x02R\n" +
+	"adjustment\x12V\n" +
+	"\x0frebilling_basis\x18\x02 \x01(\x0e2'.google.cloud.channel.v1.RebillingBasisB\x04\xe2A\x01\x02R\x0erebillingBasis\x12b\n" +
+	"\x13repricing_condition\x18\x03 \x01(\v2+.google.cloud.channel.v1.RepricingConditionB\x04\xe2A\x01\x02R\x12repricingCondition\"\x7f\n" +
 	"\x12RepricingCondition\x12\\\n" +
 	"\x13sku_group_condition\x18\x01 \x01(\v2*.google.cloud.channel.v1.SkuGroupConditionH\x00R\x11skuGroupConditionB\v\n" +
 	"\tcondition\"0\n" +

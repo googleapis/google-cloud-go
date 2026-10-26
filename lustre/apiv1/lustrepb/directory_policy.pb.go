@@ -475,35 +475,35 @@ var File_google_cloud_lustre_v1_directory_policy_proto protoreflect.FileDescript
 
 const file_google_cloud_lustre_v1_directory_policy_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/lustre/v1/directory_policy.proto\x12\x16google.cloud.lustre.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\"\xf3\x03\n" +
-	"\x0fDirectoryPolicy\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\b\xe0A\x05R\x04name\x12-\n" +
-	"\x0edirectory_path\x18\x02 \x01(\tB\x06\xe0A\x02\xe0A\x05R\rdirectoryPath\x12/\n" +
-	"\x11lustre_project_id\x18\x03 \x01(\x03B\x03\xe0A\x03R\x0flustreProjectId\x12\x1d\n" +
-	"\x03uid\x18\x04 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12H\n" +
-	"\x05state\x18\x05 \x01(\x0e2-.google.cloud.lustre.v1.DirectoryPolicy.StateB\x03\xe0A\x03R\x05state\"F\n" +
+	"-google/cloud/lustre/v1/directory_policy.proto\x12\x16google.cloud.lustre.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\"\xf4\x03\n" +
+	"\x0fDirectoryPolicy\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\b\x05R\x04name\x12,\n" +
+	"\x0edirectory_path\x18\x02 \x01(\tB\x05\xe2A\x02\x02\x05R\rdirectoryPath\x120\n" +
+	"\x11lustre_project_id\x18\x03 \x01(\x03B\x04\xe2A\x01\x03R\x0flustreProjectId\x12\x1e\n" +
+	"\x03uid\x18\x04 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12I\n" +
+	"\x05state\x18\x05 \x01(\x0e2-.google.cloud.lustre.v1.DirectoryPolicy.StateB\x04\xe2A\x01\x03R\x05state\"F\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bCREATING\x10\x01\x12\n" +
 	"\n" +
 	"\x06ACTIVE\x10\x02\x12\f\n" +
 	"\bDELETING\x10\x03:\xb2\x01\xeaA\xae\x01\n" +
-	"%lustre.googleapis.com/DirectoryPolicy\x12aprojects/{project}/locations/{location}/instances/{instance}/directoryPolicies/{directory_policy}*\x11directoryPolicies2\x0fdirectoryPolicy\"\xf3\x01\n" +
-	"\x1cCreateDirectoryPolicyRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\x12%lustre.googleapis.com/DirectoryPolicyR\x06parent\x123\n" +
-	"\x13directory_policy_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x11directoryPolicyId\x12W\n" +
-	"\x10directory_policy\x18\x03 \x01(\v2'.google.cloud.lustre.v1.DirectoryPolicyB\x03\xe0A\x02R\x0fdirectoryPolicy\"a\n" +
-	"\x1cDeleteDirectoryPolicyRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%lustre.googleapis.com/DirectoryPolicyR\x04name\"^\n" +
-	"\x19GetDirectoryPolicyRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%lustre.googleapis.com/DirectoryPolicyR\x04name\"\xab\x01\n" +
-	"\x1cListDirectoryPoliciesRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\x12%lustre.googleapis.com/DirectoryPolicyR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"%lustre.googleapis.com/DirectoryPolicy\x12aprojects/{project}/locations/{location}/instances/{instance}/directoryPolicies/{directory_policy}*\x11directoryPolicies2\x0fdirectoryPolicy\"\xf6\x01\n" +
+	"\x1cCreateDirectoryPolicyRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\x12%lustre.googleapis.com/DirectoryPolicyR\x06parent\x124\n" +
+	"\x13directory_policy_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x11directoryPolicyId\x12X\n" +
+	"\x10directory_policy\x18\x03 \x01(\v2'.google.cloud.lustre.v1.DirectoryPolicyB\x04\xe2A\x01\x02R\x0fdirectoryPolicy\"b\n" +
+	"\x1cDeleteDirectoryPolicyRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%lustre.googleapis.com/DirectoryPolicyR\x04name\"_\n" +
+	"\x19GetDirectoryPolicyRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%lustre.googleapis.com/DirectoryPolicyR\x04name\"\xae\x01\n" +
+	"\x1cListDirectoryPoliciesRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\x12%lustre.googleapis.com/DirectoryPolicyR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x9f\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x9f\x01\n" +
 	"\x1dListDirectoryPoliciesResponse\x12V\n" +
 	"\x12directory_policies\x18\x01 \x03(\v2'.google.cloud.lustre.v1.DirectoryPolicyR\x11directoryPolicies\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageTokenBh\n" +

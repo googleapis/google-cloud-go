@@ -3068,32 +3068,32 @@ var File_google_cloud_discoveryengine_v1beta_import_config_proto protoreflect.Fi
 
 const file_google_cloud_discoveryengine_v1beta_import_config_proto_rawDesc = "" +
 	"\n" +
-	"7google/cloud/discoveryengine/v1beta/import_config.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/discoveryengine/v1beta/completion.proto\x1a2google/cloud/discoveryengine/v1beta/document.proto\x1a6google/cloud/discoveryengine/v1beta/sample_query.proto\x1a4google/cloud/discoveryengine/v1beta/user_event.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\x1a\x16google/type/date.proto\"P\n" +
-	"\tGcsSource\x12\"\n" +
+	"7google/cloud/discoveryengine/v1beta/import_config.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/discoveryengine/v1beta/completion.proto\x1a2google/cloud/discoveryengine/v1beta/document.proto\x1a6google/cloud/discoveryengine/v1beta/sample_query.proto\x1a4google/cloud/discoveryengine/v1beta/user_event.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\x1a\x16google/type/date.proto\"Q\n" +
+	"\tGcsSource\x12#\n" +
 	"\n" +
-	"input_uris\x18\x01 \x03(\tB\x03\xe0A\x02R\tinputUris\x12\x1f\n" +
+	"input_uris\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\tinputUris\x12\x1f\n" +
 	"\vdata_schema\x18\x02 \x01(\tR\n" +
-	"dataSchema\"\x85\x02\n" +
+	"dataSchema\"\x87\x02\n" +
 	"\x0eBigQuerySource\x12:\n" +
 	"\x0epartition_date\x18\x05 \x01(\v2\x11.google.type.DateH\x00R\rpartitionDate\x12\x1d\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tR\tprojectId\x12\"\n" +
+	"project_id\x18\x01 \x01(\tR\tprojectId\x12#\n" +
 	"\n" +
-	"dataset_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tdatasetId\x12\x1e\n" +
-	"\btable_id\x18\x03 \x01(\tB\x03\xe0A\x02R\atableId\x12&\n" +
+	"dataset_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tdatasetId\x12\x1f\n" +
+	"\btable_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\atableId\x12&\n" +
 	"\x0fgcs_staging_dir\x18\x04 \x01(\tR\rgcsStagingDir\x12\x1f\n" +
 	"\vdata_schema\x18\x06 \x01(\tR\n" +
 	"dataSchemaB\v\n" +
-	"\tpartition\"\xc6\x01\n" +
+	"\tpartition\"\xc9\x01\n" +
 	"\rSpannerSource\x12\x1d\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tR\tprojectId\x12$\n" +
-	"\vinstance_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"instanceId\x12$\n" +
-	"\vdatabase_id\x18\x03 \x01(\tB\x03\xe0A\x02R\n" +
-	"databaseId\x12\x1e\n" +
-	"\btable_id\x18\x04 \x01(\tB\x03\xe0A\x02R\atableId\x12*\n" +
-	"\x11enable_data_boost\x18\x05 \x01(\bR\x0fenableDataBoost\"\x98\b\n" +
+	"project_id\x18\x01 \x01(\tR\tprojectId\x12%\n" +
+	"\vinstance_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"instanceId\x12%\n" +
+	"\vdatabase_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"databaseId\x12\x1f\n" +
+	"\btable_id\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\atableId\x12*\n" +
+	"\x11enable_data_boost\x18\x05 \x01(\bR\x0fenableDataBoost\"\x99\b\n" +
 	"\x0fBigtableOptions\x12$\n" +
 	"\x0ekey_field_name\x18\x01 \x01(\tR\fkeyFieldName\x12^\n" +
 	"\bfamilies\x18\x02 \x03(\v2B.google.cloud.discoveryengine.v1beta.BigtableOptions.FamiliesEntryR\bfamilies\x1a\xbe\x02\n" +
@@ -3102,9 +3102,9 @@ const file_google_cloud_discoveryengine_v1beta_import_config_proto_rawDesc = "" 
 	"field_name\x18\x01 \x01(\tR\tfieldName\x12Y\n" +
 	"\bencoding\x18\x02 \x01(\x0e2=.google.cloud.discoveryengine.v1beta.BigtableOptions.EncodingR\bencoding\x12M\n" +
 	"\x04type\x18\x03 \x01(\x0e29.google.cloud.discoveryengine.v1beta.BigtableOptions.TypeR\x04type\x12]\n" +
-	"\acolumns\x18\x04 \x03(\v2C.google.cloud.discoveryengine.v1beta.BigtableOptions.BigtableColumnR\acolumns\x1a\xfc\x01\n" +
-	"\x0eBigtableColumn\x12!\n" +
-	"\tqualifier\x18\x01 \x01(\fB\x03\xe0A\x02R\tqualifier\x12\x1d\n" +
+	"\acolumns\x18\x04 \x03(\v2C.google.cloud.discoveryengine.v1beta.BigtableOptions.BigtableColumnR\acolumns\x1a\xfd\x01\n" +
+	"\x0eBigtableColumn\x12\"\n" +
+	"\tqualifier\x18\x01 \x01(\fB\x04\xe2A\x01\x02R\tqualifier\x12\x1d\n" +
 	"\n" +
 	"field_name\x18\x02 \x01(\tR\tfieldName\x12Y\n" +
 	"\bencoding\x18\x03 \x01(\x0e2=.google.cloud.discoveryengine.v1beta.BigtableOptions.EncodingR\bencoding\x12M\n" +
@@ -3127,74 +3127,74 @@ const file_google_cloud_discoveryengine_v1beta_import_config_proto_rawDesc = "" 
 	"\x14ENCODING_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04TEXT\x10\x01\x12\n" +
 	"\n" +
-	"\x06BINARY\x10\x02\"\xdb\x01\n" +
+	"\x06BINARY\x10\x02\"\xde\x01\n" +
 	"\x0eBigtableSource\x12\x1d\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tR\tprojectId\x12$\n" +
-	"\vinstance_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"instanceId\x12\x1e\n" +
-	"\btable_id\x18\x03 \x01(\tB\x03\xe0A\x02R\atableId\x12d\n" +
-	"\x10bigtable_options\x18\x04 \x01(\v24.google.cloud.discoveryengine.v1beta.BigtableOptionsB\x03\xe0A\x02R\x0fbigtableOptions\"\x81\x02\n" +
-	"\x0fFhirStoreSource\x12J\n" +
+	"project_id\x18\x01 \x01(\tR\tprojectId\x12%\n" +
+	"\vinstance_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"instanceId\x12\x1f\n" +
+	"\btable_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\atableId\x12e\n" +
+	"\x10bigtable_options\x18\x04 \x01(\v24.google.cloud.discoveryengine.v1beta.BigtableOptionsB\x04\xe2A\x01\x02R\x0fbigtableOptions\"\x83\x02\n" +
+	"\x0fFhirStoreSource\x12K\n" +
 	"\n" +
-	"fhir_store\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
+	"fhir_store\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
 	"#healthcare.googleapis.com/FhirStoreR\tfhirStore\x12&\n" +
 	"\x0fgcs_staging_dir\x18\x02 \x01(\tR\rgcsStagingDir\x12%\n" +
-	"\x0eresource_types\x18\x03 \x03(\tR\rresourceTypes\x12S\n" +
-	"$update_from_latest_predefined_schema\x18\x04 \x01(\bB\x03\xe0A\x01R updateFromLatestPredefinedSchema\"\xdd\x01\n" +
+	"\x0eresource_types\x18\x03 \x03(\tR\rresourceTypes\x12T\n" +
+	"$update_from_latest_predefined_schema\x18\x04 \x01(\bB\x04\xe2A\x01\x01R updateFromLatestPredefinedSchema\"\xe0\x01\n" +
 	"\x0eCloudSqlSource\x12\x1d\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tR\tprojectId\x12$\n" +
-	"\vinstance_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"instanceId\x12$\n" +
-	"\vdatabase_id\x18\x03 \x01(\tB\x03\xe0A\x02R\n" +
-	"databaseId\x12\x1e\n" +
-	"\btable_id\x18\x04 \x01(\tB\x03\xe0A\x02R\atableId\x12&\n" +
+	"project_id\x18\x01 \x01(\tR\tprojectId\x12%\n" +
+	"\vinstance_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"instanceId\x12%\n" +
+	"\vdatabase_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"databaseId\x12\x1f\n" +
+	"\btable_id\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\atableId\x12&\n" +
 	"\x0fgcs_staging_dir\x18\x05 \x01(\tR\rgcsStagingDir\x12\x18\n" +
-	"\aoffload\x18\x06 \x01(\bR\aoffload\"\xe6\x01\n" +
+	"\aoffload\x18\x06 \x01(\bR\aoffload\"\xea\x01\n" +
 	"\rAlloyDbSource\x12\x1d\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tR\tprojectId\x12$\n" +
-	"\vlocation_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"locationId\x12\"\n" +
+	"project_id\x18\x01 \x01(\tR\tprojectId\x12%\n" +
+	"\vlocation_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"locationId\x12#\n" +
 	"\n" +
-	"cluster_id\x18\x03 \x01(\tB\x03\xe0A\x02R\tclusterId\x12$\n" +
-	"\vdatabase_id\x18\x04 \x01(\tB\x03\xe0A\x02R\n" +
-	"databaseId\x12\x1e\n" +
-	"\btable_id\x18\x05 \x01(\tB\x03\xe0A\x02R\atableId\x12&\n" +
-	"\x0fgcs_staging_dir\x18\x06 \x01(\tR\rgcsStagingDir\"\xa8\x01\n" +
+	"cluster_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\tclusterId\x12%\n" +
+	"\vdatabase_id\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"databaseId\x12\x1f\n" +
+	"\btable_id\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\atableId\x12&\n" +
+	"\x0fgcs_staging_dir\x18\x06 \x01(\tR\rgcsStagingDir\"\xaa\x01\n" +
 	"\x0fFirestoreSource\x12\x1d\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tR\tprojectId\x12$\n" +
-	"\vdatabase_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"databaseId\x12(\n" +
-	"\rcollection_id\x18\x03 \x01(\tB\x03\xe0A\x02R\fcollectionId\x12&\n" +
+	"project_id\x18\x01 \x01(\tR\tprojectId\x12%\n" +
+	"\vdatabase_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"databaseId\x12)\n" +
+	"\rcollection_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\fcollectionId\x12&\n" +
 	"\x0fgcs_staging_dir\x18\x04 \x01(\tR\rgcsStagingDir\"C\n" +
 	"\x11ImportErrorConfig\x12\x1f\n" +
 	"\n" +
 	"gcs_prefix\x18\x01 \x01(\tH\x00R\tgcsPrefixB\r\n" +
-	"\vdestination\"\xd1\x04\n" +
+	"\vdestination\"\xd3\x04\n" +
 	"\x17ImportUserEventsRequest\x12p\n" +
 	"\rinline_source\x18\x02 \x01(\v2I.google.cloud.discoveryengine.v1beta.ImportUserEventsRequest.InlineSourceH\x00R\finlineSource\x12O\n" +
 	"\n" +
 	"gcs_source\x18\x03 \x01(\v2..google.cloud.discoveryengine.v1beta.GcsSourceH\x00R\tgcsSource\x12^\n" +
-	"\x0fbigquery_source\x18\x04 \x01(\v23.google.cloud.discoveryengine.v1beta.BigQuerySourceH\x00R\x0ebigquerySource\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"\x0fbigquery_source\x18\x04 \x01(\v23.google.cloud.discoveryengine.v1beta.BigQuerySourceH\x00R\x0ebigquerySource\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
 	"(discoveryengine.googleapis.com/DataStoreR\x06parent\x12Y\n" +
-	"\ferror_config\x18\x05 \x01(\v26.google.cloud.discoveryengine.v1beta.ImportErrorConfigR\verrorConfig\x1ad\n" +
-	"\fInlineSource\x12T\n" +
-	"\vuser_events\x18\x01 \x03(\v2..google.cloud.discoveryengine.v1beta.UserEventB\x03\xe0A\x02R\n" +
+	"\ferror_config\x18\x05 \x01(\v26.google.cloud.discoveryengine.v1beta.ImportErrorConfigR\verrorConfig\x1ae\n" +
+	"\fInlineSource\x12U\n" +
+	"\vuser_events\x18\x01 \x03(\v2..google.cloud.discoveryengine.v1beta.UserEventB\x04\xe2A\x01\x02R\n" +
 	"userEventsB\b\n" +
 	"\x06source\"\x92\x02\n" +
 	"\x18ImportUserEventsResponse\x127\n" +
 	"\rerror_samples\x18\x01 \x03(\v2\x12.google.rpc.StatusR\ferrorSamples\x12Y\n" +
 	"\ferror_config\x18\x02 \x01(\v26.google.cloud.discoveryengine.v1beta.ImportErrorConfigR\verrorConfig\x12.\n" +
 	"\x13joined_events_count\x18\x03 \x01(\x03R\x11joinedEventsCount\x122\n" +
-	"\x15unjoined_events_count\x18\x04 \x01(\x03R\x13unjoinedEventsCount\"\xe3\x01\n" +
+	"\x15unjoined_events_count\x18\x04 \x01(\x03R\x13unjoinedEventsCount\"\xe4\x01\n" +
 	"\x18ImportUserEventsMetadata\x12;\n" +
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12#\n" +
 	"\rsuccess_count\x18\x03 \x01(\x03R\fsuccessCount\x12#\n" +
 	"\rfailure_count\x18\x04 \x01(\x03R\ffailureCount\"\xfe\x01\n" +
@@ -3206,7 +3206,7 @@ const file_google_cloud_discoveryengine_v1beta_import_config_proto_rawDesc = "" 
 	"\rsuccess_count\x18\x03 \x01(\x03R\fsuccessCount\x12#\n" +
 	"\rfailure_count\x18\x04 \x01(\x03R\ffailureCount\x12\x1f\n" +
 	"\vtotal_count\x18\x05 \x01(\x03R\n" +
-	"totalCount\"\x9f\f\n" +
+	"totalCount\"\xa2\f\n" +
 	"\x16ImportDocumentsRequest\x12o\n" +
 	"\rinline_source\x18\x02 \x01(\v2H.google.cloud.discoveryengine.v1beta.ImportDocumentsRequest.InlineSourceH\x00R\finlineSource\x12O\n" +
 	"\n" +
@@ -3218,18 +3218,18 @@ const file_google_cloud_discoveryengine_v1beta_import_config_proto_rawDesc = "" 
 	"\x10cloud_sql_source\x18\f \x01(\v23.google.cloud.discoveryengine.v1beta.CloudSqlSourceH\x00R\x0ecloudSqlSource\x12a\n" +
 	"\x10firestore_source\x18\r \x01(\v24.google.cloud.discoveryengine.v1beta.FirestoreSourceH\x00R\x0ffirestoreSource\x12\\\n" +
 	"\x0falloy_db_source\x18\x0e \x01(\v22.google.cloud.discoveryengine.v1beta.AlloyDbSourceH\x00R\ralloyDbSource\x12^\n" +
-	"\x0fbigtable_source\x18\x0f \x01(\v23.google.cloud.discoveryengine.v1beta.BigtableSourceH\x00R\x0ebigtableSource\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
+	"\x0fbigtable_source\x18\x0f \x01(\v23.google.cloud.discoveryengine.v1beta.BigtableSourceH\x00R\x0ebigtableSource\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
 	"%discoveryengine.googleapis.com/BranchR\x06parent\x12Y\n" +
 	"\ferror_config\x18\x05 \x01(\v26.google.cloud.discoveryengine.v1beta.ImportErrorConfigR\verrorConfig\x12\x7f\n" +
 	"\x13reconciliation_mode\x18\x06 \x01(\x0e2N.google.cloud.discoveryengine.v1beta.ImportDocumentsRequest.ReconciliationModeR\x12reconciliationMode\x12;\n" +
 	"\vupdate_mask\x18\a \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"updateMask\x12*\n" +
 	"\x11auto_generate_ids\x18\b \x01(\bR\x0fautoGenerateIds\x12\x19\n" +
-	"\bid_field\x18\t \x01(\tR\aidField\x127\n" +
-	"\x15force_refresh_content\x18\x10 \x01(\bB\x03\xe0A\x01R\x13forceRefreshContent\x1a`\n" +
-	"\fInlineSource\x12P\n" +
-	"\tdocuments\x18\x01 \x03(\v2-.google.cloud.discoveryengine.v1beta.DocumentB\x03\xe0A\x02R\tdocuments\"T\n" +
+	"\bid_field\x18\t \x01(\tR\aidField\x128\n" +
+	"\x15force_refresh_content\x18\x10 \x01(\bB\x04\xe2A\x01\x01R\x13forceRefreshContent\x1aa\n" +
+	"\fInlineSource\x12Q\n" +
+	"\tdocuments\x18\x01 \x03(\v2-.google.cloud.discoveryengine.v1beta.DocumentB\x04\xe2A\x01\x02R\tdocuments\"T\n" +
 	"\x12ReconciliationMode\x12#\n" +
 	"\x1fRECONCILIATION_MODE_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vINCREMENTAL\x10\x01\x12\b\n" +
@@ -3237,15 +3237,15 @@ const file_google_cloud_discoveryengine_v1beta_import_config_proto_rawDesc = "" 
 	"\x06source\"\xad\x01\n" +
 	"\x17ImportDocumentsResponse\x127\n" +
 	"\rerror_samples\x18\x01 \x03(\v2\x12.google.rpc.StatusR\ferrorSamples\x12Y\n" +
-	"\ferror_config\x18\x02 \x01(\v26.google.cloud.discoveryengine.v1beta.ImportErrorConfigR\verrorConfig\"\xbb\x03\n" +
+	"\ferror_config\x18\x02 \x01(\v26.google.cloud.discoveryengine.v1beta.ImportErrorConfigR\verrorConfig\"\xbd\x03\n" +
 	"&ImportSuggestionDenyListEntriesRequest\x12\x7f\n" +
 	"\rinline_source\x18\x02 \x01(\v2X.google.cloud.discoveryengine.v1beta.ImportSuggestionDenyListEntriesRequest.InlineSourceH\x00R\finlineSource\x12O\n" +
 	"\n" +
-	"gcs_source\x18\x03 \x01(\v2..google.cloud.discoveryengine.v1beta.GcsSourceH\x00R\tgcsSource\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(discoveryengine.googleapis.com/DataStoreR\x06parent\x1ak\n" +
-	"\fInlineSource\x12[\n" +
-	"\aentries\x18\x01 \x03(\v2<.google.cloud.discoveryengine.v1beta.SuggestionDenyListEntryB\x03\xe0A\x02R\aentriesB\b\n" +
+	"gcs_source\x18\x03 \x01(\v2..google.cloud.discoveryengine.v1beta.GcsSourceH\x00R\tgcsSource\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(discoveryengine.googleapis.com/DataStoreR\x06parent\x1al\n" +
+	"\fInlineSource\x12\\\n" +
+	"\aentries\x18\x01 \x03(\v2<.google.cloud.discoveryengine.v1beta.SuggestionDenyListEntryB\x04\xe2A\x01\x02R\aentriesB\b\n" +
 	"\x06source\"\xca\x01\n" +
 	"'ImportSuggestionDenyListEntriesResponse\x127\n" +
 	"\rerror_samples\x18\x01 \x03(\v2\x12.google.rpc.StatusR\ferrorSamples\x124\n" +
@@ -3255,17 +3255,17 @@ const file_google_cloud_discoveryengine_v1beta_import_config_proto_rawDesc = "" 
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12;\n" +
 	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"updateTime\"\xf3\x04\n" +
+	"updateTime\"\xf5\x04\n" +
 	"\"ImportCompletionSuggestionsRequest\x12{\n" +
 	"\rinline_source\x18\x02 \x01(\v2T.google.cloud.discoveryengine.v1beta.ImportCompletionSuggestionsRequest.InlineSourceH\x00R\finlineSource\x12O\n" +
 	"\n" +
 	"gcs_source\x18\x03 \x01(\v2..google.cloud.discoveryengine.v1beta.GcsSourceH\x00R\tgcsSource\x12^\n" +
-	"\x0fbigquery_source\x18\x04 \x01(\v23.google.cloud.discoveryengine.v1beta.BigQuerySourceH\x00R\x0ebigquerySource\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"\x0fbigquery_source\x18\x04 \x01(\v23.google.cloud.discoveryengine.v1beta.BigQuerySourceH\x00R\x0ebigquerySource\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
 	"(discoveryengine.googleapis.com/DataStoreR\x06parent\x12Y\n" +
-	"\ferror_config\x18\x05 \x01(\v26.google.cloud.discoveryengine.v1beta.ImportErrorConfigR\verrorConfig\x1ap\n" +
-	"\fInlineSource\x12`\n" +
-	"\vsuggestions\x18\x01 \x03(\v29.google.cloud.discoveryengine.v1beta.CompletionSuggestionB\x03\xe0A\x02R\vsuggestionsB\b\n" +
+	"\ferror_config\x18\x05 \x01(\v26.google.cloud.discoveryengine.v1beta.ImportErrorConfigR\verrorConfig\x1aq\n" +
+	"\fInlineSource\x12a\n" +
+	"\vsuggestions\x18\x01 \x03(\v29.google.cloud.discoveryengine.v1beta.CompletionSuggestionB\x04\xe2A\x01\x02R\vsuggestionsB\b\n" +
 	"\x06source\"\xb9\x01\n" +
 	"#ImportCompletionSuggestionsResponse\x127\n" +
 	"\rerror_samples\x18\x01 \x03(\v2\x12.google.rpc.StatusR\ferrorSamples\x12Y\n" +
@@ -3276,17 +3276,17 @@ const file_google_cloud_discoveryengine_v1beta_import_config_proto_rawDesc = "" 
 	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"updateTime\x12#\n" +
 	"\rsuccess_count\x18\x03 \x01(\x03R\fsuccessCount\x12#\n" +
-	"\rfailure_count\x18\x04 \x01(\x03R\ffailureCount\"\xe4\x04\n" +
+	"\rfailure_count\x18\x04 \x01(\x03R\ffailureCount\"\xe6\x04\n" +
 	"\x1aImportSampleQueriesRequest\x12s\n" +
 	"\rinline_source\x18\x02 \x01(\v2L.google.cloud.discoveryengine.v1beta.ImportSampleQueriesRequest.InlineSourceH\x00R\finlineSource\x12O\n" +
 	"\n" +
 	"gcs_source\x18\x03 \x01(\v2..google.cloud.discoveryengine.v1beta.GcsSourceH\x00R\tgcsSource\x12^\n" +
-	"\x0fbigquery_source\x18\x04 \x01(\v23.google.cloud.discoveryengine.v1beta.BigQuerySourceH\x00R\x0ebigquerySource\x12M\n" +
-	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
+	"\x0fbigquery_source\x18\x04 \x01(\v23.google.cloud.discoveryengine.v1beta.BigQuerySourceH\x00R\x0ebigquerySource\x12N\n" +
+	"\x06parent\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
 	"-discoveryengine.googleapis.com/SampleQuerySetR\x06parent\x12Y\n" +
-	"\ferror_config\x18\x05 \x01(\v26.google.cloud.discoveryengine.v1beta.ImportErrorConfigR\verrorConfig\x1al\n" +
-	"\fInlineSource\x12\\\n" +
-	"\x0esample_queries\x18\x01 \x03(\v20.google.cloud.discoveryengine.v1beta.SampleQueryB\x03\xe0A\x02R\rsampleQueriesB\b\n" +
+	"\ferror_config\x18\x05 \x01(\v26.google.cloud.discoveryengine.v1beta.ImportErrorConfigR\verrorConfig\x1am\n" +
+	"\fInlineSource\x12]\n" +
+	"\x0esample_queries\x18\x01 \x03(\v20.google.cloud.discoveryengine.v1beta.SampleQueryB\x04\xe2A\x01\x02R\rsampleQueriesB\b\n" +
 	"\x06source\"\xb1\x01\n" +
 	"\x1bImportSampleQueriesResponse\x127\n" +
 	"\rerror_samples\x18\x01 \x03(\v2\x12.google.rpc.StatusR\ferrorSamples\x12Y\n" +

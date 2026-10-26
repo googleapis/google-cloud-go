@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/workflows/v1.21.0...workflows/v1.22.0) (2026-10-22)
+
+
+### Features
+
+* Update API sources and regenerate ([#20728](https://github.com/googleapis/google-cloud-go/issues/20728)) ([ab1da9d](https://github.com/googleapis/google-cloud-go/commit/ab1da9d200416594ae18fa7a2944961f1c92c928))
+
 ## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/workflows/v1.20.0...workflows/v1.21.0) (2026-09-23)
 
 

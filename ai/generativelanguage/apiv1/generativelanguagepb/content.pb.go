@@ -479,26 +479,26 @@ var File_google_ai_generativelanguage_v1_content_proto protoreflect.FileDescript
 
 const file_google_ai_generativelanguage_v1_content_proto_rawDesc = "" +
 	"\n" +
-	"-google/ai/generativelanguage/v1/content.proto\x12\x1fgoogle.ai.generativelanguage.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/protobuf/duration.proto\"_\n" +
+	"-google/ai/generativelanguage/v1/content.proto\x12\x1fgoogle.ai.generativelanguage.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/protobuf/duration.proto\"`\n" +
 	"\aContent\x12;\n" +
-	"\x05parts\x18\x01 \x03(\v2%.google.ai.generativelanguage.v1.PartR\x05parts\x12\x17\n" +
-	"\x04role\x18\x02 \x01(\tB\x03\xe0A\x01R\x04role\"\xd8\x01\n" +
+	"\x05parts\x18\x01 \x03(\v2%.google.ai.generativelanguage.v1.PartR\x05parts\x12\x18\n" +
+	"\x04role\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04role\"\xd9\x01\n" +
 	"\x04Part\x12\x14\n" +
 	"\x04text\x18\x02 \x01(\tH\x00R\x04text\x12H\n" +
 	"\vinline_data\x18\x03 \x01(\v2%.google.ai.generativelanguage.v1.BlobH\x00R\n" +
-	"inlineData\x12\\\n" +
-	"\x0evideo_metadata\x18\x0e \x01(\v2..google.ai.generativelanguage.v1.VideoMetadataB\x03\xe0A\x01H\x01R\rvideoMetadataB\x06\n" +
+	"inlineData\x12]\n" +
+	"\x0evideo_metadata\x18\x0e \x01(\v2..google.ai.generativelanguage.v1.VideoMetadataB\x04\xe2A\x01\x01H\x01R\rvideoMetadataB\x06\n" +
 	"\x04dataB\n" +
 	"\n" +
 	"\bmetadata\"7\n" +
 	"\x04Blob\x12\x1b\n" +
 	"\tmime_type\x18\x01 \x01(\tR\bmimeType\x12\x12\n" +
-	"\x04data\x18\x02 \x01(\fR\x04data\"\xa8\x01\n" +
-	"\rVideoMetadata\x12A\n" +
-	"\fstart_offset\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\vstartOffset\x12=\n" +
+	"\x04data\x18\x02 \x01(\fR\x04data\"\xab\x01\n" +
+	"\rVideoMetadata\x12B\n" +
+	"\fstart_offset\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\vstartOffset\x12>\n" +
 	"\n" +
-	"end_offset\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\tendOffset\x12\x15\n" +
-	"\x03fps\x18\x03 \x01(\x01B\x03\xe0A\x01R\x03fps\"|\n" +
+	"end_offset\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\tendOffset\x12\x16\n" +
+	"\x03fps\x18\x03 \x01(\x01B\x04\xe2A\x01\x01R\x03fps\"|\n" +
 	"\x12ModalityTokenCount\x12E\n" +
 	"\bmodality\x18\x01 \x01(\x0e2).google.ai.generativelanguage.v1.ModalityR\bmodality\x12\x1f\n" +
 	"\vtoken_count\x18\x02 \x01(\x05R\n" +

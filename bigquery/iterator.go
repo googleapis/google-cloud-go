@@ -39,7 +39,7 @@ func newRowIterator(ctx context.Context, src *rowSource, pf pageFetcher) *RowIte
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
 		it.fetch,
 		func() int { return len(it.rows) },
-		func() interface{} { r := it.rows; it.rows = nil; return r })
+		func() any { r := it.rows; it.rows = nil; return r })
 	return it
 }
 
@@ -157,7 +157,7 @@ type pageFetcher func(ctx context.Context, _ *rowSource, _ Schema, startIndex ui
 // NullFloat64, NullBool, NullString, NullTimestamp, NullDate, NullTime or
 // NullDateTime. You can also use a *[]Value or *map[string]Value to read from a
 // table with NULLs.
-func (it *RowIterator) Next(dst interface{}) error {
+func (it *RowIterator) Next(dst any) error {
 	var vl ValueLoader
 	switch dst := dst.(type) {
 	case ValueLoader:
@@ -188,9 +188,9 @@ func (it *RowIterator) Next(dst interface{}) error {
 	return vl.Load(row, it.Schema)
 }
 
-func isStructPtr(x interface{}) bool {
+func isStructPtr(x any) bool {
 	t := reflect.TypeOf(x)
-	return t.Kind() == reflect.Ptr && t.Elem().Kind() == reflect.Struct
+	return t.Kind() == reflect.Pointer && t.Elem().Kind() == reflect.Struct
 }
 
 // PageInfo supports pagination. See the google.golang.org/api/iterator package for details.

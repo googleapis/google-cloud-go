@@ -487,24 +487,24 @@ var File_google_cloud_apphub_v1_application_proto protoreflect.FileDescriptor
 
 const file_google_cloud_apphub_v1_application_proto_rawDesc = "" +
 	"\n" +
-	"(google/cloud/apphub/v1/application.proto\x12\x16google.cloud.apphub.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/apphub/v1/attributes.proto\x1a'google/cloud/apphub/v1/properties.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf9\x06\n" +
-	"\vApplication\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12G\n" +
+	"(google/cloud/apphub/v1/application.proto\x12\x16google.cloud.apphub.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/apphub/v1/attributes.proto\x1a'google/cloud/apphub/v1/properties.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x82\a\n" +
+	"\vApplication\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12H\n" +
 	"\n" +
-	"attributes\x18\x04 \x01(\v2\".google.cloud.apphub.v1.AttributesB\x03\xe0A\x01R\n" +
-	"attributes\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12;\n" +
-	"\x05scope\x18\t \x01(\v2\x1d.google.cloud.apphub.v1.ScopeB\x06\xe0A\x02\xe0A\x05R\x05scope\x12\x1d\n" +
+	"attributes\x18\x04 \x01(\v2\".google.cloud.apphub.v1.AttributesB\x04\xe2A\x01\x01R\n" +
+	"attributes\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12:\n" +
+	"\x05scope\x18\t \x01(\v2\x1d.google.cloud.apphub.v1.ScopeB\x05\xe2A\x02\x02\x05R\x05scope\x12\x1e\n" +
 	"\x03uid\x18\n" +
-	" \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12D\n" +
-	"\x05state\x18\v \x01(\x0e2).google.cloud.apphub.v1.Application.StateB\x03\xe0A\x03R\x05state\x12i\n" +
-	"\x16application_properties\x18\f \x01(\v2-.google.cloud.apphub.v1.ApplicationPropertiesB\x03\xe0A\x03R\x15applicationProperties\x12W\n" +
-	"\x10application_type\x18\r \x01(\v2'.google.cloud.apphub.v1.ApplicationTypeB\x03\xe0A\x03R\x0fapplicationType\"F\n" +
+	" \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12E\n" +
+	"\x05state\x18\v \x01(\x0e2).google.cloud.apphub.v1.Application.StateB\x04\xe2A\x01\x03R\x05state\x12j\n" +
+	"\x16application_properties\x18\f \x01(\v2-.google.cloud.apphub.v1.ApplicationPropertiesB\x04\xe2A\x01\x03R\x15applicationProperties\x12X\n" +
+	"\x10application_type\x18\r \x01(\v2'.google.cloud.apphub.v1.ApplicationTypeB\x04\xe2A\x01\x03R\x0fapplicationType\"F\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bCREATING\x10\x01\x12\n" +
@@ -516,16 +516,16 @@ const file_google_cloud_apphub_v1_application_proto_rawDesc = "" +
 	"\x04type\x18\x01 \x01(\x0e2,.google.cloud.apphub.v1.ApplicationType.TypeR\x04type\"0\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x12\n" +
-	"\x0eAI_APPLICATION\x10\x01\"|\n" +
-	"\x05Scope\x12;\n" +
-	"\x04type\x18\x01 \x01(\x0e2\".google.cloud.apphub.v1.Scope.TypeB\x03\xe0A\x02R\x04type\"6\n" +
+	"\x0eAI_APPLICATION\x10\x01\"}\n" +
+	"\x05Scope\x12<\n" +
+	"\x04type\x18\x01 \x01(\x0e2\".google.cloud.apphub.v1.Scope.TypeB\x04\xe2A\x01\x02R\x04type\"6\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bREGIONAL\x10\x01\x12\n" +
 	"\n" +
-	"\x06GLOBAL\x10\x02\"\xfd\x01\n" +
-	"\x15ApplicationProperties\x12u\n" +
-	"\x11extended_metadata\x18\x01 \x03(\v2C.google.cloud.apphub.v1.ApplicationProperties.ExtendedMetadataEntryB\x03\xe0A\x03R\x10extendedMetadata\x1am\n" +
+	"\x06GLOBAL\x10\x02\"\xfe\x01\n" +
+	"\x15ApplicationProperties\x12v\n" +
+	"\x11extended_metadata\x18\x01 \x03(\v2C.google.cloud.apphub.v1.ApplicationProperties.ExtendedMetadataEntryB\x04\xe2A\x01\x03R\x10extendedMetadata\x1am\n" +
 	"\x15ExtendedMetadataEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12>\n" +
 	"\x05value\x18\x02 \x01(\v2(.google.cloud.apphub.v1.ExtendedMetadataR\x05value:\x028\x01B\xb2\x01\n" +

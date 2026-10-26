@@ -143,10 +143,10 @@ var File_google_cloud_discoveryengine_v1beta_agent_gateway_setting_proto protore
 const file_google_cloud_discoveryengine_v1beta_agent_gateway_setting_proto_rawDesc = "" +
 	"\n" +
 	"?google/cloud/discoveryengine/v1beta/agent_gateway_setting.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x91\x02\n" +
-	"\x13AgentGatewaySetting\x12\x94\x01\n" +
-	"\x1cdefault_egress_agent_gateway\x18\x01 \x01(\v2N.google.cloud.discoveryengine.v1beta.AgentGatewaySetting.AgentGatewayReferenceB\x03\xe0A\x01R\x19defaultEgressAgentGateway\x1ac\n" +
-	"\x15AgentGatewayReference\x12J\n" +
-	"\x04name\x18\x01 \x01(\tB6\xe0A\x02\xe0A\x05\xfaA-\n" +
+	"\x13AgentGatewaySetting\x12\x95\x01\n" +
+	"\x1cdefault_egress_agent_gateway\x18\x01 \x01(\v2N.google.cloud.discoveryengine.v1beta.AgentGatewaySetting.AgentGatewayReferenceB\x04\xe2A\x01\x01R\x19defaultEgressAgentGateway\x1ab\n" +
+	"\x15AgentGatewayReference\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x02\x02\x05\xfaA-\n" +
 	"+networkservices.googleapis.com/AgentGatewayR\x04nameB\x9f\x02\n" +
 	"'com.google.cloud.discoveryengine.v1betaB\x18AgentGatewaySettingProtoP\x01ZQcloud.google.com/go/discoveryengine/apiv1beta/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02#Google.Cloud.DiscoveryEngine.V1Beta\xca\x02#Google\\Cloud\\DiscoveryEngine\\V1beta\xea\x02&Google::Cloud::DiscoveryEngine::V1betab\x06proto3"
 
