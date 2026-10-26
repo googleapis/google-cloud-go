@@ -672,7 +672,8 @@ func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		ctx, record := startMetricsOp(it.ctx, "ListObjects", false)
 		defer func() { record(err) }()
 		// Add trace span around List API call within the fetch.
-		ctx, _ = startSpan(ctx, "grpcStorageClient.ObjectsListCall", trace.WithAttributes(rpcSystemGRPC))
+		// Bucket.Objects has no operation span, so gcp.storage.uri is recorded on each per-page ObjectsListCall span.
+		ctx, _ = startSpan(ctx, "grpcStorageClient.ObjectsListCall", withStorageURI(bucket, ""), trace.WithAttributes(rpcSystemGRPC))
 		defer func() { endSpan(ctx, err) }()
 		var objects []*storagepb.Object
 		var gitr *gapic.ObjectIterator
@@ -1739,7 +1740,7 @@ func (r *gRPCReader) updateCRC(b []byte) {
 // Checks whether the CRC matches at the conclusion of a read, if CRC checking was enabled.
 func (r *gRPCReader) runCRCCheck() error {
 	if r.checkCRC && r.gotCRC != r.wantCRC {
-		return fmt.Errorf("storage: bad CRC on read: got %d, want %d", r.gotCRC, r.wantCRC)
+		return fmt.Errorf("%w: bad CRC on read: got %d, want %d", errChecksumMismatch, r.gotCRC, r.wantCRC)
 	}
 	return nil
 }
@@ -1747,7 +1748,7 @@ func (r *gRPCReader) runCRCCheck() error {
 // checkAndResetChunkCRC verifies the chunk CRC if present, and resets the chunk CRC state.
 func (r *gRPCReader) checkAndResetChunkCRC() error {
 	if r.chunkCRCPresent && r.gotChunkCRC != r.wantChunkCRC {
-		return fmt.Errorf("storage: bad CRC on chunk read: got %d, want %d", r.gotChunkCRC, r.wantChunkCRC)
+		return fmt.Errorf("%w: bad CRC on chunk read: got %d, want %d", errChecksumMismatch, r.gotChunkCRC, r.wantChunkCRC)
 	}
 	r.gotChunkCRC = 0
 	r.chunkCRCPresent = false
@@ -2152,7 +2153,7 @@ func (d *readResponseDecoder) verifyChecksums() {
 			if d.crcErrs == nil {
 				d.crcErrs = make(map[int64]error)
 			}
-			d.crcErrs[readID] = fmt.Errorf("storage: bad CRC on chunk read: got %d, want %d", gotCRC, wantCRC)
+			d.crcErrs[readID] = fmt.Errorf("%w: bad CRC on chunk read: got %d, want %d", errChecksumMismatch, gotCRC, wantCRC)
 		}
 	}
 }

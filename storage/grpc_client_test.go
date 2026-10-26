@@ -719,7 +719,7 @@ func TestVerifyChecksums(t *testing.T) {
 			},
 			databufs: mem.BufferSlice{},
 			wantErrs: map[int64]string{
-				1: "storage: bad CRC on chunk read: got",
+				1: "storage: checksum mismatch: bad CRC on chunk read: got",
 			},
 		},
 		{
@@ -796,7 +796,7 @@ func TestVerifyChecksums(t *testing.T) {
 				1: {startBuf: 0, endBuf: 0, startOff: 0, endOff: 11},
 			},
 			wantErrs: map[int64]string{
-				1: "storage: bad CRC on chunk read: got",
+				1: "storage: checksum mismatch: bad CRC on chunk read: got",
 			},
 		},
 		{
@@ -842,7 +842,7 @@ func TestVerifyChecksums(t *testing.T) {
 				1: {startBuf: 0, endBuf: 1, startOff: 7, endOff: 6},
 			},
 			wantErrs: map[int64]string{
-				1: "storage: bad CRC on chunk read: got",
+				1: "storage: checksum mismatch: bad CRC on chunk read: got",
 			},
 		},
 		{
@@ -895,7 +895,7 @@ func TestVerifyChecksums(t *testing.T) {
 				30: {startBuf: 0, endBuf: 0, startOff: 0, endOff: 11},
 			},
 			wantErrs: map[int64]string{
-				20: "storage: bad CRC on chunk read: got",
+				20: "storage: checksum mismatch: bad CRC on chunk read: got",
 			},
 		},
 		{

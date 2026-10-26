@@ -518,6 +518,24 @@ func grpcCodeToString(code codes.Code) string {
 	}
 }
 
+// isServerChecksumError reports whether err is the service rejecting a
+// request because a CRC32C or MD5 checksum did not match, for example
+// "Object crc32c mismatch: ..." (gRPC InvalidArgument) or
+// "Provided CRC32C \"...\" doesn't match calculated CRC32C \"...\"" (HTTP 400).
+func isServerChecksumError(err error, errStr string) bool {
+	if !(strings.Contains(errStr, "crc32c") || strings.Contains(errStr, "md5")) || !strings.Contains(errStr, "match") {
+		return false
+	}
+	var apiErr *googleapi.Error
+	if errors.As(err, &apiErr) && apiErr.Code == http.StatusBadRequest {
+		return true
+	}
+	if st, ok := status.FromError(err); ok {
+		return st.Code() == codes.InvalidArgument || st.Code() == codes.DataLoss
+	}
+	return false
+}
+
 // computeErrorType maps the request result to the standard error.type values.
 func computeErrorType(err error, isHTTP bool, statusCode int64) string {
 	if err == nil {
@@ -527,57 +545,82 @@ func computeErrorType(err error, isHTTP bool, statusCode int64) string {
 		return "OK"
 	}
 
-	if err == io.EOF {
+	if errors.Is(err, io.EOF) {
 		return "OK"
 	}
 
 	errStr := strings.ToLower(err.Error())
 
-	if err == context.Canceled || strings.Contains(errStr, "context canceled") {
+	if errors.Is(err, context.Canceled) || strings.Contains(errStr, "context canceled") {
 		return "CANCELLED"
 	}
 
-	if err == context.DeadlineExceeded || strings.Contains(errStr, "deadline exceeded") || strings.Contains(errStr, "timeout") {
+	// gRPC reports a client-side deadline as a DeadlineExceeded status with
+	// this message; other DeadlineExceeded statuses come from the service.
+	if errors.Is(err, context.DeadlineExceeded) || strings.Contains(errStr, "context deadline exceeded") {
 		return "TIMEOUT"
 	}
 
-	if strings.Contains(errStr, "checksum") || strings.Contains(errStr, "mismatch") {
+	// The not-found sentinels are returned without an underlying status, for
+	// example by the HTTP XML reader on a 404 response.
+	if errors.Is(err, ErrObjectNotExist) || errors.Is(err, ErrBucketNotExist) {
+		return "NOT_FOUND"
+	}
+
+	if errors.Is(err, errChecksumMismatch) || isServerChecksumError(err, errStr) {
 		return "CHECKSUM_MISMATCH"
 	}
 
-	if strings.Contains(errStr, "auth") || strings.Contains(errStr, "credentials") || strings.Contains(errStr, "token") || strings.Contains(errStr, "key") {
-		return "AUTHENTICATION_ERROR"
-	}
-
-	if strings.Contains(errStr, "no such host") || strings.Contains(errStr, "no address") {
-		return "DNS_FAILURE"
-	}
-
-	if strings.Contains(errStr, "connection refused") || strings.Contains(errStr, "connection reset") || strings.Contains(errStr, "dial tcp") || strings.Contains(errStr, "broken pipe") || strings.Contains(errStr, "eof") {
-		return "CONNECTION_ERROR"
-	}
-
-	if strings.Contains(errStr, "tls") || strings.Contains(errStr, "certificate") || strings.Contains(errStr, "x509") {
-		return "TLS_FAILURE"
-	}
-
-	if !isHTTP {
-		if st, ok := status.FromError(err); ok && st.Code() != codes.OK {
-			return grpcCodeToString(st.Code())
-		}
-	}
-
+	// Prefer the status returned by the service over matching the error text,
+	// which can contain resource names such as "my-key" or "geofence.json".
 	if isHTTP {
 		var apiErr *googleapi.Error
-		if errors.As(err, &apiErr) {
+		if errors.As(err, &apiErr) && apiErr.Code > 0 {
 			return mapHTTPStatusCode(apiErr.Code)
 		}
 		if statusCode >= 400 {
 			return mapHTTPStatusCode(int(statusCode))
 		}
 	}
+	var grpcType string
+	if !isHTTP {
+		if st, ok := status.FromError(err); ok && st.Code() != codes.OK {
+			grpcType = grpcCodeToString(st.Code())
+			// Unknown and Unavailable are also used for client-side and
+			// network failures, which the message describes more precisely.
+			if st.Code() != codes.Unknown && st.Code() != codes.Unavailable {
+				return grpcType
+			}
+		}
+	}
 
+	if errType := errorTypeFromMessage(errStr); errType != "" {
+		return errType
+	}
+	if grpcType != "" {
+		return grpcType
+	}
 	return "UNKNOWN"
+}
+
+// errorTypeFromMessage classifies client-side and network errors by their
+// lowercase error text. It returns "" if the text matches no known class.
+func errorTypeFromMessage(errStr string) string {
+	switch {
+	case strings.Contains(errStr, "timeout"):
+		return "TIMEOUT"
+	case strings.Contains(errStr, "checksum") || strings.Contains(errStr, "mismatch"):
+		return "CHECKSUM_MISMATCH"
+	case strings.Contains(errStr, "auth") || strings.Contains(errStr, "credentials") || strings.Contains(errStr, "token") || strings.Contains(errStr, "key"):
+		return "AUTHENTICATION_ERROR"
+	case strings.Contains(errStr, "no such host") || strings.Contains(errStr, "no address"):
+		return "DNS_FAILURE"
+	case strings.Contains(errStr, "connection refused") || strings.Contains(errStr, "connection reset") || strings.Contains(errStr, "dial tcp") || strings.Contains(errStr, "broken pipe") || strings.Contains(errStr, "eof"):
+		return "CONNECTION_ERROR"
+	case strings.Contains(errStr, "tls") || strings.Contains(errStr, "certificate") || strings.Contains(errStr, "x509"):
+		return "TLS_FAILURE"
+	}
+	return ""
 }
 
 // mapHTTPStatusCode converts an HTTP status code to a canonical API error string.
@@ -592,8 +635,12 @@ func mapHTTPStatusCode(code int) string {
 		return "PERMISSION_DENIED"
 	case 404:
 		return "NOT_FOUND"
+	case 408:
+		return "DEADLINE_EXCEEDED"
 	case 409:
 		return "ABORTED"
+	case 412:
+		return "FAILED_PRECONDITION"
 	case 416:
 		return "OUT_OF_RANGE"
 	case 429:
