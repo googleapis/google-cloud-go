@@ -86,11 +86,13 @@ func (m *mockClassicTable) ApplyReadModifyWrite(ctx context.Context, row string,
 // mockSessionTable is the proto-native session-side mock. Records
 // which method fired and returns programmable responses.
 type mockSessionTable struct {
-	readRowFn   func(ctx context.Context, req *btpb.SessionReadRowRequest) (*btpb.SessionReadRowResponse, error)
-	mutateRowFn func(ctx context.Context, req *btpb.SessionMutateRowRequest) (*btpb.SessionMutateRowResponse, error)
+	readRowFn           func(ctx context.Context, req *btpb.SessionReadRowRequest) (*btpb.SessionReadRowResponse, error)
+	mutateRowFn         func(ctx context.Context, req *btpb.SessionMutateRowRequest) (*btpb.SessionMutateRowResponse, error)
+	checkAndMutateRowFn func(ctx context.Context, req *btpb.SessionCheckAndMutateRowRequest) (*btpb.SessionCheckAndMutateRowResponse, error)
 
-	readRowCalls   int
-	mutateRowCalls int
+	readRowCalls           int
+	mutateRowCalls         int
+	checkAndMutateRowCalls int
 }
 
 func (m *mockSessionTable) ReadRow(ctx context.Context, req *btpb.SessionReadRowRequest) (*btpb.SessionReadRowResponse, error) {
@@ -118,6 +120,13 @@ func (m *mockSessionTable) MutateRow(ctx context.Context, req *btpb.SessionMutat
 		return m.mutateRowFn(ctx, req)
 	}
 	return &btpb.SessionMutateRowResponse{}, nil
+}
+func (m *mockSessionTable) CheckAndMutateRow(ctx context.Context, req *btpb.SessionCheckAndMutateRowRequest) (*btpb.SessionCheckAndMutateRowResponse, error) {
+	m.checkAndMutateRowCalls++
+	if m.checkAndMutateRowFn != nil {
+		return m.checkAndMutateRowFn(ctx, req)
+	}
+	return &btpb.SessionCheckAndMutateRowResponse{PredicateMatched: true}, nil
 }
 func (m *mockSessionTable) Close() error { return nil }
 
@@ -192,24 +201,82 @@ func TestTableShim_ReadRow_RoutesByDiverter(t *testing.T) {
 	})
 }
 
-// TestTableShim_Apply_ConditionalAlwaysClassic verifies that conditional
-// mutations bypass the session path regardless of diverter setting —
-// CheckAndMutateRow has no session equivalent.
-func TestTableShim_Apply_ConditionalAlwaysClassic(t *testing.T) {
-	classic := &mockClassicTable{}
-	sess := &mockSessionTable{}
-	shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0)) // diverter says session
+// TestTableShim_Apply_ConditionalRoutesByDiverter verifies that conditional
+// mutations route to session CheckAndMutateRow when SessionLoad=1.0 and
+// classic when SessionLoad=0.0, propagate GetCondMutationResult, reject
+// nested conditional mutations, and fall back to classic on Unimplemented.
+func TestTableShim_Apply_ConditionalRoutesByDiverter(t *testing.T) {
+	t.Run("session when SessionLoad=1.0", func(t *testing.T) {
+		classic := &mockClassicTable{}
+		sess := &mockSessionTable{
+			checkAndMutateRowFn: func(ctx context.Context, req *btpb.SessionCheckAndMutateRowRequest) (*btpb.SessionCheckAndMutateRowResponse, error) {
+				if string(req.GetKey()) != "r" {
+					t.Errorf("req.Key = %q, want r", req.GetKey())
+				}
+				if !req.GetPredicateFilter().GetPassAllFilter() {
+					t.Errorf("PredicateFilter = %v, want PassAllFilter", req.GetPredicateFilter())
+				}
+				return &btpb.SessionCheckAndMutateRowResponse{PredicateMatched: true}, nil
+			},
+		}
+		shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0))
 
-	cond := NewCondMutation(PassAllFilter(), NewMutation(), nil)
-	if err := shim.Apply(context.Background(), "r", cond); err != nil {
-		t.Fatalf("unexpected err: %v", err)
-	}
-	if classic.applyCalls != 1 {
-		t.Errorf("classic.applyCalls = %d, want 1 (conditional must go classic)", classic.applyCalls)
-	}
-	if sess.mutateRowCalls != 0 {
-		t.Errorf("sess.mutateRowCalls = %d, want 0 (conditional must NOT go session)", sess.mutateRowCalls)
-	}
+		mtrue := NewMutation()
+		mtrue.DeleteRow()
+		cond := NewCondMutation(PassAllFilter(), mtrue, nil)
+		var matched bool
+		if err := shim.Apply(context.Background(), "r", cond, GetCondMutationResult(&matched)); err != nil {
+			t.Fatalf("unexpected err: %v", err)
+		}
+		if !matched {
+			t.Errorf("GetCondMutationResult matched = false, want true")
+		}
+		if classic.applyCalls != 0 {
+			t.Errorf("classic.applyCalls = %d, want 0", classic.applyCalls)
+		}
+		if sess.checkAndMutateRowCalls != 1 {
+			t.Errorf("sess.checkAndMutateRowCalls = %d, want 1", sess.checkAndMutateRowCalls)
+		}
+	})
+
+	t.Run("classic when SessionLoad=0.0", func(t *testing.T) {
+		classic := &mockClassicTable{}
+		sess := &mockSessionTable{}
+		shim := NewTableShim(classic, sess, btransport.NewDiverter(0.0))
+
+		cond := NewCondMutation(PassAllFilter(), NewMutation(), nil)
+		if err := shim.Apply(context.Background(), "r", cond); err != nil {
+			t.Fatalf("unexpected err: %v", err)
+		}
+		if classic.applyCalls != 1 || sess.checkAndMutateRowCalls != 0 {
+			t.Errorf("classic=%d session=%d, want classic=1 session=0", classic.applyCalls, sess.checkAndMutateRowCalls)
+		}
+	})
+
+	t.Run("nested conditional mutation rejected", func(t *testing.T) {
+		shim := NewTableShim(&mockClassicTable{}, &mockSessionTable{}, btransport.NewDiverter(1.0))
+		nested := NewCondMutation(PassAllFilter(), NewCondMutation(PassAllFilter(), NewMutation(), nil), nil)
+		if err := shim.Apply(context.Background(), "r", nested); err == nil {
+			t.Fatal("expected error for nested conditional mutation, got nil")
+		}
+	})
+
+	t.Run("Unimplemented falls back to classic", func(t *testing.T) {
+		classic := &mockClassicTable{}
+		sess := &mockSessionTable{
+			checkAndMutateRowFn: func(ctx context.Context, req *btpb.SessionCheckAndMutateRowRequest) (*btpb.SessionCheckAndMutateRowResponse, error) {
+				return nil, status.Error(codes.Unimplemented, "not implemented")
+			},
+		}
+		shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0))
+		cond := NewCondMutation(PassAllFilter(), NewMutation(), nil)
+		if err := shim.Apply(context.Background(), "r", cond); err != nil {
+			t.Fatalf("unexpected err: %v", err)
+		}
+		if sess.checkAndMutateRowCalls != 1 || classic.applyCalls != 1 {
+			t.Errorf("sess=%d classic=%d, want 1 and 1", sess.checkAndMutateRowCalls, classic.applyCalls)
+		}
+	})
 }
 
 // TestTableShim_Apply_NonConditionalRoutesByDiverter verifies that
