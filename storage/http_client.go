@@ -1091,7 +1091,7 @@ func (hiw *httpInternalWriter) validateChecksumFromServer() error {
 	// Do not check for channel closure as error is already set on the writer
 	// if serverChecksumChan is closed without checksum
 	if ok && hiw.fullObjectChecksum != serverChecksum {
-		return fmt.Errorf("storage: object checksum mismatch: computed %q, server %q; the bucket may contain corrupted object", encodeUint32(hiw.fullObjectChecksum), encodeUint32(serverChecksum))
+		return fmt.Errorf("%w: computed %q, server %q; the bucket may contain corrupted object", errChecksumMismatch, encodeUint32(hiw.fullObjectChecksum), encodeUint32(serverChecksum))
 	}
 	return nil
 }
@@ -1509,7 +1509,7 @@ func (r *httpReader) Read(p []byte) (int, error) {
 			// anything worth looking at.
 			if r.checkCRC {
 				if r.gotCRC != r.wantCRC {
-					return n, fmt.Errorf("storage: bad CRC on read: got %d, want %d",
+					return n, fmt.Errorf("%w: bad CRC on read: got %d, want %d", errChecksumMismatch,
 						r.gotCRC, r.wantCRC)
 				}
 			}

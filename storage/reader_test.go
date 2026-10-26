@@ -764,7 +764,7 @@ func TestHTTPReaderDisableChecksum(t *testing.T) {
 		if err == nil {
 			t.Fatal("expected CRC error, got nil")
 		}
-		if !strings.Contains(err.Error(), "storage: bad CRC on read") {
+		if !strings.Contains(err.Error(), "storage: checksum mismatch: bad CRC on read") {
 			t.Fatalf("expected bad CRC error, got: %v", err)
 		}
 

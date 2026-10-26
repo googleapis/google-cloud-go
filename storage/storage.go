@@ -76,6 +76,9 @@ var (
 	errMethodNotSupported = errors.New("storage: method is not currently supported")
 	// errSignedURLMethodNotValid indicates that given HTTP method is not valid.
 	errSignedURLMethodNotValid = fmt.Errorf("storage: HTTP method should be one of %v", reflect.ValueOf(signedURLMethods).MapKeys())
+	// errChecksumMismatch is wrapped by the errors returned when a checksum
+	// computed by the client does not match the expected value.
+	errChecksumMismatch = errors.New("storage: checksum mismatch")
 )
 
 var userAgent = fmt.Sprintf("gcloud-golang-storage/%s", internal.Version)

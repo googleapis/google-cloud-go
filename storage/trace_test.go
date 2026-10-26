@@ -33,6 +33,7 @@ import (
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/go-cmp/cmp"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/apierror"
 	"go.opentelemetry.io/otel/attribute"
 	otcodes "go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/sdk/instrumentation"
@@ -40,6 +41,7 @@ import (
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
@@ -361,6 +363,317 @@ func TestEndSpanEviction(t *testing.T) {
 			}
 			if !tc.wantEvict && !found {
 				t.Errorf("expected bucket to remain in cache")
+			}
+		})
+	}
+}
+
+func TestErrorAttributes(t *testing.T) {
+	grpcWithErrorInfo, err := status.New(codes.Unimplemented, "Appendable objects are not supported for this request.").WithDetails(&errdetails.ErrorInfo{
+		Reason: "GRPC_APPENDABLE_OBJECT_NOT_SUPPORTED",
+		Domain: "storage.googleapis.com",
+	})
+	if err != nil {
+		t.Fatalf("WithDetails: %v", err)
+	}
+	httpWithErrorInfo := &googleapi.Error{
+		Code:    http.StatusForbidden,
+		Message: "Permission denied.",
+		Body:    `{"error":{"code":403,"message":"Permission denied.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com"}]}}`,
+	}
+
+	grpcWithoutErrorInfo, err := status.New(codes.ResourceExhausted, "Rate limit exceeded.").WithDetails(&errdetails.RetryInfo{})
+	if err != nil {
+		t.Fatalf("WithDetails: %v", err)
+	}
+	// The generated JSON client returns a googleapi.Error wrapping an APIError.
+	generatedHTTPErr := &googleapi.Error{
+		Code:    http.StatusForbidden,
+		Message: "Permission denied.",
+		Body:    `{"error":{"code":403,"message":"Permission denied.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"storage.googleapis.com"}]}}`,
+	}
+	apiErr, ok := apierror.ParseError(generatedHTTPErr, false)
+	if !ok {
+		t.Fatal("apierror.ParseError failed")
+	}
+	generatedHTTPErr.Wrap(apiErr)
+
+	tests := []struct {
+		name       string
+		err        error
+		wantType   string // "" means the attribute must not be set.
+		wantDomain string // "" means the attribute must not be set.
+	}{
+		{
+			name:     "HTTP not found",
+			err:      fmt.Errorf("%w: %w", ErrBucketNotExist, &googleapi.Error{Code: http.StatusNotFound, Message: "The specified bucket does not exist."}),
+			wantType: "NOT_FOUND",
+		},
+		{
+			name:     "HTTP precondition failed",
+			err:      &googleapi.Error{Code: http.StatusPreconditionFailed, Message: "At least one of the pre-conditions you specified did not hold."},
+			wantType: "FAILED_PRECONDITION",
+		},
+		{
+			name: "HTTP XML error",
+			err: &googleapi.Error{
+				Code: http.StatusRequestedRangeNotSatisfiable,
+				Body: "<?xml version='1.0' encoding='UTF-8'?><Error><Code>InvalidRange</Code><Message>The requested range cannot be satisfied.</Message></Error>",
+			},
+			wantType: "OUT_OF_RANGE",
+		},
+		{
+			name:       "HTTP error with ErrorInfo",
+			err:        httpWithErrorInfo,
+			wantType:   "PERMISSION_DENIED",
+			wantDomain: "googleapis.com",
+		},
+		{
+			name:     "gRPC not found",
+			err:      fmt.Errorf("%w: %w", ErrObjectNotExist, status.Error(codes.NotFound, "No such object: bucket/obj")),
+			wantType: "NOT_FOUND",
+		},
+		{
+			name:       "gRPC error with ErrorInfo",
+			err:        grpcWithErrorInfo.Err(),
+			wantType:   "UNIMPLEMENTED",
+			wantDomain: "storage.googleapis.com",
+		},
+		{
+			name:       "wrapped gRPC error with ErrorInfo",
+			err:        fmt.Errorf("storage: write failed: %w", grpcWithErrorInfo.Err()),
+			wantType:   "UNIMPLEMENTED",
+			wantDomain: "storage.googleapis.com",
+		},
+		{
+			name:     "context canceled",
+			err:      context.Canceled,
+			wantType: "CANCELLED",
+		},
+		{
+			name:     "deadline exceeded",
+			err:      context.DeadlineExceeded,
+			wantType: "TIMEOUT",
+		},
+		{
+			name:     "client-side error",
+			err:      errors.New("storage: bucket name is empty"),
+			wantType: "UNKNOWN",
+		},
+		{
+			name:       "HTTP error with ErrorInfo from the generated client",
+			err:        generatedHTTPErr,
+			wantType:   "PERMISSION_DENIED",
+			wantDomain: "storage.googleapis.com",
+		},
+		{
+			name:       "wrapped HTTP error with ErrorInfo from the generated client",
+			err:        fmt.Errorf("%w: %w", ErrBucketNotExist, generatedHTTPErr),
+			wantType:   "NOT_FOUND",
+			wantDomain: "storage.googleapis.com",
+		},
+		{
+			name:     "bare ErrObjectNotExist",
+			err:      ErrObjectNotExist,
+			wantType: "NOT_FOUND",
+		},
+		{
+			name:     "bare ErrBucketNotExist",
+			err:      ErrBucketNotExist,
+			wantType: "NOT_FOUND",
+		},
+		{
+			name:     "gRPC not found with key in object name",
+			err:      fmt.Errorf("%w: %w", ErrObjectNotExist, status.Error(codes.NotFound, "No such object: bucket/my-key")),
+			wantType: "NOT_FOUND",
+		},
+		{
+			name:     "gRPC not found with timeout in object name",
+			err:      status.Error(codes.NotFound, "No such object: bucket/timeout.log"),
+			wantType: "NOT_FOUND",
+		},
+		{
+			name:     "HTTP not found with eof in object name",
+			err:      &googleapi.Error{Code: http.StatusNotFound, Message: "No such object: bucket/geofence.json"},
+			wantType: "NOT_FOUND",
+		},
+		{
+			name:     "gRPC invalid page token",
+			err:      status.Error(codes.InvalidArgument, "Invalid page token."),
+			wantType: "INVALID_ARGUMENT",
+		},
+		{
+			name:     "gRPC unavailable with network error message",
+			err:      status.Error(codes.Unavailable, "connection error: dial tcp: connection refused"),
+			wantType: "CONNECTION_ERROR",
+		},
+		{
+			name:     "gRPC unavailable from the service",
+			err:      status.Error(codes.Unavailable, "The service is currently unavailable."),
+			wantType: "UNAVAILABLE",
+		},
+		{
+			name:     "googleapi.Error without an HTTP code",
+			err:      &googleapi.Error{Message: "something went wrong"},
+			wantType: "UNKNOWN",
+		},
+		{
+			name:     "wrapped deadline exceeded",
+			err:      fmt.Errorf("storage: read failed: %w", context.DeadlineExceeded),
+			wantType: "TIMEOUT",
+		},
+		{
+			name:     "gRPC deadline exceeded from the service",
+			err:      status.Error(codes.DeadlineExceeded, "Deadline exceeded."),
+			wantType: "DEADLINE_EXCEEDED",
+		},
+		{
+			name:     "gRPC client-side deadline",
+			err:      status.Error(codes.DeadlineExceeded, "context deadline exceeded"),
+			wantType: "TIMEOUT",
+		},
+		{
+			name:     "gRPC error with details but no ErrorInfo",
+			err:      grpcWithoutErrorInfo.Err(),
+			wantType: "RESOURCE_EXHAUSTED",
+		},
+		{
+			name:     "gRPC crc32c mismatch on upload",
+			err:      status.Error(codes.InvalidArgument, "Object crc32c mismatch: server computed 1234, client provided 5678."),
+			wantType: "CHECKSUM_MISMATCH",
+		},
+		{
+			name:     "HTTP crc32c mismatch on upload",
+			err:      &googleapi.Error{Code: http.StatusBadRequest, Message: `Provided CRC32C "AAAAAA==" doesn't match calculated CRC32C "BBBBBB==".`},
+			wantType: "CHECKSUM_MISMATCH",
+		},
+		{
+			name:     "CRC mismatch on read",
+			err:      fmt.Errorf("%w: bad CRC on read: got %d, want %d", errChecksumMismatch, 1, 2),
+			wantType: "CHECKSUM_MISMATCH",
+		},
+		{
+			name:     "wrapped CRC mismatch on read",
+			err:      fmt.Errorf("storage: read failed: %w", fmt.Errorf("%w: bad CRC on chunk read: got %d, want %d", errChecksumMismatch, 1, 2)),
+			wantType: "CHECKSUM_MISMATCH",
+		},
+		{
+			name:     "invalid argument mentioning crc32c is not a checksum mismatch",
+			err:      status.Error(codes.InvalidArgument, "crc32c must be set when finishing a write."),
+			wantType: "INVALID_ARGUMENT",
+		},
+		{
+			name:     "wrapped io.EOF sets no attributes",
+			err:      fmt.Errorf("storage: read: %w", io.EOF),
+			wantType: "",
+		},
+		{
+			name:     "nil error sets no attributes",
+			err:      nil,
+			wantType: "",
+		},
+		{
+			name:     "io.EOF does not set error.type",
+			err:      io.EOF,
+			wantType: "",
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			got := map[attribute.Key]string{}
+			for _, kv := range errorAttributes(tc.err) {
+				got[kv.Key] = kv.Value.AsString()
+			}
+			want := map[attribute.Key]string{}
+			if tc.wantType != "" {
+				want["error.type"] = tc.wantType
+			}
+			if tc.wantDomain != "" {
+				want["gcp.errors.domain"] = tc.wantDomain
+			}
+			if diff := cmp.Diff(want, got); diff != "" {
+				t.Errorf("errorAttributes(%v) mismatch (-want +got):\n%s", tc.err, diff)
+			}
+		})
+	}
+}
+
+func TestStorageTraceEndSpanErrorAttributes(t *testing.T) {
+	ctx := context.Background()
+	grpcWithErrorInfo, err := status.New(codes.PermissionDenied, "Permission denied.").WithDetails(&errdetails.ErrorInfo{
+		Reason: "SERVICE_DISABLED",
+		Domain: "storage.googleapis.com",
+	})
+	if err != nil {
+		t.Fatalf("WithDetails: %v", err)
+	}
+
+	tests := []struct {
+		name      string
+		otelOn    bool
+		err       error
+		wantAttrs map[attribute.Key]string
+	}{
+		{
+			name:      "error sets error.type and gcp.errors.domain",
+			otelOn:    true,
+			err:       grpcWithErrorInfo.Err(),
+			wantAttrs: map[attribute.Key]string{"error.type": "PERMISSION_DENIED", "gcp.errors.domain": "storage.googleapis.com"},
+		},
+		{
+			name:      "gRPC not found error sets error.type",
+			otelOn:    true,
+			err:       status.Error(codes.NotFound, "No such object: bucket/obj"),
+			wantAttrs: map[attribute.Key]string{"error.type": "NOT_FOUND"},
+		},
+		{
+			name:      "HTTP not found error sets error.type",
+			otelOn:    true,
+			err:       fmt.Errorf("%w: %w", ErrBucketNotExist, &googleapi.Error{Code: http.StatusNotFound, Message: "The specified bucket does not exist."}),
+			wantAttrs: map[attribute.Key]string{"error.type": "NOT_FOUND"},
+		},
+		{
+			name:      "nil error sets no error attributes",
+			otelOn:    true,
+			err:       nil,
+			wantAttrs: map[attribute.Key]string{},
+		},
+		{
+			// The legacy internalTrace path still ends a span through the
+			// global provider; it must not get the new attributes.
+			name:      "legacy internalTrace path unchanged",
+			otelOn:    false,
+			err:       grpcWithErrorInfo.Err(),
+			wantAttrs: map[attribute.Key]string{},
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if tc.otelOn {
+				t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+			} else {
+				t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "false")
+			}
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() {
+				te.Unregister(ctx)
+			})
+
+			spanCtx, _ := startSpan(ctx, "Object.Attrs")
+			endSpan(spanCtx, tc.err)
+
+			spans := te.Spans()
+			if len(spans) != 1 {
+				t.Fatalf("expected 1 span, got %d", len(spans))
+			}
+			got := map[attribute.Key]string{}
+			for _, kv := range spans[0].Attributes {
+				if kv.Key == "error.type" || kv.Key == "gcp.errors.domain" {
+					got[kv.Key] = kv.Value.AsString()
+				}
+			}
+			if diff := cmp.Diff(tc.wantAttrs, got); diff != "" {
+				t.Errorf("error attributes mismatch (-want +got):\n%s", diff)
 			}
 		})
 	}
@@ -1462,7 +1775,11 @@ func verifySingleSpanAttributes(t *testing.T, spans tracetest.SpanStubs, wantAtt
 	if len(spans) != 1 {
 		t.Fatalf("expected one span, got %d", len(spans))
 	}
-	got := attribute.NewSet(spans[0].Attributes...)
+	// Error attributes depend on the error that ended the span and are covered
+	// by TestErrorAttributes, so they are not compared here.
+	got, _ := attribute.NewSetWithFiltered(spans[0].Attributes, func(kv attribute.KeyValue) bool {
+		return kv.Key != "error.type" && kv.Key != "gcp.errors.domain"
+	})
 	want := attribute.NewSet(append(getCommonAttributes(), wantAttrs...)...)
 	if !got.Equals(&want) {
 		t.Errorf("span %s attributes mismatch:\n got: %s\nwant: %s", spans[0].Name,
