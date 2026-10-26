@@ -232,14 +232,22 @@ func (t *trackingTransport) RoundTrip(req *http.Request) (*http.Response, error)
 	features := t.features | featureAttributes(req.Context())
 	// Merge all existing headers for this key.
 	features |= mergeFeatureAttributes(req.Header.Values(featureTrackerHeaderName))
+	var (
+		resp *http.Response
+		err  error
+	)
 	if features > 0 {
 		// Clone the request to avoid modifying the original one.
 		clonedReq := req.Clone(req.Context())
 		clonedReq.Header.Set(featureTrackerHeaderName, encodeUint32(features))
-		return baseRT.RoundTrip(clonedReq)
+		resp, err = baseRT.RoundTrip(clonedReq)
+	} else {
+		resp, err = baseRT.RoundTrip(req)
 	}
-
-	return baseRT.RoundTrip(req)
+	if resp != nil {
+		recordUploadIDFromHeader(req.Context(), resp.Header)
+	}
+	return resp, err
 }
 
 func (t *trackingTransport) CloseIdleConnections() {

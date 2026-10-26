@@ -21,6 +21,7 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"slices"
 	"strconv"
 	"sync"
 	"testing"
@@ -30,6 +31,7 @@ import (
 	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/storage/internal"
+	gapic "cloud.google.com/go/storage/internal/apiv2"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/go-cmp/cmp"
 	gax "github.com/googleapis/gax-go/v2"
@@ -47,6 +49,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/stats"
 	"google.golang.org/grpc/status"
+	"google.golang.org/grpc/test/bufconn"
 )
 
 func TestStorageTraceStartEndSpan(t *testing.T) {
@@ -1579,17 +1582,17 @@ func TestWriterTraceWriteModeEmulated(t *testing.T) {
 	checkEmulatorEnvironment(t)
 
 	ctx := context.Background()
-	c := &Client{tc: emulatorClients["grpc"]}
-	bucket := fmt.Sprintf("grpc-trace-bucket-%d", time.Now().UnixNano())
-	if err := c.Bucket(bucket).Create(ctx, "project", nil); err != nil {
-		t.Fatalf("Bucket.Create: %v", err)
-	}
 
 	testCases := []struct {
 		name      string
 		configure func(*Writer)
 		payload   []byte
 		wantAttrs []attribute.KeyValue
+		// wantUploadID is set when the upload creates a resumable session, whose
+		// server-generated ID must be recorded as gcp.storage.upload.id.
+		wantUploadID bool
+		// grpcOnly is set for upload modes that are not supported over HTTP.
+		grpcOnly bool
 	}{
 		{
 			name:      "oneshot",
@@ -1608,6 +1611,7 @@ func TestWriterTraceWriteModeEmulated(t *testing.T) {
 			wantAttrs: []attribute.KeyValue{
 				attribute.String("gcp.storage.write.mode", "resumable"),
 			},
+			wantUploadID: true,
 		},
 		{
 			name: "appendable",
@@ -1619,6 +1623,7 @@ func TestWriterTraceWriteModeEmulated(t *testing.T) {
 			wantAttrs: []attribute.KeyValue{
 				attribute.String("gcp.storage.write.mode", "appendable"),
 			},
+			grpcOnly: true,
 		},
 		{
 			name: "parallel",
@@ -1635,36 +1640,64 @@ func TestWriterTraceWriteModeEmulated(t *testing.T) {
 				attribute.Int("gcp.storage.write.parallel.part_size", 8*1024*1024),
 				attribute.Int("gcp.storage.write.parallel.concurrency", 4),
 			},
+			grpcOnly: true,
 		},
 	}
 
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			te := testutil.NewOpenTelemetryTestExporter()
-			t.Cleanup(func() {
-				te.Unregister(ctx)
-			})
-			// TODO: Remove setting development env var upon launch.
-			t.Setenv(storageOtelTracingDevVar, "true")
-
-			objName := fmt.Sprintf("object-%s-%d", tc.name, time.Now().UnixNano())
-			w := c.Bucket(bucket).Object(objName).NewWriter(ctx)
-			tc.configure(w)
-			if _, err := w.Write(tc.payload); err != nil {
-				t.Fatalf("Write: %v", err)
-			}
-			if err := w.Close(); err != nil {
-				t.Fatalf("Close: %v", err)
+	for _, transport := range []string{"grpc", "http"} {
+		t.Run(transport, func(t *testing.T) {
+			c := &Client{tc: emulatorClients[transport]}
+			bucket := fmt.Sprintf("%s-trace-bucket-%d", transport, time.Now().UnixNano())
+			if err := c.Bucket(bucket).Create(ctx, "project", nil); err != nil {
+				t.Fatalf("Bucket.Create: %v", err)
 			}
 
-			var writerSpans tracetest.SpanStubs
-			for _, s := range te.Spans() {
-				if s.Name == appendPackageName("Object.Writer") && !s.Parent.IsValid() {
-					writerSpans = append(writerSpans, s)
-				}
+			for _, tc := range testCases {
+				t.Run(tc.name, func(t *testing.T) {
+					if tc.grpcOnly && transport != "grpc" {
+						t.Skipf("%s uploads are gRPC-only", tc.name)
+					}
+					te := testutil.NewOpenTelemetryTestExporter()
+					t.Cleanup(func() {
+						te.Unregister(ctx)
+					})
+					// TODO: Remove setting development env var upon launch.
+					t.Setenv(storageOtelTracingDevVar, "true")
+
+					objName := fmt.Sprintf("object-%s-%d", tc.name, time.Now().UnixNano())
+					w := c.Bucket(bucket).Object(objName).NewWriter(ctx)
+					tc.configure(w)
+					if _, err := w.Write(tc.payload); err != nil {
+						t.Fatalf("Write: %v", err)
+					}
+					if err := w.Close(); err != nil {
+						t.Fatalf("Close: %v", err)
+					}
+
+					var writerSpans tracetest.SpanStubs
+					for _, s := range te.Spans() {
+						if s.Name == appendPackageName("Object.Writer") && !s.Parent.IsValid() {
+							writerSpans = append(writerSpans, s)
+						}
+					}
+					wantAttrs := append(slices.Clone(tc.wantAttrs),
+						attribute.String(storageURIAttrKey, "gs://"+bucket+"/"+objName))
+					if tc.wantUploadID && len(writerSpans) == 1 {
+						// The upload ID is server-generated, so only check that it is present.
+						var uploadID string
+						for _, a := range writerSpans[0].Attributes {
+							if a.Key == "gcp.storage.upload.id" {
+								uploadID = a.Value.AsString()
+							}
+						}
+						if uploadID == "" {
+							t.Errorf("Object.Writer span missing non-empty gcp.storage.upload.id")
+						}
+						wantAttrs = append(wantAttrs, attribute.String("gcp.storage.upload.id", uploadID))
+					}
+					verifySingleSpanAttributes(t, writerSpans, wantAttrs)
+				})
 			}
-			verifySingleSpanAttributes(t, writerSpans, append(tc.wantAttrs,
-				attribute.String(storageURIAttrKey, "gs://"+bucket+"/"+objName)))
 		})
 	}
 }
@@ -1957,4 +1990,233 @@ func spanStringAttribute(t *testing.T, spans tracetest.SpanStubs, spanName strin
 	}
 	t.Fatalf("span %q not found", spanName)
 	return "", false
+}
+
+func TestRecordUploadID(t *testing.T) {
+	const uploadID = "AJjja9aXX4R20FIZ2ddLnYddhJmD9Xm_Y2B_NEu5G2a6PzJiGRgPKLp6hEQpM"
+	location := func(query string) http.Header {
+		return http.Header{"Location": {"https://storage.googleapis.com/upload/storage/v1/b/my-bucket/o?" + query}}
+	}
+
+	tests := []struct {
+		name          string
+		devTracingOff bool
+		record        func(ctx context.Context)
+		wantUploadID  string
+	}{
+		{
+			name:         "direct ID",
+			record:       func(ctx context.Context) { recordUploadID(ctx, uploadID) },
+			wantUploadID: uploadID,
+		},
+		{
+			name:   "empty ID",
+			record: func(ctx context.Context) { recordUploadID(ctx, "") },
+		},
+		{
+			name: "header with upload_id",
+			record: func(ctx context.Context) {
+				recordUploadIDFromHeader(ctx, location("uploadType=resumable&upload_id="+uploadID))
+			},
+			wantUploadID: uploadID,
+		},
+		{
+			name:   "header without upload_id",
+			record: func(ctx context.Context) { recordUploadIDFromHeader(ctx, location("uploadType=resumable")) },
+		},
+		{
+			name:   "unparseable Location",
+			record: func(ctx context.Context) { recordUploadIDFromHeader(ctx, http.Header{"Location": {"://bad-url"}}) },
+		},
+		{
+			name:   "nil header",
+			record: func(ctx context.Context) { recordUploadIDFromHeader(ctx, nil) },
+		},
+		{
+			name: "trackingTransport records ID from response",
+			record: func(ctx context.Context) {
+				mock := &mockTransport{}
+				mock.addResult(&http.Response{Status: "200 OK", Header: location("upload_id=" + uploadID)}, nil)
+				req, err := http.NewRequestWithContext(ctx, "POST", "https://storage.googleapis.com/upload/storage/v1/b/my-bucket/o?uploadType=resumable", nil)
+				if err != nil {
+					t.Fatalf("NewRequestWithContext: %v", err)
+				}
+				if _, err := (&trackingTransport{base: mock}).RoundTrip(req); err != nil {
+					t.Fatalf("RoundTrip: %v", err)
+				}
+			},
+			wantUploadID: uploadID,
+		},
+		{
+			name:          "dev tracing off",
+			devTracingOff: true,
+			record:        func(ctx context.Context) { recordUploadID(ctx, uploadID) },
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := context.Background()
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() {
+				te.Unregister(ctx)
+			})
+			// TODO: Remove setting development env var upon launch.
+			t.Setenv(storageOtelTracingDevVar, strconv.FormatBool(!tc.devTracingOff))
+
+			ctx, _ = startSpan(ctx, "Object.Writer")
+			tc.record(ctx)
+			endSpan(ctx, nil)
+
+			if tc.devTracingOff {
+				for _, s := range te.Spans() {
+					for _, a := range s.Attributes {
+						if a.Key == "gcp.storage.upload.id" {
+							t.Errorf("span %s has gcp.storage.upload.id when dev tracing is disabled", s.Name)
+						}
+					}
+				}
+				return
+			}
+			var wantAttrs []attribute.KeyValue
+			if tc.wantUploadID != "" {
+				wantAttrs = append(wantAttrs, attribute.String("gcp.storage.upload.id", tc.wantUploadID))
+			}
+			verifySingleSpanAttributes(t, te.Spans(), wantAttrs)
+		})
+	}
+}
+
+// fakeResumableUploadServer is a minimal in-memory Storage gRPC server used to
+// exercise gRPCResumableBidiWriteBufferSender.connect.
+type fakeResumableUploadServer struct {
+	storagepb.UnimplementedStorageServer
+	uploadID string
+}
+
+func (s *fakeResumableUploadServer) StartResumableWrite(context.Context, *storagepb.StartResumableWriteRequest) (*storagepb.StartResumableWriteResponse, error) {
+	return &storagepb.StartResumableWriteResponse{UploadId: s.uploadID}, nil
+}
+
+func (s *fakeResumableUploadServer) QueryWriteStatus(context.Context, *storagepb.QueryWriteStatusRequest) (*storagepb.QueryWriteStatusResponse, error) {
+	return &storagepb.QueryWriteStatusResponse{
+		WriteStatus: &storagepb.QueryWriteStatusResponse_PersistedSize{PersistedSize: 0},
+	}, nil
+}
+
+func (s *fakeResumableUploadServer) BidiWriteObject(stream storagepb.Storage_BidiWriteObjectServer) error {
+	for {
+		if _, err := stream.Recv(); err != nil {
+			if err == io.EOF {
+				return nil
+			}
+			return err
+		}
+	}
+}
+
+// newFakeResumableUploadGAPICClient starts fake on an in-memory listener and
+// returns a GAPIC client connected to it.
+func newFakeResumableUploadGAPICClient(ctx context.Context, t *testing.T, fake *fakeResumableUploadServer) *gapic.Client {
+	t.Helper()
+	lis := bufconn.Listen(1 << 20)
+	srv := grpc.NewServer()
+	storagepb.RegisterStorageServer(srv, fake)
+	go srv.Serve(lis)
+	t.Cleanup(srv.Stop)
+
+	conn, err := grpc.NewClient("passthrough:///bufnet",
+		grpc.WithContextDialer(func(ctx context.Context, _ string) (net.Conn, error) {
+			return lis.DialContext(ctx)
+		}),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		t.Fatalf("grpc.NewClient: %v", err)
+	}
+	raw, err := gapic.NewClient(ctx, option.WithGRPCConn(conn))
+	if err != nil {
+		t.Fatalf("gapic.NewClient: %v", err)
+	}
+	t.Cleanup(func() { raw.Close() })
+	return raw
+}
+
+func TestGRPCResumableBidiWriteBufferSenderConnectUploadID(t *testing.T) {
+	const sampleUploadID = "AJjja9aXX4R20FIZ2ddLnYddhJmD9Xm_Y2B_NEu5G2a6PzJiGRgPKLp6hEQpM"
+	spanName := "Object.Writer"
+
+	tests := []struct {
+		name   string
+		sender func(raw *gapic.Client) *gRPCResumableBidiWriteBufferSender
+	}{
+		{
+			name: "New upload records upload.id from StartResumableWrite",
+			sender: func(raw *gapic.Client) *gRPCResumableBidiWriteBufferSender {
+				return &gRPCResumableBidiWriteBufferSender{
+					raw:               raw,
+					bucket:            "my-bucket",
+					startWriteRequest: &storagepb.StartResumableWriteRequest{},
+				}
+			},
+		},
+		{
+			name: "Resumed upload records existing upload.id",
+			sender: func(raw *gapic.Client) *gRPCResumableBidiWriteBufferSender {
+				return &gRPCResumableBidiWriteBufferSender{
+					raw:    raw,
+					bucket: "my-bucket",
+					upid:   sampleUploadID,
+				}
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := context.Background()
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() {
+				te.Unregister(ctx)
+			})
+
+			// TODO: Remove setting development env var upon launch.
+			t.Setenv(storageOtelTracingDevVar, "true")
+
+			raw := newFakeResumableUploadGAPICClient(ctx, t, &fakeResumableUploadServer{uploadID: sampleUploadID})
+			s := tc.sender(raw)
+
+			requests := make(chan gRPCBidiWriteRequest)
+			completions := make(chan gRPCBidiWriteCompletion, 1)
+			cs := gRPCBufSenderChans{
+				requests:    requests,
+				requestAcks: make(chan struct{}, 1),
+				completions: completions,
+			}
+
+			ctx, _ = startSpan(ctx, spanName)
+			s.connect(ctx, cs)
+			// Close the request channel so the stream shuts down, then drain
+			// completions until connect's goroutines close the channel.
+			close(requests)
+			for range completions {
+			}
+			if err := s.err(); err != nil {
+				t.Fatalf("connect: %v", err)
+			}
+			endSpan(ctx, nil)
+
+			spans := te.Spans()
+			if len(spans) != 1 {
+				t.Fatalf("expected one span, got %d", len(spans))
+			}
+			wantSpan := createWantSpanStub(spanName, append(getCommonAttributes(), attribute.String("gcp.storage.upload.id", sampleUploadID)))
+			opts := []cmp.Option{
+				cmp.Comparer(spanAttributesComparer),
+			}
+			if diff := testutil.Diff(spans[0], wantSpan, opts...); diff != "" {
+				t.Errorf("diff: -got, +want:\n%s\n", diff)
+			}
+		})
+	}
 }
