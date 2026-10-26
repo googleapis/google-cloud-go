@@ -553,6 +553,25 @@ func (s *fakeBigtableServer) OpenTable(stream btpb.Bigtable_OpenTableServer) err
 				return err
 			}
 			payload = b
+		case *btpb.TableRequest_MutateRows:
+			entries := make([]*btpb.SessionMutateRowsResponse_Entry, len(p.MutateRows.GetEntries()))
+			for i := range p.MutateRows.GetEntries() {
+				entries[i] = &btpb.SessionMutateRowsResponse_Entry{
+					Index:  int64(i),
+					Status: &rpcstatus.Status{Code: 0},
+				}
+			}
+			b, err := proto.Marshal(&btpb.TableResponse{
+				Payload: &btpb.TableResponse_MutateRows{
+					MutateRows: &btpb.SessionMutateRowsResponse{
+						Entries: entries,
+					},
+				},
+			})
+			if err != nil {
+				return err
+			}
+			payload = b
 		default:
 			return fmt.Errorf("fakeBigtableServer: unsupported TableRequest payload %T", tableReq.Payload)
 		}

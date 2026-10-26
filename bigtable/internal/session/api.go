@@ -34,8 +34,8 @@ import (
 
 // TableAPI is the per-resource, proto-native API exposed to
 // TableShim. The concrete implementation routes ReadRow over a READ
-// session pool, MutateRow over a separate WRITE session pool, and
-// CheckAndMutateRow and ReadModifyWriteRow over a READ_WRITE session pool —
+// session pool, MutateRow and MutateRows over a separate WRITE session pool,
+// and CheckAndMutateRow and ReadModifyWriteRow over a READ_WRITE session pool —
 // callers do not see the distinction. Pools open lazily on first
 // call (see lazyPool) so read-only resources never pay for a write
 // pool, and construction of a TableAPI never dials.
@@ -44,6 +44,7 @@ type TableAPI interface {
 	MutateRow(ctx context.Context, req *btpb.SessionMutateRowRequest) (*btpb.SessionMutateRowResponse, error)
 	CheckAndMutateRow(ctx context.Context, req *btpb.SessionCheckAndMutateRowRequest) (*btpb.SessionCheckAndMutateRowResponse, error)
 	ReadModifyWriteRow(ctx context.Context, req *btpb.SessionReadModifyWriteRowRequest) (*btpb.SessionReadModifyWriteRowResponse, error)
+	MutateRows(ctx context.Context, req *btpb.SessionMutateRowsRequest) (*btpb.SessionMutateRowsResponse, error)
 
 	// Close releases this resource's underlying read, write, and read-write
 	// session pools from the sessionClient's per-resource keyed map. Idempotent.

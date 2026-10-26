@@ -38,10 +38,11 @@ type mockClassicTable struct {
 	applyBulkFn func(ctx context.Context, rowKeys []string, muts []*Mutation, opts ...ApplyOption) ([]error, error)
 	rmwFn       func(ctx context.Context, row string, m *ReadModifyWrite) (Row, error)
 
-	readRowCalls  int
-	readRowsCalls int
-	applyCalls    int
-	rmwCalls      int
+	readRowCalls   int
+	readRowsCalls  int
+	applyCalls     int
+	applyBulkCalls int
+	rmwCalls       int
 }
 
 func (m *mockClassicTable) ReadRow(ctx context.Context, row string, opts ...ReadOption) (Row, error) {
@@ -72,6 +73,7 @@ func (m *mockClassicTable) SampleRowKeys(ctx context.Context) ([]string, error) 
 	return nil, nil
 }
 func (m *mockClassicTable) ApplyBulk(ctx context.Context, rowKeys []string, muts []*Mutation, opts ...ApplyOption) ([]error, error) {
+	m.applyBulkCalls++
 	if m.applyBulkFn != nil {
 		return m.applyBulkFn(ctx, rowKeys, muts, opts...)
 	}
@@ -92,11 +94,13 @@ type mockSessionTable struct {
 	mutateRowFn          func(ctx context.Context, req *btpb.SessionMutateRowRequest) (*btpb.SessionMutateRowResponse, error)
 	checkAndMutateRowFn  func(ctx context.Context, req *btpb.SessionCheckAndMutateRowRequest) (*btpb.SessionCheckAndMutateRowResponse, error)
 	readModifyWriteRowFn func(ctx context.Context, req *btpb.SessionReadModifyWriteRowRequest) (*btpb.SessionReadModifyWriteRowResponse, error)
+	mutateRowsFn         func(ctx context.Context, req *btpb.SessionMutateRowsRequest) (*btpb.SessionMutateRowsResponse, error)
 
 	readRowCalls            int
 	mutateRowCalls          int
 	checkAndMutateRowCalls  int
 	readModifyWriteRowCalls int
+	mutateRowsCalls         int
 }
 
 func (m *mockSessionTable) ReadRow(ctx context.Context, req *btpb.SessionReadRowRequest) (*btpb.SessionReadRowResponse, error) {
@@ -147,6 +151,20 @@ func (m *mockSessionTable) ReadModifyWriteRow(ctx context.Context, req *btpb.Ses
 			}},
 		}},
 	}}, nil
+}
+func (m *mockSessionTable) MutateRows(ctx context.Context, req *btpb.SessionMutateRowsRequest) (*btpb.SessionMutateRowsResponse, error) {
+	m.mutateRowsCalls++
+	if m.mutateRowsFn != nil {
+		return m.mutateRowsFn(ctx, req)
+	}
+	entries := make([]*btpb.SessionMutateRowsResponse_Entry, len(req.GetEntries()))
+	for i := range req.GetEntries() {
+		entries[i] = &btpb.SessionMutateRowsResponse_Entry{
+			Index:  int64(i),
+			Status: status.New(codes.OK, "").Proto(),
+		}
+	}
+	return &btpb.SessionMutateRowsResponse{Entries: entries}, nil
 }
 func (m *mockSessionTable) Close() error { return nil }
 
@@ -673,22 +691,101 @@ func TestTableShim_SampleRowKeys_AlwaysClassic(t *testing.T) {
 	}
 }
 
-// TestTableShim_ApplyBulk_AlwaysClassic — spec #14: no vRPC equivalent.
-func TestTableShim_ApplyBulk_AlwaysClassic(t *testing.T) {
-	classicCalled := 0
-	classic := &mockClassicTable{
-		applyBulkFn: func(ctx context.Context, rowKeys []string, muts []*Mutation, opts ...ApplyOption) ([]error, error) {
-			classicCalled++
-			return nil, nil
-		},
-	}
-	shim := NewTableShim(classic, &mockSessionTable{}, btransport.NewDiverter(1.0))
-	if _, err := shim.ApplyBulk(context.Background(), []string{"r1"}, []*Mutation{NewMutation()}); err != nil {
-		t.Fatalf("unexpected err: %v", err)
-	}
-	if classicCalled != 1 {
-		t.Errorf("classic.ApplyBulk calls = %d, want 1 (no vRPC equivalent)", classicCalled)
-	}
+// TestTableShim_ApplyBulk_RoutesByDiverter verifies ApplyBulk routing over
+// session MutateRows vs classic ApplyBulk, per-entry error mapping, partial
+// failure retries of idempotent entries, and Unimplemented fallback.
+func TestTableShim_ApplyBulk_RoutesByDiverter(t *testing.T) {
+	t.Run("session when SessionLoad=1.0", func(t *testing.T) {
+		classic := &mockClassicTable{}
+		sess := &mockSessionTable{}
+		shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0))
+
+		m1 := NewMutation()
+		m1.DeleteRow()
+		m2 := NewMutation()
+		m2.DeleteRow()
+		errs, err := shim.ApplyBulk(context.Background(), []string{"r1", "r2"}, []*Mutation{m1, m2})
+		if err != nil || len(errs) != 0 {
+			t.Fatalf("ApplyBulk = (%v, %v), want (nil, nil)", errs, err)
+		}
+		if sess.mutateRowsCalls != 1 || classic.applyBulkCalls != 0 {
+			t.Errorf("sess=%d classic=%d, want 1 and 0", sess.mutateRowsCalls, classic.applyBulkCalls)
+		}
+	})
+
+	t.Run("classic when SessionLoad=0.0", func(t *testing.T) {
+		classic := &mockClassicTable{}
+		sess := &mockSessionTable{}
+		shim := NewTableShim(classic, sess, btransport.NewDiverter(0.0))
+
+		_, err := shim.ApplyBulk(context.Background(), []string{"r1"}, []*Mutation{NewMutation()})
+		if err != nil {
+			t.Fatalf("unexpected err: %v", err)
+		}
+		if classic.applyBulkCalls != 1 || sess.mutateRowsCalls != 0 {
+			t.Errorf("classic=%d sess=%d, want 1 and 0", classic.applyBulkCalls, sess.mutateRowsCalls)
+		}
+	})
+
+	t.Run("per-entry error and partial retry on idempotent entry", func(t *testing.T) {
+		attempt := 0
+		sess := &mockSessionTable{
+			mutateRowsFn: func(ctx context.Context, req *btpb.SessionMutateRowsRequest) (*btpb.SessionMutateRowsResponse, error) {
+				attempt++
+				if attempt == 1 {
+					return &btpb.SessionMutateRowsResponse{
+						Entries: []*btpb.SessionMutateRowsResponse_Entry{
+							{Index: 0, Status: status.New(codes.OK, "").Proto()},
+							{Index: 1, Status: status.New(codes.Unavailable, "transient").Proto()},
+							{Index: 2, Status: status.New(codes.InvalidArgument, "bad arg").Proto()},
+						},
+					}, nil
+				}
+				// Second attempt should only carry the retryable failed entry (r2)
+				if len(req.GetEntries()) != 1 || string(req.GetEntries()[0].GetKey()) != "r2" {
+					t.Errorf("retry entries = %v, want single entry r2", req.GetEntries())
+				}
+				return &btpb.SessionMutateRowsResponse{
+					Entries: []*btpb.SessionMutateRowsResponse_Entry{
+						{Index: 0, Status: status.New(codes.OK, "").Proto()},
+					},
+				}, nil
+			},
+		}
+		shim := NewTableShim(&mockClassicTable{}, sess, btransport.NewDiverter(1.0))
+
+		m := func() *Mutation {
+			mut := NewMutation()
+			mut.Set("fam", "col", 1_000_000, []byte("v"))
+			return mut
+		}
+		errs, err := shim.ApplyBulk(context.Background(), []string{"r1", "r2", "r3"}, []*Mutation{m(), m(), m()})
+		if err != nil {
+			t.Fatalf("unexpected top-level err: %v", err)
+		}
+		if len(errs) != 3 || errs[0] != nil || errs[1] != nil || status.Code(errs[2]) != codes.InvalidArgument {
+			t.Errorf("errs = %v, want [nil, nil, InvalidArgument]", errs)
+		}
+		if sess.mutateRowsCalls != 2 {
+			t.Errorf("sess.mutateRowsCalls = %d, want 2", sess.mutateRowsCalls)
+		}
+	})
+
+	t.Run("Unimplemented falls back to classic", func(t *testing.T) {
+		classic := &mockClassicTable{}
+		sess := &mockSessionTable{
+			mutateRowsFn: func(ctx context.Context, req *btpb.SessionMutateRowsRequest) (*btpb.SessionMutateRowsResponse, error) {
+				return nil, status.Error(codes.Unimplemented, "not implemented")
+			},
+		}
+		shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0))
+		if _, err := shim.ApplyBulk(context.Background(), []string{"r1"}, []*Mutation{NewMutation()}); err != nil {
+			t.Fatalf("unexpected err: %v", err)
+		}
+		if sess.mutateRowsCalls != 1 || classic.applyBulkCalls != 1 {
+			t.Errorf("sess=%d classic=%d, want 1 and 1", sess.mutateRowsCalls, classic.applyBulkCalls)
+		}
+	})
 }
 
 // TestTableShim_ApplyReadModifyWrite_RoutesByDiverter verifies

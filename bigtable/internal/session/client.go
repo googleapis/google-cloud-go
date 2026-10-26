@@ -566,7 +566,7 @@ func (sc *sessionClient) OpenAuthorizedView(table, view string) TableAPI {
 
 // OpenMaterializedView returns a read-only TableAPI for a
 // materialized view. Only a read pool is opened; MutateRow, CheckAndMutateRow,
-// and ReadModifyWriteRow error cleanly via the nil openWrite/openReadWrite passed to newSessionTable.
+// ReadModifyWriteRow, and MutateRows error cleanly via the nil openWrite/openReadWrite passed to newSessionTable.
 func (sc *sessionClient) OpenMaterializedView(view string) TableAPI {
 	fullName := sc.fullMaterializedViewName(view)
 	readOwner := &poolCloser{}

@@ -66,6 +66,7 @@ type sessionTable struct {
 	writeVRpcDesc              btransport.VRpcDescriptor
 	checkAndMutateRowVRpcDesc  btransport.VRpcDescriptor
 	readModifyWriteRowVRpcDesc btransport.VRpcDescriptor
+	mutateRowsVRpcDesc         btransport.VRpcDescriptor
 	md                         metadata.MD
 	metricsFactory             *metrics.Factory
 	// closeRead / closeWrite / closeReadWrite tear down the specific pools this
@@ -106,16 +107,18 @@ func newSessionTable(
 	md metadata.MD,
 	metricsFactory *metrics.Factory,
 ) *sessionTable {
-	var checkAndMutateDesc, rmwDesc btransport.VRpcDescriptor
+	var checkAndMutateDesc, rmwDesc, mutateRowsDesc btransport.VRpcDescriptor
 	switch writeVRpcDesc {
 	case nil:
 		// Materialized view (read-only) — no write descriptors.
 	case btransport.MUTATE_ROW_AUTH_VIEW:
 		checkAndMutateDesc = btransport.CHECK_AND_MUTATE_ROW_AUTH_VIEW
 		rmwDesc = btransport.READ_MODIFY_WRITE_ROW_AUTH_VIEW
+		mutateRowsDesc = btransport.MUTATE_ROWS_AUTH_VIEW
 	default:
 		checkAndMutateDesc = btransport.CHECK_AND_MUTATE_ROW
 		rmwDesc = btransport.READ_MODIFY_WRITE_ROW
+		mutateRowsDesc = btransport.MUTATE_ROWS
 	}
 
 	t := &sessionTable{
@@ -124,6 +127,7 @@ func newSessionTable(
 		writeVRpcDesc:              writeVRpcDesc,
 		checkAndMutateRowVRpcDesc:  checkAndMutateDesc,
 		readModifyWriteRowVRpcDesc: rmwDesc,
+		mutateRowsVRpcDesc:         mutateRowsDesc,
 		md:                         md,
 		metricsFactory:             metricsFactory,
 		closeRead:                  closeRead,
@@ -271,6 +275,27 @@ func (t *sessionTable) ReadModifyWriteRow(ctx context.Context, req *btpb.Session
 		args: btransport.ReadModifyWriteRowArgs{
 			RowKey: string(req.GetKey()),
 			Rules:  req.GetRules(),
+		},
+		errNoPool: ErrWriteNotSupported,
+	})
+}
+
+// MutateRows dispatches a proto-native MutateRows through a lazily-opened
+// WRITE session pool. Errors with ErrWriteNotSupported when the resource
+// has no write pool (materialized views).
+//
+// Idempotency is true iff every entry's mutations satisfy mutationsAreRetryable.
+func (t *sessionTable) MutateRows(ctx context.Context, req *btpb.SessionMutateRowsRequest) (*btpb.SessionMutateRowsResponse, error) {
+	if req == nil {
+		return nil, errors.New("bigtable/session: SessionMutateRowsRequest is nil")
+	}
+	return dispatch[btransport.MutateRowsArgs, btpb.SessionMutateRowsResponse, *btpb.SessionMutateRowsResponse](ctx, t, opSpec[btransport.MutateRowsArgs, btpb.SessionMutateRowsResponse, *btpb.SessionMutateRowsResponse]{
+		method:     "MutateRows",
+		pool:       t.writePool,
+		desc:       t.mutateRowsVRpcDesc,
+		idempotent: mutateRowsAreRetryable(req.GetEntries()),
+		args: btransport.MutateRowsArgs{
+			Entries: req.GetEntries(),
 		},
 		errNoPool: ErrWriteNotSupported,
 	})
@@ -488,6 +513,15 @@ func mutationsAreRetryable(muts []*btpb.Mutation) bool {
 			return false
 		}
 		if mut.GetAddToCell() != nil || mut.GetMergeToCell() != nil {
+			return false
+		}
+	}
+	return true
+}
+
+func mutateRowsAreRetryable(entries []*btpb.SessionMutateRowsRequest_Entry) bool {
+	for _, entry := range entries {
+		if !mutationsAreRetryable(entry.GetMutations()) {
 			return false
 		}
 	}

@@ -50,13 +50,14 @@ type Table struct {
 
 	// divertible, when non-nil, layers session routing on top of the
 	// classic body for the methods that have session equivalents:
-	// Apply (MutateRow and CheckAndMutateRow), ApplyReadModifyWrite
-	// (ReadModifyWriteRow), ReadRow, and single-row shapes of ReadRows.
-	// Populated by Open when c.diverter != nil so callers that hold a bare
-	// *Table transparently participate in the session/classic split. Nil
-	// for classic-only clients — the gate in Table.Apply /
-	// Table.ApplyReadModifyWrite / Table.ReadRow / Table.ReadRows
-	// short-circuits to the *Classic helper, preserving the old fast path.
+	// Apply (MutateRow and CheckAndMutateRow), ApplyBulk (MutateRows),
+	// ApplyReadModifyWrite (ReadModifyWriteRow), ReadRow, and single-row
+	// shapes of ReadRows. Populated by Open when c.diverter != nil so
+	// callers that hold a bare *Table transparently participate in the
+	// session/classic split. Nil for classic-only clients — the gate in
+	// Table.Apply / Table.ApplyBulk / Table.ApplyReadModifyWrite /
+	// Table.ReadRow / Table.ReadRows short-circuits to the *Classic
+	// helper, preserving the old fast path.
 	//
 	// The value is a *TableShim whose classic side wraps a *tableImpl
 	// built from a snapshot of this Table with divertible EXPLICITLY
@@ -87,8 +88,9 @@ func (ti *tableImpl) Apply(ctx context.Context, row string, m *Mutation, opts ..
 	return ti.Table.applyClassic(ctx, row, m, opts...)
 }
 
+// ApplyBulk bypasses the Table.ApplyBulk divertible gate — same reason as ReadRow.
 func (ti *tableImpl) ApplyBulk(ctx context.Context, rowKeys []string, muts []*Mutation, opts ...ApplyOption) ([]error, error) {
-	return ti.Table.ApplyBulk(ctx, rowKeys, muts, opts...)
+	return ti.Table.applyBulkClassic(ctx, rowKeys, muts, opts...)
 }
 
 func (ti *tableImpl) SampleRowKeys(ctx context.Context) ([]string, error) {

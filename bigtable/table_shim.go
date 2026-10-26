@@ -19,8 +19,11 @@ import (
 	"errors"
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
+	metrics "cloud.google.com/go/bigtable/internal/metrics"
 	"cloud.google.com/go/bigtable/internal/session"
 	btransport "cloud.google.com/go/bigtable/internal/transport"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -30,20 +33,21 @@ import (
 // Diverter's SessionLoad ratio. TableShim owns the proto ↔
 // bigtable.Row conversion so the session package can stay proto-native.
 //
-// Methods with no session equivalent (SampleRowKeys, ApplyBulk) always
-// delegate to classic. ReadRows delegates to classic for the general
-// multi-row case; the single-key shape (see singleRowKey) is served by
-// the session ReadRow vRPC since it is semantically identical to
-// Table.ReadRow. Apply routes non-conditional mutations to the session
-// MutateRow vRPC and conditional mutations to the session
-// CheckAndMutateRow vRPC. ApplyReadModifyWrite routes to the session
-// ReadModifyWriteRow vRPC.
+// Methods with no session equivalent (SampleRowKeys) always delegate to
+// classic. ReadRows delegates to classic for the general multi-row case;
+// the single-key shape (see singleRowKey) is served by the session
+// ReadRow vRPC since it is semantically identical to Table.ReadRow.
+// Apply routes non-conditional mutations to the session MutateRow vRPC
+// and conditional mutations to the session CheckAndMutateRow vRPC.
+// ApplyBulk routes to the session MutateRows vRPC, and
+// ApplyReadModifyWrite routes to the session ReadModifyWriteRow vRPC.
 //
-// ReadRow, single-key ReadRows, Apply, and ApplyReadModifyWrite pass
-// their session call's error to session.UnimplementedBreaker.ShouldFallback:
-// a codes.Unimplemented response falls back to classic, and after enough
-// consecutive Unimplementeds the breaker's sticky trip gates useSession()
-// so future calls skip session entirely.
+// ReadRow, single-key ReadRows, Apply, ApplyBulk, and
+// ApplyReadModifyWrite pass their session call's error to
+// session.UnimplementedBreaker.ShouldFallback: a codes.Unimplemented
+// response falls back to classic, and after enough consecutive
+// Unimplementeds the breaker's sticky trip gates useSession() so future
+// calls skip session entirely.
 type TableShim struct {
 	classic  TableAPI
 	session  session.TableAPI
@@ -266,9 +270,142 @@ func (t *TableShim) SampleRowKeys(ctx context.Context) ([]string, error) {
 	return t.classic.SampleRowKeys(ctx)
 }
 
-// ApplyBulk delegates to classic.
+// ApplyBulk implements TableAPI. Routes bulk mutations over the session
+// MutateRows vRPC when the diverter allows, or delegates to classic.
 func (t *TableShim) ApplyBulk(ctx context.Context, rowKeys []string, muts []*Mutation, opts ...ApplyOption) ([]error, error) {
-	return t.classic.ApplyBulk(ctx, rowKeys, muts, opts...)
+	if len(rowKeys) != len(muts) {
+		return t.classic.ApplyBulk(ctx, rowKeys, muts, opts...)
+	}
+	for _, mut := range muts {
+		if mut == nil || mut.isConditional {
+			return t.classic.ApplyBulk(ctx, rowKeys, muts, opts...)
+		}
+	}
+	if !t.useSession() {
+		return t.classic.ApplyBulk(ctx, rowKeys, muts, opts...)
+	}
+
+	origEntries := make([]*entryErr, len(rowKeys))
+	for i, key := range rowKeys {
+		origEntries[i] = &entryErr{Entry: &btpb.MutateRowsRequest_Entry{RowKey: []byte(key), Mutations: muts[i].ops}}
+	}
+
+	var firstGroupErr error
+	numFailed := 0
+	groups := groupEntries(origEntries, maxMutations)
+	for i, group := range groups {
+		fallback, err := t.applyGroupSession(ctx, group, opts...)
+		if fallback && i == 0 {
+			return t.classic.ApplyBulk(ctx, rowKeys, muts, opts...)
+		}
+		if err != nil {
+			if firstGroupErr == nil {
+				firstGroupErr = err
+			}
+			numFailed++
+		}
+	}
+
+	if numFailed == len(groups) {
+		return nil, firstGroupErr
+	}
+
+	var errs []error
+	var foundErr bool
+	for _, entry := range origEntries {
+		if entry.Err == nil && entry.TopLevelErr != nil {
+			entry.Err = entry.TopLevelErr
+		}
+		if entry.Err != nil {
+			foundErr = true
+		}
+		errs = append(errs, entry.Err)
+	}
+	if foundErr {
+		return errs, nil
+	}
+	return nil, nil
+}
+
+func (t *TableShim) applyGroupSession(ctx context.Context, group []*entryErr, opts ...ApplyOption) (fallback bool, err error) {
+	const maxPartialRetries = 2
+	currentGroup := group
+	for attempt := 0; ; attempt++ {
+		entries := make([]*btpb.SessionMutateRowsRequest_Entry, len(currentGroup))
+		for i, e := range currentGroup {
+			entries[i] = &btpb.SessionMutateRowsRequest_Entry{
+				Key:       e.Entry.RowKey,
+				Mutations: e.Entry.Mutations,
+			}
+		}
+		resp, err := t.session.MutateRows(ctx, &btpb.SessionMutateRowsRequest{
+			Entries: entries,
+		})
+		if attempt == 0 && t.breaker.ShouldFallback(err) {
+			return true, err
+		}
+		if err != nil {
+			_, topLevelErr := metrics.ConvertToGrpcStatusErr(err)
+			populateTopLevelError(currentGroup, topLevelErr)
+			return false, topLevelErr
+		}
+		populateTopLevelError(currentGroup, nil)
+
+		seen := make([]bool, len(currentGroup))
+		for _, entry := range resp.GetEntries() {
+			if entry.Index >= 0 && int(entry.Index) < len(currentGroup) {
+				seen[entry.Index] = true
+				s := entry.Status
+				if s == nil {
+					currentGroup[entry.Index].Err = status.Error(codes.Internal, "bigtable: missing status in response entry")
+				} else if s.Code == int32(codes.OK) {
+					currentGroup[entry.Index].Err = nil
+				} else {
+					currentGroup[entry.Index].Err = status.Error(codes.Code(s.Code), s.Message)
+				}
+			}
+		}
+		for i, s := range seen {
+			if !s {
+				currentGroup[i].Err = status.Error(codes.Internal, "bigtable: missing entry result in MutateRows response")
+			}
+		}
+
+		if len(opts) > 0 {
+			classicEntries := make([]*btpb.MutateRowsResponse_Entry, len(resp.GetEntries()))
+			for i, e := range resp.GetEntries() {
+				classicEntries[i] = &btpb.MutateRowsResponse_Entry{
+					Index:  e.GetIndex(),
+					Status: e.GetStatus(),
+				}
+			}
+			var classicRateLimit *btpb.RateLimitInfo
+			if rli := resp.GetRateLimitInfo(); rli != nil {
+				classicRateLimit = &btpb.RateLimitInfo{
+					Period: rli.GetPeriod(),
+					Factor: rli.GetFactor(),
+				}
+			}
+			classicResp := &btpb.MutateRowsResponse{
+				Entries:       classicEntries,
+				RateLimitInfo: classicRateLimit,
+			}
+			for _, o := range opts {
+				o.after(classicResp)
+			}
+		}
+
+		var retryEntries []*entryErr
+		for _, entry := range currentGroup {
+			if entry.Err != nil && isIdempotentRetryCode[status.Code(entry.Err)] && mutationsAreRetryable(entry.Entry.Mutations) {
+				retryEntries = append(retryEntries, entry)
+			}
+		}
+		if len(retryEntries) == 0 || attempt >= maxPartialRetries {
+			return false, nil
+		}
+		currentGroup = retryEntries
+	}
 }
 
 // ApplyReadModifyWrite implements TableAPI. Routes ReadModifyWrite

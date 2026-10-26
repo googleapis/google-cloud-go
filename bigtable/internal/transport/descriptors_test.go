@@ -35,6 +35,9 @@ func TestVRpcDescriptor_Method(t *testing.T) {
 	if READ_MODIFY_WRITE_ROW.Method() != "ReadModifyWriteRow" {
 		t.Errorf("READ_MODIFY_WRITE_ROW.Method() = %q, want %q", READ_MODIFY_WRITE_ROW.Method(), "ReadModifyWriteRow")
 	}
+	if MUTATE_ROWS.Method() != "MutateRows" {
+		t.Errorf("MUTATE_ROWS.Method() = %q, want %q", MUTATE_ROWS.Method(), "MutateRows")
+	}
 	if READ_ROW_AUTH_VIEW.Method() != "ReadRow" {
 		t.Errorf("READ_ROW_AUTH_VIEW.Method() = %q, want %q", READ_ROW_AUTH_VIEW.Method(), "ReadRow")
 	}
@@ -46,6 +49,9 @@ func TestVRpcDescriptor_Method(t *testing.T) {
 	}
 	if READ_MODIFY_WRITE_ROW_AUTH_VIEW.Method() != "ReadModifyWriteRow" {
 		t.Errorf("READ_MODIFY_WRITE_ROW_AUTH_VIEW.Method() = %q, want %q", READ_MODIFY_WRITE_ROW_AUTH_VIEW.Method(), "ReadModifyWriteRow")
+	}
+	if MUTATE_ROWS_AUTH_VIEW.Method() != "MutateRows" {
+		t.Errorf("MUTATE_ROWS_AUTH_VIEW.Method() = %q, want %q", MUTATE_ROWS_AUTH_VIEW.Method(), "MutateRows")
 	}
 	if READ_ROW_MAT_VIEW.Method() != "ReadRow" {
 		t.Errorf("READ_ROW_MAT_VIEW.Method() = %q, want %q", READ_ROW_MAT_VIEW.Method(), "ReadRow")
@@ -464,6 +470,56 @@ func TestTableDescriptors_ReadModifyWriteRow(t *testing.T) {
 	}
 }
 
+func TestTableDescriptors_MutateRows(t *testing.T) {
+	args := MutateRowsArgs{
+		Entries: []*btpb.SessionMutateRowsRequest_Entry{
+			{
+				Key: []byte("r1"),
+				Mutations: []*btpb.Mutation{
+					{Mutation: &btpb.Mutation_DeleteFromRow_{DeleteFromRow: &btpb.Mutation_DeleteFromRow{}}},
+				},
+			},
+		},
+	}
+
+	encodedBytes, err := MUTATE_ROWS.Encode(args)
+	if err != nil {
+		t.Fatalf("Failed to encode MUTATE_ROWS: %v", err)
+	}
+
+	var env btpb.TableRequest
+	if err := proto.Unmarshal(encodedBytes, &env); err != nil {
+		t.Fatalf("Failed to unmarshal TableRequest: %v", err)
+	}
+
+	req := env.GetMutateRows()
+	if req == nil || len(req.GetEntries()) != 1 || string(req.GetEntries()[0].GetKey()) != "r1" {
+		t.Fatalf("Unexpected MutateRows payload: %v", req)
+	}
+
+	respEnvelope := &btpb.TableResponse{
+		Payload: &btpb.TableResponse_MutateRows{
+			MutateRows: &btpb.SessionMutateRowsResponse{
+				Entries: []*btpb.SessionMutateRowsResponse_Entry{
+					{Index: 0},
+				},
+			},
+		},
+	}
+	envelopeBytes, err := proto.Marshal(respEnvelope)
+	if err != nil {
+		t.Fatalf("Failed to marshal TableResponse: %v", err)
+	}
+	decoded, err := MUTATE_ROWS.Decode(envelopeBytes)
+	if err != nil {
+		t.Fatalf("Failed to decode MUTATE_ROWS: %v", err)
+	}
+	res, ok := decoded.(*btpb.SessionMutateRowsResponse)
+	if !ok || len(res.GetEntries()) != 1 {
+		t.Fatalf("Decoded result = %#v", decoded)
+	}
+}
+
 func TestAuthorizedViewDescriptors_WriteVRpcs(t *testing.T) {
 	// 1. CheckAndMutateRow
 	camBytes, err := CHECK_AND_MUTATE_ROW_AUTH_VIEW.Encode(CheckAndMutateRowArgs{RowKey: "av-cam"})
@@ -509,5 +565,31 @@ func TestAuthorizedViewDescriptors_WriteVRpcs(t *testing.T) {
 	rmwDecoded, err := READ_MODIFY_WRITE_ROW_AUTH_VIEW.Decode(rmwRespBytes)
 	if err != nil || string(rmwDecoded.(*btpb.SessionReadModifyWriteRowResponse).GetRow().GetKey()) != "av-rmw" {
 		t.Errorf("READ_MODIFY_WRITE_ROW_AUTH_VIEW.Decode = %v, %v", rmwDecoded, err)
+	}
+
+	// 3. MutateRows
+	mrBytes, err := MUTATE_ROWS_AUTH_VIEW.Encode(MutateRowsArgs{
+		Entries: []*btpb.SessionMutateRowsRequest_Entry{{Key: []byte("av-mr")}},
+	})
+	if err != nil {
+		t.Fatalf("MUTATE_ROWS_AUTH_VIEW.Encode: %v", err)
+	}
+	avReq.Reset()
+	if err := proto.Unmarshal(mrBytes, &avReq); err != nil {
+		t.Fatalf("unmarshal AuthorizedViewRequest: %v", err)
+	}
+	if len(avReq.GetMutateRows().GetEntries()) != 1 || string(avReq.GetMutateRows().GetEntries()[0].GetKey()) != "av-mr" {
+		t.Errorf("got entries %v, want av-mr", avReq.GetMutateRows().GetEntries())
+	}
+	mrRespBytes, _ := proto.Marshal(&btpb.AuthorizedViewResponse{
+		Payload: &btpb.AuthorizedViewResponse_MutateRows{
+			MutateRows: &btpb.SessionMutateRowsResponse{
+				Entries: []*btpb.SessionMutateRowsResponse_Entry{{Index: 0}},
+			},
+		},
+	})
+	mrDecoded, err := MUTATE_ROWS_AUTH_VIEW.Decode(mrRespBytes)
+	if err != nil || len(mrDecoded.(*btpb.SessionMutateRowsResponse).GetEntries()) != 1 {
+		t.Errorf("MUTATE_ROWS_AUTH_VIEW.Decode = %v, %v", mrDecoded, err)
 	}
 }

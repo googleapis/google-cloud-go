@@ -212,6 +212,18 @@ func TestTableImpl_BypassesDivertibleGate(t *testing.T) {
 		_, _ = ti.ReadRow(context.Background(), "row-1")
 	}()
 
+	// ApplyBulk: same shape.
+	func() {
+		defer func() {
+			if r := recover(); r != nil {
+				if _, ok := r.(spyPanic); ok {
+					t.Errorf("tableImpl.ApplyBulk reached the divertible spy — gate must be bypassed")
+				}
+			}
+		}()
+		_, _ = ti.ApplyBulk(context.Background(), []string{"row-1"}, []*Mutation{NewMutation()})
+	}()
+
 	// ApplyReadModifyWrite: same shape.
 	func() {
 		defer func() {
@@ -247,8 +259,8 @@ func (p *panickingTableAPI) ApplyReadModifyWrite(context.Context, string, *ReadM
 }
 
 // TestOpen_ClassicOnlyMethodsSkipDivertibleGate pins the invariant
-// that Table methods with no session equivalent (ApplyBulk, SampleRowKeys)
-// MUST NOT gate on t.divertible. They run the classic body directly.
+// that Table methods with no session equivalent (SampleRowKeys) MUST
+// NOT gate on t.divertible. They run the classic body directly.
 func TestOpen_ClassicOnlyMethodsSkipDivertibleGate(t *testing.T) {
 	fsc := newFakeSessionClient()
 	c := newSessionWiredClient(t, fsc)
@@ -272,22 +284,30 @@ func TestOpen_ClassicOnlyMethodsSkipDivertibleGate(t *testing.T) {
 		}
 	}
 
-	t.Run("ApplyBulk", func(t *testing.T) {
-		defer assertNotSpyPanic(t, "ApplyBulk")
-		_, _ = newTable().ApplyBulk(context.Background(), []string{"r"}, []*Mutation{NewMutation()})
-	})
 	t.Run("SampleRowKeys", func(t *testing.T) {
 		defer assertNotSpyPanic(t, "SampleRowKeys")
 		_, _ = newTable().SampleRowKeys(context.Background())
 	})
 }
 
-// TestOpen_RMWGatesOnDivertible verifies that Table.ApplyReadModifyWrite
-// gates on t.divertible so it can route over the session ReadModifyWriteRow vRPC.
-func TestOpen_RMWGatesOnDivertible(t *testing.T) {
+// TestOpen_ApplyBulkAndRMWGateOnDivertible verifies that Table.ApplyBulk
+// and Table.ApplyReadModifyWrite gate on t.divertible so they can route
+// over session MutateRows and ReadModifyWriteRow vRPCs.
+func TestOpen_ApplyBulkAndRMWGateOnDivertible(t *testing.T) {
 	fsc := newFakeSessionClient()
 	c := newSessionWiredClient(t, fsc)
 	c.diverter.SetSessionLoad(1.0)
+
+	t.Run("ApplyBulk", func(t *testing.T) {
+		defer func() {
+			r := recover()
+			if _, ok := r.(spyPanic); !ok {
+				t.Errorf("Table.ApplyBulk recovered %v, want spyPanic (must gate on divertible)", r)
+			}
+		}()
+		tbl := &Table{c: c, table: "mytable", divertible: &panickingTableAPI{}}
+		_, _ = tbl.ApplyBulk(context.Background(), []string{"r"}, []*Mutation{NewMutation()})
+	})
 
 	t.Run("ApplyReadModifyWrite", func(t *testing.T) {
 		defer func() {
@@ -566,6 +586,9 @@ func (n *noopSessionTable) CheckAndMutateRow(context.Context, *btpb.SessionCheck
 }
 func (n *noopSessionTable) ReadModifyWriteRow(context.Context, *btpb.SessionReadModifyWriteRowRequest) (*btpb.SessionReadModifyWriteRowResponse, error) {
 	return &btpb.SessionReadModifyWriteRowResponse{Row: &btpb.Row{}}, nil
+}
+func (n *noopSessionTable) MutateRows(context.Context, *btpb.SessionMutateRowsRequest) (*btpb.SessionMutateRowsResponse, error) {
+	return &btpb.SessionMutateRowsResponse{}, nil
 }
 func (n *noopSessionTable) Close() error { return nil }
 

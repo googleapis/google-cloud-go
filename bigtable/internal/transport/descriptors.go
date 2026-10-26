@@ -130,6 +130,11 @@ type ReadModifyWriteRowArgs struct {
 	Rules  []*btpb.ReadModifyWriteRule
 }
 
+// MutateRowsArgs contains arguments required for a virtual RPC MutateRows call.
+type MutateRowsArgs struct {
+	Entries []*btpb.SessionMutateRowsRequest_Entry
+}
+
 func encodeReadRow(args ReadRowArgs) *btpb.SessionReadRowRequest {
 	return &btpb.SessionReadRowRequest{
 		Key:    []byte(args.RowKey),
@@ -157,6 +162,12 @@ func encodeReadModifyWriteRow(args ReadModifyWriteRowArgs) *btpb.SessionReadModi
 	return &btpb.SessionReadModifyWriteRowRequest{
 		Key:   []byte(args.RowKey),
 		Rules: args.Rules,
+	}
+}
+
+func encodeMutateRows(args MutateRowsArgs) *btpb.SessionMutateRowsRequest {
+	return &btpb.SessionMutateRowsRequest{
+		Entries: args.Entries,
 	}
 }
 
@@ -217,6 +228,20 @@ var (
 		}),
 	}
 
+	// MUTATE_ROWS executes Bulk Mutations on standard tables.
+	MUTATE_ROWS = &VRpcDescriptorImpl{
+		MethodName: "MutateRows",
+		EncodeFn: createTableEncoder(func(req interface{}, env *btpb.TableRequest) {
+			args := req.(MutateRowsArgs)
+			env.Payload = &btpb.TableRequest_MutateRows{
+				MutateRows: encodeMutateRows(args),
+			}
+		}),
+		DecodeFn: createTableDecoder(func(env *btpb.TableResponse) interface{} {
+			return env.GetMutateRows()
+		}),
+	}
+
 	// READ_ROW_AUTH_VIEW executes Point Reads on Authorized Views.
 	READ_ROW_AUTH_VIEW = &VRpcDescriptorImpl{
 		MethodName: "ReadRow",
@@ -270,6 +295,20 @@ var (
 		}),
 		DecodeFn: createAuthViewDecoder(func(env *btpb.AuthorizedViewResponse) interface{} {
 			return env.GetReadModifyWriteRow()
+		}),
+	}
+
+	// MUTATE_ROWS_AUTH_VIEW executes Bulk Mutations on Authorized Views.
+	MUTATE_ROWS_AUTH_VIEW = &VRpcDescriptorImpl{
+		MethodName: "MutateRows",
+		EncodeFn: createAuthViewEncoder(func(req interface{}, env *btpb.AuthorizedViewRequest) {
+			args := req.(MutateRowsArgs)
+			env.Payload = &btpb.AuthorizedViewRequest_MutateRows{
+				MutateRows: encodeMutateRows(args),
+			}
+		}),
+		DecodeFn: createAuthViewDecoder(func(env *btpb.AuthorizedViewResponse) interface{} {
+			return env.GetMutateRows()
 		}),
 	}
 
