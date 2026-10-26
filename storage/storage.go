@@ -1453,7 +1453,9 @@ func (o *ObjectAttrs) toRawObject(bucket string) *raw.Object {
 	}
 	var ct string
 	if !o.CustomTime.IsZero() {
-		ct = o.CustomTime.Format(time.RFC3339)
+		// Custom-Time keeps sub-second precision. RFC3339Nano omits the
+		// fraction when it is zero, so whole seconds format as before.
+		ct = o.CustomTime.Format(time.RFC3339Nano)
 	}
 	return &raw.Object{
 		Bucket:                  bucket,
