@@ -1677,6 +1677,11 @@ func (c *hiveMetastoreRESTClient) CreateHiveCatalog(ctx context.Context, req *hi
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/hive/v1/%v/catalogs", req.GetParent())
 
 	params := url.Values{}
@@ -1731,6 +1736,11 @@ func (c *hiveMetastoreRESTClient) CreateHiveCatalog(ctx context.Context, req *hi
 func (c *hiveMetastoreRESTClient) GetHiveCatalog(ctx context.Context, req *hivepb.GetHiveCatalogRequest, opts ...gax.CallOption) (*hivepb.HiveCatalog, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/hive/v1/%v", req.GetName())
@@ -1798,6 +1808,11 @@ func (c *hiveMetastoreRESTClient) ListHiveCatalogs(ctx context.Context, req *hiv
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/hive/v1/%v/catalogs", req.GetParent())
@@ -1872,6 +1887,11 @@ func (c *hiveMetastoreRESTClient) UpdateHiveCatalog(ctx context.Context, req *hi
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetHiveCatalog().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/hive/v1/%v", req.GetHiveCatalog().GetName())
 
 	params := url.Values{}
@@ -1934,6 +1954,11 @@ func (c *hiveMetastoreRESTClient) DeleteHiveCatalog(ctx context.Context, req *hi
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/hive/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1978,6 +2003,11 @@ func (c *hiveMetastoreRESTClient) CreateHiveDatabase(ctx context.Context, req *h
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/hive/v1/%v/databases", req.GetParent())
@@ -2033,6 +2063,11 @@ func (c *hiveMetastoreRESTClient) CreateHiveDatabase(ctx context.Context, req *h
 func (c *hiveMetastoreRESTClient) GetHiveDatabase(ctx context.Context, req *hivepb.GetHiveDatabaseRequest, opts ...gax.CallOption) (*hivepb.HiveDatabase, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/hive/v1/%v", req.GetName())
@@ -2100,6 +2135,11 @@ func (c *hiveMetastoreRESTClient) ListHiveDatabases(ctx context.Context, req *hi
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/hive/v1/%v/databases", req.GetParent())
@@ -2174,6 +2214,11 @@ func (c *hiveMetastoreRESTClient) UpdateHiveDatabase(ctx context.Context, req *h
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetHiveDatabase().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/hive/v1/%v", req.GetHiveDatabase().GetName())
 
 	params := url.Values{}
@@ -2235,6 +2280,11 @@ func (c *hiveMetastoreRESTClient) DeleteHiveDatabase(ctx context.Context, req *h
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/hive/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2279,6 +2329,11 @@ func (c *hiveMetastoreRESTClient) CreateHiveTable(ctx context.Context, req *hive
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/hive/v1/%v/tables", req.GetParent())
@@ -2334,6 +2389,11 @@ func (c *hiveMetastoreRESTClient) CreateHiveTable(ctx context.Context, req *hive
 func (c *hiveMetastoreRESTClient) GetHiveTable(ctx context.Context, req *hivepb.GetHiveTableRequest, opts ...gax.CallOption) (*hivepb.HiveTable, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/hive/v1/%v", req.GetName())
@@ -2402,6 +2462,11 @@ func (c *hiveMetastoreRESTClient) ListHiveTables(ctx context.Context, req *hivep
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/hive/v1/%v/tables", req.GetParent())
@@ -2476,6 +2541,11 @@ func (c *hiveMetastoreRESTClient) UpdateHiveTable(ctx context.Context, req *hive
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetHiveTable().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/hive/v1/%v", req.GetHiveTable().GetName())
 
 	params := url.Values{}
@@ -2537,6 +2607,11 @@ func (c *hiveMetastoreRESTClient) DeleteHiveTable(ctx context.Context, req *hive
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/hive/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2580,6 +2655,11 @@ func (c *hiveMetastoreRESTClient) BatchCreatePartitions(ctx context.Context, req
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/hive/v1/%v/partitions:batchCreate", req.GetParent())
@@ -2642,6 +2722,11 @@ func (c *hiveMetastoreRESTClient) BatchDeletePartitions(ctx context.Context, req
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/hive/v1/%v/partitions:batchDelete", req.GetParent())
 
 	params := url.Values{}
@@ -2685,6 +2770,11 @@ func (c *hiveMetastoreRESTClient) BatchUpdatePartitions(ctx context.Context, req
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/hive/v1/%v/partitions:batchUpdate", req.GetParent())
@@ -2739,6 +2829,11 @@ func (c *hiveMetastoreRESTClient) BatchUpdatePartitions(ctx context.Context, req
 func (c *hiveMetastoreRESTClient) ListPartitions(ctx context.Context, req *hivepb.ListPartitionsRequest, opts ...gax.CallOption) (hivepb.HiveMetastoreService_ListPartitionsClient, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/hive/v1/%v/partitions:list", req.GetParent())
@@ -2848,6 +2943,11 @@ func (c *hiveMetastoreRESTClient) FailoverHiveCatalog(ctx context.Context, req *
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/hive/v1/%v:failover", req.GetName())

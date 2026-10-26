@@ -1132,6 +1132,11 @@ func (c *schemaRESTClient) CreateSchema(ctx context.Context, req *pubsubpb.Creat
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/schemas", req.GetParent())
 
 	params := url.Values{}
@@ -1187,6 +1192,11 @@ func (c *schemaRESTClient) CreateSchema(ctx context.Context, req *pubsubpb.Creat
 func (c *schemaRESTClient) GetSchema(ctx context.Context, req *pubsubpb.GetSchemaRequest, opts ...gax.CallOption) (*pubsubpb.Schema, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1257,6 +1267,11 @@ func (c *schemaRESTClient) ListSchemas(ctx context.Context, req *pubsubpb.ListSc
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/schemas", req.GetParent())
@@ -1340,6 +1355,11 @@ func (c *schemaRESTClient) ListSchemaRevisions(ctx context.Context, req *pubsubp
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:listRevisions", req.GetName())
 
 		params := url.Values{}
@@ -1414,6 +1434,11 @@ func (c *schemaRESTClient) CommitSchema(ctx context.Context, req *pubsubpb.Commi
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:commit", req.GetName())
 
 	params := url.Values{}
@@ -1474,6 +1499,11 @@ func (c *schemaRESTClient) RollbackSchema(ctx context.Context, req *pubsubpb.Rol
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:rollback", req.GetName())
 
 	params := url.Values{}
@@ -1526,6 +1556,11 @@ func (c *schemaRESTClient) RollbackSchema(ctx context.Context, req *pubsubpb.Rol
 func (c *schemaRESTClient) DeleteSchemaRevision(ctx context.Context, req *pubsubpb.DeleteSchemaRevisionRequest, opts ...gax.CallOption) (*pubsubpb.Schema, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:deleteRevision", req.GetName())
@@ -1585,6 +1620,11 @@ func (c *schemaRESTClient) DeleteSchema(ctx context.Context, req *pubsubpb.Delet
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1628,6 +1668,11 @@ func (c *schemaRESTClient) ValidateSchema(ctx context.Context, req *pubsubpb.Val
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/schemas:validate", req.GetParent())
@@ -1690,6 +1735,11 @@ func (c *schemaRESTClient) ValidateMessage(ctx context.Context, req *pubsubpb.Va
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/schemas:validateMessage", req.GetParent())
 
 	params := url.Values{}
@@ -1743,6 +1793,11 @@ func (c *schemaRESTClient) ValidateMessage(ctx context.Context, req *pubsubpb.Va
 func (c *schemaRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
@@ -1812,6 +1867,11 @@ func (c *schemaRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPo
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -1876,6 +1936,11 @@ func (c *schemaRESTClient) TestIamPermissions(ctx context.Context, req *iampb.Te
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())

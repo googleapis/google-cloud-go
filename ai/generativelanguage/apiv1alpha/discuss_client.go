@@ -558,6 +558,11 @@ func (c *discussRESTClient) GenerateMessage(ctx context.Context, req *generative
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetModel(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:generateMessage", req.GetModel())
 
 	params := url.Values{}
@@ -618,6 +623,11 @@ func (c *discussRESTClient) CountMessageTokens(ctx context.Context, req *generat
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetModel(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:countMessageTokens", req.GetModel())
 
 	params := url.Values{}
@@ -670,6 +680,11 @@ func (c *discussRESTClient) CountMessageTokens(ctx context.Context, req *generat
 func (c *discussRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -737,6 +752,11 @@ func (c *discussRESTClient) ListOperations(ctx context.Context, req *longrunning
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/operations", req.GetName())

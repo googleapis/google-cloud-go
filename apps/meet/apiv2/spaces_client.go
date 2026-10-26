@@ -888,6 +888,11 @@ func (c *spacesRESTClient) GetSpace(ctx context.Context, req *meetpb.GetSpaceReq
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -950,6 +955,11 @@ func (c *spacesRESTClient) UpdateSpace(ctx context.Context, req *meetpb.UpdateSp
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSpace().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetSpace().GetName())
@@ -1022,6 +1032,11 @@ func (c *spacesRESTClient) EndActiveConference(ctx context.Context, req *meetpb.
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:endActiveConference", req.GetName())
 
 	params := url.Values{}
@@ -1071,6 +1086,11 @@ func (c *spacesRESTClient) CreateMember(ctx context.Context, req *meetpb.CreateM
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/members", req.GetParent())
@@ -1130,6 +1150,11 @@ func (c *spacesRESTClient) CreateMember(ctx context.Context, req *meetpb.CreateM
 func (c *spacesRESTClient) GetMember(ctx context.Context, req *meetpb.GetMemberRequest, opts ...gax.CallOption) (*meetpb.Member, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -1204,6 +1229,11 @@ func (c *spacesRESTClient) ListMembers(ctx context.Context, req *meetpb.ListMemb
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/members", req.GetParent())
 
 		params := url.Values{}
@@ -1269,6 +1299,11 @@ func (c *spacesRESTClient) DeleteMember(ctx context.Context, req *meetpb.DeleteM
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -1313,6 +1348,11 @@ func (c *spacesRESTClient) UpdateMember(ctx context.Context, req *meetpb.UpdateM
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetMember().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetMember().GetName())
@@ -1380,6 +1420,11 @@ func (c *spacesRESTClient) BatchUpdateMembers(ctx context.Context, req *meetpb.B
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/members:batchUpdate", req.GetParent())

@@ -628,6 +628,11 @@ func (c *errorStatsRESTClient) ListGroupStats(ctx context.Context, req *errorrep
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProjectName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/groupStats", req.GetProjectName())
 
 		params := url.Values{}
@@ -743,6 +748,11 @@ func (c *errorStatsRESTClient) ListEvents(ctx context.Context, req *errorreporti
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProjectName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/events", req.GetProjectName())
 
 		params := url.Values{}
@@ -819,6 +829,11 @@ func (c *errorStatsRESTClient) ListEvents(ctx context.Context, req *errorreporti
 func (c *errorStatsRESTClient) DeleteEvents(ctx context.Context, req *errorreportingpb.DeleteEventsRequest, opts ...gax.CallOption) (*errorreportingpb.DeleteEventsResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/events", req.GetProjectName())

@@ -661,6 +661,11 @@ func (c *merchantCenterAccountLinkRESTClient) ListMerchantCenterAccountLinks(ctx
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v/merchantCenterAccountLinks", req.GetParent())
 
 	params := url.Values{}
@@ -721,6 +726,11 @@ func (c *merchantCenterAccountLinkRESTClient) CreateMerchantCenterAccountLink(ct
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v/merchantCenterAccountLinks", req.GetParent())
@@ -788,6 +798,11 @@ func (c *merchantCenterAccountLinkRESTClient) DeleteMerchantCenterAccountLink(ct
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -825,6 +840,11 @@ func (c *merchantCenterAccountLinkRESTClient) DeleteMerchantCenterAccountLink(ct
 func (c *merchantCenterAccountLinkRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetName())
@@ -892,6 +912,11 @@ func (c *merchantCenterAccountLinkRESTClient) ListOperations(ctx context.Context
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2alpha/%v/operations", req.GetName())

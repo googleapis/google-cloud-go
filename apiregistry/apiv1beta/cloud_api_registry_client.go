@@ -759,6 +759,11 @@ func (c *cloudApiRegistryRESTClient) GetMcpServer(ctx context.Context, req *apir
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -824,6 +829,11 @@ func (c *cloudApiRegistryRESTClient) ListMcpServers(ctx context.Context, req *ap
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/mcpServers", req.GetParent())
@@ -897,6 +907,11 @@ func (c *cloudApiRegistryRESTClient) GetMcpTool(ctx context.Context, req *apireg
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -962,6 +977,11 @@ func (c *cloudApiRegistryRESTClient) ListMcpTools(ctx context.Context, req *apir
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/mcpTools", req.GetParent())
@@ -1035,6 +1055,11 @@ func (c *cloudApiRegistryRESTClient) GetLocation(ctx context.Context, req *locat
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -1100,6 +1125,11 @@ func (c *cloudApiRegistryRESTClient) ListLocations(ctx context.Context, req *loc
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/locations", req.GetName())

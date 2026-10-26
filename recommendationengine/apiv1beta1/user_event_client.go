@@ -779,6 +779,11 @@ func (c *userEventRESTClient) WriteUserEvent(ctx context.Context, req *recommend
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/userEvents:write", req.GetParent())
 
 	params := url.Values{}
@@ -835,6 +840,11 @@ func (c *userEventRESTClient) WriteUserEvent(ctx context.Context, req *recommend
 func (c *userEventRESTClient) CollectUserEvent(ctx context.Context, req *recommendationenginepb.CollectUserEventRequest, opts ...gax.CallOption) (*httpbodypb.HttpBody, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/userEvents:collect", req.GetParent())
@@ -909,6 +919,11 @@ func (c *userEventRESTClient) ListUserEvents(ctx context.Context, req *recommend
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/userEvents", req.GetParent())
@@ -988,6 +1003,11 @@ func (c *userEventRESTClient) PurgeUserEvents(ctx context.Context, req *recommen
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/userEvents:purge", req.GetParent())
 
 	params := url.Values{}
@@ -1059,6 +1079,11 @@ func (c *userEventRESTClient) ImportUserEvents(ctx context.Context, req *recomme
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/userEvents:import", req.GetParent())

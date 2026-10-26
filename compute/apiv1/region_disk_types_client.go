@@ -269,6 +269,13 @@ func (c *regionDiskTypesRESTClient) Get(ctx context.Context, req *computepb.GetR
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetDiskType(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/diskTypes/%v", req.GetProject(), req.GetRegion(), req.GetDiskType())
 
 	// Build HTTP headers from client and context metadata.
@@ -329,6 +336,12 @@ func (c *regionDiskTypesRESTClient) List(ctx context.Context, req *computepb.Lis
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/diskTypes", req.GetProject(), req.GetRegion())

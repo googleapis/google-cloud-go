@@ -942,6 +942,11 @@ func (c *restClient) ListApprovalRequests(ctx context.Context, req *accessapprov
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/approvalRequests", req.GetParent())
 
 		params := url.Values{}
@@ -1010,6 +1015,11 @@ func (c *restClient) GetApprovalRequest(ctx context.Context, req *accessapproval
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1071,6 +1081,11 @@ func (c *restClient) ApproveApprovalRequest(ctx context.Context, req *accessappr
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:approve", req.GetName())
@@ -1142,6 +1157,11 @@ func (c *restClient) DismissApprovalRequest(ctx context.Context, req *accessappr
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:dismiss", req.GetName())
 
 	params := url.Values{}
@@ -1209,6 +1229,11 @@ func (c *restClient) InvalidateApprovalRequest(ctx context.Context, req *accessa
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:invalidate", req.GetName())
 
 	params := url.Values{}
@@ -1261,6 +1286,11 @@ func (c *restClient) InvalidateApprovalRequest(ctx context.Context, req *accessa
 func (c *restClient) GetAccessApprovalSettings(ctx context.Context, req *accessapprovalpb.GetAccessApprovalSettingsMessage, opts ...gax.CallOption) (*accessapprovalpb.AccessApprovalSettings, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1323,6 +1353,11 @@ func (c *restClient) UpdateAccessApprovalSettings(ctx context.Context, req *acce
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSettings().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetSettings().GetName())
@@ -1391,6 +1426,11 @@ func (c *restClient) DeleteAccessApprovalSettings(ctx context.Context, req *acce
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1429,6 +1469,11 @@ func (c *restClient) DeleteAccessApprovalSettings(ctx context.Context, req *acce
 func (c *restClient) GetAccessApprovalServiceAccount(ctx context.Context, req *accessapprovalpb.GetAccessApprovalServiceAccountMessage, opts ...gax.CallOption) (*accessapprovalpb.AccessApprovalServiceAccount, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())

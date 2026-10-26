@@ -888,6 +888,11 @@ func (c *cacheRESTClient) GetCachedContent(ctx context.Context, req *generativel
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -947,6 +952,11 @@ func (c *cacheRESTClient) UpdateCachedContent(ctx context.Context, req *generati
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCachedContent().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetCachedContent().GetName())
@@ -1010,6 +1020,11 @@ func (c *cacheRESTClient) DeleteCachedContent(ctx context.Context, req *generati
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -1047,6 +1062,11 @@ func (c *cacheRESTClient) DeleteCachedContent(ctx context.Context, req *generati
 func (c *cacheRESTClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:cancel", req.GetName())
@@ -1088,6 +1108,11 @@ func (c *cacheRESTClient) DeleteOperation(ctx context.Context, req *longrunningp
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -1125,6 +1150,11 @@ func (c *cacheRESTClient) DeleteOperation(ctx context.Context, req *longrunningp
 func (c *cacheRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -1192,6 +1222,11 @@ func (c *cacheRESTClient) ListOperations(ctx context.Context, req *longrunningpb
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/operations", req.GetName())

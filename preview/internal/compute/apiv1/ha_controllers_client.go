@@ -377,6 +377,11 @@ func (c *haControllersRESTClient) AggregatedList(ctx context.Context, req *compu
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/haControllers", req.GetProject())
 
 		params := url.Values{}
@@ -460,6 +465,13 @@ func (c *haControllersRESTClient) Delete(ctx context.Context, req *computepb.Del
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetHaController(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/haControllers/%v", req.GetProject(), req.GetRegion(), req.GetHaController())
 
 	params := url.Values{}
@@ -535,6 +547,13 @@ func (c *haControllersRESTClient) Failover(ctx context.Context, req *computepb.F
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetHaController(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/haControllers/%v/failover", req.GetProject(), req.GetRegion(), req.GetHaController())
 
 	params := url.Values{}
@@ -599,6 +618,13 @@ func (c *haControllersRESTClient) Get(ctx context.Context, req *computepb.GetHaC
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetHaController(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/haControllers/%v", req.GetProject(), req.GetRegion(), req.GetHaController())
 
 	// Build HTTP headers from client and context metadata.
@@ -653,6 +679,12 @@ func (c *haControllersRESTClient) Insert(ctx context.Context, req *computepb.Ins
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/haControllers", req.GetProject(), req.GetRegion())
@@ -732,6 +764,12 @@ func (c *haControllersRESTClient) List(ctx context.Context, req *computepb.ListH
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/haControllers", req.GetProject(), req.GetRegion())
 
 		params := url.Values{}
@@ -807,6 +845,13 @@ func (c *haControllersRESTClient) Patch(ctx context.Context, req *computepb.Patc
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetHaController(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/haControllers/%v", req.GetProject(), req.GetRegion(), req.GetHaController())

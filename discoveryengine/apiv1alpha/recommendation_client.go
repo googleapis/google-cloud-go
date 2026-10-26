@@ -631,6 +631,11 @@ func (c *recommendationRESTClient) Recommend(ctx context.Context, req *discovery
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetServingConfig(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:recommend", req.GetServingConfig())
 
 	params := url.Values{}
@@ -691,6 +696,11 @@ func (c *recommendationRESTClient) CancelOperation(ctx context.Context, req *lon
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -728,6 +738,11 @@ func (c *recommendationRESTClient) CancelOperation(ctx context.Context, req *lon
 func (c *recommendationRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -795,6 +810,11 @@ func (c *recommendationRESTClient) ListOperations(ctx context.Context, req *long
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/operations", req.GetName())

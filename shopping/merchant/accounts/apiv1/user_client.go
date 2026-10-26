@@ -740,6 +740,11 @@ func (c *userRESTClient) GetUser(ctx context.Context, req *accountspb.GetUserReq
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -802,6 +807,11 @@ func (c *userRESTClient) CreateUser(ctx context.Context, req *accountspb.CreateU
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v/users", req.GetParent())
 
 	params := url.Values{}
@@ -859,6 +869,11 @@ func (c *userRESTClient) DeleteUser(ctx context.Context, req *accountspb.DeleteU
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -904,6 +919,11 @@ func (c *userRESTClient) UpdateUser(ctx context.Context, req *accountspb.UpdateU
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetUser().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v", req.GetUser().GetName())
@@ -980,6 +1000,11 @@ func (c *userRESTClient) ListUsers(ctx context.Context, req *accountspb.ListUser
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/accounts/v1/%v/users", req.GetParent())
 
 		params := url.Values{}
@@ -1050,6 +1075,11 @@ func (c *userRESTClient) VerifySelf(ctx context.Context, req *accountspb.VerifyS
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAccount(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v/users/me:verifySelf", req.GetAccount())

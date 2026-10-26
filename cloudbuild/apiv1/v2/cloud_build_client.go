@@ -1707,6 +1707,11 @@ func (c *restClient) CreateBuild(ctx context.Context, req *cloudbuildpb.CreateBu
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/builds", req.GetProjectId())
 
 	params := url.Values{}
@@ -1781,6 +1786,12 @@ func (c *restClient) CreateBuild(ctx context.Context, req *cloudbuildpb.CreateBu
 func (c *restClient) GetBuild(ctx context.Context, req *cloudbuildpb.GetBuildRequest, opts ...gax.CallOption) (*cloudbuildpb.Build, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetId(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/builds/%v", req.GetProjectId(), req.GetId())
@@ -1865,6 +1876,11 @@ func (c *restClient) ListBuilds(ctx context.Context, req *cloudbuildpb.ListBuild
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProjectId(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/projects/%v/builds", req.GetProjectId())
 
 		params := url.Values{}
@@ -1940,6 +1956,12 @@ func (c *restClient) CancelBuild(ctx context.Context, req *cloudbuildpb.CancelBu
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetId(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/builds/%v:cancel", req.GetProjectId(), req.GetId())
@@ -2039,6 +2061,12 @@ func (c *restClient) RetryBuild(ctx context.Context, req *cloudbuildpb.RetryBuil
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetId(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/builds/%v:retry", req.GetProjectId(), req.GetId())
 
 	params := url.Values{}
@@ -2120,6 +2148,11 @@ func (c *restClient) ApproveBuild(ctx context.Context, req *cloudbuildpb.Approve
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:approve", req.GetName())
 
 	params := url.Values{}
@@ -2197,6 +2230,11 @@ func (c *restClient) CreateBuildTrigger(ctx context.Context, req *cloudbuildpb.C
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/triggers", req.GetProjectId())
 
 	params := url.Values{}
@@ -2261,6 +2299,12 @@ func (c *restClient) CreateBuildTrigger(ctx context.Context, req *cloudbuildpb.C
 func (c *restClient) GetBuildTrigger(ctx context.Context, req *cloudbuildpb.GetBuildTriggerRequest, opts ...gax.CallOption) (*cloudbuildpb.BuildTrigger, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetTriggerId(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/triggers/%v", req.GetProjectId(), req.GetTriggerId())
@@ -2342,6 +2386,11 @@ func (c *restClient) ListBuildTriggers(ctx context.Context, req *cloudbuildpb.Li
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProjectId(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/projects/%v/triggers", req.GetProjectId())
 
 		params := url.Values{}
@@ -2410,6 +2459,12 @@ func (c *restClient) DeleteBuildTrigger(ctx context.Context, req *cloudbuildpb.D
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetTriggerId(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/triggers/%v", req.GetProjectId(), req.GetTriggerId())
 
 	params := url.Values{}
@@ -2466,6 +2521,12 @@ func (c *restClient) UpdateBuildTrigger(ctx context.Context, req *cloudbuildpb.U
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetTriggerId(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/triggers/%v", req.GetProjectId(), req.GetTriggerId())
@@ -2551,6 +2612,12 @@ func (c *restClient) RunBuildTrigger(ctx context.Context, req *cloudbuildpb.RunB
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetTriggerId(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/triggers/%v:run", req.GetProjectId(), req.GetTriggerId())
 
 	params := url.Values{}
@@ -2632,6 +2699,12 @@ func (c *restClient) ReceiveTriggerWebhook(ctx context.Context, req *cloudbuildp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetTrigger(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/triggers/%v:webhook", req.GetProjectId(), req.GetTrigger())
 
 	params := url.Values{}
@@ -2697,6 +2770,11 @@ func (c *restClient) CreateWorkerPool(ctx context.Context, req *cloudbuildpb.Cre
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/workerPools", req.GetParent())
@@ -2773,6 +2851,11 @@ func (c *restClient) GetWorkerPool(ctx context.Context, req *cloudbuildpb.GetWor
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2834,6 +2917,11 @@ func (c *restClient) GetWorkerPool(ctx context.Context, req *cloudbuildpb.GetWor
 func (c *restClient) DeleteWorkerPool(ctx context.Context, req *cloudbuildpb.DeleteWorkerPoolRequest, opts ...gax.CallOption) (*DeleteWorkerPoolOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2920,6 +3008,11 @@ func (c *restClient) UpdateWorkerPool(ctx context.Context, req *cloudbuildpb.Upd
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetWorkerPool().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetWorkerPool().GetName())
@@ -3015,6 +3108,11 @@ func (c *restClient) ListWorkerPools(ctx context.Context, req *cloudbuildpb.List
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/workerPools", req.GetParent())
 
 		params := url.Values{}
@@ -3078,6 +3176,11 @@ func (c *restClient) ListWorkerPools(ctx context.Context, req *cloudbuildpb.List
 func (c *restClient) GetDefaultServiceAccount(ctx context.Context, req *cloudbuildpb.GetDefaultServiceAccountRequest, opts ...gax.CallOption) (*cloudbuildpb.DefaultServiceAccount, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())

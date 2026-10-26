@@ -944,6 +944,11 @@ func (c *dataStoreRESTClient) CreateDataStore(ctx context.Context, req *discover
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/dataStores", req.GetParent())
 
 	params := url.Values{}
@@ -1010,6 +1015,11 @@ func (c *dataStoreRESTClient) CreateDataStore(ctx context.Context, req *discover
 func (c *dataStoreRESTClient) GetDataStore(ctx context.Context, req *discoveryenginepb.GetDataStoreRequest, opts ...gax.CallOption) (*discoveryenginepb.DataStore, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -1080,6 +1090,11 @@ func (c *dataStoreRESTClient) ListDataStores(ctx context.Context, req *discovery
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/dataStores", req.GetParent())
 
 		params := url.Values{}
@@ -1146,6 +1161,11 @@ func (c *dataStoreRESTClient) ListDataStores(ctx context.Context, req *discovery
 func (c *dataStoreRESTClient) DeleteDataStore(ctx context.Context, req *discoveryenginepb.DeleteDataStoreRequest, opts ...gax.CallOption) (*DeleteDataStoreOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -1216,6 +1236,11 @@ func (c *dataStoreRESTClient) UpdateDataStore(ctx context.Context, req *discover
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDataStore().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetDataStore().GetName())
 
 	params := url.Values{}
@@ -1276,6 +1301,11 @@ func (c *dataStoreRESTClient) UpdateDataStore(ctx context.Context, req *discover
 func (c *dataStoreRESTClient) GetDocumentProcessingConfig(ctx context.Context, req *discoveryenginepb.GetDocumentProcessingConfigRequest, opts ...gax.CallOption) (*discoveryenginepb.DocumentProcessingConfig, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -1346,6 +1376,11 @@ func (c *dataStoreRESTClient) UpdateDocumentProcessingConfig(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDocumentProcessingConfig().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetDocumentProcessingConfig().GetName())
 
 	params := url.Values{}
@@ -1413,6 +1448,11 @@ func (c *dataStoreRESTClient) CancelOperation(ctx context.Context, req *longrunn
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1450,6 +1490,11 @@ func (c *dataStoreRESTClient) CancelOperation(ctx context.Context, req *longrunn
 func (c *dataStoreRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -1517,6 +1562,11 @@ func (c *dataStoreRESTClient) ListOperations(ctx context.Context, req *longrunni
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/operations", req.GetName())

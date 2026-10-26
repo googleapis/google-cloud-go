@@ -980,6 +980,11 @@ func (c *sessionsRESTClient) DetectIntent(ctx context.Context, req *cxpb.DetectI
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSession(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v:detectIntent", req.GetSession())
 
 	params := url.Values{}
@@ -1042,6 +1047,11 @@ func (c *sessionsRESTClient) ServerStreamingDetectIntent(ctx context.Context, re
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSession(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v:serverStreamingDetectIntent", req.GetSession())
@@ -1164,6 +1174,11 @@ func (c *sessionsRESTClient) MatchIntent(ctx context.Context, req *cxpb.MatchInt
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSession(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v:matchIntent", req.GetSession())
 
 	params := url.Values{}
@@ -1230,6 +1245,11 @@ func (c *sessionsRESTClient) FulfillIntent(ctx context.Context, req *cxpb.Fulfil
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetMatchIntentRequest().GetSession(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v:fulfillIntent", req.GetMatchIntentRequest().GetSession())
 
 	params := url.Values{}
@@ -1291,6 +1311,11 @@ func (c *sessionsRESTClient) SubmitAnswerFeedback(ctx context.Context, req *cxpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSession(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v:submitAnswerFeedback", req.GetSession())
 
 	params := url.Values{}
@@ -1343,6 +1368,11 @@ func (c *sessionsRESTClient) SubmitAnswerFeedback(ctx context.Context, req *cxpb
 func (c *sessionsRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
@@ -1427,6 +1457,11 @@ func (c *sessionsRESTClient) ListLocations(ctx context.Context, req *locationpb.
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v3/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -1495,6 +1530,11 @@ func (c *sessionsRESTClient) CancelOperation(ctx context.Context, req *longrunni
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1532,6 +1572,11 @@ func (c *sessionsRESTClient) CancelOperation(ctx context.Context, req *longrunni
 func (c *sessionsRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
@@ -1599,6 +1644,11 @@ func (c *sessionsRESTClient) ListOperations(ctx context.Context, req *longrunnin
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v3/%v/operations", req.GetName())

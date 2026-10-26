@@ -579,6 +579,11 @@ func (c *imageVersionsRESTClient) ListImageVersions(ctx context.Context, req *se
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/imageVersions", req.GetParent())
 
 		params := url.Values{}
@@ -647,6 +652,11 @@ func (c *imageVersionsRESTClient) DeleteOperation(ctx context.Context, req *long
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -684,6 +694,11 @@ func (c *imageVersionsRESTClient) DeleteOperation(ctx context.Context, req *long
 func (c *imageVersionsRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -751,6 +766,11 @@ func (c *imageVersionsRESTClient) ListOperations(ctx context.Context, req *longr
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

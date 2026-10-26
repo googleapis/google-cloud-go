@@ -864,6 +864,11 @@ func (c *dataStoreRESTClient) CreateDataStore(ctx context.Context, req *discover
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/dataStores", req.GetParent())
 
 	params := url.Values{}
@@ -938,6 +943,11 @@ func (c *dataStoreRESTClient) GetDataStore(ctx context.Context, req *discoveryen
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1004,6 +1014,11 @@ func (c *dataStoreRESTClient) ListDataStores(ctx context.Context, req *discovery
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/dataStores", req.GetParent())
@@ -1074,6 +1089,11 @@ func (c *dataStoreRESTClient) DeleteDataStore(ctx context.Context, req *discover
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1140,6 +1160,11 @@ func (c *dataStoreRESTClient) UpdateDataStore(ctx context.Context, req *discover
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDataStore().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDataStore().GetName())
@@ -1209,6 +1234,11 @@ func (c *dataStoreRESTClient) CancelOperation(ctx context.Context, req *longrunn
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1246,6 +1276,11 @@ func (c *dataStoreRESTClient) CancelOperation(ctx context.Context, req *longrunn
 func (c *dataStoreRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1313,6 +1348,11 @@ func (c *dataStoreRESTClient) ListOperations(ctx context.Context, req *longrunni
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

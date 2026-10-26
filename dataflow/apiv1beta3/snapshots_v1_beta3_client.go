@@ -486,6 +486,13 @@ func (c *snapshotsV1Beta3RESTClient) GetSnapshot(ctx context.Context, req *dataf
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetLocation(),
+		req.GetSnapshotId(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1b3/projects/%v/locations/%v/snapshots/%v", req.GetProjectId(), req.GetLocation(), req.GetSnapshotId())
 
 	params := url.Values{}
@@ -540,6 +547,13 @@ func (c *snapshotsV1Beta3RESTClient) DeleteSnapshot(ctx context.Context, req *da
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetLocation(),
+		req.GetSnapshotId(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1b3/projects/%v/locations/%v/snapshots/%v", req.GetProjectId(), req.GetLocation(), req.GetSnapshotId())
 
 	params := url.Values{}
@@ -592,6 +606,13 @@ func (c *snapshotsV1Beta3RESTClient) DeleteSnapshot(ctx context.Context, req *da
 func (c *snapshotsV1Beta3RESTClient) ListSnapshots(ctx context.Context, req *dataflowpb.ListSnapshotsRequest, opts ...gax.CallOption) (*dataflowpb.ListSnapshotsResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetLocation(),
+		req.GetJobId(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1b3/projects/%v/locations/%v/jobs/%v/snapshots", req.GetProjectId(), req.GetLocation(), req.GetJobId())

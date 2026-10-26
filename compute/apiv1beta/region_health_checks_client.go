@@ -354,6 +354,13 @@ func (c *regionHealthChecksRESTClient) Delete(ctx context.Context, req *computep
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetHealthCheck(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/healthChecks/%v", req.GetProject(), req.GetRegion(), req.GetHealthCheck())
 
 	params := url.Values{}
@@ -418,6 +425,13 @@ func (c *regionHealthChecksRESTClient) Get(ctx context.Context, req *computepb.G
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetHealthCheck(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/healthChecks/%v", req.GetProject(), req.GetRegion(), req.GetHealthCheck())
 
 	// Build HTTP headers from client and context metadata.
@@ -473,6 +487,12 @@ func (c *regionHealthChecksRESTClient) Insert(ctx context.Context, req *computep
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/healthChecks", req.GetProject(), req.GetRegion())
@@ -551,6 +571,12 @@ func (c *regionHealthChecksRESTClient) List(ctx context.Context, req *computepb.
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/healthChecks", req.GetProject(), req.GetRegion())
@@ -636,6 +662,13 @@ func (c *regionHealthChecksRESTClient) Patch(ctx context.Context, req *computepb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetHealthCheck(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/healthChecks/%v", req.GetProject(), req.GetRegion(), req.GetHealthCheck())
 
 	params := url.Values{}
@@ -707,6 +740,13 @@ func (c *regionHealthChecksRESTClient) TestIamPermissions(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/healthChecks/%v/testIamPermissions", req.GetProject(), req.GetRegion(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -762,6 +802,13 @@ func (c *regionHealthChecksRESTClient) Update(ctx context.Context, req *computep
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetHealthCheck(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/healthChecks/%v", req.GetProject(), req.GetRegion(), req.GetHealthCheck())

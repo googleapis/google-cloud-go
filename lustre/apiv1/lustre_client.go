@@ -1668,6 +1668,11 @@ func (c *restClient) ListInstances(ctx context.Context, req *lustrepb.ListInstan
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/instances", req.GetParent())
 
 		params := url.Values{}
@@ -1739,6 +1744,11 @@ func (c *restClient) GetInstance(ctx context.Context, req *lustrepb.GetInstanceR
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1798,6 +1808,11 @@ func (c *restClient) CreateInstance(ctx context.Context, req *lustrepb.CreateIns
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/instances", req.GetParent())
@@ -1872,6 +1887,11 @@ func (c *restClient) UpdateInstance(ctx context.Context, req *lustrepb.UpdateIns
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetInstance().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetInstance().GetName())
 
 	params := url.Values{}
@@ -1941,6 +1961,11 @@ func (c *restClient) UpdateInstance(ctx context.Context, req *lustrepb.UpdateIns
 func (c *restClient) DeleteInstance(ctx context.Context, req *lustrepb.DeleteInstanceRequest, opts ...gax.CallOption) (*DeleteInstanceOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2016,6 +2041,11 @@ func (c *restClient) RescheduleMaintenance(ctx context.Context, req *lustrepb.Re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:rescheduleMaintenance", req.GetName())
 
 	params := url.Values{}
@@ -2081,6 +2111,11 @@ func (c *restClient) ImportData(ctx context.Context, req *lustrepb.ImportDataReq
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:importData", req.GetName())
@@ -2150,6 +2185,11 @@ func (c *restClient) ExportData(ctx context.Context, req *lustrepb.ExportDataReq
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:exportData", req.GetName())
 
 	params := url.Values{}
@@ -2216,6 +2256,11 @@ func (c *restClient) CreateMirror(ctx context.Context, req *lustrepb.CreateMirro
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/mirrors", req.GetParent())
@@ -2290,6 +2335,11 @@ func (c *restClient) UpdateMirror(ctx context.Context, req *lustrepb.UpdateMirro
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetMirror().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetMirror().GetName())
 
 	params := url.Values{}
@@ -2361,6 +2411,11 @@ func (c *restClient) DeleteMirror(ctx context.Context, req *lustrepb.DeleteMirro
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2423,6 +2478,11 @@ func (c *restClient) DeleteMirror(ctx context.Context, req *lustrepb.DeleteMirro
 func (c *restClient) GetMirror(ctx context.Context, req *lustrepb.GetMirrorRequest, opts ...gax.CallOption) (*lustrepb.Mirror, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2490,6 +2550,11 @@ func (c *restClient) ListMirrors(ctx context.Context, req *lustrepb.ListMirrorsR
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/mirrors", req.GetParent())
@@ -2570,6 +2635,11 @@ func (c *restClient) CreateDirectoryPolicy(ctx context.Context, req *lustrepb.Cr
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/directoryPolicies", req.GetParent())
 
 	params := url.Values{}
@@ -2632,6 +2702,11 @@ func (c *restClient) DeleteDirectoryPolicy(ctx context.Context, req *lustrepb.De
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2691,6 +2766,11 @@ func (c *restClient) DeleteDirectoryPolicy(ctx context.Context, req *lustrepb.De
 func (c *restClient) GetDirectoryPolicy(ctx context.Context, req *lustrepb.GetDirectoryPolicyRequest, opts ...gax.CallOption) (*lustrepb.DirectoryPolicy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2760,6 +2840,11 @@ func (c *restClient) ListDirectoryPolicies(ctx context.Context, req *lustrepb.Li
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/directoryPolicies", req.GetParent())
 
 		params := url.Values{}
@@ -2823,6 +2908,11 @@ func (c *restClient) ListDirectoryPolicies(ctx context.Context, req *lustrepb.Li
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2907,6 +2997,11 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -2976,6 +3071,11 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -3041,6 +3141,11 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
@@ -3109,6 +3214,11 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -3163,6 +3273,11 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -3202,6 +3317,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3239,6 +3359,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3306,6 +3431,11 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

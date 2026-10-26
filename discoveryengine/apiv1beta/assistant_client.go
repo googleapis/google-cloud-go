@@ -893,6 +893,11 @@ func (c *assistantRESTClient) StreamAssist(ctx context.Context, req *discoveryen
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:streamAssist", req.GetName())
 
 	params := url.Values{}
@@ -1000,6 +1005,11 @@ func (c *assistantRESTClient) CreateAssistant(ctx context.Context, req *discover
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/assistants", req.GetParent())
 
 	params := url.Values{}
@@ -1055,6 +1065,11 @@ func (c *assistantRESTClient) DeleteAssistant(ctx context.Context, req *discover
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -1099,6 +1114,11 @@ func (c *assistantRESTClient) UpdateAssistant(ctx context.Context, req *discover
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAssistant().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetAssistant().GetName())
@@ -1160,6 +1180,11 @@ func (c *assistantRESTClient) UpdateAssistant(ctx context.Context, req *discover
 func (c *assistantRESTClient) GetAssistant(ctx context.Context, req *discoveryenginepb.GetAssistantRequest, opts ...gax.CallOption) (*discoveryenginepb.Assistant, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -1228,6 +1253,11 @@ func (c *assistantRESTClient) ListAssistants(ctx context.Context, req *discovery
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/assistants", req.GetParent())
@@ -1301,6 +1331,11 @@ func (c *assistantRESTClient) CancelOperation(ctx context.Context, req *longrunn
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1338,6 +1373,11 @@ func (c *assistantRESTClient) CancelOperation(ctx context.Context, req *longrunn
 func (c *assistantRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -1405,6 +1445,11 @@ func (c *assistantRESTClient) ListOperations(ctx context.Context, req *longrunni
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/operations", req.GetName())

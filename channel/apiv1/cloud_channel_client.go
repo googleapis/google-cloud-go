@@ -4957,6 +4957,11 @@ func (c *cloudChannelRESTClient) ListCustomers(ctx context.Context, req *channel
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/customers", req.GetParent())
 
 		params := url.Values{}
@@ -5039,6 +5044,11 @@ func (c *cloudChannelRESTClient) GetCustomer(ctx context.Context, req *channelpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -5117,6 +5127,11 @@ func (c *cloudChannelRESTClient) CheckCloudIdentityAccountsExist(ctx context.Con
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:checkCloudIdentityAccountsExist", req.GetParent())
@@ -5200,6 +5215,11 @@ func (c *cloudChannelRESTClient) CreateCustomer(ctx context.Context, req *channe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/customers", req.GetParent())
 
 	params := url.Values{}
@@ -5275,6 +5295,11 @@ func (c *cloudChannelRESTClient) UpdateCustomer(ctx context.Context, req *channe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCustomer().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetCustomer().GetName())
 
 	params := url.Values{}
@@ -5348,6 +5373,11 @@ func (c *cloudChannelRESTClient) DeleteCustomer(ctx context.Context, req *channe
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -5415,6 +5445,11 @@ func (c *cloudChannelRESTClient) ImportCustomer(ctx context.Context, req *channe
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/customers:import", req.GetParent())
@@ -5507,6 +5542,11 @@ func (c *cloudChannelRESTClient) ProvisionCloudIdentity(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCustomer(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:provisionCloudIdentity", req.GetCustomer())
 
 	params := url.Values{}
@@ -5590,6 +5630,11 @@ func (c *cloudChannelRESTClient) ListEntitlements(ctx context.Context, req *chan
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/entitlements", req.GetParent())
@@ -5698,6 +5743,11 @@ func (c *cloudChannelRESTClient) ListTransferableSkus(ctx context.Context, req *
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:listTransferableSkus", req.GetParent())
 
 		params := url.Values{}
@@ -5802,6 +5852,11 @@ func (c *cloudChannelRESTClient) ListTransferableOffers(ctx context.Context, req
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:listTransferableOffers", req.GetParent())
 
 		params := url.Values{}
@@ -5871,6 +5926,11 @@ func (c *cloudChannelRESTClient) ListTransferableOffers(ctx context.Context, req
 func (c *cloudChannelRESTClient) GetEntitlement(ctx context.Context, req *channelpb.GetEntitlementRequest, opts ...gax.CallOption) (*channelpb.Entitlement, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -5989,6 +6049,11 @@ func (c *cloudChannelRESTClient) CreateEntitlement(ctx context.Context, req *cha
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/entitlements", req.GetParent())
 
 	params := url.Values{}
@@ -6080,6 +6145,11 @@ func (c *cloudChannelRESTClient) ChangeParameters(ctx context.Context, req *chan
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:changeParameters", req.GetName())
@@ -6176,6 +6246,11 @@ func (c *cloudChannelRESTClient) ChangeRenewalSettings(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:changeRenewalSettings", req.GetName())
 
 	params := url.Values{}
@@ -6265,6 +6340,11 @@ func (c *cloudChannelRESTClient) ChangeOffer(ctx context.Context, req *channelpb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:changeOffer", req.GetName())
@@ -6362,6 +6442,11 @@ func (c *cloudChannelRESTClient) StartPaidService(ctx context.Context, req *chan
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:startPaidService", req.GetName())
 
 	params := url.Values{}
@@ -6452,6 +6537,11 @@ func (c *cloudChannelRESTClient) SuspendEntitlement(ctx context.Context, req *ch
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:suspend", req.GetName())
@@ -6552,6 +6642,11 @@ func (c *cloudChannelRESTClient) CancelEntitlement(ctx context.Context, req *cha
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -6649,6 +6744,11 @@ func (c *cloudChannelRESTClient) ActivateEntitlement(ctx context.Context, req *c
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:activate", req.GetName())
@@ -6763,6 +6863,11 @@ func (c *cloudChannelRESTClient) TransferEntitlements(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:transferEntitlements", req.GetParent())
 
 	params := url.Values{}
@@ -6869,6 +6974,11 @@ func (c *cloudChannelRESTClient) TransferEntitlementsToGoogle(ctx context.Contex
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:transferEntitlementsToGoogle", req.GetParent())
 
 	params := url.Values{}
@@ -6955,6 +7065,11 @@ func (c *cloudChannelRESTClient) ListChannelPartnerLinks(ctx context.Context, re
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/channelPartnerLinks", req.GetParent())
 
 		params := url.Values{}
@@ -7037,6 +7152,11 @@ func (c *cloudChannelRESTClient) ListChannelPartnerLinks(ctx context.Context, re
 func (c *cloudChannelRESTClient) GetChannelPartnerLink(ctx context.Context, req *channelpb.GetChannelPartnerLinkRequest, opts ...gax.CallOption) (*channelpb.ChannelPartnerLink, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -7130,6 +7250,11 @@ func (c *cloudChannelRESTClient) CreateChannelPartnerLink(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/channelPartnerLinks", req.GetParent())
 
 	params := url.Values{}
@@ -7218,6 +7343,11 @@ func (c *cloudChannelRESTClient) UpdateChannelPartnerLink(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -7288,6 +7418,11 @@ func (c *cloudChannelRESTClient) UpdateChannelPartnerLink(ctx context.Context, r
 func (c *cloudChannelRESTClient) GetCustomerRepricingConfig(ctx context.Context, req *channelpb.GetCustomerRepricingConfigRequest, opts ...gax.CallOption) (*channelpb.CustomerRepricingConfig, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -7384,6 +7519,11 @@ func (c *cloudChannelRESTClient) ListCustomerRepricingConfigs(ctx context.Contex
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/customerRepricingConfigs", req.GetParent())
@@ -7508,6 +7648,11 @@ func (c *cloudChannelRESTClient) CreateCustomerRepricingConfig(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/customerRepricingConfigs", req.GetParent())
 
 	params := url.Values{}
@@ -7603,6 +7748,11 @@ func (c *cloudChannelRESTClient) UpdateCustomerRepricingConfig(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCustomerRepricingConfig().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetCustomerRepricingConfig().GetName())
 
 	params := url.Values{}
@@ -7676,6 +7826,11 @@ func (c *cloudChannelRESTClient) DeleteCustomerRepricingConfig(ctx context.Conte
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -7731,6 +7886,11 @@ func (c *cloudChannelRESTClient) DeleteCustomerRepricingConfig(ctx context.Conte
 func (c *cloudChannelRESTClient) GetChannelPartnerRepricingConfig(ctx context.Context, req *channelpb.GetChannelPartnerRepricingConfigRequest, opts ...gax.CallOption) (*channelpb.ChannelPartnerRepricingConfig, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -7825,6 +7985,11 @@ func (c *cloudChannelRESTClient) ListChannelPartnerRepricingConfigs(ctx context.
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/channelPartnerRepricingConfigs", req.GetParent())
@@ -7950,6 +8115,11 @@ func (c *cloudChannelRESTClient) CreateChannelPartnerRepricingConfig(ctx context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/channelPartnerRepricingConfigs", req.GetParent())
 
 	params := url.Values{}
@@ -8045,6 +8215,11 @@ func (c *cloudChannelRESTClient) UpdateChannelPartnerRepricingConfig(ctx context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetChannelPartnerRepricingConfig().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetChannelPartnerRepricingConfig().GetName())
 
 	params := url.Values{}
@@ -8118,6 +8293,11 @@ func (c *cloudChannelRESTClient) DeleteChannelPartnerRepricingConfig(ctx context
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -8187,6 +8367,11 @@ func (c *cloudChannelRESTClient) ListSkuGroups(ctx context.Context, req *channel
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/skuGroups", req.GetParent())
@@ -8286,6 +8471,11 @@ func (c *cloudChannelRESTClient) ListSkuGroupBillableSkus(ctx context.Context, r
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/billableSkus", req.GetParent())
 
 		params := url.Values{}
@@ -8360,6 +8550,11 @@ func (c *cloudChannelRESTClient) ListSkuGroupBillableSkus(ctx context.Context, r
 func (c *cloudChannelRESTClient) LookupOffer(ctx context.Context, req *channelpb.LookupOfferRequest, opts ...gax.CallOption) (*channelpb.Offer, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetEntitlement(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:lookupOffer", req.GetEntitlement())
@@ -8519,6 +8714,11 @@ func (c *cloudChannelRESTClient) ListSkus(ctx context.Context, req *channelpb.Li
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/skus", req.GetParent())
 
 		params := url.Values{}
@@ -8603,6 +8803,11 @@ func (c *cloudChannelRESTClient) ListOffers(ctx context.Context, req *channelpb.
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/offers", req.GetParent())
@@ -8700,6 +8905,11 @@ func (c *cloudChannelRESTClient) ListPurchasableSkus(ctx context.Context, req *c
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetCustomer(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:listPurchasableSkus", req.GetCustomer())
@@ -8801,6 +9011,11 @@ func (c *cloudChannelRESTClient) ListPurchasableOffers(ctx context.Context, req 
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetCustomer(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:listPurchasableOffers", req.GetCustomer())
 
 		params := url.Values{}
@@ -8892,6 +9107,11 @@ func (c *cloudChannelRESTClient) QueryEligibleBillingAccounts(ctx context.Contex
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCustomer(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:queryEligibleBillingAccounts", req.GetCustomer())
 
 	params := url.Values{}
@@ -8977,6 +9197,11 @@ func (c *cloudChannelRESTClient) RegisterSubscriber(ctx context.Context, req *ch
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAccount(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:register", req.GetAccount())
 
 	params := url.Values{}
@@ -9059,6 +9284,11 @@ func (c *cloudChannelRESTClient) UnregisterSubscriber(ctx context.Context, req *
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAccount(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:unregister", req.GetAccount())
@@ -9146,6 +9376,11 @@ func (c *cloudChannelRESTClient) ListSubscribers(ctx context.Context, req *chann
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetAccount(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:listSubscribers", req.GetAccount())
@@ -9248,6 +9483,11 @@ func (c *cloudChannelRESTClient) ListEntitlementChanges(ctx context.Context, req
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:listEntitlementChanges", req.GetParent())
 
 		params := url.Values{}
@@ -9322,6 +9562,11 @@ func (c *cloudChannelRESTClient) CancelOperation(ctx context.Context, req *longr
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -9361,6 +9606,11 @@ func (c *cloudChannelRESTClient) DeleteOperation(ctx context.Context, req *longr
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -9398,6 +9648,11 @@ func (c *cloudChannelRESTClient) DeleteOperation(ctx context.Context, req *longr
 func (c *cloudChannelRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -9465,6 +9720,11 @@ func (c *cloudChannelRESTClient) ListOperations(ctx context.Context, req *longru
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())

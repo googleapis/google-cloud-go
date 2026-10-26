@@ -639,6 +639,11 @@ func (c *tasksRESTClient) GetTask(ctx context.Context, req *runpb.GetTaskRequest
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -704,6 +709,11 @@ func (c *tasksRESTClient) ListTasks(ctx context.Context, req *runpb.ListTasksReq
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/tasks", req.GetParent())
@@ -774,6 +784,11 @@ func (c *tasksRESTClient) DeleteOperation(ctx context.Context, req *longrunningp
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -811,6 +826,11 @@ func (c *tasksRESTClient) DeleteOperation(ctx context.Context, req *longrunningp
 func (c *tasksRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -878,6 +898,11 @@ func (c *tasksRESTClient) ListOperations(ctx context.Context, req *longrunningpb
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/operations", req.GetName())
@@ -955,6 +980,11 @@ func (c *tasksRESTClient) WaitOperation(ctx context.Context, req *longrunningpb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:wait", req.GetName())

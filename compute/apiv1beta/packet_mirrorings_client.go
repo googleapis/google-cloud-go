@@ -382,6 +382,11 @@ func (c *packetMirroringsRESTClient) AggregatedList(ctx context.Context, req *co
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/aggregated/packetMirrorings", req.GetProject())
 
 		params := url.Values{}
@@ -468,6 +473,13 @@ func (c *packetMirroringsRESTClient) Delete(ctx context.Context, req *computepb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetPacketMirroring(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/packetMirrorings/%v", req.GetProject(), req.GetRegion(), req.GetPacketMirroring())
 
 	params := url.Values{}
@@ -532,6 +544,13 @@ func (c *packetMirroringsRESTClient) Get(ctx context.Context, req *computepb.Get
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetPacketMirroring(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/packetMirrorings/%v", req.GetProject(), req.GetRegion(), req.GetPacketMirroring())
 
 	// Build HTTP headers from client and context metadata.
@@ -587,6 +606,12 @@ func (c *packetMirroringsRESTClient) Insert(ctx context.Context, req *computepb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/packetMirrorings", req.GetProject(), req.GetRegion())
@@ -665,6 +690,12 @@ func (c *packetMirroringsRESTClient) List(ctx context.Context, req *computepb.Li
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/packetMirrorings", req.GetProject(), req.GetRegion())
@@ -750,6 +781,13 @@ func (c *packetMirroringsRESTClient) Patch(ctx context.Context, req *computepb.P
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetPacketMirroring(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/packetMirrorings/%v", req.GetProject(), req.GetRegion(), req.GetPacketMirroring())
 
 	params := url.Values{}
@@ -819,6 +857,13 @@ func (c *packetMirroringsRESTClient) TestIamPermissions(ctx context.Context, req
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/packetMirrorings/%v/testIamPermissions", req.GetProject(), req.GetRegion(), req.GetResource())

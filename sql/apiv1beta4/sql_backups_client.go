@@ -600,6 +600,11 @@ func (c *sqlBackupsRESTClient) CreateBackup(ctx context.Context, req *sqlpb.Crea
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/sql/v1beta4/%v/backups", req.GetParent())
 
 	params := url.Values{}
@@ -652,6 +657,11 @@ func (c *sqlBackupsRESTClient) CreateBackup(ctx context.Context, req *sqlpb.Crea
 func (c *sqlBackupsRESTClient) GetBackup(ctx context.Context, req *sqlpb.GetBackupRequest, opts ...gax.CallOption) (*sqlpb.Backup, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/sql/v1beta4/%v", req.GetName())
@@ -719,6 +729,11 @@ func (c *sqlBackupsRESTClient) ListBackups(ctx context.Context, req *sqlpb.ListB
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/sql/v1beta4/%v/backups", req.GetParent())
@@ -797,6 +812,11 @@ func (c *sqlBackupsRESTClient) UpdateBackup(ctx context.Context, req *sqlpb.Upda
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetBackup().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/sql/v1beta4/%v", req.GetBackup().GetName())
 
 	params := url.Values{}
@@ -856,6 +876,11 @@ func (c *sqlBackupsRESTClient) UpdateBackup(ctx context.Context, req *sqlpb.Upda
 func (c *sqlBackupsRESTClient) DeleteBackup(ctx context.Context, req *sqlpb.DeleteBackupRequest, opts ...gax.CallOption) (*sqlpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/sql/v1beta4/%v", req.GetName())

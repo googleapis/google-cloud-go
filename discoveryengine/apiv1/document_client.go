@@ -1139,6 +1139,11 @@ func (c *documentRESTClient) GetDocument(ctx context.Context, req *discoveryengi
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1204,6 +1209,11 @@ func (c *documentRESTClient) ListDocuments(ctx context.Context, req *discoveryen
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/documents", req.GetParent())
@@ -1278,6 +1288,11 @@ func (c *documentRESTClient) CreateDocument(ctx context.Context, req *discoverye
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/documents", req.GetParent())
 
 	params := url.Values{}
@@ -1338,6 +1353,11 @@ func (c *documentRESTClient) UpdateDocument(ctx context.Context, req *discoverye
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDocument().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDocument().GetName())
@@ -1404,6 +1424,11 @@ func (c *documentRESTClient) DeleteDocument(ctx context.Context, req *discoverye
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1453,6 +1478,11 @@ func (c *documentRESTClient) ImportDocuments(ctx context.Context, req *discovery
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/documents:import", req.GetParent())
@@ -1537,6 +1567,11 @@ func (c *documentRESTClient) PurgeDocuments(ctx context.Context, req *discoverye
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/documents:purge", req.GetParent())
 
 	params := url.Values{}
@@ -1598,6 +1633,11 @@ func (c *documentRESTClient) PurgeDocuments(ctx context.Context, req *discoverye
 func (c *documentRESTClient) BatchGetDocumentsMetadata(ctx context.Context, req *discoveryenginepb.BatchGetDocumentsMetadataRequest, opts ...gax.CallOption) (*discoveryenginepb.BatchGetDocumentsMetadataResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/batchGetDocumentsMetadata", req.GetParent())
@@ -1670,6 +1710,11 @@ func (c *documentRESTClient) CancelOperation(ctx context.Context, req *longrunni
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1707,6 +1752,11 @@ func (c *documentRESTClient) CancelOperation(ctx context.Context, req *longrunni
 func (c *documentRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1774,6 +1824,11 @@ func (c *documentRESTClient) ListOperations(ctx context.Context, req *longrunnin
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

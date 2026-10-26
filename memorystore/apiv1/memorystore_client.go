@@ -2024,6 +2024,11 @@ func (c *restClient) ListInstances(ctx context.Context, req *memorystorepb.ListI
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/instances", req.GetParent())
 
 		params := url.Values{}
@@ -2095,6 +2100,11 @@ func (c *restClient) GetInstance(ctx context.Context, req *memorystorepb.GetInst
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2154,6 +2164,11 @@ func (c *restClient) CreateInstance(ctx context.Context, req *memorystorepb.Crea
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/instances", req.GetParent())
@@ -2228,6 +2243,11 @@ func (c *restClient) UpdateInstance(ctx context.Context, req *memorystorepb.Upda
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetInstance().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetInstance().GetName())
 
 	params := url.Values{}
@@ -2299,6 +2319,11 @@ func (c *restClient) DeleteInstance(ctx context.Context, req *memorystorepb.Dele
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2363,6 +2388,11 @@ func (c *restClient) GetCertificateAuthority(ctx context.Context, req *memorysto
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/certificateAuthority", req.GetName())
 
 	params := url.Values{}
@@ -2416,6 +2446,11 @@ func (c *restClient) GetCertificateAuthority(ctx context.Context, req *memorysto
 func (c *restClient) GetSharedRegionalCertificateAuthority(ctx context.Context, req *memorystorepb.GetSharedRegionalCertificateAuthorityRequest, opts ...gax.CallOption) (*memorystorepb.SharedRegionalCertificateAuthority, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2476,6 +2511,11 @@ func (c *restClient) RescheduleMaintenance(ctx context.Context, req *memorystore
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:rescheduleMaintenance", req.GetName())
@@ -2556,6 +2596,11 @@ func (c *restClient) ListBackupCollections(ctx context.Context, req *memorystore
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/backupCollections", req.GetParent())
 
 		params := url.Values{}
@@ -2619,6 +2664,11 @@ func (c *restClient) ListBackupCollections(ctx context.Context, req *memorystore
 func (c *restClient) GetBackupCollection(ctx context.Context, req *memorystorepb.GetBackupCollectionRequest, opts ...gax.CallOption) (*memorystorepb.BackupCollection, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2688,6 +2738,11 @@ func (c *restClient) ListBackups(ctx context.Context, req *memorystorepb.ListBac
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/backups", req.GetParent())
 
 		params := url.Values{}
@@ -2753,6 +2808,11 @@ func (c *restClient) GetBackup(ctx context.Context, req *memorystorepb.GetBackup
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2805,6 +2865,11 @@ func (c *restClient) GetBackup(ctx context.Context, req *memorystorepb.GetBackup
 func (c *restClient) DeleteBackup(ctx context.Context, req *memorystorepb.DeleteBackupRequest, opts ...gax.CallOption) (*DeleteBackupOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2875,6 +2940,11 @@ func (c *restClient) ExportBackup(ctx context.Context, req *memorystorepb.Export
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:export", req.GetName())
@@ -2955,6 +3025,11 @@ func (c *restClient) BackupInstance(ctx context.Context, req *memorystorepb.Back
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:backup", req.GetName())
 
 	params := url.Values{}
@@ -3031,6 +3106,11 @@ func (c *restClient) StartMigration(ctx context.Context, req *memorystorepb.Star
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:startMigration", req.GetName())
 
 	params := url.Values{}
@@ -3103,6 +3183,11 @@ func (c *restClient) FinishMigration(ctx context.Context, req *memorystorepb.Fin
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:finishMigration", req.GetName())
@@ -3179,6 +3264,11 @@ func (c *restClient) ListTokenAuthUsers(ctx context.Context, req *memorystorepb.
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/tokenAuthUsers", req.GetParent())
 
 		params := url.Values{}
@@ -3250,6 +3340,11 @@ func (c *restClient) GetTokenAuthUser(ctx context.Context, req *memorystorepb.Ge
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3315,6 +3410,11 @@ func (c *restClient) ListAuthTokens(ctx context.Context, req *memorystorepb.List
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/authTokens", req.GetParent())
@@ -3388,6 +3488,11 @@ func (c *restClient) GetAuthToken(ctx context.Context, req *memorystorepb.GetAut
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3446,6 +3551,11 @@ func (c *restClient) AddTokenAuthUser(ctx context.Context, req *memorystorepb.Ad
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:addTokenAuthUser", req.GetInstance())
@@ -3507,6 +3617,11 @@ func (c *restClient) AddTokenAuthUser(ctx context.Context, req *memorystorepb.Ad
 func (c *restClient) DeleteTokenAuthUser(ctx context.Context, req *memorystorepb.DeleteTokenAuthUserRequest, opts ...gax.CallOption) (*DeleteTokenAuthUserOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3582,6 +3697,11 @@ func (c *restClient) AddAuthToken(ctx context.Context, req *memorystorepb.AddAut
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetTokenAuthUser(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:addAuthToken", req.GetTokenAuthUser())
 
 	params := url.Values{}
@@ -3643,6 +3763,11 @@ func (c *restClient) DeleteAuthToken(ctx context.Context, req *memorystorepb.Del
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3702,6 +3827,11 @@ func (c *restClient) DeleteAuthToken(ctx context.Context, req *memorystorepb.Del
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3786,6 +3916,11 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -3854,6 +3989,11 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -3893,6 +4033,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3930,6 +4075,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3997,6 +4147,11 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

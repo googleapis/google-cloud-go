@@ -904,6 +904,11 @@ func (c *phoneNumbersRESTClient) ListPhoneNumbers(ctx context.Context, req *dial
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2beta1/%v/phoneNumbers", req.GetParent())
 
 		params := url.Values{}
@@ -979,6 +984,11 @@ func (c *phoneNumbersRESTClient) UpdatePhoneNumber(ctx context.Context, req *dia
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetPhoneNumber().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetPhoneNumber().GetName())
 
 	params := url.Values{}
@@ -1045,6 +1055,11 @@ func (c *phoneNumbersRESTClient) DeletePhoneNumber(ctx context.Context, req *dia
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1108,6 +1123,11 @@ func (c *phoneNumbersRESTClient) UndeletePhoneNumber(ctx context.Context, req *d
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v:undelete", req.GetName())
 
 	params := url.Values{}
@@ -1160,6 +1180,11 @@ func (c *phoneNumbersRESTClient) UndeletePhoneNumber(ctx context.Context, req *d
 func (c *phoneNumbersRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetName())
@@ -1244,6 +1269,11 @@ func (c *phoneNumbersRESTClient) ListLocations(ctx context.Context, req *locatio
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2beta1/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -1312,6 +1342,11 @@ func (c *phoneNumbersRESTClient) CancelOperation(ctx context.Context, req *longr
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1349,6 +1384,11 @@ func (c *phoneNumbersRESTClient) CancelOperation(ctx context.Context, req *longr
 func (c *phoneNumbersRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetName())
@@ -1416,6 +1456,11 @@ func (c *phoneNumbersRESTClient) ListOperations(ctx context.Context, req *longru
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2beta1/%v/operations", req.GetName())

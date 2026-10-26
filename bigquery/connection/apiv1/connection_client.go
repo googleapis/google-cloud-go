@@ -790,6 +790,11 @@ func (c *restClient) CreateConnection(ctx context.Context, req *connectionpb.Cre
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/connections", req.GetParent())
 
 	params := url.Values{}
@@ -845,6 +850,11 @@ func (c *restClient) CreateConnection(ctx context.Context, req *connectionpb.Cre
 func (c *restClient) GetConnection(ctx context.Context, req *connectionpb.GetConnectionRequest, opts ...gax.CallOption) (*connectionpb.Connection, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -912,6 +922,11 @@ func (c *restClient) ListConnections(ctx context.Context, req *connectionpb.List
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/connections", req.GetParent())
@@ -985,6 +1000,11 @@ func (c *restClient) UpdateConnection(ctx context.Context, req *connectionpb.Upd
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1046,6 +1066,11 @@ func (c *restClient) DeleteConnection(ctx context.Context, req *connectionpb.Del
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1091,6 +1116,11 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
@@ -1154,6 +1184,11 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
@@ -1220,6 +1255,11 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())

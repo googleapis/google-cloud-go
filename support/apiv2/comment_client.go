@@ -551,6 +551,11 @@ func (c *commentRESTClient) ListComments(ctx context.Context, req *supportpb.Lis
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/comments", req.GetParent())
 
 		params := url.Values{}
@@ -625,6 +630,11 @@ func (c *commentRESTClient) CreateComment(ctx context.Context, req *supportpb.Cr
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/comments", req.GetParent())
 
 	params := url.Values{}
@@ -683,6 +693,11 @@ func (c *commentRESTClient) CreateComment(ctx context.Context, req *supportpb.Cr
 func (c *commentRESTClient) GetComment(ctx context.Context, req *supportpb.GetCommentRequest, opts ...gax.CallOption) (*supportpb.Comment, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())

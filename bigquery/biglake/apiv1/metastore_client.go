@@ -1384,6 +1384,11 @@ func (c *metastoreRESTClient) CreateCatalog(ctx context.Context, req *biglakepb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/catalogs", req.GetParent())
 
 	params := url.Values{}
@@ -1439,6 +1444,11 @@ func (c *metastoreRESTClient) DeleteCatalog(ctx context.Context, req *biglakepb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1491,6 +1501,11 @@ func (c *metastoreRESTClient) DeleteCatalog(ctx context.Context, req *biglakepb.
 func (c *metastoreRESTClient) GetCatalog(ctx context.Context, req *biglakepb.GetCatalogRequest, opts ...gax.CallOption) (*biglakepb.Catalog, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1558,6 +1573,11 @@ func (c *metastoreRESTClient) ListCatalogs(ctx context.Context, req *biglakepb.L
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/catalogs", req.GetParent())
@@ -1632,6 +1652,11 @@ func (c *metastoreRESTClient) CreateDatabase(ctx context.Context, req *biglakepb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/databases", req.GetParent())
 
 	params := url.Values{}
@@ -1685,6 +1710,11 @@ func (c *metastoreRESTClient) CreateDatabase(ctx context.Context, req *biglakepb
 func (c *metastoreRESTClient) DeleteDatabase(ctx context.Context, req *biglakepb.DeleteDatabaseRequest, opts ...gax.CallOption) (*biglakepb.Database, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1748,6 +1778,11 @@ func (c *metastoreRESTClient) UpdateDatabase(ctx context.Context, req *biglakepb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDatabase().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDatabase().GetName())
 
 	params := url.Values{}
@@ -1807,6 +1842,11 @@ func (c *metastoreRESTClient) UpdateDatabase(ctx context.Context, req *biglakepb
 func (c *metastoreRESTClient) GetDatabase(ctx context.Context, req *biglakepb.GetDatabaseRequest, opts ...gax.CallOption) (*biglakepb.Database, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1874,6 +1914,11 @@ func (c *metastoreRESTClient) ListDatabases(ctx context.Context, req *biglakepb.
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/databases", req.GetParent())
@@ -1948,6 +1993,11 @@ func (c *metastoreRESTClient) CreateTable(ctx context.Context, req *biglakepb.Cr
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/tables", req.GetParent())
 
 	params := url.Values{}
@@ -2001,6 +2051,11 @@ func (c *metastoreRESTClient) CreateTable(ctx context.Context, req *biglakepb.Cr
 func (c *metastoreRESTClient) DeleteTable(ctx context.Context, req *biglakepb.DeleteTableRequest, opts ...gax.CallOption) (*biglakepb.Table, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2062,6 +2117,11 @@ func (c *metastoreRESTClient) UpdateTable(ctx context.Context, req *biglakepb.Up
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetTable().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetTable().GetName())
@@ -2131,6 +2191,11 @@ func (c *metastoreRESTClient) RenameTable(ctx context.Context, req *biglakepb.Re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:rename", req.GetName())
 
 	params := url.Values{}
@@ -2183,6 +2248,11 @@ func (c *metastoreRESTClient) RenameTable(ctx context.Context, req *biglakepb.Re
 func (c *metastoreRESTClient) GetTable(ctx context.Context, req *biglakepb.GetTableRequest, opts ...gax.CallOption) (*biglakepb.Table, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2250,6 +2320,11 @@ func (c *metastoreRESTClient) ListTables(ctx context.Context, req *biglakepb.Lis
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/tables", req.GetParent())

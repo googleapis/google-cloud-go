@@ -1341,6 +1341,11 @@ func (c *icebergCatalogRESTClient) ListIcebergNamespaces(ctx context.Context, re
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetApiParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/iceberg/v1/restcatalog/v1/%v/namespaces", req.GetApiParent())
 
 		params := url.Values{}
@@ -1446,6 +1451,11 @@ func (c *icebergCatalogRESTClient) GetIcebergNamespace(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/iceberg/v1/restcatalog/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1507,6 +1517,11 @@ func (c *icebergCatalogRESTClient) CreateIcebergNamespace(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/iceberg/v1/restcatalog/v1/%v/namespaces", req.GetParent())
 
 	params := url.Values{}
@@ -1561,6 +1576,11 @@ func (c *icebergCatalogRESTClient) DeleteIcebergNamespace(ctx context.Context, r
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/iceberg/v1/restcatalog/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1605,6 +1625,11 @@ func (c *icebergCatalogRESTClient) UpdateIcebergNamespace(ctx context.Context, r
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/iceberg/v1/restcatalog/v1/%v/properties", req.GetName())
@@ -1672,6 +1697,11 @@ func (c *icebergCatalogRESTClient) ListIcebergTableIdentifiers(ctx context.Conte
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/iceberg/v1/restcatalog/v1/%v/tables", req.GetParent())
@@ -1743,6 +1773,11 @@ func (c *icebergCatalogRESTClient) CreateIcebergTable(ctx context.Context, req *
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/iceberg/v1/restcatalog/v1/%v/tables", req.GetParent())
@@ -1839,6 +1874,11 @@ func (c *icebergCatalogRESTClient) DeleteIcebergTable(ctx context.Context, req *
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/iceberg/v1/restcatalog/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1879,6 +1919,11 @@ func (c *icebergCatalogRESTClient) DeleteIcebergTable(ctx context.Context, req *
 func (c *icebergCatalogRESTClient) GetIcebergTable(ctx context.Context, req *biglakepb.GetIcebergTableRequest, opts ...gax.CallOption) (*httpbodypb.HttpBody, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/iceberg/v1/restcatalog/v1/%v", req.GetName())
@@ -1936,6 +1981,11 @@ func (c *icebergCatalogRESTClient) GetIcebergTable(ctx context.Context, req *big
 func (c *icebergCatalogRESTClient) LoadIcebergTableCredentials(ctx context.Context, req *biglakepb.GetIcebergTableRequest, opts ...gax.CallOption) (*biglakepb.LoadIcebergTableCredentialsResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/iceberg/v1/restcatalog/v1/%v/credentials", req.GetName())
@@ -2002,6 +2052,11 @@ func (c *icebergCatalogRESTClient) UpdateIcebergTable(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/iceberg/v1/restcatalog/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2060,6 +2115,11 @@ func (c *icebergCatalogRESTClient) RegisterIcebergTable(ctx context.Context, req
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/iceberg/v1/restcatalog/v1/%v/register", req.GetParent())
@@ -2122,6 +2182,11 @@ func (c *icebergCatalogRESTClient) ReportIcebergTableMetrics(ctx context.Context
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/iceberg/v1/restcatalog/v1/%v/metrics", req.GetName())
 
 	params := url.Values{}
@@ -2159,6 +2224,11 @@ func (c *icebergCatalogRESTClient) ReportIcebergTableMetrics(ctx context.Context
 func (c *icebergCatalogRESTClient) GetIcebergCatalog(ctx context.Context, req *biglakepb.GetIcebergCatalogRequest, opts ...gax.CallOption) (*biglakepb.IcebergCatalog, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/iceberg/v1/restcatalog/extensions/%v", req.GetName())
@@ -2226,6 +2296,11 @@ func (c *icebergCatalogRESTClient) ListIcebergCatalogs(ctx context.Context, req 
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/iceberg/v1/restcatalog/extensions/%v/catalogs", req.GetParent())
@@ -2303,6 +2378,11 @@ func (c *icebergCatalogRESTClient) DeleteIcebergCatalog(ctx context.Context, req
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/iceberg/v1/restcatalog/extensions/%v", req.GetName())
 
 	params := url.Values{}
@@ -2347,6 +2427,11 @@ func (c *icebergCatalogRESTClient) UpdateIcebergCatalog(ctx context.Context, req
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetIcebergCatalog().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/iceberg/v1/restcatalog/extensions/%v", req.GetIcebergCatalog().GetName())
@@ -2422,6 +2507,11 @@ func (c *icebergCatalogRESTClient) CreateIcebergCatalog(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/iceberg/v1/restcatalog/extensions/%v/catalogs", req.GetParent())
 
 	params := url.Values{}
@@ -2484,6 +2574,11 @@ func (c *icebergCatalogRESTClient) FailoverIcebergCatalog(ctx context.Context, r
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/iceberg/v1/restcatalog/extensions/%v:failover", req.GetName())

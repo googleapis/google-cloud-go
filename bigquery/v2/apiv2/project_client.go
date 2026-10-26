@@ -435,6 +435,11 @@ func (c *projectRESTClient) GetServiceAccount(ctx context.Context, req *bigquery
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/serviceAccount", req.GetProjectId())
 
 	// Build HTTP headers from client and context metadata.

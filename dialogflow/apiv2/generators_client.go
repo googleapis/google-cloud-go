@@ -952,6 +952,11 @@ func (c *generatorsRESTClient) CreateGenerator(ctx context.Context, req *dialogf
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/generators", req.GetParent())
 
 	params := url.Values{}
@@ -1007,6 +1012,11 @@ func (c *generatorsRESTClient) CreateGenerator(ctx context.Context, req *dialogf
 func (c *generatorsRESTClient) GetGenerator(ctx context.Context, req *dialogflowpb.GetGeneratorRequest, opts ...gax.CallOption) (*dialogflowpb.Generator, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -1076,6 +1086,11 @@ func (c *generatorsRESTClient) ListGenerators(ctx context.Context, req *dialogfl
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/generators", req.GetParent())
 
 		params := url.Values{}
@@ -1141,6 +1156,11 @@ func (c *generatorsRESTClient) DeleteGenerator(ctx context.Context, req *dialogf
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -1185,6 +1205,11 @@ func (c *generatorsRESTClient) UpdateGenerator(ctx context.Context, req *dialogf
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetGenerator().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetGenerator().GetName())
@@ -1246,6 +1271,11 @@ func (c *generatorsRESTClient) UpdateGenerator(ctx context.Context, req *dialogf
 func (c *generatorsRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -1330,6 +1360,11 @@ func (c *generatorsRESTClient) ListLocations(ctx context.Context, req *locationp
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -1398,6 +1433,11 @@ func (c *generatorsRESTClient) CancelOperation(ctx context.Context, req *longrun
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1435,6 +1475,11 @@ func (c *generatorsRESTClient) CancelOperation(ctx context.Context, req *longrun
 func (c *generatorsRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -1502,6 +1547,11 @@ func (c *generatorsRESTClient) ListOperations(ctx context.Context, req *longrunn
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/operations", req.GetName())

@@ -1711,6 +1711,11 @@ func (c *restClient) ListQueues(ctx context.Context, req *cloudtaskspb.ListQueue
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2beta2/%v/queues", req.GetParent())
 
 		params := url.Values{}
@@ -1784,6 +1789,11 @@ func (c *restClient) ListQueues(ctx context.Context, req *cloudtaskspb.ListQueue
 func (c *restClient) GetQueue(ctx context.Context, req *cloudtaskspb.GetQueueRequest, opts ...gax.CallOption) (*cloudtaskspb.Queue, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta2/%v", req.GetName())
@@ -1865,6 +1875,11 @@ func (c *restClient) CreateQueue(ctx context.Context, req *cloudtaskspb.CreateQu
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta2/%v/queues", req.GetParent())
 
 	params := url.Values{}
@@ -1940,6 +1955,11 @@ func (c *restClient) UpdateQueue(ctx context.Context, req *cloudtaskspb.UpdateQu
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetQueue().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta2/%v", req.GetQueue().GetName())
 
 	params := url.Values{}
@@ -2013,6 +2033,11 @@ func (c *restClient) DeleteQueue(ctx context.Context, req *cloudtaskspb.DeleteQu
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta2/%v", req.GetName())
 
 	params := url.Values{}
@@ -2061,6 +2086,11 @@ func (c *restClient) PurgeQueue(ctx context.Context, req *cloudtaskspb.PurgeQueu
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta2/%v:purge", req.GetName())
@@ -2128,6 +2158,11 @@ func (c *restClient) PauseQueue(ctx context.Context, req *cloudtaskspb.PauseQueu
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta2/%v:pause", req.GetName())
@@ -2202,6 +2237,11 @@ func (c *restClient) ResumeQueue(ctx context.Context, req *cloudtaskspb.ResumeQu
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta2/%v:resume", req.GetName())
@@ -2318,6 +2358,11 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta2/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -2388,6 +2433,11 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta2/%v:setIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -2453,6 +2503,11 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta2/%v:testIamPermissions", req.GetResource())
@@ -2530,6 +2585,11 @@ func (c *restClient) ListTasks(ctx context.Context, req *cloudtaskspb.ListTasksR
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2beta2/%v/tasks", req.GetParent())
 
 		params := url.Values{}
@@ -2596,6 +2656,11 @@ func (c *restClient) ListTasks(ctx context.Context, req *cloudtaskspb.ListTasksR
 func (c *restClient) GetTask(ctx context.Context, req *cloudtaskspb.GetTaskRequest, opts ...gax.CallOption) (*cloudtaskspb.Task, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta2/%v", req.GetName())
@@ -2670,6 +2735,11 @@ func (c *restClient) CreateTask(ctx context.Context, req *cloudtaskspb.CreateTas
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta2/%v/tasks", req.GetParent())
 
 	params := url.Values{}
@@ -2726,6 +2796,11 @@ func (c *restClient) CreateTask(ctx context.Context, req *cloudtaskspb.CreateTas
 func (c *restClient) DeleteTask(ctx context.Context, req *cloudtaskspb.DeleteTaskRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta2/%v", req.GetName())
@@ -2793,6 +2868,11 @@ func (c *restClient) LeaseTasks(ctx context.Context, req *cloudtaskspb.LeaseTask
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta2/%v/tasks:lease", req.GetParent())
@@ -2868,6 +2948,11 @@ func (c *restClient) AcknowledgeTask(ctx context.Context, req *cloudtaskspb.Ackn
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta2/%v:acknowledge", req.GetName())
 
 	params := url.Values{}
@@ -2916,6 +3001,11 @@ func (c *restClient) RenewLease(ctx context.Context, req *cloudtaskspb.RenewLeas
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta2/%v:renewLease", req.GetName())
@@ -2981,6 +3071,11 @@ func (c *restClient) CancelLease(ctx context.Context, req *cloudtaskspb.CancelLe
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta2/%v:cancelLease", req.GetName())
@@ -3072,6 +3167,11 @@ func (c *restClient) RunTask(ctx context.Context, req *cloudtaskspb.RunTaskReque
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta2/%v:run", req.GetName())
 
 	params := url.Values{}
@@ -3124,6 +3224,11 @@ func (c *restClient) RunTask(ctx context.Context, req *cloudtaskspb.RunTaskReque
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta2/%v", req.GetName())
@@ -3191,6 +3296,11 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2beta2/%v/locations", req.GetName())
