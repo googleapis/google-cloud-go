@@ -12,14 +12,14 @@
 
 ---
 
-### 1. Every resource has two session pools — read and write — except MaterializedView, which has read only
+### 1. Every resource has separate session pools — read, write, and read-write — except MaterializedView, which has read only
 
-- `SessionClient.OpenTable(name)` → `sessionTable{readPool, writePool}` with descriptors `READ_ROW` / `MUTATE_ROW` (`client.go:369`).
-- `SessionClient.OpenAuthorizedView(view)` → `sessionTable{readPool, writePool}` with descriptors `READ_ROW_AUTH_VIEW` / `MUTATE_ROW_AUTH_VIEW` (`client.go:397`).
-- `SessionClient.OpenMaterializedView(view)` → `sessionTable{readPool, writePool=nil}` with `READ_ROW_MAT_VIEW`; **MatView is read-only by contract** (`client.go:403-415`). `MutateRow` on a MatView MUST return `ErrWriteNotSupported` (`table.go:29-31, 154`).
-- Pools are **`lazyPool`** — opened on first `ReadRow` / `Apply`, not at `OpenTable`. Failed opens are **not cached** (a transient `proto.Marshal` failure MUST NOT strand the table); the next call retries. See `SESSION_CLIENT_SPEC.md #1` for the two-layer lazy-creation topology.
-- **Read and write pools do not share sessions.** Each pool holds its own set of Sessions typed for its direction (via `SessionType` on the underlying `Session`), each running its own OpenSession bidi stream. This is what keeps the multiplex=1 rule (`SESSION_SPEC.md #2`) from starving cross-direction traffic.
-- Behavioral shift vs classic path: marshal failures on session payloads surface on first `ReadRow`/`Apply`, not at `OpenTable`. Callers that expected eager failure will see it later.
+- `SessionClient.OpenTable(name)` → `sessionTable{readPool, writePool, readWritePool}` with descriptors `READ_ROW` / `MUTATE_ROW` (`client.go`).
+- `SessionClient.OpenAuthorizedView(view)` → `sessionTable{readPool, writePool, readWritePool}` with descriptors `READ_ROW_AUTH_VIEW` / `MUTATE_ROW_AUTH_VIEW` (`client.go`).
+- `SessionClient.OpenMaterializedView(view)` → `sessionTable{readPool, writePool=nil, readWritePool=nil}` with `READ_ROW_MAT_VIEW`; **MatView is read-only by contract**. Write operations on a MatView MUST return `ErrWriteNotSupported`.
+- Pools are **`lazyPool`** — opened on first operation, not at `OpenTable`. Failed opens are **not cached** (a transient `proto.Marshal` failure MUST NOT strand the table); the next call retries. See `SESSION_CLIENT_SPEC.md #1` for the two-layer lazy-creation topology.
+- **Read, write, and read-write pools do not share sessions.** Each pool holds its own set of Sessions typed for its direction (via `SessionType` on the underlying `Session`), each running its own OpenSession bidi stream. This is what keeps the multiplex=1 rule (`SESSION_SPEC.md #2`) from starving cross-direction traffic.
+- Behavioral shift vs classic path: marshal failures on session payloads surface on first operation, not at `OpenTable`. Callers that expected eager failure will see it later.
 
 ### 2. The AFE picker is two-tier, K-choice, and PeakEwma-OK-gated — Java-parity
 
