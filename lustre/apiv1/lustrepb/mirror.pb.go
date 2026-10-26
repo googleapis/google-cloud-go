@@ -860,23 +860,23 @@ var File_google_cloud_lustre_v1_mirror_proto protoreflect.FileDescriptor
 
 const file_google_cloud_lustre_v1_mirror_proto_rawDesc = "" +
 	"\n" +
-	"#google/cloud/lustre/v1/mirror.proto\x12\x16google.cloud.lustre.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a%google/cloud/lustre/v1/transfer.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf9\a\n" +
-	"\x06Mirror\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12B\n" +
-	"\bgcs_path\x18\x03 \x01(\v2\x1f.google.cloud.lustre.v1.GcsPathB\x06\xe0A\x02\xe0A\x05R\agcsPath\x12K\n" +
-	"\vlustre_path\x18\x04 \x01(\v2\".google.cloud.lustre.v1.LustrePathB\x06\xe0A\x02\xe0A\x05R\n" +
-	"lustrePath\x12N\n" +
-	"\tdirection\x18\x05 \x01(\x0e2(.google.cloud.lustre.v1.Mirror.DirectionB\x06\xe0A\x02\xe0A\x05R\tdirection\x129\n" +
-	"\x16deleted_files_retained\x18\x06 \x01(\bB\x03\xe0A\x01R\x14deletedFilesRetained\x12%\n" +
-	"\vdescription\x18\a \x01(\tB\x03\xe0A\x01R\vdescription\x12G\n" +
-	"\x06labels\x18\b \x03(\v2*.google.cloud.lustre.v1.Mirror.LabelsEntryB\x03\xe0A\x01R\x06labels\x12@\n" +
-	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
+	"#google/cloud/lustre/v1/mirror.proto\x12\x16google.cloud.lustre.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a%google/cloud/lustre/v1/transfer.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfe\a\n" +
+	"\x06Mirror\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\bgcs_path\x18\x03 \x01(\v2\x1f.google.cloud.lustre.v1.GcsPathB\x05\xe2A\x02\x02\x05R\agcsPath\x12J\n" +
+	"\vlustre_path\x18\x04 \x01(\v2\".google.cloud.lustre.v1.LustrePathB\x05\xe2A\x02\x02\x05R\n" +
+	"lustrePath\x12M\n" +
+	"\tdirection\x18\x05 \x01(\x0e2(.google.cloud.lustre.v1.Mirror.DirectionB\x05\xe2A\x02\x02\x05R\tdirection\x12:\n" +
+	"\x16deleted_files_retained\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\x14deletedFilesRetained\x12&\n" +
+	"\vdescription\x18\a \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12H\n" +
+	"\x06labels\x18\b \x03(\v2*.google.cloud.lustre.v1.Mirror.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12A\n" +
+	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
 	"\vupdate_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x1d\n" +
-	"\x03uid\x18\v \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12?\n" +
-	"\x05state\x18\f \x01(\x0e2$.google.cloud.lustre.v1.Mirror.StateB\x03\xe0A\x03R\x05state\x1a9\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x1e\n" +
+	"\x03uid\x18\v \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12@\n" +
+	"\x05state\x18\f \x01(\x0e2$.google.cloud.lustre.v1.Mirror.StateB\x04\xe2A\x01\x03R\x05state\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\">\n" +
@@ -891,48 +891,48 @@ const file_google_cloud_lustre_v1_mirror_proto_rawDesc = "" +
 	"\n" +
 	"\x06ACTIVE\x10\x04\x12\r\n" +
 	"\tSUSPENDED\x10\x05:\x81\x01\xeaA~\n" +
-	"\x1clustre.googleapis.com/Mirror\x12Mprojects/{project}/locations/{location}/instances/{instance}/mirrors/{mirror}*\amirrors2\x06mirror\"\xde\x01\n" +
-	"\x13CreateMirrorRequest\x12<\n" +
-	"\x06parent\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\x12\x1clustre.googleapis.com/MirrorR\x06parent\x12 \n" +
-	"\tmirror_id\x18\x02 \x01(\tB\x03\xe0A\x02R\bmirrorId\x12;\n" +
-	"\x06mirror\x18\x03 \x01(\v2\x1e.google.cloud.lustre.v1.MirrorB\x03\xe0A\x02R\x06mirror\x12*\n" +
+	"\x1clustre.googleapis.com/Mirror\x12Mprojects/{project}/locations/{location}/instances/{instance}/mirrors/{mirror}*\amirrors2\x06mirror\"\xe2\x01\n" +
+	"\x13CreateMirrorRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\x12\x1clustre.googleapis.com/MirrorR\x06parent\x12!\n" +
+	"\tmirror_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\bmirrorId\x12<\n" +
+	"\x06mirror\x18\x03 \x01(\v2\x1e.google.cloud.lustre.v1.MirrorB\x04\xe2A\x01\x02R\x06mirror\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xc0\x01\n" +
-	"\x13UpdateMirrorRequest\x12;\n" +
-	"\x06mirror\x18\x01 \x01(\v2\x1e.google.cloud.lustre.v1.MirrorB\x03\xe0A\x02R\x06mirror\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xc3\x01\n" +
+	"\x13UpdateMirrorRequest\x12<\n" +
+	"\x06mirror\x18\x01 \x01(\v2\x1e.google.cloud.lustre.v1.MirrorB\x04\xe2A\x01\x02R\x06mirror\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"{\n" +
-	"\x13DeleteMirrorRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1clustre.googleapis.com/MirrorR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"}\n" +
+	"\x13DeleteMirrorRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1clustre.googleapis.com/MirrorR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"L\n" +
-	"\x10GetMirrorRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1clustre.googleapis.com/MirrorR\x04name\"\xd5\x01\n" +
-	"\x12ListMirrorsRequest\x12<\n" +
-	"\x06parent\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\x12\x1clustre.googleapis.com/MirrorR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"M\n" +
+	"\x10GetMirrorRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1clustre.googleapis.com/MirrorR\x04name\"\xda\x01\n" +
+	"\x12ListMirrorsRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\x12\x1clustre.googleapis.com/MirrorR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1e\n" +
-	"\border_by\x18\x04 \x01(\tB\x03\xe0A\x01R\aorderBy\x12\x1b\n" +
-	"\x06filter\x18\x05 \x01(\tB\x03\xe0A\x01R\x06filter\"\x9e\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1f\n" +
+	"\border_by\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\x12\x1c\n" +
+	"\x06filter\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x9f\x01\n" +
 	"\x13ListMirrorsResponse\x128\n" +
 	"\amirrors\x18\x01 \x03(\v2\x1e.google.cloud.lustre.v1.MirrorR\amirrors\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"\xba\x03\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x06R\vunreachable\"\xc1\x03\n" +
 	"\x14CreateMirrorMetadata\x12`\n" +
-	"\x12operation_metadata\x18\x01 \x01(\v21.google.cloud.lustre.v1.TransferOperationMetadataR\x11operationMetadata\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x04 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x05 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x06 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\a \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\b \x01(\tB\x03\xe0A\x03R\n" +
+	"\x12operation_metadata\x18\x01 \x01(\v21.google.cloud.lustre.v1.TransferOperationMetadataR\x11operationMetadata\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\a \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\b \x01(\tB\x04\xe2A\x01\x03R\n" +
 	"apiVersionB_\n" +
 	"\x1acom.google.cloud.lustre.v1B\vMirrorProtoP\x01Z2cloud.google.com/go/lustre/apiv1/lustrepb;lustrepbb\x06proto3"
 

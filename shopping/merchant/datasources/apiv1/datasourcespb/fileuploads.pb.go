@@ -411,26 +411,26 @@ var File_google_shopping_merchant_datasources_v1_fileuploads_proto protoreflect.
 
 const file_google_shopping_merchant_datasources_v1_fileuploads_proto_rawDesc = "" +
 	"\n" +
-	"9google/shopping/merchant/datasources/v1/fileuploads.proto\x12'google.shopping.merchant.datasources.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x9c\b\n" +
+	"9google/shopping/merchant/datasources/v1/fileuploads.proto\x12'google.shopping.merchant.datasources.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xaa\b\n" +
 	"\n" +
-	"FileUpload\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12)\n" +
-	"\x0edata_source_id\x18\x02 \x01(\x03B\x03\xe0A\x03R\fdataSourceId\x12s\n" +
-	"\x10processing_state\x18\x03 \x01(\x0e2C.google.shopping.merchant.datasources.v1.FileUpload.ProcessingStateB\x03\xe0A\x03R\x0fprocessingState\x12V\n" +
-	"\x06issues\x18\x04 \x03(\v29.google.shopping.merchant.datasources.v1.FileUpload.IssueB\x03\xe0A\x03R\x06issues\x12$\n" +
-	"\vitems_total\x18\x05 \x01(\x03B\x03\xe0A\x03R\n" +
-	"itemsTotal\x12(\n" +
-	"\ritems_created\x18\x06 \x01(\x03B\x03\xe0A\x03R\fitemsCreated\x12(\n" +
-	"\ritems_updated\x18\a \x01(\x03B\x03\xe0A\x03R\fitemsUpdated\x12@\n" +
-	"\vupload_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"uploadTime\x1a\xd2\x02\n" +
-	"\x05Issue\x12\x19\n" +
-	"\x05title\x18\x01 \x01(\tB\x03\xe0A\x03R\x05title\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x03R\vdescription\x12\x17\n" +
-	"\x04code\x18\x03 \x01(\tB\x03\xe0A\x03R\x04code\x12\x19\n" +
-	"\x05count\x18\x04 \x01(\x03B\x03\xe0A\x03R\x05count\x12c\n" +
-	"\bseverity\x18\x05 \x01(\x0e2B.google.shopping.merchant.datasources.v1.FileUpload.Issue.SeverityB\x03\xe0A\x03R\bseverity\x120\n" +
-	"\x11documentation_uri\x18\x06 \x01(\tB\x03\xe0A\x03R\x10documentationUri\"<\n" +
+	"FileUpload\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12*\n" +
+	"\x0edata_source_id\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\fdataSourceId\x12t\n" +
+	"\x10processing_state\x18\x03 \x01(\x0e2C.google.shopping.merchant.datasources.v1.FileUpload.ProcessingStateB\x04\xe2A\x01\x03R\x0fprocessingState\x12W\n" +
+	"\x06issues\x18\x04 \x03(\v29.google.shopping.merchant.datasources.v1.FileUpload.IssueB\x04\xe2A\x01\x03R\x06issues\x12%\n" +
+	"\vitems_total\x18\x05 \x01(\x03B\x04\xe2A\x01\x03R\n" +
+	"itemsTotal\x12)\n" +
+	"\ritems_created\x18\x06 \x01(\x03B\x04\xe2A\x01\x03R\fitemsCreated\x12)\n" +
+	"\ritems_updated\x18\a \x01(\x03B\x04\xe2A\x01\x03R\fitemsUpdated\x12A\n" +
+	"\vupload_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"uploadTime\x1a\xd8\x02\n" +
+	"\x05Issue\x12\x1a\n" +
+	"\x05title\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x05title\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vdescription\x12\x18\n" +
+	"\x04code\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x04code\x12\x1a\n" +
+	"\x05count\x18\x04 \x01(\x03B\x04\xe2A\x01\x03R\x05count\x12d\n" +
+	"\bseverity\x18\x05 \x01(\x0e2B.google.shopping.merchant.datasources.v1.FileUpload.Issue.SeverityB\x04\xe2A\x01\x03R\bseverity\x121\n" +
+	"\x11documentation_uri\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x10documentationUri\"<\n" +
 	"\bSeverity\x12\x18\n" +
 	"\x14SEVERITY_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aWARNING\x10\x01\x12\t\n" +
@@ -442,9 +442,9 @@ const file_google_shopping_merchant_datasources_v1_fileuploads_proto_rawDesc = "
 	"\vIN_PROGRESS\x10\x02\x12\r\n" +
 	"\tSUCCEEDED\x10\x03:\x8a\x01\xeaA\x86\x01\n" +
 	"%merchantapi.googleapis.com/FileUpload\x12Daccounts/{account}/dataSources/{datasource}/fileUploads/{fileupload}*\vfileUploads2\n" +
-	"fileUpload\"Y\n" +
-	"\x14GetFileUploadRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
+	"fileUpload\"Z\n" +
+	"\x14GetFileUploadRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
 	"%merchantapi.googleapis.com/FileUploadR\x04name2\xb1\x02\n" +
 	"\x12FileUploadsService\x12\xd1\x01\n" +
 	"\rGetFileUpload\x12=.google.shopping.merchant.datasources.v1.GetFileUploadRequest\x1a3.google.shopping.merchant.datasources.v1.FileUpload\"L\xdaA\x04name\x82\xd3\xe4\x93\x02?\x12=/datasources/v1/{name=accounts/*/dataSources/*/fileUploads/*}\x1aG\xcaA\x1amerchantapi.googleapis.com\xd2A'https://www.googleapis.com/auth/contentB\x98\x02\n" +

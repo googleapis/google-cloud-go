@@ -310,28 +310,28 @@ var File_google_cloud_osconfig_agentendpoint_v1_vm_inventory_proto protoreflect.
 
 const file_google_cloud_osconfig_agentendpoint_v1_vm_inventory_proto_rawDesc = "" +
 	"\n" +
-	"9google/cloud/osconfig/agentendpoint/v1/vm_inventory.proto\x12&google.cloud.osconfig.agentendpoint.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xfa\x06\n" +
-	"\vVmInventory\x12X\n" +
-	"\aos_info\x18\x01 \x01(\v2:.google.cloud.osconfig.agentendpoint.v1.VmInventory.OsInfoB\x03\xe0A\x02R\x06osInfo\x12u\n" +
-	"\x12installed_packages\x18\x02 \x03(\v2A.google.cloud.osconfig.agentendpoint.v1.VmInventory.InventoryItemB\x03\xe0A\x02R\x11installedPackages\x12u\n" +
-	"\x12available_packages\x18\x03 \x03(\v2A.google.cloud.osconfig.agentendpoint.v1.VmInventory.InventoryItemB\x03\xe0A\x02R\x11availablePackages\x1a\xcb\x02\n" +
-	"\x06OsInfo\x12 \n" +
-	"\thost_name\x18\x01 \x01(\tB\x03\xe0A\x02R\bhostName\x12 \n" +
-	"\tlong_name\x18\x02 \x01(\tB\x03\xe0A\x01R\blongName\x12\"\n" +
+	"9google/cloud/osconfig/agentendpoint/v1/vm_inventory.proto\x12&google.cloud.osconfig.agentendpoint.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1cgoogle/protobuf/struct.proto\"\x8b\a\n" +
+	"\vVmInventory\x12Y\n" +
+	"\aos_info\x18\x01 \x01(\v2:.google.cloud.osconfig.agentendpoint.v1.VmInventory.OsInfoB\x04\xe2A\x01\x02R\x06osInfo\x12v\n" +
+	"\x12installed_packages\x18\x02 \x03(\v2A.google.cloud.osconfig.agentendpoint.v1.VmInventory.InventoryItemB\x04\xe2A\x01\x02R\x11installedPackages\x12v\n" +
+	"\x12available_packages\x18\x03 \x03(\v2A.google.cloud.osconfig.agentendpoint.v1.VmInventory.InventoryItemB\x04\xe2A\x01\x02R\x11availablePackages\x1a\xd3\x02\n" +
+	"\x06OsInfo\x12!\n" +
+	"\thost_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bhostName\x12!\n" +
+	"\tlong_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\blongName\x12#\n" +
 	"\n" +
-	"short_name\x18\x03 \x01(\tB\x03\xe0A\x02R\tshortName\x12\x1d\n" +
-	"\aversion\x18\x04 \x01(\tB\x03\xe0A\x01R\aversion\x12'\n" +
-	"\farchitecture\x18\x05 \x01(\tB\x03\xe0A\x02R\farchitecture\x12*\n" +
-	"\x0ekernel_version\x18\x06 \x01(\tB\x03\xe0A\x01R\rkernelVersion\x12*\n" +
-	"\x0ekernel_release\x18\a \x01(\tB\x03\xe0A\x01R\rkernelRelease\x129\n" +
-	"\x16osconfig_agent_version\x18\b \x01(\tB\x03\xe0A\x02R\x14osconfigAgentVersion\x1a\xd4\x01\n" +
-	"\rInventoryItem\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x17\n" +
-	"\x04type\x18\x02 \x01(\tB\x03\xe0A\x02R\x04type\x12\x1d\n" +
-	"\aversion\x18\x03 \x01(\tB\x03\xe0A\x02R\aversion\x12\x17\n" +
-	"\x04purl\x18\x04 \x01(\tB\x03\xe0A\x02R\x04purl\x12\x1f\n" +
-	"\blocation\x18\x05 \x03(\tB\x03\xe0A\x02R\blocation\x128\n" +
-	"\bmetadata\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\bmetadataB\x92\x01\n" +
+	"short_name\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\tshortName\x12\x1e\n" +
+	"\aversion\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\aversion\x12(\n" +
+	"\farchitecture\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\farchitecture\x12+\n" +
+	"\x0ekernel_version\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\rkernelVersion\x12+\n" +
+	"\x0ekernel_release\x18\a \x01(\tB\x04\xe2A\x01\x01R\rkernelRelease\x12:\n" +
+	"\x16osconfig_agent_version\x18\b \x01(\tB\x04\xe2A\x01\x02R\x14osconfigAgentVersion\x1a\xda\x01\n" +
+	"\rInventoryItem\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12\x18\n" +
+	"\x04type\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04type\x12\x1e\n" +
+	"\aversion\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\aversion\x12\x18\n" +
+	"\x04purl\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\x04purl\x12 \n" +
+	"\blocation\x18\x05 \x03(\tB\x04\xe2A\x01\x02R\blocation\x129\n" +
+	"\bmetadata\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\bmetadataB\x92\x01\n" +
 	"*com.google.cloud.osconfig.agentendpoint.v1B\x10VmInventoryProtoP\x01ZPcloud.google.com/go/osconfig/agentendpoint/apiv1/agentendpointpb;agentendpointpbb\x06proto3"
 
 var (

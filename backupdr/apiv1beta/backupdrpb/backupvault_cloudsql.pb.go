@@ -439,36 +439,36 @@ var File_google_cloud_backupdr_v1beta_backupvault_cloudsql_proto protoreflect.Fi
 
 const file_google_cloud_backupdr_v1beta_backupvault_cloudsql_proto_rawDesc = "" +
 	"\n" +
-	"7google/cloud/backupdr/v1beta/backupvault_cloudsql.proto\x12\x1cgoogle.cloud.backupdr.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa4\x02\n" +
-	"$CloudSqlInstanceDataSourceProperties\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x03\xfaA\"\n" +
-	" sqladmin.googleapis.com/InstanceR\x04name\x12A\n" +
-	"\x1adatabase_installed_version\x18\x02 \x01(\tB\x03\xe0A\x03R\x18databaseInstalledVersion\x12Q\n" +
-	"\x14instance_create_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x12instanceCreateTime\x12(\n" +
-	"\rinstance_tier\x18\x05 \x01(\tB\x03\xe0A\x03R\finstanceTier\"\xb0\x03\n" +
-	" CloudSqlInstanceBackupProperties\x12A\n" +
-	"\x1adatabase_installed_version\x18\x02 \x01(\tB\x03\xe0A\x03R\x18databaseInstalledVersion\x12&\n" +
-	"\ffinal_backup\x18\x03 \x01(\bB\x03\xe0A\x03R\vfinalBackup\x12Q\n" +
-	"\x0fsource_instance\x18\x04 \x01(\tB(\xe0A\x03\xfaA\"\n" +
-	" sqladmin.googleapis.com/InstanceR\x0esourceInstance\x12Q\n" +
-	"\x14instance_create_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x12instanceCreateTime\x12(\n" +
-	"\rinstance_tier\x18\x06 \x01(\tB\x03\xe0A\x03R\finstanceTier\x12Q\n" +
-	"\x14instance_delete_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x12instanceDeleteTime\"\xad\x02\n" +
-	"-CloudSqlInstanceDataSourceReferenceProperties\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x03\xfaA\"\n" +
-	" sqladmin.googleapis.com/InstanceR\x04name\x12A\n" +
-	"\x1adatabase_installed_version\x18\x02 \x01(\tB\x03\xe0A\x03R\x18databaseInstalledVersion\x12Q\n" +
-	"\x14instance_create_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x12instanceCreateTime\x12(\n" +
-	"\rinstance_tier\x18\x05 \x01(\tB\x03\xe0A\x03R\finstanceTier\"\xda\x01\n" +
-	"$CloudSqlInstanceInitializationConfig\x12i\n" +
-	"\aedition\x18\x01 \x01(\x0e2J.google.cloud.backupdr.v1beta.CloudSqlInstanceInitializationConfig.EditionB\x03\xe0A\x02R\aedition\"G\n" +
+	"7google/cloud/backupdr/v1beta/backupvault_cloudsql.proto\x12\x1cgoogle.cloud.backupdr.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa8\x02\n" +
+	"$CloudSqlInstanceDataSourceProperties\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x03\xfaA\"\n" +
+	" sqladmin.googleapis.com/InstanceR\x04name\x12B\n" +
+	"\x1adatabase_installed_version\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x18databaseInstalledVersion\x12R\n" +
+	"\x14instance_create_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x12instanceCreateTime\x12)\n" +
+	"\rinstance_tier\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\finstanceTier\"\xb6\x03\n" +
+	" CloudSqlInstanceBackupProperties\x12B\n" +
+	"\x1adatabase_installed_version\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x18databaseInstalledVersion\x12'\n" +
+	"\ffinal_backup\x18\x03 \x01(\bB\x04\xe2A\x01\x03R\vfinalBackup\x12R\n" +
+	"\x0fsource_instance\x18\x04 \x01(\tB)\xe2A\x01\x03\xfaA\"\n" +
+	" sqladmin.googleapis.com/InstanceR\x0esourceInstance\x12R\n" +
+	"\x14instance_create_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x12instanceCreateTime\x12)\n" +
+	"\rinstance_tier\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\finstanceTier\x12R\n" +
+	"\x14instance_delete_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x12instanceDeleteTime\"\xb1\x02\n" +
+	"-CloudSqlInstanceDataSourceReferenceProperties\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x03\xfaA\"\n" +
+	" sqladmin.googleapis.com/InstanceR\x04name\x12B\n" +
+	"\x1adatabase_installed_version\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x18databaseInstalledVersion\x12R\n" +
+	"\x14instance_create_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x12instanceCreateTime\x12)\n" +
+	"\rinstance_tier\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\finstanceTier\"\xdb\x01\n" +
+	"$CloudSqlInstanceInitializationConfig\x12j\n" +
+	"\aedition\x18\x01 \x01(\x0e2J.google.cloud.backupdr.v1beta.CloudSqlInstanceInitializationConfig.EditionB\x04\xe2A\x01\x02R\aedition\"G\n" +
 	"\aEdition\x12\x17\n" +
 	"\x13EDITION_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +
 	"ENTERPRISE\x10\x01\x12\x13\n" +
-	"\x0fENTERPRISE_PLUS\x10\x02\"\x84\x01\n" +
-	"/CloudSqlInstanceBackupPlanAssociationProperties\x12Q\n" +
-	"\x14instance_create_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x12instanceCreateTimeB\xaa\x02\xeaAK\n" +
+	"\x0fENTERPRISE_PLUS\x10\x02\"\x85\x01\n" +
+	"/CloudSqlInstanceBackupPlanAssociationProperties\x12R\n" +
+	"\x14instance_create_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x12instanceCreateTimeB\xaa\x02\xeaAK\n" +
 	" sqladmin.googleapis.com/Instance\x12'projects/{project}/instances/{instance}\n" +
 	" com.google.cloud.backupdr.v1betaB\x18BackupvaultCloudSqlProtoP\x01Z<cloud.google.com/go/backupdr/apiv1beta/backupdrpb;backupdrpb\xaa\x02\x1cGoogle.Cloud.BackupDR.V1Beta\xca\x02\x1cGoogle\\Cloud\\BackupDR\\V1beta\xea\x02\x1fGoogle::Cloud::BackupDR::V1betab\x06proto3"
 

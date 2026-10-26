@@ -1198,23 +1198,23 @@ var File_google_cloud_osconfig_v1_patch_deployments_proto protoreflect.FileDescr
 
 const file_google_cloud_osconfig_v1_patch_deployments_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/osconfig/v1/patch_deployments.proto\x12\x18google.cloud.osconfig.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a)google/cloud/osconfig/v1/patch_jobs.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1agoogle/type/datetime.proto\x1a\x1bgoogle/type/dayofweek.proto\x1a\x1bgoogle/type/timeofday.proto\"\x83\b\n" +
+	"0google/cloud/osconfig/v1/patch_deployments.proto\x12\x18google.cloud.osconfig.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a)google/cloud/osconfig/v1/patch_jobs.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1agoogle/type/datetime.proto\x1a\x1bgoogle/type/dayofweek.proto\x1a\x1bgoogle/type/timeofday.proto\"\x8e\b\n" +
 	"\x0fPatchDeployment\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12[\n" +
-	"\x0finstance_filter\x18\x03 \x01(\v2-.google.cloud.osconfig.v1.PatchInstanceFilterB\x03\xe0A\x02R\x0einstanceFilter\x12M\n" +
-	"\fpatch_config\x18\x04 \x01(\v2%.google.cloud.osconfig.v1.PatchConfigB\x03\xe0A\x01R\vpatchConfig\x12:\n" +
-	"\bduration\x18\x05 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\bduration\x12\\\n" +
-	"\x11one_time_schedule\x18\x06 \x01(\v2).google.cloud.osconfig.v1.OneTimeScheduleB\x03\xe0A\x02H\x00R\x0foneTimeSchedule\x12a\n" +
-	"\x12recurring_schedule\x18\a \x01(\v2+.google.cloud.osconfig.v1.RecurringScheduleB\x03\xe0A\x02H\x00R\x11recurringSchedule\x12@\n" +
-	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12K\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\\\n" +
+	"\x0finstance_filter\x18\x03 \x01(\v2-.google.cloud.osconfig.v1.PatchInstanceFilterB\x04\xe2A\x01\x02R\x0einstanceFilter\x12N\n" +
+	"\fpatch_config\x18\x04 \x01(\v2%.google.cloud.osconfig.v1.PatchConfigB\x04\xe2A\x01\x01R\vpatchConfig\x12;\n" +
+	"\bduration\x18\x05 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\bduration\x12]\n" +
+	"\x11one_time_schedule\x18\x06 \x01(\v2).google.cloud.osconfig.v1.OneTimeScheduleB\x04\xe2A\x01\x02H\x00R\x0foneTimeSchedule\x12b\n" +
+	"\x12recurring_schedule\x18\a \x01(\v2+.google.cloud.osconfig.v1.RecurringScheduleB\x04\xe2A\x01\x02H\x00R\x11recurringSchedule\x12A\n" +
+	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12L\n" +
 	"\x11last_execute_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0flastExecuteTime\x12E\n" +
-	"\arollout\x18\v \x01(\v2&.google.cloud.osconfig.v1.PatchRolloutB\x03\xe0A\x01R\arollout\x12J\n" +
-	"\x05state\x18\f \x01(\x0e2/.google.cloud.osconfig.v1.PatchDeployment.StateB\x03\xe0A\x03R\x05state\"6\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x0flastExecuteTime\x12F\n" +
+	"\arollout\x18\v \x01(\v2&.google.cloud.osconfig.v1.PatchRolloutB\x04\xe2A\x01\x01R\arollout\x12K\n" +
+	"\x05state\x18\f \x01(\x0e2/.google.cloud.osconfig.v1.PatchDeployment.StateB\x04\xe2A\x01\x03R\x05state\"6\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
@@ -1223,68 +1223,68 @@ const file_google_cloud_osconfig_v1_patch_deployments_proto_rawDesc = "" +
 	"\x06PAUSED\x10\x02:d\xeaAa\n" +
 	"'osconfig.googleapis.com/PatchDeployment\x126projects/{project}/patchDeployments/{patch_deployment}B\n" +
 	"\n" +
-	"\bschedule\"U\n" +
-	"\x0fOneTimeSchedule\x12B\n" +
-	"\fexecute_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\vexecuteTime\"\xed\x05\n" +
-	"\x11RecurringSchedule\x127\n" +
-	"\ttime_zone\x18\x01 \x01(\v2\x15.google.type.TimeZoneB\x03\xe0A\x02R\btimeZone\x12>\n" +
+	"\bschedule\"V\n" +
+	"\x0fOneTimeSchedule\x12C\n" +
+	"\fexecute_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\vexecuteTime\"\xf6\x05\n" +
+	"\x11RecurringSchedule\x128\n" +
+	"\ttime_zone\x18\x01 \x01(\v2\x15.google.type.TimeZoneB\x04\xe2A\x01\x02R\btimeZone\x12?\n" +
 	"\n" +
-	"start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\tstartTime\x12:\n" +
-	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\aendTime\x12;\n" +
-	"\vtime_of_day\x18\x04 \x01(\v2\x16.google.type.TimeOfDayB\x03\xe0A\x02R\ttimeOfDay\x12X\n" +
-	"\tfrequency\x18\x05 \x01(\x0e25.google.cloud.osconfig.v1.RecurringSchedule.FrequencyB\x03\xe0A\x02R\tfrequency\x12G\n" +
-	"\x06weekly\x18\x06 \x01(\v2(.google.cloud.osconfig.v1.WeeklyScheduleB\x03\xe0A\x02H\x00R\x06weekly\x12J\n" +
-	"\amonthly\x18\a \x01(\v2).google.cloud.osconfig.v1.MonthlyScheduleB\x03\xe0A\x02H\x00R\amonthly\x12K\n" +
-	"\x11last_execute_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0flastExecuteTime\x12K\n" +
+	"start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\tstartTime\x12;\n" +
+	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\aendTime\x12<\n" +
+	"\vtime_of_day\x18\x04 \x01(\v2\x16.google.type.TimeOfDayB\x04\xe2A\x01\x02R\ttimeOfDay\x12Y\n" +
+	"\tfrequency\x18\x05 \x01(\x0e25.google.cloud.osconfig.v1.RecurringSchedule.FrequencyB\x04\xe2A\x01\x02R\tfrequency\x12H\n" +
+	"\x06weekly\x18\x06 \x01(\v2(.google.cloud.osconfig.v1.WeeklyScheduleB\x04\xe2A\x01\x02H\x00R\x06weekly\x12K\n" +
+	"\amonthly\x18\a \x01(\v2).google.cloud.osconfig.v1.MonthlyScheduleB\x04\xe2A\x01\x02H\x00R\amonthly\x12L\n" +
+	"\x11last_execute_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x0flastExecuteTime\x12L\n" +
 	"\x11next_execute_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0fnextExecuteTime\"J\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x0fnextExecuteTime\"J\n" +
 	"\tFrequency\x12\x19\n" +
 	"\x15FREQUENCY_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06WEEKLY\x10\x01\x12\v\n" +
 	"\aMONTHLY\x10\x02\x12\t\n" +
 	"\x05DAILY\x10\x03B\x11\n" +
-	"\x0fschedule_config\"M\n" +
-	"\x0eWeeklySchedule\x12;\n" +
-	"\vday_of_week\x18\x01 \x01(\x0e2\x16.google.type.DayOfWeekB\x03\xe0A\x02R\tdayOfWeek\"\xa1\x01\n" +
-	"\x0fMonthlySchedule\x12Z\n" +
-	"\x11week_day_of_month\x18\x01 \x01(\v2(.google.cloud.osconfig.v1.WeekDayOfMonthB\x03\xe0A\x02H\x00R\x0eweekDayOfMonth\x12\"\n" +
-	"\tmonth_day\x18\x02 \x01(\x05B\x03\xe0A\x02H\x00R\bmonthDayB\x0e\n" +
-	"\fday_of_month\"\x99\x01\n" +
-	"\x0eWeekDayOfMonth\x12&\n" +
-	"\fweek_ordinal\x18\x01 \x01(\x05B\x03\xe0A\x02R\vweekOrdinal\x12;\n" +
-	"\vday_of_week\x18\x02 \x01(\x0e2\x16.google.type.DayOfWeekB\x03\xe0A\x02R\tdayOfWeek\x12\"\n" +
+	"\x0fschedule_config\"N\n" +
+	"\x0eWeeklySchedule\x12<\n" +
+	"\vday_of_week\x18\x01 \x01(\x0e2\x16.google.type.DayOfWeekB\x04\xe2A\x01\x02R\tdayOfWeek\"\xa3\x01\n" +
+	"\x0fMonthlySchedule\x12[\n" +
+	"\x11week_day_of_month\x18\x01 \x01(\v2(.google.cloud.osconfig.v1.WeekDayOfMonthB\x04\xe2A\x01\x02H\x00R\x0eweekDayOfMonth\x12#\n" +
+	"\tmonth_day\x18\x02 \x01(\x05B\x04\xe2A\x01\x02H\x00R\bmonthDayB\x0e\n" +
+	"\fday_of_month\"\x9c\x01\n" +
+	"\x0eWeekDayOfMonth\x12'\n" +
+	"\fweek_ordinal\x18\x01 \x01(\x05B\x04\xe2A\x01\x02R\vweekOrdinal\x12<\n" +
+	"\vday_of_week\x18\x02 \x01(\x0e2\x16.google.type.DayOfWeekB\x04\xe2A\x01\x02R\tdayOfWeek\x12#\n" +
 	"\n" +
-	"day_offset\x18\x03 \x01(\x05B\x03\xe0A\x01R\tdayOffset\"\xfb\x01\n" +
-	"\x1cCreatePatchDeploymentRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x123\n" +
-	"\x13patch_deployment_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x11patchDeploymentId\x12Y\n" +
-	"\x10patch_deployment\x18\x03 \x01(\v2).google.cloud.osconfig.v1.PatchDeploymentB\x03\xe0A\x02R\x0fpatchDeployment\"`\n" +
-	"\x19GetPatchDeploymentRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'osconfig.googleapis.com/PatchDeploymentR\x04name\"\xb0\x01\n" +
-	"\x1bListPatchDeploymentsRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"day_offset\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\tdayOffset\"\xfe\x01\n" +
+	"\x1cCreatePatchDeploymentRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x124\n" +
+	"\x13patch_deployment_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x11patchDeploymentId\x12Z\n" +
+	"\x10patch_deployment\x18\x03 \x01(\v2).google.cloud.osconfig.v1.PatchDeploymentB\x04\xe2A\x01\x02R\x0fpatchDeployment\"a\n" +
+	"\x19GetPatchDeploymentRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'osconfig.googleapis.com/PatchDeploymentR\x04name\"\xb3\x01\n" +
+	"\x1bListPatchDeploymentsRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x9e\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x9e\x01\n" +
 	"\x1cListPatchDeploymentsResponse\x12V\n" +
 	"\x11patch_deployments\x18\x01 \x03(\v2).google.cloud.osconfig.v1.PatchDeploymentR\x10patchDeployments\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"c\n" +
-	"\x1cDeletePatchDeploymentRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'osconfig.googleapis.com/PatchDeploymentR\x04name\"\xbb\x01\n" +
-	"\x1cUpdatePatchDeploymentRequest\x12Y\n" +
-	"\x10patch_deployment\x18\x01 \x01(\v2).google.cloud.osconfig.v1.PatchDeploymentB\x03\xe0A\x02R\x0fpatchDeployment\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"b\n" +
-	"\x1bPausePatchDeploymentRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'osconfig.googleapis.com/PatchDeploymentR\x04name\"c\n" +
-	"\x1cResumePatchDeploymentRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"d\n" +
+	"\x1cDeletePatchDeploymentRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'osconfig.googleapis.com/PatchDeploymentR\x04name\"\xbd\x01\n" +
+	"\x1cUpdatePatchDeploymentRequest\x12Z\n" +
+	"\x10patch_deployment\x18\x01 \x01(\v2).google.cloud.osconfig.v1.PatchDeploymentB\x04\xe2A\x01\x02R\x0fpatchDeployment\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"c\n" +
+	"\x1bPausePatchDeploymentRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'osconfig.googleapis.com/PatchDeploymentR\x04name\"d\n" +
+	"\x1cResumePatchDeploymentRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
 	"'osconfig.googleapis.com/PatchDeploymentR\x04nameB\xbe\x01\n" +
 	"\x1ccom.google.cloud.osconfig.v1B\x10PatchDeploymentsZ8cloud.google.com/go/osconfig/apiv1/osconfigpb;osconfigpb\xaa\x02\x18Google.Cloud.OsConfig.V1\xca\x02\x18Google\\Cloud\\OsConfig\\V1\xea\x02\x1bGoogle::Cloud::OsConfig::V1b\x06proto3"
 

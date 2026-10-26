@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -58,6 +58,7 @@ const (
 	CertificateManager_ListCertificateIssuanceConfigs_FullMethodName  = "/google.cloud.certificatemanager.v1.CertificateManager/ListCertificateIssuanceConfigs"
 	CertificateManager_GetCertificateIssuanceConfig_FullMethodName    = "/google.cloud.certificatemanager.v1.CertificateManager/GetCertificateIssuanceConfig"
 	CertificateManager_CreateCertificateIssuanceConfig_FullMethodName = "/google.cloud.certificatemanager.v1.CertificateManager/CreateCertificateIssuanceConfig"
+	CertificateManager_UpdateCertificateIssuanceConfig_FullMethodName = "/google.cloud.certificatemanager.v1.CertificateManager/UpdateCertificateIssuanceConfig"
 	CertificateManager_DeleteCertificateIssuanceConfig_FullMethodName = "/google.cloud.certificatemanager.v1.CertificateManager/DeleteCertificateIssuanceConfig"
 	CertificateManager_ListTrustConfigs_FullMethodName                = "/google.cloud.certificatemanager.v1.CertificateManager/ListTrustConfigs"
 	CertificateManager_GetTrustConfig_FullMethodName                  = "/google.cloud.certificatemanager.v1.CertificateManager/GetTrustConfig"
@@ -118,6 +119,8 @@ type CertificateManagerClient interface {
 	GetCertificateIssuanceConfig(ctx context.Context, in *GetCertificateIssuanceConfigRequest, opts ...grpc.CallOption) (*CertificateIssuanceConfig, error)
 	// Creates a new CertificateIssuanceConfig in a given project and location.
 	CreateCertificateIssuanceConfig(ctx context.Context, in *CreateCertificateIssuanceConfigRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Updates a CertificateIssuanceConfig.
+	UpdateCertificateIssuanceConfig(ctx context.Context, in *UpdateCertificateIssuanceConfigRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a single CertificateIssuanceConfig.
 	DeleteCertificateIssuanceConfig(ctx context.Context, in *DeleteCertificateIssuanceConfigRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists TrustConfigs in a given project and location.
@@ -347,6 +350,15 @@ func (c *certificateManagerClient) CreateCertificateIssuanceConfig(ctx context.C
 	return out, nil
 }
 
+func (c *certificateManagerClient) UpdateCertificateIssuanceConfig(ctx context.Context, in *UpdateCertificateIssuanceConfigRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, CertificateManager_UpdateCertificateIssuanceConfig_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *certificateManagerClient) DeleteCertificateIssuanceConfig(ctx context.Context, in *DeleteCertificateIssuanceConfigRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, CertificateManager_DeleteCertificateIssuanceConfig_FullMethodName, in, out, opts...)
@@ -453,6 +465,8 @@ type CertificateManagerServer interface {
 	GetCertificateIssuanceConfig(context.Context, *GetCertificateIssuanceConfigRequest) (*CertificateIssuanceConfig, error)
 	// Creates a new CertificateIssuanceConfig in a given project and location.
 	CreateCertificateIssuanceConfig(context.Context, *CreateCertificateIssuanceConfigRequest) (*longrunningpb.Operation, error)
+	// Updates a CertificateIssuanceConfig.
+	UpdateCertificateIssuanceConfig(context.Context, *UpdateCertificateIssuanceConfigRequest) (*longrunningpb.Operation, error)
 	// Deletes a single CertificateIssuanceConfig.
 	DeleteCertificateIssuanceConfig(context.Context, *DeleteCertificateIssuanceConfigRequest) (*longrunningpb.Operation, error)
 	// Lists TrustConfigs in a given project and location.
@@ -539,6 +553,9 @@ func (UnimplementedCertificateManagerServer) GetCertificateIssuanceConfig(contex
 }
 func (UnimplementedCertificateManagerServer) CreateCertificateIssuanceConfig(context.Context, *CreateCertificateIssuanceConfigRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateCertificateIssuanceConfig not implemented")
+}
+func (UnimplementedCertificateManagerServer) UpdateCertificateIssuanceConfig(context.Context, *UpdateCertificateIssuanceConfigRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateCertificateIssuanceConfig not implemented")
 }
 func (UnimplementedCertificateManagerServer) DeleteCertificateIssuanceConfig(context.Context, *DeleteCertificateIssuanceConfigRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteCertificateIssuanceConfig not implemented")
@@ -984,6 +1001,24 @@ func _CertificateManager_CreateCertificateIssuanceConfig_Handler(srv interface{}
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CertificateManager_UpdateCertificateIssuanceConfig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateCertificateIssuanceConfigRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CertificateManagerServer).UpdateCertificateIssuanceConfig(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CertificateManager_UpdateCertificateIssuanceConfig_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CertificateManagerServer).UpdateCertificateIssuanceConfig(ctx, req.(*UpdateCertificateIssuanceConfigRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _CertificateManager_DeleteCertificateIssuanceConfig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeleteCertificateIssuanceConfigRequest)
 	if err := dec(in); err != nil {
@@ -1190,6 +1225,10 @@ var CertificateManager_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateCertificateIssuanceConfig",
 			Handler:    _CertificateManager_CreateCertificateIssuanceConfig_Handler,
+		},
+		{
+			MethodName: "UpdateCertificateIssuanceConfig",
+			Handler:    _CertificateManager_UpdateCertificateIssuanceConfig_Handler,
 		},
 		{
 			MethodName: "DeleteCertificateIssuanceConfig",

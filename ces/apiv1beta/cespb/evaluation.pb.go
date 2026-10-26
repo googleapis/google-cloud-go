@@ -5967,130 +5967,130 @@ var File_google_cloud_ces_v1beta_evaluation_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1beta_evaluation_proto_rawDesc = "" +
 	"\n" +
-	"(google/cloud/ces/v1beta/evaluation.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a!google/cloud/ces/v1beta/app.proto\x1a$google/cloud/ces/v1beta/common.proto\x1a7google/cloud/ces/v1beta/evaluation_metrics_config.proto\x1a%google/cloud/ces/v1beta/example.proto\x1a#google/cloud/ces/v1beta/fakes.proto\x1a(google/cloud/ces/v1beta/golden_run.proto\x1a-google/cloud/ces/v1beta/session_service.proto\x1a*google/cloud/ces/v1beta/toolset_tool.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xe7\x10\n" +
-	"\x11AggregatedMetrics\x12x\n" +
-	"\x16metrics_by_app_version\x18\x03 \x03(\v2>.google.cloud.ces.v1beta.AggregatedMetrics.MetricsByAppVersionB\x03\xe0A\x03R\x13metricsByAppVersion\x1a\x8a\x01\n" +
-	"\vToolMetrics\x123\n" +
-	"\x04tool\x18\x01 \x01(\tB\x1f\xe0A\x03\xfaA\x19\n" +
-	"\x17ces.googleapis.com/ToolR\x04tool\x12\"\n" +
+	"(google/cloud/ces/v1beta/evaluation.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a!google/cloud/ces/v1beta/app.proto\x1a$google/cloud/ces/v1beta/common.proto\x1a7google/cloud/ces/v1beta/evaluation_metrics_config.proto\x1a%google/cloud/ces/v1beta/example.proto\x1a#google/cloud/ces/v1beta/fakes.proto\x1a(google/cloud/ces/v1beta/golden_run.proto\x1a-google/cloud/ces/v1beta/session_service.proto\x1a*google/cloud/ces/v1beta/toolset_tool.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xff\x10\n" +
+	"\x11AggregatedMetrics\x12y\n" +
+	"\x16metrics_by_app_version\x18\x03 \x03(\v2>.google.cloud.ces.v1beta.AggregatedMetrics.MetricsByAppVersionB\x04\xe2A\x01\x03R\x13metricsByAppVersion\x1a\x8d\x01\n" +
+	"\vToolMetrics\x124\n" +
+	"\x04tool\x18\x01 \x01(\tB \xe2A\x01\x03\xfaA\x19\n" +
+	"\x17ces.googleapis.com/ToolR\x04tool\x12#\n" +
 	"\n" +
-	"pass_count\x18\x02 \x01(\x05B\x03\xe0A\x03R\tpassCount\x12\"\n" +
+	"pass_count\x18\x02 \x01(\x05B\x04\xe2A\x01\x03R\tpassCount\x12#\n" +
 	"\n" +
-	"fail_count\x18\x03 \x01(\x05B\x03\xe0A\x03R\tfailCount\x1a]\n" +
-	"\x12TurnLatencyMetrics\x12G\n" +
-	"\x0faverage_latency\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x03R\x0eaverageLatency\x1a\x96\x01\n" +
-	"\x16ToolCallLatencyMetrics\x123\n" +
-	"\x04tool\x18\x01 \x01(\tB\x1f\xe0A\x03\xfaA\x19\n" +
-	"\x17ces.googleapis.com/ToolR\x04tool\x12G\n" +
-	"\x0faverage_latency\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x03R\x0eaverageLatency\x1a6\n" +
-	"\x19SemanticSimilarityMetrics\x12\x19\n" +
-	"\x05score\x18\x01 \x01(\x02B\x03\xe0A\x03R\x05score\x1a1\n" +
-	"\x14HallucinationMetrics\x12\x19\n" +
-	"\x05score\x18\x01 \x01(\x02B\x03\xe0A\x03R\x05score\x1a\xd0\x06\n" +
-	"\x13MetricsByAppVersion\x12)\n" +
-	"\x0eapp_version_id\x18\x01 \x01(\tB\x03\xe0A\x03R\fappVersionId\x12^\n" +
-	"\ftool_metrics\x18\x02 \x03(\v26.google.cloud.ces.v1beta.AggregatedMetrics.ToolMetricsB\x03\xe0A\x03R\vtoolMetrics\x12\x89\x01\n" +
-	"\x1bsemantic_similarity_metrics\x18\x03 \x03(\v2D.google.cloud.ces.v1beta.AggregatedMetrics.SemanticSimilarityMetricsB\x03\xe0A\x03R\x19semanticSimilarityMetrics\x12y\n" +
-	"\x15hallucination_metrics\x18\x05 \x03(\v2?.google.cloud.ces.v1beta.AggregatedMetrics.HallucinationMetricsB\x03\xe0A\x03R\x14hallucinationMetrics\x12\x81\x01\n" +
-	"\x19tool_call_latency_metrics\x18\x06 \x03(\v2A.google.cloud.ces.v1beta.AggregatedMetrics.ToolCallLatencyMetricsB\x03\xe0A\x03R\x16toolCallLatencyMetrics\x12t\n" +
-	"\x14turn_latency_metrics\x18\a \x03(\v2=.google.cloud.ces.v1beta.AggregatedMetrics.TurnLatencyMetricsB\x03\xe0A\x03R\x12turnLatencyMetrics\x12\"\n" +
+	"fail_count\x18\x03 \x01(\x05B\x04\xe2A\x01\x03R\tfailCount\x1a^\n" +
+	"\x12TurnLatencyMetrics\x12H\n" +
+	"\x0faverage_latency\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x03R\x0eaverageLatency\x1a\x98\x01\n" +
+	"\x16ToolCallLatencyMetrics\x124\n" +
+	"\x04tool\x18\x01 \x01(\tB \xe2A\x01\x03\xfaA\x19\n" +
+	"\x17ces.googleapis.com/ToolR\x04tool\x12H\n" +
+	"\x0faverage_latency\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x03R\x0eaverageLatency\x1a7\n" +
+	"\x19SemanticSimilarityMetrics\x12\x1a\n" +
+	"\x05score\x18\x01 \x01(\x02B\x04\xe2A\x01\x03R\x05score\x1a2\n" +
+	"\x14HallucinationMetrics\x12\x1a\n" +
+	"\x05score\x18\x01 \x01(\x02B\x04\xe2A\x01\x03R\x05score\x1a\xd9\x06\n" +
+	"\x13MetricsByAppVersion\x12*\n" +
+	"\x0eapp_version_id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\fappVersionId\x12_\n" +
+	"\ftool_metrics\x18\x02 \x03(\v26.google.cloud.ces.v1beta.AggregatedMetrics.ToolMetricsB\x04\xe2A\x01\x03R\vtoolMetrics\x12\x8a\x01\n" +
+	"\x1bsemantic_similarity_metrics\x18\x03 \x03(\v2D.google.cloud.ces.v1beta.AggregatedMetrics.SemanticSimilarityMetricsB\x04\xe2A\x01\x03R\x19semanticSimilarityMetrics\x12z\n" +
+	"\x15hallucination_metrics\x18\x05 \x03(\v2?.google.cloud.ces.v1beta.AggregatedMetrics.HallucinationMetricsB\x04\xe2A\x01\x03R\x14hallucinationMetrics\x12\x82\x01\n" +
+	"\x19tool_call_latency_metrics\x18\x06 \x03(\v2A.google.cloud.ces.v1beta.AggregatedMetrics.ToolCallLatencyMetricsB\x04\xe2A\x01\x03R\x16toolCallLatencyMetrics\x12u\n" +
+	"\x14turn_latency_metrics\x18\a \x03(\v2=.google.cloud.ces.v1beta.AggregatedMetrics.TurnLatencyMetricsB\x04\xe2A\x01\x03R\x12turnLatencyMetrics\x12#\n" +
 	"\n" +
-	"pass_count\x18\b \x01(\x05B\x03\xe0A\x03R\tpassCount\x12\"\n" +
+	"pass_count\x18\b \x01(\x05B\x04\xe2A\x01\x03R\tpassCount\x12#\n" +
 	"\n" +
-	"fail_count\x18\t \x01(\x05B\x03\xe0A\x03R\tfailCount\x12e\n" +
-	"\x0fmetrics_by_turn\x18\x04 \x03(\v28.google.cloud.ces.v1beta.AggregatedMetrics.MetricsByTurnB\x03\xe0A\x03R\rmetricsByTurn\x1a\x94\x05\n" +
-	"\rMetricsByTurn\x12\"\n" +
+	"fail_count\x18\t \x01(\x05B\x04\xe2A\x01\x03R\tfailCount\x12f\n" +
+	"\x0fmetrics_by_turn\x18\x04 \x03(\v28.google.cloud.ces.v1beta.AggregatedMetrics.MetricsByTurnB\x04\xe2A\x01\x03R\rmetricsByTurn\x1a\x9a\x05\n" +
+	"\rMetricsByTurn\x12#\n" +
 	"\n" +
-	"turn_index\x18\x01 \x01(\x05B\x03\xe0A\x03R\tturnIndex\x12^\n" +
-	"\ftool_metrics\x18\x02 \x03(\v26.google.cloud.ces.v1beta.AggregatedMetrics.ToolMetricsB\x03\xe0A\x03R\vtoolMetrics\x12\x89\x01\n" +
-	"\x1bsemantic_similarity_metrics\x18\x03 \x03(\v2D.google.cloud.ces.v1beta.AggregatedMetrics.SemanticSimilarityMetricsB\x03\xe0A\x03R\x19semanticSimilarityMetrics\x12y\n" +
-	"\x15hallucination_metrics\x18\x04 \x03(\v2?.google.cloud.ces.v1beta.AggregatedMetrics.HallucinationMetricsB\x03\xe0A\x03R\x14hallucinationMetrics\x12\x81\x01\n" +
-	"\x19tool_call_latency_metrics\x18\x05 \x03(\v2A.google.cloud.ces.v1beta.AggregatedMetrics.ToolCallLatencyMetricsB\x03\xe0A\x03R\x16toolCallLatencyMetrics\x12t\n" +
-	"\x14turn_latency_metrics\x18\x06 \x03(\v2=.google.cloud.ces.v1beta.AggregatedMetrics.TurnLatencyMetricsB\x03\xe0A\x03R\x12turnLatencyMetrics\"\xbe*\n" +
+	"turn_index\x18\x01 \x01(\x05B\x04\xe2A\x01\x03R\tturnIndex\x12_\n" +
+	"\ftool_metrics\x18\x02 \x03(\v26.google.cloud.ces.v1beta.AggregatedMetrics.ToolMetricsB\x04\xe2A\x01\x03R\vtoolMetrics\x12\x8a\x01\n" +
+	"\x1bsemantic_similarity_metrics\x18\x03 \x03(\v2D.google.cloud.ces.v1beta.AggregatedMetrics.SemanticSimilarityMetricsB\x04\xe2A\x01\x03R\x19semanticSimilarityMetrics\x12z\n" +
+	"\x15hallucination_metrics\x18\x04 \x03(\v2?.google.cloud.ces.v1beta.AggregatedMetrics.HallucinationMetricsB\x04\xe2A\x01\x03R\x14hallucinationMetrics\x12\x82\x01\n" +
+	"\x19tool_call_latency_metrics\x18\x05 \x03(\v2A.google.cloud.ces.v1beta.AggregatedMetrics.ToolCallLatencyMetricsB\x04\xe2A\x01\x03R\x16toolCallLatencyMetrics\x12u\n" +
+	"\x14turn_latency_metrics\x18\x06 \x03(\v2=.google.cloud.ces.v1beta.AggregatedMetrics.TurnLatencyMetricsB\x04\xe2A\x01\x03R\x12turnLatencyMetrics\"\xf7*\n" +
 	"\n" +
-	"Evaluation\x12I\n" +
-	"\x06golden\x18\v \x01(\v2*.google.cloud.ces.v1beta.Evaluation.GoldenB\x03\xe0A\x01H\x00R\x06golden\x12O\n" +
-	"\bscenario\x18\f \x01(\v2,.google.cloud.ces.v1beta.Evaluation.ScenarioB\x03\xe0A\x01H\x00R\bscenario\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12\x17\n" +
-	"\x04tags\x18\x04 \x03(\tB\x03\xe0A\x01R\x04tags\x12]\n" +
-	"\x13evaluation_datasets\x18\x05 \x03(\tB,\xe0A\x03\xfaA&\n" +
-	"$ces.googleapis.com/EvaluationDatasetR\x12evaluationDatasets\x12@\n" +
-	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12\"\n" +
+	"Evaluation\x12J\n" +
+	"\x06golden\x18\v \x01(\v2*.google.cloud.ces.v1beta.Evaluation.GoldenB\x04\xe2A\x01\x01H\x00R\x06golden\x12P\n" +
+	"\bscenario\x18\f \x01(\v2,.google.cloud.ces.v1beta.Evaluation.ScenarioB\x04\xe2A\x01\x01H\x00R\bscenario\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\x18\n" +
+	"\x04tags\x18\x04 \x03(\tB\x04\xe2A\x01\x01R\x04tags\x12^\n" +
+	"\x13evaluation_datasets\x18\x05 \x03(\tB-\xe2A\x01\x03\xfaA&\n" +
+	"$ces.googleapis.com/EvaluationDatasetR\x12evaluationDatasets\x12A\n" +
+	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12#\n" +
 	"\n" +
-	"created_by\x18\r \x01(\tB\x03\xe0A\x03R\tcreatedBy\x12@\n" +
-	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12+\n" +
-	"\x0flast_updated_by\x18\x0e \x01(\tB\x03\xe0A\x03R\rlastUpdatedBy\x12Q\n" +
-	"\x0fevaluation_runs\x18\x0f \x03(\tB(\xe0A\x03\xfaA\"\n" +
-	" ces.googleapis.com/EvaluationRunR\x0eevaluationRuns\x12\x17\n" +
+	"created_by\x18\r \x01(\tB\x04\xe2A\x01\x03R\tcreatedBy\x12A\n" +
+	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12,\n" +
+	"\x0flast_updated_by\x18\x0e \x01(\tB\x04\xe2A\x01\x03R\rlastUpdatedBy\x12R\n" +
+	"\x0fevaluation_runs\x18\x0f \x03(\tB)\xe2A\x01\x03\xfaA\"\n" +
+	" ces.googleapis.com/EvaluationRunR\x0eevaluationRuns\x12\x18\n" +
 	"\x04etag\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R\x04etag\x12^\n" +
-	"\x12aggregated_metrics\x18\x10 \x01(\v2*.google.cloud.ces.v1beta.AggregatedMetricsB\x03\xe0A\x03R\x11aggregatedMetrics\x12b\n" +
-	"\x15last_completed_result\x18\x11 \x01(\v2).google.cloud.ces.v1beta.EvaluationResultB\x03\xe0A\x03R\x13lastCompletedResult\x12\x1d\n" +
-	"\ainvalid\x18\x12 \x01(\bB\x03\xe0A\x03R\ainvalid\x12X\n" +
-	"\x10last_ten_results\x18\x13 \x03(\v2).google.cloud.ces.v1beta.EvaluationResultB\x03\xe0A\x03R\x0elastTenResults\x12\x8c\x01\n" +
-	"%evaluation_metrics_threshold_override\x18\x14 \x01(\v24.google.cloud.ces.v1beta.EvaluationMetricsThresholdsB\x03\xe0A\x01R\"evaluationMetricsThresholdOverride\x12\x82\x01\n" +
-	"\"evaluation_metrics_config_override\x18\x15 \x01(\v20.google.cloud.ces.v1beta.EvaluationMetricsConfigB\x03\xe0A\x01R\x1fevaluationMetricsConfigOverride\x1a\xe0\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R\x04etag\x12_\n" +
+	"\x12aggregated_metrics\x18\x10 \x01(\v2*.google.cloud.ces.v1beta.AggregatedMetricsB\x04\xe2A\x01\x03R\x11aggregatedMetrics\x12c\n" +
+	"\x15last_completed_result\x18\x11 \x01(\v2).google.cloud.ces.v1beta.EvaluationResultB\x04\xe2A\x01\x03R\x13lastCompletedResult\x12\x1e\n" +
+	"\ainvalid\x18\x12 \x01(\bB\x04\xe2A\x01\x03R\ainvalid\x12Y\n" +
+	"\x10last_ten_results\x18\x13 \x03(\v2).google.cloud.ces.v1beta.EvaluationResultB\x04\xe2A\x01\x03R\x0elastTenResults\x12\x8d\x01\n" +
+	"%evaluation_metrics_threshold_override\x18\x14 \x01(\v24.google.cloud.ces.v1beta.EvaluationMetricsThresholdsB\x04\xe2A\x01\x01R\"evaluationMetricsThresholdOverride\x12\x83\x01\n" +
+	"\"evaluation_metrics_config_override\x18\x15 \x01(\v20.google.cloud.ces.v1beta.EvaluationMetricsConfigB\x04\xe2A\x01\x01R\x1fevaluationMetricsConfigOverride\x1a\xed\n" +
 	"\n" +
-	"\x11GoldenExpectation\x12E\n" +
-	"\ttool_call\x18\x02 \x01(\v2!.google.cloud.ces.v1beta.ToolCallB\x03\xe0A\x01H\x00R\btoolCall\x12Q\n" +
-	"\rtool_response\x18\x03 \x01(\v2%.google.cloud.ces.v1beta.ToolResponseB\x03\xe0A\x01H\x00R\ftoolResponse\x12N\n" +
-	"\x0eagent_response\x18\x04 \x01(\v2 .google.cloud.ces.v1beta.MessageB\x03\xe0A\x01H\x00R\ragentResponse\x12T\n" +
-	"\x0eagent_transfer\x18\x05 \x01(\v2&.google.cloud.ces.v1beta.AgentTransferB\x03\xe0A\x01H\x00R\ragentTransfer\x12K\n" +
-	"\x11updated_variables\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01H\x00R\x10updatedVariables\x12Z\n" +
-	"\x12mock_tool_response\x18\a \x01(\v2%.google.cloud.ces.v1beta.ToolResponseB\x03\xe0A\x01H\x00R\x10mockToolResponse\x12)\n" +
-	"\rno_tool_calls\x18\r \x01(\bB\x03\xe0A\x01H\x00R\vnoToolCalls\x12\x17\n" +
-	"\x04note\x18\x01 \x01(\tB\x03\xe0A\x01R\x04note\x12,\n" +
-	"\x0fskip_evaluation\x18\b \x01(\bB\x03\xe0A\x01R\x0eskipEvaluation\x12\xdf\x01\n" +
-	"-expectation_level_metrics_thresholds_override\x18\t \x01(\v2x.google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.ExpectationLevelMetricsThresholdsB\x03\xe0A\x01R)expectationLevelMetricsThresholdsOverride\x12\xcf\x01\n" +
+	"\x11GoldenExpectation\x12F\n" +
+	"\ttool_call\x18\x02 \x01(\v2!.google.cloud.ces.v1beta.ToolCallB\x04\xe2A\x01\x01H\x00R\btoolCall\x12R\n" +
+	"\rtool_response\x18\x03 \x01(\v2%.google.cloud.ces.v1beta.ToolResponseB\x04\xe2A\x01\x01H\x00R\ftoolResponse\x12O\n" +
+	"\x0eagent_response\x18\x04 \x01(\v2 .google.cloud.ces.v1beta.MessageB\x04\xe2A\x01\x01H\x00R\ragentResponse\x12U\n" +
+	"\x0eagent_transfer\x18\x05 \x01(\v2&.google.cloud.ces.v1beta.AgentTransferB\x04\xe2A\x01\x01H\x00R\ragentTransfer\x12L\n" +
+	"\x11updated_variables\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01H\x00R\x10updatedVariables\x12[\n" +
+	"\x12mock_tool_response\x18\a \x01(\v2%.google.cloud.ces.v1beta.ToolResponseB\x04\xe2A\x01\x01H\x00R\x10mockToolResponse\x12*\n" +
+	"\rno_tool_calls\x18\r \x01(\bB\x04\xe2A\x01\x01H\x00R\vnoToolCalls\x12\x18\n" +
+	"\x04note\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04note\x12-\n" +
+	"\x0fskip_evaluation\x18\b \x01(\bB\x04\xe2A\x01\x01R\x0eskipEvaluation\x12\xe0\x01\n" +
+	"-expectation_level_metrics_thresholds_override\x18\t \x01(\v2x.google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.ExpectationLevelMetricsThresholdsB\x04\xe2A\x01\x01R)expectationLevelMetricsThresholdsOverride\x12\xd0\x01\n" +
 	":agent_response_semantic_similarity_metrics_config_override\x18\n" +
-	" \x01(\v2P.google.cloud.ces.v1beta.EvaluationMetricsConfig.SemanticSimilarityMetricsConfigB\x03\xe0A\x01R4agentResponseSemanticSimilarityMetricsConfigOverride\x12\xbf\x01\n" +
-	"4agent_response_hallucination_metrics_config_override\x18\v \x01(\v2K.google.cloud.ces.v1beta.EvaluationMetricsConfig.HallucinationMetricsConfigB\x03\xe0A\x01R/agentResponseHallucinationMetricsConfigOverride\x12m\n" +
-	"\x0fcomparison_type\x18\f \x01(\x0e2?.google.cloud.ces.v1beta.EvaluationMetricsConfig.ComparisonTypeB\x03\xe0A\x01R\x0ecomparisonTypeB\v\n" +
-	"\tcondition\x1a\x91\x02\n" +
-	"\x04Step\x12K\n" +
+	" \x01(\v2P.google.cloud.ces.v1beta.EvaluationMetricsConfig.SemanticSimilarityMetricsConfigB\x04\xe2A\x01\x01R4agentResponseSemanticSimilarityMetricsConfigOverride\x12\xc0\x01\n" +
+	"4agent_response_hallucination_metrics_config_override\x18\v \x01(\v2K.google.cloud.ces.v1beta.EvaluationMetricsConfig.HallucinationMetricsConfigB\x04\xe2A\x01\x01R/agentResponseHallucinationMetricsConfigOverride\x12n\n" +
+	"\x0fcomparison_type\x18\f \x01(\x0e2?.google.cloud.ces.v1beta.EvaluationMetricsConfig.ComparisonTypeB\x04\xe2A\x01\x01R\x0ecomparisonTypeB\v\n" +
+	"\tcondition\x1a\x94\x02\n" +
+	"\x04Step\x12L\n" +
 	"\n" +
-	"user_input\x18\x01 \x01(\v2%.google.cloud.ces.v1beta.SessionInputB\x03\xe0A\x01H\x00R\tuserInput\x12T\n" +
-	"\x0eagent_transfer\x18\x02 \x01(\v2&.google.cloud.ces.v1beta.AgentTransferB\x03\xe0A\x01H\x00R\ragentTransfer\x12^\n" +
-	"\vexpectation\x18\x03 \x01(\v25.google.cloud.ces.v1beta.Evaluation.GoldenExpectationB\x03\xe0A\x01H\x00R\vexpectationB\x06\n" +
-	"\x04step\x1a\x8c\x04\n" +
+	"user_input\x18\x01 \x01(\v2%.google.cloud.ces.v1beta.SessionInputB\x04\xe2A\x01\x01H\x00R\tuserInput\x12U\n" +
+	"\x0eagent_transfer\x18\x02 \x01(\v2&.google.cloud.ces.v1beta.AgentTransferB\x04\xe2A\x01\x01H\x00R\ragentTransfer\x12_\n" +
+	"\vexpectation\x18\x03 \x01(\v25.google.cloud.ces.v1beta.Evaluation.GoldenExpectationB\x04\xe2A\x01\x01H\x00R\vexpectationB\x06\n" +
+	"\x04step\x1a\x90\x04\n" +
 	"\n" +
-	"GoldenTurn\x12C\n" +
-	"\x05steps\x18\x01 \x03(\v2(.google.cloud.ces.v1beta.Evaluation.StepB\x03\xe0A\x02R\x05steps\x12?\n" +
-	"\troot_span\x18\x02 \x01(\v2\x1d.google.cloud.ces.v1beta.SpanB\x03\xe0A\x01R\brootSpan\x12\xca\x01\n" +
-	"&turn_level_metrics_thresholds_override\x18\x03 \x01(\v2q.google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.TurnLevelMetricsThresholdsB\x03\xe0A\x01R\"turnLevelMetricsThresholdsOverride\x12\xaa\x01\n" +
-	"&hallucination_metric_behavior_override\x18\x04 \x01(\x0e2P.google.cloud.ces.v1beta.EvaluationMetricsThresholds.HallucinationMetricBehaviorB\x03\xe0A\x01R#hallucinationMetricBehaviorOverride\x1a\xbe\x01\n" +
-	"\x06Golden\x12I\n" +
-	"\x05turns\x18\x02 \x03(\v2..google.cloud.ces.v1beta.Evaluation.GoldenTurnB\x03\xe0A\x02R\x05turns\x12i\n" +
-	"\x17evaluation_expectations\x18\x03 \x03(\tB0\xe0A\x01\xfaA*\n" +
-	"(ces.googleapis.com/EvaluationExpectationR\x16evaluationExpectations\x1a\xb3\x03\n" +
-	"\x13ScenarioExpectation\x12y\n" +
-	"\x10tool_expectation\x18\x01 \x01(\v2G.google.cloud.ces.v1beta.Evaluation.ScenarioExpectation.ToolExpectationB\x03\xe0A\x01H\x00R\x0ftoolExpectation\x12N\n" +
-	"\x0eagent_response\x18\x02 \x01(\v2 .google.cloud.ces.v1beta.MessageB\x03\xe0A\x01H\x00R\ragentResponse\x1a\xc1\x01\n" +
-	"\x0fToolExpectation\x12T\n" +
-	"\x12expected_tool_call\x18\x01 \x01(\v2!.google.cloud.ces.v1beta.ToolCallB\x03\xe0A\x02R\x10expectedToolCall\x12X\n" +
-	"\x12mock_tool_response\x18\x02 \x01(\v2%.google.cloud.ces.v1beta.ToolResponseB\x03\xe0A\x02R\x10mockToolResponseB\r\n" +
-	"\vexpectation\x1a\x8e\t\n" +
-	"\bScenario\x12\x17\n" +
-	"\x04task\x18\x01 \x01(\tB\x03\xe0A\x02R\x04task\x12Y\n" +
+	"GoldenTurn\x12D\n" +
+	"\x05steps\x18\x01 \x03(\v2(.google.cloud.ces.v1beta.Evaluation.StepB\x04\xe2A\x01\x02R\x05steps\x12@\n" +
+	"\troot_span\x18\x02 \x01(\v2\x1d.google.cloud.ces.v1beta.SpanB\x04\xe2A\x01\x01R\brootSpan\x12\xcb\x01\n" +
+	"&turn_level_metrics_thresholds_override\x18\x03 \x01(\v2q.google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.TurnLevelMetricsThresholdsB\x04\xe2A\x01\x01R\"turnLevelMetricsThresholdsOverride\x12\xab\x01\n" +
+	"&hallucination_metric_behavior_override\x18\x04 \x01(\x0e2P.google.cloud.ces.v1beta.EvaluationMetricsThresholds.HallucinationMetricBehaviorB\x04\xe2A\x01\x01R#hallucinationMetricBehaviorOverride\x1a\xc0\x01\n" +
+	"\x06Golden\x12J\n" +
+	"\x05turns\x18\x02 \x03(\v2..google.cloud.ces.v1beta.Evaluation.GoldenTurnB\x04\xe2A\x01\x02R\x05turns\x12j\n" +
+	"\x17evaluation_expectations\x18\x03 \x03(\tB1\xe2A\x01\x01\xfaA*\n" +
+	"(ces.googleapis.com/EvaluationExpectationR\x16evaluationExpectations\x1a\xb7\x03\n" +
+	"\x13ScenarioExpectation\x12z\n" +
+	"\x10tool_expectation\x18\x01 \x01(\v2G.google.cloud.ces.v1beta.Evaluation.ScenarioExpectation.ToolExpectationB\x04\xe2A\x01\x01H\x00R\x0ftoolExpectation\x12O\n" +
+	"\x0eagent_response\x18\x02 \x01(\v2 .google.cloud.ces.v1beta.MessageB\x04\xe2A\x01\x01H\x00R\ragentResponse\x1a\xc3\x01\n" +
+	"\x0fToolExpectation\x12U\n" +
+	"\x12expected_tool_call\x18\x01 \x01(\v2!.google.cloud.ces.v1beta.ToolCallB\x04\xe2A\x01\x02R\x10expectedToolCall\x12Y\n" +
+	"\x12mock_tool_response\x18\x02 \x01(\v2%.google.cloud.ces.v1beta.ToolResponseB\x04\xe2A\x01\x02R\x10mockToolResponseB\r\n" +
+	"\vexpectation\x1a\x9a\t\n" +
+	"\bScenario\x12\x18\n" +
+	"\x04task\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04task\x12Z\n" +
 	"\n" +
-	"user_facts\x18\x04 \x03(\v25.google.cloud.ces.v1beta.Evaluation.Scenario.UserFactB\x03\xe0A\x01R\tuserFacts\x12 \n" +
-	"\tmax_turns\x18\x05 \x01(\x05B\x03\xe0A\x01R\bmaxTurns\x12\x1d\n" +
-	"\arubrics\x18\x02 \x03(\tB\x03\xe0A\x02R\arubrics\x12q\n" +
-	"\x15scenario_expectations\x18\x03 \x03(\v27.google.cloud.ces.v1beta.Evaluation.ScenarioExpectationB\x03\xe0A\x02R\x14scenarioExpectations\x12K\n" +
-	"\x12variable_overrides\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x11variableOverrides\x12\x84\x01\n" +
-	"\x18task_completion_behavior\x18\a \x01(\x0e2C.google.cloud.ces.v1beta.Evaluation.Scenario.TaskCompletionBehaviorB\x05\xe0A\x01\x18\x01R\x16taskCompletionBehavior\x12p\n" +
-	"\x12user_goal_behavior\x18\b \x01(\x0e2=.google.cloud.ces.v1beta.Evaluation.Scenario.UserGoalBehaviorB\x03\xe0A\x01R\x10userGoalBehavior\x12i\n" +
+	"user_facts\x18\x04 \x03(\v25.google.cloud.ces.v1beta.Evaluation.Scenario.UserFactB\x04\xe2A\x01\x01R\tuserFacts\x12!\n" +
+	"\tmax_turns\x18\x05 \x01(\x05B\x04\xe2A\x01\x01R\bmaxTurns\x12\x1e\n" +
+	"\arubrics\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\arubrics\x12r\n" +
+	"\x15scenario_expectations\x18\x03 \x03(\v27.google.cloud.ces.v1beta.Evaluation.ScenarioExpectationB\x04\xe2A\x01\x02R\x14scenarioExpectations\x12L\n" +
+	"\x12variable_overrides\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\x11variableOverrides\x12\x85\x01\n" +
+	"\x18task_completion_behavior\x18\a \x01(\x0e2C.google.cloud.ces.v1beta.Evaluation.Scenario.TaskCompletionBehaviorB\x06\xe2A\x01\x01\x18\x01R\x16taskCompletionBehavior\x12q\n" +
+	"\x12user_goal_behavior\x18\b \x01(\x0e2=.google.cloud.ces.v1beta.Evaluation.Scenario.UserGoalBehaviorB\x04\xe2A\x01\x01R\x10userGoalBehavior\x12j\n" +
 	"\x17evaluation_expectations\x18\n" +
-	" \x03(\tB0\xe0A\x01\xfaA*\n" +
-	"(ces.googleapis.com/EvaluationExpectationR\x16evaluationExpectations\x12~\n" +
-	"\x17scenario_execution_mode\x18\f \x01(\x0e2A.google.cloud.ces.v1beta.EvaluationSettings.ScenarioExecutionModeB\x03\xe0A\x01R\x15scenarioExecutionMode\x1a>\n" +
-	"\bUserFact\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x19\n" +
-	"\x05value\x18\x02 \x01(\tB\x03\xe0A\x02R\x05value\"i\n" +
+	" \x03(\tB1\xe2A\x01\x01\xfaA*\n" +
+	"(ces.googleapis.com/EvaluationExpectationR\x16evaluationExpectations\x12\x7f\n" +
+	"\x17scenario_execution_mode\x18\f \x01(\x0e2A.google.cloud.ces.v1beta.EvaluationSettings.ScenarioExecutionModeB\x04\xe2A\x01\x01R\x15scenarioExecutionMode\x1a@\n" +
+	"\bUserFact\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12\x1a\n" +
+	"\x05value\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05value\"i\n" +
 	"\x16TaskCompletionBehavior\x12(\n" +
 	"$TASK_COMPLETION_BEHAVIOR_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eTASK_SATISFIED\x10\x01\x12\x11\n" +
@@ -6102,135 +6102,135 @@ const file_google_cloud_ces_v1beta_evaluation_proto_rawDesc = "" +
 	"\x11USER_GOAL_IGNORED\x10\x03:\x89\x01\xeaA\x85\x01\n" +
 	"\x1dces.googleapis.com/Evaluation\x12Kprojects/{project}/locations/{location}/apps/{app}/evaluations/{evaluation}*\vevaluations2\n" +
 	"evaluationB\b\n" +
-	"\x06inputs\"\x9b\x05\n" +
-	"\x11EvaluationDataset\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12G\n" +
-	"\vevaluations\x18\x03 \x03(\tB%\xe0A\x01\xfaA\x1f\n" +
-	"\x1dces.googleapis.com/EvaluationR\vevaluations\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x17\n" +
-	"\x04etag\x18\x06 \x01(\tB\x03\xe0A\x03R\x04etag\x12\"\n" +
+	"\x06inputs\"\xa4\x05\n" +
+	"\x11EvaluationDataset\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12H\n" +
+	"\vevaluations\x18\x03 \x03(\tB&\xe2A\x01\x01\xfaA\x1f\n" +
+	"\x1dces.googleapis.com/EvaluationR\vevaluations\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x18\n" +
+	"\x04etag\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x04etag\x12#\n" +
 	"\n" +
-	"created_by\x18\a \x01(\tB\x03\xe0A\x03R\tcreatedBy\x12+\n" +
-	"\x0flast_updated_by\x18\b \x01(\tB\x03\xe0A\x03R\rlastUpdatedBy\x12^\n" +
-	"\x12aggregated_metrics\x18\t \x01(\v2*.google.cloud.ces.v1beta.AggregatedMetricsB\x03\xe0A\x03R\x11aggregatedMetrics:\xad\x01\xeaA\xa9\x01\n" +
-	"$ces.googleapis.com/EvaluationDataset\x12Zprojects/{project}/locations/{location}/apps/{app}/evaluationDatasets/{evaluation_dataset}*\x12evaluationDatasets2\x11evaluationDataset\"\xe2C\n" +
-	"\x10EvaluationResult\x12b\n" +
-	"\rgolden_result\x18\a \x01(\v26.google.cloud.ces.v1beta.EvaluationResult.GoldenResultB\x03\xe0A\x03H\x00R\fgoldenResult\x12h\n" +
-	"\x0fscenario_result\x18\b \x01(\v28.google.cloud.ces.v1beta.EvaluationResult.ScenarioResultB\x03\xe0A\x03H\x00R\x0escenarioResult\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12c\n" +
-	"\x11evaluation_status\x18\x04 \x01(\x0e21.google.cloud.ces.v1beta.EvaluationResult.OutcomeB\x03\xe0A\x03R\x10evaluationStatus\x12O\n" +
-	"\x0eevaluation_run\x18\x06 \x01(\tB(\xe0A\x03\xfaA\"\n" +
-	" ces.googleapis.com/EvaluationRunR\revaluationRun\x12I\n" +
-	"\apersona\x18\x11 \x01(\v2*.google.cloud.ces.v1beta.EvaluationPersonaB\x03\xe0A\x03R\apersona\x12P\n" +
+	"created_by\x18\a \x01(\tB\x04\xe2A\x01\x03R\tcreatedBy\x12,\n" +
+	"\x0flast_updated_by\x18\b \x01(\tB\x04\xe2A\x01\x03R\rlastUpdatedBy\x12_\n" +
+	"\x12aggregated_metrics\x18\t \x01(\v2*.google.cloud.ces.v1beta.AggregatedMetricsB\x04\xe2A\x01\x03R\x11aggregatedMetrics:\xad\x01\xeaA\xa9\x01\n" +
+	"$ces.googleapis.com/EvaluationDataset\x12Zprojects/{project}/locations/{location}/apps/{app}/evaluationDatasets/{evaluation_dataset}*\x12evaluationDatasets2\x11evaluationDataset\"\xc4D\n" +
+	"\x10EvaluationResult\x12c\n" +
+	"\rgolden_result\x18\a \x01(\v26.google.cloud.ces.v1beta.EvaluationResult.GoldenResultB\x04\xe2A\x01\x03H\x00R\fgoldenResult\x12i\n" +
+	"\x0fscenario_result\x18\b \x01(\v28.google.cloud.ces.v1beta.EvaluationResult.ScenarioResultB\x04\xe2A\x01\x03H\x00R\x0escenarioResult\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12d\n" +
+	"\x11evaluation_status\x18\x04 \x01(\x0e21.google.cloud.ces.v1beta.EvaluationResult.OutcomeB\x04\xe2A\x01\x03R\x10evaluationStatus\x12P\n" +
+	"\x0eevaluation_run\x18\x06 \x01(\tB)\xe2A\x01\x03\xfaA\"\n" +
+	" ces.googleapis.com/EvaluationRunR\revaluationRun\x12J\n" +
+	"\apersona\x18\x11 \x01(\v2*.google.cloud.ces.v1beta.EvaluationPersonaB\x04\xe2A\x01\x03R\apersona\x12Q\n" +
 	"\n" +
-	"error_info\x18\x0f \x01(\v2,.google.cloud.ces.v1beta.EvaluationErrorInfoB\x03\xe0A\x03R\terrorInfo\x12/\n" +
-	"\x05error\x18\x0e \x01(\v2\x12.google.rpc.StatusB\x05\xe0A\x03\x18\x01R\x05error\x12&\n" +
-	"\finitiated_by\x18\t \x01(\tB\x03\xe0A\x03R\vinitiatedBy\x12F\n" +
+	"error_info\x18\x0f \x01(\v2,.google.cloud.ces.v1beta.EvaluationErrorInfoB\x04\xe2A\x01\x03R\terrorInfo\x120\n" +
+	"\x05error\x18\x0e \x01(\v2\x12.google.rpc.StatusB\x06\xe2A\x01\x03\x18\x01R\x05error\x12'\n" +
+	"\finitiated_by\x18\t \x01(\tB\x04\xe2A\x01\x03R\vinitiatedBy\x12G\n" +
 	"\vapp_version\x18\n" +
-	" \x01(\tB%\xe0A\x03\xfaA\x1f\n" +
+	" \x01(\tB&\xe2A\x01\x03\xfaA\x1f\n" +
 	"\x1dces.googleapis.com/AppVersionR\n" +
-	"appVersion\x12<\n" +
-	"\x18app_version_display_name\x18\r \x01(\tB\x03\xe0A\x03R\x15appVersionDisplayName\x12B\n" +
-	"\tchangelog\x18\x15 \x01(\tB$\xe0A\x03\xfaA\x1e\n" +
-	"\x1cces.googleapis.com/ChangelogR\tchangelog\x12S\n" +
-	"\x15changelog_create_time\x18\x16 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x13changelogCreateTime\x12f\n" +
-	"\x0fexecution_state\x18\v \x01(\x0e28.google.cloud.ces.v1beta.EvaluationResult.ExecutionStateB\x03\xe0A\x03R\x0eexecutionState\x12}\n" +
-	"\x1devaluation_metrics_thresholds\x18\f \x01(\v24.google.cloud.ces.v1beta.EvaluationMetricsThresholdsB\x03\xe0A\x03R\x1bevaluationMetricsThresholds\x12F\n" +
-	"\x06config\x18\x12 \x01(\v2).google.cloud.ces.v1beta.EvaluationConfigB\x03\xe0A\x03R\x06config\x12Y\n" +
-	"\x11golden_run_method\x18\x13 \x01(\x0e2(.google.cloud.ces.v1beta.GoldenRunMethodB\x03\xe0A\x03R\x0fgoldenRunMethod\x1a\xbe\t\n" +
-	"\x18GoldenExpectationOutcome\x12V\n" +
-	"\x12observed_tool_call\x18\x02 \x01(\v2!.google.cloud.ces.v1beta.ToolCallB\x03\xe0A\x03H\x00R\x10observedToolCall\x12b\n" +
-	"\x16observed_tool_response\x18\x03 \x01(\v2%.google.cloud.ces.v1beta.ToolResponseB\x03\xe0A\x03H\x00R\x14observedToolResponse\x12_\n" +
-	"\x17observed_agent_response\x18\x04 \x01(\v2 .google.cloud.ces.v1beta.MessageB\x03\xe0A\x03H\x00R\x15observedAgentResponse\x12e\n" +
-	"\x17observed_agent_transfer\x18\x05 \x01(\v2&.google.cloud.ces.v1beta.AgentTransferB\x03\xe0A\x03H\x00R\x15observedAgentTransfer\x12I\n" +
-	"\x10observed_payload\x18\t \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x03H\x00R\x0fobservedPayload\x12\\\n" +
-	"\vexpectation\x18\x01 \x01(\v25.google.cloud.ces.v1beta.Evaluation.GoldenExpectationB\x03\xe0A\x03R\vexpectation\x12P\n" +
-	"\aoutcome\x18\x06 \x01(\x0e21.google.cloud.ces.v1beta.EvaluationResult.OutcomeB\x03\xe0A\x03R\aoutcome\x12\x87\x01\n" +
-	"\x1asemantic_similarity_result\x18\a \x01(\v2B.google.cloud.ces.v1beta.EvaluationResult.SemanticSimilarityResultB\x05\xe0A\x03\x18\x01R\x18semanticSimilarityResult\x12\x92\x01\n" +
-	"\x16tool_invocation_result\x18\b \x01(\v2W.google.cloud.ces.v1beta.EvaluationResult.GoldenExpectationOutcome.ToolInvocationResultB\x03\xe0A\x03R\x14toolInvocationResult\x1a\xf9\x01\n" +
-	"\x14ToolInvocationResult\x12H\n" +
-	"\x1bparameter_correctness_score\x18\x01 \x01(\x02B\x03\xe0A\x03H\x00R\x19parameterCorrectnessScore\x88\x01\x01\x12P\n" +
-	"\aoutcome\x18\x02 \x01(\x0e21.google.cloud.ces.v1beta.EvaluationResult.OutcomeB\x03\xe0A\x03R\aoutcome\x12%\n" +
-	"\vexplanation\x18\x03 \x01(\tB\x03\xe0A\x03R\vexplanationB\x1e\n" +
+	"appVersion\x12=\n" +
+	"\x18app_version_display_name\x18\r \x01(\tB\x04\xe2A\x01\x03R\x15appVersionDisplayName\x12C\n" +
+	"\tchangelog\x18\x15 \x01(\tB%\xe2A\x01\x03\xfaA\x1e\n" +
+	"\x1cces.googleapis.com/ChangelogR\tchangelog\x12T\n" +
+	"\x15changelog_create_time\x18\x16 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x13changelogCreateTime\x12g\n" +
+	"\x0fexecution_state\x18\v \x01(\x0e28.google.cloud.ces.v1beta.EvaluationResult.ExecutionStateB\x04\xe2A\x01\x03R\x0eexecutionState\x12~\n" +
+	"\x1devaluation_metrics_thresholds\x18\f \x01(\v24.google.cloud.ces.v1beta.EvaluationMetricsThresholdsB\x04\xe2A\x01\x03R\x1bevaluationMetricsThresholds\x12G\n" +
+	"\x06config\x18\x12 \x01(\v2).google.cloud.ces.v1beta.EvaluationConfigB\x04\xe2A\x01\x03R\x06config\x12Z\n" +
+	"\x11golden_run_method\x18\x13 \x01(\x0e2(.google.cloud.ces.v1beta.GoldenRunMethodB\x04\xe2A\x01\x03R\x0fgoldenRunMethod\x1a\xca\t\n" +
+	"\x18GoldenExpectationOutcome\x12W\n" +
+	"\x12observed_tool_call\x18\x02 \x01(\v2!.google.cloud.ces.v1beta.ToolCallB\x04\xe2A\x01\x03H\x00R\x10observedToolCall\x12c\n" +
+	"\x16observed_tool_response\x18\x03 \x01(\v2%.google.cloud.ces.v1beta.ToolResponseB\x04\xe2A\x01\x03H\x00R\x14observedToolResponse\x12`\n" +
+	"\x17observed_agent_response\x18\x04 \x01(\v2 .google.cloud.ces.v1beta.MessageB\x04\xe2A\x01\x03H\x00R\x15observedAgentResponse\x12f\n" +
+	"\x17observed_agent_transfer\x18\x05 \x01(\v2&.google.cloud.ces.v1beta.AgentTransferB\x04\xe2A\x01\x03H\x00R\x15observedAgentTransfer\x12J\n" +
+	"\x10observed_payload\x18\t \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x03H\x00R\x0fobservedPayload\x12]\n" +
+	"\vexpectation\x18\x01 \x01(\v25.google.cloud.ces.v1beta.Evaluation.GoldenExpectationB\x04\xe2A\x01\x03R\vexpectation\x12Q\n" +
+	"\aoutcome\x18\x06 \x01(\x0e21.google.cloud.ces.v1beta.EvaluationResult.OutcomeB\x04\xe2A\x01\x03R\aoutcome\x12\x88\x01\n" +
+	"\x1asemantic_similarity_result\x18\a \x01(\v2B.google.cloud.ces.v1beta.EvaluationResult.SemanticSimilarityResultB\x06\xe2A\x01\x03\x18\x01R\x18semanticSimilarityResult\x12\x93\x01\n" +
+	"\x16tool_invocation_result\x18\b \x01(\v2W.google.cloud.ces.v1beta.EvaluationResult.GoldenExpectationOutcome.ToolInvocationResultB\x04\xe2A\x01\x03R\x14toolInvocationResult\x1a\xfc\x01\n" +
+	"\x14ToolInvocationResult\x12I\n" +
+	"\x1bparameter_correctness_score\x18\x01 \x01(\x02B\x04\xe2A\x01\x03H\x00R\x19parameterCorrectnessScore\x88\x01\x01\x12Q\n" +
+	"\aoutcome\x18\x02 \x01(\x0e21.google.cloud.ces.v1beta.EvaluationResult.OutcomeB\x04\xe2A\x01\x03R\aoutcome\x12&\n" +
+	"\vexplanation\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\vexplanationB\x1e\n" +
 	"\x1c_parameter_correctness_scoreB\b\n" +
-	"\x06result\x1a\x9c\x02\n" +
-	"\x1bEvaluationExpectationResult\x12g\n" +
-	"\x16evaluation_expectation\x18\x01 \x01(\tB0\xe0A\x03\xfaA*\n" +
-	"(ces.googleapis.com/EvaluationExpectationR\x15evaluationExpectation\x12\x1b\n" +
-	"\x06prompt\x18\x02 \x01(\tB\x03\xe0A\x03R\x06prompt\x12P\n" +
-	"\aoutcome\x18\x03 \x01(\x0e21.google.cloud.ces.v1beta.EvaluationResult.OutcomeB\x03\xe0A\x03R\aoutcome\x12%\n" +
-	"\vexplanation\x18\x04 \x01(\tB\x03\xe0A\x03R\vexplanation\x1a\x9e\v\n" +
-	"\fGoldenResult\x12|\n" +
-	"\x13turn_replay_results\x18\x01 \x03(\v2G.google.cloud.ces.v1beta.EvaluationResult.GoldenResult.TurnReplayResultB\x03\xe0A\x03R\x11turnReplayResults\x12\x90\x01\n" +
-	"\x1eevaluation_expectation_results\x18\x02 \x03(\v2E.google.cloud.ces.v1beta.EvaluationResult.EvaluationExpectationResultB\x03\xe0A\x03R\x1cevaluationExpectationResults\x1a\xfc\b\n" +
-	"\x10TurnReplayResult\x12K\n" +
-	"\fconversation\x18\x01 \x01(\tB'\xe0A\x03\xfaA!\n" +
-	"\x1fces.googleapis.com/ConversationR\fconversation\x12x\n" +
-	"\x13expectation_outcome\x18\x02 \x03(\v2B.google.cloud.ces.v1beta.EvaluationResult.GoldenExpectationOutcomeB\x03\xe0A\x03R\x12expectationOutcome\x12u\n" +
-	"\x14hallucination_result\x18\x03 \x01(\v2=.google.cloud.ces.v1beta.EvaluationResult.HallucinationResultB\x03\xe0A\x03R\x13hallucinationResult\x129\n" +
-	"\x15tool_invocation_score\x18\x04 \x01(\x02B\x05\xe0A\x03\x18\x01R\x13toolInvocationScore\x12K\n" +
-	"\x1dtool_ordered_invocation_score\x18\x05 \x01(\x02B\x03\xe0A\x03H\x00R\x1atoolOrderedInvocationScore\x88\x01\x01\x12A\n" +
-	"\fturn_latency\x18\x06 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x03R\vturnLatency\x12n\n" +
-	"\x13tool_call_latencies\x18\a \x03(\v29.google.cloud.ces.v1beta.EvaluationResult.ToolCallLatencyB\x03\xe0A\x03R\x11toolCallLatencies\x12\x85\x01\n" +
-	"\x1asemantic_similarity_result\x18\b \x01(\v2B.google.cloud.ces.v1beta.EvaluationResult.SemanticSimilarityResultB\x03\xe0A\x03R\x18semanticSimilarityResult\x12\x8f\x01\n" +
-	"\x1eoverall_tool_invocation_result\x18\t \x01(\v2E.google.cloud.ces.v1beta.EvaluationResult.OverallToolInvocationResultB\x03\xe0A\x03R\x1boverallToolInvocationResult\x12P\n" +
+	"\x06result\x1a\xa0\x02\n" +
+	"\x1bEvaluationExpectationResult\x12h\n" +
+	"\x16evaluation_expectation\x18\x01 \x01(\tB1\xe2A\x01\x03\xfaA*\n" +
+	"(ces.googleapis.com/EvaluationExpectationR\x15evaluationExpectation\x12\x1c\n" +
+	"\x06prompt\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x06prompt\x12Q\n" +
+	"\aoutcome\x18\x03 \x01(\x0e21.google.cloud.ces.v1beta.EvaluationResult.OutcomeB\x04\xe2A\x01\x03R\aoutcome\x12&\n" +
+	"\vexplanation\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\vexplanation\x1a\xab\v\n" +
+	"\fGoldenResult\x12}\n" +
+	"\x13turn_replay_results\x18\x01 \x03(\v2G.google.cloud.ces.v1beta.EvaluationResult.GoldenResult.TurnReplayResultB\x04\xe2A\x01\x03R\x11turnReplayResults\x12\x91\x01\n" +
+	"\x1eevaluation_expectation_results\x18\x02 \x03(\v2E.google.cloud.ces.v1beta.EvaluationResult.EvaluationExpectationResultB\x04\xe2A\x01\x03R\x1cevaluationExpectationResults\x1a\x87\t\n" +
+	"\x10TurnReplayResult\x12L\n" +
+	"\fconversation\x18\x01 \x01(\tB(\xe2A\x01\x03\xfaA!\n" +
+	"\x1fces.googleapis.com/ConversationR\fconversation\x12y\n" +
+	"\x13expectation_outcome\x18\x02 \x03(\v2B.google.cloud.ces.v1beta.EvaluationResult.GoldenExpectationOutcomeB\x04\xe2A\x01\x03R\x12expectationOutcome\x12v\n" +
+	"\x14hallucination_result\x18\x03 \x01(\v2=.google.cloud.ces.v1beta.EvaluationResult.HallucinationResultB\x04\xe2A\x01\x03R\x13hallucinationResult\x12:\n" +
+	"\x15tool_invocation_score\x18\x04 \x01(\x02B\x06\xe2A\x01\x03\x18\x01R\x13toolInvocationScore\x12L\n" +
+	"\x1dtool_ordered_invocation_score\x18\x05 \x01(\x02B\x04\xe2A\x01\x03H\x00R\x1atoolOrderedInvocationScore\x88\x01\x01\x12B\n" +
+	"\fturn_latency\x18\x06 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x03R\vturnLatency\x12o\n" +
+	"\x13tool_call_latencies\x18\a \x03(\v29.google.cloud.ces.v1beta.EvaluationResult.ToolCallLatencyB\x04\xe2A\x01\x03R\x11toolCallLatencies\x12\x86\x01\n" +
+	"\x1asemantic_similarity_result\x18\b \x01(\v2B.google.cloud.ces.v1beta.EvaluationResult.SemanticSimilarityResultB\x04\xe2A\x01\x03R\x18semanticSimilarityResult\x12\x90\x01\n" +
+	"\x1eoverall_tool_invocation_result\x18\t \x01(\v2E.google.cloud.ces.v1beta.EvaluationResult.OverallToolInvocationResultB\x04\xe2A\x01\x03R\x1boverallToolInvocationResult\x12Q\n" +
 	"\n" +
 	"error_info\x18\n" +
-	" \x01(\v2,.google.cloud.ces.v1beta.EvaluationErrorInfoB\x03\xe0A\x03R\terrorInfo\x12a\n" +
-	"\x0espan_latencies\x18\v \x03(\v25.google.cloud.ces.v1beta.EvaluationResult.SpanLatencyB\x03\xe0A\x03R\rspanLatenciesB \n" +
-	"\x1e_tool_ordered_invocation_score\x1a\x90\x01\n" +
-	"\x15ScenarioRubricOutcome\x12\x1b\n" +
-	"\x06rubric\x18\x01 \x01(\tB\x03\xe0A\x03R\x06rubric\x12\x1e\n" +
-	"\x05score\x18\x02 \x01(\x02B\x03\xe0A\x03H\x00R\x05score\x88\x01\x01\x120\n" +
-	"\x11score_explanation\x18\x03 \x01(\tB\x03\xe0A\x03R\x10scoreExplanationB\b\n" +
-	"\x06_score\x1a\xf1\x04\n" +
-	"\x1aScenarioExpectationOutcome\x12\x8a\x01\n" +
-	"\x12observed_tool_call\x18\x02 \x01(\v2U.google.cloud.ces.v1beta.EvaluationResult.ScenarioExpectationOutcome.ObservedToolCallB\x03\xe0A\x03H\x00R\x10observedToolCall\x12_\n" +
-	"\x17observed_agent_response\x18\x03 \x01(\v2 .google.cloud.ces.v1beta.MessageB\x03\xe0A\x03H\x00R\x15observedAgentResponse\x12^\n" +
-	"\vexpectation\x18\x01 \x01(\v27.google.cloud.ces.v1beta.Evaluation.ScenarioExpectationB\x03\xe0A\x03R\vexpectation\x12P\n" +
-	"\aoutcome\x18\x04 \x01(\x0e21.google.cloud.ces.v1beta.EvaluationResult.OutcomeB\x03\xe0A\x03R\aoutcome\x1a\xa8\x01\n" +
-	"\x10ObservedToolCall\x12C\n" +
-	"\ttool_call\x18\x01 \x01(\v2!.google.cloud.ces.v1beta.ToolCallB\x03\xe0A\x03R\btoolCall\x12O\n" +
-	"\rtool_response\x18\x02 \x01(\v2%.google.cloud.ces.v1beta.ToolResponseB\x03\xe0A\x03R\ftoolResponseB\b\n" +
-	"\x06result\x1a\xd2\n" +
+	" \x01(\v2,.google.cloud.ces.v1beta.EvaluationErrorInfoB\x04\xe2A\x01\x03R\terrorInfo\x12b\n" +
+	"\x0espan_latencies\x18\v \x03(\v25.google.cloud.ces.v1beta.EvaluationResult.SpanLatencyB\x04\xe2A\x01\x03R\rspanLatenciesB \n" +
+	"\x1e_tool_ordered_invocation_score\x1a\x93\x01\n" +
+	"\x15ScenarioRubricOutcome\x12\x1c\n" +
+	"\x06rubric\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x06rubric\x12\x1f\n" +
+	"\x05score\x18\x02 \x01(\x02B\x04\xe2A\x01\x03H\x00R\x05score\x88\x01\x01\x121\n" +
+	"\x11score_explanation\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x10scoreExplanationB\b\n" +
+	"\x06_score\x1a\xf7\x04\n" +
+	"\x1aScenarioExpectationOutcome\x12\x8b\x01\n" +
+	"\x12observed_tool_call\x18\x02 \x01(\v2U.google.cloud.ces.v1beta.EvaluationResult.ScenarioExpectationOutcome.ObservedToolCallB\x04\xe2A\x01\x03H\x00R\x10observedToolCall\x12`\n" +
+	"\x17observed_agent_response\x18\x03 \x01(\v2 .google.cloud.ces.v1beta.MessageB\x04\xe2A\x01\x03H\x00R\x15observedAgentResponse\x12_\n" +
+	"\vexpectation\x18\x01 \x01(\v27.google.cloud.ces.v1beta.Evaluation.ScenarioExpectationB\x04\xe2A\x01\x03R\vexpectation\x12Q\n" +
+	"\aoutcome\x18\x04 \x01(\x0e21.google.cloud.ces.v1beta.EvaluationResult.OutcomeB\x04\xe2A\x01\x03R\aoutcome\x1a\xaa\x01\n" +
+	"\x10ObservedToolCall\x12D\n" +
+	"\ttool_call\x18\x01 \x01(\v2!.google.cloud.ces.v1beta.ToolCallB\x04\xe2A\x01\x03R\btoolCall\x12P\n" +
+	"\rtool_response\x18\x02 \x01(\v2%.google.cloud.ces.v1beta.ToolResponseB\x04\xe2A\x01\x03R\ftoolResponseB\b\n" +
+	"\x06result\x1a\xdf\n" +
 	"\n" +
-	"\x0eScenarioResult\x12K\n" +
-	"\fconversation\x18\x01 \x01(\tB'\xe0A\x03\xfaA!\n" +
-	"\x1fces.googleapis.com/ConversationR\fconversation\x12\x17\n" +
+	"\x0eScenarioResult\x12L\n" +
+	"\fconversation\x18\x01 \x01(\tB(\xe2A\x01\x03\xfaA!\n" +
+	"\x1fces.googleapis.com/ConversationR\fconversation\x12\x18\n" +
 	"\x04task\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R\x04task\x12Y\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R\x04task\x12Z\n" +
 	"\n" +
-	"user_facts\x18\v \x03(\v25.google.cloud.ces.v1beta.Evaluation.Scenario.UserFactB\x03\xe0A\x03R\tuserFacts\x12|\n" +
-	"\x14expectation_outcomes\x18\x02 \x03(\v2D.google.cloud.ces.v1beta.EvaluationResult.ScenarioExpectationOutcomeB\x03\xe0A\x03R\x13expectationOutcomes\x12m\n" +
-	"\x0frubric_outcomes\x18\x03 \x03(\v2?.google.cloud.ces.v1beta.EvaluationResult.ScenarioRubricOutcomeB\x03\xe0A\x03R\x0erubricOutcomes\x12u\n" +
-	"\x14hallucination_result\x18\x04 \x03(\v2=.google.cloud.ces.v1beta.EvaluationResult.HallucinationResultB\x03\xe0A\x03R\x13hallucinationResult\x12{\n" +
-	"\x16task_completion_result\x18\x05 \x01(\v2>.google.cloud.ces.v1beta.EvaluationResult.TaskCompletionResultB\x05\xe0A\x03\x18\x01R\x14taskCompletionResult\x12n\n" +
-	"\x13tool_call_latencies\x18\x06 \x03(\v29.google.cloud.ces.v1beta.EvaluationResult.ToolCallLatencyB\x03\xe0A\x03R\x11toolCallLatencies\x12\x8c\x01\n" +
-	"\x1duser_goal_satisfaction_result\x18\a \x01(\v2D.google.cloud.ces.v1beta.EvaluationResult.UserGoalSatisfactionResultB\x03\xe0A\x03R\x1auserGoalSatisfactionResult\x12F\n" +
-	"\x1aall_expectations_satisfied\x18\b \x01(\bB\x03\xe0A\x03H\x00R\x18allExpectationsSatisfied\x88\x01\x01\x12/\n" +
-	"\x0etask_completed\x18\t \x01(\bB\x03\xe0A\x03H\x01R\rtaskCompleted\x88\x01\x01\x12a\n" +
-	"\x0espan_latencies\x18\f \x03(\v25.google.cloud.ces.v1beta.EvaluationResult.SpanLatencyB\x03\xe0A\x03R\rspanLatencies\x12\x90\x01\n" +
-	"\x1eevaluation_expectation_results\x18\r \x03(\v2E.google.cloud.ces.v1beta.EvaluationResult.EvaluationExpectationResultB\x03\xe0A\x03R\x1cevaluationExpectationResultsB\x1d\n" +
+	"user_facts\x18\v \x03(\v25.google.cloud.ces.v1beta.Evaluation.Scenario.UserFactB\x04\xe2A\x01\x03R\tuserFacts\x12}\n" +
+	"\x14expectation_outcomes\x18\x02 \x03(\v2D.google.cloud.ces.v1beta.EvaluationResult.ScenarioExpectationOutcomeB\x04\xe2A\x01\x03R\x13expectationOutcomes\x12n\n" +
+	"\x0frubric_outcomes\x18\x03 \x03(\v2?.google.cloud.ces.v1beta.EvaluationResult.ScenarioRubricOutcomeB\x04\xe2A\x01\x03R\x0erubricOutcomes\x12v\n" +
+	"\x14hallucination_result\x18\x04 \x03(\v2=.google.cloud.ces.v1beta.EvaluationResult.HallucinationResultB\x04\xe2A\x01\x03R\x13hallucinationResult\x12|\n" +
+	"\x16task_completion_result\x18\x05 \x01(\v2>.google.cloud.ces.v1beta.EvaluationResult.TaskCompletionResultB\x06\xe2A\x01\x03\x18\x01R\x14taskCompletionResult\x12o\n" +
+	"\x13tool_call_latencies\x18\x06 \x03(\v29.google.cloud.ces.v1beta.EvaluationResult.ToolCallLatencyB\x04\xe2A\x01\x03R\x11toolCallLatencies\x12\x8d\x01\n" +
+	"\x1duser_goal_satisfaction_result\x18\a \x01(\v2D.google.cloud.ces.v1beta.EvaluationResult.UserGoalSatisfactionResultB\x04\xe2A\x01\x03R\x1auserGoalSatisfactionResult\x12G\n" +
+	"\x1aall_expectations_satisfied\x18\b \x01(\bB\x04\xe2A\x01\x03H\x00R\x18allExpectationsSatisfied\x88\x01\x01\x120\n" +
+	"\x0etask_completed\x18\t \x01(\bB\x04\xe2A\x01\x03H\x01R\rtaskCompleted\x88\x01\x01\x12b\n" +
+	"\x0espan_latencies\x18\f \x03(\v25.google.cloud.ces.v1beta.EvaluationResult.SpanLatencyB\x04\xe2A\x01\x03R\rspanLatencies\x12\x91\x01\n" +
+	"\x1eevaluation_expectation_results\x18\r \x03(\v2E.google.cloud.ces.v1beta.EvaluationResult.EvaluationExpectationResultB\x04\xe2A\x01\x03R\x1cevaluationExpectationResultsB\x1d\n" +
 	"\x1b_all_expectations_satisfiedB\x11\n" +
-	"\x0f_task_completed\x1a\xde\x04\n" +
-	"\vSpanLatency\x12!\n" +
-	"\bresource\x18\x02 \x01(\tB\x03\xe0A\x03H\x00R\bresource\x12E\n" +
-	"\atoolset\x18\x03 \x01(\v2$.google.cloud.ces.v1beta.ToolsetToolB\x03\xe0A\x03H\x00R\atoolset\x12\x1b\n" +
-	"\x05model\x18\x04 \x01(\tB\x03\xe0A\x03H\x00R\x05model\x12!\n" +
-	"\bcallback\x18\x05 \x01(\tB\x03\xe0A\x03H\x00R\bcallback\x12S\n" +
-	"\x04type\x18\x01 \x01(\x0e2:.google.cloud.ces.v1beta.EvaluationResult.SpanLatency.TypeB\x03\xe0A\x03R\x04type\x12&\n" +
-	"\fdisplay_name\x18\t \x01(\tB\x03\xe0A\x03R\vdisplayName\x12>\n" +
+	"\x0f_task_completed\x1a\xe7\x04\n" +
+	"\vSpanLatency\x12\"\n" +
+	"\bresource\x18\x02 \x01(\tB\x04\xe2A\x01\x03H\x00R\bresource\x12F\n" +
+	"\atoolset\x18\x03 \x01(\v2$.google.cloud.ces.v1beta.ToolsetToolB\x04\xe2A\x01\x03H\x00R\atoolset\x12\x1c\n" +
+	"\x05model\x18\x04 \x01(\tB\x04\xe2A\x01\x03H\x00R\x05model\x12\"\n" +
+	"\bcallback\x18\x05 \x01(\tB\x04\xe2A\x01\x03H\x00R\bcallback\x12T\n" +
+	"\x04type\x18\x01 \x01(\x0e2:.google.cloud.ces.v1beta.EvaluationResult.SpanLatency.TypeB\x04\xe2A\x01\x03R\x04type\x12'\n" +
+	"\fdisplay_name\x18\t \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12?\n" +
 	"\n" +
-	"start_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12K\n" +
-	"\x11execution_latency\x18\b \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x03R\x10executionLatency\"Q\n" +
+	"start_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12L\n" +
+	"\x11execution_latency\x18\b \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x03R\x10executionLatency\"Q\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04TOOL\x10\x01\x12\x11\n" +
@@ -6238,39 +6238,39 @@ const file_google_cloud_ces_v1beta_evaluation_proto_rawDesc = "" +
 	"\tGUARDRAIL\x10\x03\x12\a\n" +
 	"\x03LLM\x10\x04B\f\n" +
 	"\n" +
-	"identifier\x1a\xb7\x02\n" +
-	"\x0fToolCallLatency\x123\n" +
-	"\x04tool\x18\x01 \x01(\tB\x1f\xe0A\x03\xfaA\x19\n" +
-	"\x17ces.googleapis.com/ToolR\x04tool\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12>\n" +
+	"identifier\x1a\xbc\x02\n" +
+	"\x0fToolCallLatency\x124\n" +
+	"\x04tool\x18\x01 \x01(\tB \xe2A\x01\x03\xfaA\x19\n" +
+	"\x17ces.googleapis.com/ToolR\x04tool\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12?\n" +
 	"\n" +
-	"start_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12K\n" +
-	"\x11execution_latency\x18\x05 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x03R\x10executionLatency\x1a\x81\x01\n" +
-	"\x13HallucinationResult\x12\x1e\n" +
-	"\x05score\x18\x01 \x01(\x05B\x03\xe0A\x03H\x00R\x05score\x88\x01\x01\x12\x19\n" +
-	"\x05label\x18\x02 \x01(\tB\x03\xe0A\x03R\x05label\x12%\n" +
-	"\vexplanation\x18\x03 \x01(\tB\x03\xe0A\x03R\vexplanationB\b\n" +
-	"\x06_score\x1a\x88\x01\n" +
-	"\x1aUserGoalSatisfactionResult\x12\x1e\n" +
-	"\x05score\x18\x01 \x01(\x05B\x03\xe0A\x03H\x00R\x05score\x88\x01\x01\x12\x19\n" +
-	"\x05label\x18\x02 \x01(\tB\x03\xe0A\x03R\x05label\x12%\n" +
-	"\vexplanation\x18\x03 \x01(\tB\x03\xe0A\x03R\vexplanationB\b\n" +
-	"\x06_score\x1a\xd8\x01\n" +
-	"\x18SemanticSimilarityResult\x12\x1e\n" +
-	"\x05score\x18\x01 \x01(\x05B\x03\xe0A\x03H\x00R\x05score\x88\x01\x01\x12\x19\n" +
-	"\x05label\x18\x02 \x01(\tB\x03\xe0A\x03R\x05label\x12%\n" +
-	"\vexplanation\x18\x03 \x01(\tB\x03\xe0A\x03R\vexplanation\x12P\n" +
-	"\aoutcome\x18\x04 \x01(\x0e21.google.cloud.ces.v1beta.EvaluationResult.OutcomeB\x03\xe0A\x03R\aoutcomeB\b\n" +
-	"\x06_score\x1a\xc2\x01\n" +
+	"start_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12L\n" +
+	"\x11execution_latency\x18\x05 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x03R\x10executionLatency\x1a\x84\x01\n" +
+	"\x13HallucinationResult\x12\x1f\n" +
+	"\x05score\x18\x01 \x01(\x05B\x04\xe2A\x01\x03H\x00R\x05score\x88\x01\x01\x12\x1a\n" +
+	"\x05label\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x05label\x12&\n" +
+	"\vexplanation\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\vexplanationB\b\n" +
+	"\x06_score\x1a\x8b\x01\n" +
+	"\x1aUserGoalSatisfactionResult\x12\x1f\n" +
+	"\x05score\x18\x01 \x01(\x05B\x04\xe2A\x01\x03H\x00R\x05score\x88\x01\x01\x12\x1a\n" +
+	"\x05label\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x05label\x12&\n" +
+	"\vexplanation\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\vexplanationB\b\n" +
+	"\x06_score\x1a\xdc\x01\n" +
+	"\x18SemanticSimilarityResult\x12\x1f\n" +
+	"\x05score\x18\x01 \x01(\x05B\x04\xe2A\x01\x03H\x00R\x05score\x88\x01\x01\x12\x1a\n" +
+	"\x05label\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x05label\x12&\n" +
+	"\vexplanation\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\vexplanation\x12Q\n" +
+	"\aoutcome\x18\x04 \x01(\x0e21.google.cloud.ces.v1beta.EvaluationResult.OutcomeB\x04\xe2A\x01\x03R\aoutcomeB\b\n" +
+	"\x06_score\x1a\xc3\x01\n" +
 	"\x1bOverallToolInvocationResult\x127\n" +
-	"\x15tool_invocation_score\x18\x01 \x01(\x02H\x00R\x13toolInvocationScore\x88\x01\x01\x12P\n" +
-	"\aoutcome\x18\x02 \x01(\x0e21.google.cloud.ces.v1beta.EvaluationResult.OutcomeB\x03\xe0A\x03R\aoutcomeB\x18\n" +
-	"\x16_tool_invocation_score\x1a\x82\x01\n" +
-	"\x14TaskCompletionResult\x12\x1e\n" +
-	"\x05score\x18\x01 \x01(\x05B\x03\xe0A\x03H\x00R\x05score\x88\x01\x01\x12\x19\n" +
-	"\x05label\x18\x02 \x01(\tB\x03\xe0A\x03R\x05label\x12%\n" +
-	"\vexplanation\x18\x03 \x01(\tB\x03\xe0A\x03R\vexplanationB\b\n" +
+	"\x15tool_invocation_score\x18\x01 \x01(\x02H\x00R\x13toolInvocationScore\x88\x01\x01\x12Q\n" +
+	"\aoutcome\x18\x02 \x01(\x0e21.google.cloud.ces.v1beta.EvaluationResult.OutcomeB\x04\xe2A\x01\x03R\aoutcomeB\x18\n" +
+	"\x16_tool_invocation_score\x1a\x85\x01\n" +
+	"\x14TaskCompletionResult\x12\x1f\n" +
+	"\x05score\x18\x01 \x01(\x05B\x04\xe2A\x01\x03H\x00R\x05score\x88\x01\x01\x12\x1a\n" +
+	"\x05label\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x05label\x12&\n" +
+	"\vexplanation\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\vexplanationB\b\n" +
 	"\x06_score\"C\n" +
 	"\aOutcome\x12\x17\n" +
 	"\x13OUTCOME_UNSPECIFIED\x10\x00\x12\b\n" +
@@ -6286,56 +6286,56 @@ const file_google_cloud_ces_v1beta_evaluation_proto_rawDesc = "" +
 	"\x05ERROR\x10\x03\x12\r\n" +
 	"\tCANCELLED\x10\x04:\xb7\x01\xeaA\xb3\x01\n" +
 	"#ces.googleapis.com/EvaluationResult\x12gprojects/{project}/locations/{location}/apps/{app}/evaluations/{evaluation}/results/{evaluation_result}*\x11evaluationResults2\x10evaluationResultB\b\n" +
-	"\x06result\"\xea\x15\n" +
-	"\rEvaluationRun\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12Z\n" +
-	"\x12evaluation_results\x18\x03 \x03(\tB+\xe0A\x03\xfaA%\n" +
-	"#ces.googleapis.com/EvaluationResultR\x11evaluationResults\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12&\n" +
-	"\finitiated_by\x18\x05 \x01(\tB\x03\xe0A\x03R\vinitiatedBy\x12F\n" +
-	"\vapp_version\x18\x06 \x01(\tB%\xe0A\x03\xfaA\x1f\n" +
+	"\x06result\"\x8c\x16\n" +
+	"\rEvaluationRun\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12[\n" +
+	"\x12evaluation_results\x18\x03 \x03(\tB,\xe2A\x01\x03\xfaA%\n" +
+	"#ces.googleapis.com/EvaluationResultR\x11evaluationResults\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12'\n" +
+	"\finitiated_by\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\vinitiatedBy\x12G\n" +
+	"\vapp_version\x18\x06 \x01(\tB&\xe2A\x01\x03\xfaA\x1f\n" +
 	"\x1dces.googleapis.com/AppVersionR\n" +
-	"appVersion\x12<\n" +
-	"\x18app_version_display_name\x18\r \x01(\tB\x03\xe0A\x03R\x15appVersionDisplayName\x12B\n" +
-	"\tchangelog\x18\x16 \x01(\tB$\xe0A\x03\xfaA\x1e\n" +
-	"\x1cces.googleapis.com/ChangelogR\tchangelog\x12S\n" +
-	"\x15changelog_create_time\x18\x17 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x13changelogCreateTime\x12G\n" +
-	"\vevaluations\x18\a \x03(\tB%\xe0A\x03\xfaA\x1f\n" +
-	"\x1dces.googleapis.com/EvaluationR\vevaluations\x12[\n" +
-	"\x12evaluation_dataset\x18\b \x01(\tB,\xe0A\x03\xfaA&\n" +
-	"$ces.googleapis.com/EvaluationDatasetR\x11evaluationDataset\x12c\n" +
-	"\x0fevaluation_type\x18\t \x01(\x0e25.google.cloud.ces.v1beta.EvaluationRun.EvaluationTypeB\x03\xe0A\x03R\x0eevaluationType\x12T\n" +
+	"appVersion\x12=\n" +
+	"\x18app_version_display_name\x18\r \x01(\tB\x04\xe2A\x01\x03R\x15appVersionDisplayName\x12C\n" +
+	"\tchangelog\x18\x16 \x01(\tB%\xe2A\x01\x03\xfaA\x1e\n" +
+	"\x1cces.googleapis.com/ChangelogR\tchangelog\x12T\n" +
+	"\x15changelog_create_time\x18\x17 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x13changelogCreateTime\x12H\n" +
+	"\vevaluations\x18\a \x03(\tB&\xe2A\x01\x03\xfaA\x1f\n" +
+	"\x1dces.googleapis.com/EvaluationR\vevaluations\x12\\\n" +
+	"\x12evaluation_dataset\x18\b \x01(\tB-\xe2A\x01\x03\xfaA&\n" +
+	"$ces.googleapis.com/EvaluationDatasetR\x11evaluationDataset\x12d\n" +
+	"\x0fevaluation_type\x18\t \x01(\x0e25.google.cloud.ces.v1beta.EvaluationRun.EvaluationTypeB\x04\xe2A\x01\x03R\x0eevaluationType\x12U\n" +
 	"\x05state\x18\n" +
-	" \x01(\x0e29.google.cloud.ces.v1beta.EvaluationRun.EvaluationRunStateB\x03\xe0A\x03R\x05state\x12P\n" +
-	"\bprogress\x18\v \x01(\v2/.google.cloud.ces.v1beta.EvaluationRun.ProgressB\x03\xe0A\x03R\bprogress\x12F\n" +
-	"\x06config\x18\f \x01(\v2).google.cloud.ces.v1beta.EvaluationConfigB\x03\xe0A\x03R\x06config\x12/\n" +
-	"\x05error\x18\x0e \x01(\v2\x12.google.rpc.StatusB\x05\xe0A\x03\x18\x01R\x05error\x12P\n" +
+	" \x01(\x0e29.google.cloud.ces.v1beta.EvaluationRun.EvaluationRunStateB\x04\xe2A\x01\x03R\x05state\x12Q\n" +
+	"\bprogress\x18\v \x01(\v2/.google.cloud.ces.v1beta.EvaluationRun.ProgressB\x04\xe2A\x01\x03R\bprogress\x12G\n" +
+	"\x06config\x18\f \x01(\v2).google.cloud.ces.v1beta.EvaluationConfigB\x04\xe2A\x01\x03R\x06config\x120\n" +
+	"\x05error\x18\x0e \x01(\v2\x12.google.rpc.StatusB\x06\xe2A\x01\x03\x18\x01R\x05error\x12Q\n" +
 	"\n" +
-	"error_info\x18\x11 \x01(\v2,.google.cloud.ces.v1beta.EvaluationErrorInfoB\x03\xe0A\x03R\terrorInfo\x12\x81\x01\n" +
-	"\x18evaluation_run_summaries\x18\x0f \x03(\v2B.google.cloud.ces.v1beta.EvaluationRun.EvaluationRunSummariesEntryB\x03\xe0A\x03R\x16evaluationRunSummaries\x12R\n" +
-	"\x0elatency_report\x18\x19 \x01(\v2&.google.cloud.ces.v1beta.LatencyReportB\x03\xe0A\x03R\rlatencyReport\x12 \n" +
-	"\trun_count\x18\x10 \x01(\x05B\x03\xe0A\x03R\brunCount\x12^\n" +
-	"\x13persona_run_configs\x18\x12 \x03(\v2).google.cloud.ces.v1beta.PersonaRunConfigB\x03\xe0A\x03R\x11personaRunConfigs\x12a\n" +
-	"\x13optimization_config\x18\x13 \x01(\v2+.google.cloud.ces.v1beta.OptimizationConfigB\x03\xe0A\x01R\x12optimizationConfig\x12k\n" +
-	"\x18scheduled_evaluation_run\x18\x14 \x01(\tB1\xe0A\x03\xfaA+\n" +
-	")ces.googleapis.com/ScheduledEvaluationRunR\x16scheduledEvaluationRun\x12Y\n" +
-	"\x11golden_run_method\x18\x15 \x01(\x0e2(.google.cloud.ces.v1beta.GoldenRunMethodB\x03\xe0A\x03R\x0fgoldenRunMethod\x12!\n" +
-	"\toperation\x18\x1a \x01(\tB\x03\xe0A\x03R\toperation\x1a\x82\x02\n" +
-	"\bProgress\x12$\n" +
-	"\vtotal_count\x18\x01 \x01(\x05B\x03\xe0A\x03R\n" +
-	"totalCount\x12&\n" +
-	"\ffailed_count\x18\x02 \x01(\x05B\x03\xe0A\x03R\vfailedCount\x12$\n" +
-	"\verror_count\x18\x03 \x01(\x05B\x03\xe0A\x03R\n" +
-	"errorCount\x12,\n" +
-	"\x0fcompleted_count\x18\x04 \x01(\x05B\x03\xe0A\x03R\x0ecompletedCount\x12&\n" +
-	"\fpassed_count\x18\x05 \x01(\x05B\x03\xe0A\x03R\vpassedCount\x12,\n" +
-	"\x0fcancelled_count\x18\x06 \x01(\x05B\x03\xe0A\x03R\x0ecancelledCount\x1a\x8c\x01\n" +
-	"\x14EvaluationRunSummary\x12&\n" +
-	"\fpassed_count\x18\x01 \x01(\x05B\x03\xe0A\x03R\vpassedCount\x12&\n" +
-	"\ffailed_count\x18\x02 \x01(\x05B\x03\xe0A\x03R\vfailedCount\x12$\n" +
-	"\verror_count\x18\x03 \x01(\x05B\x03\xe0A\x03R\n" +
+	"error_info\x18\x11 \x01(\v2,.google.cloud.ces.v1beta.EvaluationErrorInfoB\x04\xe2A\x01\x03R\terrorInfo\x12\x82\x01\n" +
+	"\x18evaluation_run_summaries\x18\x0f \x03(\v2B.google.cloud.ces.v1beta.EvaluationRun.EvaluationRunSummariesEntryB\x04\xe2A\x01\x03R\x16evaluationRunSummaries\x12S\n" +
+	"\x0elatency_report\x18\x19 \x01(\v2&.google.cloud.ces.v1beta.LatencyReportB\x04\xe2A\x01\x03R\rlatencyReport\x12!\n" +
+	"\trun_count\x18\x10 \x01(\x05B\x04\xe2A\x01\x03R\brunCount\x12_\n" +
+	"\x13persona_run_configs\x18\x12 \x03(\v2).google.cloud.ces.v1beta.PersonaRunConfigB\x04\xe2A\x01\x03R\x11personaRunConfigs\x12b\n" +
+	"\x13optimization_config\x18\x13 \x01(\v2+.google.cloud.ces.v1beta.OptimizationConfigB\x04\xe2A\x01\x01R\x12optimizationConfig\x12l\n" +
+	"\x18scheduled_evaluation_run\x18\x14 \x01(\tB2\xe2A\x01\x03\xfaA+\n" +
+	")ces.googleapis.com/ScheduledEvaluationRunR\x16scheduledEvaluationRun\x12Z\n" +
+	"\x11golden_run_method\x18\x15 \x01(\x0e2(.google.cloud.ces.v1beta.GoldenRunMethodB\x04\xe2A\x01\x03R\x0fgoldenRunMethod\x12\"\n" +
+	"\toperation\x18\x1a \x01(\tB\x04\xe2A\x01\x03R\toperation\x1a\x88\x02\n" +
+	"\bProgress\x12%\n" +
+	"\vtotal_count\x18\x01 \x01(\x05B\x04\xe2A\x01\x03R\n" +
+	"totalCount\x12'\n" +
+	"\ffailed_count\x18\x02 \x01(\x05B\x04\xe2A\x01\x03R\vfailedCount\x12%\n" +
+	"\verror_count\x18\x03 \x01(\x05B\x04\xe2A\x01\x03R\n" +
+	"errorCount\x12-\n" +
+	"\x0fcompleted_count\x18\x04 \x01(\x05B\x04\xe2A\x01\x03R\x0ecompletedCount\x12'\n" +
+	"\fpassed_count\x18\x05 \x01(\x05B\x04\xe2A\x01\x03R\vpassedCount\x12-\n" +
+	"\x0fcancelled_count\x18\x06 \x01(\x05B\x04\xe2A\x01\x03R\x0ecancelledCount\x1a\x8f\x01\n" +
+	"\x14EvaluationRunSummary\x12'\n" +
+	"\fpassed_count\x18\x01 \x01(\x05B\x04\xe2A\x01\x03R\vpassedCount\x12'\n" +
+	"\ffailed_count\x18\x02 \x01(\x05B\x04\xe2A\x01\x03R\vfailedCount\x12%\n" +
+	"\verror_count\x18\x03 \x01(\x05B\x04\xe2A\x01\x03R\n" +
 	"errorCount\x1a\x86\x01\n" +
 	"\x1bEvaluationRunSummariesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12Q\n" +
@@ -6354,71 +6354,71 @@ const file_google_cloud_ces_v1beta_evaluation_proto_rawDesc = "" +
 	"\tCOMPLETED\x10\x02\x12\t\n" +
 	"\x05ERROR\x10\x03\x12\r\n" +
 	"\tCANCELLED\x10\x04:\x99\x01\xeaA\x95\x01\n" +
-	" ces.googleapis.com/EvaluationRun\x12Rprojects/{project}/locations/{location}/apps/{app}/evaluationRuns/{evaluation_run}*\x0eevaluationRuns2\revaluationRun\"\xc4\f\n" +
-	"\rLatencyReport\x12a\n" +
-	"\x0etool_latencies\x18\x01 \x03(\v22.google.cloud.ces.v1beta.LatencyReport.ToolLatencyB\x06\xe0A\x03\xe0A\x06R\rtoolLatencies\x12m\n" +
-	"\x12callback_latencies\x18\x02 \x03(\v26.google.cloud.ces.v1beta.LatencyReport.CallbackLatencyB\x06\xe0A\x03\xe0A\x06R\x11callbackLatencies\x12p\n" +
-	"\x13guardrail_latencies\x18\x03 \x03(\v27.google.cloud.ces.v1beta.LatencyReport.GuardrailLatencyB\x06\xe0A\x03\xe0A\x06R\x12guardrailLatencies\x12k\n" +
-	"\x12llm_call_latencies\x18\x04 \x03(\v25.google.cloud.ces.v1beta.LatencyReport.LlmCallLatencyB\x06\xe0A\x03\xe0A\x06R\x10llmCallLatencies\x12(\n" +
-	"\rsession_count\x18\x05 \x01(\x05B\x03\xe0A\x03R\fsessionCount\x1a\xf7\x01\n" +
-	"\x0eLatencyMetrics\x12?\n" +
-	"\vp50_latency\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x03R\n" +
-	"p50Latency\x12?\n" +
-	"\vp90_latency\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x03R\n" +
-	"p90Latency\x12?\n" +
-	"\vp99_latency\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x03R\n" +
-	"p99Latency\x12\"\n" +
+	" ces.googleapis.com/EvaluationRun\x12Rprojects/{project}/locations/{location}/apps/{app}/evaluationRuns/{evaluation_run}*\x0eevaluationRuns2\revaluationRun\"\xd0\f\n" +
+	"\rLatencyReport\x12`\n" +
+	"\x0etool_latencies\x18\x01 \x03(\v22.google.cloud.ces.v1beta.LatencyReport.ToolLatencyB\x05\xe2A\x02\x03\x06R\rtoolLatencies\x12l\n" +
+	"\x12callback_latencies\x18\x02 \x03(\v26.google.cloud.ces.v1beta.LatencyReport.CallbackLatencyB\x05\xe2A\x02\x03\x06R\x11callbackLatencies\x12o\n" +
+	"\x13guardrail_latencies\x18\x03 \x03(\v27.google.cloud.ces.v1beta.LatencyReport.GuardrailLatencyB\x05\xe2A\x02\x03\x06R\x12guardrailLatencies\x12j\n" +
+	"\x12llm_call_latencies\x18\x04 \x03(\v25.google.cloud.ces.v1beta.LatencyReport.LlmCallLatencyB\x05\xe2A\x02\x03\x06R\x10llmCallLatencies\x12)\n" +
+	"\rsession_count\x18\x05 \x01(\x05B\x04\xe2A\x01\x03R\fsessionCount\x1a\xfb\x01\n" +
+	"\x0eLatencyMetrics\x12@\n" +
+	"\vp50_latency\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x03R\n" +
+	"p50Latency\x12@\n" +
+	"\vp90_latency\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x03R\n" +
+	"p90Latency\x12@\n" +
+	"\vp99_latency\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x03R\n" +
+	"p99Latency\x12#\n" +
 	"\n" +
-	"call_count\x18\x04 \x01(\x05B\x03\xe0A\x03R\tcallCount\x1a\xbd\x02\n" +
-	"\vToolLatency\x125\n" +
-	"\x04tool\x18\x01 \x01(\tB\x1f\xe0A\x03\xfaA\x19\n" +
-	"\x17ces.googleapis.com/ToolH\x00R\x04tool\x12N\n" +
-	"\ftoolset_tool\x18\x02 \x01(\v2$.google.cloud.ces.v1beta.ToolsetToolB\x03\xe0A\x03H\x00R\vtoolsetTool\x12/\n" +
-	"\x11tool_display_name\x18\x03 \x01(\tB\x03\xe0A\x03R\x0ftoolDisplayName\x12c\n" +
-	"\x0flatency_metrics\x18\x04 \x01(\v25.google.cloud.ces.v1beta.LatencyReport.LatencyMetricsB\x03\xe0A\x03R\x0elatencyMetricsB\x11\n" +
-	"\x0ftool_identifier\x1a\x91\x01\n" +
-	"\x0fCallbackLatency\x12\x19\n" +
-	"\x05stage\x18\x01 \x01(\tB\x03\xe0A\x03R\x05stage\x12c\n" +
-	"\x0flatency_metrics\x18\x02 \x01(\v25.google.cloud.ces.v1beta.LatencyReport.LatencyMetricsB\x03\xe0A\x03R\x0elatencyMetrics\x1a\xf6\x01\n" +
-	"\x10GuardrailLatency\x12B\n" +
-	"\tguardrail\x18\x01 \x01(\tB$\xe0A\x03\xfaA\x1e\n" +
-	"\x1cces.googleapis.com/GuardrailR\tguardrail\x129\n" +
-	"\x16guardrail_display_name\x18\x02 \x01(\tB\x03\xe0A\x03R\x14guardrailDisplayName\x12c\n" +
-	"\x0flatency_metrics\x18\x03 \x01(\v25.google.cloud.ces.v1beta.LatencyReport.LatencyMetricsB\x03\xe0A\x03R\x0elatencyMetrics\x1a\x90\x01\n" +
-	"\x0eLlmCallLatency\x12\x19\n" +
-	"\x05model\x18\x01 \x01(\tB\x03\xe0A\x03R\x05model\x12c\n" +
-	"\x0flatency_metrics\x18\x02 \x01(\v25.google.cloud.ces.v1beta.LatencyReport.LatencyMetricsB\x03\xe0A\x03R\x0elatencyMetrics\"\xf0\x04\n" +
-	"\x15EvaluationExpectation\x12d\n" +
-	"\fllm_criteria\x18\x03 \x01(\v2:.google.cloud.ces.v1beta.EvaluationExpectation.LlmCriteriaB\x03\xe0A\x01H\x00R\vllmCriteria\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12\x17\n" +
-	"\x04tags\x18\b \x03(\tB\x03\xe0A\x01R\x04tags\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x17\n" +
-	"\x04etag\x18\x06 \x01(\tB\x03\xe0A\x03R\x04etag\x1a*\n" +
-	"\vLlmCriteria\x12\x1b\n" +
-	"\x06prompt\x18\x01 \x01(\tB\x03\xe0A\x02R\x06prompt:\xc1\x01\xeaA\xbd\x01\n" +
+	"call_count\x18\x04 \x01(\x05B\x04\xe2A\x01\x03R\tcallCount\x1a\xc1\x02\n" +
+	"\vToolLatency\x126\n" +
+	"\x04tool\x18\x01 \x01(\tB \xe2A\x01\x03\xfaA\x19\n" +
+	"\x17ces.googleapis.com/ToolH\x00R\x04tool\x12O\n" +
+	"\ftoolset_tool\x18\x02 \x01(\v2$.google.cloud.ces.v1beta.ToolsetToolB\x04\xe2A\x01\x03H\x00R\vtoolsetTool\x120\n" +
+	"\x11tool_display_name\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x0ftoolDisplayName\x12d\n" +
+	"\x0flatency_metrics\x18\x04 \x01(\v25.google.cloud.ces.v1beta.LatencyReport.LatencyMetricsB\x04\xe2A\x01\x03R\x0elatencyMetricsB\x11\n" +
+	"\x0ftool_identifier\x1a\x93\x01\n" +
+	"\x0fCallbackLatency\x12\x1a\n" +
+	"\x05stage\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x05stage\x12d\n" +
+	"\x0flatency_metrics\x18\x02 \x01(\v25.google.cloud.ces.v1beta.LatencyReport.LatencyMetricsB\x04\xe2A\x01\x03R\x0elatencyMetrics\x1a\xf9\x01\n" +
+	"\x10GuardrailLatency\x12C\n" +
+	"\tguardrail\x18\x01 \x01(\tB%\xe2A\x01\x03\xfaA\x1e\n" +
+	"\x1cces.googleapis.com/GuardrailR\tguardrail\x12:\n" +
+	"\x16guardrail_display_name\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x14guardrailDisplayName\x12d\n" +
+	"\x0flatency_metrics\x18\x03 \x01(\v25.google.cloud.ces.v1beta.LatencyReport.LatencyMetricsB\x04\xe2A\x01\x03R\x0elatencyMetrics\x1a\x92\x01\n" +
+	"\x0eLlmCallLatency\x12\x1a\n" +
+	"\x05model\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x05model\x12d\n" +
+	"\x0flatency_metrics\x18\x02 \x01(\v25.google.cloud.ces.v1beta.LatencyReport.LatencyMetricsB\x04\xe2A\x01\x03R\x0elatencyMetrics\"\xf8\x04\n" +
+	"\x15EvaluationExpectation\x12e\n" +
+	"\fllm_criteria\x18\x03 \x01(\v2:.google.cloud.ces.v1beta.EvaluationExpectation.LlmCriteriaB\x04\xe2A\x01\x01H\x00R\vllmCriteria\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12\x18\n" +
+	"\x04tags\x18\b \x03(\tB\x04\xe2A\x01\x01R\x04tags\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x18\n" +
+	"\x04etag\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x04etag\x1a+\n" +
+	"\vLlmCriteria\x12\x1c\n" +
+	"\x06prompt\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06prompt:\xc1\x01\xeaA\xbd\x01\n" +
 	"(ces.googleapis.com/EvaluationExpectation\x12bprojects/{project}/locations/{location}/apps/{app}/evaluationExpectations/{evaluation_expectation}*\x16evaluationExpectations2\x15evaluationExpectationB\n" +
 	"\n" +
-	"\bcriteria\"\xff\x03\n" +
-	"\x10EvaluationConfig\x12^\n" +
-	"\x12input_audio_config\x18\x01 \x01(\v2).google.cloud.ces.v1beta.InputAudioConfigB\x05\xe0A\x01\x18\x01R\x10inputAudioConfig\x12a\n" +
-	"\x13output_audio_config\x18\x02 \x01(\v2*.google.cloud.ces.v1beta.OutputAudioConfigB\x05\xe0A\x01\x18\x01R\x11outputAudioConfig\x12o\n" +
-	"\x12evaluation_channel\x18\x03 \x01(\x0e2;.google.cloud.ces.v1beta.EvaluationConfig.EvaluationChannelB\x03\xe0A\x01R\x11evaluationChannel\x12i\n" +
-	"\x13tool_call_behaviour\x18\x04 \x01(\x0e24.google.cloud.ces.v1beta.EvaluationToolCallBehaviourB\x03\xe0A\x01R\x11toolCallBehaviour\"L\n" +
+	"\bcriteria\"\x83\x04\n" +
+	"\x10EvaluationConfig\x12_\n" +
+	"\x12input_audio_config\x18\x01 \x01(\v2).google.cloud.ces.v1beta.InputAudioConfigB\x06\xe2A\x01\x01\x18\x01R\x10inputAudioConfig\x12b\n" +
+	"\x13output_audio_config\x18\x02 \x01(\v2*.google.cloud.ces.v1beta.OutputAudioConfigB\x06\xe2A\x01\x01\x18\x01R\x11outputAudioConfig\x12p\n" +
+	"\x12evaluation_channel\x18\x03 \x01(\x0e2;.google.cloud.ces.v1beta.EvaluationConfig.EvaluationChannelB\x04\xe2A\x01\x01R\x11evaluationChannel\x12j\n" +
+	"\x13tool_call_behaviour\x18\x04 \x01(\x0e24.google.cloud.ces.v1beta.EvaluationToolCallBehaviourB\x04\xe2A\x01\x01R\x11toolCallBehaviour\"L\n" +
 	"\x11EvaluationChannel\x12\"\n" +
 	"\x1eEVALUATION_CHANNEL_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04TEXT\x10\x01\x12\t\n" +
-	"\x05AUDIO\x10\x02\"\xd3\x03\n" +
-	"\x13EvaluationErrorInfo\x12Z\n" +
+	"\x05AUDIO\x10\x02\"\xd7\x03\n" +
+	"\x13EvaluationErrorInfo\x12[\n" +
 	"\n" +
-	"error_type\x18\x01 \x01(\x0e26.google.cloud.ces.v1beta.EvaluationErrorInfo.ErrorTypeB\x03\xe0A\x03R\terrorType\x12(\n" +
-	"\rerror_message\x18\x02 \x01(\tB\x03\xe0A\x03R\ferrorMessage\x12\"\n" +
+	"error_type\x18\x01 \x01(\x0e26.google.cloud.ces.v1beta.EvaluationErrorInfo.ErrorTypeB\x04\xe2A\x01\x03R\terrorType\x12)\n" +
+	"\rerror_message\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\ferrorMessage\x12#\n" +
 	"\n" +
-	"session_id\x18\x03 \x01(\tB\x03\xe0A\x03R\tsessionId\x12>\n" +
-	"\x19user_facing_error_message\x18\x04 \x01(\tB\x03\xe0A\x03R\x16userFacingErrorMessage\"\xd1\x01\n" +
+	"session_id\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\tsessionId\x12?\n" +
+	"\x19user_facing_error_message\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x16userFacingErrorMessage\"\xd1\x01\n" +
 	"\tErrorType\x12\x1a\n" +
 	"\x16ERROR_TYPE_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fRUNTIME_FAILURE\x10\x01\x12\"\n" +
@@ -6426,56 +6426,56 @@ const file_google_cloud_ces_v1beta_evaluation_proto_rawDesc = "" +
 	"\x1aMETRIC_CALCULATION_FAILURE\x10\x03\x12\x1d\n" +
 	"\x19EVALUATION_UPDATE_FAILURE\x10\x04\x12\x13\n" +
 	"\x0fQUOTA_EXHAUSTED\x10\x05\x12\x1b\n" +
-	"\x17USER_SIMULATION_FAILURE\x10\x06\"\xa7\b\n" +
-	"\x14RunEvaluationRequest\x120\n" +
-	"\x03app\x18\x01 \x01(\tB\x1e\xe0A\x02\xfaA\x18\n" +
-	"\x16ces.googleapis.com/AppR\x03app\x12G\n" +
-	"\vevaluations\x18\x02 \x03(\tB%\xe0A\x01\xfaA\x1f\n" +
-	"\x1dces.googleapis.com/EvaluationR\vevaluations\x12[\n" +
-	"\x12evaluation_dataset\x18\x03 \x01(\tB,\xe0A\x01\xfaA&\n" +
-	"$ces.googleapis.com/EvaluationDatasetR\x11evaluationDataset\x12&\n" +
-	"\fdisplay_name\x18\x04 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12F\n" +
-	"\vapp_version\x18\x06 \x01(\tB%\xe0A\x01\xfaA\x1f\n" +
+	"\x17USER_SIMULATION_FAILURE\x10\x06\"\xb4\b\n" +
+	"\x14RunEvaluationRequest\x121\n" +
+	"\x03app\x18\x01 \x01(\tB\x1f\xe2A\x01\x02\xfaA\x18\n" +
+	"\x16ces.googleapis.com/AppR\x03app\x12H\n" +
+	"\vevaluations\x18\x02 \x03(\tB&\xe2A\x01\x01\xfaA\x1f\n" +
+	"\x1dces.googleapis.com/EvaluationR\vevaluations\x12\\\n" +
+	"\x12evaluation_dataset\x18\x03 \x01(\tB-\xe2A\x01\x01\xfaA&\n" +
+	"$ces.googleapis.com/EvaluationDatasetR\x11evaluationDataset\x12'\n" +
+	"\fdisplay_name\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12G\n" +
+	"\vapp_version\x18\x06 \x01(\tB&\xe2A\x01\x01\xfaA\x1f\n" +
 	"\x1dces.googleapis.com/AppVersionR\n" +
-	"appVersion\x12F\n" +
-	"\x06config\x18\b \x01(\v2).google.cloud.ces.v1beta.EvaluationConfigB\x03\xe0A\x01R\x06config\x12%\n" +
-	"\trun_count\x18\t \x01(\x05B\x03\xe0A\x01H\x00R\brunCount\x88\x01\x01\x12^\n" +
+	"appVersion\x12G\n" +
+	"\x06config\x18\b \x01(\v2).google.cloud.ces.v1beta.EvaluationConfigB\x04\xe2A\x01\x01R\x06config\x12&\n" +
+	"\trun_count\x18\t \x01(\x05B\x04\xe2A\x01\x01H\x00R\brunCount\x88\x01\x01\x12_\n" +
 	"\x13persona_run_configs\x18\n" +
-	" \x03(\v2).google.cloud.ces.v1beta.PersonaRunConfigB\x03\xe0A\x01R\x11personaRunConfigs\x12a\n" +
-	"\x13optimization_config\x18\v \x01(\v2+.google.cloud.ces.v1beta.OptimizationConfigB\x03\xe0A\x01R\x12optimizationConfig\x12k\n" +
-	"\x18scheduled_evaluation_run\x18\f \x01(\tB1\xe0A\x01\xfaA+\n" +
-	")ces.googleapis.com/ScheduledEvaluationRunR\x16scheduledEvaluationRun\x12Y\n" +
-	"\x11golden_run_method\x18\r \x01(\x0e2(.google.cloud.ces.v1beta.GoldenRunMethodB\x03\xe0A\x01R\x0fgoldenRunMethod\x12;\n" +
-	"\x17generate_latency_report\x18\x0e \x01(\bB\x03\xe0A\x01R\x15generateLatencyReport\x12\x81\x01\n" +
-	"\x1fevaluation_run_caching_settings\x18\x0f \x01(\v25.google.cloud.ces.v1beta.EvaluationRunCachingSettingsB\x03\xe0A\x01R\x1cevaluationRunCachingSettingsB\f\n" +
+	" \x03(\v2).google.cloud.ces.v1beta.PersonaRunConfigB\x04\xe2A\x01\x01R\x11personaRunConfigs\x12b\n" +
+	"\x13optimization_config\x18\v \x01(\v2+.google.cloud.ces.v1beta.OptimizationConfigB\x04\xe2A\x01\x01R\x12optimizationConfig\x12l\n" +
+	"\x18scheduled_evaluation_run\x18\f \x01(\tB2\xe2A\x01\x01\xfaA+\n" +
+	")ces.googleapis.com/ScheduledEvaluationRunR\x16scheduledEvaluationRun\x12Z\n" +
+	"\x11golden_run_method\x18\r \x01(\x0e2(.google.cloud.ces.v1beta.GoldenRunMethodB\x04\xe2A\x01\x01R\x0fgoldenRunMethod\x12<\n" +
+	"\x17generate_latency_report\x18\x0e \x01(\bB\x04\xe2A\x01\x01R\x15generateLatencyReport\x12\x82\x01\n" +
+	"\x1fevaluation_run_caching_settings\x18\x0f \x01(\v25.google.cloud.ces.v1beta.EvaluationRunCachingSettingsB\x04\xe2A\x01\x01R\x1cevaluationRunCachingSettingsB\f\n" +
 	"\n" +
-	"_run_count\"\xc5\n" +
+	"_run_count\"\xd6\n" +
 	"\n" +
-	"\x16ScheduledEvaluationRun\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12L\n" +
-	"\arequest\x18\x03 \x01(\v2-.google.cloud.ces.v1beta.RunEvaluationRequestB\x03\xe0A\x02R\arequest\x12%\n" +
-	"\vdescription\x18\x04 \x01(\tB\x03\xe0A\x01R\vdescription\x12r\n" +
-	"\x11scheduling_config\x18\x05 \x01(\v2@.google.cloud.ces.v1beta.ScheduledEvaluationRun.SchedulingConfigB\x03\xe0A\x02R\x10schedulingConfig\x12\x1b\n" +
-	"\x06active\x18\x06 \x01(\bB\x03\xe0A\x01R\x06active\x12V\n" +
-	"\x12last_completed_run\x18\a \x01(\tB(\xe0A\x03\xfaA\"\n" +
-	" ces.googleapis.com/EvaluationRunR\x10lastCompletedRun\x12.\n" +
-	"\x10total_executions\x18\b \x01(\x05B\x03\xe0A\x03R\x0ftotalExecutions\x12b\n" +
-	"\x1dnext_scheduled_execution_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x1anextScheduledExecutionTime\x12@\n" +
+	"\x16ScheduledEvaluationRun\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12M\n" +
+	"\arequest\x18\x03 \x01(\v2-.google.cloud.ces.v1beta.RunEvaluationRequestB\x04\xe2A\x01\x02R\arequest\x12&\n" +
+	"\vdescription\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12s\n" +
+	"\x11scheduling_config\x18\x05 \x01(\v2@.google.cloud.ces.v1beta.ScheduledEvaluationRun.SchedulingConfigB\x04\xe2A\x01\x02R\x10schedulingConfig\x12\x1c\n" +
+	"\x06active\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\x06active\x12W\n" +
+	"\x12last_completed_run\x18\a \x01(\tB)\xe2A\x01\x03\xfaA\"\n" +
+	" ces.googleapis.com/EvaluationRunR\x10lastCompletedRun\x12/\n" +
+	"\x10total_executions\x18\b \x01(\x05B\x04\xe2A\x01\x03R\x0ftotalExecutions\x12c\n" +
+	"\x1dnext_scheduled_execution_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x1anextScheduledExecutionTime\x12A\n" +
 	"\vcreate_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12\"\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12#\n" +
 	"\n" +
-	"created_by\x18\v \x01(\tB\x03\xe0A\x03R\tcreatedBy\x12@\n" +
-	"\vupdate_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12+\n" +
-	"\x0flast_updated_by\x18\r \x01(\tB\x03\xe0A\x03R\rlastUpdatedBy\x12\x17\n" +
-	"\x04etag\x18\x0e \x01(\tB\x03\xe0A\x03R\x04etag\x1a\xbf\x02\n" +
-	"\x10SchedulingConfig\x12m\n" +
-	"\tfrequency\x18\x01 \x01(\x0e2J.google.cloud.ces.v1beta.ScheduledEvaluationRun.SchedulingConfig.FrequencyB\x03\xe0A\x02R\tfrequency\x12>\n" +
+	"created_by\x18\v \x01(\tB\x04\xe2A\x01\x03R\tcreatedBy\x12A\n" +
+	"\vupdate_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12,\n" +
+	"\x0flast_updated_by\x18\r \x01(\tB\x04\xe2A\x01\x03R\rlastUpdatedBy\x12\x18\n" +
+	"\x04etag\x18\x0e \x01(\tB\x04\xe2A\x01\x03R\x04etag\x1a\xc2\x02\n" +
+	"\x10SchedulingConfig\x12n\n" +
+	"\tfrequency\x18\x01 \x01(\x0e2J.google.cloud.ces.v1beta.ScheduledEvaluationRun.SchedulingConfig.FrequencyB\x04\xe2A\x01\x02R\tfrequency\x12?\n" +
 	"\n" +
-	"start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\tstartTime\x12%\n" +
-	"\fdays_of_week\x18\x03 \x03(\x05B\x03\xe0A\x01R\n" +
+	"start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\tstartTime\x12&\n" +
+	"\fdays_of_week\x18\x03 \x03(\x05B\x04\xe2A\x01\x01R\n" +
 	"daysOfWeek\"U\n" +
 	"\tFrequency\x12\x19\n" +
 	"\x15FREQUENCY_UNSPECIFIED\x10\x00\x12\b\n" +
@@ -6484,19 +6484,19 @@ const file_google_cloud_ces_v1beta_evaluation_proto_rawDesc = "" +
 	"\n" +
 	"\x06WEEKLY\x10\x03\x12\f\n" +
 	"\bBIWEEKLY\x10\x04:\xc7\x01\xeaA\xc3\x01\n" +
-	")ces.googleapis.com/ScheduledEvaluationRun\x12eprojects/{project}/locations/{location}/apps/{app}/scheduledEvaluationRuns/{scheduled_evaluation_run}*\x17scheduledEvaluationRuns2\x16scheduledEvaluationRun\"U\n" +
-	"\x10PersonaRunConfig\x12\x1d\n" +
-	"\apersona\x18\x01 \x01(\tB\x03\xe0A\x01R\apersona\x12\"\n" +
+	")ces.googleapis.com/ScheduledEvaluationRun\x12eprojects/{project}/locations/{location}/apps/{app}/scheduledEvaluationRuns/{scheduled_evaluation_run}*\x17scheduledEvaluationRuns2\x16scheduledEvaluationRun\"W\n" +
+	"\x10PersonaRunConfig\x12\x1e\n" +
+	"\apersona\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\apersona\x12#\n" +
 	"\n" +
-	"task_count\x18\x02 \x01(\x05B\x03\xe0A\x01R\ttaskCount\"\x84\x04\n" +
-	"\x12OptimizationConfig\x125\n" +
-	"\x14generate_loss_report\x18\x01 \x01(\bB\x03\xe0A\x01R\x12generateLossReport\x120\n" +
-	"\x11assistant_session\x18\x02 \x01(\tB\x03\xe0A\x03R\x10assistantSession\x12*\n" +
-	"\x0ereport_summary\x18\x03 \x01(\tB\x03\xe0A\x03R\rreportSummary\x121\n" +
-	"\x12should_suggest_fix\x18\x05 \x01(\bB\x03\xe0A\x03R\x10shouldSuggestFix\x12[\n" +
-	"\x06status\x18\x04 \x01(\x0e2>.google.cloud.ces.v1beta.OptimizationConfig.OptimizationStatusB\x03\xe0A\x03R\x06status\x12(\n" +
-	"\rerror_message\x18\x06 \x01(\tB\x03\xe0A\x03R\ferrorMessage\x12=\n" +
-	"\vloss_report\x18\a \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x03R\n" +
+	"task_count\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\ttaskCount\"\x8b\x04\n" +
+	"\x12OptimizationConfig\x126\n" +
+	"\x14generate_loss_report\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x12generateLossReport\x121\n" +
+	"\x11assistant_session\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x10assistantSession\x12+\n" +
+	"\x0ereport_summary\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\rreportSummary\x122\n" +
+	"\x12should_suggest_fix\x18\x05 \x01(\bB\x04\xe2A\x01\x03R\x10shouldSuggestFix\x12\\\n" +
+	"\x06status\x18\x04 \x01(\x0e2>.google.cloud.ces.v1beta.OptimizationConfig.OptimizationStatusB\x04\xe2A\x01\x03R\x06status\x12)\n" +
+	"\rerror_message\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\ferrorMessage\x12>\n" +
+	"\vloss_report\x18\a \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x03R\n" +
 	"lossReport\"`\n" +
 	"\x12OptimizationStatus\x12#\n" +
 	"\x1fOPTIMIZATION_STATUS_UNSPECIFIED\x10\x00\x12\v\n" +

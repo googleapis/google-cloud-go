@@ -3579,46 +3579,46 @@ var File_google_cloud_dialogflow_v2_conversation_proto protoreflect.FileDescript
 
 const file_google_cloud_dialogflow_v2_conversation_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/dialogflow/v2/conversation.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a5google/cloud/dialogflow/v2/conversation_profile.proto\x1a*google/cloud/dialogflow/v2/generator.proto\x1a,google/cloud/dialogflow/v2/participant.proto\x1a(google/cloud/dialogflow/v2/session.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd9\x1a\n" +
-	"\fConversation\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x12e\n" +
-	"\x0flifecycle_state\x18\x02 \x01(\x0e27.google.cloud.dialogflow.v2.Conversation.LifecycleStateB\x03\xe0A\x03R\x0elifecycleState\x12h\n" +
-	"\x14conversation_profile\x18\x03 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-dialogflow.googleapis.com/ConversationProfileR\x13conversationProfile\x12[\n" +
-	"\fphone_number\x18\x04 \x01(\v23.google.cloud.dialogflow.v2.ConversationPhoneNumberB\x03\xe0A\x03R\vphoneNumber\x12>\n" +
+	"-google/cloud/dialogflow/v2/conversation.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a5google/cloud/dialogflow/v2/conversation_profile.proto\x1a*google/cloud/dialogflow/v2/generator.proto\x1a,google/cloud/dialogflow/v2/participant.proto\x1a(google/cloud/dialogflow/v2/session.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf1\x1a\n" +
+	"\fConversation\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\bR\x04name\x12f\n" +
+	"\x0flifecycle_state\x18\x02 \x01(\x0e27.google.cloud.dialogflow.v2.Conversation.LifecycleStateB\x04\xe2A\x01\x03R\x0elifecycleState\x12i\n" +
+	"\x14conversation_profile\x18\x03 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-dialogflow.googleapis.com/ConversationProfileR\x13conversationProfile\x12\\\n" +
+	"\fphone_number\x18\x04 \x01(\v23.google.cloud.dialogflow.v2.ConversationPhoneNumberB\x04\xe2A\x01\x03R\vphoneNumber\x12?\n" +
 	"\n" +
-	"start_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12n\n" +
-	"\x12conversation_stage\x18\a \x01(\x0e2:.google.cloud.dialogflow.v2.Conversation.ConversationStageB\x03\xe0A\x01R\x11conversationStage\x12\x81\x01\n" +
+	"start_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12o\n" +
+	"\x12conversation_stage\x18\a \x01(\x0e2:.google.cloud.dialogflow.v2.Conversation.ConversationStageB\x04\xe2A\x01\x01R\x11conversationStage\x12\x82\x01\n" +
 	"\x19telephony_connection_info\x18\n" +
-	" \x01(\v2@.google.cloud.dialogflow.v2.Conversation.TelephonyConnectionInfoB\x03\xe0A\x03R\x17telephonyConnectionInfo\x12y\n" +
-	"\x1cinitial_conversation_profile\x18\x0f \x01(\v2/.google.cloud.dialogflow.v2.ConversationProfileB\x06\xe0A\x01\xe0A\x03R\x1ainitialConversationProfile\x12\x8c\x01\n" +
-	"\x1bingested_context_references\x18\x11 \x03(\v2G.google.cloud.dialogflow.v2.Conversation.IngestedContextReferencesEntryB\x03\xe0A\x03R\x19ingestedContextReferences\x12\x89\x01\n" +
-	"\x1ainitial_generator_contexts\x18\x12 \x03(\v2F.google.cloud.dialogflow.v2.Conversation.InitialGeneratorContextsEntryB\x03\xe0A\x03R\x18initialGeneratorContexts\x1a\xe1\x03\n" +
-	"\x17TelephonyConnectionInfo\x12(\n" +
-	"\rdialed_number\x18\x02 \x01(\tB\x03\xe0A\x03R\fdialedNumber\x12\x15\n" +
-	"\x03sdp\x18\x05 \x01(\tB\x03\xe0A\x01R\x03sdp\x12p\n" +
-	"\vsip_headers\x18\f \x03(\v2J.google.cloud.dialogflow.v2.Conversation.TelephonyConnectionInfo.SipHeaderB\x03\xe0A\x03R\n" +
-	"sipHeaders\x12\x81\x01\n" +
-	"\x13extra_mime_contents\x18\r \x03(\v2L.google.cloud.dialogflow.v2.Conversation.TelephonyConnectionInfo.MimeContentB\x03\xe0A\x03R\x11extraMimeContents\x1a?\n" +
-	"\tSipHeader\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x01R\x04name\x12\x19\n" +
-	"\x05value\x18\x02 \x01(\tB\x03\xe0A\x01R\x05value\x1aN\n" +
-	"\vMimeContent\x12 \n" +
-	"\tmime_type\x18\x01 \x01(\tB\x03\xe0A\x01R\bmimeType\x12\x1d\n" +
-	"\acontent\x18\x02 \x01(\fB\x03\xe0A\x01R\acontent\x1a\xc9\x06\n" +
-	"\x10ContextReference\x12x\n" +
-	"\x10context_contents\x18\x01 \x03(\v2H.google.cloud.dialogflow.v2.Conversation.ContextReference.ContextContentB\x03\xe0A\x02R\x0fcontextContents\x12j\n" +
-	"\vupdate_mode\x18\x02 \x01(\x0e2D.google.cloud.dialogflow.v2.Conversation.ContextReference.UpdateModeB\x03\xe0A\x02R\n" +
-	"updateMode\x12(\n" +
-	"\rlanguage_code\x18\x03 \x01(\tB\x03\xe0A\x01R\flanguageCode\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x1a\x9c\x03\n" +
-	"\x0eContextContent\x12\x1d\n" +
-	"\acontent\x18\x01 \x01(\tB\x03\xe0A\x02R\acontent\x12\x82\x01\n" +
-	"\x0econtent_format\x18\x02 \x01(\x0e2V.google.cloud.dialogflow.v2.Conversation.ContextReference.ContextContent.ContentFormatB\x03\xe0A\x02R\rcontentFormat\x12F\n" +
-	"\x0eingestion_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\ringestionTime\x12S\n" +
-	"\ranswer_record\x18\x04 \x01(\tB.\xe0A\x01\xfaA(\n" +
+	" \x01(\v2@.google.cloud.dialogflow.v2.Conversation.TelephonyConnectionInfoB\x04\xe2A\x01\x03R\x17telephonyConnectionInfo\x12x\n" +
+	"\x1cinitial_conversation_profile\x18\x0f \x01(\v2/.google.cloud.dialogflow.v2.ConversationProfileB\x05\xe2A\x02\x01\x03R\x1ainitialConversationProfile\x12\x8d\x01\n" +
+	"\x1bingested_context_references\x18\x11 \x03(\v2G.google.cloud.dialogflow.v2.Conversation.IngestedContextReferencesEntryB\x04\xe2A\x01\x03R\x19ingestedContextReferences\x12\x8a\x01\n" +
+	"\x1ainitial_generator_contexts\x18\x12 \x03(\v2F.google.cloud.dialogflow.v2.Conversation.InitialGeneratorContextsEntryB\x04\xe2A\x01\x03R\x18initialGeneratorContexts\x1a\xe9\x03\n" +
+	"\x17TelephonyConnectionInfo\x12)\n" +
+	"\rdialed_number\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\fdialedNumber\x12\x16\n" +
+	"\x03sdp\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x03sdp\x12q\n" +
+	"\vsip_headers\x18\f \x03(\v2J.google.cloud.dialogflow.v2.Conversation.TelephonyConnectionInfo.SipHeaderB\x04\xe2A\x01\x03R\n" +
+	"sipHeaders\x12\x82\x01\n" +
+	"\x13extra_mime_contents\x18\r \x03(\v2L.google.cloud.dialogflow.v2.Conversation.TelephonyConnectionInfo.MimeContentB\x04\xe2A\x01\x03R\x11extraMimeContents\x1aA\n" +
+	"\tSipHeader\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04name\x12\x1a\n" +
+	"\x05value\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x05value\x1aP\n" +
+	"\vMimeContent\x12!\n" +
+	"\tmime_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\bmimeType\x12\x1e\n" +
+	"\acontent\x18\x02 \x01(\fB\x04\xe2A\x01\x01R\acontent\x1a\xd1\x06\n" +
+	"\x10ContextReference\x12y\n" +
+	"\x10context_contents\x18\x01 \x03(\v2H.google.cloud.dialogflow.v2.Conversation.ContextReference.ContextContentB\x04\xe2A\x01\x02R\x0fcontextContents\x12k\n" +
+	"\vupdate_mode\x18\x02 \x01(\x0e2D.google.cloud.dialogflow.v2.Conversation.ContextReference.UpdateModeB\x04\xe2A\x01\x02R\n" +
+	"updateMode\x12)\n" +
+	"\rlanguage_code\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x1a\xa0\x03\n" +
+	"\x0eContextContent\x12\x1e\n" +
+	"\acontent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\acontent\x12\x83\x01\n" +
+	"\x0econtent_format\x18\x02 \x01(\x0e2V.google.cloud.dialogflow.v2.Conversation.ContextReference.ContextContent.ContentFormatB\x04\xe2A\x01\x02R\rcontentFormat\x12G\n" +
+	"\x0eingestion_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\ringestionTime\x12T\n" +
+	"\ranswer_record\x18\x04 \x01(\tB/\xe2A\x01\x01\xfaA(\n" +
 	"&dialogflow.googleapis.com/AnswerRecordR\fanswerRecord\"I\n" +
 	"\rContentFormat\x12\x1e\n" +
 	"\x1aCONTENT_FORMAT_UNSPECIFIED\x10\x00\x12\b\n" +
@@ -3630,9 +3630,9 @@ const file_google_cloud_dialogflow_v2_conversation_proto_rawDesc = "" +
 	"\x17UPDATE_MODE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06APPEND\x10\x01\x12\r\n" +
-	"\tOVERWRITE\x10\x02\x1a\xb5\x02\n" +
-	"\x10GeneratorContext\x12s\n" +
-	"\x0egenerator_type\x18\x01 \x01(\x0e2G.google.cloud.dialogflow.v2.Conversation.GeneratorContext.GeneratorTypeB\x03\xe0A\x03R\rgeneratorType\"\xab\x01\n" +
+	"\tOVERWRITE\x10\x02\x1a\xb6\x02\n" +
+	"\x10GeneratorContext\x12t\n" +
+	"\x0egenerator_type\x18\x01 \x01(\x0e2G.google.cloud.dialogflow.v2.Conversation.GeneratorContext.GeneratorTypeB\x04\xe2A\x01\x03R\rgeneratorType\"\xab\x01\n" +
 	"\rGeneratorType\x12\x1e\n" +
 	"\x1aGENERATOR_TYPE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tFREE_FORM\x10\x01\x12\x12\n" +
@@ -3655,42 +3655,42 @@ const file_google_cloud_dialogflow_v2_conversation_proto_rawDesc = "" +
 	"\x1eCONVERSATION_STAGE_UNSPECIFIED\x10\x00\x12\x17\n" +
 	"\x13VIRTUAL_AGENT_STAGE\x10\x01\x12\x16\n" +
 	"\x12HUMAN_ASSIST_STAGE\x10\x02:\xc0\x01\xeaA\xbc\x01\n" +
-	"&dialogflow.googleapis.com/Conversation\x12/projects/{project}/conversations/{conversation}\x12Dprojects/{project}/locations/{location}/conversations/{conversation}*\rconversations2\fconversation\"\xe4\x01\n" +
-	"\x19CreateConversationRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&dialogflow.googleapis.com/ConversationR\x06parent\x12Q\n" +
-	"\fconversation\x18\x02 \x01(\v2(.google.cloud.dialogflow.v2.ConversationB\x03\xe0A\x02R\fconversation\x12,\n" +
-	"\x0fconversation_id\x18\x03 \x01(\tB\x03\xe0A\x01R\x0econversationId\"\xc5\x01\n" +
-	"\x18ListConversationsRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&dialogflow.googleapis.com/ConversationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"&dialogflow.googleapis.com/Conversation\x12/projects/{project}/conversations/{conversation}\x12Dprojects/{project}/locations/{location}/conversations/{conversation}*\rconversations2\fconversation\"\xe7\x01\n" +
+	"\x19CreateConversationRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\x12&dialogflow.googleapis.com/ConversationR\x06parent\x12R\n" +
+	"\fconversation\x18\x02 \x01(\v2(.google.cloud.dialogflow.v2.ConversationB\x04\xe2A\x01\x02R\fconversation\x12-\n" +
+	"\x0fconversation_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x0econversationId\"\xc9\x01\n" +
+	"\x18ListConversationsRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\x12&dialogflow.googleapis.com/ConversationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\x93\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x93\x01\n" +
 	"\x19ListConversationsResponse\x12N\n" +
 	"\rconversations\x18\x01 \x03(\v2(.google.cloud.dialogflow.v2.ConversationR\rconversations\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\\\n" +
-	"\x16GetConversationRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&dialogflow.googleapis.com/ConversationR\x04name\"a\n" +
-	"\x1bCompleteConversationRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&dialogflow.googleapis.com/ConversationR\x04name\"\xbb\x01\n" +
-	"\x13ListMessagesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!dialogflow.googleapis.com/MessageR\x06parent\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"]\n" +
+	"\x16GetConversationRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&dialogflow.googleapis.com/ConversationR\x04name\"b\n" +
+	"\x1bCompleteConversationRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&dialogflow.googleapis.com/ConversationR\x04name\"\xbf\x01\n" +
+	"\x13ListMessagesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!dialogflow.googleapis.com/MessageR\x06parent\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x7f\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x7f\n" +
 	"\x14ListMessagesResponse\x12?\n" +
 	"\bmessages\x18\x01 \x03(\v2#.google.cloud.dialogflow.v2.MessageR\bmessages\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"i\n" +
-	"\x17ConversationPhoneNumber\x12&\n" +
-	"\fcountry_code\x18\x02 \x01(\x05B\x03\xe0A\x03R\vcountryCode\x12&\n" +
-	"\fphone_number\x18\x03 \x01(\tB\x03\xe0A\x03R\vphoneNumber\"\xfd\x02\n" +
-	"\x1eIngestContextReferencesRequest\x12R\n" +
-	"\fconversation\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&dialogflow.googleapis.com/ConversationR\fconversation\x12\x85\x01\n" +
-	"\x12context_references\x18\x02 \x03(\v2Q.google.cloud.dialogflow.v2.IngestContextReferencesRequest.ContextReferencesEntryB\x03\xe0A\x02R\x11contextReferences\x1a\x7f\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"k\n" +
+	"\x17ConversationPhoneNumber\x12'\n" +
+	"\fcountry_code\x18\x02 \x01(\x05B\x04\xe2A\x01\x03R\vcountryCode\x12'\n" +
+	"\fphone_number\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\vphoneNumber\"\xff\x02\n" +
+	"\x1eIngestContextReferencesRequest\x12S\n" +
+	"\fconversation\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&dialogflow.googleapis.com/ConversationR\fconversation\x12\x86\x01\n" +
+	"\x12context_references\x18\x02 \x03(\v2Q.google.cloud.dialogflow.v2.IngestContextReferencesRequest.ContextReferencesEntryB\x04\xe2A\x01\x02R\x11contextReferences\x1a\x7f\n" +
 	"\x16ContextReferencesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12O\n" +
 	"\x05value\x18\x02 \x01(\v29.google.cloud.dialogflow.v2.Conversation.ContextReferenceR\x05value:\x028\x01\"\xc8\x02\n" +
@@ -3698,41 +3698,41 @@ const file_google_cloud_dialogflow_v2_conversation_proto_rawDesc = "" +
 	"\x1bingested_context_references\x18\x01 \x03(\v2Z.google.cloud.dialogflow.v2.IngestContextReferencesResponse.IngestedContextReferencesEntryR\x19ingestedContextReferences\x1a\x87\x01\n" +
 	"\x1eIngestedContextReferencesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12O\n" +
-	"\x05value\x18\x02 \x01(\v29.google.cloud.dialogflow.v2.Conversation.ContextReferenceR\x05value:\x028\x01\"\xd9\x02\n" +
-	"!SuggestConversationSummaryRequest\x12R\n" +
-	"\fconversation\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&dialogflow.googleapis.com/ConversationR\fconversation\x12P\n" +
-	"\x0elatest_message\x18\x03 \x01(\tB)\xe0A\x01\xfaA#\n" +
-	"!dialogflow.googleapis.com/MessageR\rlatestMessage\x12&\n" +
-	"\fcontext_size\x18\x04 \x01(\x05B\x03\xe0A\x01R\vcontextSize\x12f\n" +
-	"\x13assist_query_params\x18\x05 \x01(\v21.google.cloud.dialogflow.v2.AssistQueryParametersB\x03\xe0A\x01R\x11assistQueryParams\"\xba\x06\n" +
+	"\x05value\x18\x02 \x01(\v29.google.cloud.dialogflow.v2.Conversation.ContextReferenceR\x05value:\x028\x01\"\xdd\x02\n" +
+	"!SuggestConversationSummaryRequest\x12S\n" +
+	"\fconversation\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&dialogflow.googleapis.com/ConversationR\fconversation\x12Q\n" +
+	"\x0elatest_message\x18\x03 \x01(\tB*\xe2A\x01\x01\xfaA#\n" +
+	"!dialogflow.googleapis.com/MessageR\rlatestMessage\x12'\n" +
+	"\fcontext_size\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\vcontextSize\x12g\n" +
+	"\x13assist_query_params\x18\x05 \x01(\v21.google.cloud.dialogflow.v2.AssistQueryParametersB\x04\xe2A\x01\x01R\x11assistQueryParams\"\xbc\x06\n" +
 	"\"SuggestConversationSummaryResponse\x12`\n" +
 	"\asummary\x18\x01 \x01(\v2F.google.cloud.dialogflow.v2.SuggestConversationSummaryResponse.SummaryR\asummary\x12M\n" +
 	"\x0elatest_message\x18\x02 \x01(\tB&\xfaA#\n" +
 	"!dialogflow.googleapis.com/MessageR\rlatestMessage\x12!\n" +
-	"\fcontext_size\x18\x03 \x01(\x05R\vcontextSize\x1a\xbf\x04\n" +
+	"\fcontext_size\x18\x03 \x01(\x05R\vcontextSize\x1a\xc1\x04\n" +
 	"\aSummary\x12\x12\n" +
 	"\x04text\x18\x01 \x01(\tR\x04text\x12}\n" +
 	"\rtext_sections\x18\x04 \x03(\v2X.google.cloud.dialogflow.v2.SuggestConversationSummaryResponse.Summary.TextSectionsEntryR\ftextSections\x12\x87\x01\n" +
 	"\x14sorted_text_sections\x18\x06 \x03(\v2U.google.cloud.dialogflow.v2.SuggestConversationSummaryResponse.Summary.SummarySectionR\x12sortedTextSections\x12P\n" +
 	"\ranswer_record\x18\x03 \x01(\tB+\xfaA(\n" +
 	"&dialogflow.googleapis.com/AnswerRecordR\fanswerRecord\x124\n" +
-	"\x16baseline_model_version\x18\x05 \x01(\tR\x14baselineModelVersion\x1aN\n" +
-	"\x0eSummarySection\x12\x1d\n" +
-	"\asection\x18\x01 \x01(\tB\x03\xe0A\x03R\asection\x12\x1d\n" +
-	"\asummary\x18\x02 \x01(\tB\x03\xe0A\x03R\asummary\x1a?\n" +
+	"\x16baseline_model_version\x18\x05 \x01(\tR\x14baselineModelVersion\x1aP\n" +
+	"\x0eSummarySection\x12\x1e\n" +
+	"\asection\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\asection\x12\x1e\n" +
+	"\asummary\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\asummary\x1a?\n" +
 	"\x11TextSectionsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xba\x04\n" +
-	"\x1fGenerateStatelessSummaryRequest\x12\x8b\x01\n" +
-	"\x16stateless_conversation\x18\x01 \x01(\v2O.google.cloud.dialogflow.v2.GenerateStatelessSummaryRequest.MinimalConversationB\x03\xe0A\x02R\x15statelessConversation\x12g\n" +
-	"\x14conversation_profile\x18\x02 \x01(\v2/.google.cloud.dialogflow.v2.ConversationProfileB\x03\xe0A\x02R\x13conversationProfile\x12P\n" +
-	"\x0elatest_message\x18\x03 \x01(\tB)\xe0A\x01\xfaA#\n" +
-	"!dialogflow.googleapis.com/MessageR\rlatestMessage\x12-\n" +
-	"\x10max_context_size\x18\x04 \x01(\x05B\x03\xe0A\x01R\x0emaxContextSize\x1a\x9e\x01\n" +
-	"\x13MinimalConversation\x12D\n" +
-	"\bmessages\x18\x01 \x03(\v2#.google.cloud.dialogflow.v2.MessageB\x03\xe0A\x02R\bmessages\x12A\n" +
-	"\x06parent\x18\x02 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xc0\x04\n" +
+	"\x1fGenerateStatelessSummaryRequest\x12\x8c\x01\n" +
+	"\x16stateless_conversation\x18\x01 \x01(\v2O.google.cloud.dialogflow.v2.GenerateStatelessSummaryRequest.MinimalConversationB\x04\xe2A\x01\x02R\x15statelessConversation\x12h\n" +
+	"\x14conversation_profile\x18\x02 \x01(\v2/.google.cloud.dialogflow.v2.ConversationProfileB\x04\xe2A\x01\x02R\x13conversationProfile\x12Q\n" +
+	"\x0elatest_message\x18\x03 \x01(\tB*\xe2A\x01\x01\xfaA#\n" +
+	"!dialogflow.googleapis.com/MessageR\rlatestMessage\x12.\n" +
+	"\x10max_context_size\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\x0emaxContextSize\x1a\xa0\x01\n" +
+	"\x13MinimalConversation\x12E\n" +
+	"\bmessages\x18\x01 \x03(\v2#.google.cloud.dialogflow.v2.MessageB\x04\xe2A\x01\x02R\bmessages\x12B\n" +
+	"\x06parent\x18\x02 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\"\x88\x04\n" +
 	" GenerateStatelessSummaryResponse\x12^\n" +
 	"\asummary\x18\x01 \x01(\v2D.google.cloud.dialogflow.v2.GenerateStatelessSummaryResponse.SummaryR\asummary\x12M\n" +
@@ -3745,63 +3745,63 @@ const file_google_cloud_dialogflow_v2_conversation_proto_rawDesc = "" +
 	"\x16baseline_model_version\x18\x04 \x01(\tR\x14baselineModelVersion\x1a?\n" +
 	"\x11TextSectionsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xeb\x05\n" +
-	"\"GenerateStatelessSuggestionRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xf0\x05\n" +
+	"\"GenerateStatelessSuggestionRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12E\n" +
 	"\tgenerator\x18\x02 \x01(\v2%.google.cloud.dialogflow.v2.GeneratorH\x00R\tgenerator\x12'\n" +
-	"\x0egenerator_name\x18\x03 \x01(\tH\x00R\rgeneratorName\x12\x89\x01\n" +
-	"\x12context_references\x18\x04 \x03(\v2U.google.cloud.dialogflow.v2.GenerateStatelessSuggestionRequest.ContextReferencesEntryB\x03\xe0A\x01R\x11contextReferences\x12g\n" +
-	"\x14conversation_context\x18\x05 \x01(\v2/.google.cloud.dialogflow.v2.ConversationContextB\x03\xe0A\x01R\x13conversationContext\x12T\n" +
-	"\x0etrigger_events\x18\x06 \x03(\x0e2(.google.cloud.dialogflow.v2.TriggerEventB\x03\xe0A\x01R\rtriggerEvents\x120\n" +
-	"\x11security_settings\x18\b \x01(\tB\x03\xe0A\x01R\x10securitySettings\x1a\x7f\n" +
+	"\x0egenerator_name\x18\x03 \x01(\tH\x00R\rgeneratorName\x12\x8a\x01\n" +
+	"\x12context_references\x18\x04 \x03(\v2U.google.cloud.dialogflow.v2.GenerateStatelessSuggestionRequest.ContextReferencesEntryB\x04\xe2A\x01\x01R\x11contextReferences\x12h\n" +
+	"\x14conversation_context\x18\x05 \x01(\v2/.google.cloud.dialogflow.v2.ConversationContextB\x04\xe2A\x01\x01R\x13conversationContext\x12U\n" +
+	"\x0etrigger_events\x18\x06 \x03(\x0e2(.google.cloud.dialogflow.v2.TriggerEventB\x04\xe2A\x01\x01R\rtriggerEvents\x121\n" +
+	"\x11security_settings\x18\b \x01(\tB\x04\xe2A\x01\x01R\x10securitySettings\x1a\x7f\n" +
 	"\x16ContextReferencesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12O\n" +
 	"\x05value\x18\x02 \x01(\v29.google.cloud.dialogflow.v2.Conversation.ContextReferenceR\x05value:\x028\x01B\x14\n" +
-	"\x12generator_resource\"\x8e\x01\n" +
-	"#GenerateStatelessSuggestionResponse\x12g\n" +
-	"\x14generator_suggestion\x18\x01 \x01(\v2/.google.cloud.dialogflow.v2.GeneratorSuggestionB\x03\xe0A\x02R\x13generatorSuggestion\"\xf2\x14\n" +
-	"\x16SearchKnowledgeRequest\x12\x1b\n" +
-	"\x06parent\x18\x06 \x01(\tB\x03\xe0A\x02R\x06parent\x12@\n" +
-	"\x05query\x18\x01 \x01(\v2%.google.cloud.dialogflow.v2.TextInputB\x03\xe0A\x02R\x05query\x12h\n" +
-	"\x14conversation_profile\x18\x02 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-dialogflow.googleapis.com/ConversationProfileR\x13conversationProfile\x12\"\n" +
+	"\x12generator_resource\"\x8f\x01\n" +
+	"#GenerateStatelessSuggestionResponse\x12h\n" +
+	"\x14generator_suggestion\x18\x01 \x01(\v2/.google.cloud.dialogflow.v2.GeneratorSuggestionB\x04\xe2A\x01\x02R\x13generatorSuggestion\"\x8c\x15\n" +
+	"\x16SearchKnowledgeRequest\x12\x1c\n" +
+	"\x06parent\x18\x06 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12A\n" +
+	"\x05query\x18\x01 \x01(\v2%.google.cloud.dialogflow.v2.TextInputB\x04\xe2A\x01\x02R\x05query\x12i\n" +
+	"\x14conversation_profile\x18\x02 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-dialogflow.googleapis.com/ConversationProfileR\x13conversationProfile\x12#\n" +
 	"\n" +
-	"session_id\x18\x03 \x01(\tB\x03\xe0A\x02R\tsessionId\x12R\n" +
-	"\fconversation\x18\x04 \x01(\tB.\xe0A\x01\xfaA(\n" +
-	"&dialogflow.googleapis.com/ConversationR\fconversation\x12P\n" +
-	"\x0elatest_message\x18\x05 \x01(\tB)\xe0A\x01\xfaA#\n" +
-	"!dialogflow.googleapis.com/MessageR\rlatestMessage\x12f\n" +
-	"\fquery_source\x18\a \x01(\x0e2>.google.cloud.dialogflow.v2.SearchKnowledgeRequest.QuerySourceB\x03\xe0A\x01R\vquerySource\x12H\n" +
-	"\x11end_user_metadata\x18\t \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x0fendUserMetadata\x12i\n" +
-	"\rsearch_config\x18\v \x01(\v2?.google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfigB\x03\xe0A\x01R\fsearchConfig\x12&\n" +
-	"\fexact_search\x18\x0e \x01(\bB\x03\xe0A\x01R\vexactSearch\x1a\xac\x0e\n" +
-	"\fSearchConfig\x12p\n" +
-	"\vboost_specs\x18\x01 \x03(\v2J.google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.BoostSpecsB\x03\xe0A\x01R\n" +
-	"boostSpecs\x12s\n" +
-	"\ffilter_specs\x18\x02 \x03(\v2K.google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.FilterSpecsB\x03\xe0A\x01R\vfilterSpecs\x1a\xe2\v\n" +
+	"session_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\tsessionId\x12S\n" +
+	"\fconversation\x18\x04 \x01(\tB/\xe2A\x01\x01\xfaA(\n" +
+	"&dialogflow.googleapis.com/ConversationR\fconversation\x12Q\n" +
+	"\x0elatest_message\x18\x05 \x01(\tB*\xe2A\x01\x01\xfaA#\n" +
+	"!dialogflow.googleapis.com/MessageR\rlatestMessage\x12g\n" +
+	"\fquery_source\x18\a \x01(\x0e2>.google.cloud.dialogflow.v2.SearchKnowledgeRequest.QuerySourceB\x04\xe2A\x01\x01R\vquerySource\x12I\n" +
+	"\x11end_user_metadata\x18\t \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\x0fendUserMetadata\x12j\n" +
+	"\rsearch_config\x18\v \x01(\v2?.google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfigB\x04\xe2A\x01\x01R\fsearchConfig\x12'\n" +
+	"\fexact_search\x18\x0e \x01(\bB\x04\xe2A\x01\x01R\vexactSearch\x1a\xbc\x0e\n" +
+	"\fSearchConfig\x12q\n" +
+	"\vboost_specs\x18\x01 \x03(\v2J.google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.BoostSpecsB\x04\xe2A\x01\x01R\n" +
+	"boostSpecs\x12t\n" +
+	"\ffilter_specs\x18\x02 \x03(\v2K.google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.FilterSpecsB\x04\xe2A\x01\x01R\vfilterSpecs\x1a\xee\v\n" +
 	"\n" +
-	"BoostSpecs\x12Q\n" +
-	"\vdata_stores\x18\x01 \x03(\tB0\xe0A\x01\xfaA*\n" +
+	"BoostSpecs\x12R\n" +
+	"\vdata_stores\x18\x01 \x03(\tB1\xe2A\x01\x01\xfaA*\n" +
 	"(discoveryengine.googleapis.com/DataStoreR\n" +
-	"dataStores\x12m\n" +
-	"\x04spec\x18\x02 \x03(\v2T.google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.BoostSpecs.BoostSpecB\x03\xe0A\x01R\x04spec\x1a\x91\n" +
+	"dataStores\x12n\n" +
+	"\x04spec\x18\x02 \x03(\v2T.google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.BoostSpecs.BoostSpecB\x04\xe2A\x01\x01R\x04spec\x1a\x9b\n" +
 	"\n" +
-	"\tBoostSpec\x12\xa0\x01\n" +
-	"\x15condition_boost_specs\x18\x01 \x03(\v2g.google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.BoostSpecs.BoostSpec.ConditionBoostSpecB\x03\xe0A\x01R\x13conditionBoostSpecs\x1a\xe0\b\n" +
-	"\x12ConditionBoostSpec\x12!\n" +
-	"\tcondition\x18\x01 \x01(\tB\x03\xe0A\x01R\tcondition\x12\x19\n" +
-	"\x05boost\x18\x02 \x01(\x02B\x03\xe0A\x01R\x05boost\x12\xab\x01\n" +
-	"\x12boost_control_spec\x18\x04 \x01(\v2x.google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.BoostSpecs.BoostSpec.ConditionBoostSpec.BoostControlSpecB\x03\xe0A\x01R\x10boostControlSpec\x1a\xdd\x06\n" +
-	"\x10BoostControlSpec\x12\"\n" +
+	"\tBoostSpec\x12\xa1\x01\n" +
+	"\x15condition_boost_specs\x18\x01 \x03(\v2g.google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.BoostSpecs.BoostSpec.ConditionBoostSpecB\x04\xe2A\x01\x01R\x13conditionBoostSpecs\x1a\xe9\b\n" +
+	"\x12ConditionBoostSpec\x12\"\n" +
+	"\tcondition\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\tcondition\x12\x1a\n" +
+	"\x05boost\x18\x02 \x01(\x02B\x04\xe2A\x01\x01R\x05boost\x12\xac\x01\n" +
+	"\x12boost_control_spec\x18\x04 \x01(\v2x.google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.BoostSpecs.BoostSpec.ConditionBoostSpec.BoostControlSpecB\x04\xe2A\x01\x01R\x10boostControlSpec\x1a\xe3\x06\n" +
+	"\x10BoostControlSpec\x12#\n" +
 	"\n" +
-	"field_name\x18\x01 \x01(\tB\x03\xe0A\x01R\tfieldName\x12\xb3\x01\n" +
-	"\x0eattribute_type\x18\x02 \x01(\x0e2\x86\x01.google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.BoostSpecs.BoostSpec.ConditionBoostSpec.BoostControlSpec.AttributeTypeB\x03\xe0A\x01R\rattributeType\x12\xbf\x01\n" +
-	"\x12interpolation_type\x18\x03 \x01(\x0e2\x8a\x01.google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.BoostSpecs.BoostSpec.ConditionBoostSpec.BoostControlSpec.InterpolationTypeB\x03\xe0A\x01R\x11interpolationType\x12\xb2\x01\n" +
-	"\x0econtrol_points\x18\x04 \x03(\v2\x85\x01.google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.BoostSpecs.BoostSpec.ConditionBoostSpec.BoostControlSpec.ControlPointB\x03\xe0A\x01R\rcontrolPoints\x1ad\n" +
-	"\fControlPoint\x12,\n" +
-	"\x0fattribute_value\x18\x01 \x01(\tB\x03\xe0A\x01R\x0eattributeValue\x12&\n" +
-	"\fboost_amount\x18\x02 \x01(\x02B\x03\xe0A\x01R\vboostAmount\"M\n" +
+	"field_name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\tfieldName\x12\xb4\x01\n" +
+	"\x0eattribute_type\x18\x02 \x01(\x0e2\x86\x01.google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.BoostSpecs.BoostSpec.ConditionBoostSpec.BoostControlSpec.AttributeTypeB\x04\xe2A\x01\x01R\rattributeType\x12\xc0\x01\n" +
+	"\x12interpolation_type\x18\x03 \x01(\x0e2\x8a\x01.google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.BoostSpecs.BoostSpec.ConditionBoostSpec.BoostControlSpec.InterpolationTypeB\x04\xe2A\x01\x01R\x11interpolationType\x12\xb3\x01\n" +
+	"\x0econtrol_points\x18\x04 \x03(\v2\x85\x01.google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.BoostSpecs.BoostSpec.ConditionBoostSpec.BoostControlSpec.ControlPointB\x04\xe2A\x01\x01R\rcontrolPoints\x1af\n" +
+	"\fControlPoint\x12-\n" +
+	"\x0fattribute_value\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0eattributeValue\x12'\n" +
+	"\fboost_amount\x18\x02 \x01(\x02B\x04\xe2A\x01\x01R\vboostAmount\"M\n" +
 	"\rAttributeType\x12\x1e\n" +
 	"\x1aATTRIBUTE_TYPE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tNUMERICAL\x10\x01\x12\r\n" +
@@ -3809,21 +3809,21 @@ const file_google_cloud_dialogflow_v2_conversation_proto_rawDesc = "" +
 	"\x11InterpolationType\x12\"\n" +
 	"\x1eINTERPOLATION_TYPE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
-	"\x06LINEAR\x10\x01\x1aP\n" +
-	"\vFilterSpecs\x12$\n" +
-	"\vdata_stores\x18\x01 \x03(\tB\x03\xe0A\x01R\n" +
-	"dataStores\x12\x1b\n" +
-	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x01R\x06filter\"Q\n" +
+	"\x06LINEAR\x10\x01\x1aR\n" +
+	"\vFilterSpecs\x12%\n" +
+	"\vdata_stores\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\n" +
+	"dataStores\x12\x1c\n" +
+	"\x06filter\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"Q\n" +
 	"\vQuerySource\x12\x1c\n" +
 	"\x18QUERY_SOURCE_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vAGENT_QUERY\x10\x01\x12\x13\n" +
-	"\x0fSUGGESTED_QUERY\x10\x02\"\xa0\x06\n" +
+	"\x0fSUGGESTED_QUERY\x10\x02\"\xa1\x06\n" +
 	"\x18SearchKnowledgeDebugInfo\x12o\n" +
 	"\x19datastore_response_reason\x18\x01 \x01(\x0e23.google.cloud.dialogflow.v2.DatastoreResponseReasonR\x17datastoreResponseReason\x12\x88\x01\n" +
 	"\x19search_knowledge_behavior\x18\x02 \x01(\v2L.google.cloud.dialogflow.v2.SearchKnowledgeDebugInfo.SearchKnowledgeBehaviorR\x17searchKnowledgeBehavior\x12\x8f\x01\n" +
 	"%ingested_context_reference_debug_info\x18\x03 \x01(\v2=.google.cloud.dialogflow.v2.IngestedContextReferenceDebugInfoR!ingestedContextReferenceDebugInfo\x12S\n" +
-	"\x0fservice_latency\x18\x04 \x01(\v2*.google.cloud.dialogflow.v2.ServiceLatencyR\x0eserviceLatency\x12B\n" +
-	"\x0eces_debug_info\x18\x05 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\fcesDebugInfo\x1a\xdc\x01\n" +
+	"\x0fservice_latency\x18\x04 \x01(\v2*.google.cloud.dialogflow.v2.ServiceLatencyR\x0eserviceLatency\x12C\n" +
+	"\x0eces_debug_info\x18\x05 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\fcesDebugInfo\x1a\xdc\x01\n" +
 	"\x17SearchKnowledgeBehavior\x12A\n" +
 	"\x1danswer_generation_rewriter_on\x18\x01 \x01(\bR\x1aanswerGenerationRewriterOn\x12;\n" +
 	"\x1aend_user_metadata_included\x18\x02 \x01(\bR\x17endUserMetadataIncluded\x12A\n" +
@@ -3853,13 +3853,13 @@ const file_google_cloud_dialogflow_v2_conversation_proto_rawDesc = "" +
 	"\n" +
 	"\x06INTENT\x10\x03\x12\f\n" +
 	"\bPLAYBOOK\x10\x04\x12\t\n" +
-	"\x05EVENT\x10\x05\"\x98\x02\n" +
-	"\x1aGenerateSuggestionsRequest\x12R\n" +
-	"\fconversation\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&dialogflow.googleapis.com/ConversationR\fconversation\x12P\n" +
-	"\x0elatest_message\x18\x02 \x01(\tB)\xe0A\x01\xfaA#\n" +
-	"!dialogflow.googleapis.com/MessageR\rlatestMessage\x12T\n" +
-	"\x0etrigger_events\x18\x03 \x03(\x0e2(.google.cloud.dialogflow.v2.TriggerEventB\x03\xe0A\x01R\rtriggerEvents2\xa6\x1a\n" +
+	"\x05EVENT\x10\x05\"\x9b\x02\n" +
+	"\x1aGenerateSuggestionsRequest\x12S\n" +
+	"\fconversation\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&dialogflow.googleapis.com/ConversationR\fconversation\x12Q\n" +
+	"\x0elatest_message\x18\x02 \x01(\tB*\xe2A\x01\x01\xfaA#\n" +
+	"!dialogflow.googleapis.com/MessageR\rlatestMessage\x12U\n" +
+	"\x0etrigger_events\x18\x03 \x03(\x0e2(.google.cloud.dialogflow.v2.TriggerEventB\x04\xe2A\x01\x01R\rtriggerEvents2\xa6\x1a\n" +
 	"\rConversations\x12\x8c\x02\n" +
 	"\x12CreateConversation\x125.google.cloud.dialogflow.v2.CreateConversationRequest\x1a(.google.cloud.dialogflow.v2.Conversation\"\x94\x01\xdaA\x13parent,conversation\x82\xd3\xe4\x93\x02x:\fconversationZA:\fconversation\"1/v2/{parent=projects/*/locations/*}/conversations\"%/v2/{parent=projects/*}/conversations\x12\xed\x01\n" +
 	"\x11ListConversations\x124.google.cloud.dialogflow.v2.ListConversationsRequest\x1a5.google.cloud.dialogflow.v2.ListConversationsResponse\"k\xdaA\x06parent\x82\xd3\xe4\x93\x02\\Z3\x121/v2/{parent=projects/*/locations/*}/conversations\x12%/v2/{parent=projects/*}/conversations\x12\xda\x01\n" +

@@ -1202,11 +1202,11 @@ const file_google_chat_v1_annotation_proto_rawDesc = "" +
 	"\x06thread\x18\x02 \x01(\tB\x1f\xfaA\x1c\n" +
 	"\x1achat.googleapis.com/ThreadR\x06thread\x12:\n" +
 	"\amessage\x18\x03 \x01(\tB \xfaA\x1d\n" +
-	"\x1bchat.googleapis.com/MessageR\amessage\"\xd9\x02\n" +
+	"\x1bchat.googleapis.com/MessageR\amessage\"\xd8\x02\n" +
 	"\x11MeetSpaceLinkData\x12!\n" +
 	"\fmeeting_code\x18\x01 \x01(\tR\vmeetingCode\x12:\n" +
-	"\x04type\x18\x02 \x01(\x0e2&.google.chat.v1.MeetSpaceLinkData.TypeR\x04type\x12[\n" +
-	"\rhuddle_status\x18\x03 \x01(\x0e2..google.chat.v1.MeetSpaceLinkData.HuddleStatusB\x06\xe0A\x01\xe0A\x03R\fhuddleStatus\"5\n" +
+	"\x04type\x18\x02 \x01(\x0e2&.google.chat.v1.MeetSpaceLinkData.TypeR\x04type\x12Z\n" +
+	"\rhuddle_status\x18\x03 \x01(\x0e2..google.chat.v1.MeetSpaceLinkData.HuddleStatusB\x05\xe2A\x02\x01\x03R\fhuddleStatus\"5\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aMEETING\x10\x01\x12\n" +

@@ -221,16 +221,16 @@ var File_google_cloud_securitycenter_v1_security_health_analytics_custom_module_
 
 const file_google_cloud_securitycenter_v1_security_health_analytics_custom_module_proto_rawDesc = "" +
 	"\n" +
-	"Lgoogle/cloud/securitycenter/v1/security_health_analytics_custom_module.proto\x12\x1egoogle.cloud.securitycenter.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1aLgoogle/cloud/securitycenter/v1/security_health_analytics_custom_config.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb7\a\n" +
-	"#SecurityHealthAnalyticsCustomModule\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12!\n" +
+	"Lgoogle/cloud/securitycenter/v1/security_health_analytics_custom_module.proto\x12\x1egoogle.cloud.securitycenter.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1aLgoogle/cloud/securitycenter/v1/security_health_analytics_custom_config.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbb\a\n" +
+	"#SecurityHealthAnalyticsCustomModule\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12~\n" +
-	"\x10enablement_state\x18\x04 \x01(\x0e2S.google.cloud.securitycenter.v1.SecurityHealthAnalyticsCustomModule.EnablementStateR\x0fenablementState\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12$\n" +
-	"\vlast_editor\x18\x06 \x01(\tB\x03\xe0A\x03R\n" +
-	"lastEditor\x12r\n" +
-	"\x0fancestor_module\x18\a \x01(\tBI\xe0A\x03\xfaAC\n" +
+	"\x10enablement_state\x18\x04 \x01(\x0e2S.google.cloud.securitycenter.v1.SecurityHealthAnalyticsCustomModule.EnablementStateR\x0fenablementState\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12%\n" +
+	"\vlast_editor\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"lastEditor\x12s\n" +
+	"\x0fancestor_module\x18\a \x01(\tBJ\xe2A\x01\x03\xfaAC\n" +
 	"Asecuritycenter.googleapis.com/SecurityHealthAnalyticsCustomModuleR\x0eancestorModule\x12Q\n" +
 	"\rcustom_config\x18\b \x01(\v2,.google.cloud.securitycenter.v1.CustomConfigR\fcustomConfig\"]\n" +
 	"\x0fEnablementState\x12 \n" +

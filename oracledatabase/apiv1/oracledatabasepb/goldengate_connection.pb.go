@@ -8036,28 +8036,28 @@ var File_google_cloud_oracledatabase_v1_goldengate_connection_proto protoreflect
 
 const file_google_cloud_oracledatabase_v1_goldengate_connection_proto_rawDesc = "" +
 	"\n" +
-	":google/cloud/oracledatabase/v1/goldengate_connection.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc9\x06\n" +
-	"\x14GoldengateConnection\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12c\n" +
+	":google/cloud/oracledatabase/v1/goldengate_connection.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd2\x06\n" +
+	"\x14GoldengateConnection\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12d\n" +
 	"\n" +
-	"properties\x18\x02 \x01(\v2>.google.cloud.oracledatabase.v1.GoldengateConnectionPropertiesB\x03\xe0A\x02R\n" +
-	"properties\x12+\n" +
-	"\x0fgcp_oracle_zone\x18\x03 \x01(\tB\x03\xe0A\x01R\rgcpOracleZone\x12]\n" +
-	"\x06labels\x18\x04 \x03(\v2@.google.cloud.oracledatabase.v1.GoldengateConnection.LabelsEntryB\x03\xe0A\x01R\x06labels\x12Q\n" +
-	"\vodb_network\x18\x05 \x01(\tB0\xe0A\x01\xfaA*\n" +
+	"properties\x18\x02 \x01(\v2>.google.cloud.oracledatabase.v1.GoldengateConnectionPropertiesB\x04\xe2A\x01\x02R\n" +
+	"properties\x12,\n" +
+	"\x0fgcp_oracle_zone\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\rgcpOracleZone\x12^\n" +
+	"\x06labels\x18\x04 \x03(\v2@.google.cloud.oracledatabase.v1.GoldengateConnection.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12R\n" +
+	"\vodb_network\x18\x05 \x01(\tB1\xe2A\x01\x01\xfaA*\n" +
 	"(oracledatabase.googleapis.com/OdbNetworkR\n" +
-	"odbNetwork\x12N\n" +
+	"odbNetwork\x12O\n" +
 	"\n" +
-	"odb_subnet\x18\x06 \x01(\tB/\xe0A\x01\xfaA)\n" +
-	"'oracledatabase.googleapis.com/OdbSubnetR\todbSubnet\x12*\n" +
-	"\x0eentitlement_id\x18\a \x01(\tB\x03\xe0A\x03R\rentitlementId\x12@\n" +
-	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12\x1c\n" +
-	"\aoci_url\x18\t \x01(\tB\x03\xe0A\x03R\x06ociUrl\x1a9\n" +
+	"odb_subnet\x18\x06 \x01(\tB0\xe2A\x01\x01\xfaA)\n" +
+	"'oracledatabase.googleapis.com/OdbSubnetR\todbSubnet\x12+\n" +
+	"\x0eentitlement_id\x18\a \x01(\tB\x04\xe2A\x01\x03R\rentitlementId\x12A\n" +
+	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12\x1d\n" +
+	"\aoci_url\x18\t \x01(\tB\x04\xe2A\x01\x03R\x06ociUrl\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\xbc\x01\xeaA\xb8\x01\n" +
-	"2oracledatabase.googleapis.com/GoldengateConnection\x12Uprojects/{project}/locations/{location}/goldengateConnections/{goldengate_connection}*\x15goldengateConnections2\x14goldengateConnection\"\xd70\n" +
+	"2oracledatabase.googleapis.com/GoldengateConnection\x12Uprojects/{project}/locations/{location}/goldengateConnections/{goldengate_connection}*\x15goldengateConnections2\x14goldengateConnection\"\xe00\n" +
 	"\x1eGoldengateConnectionProperties\x12\x88\x01\n" +
 	"\x1coracle_connection_properties\x18\t \x01(\v2D.google.cloud.oracledatabase.v1.GoldengateOracleConnectionPropertiesH\x00R\x1aoracleConnectionProperties\x12\x94\x01\n" +
 	" goldengate_connection_properties\x18\n" +
@@ -8088,17 +8088,17 @@ const file_google_cloud_oracledatabase_v1_goldengate_connection_proto_rawDesc = 
 	"#google_pubsub_connection_properties\x18# \x01(\v2J.google.cloud.oracledatabase.v1.GoldengateGooglePubsubConnectionPropertiesH\x00R googlePubsubConnectionProperties\x12\xa4\x01\n" +
 	"&microsoft_fabric_connection_properties\x18$ \x01(\v2M.google.cloud.oracledatabase.v1.GoldengateMicrosoftFabricConnectionPropertiesH\x00R#microsoftFabricConnectionProperties\x12\xb5\x01\n" +
 	"-oracle_ai_data_platform_connection_properties\x18% \x01(\v2R.google.cloud.oracledatabase.v1.GoldengateOracleAIDataPlatformConnectionPropertiesH\x00R(oracleAiDataPlatformConnectionProperties\x12\x8b\x01\n" +
-	"\x1diceberg_connection_properties\x18& \x01(\v2E.google.cloud.oracledatabase.v1.GoldengateIcebergConnectionPropertiesH\x00R\x1bicebergConnectionProperties\x12\x85\x01\n" +
-	"\x0fconnection_type\x18\x01 \x01(\x0e2W.google.cloud.oracledatabase.v1.GoldengateConnectionProperties.GoldengateConnectionTypeB\x03\xe0A\x02R\x0econnectionType\x12\x17\n" +
-	"\x04ocid\x18\x02 \x01(\tB\x03\xe0A\x03R\x04ocid\x12&\n" +
-	"\fdisplay_name\x18\x03 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x04 \x01(\tB\x03\xe0A\x01R\vdescription\x12\x8f\x01\n" +
-	"\x0flifecycle_state\x18\x05 \x01(\x0e2a.google.cloud.oracledatabase.v1.GoldengateConnectionProperties.GoldengateConnectionLifecycleStateB\x03\xe0A\x03R\x0elifecycleState\x120\n" +
-	"\x11lifecycle_details\x18\x06 \x01(\tB\x03\xe0A\x03R\x10lifecycleDetails\x12@\n" +
-	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x8c\x01\n" +
-	"\x0erouting_method\x18\b \x01(\x0e2`.google.cloud.oracledatabase.v1.GoldengateConnectionProperties.GoldengateConnectionRoutingMethodB\x03\xe0A\x01R\rroutingMethod\x125\n" +
-	"\x14ingress_ip_addresses\x18' \x03(\tB\x03\xe0A\x03R\x12ingressIpAddresses\"\xde\x04\n" +
+	"\x1diceberg_connection_properties\x18& \x01(\v2E.google.cloud.oracledatabase.v1.GoldengateIcebergConnectionPropertiesH\x00R\x1bicebergConnectionProperties\x12\x86\x01\n" +
+	"\x0fconnection_type\x18\x01 \x01(\x0e2W.google.cloud.oracledatabase.v1.GoldengateConnectionProperties.GoldengateConnectionTypeB\x04\xe2A\x01\x02R\x0econnectionType\x12\x18\n" +
+	"\x04ocid\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x04ocid\x12'\n" +
+	"\fdisplay_name\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\x90\x01\n" +
+	"\x0flifecycle_state\x18\x05 \x01(\x0e2a.google.cloud.oracledatabase.v1.GoldengateConnectionProperties.GoldengateConnectionLifecycleStateB\x04\xe2A\x01\x03R\x0elifecycleState\x121\n" +
+	"\x11lifecycle_details\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x10lifecycleDetails\x12A\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x8d\x01\n" +
+	"\x0erouting_method\x18\b \x01(\x0e2`.google.cloud.oracledatabase.v1.GoldengateConnectionProperties.GoldengateConnectionRoutingMethodB\x04\xe2A\x01\x01R\rroutingMethod\x126\n" +
+	"\x14ingress_ip_addresses\x18' \x03(\tB\x04\xe2A\x01\x03R\x12ingressIpAddresses\"\xde\x04\n" +
 	"\x18GoldengateConnectionType\x12*\n" +
 	"&GOLDENGATE_CONNECTION_TYPE_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +
@@ -8149,19 +8149,19 @@ const file_google_cloud_oracledatabase_v1_goldengate_connection_proto_rawDesc = 
 	"0GOLDENGATE_CONNECTION_ROUTING_METHOD_UNSPECIFIED\x10\x00\x12\x1e\n" +
 	"\x1aSHARED_DEPLOYMENT_ENDPOINT\x10\x01\x12\x16\n" +
 	"\x12DEDICATED_ENDPOINT\x10\x02B\x14\n" +
-	"\x12connection_details\"\xef\x06\n" +
-	"$GoldengateOracleConnectionProperties\x12$\n" +
+	"\x12connection_details\"\xf4\x06\n" +
+	"$GoldengateOracleConnectionProperties\x12#\n" +
 	"\bpassword\x18\n" +
-	" \x01(\tB\x06\xe0A\x01\xe0A\x04H\x00R\bpassword\x12o\n" +
-	"\x17password_secret_version\x18\v \x01(\tB5\xe0A\x01\xe0A\x04\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionH\x00R\x15passwordSecretVersion\x12,\n" +
-	"\x0ftechnology_type\x18\x01 \x01(\tB\x03\xe0A\x01R\x0etechnologyType\x12\x1f\n" +
-	"\busername\x18\x02 \x01(\tB\x03\xe0A\x01R\busername\x12\x93\x01\n" +
-	"\x13authentication_mode\x18\x03 \x01(\x0e2].google.cloud.oracledatabase.v1.GoldengateOracleConnectionProperties.OracleAuthenticationModeB\x03\xe0A\x01R\x12authenticationMode\x120\n" +
-	"\x11connection_string\x18\x04 \x01(\tB\x03\xe0A\x01R\x10connectionString\x12x\n" +
-	"\fsession_mode\x18\x05 \x01(\x0e2P.google.cloud.oracledatabase.v1.GoldengateOracleConnectionProperties.SessionModeB\x03\xe0A\x01R\vsessionMode\x128\n" +
-	"\x16gcp_oracle_database_id\x18\x06 \x01(\tB\x03\xe0A\x01R\x13gcpOracleDatabaseId\x12$\n" +
-	"\vwallet_file\x18\t \x01(\tB\x03\xe0A\x01R\n" +
+	" \x01(\tB\x05\xe2A\x02\x01\x04H\x00R\bpassword\x12n\n" +
+	"\x17password_secret_version\x18\v \x01(\tB4\xe2A\x02\x01\x04\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionH\x00R\x15passwordSecretVersion\x12-\n" +
+	"\x0ftechnology_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0etechnologyType\x12 \n" +
+	"\busername\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\busername\x12\x94\x01\n" +
+	"\x13authentication_mode\x18\x03 \x01(\x0e2].google.cloud.oracledatabase.v1.GoldengateOracleConnectionProperties.OracleAuthenticationModeB\x04\xe2A\x01\x01R\x12authenticationMode\x121\n" +
+	"\x11connection_string\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x10connectionString\x12y\n" +
+	"\fsession_mode\x18\x05 \x01(\x0e2P.google.cloud.oracledatabase.v1.GoldengateOracleConnectionProperties.SessionModeB\x04\xe2A\x01\x01R\vsessionMode\x129\n" +
+	"\x16gcp_oracle_database_id\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x13gcpOracleDatabaseId\x12%\n" +
+	"\vwallet_file\x18\t \x01(\tB\x04\xe2A\x01\x01R\n" +
 	"walletFile\"Y\n" +
 	"\x18OracleAuthenticationMode\x12*\n" +
 	"&ORACLE_AUTHENTICATION_MODE_UNSPECIFIED\x10\x00\x12\a\n" +
@@ -8172,47 +8172,47 @@ const file_google_cloud_oracledatabase_v1_goldengate_connection_proto_rawDesc = 
 	"\n" +
 	"\x06DIRECT\x10\x01\x12\f\n" +
 	"\bREDIRECT\x10\x02B\x1d\n" +
-	"\x1bconnection_password_options\"\xd7\x03\n" +
-	"(GoldengateGoldengateConnectionProperties\x12$\n" +
-	"\bpassword\x18\a \x01(\tB\x06\xe0A\x01\xe0A\x04H\x00R\bpassword\x12o\n" +
-	"\x17password_secret_version\x18\b \x01(\tB5\xe0A\x01\xe0A\x04\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionH\x00R\x15passwordSecretVersion\x12,\n" +
-	"\x0ftechnology_type\x18\x01 \x01(\tB\x03\xe0A\x01R\x0etechnologyType\x12t\n" +
-	"\x18goldengate_deployment_id\x18\x02 \x01(\tB:\xe0A\x01\xfaA4\n" +
-	"2oracledatabase.googleapis.com/GoldengateDeploymentR\x16goldengateDeploymentId\x12\x17\n" +
-	"\x04host\x18\x03 \x01(\tB\x03\xe0A\x01R\x04host\x12\x17\n" +
-	"\x04port\x18\x04 \x01(\x05B\x03\xe0A\x01R\x04port\x12\x1f\n" +
-	"\busername\x18\x05 \x01(\tB\x03\xe0A\x01R\busernameB\x1d\n" +
-	"\x1bconnection_password_options\"n\n" +
-	"%GoldengateGenericConnectionProperties\x12,\n" +
-	"\x0ftechnology_type\x18\x01 \x01(\tB\x03\xe0A\x01R\x0etechnologyType\x12\x17\n" +
-	"\x04host\x18\x02 \x01(\tB\x03\xe0A\x01R\x04host\"\x9e\x01\n" +
-	"0GoldengateGoogleCloudStorageConnectionProperties\x12,\n" +
-	"\x0ftechnology_type\x18\x01 \x01(\tB\x03\xe0A\x01R\x0etechnologyType\x12<\n" +
-	"\x18service_account_key_file\x18\x03 \x01(\tB\x03\xe0A\x01R\x15serviceAccountKeyFile\"\x9a\x01\n" +
-	",GoldengateGoogleBigQueryConnectionProperties\x12,\n" +
-	"\x0ftechnology_type\x18\x01 \x01(\tB\x03\xe0A\x01R\x0etechnologyType\x12<\n" +
-	"\x18service_account_key_file\x18\x03 \x01(\tB\x03\xe0A\x01R\x15serviceAccountKeyFile\"\xf8\b\n" +
-	"#GoldengateMysqlConnectionProperties\x12$\n" +
-	"\bpassword\x18\x0f \x01(\tB\x06\xe0A\x01\xe0A\x04H\x00R\bpassword\x12o\n" +
-	"\x17password_secret_version\x18\x10 \x01(\tB5\xe0A\x01\xe0A\x04\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionH\x00R\x15passwordSecretVersion\x12,\n" +
-	"\x0ftechnology_type\x18\x01 \x01(\tB\x03\xe0A\x01R\x0etechnologyType\x12\x1f\n" +
-	"\busername\x18\x02 \x01(\tB\x03\xe0A\x01R\busername\x12\x17\n" +
-	"\x04host\x18\x04 \x01(\tB\x03\xe0A\x01R\x04host\x12\x17\n" +
-	"\x04port\x18\x05 \x01(\x05B\x03\xe0A\x01R\x04port\x12\x1f\n" +
-	"\bdatabase\x18\x06 \x01(\tB\x03\xe0A\x01R\bdatabase\x12\x8b\x01\n" +
-	"\x11security_protocol\x18\a \x01(\x0e2Y.google.cloud.oracledatabase.v1.GoldengateMysqlConnectionProperties.MysqlSecurityProtocolB\x03\xe0A\x01R\x10securityProtocol\x12k\n" +
-	"\bssl_mode\x18\b \x01(\x0e2K.google.cloud.oracledatabase.v1.GoldengateMysqlConnectionProperties.SSLModeB\x03\xe0A\x01R\asslMode\x12#\n" +
-	"\vssl_ca_file\x18\t \x01(\tB\x03\xe0A\x01R\tsslCaFile\x12%\n" +
+	"\x1bconnection_password_options\"\xda\x03\n" +
+	"(GoldengateGoldengateConnectionProperties\x12#\n" +
+	"\bpassword\x18\a \x01(\tB\x05\xe2A\x02\x01\x04H\x00R\bpassword\x12n\n" +
+	"\x17password_secret_version\x18\b \x01(\tB4\xe2A\x02\x01\x04\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionH\x00R\x15passwordSecretVersion\x12-\n" +
+	"\x0ftechnology_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0etechnologyType\x12u\n" +
+	"\x18goldengate_deployment_id\x18\x02 \x01(\tB;\xe2A\x01\x01\xfaA4\n" +
+	"2oracledatabase.googleapis.com/GoldengateDeploymentR\x16goldengateDeploymentId\x12\x18\n" +
+	"\x04host\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04host\x12\x18\n" +
+	"\x04port\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\x04port\x12 \n" +
+	"\busername\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\busernameB\x1d\n" +
+	"\x1bconnection_password_options\"p\n" +
+	"%GoldengateGenericConnectionProperties\x12-\n" +
+	"\x0ftechnology_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0etechnologyType\x12\x18\n" +
+	"\x04host\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04host\"\xa0\x01\n" +
+	"0GoldengateGoogleCloudStorageConnectionProperties\x12-\n" +
+	"\x0ftechnology_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0etechnologyType\x12=\n" +
+	"\x18service_account_key_file\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x15serviceAccountKeyFile\"\x9c\x01\n" +
+	",GoldengateGoogleBigQueryConnectionProperties\x12-\n" +
+	"\x0ftechnology_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0etechnologyType\x12=\n" +
+	"\x18service_account_key_file\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x15serviceAccountKeyFile\"\x83\t\n" +
+	"#GoldengateMysqlConnectionProperties\x12#\n" +
+	"\bpassword\x18\x0f \x01(\tB\x05\xe2A\x02\x01\x04H\x00R\bpassword\x12n\n" +
+	"\x17password_secret_version\x18\x10 \x01(\tB4\xe2A\x02\x01\x04\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionH\x00R\x15passwordSecretVersion\x12-\n" +
+	"\x0ftechnology_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0etechnologyType\x12 \n" +
+	"\busername\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\busername\x12\x18\n" +
+	"\x04host\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x04host\x12\x18\n" +
+	"\x04port\x18\x05 \x01(\x05B\x04\xe2A\x01\x01R\x04port\x12 \n" +
+	"\bdatabase\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\bdatabase\x12\x8c\x01\n" +
+	"\x11security_protocol\x18\a \x01(\x0e2Y.google.cloud.oracledatabase.v1.GoldengateMysqlConnectionProperties.MysqlSecurityProtocolB\x04\xe2A\x01\x01R\x10securityProtocol\x12l\n" +
+	"\bssl_mode\x18\b \x01(\x0e2K.google.cloud.oracledatabase.v1.GoldengateMysqlConnectionProperties.SSLModeB\x04\xe2A\x01\x01R\asslMode\x12$\n" +
+	"\vssl_ca_file\x18\t \x01(\tB\x04\xe2A\x01\x01R\tsslCaFile\x12&\n" +
 	"\fssl_crl_file\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\n" +
-	"sslCrlFile\x12'\n" +
-	"\rssl_cert_file\x18\v \x01(\tB\x03\xe0A\x01R\vsslCertFile\x12%\n" +
-	"\fssl_key_file\x18\f \x01(\tB\x03\xe0A\x01R\n" +
-	"sslKeyFile\x12g\n" +
-	"\x15additional_attributes\x18\r \x03(\v2-.google.cloud.oracledatabase.v1.NameValuePairB\x03\xe0A\x01R\x14additionalAttributes\x12%\n" +
-	"\fdb_system_id\x18\x0e \x01(\tB\x03\xe0A\x01R\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"sslCrlFile\x12(\n" +
+	"\rssl_cert_file\x18\v \x01(\tB\x04\xe2A\x01\x01R\vsslCertFile\x12&\n" +
+	"\fssl_key_file\x18\f \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"sslKeyFile\x12h\n" +
+	"\x15additional_attributes\x18\r \x03(\v2-.google.cloud.oracledatabase.v1.NameValuePairB\x04\xe2A\x01\x01R\x14additionalAttributes\x12&\n" +
+	"\fdb_system_id\x18\x0e \x01(\tB\x04\xe2A\x01\x01R\n" +
 	"dbSystemId\"^\n" +
 	"\x15MysqlSecurityProtocol\x12'\n" +
 	"#MYSQL_SECURITY_PROTOCOL_UNSPECIFIED\x10\x00\x12\t\n" +
@@ -8226,33 +8226,33 @@ const file_google_cloud_oracledatabase_v1_goldengate_connection_proto_rawDesc = 
 	"\bREQUIRED\x10\x03\x12\r\n" +
 	"\tVERIFY_CA\x10\x04\x12\x13\n" +
 	"\x0fVERIFY_IDENTITY\x10\x05B\x1d\n" +
-	"\x1bconnection_password_options\"\x8b\r\n" +
-	"#GoldengateKafkaConnectionProperties\x12$\n" +
-	"\bpassword\x18\x10 \x01(\tB\x06\xe0A\x01\xe0A\x04H\x00R\bpassword\x12o\n" +
-	"\x17password_secret_version\x18\x14 \x01(\tB5\xe0A\x01\xe0A\x04\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionH\x00R\x15passwordSecretVersion\x12:\n" +
-	"\x14trust_store_password\x18\x11 \x01(\tB\x06\xe0A\x01\xe0A\x04H\x01R\x12trustStorePassword\x12\x85\x01\n" +
-	"#trust_store_password_secret_version\x18\x15 \x01(\tB5\xe0A\x01\xe0A\x04\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionH\x01R\x1ftrustStorePasswordSecretVersion\x126\n" +
-	"\x12key_store_password\x18\x12 \x01(\tB\x06\xe0A\x01\xe0A\x04H\x02R\x10keyStorePassword\x12\x81\x01\n" +
-	"!key_store_password_secret_version\x18\x16 \x01(\tB5\xe0A\x01\xe0A\x04\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionH\x02R\x1dkeyStorePasswordSecretVersion\x122\n" +
-	"\x10ssl_key_password\x18\x13 \x01(\tB\x06\xe0A\x01\xe0A\x04H\x03R\x0esslKeyPassword\x12}\n" +
-	"\x1fssl_key_password_secret_version\x18\x17 \x01(\tB5\xe0A\x01\xe0A\x04\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionH\x03R\x1bsslKeyPasswordSecretVersion\x12,\n" +
-	"\x0ftechnology_type\x18\x01 \x01(\tB\x03\xe0A\x01R\x0etechnologyType\x12)\n" +
-	"\x0estream_pool_id\x18\x02 \x01(\tB\x03\xe0A\x01R\fstreamPoolId\x12\"\n" +
+	"\x1bconnection_password_options\"\x8e\r\n" +
+	"#GoldengateKafkaConnectionProperties\x12#\n" +
+	"\bpassword\x18\x10 \x01(\tB\x05\xe2A\x02\x01\x04H\x00R\bpassword\x12n\n" +
+	"\x17password_secret_version\x18\x14 \x01(\tB4\xe2A\x02\x01\x04\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionH\x00R\x15passwordSecretVersion\x129\n" +
+	"\x14trust_store_password\x18\x11 \x01(\tB\x05\xe2A\x02\x01\x04H\x01R\x12trustStorePassword\x12\x84\x01\n" +
+	"#trust_store_password_secret_version\x18\x15 \x01(\tB4\xe2A\x02\x01\x04\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionH\x01R\x1ftrustStorePasswordSecretVersion\x125\n" +
+	"\x12key_store_password\x18\x12 \x01(\tB\x05\xe2A\x02\x01\x04H\x02R\x10keyStorePassword\x12\x80\x01\n" +
+	"!key_store_password_secret_version\x18\x16 \x01(\tB4\xe2A\x02\x01\x04\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionH\x02R\x1dkeyStorePasswordSecretVersion\x121\n" +
+	"\x10ssl_key_password\x18\x13 \x01(\tB\x05\xe2A\x02\x01\x04H\x03R\x0esslKeyPassword\x12|\n" +
+	"\x1fssl_key_password_secret_version\x18\x17 \x01(\tB4\xe2A\x02\x01\x04\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionH\x03R\x1bsslKeyPasswordSecretVersion\x12-\n" +
+	"\x0ftechnology_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0etechnologyType\x12*\n" +
+	"\x0estream_pool_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\fstreamPoolId\x12#\n" +
 	"\n" +
-	"cluster_id\x18\x03 \x01(\tB\x03\xe0A\x01R\tclusterId\x12f\n" +
-	"\x11bootstrap_servers\x18\x04 \x03(\v24.google.cloud.oracledatabase.v1.KafkaBootstrapServerB\x03\xe0A\x01R\x10bootstrapServers\x12\x8b\x01\n" +
-	"\x11security_protocol\x18\x05 \x01(\x0e2Y.google.cloud.oracledatabase.v1.GoldengateKafkaConnectionProperties.KafkaSecurityProtocolB\x03\xe0A\x01R\x10securityProtocol\x12\x1f\n" +
-	"\busername\x18\x06 \x01(\tB\x03\xe0A\x01R\busername\x12-\n" +
-	"\x10trust_store_file\x18\b \x01(\tB\x03\xe0A\x01R\x0etrustStoreFile\x12)\n" +
+	"cluster_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tclusterId\x12g\n" +
+	"\x11bootstrap_servers\x18\x04 \x03(\v24.google.cloud.oracledatabase.v1.KafkaBootstrapServerB\x04\xe2A\x01\x01R\x10bootstrapServers\x12\x8c\x01\n" +
+	"\x11security_protocol\x18\x05 \x01(\x0e2Y.google.cloud.oracledatabase.v1.GoldengateKafkaConnectionProperties.KafkaSecurityProtocolB\x04\xe2A\x01\x01R\x10securityProtocol\x12 \n" +
+	"\busername\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\busername\x12.\n" +
+	"\x10trust_store_file\x18\b \x01(\tB\x04\xe2A\x01\x01R\x0etrustStoreFile\x12*\n" +
 	"\x0ekey_store_file\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\fkeyStoreFile\x12=\n" +
-	"\x18consumer_properties_file\x18\r \x01(\tB\x03\xe0A\x01R\x16consumerPropertiesFile\x12=\n" +
-	"\x18producer_properties_file\x18\x0e \x01(\tB\x03\xe0A\x01R\x16producerPropertiesFile\x129\n" +
-	"\x16use_resource_principal\x18\x0f \x01(\bB\x03\xe0A\x01R\x14useResourcePrincipal\"z\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\fkeyStoreFile\x12>\n" +
+	"\x18consumer_properties_file\x18\r \x01(\tB\x04\xe2A\x01\x01R\x16consumerPropertiesFile\x12>\n" +
+	"\x18producer_properties_file\x18\x0e \x01(\tB\x04\xe2A\x01\x01R\x16producerPropertiesFile\x12:\n" +
+	"\x16use_resource_principal\x18\x0f \x01(\bB\x04\xe2A\x01\x01R\x14useResourcePrincipal\"z\n" +
 	"\x15KafkaSecurityProtocol\x12'\n" +
 	"#KAFKA_SECURITY_PROTOCOL_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03SSL\x10\x01\x12\f\n" +
@@ -8262,27 +8262,27 @@ const file_google_cloud_oracledatabase_v1_goldengate_connection_proto_rawDesc = 
 	"\x1bconnection_password_optionsB\x1e\n" +
 	"\x1ctrust_store_password_optionsB\x1c\n" +
 	"\x1akey_store_password_optionsB\x1a\n" +
-	"\x18ssl_key_password_options\"\xaf\n" +
+	"\x18ssl_key_password_options\"\xad\n" +
 	"\n" +
-	"1GoldengateKafkaSchemaRegistryConnectionProperties\x12$\n" +
-	"\bpassword\x18\v \x01(\tB\x06\xe0A\x01\xe0A\x04H\x00R\bpassword\x12o\n" +
-	"\x17password_secret_version\x18\x0f \x01(\tB5\xe0A\x01\xe0A\x04\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionH\x00R\x15passwordSecretVersion\x12:\n" +
-	"\x14trust_store_password\x18\f \x01(\tB\x06\xe0A\x01\xe0A\x04H\x01R\x12trustStorePassword\x12\x85\x01\n" +
-	"#trust_store_password_secret_version\x18\x10 \x01(\tB5\xe0A\x01\xe0A\x04\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionH\x01R\x1ftrustStorePasswordSecretVersion\x126\n" +
-	"\x12key_store_password\x18\r \x01(\tB\x06\xe0A\x01\xe0A\x04H\x02R\x10keyStorePassword\x12\x81\x01\n" +
-	"!key_store_password_secret_version\x18\x11 \x01(\tB5\xe0A\x01\xe0A\x04\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionH\x02R\x1dkeyStorePasswordSecretVersion\x122\n" +
-	"\x10ssl_key_password\x18\x0e \x01(\tB\x06\xe0A\x01\xe0A\x04H\x03R\x0esslKeyPassword\x12}\n" +
-	"\x1fssl_key_password_secret_version\x18\x12 \x01(\tB5\xe0A\x01\xe0A\x04\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionH\x03R\x1bsslKeyPasswordSecretVersion\x12,\n" +
-	"\x0ftechnology_type\x18\x01 \x01(\tB\x03\xe0A\x01R\x0etechnologyType\x12\x15\n" +
-	"\x03url\x18\x02 \x01(\tB\x03\xe0A\x01R\x03url\x12\x9a\x01\n" +
-	"\x13authentication_type\x18\x03 \x01(\x0e2d.google.cloud.oracledatabase.v1.GoldengateKafkaSchemaRegistryConnectionProperties.AuthenticationTypeB\x03\xe0A\x01R\x12authenticationType\x12\x1f\n" +
-	"\busername\x18\x04 \x01(\tB\x03\xe0A\x01R\busername\x12-\n" +
-	"\x10trust_store_file\x18\x06 \x01(\tB\x03\xe0A\x01R\x0etrustStoreFile\x12)\n" +
-	"\x0ekey_store_file\x18\b \x01(\tB\x03\xe0A\x01R\fkeyStoreFile\"Z\n" +
+	"1GoldengateKafkaSchemaRegistryConnectionProperties\x12#\n" +
+	"\bpassword\x18\v \x01(\tB\x05\xe2A\x02\x01\x04H\x00R\bpassword\x12n\n" +
+	"\x17password_secret_version\x18\x0f \x01(\tB4\xe2A\x02\x01\x04\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionH\x00R\x15passwordSecretVersion\x129\n" +
+	"\x14trust_store_password\x18\f \x01(\tB\x05\xe2A\x02\x01\x04H\x01R\x12trustStorePassword\x12\x84\x01\n" +
+	"#trust_store_password_secret_version\x18\x10 \x01(\tB4\xe2A\x02\x01\x04\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionH\x01R\x1ftrustStorePasswordSecretVersion\x125\n" +
+	"\x12key_store_password\x18\r \x01(\tB\x05\xe2A\x02\x01\x04H\x02R\x10keyStorePassword\x12\x80\x01\n" +
+	"!key_store_password_secret_version\x18\x11 \x01(\tB4\xe2A\x02\x01\x04\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionH\x02R\x1dkeyStorePasswordSecretVersion\x121\n" +
+	"\x10ssl_key_password\x18\x0e \x01(\tB\x05\xe2A\x02\x01\x04H\x03R\x0esslKeyPassword\x12|\n" +
+	"\x1fssl_key_password_secret_version\x18\x12 \x01(\tB4\xe2A\x02\x01\x04\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionH\x03R\x1bsslKeyPasswordSecretVersion\x12-\n" +
+	"\x0ftechnology_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0etechnologyType\x12\x16\n" +
+	"\x03url\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x03url\x12\x9b\x01\n" +
+	"\x13authentication_type\x18\x03 \x01(\x0e2d.google.cloud.oracledatabase.v1.GoldengateKafkaSchemaRegistryConnectionProperties.AuthenticationTypeB\x04\xe2A\x01\x01R\x12authenticationType\x12 \n" +
+	"\busername\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\busername\x12.\n" +
+	"\x10trust_store_file\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x0etrustStoreFile\x12*\n" +
+	"\x0ekey_store_file\x18\b \x01(\tB\x04\xe2A\x01\x01R\fkeyStoreFile\"Z\n" +
 	"\x12AuthenticationType\x12#\n" +
 	"\x1fAUTHENTICATION_TYPE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04NONE\x10\x01\x12\t\n" +
@@ -8292,63 +8292,63 @@ const file_google_cloud_oracledatabase_v1_goldengate_connection_proto_rawDesc = 
 	"\x1bconnection_password_optionsB\x1e\n" +
 	"\x1ctrust_store_password_optionsB\x1c\n" +
 	"\x1akey_store_password_optionsB\x1a\n" +
-	"\x18ssl_key_password_options\"\xaa\x03\n" +
-	".GoldengateOciObjectStorageConnectionProperties\x12,\n" +
-	"\x0ftechnology_type\x18\x01 \x01(\tB\x03\xe0A\x01R\x0etechnologyType\x12\"\n" +
+	"\x18ssl_key_password_options\"\xb2\x03\n" +
+	".GoldengateOciObjectStorageConnectionProperties\x12-\n" +
+	"\x0ftechnology_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0etechnologyType\x12#\n" +
 	"\n" +
-	"tenancy_id\x18\x02 \x01(\tB\x03\xe0A\x01R\ttenancyId\x12\x1b\n" +
-	"\x06region\x18\x03 \x01(\tB\x03\xe0A\x01R\x06region\x12\x1c\n" +
-	"\auser_id\x18\x04 \x01(\tB\x03\xe0A\x01R\x06userId\x12-\n" +
-	"\x10private_key_file\x18\x05 \x01(\tB\x03\xe0A\x01R\x0eprivateKeyFile\x12F\n" +
-	"\x1dprivate_key_passphrase_secret\x18\x06 \x01(\tB\x03\xe0A\x01R\x1aprivateKeyPassphraseSecret\x129\n" +
-	"\x16public_key_fingerprint\x18\a \x01(\tB\x03\xe0A\x01R\x14publicKeyFingerprint\x129\n" +
-	"\x16use_resource_principal\x18\b \x01(\bB\x03\xe0A\x01R\x14useResourcePrincipal\"\xd7\x05\n" +
-	"2GoldengateAzureDataLakeStorageConnectionProperties\x12,\n" +
-	"\x0ftechnology_type\x18\x01 \x01(\tB\x03\xe0A\x01R\x0etechnologyType\x12\x9b\x01\n" +
-	"\x13authentication_type\x18\x02 \x01(\x0e2e.google.cloud.oracledatabase.v1.GoldengateAzureDataLakeStorageConnectionProperties.AuthenticationTypeB\x03\xe0A\x01R\x12authenticationType\x12\x1d\n" +
-	"\aaccount\x18\x03 \x01(\tB\x03\xe0A\x01R\aaccount\x121\n" +
-	"\x12account_key_secret\x18\x04 \x01(\tB\x03\xe0A\x01R\x10accountKeySecret\x12-\n" +
-	"\x10sas_token_secret\x18\x05 \x01(\tB\x03\xe0A\x01R\x0esasTokenSecret\x12+\n" +
-	"\x0fazure_tenant_id\x18\x06 \x01(\tB\x03\xe0A\x01R\razureTenantId\x12 \n" +
-	"\tclient_id\x18\a \x01(\tB\x03\xe0A\x01R\bclientId\x12(\n" +
-	"\rclient_secret\x18\b \x01(\tB\x03\xe0A\x01R\fclientSecret\x12\x1f\n" +
-	"\bendpoint\x18\t \x01(\tB\x03\xe0A\x01R\bendpoint\x125\n" +
+	"tenancy_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\ttenancyId\x12\x1c\n" +
+	"\x06region\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x06region\x12\x1d\n" +
+	"\auser_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06userId\x12.\n" +
+	"\x10private_key_file\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x0eprivateKeyFile\x12G\n" +
+	"\x1dprivate_key_passphrase_secret\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x1aprivateKeyPassphraseSecret\x12:\n" +
+	"\x16public_key_fingerprint\x18\a \x01(\tB\x04\xe2A\x01\x01R\x14publicKeyFingerprint\x12:\n" +
+	"\x16use_resource_principal\x18\b \x01(\bB\x04\xe2A\x01\x01R\x14useResourcePrincipal\"\xe1\x05\n" +
+	"2GoldengateAzureDataLakeStorageConnectionProperties\x12-\n" +
+	"\x0ftechnology_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0etechnologyType\x12\x9c\x01\n" +
+	"\x13authentication_type\x18\x02 \x01(\x0e2e.google.cloud.oracledatabase.v1.GoldengateAzureDataLakeStorageConnectionProperties.AuthenticationTypeB\x04\xe2A\x01\x01R\x12authenticationType\x12\x1e\n" +
+	"\aaccount\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\aaccount\x122\n" +
+	"\x12account_key_secret\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x10accountKeySecret\x12.\n" +
+	"\x10sas_token_secret\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x0esasTokenSecret\x12,\n" +
+	"\x0fazure_tenant_id\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\razureTenantId\x12!\n" +
+	"\tclient_id\x18\a \x01(\tB\x04\xe2A\x01\x01R\bclientId\x12)\n" +
+	"\rclient_secret\x18\b \x01(\tB\x04\xe2A\x01\x01R\fclientSecret\x12 \n" +
+	"\bendpoint\x18\t \x01(\tB\x04\xe2A\x01\x01R\bendpoint\x126\n" +
 	"\x14azure_authority_host\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\x12azureAuthorityHost\"\x82\x01\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\x12azureAuthorityHost\"\x82\x01\n" +
 	"\x12AuthenticationType\x12#\n" +
 	"\x1fAUTHENTICATION_TYPE_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +
 	"SHARED_KEY\x10\x01\x12\x1b\n" +
 	"\x17SHARED_ACCESS_SIGNATURE\x10\x02\x12\x1a\n" +
-	"\x16AZURE_ACTIVE_DIRECTORY\x10\x03\"\xec\x02\n" +
-	"3GoldengateAzureSynapseAnalyticsConnectionProperties\x12$\n" +
-	"\bpassword\x18\x05 \x01(\tB\x06\xe0A\x01\xe0A\x04H\x00R\bpassword\x12o\n" +
-	"\x17password_secret_version\x18\x06 \x01(\tB5\xe0A\x01\xe0A\x04\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionH\x00R\x15passwordSecretVersion\x12,\n" +
-	"\x0ftechnology_type\x18\x01 \x01(\tB\x03\xe0A\x01R\x0etechnologyType\x120\n" +
-	"\x11connection_string\x18\x02 \x01(\tB\x03\xe0A\x01R\x10connectionString\x12\x1f\n" +
-	"\busername\x18\x03 \x01(\tB\x03\xe0A\x01R\busernameB\x1d\n" +
-	"\x1bconnection_password_options\"\x9f\t\n" +
-	"(GoldengatePostgresqlConnectionProperties\x12$\n" +
-	"\bpassword\x18\x0f \x01(\tB\x06\xe0A\x01\xe0A\x04H\x00R\bpassword\x12o\n" +
-	"\x17password_secret_version\x18\x10 \x01(\tB5\xe0A\x01\xe0A\x04\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionH\x00R\x15passwordSecretVersion\x12,\n" +
-	"\x0ftechnology_type\x18\x01 \x01(\tB\x03\xe0A\x01R\x0etechnologyType\x12\x1f\n" +
-	"\bdatabase\x18\x02 \x01(\tB\x03\xe0A\x01R\bdatabase\x12\x17\n" +
-	"\x04host\x18\x03 \x01(\tB\x03\xe0A\x01R\x04host\x12\x17\n" +
-	"\x04port\x18\x04 \x01(\x05B\x03\xe0A\x01R\x04port\x12\x1f\n" +
-	"\busername\x18\x05 \x01(\tB\x03\xe0A\x01R\busername\x12g\n" +
-	"\x15additional_attributes\x18\a \x03(\v2-.google.cloud.oracledatabase.v1.NameValuePairB\x03\xe0A\x01R\x14additionalAttributes\x12\x95\x01\n" +
-	"\x11security_protocol\x18\b \x01(\x0e2c.google.cloud.oracledatabase.v1.GoldengatePostgresqlConnectionProperties.PostgresqlSecurityProtocolB\x03\xe0A\x01R\x10securityProtocol\x12z\n" +
-	"\bssl_mode\x18\t \x01(\x0e2Z.google.cloud.oracledatabase.v1.GoldengatePostgresqlConnectionProperties.PostgresqlSslModeB\x03\xe0A\x01R\asslMode\x12#\n" +
+	"\x16AZURE_ACTIVE_DIRECTORY\x10\x03\"\xed\x02\n" +
+	"3GoldengateAzureSynapseAnalyticsConnectionProperties\x12#\n" +
+	"\bpassword\x18\x05 \x01(\tB\x05\xe2A\x02\x01\x04H\x00R\bpassword\x12n\n" +
+	"\x17password_secret_version\x18\x06 \x01(\tB4\xe2A\x02\x01\x04\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionH\x00R\x15passwordSecretVersion\x12-\n" +
+	"\x0ftechnology_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0etechnologyType\x121\n" +
+	"\x11connection_string\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x10connectionString\x12 \n" +
+	"\busername\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\busernameB\x1d\n" +
+	"\x1bconnection_password_options\"\xaa\t\n" +
+	"(GoldengatePostgresqlConnectionProperties\x12#\n" +
+	"\bpassword\x18\x0f \x01(\tB\x05\xe2A\x02\x01\x04H\x00R\bpassword\x12n\n" +
+	"\x17password_secret_version\x18\x10 \x01(\tB4\xe2A\x02\x01\x04\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionH\x00R\x15passwordSecretVersion\x12-\n" +
+	"\x0ftechnology_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0etechnologyType\x12 \n" +
+	"\bdatabase\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\bdatabase\x12\x18\n" +
+	"\x04host\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04host\x12\x18\n" +
+	"\x04port\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\x04port\x12 \n" +
+	"\busername\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\busername\x12h\n" +
+	"\x15additional_attributes\x18\a \x03(\v2-.google.cloud.oracledatabase.v1.NameValuePairB\x04\xe2A\x01\x01R\x14additionalAttributes\x12\x96\x01\n" +
+	"\x11security_protocol\x18\b \x01(\x0e2c.google.cloud.oracledatabase.v1.GoldengatePostgresqlConnectionProperties.PostgresqlSecurityProtocolB\x04\xe2A\x01\x01R\x10securityProtocol\x12{\n" +
+	"\bssl_mode\x18\t \x01(\x0e2Z.google.cloud.oracledatabase.v1.GoldengatePostgresqlConnectionProperties.PostgresqlSslModeB\x04\xe2A\x01\x01R\asslMode\x12$\n" +
 	"\vssl_ca_file\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\tsslCaFile\x12%\n" +
-	"\fssl_crl_file\x18\v \x01(\tB\x03\xe0A\x01R\n" +
-	"sslCrlFile\x12'\n" +
-	"\rssl_cert_file\x18\f \x01(\tB\x03\xe0A\x01R\vsslCertFile\x12%\n" +
-	"\fssl_key_file\x18\r \x01(\tB\x03\xe0A\x01R\n" +
-	"sslKeyFile\x12%\n" +
-	"\fdb_system_id\x18\x0e \x01(\tB\x03\xe0A\x01R\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\tsslCaFile\x12&\n" +
+	"\fssl_crl_file\x18\v \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"sslCrlFile\x12(\n" +
+	"\rssl_cert_file\x18\f \x01(\tB\x04\xe2A\x01\x01R\vsslCertFile\x12&\n" +
+	"\fssl_key_file\x18\r \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"sslKeyFile\x12&\n" +
+	"\fdb_system_id\x18\x0e \x01(\tB\x04\xe2A\x01\x01R\n" +
 	"dbSystemId\"h\n" +
 	"\x1aPostgresqlSecurityProtocol\x12,\n" +
 	"(POSTGRESQL_SECURITY_PROTOCOL_UNSPECIFIED\x10\x00\x12\t\n" +
@@ -8362,63 +8362,63 @@ const file_google_cloud_oracledatabase_v1_goldengate_connection_proto_rawDesc = 
 	"\aREQUIRE\x10\x02\x12\r\n" +
 	"\tVERIFY_CA\x10\x03\x12\x0f\n" +
 	"\vVERIFY_FULL\x10\x04B\x1d\n" +
-	"\x1bconnection_password_options\"\x8b\a\n" +
-	"0GoldengateMicrosoftSqlserverConnectionProperties\x12$\n" +
-	"\bpassword\x18\v \x01(\tB\x06\xe0A\x01\xe0A\x04H\x00R\bpassword\x12o\n" +
-	"\x17password_secret_version\x18\f \x01(\tB5\xe0A\x01\xe0A\x04\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionH\x00R\x15passwordSecretVersion\x12,\n" +
-	"\x0ftechnology_type\x18\x01 \x01(\tB\x03\xe0A\x01R\x0etechnologyType\x12\x1f\n" +
-	"\bdatabase\x18\x02 \x01(\tB\x03\xe0A\x01R\bdatabase\x12\x17\n" +
-	"\x04host\x18\x03 \x01(\tB\x03\xe0A\x01R\x04host\x12\x17\n" +
-	"\x04port\x18\x04 \x01(\x05B\x03\xe0A\x01R\x04port\x12\x1f\n" +
-	"\busername\x18\x05 \x01(\tB\x03\xe0A\x01R\busername\x12g\n" +
-	"\x15additional_attributes\x18\a \x03(\v2-.google.cloud.oracledatabase.v1.NameValuePairB\x03\xe0A\x01R\x14additionalAttributes\x12\xa5\x01\n" +
-	"\x11security_protocol\x18\b \x01(\x0e2s.google.cloud.oracledatabase.v1.GoldengateMicrosoftSqlserverConnectionProperties.MicrosoftSqlserverSecurityProtocolB\x03\xe0A\x01R\x10securityProtocol\x12#\n" +
-	"\vssl_ca_file\x18\t \x01(\tB\x03\xe0A\x01R\tsslCaFile\x12X\n" +
+	"\x1bconnection_password_options\"\x92\a\n" +
+	"0GoldengateMicrosoftSqlserverConnectionProperties\x12#\n" +
+	"\bpassword\x18\v \x01(\tB\x05\xe2A\x02\x01\x04H\x00R\bpassword\x12n\n" +
+	"\x17password_secret_version\x18\f \x01(\tB4\xe2A\x02\x01\x04\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionH\x00R\x15passwordSecretVersion\x12-\n" +
+	"\x0ftechnology_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0etechnologyType\x12 \n" +
+	"\bdatabase\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\bdatabase\x12\x18\n" +
+	"\x04host\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04host\x12\x18\n" +
+	"\x04port\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\x04port\x12 \n" +
+	"\busername\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\busername\x12h\n" +
+	"\x15additional_attributes\x18\a \x03(\v2-.google.cloud.oracledatabase.v1.NameValuePairB\x04\xe2A\x01\x01R\x14additionalAttributes\x12\xa6\x01\n" +
+	"\x11security_protocol\x18\b \x01(\x0e2s.google.cloud.oracledatabase.v1.GoldengateMicrosoftSqlserverConnectionProperties.MicrosoftSqlserverSecurityProtocolB\x04\xe2A\x01\x01R\x10securityProtocol\x12$\n" +
+	"\vssl_ca_file\x18\t \x01(\tB\x04\xe2A\x01\x01R\tsslCaFile\x12Y\n" +
 	"&server_certificate_validation_required\x18\n" +
-	" \x01(\bB\x03\xe0A\x01R#serverCertificateValidationRequired\"o\n" +
+	" \x01(\bB\x04\xe2A\x01\x01R#serverCertificateValidationRequired\"o\n" +
 	"\"MicrosoftSqlserverSecurityProtocol\x125\n" +
 	"1MICROSOFT_SQLSERVER_SECURITY_PROTOCOL_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05PLAIN\x10\x01\x12\a\n" +
 	"\x03TLS\x10\x02B\x1d\n" +
-	"\x1bconnection_password_options\"\xfb\x01\n" +
-	"&GoldengateAmazonS3ConnectionProperties\x12,\n" +
-	"\x0ftechnology_type\x18\x01 \x01(\tB\x03\xe0A\x01R\x0etechnologyType\x12'\n" +
-	"\raccess_key_id\x18\x02 \x01(\tB\x03\xe0A\x01R\vaccessKeyId\x12<\n" +
-	"\x18secret_access_key_secret\x18\x03 \x01(\tB\x03\xe0A\x01R\x15secretAccessKeySecret\x12\x1f\n" +
-	"\bendpoint\x18\x04 \x01(\tB\x03\xe0A\x01R\bendpoint\x12\x1b\n" +
-	"\x06region\x18\x05 \x01(\tB\x03\xe0A\x01R\x06region\"{\n" +
-	"\"GoldengateHdfsConnectionProperties\x12,\n" +
-	"\x0ftechnology_type\x18\x01 \x01(\tB\x03\xe0A\x01R\x0etechnologyType\x12'\n" +
-	"\rcore_site_xml\x18\x02 \x01(\tB\x03\xe0A\x01R\vcoreSiteXml\"\xc8\x0f\n" +
-	"0GoldengateJavaMessageServiceConnectionProperties\x12$\n" +
-	"\bpassword\x18\x13 \x01(\tB\x06\xe0A\x01\xe0A\x04H\x00R\bpassword\x12o\n" +
-	"\x17password_secret_version\x18\x17 \x01(\tB5\xe0A\x01\xe0A\x04\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionH\x00R\x15passwordSecretVersion\x12:\n" +
-	"\x14trust_store_password\x18\x14 \x01(\tB\x06\xe0A\x01\xe0A\x04H\x01R\x12trustStorePassword\x12\x85\x01\n" +
-	"#trust_store_password_secret_version\x18\x18 \x01(\tB5\xe0A\x01\xe0A\x04\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionH\x01R\x1ftrustStorePasswordSecretVersion\x126\n" +
-	"\x12key_store_password\x18\x15 \x01(\tB\x06\xe0A\x01\xe0A\x04H\x02R\x10keyStorePassword\x12\x81\x01\n" +
-	"!key_store_password_secret_version\x18\x19 \x01(\tB5\xe0A\x01\xe0A\x04\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionH\x02R\x1dkeyStorePasswordSecretVersion\x122\n" +
-	"\x10ssl_key_password\x18\x16 \x01(\tB\x06\xe0A\x01\xe0A\x04H\x03R\x0esslKeyPassword\x12}\n" +
-	"\x1fssl_key_password_secret_version\x18\x1a \x01(\tB5\xe0A\x01\xe0A\x04\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionH\x03R\x1bsslKeyPasswordSecretVersion\x12,\n" +
-	"\x0ftechnology_type\x18\x01 \x01(\tB\x03\xe0A\x01R\x0etechnologyType\x12\x1e\n" +
-	"\buse_jndi\x18\x02 \x01(\bB\x03\xe0A\x01R\auseJndi\x12;\n" +
-	"\x17jndi_connection_factory\x18\x03 \x01(\tB\x03\xe0A\x01R\x15jndiConnectionFactory\x12/\n" +
-	"\x11jndi_provider_url\x18\x04 \x01(\tB\x03\xe0A\x01R\x0fjndiProviderUrl\x12D\n" +
-	"\x1cjndi_initial_context_factory\x18\x05 \x01(\tB\x03\xe0A\x01R\x19jndiInitialContextFactory\x12;\n" +
-	"\x17jndi_security_principal\x18\x06 \x01(\tB\x03\xe0A\x01R\x15jndiSecurityPrincipal\x12L\n" +
-	" jndi_security_credentials_secret\x18\a \x01(\tB\x03\xe0A\x01R\x1djndiSecurityCredentialsSecret\x12*\n" +
-	"\x0econnection_url\x18\b \x01(\tB\x03\xe0A\x01R\rconnectionUrl\x122\n" +
-	"\x12connection_factory\x18\t \x01(\tB\x03\xe0A\x01R\x11connectionFactory\x12\x1f\n" +
+	"\x1bconnection_password_options\"\x80\x02\n" +
+	"&GoldengateAmazonS3ConnectionProperties\x12-\n" +
+	"\x0ftechnology_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0etechnologyType\x12(\n" +
+	"\raccess_key_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vaccessKeyId\x12=\n" +
+	"\x18secret_access_key_secret\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x15secretAccessKeySecret\x12 \n" +
+	"\bendpoint\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\bendpoint\x12\x1c\n" +
+	"\x06region\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x06region\"}\n" +
+	"\"GoldengateHdfsConnectionProperties\x12-\n" +
+	"\x0ftechnology_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0etechnologyType\x12(\n" +
+	"\rcore_site_xml\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vcoreSiteXml\"\xce\x0f\n" +
+	"0GoldengateJavaMessageServiceConnectionProperties\x12#\n" +
+	"\bpassword\x18\x13 \x01(\tB\x05\xe2A\x02\x01\x04H\x00R\bpassword\x12n\n" +
+	"\x17password_secret_version\x18\x17 \x01(\tB4\xe2A\x02\x01\x04\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionH\x00R\x15passwordSecretVersion\x129\n" +
+	"\x14trust_store_password\x18\x14 \x01(\tB\x05\xe2A\x02\x01\x04H\x01R\x12trustStorePassword\x12\x84\x01\n" +
+	"#trust_store_password_secret_version\x18\x18 \x01(\tB4\xe2A\x02\x01\x04\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionH\x01R\x1ftrustStorePasswordSecretVersion\x125\n" +
+	"\x12key_store_password\x18\x15 \x01(\tB\x05\xe2A\x02\x01\x04H\x02R\x10keyStorePassword\x12\x80\x01\n" +
+	"!key_store_password_secret_version\x18\x19 \x01(\tB4\xe2A\x02\x01\x04\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionH\x02R\x1dkeyStorePasswordSecretVersion\x121\n" +
+	"\x10ssl_key_password\x18\x16 \x01(\tB\x05\xe2A\x02\x01\x04H\x03R\x0esslKeyPassword\x12|\n" +
+	"\x1fssl_key_password_secret_version\x18\x1a \x01(\tB4\xe2A\x02\x01\x04\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionH\x03R\x1bsslKeyPasswordSecretVersion\x12-\n" +
+	"\x0ftechnology_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0etechnologyType\x12\x1f\n" +
+	"\buse_jndi\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\auseJndi\x12<\n" +
+	"\x17jndi_connection_factory\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x15jndiConnectionFactory\x120\n" +
+	"\x11jndi_provider_url\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x0fjndiProviderUrl\x12E\n" +
+	"\x1cjndi_initial_context_factory\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x19jndiInitialContextFactory\x12<\n" +
+	"\x17jndi_security_principal\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x15jndiSecurityPrincipal\x12M\n" +
+	" jndi_security_credentials_secret\x18\a \x01(\tB\x04\xe2A\x01\x01R\x1djndiSecurityCredentialsSecret\x12+\n" +
+	"\x0econnection_url\x18\b \x01(\tB\x04\xe2A\x01\x01R\rconnectionUrl\x123\n" +
+	"\x12connection_factory\x18\t \x01(\tB\x04\xe2A\x01\x01R\x11connectionFactory\x12 \n" +
 	"\busername\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\busername\x12\x96\x01\n" +
-	"\x11security_protocol\x18\f \x01(\x0e2d.google.cloud.oracledatabase.v1.GoldengateJavaMessageServiceConnectionProperties.JmsSecurityProtocolB\x03\xe0A\x01R\x10securityProtocol\x12\x9c\x01\n" +
-	"\x13authentication_type\x18\r \x01(\x0e2f.google.cloud.oracledatabase.v1.GoldengateJavaMessageServiceConnectionProperties.JmsAuthenticationTypeB\x03\xe0A\x01R\x12authenticationType\x12-\n" +
-	"\x10trust_store_file\x18\x0e \x01(\tB\x03\xe0A\x01R\x0etrustStoreFile\x12)\n" +
-	"\x0ekey_store_file\x18\x10 \x01(\tB\x03\xe0A\x01R\fkeyStoreFile\"Z\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\busername\x12\x97\x01\n" +
+	"\x11security_protocol\x18\f \x01(\x0e2d.google.cloud.oracledatabase.v1.GoldengateJavaMessageServiceConnectionProperties.JmsSecurityProtocolB\x04\xe2A\x01\x01R\x10securityProtocol\x12\x9d\x01\n" +
+	"\x13authentication_type\x18\r \x01(\x0e2f.google.cloud.oracledatabase.v1.GoldengateJavaMessageServiceConnectionProperties.JmsAuthenticationTypeB\x04\xe2A\x01\x01R\x12authenticationType\x12.\n" +
+	"\x10trust_store_file\x18\x0e \x01(\tB\x04\xe2A\x01\x01R\x0etrustStoreFile\x12*\n" +
+	"\x0ekey_store_file\x18\x10 \x01(\tB\x04\xe2A\x01\x01R\fkeyStoreFile\"Z\n" +
 	"\x13JmsSecurityProtocol\x12%\n" +
 	"!JMS_SECURITY_PROTOCOL_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05PLAIN\x10\x01\x12\a\n" +
@@ -8431,73 +8431,73 @@ const file_google_cloud_oracledatabase_v1_goldengate_connection_proto_rawDesc = 
 	"\x1bconnection_password_optionsB\x1e\n" +
 	"\x1ctrust_store_password_optionsB\x1c\n" +
 	"\x1akey_store_password_optionsB\x1a\n" +
-	"\x18ssl_key_password_options\"\xfe\a\n" +
-	"%GoldengateMongodbConnectionProperties\x12$\n" +
+	"\x18ssl_key_password_options\"\x81\b\n" +
+	"%GoldengateMongodbConnectionProperties\x12#\n" +
 	"\bpassword\x18\n" +
-	" \x01(\tB\x06\xe0A\x01\xe0A\x04H\x00R\bpassword\x12o\n" +
-	"\x17password_secret_version\x18\f \x01(\tB5\xe0A\x01\xe0A\x04\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionH\x00R\x15passwordSecretVersion\x12R\n" +
-	"!tls_certificate_key_file_password\x18\v \x01(\tB\x06\xe0A\x01\xe0A\x04H\x01R\x1dtlsCertificateKeyFilePassword\x12\x9d\x01\n" +
-	"0tls_certificate_key_file_password_secret_version\x18\r \x01(\tB5\xe0A\x01\xe0A\x04\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionH\x01R*tlsCertificateKeyFilePasswordSecretVersion\x12,\n" +
-	"\x0ftechnology_type\x18\x01 \x01(\tB\x03\xe0A\x01R\x0etechnologyType\x120\n" +
-	"\x11connection_string\x18\x02 \x01(\tB\x03\xe0A\x01R\x10connectionString\x12\x1f\n" +
-	"\busername\x18\x03 \x01(\tB\x03\xe0A\x01R\busername\x12$\n" +
-	"\vdatabase_id\x18\x05 \x01(\tB\x03\xe0A\x01R\n" +
-	"databaseId\x12\x8f\x01\n" +
-	"\x11security_protocol\x18\x06 \x01(\x0e2].google.cloud.oracledatabase.v1.GoldengateMongodbConnectionProperties.MongodbSecurityProtocolB\x03\xe0A\x01R\x10securityProtocol\x12#\n" +
-	"\vtls_ca_file\x18\a \x01(\tB\x03\xe0A\x01R\ttlsCaFile\x12<\n" +
-	"\x18tls_certificate_key_file\x18\b \x01(\tB\x03\xe0A\x01R\x15tlsCertificateKeyFile\"b\n" +
+	" \x01(\tB\x05\xe2A\x02\x01\x04H\x00R\bpassword\x12n\n" +
+	"\x17password_secret_version\x18\f \x01(\tB4\xe2A\x02\x01\x04\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionH\x00R\x15passwordSecretVersion\x12Q\n" +
+	"!tls_certificate_key_file_password\x18\v \x01(\tB\x05\xe2A\x02\x01\x04H\x01R\x1dtlsCertificateKeyFilePassword\x12\x9c\x01\n" +
+	"0tls_certificate_key_file_password_secret_version\x18\r \x01(\tB4\xe2A\x02\x01\x04\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionH\x01R*tlsCertificateKeyFilePasswordSecretVersion\x12-\n" +
+	"\x0ftechnology_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0etechnologyType\x121\n" +
+	"\x11connection_string\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x10connectionString\x12 \n" +
+	"\busername\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\busername\x12%\n" +
+	"\vdatabase_id\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"databaseId\x12\x90\x01\n" +
+	"\x11security_protocol\x18\x06 \x01(\x0e2].google.cloud.oracledatabase.v1.GoldengateMongodbConnectionProperties.MongodbSecurityProtocolB\x04\xe2A\x01\x01R\x10securityProtocol\x12$\n" +
+	"\vtls_ca_file\x18\a \x01(\tB\x04\xe2A\x01\x01R\ttlsCaFile\x12=\n" +
+	"\x18tls_certificate_key_file\x18\b \x01(\tB\x04\xe2A\x01\x01R\x15tlsCertificateKeyFile\"b\n" +
 	"\x17MongodbSecurityProtocol\x12)\n" +
 	"%MONGODB_SECURITY_PROTOCOL_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05PLAIN\x10\x01\x12\a\n" +
 	"\x03TLS\x10\x02\x12\b\n" +
 	"\x04MTLS\x10\x03B\x1d\n" +
 	"\x1bconnection_password_optionsB+\n" +
-	")tls_certificate_key_file_password_options\"\xa5\x03\n" +
-	")GoldengateOracleNosqlConnectionProperties\x12,\n" +
-	"\x0ftechnology_type\x18\x01 \x01(\tB\x03\xe0A\x01R\x0etechnologyType\x12\"\n" +
+	")tls_certificate_key_file_password_options\"\xad\x03\n" +
+	")GoldengateOracleNosqlConnectionProperties\x12-\n" +
+	"\x0ftechnology_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0etechnologyType\x12#\n" +
 	"\n" +
-	"tenancy_id\x18\x02 \x01(\tB\x03\xe0A\x01R\ttenancyId\x12\x1b\n" +
-	"\x06region\x18\x03 \x01(\tB\x03\xe0A\x01R\x06region\x12\x1c\n" +
-	"\auser_id\x18\x04 \x01(\tB\x03\xe0A\x01R\x06userId\x12-\n" +
-	"\x10private_key_file\x18\x05 \x01(\tB\x03\xe0A\x01R\x0eprivateKeyFile\x12F\n" +
-	"\x1dprivate_key_passphrase_secret\x18\x06 \x01(\tB\x03\xe0A\x01R\x1aprivateKeyPassphraseSecret\x129\n" +
-	"\x16public_key_fingerprint\x18\a \x01(\tB\x03\xe0A\x01R\x14publicKeyFingerprint\x129\n" +
-	"\x16use_resource_principal\x18\b \x01(\bB\x03\xe0A\x01R\x14useResourcePrincipal\"\xb8\x05\n" +
-	"'GoldengateSnowflakeConnectionProperties\x12$\n" +
-	"\bpassword\x18\b \x01(\tB\x06\xe0A\x01\xe0A\x04H\x00R\bpassword\x12o\n" +
-	"\x17password_secret_version\x18\t \x01(\tB5\xe0A\x01\xe0A\x04\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionH\x00R\x15passwordSecretVersion\x12,\n" +
-	"\x0ftechnology_type\x18\x01 \x01(\tB\x03\xe0A\x01R\x0etechnologyType\x12*\n" +
-	"\x0econnection_url\x18\x02 \x01(\tB\x03\xe0A\x01R\rconnectionUrl\x12\x90\x01\n" +
-	"\x13authentication_type\x18\x03 \x01(\x0e2Z.google.cloud.oracledatabase.v1.GoldengateSnowflakeConnectionProperties.AuthenticationTypeB\x03\xe0A\x01R\x12authenticationType\x12\x1f\n" +
-	"\busername\x18\x04 \x01(\tB\x03\xe0A\x01R\busername\x12-\n" +
-	"\x10private_key_file\x18\x06 \x01(\tB\x03\xe0A\x01R\x0eprivateKeyFile\x12F\n" +
-	"\x1dprivate_key_passphrase_secret\x18\a \x01(\tB\x03\xe0A\x01R\x1aprivateKeyPassphraseSecret\"R\n" +
+	"tenancy_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\ttenancyId\x12\x1c\n" +
+	"\x06region\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x06region\x12\x1d\n" +
+	"\auser_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06userId\x12.\n" +
+	"\x10private_key_file\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x0eprivateKeyFile\x12G\n" +
+	"\x1dprivate_key_passphrase_secret\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x1aprivateKeyPassphraseSecret\x12:\n" +
+	"\x16public_key_fingerprint\x18\a \x01(\tB\x04\xe2A\x01\x01R\x14publicKeyFingerprint\x12:\n" +
+	"\x16use_resource_principal\x18\b \x01(\bB\x04\xe2A\x01\x01R\x14useResourcePrincipal\"\xbc\x05\n" +
+	"'GoldengateSnowflakeConnectionProperties\x12#\n" +
+	"\bpassword\x18\b \x01(\tB\x05\xe2A\x02\x01\x04H\x00R\bpassword\x12n\n" +
+	"\x17password_secret_version\x18\t \x01(\tB4\xe2A\x02\x01\x04\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionH\x00R\x15passwordSecretVersion\x12-\n" +
+	"\x0ftechnology_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0etechnologyType\x12+\n" +
+	"\x0econnection_url\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\rconnectionUrl\x12\x91\x01\n" +
+	"\x13authentication_type\x18\x03 \x01(\x0e2Z.google.cloud.oracledatabase.v1.GoldengateSnowflakeConnectionProperties.AuthenticationTypeB\x04\xe2A\x01\x01R\x12authenticationType\x12 \n" +
+	"\busername\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\busername\x12.\n" +
+	"\x10private_key_file\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x0eprivateKeyFile\x12G\n" +
+	"\x1dprivate_key_passphrase_secret\x18\a \x01(\tB\x04\xe2A\x01\x01R\x1aprivateKeyPassphraseSecret\"R\n" +
 	"\x12AuthenticationType\x12#\n" +
 	"\x1fAUTHENTICATION_TYPE_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05BASIC\x10\x01\x12\f\n" +
 	"\bKEY_PAIR\x10\x02B\x1d\n" +
-	"\x1bconnection_password_options\"\xdf\x02\n" +
-	",GoldengateAmazonRedshiftConnectionProperties\x12$\n" +
-	"\bpassword\x18\x05 \x01(\tB\x06\xe0A\x01\xe0A\x04H\x00R\bpassword\x12o\n" +
-	"\x17password_secret_version\x18\x06 \x01(\tB5\xe0A\x01\xe0A\x04\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionH\x00R\x15passwordSecretVersion\x12,\n" +
-	"\x0ftechnology_type\x18\x01 \x01(\tB\x03\xe0A\x01R\x0etechnologyType\x12*\n" +
-	"\x0econnection_url\x18\x02 \x01(\tB\x03\xe0A\x01R\rconnectionUrl\x12\x1f\n" +
-	"\busername\x18\x03 \x01(\tB\x03\xe0A\x01R\busernameB\x1d\n" +
-	"\x1bconnection_password_options\"\x8b\a\n" +
-	"+GoldengateElasticsearchConnectionProperties\x12$\n" +
-	"\bpassword\x18\b \x01(\tB\x06\xe0A\x01\xe0A\x04H\x00R\bpassword\x12o\n" +
-	"\x17password_secret_version\x18\t \x01(\tB5\xe0A\x01\xe0A\x04\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionH\x00R\x15passwordSecretVersion\x12,\n" +
-	"\x0ftechnology_type\x18\x01 \x01(\tB\x03\xe0A\x01R\x0etechnologyType\x12\x1d\n" +
-	"\aservers\x18\x02 \x01(\tB\x03\xe0A\x01R\aservers\x12\x9b\x01\n" +
-	"\x11security_protocol\x18\x03 \x01(\x0e2i.google.cloud.oracledatabase.v1.GoldengateElasticsearchConnectionProperties.ElasticsearchSecurityProtocolB\x03\xe0A\x01R\x10securityProtocol\x12\xa1\x01\n" +
-	"\x13authentication_type\x18\x04 \x01(\x0e2k.google.cloud.oracledatabase.v1.GoldengateElasticsearchConnectionProperties.ElasticsearchAuthenticationTypeB\x03\xe0A\x01R\x12authenticationType\x12\x1f\n" +
-	"\busername\x18\x05 \x01(\tB\x03\xe0A\x01R\busername\x12%\n" +
-	"\vfingerprint\x18\a \x01(\tB\x03\xe0A\x01R\vfingerprint\"d\n" +
+	"\x1bconnection_password_options\"\xe0\x02\n" +
+	",GoldengateAmazonRedshiftConnectionProperties\x12#\n" +
+	"\bpassword\x18\x05 \x01(\tB\x05\xe2A\x02\x01\x04H\x00R\bpassword\x12n\n" +
+	"\x17password_secret_version\x18\x06 \x01(\tB4\xe2A\x02\x01\x04\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionH\x00R\x15passwordSecretVersion\x12-\n" +
+	"\x0ftechnology_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0etechnologyType\x12+\n" +
+	"\x0econnection_url\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\rconnectionUrl\x12 \n" +
+	"\busername\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\busernameB\x1d\n" +
+	"\x1bconnection_password_options\"\x8f\a\n" +
+	"+GoldengateElasticsearchConnectionProperties\x12#\n" +
+	"\bpassword\x18\b \x01(\tB\x05\xe2A\x02\x01\x04H\x00R\bpassword\x12n\n" +
+	"\x17password_secret_version\x18\t \x01(\tB4\xe2A\x02\x01\x04\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionH\x00R\x15passwordSecretVersion\x12-\n" +
+	"\x0ftechnology_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0etechnologyType\x12\x1e\n" +
+	"\aservers\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\aservers\x12\x9c\x01\n" +
+	"\x11security_protocol\x18\x03 \x01(\x0e2i.google.cloud.oracledatabase.v1.GoldengateElasticsearchConnectionProperties.ElasticsearchSecurityProtocolB\x04\xe2A\x01\x01R\x10securityProtocol\x12\xa2\x01\n" +
+	"\x13authentication_type\x18\x04 \x01(\x0e2k.google.cloud.oracledatabase.v1.GoldengateElasticsearchConnectionProperties.ElasticsearchAuthenticationTypeB\x04\xe2A\x01\x01R\x12authenticationType\x12 \n" +
+	"\busername\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\busername\x12&\n" +
+	"\vfingerprint\x18\a \x01(\tB\x04\xe2A\x01\x01R\vfingerprint\"d\n" +
 	"\x1dElasticsearchSecurityProtocol\x12/\n" +
 	"+ELASTICSEARCH_SECURITY_PROTOCOL_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05PLAIN\x10\x01\x12\a\n" +
@@ -8506,54 +8506,54 @@ const file_google_cloud_oracledatabase_v1_goldengate_connection_proto_rawDesc = 
 	"-ELASTICSEARCH_AUTHENTICATION_TYPE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04NONE\x10\x01\x12\t\n" +
 	"\x05BASIC\x10\x02B\x1d\n" +
-	"\x1bconnection_password_options\"\x87\x02\n" +
-	"+GoldengateAmazonKinesisConnectionProperties\x12,\n" +
-	"\x0ftechnology_type\x18\x01 \x01(\tB\x03\xe0A\x01R\x0etechnologyType\x12'\n" +
-	"\raccess_key_id\x18\x02 \x01(\tB\x03\xe0A\x01R\vaccessKeyId\x12<\n" +
-	"\x18secret_access_key_secret\x18\x03 \x01(\tB\x03\xe0A\x01R\x15secretAccessKeySecret\x12\x1f\n" +
-	"\bendpoint\x18\x04 \x01(\tB\x03\xe0A\x01R\bendpoint\x12\"\n" +
+	"\x1bconnection_password_options\"\x8c\x02\n" +
+	"+GoldengateAmazonKinesisConnectionProperties\x12-\n" +
+	"\x0ftechnology_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0etechnologyType\x12(\n" +
+	"\raccess_key_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vaccessKeyId\x12=\n" +
+	"\x18secret_access_key_secret\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x15secretAccessKeySecret\x12 \n" +
+	"\bendpoint\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\bendpoint\x12#\n" +
 	"\n" +
-	"aws_region\x18\x05 \x01(\tB\x03\xe0A\x01R\tawsRegion\"\x84\a\n" +
-	"!GoldengateDb2ConnectionProperties\x12$\n" +
-	"\bpassword\x18\f \x01(\tB\x06\xe0A\x01\xe0A\x04H\x00R\bpassword\x12o\n" +
-	"\x17password_secret_version\x18\r \x01(\tB5\xe0A\x01\xe0A\x04\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionH\x00R\x15passwordSecretVersion\x12,\n" +
-	"\x0ftechnology_type\x18\x01 \x01(\tB\x03\xe0A\x01R\x0etechnologyType\x12\x17\n" +
-	"\x04host\x18\x02 \x01(\tB\x03\xe0A\x01R\x04host\x12\x17\n" +
-	"\x04port\x18\x03 \x01(\x05B\x03\xe0A\x01R\x04port\x12\x1f\n" +
-	"\bdatabase\x18\x04 \x01(\tB\x03\xe0A\x01R\bdatabase\x12\x1f\n" +
-	"\busername\x18\x05 \x01(\tB\x03\xe0A\x01R\busername\x12\x87\x01\n" +
-	"\x11security_protocol\x18\x06 \x01(\x0e2U.google.cloud.oracledatabase.v1.GoldengateDb2ConnectionProperties.Db2SecurityProtocolB\x03\xe0A\x01R\x10securityProtocol\x12g\n" +
-	"\x15additional_attributes\x18\b \x03(\v2-.google.cloud.oracledatabase.v1.NameValuePairB\x03\xe0A\x01R\x14additionalAttributes\x12@\n" +
-	"\x1assl_client_keystoredb_file\x18\t \x01(\tB\x03\xe0A\x01R\x17sslClientKeystoredbFile\x12<\n" +
+	"aws_region\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\tawsRegion\"\x8c\a\n" +
+	"!GoldengateDb2ConnectionProperties\x12#\n" +
+	"\bpassword\x18\f \x01(\tB\x05\xe2A\x02\x01\x04H\x00R\bpassword\x12n\n" +
+	"\x17password_secret_version\x18\r \x01(\tB4\xe2A\x02\x01\x04\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionH\x00R\x15passwordSecretVersion\x12-\n" +
+	"\x0ftechnology_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0etechnologyType\x12\x18\n" +
+	"\x04host\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04host\x12\x18\n" +
+	"\x04port\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\x04port\x12 \n" +
+	"\bdatabase\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\bdatabase\x12 \n" +
+	"\busername\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\busername\x12\x88\x01\n" +
+	"\x11security_protocol\x18\x06 \x01(\x0e2U.google.cloud.oracledatabase.v1.GoldengateDb2ConnectionProperties.Db2SecurityProtocolB\x04\xe2A\x01\x01R\x10securityProtocol\x12h\n" +
+	"\x15additional_attributes\x18\b \x03(\v2-.google.cloud.oracledatabase.v1.NameValuePairB\x04\xe2A\x01\x01R\x14additionalAttributes\x12A\n" +
+	"\x1assl_client_keystoredb_file\x18\t \x01(\tB\x04\xe2A\x01\x01R\x17sslClientKeystoredbFile\x12=\n" +
 	"\x18ssl_client_keystash_file\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\x15sslClientKeystashFile\x12B\n" +
-	"\x1bssl_server_certificate_file\x18\v \x01(\tB\x03\xe0A\x01R\x18sslServerCertificateFile\"P\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\x15sslClientKeystashFile\x12C\n" +
+	"\x1bssl_server_certificate_file\x18\v \x01(\tB\x04\xe2A\x01\x01R\x18sslServerCertificateFile\"P\n" +
 	"\x13Db2SecurityProtocol\x12%\n" +
 	"!DB2_SECURITY_PROTOCOL_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05PLAIN\x10\x01\x12\a\n" +
 	"\x03TLS\x10\x02B\x1d\n" +
-	"\x1bconnection_password_options\"\xed\n" +
+	"\x1bconnection_password_options\"\xef\n" +
 	"\n" +
-	"#GoldengateRedisConnectionProperties\x12$\n" +
-	"\bpassword\x18\f \x01(\tB\x06\xe0A\x01\xe0A\x04H\x00R\bpassword\x12o\n" +
-	"\x17password_secret_version\x18\x0f \x01(\tB5\xe0A\x01\xe0A\x04\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionH\x00R\x15passwordSecretVersion\x12:\n" +
-	"\x14trust_store_password\x18\r \x01(\tB\x06\xe0A\x01\xe0A\x04H\x01R\x12trustStorePassword\x12\x85\x01\n" +
-	"#trust_store_password_secret_version\x18\x10 \x01(\tB5\xe0A\x01\xe0A\x04\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionH\x01R\x1ftrustStorePasswordSecretVersion\x126\n" +
-	"\x12key_store_password\x18\x0e \x01(\tB\x06\xe0A\x01\xe0A\x04H\x02R\x10keyStorePassword\x12\x81\x01\n" +
-	"!key_store_password_secret_version\x18\x11 \x01(\tB5\xe0A\x01\xe0A\x04\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionH\x02R\x1dkeyStorePasswordSecretVersion\x12,\n" +
-	"\x0ftechnology_type\x18\x01 \x01(\tB\x03\xe0A\x01R\x0etechnologyType\x12\x1d\n" +
-	"\aservers\x18\x02 \x01(\tB\x03\xe0A\x01R\aservers\x12\x8b\x01\n" +
-	"\x11security_protocol\x18\x03 \x01(\x0e2Y.google.cloud.oracledatabase.v1.GoldengateRedisConnectionProperties.RedisSecurityProtocolB\x03\xe0A\x01R\x10securityProtocol\x12\x91\x01\n" +
-	"\x13authentication_type\x18\x04 \x01(\x0e2[.google.cloud.oracledatabase.v1.GoldengateRedisConnectionProperties.RedisAuthenticationTypeB\x03\xe0A\x01R\x12authenticationType\x12\x1f\n" +
-	"\busername\x18\x05 \x01(\tB\x03\xe0A\x01R\busername\x12-\n" +
-	"\x10redis_cluster_id\x18\a \x01(\tB\x03\xe0A\x01R\x0eredisClusterId\x12-\n" +
-	"\x10trust_store_file\x18\b \x01(\tB\x03\xe0A\x01R\x0etrustStoreFile\x12)\n" +
+	"#GoldengateRedisConnectionProperties\x12#\n" +
+	"\bpassword\x18\f \x01(\tB\x05\xe2A\x02\x01\x04H\x00R\bpassword\x12n\n" +
+	"\x17password_secret_version\x18\x0f \x01(\tB4\xe2A\x02\x01\x04\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionH\x00R\x15passwordSecretVersion\x129\n" +
+	"\x14trust_store_password\x18\r \x01(\tB\x05\xe2A\x02\x01\x04H\x01R\x12trustStorePassword\x12\x84\x01\n" +
+	"#trust_store_password_secret_version\x18\x10 \x01(\tB4\xe2A\x02\x01\x04\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionH\x01R\x1ftrustStorePasswordSecretVersion\x125\n" +
+	"\x12key_store_password\x18\x0e \x01(\tB\x05\xe2A\x02\x01\x04H\x02R\x10keyStorePassword\x12\x80\x01\n" +
+	"!key_store_password_secret_version\x18\x11 \x01(\tB4\xe2A\x02\x01\x04\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionH\x02R\x1dkeyStorePasswordSecretVersion\x12-\n" +
+	"\x0ftechnology_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0etechnologyType\x12\x1e\n" +
+	"\aservers\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\aservers\x12\x8c\x01\n" +
+	"\x11security_protocol\x18\x03 \x01(\x0e2Y.google.cloud.oracledatabase.v1.GoldengateRedisConnectionProperties.RedisSecurityProtocolB\x04\xe2A\x01\x01R\x10securityProtocol\x12\x92\x01\n" +
+	"\x13authentication_type\x18\x04 \x01(\x0e2[.google.cloud.oracledatabase.v1.GoldengateRedisConnectionProperties.RedisAuthenticationTypeB\x04\xe2A\x01\x01R\x12authenticationType\x12 \n" +
+	"\busername\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\busername\x12.\n" +
+	"\x10redis_cluster_id\x18\a \x01(\tB\x04\xe2A\x01\x01R\x0eredisClusterId\x12.\n" +
+	"\x10trust_store_file\x18\b \x01(\tB\x04\xe2A\x01\x01R\x0etrustStoreFile\x12*\n" +
 	"\x0ekey_store_file\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\fkeyStoreFile\"^\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\fkeyStoreFile\"^\n" +
 	"\x15RedisSecurityProtocol\x12'\n" +
 	"#REDIS_SECURITY_PROTOCOL_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05PLAIN\x10\x01\x12\a\n" +
@@ -8565,64 +8565,64 @@ const file_google_cloud_oracledatabase_v1_goldengate_connection_proto_rawDesc = 
 	"\x05BASIC\x10\x02B\x1d\n" +
 	"\x1bconnection_password_optionsB\x1e\n" +
 	"\x1ctrust_store_password_optionsB\x1c\n" +
-	"\x1akey_store_password_options\"\xd2\x05\n" +
-	"(GoldengateDatabricksConnectionProperties\x12$\n" +
-	"\bpassword\x18\b \x01(\tB\x06\xe0A\x01\xe0A\x04H\x00R\bpassword\x12o\n" +
-	"\x17password_secret_version\x18\t \x01(\tB5\xe0A\x01\xe0A\x04\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionH\x00R\x15passwordSecretVersion\x12,\n" +
-	"\x0ftechnology_type\x18\x01 \x01(\tB\x03\xe0A\x01R\x0etechnologyType\x12\x9b\x01\n" +
-	"\x13authentication_type\x18\x02 \x01(\x0e2e.google.cloud.oracledatabase.v1.GoldengateDatabricksConnectionProperties.DatabricksAuthenticationTypeB\x03\xe0A\x01R\x12authenticationType\x12*\n" +
-	"\x0econnection_url\x18\x03 \x01(\tB\x03\xe0A\x01R\rconnectionUrl\x12 \n" +
-	"\tclient_id\x18\x05 \x01(\tB\x03\xe0A\x01R\bclientId\x12(\n" +
-	"\rclient_secret\x18\x06 \x01(\tB\x03\xe0A\x01R\fclientSecret\x122\n" +
-	"\x12storage_credential\x18\a \x01(\tB\x03\xe0A\x01R\x11storageCredential\"x\n" +
+	"\x1akey_store_password_options\"\xd6\x05\n" +
+	"(GoldengateDatabricksConnectionProperties\x12#\n" +
+	"\bpassword\x18\b \x01(\tB\x05\xe2A\x02\x01\x04H\x00R\bpassword\x12n\n" +
+	"\x17password_secret_version\x18\t \x01(\tB4\xe2A\x02\x01\x04\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionH\x00R\x15passwordSecretVersion\x12-\n" +
+	"\x0ftechnology_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0etechnologyType\x12\x9c\x01\n" +
+	"\x13authentication_type\x18\x02 \x01(\x0e2e.google.cloud.oracledatabase.v1.GoldengateDatabricksConnectionProperties.DatabricksAuthenticationTypeB\x04\xe2A\x01\x01R\x12authenticationType\x12+\n" +
+	"\x0econnection_url\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\rconnectionUrl\x12!\n" +
+	"\tclient_id\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\bclientId\x12)\n" +
+	"\rclient_secret\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\fclientSecret\x123\n" +
+	"\x12storage_credential\x18\a \x01(\tB\x04\xe2A\x01\x01R\x11storageCredential\"x\n" +
 	"\x1cDatabricksAuthenticationType\x12.\n" +
 	"*DATABRICKS_AUTHENTICATION_TYPE_UNSPECIFIED\x10\x00\x12\x19\n" +
 	"\x15PERSONAL_ACCESS_TOKEN\x10\x01\x12\r\n" +
 	"\tOAUTH_M2M\x10\x02B\x1d\n" +
-	"\x1bconnection_password_options\"\x98\x01\n" +
-	"*GoldengateGooglePubsubConnectionProperties\x12,\n" +
-	"\x0ftechnology_type\x18\x01 \x01(\tB\x03\xe0A\x01R\x0etechnologyType\x12<\n" +
-	"\x18service_account_key_file\x18\x02 \x01(\tB\x03\xe0A\x01R\x15serviceAccountKeyFile\"\xec\x01\n" +
-	"-GoldengateMicrosoftFabricConnectionProperties\x12,\n" +
-	"\x0ftechnology_type\x18\x01 \x01(\tB\x03\xe0A\x01R\x0etechnologyType\x12 \n" +
-	"\ttenant_id\x18\x02 \x01(\tB\x03\xe0A\x01R\btenantId\x12 \n" +
-	"\tclient_id\x18\x03 \x01(\tB\x03\xe0A\x01R\bclientId\x12(\n" +
-	"\rclient_secret\x18\x04 \x01(\tB\x03\xe0A\x01R\fclientSecret\x12\x1f\n" +
-	"\bendpoint\x18\x05 \x01(\tB\x03\xe0A\x01R\bendpoint\"\xda\x03\n" +
-	"2GoldengateOracleAIDataPlatformConnectionProperties\x12,\n" +
-	"\x0ftechnology_type\x18\x01 \x01(\tB\x03\xe0A\x01R\x0etechnologyType\x12*\n" +
-	"\x0econnection_url\x18\x02 \x01(\tB\x03\xe0A\x01R\rconnectionUrl\x12\"\n" +
+	"\x1bconnection_password_options\"\x9a\x01\n" +
+	"*GoldengateGooglePubsubConnectionProperties\x12-\n" +
+	"\x0ftechnology_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0etechnologyType\x12=\n" +
+	"\x18service_account_key_file\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x15serviceAccountKeyFile\"\xf1\x01\n" +
+	"-GoldengateMicrosoftFabricConnectionProperties\x12-\n" +
+	"\x0ftechnology_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0etechnologyType\x12!\n" +
+	"\ttenant_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\btenantId\x12!\n" +
+	"\tclient_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\bclientId\x12)\n" +
+	"\rclient_secret\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\fclientSecret\x12 \n" +
+	"\bendpoint\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\bendpoint\"\xe3\x03\n" +
+	"2GoldengateOracleAIDataPlatformConnectionProperties\x12-\n" +
+	"\x0ftechnology_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0etechnologyType\x12+\n" +
+	"\x0econnection_url\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\rconnectionUrl\x12#\n" +
 	"\n" +
-	"tenancy_id\x18\x03 \x01(\tB\x03\xe0A\x01R\ttenancyId\x12\x1b\n" +
-	"\x06region\x18\x04 \x01(\tB\x03\xe0A\x01R\x06region\x12\x1c\n" +
-	"\auser_id\x18\x05 \x01(\tB\x03\xe0A\x01R\x06userId\x12-\n" +
-	"\x10private_key_file\x18\x06 \x01(\tB\x03\xe0A\x01R\x0eprivateKeyFile\x12F\n" +
-	"\x1dprivate_key_passphrase_secret\x18\a \x01(\tB\x03\xe0A\x01R\x1aprivateKeyPassphraseSecret\x129\n" +
-	"\x16public_key_fingerprint\x18\b \x01(\tB\x03\xe0A\x01R\x14publicKeyFingerprint\x129\n" +
-	"\x16use_resource_principal\x18\t \x01(\bB\x03\xe0A\x01R\x14useResourcePrincipal\"2\n" +
-	"\x12GlueIcebergCatalog\x12\x1c\n" +
-	"\aglue_id\x18\x01 \x01(\tB\x03\xe0A\x02R\x06glueId\"J\n" +
-	"\x14NessieIcebergCatalog\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x02R\x03uri\x12\x1b\n" +
-	"\x06branch\x18\x02 \x01(\tB\x03\xe0A\x02R\x06branch\"\xd4\x01\n" +
-	"\x15PolarisIcebergCatalog\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x02R\x03uri\x12,\n" +
-	"\x0fpolaris_catalog\x18\x02 \x01(\tB\x03\xe0A\x02R\x0epolarisCatalog\x12 \n" +
-	"\tclient_id\x18\x03 \x01(\tB\x03\xe0A\x02R\bclientId\x12*\n" +
-	"\x0eprincipal_role\x18\x04 \x01(\tB\x03\xe0A\x02R\rprincipalRole\x12(\n" +
-	"\rclient_secret\x18\x05 \x01(\tB\x03\xe0A\x01R\fclientSecret\"P\n" +
-	"\x12RestIcebergCatalog\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x02R\x03uri\x12#\n" +
+	"tenancy_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\ttenancyId\x12\x1c\n" +
+	"\x06region\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06region\x12\x1d\n" +
+	"\auser_id\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x06userId\x12.\n" +
+	"\x10private_key_file\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x0eprivateKeyFile\x12G\n" +
+	"\x1dprivate_key_passphrase_secret\x18\a \x01(\tB\x04\xe2A\x01\x01R\x1aprivateKeyPassphraseSecret\x12:\n" +
+	"\x16public_key_fingerprint\x18\b \x01(\tB\x04\xe2A\x01\x01R\x14publicKeyFingerprint\x12:\n" +
+	"\x16use_resource_principal\x18\t \x01(\bB\x04\xe2A\x01\x01R\x14useResourcePrincipal\"3\n" +
+	"\x12GlueIcebergCatalog\x12\x1d\n" +
+	"\aglue_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06glueId\"L\n" +
+	"\x14NessieIcebergCatalog\x12\x16\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03uri\x12\x1c\n" +
+	"\x06branch\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06branch\"\xd9\x01\n" +
+	"\x15PolarisIcebergCatalog\x12\x16\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03uri\x12-\n" +
+	"\x0fpolaris_catalog\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0epolarisCatalog\x12!\n" +
+	"\tclient_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\bclientId\x12+\n" +
+	"\x0eprincipal_role\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\rprincipalRole\x12)\n" +
+	"\rclient_secret\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\fclientSecret\"R\n" +
+	"\x12RestIcebergCatalog\x12\x16\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03uri\x12$\n" +
 	"\n" +
-	"properties\x18\x02 \x01(\tB\x03\xe0A\x01R\n" +
-	"properties\"\x9c\x05\n" +
+	"properties\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"properties\"\x9d\x05\n" +
 	"\x0eIcebergCatalog\x12f\n" +
 	"\x14glue_iceberg_catalog\x18\x01 \x01(\v22.google.cloud.oracledatabase.v1.GlueIcebergCatalogH\x00R\x12glueIcebergCatalog\x12l\n" +
 	"\x16nessie_iceberg_catalog\x18\x03 \x01(\v24.google.cloud.oracledatabase.v1.NessieIcebergCatalogH\x00R\x14nessieIcebergCatalog\x12o\n" +
 	"\x17polaris_iceberg_catalog\x18\x04 \x01(\v25.google.cloud.oracledatabase.v1.PolarisIcebergCatalogH\x00R\x15polarisIcebergCatalog\x12f\n" +
-	"\x14rest_iceberg_catalog\x18\x05 \x01(\v22.google.cloud.oracledatabase.v1.RestIcebergCatalogH\x00R\x12restIcebergCatalog\x12b\n" +
-	"\fcatalog_type\x18\x06 \x01(\x0e2:.google.cloud.oracledatabase.v1.IcebergCatalog.CatalogTypeB\x03\xe0A\x02R\vcatalogType\"d\n" +
+	"\x14rest_iceberg_catalog\x18\x05 \x01(\v22.google.cloud.oracledatabase.v1.RestIcebergCatalogH\x00R\x12restIcebergCatalog\x12c\n" +
+	"\fcatalog_type\x18\x06 \x01(\x0e2:.google.cloud.oracledatabase.v1.IcebergCatalog.CatalogTypeB\x04\xe2A\x01\x02R\vcatalogType\"d\n" +
 	"\vCatalogType\x12\x1c\n" +
 	"\x18CATALOG_TYPE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04GLUE\x10\x01\x12\n" +
@@ -8632,77 +8632,77 @@ const file_google_cloud_oracledatabase_v1_goldengate_connection_proto_rawDesc = 
 	"\x06NESSIE\x10\x03\x12\v\n" +
 	"\aPOLARIS\x10\x04\x12\b\n" +
 	"\x04REST\x10\x05B\x11\n" +
-	"\x0fcatalog_details\"\xff\x02\n" +
-	"\x16AmazonS3IcebergStorage\x12g\n" +
-	"\vscheme_type\x18\x01 \x01(\x0e2A.google.cloud.oracledatabase.v1.AmazonS3IcebergStorage.SchemeTypeB\x03\xe0A\x02R\n" +
-	"schemeType\x12'\n" +
-	"\raccess_key_id\x18\x02 \x01(\tB\x03\xe0A\x02R\vaccessKeyId\x12\x1b\n" +
-	"\x06region\x18\x03 \x01(\tB\x03\xe0A\x02R\x06region\x12\x1b\n" +
-	"\x06bucket\x18\x04 \x01(\tB\x03\xe0A\x02R\x06bucket\x12\x1f\n" +
-	"\bendpoint\x18\x05 \x01(\tB\x03\xe0A\x01R\bendpoint\x12<\n" +
-	"\x18secret_access_key_secret\x18\x06 \x01(\tB\x03\xe0A\x01R\x15secretAccessKeySecret\":\n" +
+	"\x0fcatalog_details\"\x85\x03\n" +
+	"\x16AmazonS3IcebergStorage\x12h\n" +
+	"\vscheme_type\x18\x01 \x01(\x0e2A.google.cloud.oracledatabase.v1.AmazonS3IcebergStorage.SchemeTypeB\x04\xe2A\x01\x02R\n" +
+	"schemeType\x12(\n" +
+	"\raccess_key_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vaccessKeyId\x12\x1c\n" +
+	"\x06region\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x06region\x12\x1c\n" +
+	"\x06bucket\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\x06bucket\x12 \n" +
+	"\bendpoint\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\bendpoint\x12=\n" +
+	"\x18secret_access_key_secret\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x15secretAccessKeySecret\":\n" +
 	"\n" +
 	"SchemeType\x12\x1b\n" +
 	"\x17SCHEME_TYPE_UNSPECIFIED\x10\x00\x12\x06\n" +
 	"\x02S3\x10\x01\x12\a\n" +
-	"\x03S3A\x10\x02\"\xa1\x01\n" +
-	" GoogleCloudStorageIcebergStorage\x12\x1b\n" +
-	"\x06bucket\x18\x01 \x01(\tB\x03\xe0A\x02R\x06bucket\x12\"\n" +
+	"\x03S3A\x10\x02\"\xa4\x01\n" +
+	" GoogleCloudStorageIcebergStorage\x12\x1c\n" +
+	"\x06bucket\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06bucket\x12#\n" +
 	"\n" +
-	"project_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tprojectId\x12<\n" +
-	"\x18service_account_key_file\x18\x03 \x01(\tB\x03\xe0A\x01R\x15serviceAccountKeyFile\"\xc5\x01\n" +
-	"\"AzureDataLakeStorageIcebergStorage\x12(\n" +
-	"\razure_account\x18\x01 \x01(\tB\x03\xe0A\x02R\fazureAccount\x12!\n" +
-	"\tcontainer\x18\x02 \x01(\tB\x03\xe0A\x02R\tcontainer\x121\n" +
-	"\x12account_key_secret\x18\x03 \x01(\tB\x03\xe0A\x01R\x10accountKeySecret\x12\x1f\n" +
-	"\bendpoint\x18\x04 \x01(\tB\x03\xe0A\x01R\bendpoint\"\xa0\x05\n" +
+	"project_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12=\n" +
+	"\x18service_account_key_file\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x15serviceAccountKeyFile\"\xc9\x01\n" +
+	"\"AzureDataLakeStorageIcebergStorage\x12)\n" +
+	"\razure_account\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\fazureAccount\x12\"\n" +
+	"\tcontainer\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tcontainer\x122\n" +
+	"\x12account_key_secret\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x10accountKeySecret\x12 \n" +
+	"\bendpoint\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\bendpoint\"\xa1\x05\n" +
 	"\x0eIcebergStorage\x12s\n" +
 	"\x19amazon_s3_iceberg_storage\x18\x01 \x01(\v26.google.cloud.oracledatabase.v1.AmazonS3IcebergStorageH\x00R\x16amazonS3IcebergStorage\x12\x92\x01\n" +
 	"$google_cloud_storage_iceberg_storage\x18\x02 \x01(\v2@.google.cloud.oracledatabase.v1.GoogleCloudStorageIcebergStorageH\x00R googleCloudStorageIcebergStorage\x12\x99\x01\n" +
-	"'azure_data_lake_storage_iceberg_storage\x18\x03 \x01(\v2B.google.cloud.oracledatabase.v1.AzureDataLakeStorageIcebergStorageH\x00R\"azureDataLakeStorageIcebergStorage\x12b\n" +
-	"\fstorage_type\x18\x04 \x01(\x0e2:.google.cloud.oracledatabase.v1.IcebergStorage.StorageTypeB\x03\xe0A\x02R\vstorageType\"q\n" +
+	"'azure_data_lake_storage_iceberg_storage\x18\x03 \x01(\v2B.google.cloud.oracledatabase.v1.AzureDataLakeStorageIcebergStorageH\x00R\"azureDataLakeStorageIcebergStorage\x12c\n" +
+	"\fstorage_type\x18\x04 \x01(\x0e2:.google.cloud.oracledatabase.v1.IcebergStorage.StorageTypeB\x04\xe2A\x01\x02R\vstorageType\"q\n" +
 	"\vStorageType\x12\x1c\n" +
 	"\x18STORAGE_TYPE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tAMAZON_S3\x10\x01\x12\x18\n" +
 	"\x14GOOGLE_CLOUD_STORAGE\x10\x02\x12\x1b\n" +
 	"\x17AZURE_DATA_LAKE_STORAGE\x10\x03B\x11\n" +
-	"\x0fstorage_details\"\xf3\x01\n" +
-	"%GoldengateIcebergConnectionProperties\x12,\n" +
-	"\x0ftechnology_type\x18\x01 \x01(\tB\x03\xe0A\x02R\x0etechnologyType\x12M\n" +
-	"\acatalog\x18\x02 \x01(\v2..google.cloud.oracledatabase.v1.IcebergCatalogB\x03\xe0A\x02R\acatalog\x12M\n" +
-	"\astorage\x18\x03 \x01(\v2..google.cloud.oracledatabase.v1.IcebergStorageB\x03\xe0A\x02R\astorage\"\xd2\x02\n" +
-	"!CreateGoldengateConnectionRequest\x12R\n" +
-	"\x06parent\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\x122oracledatabase.googleapis.com/GoldengateConnectionR\x06parent\x12=\n" +
-	"\x18goldengate_connection_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x16goldengateConnectionId\x12n\n" +
-	"\x15goldengate_connection\x18\x03 \x01(\v24.google.cloud.oracledatabase.v1.GoldengateConnectionB\x03\xe0A\x02R\x14goldengateConnection\x12*\n" +
+	"\x0fstorage_details\"\xf6\x01\n" +
+	"%GoldengateIcebergConnectionProperties\x12-\n" +
+	"\x0ftechnology_type\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x0etechnologyType\x12N\n" +
+	"\acatalog\x18\x02 \x01(\v2..google.cloud.oracledatabase.v1.IcebergCatalogB\x04\xe2A\x01\x02R\acatalog\x12N\n" +
+	"\astorage\x18\x03 \x01(\v2..google.cloud.oracledatabase.v1.IcebergStorageB\x04\xe2A\x01\x02R\astorage\"\xd6\x02\n" +
+	"!CreateGoldengateConnectionRequest\x12S\n" +
+	"\x06parent\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\x122oracledatabase.googleapis.com/GoldengateConnectionR\x06parent\x12>\n" +
+	"\x18goldengate_connection_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x16goldengateConnectionId\x12o\n" +
+	"\x15goldengate_connection\x18\x03 \x01(\v24.google.cloud.oracledatabase.v1.GoldengateConnectionB\x04\xe2A\x01\x02R\x14goldengateConnection\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x9f\x01\n" +
-	"!DeleteGoldengateConnectionRequest\x12N\n" +
-	"\x04name\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\n" +
-	"2oracledatabase.googleapis.com/GoldengateConnectionR\x04name\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xa1\x01\n" +
+	"!DeleteGoldengateConnectionRequest\x12O\n" +
+	"\x04name\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\n" +
+	"2oracledatabase.googleapis.com/GoldengateConnectionR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"p\n" +
-	"\x1eGetGoldengateConnectionRequest\x12N\n" +
-	"\x04name\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\n" +
-	"2oracledatabase.googleapis.com/GoldengateConnectionR\x04name\"\xf9\x01\n" +
-	" ListGoldengateConnectionsRequest\x12R\n" +
-	"\x06parent\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\x122oracledatabase.googleapis.com/GoldengateConnectionR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"q\n" +
+	"\x1eGetGoldengateConnectionRequest\x12O\n" +
+	"\x04name\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\n" +
+	"2oracledatabase.googleapis.com/GoldengateConnectionR\x04name\"\xfe\x01\n" +
+	" ListGoldengateConnectionsRequest\x12S\n" +
+	"\x06parent\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\x122oracledatabase.googleapis.com/GoldengateConnectionR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xdf\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xe0\x01\n" +
 	"!ListGoldengateConnectionsResponse\x12k\n" +
 	"\x16goldengate_connections\x18\x01 \x03(\v24.google.cloud.oracledatabase.v1.GoldengateConnectionR\x15goldengateConnections\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x01R\vunreachable\"A\n" +
-	"\rNameValuePair\x12\x15\n" +
-	"\x03key\x18\x01 \x01(\tB\x03\xe0A\x02R\x03key\x12\x19\n" +
-	"\x05value\x18\x02 \x01(\tB\x03\xe0A\x02R\x05value\"\x83\x01\n" +
-	"\x14KafkaBootstrapServer\x12\x17\n" +
-	"\x04host\x18\x01 \x01(\tB\x03\xe0A\x02R\x04host\x12\x17\n" +
-	"\x04port\x18\x02 \x01(\x05B\x03\xe0A\x01R\x04port\x129\n" +
-	"\x12private_ip_address\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x04R\x10privateIpAddressB\xf3\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\vunreachable\"C\n" +
+	"\rNameValuePair\x12\x16\n" +
+	"\x03key\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03key\x12\x1a\n" +
+	"\x05value\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05value\"\x86\x01\n" +
+	"\x14KafkaBootstrapServer\x12\x18\n" +
+	"\x04host\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04host\x12\x18\n" +
+	"\x04port\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x04port\x12:\n" +
+	"\x12private_ip_address\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x04R\x10privateIpAddressB\xf3\x01\n" +
 	"\"com.google.cloud.oracledatabase.v1B\x19GoldengateConnectionProtoP\x01ZJcloud.google.com/go/oracledatabase/apiv1/oracledatabasepb;oracledatabasepb\xaa\x02\x1eGoogle.Cloud.OracleDatabase.V1\xca\x02\x1eGoogle\\Cloud\\OracleDatabase\\V1\xea\x02!Google::Cloud::OracleDatabase::V1b\x06proto3"
 
 var (

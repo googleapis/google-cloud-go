@@ -4056,9 +4056,9 @@ var File_google_cloud_clouddms_v1_clouddms_proto protoreflect.FileDescriptor
 
 const file_google_cloud_clouddms_v1_clouddms_proto_rawDesc = "" +
 	"\n" +
-	"'google/cloud/clouddms/v1/clouddms.proto\x12\x18google.cloud.clouddms.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a1google/cloud/clouddms/v1/clouddms_resources.proto\x1a<google/cloud/clouddms/v1/conversionworkspace_resources.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd4\x01\n" +
-	"\x18ListMigrationJobsRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\x12)datamigration.googleapis.com/MigrationJobR\x06parent\x12\x1b\n" +
+	"'google/cloud/clouddms/v1/clouddms.proto\x12\x18google.cloud.clouddms.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a1google/cloud/clouddms/v1/clouddms_resources.proto\x1a<google/cloud/clouddms/v1/conversionworkspace_resources.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd5\x01\n" +
+	"\x18ListMigrationJobsRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\x12)datamigration.googleapis.com/MigrationJobR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -4067,32 +4067,32 @@ const file_google_cloud_clouddms_v1_clouddms_proto_rawDesc = "" +
 	"\x19ListMigrationJobsResponse\x12M\n" +
 	"\x0emigration_jobs\x18\x01 \x03(\v2&.google.cloud.clouddms.v1.MigrationJobR\rmigrationJobs\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"_\n" +
-	"\x16GetMigrationJobRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")datamigration.googleapis.com/MigrationJobR\x04name\"\x8b\x02\n" +
-	"\x19CreateMigrationJobRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\x12)datamigration.googleapis.com/MigrationJobR\x06parent\x12-\n" +
-	"\x10migration_job_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x0emigrationJobId\x12P\n" +
-	"\rmigration_job\x18\x03 \x01(\v2&.google.cloud.clouddms.v1.MigrationJobB\x03\xe0A\x02R\fmigrationJob\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"`\n" +
+	"\x16GetMigrationJobRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")datamigration.googleapis.com/MigrationJobR\x04name\"\x8f\x02\n" +
+	"\x19CreateMigrationJobRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\x12)datamigration.googleapis.com/MigrationJobR\x06parent\x12.\n" +
+	"\x10migration_job_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0emigrationJobId\x12Q\n" +
+	"\rmigration_job\x18\x03 \x01(\v2&.google.cloud.clouddms.v1.MigrationJobB\x04\xe2A\x01\x02R\fmigrationJob\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xce\x01\n" +
-	"\x19UpdateMigrationJobRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12P\n" +
-	"\rmigration_job\x18\x02 \x01(\v2&.google.cloud.clouddms.v1.MigrationJobB\x03\xe0A\x02R\fmigrationJob\x12\x1d\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xd0\x01\n" +
+	"\x19UpdateMigrationJobRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12Q\n" +
+	"\rmigration_job\x18\x02 \x01(\v2&.google.cloud.clouddms.v1.MigrationJobB\x04\xe2A\x01\x02R\fmigrationJob\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tR\trequestId\"\x97\x01\n" +
-	"\x19DeleteMigrationJobRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
+	"request_id\x18\x03 \x01(\tR\trequestId\"\x98\x01\n" +
+	"\x19DeleteMigrationJobRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
 	")datamigration.googleapis.com/MigrationJobR\x04name\x12\x1d\n" +
 	"\n" +
 	"request_id\x18\x02 \x01(\tR\trequestId\x12\x14\n" +
-	"\x05force\x18\x03 \x01(\bR\x05force\"\x8c\x01\n" +
+	"\x05force\x18\x03 \x01(\bR\x05force\"\x8d\x01\n" +
 	"\x18StartMigrationJobRequest\x12B\n" +
 	"\x04name\x18\x01 \x01(\tB.\xfaA+\n" +
-	")datamigration.googleapis.com/MigrationJobR\x04name\x12,\n" +
-	"\x0fskip_validation\x18\x02 \x01(\bB\x03\xe0A\x01R\x0eskipValidation\"]\n" +
+	")datamigration.googleapis.com/MigrationJobR\x04name\x12-\n" +
+	"\x0fskip_validation\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x0eskipValidation\"]\n" +
 	"\x17StopMigrationJobRequest\x12B\n" +
 	"\x04name\x18\x01 \x01(\tB.\xfaA+\n" +
 	")datamigration.googleapis.com/MigrationJobR\x04name\"_\n" +
@@ -4101,44 +4101,44 @@ const file_google_cloud_clouddms_v1_clouddms_proto_rawDesc = "" +
 	")datamigration.googleapis.com/MigrationJobR\x04name\"`\n" +
 	"\x1aPromoteMigrationJobRequest\x12B\n" +
 	"\x04name\x18\x01 \x01(\tB.\xfaA+\n" +
-	")datamigration.googleapis.com/MigrationJobR\x04name\"\xf3\x01\n" +
+	")datamigration.googleapis.com/MigrationJobR\x04name\"\xf5\x01\n" +
 	"\x19VerifyMigrationJobRequest\x12B\n" +
 	"\x04name\x18\x01 \x01(\tB.\xfaA+\n" +
-	")datamigration.googleapis.com/MigrationJobR\x04name\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12P\n" +
-	"\rmigration_job\x18\x03 \x01(\v2&.google.cloud.clouddms.v1.MigrationJobB\x03\xe0A\x01R\fmigrationJob\"\x8e\x01\n" +
+	")datamigration.googleapis.com/MigrationJobR\x04name\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12Q\n" +
+	"\rmigration_job\x18\x03 \x01(\v2&.google.cloud.clouddms.v1.MigrationJobB\x04\xe2A\x01\x01R\fmigrationJob\"\x8f\x01\n" +
 	"\x1aRestartMigrationJobRequest\x12B\n" +
 	"\x04name\x18\x01 \x01(\tB.\xfaA+\n" +
-	")datamigration.googleapis.com/MigrationJobR\x04name\x12,\n" +
-	"\x0fskip_validation\x18\x02 \x01(\bB\x03\xe0A\x01R\x0eskipValidation\"\xe5\x02\n" +
+	")datamigration.googleapis.com/MigrationJobR\x04name\x12-\n" +
+	"\x0fskip_validation\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x0eskipValidation\"\xe6\x02\n" +
 	"\x18GenerateSshScriptRequest\x12S\n" +
 	"\rmigration_job\x18\x01 \x01(\tB.\xfaA+\n" +
-	")datamigration.googleapis.com/MigrationJobR\fmigrationJob\x12\x13\n" +
-	"\x02vm\x18\x02 \x01(\tB\x03\xe0A\x02R\x02vm\x12Z\n" +
+	")datamigration.googleapis.com/MigrationJobR\fmigrationJob\x12\x14\n" +
+	"\x02vm\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x02vm\x12Z\n" +
 	"\x12vm_creation_config\x18d \x01(\v2*.google.cloud.clouddms.v1.VmCreationConfigH\x00R\x10vmCreationConfig\x12]\n" +
 	"\x13vm_selection_config\x18e \x01(\v2+.google.cloud.clouddms.v1.VmSelectionConfigH\x00R\x11vmSelectionConfig\x12\x17\n" +
 	"\avm_port\x18\x03 \x01(\x05R\x06vmPortB\v\n" +
-	"\tvm_config\"p\n" +
-	"\x10VmCreationConfig\x12+\n" +
-	"\x0fvm_machine_type\x18\x01 \x01(\tB\x03\xe0A\x02R\rvmMachineType\x12\x17\n" +
+	"\tvm_config\"q\n" +
+	"\x10VmCreationConfig\x12,\n" +
+	"\x0fvm_machine_type\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\rvmMachineType\x12\x17\n" +
 	"\avm_zone\x18\x02 \x01(\tR\x06vmZone\x12\x16\n" +
-	"\x06subnet\x18\x03 \x01(\tR\x06subnet\"1\n" +
-	"\x11VmSelectionConfig\x12\x1c\n" +
-	"\avm_zone\x18\x01 \x01(\tB\x03\xe0A\x02R\x06vmZone\"#\n" +
+	"\x06subnet\x18\x03 \x01(\tR\x06subnet\"2\n" +
+	"\x11VmSelectionConfig\x12\x1d\n" +
+	"\avm_zone\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06vmZone\"#\n" +
 	"\tSshScript\x12\x16\n" +
-	"\x06script\x18\x01 \x01(\tR\x06script\"\xff\x01\n" +
+	"\x06script\x18\x01 \x01(\tR\x06script\"\x83\x02\n" +
 	"\x1dGenerateTcpProxyScriptRequest\x12S\n" +
 	"\rmigration_job\x18\x01 \x01(\tB.\xfaA+\n" +
-	")datamigration.googleapis.com/MigrationJobR\fmigrationJob\x12\x1c\n" +
-	"\avm_name\x18\x02 \x01(\tB\x03\xe0A\x02R\x06vmName\x12+\n" +
-	"\x0fvm_machine_type\x18\x03 \x01(\tB\x03\xe0A\x02R\rvmMachineType\x12\x1c\n" +
-	"\avm_zone\x18\x04 \x01(\tB\x03\xe0A\x01R\x06vmZone\x12 \n" +
-	"\tvm_subnet\x18\x05 \x01(\tB\x03\xe0A\x02R\bvmSubnet\"(\n" +
+	")datamigration.googleapis.com/MigrationJobR\fmigrationJob\x12\x1d\n" +
+	"\avm_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06vmName\x12,\n" +
+	"\x0fvm_machine_type\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\rvmMachineType\x12\x1d\n" +
+	"\avm_zone\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06vmZone\x12!\n" +
+	"\tvm_subnet\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\bvmSubnet\"(\n" +
 	"\x0eTcpProxyScript\x12\x16\n" +
-	"\x06script\x18\x01 \x01(\tR\x06script\"\xde\x01\n" +
-	"\x1dListConnectionProfilesRequest\x12N\n" +
-	"\x06parent\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\x12.datamigration.googleapis.com/ConnectionProfileR\x06parent\x12\x1b\n" +
+	"\x06script\x18\x01 \x01(\tR\x06script\"\xdf\x01\n" +
+	"\x1dListConnectionProfilesRequest\x12O\n" +
+	"\x06parent\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\x12.datamigration.googleapis.com/ConnectionProfileR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -4147,41 +4147,41 @@ const file_google_cloud_clouddms_v1_clouddms_proto_rawDesc = "" +
 	"\x1eListConnectionProfilesResponse\x12\\\n" +
 	"\x13connection_profiles\x18\x01 \x03(\v2+.google.cloud.clouddms.v1.ConnectionProfileR\x12connectionProfiles\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"i\n" +
-	"\x1bGetConnectionProfileRequest\x12J\n" +
-	"\x04name\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".datamigration.googleapis.com/ConnectionProfileR\x04name\"\x86\x03\n" +
-	"\x1eCreateConnectionProfileRequest\x12N\n" +
-	"\x06parent\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\x12.datamigration.googleapis.com/ConnectionProfileR\x06parent\x127\n" +
-	"\x15connection_profile_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x13connectionProfileId\x12_\n" +
-	"\x12connection_profile\x18\x03 \x01(\v2+.google.cloud.clouddms.v1.ConnectionProfileB\x03\xe0A\x02R\x11connectionProfile\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"j\n" +
+	"\x1bGetConnectionProfileRequest\x12K\n" +
+	"\x04name\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".datamigration.googleapis.com/ConnectionProfileR\x04name\"\x8c\x03\n" +
+	"\x1eCreateConnectionProfileRequest\x12O\n" +
+	"\x06parent\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\x12.datamigration.googleapis.com/ConnectionProfileR\x06parent\x128\n" +
+	"\x15connection_profile_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x13connectionProfileId\x12`\n" +
+	"\x12connection_profile\x18\x03 \x01(\v2+.google.cloud.clouddms.v1.ConnectionProfileB\x04\xe2A\x01\x02R\x11connectionProfile\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\x12(\n" +
-	"\rvalidate_only\x18\x05 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12,\n" +
-	"\x0fskip_validation\x18\x06 \x01(\bB\x03\xe0A\x01R\x0eskipValidation\"\xbf\x02\n" +
-	"\x1eUpdateConnectionProfileRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12_\n" +
-	"\x12connection_profile\x18\x02 \x01(\v2+.google.cloud.clouddms.v1.ConnectionProfileB\x03\xe0A\x02R\x11connectionProfile\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12)\n" +
+	"\rvalidate_only\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12-\n" +
+	"\x0fskip_validation\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\x0eskipValidation\"\xc4\x02\n" +
+	"\x1eUpdateConnectionProfileRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12`\n" +
+	"\x12connection_profile\x18\x02 \x01(\v2+.google.cloud.clouddms.v1.ConnectionProfileB\x04\xe2A\x01\x02R\x11connectionProfile\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\x12(\n" +
-	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12,\n" +
-	"\x0fskip_validation\x18\x05 \x01(\bB\x03\xe0A\x01R\x0eskipValidation\"\xa1\x01\n" +
-	"\x1eDeleteConnectionProfileRequest\x12J\n" +
-	"\x04name\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12)\n" +
+	"\rvalidate_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12-\n" +
+	"\x0fskip_validation\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\x0eskipValidation\"\xa2\x01\n" +
+	"\x1eDeleteConnectionProfileRequest\x12K\n" +
+	"\x04name\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
 	".datamigration.googleapis.com/ConnectionProfileR\x04name\x12\x1d\n" +
 	"\n" +
 	"request_id\x18\x02 \x01(\tR\trequestId\x12\x14\n" +
-	"\x05force\x18\x03 \x01(\bR\x05force\"\xdc\x02\n" +
-	"\x1eCreatePrivateConnectionRequest\x12N\n" +
-	"\x06parent\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\x12.datamigration.googleapis.com/PrivateConnectionR\x06parent\x127\n" +
-	"\x15private_connection_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x13privateConnectionId\x12_\n" +
-	"\x12private_connection\x18\x03 \x01(\v2+.google.cloud.clouddms.v1.PrivateConnectionB\x03\xe0A\x02R\x11privateConnection\x12\"\n" +
+	"\x05force\x18\x03 \x01(\bR\x05force\"\xe1\x02\n" +
+	"\x1eCreatePrivateConnectionRequest\x12O\n" +
+	"\x06parent\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\x12.datamigration.googleapis.com/PrivateConnectionR\x06parent\x128\n" +
+	"\x15private_connection_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x13privateConnectionId\x12`\n" +
+	"\x12private_connection\x18\x03 \x01(\v2+.google.cloud.clouddms.v1.PrivateConnectionB\x04\xe2A\x01\x02R\x11privateConnection\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\x12,\n" +
-	"\x0fskip_validation\x18\x05 \x01(\bB\x03\xe0A\x01R\x0eskipValidation\"\xde\x01\n" +
-	"\x1dListPrivateConnectionsRequest\x12N\n" +
-	"\x06parent\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\x12.datamigration.googleapis.com/PrivateConnectionR\x06parent\x12\x1b\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12-\n" +
+	"\x0fskip_validation\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\x0eskipValidation\"\xdf\x01\n" +
+	"\x1dListPrivateConnectionsRequest\x12O\n" +
+	"\x06parent\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\x12.datamigration.googleapis.com/PrivateConnectionR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -4190,27 +4190,27 @@ const file_google_cloud_clouddms_v1_clouddms_proto_rawDesc = "" +
 	"\x1eListPrivateConnectionsResponse\x12\\\n" +
 	"\x13private_connections\x18\x01 \x03(\v2+.google.cloud.clouddms.v1.PrivateConnectionR\x12privateConnections\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\x90\x01\n" +
-	"\x1eDeletePrivateConnectionRequest\x12J\n" +
-	"\x04name\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".datamigration.googleapis.com/PrivateConnectionR\x04name\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\x92\x01\n" +
+	"\x1eDeletePrivateConnectionRequest\x12K\n" +
+	"\x04name\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".datamigration.googleapis.com/PrivateConnectionR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"i\n" +
-	"\x1bGetPrivateConnectionRequest\x12J\n" +
-	"\x04name\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".datamigration.googleapis.com/PrivateConnectionR\x04name\"\xd5\x02\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion\"\xc7\x01\n" +
-	"\x1fListConversionWorkspacesRequest\x12P\n" +
-	"\x06parent\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\x120datamigration.googleapis.com/ConversionWorkspaceR\x06parent\x12\x1b\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"j\n" +
+	"\x1bGetPrivateConnectionRequest\x12K\n" +
+	"\x04name\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".datamigration.googleapis.com/PrivateConnectionR\x04name\"\xdc\x02\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"apiVersion\"\xc8\x01\n" +
+	"\x1fListConversionWorkspacesRequest\x12Q\n" +
+	"\x06parent\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\x120datamigration.googleapis.com/ConversionWorkspaceR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -4218,94 +4218,94 @@ const file_google_cloud_clouddms_v1_clouddms_proto_rawDesc = "" +
 	" ListConversionWorkspacesResponse\x12b\n" +
 	"\x15conversion_workspaces\x18\x01 \x03(\v2-.google.cloud.clouddms.v1.ConversionWorkspaceR\x14conversionWorkspaces\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"m\n" +
-	"\x1dGetConversionWorkspaceRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0datamigration.googleapis.com/ConversionWorkspaceR\x04name\"\xb7\x02\n" +
-	" CreateConversionWorkspaceRequest\x12P\n" +
-	"\x06parent\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\x120datamigration.googleapis.com/ConversionWorkspaceR\x06parent\x12;\n" +
-	"\x17conversion_workspace_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x15conversionWorkspaceId\x12e\n" +
-	"\x14conversion_workspace\x18\x03 \x01(\v2-.google.cloud.clouddms.v1.ConversionWorkspaceB\x03\xe0A\x02R\x13conversionWorkspace\x12\x1d\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"n\n" +
+	"\x1dGetConversionWorkspaceRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0datamigration.googleapis.com/ConversionWorkspaceR\x04name\"\xba\x02\n" +
+	" CreateConversionWorkspaceRequest\x12Q\n" +
+	"\x06parent\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\x120datamigration.googleapis.com/ConversionWorkspaceR\x06parent\x12<\n" +
+	"\x17conversion_workspace_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x15conversionWorkspaceId\x12f\n" +
+	"\x14conversion_workspace\x18\x03 \x01(\v2-.google.cloud.clouddms.v1.ConversionWorkspaceB\x04\xe2A\x01\x02R\x13conversionWorkspace\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tR\trequestId\"\xea\x01\n" +
-	" UpdateConversionWorkspaceRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12e\n" +
-	"\x14conversion_workspace\x18\x02 \x01(\v2-.google.cloud.clouddms.v1.ConversionWorkspaceB\x03\xe0A\x02R\x13conversionWorkspace\x12\x1d\n" +
+	"request_id\x18\x04 \x01(\tR\trequestId\"\xec\x01\n" +
+	" UpdateConversionWorkspaceRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12f\n" +
+	"\x14conversion_workspace\x18\x02 \x01(\v2-.google.cloud.clouddms.v1.ConversionWorkspaceB\x04\xe2A\x01\x02R\x13conversionWorkspace\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tR\trequestId\"\xa5\x01\n" +
-	" DeleteConversionWorkspaceRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
+	"request_id\x18\x03 \x01(\tR\trequestId\"\xa6\x01\n" +
+	" DeleteConversionWorkspaceRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
 	"0datamigration.googleapis.com/ConversionWorkspaceR\x04name\x12\x1d\n" +
 	"\n" +
 	"request_id\x18\x02 \x01(\tR\trequestId\x12\x14\n" +
-	"\x05force\x18\x03 \x01(\bR\x05force\"\x96\x01\n" +
-	" CommitConversionWorkspaceRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0datamigration.googleapis.com/ConversionWorkspaceR\x04name\x12$\n" +
-	"\vcommit_name\x18\x02 \x01(\tB\x03\xe0A\x01R\n" +
-	"commitName\"r\n" +
-	"\"RollbackConversionWorkspaceRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0datamigration.googleapis.com/ConversionWorkspaceR\x04name\"\x90\x02\n" +
-	"\x1fApplyConversionWorkspaceRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
+	"\x05force\x18\x03 \x01(\bR\x05force\"\x98\x01\n" +
+	" CommitConversionWorkspaceRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0datamigration.googleapis.com/ConversionWorkspaceR\x04name\x12%\n" +
+	"\vcommit_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"commitName\"s\n" +
+	"\"RollbackConversionWorkspaceRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0datamigration.googleapis.com/ConversionWorkspaceR\x04name\"\x94\x02\n" +
+	"\x1fApplyConversionWorkspaceRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
 	"0datamigration.googleapis.com/ConversionWorkspaceR\x04name\x12\x16\n" +
-	"\x06filter\x18\x02 \x01(\tR\x06filter\x12\x1c\n" +
-	"\adry_run\x18\x03 \x01(\bB\x03\xe0A\x01R\x06dryRun\x12$\n" +
-	"\vauto_commit\x18\x04 \x01(\bB\x03\xe0A\x01R\n" +
-	"autoCommit\x124\n" +
-	"\x12connection_profile\x18d \x01(\tB\x03\xe0A\x01H\x00R\x11connectionProfileB\r\n" +
-	"\vdestination\"\xa7\x01\n" +
-	"\x17ListMappingRulesRequest\x12P\n" +
-	"\x06parent\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
+	"\x06filter\x18\x02 \x01(\tR\x06filter\x12\x1d\n" +
+	"\adry_run\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x06dryRun\x12%\n" +
+	"\vauto_commit\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\n" +
+	"autoCommit\x125\n" +
+	"\x12connection_profile\x18d \x01(\tB\x04\xe2A\x01\x01H\x00R\x11connectionProfileB\r\n" +
+	"\vdestination\"\xa8\x01\n" +
+	"\x17ListMappingRulesRequest\x12Q\n" +
+	"\x06parent\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
 	"0datamigration.googleapis.com/ConversionWorkspaceR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x8e\x01\n" +
 	"\x18ListMappingRulesResponse\x12J\n" +
 	"\rmapping_rules\x18\x01 \x03(\v2%.google.cloud.clouddms.v1.MappingRuleR\fmappingRules\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"]\n" +
-	"\x15GetMappingRuleRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(datamigration.googleapis.com/MappingRuleR\x04name\"\xa9\x02\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"^\n" +
+	"\x15GetMappingRuleRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(datamigration.googleapis.com/MappingRuleR\x04name\"\xab\x02\n" +
 	"\x1eSeedConversionWorkspaceRequest\x12I\n" +
 	"\x04name\x18\x01 \x01(\tB5\xfaA2\n" +
 	"0datamigration.googleapis.com/ConversionWorkspaceR\x04name\x12\x1f\n" +
 	"\vauto_commit\x18\x02 \x01(\bR\n" +
-	"autoCommit\x12A\n" +
-	"\x19source_connection_profile\x18d \x01(\tB\x03\xe0A\x01H\x00R\x17sourceConnectionProfile\x12K\n" +
-	"\x1edestination_connection_profile\x18e \x01(\tB\x03\xe0A\x01H\x00R\x1cdestinationConnectionProfileB\v\n" +
-	"\tseed_from\"\xe2\x01\n" +
+	"autoCommit\x12B\n" +
+	"\x19source_connection_profile\x18d \x01(\tB\x04\xe2A\x01\x01H\x00R\x17sourceConnectionProfile\x12L\n" +
+	"\x1edestination_connection_profile\x18e \x01(\tB\x04\xe2A\x01\x01H\x00R\x1cdestinationConnectionProfileB\v\n" +
+	"\tseed_from\"\xe5\x01\n" +
 	"!ConvertConversionWorkspaceRequest\x12I\n" +
 	"\x04name\x18\x01 \x01(\tB5\xfaA2\n" +
-	"0datamigration.googleapis.com/ConversionWorkspaceR\x04name\x12$\n" +
-	"\vauto_commit\x18\x04 \x01(\bB\x03\xe0A\x01R\n" +
-	"autoCommit\x12\x1b\n" +
-	"\x06filter\x18\x05 \x01(\tB\x03\xe0A\x01R\x06filter\x12/\n" +
-	"\x11convert_full_path\x18\x06 \x01(\bB\x03\xe0A\x01R\x0fconvertFullPath\"\xc1\x03\n" +
-	"\x19ImportMappingRulesRequest\x12P\n" +
-	"\x06parent\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0datamigration.googleapis.com/ConversionWorkspaceR\x06parent\x12W\n" +
-	"\frules_format\x18\x02 \x01(\x0e2/.google.cloud.clouddms.v1.ImportRulesFileFormatB\x03\xe0A\x02R\vrulesFormat\x12c\n" +
-	"\vrules_files\x18\x03 \x03(\v2=.google.cloud.clouddms.v1.ImportMappingRulesRequest.RulesFileB\x03\xe0A\x02R\n" +
-	"rulesFiles\x12$\n" +
-	"\vauto_commit\x18\x06 \x01(\bB\x03\xe0A\x02R\n" +
-	"autoCommit\x1an\n" +
-	"\tRulesFile\x127\n" +
-	"\x15rules_source_filename\x18\x01 \x01(\tB\x03\xe0A\x02R\x13rulesSourceFilename\x12(\n" +
-	"\rrules_content\x18\x02 \x01(\tB\x03\xe0A\x02R\frulesContent\"\xc3\x04\n" +
-	"\x1fDescribeDatabaseEntitiesRequest\x12k\n" +
-	"\x14conversion_workspace\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0datamigration.googleapis.com/ConversionWorkspaceR\x13conversionWorkspace\x12 \n" +
-	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"0datamigration.googleapis.com/ConversionWorkspaceR\x04name\x12%\n" +
+	"\vauto_commit\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\n" +
+	"autoCommit\x12\x1c\n" +
+	"\x06filter\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x120\n" +
+	"\x11convert_full_path\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\x0fconvertFullPath\"\xc7\x03\n" +
+	"\x19ImportMappingRulesRequest\x12Q\n" +
+	"\x06parent\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0datamigration.googleapis.com/ConversionWorkspaceR\x06parent\x12X\n" +
+	"\frules_format\x18\x02 \x01(\x0e2/.google.cloud.clouddms.v1.ImportRulesFileFormatB\x04\xe2A\x01\x02R\vrulesFormat\x12d\n" +
+	"\vrules_files\x18\x03 \x03(\v2=.google.cloud.clouddms.v1.ImportMappingRulesRequest.RulesFileB\x04\xe2A\x01\x02R\n" +
+	"rulesFiles\x12%\n" +
+	"\vauto_commit\x18\x06 \x01(\bB\x04\xe2A\x01\x02R\n" +
+	"autoCommit\x1ap\n" +
+	"\tRulesFile\x128\n" +
+	"\x15rules_source_filename\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x13rulesSourceFilename\x12)\n" +
+	"\rrules_content\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\frulesContent\"\xcb\x04\n" +
+	"\x1fDescribeDatabaseEntitiesRequest\x12l\n" +
+	"\x14conversion_workspace\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0datamigration.googleapis.com/ConversionWorkspaceR\x13conversionWorkspace\x12!\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01R\tpageToken\x12]\n" +
-	"\x04tree\x18\x06 \x01(\x0e2D.google.cloud.clouddms.v1.DescribeDatabaseEntitiesRequest.DBTreeTypeB\x03\xe0A\x02R\x04tree\x12%\n" +
-	"\vuncommitted\x18\v \x01(\bB\x03\xe0A\x01R\vuncommitted\x12 \n" +
-	"\tcommit_id\x18\f \x01(\tB\x03\xe0A\x01R\bcommitId\x12\x1b\n" +
-	"\x06filter\x18\r \x01(\tB\x03\xe0A\x01R\x06filter\x12E\n" +
-	"\x04view\x18\x0e \x01(\x0e2,.google.cloud.clouddms.v1.DatabaseEntityViewB\x03\xe0A\x01R\x04view\"a\n" +
+	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12^\n" +
+	"\x04tree\x18\x06 \x01(\x0e2D.google.cloud.clouddms.v1.DescribeDatabaseEntitiesRequest.DBTreeTypeB\x04\xe2A\x01\x02R\x04tree\x12&\n" +
+	"\vuncommitted\x18\v \x01(\bB\x04\xe2A\x01\x01R\vuncommitted\x12!\n" +
+	"\tcommit_id\x18\f \x01(\tB\x04\xe2A\x01\x01R\bcommitId\x12\x1c\n" +
+	"\x06filter\x18\r \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12F\n" +
+	"\x04view\x18\x0e \x01(\x0e2,.google.cloud.clouddms.v1.DatabaseEntityViewB\x04\xe2A\x01\x01R\x04view\"a\n" +
 	"\n" +
 	"DBTreeType\x12\x1c\n" +
 	"\x18DB_TREE_TYPE_UNSPECIFIED\x10\x00\x12\x0f\n" +
@@ -4315,33 +4315,33 @@ const file_google_cloud_clouddms_v1_clouddms_proto_rawDesc = "" +
 	"\x10DESTINATION_TREE\x10\x03\"\xa1\x01\n" +
 	" DescribeDatabaseEntitiesResponse\x12U\n" +
 	"\x11database_entities\x18\x01 \x03(\v2(.google.cloud.clouddms.v1.DatabaseEntityR\x10databaseEntities\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xc7\x02\n" +
-	"\x1bSearchBackgroundJobsRequest\x12k\n" +
-	"\x14conversion_workspace\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0datamigration.googleapis.com/ConversionWorkspaceR\x13conversionWorkspace\x12H\n" +
-	"\x1freturn_most_recent_per_job_type\x18\x02 \x01(\bB\x03\xe0A\x01R\x1areturnMostRecentPerJobType\x12\x1e\n" +
-	"\bmax_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\amaxSize\x12Q\n" +
-	"\x14completed_until_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\x12completedUntilTime\"c\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xcb\x02\n" +
+	"\x1bSearchBackgroundJobsRequest\x12l\n" +
+	"\x14conversion_workspace\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0datamigration.googleapis.com/ConversionWorkspaceR\x13conversionWorkspace\x12I\n" +
+	"\x1freturn_most_recent_per_job_type\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x1areturnMostRecentPerJobType\x12\x1f\n" +
+	"\bmax_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\amaxSize\x12R\n" +
+	"\x14completed_until_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\x12completedUntilTime\"c\n" +
 	"\x1cSearchBackgroundJobsResponse\x12C\n" +
-	"\x04jobs\x18\x01 \x03(\v2/.google.cloud.clouddms.v1.BackgroundJobLogEntryR\x04jobs\"\xbc\x01\n" +
-	"+DescribeConversionWorkspaceRevisionsRequest\x12k\n" +
-	"\x14conversion_workspace\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0datamigration.googleapis.com/ConversionWorkspaceR\x13conversionWorkspace\x12 \n" +
-	"\tcommit_id\x18\x02 \x01(\tB\x03\xe0A\x01R\bcommitId\"{\n" +
+	"\x04jobs\x18\x01 \x03(\v2/.google.cloud.clouddms.v1.BackgroundJobLogEntryR\x04jobs\"\xbe\x01\n" +
+	"+DescribeConversionWorkspaceRevisionsRequest\x12l\n" +
+	"\x14conversion_workspace\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0datamigration.googleapis.com/ConversionWorkspaceR\x13conversionWorkspace\x12!\n" +
+	"\tcommit_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\bcommitId\"{\n" +
 	",DescribeConversionWorkspaceRevisionsResponse\x12K\n" +
-	"\trevisions\x18\x01 \x03(\v2-.google.cloud.clouddms.v1.ConversionWorkspaceR\trevisions\"\xff\x01\n" +
-	"\x18CreateMappingRuleRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(datamigration.googleapis.com/MappingRuleR\x06parent\x12+\n" +
-	"\x0fmapping_rule_id\x18\x02 \x01(\tB\x03\xe0A\x02R\rmappingRuleId\x12M\n" +
-	"\fmapping_rule\x18\x03 \x01(\v2%.google.cloud.clouddms.v1.MappingRuleB\x03\xe0A\x02R\vmappingRule\x12\x1d\n" +
+	"\trevisions\x18\x01 \x03(\v2-.google.cloud.clouddms.v1.ConversionWorkspaceR\trevisions\"\x82\x02\n" +
+	"\x18CreateMappingRuleRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(datamigration.googleapis.com/MappingRuleR\x06parent\x12,\n" +
+	"\x0fmapping_rule_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\rmappingRuleId\x12N\n" +
+	"\fmapping_rule\x18\x03 \x01(\v2%.google.cloud.clouddms.v1.MappingRuleB\x04\xe2A\x01\x02R\vmappingRule\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tR\trequestId\"\x84\x01\n" +
-	"\x18DeleteMappingRuleRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(datamigration.googleapis.com/MappingRuleR\x04name\x12\"\n" +
+	"request_id\x18\x04 \x01(\tR\trequestId\"\x86\x01\n" +
+	"\x18DeleteMappingRuleRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(datamigration.googleapis.com/MappingRuleR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\x92\x01\n" +
-	"\x15FetchStaticIpsRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x93\x01\n" +
+	"\x15FetchStaticIpsRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x04name\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +

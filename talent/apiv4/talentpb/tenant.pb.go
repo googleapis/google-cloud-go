@@ -108,10 +108,10 @@ var File_google_cloud_talent_v4_tenant_proto protoreflect.FileDescriptor
 
 const file_google_cloud_talent_v4_tenant_proto_rawDesc = "" +
 	"\n" +
-	"#google/cloud/talent/v4/tenant.proto\x12\x16google.cloud.talent.v4\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x88\x01\n" +
+	"#google/cloud/talent/v4/tenant.proto\x12\x16google.cloud.talent.v4\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x89\x01\n" +
 	"\x06Tenant\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12$\n" +
-	"\vexternal_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12%\n" +
+	"\vexternal_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
 	"externalId:D\xeaAA\n" +
 	"\x1ajobs.googleapis.com/Tenant\x12#projects/{project}/tenants/{tenant}Be\n" +
 	"\x1acom.google.cloud.talent.v4B\vTenantProtoP\x01Z2cloud.google.com/go/talent/apiv4/talentpb;talentpb\xa2\x02\x03CTSb\x06proto3"

@@ -2239,7 +2239,7 @@ type queryParameterTestCase struct {
 	query      string
 	parameters []QueryParameter
 	wantRow    []Value
-	wantConfig interface{}
+	wantConfig any
 }
 
 var (
@@ -2336,7 +2336,7 @@ func initQueryParameterTestCases() {
 			"SELECT @val",
 			[]QueryParameter{{Name: "val", Value: []time.Time{ts, ts}}},
 			[]Value{[]Value{ts, ts}},
-			[]interface{}{ts, ts},
+			[]any{ts, ts},
 		},
 		{
 			"DatetimeParam",
@@ -2439,20 +2439,20 @@ func initQueryParameterTestCases() {
 				},
 			},
 			[]Value{[]Value{rangeTimestamp1, rangeTimestamp2}},
-			[]interface{}{rangeTimestamp1, rangeTimestamp2},
+			[]any{rangeTimestamp1, rangeTimestamp2},
 		},
 		{
 			"NestedStructParam",
 			"SELECT @val",
 			[]QueryParameter{{Name: "val", Value: s{ts, []string{"a", "b"}, ss{"c"}, []ss{{"d"}, {"e"}}}}},
 			[]Value{[]Value{ts, []Value{"a", "b"}, []Value{"c"}, []Value{[]Value{"d"}, []Value{"e"}}}},
-			map[string]interface{}{
+			map[string]any{
 				"Timestamp":   ts,
-				"StringArray": []interface{}{"a", "b"},
-				"SubStruct":   map[string]interface{}{"String": "c"},
-				"SubStructArray": []interface{}{
-					map[string]interface{}{"String": "d"},
-					map[string]interface{}{"String": "e"},
+				"StringArray": []any{"a", "b"},
+				"SubStruct":   map[string]any{"String": "c"},
+				"SubStructArray": []any{
+					map[string]any{"String": "d"},
+					map[string]any{"String": "e"},
 				},
 			},
 		},
@@ -2461,9 +2461,9 @@ func initQueryParameterTestCases() {
 			"SELECT @val.Timestamp, @val.SubStruct.String",
 			[]QueryParameter{{Name: "val", Value: s{Timestamp: ts, SubStruct: ss{"a"}}}},
 			[]Value{ts, "a"},
-			map[string]interface{}{
+			map[string]any{
 				"Timestamp":      ts,
-				"SubStruct":      map[string]interface{}{"String": "a"},
+				"SubStruct":      map[string]any{"String": "a"},
 				"StringArray":    nil,
 				"SubStructArray": nil,
 			},
@@ -2505,7 +2505,7 @@ func initQueryParameterTestCases() {
 				},
 			},
 			[]Value{[]Value{"a", "b"}},
-			[]interface{}{"a", "b"},
+			[]any{"a", "b"},
 		},
 		{
 			"StructExplicitParam",
@@ -2602,14 +2602,14 @@ func initQueryParameterTestCases() {
 				},
 			},
 			[]Value{[]Value{ts, []Value{bigRat, rat}, []Value{[]Value{int64(42)}, []Value{int64(43)}}, []Value{"c"}}},
-			map[string]interface{}{
+			map[string]any{
 				"Timestamp":       ts,
-				"BigNumericArray": []interface{}{bigRat, rat},
-				"ArraySingleValueStruct": []interface{}{
-					map[string]interface{}{"Number": int64(42)},
-					map[string]interface{}{"Number": int64(43)},
+				"BigNumericArray": []any{bigRat, rat},
+				"ArraySingleValueStruct": []any{
+					map[string]any{"Number": int64(42)},
+					map[string]any{"Number": int64(43)},
 				},
-				"SubStruct": map[string]interface{}{"String": "c"},
+				"SubStruct": map[string]any{"String": "c"},
 			},
 		},
 	}
@@ -2698,7 +2698,7 @@ func TestIntegration_TimestampFormat(t *testing.T) {
 		query      string
 		parameters []*bq.QueryParameter
 		wantRow    []Value
-		wantConfig interface{}
+		wantConfig any
 	}{
 		{
 			"Literal",

@@ -582,29 +582,29 @@ var File_google_cloud_discoveryengine_v1_schema_service_proto protoreflect.FileD
 
 const file_google_cloud_discoveryengine_v1_schema_service_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/discoveryengine/v1/schema_service.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/discoveryengine/v1/schema.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"U\n" +
-	"\x10GetSchemaRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%discoveryengine.googleapis.com/SchemaR\x04name\"\x9a\x01\n" +
-	"\x12ListSchemasRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"4google/cloud/discoveryengine/v1/schema_service.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/discoveryengine/v1/schema.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"V\n" +
+	"\x10GetSchemaRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%discoveryengine.googleapis.com/SchemaR\x04name\"\x9b\x01\n" +
+	"\x12ListSchemasRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
 	"(discoveryengine.googleapis.com/DataStoreR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x80\x01\n" +
 	"\x13ListSchemasResponse\x12A\n" +
 	"\aschemas\x18\x01 \x03(\v2'.google.cloud.discoveryengine.v1.SchemaR\aschemas\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xc7\x01\n" +
-	"\x13CreateSchemaRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(discoveryengine.googleapis.com/DataStoreR\x06parent\x12D\n" +
-	"\x06schema\x18\x02 \x01(\v2'.google.cloud.discoveryengine.v1.SchemaB\x03\xe0A\x02R\x06schema\x12 \n" +
-	"\tschema_id\x18\x03 \x01(\tB\x03\xe0A\x02R\bschemaId\"\x80\x01\n" +
-	"\x13UpdateSchemaRequest\x12D\n" +
-	"\x06schema\x18\x01 \x01(\v2'.google.cloud.discoveryengine.v1.SchemaB\x03\xe0A\x02R\x06schema\x12#\n" +
-	"\rallow_missing\x18\x03 \x01(\bR\fallowMissing\"X\n" +
-	"\x13DeleteSchemaRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xca\x01\n" +
+	"\x13CreateSchemaRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(discoveryengine.googleapis.com/DataStoreR\x06parent\x12E\n" +
+	"\x06schema\x18\x02 \x01(\v2'.google.cloud.discoveryengine.v1.SchemaB\x04\xe2A\x01\x02R\x06schema\x12!\n" +
+	"\tschema_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\bschemaId\"\x81\x01\n" +
+	"\x13UpdateSchemaRequest\x12E\n" +
+	"\x06schema\x18\x01 \x01(\v2'.google.cloud.discoveryengine.v1.SchemaB\x04\xe2A\x01\x02R\x06schema\x12#\n" +
+	"\rallow_missing\x18\x03 \x01(\bR\fallowMissing\"Y\n" +
+	"\x13DeleteSchemaRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
 	"%discoveryengine.googleapis.com/SchemaR\x04name\"\x90\x01\n" +
 	"\x14CreateSchemaMetadata\x12;\n" +
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +

@@ -533,17 +533,17 @@ var File_google_cloud_translate_v3_common_proto protoreflect.FileDescriptor
 
 const file_google_cloud_translate_v3_common_proto_rawDesc = "" +
 	"\n" +
-	"&google/cloud/translate/v3/common.proto\x12\x1bgoogle.cloud.translation.v3\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"2\n" +
-	"\x0eGcsInputSource\x12 \n" +
-	"\tinput_uri\x18\x01 \x01(\tB\x03\xe0A\x02R\binputUri\"z\n" +
-	"\x0fFileInputSource\x12 \n" +
-	"\tmime_type\x18\x01 \x01(\tB\x03\xe0A\x02R\bmimeType\x12\x1d\n" +
-	"\acontent\x18\x02 \x01(\fB\x03\xe0A\x02R\acontent\x12&\n" +
-	"\fdisplay_name\x18\x03 \x01(\tB\x03\xe0A\x02R\vdisplayName\"G\n" +
-	"\x14GcsOutputDestination\x12/\n" +
-	"\x11output_uri_prefix\x18\x01 \x01(\tB\x03\xe0A\x02R\x0foutputUriPrefix\"\xbf\x05\n" +
-	"\rGlossaryEntry\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12]\n" +
+	"&google/cloud/translate/v3/common.proto\x12\x1bgoogle.cloud.translation.v3\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"3\n" +
+	"\x0eGcsInputSource\x12!\n" +
+	"\tinput_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\binputUri\"}\n" +
+	"\x0fFileInputSource\x12!\n" +
+	"\tmime_type\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bmimeType\x12\x1e\n" +
+	"\acontent\x18\x02 \x01(\fB\x04\xe2A\x01\x02R\acontent\x12'\n" +
+	"\fdisplay_name\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\"H\n" +
+	"\x14GcsOutputDestination\x120\n" +
+	"\x11output_uri_prefix\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x0foutputUriPrefix\"\xc0\x05\n" +
+	"\rGlossaryEntry\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12]\n" +
 	"\n" +
 	"terms_pair\x18\x02 \x01(\v2<.google.cloud.translation.v3.GlossaryEntry.GlossaryTermsPairH\x00R\ttermsPair\x12Z\n" +
 	"\tterms_set\x18\x03 \x01(\v2;.google.cloud.translation.v3.GlossaryEntry.GlossaryTermsSetH\x00R\btermsSet\x12 \n" +

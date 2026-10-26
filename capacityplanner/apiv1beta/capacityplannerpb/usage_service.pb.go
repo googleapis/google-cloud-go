@@ -3008,60 +3008,60 @@ var File_google_cloud_capacityplanner_v1beta_usage_service_proto protoreflect.Fi
 
 const file_google_cloud_capacityplanner_v1beta_usage_service_proto_rawDesc = "" +
 	"\n" +
-	"7google/cloud/capacityplanner/v1beta/usage_service.proto\x12#google.cloud.capacityplanner.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/capacityplanner/v1beta/allocation.proto\x1a<google/cloud/capacityplanner/v1beta/future_reservation.proto\x1a#google/longrunning/operations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x16google/type/date.proto\"\x9d\x06\n" +
-	"\x1aQueryUsageHistoriesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12h\n" +
-	"\x0elocation_level\x18\v \x01(\x0e2<.google.cloud.capacityplanner.v1beta.TimeSeries.LocationTypeB\x03\xe0A\x01R\rlocationLevel\x12\x1c\n" +
-	"\ais_spot\x18\x0e \x01(\bB\x03\xe0A\x01R\x06isSpot\x12%\n" +
-	"\x0emachine_family\x18\x02 \x01(\tR\rmachineFamily\x12[\n" +
-	"\rmachine_shape\x18\r \x01(\v21.google.cloud.capacityplanner.v1beta.MachineShapeB\x03\xe0A\x01R\fmachineShape\x12 \n" +
-	"\tdisk_type\x18\a \x01(\tB\x03\xe0A\x01R\bdiskType\x120\n" +
-	"\x11confidential_mode\x18\x0f \x01(\bB\x03\xe0A\x01R\x10confidentialMode\x12\x1e\n" +
-	"\bgpu_type\x18\b \x01(\tB\x03\xe0A\x01R\agpuType\x12\x1e\n" +
-	"\btpu_type\x18\f \x01(\tB\x03\xe0A\x01R\atpuType\x123\n" +
-	"\x13cloud_resource_type\x18\x03 \x01(\tB\x03\xe0A\x02R\x11cloudResourceType\x12}\n" +
-	"\x18usage_aggregation_method\x18\x04 \x01(\x0e2C.google.cloud.capacityplanner.v1beta.UsageHistory.AggregationMethodR\x16usageAggregationMethod\x125\n" +
+	"7google/cloud/capacityplanner/v1beta/usage_service.proto\x12#google.cloud.capacityplanner.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/capacityplanner/v1beta/allocation.proto\x1a<google/cloud/capacityplanner/v1beta/future_reservation.proto\x1a#google/longrunning/operations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x16google/type/date.proto\"\xa8\x06\n" +
+	"\x1aQueryUsageHistoriesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12i\n" +
+	"\x0elocation_level\x18\v \x01(\x0e2<.google.cloud.capacityplanner.v1beta.TimeSeries.LocationTypeB\x04\xe2A\x01\x01R\rlocationLevel\x12\x1d\n" +
+	"\ais_spot\x18\x0e \x01(\bB\x04\xe2A\x01\x01R\x06isSpot\x12%\n" +
+	"\x0emachine_family\x18\x02 \x01(\tR\rmachineFamily\x12\\\n" +
+	"\rmachine_shape\x18\r \x01(\v21.google.cloud.capacityplanner.v1beta.MachineShapeB\x04\xe2A\x01\x01R\fmachineShape\x12!\n" +
+	"\tdisk_type\x18\a \x01(\tB\x04\xe2A\x01\x01R\bdiskType\x121\n" +
+	"\x11confidential_mode\x18\x0f \x01(\bB\x04\xe2A\x01\x01R\x10confidentialMode\x12\x1f\n" +
+	"\bgpu_type\x18\b \x01(\tB\x04\xe2A\x01\x01R\agpuType\x12\x1f\n" +
+	"\btpu_type\x18\f \x01(\tB\x04\xe2A\x01\x01R\atpuType\x124\n" +
+	"\x13cloud_resource_type\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x11cloudResourceType\x12}\n" +
+	"\x18usage_aggregation_method\x18\x04 \x01(\x0e2C.google.cloud.capacityplanner.v1beta.UsageHistory.AggregationMethodR\x16usageAggregationMethod\x126\n" +
 	"\n" +
-	"start_date\x18\t \x01(\v2\x11.google.type.DateB\x03\xe0A\x01R\tstartDate\x121\n" +
+	"start_date\x18\t \x01(\v2\x11.google.type.DateB\x04\xe2A\x01\x01R\tstartDate\x122\n" +
 	"\bend_date\x18\n" +
-	" \x01(\v2\x11.google.type.DateB\x03\xe0A\x01R\aendDate\"y\n" +
+	" \x01(\v2\x11.google.type.DateB\x04\xe2A\x01\x01R\aendDate\"y\n" +
 	"\x1bQueryUsageHistoriesResponse\x12Z\n" +
-	"\x0fusage_histories\x18\x01 \x03(\v21.google.cloud.capacityplanner.v1beta.UsageHistoryR\x0eusageHistories\"\xef\x05\n" +
-	"\x15QueryForecastsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x0fusage_histories\x18\x01 \x03(\v21.google.cloud.capacityplanner.v1beta.UsageHistoryR\x0eusageHistories\"\xf6\x05\n" +
+	"\x15QueryForecastsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12%\n" +
-	"\x0emachine_family\x18\x02 \x01(\tR\rmachineFamily\x12[\n" +
-	"\rmachine_shape\x18\f \x01(\v21.google.cloud.capacityplanner.v1beta.MachineShapeB\x03\xe0A\x01R\fmachineShape\x12 \n" +
-	"\tdisk_type\x18\t \x01(\tB\x03\xe0A\x01R\bdiskType\x120\n" +
-	"\x11confidential_mode\x18\r \x01(\bB\x03\xe0A\x01R\x10confidentialMode\x12\x1e\n" +
+	"\x0emachine_family\x18\x02 \x01(\tR\rmachineFamily\x12\\\n" +
+	"\rmachine_shape\x18\f \x01(\v21.google.cloud.capacityplanner.v1beta.MachineShapeB\x04\xe2A\x01\x01R\fmachineShape\x12!\n" +
+	"\tdisk_type\x18\t \x01(\tB\x04\xe2A\x01\x01R\bdiskType\x121\n" +
+	"\x11confidential_mode\x18\r \x01(\bB\x04\xe2A\x01\x01R\x10confidentialMode\x12\x1f\n" +
 	"\bgpu_type\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\agpuType\x12\x1e\n" +
-	"\btpu_type\x18\v \x01(\tB\x03\xe0A\x01R\atpuType\x123\n" +
-	"\x13cloud_resource_type\x18\x03 \x01(\tB\x03\xe0A\x02R\x11cloudResourceType\x12_\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\agpuType\x12\x1f\n" +
+	"\btpu_type\x18\v \x01(\tB\x04\xe2A\x01\x01R\atpuType\x124\n" +
+	"\x13cloud_resource_type\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x11cloudResourceType\x12_\n" +
 	"\rforecast_type\x18\x04 \x01(\x0e2:.google.cloud.capacityplanner.v1beta.Forecast.ForecastTypeR\fforecastType\x12q\n" +
 	"\x13prediction_interval\x18\x05 \x01(\x0e2@.google.cloud.capacityplanner.v1beta.Forecast.PredictionIntervalR\x12predictionInterval\x12r\n" +
 	"\x12aggregation_method\x18\b \x01(\x0e2C.google.cloud.capacityplanner.v1beta.UsageHistory.AggregationMethodR\x11aggregationMethod\"e\n" +
 	"\x16QueryForecastsResponse\x12K\n" +
-	"\tforecasts\x18\x01 \x03(\v2-.google.cloud.capacityplanner.v1beta.ForecastR\tforecasts\"\xc9\r\n" +
-	"\x18QueryReservationsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12h\n" +
-	"\x0elocation_level\x18\x10 \x01(\x0e2<.google.cloud.capacityplanner.v1beta.TimeSeries.LocationTypeB\x03\xe0A\x01R\rlocationLevel\x12*\n" +
-	"\x0emachine_family\x18\x02 \x01(\tB\x03\xe0A\x01R\rmachineFamily\x12[\n" +
-	"\rmachine_shape\x18\v \x01(\v21.google.cloud.capacityplanner.v1beta.MachineShapeB\x03\xe0A\x01R\fmachineShape\x12\x1e\n" +
-	"\bgpu_type\x18\x03 \x01(\tB\x03\xe0A\x01R\agpuType\x123\n" +
-	"\x13cloud_resource_type\x18\x04 \x01(\tB\x03\xe0A\x02R\x11cloudResourceType\x12}\n" +
-	"\x10reservation_type\x18\x05 \x01(\x0e2M.google.cloud.capacityplanner.v1beta.QueryReservationsRequest.ReservationTypeB\x03\xe0A\x02R\x0freservationType\x12k\n" +
+	"\tforecasts\x18\x01 \x03(\v2-.google.cloud.capacityplanner.v1beta.ForecastR\tforecasts\"\xd7\r\n" +
+	"\x18QueryReservationsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12i\n" +
+	"\x0elocation_level\x18\x10 \x01(\x0e2<.google.cloud.capacityplanner.v1beta.TimeSeries.LocationTypeB\x04\xe2A\x01\x01R\rlocationLevel\x12+\n" +
+	"\x0emachine_family\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\rmachineFamily\x12\\\n" +
+	"\rmachine_shape\x18\v \x01(\v21.google.cloud.capacityplanner.v1beta.MachineShapeB\x04\xe2A\x01\x01R\fmachineShape\x12\x1f\n" +
+	"\bgpu_type\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\agpuType\x124\n" +
+	"\x13cloud_resource_type\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\x11cloudResourceType\x12~\n" +
+	"\x10reservation_type\x18\x05 \x01(\x0e2M.google.cloud.capacityplanner.v1beta.QueryReservationsRequest.ReservationTypeB\x04\xe2A\x01\x02R\x0freservationType\x12l\n" +
 	"\n" +
-	"share_type\x18\x06 \x01(\x0e2G.google.cloud.capacityplanner.v1beta.QueryReservationsRequest.ShareTypeB\x03\xe0A\x01R\tshareType\x12w\n" +
-	"\x0eownership_type\x18\a \x01(\x0e2K.google.cloud.capacityplanner.v1beta.QueryReservationsRequest.OwnershipTypeB\x03\xe0A\x01R\rownershipType\x12\x8d\x01\n" +
-	"\x16reservation_data_level\x18\b \x01(\x0e2R.google.cloud.capacityplanner.v1beta.QueryReservationsRequest.ReservationDataLevelB\x03\xe0A\x02R\x14reservationDataLevel\x12K\n" +
-	"\x1finclude_unapproved_reservations\x18\f \x01(\bB\x03\xe0A\x01R\x1dincludeUnapprovedReservations\x12w\n" +
-	"\x12aggregation_method\x18\r \x01(\x0e2C.google.cloud.capacityplanner.v1beta.UsageHistory.AggregationMethodB\x03\xe0A\x01R\x11aggregationMethod\x125\n" +
+	"share_type\x18\x06 \x01(\x0e2G.google.cloud.capacityplanner.v1beta.QueryReservationsRequest.ShareTypeB\x04\xe2A\x01\x01R\tshareType\x12x\n" +
+	"\x0eownership_type\x18\a \x01(\x0e2K.google.cloud.capacityplanner.v1beta.QueryReservationsRequest.OwnershipTypeB\x04\xe2A\x01\x01R\rownershipType\x12\x8e\x01\n" +
+	"\x16reservation_data_level\x18\b \x01(\x0e2R.google.cloud.capacityplanner.v1beta.QueryReservationsRequest.ReservationDataLevelB\x04\xe2A\x01\x02R\x14reservationDataLevel\x12L\n" +
+	"\x1finclude_unapproved_reservations\x18\f \x01(\bB\x04\xe2A\x01\x01R\x1dincludeUnapprovedReservations\x12x\n" +
+	"\x12aggregation_method\x18\r \x01(\x0e2C.google.cloud.capacityplanner.v1beta.UsageHistory.AggregationMethodB\x04\xe2A\x01\x01R\x11aggregationMethod\x126\n" +
 	"\n" +
-	"start_date\x18\x0e \x01(\v2\x11.google.type.DateB\x03\xe0A\x01R\tstartDate\x121\n" +
-	"\bend_date\x18\x0f \x01(\v2\x11.google.type.DateB\x03\xe0A\x01R\aendDate\"\x97\x01\n" +
+	"start_date\x18\x0e \x01(\v2\x11.google.type.DateB\x04\xe2A\x01\x01R\tstartDate\x122\n" +
+	"\bend_date\x18\x0f \x01(\v2\x11.google.type.DateB\x04\xe2A\x01\x01R\aendDate\"\x97\x01\n" +
 	"\x0fReservationType\x12 \n" +
 	"\x1cRESERVATION_TYPE_UNSPECIFIED\x10\x00\x12\x1f\n" +
 	"\x1bRESERVATION_TYPE_ALLOCATION\x10\x01\x12'\n" +
@@ -3120,15 +3120,15 @@ const file_google_cloud_capacityplanner_v1beta_usage_service_proto_rawDesc = "" 
 	"\x04PEAK\x10\x02\x12\a\n" +
 	"\x03P50\x10\x03\x12\a\n" +
 	"\x03P75\x10\x04\x12\a\n" +
-	"\x03P99\x10\x05\"\x87\x05\n" +
+	"\x03P99\x10\x05\"\x8b\x05\n" +
 	"\n" +
-	"TimeSeries\x12f\n" +
-	"\rlocation_type\x18\x01 \x01(\x0e2<.google.cloud.capacityplanner.v1beta.TimeSeries.LocationTypeB\x03\xe0A\x02R\flocationType\x12\x1f\n" +
-	"\blocation\x18\t \x01(\tB\x03\xe0A\x01R\blocation\x12\x1c\n" +
-	"\ais_spot\x18\v \x01(\bB\x03\xe0A\x01R\x06isSpot\x12%\n" +
+	"TimeSeries\x12g\n" +
+	"\rlocation_type\x18\x01 \x01(\x0e2<.google.cloud.capacityplanner.v1beta.TimeSeries.LocationTypeB\x04\xe2A\x01\x02R\flocationType\x12 \n" +
+	"\blocation\x18\t \x01(\tB\x04\xe2A\x01\x01R\blocation\x12\x1d\n" +
+	"\ais_spot\x18\v \x01(\bB\x04\xe2A\x01\x01R\x06isSpot\x12%\n" +
 	"\x0emachine_family\x18\x02 \x01(\tR\rmachineFamily\x12\x1b\n" +
-	"\tdisk_type\x18\x06 \x01(\tR\bdiskType\x120\n" +
-	"\x11confidential_mode\x18\f \x01(\bB\x03\xe0A\x01R\x10confidentialMode\x12\x19\n" +
+	"\tdisk_type\x18\x06 \x01(\tR\bdiskType\x121\n" +
+	"\x11confidential_mode\x18\f \x01(\bB\x04\xe2A\x01\x01R\x10confidentialMode\x12\x19\n" +
 	"\bgpu_type\x18\a \x01(\tR\agpuType\x12\x19\n" +
 	"\btpu_type\x18\n" +
 	" \x01(\tR\atpuType\x12V\n" +
@@ -3139,78 +3139,78 @@ const file_google_cloud_capacityplanner_v1beta_usage_service_proto_rawDesc = "" 
 	"\fLocationType\x12\x1d\n" +
 	"\x19LOCATION_TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bREGIONAL\x10\x01\x12\t\n" +
-	"\x05ZONAL\x10\x02\"\xc3\x05\n" +
-	"\x0fReservationData\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12P\n" +
+	"\x05ZONAL\x10\x02\"\xc4\x05\n" +
+	"\x0fReservationData\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12P\n" +
 	"\vtime_series\x18\x02 \x01(\v2/.google.cloud.capacityplanner.v1beta.TimeSeriesR\n" +
 	"timeSeries\x12g\n" +
 	"\x17used_reservation_values\x18\x05 \x01(\v2/.google.cloud.capacityplanner.v1beta.TimeSeriesR\x15usedReservationValues\x12g\n" +
 	"\x13future_reservations\x18\x03 \x03(\v26.google.cloud.capacityplanner.v1beta.FutureReservationR\x12futureReservations\x12Q\n" +
 	"\vallocations\x18\x04 \x03(\v2/.google.cloud.capacityplanner.v1beta.AllocationR\vallocations:\x9f\x02\xeaA\x9b\x02\n" +
-	"*capacityplanner.googleapis.com/Reservation\x12Bprojects/{project}/locations/{location}/reservations/{reservation}\x12Lorganizations/{organization}/locations/{location}/reservations/{reservation}\x12@folders/{folder}/locations/{location}/reservations/{reservation}*\freservations2\vreservation\"\x83\x04\n" +
-	"\fMachineShape\x12*\n" +
-	"\x0emachine_family\x18\x01 \x01(\tB\x03\xe0A\x01R\rmachineFamily\x12&\n" +
-	"\fmachine_type\x18\x02 \x01(\tB\x03\xe0A\x01R\vmachineType\x12(\n" +
-	"\rmachine_shape\x18\x03 \x01(\tB\x03\xe0A\x01R\fmachineShape\x12 \n" +
-	"\tcpu_cores\x18\x04 \x01(\x01B\x03\xe0A\x01R\bcpuCores\x12\x1e\n" +
-	"\bgpu_type\x18\x05 \x01(\tB\x03\xe0A\x01R\agpuType\x12-\n" +
+	"*capacityplanner.googleapis.com/Reservation\x12Bprojects/{project}/locations/{location}/reservations/{reservation}\x12Lorganizations/{organization}/locations/{location}/reservations/{reservation}\x12@folders/{folder}/locations/{location}/reservations/{reservation}*\freservations2\vreservation\"\x8f\x04\n" +
+	"\fMachineShape\x12+\n" +
+	"\x0emachine_family\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\rmachineFamily\x12'\n" +
+	"\fmachine_type\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vmachineType\x12)\n" +
+	"\rmachine_shape\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\fmachineShape\x12!\n" +
+	"\tcpu_cores\x18\x04 \x01(\x01B\x04\xe2A\x01\x01R\bcpuCores\x12\x1f\n" +
+	"\bgpu_type\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\agpuType\x12.\n" +
 	"\x10gpu_compute_type\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\x0egpuComputeType\x12 \n" +
-	"\tgpu_cores\x18\x06 \x01(\x03B\x03\xe0A\x01R\bgpuCores\x125\n" +
-	"\x14local_ssd_partitions\x18\a \x01(\x03B\x03\xe0A\x01R\x12localSsdPartitions\x12%\n" +
-	"\flocal_ssd_gb\x18\b \x01(\x01B\x03\xe0A\x01R\n" +
-	"localSsdGb\x12 \n" +
-	"\tmemory_gb\x18\t \x01(\x01B\x03\xe0A\x01R\bmemoryGb\x123\n" +
-	"\x13local_ssd_interface\x18\v \x01(\tB\x03\xe0A\x01R\x11localSsdInterface\x12-\n" +
-	"\x10min_cpu_platform\x18\f \x01(\tB\x03\xe0A\x01R\x0eminCpuPlatform\"\xdf\x05\n" +
-	"\x1bExportUsageHistoriesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12\x1c\n" +
-	"\ais_spot\x18\v \x01(\bB\x03\xe0A\x01R\x06isSpot\x12*\n" +
-	"\x0emachine_family\x18\x02 \x01(\tB\x03\xe0A\x01R\rmachineFamily\x12[\n" +
-	"\rmachine_shape\x18\r \x01(\v21.google.cloud.capacityplanner.v1beta.MachineShapeB\x03\xe0A\x01R\fmachineShape\x12 \n" +
-	"\tdisk_type\x18\x03 \x01(\tB\x03\xe0A\x01R\bdiskType\x12\x1e\n" +
-	"\bgpu_type\x18\t \x01(\tB\x03\xe0A\x01R\agpuType\x12\x1e\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\x0egpuComputeType\x12!\n" +
+	"\tgpu_cores\x18\x06 \x01(\x03B\x04\xe2A\x01\x01R\bgpuCores\x126\n" +
+	"\x14local_ssd_partitions\x18\a \x01(\x03B\x04\xe2A\x01\x01R\x12localSsdPartitions\x12&\n" +
+	"\flocal_ssd_gb\x18\b \x01(\x01B\x04\xe2A\x01\x01R\n" +
+	"localSsdGb\x12!\n" +
+	"\tmemory_gb\x18\t \x01(\x01B\x04\xe2A\x01\x01R\bmemoryGb\x124\n" +
+	"\x13local_ssd_interface\x18\v \x01(\tB\x04\xe2A\x01\x01R\x11localSsdInterface\x12.\n" +
+	"\x10min_cpu_platform\x18\f \x01(\tB\x04\xe2A\x01\x01R\x0eminCpuPlatform\"\xeb\x05\n" +
+	"\x1bExportUsageHistoriesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12\x1d\n" +
+	"\ais_spot\x18\v \x01(\bB\x04\xe2A\x01\x01R\x06isSpot\x12+\n" +
+	"\x0emachine_family\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\rmachineFamily\x12\\\n" +
+	"\rmachine_shape\x18\r \x01(\v21.google.cloud.capacityplanner.v1beta.MachineShapeB\x04\xe2A\x01\x01R\fmachineShape\x12!\n" +
+	"\tdisk_type\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\bdiskType\x12\x1f\n" +
+	"\bgpu_type\x18\t \x01(\tB\x04\xe2A\x01\x01R\agpuType\x12\x1f\n" +
 	"\btpu_type\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\atpuType\x12(\n" +
-	"\rresource_type\x18\x04 \x01(\tB\x03\xe0A\x02R\fresourceType\x12\x82\x01\n" +
-	"\x18usage_aggregation_method\x18\x05 \x01(\x0e2C.google.cloud.capacityplanner.v1beta.UsageHistory.AggregationMethodB\x03\xe0A\x01R\x16usageAggregationMethod\x125\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\atpuType\x12)\n" +
+	"\rresource_type\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\fresourceType\x12\x83\x01\n" +
+	"\x18usage_aggregation_method\x18\x05 \x01(\x0e2C.google.cloud.capacityplanner.v1beta.UsageHistory.AggregationMethodB\x04\xe2A\x01\x01R\x16usageAggregationMethod\x126\n" +
 	"\n" +
-	"start_date\x18\x06 \x01(\v2\x11.google.type.DateB\x03\xe0A\x01R\tstartDate\x121\n" +
-	"\bend_date\x18\a \x01(\v2\x11.google.type.DateB\x03\xe0A\x01R\aendDate\x12[\n" +
-	"\routput_config\x18\b \x01(\v21.google.cloud.capacityplanner.v1beta.OutputConfigB\x03\xe0A\x02R\foutputConfig\"\xa8\x06\n" +
-	"\x16ExportForecastsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12*\n" +
-	"\x0emachine_family\x18\x02 \x01(\tB\x03\xe0A\x01R\rmachineFamily\x12[\n" +
-	"\rmachine_shape\x18\f \x01(\v21.google.cloud.capacityplanner.v1beta.MachineShapeB\x03\xe0A\x01R\fmachineShape\x12 \n" +
-	"\tdisk_type\x18\x03 \x01(\tB\x03\xe0A\x01R\bdiskType\x12\x1e\n" +
+	"start_date\x18\x06 \x01(\v2\x11.google.type.DateB\x04\xe2A\x01\x01R\tstartDate\x122\n" +
+	"\bend_date\x18\a \x01(\v2\x11.google.type.DateB\x04\xe2A\x01\x01R\aendDate\x12\\\n" +
+	"\routput_config\x18\b \x01(\v21.google.cloud.capacityplanner.v1beta.OutputConfigB\x04\xe2A\x01\x02R\foutputConfig\"\xb4\x06\n" +
+	"\x16ExportForecastsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12+\n" +
+	"\x0emachine_family\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\rmachineFamily\x12\\\n" +
+	"\rmachine_shape\x18\f \x01(\v21.google.cloud.capacityplanner.v1beta.MachineShapeB\x04\xe2A\x01\x01R\fmachineShape\x12!\n" +
+	"\tdisk_type\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\bdiskType\x12\x1f\n" +
 	"\bgpu_type\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\agpuType\x12\x1e\n" +
-	"\btpu_type\x18\v \x01(\tB\x03\xe0A\x01R\atpuType\x12(\n" +
-	"\rresource_type\x18\x04 \x01(\tB\x03\xe0A\x02R\fresourceType\x12v\n" +
-	"\x13prediction_interval\x18\x05 \x01(\x0e2@.google.cloud.capacityplanner.v1beta.Forecast.PredictionIntervalB\x03\xe0A\x01R\x12predictionInterval\x12w\n" +
-	"\x12aggregation_method\x18\x06 \x01(\x0e2C.google.cloud.capacityplanner.v1beta.UsageHistory.AggregationMethodB\x03\xe0A\x01R\x11aggregationMethod\x125\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\agpuType\x12\x1f\n" +
+	"\btpu_type\x18\v \x01(\tB\x04\xe2A\x01\x01R\atpuType\x12)\n" +
+	"\rresource_type\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\fresourceType\x12w\n" +
+	"\x13prediction_interval\x18\x05 \x01(\x0e2@.google.cloud.capacityplanner.v1beta.Forecast.PredictionIntervalB\x04\xe2A\x01\x01R\x12predictionInterval\x12x\n" +
+	"\x12aggregation_method\x18\x06 \x01(\x0e2C.google.cloud.capacityplanner.v1beta.UsageHistory.AggregationMethodB\x04\xe2A\x01\x01R\x11aggregationMethod\x126\n" +
 	"\n" +
-	"start_date\x18\a \x01(\v2\x11.google.type.DateB\x03\xe0A\x01R\tstartDate\x121\n" +
-	"\bend_date\x18\b \x01(\v2\x11.google.type.DateB\x03\xe0A\x01R\aendDate\x12[\n" +
-	"\routput_config\x18\t \x01(\v21.google.cloud.capacityplanner.v1beta.OutputConfigB\x03\xe0A\x02R\foutputConfig\"\xdd\a\n" +
-	"\x1eExportReservationsUsageRequest\x12,\n" +
-	"\x0emachine_family\x18\x02 \x01(\tB\x03\xe0A\x01H\x00R\rmachineFamily\x12]\n" +
-	"\rmachine_shape\x18\x03 \x01(\v21.google.cloud.capacityplanner.v1beta.MachineShapeB\x03\xe0A\x01H\x00R\fmachineShape\x12 \n" +
-	"\bgpu_type\x18\x04 \x01(\tB\x03\xe0A\x01H\x00R\agpuType\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12h\n" +
-	"\x0elocation_level\x18\v \x01(\x0e2<.google.cloud.capacityplanner.v1beta.TimeSeries.LocationTypeB\x03\xe0A\x01R\rlocationLevel\x123\n" +
-	"\x13cloud_resource_type\x18\x05 \x01(\tB\x03\xe0A\x02R\x11cloudResourceType\x12\x82\x01\n" +
-	"\x18usage_aggregation_method\x18\x06 \x01(\x0e2C.google.cloud.capacityplanner.v1beta.UsageHistory.AggregationMethodB\x03\xe0A\x02R\x16usageAggregationMethod\x12q\n" +
+	"start_date\x18\a \x01(\v2\x11.google.type.DateB\x04\xe2A\x01\x01R\tstartDate\x122\n" +
+	"\bend_date\x18\b \x01(\v2\x11.google.type.DateB\x04\xe2A\x01\x01R\aendDate\x12\\\n" +
+	"\routput_config\x18\t \x01(\v21.google.cloud.capacityplanner.v1beta.OutputConfigB\x04\xe2A\x01\x02R\foutputConfig\"\xe8\a\n" +
+	"\x1eExportReservationsUsageRequest\x12-\n" +
+	"\x0emachine_family\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x00R\rmachineFamily\x12^\n" +
+	"\rmachine_shape\x18\x03 \x01(\v21.google.cloud.capacityplanner.v1beta.MachineShapeB\x04\xe2A\x01\x01H\x00R\fmachineShape\x12!\n" +
+	"\bgpu_type\x18\x04 \x01(\tB\x04\xe2A\x01\x01H\x00R\agpuType\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12i\n" +
+	"\x0elocation_level\x18\v \x01(\x0e2<.google.cloud.capacityplanner.v1beta.TimeSeries.LocationTypeB\x04\xe2A\x01\x01R\rlocationLevel\x124\n" +
+	"\x13cloud_resource_type\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\x11cloudResourceType\x12\x83\x01\n" +
+	"\x18usage_aggregation_method\x18\x06 \x01(\x0e2C.google.cloud.capacityplanner.v1beta.UsageHistory.AggregationMethodB\x04\xe2A\x01\x02R\x16usageAggregationMethod\x12r\n" +
 	"\n" +
-	"share_type\x18\a \x01(\x0e2M.google.cloud.capacityplanner.v1beta.ExportReservationsUsageRequest.ShareTypeB\x03\xe0A\x01R\tshareType\x125\n" +
+	"share_type\x18\a \x01(\x0e2M.google.cloud.capacityplanner.v1beta.ExportReservationsUsageRequest.ShareTypeB\x04\xe2A\x01\x01R\tshareType\x126\n" +
 	"\n" +
-	"start_date\x18\b \x01(\v2\x11.google.type.DateB\x03\xe0A\x01R\tstartDate\x121\n" +
-	"\bend_date\x18\t \x01(\v2\x11.google.type.DateB\x03\xe0A\x01R\aendDate\x12[\n" +
+	"start_date\x18\b \x01(\v2\x11.google.type.DateB\x04\xe2A\x01\x01R\tstartDate\x122\n" +
+	"\bend_date\x18\t \x01(\v2\x11.google.type.DateB\x04\xe2A\x01\x01R\aendDate\x12\\\n" +
 	"\routput_config\x18\n" +
-	" \x01(\v21.google.cloud.capacityplanner.v1beta.OutputConfigB\x03\xe0A\x02R\foutputConfig\"_\n" +
+	" \x01(\v21.google.cloud.capacityplanner.v1beta.OutputConfigB\x04\xe2A\x01\x02R\foutputConfig\"_\n" +
 	"\tShareType\x12\x1a\n" +
 	"\x16SHARE_TYPE_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10SHARE_TYPE_LOCAL\x10\x01\x12 \n" +
@@ -3220,19 +3220,19 @@ const file_google_cloud_capacityplanner_v1beta_usage_service_proto_rawDesc = "" 
 	"\fOutputConfig\x12^\n" +
 	"\x0fgcs_destination\x18\x01 \x01(\v23.google.cloud.capacityplanner.v1beta.GcsDestinationH\x00R\x0egcsDestination\x12m\n" +
 	"\x14bigquery_destination\x18\x02 \x01(\v28.google.cloud.capacityplanner.v1beta.BigQueryDestinationH\x00R\x13bigqueryDestinationB\r\n" +
-	"\vdestination\"|\n" +
-	"\x0eGcsDestination\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x01R\x03uri\x12\x1b\n" +
-	"\x06bucket\x18\x03 \x01(\tB\x03\xe0A\x02R\x06bucket\x12\x1b\n" +
-	"\x06object\x18\x04 \x01(\tB\x03\xe0A\x02R\x06object\x12\x19\n" +
-	"\x05force\x18\x02 \x01(\bB\x03\xe0A\x01R\x05force\"\xf5\x05\n" +
-	"\x13BigQueryDestination\x12\x1d\n" +
-	"\adataset\x18\x01 \x01(\tB\x03\xe0A\x02R\adataset\x12\x19\n" +
-	"\x05table\x18\x02 \x01(\tB\x03\xe0A\x02R\x05table\x12o\n" +
-	"\rpartition_key\x18\x03 \x01(\x0e2E.google.cloud.capacityplanner.v1beta.BigQueryDestination.PartitionKeyB\x03\xe0A\x01R\fpartitionKey\x12{\n" +
-	"\x11write_disposition\x18\x04 \x01(\x0e2I.google.cloud.capacityplanner.v1beta.BigQueryDestination.WriteDispositionB\x03\xe0A\x01R\x10writeDisposition\x12~\n" +
-	"\x12create_disposition\x18\x05 \x01(\x0e2J.google.cloud.capacityplanner.v1beta.BigQueryDestination.CreateDispositionB\x03\xe0A\x01R\x11createDisposition\x12&\n" +
-	"\fgcs_location\x18\x06 \x01(\tB\x03\xe0A\x01R\vgcsLocation\"?\n" +
+	"\vdestination\"\x80\x01\n" +
+	"\x0eGcsDestination\x12\x16\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x03uri\x12\x1c\n" +
+	"\x06bucket\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x06bucket\x12\x1c\n" +
+	"\x06object\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\x06object\x12\x1a\n" +
+	"\x05force\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x05force\"\xfb\x05\n" +
+	"\x13BigQueryDestination\x12\x1e\n" +
+	"\adataset\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\adataset\x12\x1a\n" +
+	"\x05table\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05table\x12p\n" +
+	"\rpartition_key\x18\x03 \x01(\x0e2E.google.cloud.capacityplanner.v1beta.BigQueryDestination.PartitionKeyB\x04\xe2A\x01\x01R\fpartitionKey\x12|\n" +
+	"\x11write_disposition\x18\x04 \x01(\x0e2I.google.cloud.capacityplanner.v1beta.BigQueryDestination.WriteDispositionB\x04\xe2A\x01\x01R\x10writeDisposition\x12\x7f\n" +
+	"\x12create_disposition\x18\x05 \x01(\x0e2J.google.cloud.capacityplanner.v1beta.BigQueryDestination.CreateDispositionB\x04\xe2A\x01\x01R\x11createDisposition\x12'\n" +
+	"\fgcs_location\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\vgcsLocation\"?\n" +
 	"\fPartitionKey\x12\x1d\n" +
 	"\x19PARTITION_KEY_UNSPECIFIED\x10\x00\x12\x10\n" +
 	"\fREQUEST_TIME\x10\x01\"l\n" +
@@ -3244,11 +3244,11 @@ const file_google_cloud_capacityplanner_v1beta_usage_service_proto_rawDesc = "" 
 	"\x11CreateDisposition\x12\"\n" +
 	"\x1eCREATE_DISPOSITION_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10CREATE_IF_NEEDED\x10\x01\x12\x10\n" +
-	"\fCREATE_NEVER\x10\x02\"\x91\x01\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\":\n" +
+	"\fCREATE_NEVER\x10\x02\"\x93\x01\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\":\n" +
 	"\x1cExportUsageHistoriesResponse\x12\x1a\n" +
 	"\bresponse\x18\x01 \x01(\tR\bresponse\"5\n" +
 	"\x17ExportForecastsResponse\x12\x1a\n" +

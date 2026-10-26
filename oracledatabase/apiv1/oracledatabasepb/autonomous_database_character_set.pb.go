@@ -162,11 +162,11 @@ var File_google_cloud_oracledatabase_v1_autonomous_database_character_set_proto 
 
 const file_google_cloud_oracledatabase_v1_autonomous_database_character_set_proto_rawDesc = "" +
 	"\n" +
-	"Fgoogle/cloud/oracledatabase/v1/autonomous_database_character_set.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xaf\x04\n" +
-	"\x1eAutonomousDatabaseCharacterSet\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x82\x01\n" +
-	"\x12character_set_type\x18\x02 \x01(\x0e2O.google.cloud.oracledatabase.v1.AutonomousDatabaseCharacterSet.CharacterSetTypeB\x03\xe0A\x03R\x10characterSetType\x12(\n" +
-	"\rcharacter_set\x18\x03 \x01(\tB\x03\xe0A\x03R\fcharacterSet\"R\n" +
+	"Fgoogle/cloud/oracledatabase/v1/autonomous_database_character_set.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xb2\x04\n" +
+	"\x1eAutonomousDatabaseCharacterSet\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x83\x01\n" +
+	"\x12character_set_type\x18\x02 \x01(\x0e2O.google.cloud.oracledatabase.v1.AutonomousDatabaseCharacterSet.CharacterSetTypeB\x04\xe2A\x01\x03R\x10characterSetType\x12)\n" +
+	"\rcharacter_set\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\fcharacterSet\"R\n" +
 	"\x10CharacterSetType\x12\"\n" +
 	"\x1eCHARACTER_SET_TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDATABASE\x10\x01\x12\f\n" +

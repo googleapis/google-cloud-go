@@ -1619,37 +1619,37 @@ var File_google_cloud_dataplex_v1_data_products_proto protoreflect.FileDescripto
 
 const file_google_cloud_dataplex_v1_data_products_proto_rawDesc = "" +
 	"\n" +
-	",google/cloud/dataplex/v1/data_products.proto\x12\x18google.cloud.dataplex.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/dataplex/v1/approval_workflow.proto\x1a&google/cloud/dataplex/v1/service.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb2\v\n" +
-	"\vDataProduct\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1d\n" +
-	"\x03uid\x18\x02 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12&\n" +
-	"\fdisplay_name\x18\x03 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x17\n" +
-	"\x04etag\x18\x06 \x01(\tB\x03\xe0A\x01R\x04etag\x12N\n" +
-	"\x06labels\x18\a \x03(\v21.google.cloud.dataplex.v1.DataProduct.LabelsEntryB\x03\xe0A\x01R\x06labels\x12%\n" +
-	"\vdescription\x18\b \x01(\tB\x03\xe0A\x01R\vdescription\x12\x17\n" +
+	",google/cloud/dataplex/v1/data_products.proto\x12\x18google.cloud.dataplex.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/dataplex/v1/approval_workflow.proto\x1a&google/cloud/dataplex/v1/service.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc6\v\n" +
+	"\vDataProduct\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x1e\n" +
+	"\x03uid\x18\x02 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12'\n" +
+	"\fdisplay_name\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x18\n" +
+	"\x04etag\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12O\n" +
+	"\x06labels\x18\a \x03(\v21.google.cloud.dataplex.v1.DataProduct.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12&\n" +
+	"\vdescription\x18\b \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\x18\n" +
 	"\x04icon\x18\n" +
-	" \x01(\fB\x03\xe0A\x01R\x04icon\x12&\n" +
-	"\fowner_emails\x18\v \x03(\tB\x03\xe0A\x02R\vownerEmails\x12$\n" +
-	"\vasset_count\x18\r \x01(\x05B\x03\xe0A\x03R\n" +
-	"assetCount\x12a\n" +
-	"\raccess_groups\x18\x0e \x03(\v27.google.cloud.dataplex.v1.DataProduct.AccessGroupsEntryB\x03\xe0A\x01R\faccessGroups\x12z\n" +
-	"\x16access_approval_config\x18\x0f \x01(\v2:.google.cloud.dataplex.v1.DataProduct.AccessApprovalConfigB\x03\xe0A\x01H\x00R\x14accessApprovalConfig\x88\x01\x01\x1a\x84\x01\n" +
-	"\tPrincipal\x12(\n" +
-	"\fgoogle_group\x18\x01 \x01(\tB\x03\xe0A\x01H\x00R\vgoogleGroup\x121\n" +
-	"\x0fservice_account\x18\x02 \x01(\tB\x03\xe0A\x01H\x01R\x0eserviceAccount\x88\x01\x01B\x06\n" +
+	" \x01(\fB\x04\xe2A\x01\x01R\x04icon\x12'\n" +
+	"\fowner_emails\x18\v \x03(\tB\x04\xe2A\x01\x02R\vownerEmails\x12%\n" +
+	"\vasset_count\x18\r \x01(\x05B\x04\xe2A\x01\x03R\n" +
+	"assetCount\x12b\n" +
+	"\raccess_groups\x18\x0e \x03(\v27.google.cloud.dataplex.v1.DataProduct.AccessGroupsEntryB\x04\xe2A\x01\x01R\faccessGroups\x12{\n" +
+	"\x16access_approval_config\x18\x0f \x01(\v2:.google.cloud.dataplex.v1.DataProduct.AccessApprovalConfigB\x04\xe2A\x01\x01H\x00R\x14accessApprovalConfig\x88\x01\x01\x1a\x86\x01\n" +
+	"\tPrincipal\x12)\n" +
+	"\fgoogle_group\x18\x01 \x01(\tB\x04\xe2A\x01\x01H\x00R\vgoogleGroup\x122\n" +
+	"\x0fservice_account\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x01R\x0eserviceAccount\x88\x01\x01B\x06\n" +
 	"\x04typeB\x12\n" +
-	"\x10_service_account\x1a\xc5\x01\n" +
-	"\vAccessGroup\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12R\n" +
-	"\tprincipal\x18\x04 \x01(\v2/.google.cloud.dataplex.v1.DataProduct.PrincipalB\x03\xe0A\x02R\tprincipal\x1aD\n" +
-	"\x14AccessApprovalConfig\x12,\n" +
-	"\x0fapprover_emails\x18\x02 \x03(\tB\x03\xe0A\x01R\x0eapproverEmails\x1a9\n" +
+	"\x10_service_account\x1a\xc9\x01\n" +
+	"\vAccessGroup\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x02id\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12S\n" +
+	"\tprincipal\x18\x04 \x01(\v2/.google.cloud.dataplex.v1.DataProduct.PrincipalB\x04\xe2A\x01\x02R\tprincipal\x1aE\n" +
+	"\x14AccessApprovalConfig\x12-\n" +
+	"\x0fapprover_emails\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x0eapproverEmails\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1ar\n" +
@@ -1657,20 +1657,20 @@ const file_google_cloud_dataplex_v1_data_products_proto_rawDesc = "" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12G\n" +
 	"\x05value\x18\x02 \x01(\v21.google.cloud.dataplex.v1.DataProduct.AccessGroupR\x05value:\x028\x01:\x89\x01\xeaA\x85\x01\n" +
 	"#dataplex.googleapis.com/DataProduct\x12Cprojects/{project}/locations/{location}/dataProducts/{data_product}*\fdataProducts2\vdataProductB\x19\n" +
-	"\x17_access_approval_config\"\xd4\x06\n" +
-	"\tDataAsset\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1d\n" +
-	"\x03uid\x18\x02 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x17\n" +
-	"\x04etag\x18\x05 \x01(\tB\x03\xe0A\x01R\x04etag\x12L\n" +
-	"\x06labels\x18\x06 \x03(\v2/.google.cloud.dataplex.v1.DataAsset.LabelsEntryB\x03\xe0A\x01R\x06labels\x12\"\n" +
-	"\bresource\x18\a \x01(\tB\x06\xe0A\x05\xe0A\x02R\bresource\x12r\n" +
-	"\x14access_group_configs\x18\t \x03(\v2;.google.cloud.dataplex.v1.DataAsset.AccessGroupConfigsEntryB\x03\xe0A\x01R\x12accessGroupConfigs\x1a5\n" +
-	"\x11AccessGroupConfig\x12 \n" +
-	"\tiam_roles\x18\x01 \x03(\tB\x03\xe0A\x01R\biamRoles\x1a9\n" +
+	"\x17_access_approval_config\"\xdb\x06\n" +
+	"\tDataAsset\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x1e\n" +
+	"\x03uid\x18\x02 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x18\n" +
+	"\x04etag\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12M\n" +
+	"\x06labels\x18\x06 \x03(\v2/.google.cloud.dataplex.v1.DataAsset.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12!\n" +
+	"\bresource\x18\a \x01(\tB\x05\xe2A\x02\x05\x02R\bresource\x12s\n" +
+	"\x14access_group_configs\x18\t \x03(\v2;.google.cloud.dataplex.v1.DataAsset.AccessGroupConfigsEntryB\x04\xe2A\x01\x01R\x12accessGroupConfigs\x1a6\n" +
+	"\x11AccessGroupConfig\x12!\n" +
+	"\tiam_roles\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\biamRoles\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a|\n" +
@@ -1678,75 +1678,75 @@ const file_google_cloud_dataplex_v1_data_products_proto_rawDesc = "" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12K\n" +
 	"\x05value\x18\x02 \x01(\v25.google.cloud.dataplex.v1.DataAsset.AccessGroupConfigR\x05value:\x028\x01:\x9b\x01\xeaA\x97\x01\n" +
 	"!dataplex.googleapis.com/DataAsset\x12[projects/{project}/locations/{location}/dataProducts/{data_product}/dataAssets/{data_asset}*\n" +
-	"dataAssets2\tdataAsset\"\x83\x02\n" +
-	"\x18CreateDataProductRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12+\n" +
-	"\x0fdata_product_id\x18\x02 \x01(\tB\x03\xe0A\x01R\rdataProductId\x12M\n" +
-	"\fdata_product\x18\x03 \x01(\v2%.google.cloud.dataplex.v1.DataProductB\x03\xe0A\x02R\vdataProduct\x12(\n" +
-	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\x9e\x01\n" +
-	"\x18DeleteDataProductRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#dataplex.googleapis.com/DataProductR\x04name\x12\x17\n" +
-	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x01R\x04etag\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"X\n" +
-	"\x15GetDataProductRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#dataplex.googleapis.com/DataProductR\x04name\"\xdf\x01\n" +
-	"\x17ListDataProductsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
-	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x01R\x06filter\x12 \n" +
-	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"dataAssets2\tdataAsset\"\x87\x02\n" +
+	"\x18CreateDataProductRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12,\n" +
+	"\x0fdata_product_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\rdataProductId\x12N\n" +
+	"\fdata_product\x18\x03 \x01(\v2%.google.cloud.dataplex.v1.DataProductB\x04\xe2A\x01\x02R\vdataProduct\x12)\n" +
+	"\rvalidate_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xa1\x01\n" +
+	"\x18DeleteDataProductRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#dataplex.googleapis.com/DataProductR\x04name\x12\x18\n" +
+	"\x04etag\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"Y\n" +
+	"\x15GetDataProductRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#dataplex.googleapis.com/DataProductR\x04name\"\xe4\x01\n" +
+	"\x17ListDataProductsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12\x1c\n" +
+	"\x06filter\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12!\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xb5\x01\n" +
+	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xb6\x01\n" +
 	"\x18ListDataProductsResponse\x12J\n" +
 	"\rdata_products\x18\x01 \x03(\v2%.google.cloud.dataplex.v1.DataProductR\fdataProducts\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"\xd5\x01\n" +
-	"\x18UpdateDataProductRequest\x12M\n" +
-	"\fdata_product\x18\x01 \x01(\v2%.google.cloud.dataplex.v1.DataProductB\x03\xe0A\x02R\vdataProduct\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xe5\x01\n" +
-	"\x1fRequestDataProductAccessRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#dataplex.googleapis.com/DataProductR\x06parent\x12S\n" +
-	"\x0echange_request\x18\x02 \x01(\v2'.google.cloud.dataplex.v1.ChangeRequestB\x03\xe0A\x02R\rchangeRequest\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"~\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x06R\vunreachable\"\xd8\x01\n" +
+	"\x18UpdateDataProductRequest\x12N\n" +
+	"\fdata_product\x18\x01 \x01(\v2%.google.cloud.dataplex.v1.DataProductB\x04\xe2A\x01\x02R\vdataProduct\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xe8\x01\n" +
+	"\x1fRequestDataProductAccessRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#dataplex.googleapis.com/DataProductR\x06parent\x12T\n" +
+	"\x0echange_request\x18\x02 \x01(\v2'.google.cloud.dataplex.v1.ChangeRequestB\x04\xe2A\x01\x02R\rchangeRequest\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"~\n" +
 	" RequestDataProductAccessResponse\x12Z\n" +
 	"\x13change_request_name\x18\x01 \x01(\tB*\xfaA'\n" +
-	"%dataplex.googleapis.com/ChangeRequestR\x11changeRequestName\"\xf9\x01\n" +
-	"\x16CreateDataAssetRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#dataplex.googleapis.com/DataProductR\x06parent\x12'\n" +
-	"\rdata_asset_id\x18\x02 \x01(\tB\x03\xe0A\x01R\vdataAssetId\x12G\n" +
+	"%dataplex.googleapis.com/ChangeRequestR\x11changeRequestName\"\xfd\x01\n" +
+	"\x16CreateDataAssetRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#dataplex.googleapis.com/DataProductR\x06parent\x12(\n" +
+	"\rdata_asset_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdataAssetId\x12H\n" +
 	"\n" +
-	"data_asset\x18\x03 \x01(\v2#.google.cloud.dataplex.v1.DataAssetB\x03\xe0A\x02R\tdataAsset\x12(\n" +
-	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xcd\x01\n" +
-	"\x16UpdateDataAssetRequest\x12G\n" +
+	"data_asset\x18\x03 \x01(\v2#.google.cloud.dataplex.v1.DataAssetB\x04\xe2A\x01\x02R\tdataAsset\x12)\n" +
+	"\rvalidate_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xd0\x01\n" +
+	"\x16UpdateDataAssetRequest\x12H\n" +
 	"\n" +
-	"data_asset\x18\x01 \x01(\v2#.google.cloud.dataplex.v1.DataAssetB\x03\xe0A\x02R\tdataAsset\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\x9a\x01\n" +
-	"\x16DeleteDataAssetRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!dataplex.googleapis.com/DataAssetR\x04name\x12\x17\n" +
-	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x01R\x04etag\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"T\n" +
-	"\x13GetDataAssetRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!dataplex.googleapis.com/DataAssetR\x04name\"\xdf\x01\n" +
-	"\x15ListDataAssetsRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#dataplex.googleapis.com/DataProductR\x06parent\x12\x1b\n" +
-	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x03 \x01(\tB\x03\xe0A\x01R\aorderBy\x12 \n" +
-	"\tpage_size\x18\x04 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"data_asset\x18\x01 \x01(\v2#.google.cloud.dataplex.v1.DataAssetB\x04\xe2A\x01\x02R\tdataAsset\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\x9d\x01\n" +
+	"\x16DeleteDataAssetRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!dataplex.googleapis.com/DataAssetR\x04name\x12\x18\n" +
+	"\x04etag\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"U\n" +
+	"\x13GetDataAssetRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!dataplex.googleapis.com/DataAssetR\x04name\"\xe4\x01\n" +
+	"\x15ListDataAssetsRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#dataplex.googleapis.com/DataProductR\x06parent\x12\x1c\n" +
+	"\x06filter\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\x12!\n" +
+	"\tpage_size\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x05 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x86\x01\n" +
+	"page_token\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x86\x01\n" +
 	"\x16ListDataAssetsResponse\x12D\n" +
 	"\vdata_assets\x18\x01 \x03(\v2#.google.cloud.dataplex.v1.DataAssetR\n" +
 	"dataAssets\x12&\n" +

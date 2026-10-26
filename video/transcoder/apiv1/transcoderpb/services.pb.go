@@ -676,48 +676,48 @@ var File_google_cloud_video_transcoder_v1_services_proto protoreflect.FileDescri
 
 const file_google_cloud_video_transcoder_v1_services_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/video/transcoder/v1/services.proto\x12 google.cloud.video.transcoder.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/video/transcoder/v1/resources.proto\x1a\x1bgoogle/protobuf/empty.proto\"\x93\x01\n" +
-	"\x10CreateJobRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12<\n" +
-	"\x03job\x18\x02 \x01(\v2%.google.cloud.video.transcoder.v1.JobB\x03\xe0A\x02R\x03job\"\xc3\x01\n" +
-	"\x0fListJobsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"/google/cloud/video/transcoder/v1/services.proto\x12 google.cloud.video.transcoder.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/video/transcoder/v1/resources.proto\x1a\x1bgoogle/protobuf/empty.proto\"\x95\x01\n" +
+	"\x10CreateJobRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12=\n" +
+	"\x03job\x18\x02 \x01(\v2%.google.cloud.video.transcoder.v1.JobB\x04\xe2A\x01\x02R\x03job\"\xc4\x01\n" +
+	"\x0fListJobsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
 	"\x06filter\x18\x04 \x01(\tR\x06filter\x12\x19\n" +
-	"\border_by\x18\x05 \x01(\tR\aorderBy\"J\n" +
-	"\rGetJobRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dtranscoder.googleapis.com/JobR\x04name\"r\n" +
-	"\x10DeleteJobRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
+	"\border_by\x18\x05 \x01(\tR\aorderBy\"K\n" +
+	"\rGetJobRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dtranscoder.googleapis.com/JobR\x04name\"s\n" +
+	"\x10DeleteJobRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
 	"\x1dtranscoder.googleapis.com/JobR\x04name\x12#\n" +
 	"\rallow_missing\x18\x02 \x01(\bR\fallowMissing\"\x97\x01\n" +
 	"\x10ListJobsResponse\x129\n" +
 	"\x04jobs\x18\x01 \x03(\v2%.google.cloud.video.transcoder.v1.JobR\x04jobs\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xe1\x01\n" +
-	"\x18CreateJobTemplateRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12U\n" +
-	"\fjob_template\x18\x02 \x01(\v2-.google.cloud.video.transcoder.v1.JobTemplateB\x03\xe0A\x02R\vjobTemplate\x12+\n" +
-	"\x0fjob_template_id\x18\x03 \x01(\tB\x03\xe0A\x02R\rjobTemplateId\"\xcb\x01\n" +
-	"\x17ListJobTemplatesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xe4\x01\n" +
+	"\x18CreateJobTemplateRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12V\n" +
+	"\fjob_template\x18\x02 \x01(\v2-.google.cloud.video.transcoder.v1.JobTemplateB\x04\xe2A\x01\x02R\vjobTemplate\x12,\n" +
+	"\x0fjob_template_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\rjobTemplateId\"\xcc\x01\n" +
+	"\x17ListJobTemplatesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
 	"\x06filter\x18\x04 \x01(\tR\x06filter\x12\x19\n" +
-	"\border_by\x18\x05 \x01(\tR\aorderBy\"Z\n" +
-	"\x15GetJobTemplateRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%transcoder.googleapis.com/JobTemplateR\x04name\"\x82\x01\n" +
-	"\x18DeleteJobTemplateRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
+	"\border_by\x18\x05 \x01(\tR\aorderBy\"[\n" +
+	"\x15GetJobTemplateRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%transcoder.googleapis.com/JobTemplateR\x04name\"\x83\x01\n" +
+	"\x18DeleteJobTemplateRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
 	"%transcoder.googleapis.com/JobTemplateR\x04name\x12#\n" +
 	"\rallow_missing\x18\x02 \x01(\bR\fallowMissing\"\xb8\x01\n" +
 	"\x18ListJobTemplatesResponse\x12R\n" +

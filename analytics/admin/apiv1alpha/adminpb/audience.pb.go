@@ -1618,54 +1618,54 @@ var File_google_analytics_admin_v1alpha_audience_proto protoreflect.FileDescript
 
 const file_google_analytics_admin_v1alpha_audience_proto_rawDesc = "" +
 	"\n" +
-	"-google/analytics/admin/v1alpha/audience.proto\x12\x1egoogle.analytics.admin.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdb\r\n" +
+	"-google/analytics/admin/v1alpha/audience.proto\x12\x1egoogle.analytics.admin.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe5\r\n" +
 	"\x1fAudienceDimensionOrMetricFilter\x12s\n" +
 	"\rstring_filter\x18\x02 \x01(\v2L.google.analytics.admin.v1alpha.AudienceDimensionOrMetricFilter.StringFilterH\x00R\fstringFilter\x12t\n" +
 	"\x0ein_list_filter\x18\x03 \x01(\v2L.google.analytics.admin.v1alpha.AudienceDimensionOrMetricFilter.InListFilterH\x00R\finListFilter\x12v\n" +
 	"\x0enumeric_filter\x18\x04 \x01(\v2M.google.analytics.admin.v1alpha.AudienceDimensionOrMetricFilter.NumericFilterH\x00R\rnumericFilter\x12v\n" +
-	"\x0ebetween_filter\x18\x05 \x01(\v2M.google.analytics.admin.v1alpha.AudienceDimensionOrMetricFilter.BetweenFilterH\x00R\rbetweenFilter\x12%\n" +
+	"\x0ebetween_filter\x18\x05 \x01(\v2M.google.analytics.admin.v1alpha.AudienceDimensionOrMetricFilter.BetweenFilterH\x00R\rbetweenFilter\x12$\n" +
 	"\n" +
-	"field_name\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\x05R\tfieldName\x123\n" +
-	"\x14at_any_point_in_time\x18\x06 \x01(\bB\x03\xe0A\x01R\x10atAnyPointInTime\x121\n" +
-	"\x13in_any_n_day_period\x18\a \x01(\x05B\x03\xe0A\x01R\x0finAnyNDayPeriod\x1a\xc4\x02\n" +
-	"\fStringFilter\x12z\n" +
+	"field_name\x18\x01 \x01(\tB\x05\xe2A\x02\x02\x05R\tfieldName\x124\n" +
+	"\x14at_any_point_in_time\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\x10atAnyPointInTime\x122\n" +
+	"\x13in_any_n_day_period\x18\a \x01(\x05B\x04\xe2A\x01\x01R\x0finAnyNDayPeriod\x1a\xc7\x02\n" +
+	"\fStringFilter\x12{\n" +
 	"\n" +
-	"match_type\x18\x01 \x01(\x0e2V.google.analytics.admin.v1alpha.AudienceDimensionOrMetricFilter.StringFilter.MatchTypeB\x03\xe0A\x02R\tmatchType\x12\x19\n" +
-	"\x05value\x18\x02 \x01(\tB\x03\xe0A\x02R\x05value\x12*\n" +
-	"\x0ecase_sensitive\x18\x03 \x01(\bB\x03\xe0A\x01R\rcaseSensitive\"q\n" +
+	"match_type\x18\x01 \x01(\x0e2V.google.analytics.admin.v1alpha.AudienceDimensionOrMetricFilter.StringFilter.MatchTypeB\x04\xe2A\x01\x02R\tmatchType\x12\x1a\n" +
+	"\x05value\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05value\x12+\n" +
+	"\x0ecase_sensitive\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\rcaseSensitive\"q\n" +
 	"\tMatchType\x12\x1a\n" +
 	"\x16MATCH_TYPE_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05EXACT\x10\x01\x12\x0f\n" +
 	"\vBEGINS_WITH\x10\x02\x12\r\n" +
 	"\tENDS_WITH\x10\x03\x12\f\n" +
 	"\bCONTAINS\x10\x04\x12\x0f\n" +
-	"\vFULL_REGEXP\x10\x05\x1aW\n" +
-	"\fInListFilter\x12\x1b\n" +
-	"\x06values\x18\x01 \x03(\tB\x03\xe0A\x02R\x06values\x12*\n" +
-	"\x0ecase_sensitive\x18\x02 \x01(\bB\x03\xe0A\x01R\rcaseSensitive\x1ac\n" +
+	"\vFULL_REGEXP\x10\x05\x1aY\n" +
+	"\fInListFilter\x12\x1c\n" +
+	"\x06values\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\x06values\x12+\n" +
+	"\x0ecase_sensitive\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\rcaseSensitive\x1ac\n" +
 	"\fNumericValue\x12!\n" +
 	"\vint64_value\x18\x01 \x01(\x03H\x00R\n" +
 	"int64Value\x12#\n" +
 	"\fdouble_value\x18\x02 \x01(\x01H\x00R\vdoubleValueB\v\n" +
-	"\tone_value\x1a\xc8\x02\n" +
-	"\rNumericFilter\x12z\n" +
-	"\toperation\x18\x01 \x01(\x0e2W.google.analytics.admin.v1alpha.AudienceDimensionOrMetricFilter.NumericFilter.OperationB\x03\xe0A\x02R\toperation\x12g\n" +
-	"\x05value\x18\x02 \x01(\v2L.google.analytics.admin.v1alpha.AudienceDimensionOrMetricFilter.NumericValueB\x03\xe0A\x02R\x05value\"R\n" +
+	"\tone_value\x1a\xca\x02\n" +
+	"\rNumericFilter\x12{\n" +
+	"\toperation\x18\x01 \x01(\x0e2W.google.analytics.admin.v1alpha.AudienceDimensionOrMetricFilter.NumericFilter.OperationB\x04\xe2A\x01\x02R\toperation\x12h\n" +
+	"\x05value\x18\x02 \x01(\v2L.google.analytics.admin.v1alpha.AudienceDimensionOrMetricFilter.NumericValueB\x04\xe2A\x01\x02R\x05value\"R\n" +
 	"\tOperation\x12\x19\n" +
 	"\x15OPERATION_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05EQUAL\x10\x01\x12\r\n" +
 	"\tLESS_THAN\x10\x02\x12\x10\n" +
-	"\fGREATER_THAN\x10\x04\x1a\xef\x01\n" +
-	"\rBetweenFilter\x12p\n" +
+	"\fGREATER_THAN\x10\x04\x1a\xf1\x01\n" +
+	"\rBetweenFilter\x12q\n" +
 	"\n" +
-	"from_value\x18\x01 \x01(\v2L.google.analytics.admin.v1alpha.AudienceDimensionOrMetricFilter.NumericValueB\x03\xe0A\x02R\tfromValue\x12l\n" +
-	"\bto_value\x18\x02 \x01(\v2L.google.analytics.admin.v1alpha.AudienceDimensionOrMetricFilter.NumericValueB\x03\xe0A\x02R\atoValueB\f\n" +
+	"from_value\x18\x01 \x01(\v2L.google.analytics.admin.v1alpha.AudienceDimensionOrMetricFilter.NumericValueB\x04\xe2A\x01\x02R\tfromValue\x12m\n" +
+	"\bto_value\x18\x02 \x01(\v2L.google.analytics.admin.v1alpha.AudienceDimensionOrMetricFilter.NumericValueB\x04\xe2A\x01\x02R\atoValueB\f\n" +
 	"\n" +
 	"one_filter\"\xc7\x01\n" +
-	"\x13AudienceEventFilter\x12%\n" +
+	"\x13AudienceEventFilter\x12$\n" +
 	"\n" +
-	"event_name\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\x05R\teventName\x12\x88\x01\n" +
-	"!event_parameter_filter_expression\x18\x02 \x01(\v28.google.analytics.admin.v1alpha.AudienceFilterExpressionB\x03\xe0A\x01R\x1eeventParameterFilterExpression\"\x97\x04\n" +
+	"event_name\x18\x01 \x01(\tB\x05\xe2A\x02\x02\x05R\teventName\x12\x89\x01\n" +
+	"!event_parameter_filter_expression\x18\x02 \x01(\v28.google.analytics.admin.v1alpha.AudienceFilterExpressionB\x04\xe2A\x01\x01R\x1eeventParameterFilterExpression\"\x97\x04\n" +
 	"\x18AudienceFilterExpression\x12[\n" +
 	"\tand_group\x18\x01 \x01(\v2<.google.analytics.admin.v1alpha.AudienceFilterExpressionListH\x00R\bandGroup\x12Y\n" +
 	"\bor_group\x18\x02 \x01(\v2<.google.analytics.admin.v1alpha.AudienceFilterExpressionListH\x00R\aorGroup\x12a\n" +
@@ -1674,47 +1674,47 @@ const file_google_analytics_admin_v1alpha_audience_proto_rawDesc = "" +
 	"\fevent_filter\x18\x05 \x01(\v23.google.analytics.admin.v1alpha.AudienceEventFilterH\x00R\veventFilterB\x06\n" +
 	"\x04expr\"\x87\x01\n" +
 	"\x1cAudienceFilterExpressionList\x12g\n" +
-	"\x12filter_expressions\x18\x01 \x03(\v28.google.analytics.admin.v1alpha.AudienceFilterExpressionR\x11filterExpressions\"\xd8\x01\n" +
-	"\x14AudienceSimpleFilter\x12Q\n" +
-	"\x05scope\x18\x01 \x01(\x0e23.google.analytics.admin.v1alpha.AudienceFilterScopeB\x06\xe0A\x02\xe0A\x05R\x05scope\x12m\n" +
-	"\x11filter_expression\x18\x02 \x01(\v28.google.analytics.admin.v1alpha.AudienceFilterExpressionB\x06\xe0A\x02\xe0A\x05R\x10filterExpression\"\xa2\x05\n" +
-	"\x16AudienceSequenceFilter\x12Q\n" +
-	"\x05scope\x18\x01 \x01(\x0e23.google.analytics.admin.v1alpha.AudienceFilterScopeB\x06\xe0A\x02\xe0A\x05R\x05scope\x12Z\n" +
-	"\x19sequence_maximum_duration\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x17sequenceMaximumDuration\x12w\n" +
-	"\x0esequence_steps\x18\x03 \x03(\v2K.google.analytics.admin.v1alpha.AudienceSequenceFilter.AudienceSequenceStepB\x03\xe0A\x02R\rsequenceSteps\x1a\xdf\x02\n" +
-	"\x14AudienceSequenceStep\x12Q\n" +
-	"\x05scope\x18\x01 \x01(\x0e23.google.analytics.admin.v1alpha.AudienceFilterScopeB\x06\xe0A\x02\xe0A\x05R\x05scope\x124\n" +
-	"\x13immediately_follows\x18\x02 \x01(\bB\x03\xe0A\x01R\x12immediatelyFollows\x12O\n" +
-	"\x13constraint_duration\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x12constraintDuration\x12m\n" +
-	"\x11filter_expression\x18\x04 \x01(\v28.google.analytics.admin.v1alpha.AudienceFilterExpressionB\x06\xe0A\x02\xe0A\x05R\x10filterExpression\"\xa5\x03\n" +
+	"\x12filter_expressions\x18\x01 \x03(\v28.google.analytics.admin.v1alpha.AudienceFilterExpressionR\x11filterExpressions\"\xd6\x01\n" +
+	"\x14AudienceSimpleFilter\x12P\n" +
+	"\x05scope\x18\x01 \x01(\x0e23.google.analytics.admin.v1alpha.AudienceFilterScopeB\x05\xe2A\x02\x02\x05R\x05scope\x12l\n" +
+	"\x11filter_expression\x18\x02 \x01(\v28.google.analytics.admin.v1alpha.AudienceFilterExpressionB\x05\xe2A\x02\x02\x05R\x10filterExpression\"\xa3\x05\n" +
+	"\x16AudienceSequenceFilter\x12P\n" +
+	"\x05scope\x18\x01 \x01(\x0e23.google.analytics.admin.v1alpha.AudienceFilterScopeB\x05\xe2A\x02\x02\x05R\x05scope\x12[\n" +
+	"\x19sequence_maximum_duration\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x17sequenceMaximumDuration\x12x\n" +
+	"\x0esequence_steps\x18\x03 \x03(\v2K.google.analytics.admin.v1alpha.AudienceSequenceFilter.AudienceSequenceStepB\x04\xe2A\x01\x02R\rsequenceSteps\x1a\xdf\x02\n" +
+	"\x14AudienceSequenceStep\x12P\n" +
+	"\x05scope\x18\x01 \x01(\x0e23.google.analytics.admin.v1alpha.AudienceFilterScopeB\x05\xe2A\x02\x02\x05R\x05scope\x125\n" +
+	"\x13immediately_follows\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x12immediatelyFollows\x12P\n" +
+	"\x13constraint_duration\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x12constraintDuration\x12l\n" +
+	"\x11filter_expression\x18\x04 \x01(\v28.google.analytics.admin.v1alpha.AudienceFilterExpressionB\x05\xe2A\x02\x02\x05R\x10filterExpression\"\xa6\x03\n" +
 	"\x14AudienceFilterClause\x12[\n" +
 	"\rsimple_filter\x18\x02 \x01(\v24.google.analytics.admin.v1alpha.AudienceSimpleFilterH\x00R\fsimpleFilter\x12a\n" +
-	"\x0fsequence_filter\x18\x03 \x01(\v26.google.analytics.admin.v1alpha.AudienceSequenceFilterH\x00R\x0esequenceFilter\x12m\n" +
-	"\vclause_type\x18\x01 \x01(\x0e2G.google.analytics.admin.v1alpha.AudienceFilterClause.AudienceClauseTypeB\x03\xe0A\x02R\n" +
+	"\x0fsequence_filter\x18\x03 \x01(\v26.google.analytics.admin.v1alpha.AudienceSequenceFilterH\x00R\x0esequenceFilter\x12n\n" +
+	"\vclause_type\x18\x01 \x01(\x0e2G.google.analytics.admin.v1alpha.AudienceFilterClause.AudienceClauseTypeB\x04\xe2A\x01\x02R\n" +
 	"clauseType\"T\n" +
 	"\x12AudienceClauseType\x12$\n" +
 	" AUDIENCE_CLAUSE_TYPE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aINCLUDE\x10\x01\x12\v\n" +
 	"\aEXCLUDE\x10\x02B\b\n" +
-	"\x06filter\"\x8c\x02\n" +
-	"\x14AudienceEventTrigger\x12\"\n" +
+	"\x06filter\"\x8e\x02\n" +
+	"\x14AudienceEventTrigger\x12#\n" +
 	"\n" +
-	"event_name\x18\x01 \x01(\tB\x03\xe0A\x02R\teventName\x12k\n" +
-	"\rlog_condition\x18\x02 \x01(\x0e2A.google.analytics.admin.v1alpha.AudienceEventTrigger.LogConditionB\x03\xe0A\x02R\flogCondition\"c\n" +
+	"event_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\teventName\x12l\n" +
+	"\rlog_condition\x18\x02 \x01(\x0e2A.google.analytics.admin.v1alpha.AudienceEventTrigger.LogConditionB\x04\xe2A\x01\x02R\flogCondition\"c\n" +
 	"\fLogCondition\x12\x1d\n" +
 	"\x19LOG_CONDITION_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fAUDIENCE_JOINED\x10\x01\x12\x1f\n" +
-	"\x1bAUDIENCE_MEMBERSHIP_RENEWED\x10\x02\"\xe8\x06\n" +
-	"\bAudience\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x02R\vdescription\x12@\n" +
-	"\x18membership_duration_days\x18\x04 \x01(\x05B\x06\xe0A\x02\xe0A\x05R\x16membershipDurationDays\x12C\n" +
-	"\x1bads_personalization_enabled\x18\x05 \x01(\bB\x03\xe0A\x03R\x19adsPersonalizationEnabled\x12^\n" +
-	"\revent_trigger\x18\x06 \x01(\v24.google.analytics.admin.v1alpha.AudienceEventTriggerB\x03\xe0A\x01R\feventTrigger\x12\x83\x01\n" +
-	"\x17exclusion_duration_mode\x18\a \x01(\x0e2F.google.analytics.admin.v1alpha.Audience.AudienceExclusionDurationModeB\x03\xe0A\x05R\x15exclusionDurationMode\x12f\n" +
-	"\x0efilter_clauses\x18\b \x03(\v24.google.analytics.admin.v1alpha.AudienceFilterClauseB\t\xe0A\x05\xe0A\x02\xe0A\x06R\rfilterClauses\x12@\n" +
-	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x1bAUDIENCE_MEMBERSHIP_RENEWED\x10\x02\"\xeb\x06\n" +
+	"\bAudience\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\vdescription\x12?\n" +
+	"\x18membership_duration_days\x18\x04 \x01(\x05B\x05\xe2A\x02\x02\x05R\x16membershipDurationDays\x12D\n" +
+	"\x1bads_personalization_enabled\x18\x05 \x01(\bB\x04\xe2A\x01\x03R\x19adsPersonalizationEnabled\x12_\n" +
+	"\revent_trigger\x18\x06 \x01(\v24.google.analytics.admin.v1alpha.AudienceEventTriggerB\x04\xe2A\x01\x01R\feventTrigger\x12\x84\x01\n" +
+	"\x17exclusion_duration_mode\x18\a \x01(\x0e2F.google.analytics.admin.v1alpha.Audience.AudienceExclusionDurationModeB\x04\xe2A\x01\x05R\x15exclusionDurationMode\x12c\n" +
+	"\x0efilter_clauses\x18\b \x03(\v24.google.analytics.admin.v1alpha.AudienceFilterClauseB\x06\xe2A\x03\x05\x02\x06R\rfilterClauses\x12A\n" +
+	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"createTime\"\x83\x01\n" +
 	"\x1dAudienceExclusionDurationMode\x120\n" +
 	",AUDIENCE_EXCLUSION_DURATION_MODE_UNSPECIFIED\x10\x00\x12\x17\n" +

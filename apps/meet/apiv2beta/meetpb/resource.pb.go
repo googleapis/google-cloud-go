@@ -2429,16 +2429,16 @@ var File_google_apps_meet_v2beta_resource_proto protoreflect.FileDescriptor
 
 const file_google_apps_meet_v2beta_resource_proto_rawDesc = "" +
 	"\n" +
-	"&google/apps/meet/v2beta/resource.proto\x12\x17google.apps.meet.v2beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc5\x05\n" +
-	"\x05Space\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12$\n" +
-	"\vmeeting_uri\x18\x02 \x01(\tB\x03\xe0A\x03R\n" +
-	"meetingUri\x12&\n" +
-	"\fmeeting_code\x18\x03 \x01(\tB\x03\xe0A\x03R\vmeetingCode\x12<\n" +
+	"&google/apps/meet/v2beta/resource.proto\x12\x17google.apps.meet.v2beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xca\x05\n" +
+	"\x05Space\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12%\n" +
+	"\vmeeting_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"meetingUri\x12'\n" +
+	"\fmeeting_code\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\vmeetingCode\x12<\n" +
 	"\x06config\x18\x05 \x01(\v2$.google.apps.meet.v2beta.SpaceConfigR\x06config\x12V\n" +
-	"\x11active_conference\x18\x06 \x01(\v2).google.apps.meet.v2beta.ActiveConferenceR\x10activeConference\x12R\n" +
-	"\fphone_access\x18\a \x03(\v2*.google.apps.meet.v2beta.Space.PhoneAccessB\x03\xe0A\x03R\vphoneAccess\x12b\n" +
-	"\x12gateway_sip_access\x18\b \x03(\v2/.google.apps.meet.v2beta.Space.GatewaySipAccessB\x03\xe0A\x03R\x10gatewaySipAccess\x1a\x88\x01\n" +
+	"\x11active_conference\x18\x06 \x01(\v2).google.apps.meet.v2beta.ActiveConferenceR\x10activeConference\x12S\n" +
+	"\fphone_access\x18\a \x03(\v2*.google.apps.meet.v2beta.Space.PhoneAccessB\x04\xe2A\x01\x03R\vphoneAccess\x12c\n" +
+	"\x12gateway_sip_access\x18\b \x03(\v2/.google.apps.meet.v2beta.Space.GatewaySipAccessB\x04\xe2A\x01\x03R\x10gatewaySipAccess\x1a\x88\x01\n" +
 	"\vPhoneAccess\x12!\n" +
 	"\fphone_number\x18\x01 \x01(\tR\vphoneNumber\x12\x10\n" +
 	"\x03pin\x18\x02 \x01(\tR\x03pin\x12\x1f\n" +
@@ -2448,11 +2448,11 @@ const file_google_apps_meet_v2beta_resource_proto_rawDesc = "" +
 	"\x10GatewaySipAccess\x12\x10\n" +
 	"\x03uri\x18\x01 \x01(\tR\x03uri\x12&\n" +
 	"\x0fsip_access_code\x18\x02 \x01(\tR\rsipAccessCode:.\xeaA+\n" +
-	"\x19meet.googleapis.com/Space\x12\x0espaces/{space}\"\xb1\x01\n" +
-	"\x10ActiveConference\x12Y\n" +
-	"\x11conference_record\x18\x01 \x01(\tB,\xe0A\x03\xfaA&\n" +
-	"$meet.googleapis.com/ConferenceRecordR\x10conferenceRecord\x12B\n" +
-	"\x1bmedia_api_consenter_present\x18\x02 \x01(\bB\x03\xe0A\x03R\x18mediaApiConsenterPresent\"\xcf\x14\n" +
+	"\x19meet.googleapis.com/Space\x12\x0espaces/{space}\"\xb3\x01\n" +
+	"\x10ActiveConference\x12Z\n" +
+	"\x11conference_record\x18\x01 \x01(\tB-\xe2A\x01\x03\xfaA&\n" +
+	"$meet.googleapis.com/ConferenceRecordR\x10conferenceRecord\x12C\n" +
+	"\x1bmedia_api_consenter_present\x18\x02 \x01(\bB\x04\xe2A\x01\x03R\x18mediaApiConsenterPresent\"\xcf\x14\n" +
 	"\vSpaceConfig\x12P\n" +
 	"\vaccess_type\x18\x01 \x01(\x0e2/.google.apps.meet.v2beta.SpaceConfig.AccessTypeR\n" +
 	"accessType\x12c\n" +
@@ -2510,9 +2510,9 @@ const file_google_apps_meet_v2beta_resource_proto_rawDesc = "" +
 	"\x1eAttendanceReportGenerationType\x121\n" +
 	"-ATTENDANCE_REPORT_GENERATION_TYPE_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fGENERATE_REPORT\x10\x01\x12\x13\n" +
-	"\x0fDO_NOT_GENERATE\x10\x02\"\x82\x02\n" +
-	"\x06Member\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x14\n" +
+	"\x0fDO_NOT_GENERATE\x10\x02\"\x83\x02\n" +
+	"\x06Member\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x14\n" +
 	"\x05email\x18\x02 \x01(\tR\x05email\x128\n" +
 	"\x04role\x18\x03 \x01(\x0e2$.google.apps.meet.v2beta.Member.RoleR\x04role\x12\x12\n" +
 	"\x04user\x18\x04 \x01(\tR\x04user\"(\n" +
@@ -2520,47 +2520,47 @@ const file_google_apps_meet_v2beta_resource_proto_rawDesc = "" +
 	"\x10ROLE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06COHOST\x10\x01:Q\xeaAN\n" +
-	"\x1ameet.googleapis.com/Member\x12\x1fspaces/{space}/members/{member}*\amembers2\x06member\"\x99\x03\n" +
-	"\x10ConferenceRecord\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12>\n" +
+	"\x1ameet.googleapis.com/Member\x12\x1fspaces/{space}/members/{member}*\amembers2\x06member\"\x9e\x03\n" +
+	"\x10ConferenceRecord\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12?\n" +
 	"\n" +
-	"start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12@\n" +
-	"\vexpire_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"expireTime\x127\n" +
-	"\x05space\x18\x05 \x01(\tB!\xe0A\x03\xfaA\x1b\n" +
+	"start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12A\n" +
+	"\vexpire_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"expireTime\x128\n" +
+	"\x05space\x18\x05 \x01(\tB\"\xe2A\x01\x03\xfaA\x1b\n" +
 	"\x19meet.googleapis.com/SpaceR\x05space:u\xeaAr\n" +
-	"$meet.googleapis.com/ConferenceRecord\x12%conferenceRecords/{conference_record}*\x11conferenceRecords2\x10conferenceRecord\"\xb0\x04\n" +
+	"$meet.googleapis.com/ConferenceRecord\x12%conferenceRecords/{conference_record}*\x11conferenceRecords2\x10conferenceRecord\"\xb3\x04\n" +
 	"\vParticipant\x12L\n" +
 	"\rsignedin_user\x18\x04 \x01(\v2%.google.apps.meet.v2beta.SignedinUserH\x00R\fsignedinUser\x12O\n" +
 	"\x0eanonymous_user\x18\x05 \x01(\v2&.google.apps.meet.v2beta.AnonymousUserH\x00R\ranonymousUser\x12C\n" +
 	"\n" +
-	"phone_user\x18\x06 \x01(\v2\".google.apps.meet.v2beta.PhoneUserH\x00R\tphoneUser\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12O\n" +
-	"\x13earliest_start_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x11earliestStartTime\x12G\n" +
-	"\x0flatest_end_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\rlatestEndTime:\x81\x01\xeaA~\n" +
+	"phone_user\x18\x06 \x01(\v2\".google.apps.meet.v2beta.PhoneUserH\x00R\tphoneUser\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12P\n" +
+	"\x13earliest_start_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x11earliestStartTime\x12H\n" +
+	"\x0flatest_end_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\rlatestEndTime:\x81\x01\xeaA~\n" +
 	"\x1fmeet.googleapis.com/Participant\x12@conferenceRecords/{conference_record}/participants/{participant}*\fparticipants2\vparticipantB\x06\n" +
-	"\x04user\"\xed\x02\n" +
-	"\x12ParticipantSession\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12>\n" +
+	"\x04user\"\xf0\x02\n" +
+	"\x12ParticipantSession\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12?\n" +
 	"\n" +
-	"start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime:\xc1\x01\xeaA\xbd\x01\n" +
-	"&meet.googleapis.com/ParticipantSession\x12jconferenceRecords/{conference_record}/participants/{participant}/participantSessions/{participant_session}*\x13participantSessions2\x12participantSession\"O\n" +
-	"\fSignedinUser\x12\x17\n" +
-	"\x04user\x18\x01 \x01(\tB\x03\xe0A\x03R\x04user\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x03R\vdisplayName\"7\n" +
-	"\rAnonymousUser\x12&\n" +
-	"\fdisplay_name\x18\x01 \x01(\tB\x03\xe0A\x03R\vdisplayName\"3\n" +
-	"\tPhoneUser\x12&\n" +
-	"\fdisplay_name\x18\x01 \x01(\tB\x03\xe0A\x03R\vdisplayName\"\x98\x04\n" +
-	"\tRecording\x12]\n" +
-	"\x11drive_destination\x18\x06 \x01(\v2).google.apps.meet.v2beta.DriveDestinationB\x03\xe0A\x03H\x00R\x10driveDestination\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12C\n" +
-	"\x05state\x18\x03 \x01(\x0e2(.google.apps.meet.v2beta.Recording.StateB\x03\xe0A\x03R\x05state\x12>\n" +
+	"start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime:\xc1\x01\xeaA\xbd\x01\n" +
+	"&meet.googleapis.com/ParticipantSession\x12jconferenceRecords/{conference_record}/participants/{participant}/participantSessions/{participant_session}*\x13participantSessions2\x12participantSession\"Q\n" +
+	"\fSignedinUser\x12\x18\n" +
+	"\x04user\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04user\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\"8\n" +
+	"\rAnonymousUser\x12'\n" +
+	"\fdisplay_name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\"4\n" +
+	"\tPhoneUser\x12'\n" +
+	"\fdisplay_name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\"\x9d\x04\n" +
+	"\tRecording\x12^\n" +
+	"\x11drive_destination\x18\x06 \x01(\v2).google.apps.meet.v2beta.DriveDestinationB\x04\xe2A\x01\x03H\x00R\x10driveDestination\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12D\n" +
+	"\x05state\x18\x03 \x01(\x0e2(.google.apps.meet.v2beta.Recording.StateB\x04\xe2A\x01\x03R\x05state\x12?\n" +
 	"\n" +
-	"start_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\"J\n" +
+	"start_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\"J\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aSTARTED\x10\x01\x12\t\n" +
@@ -2568,19 +2568,19 @@ const file_google_apps_meet_v2beta_resource_proto_rawDesc = "" +
 	"\x0eFILE_GENERATED\x10\x03:w\xeaAt\n" +
 	"\x1dmeet.googleapis.com/Recording\x12<conferenceRecords/{conference_record}/recordings/{recording}*\n" +
 	"recordings2\trecordingB\r\n" +
-	"\vdestination\"O\n" +
-	"\x10DriveDestination\x12\x17\n" +
-	"\x04file\x18\x01 \x01(\tB\x03\xe0A\x03R\x04file\x12\"\n" +
+	"\vdestination\"Q\n" +
+	"\x10DriveDestination\x12\x18\n" +
+	"\x04file\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04file\x12#\n" +
 	"\n" +
-	"export_uri\x18\x02 \x01(\tB\x03\xe0A\x03R\texportUri\"\x9c\x04\n" +
+	"export_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\texportUri\"\xa1\x04\n" +
 	"\n" +
-	"Transcript\x12Z\n" +
-	"\x10docs_destination\x18\x06 \x01(\v2(.google.apps.meet.v2beta.DocsDestinationB\x03\xe0A\x03H\x00R\x0fdocsDestination\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12D\n" +
-	"\x05state\x18\x03 \x01(\x0e2).google.apps.meet.v2beta.Transcript.StateB\x03\xe0A\x03R\x05state\x12>\n" +
+	"Transcript\x12[\n" +
+	"\x10docs_destination\x18\x06 \x01(\v2(.google.apps.meet.v2beta.DocsDestinationB\x04\xe2A\x01\x03H\x00R\x0fdocsDestination\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12E\n" +
+	"\x05state\x18\x03 \x01(\x0e2).google.apps.meet.v2beta.Transcript.StateB\x04\xe2A\x01\x03R\x05state\x12?\n" +
 	"\n" +
-	"start_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\"J\n" +
+	"start_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\"J\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aSTARTED\x10\x01\x12\t\n" +
@@ -2588,28 +2588,28 @@ const file_google_apps_meet_v2beta_resource_proto_rawDesc = "" +
 	"\x0eFILE_GENERATED\x10\x03:|\xeaAy\n" +
 	"\x1emeet.googleapis.com/Transcript\x12>conferenceRecords/{conference_record}/transcripts/{transcript}*\vtranscripts2\n" +
 	"transcriptB\r\n" +
-	"\vdestination\"V\n" +
-	"\x0fDocsDestination\x12\x1f\n" +
-	"\bdocument\x18\x01 \x01(\tB\x03\xe0A\x03R\bdocument\x12\"\n" +
+	"\vdestination\"X\n" +
+	"\x0fDocsDestination\x12 \n" +
+	"\bdocument\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\bdocument\x12#\n" +
 	"\n" +
-	"export_uri\x18\x02 \x01(\tB\x03\xe0A\x03R\texportUri\"\xd4\x03\n" +
-	"\x0fTranscriptEntry\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12I\n" +
-	"\vparticipant\x18\x02 \x01(\tB'\xe0A\x03\xfaA!\n" +
-	"\x1fmeet.googleapis.com/ParticipantR\vparticipant\x12\x17\n" +
-	"\x04text\x18\x03 \x01(\tB\x03\xe0A\x03R\x04text\x12(\n" +
-	"\rlanguage_code\x18\x04 \x01(\tB\x03\xe0A\x03R\flanguageCode\x12>\n" +
+	"export_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\texportUri\"\xda\x03\n" +
+	"\x0fTranscriptEntry\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12J\n" +
+	"\vparticipant\x18\x02 \x01(\tB(\xe2A\x01\x03\xfaA!\n" +
+	"\x1fmeet.googleapis.com/ParticipantR\vparticipant\x12\x18\n" +
+	"\x04text\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x04text\x12)\n" +
+	"\rlanguage_code\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\flanguageCode\x12?\n" +
 	"\n" +
-	"start_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime:\x9d\x01\xeaA\x99\x01\n" +
-	"#meet.googleapis.com/TranscriptEntry\x12NconferenceRecords/{conference_record}/transcripts/{transcript}/entries/{entry}*\x11transcriptEntries2\x0ftranscriptEntry\"\x99\x04\n" +
-	"\tSmartNote\x12Z\n" +
-	"\x10docs_destination\x18\x05 \x01(\v2(.google.apps.meet.v2beta.DocsDestinationB\x03\xe0A\x03H\x00R\x0fdocsDestination\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\b\xe0A\x03R\x04name\x12C\n" +
-	"\x05state\x18\x02 \x01(\x0e2(.google.apps.meet.v2beta.SmartNote.StateB\x03\xe0A\x03R\x05state\x12>\n" +
+	"start_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime:\x9d\x01\xeaA\x99\x01\n" +
+	"#meet.googleapis.com/TranscriptEntry\x12NconferenceRecords/{conference_record}/transcripts/{transcript}/entries/{entry}*\x11transcriptEntries2\x0ftranscriptEntry\"\x9c\x04\n" +
+	"\tSmartNote\x12[\n" +
+	"\x10docs_destination\x18\x05 \x01(\v2(.google.apps.meet.v2beta.DocsDestinationB\x04\xe2A\x01\x03H\x00R\x0fdocsDestination\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\b\x03R\x04name\x12D\n" +
+	"\x05state\x18\x02 \x01(\x0e2(.google.apps.meet.v2beta.SmartNote.StateB\x04\xe2A\x01\x03R\x05state\x12?\n" +
 	"\n" +
-	"start_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\"J\n" +
+	"start_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\"J\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aSTARTED\x10\x01\x12\t\n" +

@@ -283,33 +283,33 @@ var File_google_cloud_run_v2_revision_template_proto protoreflect.FileDescriptor
 
 const file_google_cloud_run_v2_revision_template_proto_rawDesc = "" +
 	"\n" +
-	"+google/cloud/run/v2/revision_template.proto\x12\x13google.cloud.run.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a!google/cloud/run/v2/k8s.min.proto\x1a)google/cloud/run/v2/vendor_settings.proto\x1a\x1egoogle/protobuf/duration.proto\"\xc7\f\n" +
-	"\x10RevisionTemplate\x12?\n" +
-	"\brevision\x18\x01 \x01(\tB#\xe0A\x01\xfaA\x1d\n" +
-	"\x1brun.googleapis.com/RevisionR\brevision\x12N\n" +
-	"\x06labels\x18\x02 \x03(\v21.google.cloud.run.v2.RevisionTemplate.LabelsEntryB\x03\xe0A\x01R\x06labels\x12]\n" +
-	"\vannotations\x18\x03 \x03(\v26.google.cloud.run.v2.RevisionTemplate.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12C\n" +
-	"\ascaling\x18\x04 \x01(\v2$.google.cloud.run.v2.RevisionScalingB\x03\xe0A\x01R\ascaling\x12B\n" +
+	"+google/cloud/run/v2/revision_template.proto\x12\x13google.cloud.run.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a!google/cloud/run/v2/k8s.min.proto\x1a)google/cloud/run/v2/vendor_settings.proto\x1a\x1egoogle/protobuf/duration.proto\"\xd8\f\n" +
+	"\x10RevisionTemplate\x12@\n" +
+	"\brevision\x18\x01 \x01(\tB$\xe2A\x01\x01\xfaA\x1d\n" +
+	"\x1brun.googleapis.com/RevisionR\brevision\x12O\n" +
+	"\x06labels\x18\x02 \x03(\v21.google.cloud.run.v2.RevisionTemplate.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12^\n" +
+	"\vannotations\x18\x03 \x03(\v26.google.cloud.run.v2.RevisionTemplate.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12D\n" +
+	"\ascaling\x18\x04 \x01(\v2$.google.cloud.run.v2.RevisionScalingB\x04\xe2A\x01\x01R\ascaling\x12C\n" +
 	"\n" +
-	"vpc_access\x18\x06 \x01(\v2\x1e.google.cloud.run.v2.VpcAccessB\x03\xe0A\x01R\tvpcAccess\x128\n" +
-	"\atimeout\x18\b \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\atimeout\x12,\n" +
-	"\x0fservice_account\x18\t \x01(\tB\x03\xe0A\x01R\x0eserviceAccount\x12>\n" +
+	"vpc_access\x18\x06 \x01(\v2\x1e.google.cloud.run.v2.VpcAccessB\x04\xe2A\x01\x01R\tvpcAccess\x129\n" +
+	"\atimeout\x18\b \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\atimeout\x12-\n" +
+	"\x0fservice_account\x18\t \x01(\tB\x04\xe2A\x01\x01R\x0eserviceAccount\x12>\n" +
 	"\n" +
 	"containers\x18\n" +
 	" \x03(\v2\x1e.google.cloud.run.v2.ContainerR\n" +
-	"containers\x12:\n" +
-	"\avolumes\x18\v \x03(\v2\x1b.google.cloud.run.v2.VolumeB\x03\xe0A\x01R\avolumes\x12c\n" +
-	"\x15execution_environment\x18\r \x01(\x0e2).google.cloud.run.v2.ExecutionEnvironmentB\x03\xe0A\x01R\x14executionEnvironment\x12M\n" +
+	"containers\x12;\n" +
+	"\avolumes\x18\v \x03(\v2\x1b.google.cloud.run.v2.VolumeB\x04\xe2A\x01\x01R\avolumes\x12d\n" +
+	"\x15execution_environment\x18\r \x01(\x0e2).google.cloud.run.v2.ExecutionEnvironmentB\x04\xe2A\x01\x01R\x14executionEnvironment\x12M\n" +
 	"\x0eencryption_key\x18\x0e \x01(\tB&\xfaA#\n" +
-	"!cloudkms.googleapis.com/CryptoKeyR\rencryptionKey\x12L\n" +
-	" max_instance_request_concurrency\x18\x0f \x01(\x05B\x03\xe0A\x01R\x1dmaxInstanceRequestConcurrency\x12H\n" +
-	"\fservice_mesh\x18\x10 \x01(\v2 .google.cloud.run.v2.ServiceMeshB\x03\xe0A\x01R\vserviceMesh\x12\x80\x01\n" +
-	" encryption_key_revocation_action\x18\x11 \x01(\x0e22.google.cloud.run.v2.EncryptionKeyRevocationActionB\x03\xe0A\x01R\x1dencryptionKeyRevocationAction\x12g\n" +
-	" encryption_key_shutdown_duration\x18\x12 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x1dencryptionKeyShutdownDuration\x12.\n" +
-	"\x10session_affinity\x18\x13 \x01(\bB\x03\xe0A\x01R\x0fsessionAffinity\x127\n" +
-	"\x15health_check_disabled\x18\x14 \x01(\bB\x03\xe0A\x01R\x13healthCheckDisabled\x12K\n" +
-	"\rnode_selector\x18\x15 \x01(\v2!.google.cloud.run.v2.NodeSelectorB\x03\xe0A\x01R\fnodeSelector\x12K\n" +
-	"\x1dgpu_zonal_redundancy_disabled\x18\x18 \x01(\bB\x03\xe0A\x01H\x00R\x1agpuZonalRedundancyDisabled\x88\x01\x01\x1a9\n" +
+	"!cloudkms.googleapis.com/CryptoKeyR\rencryptionKey\x12M\n" +
+	" max_instance_request_concurrency\x18\x0f \x01(\x05B\x04\xe2A\x01\x01R\x1dmaxInstanceRequestConcurrency\x12I\n" +
+	"\fservice_mesh\x18\x10 \x01(\v2 .google.cloud.run.v2.ServiceMeshB\x04\xe2A\x01\x01R\vserviceMesh\x12\x81\x01\n" +
+	" encryption_key_revocation_action\x18\x11 \x01(\x0e22.google.cloud.run.v2.EncryptionKeyRevocationActionB\x04\xe2A\x01\x01R\x1dencryptionKeyRevocationAction\x12h\n" +
+	" encryption_key_shutdown_duration\x18\x12 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x1dencryptionKeyShutdownDuration\x12/\n" +
+	"\x10session_affinity\x18\x13 \x01(\bB\x04\xe2A\x01\x01R\x0fsessionAffinity\x128\n" +
+	"\x15health_check_disabled\x18\x14 \x01(\bB\x04\xe2A\x01\x01R\x13healthCheckDisabled\x12L\n" +
+	"\rnode_selector\x18\x15 \x01(\v2!.google.cloud.run.v2.NodeSelectorB\x04\xe2A\x01\x01R\fnodeSelector\x12L\n" +
+	"\x1dgpu_zonal_redundancy_disabled\x18\x18 \x01(\bB\x04\xe2A\x01\x01H\x00R\x1agpuZonalRedundancyDisabled\x88\x01\x01\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a>\n" +

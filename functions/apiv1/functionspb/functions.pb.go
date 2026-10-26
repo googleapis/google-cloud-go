@@ -2290,7 +2290,7 @@ var File_google_cloud_functions_v1_functions_proto protoreflect.FileDescriptor
 
 const file_google_cloud_functions_v1_functions_proto_rawDesc = "" +
 	"\n" +
-	")google/cloud/functions/v1/functions.proto\x12\x19google.cloud.functions.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a*google/cloud/functions/v1/operations.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa0\x19\n" +
+	")google/cloud/functions/v1/functions.proto\x12\x19google.cloud.functions.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a*google/cloud/functions/v1/operations.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa7\x19\n" +
 	"\rCloudFunction\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12.\n" +
@@ -2298,19 +2298,19 @@ const file_google_cloud_functions_v1_functions_proto_rawDesc = "" +
 	"\x11source_repository\x18\x04 \x01(\v2+.google.cloud.functions.v1.SourceRepositoryH\x00R\x10sourceRepository\x12,\n" +
 	"\x11source_upload_url\x18\x10 \x01(\tH\x00R\x0fsourceUploadUrl\x12N\n" +
 	"\rhttps_trigger\x18\x05 \x01(\v2'.google.cloud.functions.v1.HttpsTriggerH\x01R\fhttpsTrigger\x12N\n" +
-	"\revent_trigger\x18\x06 \x01(\v2'.google.cloud.functions.v1.EventTriggerH\x01R\feventTrigger\x12K\n" +
-	"\x06status\x18\a \x01(\x0e2..google.cloud.functions.v1.CloudFunctionStatusB\x03\xe0A\x03R\x06status\x12\x1f\n" +
+	"\revent_trigger\x18\x06 \x01(\v2'.google.cloud.functions.v1.EventTriggerH\x01R\feventTrigger\x12L\n" +
+	"\x06status\x18\a \x01(\x0e2..google.cloud.functions.v1.CloudFunctionStatusB\x04\xe2A\x01\x03R\x06status\x12\x1f\n" +
 	"\ventry_point\x18\b \x01(\tR\n" +
 	"entryPoint\x12\x18\n" +
 	"\aruntime\x18\x13 \x01(\tR\aruntime\x123\n" +
 	"\atimeout\x18\t \x01(\v2\x19.google.protobuf.DurationR\atimeout\x12.\n" +
 	"\x13available_memory_mb\x18\n" +
 	" \x01(\x05R\x11availableMemoryMb\x122\n" +
-	"\x15service_account_email\x18\v \x01(\tR\x13serviceAccountEmail\x12@\n" +
-	"\vupdate_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\"\n" +
+	"\x15service_account_email\x18\v \x01(\tR\x13serviceAccountEmail\x12A\n" +
+	"\vupdate_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12#\n" +
 	"\n" +
-	"version_id\x18\x0e \x01(\x03B\x03\xe0A\x03R\tversionId\x12L\n" +
+	"version_id\x18\x0e \x01(\x03B\x04\xe2A\x01\x03R\tversionId\x12L\n" +
 	"\x06labels\x18\x0f \x03(\v24.google.cloud.functions.v1.CloudFunction.LabelsEntryR\x06labels\x12w\n" +
 	"\x15environment_variables\x18\x11 \x03(\v2B.google.cloud.functions.v1.CloudFunction.EnvironmentVariablesEntryR\x14environmentVariables\x12\x87\x01\n" +
 	"\x1bbuild_environment_variables\x18\x1c \x03(\v2G.google.cloud.functions.v1.CloudFunction.BuildEnvironmentVariablesEntryR\x19buildEnvironmentVariables\x12\x1c\n" +
@@ -2323,22 +2323,22 @@ const file_google_cloud_functions_v1_functions_proto_rawDesc = "" +
 	"\fkms_key_name\x18\x19 \x01(\tB&\xfaA#\n" +
 	"!cloudkms.googleapis.com/CryptoKeyR\n" +
 	"kmsKeyName\x12*\n" +
-	"\x11build_worker_pool\x18\x1a \x01(\tR\x0fbuildWorkerPool\x12\x1e\n" +
-	"\bbuild_id\x18\x1b \x01(\tB\x03\xe0A\x03R\abuildId\x12\"\n" +
+	"\x11build_worker_pool\x18\x1a \x01(\tR\x0fbuildWorkerPool\x12\x1f\n" +
+	"\bbuild_id\x18\x1b \x01(\tB\x04\xe2A\x01\x03R\abuildId\x12#\n" +
 	"\n" +
-	"build_name\x18! \x01(\tB\x03\xe0A\x03R\tbuildName\x12i\n" +
+	"build_name\x18! \x01(\tB\x04\xe2A\x01\x03R\tbuildName\x12i\n" +
 	"\x1csecret_environment_variables\x18\x1d \x03(\v2'.google.cloud.functions.v1.SecretEnvVarR\x1asecretEnvironmentVariables\x12N\n" +
-	"\x0esecret_volumes\x18\x1e \x03(\v2'.google.cloud.functions.v1.SecretVolumeR\rsecretVolumes\x12&\n" +
-	"\fsource_token\x18\x1f \x01(\tB\x03\xe0A\x04R\vsourceToken\x12\\\n" +
+	"\x0esecret_volumes\x18\x1e \x03(\v2'.google.cloud.functions.v1.SecretVolumeR\rsecretVolumes\x12'\n" +
+	"\fsource_token\x18\x1f \x01(\tB\x04\xe2A\x01\x04R\vsourceToken\x12\\\n" +
 	"\x11docker_repository\x18\" \x01(\tB/\xfaA,\n" +
 	"*artifactregistry.googleapis.com/RepositoryR\x10dockerRepository\x12d\n" +
 	"\x0fdocker_registry\x18# \x01(\x0e27.google.cloud.functions.v1.CloudFunction.DockerRegistryB\x02\x18\x01R\x0edockerRegistry\x12x\n" +
 	"\x17automatic_update_policy\x18( \x01(\v2>.google.cloud.functions.v1.CloudFunction.AutomaticUpdatePolicyH\x02R\x15automaticUpdatePolicy\x12v\n" +
 	"\x17on_deploy_update_policy\x18) \x01(\v2=.google.cloud.functions.v1.CloudFunction.OnDeployUpdatePolicyH\x02R\x14onDeployUpdatePolicy\x122\n" +
 	"\x15build_service_account\x18+ \x01(\tR\x13buildServiceAccount\x1a\x17\n" +
-	"\x15AutomaticUpdatePolicy\x1aD\n" +
-	"\x14OnDeployUpdatePolicy\x12,\n" +
-	"\x0fruntime_version\x18\x01 \x01(\tB\x03\xe0A\x03R\x0eruntimeVersion\x1a9\n" +
+	"\x15AutomaticUpdatePolicy\x1aE\n" +
+	"\x14OnDeployUpdatePolicy\x12-\n" +
+	"\x0fruntime_version\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x0eruntimeVersion\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1aG\n" +
@@ -2364,12 +2364,12 @@ const file_google_cloud_functions_v1_functions_proto_rawDesc = "" +
 	"+cloudfunctions.googleapis.com/CloudFunction\x12<projects/{project}/locations/{location}/functions/{function}B\r\n" +
 	"\vsource_codeB\t\n" +
 	"\atriggerB\x17\n" +
-	"\x15runtime_update_policy\"L\n" +
+	"\x15runtime_update_policy\"M\n" +
 	"\x10SourceRepository\x12\x10\n" +
-	"\x03url\x18\x01 \x01(\tR\x03url\x12&\n" +
-	"\fdeployed_url\x18\x02 \x01(\tB\x03\xe0A\x03R\vdeployedUrl\"\xdc\x01\n" +
-	"\fHttpsTrigger\x12\x15\n" +
-	"\x03url\x18\x01 \x01(\tB\x03\xe0A\x03R\x03url\x12\\\n" +
+	"\x03url\x18\x01 \x01(\tR\x03url\x12'\n" +
+	"\fdeployed_url\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vdeployedUrl\"\xdd\x01\n" +
+	"\fHttpsTrigger\x12\x16\n" +
+	"\x03url\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x03url\x12\\\n" +
 	"\x0esecurity_level\x18\x02 \x01(\x0e25.google.cloud.functions.v1.HttpsTrigger.SecurityLevelR\rsecurityLevel\"W\n" +
 	"\rSecurityLevel\x12\x1e\n" +
 	"\x1aSECURITY_LEVEL_UNSPECIFIED\x10\x00\x12\x11\n" +
@@ -2400,20 +2400,20 @@ const file_google_cloud_functions_v1_functions_proto_rawDesc = "" +
 	"\bversions\x18\x04 \x03(\v25.google.cloud.functions.v1.SecretVolume.SecretVersionR\bversions\x1a=\n" +
 	"\rSecretVersion\x12\x18\n" +
 	"\aversion\x18\x01 \x01(\tR\aversion\x12\x12\n" +
-	"\x04path\x18\x02 \x01(\tR\x04path\"\xa9\x01\n" +
-	"\x15CreateFunctionRequest\x12E\n" +
-	"\blocation\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\blocation\x12I\n" +
-	"\bfunction\x18\x02 \x01(\v2(.google.cloud.functions.v1.CloudFunctionB\x03\xe0A\x02R\bfunction\"\x9f\x01\n" +
-	"\x15UpdateFunctionRequest\x12I\n" +
-	"\bfunction\x18\x01 \x01(\v2(.google.cloud.functions.v1.CloudFunctionB\x03\xe0A\x02R\bfunction\x12;\n" +
+	"\x04path\x18\x02 \x01(\tR\x04path\"\xab\x01\n" +
+	"\x15CreateFunctionRequest\x12F\n" +
+	"\blocation\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\blocation\x12J\n" +
+	"\bfunction\x18\x02 \x01(\v2(.google.cloud.functions.v1.CloudFunctionB\x04\xe2A\x01\x02R\bfunction\"\xa0\x01\n" +
+	"\x15UpdateFunctionRequest\x12J\n" +
+	"\bfunction\x18\x01 \x01(\v2(.google.cloud.functions.v1.CloudFunctionB\x04\xe2A\x01\x02R\bfunction\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"\x81\x01\n" +
-	"\x12GetFunctionRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudfunctions.googleapis.com/CloudFunctionR\x04name\x12\"\n" +
+	"updateMask\"\x83\x01\n" +
+	"\x12GetFunctionRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudfunctions.googleapis.com/CloudFunctionR\x04name\x12#\n" +
 	"\n" +
-	"version_id\x18\x02 \x01(\x03B\x03\xe0A\x01R\tversionId\"\x92\x01\n" +
+	"version_id\x18\x02 \x01(\x03B\x04\xe2A\x01\x01R\tversionId\"\x92\x01\n" +
 	"\x14ListFunctionsRequest\x12>\n" +
 	"\x06parent\x18\x01 \x01(\tB&\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
@@ -2423,14 +2423,14 @@ const file_google_cloud_functions_v1_functions_proto_rawDesc = "" +
 	"\x15ListFunctionsResponse\x12F\n" +
 	"\tfunctions\x18\x01 \x03(\v2(.google.cloud.functions.v1.CloudFunctionR\tfunctions\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"`\n" +
-	"\x15DeleteFunctionRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudfunctions.googleapis.com/CloudFunctionR\x04name\"w\n" +
-	"\x13CallFunctionRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudfunctions.googleapis.com/CloudFunctionR\x04name\x12\x17\n" +
-	"\x04data\x18\x02 \x01(\tB\x03\xe0A\x02R\x04data\"g\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"a\n" +
+	"\x15DeleteFunctionRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudfunctions.googleapis.com/CloudFunctionR\x04name\"y\n" +
+	"\x13CallFunctionRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudfunctions.googleapis.com/CloudFunctionR\x04name\x12\x18\n" +
+	"\x04data\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04data\"g\n" +
 	"\x14CallFunctionResponse\x12!\n" +
 	"\fexecution_id\x18\x01 \x01(\tR\vexecutionId\x12\x16\n" +
 	"\x06result\x18\x02 \x01(\tR\x06result\x12\x14\n" +

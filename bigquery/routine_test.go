@@ -22,8 +22,8 @@ import (
 	bq "google.golang.org/api/bigquery/v2"
 )
 
-func testRoutineConversion(t *testing.T, conversion string, in interface{}, want interface{}) {
-	var got interface{}
+func testRoutineConversion(t *testing.T, conversion string, in any, want any) {
+	var got any
 	var err error
 	switch conversion {
 	case "ToRoutineMetadata":
@@ -74,8 +74,8 @@ func TestRoutineTypeConversions(t *testing.T) {
 	tests := []struct {
 		name       string
 		conversion string
-		in         interface{}
-		want       interface{}
+		in         any
+		want       any
 	}{
 		{
 			name:       "empty",

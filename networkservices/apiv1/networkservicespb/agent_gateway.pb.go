@@ -1107,53 +1107,55 @@ var File_google_cloud_networkservices_v1_agent_gateway_proto protoreflect.FileDe
 
 const file_google_cloud_networkservices_v1_agent_gateway_proto_rawDesc = "" +
 	"\n" +
-	"3google/cloud/networkservices/v1/agent_gateway.proto\x12\x1fgoogle.cloud.networkservices.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdd\x12\n" +
-	"\fAgentGateway\x12i\n" +
-	"\x0egoogle_managed\x18\b \x01(\v2;.google.cloud.networkservices.v1.AgentGateway.GoogleManagedB\x03\xe0A\x01H\x00R\rgoogleManaged\x12c\n" +
-	"\fself_managed\x18\t \x01(\v29.google.cloud.networkservices.v1.AgentGateway.SelfManagedB\x03\xe0A\x01H\x00R\vselfManaged\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12V\n" +
-	"\x06labels\x18\x04 \x03(\v29.google.cloud.networkservices.v1.AgentGateway.LabelsEntryB\x03\xe0A\x01R\x06labels\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tB\x03\xe0A\x01R\vdescription\x12\x17\n" +
-	"\x04etag\x18\x06 \x01(\tB\x03\xe0A\x01R\x04etag\x12[\n" +
-	"\tprotocols\x18\f \x03(\x0e26.google.cloud.networkservices.v1.AgentGateway.ProtocolB\x05\xe0A\x01\x18\x01R\tprotocols\x12#\n" +
+	"3google/cloud/networkservices/v1/agent_gateway.proto\x12\x1fgoogle.cloud.networkservices.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf8\x12\n" +
+	"\fAgentGateway\x12j\n" +
+	"\x0egoogle_managed\x18\b \x01(\v2;.google.cloud.networkservices.v1.AgentGateway.GoogleManagedB\x04\xe2A\x01\x01H\x00R\rgoogleManaged\x12d\n" +
+	"\fself_managed\x18\t \x01(\v29.google.cloud.networkservices.v1.AgentGateway.SelfManagedB\x04\xe2A\x01\x01H\x00R\vselfManaged\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12W\n" +
+	"\x06labels\x18\x04 \x03(\v29.google.cloud.networkservices.v1.AgentGateway.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\x18\n" +
+	"\x04etag\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12\\\n" +
+	"\tprotocols\x18\f \x03(\x0e26.google.cloud.networkservices.v1.AgentGateway.ProtocolB\x06\xe2A\x01\x01\x18\x01R\tprotocols\x12$\n" +
 	"\n" +
-	"registries\x18\r \x03(\tB\x03\xe0A\x01R\n" +
-	"registries\x12g\n" +
+	"registries\x18\r \x03(\tB\x04\xe2A\x01\x01R\n" +
+	"registries\x12h\n" +
 	"\x0enetwork_config\x18\n" +
-	" \x01(\v2;.google.cloud.networkservices.v1.AgentGateway.NetworkConfigB\x03\xe0A\x01R\rnetworkConfig\x12w\n" +
-	"\x12agent_gateway_card\x18\v \x01(\v2D.google.cloud.networkservices.v1.AgentGateway.AgentGatewayOutputCardB\x03\xe0A\x03R\x10agentGatewayCard\x1a\xff\x01\n" +
-	"\rGoogleManaged\x12\x85\x01\n" +
-	"\x14governed_access_path\x18\x01 \x01(\x0e2N.google.cloud.networkservices.v1.AgentGateway.GoogleManaged.GovernedAccessPathB\x03\xe0A\x01R\x12governedAccessPath\"f\n" +
+	" \x01(\v2;.google.cloud.networkservices.v1.AgentGateway.NetworkConfigB\x04\xe2A\x01\x01R\rnetworkConfig\x12x\n" +
+	"\x12agent_gateway_card\x18\v \x01(\v2D.google.cloud.networkservices.v1.AgentGateway.AgentGatewayOutputCardB\x04\xe2A\x01\x03R\x10agentGatewayCard\x1a\x80\x02\n" +
+	"\rGoogleManaged\x12\x86\x01\n" +
+	"\x14governed_access_path\x18\x01 \x01(\x0e2N.google.cloud.networkservices.v1.AgentGateway.GoogleManaged.GovernedAccessPathB\x04\xe2A\x01\x01R\x12governedAccessPath\"f\n" +
 	"\x12GovernedAccessPath\x12$\n" +
 	" GOVERNED_ACCESS_PATH_UNSPECIFIED\x10\x00\x12\x15\n" +
 	"\x11AGENT_TO_ANYWHERE\x10\x01\x12\x13\n" +
-	"\x0fCLIENT_TO_AGENT\x10\x02\x1ak\n" +
-	"\vSelfManaged\x12,\n" +
-	"\fresource_uri\x18\x01 \x01(\tB\t\xe0A\x01\xfaA\x03\n" +
-	"\x01*R\vresourceUri\x12.\n" +
-	"\rresource_uris\x18\x02 \x03(\tB\t\xe0A\x01\xfaA\x03\n" +
-	"\x01*R\fresourceUris\x1a\x96\x05\n" +
-	"\rNetworkConfig\x12_\n" +
-	"\x06egress\x18\x01 \x01(\v2B.google.cloud.networkservices.v1.AgentGateway.NetworkConfig.EgressB\x03\xe0A\x01R\x06egress\x12\x7f\n" +
-	"\x12dns_peering_config\x18\x02 \x01(\v2L.google.cloud.networkservices.v1.AgentGateway.NetworkConfig.DnsPeeringConfigB\x03\xe0A\x01R\x10dnsPeeringConfig\x1a\xf3\x01\n" +
-	"\x06Egress\x122\n" +
-	"\x12network_attachment\x18\x01 \x01(\tB\x03\xe0A\x01R\x11networkAttachment\x12v\n" +
-	"\ftrust_config\x18\x02 \x01(\v2N.google.cloud.networkservices.v1.AgentGateway.NetworkConfig.Egress.TrustConfigB\x03\xe0A\x01R\vtrustConfig\x1a=\n" +
-	"\vTrustConfig\x12.\n" +
-	"\x10pem_certificates\x18\x01 \x03(\tB\x03\xe0A\x02R\x0fpemCertificates\x1a\xac\x01\n" +
-	"\x10DnsPeeringConfig\x12\x1d\n" +
-	"\adomains\x18\x01 \x03(\tB\x03\xe0A\x02R\adomains\x12*\n" +
-	"\x0etarget_project\x18\x02 \x01(\tB\x03\xe0A\x02R\rtargetProject\x12M\n" +
-	"\x0etarget_network\x18\x03 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1ecompute.googleapis.com/NetworkR\rtargetNetwork\x1a\xc6\x01\n" +
-	"\x16AgentGatewayOutputCard\x12(\n" +
-	"\rmtls_endpoint\x18\x01 \x01(\tB\x03\xe0A\x03R\fmtlsEndpoint\x120\n" +
-	"\x11root_certificates\x18\x05 \x03(\tB\x03\xe0A\x03R\x10rootCertificates\x12P\n" +
-	"\"service_extensions_service_account\x18\x04 \x01(\tB\x03\xe0A\x03R\x1fserviceExtensionsServiceAccount\x1a9\n" +
+	"\x0fCLIENT_TO_AGENT\x10\x02\x1am\n" +
+	"\vSelfManaged\x12-\n" +
+	"\fresource_uri\x18\x01 \x01(\tB\n" +
+	"\xe2A\x01\x01\xfaA\x03\n" +
+	"\x01*R\vresourceUri\x12/\n" +
+	"\rresource_uris\x18\x02 \x03(\tB\n" +
+	"\xe2A\x01\x01\xfaA\x03\n" +
+	"\x01*R\fresourceUris\x1a\x9f\x05\n" +
+	"\rNetworkConfig\x12`\n" +
+	"\x06egress\x18\x01 \x01(\v2B.google.cloud.networkservices.v1.AgentGateway.NetworkConfig.EgressB\x04\xe2A\x01\x01R\x06egress\x12\x80\x01\n" +
+	"\x12dns_peering_config\x18\x02 \x01(\v2L.google.cloud.networkservices.v1.AgentGateway.NetworkConfig.DnsPeeringConfigB\x04\xe2A\x01\x01R\x10dnsPeeringConfig\x1a\xf6\x01\n" +
+	"\x06Egress\x123\n" +
+	"\x12network_attachment\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x11networkAttachment\x12w\n" +
+	"\ftrust_config\x18\x02 \x01(\v2N.google.cloud.networkservices.v1.AgentGateway.NetworkConfig.Egress.TrustConfigB\x04\xe2A\x01\x01R\vtrustConfig\x1a>\n" +
+	"\vTrustConfig\x12/\n" +
+	"\x10pem_certificates\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\x0fpemCertificates\x1a\xaf\x01\n" +
+	"\x10DnsPeeringConfig\x12\x1e\n" +
+	"\adomains\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\adomains\x12+\n" +
+	"\x0etarget_project\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\rtargetProject\x12N\n" +
+	"\x0etarget_network\x18\x03 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1ecompute.googleapis.com/NetworkR\rtargetNetwork\x1a\xc9\x01\n" +
+	"\x16AgentGatewayOutputCard\x12)\n" +
+	"\rmtls_endpoint\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\fmtlsEndpoint\x121\n" +
+	"\x11root_certificates\x18\x05 \x03(\tB\x04\xe2A\x01\x03R\x10rootCertificates\x12Q\n" +
+	"\"service_extensions_service_account\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x1fserviceExtensionsServiceAccount\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"-\n" +
@@ -1161,32 +1163,32 @@ const file_google_cloud_networkservices_v1_agent_gateway_proto_rawDesc = "" +
 	"\x14PROTOCOL_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03MCP\x10\x01:\x95\x01\xeaA\x91\x01\n" +
 	"+networkservices.googleapis.com/AgentGateway\x12Eprojects/{project}/locations/{location}/agentGateways/{agent_gateway}*\ragentGateways2\fagentGatewayB\x11\n" +
-	"\x0fdeployment_mode\"\xe8\x01\n" +
-	"\x18ListAgentGatewaysRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+networkservices.googleapis.com/AgentGatewayR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fdeployment_mode\"\xec\x01\n" +
+	"\x18ListAgentGatewaysRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+networkservices.googleapis.com/AgentGatewayR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x129\n" +
-	"\x16return_partial_success\x18\x04 \x01(\bB\x03\xe0A\x01R\x14returnPartialSuccess\"\xbb\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12:\n" +
+	"\x16return_partial_success\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x14returnPartialSuccess\"\xbb\x01\n" +
 	"\x19ListAgentGatewaysResponse\x12T\n" +
 	"\x0eagent_gateways\x18\x01 \x03(\v2-.google.cloud.networkservices.v1.AgentGatewayR\ragentGateways\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"a\n" +
-	"\x16GetAgentGatewayRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+networkservices.googleapis.com/AgentGatewayR\x04name\"\xf0\x01\n" +
-	"\x19CreateAgentGatewayRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+networkservices.googleapis.com/AgentGatewayR\x06parent\x12-\n" +
-	"\x10agent_gateway_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x0eagentGatewayId\x12W\n" +
-	"\ragent_gateway\x18\x03 \x01(\v2-.google.cloud.networkservices.v1.AgentGatewayB\x03\xe0A\x02R\fagentGateway\"\xb6\x01\n" +
-	"\x19UpdateAgentGatewayRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12W\n" +
-	"\ragent_gateway\x18\x02 \x01(\v2-.google.cloud.networkservices.v1.AgentGatewayB\x03\xe0A\x02R\fagentGateway\"}\n" +
-	"\x19DeleteAgentGatewayRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+networkservices.googleapis.com/AgentGatewayR\x04name\x12\x17\n" +
-	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x01R\x04etagB\xf2\x01\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"b\n" +
+	"\x16GetAgentGatewayRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+networkservices.googleapis.com/AgentGatewayR\x04name\"\xf3\x01\n" +
+	"\x19CreateAgentGatewayRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+networkservices.googleapis.com/AgentGatewayR\x06parent\x12.\n" +
+	"\x10agent_gateway_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0eagentGatewayId\x12X\n" +
+	"\ragent_gateway\x18\x03 \x01(\v2-.google.cloud.networkservices.v1.AgentGatewayB\x04\xe2A\x01\x02R\fagentGateway\"\xb8\x01\n" +
+	"\x19UpdateAgentGatewayRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12X\n" +
+	"\ragent_gateway\x18\x02 \x01(\v2-.google.cloud.networkservices.v1.AgentGatewayB\x04\xe2A\x01\x02R\fagentGateway\"\x7f\n" +
+	"\x19DeleteAgentGatewayRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+networkservices.googleapis.com/AgentGatewayR\x04name\x12\x18\n" +
+	"\x04etag\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04etagB\xf2\x01\n" +
 	"#com.google.cloud.networkservices.v1B\x11AgentGatewayProtoP\x01ZMcloud.google.com/go/networkservices/apiv1/networkservicespb;networkservicespb\xaa\x02\x1fGoogle.Cloud.NetworkServices.V1\xca\x02\x1fGoogle\\Cloud\\NetworkServices\\V1\xea\x02\"Google::Cloud::NetworkServices::V1b\x06proto3"
 
 var (

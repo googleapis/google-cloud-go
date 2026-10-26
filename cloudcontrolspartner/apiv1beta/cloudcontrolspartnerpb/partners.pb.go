@@ -374,21 +374,21 @@ var File_google_cloud_cloudcontrolspartner_v1beta_partners_proto protoreflect.Fi
 
 const file_google_cloud_cloudcontrolspartner_v1beta_partners_proto_rawDesc = "" +
 	"\n" +
-	"7google/cloud/cloudcontrolspartner/v1beta/partners.proto\x12(google.cloud.cloudcontrolspartner.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x9f\x04\n" +
-	"\aPartner\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12A\n" +
+	"7google/cloud/cloudcontrolspartner/v1beta/partners.proto\x12(google.cloud.cloudcontrolspartner.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa2\x04\n" +
+	"\aPartner\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
 	"\x04skus\x18\x03 \x03(\v2-.google.cloud.cloudcontrolspartner.v1beta.SkuR\x04skus\x12Z\n" +
 	"\rekm_solutions\x18\x04 \x03(\v25.google.cloud.cloudcontrolspartner.v1beta.EkmMetadataR\fekmSolutions\x124\n" +
 	"\x16operated_cloud_regions\x18\x05 \x03(\tR\x14operatedCloudRegions\x12,\n" +
-	"\x12partner_project_id\x18\a \x01(\tR\x10partnerProjectId\x12@\n" +
-	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
+	"\x12partner_project_id\x18\a \x01(\tR\x10partnerProjectId\x12A\n" +
+	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
 	"\vupdate_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime:t\xeaAq\n" +
-	"+cloudcontrolspartner.googleapis.com/Partner\x129organizations/{organization}/locations/{location}/partner2\apartner\"\\\n" +
-	"\x11GetPartnerRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
+	"+cloudcontrolspartner.googleapis.com/Partner\x129organizations/{organization}/locations/{location}/partner2\apartner\"]\n" +
+	"\x11GetPartnerRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
 	"+cloudcontrolspartner.googleapis.com/PartnerR\x04name\"8\n" +
 	"\x03Sku\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12!\n" +

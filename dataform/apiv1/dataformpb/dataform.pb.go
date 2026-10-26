@@ -13122,58 +13122,58 @@ var File_google_cloud_dataform_v1_dataform_proto protoreflect.FileDescriptor
 
 const file_google_cloud_dataform_v1_dataform_proto_rawDesc = "" +
 	"\n" +
-	"'google/cloud/dataform/v1/dataform.proto\x12\x18google.cloud.dataform.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\x1a\x1agoogle/type/interval.proto\"x\n" +
-	"\x13DataEncryptionState\x12a\n" +
-	"\x14kms_key_version_name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(cloudkms.googleapis.com/CryptoKeyVersionR\x11kmsKeyVersionName\"\xf1\x14\n" +
+	"'google/cloud/dataform/v1/dataform.proto\x12\x18google.cloud.dataform.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\x1a\x1agoogle/type/interval.proto\"y\n" +
+	"\x13DataEncryptionState\x12b\n" +
+	"\x14kms_key_version_name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(cloudkms.googleapis.com/CryptoKeyVersionR\x11kmsKeyVersionName\"\x8b\x15\n" +
 	"\n" +
-	"Repository\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x125\n" +
-	"\x11containing_folder\x18\x10 \x01(\tB\x03\xe0A\x01H\x00R\x10containingFolder\x88\x01\x01\x122\n" +
-	"\x10team_folder_name\x18\x12 \x01(\tB\x03\xe0A\x03H\x01R\x0eteamFolderName\x88\x01\x01\x12@\n" +
-	"\vcreate_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12&\n" +
-	"\fdisplay_name\x18\b \x01(\tB\x03\xe0A\x01R\vdisplayName\x12k\n" +
-	"\x13git_remote_settings\x18\x02 \x01(\v26.google.cloud.dataform.v1.Repository.GitRemoteSettingsB\x03\xe0A\x01R\x11gitRemoteSettings\x12\x8e\x01\n" +
-	"*npmrc_environment_variables_secret_version\x18\x03 \x01(\tB2\xe0A\x01\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionR&npmrcEnvironmentVariablesSecretVersion\x12\x8f\x01\n" +
-	"\x1fworkspace_compilation_overrides\x18\x04 \x01(\v2B.google.cloud.dataform.v1.Repository.WorkspaceCompilationOverridesB\x03\xe0A\x01R\x1dworkspaceCompilationOverrides\x12M\n" +
-	"\x06labels\x18\x05 \x03(\v20.google.cloud.dataform.v1.Repository.LabelsEntryB\x03\xe0A\x01R\x06labels\x12G\n" +
-	"\x1cset_authenticated_user_admin\x18\t \x01(\bB\x06\xe0A\x01\xe0A\x04R\x19setAuthenticatedUserAdmin\x12,\n" +
+	"Repository\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x126\n" +
+	"\x11containing_folder\x18\x10 \x01(\tB\x04\xe2A\x01\x01H\x00R\x10containingFolder\x88\x01\x01\x123\n" +
+	"\x10team_folder_name\x18\x12 \x01(\tB\x04\xe2A\x01\x03H\x01R\x0eteamFolderName\x88\x01\x01\x12A\n" +
+	"\vcreate_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12'\n" +
+	"\fdisplay_name\x18\b \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12l\n" +
+	"\x13git_remote_settings\x18\x02 \x01(\v26.google.cloud.dataform.v1.Repository.GitRemoteSettingsB\x04\xe2A\x01\x01R\x11gitRemoteSettings\x12\x8f\x01\n" +
+	"*npmrc_environment_variables_secret_version\x18\x03 \x01(\tB3\xe2A\x01\x01\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionR&npmrcEnvironmentVariablesSecretVersion\x12\x90\x01\n" +
+	"\x1fworkspace_compilation_overrides\x18\x04 \x01(\v2B.google.cloud.dataform.v1.Repository.WorkspaceCompilationOverridesB\x04\xe2A\x01\x01R\x1dworkspaceCompilationOverrides\x12N\n" +
+	"\x06labels\x18\x05 \x03(\v20.google.cloud.dataform.v1.Repository.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12F\n" +
+	"\x1cset_authenticated_user_admin\x18\t \x01(\bB\x05\xe2A\x02\x01\x04R\x19setAuthenticatedUserAdmin\x12-\n" +
 	"\x0fservice_account\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\x0eserviceAccount\x12K\n" +
-	"\fkms_key_name\x18\v \x01(\tB)\xe0A\x01\xfaA#\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\x0eserviceAccount\x12L\n" +
+	"\fkms_key_name\x18\v \x01(\tB*\xe2A\x01\x01\xfaA#\n" +
 	"!cloudkms.googleapis.com/CryptoKeyR\n" +
-	"kmsKeyName\x12f\n" +
-	"\x15data_encryption_state\x18\f \x01(\v2-.google.cloud.dataform.v1.DataEncryptionStateB\x03\xe0A\x03R\x13dataEncryptionState\x125\n" +
-	"\x11internal_metadata\x18\x0f \x01(\tB\x03\xe0A\x03H\x02R\x10internalMetadata\x88\x01\x01\x12l\n" +
-	"\x14end_user_auth_config\x18\x1c \x01(\v26.google.cloud.dataform.v1.Repository.EndUserAuthConfigB\x03\xe0A\x01R\x11endUserAuthConfig\x1a\xb8\a\n" +
-	"\x11GitRemoteSettings\x12\x15\n" +
-	"\x03url\x18\x01 \x01(\tB\x03\xe0A\x02R\x03url\x12*\n" +
-	"\x0edefault_branch\x18\x02 \x01(\tB\x03\xe0A\x01R\rdefaultBranch\x12=\n" +
-	"\x18effective_default_branch\x18\t \x01(\tB\x03\xe0A\x03R\x16effectiveDefaultBranch\x12\x81\x01\n" +
-	"#authentication_token_secret_version\x18\x03 \x01(\tB2\xe0A\x01\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionR authenticationTokenSecretVersion\x12\x8f\x01\n" +
-	"\x19ssh_authentication_config\x18\x05 \x01(\v2N.google.cloud.dataform.v1.Repository.GitRemoteSettings.SshAuthenticationConfigB\x03\xe0A\x01R\x17sshAuthenticationConfig\x12n\n" +
-	"\x13git_repository_link\x18\a \x01(\tB9\xe0A\x01\xfaA3\n" +
-	"1developerconnect.googleapis.com/GitRepositoryLinkH\x00R\x11gitRepositoryLink\x88\x01\x01\x12l\n" +
-	"\ftoken_status\x18\x04 \x01(\x0e2B.google.cloud.dataform.v1.Repository.GitRemoteSettings.TokenStatusB\x05\xe0A\x03\x18\x01R\vtokenStatus\x1a\xc0\x01\n" +
-	"\x17SshAuthenticationConfig\x12x\n" +
-	"\x1fuser_private_key_secret_version\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionR\x1buserPrivateKeySecretVersion\x12+\n" +
-	"\x0fhost_public_key\x18\x02 \x01(\tB\x03\xe0A\x02R\rhostPublicKey\"R\n" +
+	"kmsKeyName\x12g\n" +
+	"\x15data_encryption_state\x18\f \x01(\v2-.google.cloud.dataform.v1.DataEncryptionStateB\x04\xe2A\x01\x03R\x13dataEncryptionState\x126\n" +
+	"\x11internal_metadata\x18\x0f \x01(\tB\x04\xe2A\x01\x03H\x02R\x10internalMetadata\x88\x01\x01\x12m\n" +
+	"\x14end_user_auth_config\x18\x1c \x01(\v26.google.cloud.dataform.v1.Repository.EndUserAuthConfigB\x04\xe2A\x01\x01R\x11endUserAuthConfig\x1a\xc1\a\n" +
+	"\x11GitRemoteSettings\x12\x16\n" +
+	"\x03url\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03url\x12+\n" +
+	"\x0edefault_branch\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\rdefaultBranch\x12>\n" +
+	"\x18effective_default_branch\x18\t \x01(\tB\x04\xe2A\x01\x03R\x16effectiveDefaultBranch\x12\x82\x01\n" +
+	"#authentication_token_secret_version\x18\x03 \x01(\tB3\xe2A\x01\x01\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionR authenticationTokenSecretVersion\x12\x90\x01\n" +
+	"\x19ssh_authentication_config\x18\x05 \x01(\v2N.google.cloud.dataform.v1.Repository.GitRemoteSettings.SshAuthenticationConfigB\x04\xe2A\x01\x01R\x17sshAuthenticationConfig\x12o\n" +
+	"\x13git_repository_link\x18\a \x01(\tB:\xe2A\x01\x01\xfaA3\n" +
+	"1developerconnect.googleapis.com/GitRepositoryLinkH\x00R\x11gitRepositoryLink\x88\x01\x01\x12m\n" +
+	"\ftoken_status\x18\x04 \x01(\x0e2B.google.cloud.dataform.v1.Repository.GitRemoteSettings.TokenStatusB\x06\xe2A\x01\x03\x18\x01R\vtokenStatus\x1a\xc2\x01\n" +
+	"\x17SshAuthenticationConfig\x12y\n" +
+	"\x1fuser_private_key_secret_version\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionR\x1buserPrivateKeySecretVersion\x12,\n" +
+	"\x0fhost_public_key\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\rhostPublicKey\"R\n" +
 	"\vTokenStatus\x12\x1c\n" +
 	"\x18TOKEN_STATUS_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tNOT_FOUND\x10\x01\x12\v\n" +
 	"\aINVALID\x10\x02\x12\t\n" +
 	"\x05VALID\x10\x03B\x16\n" +
-	"\x14_git_repository_link\x1a\xa1\x01\n" +
-	"\x1dWorkspaceCompilationOverrides\x12.\n" +
-	"\x10default_database\x18\x01 \x01(\tB\x03\xe0A\x01R\x0fdefaultDatabase\x12(\n" +
-	"\rschema_suffix\x18\x02 \x01(\tB\x03\xe0A\x01R\fschemaSuffix\x12&\n" +
-	"\ftable_prefix\x18\x03 \x01(\tB\x03\xe0A\x01R\vtablePrefix\x1ab\n" +
-	"\x11EndUserAuthConfig\x12M\n" +
-	"\foauth_config\x18\x01 \x01(\v2%.google.cloud.dataform.v1.OAuthConfigB\x03\xe0A\x01R\voauthConfig\x1a9\n" +
+	"\x14_git_repository_link\x1a\xa4\x01\n" +
+	"\x1dWorkspaceCompilationOverrides\x12/\n" +
+	"\x10default_database\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0fdefaultDatabase\x12)\n" +
+	"\rschema_suffix\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\fschemaSuffix\x12'\n" +
+	"\ftable_prefix\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vtablePrefix\x1ac\n" +
+	"\x11EndUserAuthConfig\x12N\n" +
+	"\foauth_config\x18\x01 \x01(\v2%.google.cloud.dataform.v1.OAuthConfigB\x04\xe2A\x01\x01R\voauthConfig\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x85\x01\xeaA\x81\x01\n" +
@@ -13181,55 +13181,55 @@ const file_google_cloud_dataform_v1_dataform_proto_rawDesc = "" +
 	"repositoryB\x14\n" +
 	"\x12_containing_folderB\x13\n" +
 	"\x11_team_folder_nameB\x14\n" +
-	"\x12_internal_metadata\"J\n" +
-	"\vOAuthConfig\x12;\n" +
-	"\x17additional_oauth_scopes\x18\x01 \x03(\tB\x03\xe0A\x01R\x15additionalOauthScopes\"?\n" +
-	"\x17PrivateResourceMetadata\x12$\n" +
-	"\vuser_scoped\x18\x01 \x01(\bB\x03\xe0A\x03R\n" +
-	"userScoped\"\xdf\x01\n" +
-	"\x17ListRepositoriesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x12_internal_metadata\"K\n" +
+	"\vOAuthConfig\x12<\n" +
+	"\x17additional_oauth_scopes\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\x15additionalOauthScopes\"@\n" +
+	"\x17PrivateResourceMetadata\x12%\n" +
+	"\vuser_scoped\x18\x01 \x01(\bB\x04\xe2A\x01\x03R\n" +
+	"userScoped\"\xe4\x01\n" +
+	"\x17ListRepositoriesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1e\n" +
-	"\border_by\x18\x04 \x01(\tB\x03\xe0A\x01R\aorderBy\x12\x1b\n" +
-	"\x06filter\x18\x05 \x01(\tB\x03\xe0A\x01R\x06filter\"\xae\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1f\n" +
+	"\border_by\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\x12\x1c\n" +
+	"\x06filter\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xae\x01\n" +
 	"\x18ListRepositoriesResponse\x12H\n" +
 	"\frepositories\x18\x01 \x03(\v2$.google.cloud.dataform.v1.RepositoryR\frepositories\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xc7\x01\n" +
-	"\x15MoveRepositoryRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"dataform.googleapis.com/RepositoryR\x04name\x12L\n" +
-	"\x1ddestination_containing_folder\x18\x02 \x01(\tB\x03\xe0A\x01H\x00R\x1bdestinationContainingFolder\x88\x01\x01B \n" +
-	"\x1e_destination_containing_folder\"V\n" +
-	"\x14GetRepositoryRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"dataform.googleapis.com/RepositoryR\x04name\"\xd1\x01\n" +
-	"\x17CreateRepositoryRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12I\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xc9\x01\n" +
+	"\x15MoveRepositoryRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"dataform.googleapis.com/RepositoryR\x04name\x12M\n" +
+	"\x1ddestination_containing_folder\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x00R\x1bdestinationContainingFolder\x88\x01\x01B \n" +
+	"\x1e_destination_containing_folder\"W\n" +
+	"\x14GetRepositoryRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"dataform.googleapis.com/RepositoryR\x04name\"\xd4\x01\n" +
+	"\x17CreateRepositoryRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12J\n" +
 	"\n" +
-	"repository\x18\x02 \x01(\v2$.google.cloud.dataform.v1.RepositoryB\x03\xe0A\x02R\n" +
-	"repository\x12(\n" +
-	"\rrepository_id\x18\x03 \x01(\tB\x03\xe0A\x02R\frepositoryId\"\xa6\x01\n" +
-	"\x17UpdateRepositoryRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12I\n" +
+	"repository\x18\x02 \x01(\v2$.google.cloud.dataform.v1.RepositoryB\x04\xe2A\x01\x02R\n" +
+	"repository\x12)\n" +
+	"\rrepository_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\frepositoryId\"\xa8\x01\n" +
+	"\x17UpdateRepositoryRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12J\n" +
 	"\n" +
-	"repository\x18\x02 \x01(\v2$.google.cloud.dataform.v1.RepositoryB\x03\xe0A\x02R\n" +
-	"repository\"t\n" +
-	"\x17DeleteRepositoryRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"dataform.googleapis.com/RepositoryR\x04name\x12\x19\n" +
-	"\x05force\x18\x02 \x01(\bB\x03\xe0A\x01R\x05force\"\xbd\x06\n" +
-	"\x1eCommitRepositoryChangesRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"dataform.googleapis.com/RepositoryR\x04name\x12V\n" +
-	"\x0fcommit_metadata\x18\x02 \x01(\v2(.google.cloud.dataform.v1.CommitMetadataB\x03\xe0A\x02R\x0ecommitMetadata\x12<\n" +
-	"\x18required_head_commit_sha\x18\x04 \x01(\tB\x03\xe0A\x01R\x15requiredHeadCommitSha\x12z\n" +
-	"\x0ffile_operations\x18\x03 \x03(\v2L.google.cloud.dataform.v1.CommitRepositoryChangesRequest.FileOperationsEntryB\x03\xe0A\x01R\x0efileOperations\x1a\xbc\x02\n" +
+	"repository\x18\x02 \x01(\v2$.google.cloud.dataform.v1.RepositoryB\x04\xe2A\x01\x02R\n" +
+	"repository\"v\n" +
+	"\x17DeleteRepositoryRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"dataform.googleapis.com/RepositoryR\x04name\x12\x1a\n" +
+	"\x05force\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x05force\"\xc1\x06\n" +
+	"\x1eCommitRepositoryChangesRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"dataform.googleapis.com/RepositoryR\x04name\x12W\n" +
+	"\x0fcommit_metadata\x18\x02 \x01(\v2(.google.cloud.dataform.v1.CommitMetadataB\x04\xe2A\x01\x02R\x0ecommitMetadata\x12=\n" +
+	"\x18required_head_commit_sha\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x15requiredHeadCommitSha\x12{\n" +
+	"\x0ffile_operations\x18\x03 \x03(\v2L.google.cloud.dataform.v1.CommitRepositoryChangesRequest.FileOperationsEntryB\x04\xe2A\x01\x01R\x0efileOperations\x1a\xbc\x02\n" +
 	"\rFileOperation\x12q\n" +
 	"\n" +
 	"write_file\x18\x01 \x01(\v2P.google.cloud.dataform.v1.CommitRepositoryChangesRequest.FileOperation.WriteFileH\x00R\twriteFile\x12t\n" +
@@ -13245,33 +13245,33 @@ const file_google_cloud_dataform_v1_dataform_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\v2F.google.cloud.dataform.v1.CommitRepositoryChangesRequest.FileOperationR\x05value:\x028\x01\"@\n" +
 	"\x1fCommitRepositoryChangesResponse\x12\x1d\n" +
 	"\n" +
-	"commit_sha\x18\x01 \x01(\tR\tcommitSha\"\x98\x01\n" +
-	"\x19ReadRepositoryFileRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"dataform.googleapis.com/RepositoryR\x04name\x12\"\n" +
+	"commit_sha\x18\x01 \x01(\tR\tcommitSha\"\x9b\x01\n" +
+	"\x19ReadRepositoryFileRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"dataform.googleapis.com/RepositoryR\x04name\x12#\n" +
 	"\n" +
-	"commit_sha\x18\x02 \x01(\tB\x03\xe0A\x01R\tcommitSha\x12\x17\n" +
-	"\x04path\x18\x03 \x01(\tB\x03\xe0A\x02R\x04path\"8\n" +
+	"commit_sha\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\tcommitSha\x12\x18\n" +
+	"\x04path\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x04path\"8\n" +
 	"\x1aReadRepositoryFileResponse\x12\x1a\n" +
-	"\bcontents\x18\x01 \x01(\fR\bcontents\"\xec\x01\n" +
-	"'QueryRepositoryDirectoryContentsRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"dataform.googleapis.com/RepositoryR\x04name\x12\"\n" +
+	"\bcontents\x18\x01 \x01(\fR\bcontents\"\xf1\x01\n" +
+	"'QueryRepositoryDirectoryContentsRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"dataform.googleapis.com/RepositoryR\x04name\x12#\n" +
 	"\n" +
-	"commit_sha\x18\x02 \x01(\tB\x03\xe0A\x01R\tcommitSha\x12\x17\n" +
-	"\x04path\x18\x03 \x01(\tB\x03\xe0A\x01R\x04path\x12 \n" +
-	"\tpage_size\x18\x04 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"commit_sha\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\tcommitSha\x12\x18\n" +
+	"\x04path\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04path\x12!\n" +
+	"\tpage_size\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x05 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xa9\x01\n" +
+	"page_token\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xa9\x01\n" +
 	"(QueryRepositoryDirectoryContentsResponse\x12U\n" +
 	"\x11directory_entries\x18\x01 \x03(\v2(.google.cloud.dataform.v1.DirectoryEntryR\x10directoryEntries\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa5\x01\n" +
-	"\x1dFetchRepositoryHistoryRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"dataform.googleapis.com/RepositoryR\x04name\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa8\x01\n" +
+	"\x1dFetchRepositoryHistoryRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"dataform.googleapis.com/RepositoryR\x04name\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x05 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x8c\x01\n" +
+	"page_token\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x8c\x01\n" +
 	"\x1eFetchRepositoryHistoryResponse\x12B\n" +
 	"\acommits\x18\x01 \x03(\v2(.google.cloud.dataform.v1.CommitLogEntryR\acommits\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xd3\x01\n" +
@@ -13281,12 +13281,12 @@ const file_google_cloud_dataform_v1_dataform_proto_rawDesc = "" +
 	"\n" +
 	"commit_sha\x18\x02 \x01(\tR\tcommitSha\x12>\n" +
 	"\x06author\x18\x03 \x01(\v2&.google.cloud.dataform.v1.CommitAuthorR\x06author\x12%\n" +
-	"\x0ecommit_message\x18\x04 \x01(\tR\rcommitMessage\"\x81\x01\n" +
-	"\x0eCommitMetadata\x12C\n" +
-	"\x06author\x18\x01 \x01(\v2&.google.cloud.dataform.v1.CommitAuthorB\x03\xe0A\x02R\x06author\x12*\n" +
-	"\x0ecommit_message\x18\x02 \x01(\tB\x03\xe0A\x01R\rcommitMessage\"k\n" +
-	")ComputeRepositoryAccessTokenStatusRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
+	"\x0ecommit_message\x18\x04 \x01(\tR\rcommitMessage\"\x83\x01\n" +
+	"\x0eCommitMetadata\x12D\n" +
+	"\x06author\x18\x01 \x01(\v2&.google.cloud.dataform.v1.CommitAuthorB\x04\xe2A\x01\x02R\x06author\x12+\n" +
+	"\x0ecommit_message\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\rcommitMessage\"l\n" +
+	")ComputeRepositoryAccessTokenStatusRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
 	"\"dataform.googleapis.com/RepositoryR\x04name\"\x8c\x02\n" +
 	"*ComputeRepositoryAccessTokenStatusResponse\x12s\n" +
 	"\ftoken_status\x18\x01 \x01(\x0e2P.google.cloud.dataform.v1.ComputeRepositoryAccessTokenStatusResponse.TokenStatusR\vtokenStatus\"i\n" +
@@ -13295,111 +13295,111 @@ const file_google_cloud_dataform_v1_dataform_proto_rawDesc = "" +
 	"\tNOT_FOUND\x10\x01\x12\v\n" +
 	"\aINVALID\x10\x02\x12\t\n" +
 	"\x05VALID\x10\x03\x12\x15\n" +
-	"\x11PERMISSION_DENIED\x10\x04\"\\\n" +
-	"\x1aFetchRemoteBranchesRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
+	"\x11PERMISSION_DENIED\x10\x04\"]\n" +
+	"\x1aFetchRemoteBranchesRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
 	"\"dataform.googleapis.com/RepositoryR\x04name\"9\n" +
 	"\x1bFetchRemoteBranchesResponse\x12\x1a\n" +
-	"\bbranches\x18\x01 \x03(\tR\bbranches\"\xeb\x04\n" +
-	"\tWorkspace\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12f\n" +
-	"\x15data_encryption_state\x18\x02 \x01(\v2-.google.cloud.dataform.v1.DataEncryptionStateB\x03\xe0A\x03R\x13dataEncryptionState\x125\n" +
-	"\x11internal_metadata\x18\x05 \x01(\tB\x03\xe0A\x03H\x00R\x10internalMetadata\x88\x01\x01\x12-\n" +
-	"\rdisable_moves\x18\x06 \x01(\bB\x03\xe0A\x01H\x01R\fdisableMoves\x88\x01\x01\x12r\n" +
-	"\x19private_resource_metadata\x18\b \x01(\v21.google.cloud.dataform.v1.PrivateResourceMetadataB\x03\xe0A\x03R\x17privateResourceMetadata:\x98\x01\xeaA\x94\x01\n" +
+	"\bbranches\x18\x01 \x03(\tR\bbranches\"\xf1\x04\n" +
+	"\tWorkspace\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12g\n" +
+	"\x15data_encryption_state\x18\x02 \x01(\v2-.google.cloud.dataform.v1.DataEncryptionStateB\x04\xe2A\x01\x03R\x13dataEncryptionState\x126\n" +
+	"\x11internal_metadata\x18\x05 \x01(\tB\x04\xe2A\x01\x03H\x00R\x10internalMetadata\x88\x01\x01\x12.\n" +
+	"\rdisable_moves\x18\x06 \x01(\bB\x04\xe2A\x01\x01H\x01R\fdisableMoves\x88\x01\x01\x12s\n" +
+	"\x19private_resource_metadata\x18\b \x01(\v21.google.cloud.dataform.v1.PrivateResourceMetadataB\x04\xe2A\x01\x03R\x17privateResourceMetadata:\x98\x01\xeaA\x94\x01\n" +
 	"!dataform.googleapis.com/Workspace\x12Xprojects/{project}/locations/{location}/repositories/{repository}/workspaces/{workspace}*\n" +
 	"workspaces2\tworkspaceB\x14\n" +
 	"\x12_internal_metadataB\x10\n" +
-	"\x0e_disable_moves\"\xde\x01\n" +
-	"\x15ListWorkspacesRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"dataform.googleapis.com/RepositoryR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0e_disable_moves\"\xe3\x01\n" +
+	"\x15ListWorkspacesRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"dataform.googleapis.com/RepositoryR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1e\n" +
-	"\border_by\x18\x04 \x01(\tB\x03\xe0A\x01R\aorderBy\x12\x1b\n" +
-	"\x06filter\x18\x05 \x01(\tB\x03\xe0A\x01R\x06filter\"\xa7\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1f\n" +
+	"\border_by\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\x12\x1c\n" +
+	"\x06filter\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xa7\x01\n" +
 	"\x16ListWorkspacesResponse\x12C\n" +
 	"\n" +
 	"workspaces\x18\x01 \x03(\v2#.google.cloud.dataform.v1.WorkspaceR\n" +
 	"workspaces\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"T\n" +
-	"\x13GetWorkspaceRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!dataform.googleapis.com/WorkspaceR\x04name\"\xcc\x01\n" +
-	"\x16CreateWorkspaceRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"dataform.googleapis.com/RepositoryR\x06parent\x12F\n" +
-	"\tworkspace\x18\x02 \x01(\v2#.google.cloud.dataform.v1.WorkspaceB\x03\xe0A\x02R\tworkspace\x12&\n" +
-	"\fworkspace_id\x18\x03 \x01(\tB\x03\xe0A\x02R\vworkspaceId\"W\n" +
-	"\x16DeleteWorkspaceRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!dataform.googleapis.com/WorkspaceR\x04name\"Q\n" +
-	"\fCommitAuthor\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12(\n" +
-	"\remail_address\x18\x02 \x01(\tB\x03\xe0A\x02R\femailAddress\"\xc5\x01\n" +
-	"\x15PullGitCommitsRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!dataform.googleapis.com/WorkspaceR\x04name\x12(\n" +
-	"\rremote_branch\x18\x02 \x01(\tB\x03\xe0A\x01R\fremoteBranch\x12C\n" +
-	"\x06author\x18\x03 \x01(\v2&.google.cloud.dataform.v1.CommitAuthorB\x03\xe0A\x02R\x06author\"\x18\n" +
-	"\x16PullGitCommitsResponse\"\x80\x01\n" +
-	"\x15PushGitCommitsRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!dataform.googleapis.com/WorkspaceR\x04name\x12(\n" +
-	"\rremote_branch\x18\x02 \x01(\tB\x03\xe0A\x01R\fremoteBranch\"\x18\n" +
-	"\x16PushGitCommitsResponse\"\\\n" +
-	"\x1bFetchFileGitStatusesRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!dataform.googleapis.com/WorkspaceR\x04name\"\x9d\x03\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"U\n" +
+	"\x13GetWorkspaceRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!dataform.googleapis.com/WorkspaceR\x04name\"\xcf\x01\n" +
+	"\x16CreateWorkspaceRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"dataform.googleapis.com/RepositoryR\x06parent\x12G\n" +
+	"\tworkspace\x18\x02 \x01(\v2#.google.cloud.dataform.v1.WorkspaceB\x04\xe2A\x01\x02R\tworkspace\x12'\n" +
+	"\fworkspace_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\vworkspaceId\"X\n" +
+	"\x16DeleteWorkspaceRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!dataform.googleapis.com/WorkspaceR\x04name\"S\n" +
+	"\fCommitAuthor\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12)\n" +
+	"\remail_address\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\femailAddress\"\xc8\x01\n" +
+	"\x15PullGitCommitsRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!dataform.googleapis.com/WorkspaceR\x04name\x12)\n" +
+	"\rremote_branch\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\fremoteBranch\x12D\n" +
+	"\x06author\x18\x03 \x01(\v2&.google.cloud.dataform.v1.CommitAuthorB\x04\xe2A\x01\x02R\x06author\"\x18\n" +
+	"\x16PullGitCommitsResponse\"\x82\x01\n" +
+	"\x15PushGitCommitsRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!dataform.googleapis.com/WorkspaceR\x04name\x12)\n" +
+	"\rremote_branch\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\fremoteBranch\"\x18\n" +
+	"\x16PushGitCommitsResponse\"]\n" +
+	"\x1bFetchFileGitStatusesRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!dataform.googleapis.com/WorkspaceR\x04name\"\x9e\x03\n" +
 	"\x1cFetchFileGitStatusesResponse\x12\x86\x01\n" +
-	"\x18uncommitted_file_changes\x18\x01 \x03(\v2L.google.cloud.dataform.v1.FetchFileGitStatusesResponse.UncommittedFileChangeR\x16uncommittedFileChanges\x1a\xf3\x01\n" +
+	"\x18uncommitted_file_changes\x18\x01 \x03(\v2L.google.cloud.dataform.v1.FetchFileGitStatusesResponse.UncommittedFileChangeR\x16uncommittedFileChanges\x1a\xf4\x01\n" +
 	"\x15UncommittedFileChange\x12\x12\n" +
-	"\x04path\x18\x01 \x01(\tR\x04path\x12m\n" +
-	"\x05state\x18\x02 \x01(\x0e2R.google.cloud.dataform.v1.FetchFileGitStatusesResponse.UncommittedFileChange.StateB\x03\xe0A\x03R\x05state\"W\n" +
+	"\x04path\x18\x01 \x01(\tR\x04path\x12n\n" +
+	"\x05state\x18\x02 \x01(\x0e2R.google.cloud.dataform.v1.FetchFileGitStatusesResponse.UncommittedFileChange.StateB\x04\xe2A\x01\x03R\x05state\"W\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05ADDED\x10\x01\x12\v\n" +
 	"\aDELETED\x10\x02\x12\f\n" +
 	"\bMODIFIED\x10\x03\x12\x11\n" +
-	"\rHAS_CONFLICTS\x10\x04\"\x85\x01\n" +
-	"\x1aFetchGitAheadBehindRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!dataform.googleapis.com/WorkspaceR\x04name\x12(\n" +
-	"\rremote_branch\x18\x02 \x01(\tB\x03\xe0A\x01R\fremoteBranch\"i\n" +
+	"\rHAS_CONFLICTS\x10\x04\"\x87\x01\n" +
+	"\x1aFetchGitAheadBehindRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!dataform.googleapis.com/WorkspaceR\x04name\x12)\n" +
+	"\rremote_branch\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\fremoteBranch\"i\n" +
 	"\x1bFetchGitAheadBehindResponse\x12#\n" +
 	"\rcommits_ahead\x18\x01 \x01(\x05R\fcommitsAhead\x12%\n" +
-	"\x0ecommits_behind\x18\x02 \x01(\x05R\rcommitsBehind\"\xea\x01\n" +
-	"\x1dCommitWorkspaceChangesRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!dataform.googleapis.com/WorkspaceR\x04name\x12C\n" +
-	"\x06author\x18\x04 \x01(\v2&.google.cloud.dataform.v1.CommitAuthorB\x03\xe0A\x02R\x06author\x12*\n" +
-	"\x0ecommit_message\x18\x02 \x01(\tB\x03\xe0A\x01R\rcommitMessage\x12\x19\n" +
-	"\x05paths\x18\x03 \x03(\tB\x03\xe0A\x01R\x05paths\" \n" +
-	"\x1eCommitWorkspaceChangesResponse\"\x93\x01\n" +
-	"\x1cResetWorkspaceChangesRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!dataform.googleapis.com/WorkspaceR\x04name\x12\x19\n" +
-	"\x05paths\x18\x02 \x03(\tB\x03\xe0A\x01R\x05paths\x12\x19\n" +
-	"\x05clean\x18\x03 \x01(\bB\x03\xe0A\x01R\x05clean\"\x1f\n" +
-	"\x1dResetWorkspaceChangesResponse\"x\n" +
-	"\x14FetchFileDiffRequest\x12G\n" +
-	"\tworkspace\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!dataform.googleapis.com/WorkspaceR\tworkspace\x12\x17\n" +
-	"\x04path\x18\x02 \x01(\tB\x03\xe0A\x02R\x04path\">\n" +
+	"\x0ecommits_behind\x18\x02 \x01(\x05R\rcommitsBehind\"\xee\x01\n" +
+	"\x1dCommitWorkspaceChangesRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!dataform.googleapis.com/WorkspaceR\x04name\x12D\n" +
+	"\x06author\x18\x04 \x01(\v2&.google.cloud.dataform.v1.CommitAuthorB\x04\xe2A\x01\x02R\x06author\x12+\n" +
+	"\x0ecommit_message\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\rcommitMessage\x12\x1a\n" +
+	"\x05paths\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x05paths\" \n" +
+	"\x1eCommitWorkspaceChangesResponse\"\x96\x01\n" +
+	"\x1cResetWorkspaceChangesRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!dataform.googleapis.com/WorkspaceR\x04name\x12\x1a\n" +
+	"\x05paths\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x05paths\x12\x1a\n" +
+	"\x05clean\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x05clean\"\x1f\n" +
+	"\x1dResetWorkspaceChangesResponse\"z\n" +
+	"\x14FetchFileDiffRequest\x12H\n" +
+	"\tworkspace\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!dataform.googleapis.com/WorkspaceR\tworkspace\x12\x18\n" +
+	"\x04path\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04path\">\n" +
 	"\x15FetchFileDiffResponse\x12%\n" +
-	"\x0eformatted_diff\x18\x01 \x01(\tR\rformattedDiff\"\x91\x02\n" +
-	"\x1dQueryDirectoryContentsRequest\x12G\n" +
-	"\tworkspace\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!dataform.googleapis.com/WorkspaceR\tworkspace\x12\x17\n" +
-	"\x04path\x18\x02 \x01(\tB\x03\xe0A\x01R\x04path\x12 \n" +
-	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0eformatted_diff\x18\x01 \x01(\tR\rformattedDiff\"\x96\x02\n" +
+	"\x1dQueryDirectoryContentsRequest\x12H\n" +
+	"\tworkspace\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!dataform.googleapis.com/WorkspaceR\tworkspace\x12\x18\n" +
+	"\x04path\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04path\x12!\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01R\tpageToken\x12H\n" +
-	"\x04view\x18\x05 \x01(\x0e2/.google.cloud.dataform.v1.DirectoryContentsViewB\x03\xe0A\x01R\x04view\"\x9f\x01\n" +
+	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12I\n" +
+	"\x04view\x18\x05 \x01(\x0e2/.google.cloud.dataform.v1.DirectoryContentsViewB\x04\xe2A\x01\x01R\x04view\"\x9f\x01\n" +
 	"\x1eQueryDirectoryContentsResponse\x12U\n" +
 	"\x11directory_entries\x18\x01 \x03(\v2(.google.cloud.dataform.v1.DirectoryEntryR\x10directoryEntries\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x9e\x01\n" +
@@ -13407,22 +13407,22 @@ const file_google_cloud_dataform_v1_dataform_proto_rawDesc = "" +
 	"\x04file\x18\x01 \x01(\tH\x00R\x04file\x12\x1e\n" +
 	"\tdirectory\x18\x02 \x01(\tH\x00R\tdirectory\x12M\n" +
 	"\bmetadata\x18\x03 \x01(\v21.google.cloud.dataform.v1.FilesystemEntryMetadataR\bmetadataB\a\n" +
-	"\x05entry\"\x7f\n" +
-	"\x17FilesystemEntryMetadata\x12\"\n" +
+	"\x05entry\"\x81\x01\n" +
+	"\x17FilesystemEntryMetadata\x12#\n" +
 	"\n" +
-	"size_bytes\x18\x01 \x01(\x03B\x03\xe0A\x03R\tsizeBytes\x12@\n" +
-	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\"\xc0\x01\n" +
-	"\x12SearchFilesRequest\x12G\n" +
-	"\tworkspace\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!dataform.googleapis.com/WorkspaceR\tworkspace\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"size_bytes\x18\x01 \x01(\x03B\x04\xe2A\x01\x03R\tsizeBytes\x12A\n" +
+	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\"\xc4\x01\n" +
+	"\x12SearchFilesRequest\x12H\n" +
+	"\tworkspace\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!dataform.googleapis.com/WorkspaceR\tworkspace\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\x91\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x92\x01\n" +
 	"\x13SearchFilesResponse\x12M\n" +
-	"\x0esearch_results\x18\x01 \x03(\v2&.google.cloud.dataform.v1.SearchResultR\rsearchResults\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\rnextPageToken\"\xaa\x01\n" +
+	"\x0esearch_results\x18\x01 \x03(\v2&.google.cloud.dataform.v1.SearchResultR\rsearchResults\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\rnextPageToken\"\xaa\x01\n" +
 	"\fSearchResult\x12@\n" +
 	"\x04file\x18\x01 \x01(\v2*.google.cloud.dataform.v1.FileSearchResultH\x00R\x04file\x12O\n" +
 	"\tdirectory\x18\x02 \x01(\v2/.google.cloud.dataform.v1.DirectorySearchResultH\x00R\tdirectoryB\a\n" +
@@ -13430,186 +13430,186 @@ const file_google_cloud_dataform_v1_dataform_proto_rawDesc = "" +
 	"\x10FileSearchResult\x12\x12\n" +
 	"\x04path\x18\x01 \x01(\tR\x04path\"+\n" +
 	"\x15DirectorySearchResult\x12\x12\n" +
-	"\x04path\x18\x01 \x01(\tR\x04path\"x\n" +
-	"\x14MakeDirectoryRequest\x12G\n" +
-	"\tworkspace\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!dataform.googleapis.com/WorkspaceR\tworkspace\x12\x17\n" +
-	"\x04path\x18\x02 \x01(\tB\x03\xe0A\x02R\x04path\"\x17\n" +
-	"\x15MakeDirectoryResponse\"z\n" +
-	"\x16RemoveDirectoryRequest\x12G\n" +
-	"\tworkspace\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!dataform.googleapis.com/WorkspaceR\tworkspace\x12\x17\n" +
-	"\x04path\x18\x02 \x01(\tB\x03\xe0A\x02R\x04path\"\x19\n" +
-	"\x17RemoveDirectoryResponse\"\x98\x01\n" +
-	"\x14MoveDirectoryRequest\x12G\n" +
-	"\tworkspace\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!dataform.googleapis.com/WorkspaceR\tworkspace\x12\x17\n" +
-	"\x04path\x18\x02 \x01(\tB\x03\xe0A\x02R\x04path\x12\x1e\n" +
-	"\bnew_path\x18\x03 \x01(\tB\x03\xe0A\x02R\anewPath\"\x17\n" +
-	"\x15MoveDirectoryResponse\"\x94\x01\n" +
-	"\x0fReadFileRequest\x12G\n" +
-	"\tworkspace\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!dataform.googleapis.com/WorkspaceR\tworkspace\x12\x17\n" +
-	"\x04path\x18\x02 \x01(\tB\x03\xe0A\x02R\x04path\x12\x1f\n" +
-	"\brevision\x18\x03 \x01(\tB\x03\xe0A\x01R\brevision\"7\n" +
+	"\x04path\x18\x01 \x01(\tR\x04path\"z\n" +
+	"\x14MakeDirectoryRequest\x12H\n" +
+	"\tworkspace\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!dataform.googleapis.com/WorkspaceR\tworkspace\x12\x18\n" +
+	"\x04path\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04path\"\x17\n" +
+	"\x15MakeDirectoryResponse\"|\n" +
+	"\x16RemoveDirectoryRequest\x12H\n" +
+	"\tworkspace\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!dataform.googleapis.com/WorkspaceR\tworkspace\x12\x18\n" +
+	"\x04path\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04path\"\x19\n" +
+	"\x17RemoveDirectoryResponse\"\x9b\x01\n" +
+	"\x14MoveDirectoryRequest\x12H\n" +
+	"\tworkspace\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!dataform.googleapis.com/WorkspaceR\tworkspace\x12\x18\n" +
+	"\x04path\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04path\x12\x1f\n" +
+	"\bnew_path\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\anewPath\"\x17\n" +
+	"\x15MoveDirectoryResponse\"\x97\x01\n" +
+	"\x0fReadFileRequest\x12H\n" +
+	"\tworkspace\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!dataform.googleapis.com/WorkspaceR\tworkspace\x12\x18\n" +
+	"\x04path\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04path\x12 \n" +
+	"\brevision\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\brevision\"7\n" +
 	"\x10ReadFileResponse\x12#\n" +
-	"\rfile_contents\x18\x01 \x01(\fR\ffileContents\"u\n" +
-	"\x11RemoveFileRequest\x12G\n" +
-	"\tworkspace\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!dataform.googleapis.com/WorkspaceR\tworkspace\x12\x17\n" +
-	"\x04path\x18\x02 \x01(\tB\x03\xe0A\x02R\x04path\"\x14\n" +
-	"\x12RemoveFileResponse\"\x93\x01\n" +
-	"\x0fMoveFileRequest\x12G\n" +
-	"\tworkspace\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!dataform.googleapis.com/WorkspaceR\tworkspace\x12\x17\n" +
-	"\x04path\x18\x02 \x01(\tB\x03\xe0A\x02R\x04path\x12\x1e\n" +
-	"\bnew_path\x18\x03 \x01(\tB\x03\xe0A\x02R\anewPath\"\x12\n" +
-	"\x10MoveFileResponse\"\x95\x01\n" +
-	"\x10WriteFileRequest\x12G\n" +
-	"\tworkspace\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!dataform.googleapis.com/WorkspaceR\tworkspace\x12\x17\n" +
-	"\x04path\x18\x02 \x01(\tB\x03\xe0A\x02R\x04path\x12\x1f\n" +
-	"\bcontents\x18\x03 \x01(\fB\x03\xe0A\x02R\bcontents\"\x13\n" +
-	"\x11WriteFileResponse\"\xbc\x01\n" +
-	"\x19InstallNpmPackagesRequest\x12G\n" +
-	"\tworkspace\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!dataform.googleapis.com/WorkspaceR\tworkspace\x12V\n" +
-	"\x0fpipeline_config\x18\x03 \x01(\v2(.google.cloud.dataform.v1.PipelineConfigB\x03\xe0A\x01R\x0epipelineConfig\"\x1c\n" +
-	"\x1aInstallNpmPackagesResponse\"\xad\b\n" +
-	"\rReleaseConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12(\n" +
-	"\rgit_commitish\x18\x02 \x01(\tB\x03\xe0A\x02R\fgitCommitish\x12l\n" +
-	"\x17code_compilation_config\x18\x03 \x01(\v2/.google.cloud.dataform.v1.CodeCompilationConfigB\x03\xe0A\x01R\x15codeCompilationConfig\x12(\n" +
-	"\rcron_schedule\x18\x04 \x01(\tB\x03\xe0A\x01R\fcronSchedule\x12 \n" +
-	"\ttime_zone\x18\a \x01(\tB\x03\xe0A\x01R\btimeZone\x12\x8c\x01\n" +
-	" recent_scheduled_release_records\x18\x05 \x03(\v2>.google.cloud.dataform.v1.ReleaseConfig.ScheduledReleaseRecordB\x03\xe0A\x03R\x1drecentScheduledReleaseRecords\x12o\n" +
-	"\x1arelease_compilation_result\x18\x06 \x01(\tB1\xe0A\x01\xfaA+\n" +
-	")dataform.googleapis.com/CompilationResultR\x18releaseCompilationResult\x12\x1f\n" +
-	"\bdisabled\x18\b \x01(\bB\x03\xe0A\x01R\bdisabled\x125\n" +
-	"\x11internal_metadata\x18\t \x01(\tB\x03\xe0A\x03H\x00R\x10internalMetadata\x88\x01\x01\x1a\x80\x02\n" +
+	"\rfile_contents\x18\x01 \x01(\fR\ffileContents\"w\n" +
+	"\x11RemoveFileRequest\x12H\n" +
+	"\tworkspace\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!dataform.googleapis.com/WorkspaceR\tworkspace\x12\x18\n" +
+	"\x04path\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04path\"\x14\n" +
+	"\x12RemoveFileResponse\"\x96\x01\n" +
+	"\x0fMoveFileRequest\x12H\n" +
+	"\tworkspace\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!dataform.googleapis.com/WorkspaceR\tworkspace\x12\x18\n" +
+	"\x04path\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04path\x12\x1f\n" +
+	"\bnew_path\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\anewPath\"\x12\n" +
+	"\x10MoveFileResponse\"\x98\x01\n" +
+	"\x10WriteFileRequest\x12H\n" +
+	"\tworkspace\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!dataform.googleapis.com/WorkspaceR\tworkspace\x12\x18\n" +
+	"\x04path\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04path\x12 \n" +
+	"\bcontents\x18\x03 \x01(\fB\x04\xe2A\x01\x02R\bcontents\"\x13\n" +
+	"\x11WriteFileResponse\"\xbe\x01\n" +
+	"\x19InstallNpmPackagesRequest\x12H\n" +
+	"\tworkspace\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!dataform.googleapis.com/WorkspaceR\tworkspace\x12W\n" +
+	"\x0fpipeline_config\x18\x03 \x01(\v2(.google.cloud.dataform.v1.PipelineConfigB\x04\xe2A\x01\x01R\x0epipelineConfig\"\x1c\n" +
+	"\x1aInstallNpmPackagesResponse\"\xb7\b\n" +
+	"\rReleaseConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12)\n" +
+	"\rgit_commitish\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\fgitCommitish\x12m\n" +
+	"\x17code_compilation_config\x18\x03 \x01(\v2/.google.cloud.dataform.v1.CodeCompilationConfigB\x04\xe2A\x01\x01R\x15codeCompilationConfig\x12)\n" +
+	"\rcron_schedule\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\fcronSchedule\x12!\n" +
+	"\ttime_zone\x18\a \x01(\tB\x04\xe2A\x01\x01R\btimeZone\x12\x8d\x01\n" +
+	" recent_scheduled_release_records\x18\x05 \x03(\v2>.google.cloud.dataform.v1.ReleaseConfig.ScheduledReleaseRecordB\x04\xe2A\x01\x03R\x1drecentScheduledReleaseRecords\x12p\n" +
+	"\x1arelease_compilation_result\x18\x06 \x01(\tB2\xe2A\x01\x01\xfaA+\n" +
+	")dataform.googleapis.com/CompilationResultR\x18releaseCompilationResult\x12 \n" +
+	"\bdisabled\x18\b \x01(\bB\x04\xe2A\x01\x01R\bdisabled\x126\n" +
+	"\x11internal_metadata\x18\t \x01(\tB\x04\xe2A\x01\x03H\x00R\x10internalMetadata\x88\x01\x01\x1a\x81\x02\n" +
 	"\x16ScheduledReleaseRecord\x12_\n" +
 	"\x12compilation_result\x18\x02 \x01(\tB.\xfaA+\n" +
 	")dataform.googleapis.com/CompilationResultH\x00R\x11compilationResult\x127\n" +
-	"\ferror_status\x18\x03 \x01(\v2\x12.google.rpc.StatusH\x00R\verrorStatus\x12B\n" +
-	"\frelease_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\vreleaseTimeB\b\n" +
+	"\ferror_status\x18\x03 \x01(\v2\x12.google.rpc.StatusH\x00R\verrorStatus\x12C\n" +
+	"\frelease_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\vreleaseTimeB\b\n" +
 	"\x06result:\xad\x01\xeaA\xa9\x01\n" +
 	"%dataform.googleapis.com/ReleaseConfig\x12aprojects/{project}/locations/{location}/repositories/{repository}/releaseConfigs/{release_config}*\x0ereleaseConfigs2\rreleaseConfigB\x14\n" +
-	"\x12_internal_metadata\"\xa5\x01\n" +
-	"\x19ListReleaseConfigsRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"dataform.googleapis.com/RepositoryR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x12_internal_metadata\"\xa8\x01\n" +
+	"\x19ListReleaseConfigsRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"dataform.googleapis.com/RepositoryR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xb8\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xb8\x01\n" +
 	"\x1aListReleaseConfigsResponse\x12P\n" +
 	"\x0frelease_configs\x18\x01 \x03(\v2'.google.cloud.dataform.v1.ReleaseConfigR\x0ereleaseConfigs\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\\\n" +
-	"\x17GetReleaseConfigRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%dataform.googleapis.com/ReleaseConfigR\x04name\"\xe6\x01\n" +
-	"\x1aCreateReleaseConfigRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"dataform.googleapis.com/RepositoryR\x06parent\x12S\n" +
-	"\x0erelease_config\x18\x02 \x01(\v2'.google.cloud.dataform.v1.ReleaseConfigB\x03\xe0A\x02R\rreleaseConfig\x12/\n" +
-	"\x11release_config_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x0freleaseConfigId\"\xb3\x01\n" +
-	"\x1aUpdateReleaseConfigRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12S\n" +
-	"\x0erelease_config\x18\x02 \x01(\v2'.google.cloud.dataform.v1.ReleaseConfigB\x03\xe0A\x02R\rreleaseConfig\"_\n" +
-	"\x1aDeleteReleaseConfigRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%dataform.googleapis.com/ReleaseConfigR\x04name\"\xc5\v\n" +
-	"\x11CompilationResult\x12*\n" +
-	"\rgit_commitish\x18\x02 \x01(\tB\x03\xe0A\x05H\x00R\fgitCommitish\x12I\n" +
-	"\tworkspace\x18\x03 \x01(\tB)\xe0A\x05\xfaA#\n" +
-	"!dataform.googleapis.com/WorkspaceH\x00R\tworkspace\x12V\n" +
-	"\x0erelease_config\x18\a \x01(\tB-\xe0A\x05\xfaA'\n" +
-	"%dataform.googleapis.com/ReleaseConfigH\x00R\rreleaseConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12l\n" +
-	"\x17code_compilation_config\x18\x04 \x01(\v2/.google.cloud.dataform.v1.CodeCompilationConfigB\x03\xe0A\x05R\x15codeCompilationConfig\x12:\n" +
-	"\x17resolved_git_commit_sha\x18\b \x01(\tB\x03\xe0A\x03R\x14resolvedGitCommitSha\x127\n" +
-	"\x15dataform_core_version\x18\x05 \x01(\tB\x03\xe0A\x03R\x13dataformCoreVersion\x12p\n" +
-	"\x12compilation_errors\x18\x06 \x03(\v2<.google.cloud.dataform.v1.CompilationResult.CompilationErrorB\x03\xe0A\x03R\x11compilationErrors\x12f\n" +
-	"\x15data_encryption_state\x18\t \x01(\v2-.google.cloud.dataform.v1.DataEncryptionStateB\x03\xe0A\x03R\x13dataEncryptionState\x12@\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"]\n" +
+	"\x17GetReleaseConfigRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%dataform.googleapis.com/ReleaseConfigR\x04name\"\xe9\x01\n" +
+	"\x1aCreateReleaseConfigRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"dataform.googleapis.com/RepositoryR\x06parent\x12T\n" +
+	"\x0erelease_config\x18\x02 \x01(\v2'.google.cloud.dataform.v1.ReleaseConfigB\x04\xe2A\x01\x02R\rreleaseConfig\x120\n" +
+	"\x11release_config_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x0freleaseConfigId\"\xb5\x01\n" +
+	"\x1aUpdateReleaseConfigRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12T\n" +
+	"\x0erelease_config\x18\x02 \x01(\v2'.google.cloud.dataform.v1.ReleaseConfigB\x04\xe2A\x01\x02R\rreleaseConfig\"`\n" +
+	"\x1aDeleteReleaseConfigRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%dataform.googleapis.com/ReleaseConfigR\x04name\"\xd6\v\n" +
+	"\x11CompilationResult\x12+\n" +
+	"\rgit_commitish\x18\x02 \x01(\tB\x04\xe2A\x01\x05H\x00R\fgitCommitish\x12J\n" +
+	"\tworkspace\x18\x03 \x01(\tB*\xe2A\x01\x05\xfaA#\n" +
+	"!dataform.googleapis.com/WorkspaceH\x00R\tworkspace\x12W\n" +
+	"\x0erelease_config\x18\a \x01(\tB.\xe2A\x01\x05\xfaA'\n" +
+	"%dataform.googleapis.com/ReleaseConfigH\x00R\rreleaseConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12m\n" +
+	"\x17code_compilation_config\x18\x04 \x01(\v2/.google.cloud.dataform.v1.CodeCompilationConfigB\x04\xe2A\x01\x05R\x15codeCompilationConfig\x12;\n" +
+	"\x17resolved_git_commit_sha\x18\b \x01(\tB\x04\xe2A\x01\x03R\x14resolvedGitCommitSha\x128\n" +
+	"\x15dataform_core_version\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x13dataformCoreVersion\x12q\n" +
+	"\x12compilation_errors\x18\x06 \x03(\v2<.google.cloud.dataform.v1.CompilationResult.CompilationErrorB\x04\xe2A\x01\x03R\x11compilationErrors\x12g\n" +
+	"\x15data_encryption_state\x18\t \x01(\v2-.google.cloud.dataform.v1.DataEncryptionStateB\x04\xe2A\x01\x03R\x13dataEncryptionState\x12A\n" +
 	"\vcreate_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x125\n" +
-	"\x11internal_metadata\x18\v \x01(\tB\x03\xe0A\x03H\x01R\x10internalMetadata\x88\x01\x01\x12r\n" +
-	"\x19private_resource_metadata\x18\f \x01(\v21.google.cloud.dataform.v1.PrivateResourceMetadataB\x03\xe0A\x03R\x17privateResourceMetadata\x12\x85\x01\n" +
-	" gcs_repository_snapshot_metadata\x18\r \x01(\v27.google.cloud.dataform.v1.GcsRepositorySnapshotMetadataB\x03\xe0A\x03R\x1dgcsRepositorySnapshotMetadata\x1a\xb1\x01\n" +
-	"\x10CompilationError\x12\x1d\n" +
-	"\amessage\x18\x01 \x01(\tB\x03\xe0A\x03R\amessage\x12\x19\n" +
-	"\x05stack\x18\x02 \x01(\tB\x03\xe0A\x03R\x05stack\x12\x17\n" +
-	"\x04path\x18\x03 \x01(\tB\x03\xe0A\x03R\x04path\x12J\n" +
-	"\raction_target\x18\x04 \x01(\v2 .google.cloud.dataform.v1.TargetB\x03\xe0A\x03R\factionTarget:\xc1\x01\xeaA\xbd\x01\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x126\n" +
+	"\x11internal_metadata\x18\v \x01(\tB\x04\xe2A\x01\x03H\x01R\x10internalMetadata\x88\x01\x01\x12s\n" +
+	"\x19private_resource_metadata\x18\f \x01(\v21.google.cloud.dataform.v1.PrivateResourceMetadataB\x04\xe2A\x01\x03R\x17privateResourceMetadata\x12\x86\x01\n" +
+	" gcs_repository_snapshot_metadata\x18\r \x01(\v27.google.cloud.dataform.v1.GcsRepositorySnapshotMetadataB\x04\xe2A\x01\x03R\x1dgcsRepositorySnapshotMetadata\x1a\xb5\x01\n" +
+	"\x10CompilationError\x12\x1e\n" +
+	"\amessage\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\amessage\x12\x1a\n" +
+	"\x05stack\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x05stack\x12\x18\n" +
+	"\x04path\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x04path\x12K\n" +
+	"\raction_target\x18\x04 \x01(\v2 .google.cloud.dataform.v1.TargetB\x04\xe2A\x01\x03R\factionTarget:\xc1\x01\xeaA\xbd\x01\n" +
 	")dataform.googleapis.com/CompilationResult\x12iprojects/{project}/locations/{location}/repositories/{repository}/compilationResults/{compilation_result}*\x12compilationResults2\x11compilationResultB\b\n" +
 	"\x06sourceB\x14\n" +
-	"\x12_internal_metadata\"\xc7\x06\n" +
-	"\x15CodeCompilationConfig\x12.\n" +
-	"\x10default_database\x18\x01 \x01(\tB\x03\xe0A\x01R\x0fdefaultDatabase\x12*\n" +
-	"\x0edefault_schema\x18\x02 \x01(\tB\x03\xe0A\x01R\rdefaultSchema\x12.\n" +
-	"\x10default_location\x18\b \x01(\tB\x03\xe0A\x01R\x0fdefaultLocation\x12.\n" +
-	"\x10assertion_schema\x18\x03 \x01(\tB\x03\xe0A\x01R\x0fassertionSchema\x12R\n" +
-	"\x04vars\x18\x04 \x03(\v29.google.cloud.dataform.v1.CodeCompilationConfig.VarsEntryB\x03\xe0A\x01R\x04vars\x12,\n" +
-	"\x0fdatabase_suffix\x18\x05 \x01(\tB\x03\xe0A\x01R\x0edatabaseSuffix\x12(\n" +
-	"\rschema_suffix\x18\x06 \x01(\tB\x03\xe0A\x01R\fschemaSuffix\x12&\n" +
-	"\ftable_prefix\x18\a \x01(\tB\x03\xe0A\x01R\vtablePrefix\x12F\n" +
+	"\x12_internal_metadata\"\xd3\x06\n" +
+	"\x15CodeCompilationConfig\x12/\n" +
+	"\x10default_database\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0fdefaultDatabase\x12+\n" +
+	"\x0edefault_schema\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\rdefaultSchema\x12/\n" +
+	"\x10default_location\x18\b \x01(\tB\x04\xe2A\x01\x01R\x0fdefaultLocation\x12/\n" +
+	"\x10assertion_schema\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x0fassertionSchema\x12S\n" +
+	"\x04vars\x18\x04 \x03(\v29.google.cloud.dataform.v1.CodeCompilationConfig.VarsEntryB\x04\xe2A\x01\x01R\x04vars\x12-\n" +
+	"\x0fdatabase_suffix\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x0edatabaseSuffix\x12)\n" +
+	"\rschema_suffix\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\fschemaSuffix\x12'\n" +
+	"\ftable_prefix\x18\a \x01(\tB\x04\xe2A\x01\x01R\vtablePrefix\x12G\n" +
 	"\x1dbuiltin_assertion_name_prefix\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\x1abuiltinAssertionNamePrefix\x12~\n" +
-	" default_notebook_runtime_options\x18\t \x01(\v20.google.cloud.dataform.v1.NotebookRuntimeOptionsB\x03\xe0A\x01R\x1ddefaultNotebookRuntimeOptions\x12V\n" +
-	"\x0fpipeline_config\x18\f \x01(\v2(.google.cloud.dataform.v1.PipelineConfigB\x03\xe0A\x01R\x0epipelineConfig\x121\n" +
-	"\x0flineage_enabled\x18\x0e \x01(\bB\x03\xe0A\x03H\x00R\x0elineageEnabled\x88\x01\x01\x1a7\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\x1abuiltinAssertionNamePrefix\x12\x7f\n" +
+	" default_notebook_runtime_options\x18\t \x01(\v20.google.cloud.dataform.v1.NotebookRuntimeOptionsB\x04\xe2A\x01\x01R\x1ddefaultNotebookRuntimeOptions\x12W\n" +
+	"\x0fpipeline_config\x18\f \x01(\v2(.google.cloud.dataform.v1.PipelineConfigB\x04\xe2A\x01\x01R\x0epipelineConfig\x122\n" +
+	"\x0flineage_enabled\x18\x0e \x01(\bB\x04\xe2A\x01\x03H\x00R\x0elineageEnabled\x88\x01\x01\x1a7\n" +
 	"\tVarsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\x12\n" +
-	"\x10_lineage_enabled\"\xaf\x01\n" +
-	"\x1dGcsRepositorySnapshotMetadata\x12;\n" +
-	"\x17repository_snapshot_uri\x18\x01 \x01(\tB\x03\xe0A\x03R\x15repositorySnapshotUri\x12,\n" +
-	"\x0fcrc32c_checksum\x18\x02 \x01(\tB\x03\xe0A\x03R\x0ecrc32cChecksum\x12#\n" +
+	"\x10_lineage_enabled\"\xb2\x01\n" +
+	"\x1dGcsRepositorySnapshotMetadata\x12<\n" +
+	"\x17repository_snapshot_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x15repositorySnapshotUri\x12-\n" +
+	"\x0fcrc32c_checksum\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x0ecrc32cChecksum\x12$\n" +
 	"\n" +
-	"generation\x18\x03 \x01(\x03B\x03\xe0A\x03R\n" +
-	"generation\"_\n" +
-	" GcsRepositorySnapshotDestination\x12;\n" +
-	"\x17repository_snapshot_uri\x18\x01 \x01(\tB\x03\xe0A\x01R\x15repositorySnapshotUri\"\x9d\x03\n" +
-	"\x16NotebookRuntimeOptions\x121\n" +
-	"\x11gcs_output_bucket\x18\x01 \x01(\tB\x03\xe0A\x01H\x00R\x0fgcsOutputBucket\x12\x90\x01\n" +
-	"#gcs_repository_snapshot_destination\x18\x03 \x01(\v2:.google.cloud.dataform.v1.GcsRepositorySnapshotDestinationB\x03\xe0A\x01H\x01R gcsRepositorySnapshotDestination\x12\x8b\x01\n" +
-	"%ai_platform_notebook_runtime_template\x18\x02 \x01(\tB9\xe0A\x01\xfaA3\n" +
+	"generation\x18\x03 \x01(\x03B\x04\xe2A\x01\x03R\n" +
+	"generation\"`\n" +
+	" GcsRepositorySnapshotDestination\x12<\n" +
+	"\x17repository_snapshot_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x15repositorySnapshotUri\"\xa0\x03\n" +
+	"\x16NotebookRuntimeOptions\x122\n" +
+	"\x11gcs_output_bucket\x18\x01 \x01(\tB\x04\xe2A\x01\x01H\x00R\x0fgcsOutputBucket\x12\x91\x01\n" +
+	"#gcs_repository_snapshot_destination\x18\x03 \x01(\v2:.google.cloud.dataform.v1.GcsRepositorySnapshotDestinationB\x04\xe2A\x01\x01H\x01R gcsRepositorySnapshotDestination\x12\x8c\x01\n" +
+	"%ai_platform_notebook_runtime_template\x18\x02 \x01(\tB:\xe2A\x01\x01\xfaA3\n" +
 	"1aiplatform.googleapis.com/NotebookRuntimeTemplateR!aiPlatformNotebookRuntimeTemplateB\x10\n" +
 	"\x0eexecution_sinkB\x1d\n" +
-	"\x1brepository_snapshot_storage\"\xde\x01\n" +
-	"\x0ePipelineConfig\x12_\n" +
-	"\rpipeline_type\x18\x01 \x01(\x0e25.google.cloud.dataform.v1.PipelineConfig.PipelineTypeB\x03\xe0A\x02R\fpipelineType\x12\x17\n" +
-	"\x04path\x18\x02 \x01(\tB\x03\xe0A\x02R\x04path\"R\n" +
+	"\x1brepository_snapshot_storage\"\xe0\x01\n" +
+	"\x0ePipelineConfig\x12`\n" +
+	"\rpipeline_type\x18\x01 \x01(\x0e25.google.cloud.dataform.v1.PipelineConfig.PipelineTypeB\x04\xe2A\x01\x02R\fpipelineType\x12\x18\n" +
+	"\x04path\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04path\"R\n" +
 	"\fPipelineType\x12\x1d\n" +
 	"\x19PIPELINE_TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDATAFORM\x10\x01\x12\a\n" +
 	"\x03SQL\x10\x03\x12\f\n" +
-	"\bNOTEBOOK\x10\x04\"\xe6\x01\n" +
-	"\x1dListCompilationResultsRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"dataform.googleapis.com/RepositoryR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\bNOTEBOOK\x10\x04\"\xeb\x01\n" +
+	"\x1dListCompilationResultsRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"dataform.googleapis.com/RepositoryR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1e\n" +
-	"\border_by\x18\x04 \x01(\tB\x03\xe0A\x01R\aorderBy\x12\x1b\n" +
-	"\x06filter\x18\x05 \x01(\tB\x03\xe0A\x01R\x06filter\"\xc8\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1f\n" +
+	"\border_by\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\x12\x1c\n" +
+	"\x06filter\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xc8\x01\n" +
 	"\x1eListCompilationResultsResponse\x12\\\n" +
 	"\x13compilation_results\x18\x01 \x03(\v2+.google.cloud.dataform.v1.CompilationResultR\x12compilationResults\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"d\n" +
-	"\x1bGetCompilationResultRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")dataform.googleapis.com/CompilationResultR\x04name\"\xc5\x01\n" +
-	"\x1eCreateCompilationResultRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"dataform.googleapis.com/RepositoryR\x06parent\x12_\n" +
-	"\x12compilation_result\x18\x02 \x01(\v2+.google.cloud.dataform.v1.CompilationResultB\x03\xe0A\x02R\x11compilationResult\"_\n" +
-	"\x06Target\x12\x1f\n" +
-	"\bdatabase\x18\x01 \x01(\tB\x03\xe0A\x01R\bdatabase\x12\x1b\n" +
-	"\x06schema\x18\x02 \x01(\tB\x03\xe0A\x01R\x06schema\x12\x17\n" +
-	"\x04name\x18\x03 \x01(\tB\x03\xe0A\x01R\x04name\"\xb9\x03\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"e\n" +
+	"\x1bGetCompilationResultRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")dataform.googleapis.com/CompilationResultR\x04name\"\xc7\x01\n" +
+	"\x1eCreateCompilationResultRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"dataform.googleapis.com/RepositoryR\x06parent\x12`\n" +
+	"\x12compilation_result\x18\x02 \x01(\v2+.google.cloud.dataform.v1.CompilationResultB\x04\xe2A\x01\x02R\x11compilationResult\"b\n" +
+	"\x06Target\x12 \n" +
+	"\bdatabase\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\bdatabase\x12\x1c\n" +
+	"\x06schema\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06schema\x12\x18\n" +
+	"\x04name\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04name\"\xb9\x03\n" +
 	"\x12RelationDescriptor\x12 \n" +
 	"\vdescription\x18\x01 \x01(\tR\vdescription\x12W\n" +
 	"\acolumns\x18\x02 \x03(\v2=.google.cloud.dataform.v1.RelationDescriptor.ColumnDescriptorR\acolumns\x12i\n" +
@@ -13620,7 +13620,7 @@ const file_google_cloud_dataform_v1_dataform_proto_rawDesc = "" +
 	"\x14bigquery_policy_tags\x18\x03 \x03(\tR\x12bigqueryPolicyTags\x1aA\n" +
 	"\x13BigqueryLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xd2%\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xd7%\n" +
 	"\x17CompilationResultAction\x12X\n" +
 	"\brelation\x18\x04 \x01(\v2:.google.cloud.dataform.v1.CompilationResultAction.RelationH\x00R\brelation\x12^\n" +
 	"\n" +
@@ -13632,9 +13632,9 @@ const file_google_cloud_dataform_v1_dataform_proto_rawDesc = "" +
 	"\x10data_preparation\x18\t \x01(\v2A.google.cloud.dataform.v1.CompilationResultAction.DataPreparationH\x00R\x0fdataPreparation\x128\n" +
 	"\x06target\x18\x01 \x01(\v2 .google.cloud.dataform.v1.TargetR\x06target\x12K\n" +
 	"\x10canonical_target\x18\x02 \x01(\v2 .google.cloud.dataform.v1.TargetR\x0fcanonicalTarget\x12\x1b\n" +
-	"\tfile_path\x18\x03 \x01(\tR\bfilePath\x125\n" +
+	"\tfile_path\x18\x03 \x01(\tR\bfilePath\x126\n" +
 	"\x11internal_metadata\x18\n" +
-	" \x01(\tB\x03\xe0A\x03H\x01R\x10internalMetadata\x88\x01\x01\x1a\xe8\x0e\n" +
+	" \x01(\tB\x04\xe2A\x01\x03H\x01R\x10internalMetadata\x88\x01\x01\x1a\xec\x0e\n" +
 	"\bRelation\x12O\n" +
 	"\x12dependency_targets\x18\x01 \x03(\v2 .google.cloud.dataform.v1.TargetR\x11dependencyTargets\x12\x1a\n" +
 	"\bdisabled\x18\x02 \x01(\bR\bdisabled\x12\x12\n" +
@@ -13650,14 +13650,14 @@ const file_google_cloud_dataform_v1_dataform_proto_rawDesc = "" +
 	"\x13cluster_expressions\x18\v \x03(\tR\x12clusterExpressions\x12:\n" +
 	"\x19partition_expiration_days\x18\f \x01(\x05R\x17partitionExpirationDays\x128\n" +
 	"\x18require_partition_filter\x18\r \x01(\bR\x16requirePartitionFilter\x12\x80\x01\n" +
-	"\x12additional_options\x18\x0e \x03(\v2Q.google.cloud.dataform.v1.CompilationResultAction.Relation.AdditionalOptionsEntryR\x11additionalOptions\x12#\n" +
+	"\x12additional_options\x18\x0e \x03(\v2Q.google.cloud.dataform.v1.CompilationResultAction.Relation.AdditionalOptionsEntryR\x11additionalOptions\x12$\n" +
 	"\n" +
-	"connection\x18\x0f \x01(\tB\x03\xe0A\x01R\n" +
-	"connection\x12n\n" +
-	"\ftable_format\x18\x10 \x01(\x0e2F.google.cloud.dataform.v1.CompilationResultAction.Relation.TableFormatB\x03\xe0A\x01R\vtableFormat\x12k\n" +
-	"\vfile_format\x18\x11 \x01(\x0e2E.google.cloud.dataform.v1.CompilationResultAction.Relation.FileFormatB\x03\xe0A\x01R\n" +
-	"fileFormat\x12$\n" +
-	"\vstorage_uri\x18\x12 \x01(\tB\x03\xe0A\x01R\n" +
+	"connection\x18\x0f \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"connection\x12o\n" +
+	"\ftable_format\x18\x10 \x01(\x0e2F.google.cloud.dataform.v1.CompilationResultAction.Relation.TableFormatB\x04\xe2A\x01\x01R\vtableFormat\x12l\n" +
+	"\vfile_format\x18\x11 \x01(\x0e2E.google.cloud.dataform.v1.CompilationResultAction.Relation.FileFormatB\x04\xe2A\x01\x01R\n" +
+	"fileFormat\x12%\n" +
+	"\vstorage_uri\x18\x12 \x01(\tB\x04\xe2A\x01\x01R\n" +
 	"storageUri\x1a\xdd\x02\n" +
 	"\x16IncrementalTableConfig\x128\n" +
 	"\x18incremental_select_query\x18\x01 \x01(\tR\x16incrementalSelectQuery\x12)\n" +
@@ -13733,100 +13733,100 @@ const file_google_cloud_dataform_v1_dataform_proto_rawDesc = "" +
 	"\x13IncrementalLoadMode\x12\x16\n" +
 	"\x06column\x18\x01 \x01(\tR\x06columnB\x11\n" +
 	"\x0fcompiled_objectB\x14\n" +
-	"\x12_internal_metadata\"\xd0\x01\n" +
-	"$QueryCompilationResultActionsRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")dataform.googleapis.com/CompilationResultR\x04name\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x12_internal_metadata\"\xd4\x01\n" +
+	"$QueryCompilationResultActionsRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")dataform.googleapis.com/CompilationResultR\x04name\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\xc0\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xc0\x01\n" +
 	"%QueryCompilationResultActionsResponse\x12o\n" +
 	"\x1acompilation_result_actions\x18\x01 \x03(\v21.google.cloud.dataform.v1.CompilationResultActionR\x18compilationResultActions\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xf2\b\n" +
-	"\x0eWorkflowConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12T\n" +
-	"\x0erelease_config\x18\x02 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%dataform.googleapis.com/ReleaseConfigR\rreleaseConfig\x12\\\n" +
-	"\x11invocation_config\x18\x03 \x01(\v2*.google.cloud.dataform.v1.InvocationConfigB\x03\xe0A\x01R\x10invocationConfig\x12(\n" +
-	"\rcron_schedule\x18\x04 \x01(\tB\x03\xe0A\x01R\fcronSchedule\x12 \n" +
-	"\ttime_zone\x18\a \x01(\tB\x03\xe0A\x01R\btimeZone\x12\x93\x01\n" +
-	"\"recent_scheduled_execution_records\x18\x05 \x03(\v2A.google.cloud.dataform.v1.WorkflowConfig.ScheduledExecutionRecordB\x03\xe0A\x03R\x1frecentScheduledExecutionRecords\x12\x1f\n" +
-	"\bdisabled\x18\b \x01(\bB\x03\xe0A\x01R\bdisabled\x12@\n" +
-	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xfd\b\n" +
+	"\x0eWorkflowConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12U\n" +
+	"\x0erelease_config\x18\x02 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%dataform.googleapis.com/ReleaseConfigR\rreleaseConfig\x12]\n" +
+	"\x11invocation_config\x18\x03 \x01(\v2*.google.cloud.dataform.v1.InvocationConfigB\x04\xe2A\x01\x01R\x10invocationConfig\x12)\n" +
+	"\rcron_schedule\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\fcronSchedule\x12!\n" +
+	"\ttime_zone\x18\a \x01(\tB\x04\xe2A\x01\x01R\btimeZone\x12\x94\x01\n" +
+	"\"recent_scheduled_execution_records\x18\x05 \x03(\v2A.google.cloud.dataform.v1.WorkflowConfig.ScheduledExecutionRecordB\x04\xe2A\x01\x03R\x1frecentScheduledExecutionRecords\x12 \n" +
+	"\bdisabled\x18\b \x01(\bB\x04\xe2A\x01\x01R\bdisabled\x12A\n" +
+	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
 	"\vupdate_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x125\n" +
-	"\x11internal_metadata\x18\v \x01(\tB\x03\xe0A\x03H\x00R\x10internalMetadata\x88\x01\x01\x1a\x89\x02\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x126\n" +
+	"\x11internal_metadata\x18\v \x01(\tB\x04\xe2A\x01\x03H\x00R\x10internalMetadata\x88\x01\x01\x1a\x8a\x02\n" +
 	"\x18ScheduledExecutionRecord\x12b\n" +
 	"\x13workflow_invocation\x18\x02 \x01(\tB/\xfaA,\n" +
 	"*dataform.googleapis.com/WorkflowInvocationH\x00R\x12workflowInvocation\x127\n" +
-	"\ferror_status\x18\x03 \x01(\v2\x12.google.rpc.StatusH\x00R\verrorStatus\x12F\n" +
-	"\x0eexecution_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\rexecutionTimeB\b\n" +
+	"\ferror_status\x18\x03 \x01(\v2\x12.google.rpc.StatusH\x00R\verrorStatus\x12G\n" +
+	"\x0eexecution_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\rexecutionTimeB\b\n" +
 	"\x06result:\xb2\x01\xeaA\xae\x01\n" +
 	"&dataform.googleapis.com/WorkflowConfig\x12cprojects/{project}/locations/{location}/repositories/{repository}/workflowConfigs/{workflow_config}*\x0fworkflowConfigs2\x0eworkflowConfigB\x14\n" +
-	"\x12_internal_metadata\"\x95\a\n" +
-	"\x10InvocationConfig\x12P\n" +
-	"\x10included_targets\x18\x01 \x03(\v2 .google.cloud.dataform.v1.TargetB\x03\xe0A\x01R\x0fincludedTargets\x12(\n" +
-	"\rincluded_tags\x18\x02 \x03(\tB\x03\xe0A\x01R\fincludedTags\x12M\n" +
-	" transitive_dependencies_included\x18\x03 \x01(\bB\x03\xe0A\x01R\x1etransitiveDependenciesIncluded\x12I\n" +
-	"\x1etransitive_dependents_included\x18\x04 \x01(\bB\x03\xe0A\x01R\x1ctransitiveDependentsIncluded\x12[\n" +
-	"(fully_refresh_incremental_tables_enabled\x18\x05 \x01(\bB\x03\xe0A\x01R$fullyRefreshIncrementalTablesEnabled\x12,\n" +
-	"\x0fservice_account\x18\x06 \x01(\tB\x03\xe0A\x01R\x0eserviceAccount\x12|\n" +
-	"\x14end_user_auth_config\x18\a \x01(\v2F.google.cloud.dataform.v1.InvocationConfig.EndUserAuthenticationConfigB\x03\xe0A\x01R\x11endUserAuthConfig\x12i\n" +
-	"\x0equery_priority\x18\t \x01(\x0e28.google.cloud.dataform.v1.InvocationConfig.QueryPriorityB\x03\xe0A\x01H\x00R\rqueryPriority\x88\x01\x01\x1a\x90\x01\n" +
-	"\x1bEndUserAuthenticationConfig\x12\"\n" +
+	"\x12_internal_metadata\"\x9f\a\n" +
+	"\x10InvocationConfig\x12Q\n" +
+	"\x10included_targets\x18\x01 \x03(\v2 .google.cloud.dataform.v1.TargetB\x04\xe2A\x01\x01R\x0fincludedTargets\x12)\n" +
+	"\rincluded_tags\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\fincludedTags\x12N\n" +
+	" transitive_dependencies_included\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x1etransitiveDependenciesIncluded\x12J\n" +
+	"\x1etransitive_dependents_included\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x1ctransitiveDependentsIncluded\x12\\\n" +
+	"(fully_refresh_incremental_tables_enabled\x18\x05 \x01(\bB\x04\xe2A\x01\x01R$fullyRefreshIncrementalTablesEnabled\x12-\n" +
+	"\x0fservice_account\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x0eserviceAccount\x12}\n" +
+	"\x14end_user_auth_config\x18\a \x01(\v2F.google.cloud.dataform.v1.InvocationConfig.EndUserAuthenticationConfigB\x04\xe2A\x01\x01R\x11endUserAuthConfig\x12j\n" +
+	"\x0equery_priority\x18\t \x01(\x0e28.google.cloud.dataform.v1.InvocationConfig.QueryPriorityB\x04\xe2A\x01\x01H\x00R\rqueryPriority\x88\x01\x01\x1a\x92\x01\n" +
+	"\x1bEndUserAuthenticationConfig\x12#\n" +
 	"\n" +
-	"user_email\x18\x02 \x01(\tB\x03\xe0A\x03R\tuserEmail\x12M\n" +
-	"\foauth_config\x18\x04 \x01(\v2%.google.cloud.dataform.v1.OAuthConfigB\x03\xe0A\x01R\voauthConfig\"K\n" +
+	"user_email\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\tuserEmail\x12N\n" +
+	"\foauth_config\x18\x04 \x01(\v2%.google.cloud.dataform.v1.OAuthConfigB\x04\xe2A\x01\x01R\voauthConfig\"K\n" +
 	"\rQueryPriority\x12\x1e\n" +
 	"\x1aQUERY_PRIORITY_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vINTERACTIVE\x10\x01\x12\t\n" +
 	"\x05BATCH\x10\x02B\x11\n" +
-	"\x0f_query_priorityJ\x04\b\v\x10\f\"\xa6\x01\n" +
-	"\x1aListWorkflowConfigsRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"dataform.googleapis.com/RepositoryR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0f_query_priorityJ\x04\b\v\x10\f\"\xa9\x01\n" +
+	"\x1aListWorkflowConfigsRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"dataform.googleapis.com/RepositoryR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xbc\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xbc\x01\n" +
 	"\x1bListWorkflowConfigsResponse\x12S\n" +
 	"\x10workflow_configs\x18\x01 \x03(\v2(.google.cloud.dataform.v1.WorkflowConfigR\x0fworkflowConfigs\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"^\n" +
-	"\x18GetWorkflowConfigRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&dataform.googleapis.com/WorkflowConfigR\x04name\"\xec\x01\n" +
-	"\x1bCreateWorkflowConfigRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"dataform.googleapis.com/RepositoryR\x06parent\x12V\n" +
-	"\x0fworkflow_config\x18\x02 \x01(\v2(.google.cloud.dataform.v1.WorkflowConfigB\x03\xe0A\x02R\x0eworkflowConfig\x121\n" +
-	"\x12workflow_config_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x10workflowConfigId\"\xb7\x01\n" +
-	"\x1bUpdateWorkflowConfigRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12V\n" +
-	"\x0fworkflow_config\x18\x02 \x01(\v2(.google.cloud.dataform.v1.WorkflowConfigB\x03\xe0A\x02R\x0eworkflowConfig\"a\n" +
-	"\x1bDeleteWorkflowConfigRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&dataform.googleapis.com/WorkflowConfigR\x04name\"\x9b\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"_\n" +
+	"\x18GetWorkflowConfigRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&dataform.googleapis.com/WorkflowConfigR\x04name\"\xef\x01\n" +
+	"\x1bCreateWorkflowConfigRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"dataform.googleapis.com/RepositoryR\x06parent\x12W\n" +
+	"\x0fworkflow_config\x18\x02 \x01(\v2(.google.cloud.dataform.v1.WorkflowConfigB\x04\xe2A\x01\x02R\x0eworkflowConfig\x122\n" +
+	"\x12workflow_config_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x10workflowConfigId\"\xb9\x01\n" +
+	"\x1bUpdateWorkflowConfigRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12W\n" +
+	"\x0fworkflow_config\x18\x02 \x01(\v2(.google.cloud.dataform.v1.WorkflowConfigB\x04\xe2A\x01\x02R\x0eworkflowConfig\"b\n" +
+	"\x1bDeleteWorkflowConfigRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&dataform.googleapis.com/WorkflowConfigR\x04name\"\xa6\n" +
 	"\n" +
-	"\x12WorkflowInvocation\x12b\n" +
-	"\x12compilation_result\x18\x02 \x01(\tB1\xe0A\x05\xfaA+\n" +
-	")dataform.googleapis.com/CompilationResultH\x00R\x11compilationResult\x12Y\n" +
-	"\x0fworkflow_config\x18\x06 \x01(\tB.\xe0A\x05\xfaA(\n" +
-	"&dataform.googleapis.com/WorkflowConfigH\x00R\x0eworkflowConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\\\n" +
-	"\x11invocation_config\x18\x03 \x01(\v2*.google.cloud.dataform.v1.InvocationConfigB\x03\xe0A\x05R\x10invocationConfig\x12M\n" +
-	"\x05state\x18\x04 \x01(\x0e22.google.cloud.dataform.v1.WorkflowInvocation.StateB\x03\xe0A\x03R\x05state\x12G\n" +
-	"\x11invocation_timing\x18\x05 \x01(\v2\x15.google.type.IntervalB\x03\xe0A\x03R\x10invocationTiming\x12q\n" +
-	"\x1bresolved_compilation_result\x18\a \x01(\tB1\xe0A\x03\xfaA+\n" +
-	")dataform.googleapis.com/CompilationResultR\x19resolvedCompilationResult\x12f\n" +
-	"\x15data_encryption_state\x18\b \x01(\v2-.google.cloud.dataform.v1.DataEncryptionStateB\x03\xe0A\x03R\x13dataEncryptionState\x125\n" +
-	"\x11internal_metadata\x18\t \x01(\tB\x03\xe0A\x03H\x01R\x10internalMetadata\x88\x01\x01\x12r\n" +
+	"\x12WorkflowInvocation\x12c\n" +
+	"\x12compilation_result\x18\x02 \x01(\tB2\xe2A\x01\x05\xfaA+\n" +
+	")dataform.googleapis.com/CompilationResultH\x00R\x11compilationResult\x12Z\n" +
+	"\x0fworkflow_config\x18\x06 \x01(\tB/\xe2A\x01\x05\xfaA(\n" +
+	"&dataform.googleapis.com/WorkflowConfigH\x00R\x0eworkflowConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12]\n" +
+	"\x11invocation_config\x18\x03 \x01(\v2*.google.cloud.dataform.v1.InvocationConfigB\x04\xe2A\x01\x05R\x10invocationConfig\x12N\n" +
+	"\x05state\x18\x04 \x01(\x0e22.google.cloud.dataform.v1.WorkflowInvocation.StateB\x04\xe2A\x01\x03R\x05state\x12H\n" +
+	"\x11invocation_timing\x18\x05 \x01(\v2\x15.google.type.IntervalB\x04\xe2A\x01\x03R\x10invocationTiming\x12r\n" +
+	"\x1bresolved_compilation_result\x18\a \x01(\tB2\xe2A\x01\x03\xfaA+\n" +
+	")dataform.googleapis.com/CompilationResultR\x19resolvedCompilationResult\x12g\n" +
+	"\x15data_encryption_state\x18\b \x01(\v2-.google.cloud.dataform.v1.DataEncryptionStateB\x04\xe2A\x01\x03R\x13dataEncryptionState\x126\n" +
+	"\x11internal_metadata\x18\t \x01(\tB\x04\xe2A\x01\x03H\x01R\x10internalMetadata\x88\x01\x01\x12s\n" +
 	"\x19private_resource_metadata\x18\n" +
-	" \x01(\v21.google.cloud.dataform.v1.PrivateResourceMetadataB\x03\xe0A\x03R\x17privateResourceMetadata\x12V\n" +
-	"\x0fpipeline_config\x18\v \x01(\v2(.google.cloud.dataform.v1.PipelineConfigB\x03\xe0A\x03R\x0epipelineConfig\"d\n" +
+	" \x01(\v21.google.cloud.dataform.v1.PrivateResourceMetadataB\x04\xe2A\x01\x03R\x17privateResourceMetadata\x12W\n" +
+	"\x0fpipeline_config\x18\v \x01(\v2(.google.cloud.dataform.v1.PipelineConfigB\x04\xe2A\x01\x03R\x0epipelineConfig\"d\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aRUNNING\x10\x01\x12\r\n" +
@@ -13837,58 +13837,58 @@ const file_google_cloud_dataform_v1_dataform_proto_rawDesc = "" +
 	"\tCANCELING\x10\x05:\xc6\x01\xeaA\xc2\x01\n" +
 	"*dataform.googleapis.com/WorkflowInvocation\x12kprojects/{project}/locations/{location}/repositories/{repository}/workflowInvocations/{workflow_invocation}*\x13workflowInvocations2\x12workflowInvocationB\x14\n" +
 	"\x12compilation_sourceB\x14\n" +
-	"\x12_internal_metadata\"\xe7\x01\n" +
-	"\x1eListWorkflowInvocationsRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"dataform.googleapis.com/RepositoryR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x12_internal_metadata\"\xec\x01\n" +
+	"\x1eListWorkflowInvocationsRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"dataform.googleapis.com/RepositoryR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1e\n" +
-	"\border_by\x18\x04 \x01(\tB\x03\xe0A\x01R\aorderBy\x12\x1b\n" +
-	"\x06filter\x18\x05 \x01(\tB\x03\xe0A\x01R\x06filter\"\xcc\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1f\n" +
+	"\border_by\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\x12\x1c\n" +
+	"\x06filter\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xcc\x01\n" +
 	"\x1fListWorkflowInvocationsResponse\x12_\n" +
 	"\x14workflow_invocations\x18\x01 \x03(\v2,.google.cloud.dataform.v1.WorkflowInvocationR\x13workflowInvocations\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"f\n" +
-	"\x1cGetWorkflowInvocationRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*dataform.googleapis.com/WorkflowInvocationR\x04name\"\xc9\x01\n" +
-	"\x1fCreateWorkflowInvocationRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"dataform.googleapis.com/RepositoryR\x06parent\x12b\n" +
-	"\x13workflow_invocation\x18\x02 \x01(\v2,.google.cloud.dataform.v1.WorkflowInvocationB\x03\xe0A\x02R\x12workflowInvocation\"i\n" +
-	"\x1fDeleteWorkflowInvocationRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*dataform.googleapis.com/WorkflowInvocationR\x04name\"i\n" +
-	"\x1fCancelWorkflowInvocationRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"g\n" +
+	"\x1cGetWorkflowInvocationRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*dataform.googleapis.com/WorkflowInvocationR\x04name\"\xcb\x01\n" +
+	"\x1fCreateWorkflowInvocationRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"dataform.googleapis.com/RepositoryR\x06parent\x12c\n" +
+	"\x13workflow_invocation\x18\x02 \x01(\v2,.google.cloud.dataform.v1.WorkflowInvocationB\x04\xe2A\x01\x02R\x12workflowInvocation\"j\n" +
+	"\x1fDeleteWorkflowInvocationRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*dataform.googleapis.com/WorkflowInvocationR\x04name\"j\n" +
+	"\x1fCancelWorkflowInvocationRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
 	"*dataform.googleapis.com/WorkflowInvocationR\x04name\"\"\n" +
-	" CancelWorkflowInvocationResponse\"\xfc\x12\n" +
-	"\x18WorkflowInvocationAction\x12q\n" +
-	"\x0fbigquery_action\x18\x06 \x01(\v2A.google.cloud.dataform.v1.WorkflowInvocationAction.BigQueryActionB\x03\xe0A\x03H\x00R\x0ebigqueryAction\x12q\n" +
-	"\x0fnotebook_action\x18\b \x01(\v2A.google.cloud.dataform.v1.WorkflowInvocationAction.NotebookActionB\x03\xe0A\x03H\x00R\x0enotebookAction\x12\x87\x01\n" +
-	"\x17data_preparation_action\x18\t \x01(\v2H.google.cloud.dataform.v1.WorkflowInvocationAction.DataPreparationActionB\x03\xe0A\x03H\x00R\x15dataPreparationAction\x12=\n" +
-	"\x06target\x18\x01 \x01(\v2 .google.cloud.dataform.v1.TargetB\x03\xe0A\x03R\x06target\x12P\n" +
-	"\x10canonical_target\x18\x02 \x01(\v2 .google.cloud.dataform.v1.TargetB\x03\xe0A\x03R\x0fcanonicalTarget\x12S\n" +
-	"\x05state\x18\x04 \x01(\x0e28.google.cloud.dataform.v1.WorkflowInvocationAction.StateB\x03\xe0A\x03R\x05state\x12*\n" +
-	"\x0efailure_reason\x18\a \x01(\tB\x03\xe0A\x03R\rfailureReason\x12G\n" +
-	"\x11invocation_timing\x18\x05 \x01(\v2\x15.google.type.IntervalB\x03\xe0A\x03R\x10invocationTiming\x125\n" +
+	" CancelWorkflowInvocationResponse\"\x8d\x13\n" +
+	"\x18WorkflowInvocationAction\x12r\n" +
+	"\x0fbigquery_action\x18\x06 \x01(\v2A.google.cloud.dataform.v1.WorkflowInvocationAction.BigQueryActionB\x04\xe2A\x01\x03H\x00R\x0ebigqueryAction\x12r\n" +
+	"\x0fnotebook_action\x18\b \x01(\v2A.google.cloud.dataform.v1.WorkflowInvocationAction.NotebookActionB\x04\xe2A\x01\x03H\x00R\x0enotebookAction\x12\x88\x01\n" +
+	"\x17data_preparation_action\x18\t \x01(\v2H.google.cloud.dataform.v1.WorkflowInvocationAction.DataPreparationActionB\x04\xe2A\x01\x03H\x00R\x15dataPreparationAction\x12>\n" +
+	"\x06target\x18\x01 \x01(\v2 .google.cloud.dataform.v1.TargetB\x04\xe2A\x01\x03R\x06target\x12Q\n" +
+	"\x10canonical_target\x18\x02 \x01(\v2 .google.cloud.dataform.v1.TargetB\x04\xe2A\x01\x03R\x0fcanonicalTarget\x12T\n" +
+	"\x05state\x18\x04 \x01(\x0e28.google.cloud.dataform.v1.WorkflowInvocationAction.StateB\x04\xe2A\x01\x03R\x05state\x12+\n" +
+	"\x0efailure_reason\x18\a \x01(\tB\x04\xe2A\x01\x03R\rfailureReason\x12H\n" +
+	"\x11invocation_timing\x18\x05 \x01(\v2\x15.google.type.IntervalB\x04\xe2A\x01\x03R\x10invocationTiming\x126\n" +
 	"\x11internal_metadata\x18\n" +
-	" \x01(\tB\x03\xe0A\x03H\x01R\x10internalMetadata\x88\x01\x01\x1aP\n" +
-	"\x0eBigQueryAction\x12\"\n" +
+	" \x01(\tB\x04\xe2A\x01\x03H\x01R\x10internalMetadata\x88\x01\x01\x1aR\n" +
+	"\x0eBigQueryAction\x12#\n" +
 	"\n" +
-	"sql_script\x18\x01 \x01(\tB\x03\xe0A\x03R\tsqlScript\x12\x1a\n" +
-	"\x06job_id\x18\x02 \x01(\tB\x03\xe0A\x03R\x05jobId\x1ao\n" +
-	"\x0eNotebookAction\x12\x1f\n" +
-	"\bcontents\x18\x01 \x01(\tB\x03\xe0A\x03R\bcontents\x12\x1a\n" +
-	"\x06job_id\x18\x02 \x01(\tB\x03\xe0A\x03R\x05jobId\x12 \n" +
-	"\tfile_path\x18\x03 \x01(\tB\x03\xe0A\x03R\bfilePath\x1a\x92\n" +
+	"sql_script\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\tsqlScript\x12\x1b\n" +
+	"\x06job_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x05jobId\x1ar\n" +
+	"\x0eNotebookAction\x12 \n" +
+	"\bcontents\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\bcontents\x12\x1b\n" +
+	"\x06job_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x05jobId\x12!\n" +
+	"\tfile_path\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\bfilePath\x1a\x95\n" +
 	"\n" +
-	"\x15DataPreparationAction\x12*\n" +
-	"\rcontents_yaml\x18\x02 \x01(\tB\x03\xe0A\x03H\x00R\fcontentsYaml\x12\x81\x01\n" +
-	"\fcontents_sql\x18\x06 \x01(\v2\\.google.cloud.dataform.v1.WorkflowInvocationAction.DataPreparationAction.ActionSqlDefinitionH\x00R\vcontentsSql\x12(\n" +
-	"\rgenerated_sql\x18\x03 \x01(\tB\x03\xe0A\x03R\fgeneratedSql\x12\x1a\n" +
-	"\x06job_id\x18\x04 \x01(\tB\x03\xe0A\x03R\x05jobId\x1a\xa3\x02\n" +
+	"\x15DataPreparationAction\x12+\n" +
+	"\rcontents_yaml\x18\x02 \x01(\tB\x04\xe2A\x01\x03H\x00R\fcontentsYaml\x12\x81\x01\n" +
+	"\fcontents_sql\x18\x06 \x01(\v2\\.google.cloud.dataform.v1.WorkflowInvocationAction.DataPreparationAction.ActionSqlDefinitionH\x00R\vcontentsSql\x12)\n" +
+	"\rgenerated_sql\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\fgeneratedSql\x12\x1b\n" +
+	"\x06job_id\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x05jobId\x1a\xa3\x02\n" +
 	"\x13ActionSqlDefinition\x12\x14\n" +
 	"\x05query\x18\x01 \x01(\tR\x05query\x12z\n" +
 	"\verror_table\x18\x02 \x01(\v2Y.google.cloud.dataform.v1.WorkflowInvocationAction.DataPreparationAction.ActionErrorTableR\n" +
@@ -13919,93 +13919,93 @@ const file_google_cloud_dataform_v1_dataform_proto_rawDesc = "" +
 	"\n" +
 	"\x06FAILED\x10\x06B\b\n" +
 	"\x06actionB\x14\n" +
-	"\x12_internal_metadata\"\xb5\x01\n" +
-	"%QueryWorkflowInvocationActionsRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*dataform.googleapis.com/WorkflowInvocationR\x04name\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x12_internal_metadata\"\xb8\x01\n" +
+	"%QueryWorkflowInvocationActionsRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*dataform.googleapis.com/WorkflowInvocationR\x04name\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xc4\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xc4\x01\n" +
 	"&QueryWorkflowInvocationActionsResponse\x12r\n" +
 	"\x1bworkflow_invocation_actions\x18\x01 \x03(\v22.google.cloud.dataform.v1.WorkflowInvocationActionR\x19workflowInvocationActions\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb0\x02\n" +
-	"\x06Config\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12Z\n" +
-	"\x14default_kms_key_name\x18\x02 \x01(\tB)\xe0A\x01\xfaA#\n" +
-	"!cloudkms.googleapis.com/CryptoKeyR\x11defaultKmsKeyName\x125\n" +
-	"\x11internal_metadata\x18\a \x01(\tB\x03\xe0A\x03H\x00R\x10internalMetadata\x88\x01\x01:d\xeaAa\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb3\x02\n" +
+	"\x06Config\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12[\n" +
+	"\x14default_kms_key_name\x18\x02 \x01(\tB*\xe2A\x01\x01\xfaA#\n" +
+	"!cloudkms.googleapis.com/CryptoKeyR\x11defaultKmsKeyName\x126\n" +
+	"\x11internal_metadata\x18\a \x01(\tB\x04\xe2A\x01\x03H\x00R\x10internalMetadata\x88\x01\x01:d\xeaAa\n" +
 	"\x1edataform.googleapis.com/Config\x12.projects/{project}/locations/{location}/config*\aconfigs2\x06configB\x14\n" +
-	"\x12_internal_metadata\"N\n" +
-	"\x10GetConfigRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1edataform.googleapis.com/ConfigR\x04name\"\x96\x01\n" +
-	"\x13UpdateConfigRequest\x12=\n" +
-	"\x06config\x18\x01 \x01(\v2 .google.cloud.dataform.v1.ConfigB\x03\xe0A\x02R\x06config\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"\xc3\x04\n" +
-	"\x06Folder\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x120\n" +
-	"\x11containing_folder\x18\x03 \x01(\tB\x03\xe0A\x01R\x10containingFolder\x12-\n" +
-	"\x10team_folder_name\x18\x04 \x01(\tB\x03\xe0A\x03R\x0eteamFolderName\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x125\n" +
-	"\x11internal_metadata\x18\a \x01(\tB\x03\xe0A\x03H\x00R\x10internalMetadata\x88\x01\x01\x12<\n" +
-	"\x15creator_iam_principal\x18\b \x01(\tB\x03\xe0A\x03H\x01R\x13creatorIamPrincipal\x88\x01\x01:n\xeaAk\n" +
+	"\x12_internal_metadata\"O\n" +
+	"\x10GetConfigRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1edataform.googleapis.com/ConfigR\x04name\"\x98\x01\n" +
+	"\x13UpdateConfigRequest\x12>\n" +
+	"\x06config\x18\x01 \x01(\v2 .google.cloud.dataform.v1.ConfigB\x04\xe2A\x01\x02R\x06config\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"\xcb\x04\n" +
+	"\x06Folder\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x121\n" +
+	"\x11containing_folder\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x10containingFolder\x12.\n" +
+	"\x10team_folder_name\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x0eteamFolderName\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x126\n" +
+	"\x11internal_metadata\x18\a \x01(\tB\x04\xe2A\x01\x03H\x00R\x10internalMetadata\x88\x01\x01\x12=\n" +
+	"\x15creator_iam_principal\x18\b \x01(\tB\x04\xe2A\x01\x03H\x01R\x13creatorIamPrincipal\x88\x01\x01:n\xeaAk\n" +
 	"\x1edataform.googleapis.com/Folder\x128projects/{project}/locations/{location}/folders/{folder}*\afolders2\x06folderB\x14\n" +
 	"\x12_internal_metadataB\x18\n" +
-	"\x16_creator_iam_principal\"\x97\x01\n" +
-	"\x13CreateFolderRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12=\n" +
-	"\x06folder\x18\x02 \x01(\v2 .google.cloud.dataform.v1.FolderB\x03\xe0A\x02R\x06folder\"\xbf\x01\n" +
-	"\x11MoveFolderRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1edataform.googleapis.com/FolderR\x04name\x12L\n" +
-	"\x1ddestination_containing_folder\x18\x02 \x01(\tB\x03\xe0A\x01H\x00R\x1bdestinationContainingFolder\x88\x01\x01B \n" +
-	"\x1e_destination_containing_folder\"N\n" +
-	"\x10GetFolderRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1edataform.googleapis.com/FolderR\x04name\"\x96\x01\n" +
-	"\x13UpdateFolderRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12=\n" +
-	"\x06folder\x18\x02 \x01(\v2 .google.cloud.dataform.v1.FolderB\x03\xe0A\x02R\x06folder\"Q\n" +
-	"\x13DeleteFolderRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1edataform.googleapis.com/FolderR\x04name\"p\n" +
-	"\x17DeleteFolderTreeRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1edataform.googleapis.com/FolderR\x04name\x12\x19\n" +
-	"\x05force\x18\x02 \x01(\bB\x03\xe0A\x01R\x05force\"x\n" +
-	"\x1bDeleteTeamFolderTreeRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"dataform.googleapis.com/TeamFolderR\x04name\x12\x19\n" +
-	"\x05force\x18\x02 \x01(\bB\x03\xe0A\x01R\x05force\"\x97\x03\n" +
-	"\x18DeleteFolderTreeMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12S\n" +
-	"\x05state\x18\x04 \x01(\x0e28.google.cloud.dataform.v1.DeleteFolderTreeMetadata.StateB\x03\xe0A\x03R\x05state\x12.\n" +
-	"\x10percent_complete\x18\x05 \x01(\x05B\x03\xe0A\x03R\x0fpercentComplete\"[\n" +
+	"\x16_creator_iam_principal\"\x99\x01\n" +
+	"\x13CreateFolderRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12>\n" +
+	"\x06folder\x18\x02 \x01(\v2 .google.cloud.dataform.v1.FolderB\x04\xe2A\x01\x02R\x06folder\"\xc1\x01\n" +
+	"\x11MoveFolderRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1edataform.googleapis.com/FolderR\x04name\x12M\n" +
+	"\x1ddestination_containing_folder\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x00R\x1bdestinationContainingFolder\x88\x01\x01B \n" +
+	"\x1e_destination_containing_folder\"O\n" +
+	"\x10GetFolderRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1edataform.googleapis.com/FolderR\x04name\"\x98\x01\n" +
+	"\x13UpdateFolderRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12>\n" +
+	"\x06folder\x18\x02 \x01(\v2 .google.cloud.dataform.v1.FolderB\x04\xe2A\x01\x02R\x06folder\"R\n" +
+	"\x13DeleteFolderRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1edataform.googleapis.com/FolderR\x04name\"r\n" +
+	"\x17DeleteFolderTreeRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1edataform.googleapis.com/FolderR\x04name\x12\x1a\n" +
+	"\x05force\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x05force\"z\n" +
+	"\x1bDeleteTeamFolderTreeRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"dataform.googleapis.com/TeamFolderR\x04name\x12\x1a\n" +
+	"\x05force\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x05force\"\x9c\x03\n" +
+	"\x18DeleteFolderTreeMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12T\n" +
+	"\x05state\x18\x04 \x01(\x0e28.google.cloud.dataform.v1.DeleteFolderTreeMetadata.StateB\x04\xe2A\x01\x03R\x05state\x12/\n" +
+	"\x10percent_complete\x18\x05 \x01(\x05B\x04\xe2A\x01\x03R\x0fpercentComplete\"[\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vINITIALIZED\x10\x01\x12\x0f\n" +
 	"\vIN_PROGRESS\x10\x02\x12\r\n" +
 	"\tSUCCEEDED\x10\x03\x12\n" +
 	"\n" +
-	"\x06FAILED\x10\x04\"\xdf\x01\n" +
-	"\x1aQueryFolderContentsRequest\x12>\n" +
-	"\x06folder\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1edataform.googleapis.com/FolderR\x06folder\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x06FAILED\x10\x04\"\xe4\x01\n" +
+	"\x1aQueryFolderContentsRequest\x12?\n" +
+	"\x06folder\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1edataform.googleapis.com/FolderR\x06folder\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1e\n" +
-	"\border_by\x18\x04 \x01(\tB\x03\xe0A\x01R\aorderBy\x12\x1b\n" +
-	"\x06filter\x18\x05 \x01(\tB\x03\xe0A\x01R\x06filter\"\xcf\x02\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1f\n" +
+	"\border_by\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\x12\x1c\n" +
+	"\x06filter\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xcf\x02\n" +
 	"\x1bQueryFolderContentsResponse\x12c\n" +
 	"\aentries\x18\x01 \x03(\v2I.google.cloud.dataform.v1.QueryFolderContentsResponse.FolderContentsEntryR\aentries\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x1a\xa2\x01\n" +
@@ -14014,15 +14014,15 @@ const file_google_cloud_dataform_v1_dataform_proto_rawDesc = "" +
 	"\n" +
 	"repository\x18\x02 \x01(\v2$.google.cloud.dataform.v1.RepositoryH\x00R\n" +
 	"repositoryB\a\n" +
-	"\x05entry\"\xe8\x01\n" +
-	"\x1cQueryUserRootContentsRequest\x12E\n" +
-	"\blocation\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\blocation\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x05entry\"\xed\x01\n" +
+	"\x1cQueryUserRootContentsRequest\x12F\n" +
+	"\blocation\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\blocation\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1e\n" +
-	"\border_by\x18\x04 \x01(\tB\x03\xe0A\x01R\aorderBy\x12\x1b\n" +
-	"\x06filter\x18\x05 \x01(\tB\x03\xe0A\x01R\x06filter\"\xcf\x02\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1f\n" +
+	"\border_by\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\x12\x1c\n" +
+	"\x06filter\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xcf\x02\n" +
 	"\x1dQueryUserRootContentsResponse\x12c\n" +
 	"\aentries\x18\x01 \x03(\v2I.google.cloud.dataform.v1.QueryUserRootContentsResponse.RootContentsEntryR\aentries\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x1a\xa0\x01\n" +
@@ -14031,46 +14031,46 @@ const file_google_cloud_dataform_v1_dataform_proto_rawDesc = "" +
 	"\n" +
 	"repository\x18\x02 \x01(\v2$.google.cloud.dataform.v1.RepositoryH\x00R\n" +
 	"repositoryB\a\n" +
-	"\x05entry\"\xfd\x03\n" +
+	"\x05entry\"\x83\x04\n" +
 	"\n" +
-	"TeamFolder\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x125\n" +
-	"\x11internal_metadata\x18\x05 \x01(\tB\x03\xe0A\x03H\x00R\x10internalMetadata\x88\x01\x01\x12<\n" +
-	"\x15creator_iam_principal\x18\x06 \x01(\tB\x03\xe0A\x03H\x01R\x13creatorIamPrincipal\x88\x01\x01:\x84\x01\xeaA\x80\x01\n" +
+	"TeamFolder\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x126\n" +
+	"\x11internal_metadata\x18\x05 \x01(\tB\x04\xe2A\x01\x03H\x00R\x10internalMetadata\x88\x01\x01\x12=\n" +
+	"\x15creator_iam_principal\x18\x06 \x01(\tB\x04\xe2A\x01\x03H\x01R\x13creatorIamPrincipal\x88\x01\x01:\x84\x01\xeaA\x80\x01\n" +
 	"\"dataform.googleapis.com/TeamFolder\x12Aprojects/{project}/locations/{location}/teamFolders/{team_folder}*\vteamFolders2\n" +
 	"teamFolderB\x14\n" +
 	"\x12_internal_metadataB\x18\n" +
-	"\x16_creator_iam_principal\"\xa8\x01\n" +
-	"\x17CreateTeamFolderRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12J\n" +
-	"\vteam_folder\x18\x02 \x01(\v2$.google.cloud.dataform.v1.TeamFolderB\x03\xe0A\x02R\n" +
-	"teamFolder\"V\n" +
-	"\x14GetTeamFolderRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"dataform.googleapis.com/TeamFolderR\x04name\"\xa7\x01\n" +
-	"\x17UpdateTeamFolderRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12J\n" +
-	"\vteam_folder\x18\x02 \x01(\v2$.google.cloud.dataform.v1.TeamFolderB\x03\xe0A\x02R\n" +
-	"teamFolder\"Y\n" +
-	"\x17DeleteTeamFolderRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"dataform.googleapis.com/TeamFolderR\x04name\"\xf0\x01\n" +
-	"\x1eQueryTeamFolderContentsRequest\x12K\n" +
-	"\vteam_folder\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
+	"\x16_creator_iam_principal\"\xaa\x01\n" +
+	"\x17CreateTeamFolderRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12K\n" +
+	"\vteam_folder\x18\x02 \x01(\v2$.google.cloud.dataform.v1.TeamFolderB\x04\xe2A\x01\x02R\n" +
+	"teamFolder\"W\n" +
+	"\x14GetTeamFolderRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"dataform.googleapis.com/TeamFolderR\x04name\"\xa9\x01\n" +
+	"\x17UpdateTeamFolderRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12K\n" +
+	"\vteam_folder\x18\x02 \x01(\v2$.google.cloud.dataform.v1.TeamFolderB\x04\xe2A\x01\x02R\n" +
+	"teamFolder\"Z\n" +
+	"\x17DeleteTeamFolderRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"dataform.googleapis.com/TeamFolderR\x04name\"\xf5\x01\n" +
+	"\x1eQueryTeamFolderContentsRequest\x12L\n" +
+	"\vteam_folder\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
 	"\"dataform.googleapis.com/TeamFolderR\n" +
-	"teamFolder\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"teamFolder\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1e\n" +
-	"\border_by\x18\x04 \x01(\tB\x03\xe0A\x01R\aorderBy\x12\x1b\n" +
-	"\x06filter\x18\x05 \x01(\tB\x03\xe0A\x01R\x06filter\"\xdf\x02\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1f\n" +
+	"\border_by\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\x12\x1c\n" +
+	"\x06filter\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xdf\x02\n" +
 	"\x1fQueryTeamFolderContentsResponse\x12k\n" +
 	"\aentries\x18\x01 \x03(\v2Q.google.cloud.dataform.v1.QueryTeamFolderContentsResponse.TeamFolderContentsEntryR\aentries\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x1a\xa6\x01\n" +
@@ -14079,27 +14079,27 @@ const file_google_cloud_dataform_v1_dataform_proto_rawDesc = "" +
 	"\n" +
 	"repository\x18\x02 \x01(\v2$.google.cloud.dataform.v1.RepositoryH\x00R\n" +
 	"repositoryB\a\n" +
-	"\x05entry\"\xe4\x01\n" +
-	"\x18SearchTeamFoldersRequest\x12E\n" +
-	"\blocation\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\blocation\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x05entry\"\xe9\x01\n" +
+	"\x18SearchTeamFoldersRequest\x12F\n" +
+	"\blocation\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\blocation\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1e\n" +
-	"\border_by\x18\x04 \x01(\tB\x03\xe0A\x01R\aorderBy\x12\x1b\n" +
-	"\x06filter\x18\x05 \x01(\tB\x03\xe0A\x01R\x06filter\"\x95\x02\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1f\n" +
+	"\border_by\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\x12\x1c\n" +
+	"\x06filter\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x95\x02\n" +
 	"\x19SearchTeamFoldersResponse\x12d\n" +
 	"\aresults\x18\x01 \x03(\v2J.google.cloud.dataform.v1.SearchTeamFoldersResponse.TeamFolderSearchResultR\aresults\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x1aj\n" +
 	"\x16TeamFolderSearchResult\x12G\n" +
 	"\vteam_folder\x18\x02 \x01(\v2$.google.cloud.dataform.v1.TeamFolderH\x00R\n" +
 	"teamFolderB\a\n" +
-	"\x05entry\"\xff\x02\n" +
-	"\x12MoveFolderMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12H\n" +
+	"\x05entry\"\x82\x03\n" +
+	"\x12MoveFolderMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12H\n" +
 	"\x05state\x18\x04 \x01(\x0e22.google.cloud.dataform.v1.MoveFolderMetadata.StateR\x05state\x12)\n" +
 	"\x10percent_complete\x18\x05 \x01(\x05R\x0fpercentComplete\"Y\n" +
 	"\x05State\x12\x15\n" +
@@ -14108,12 +14108,12 @@ const file_google_cloud_dataform_v1_dataform_proto_rawDesc = "" +
 	"\vIN_PROGRESS\x10\x02\x12\v\n" +
 	"\aSUCCESS\x10\x03\x12\n" +
 	"\n" +
-	"\x06FAILED\x10\x04\"\x87\x03\n" +
-	"\x16MoveRepositoryMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12L\n" +
+	"\x06FAILED\x10\x04\"\x8a\x03\n" +
+	"\x16MoveRepositoryMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12L\n" +
 	"\x05state\x18\x04 \x01(\x0e26.google.cloud.dataform.v1.MoveRepositoryMetadata.StateR\x05state\x12)\n" +
 	"\x10percent_complete\x18\x05 \x01(\x05R\x0fpercentComplete\"Y\n" +
 	"\x05State\x12\x15\n" +

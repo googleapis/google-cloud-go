@@ -375,23 +375,23 @@ var File_google_ads_datamanager_v1_user_list_direct_license_service_proto protor
 
 const file_google_ads_datamanager_v1_user_list_direct_license_service_proto_rawDesc = "" +
 	"\n" +
-	"@google/ads/datamanager/v1/user_list_direct_license_service.proto\x12\x19google.ads.datamanager.v1\x1a8google/ads/datamanager/v1/user_list_direct_license.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\"\xe6\x01\n" +
-	"\"CreateUserListDirectLicenseRequest\x12P\n" +
-	"\x06parent\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\x120datamanager.googleapis.com/UserListDirectLicenseR\x06parent\x12n\n" +
-	"\x18user_list_direct_license\x18\x02 \x01(\v20.google.ads.datamanager.v1.UserListDirectLicenseB\x03\xe0A\x02R\x15userListDirectLicense\"o\n" +
-	"\x1fGetUserListDirectLicenseRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0datamanager.googleapis.com/UserListDirectLicenseR\x04name\"\xd6\x01\n" +
-	"\"UpdateUserListDirectLicenseRequest\x12n\n" +
-	"\x18user_list_direct_license\x18\x01 \x01(\v20.google.ads.datamanager.v1.UserListDirectLicenseB\x03\xe0A\x02R\x15userListDirectLicense\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"\xd8\x01\n" +
-	"!ListUserListDirectLicensesRequest\x12P\n" +
-	"\x06parent\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\x120datamanager.googleapis.com/UserListDirectLicenseR\x06parent\x12\x1b\n" +
-	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x01R\x06filter\x12 \n" +
-	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"@google/ads/datamanager/v1/user_list_direct_license_service.proto\x12\x19google.ads.datamanager.v1\x1a8google/ads/datamanager/v1/user_list_direct_license.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\"\xe8\x01\n" +
+	"\"CreateUserListDirectLicenseRequest\x12Q\n" +
+	"\x06parent\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\x120datamanager.googleapis.com/UserListDirectLicenseR\x06parent\x12o\n" +
+	"\x18user_list_direct_license\x18\x02 \x01(\v20.google.ads.datamanager.v1.UserListDirectLicenseB\x04\xe2A\x01\x02R\x15userListDirectLicense\"p\n" +
+	"\x1fGetUserListDirectLicenseRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0datamanager.googleapis.com/UserListDirectLicenseR\x04name\"\xd8\x01\n" +
+	"\"UpdateUserListDirectLicenseRequest\x12o\n" +
+	"\x18user_list_direct_license\x18\x01 \x01(\v20.google.ads.datamanager.v1.UserListDirectLicenseB\x04\xe2A\x01\x02R\x15userListDirectLicense\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"\xdc\x01\n" +
+	"!ListUserListDirectLicensesRequest\x12Q\n" +
+	"\x06parent\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\x120datamanager.googleapis.com/UserListDirectLicenseR\x06parent\x12\x1c\n" +
+	"\x06filter\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12!\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xb9\x01\n" +
+	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xb9\x01\n" +
 	"\"ListUserListDirectLicensesResponse\x12k\n" +
 	"\x19user_list_direct_licenses\x18\x01 \x03(\v20.google.ads.datamanager.v1.UserListDirectLicenseR\x16userListDirectLicenses\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken2\xf8\b\n" +

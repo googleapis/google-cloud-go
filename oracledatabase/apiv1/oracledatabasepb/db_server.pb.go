@@ -299,27 +299,27 @@ var File_google_cloud_oracledatabase_v1_db_server_proto protoreflect.FileDescrip
 
 const file_google_cloud_oracledatabase_v1_db_server_proto_rawDesc = "" +
 	"\n" +
-	".google/cloud/oracledatabase/v1/db_server.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xe2\x02\n" +
-	"\bDbServer\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12W\n" +
+	".google/cloud/oracledatabase/v1/db_server.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xe5\x02\n" +
+	"\bDbServer\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12X\n" +
 	"\n" +
-	"properties\x18\x03 \x01(\v22.google.cloud.oracledatabase.v1.DbServerPropertiesB\x03\xe0A\x01R\n" +
+	"properties\x18\x03 \x01(\v22.google.cloud.oracledatabase.v1.DbServerPropertiesB\x04\xe2A\x01\x01R\n" +
 	"properties:\xbb\x01\xeaA\xb7\x01\n" +
-	"&oracledatabase.googleapis.com/DbServer\x12xprojects/{project}/locations/{location}/cloudExadataInfrastructures/{cloud_exadata_infrastructure}/dbServers/{db_server}*\tdbServers2\bdbServer\"\xd9\x04\n" +
-	"\x12DbServerProperties\x12\x17\n" +
-	"\x04ocid\x18\x01 \x01(\tB\x03\xe0A\x03R\x04ocid\x12\"\n" +
+	"&oracledatabase.googleapis.com/DbServer\x12xprojects/{project}/locations/{location}/cloudExadataInfrastructures/{cloud_exadata_infrastructure}/dbServers/{db_server}*\tdbServers2\bdbServer\"\xe3\x04\n" +
+	"\x12DbServerProperties\x12\x18\n" +
+	"\x04ocid\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04ocid\x12#\n" +
 	"\n" +
-	"ocpu_count\x18\x02 \x01(\x05B\x03\xe0A\x01R\tocpuCount\x12)\n" +
-	"\x0emax_ocpu_count\x18\x03 \x01(\x05B\x03\xe0A\x01R\fmaxOcpuCount\x12)\n" +
-	"\x0ememory_size_gb\x18\x04 \x01(\x05B\x03\xe0A\x01R\fmemorySizeGb\x120\n" +
-	"\x12max_memory_size_gb\x18\x05 \x01(\x05B\x03\xe0A\x01R\x0fmaxMemorySizeGb\x129\n" +
-	"\x17db_node_storage_size_gb\x18\x06 \x01(\x05B\x03\xe0A\x01R\x13dbNodeStorageSizeGb\x12@\n" +
-	"\x1bmax_db_node_storage_size_gb\x18\a \x01(\x05B\x03\xe0A\x01R\x16maxDbNodeStorageSizeGb\x12\x1e\n" +
-	"\bvm_count\x18\b \x01(\x05B\x03\xe0A\x01R\avmCount\x12S\n" +
-	"\x05state\x18\t \x01(\x0e28.google.cloud.oracledatabase.v1.DbServerProperties.StateB\x03\xe0A\x03R\x05state\x12#\n" +
+	"ocpu_count\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\tocpuCount\x12*\n" +
+	"\x0emax_ocpu_count\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\fmaxOcpuCount\x12*\n" +
+	"\x0ememory_size_gb\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\fmemorySizeGb\x121\n" +
+	"\x12max_memory_size_gb\x18\x05 \x01(\x05B\x04\xe2A\x01\x01R\x0fmaxMemorySizeGb\x12:\n" +
+	"\x17db_node_storage_size_gb\x18\x06 \x01(\x05B\x04\xe2A\x01\x01R\x13dbNodeStorageSizeGb\x12A\n" +
+	"\x1bmax_db_node_storage_size_gb\x18\a \x01(\x05B\x04\xe2A\x01\x01R\x16maxDbNodeStorageSizeGb\x12\x1f\n" +
+	"\bvm_count\x18\b \x01(\x05B\x04\xe2A\x01\x01R\avmCount\x12T\n" +
+	"\x05state\x18\t \x01(\x0e28.google.cloud.oracledatabase.v1.DbServerProperties.StateB\x04\xe2A\x01\x03R\x05state\x12$\n" +
 	"\vdb_node_ids\x18\n" +
-	" \x03(\tB\x03\xe0A\x03R\tdbNodeIds\"g\n" +
+	" \x03(\tB\x04\xe2A\x01\x03R\tdbNodeIds\"g\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bCREATING\x10\x01\x12\r\n" +

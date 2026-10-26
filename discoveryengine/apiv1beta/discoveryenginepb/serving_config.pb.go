@@ -780,21 +780,21 @@ var File_google_cloud_discoveryengine_v1beta_serving_config_proto protoreflect.F
 
 const file_google_cloud_discoveryengine_v1beta_serving_config_proto_rawDesc = "" +
 	"\n" +
-	"8google/cloud/discoveryengine/v1beta/serving_config.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/discoveryengine/v1beta/common.proto\x1a8google/cloud/discoveryengine/v1beta/search_service.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xba\x12\n" +
+	"8google/cloud/discoveryengine/v1beta/serving_config.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/discoveryengine/v1beta/common.proto\x1a8google/cloud/discoveryengine/v1beta/search_service.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbf\x12\n" +
 	"\rServingConfig\x12c\n" +
 	"\fmedia_config\x18\a \x01(\v2>.google.cloud.discoveryengine.v1beta.ServingConfig.MediaConfigH\x00R\vmediaConfig\x12i\n" +
 	"\x0egeneric_config\x18\n" +
-	" \x01(\v2@.google.cloud.discoveryengine.v1beta.ServingConfig.GenericConfigH\x00R\rgenericConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12^\n" +
-	"\rsolution_type\x18\x03 \x01(\x0e21.google.cloud.discoveryengine.v1beta.SolutionTypeB\x06\xe0A\x02\xe0A\x05R\fsolutionType\x12\x19\n" +
+	" \x01(\v2@.google.cloud.discoveryengine.v1beta.ServingConfig.GenericConfigH\x00R\rgenericConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12]\n" +
+	"\rsolution_type\x18\x03 \x01(\x0e21.google.cloud.discoveryengine.v1beta.SolutionTypeB\x05\xe2A\x02\x02\x05R\fsolutionType\x12\x19\n" +
 	"\bmodel_id\x18\x04 \x01(\tR\amodelId\x12'\n" +
 	"\x0fdiversity_level\x18\x05 \x01(\tR\x0ediversityLevel\x12_\n" +
 	"\x10embedding_config\x18\x14 \x01(\v24.google.cloud.discoveryengine.v1beta.EmbeddingConfigR\x0fembeddingConfig\x12-\n" +
-	"\x12ranking_expression\x18\x15 \x01(\tR\x11rankingExpression\x12@\n" +
-	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x12ranking_expression\x18\x15 \x01(\tR\x11rankingExpression\x12A\n" +
+	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12,\n" +
 	"\x12filter_control_ids\x18\v \x03(\tR\x10filterControlIds\x12*\n" +
 	"\x11boost_control_ids\x18\f \x03(\tR\x0fboostControlIds\x120\n" +
@@ -805,31 +805,31 @@ const file_google_cloud_discoveryengine_v1beta_serving_config_proto_rawDesc = ""
 	"\x17replacement_control_ids\x18\x12 \x03(\tR\x15replacementControlIds\x12,\n" +
 	"\x12ignore_control_ids\x18\x13 \x03(\tR\x10ignoreControlIds\x12.\n" +
 	"\x13promote_control_ids\x18\x1a \x03(\tR\x11promoteControlIds\x12y\n" +
-	"\x14personalization_spec\x18\x19 \x01(\v2F.google.cloud.discoveryengine.v1beta.SearchRequest.PersonalizationSpecR\x13personalizationSpec\x12t\n" +
-	"\x16answer_generation_spec\x18\x1b \x01(\v29.google.cloud.discoveryengine.v1beta.AnswerGenerationSpecB\x03\xe0A\x01R\x14answerGenerationSpec\x1a\x87\x03\n" +
+	"\x14personalization_spec\x18\x19 \x01(\v2F.google.cloud.discoveryengine.v1beta.SearchRequest.PersonalizationSpecR\x13personalizationSpec\x12u\n" +
+	"\x16answer_generation_spec\x18\x1b \x01(\v29.google.cloud.discoveryengine.v1beta.AnswerGenerationSpecB\x04\xe2A\x01\x01R\x14answerGenerationSpec\x1a\x88\x03\n" +
 	"\vMediaConfig\x12Q\n" +
 	"$content_watched_percentage_threshold\x18\x02 \x01(\x02H\x00R!contentWatchedPercentageThreshold\x12K\n" +
 	"!content_watched_seconds_threshold\x18\x05 \x01(\x02H\x00R\x1econtentWatchedSecondsThreshold\x12.\n" +
-	"\x13demotion_event_type\x18\x01 \x01(\tR\x11demotionEventType\x12K\n" +
-	" demote_content_watched_past_days\x18% \x01(\x05B\x03\xe0A\x01R\x1cdemoteContentWatchedPastDays\x12A\n" +
+	"\x13demotion_event_type\x18\x01 \x01(\tR\x11demotionEventType\x12L\n" +
+	" demote_content_watched_past_days\x18% \x01(\x05B\x04\xe2A\x01\x01R\x1cdemoteContentWatchedPastDays\x12A\n" +
 	"\x1dcontent_freshness_cutoff_days\x18\x04 \x01(\x05R\x1acontentFreshnessCutoffDaysB\x18\n" +
 	"\x16demote_content_watched\x1a\x85\x01\n" +
 	"\rGenericConfig\x12t\n" +
 	"\x13content_search_spec\x18\x01 \x01(\v2D.google.cloud.discoveryengine.v1beta.SearchRequest.ContentSearchSpecR\x11contentSearchSpec:\x80\x03\xeaA\xfc\x02\n" +
 	",discoveryengine.googleapis.com/ServingConfig\x12_projects/{project}/locations/{location}/dataStores/{data_store}/servingConfigs/{serving_config}\x12xprojects/{project}/locations/{location}/collections/{collection}/dataStores/{data_store}/servingConfigs/{serving_config}\x12qprojects/{project}/locations/{location}/collections/{collection}/engines/{engine}/servingConfigs/{serving_config}B\x11\n" +
-	"\x0fvertical_config\"\xf5\x03\n" +
-	"\x14AnswerGenerationSpec\x12\x99\x01\n" +
-	"\x1cuser_defined_classifier_spec\x18\x01 \x01(\v2S.google.cloud.discoveryengine.v1beta.AnswerGenerationSpec.UserDefinedClassifierSpecB\x03\xe0A\x01R\x19userDefinedClassifierSpec\x1a\xc0\x02\n" +
-	"\x19UserDefinedClassifierSpec\x12H\n" +
-	"\x1eenable_user_defined_classifier\x18\x01 \x01(\bB\x03\xe0A\x01R\x1benableUserDefinedClassifier\x12\x1f\n" +
-	"\bpreamble\x18\x02 \x01(\tB\x03\xe0A\x01R\bpreamble\x12\x1e\n" +
-	"\bmodel_id\x18\x03 \x01(\tB\x03\xe0A\x01R\amodelId\x12$\n" +
-	"\vtask_marker\x18\x04 \x01(\tB\x03\xe0A\x01R\n" +
-	"taskMarker\x12\x18\n" +
-	"\x05top_p\x18\x05 \x01(\x01B\x03\xe0A\x01R\x04topP\x12\x18\n" +
-	"\x05top_k\x18\x06 \x01(\x03B\x03\xe0A\x01R\x04topK\x12%\n" +
-	"\vtemperature\x18\a \x01(\x01B\x03\xe0A\x01R\vtemperature\x12\x17\n" +
-	"\x04seed\x18\b \x01(\x05B\x03\xe0A\x01R\x04seedB\x99\x02\n" +
+	"\x0fvertical_config\"\xfe\x03\n" +
+	"\x14AnswerGenerationSpec\x12\x9a\x01\n" +
+	"\x1cuser_defined_classifier_spec\x18\x01 \x01(\v2S.google.cloud.discoveryengine.v1beta.AnswerGenerationSpec.UserDefinedClassifierSpecB\x04\xe2A\x01\x01R\x19userDefinedClassifierSpec\x1a\xc8\x02\n" +
+	"\x19UserDefinedClassifierSpec\x12I\n" +
+	"\x1eenable_user_defined_classifier\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x1benableUserDefinedClassifier\x12 \n" +
+	"\bpreamble\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\bpreamble\x12\x1f\n" +
+	"\bmodel_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\amodelId\x12%\n" +
+	"\vtask_marker\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"taskMarker\x12\x19\n" +
+	"\x05top_p\x18\x05 \x01(\x01B\x04\xe2A\x01\x01R\x04topP\x12\x19\n" +
+	"\x05top_k\x18\x06 \x01(\x03B\x04\xe2A\x01\x01R\x04topK\x12&\n" +
+	"\vtemperature\x18\a \x01(\x01B\x04\xe2A\x01\x01R\vtemperature\x12\x18\n" +
+	"\x04seed\x18\b \x01(\x05B\x04\xe2A\x01\x01R\x04seedB\x99\x02\n" +
 	"'com.google.cloud.discoveryengine.v1betaB\x12ServingConfigProtoP\x01ZQcloud.google.com/go/discoveryengine/apiv1beta/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02#Google.Cloud.DiscoveryEngine.V1Beta\xca\x02#Google\\Cloud\\DiscoveryEngine\\V1beta\xea\x02&Google::Cloud::DiscoveryEngine::V1betab\x06proto3"
 
 var (

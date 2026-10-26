@@ -517,45 +517,45 @@ var File_google_cloud_networkservices_v1_service_binding_proto protoreflect.File
 
 const file_google_cloud_networkservices_v1_service_binding_proto_rawDesc = "" +
 	"\n" +
-	"5google/cloud/networkservices/v1/service_binding.proto\x12\x1fgoogle.cloud.networkservices.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdb\x04\n" +
-	"\x0eServiceBinding\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12K\n" +
-	"\aservice\x18\x05 \x01(\tB1\xe0A\x01\xfaA)\n" +
-	"'servicedirectory.googleapis.com/Service\x18\x01R\aservice\x12$\n" +
+	"5google/cloud/networkservices/v1/service_binding.proto\x12\x1fgoogle.cloud.networkservices.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe2\x04\n" +
+	"\x0eServiceBinding\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12L\n" +
+	"\aservice\x18\x05 \x01(\tB2\xe2A\x01\x01\xfaA)\n" +
+	"'servicedirectory.googleapis.com/Service\x18\x01R\aservice\x12%\n" +
 	"\n" +
-	"service_id\x18\b \x01(\tB\x05\xe0A\x03\x18\x01R\tserviceId\x12X\n" +
-	"\x06labels\x18\a \x03(\v2;.google.cloud.networkservices.v1.ServiceBinding.LabelsEntryB\x03\xe0A\x01R\x06labels\x1a9\n" +
+	"service_id\x18\b \x01(\tB\x06\xe2A\x01\x03\x18\x01R\tserviceId\x12Y\n" +
+	"\x06labels\x18\a \x03(\v2;.google.cloud.networkservices.v1.ServiceBinding.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:}\xeaAz\n" +
-	"-networkservices.googleapis.com/ServiceBinding\x12Iprojects/{project}/locations/{location}/serviceBindings/{service_binding}\"\xa7\x01\n" +
-	"\x1aListServiceBindingsRequest\x12M\n" +
-	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\x12-networkservices.googleapis.com/ServiceBindingR\x06parent\x12\x1b\n" +
+	"-networkservices.googleapis.com/ServiceBinding\x12Iprojects/{project}/locations/{location}/serviceBindings/{service_binding}\"\xa8\x01\n" +
+	"\x1aListServiceBindingsRequest\x12N\n" +
+	"\x06parent\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\x12-networkservices.googleapis.com/ServiceBindingR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xc3\x01\n" +
 	"\x1bListServiceBindingsResponse\x12Z\n" +
 	"\x10service_bindings\x18\x01 \x03(\v2/.google.cloud.networkservices.v1.ServiceBindingR\x0fserviceBindings\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"e\n" +
-	"\x18GetServiceBindingRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-networkservices.googleapis.com/ServiceBindingR\x04name\"\xfe\x01\n" +
-	"\x1bCreateServiceBindingRequest\x12M\n" +
-	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\x12-networkservices.googleapis.com/ServiceBindingR\x06parent\x121\n" +
-	"\x12service_binding_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x10serviceBindingId\x12]\n" +
-	"\x0fservice_binding\x18\x03 \x01(\v2/.google.cloud.networkservices.v1.ServiceBindingB\x03\xe0A\x02R\x0eserviceBinding\"\xbe\x01\n" +
-	"\x1bUpdateServiceBindingRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12]\n" +
-	"\x0fservice_binding\x18\x02 \x01(\v2/.google.cloud.networkservices.v1.ServiceBindingB\x03\xe0A\x02R\x0eserviceBinding\"h\n" +
-	"\x1bDeleteServiceBindingRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"f\n" +
+	"\x18GetServiceBindingRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-networkservices.googleapis.com/ServiceBindingR\x04name\"\x81\x02\n" +
+	"\x1bCreateServiceBindingRequest\x12N\n" +
+	"\x06parent\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\x12-networkservices.googleapis.com/ServiceBindingR\x06parent\x122\n" +
+	"\x12service_binding_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x10serviceBindingId\x12^\n" +
+	"\x0fservice_binding\x18\x03 \x01(\v2/.google.cloud.networkservices.v1.ServiceBindingB\x04\xe2A\x01\x02R\x0eserviceBinding\"\xc0\x01\n" +
+	"\x1bUpdateServiceBindingRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12^\n" +
+	"\x0fservice_binding\x18\x02 \x01(\v2/.google.cloud.networkservices.v1.ServiceBindingB\x04\xe2A\x01\x02R\x0eserviceBinding\"i\n" +
+	"\x1bDeleteServiceBindingRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
 	"-networkservices.googleapis.com/ServiceBindingR\x04nameB\xf3\x02\xeaA|\n" +
 	"'servicedirectory.googleapis.com/Service\x12Qprojects/{project}/locations/{location}/namespaces/{namespace}/services/{service}\n" +
 	"#com.google.cloud.networkservices.v1B\x13ServiceBindingProtoP\x01ZMcloud.google.com/go/networkservices/apiv1/networkservicespb;networkservicespb\xaa\x02\x1fGoogle.Cloud.NetworkServices.V1\xca\x02\x1fGoogle\\Cloud\\NetworkServices\\V1\xea\x02\"Google::Cloud::NetworkServices::V1b\x06proto3"

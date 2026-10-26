@@ -4870,11 +4870,11 @@ var File_google_bigtable_v2_session_proto protoreflect.FileDescriptor
 
 const file_google_bigtable_v2_session_proto_rawDesc = "" +
 	"\n" +
-	" google/bigtable/v2/session.proto\x12\x12google.bigtable.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1dgoogle/bigtable/v2/data.proto\x1a&google/bigtable/v2/feature_flags.proto\x1a&google/bigtable/v2/request_stats.proto\x1a google/protobuf/descriptor.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/rpc/error_details.proto\x1a\x17google/rpc/status.proto\"\x9e\x01\n" +
-	"\x1dGetClientConfigurationRequest\x12R\n" +
-	"\rinstance_name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%bigtableadmin.googleapis.com/InstanceR\finstanceName\x12)\n" +
-	"\x0eapp_profile_id\x18\x02 \x01(\tB\x03\xe0A\x01R\fappProfileId\"\xb3\x03\n" +
+	" google/bigtable/v2/session.proto\x12\x12google.bigtable.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1dgoogle/bigtable/v2/data.proto\x1a&google/bigtable/v2/feature_flags.proto\x1a&google/bigtable/v2/request_stats.proto\x1a google/protobuf/descriptor.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/rpc/error_details.proto\x1a\x17google/rpc/status.proto\"\xa0\x01\n" +
+	"\x1dGetClientConfigurationRequest\x12S\n" +
+	"\rinstance_name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%bigtableadmin.googleapis.com/InstanceR\finstanceName\x12*\n" +
+	"\x0eapp_profile_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\fappProfileId\"\xb3\x03\n" +
 	"\x14LoadBalancingOptions\x12`\n" +
 	"\x0fleast_in_flight\x18\x01 \x01(\v26.google.bigtable.v2.LoadBalancingOptions.LeastInFlightH\x00R\rleastInFlight\x12P\n" +
 	"\tpeak_ewma\x18\x02 \x01(\v21.google.bigtable.v2.LoadBalancingOptions.PeakEwmaH\x00R\bpeakEwma\x12I\n" +
@@ -5158,13 +5158,13 @@ const file_google_bigtable_v2_session_proto_rawDesc = "" +
 	"\x0eGoAwayResponse\x12\x16\n" +
 	"\x06reason\x18\x01 \x01(\tR\x06reason\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12/\n" +
-	"\x14last_rpc_id_admitted\x18\x03 \x01(\x03R\x11lastRpcIdAdmitted\"\x86\x02\n" +
+	"\x14last_rpc_id_admitted\x18\x03 \x01(\x03R\x11lastRpcIdAdmitted\"\x89\x02\n" +
 	"\x14SessionRefreshConfig\x12\\\n" +
-	"\x16optimized_open_request\x18\x01 \x01(\v2&.google.bigtable.v2.OpenSessionRequestR\x14optimizedOpenRequest\x12R\n" +
-	"\bmetadata\x18\x02 \x03(\v21.google.bigtable.v2.SessionRefreshConfig.MetadataB\x03\xe0A\x03R\bmetadata\x1a<\n" +
-	"\bMetadata\x12\x15\n" +
-	"\x03key\x18\x01 \x01(\tB\x03\xe0A\x03R\x03key\x12\x19\n" +
-	"\x05value\x18\x02 \x01(\fB\x03\xe0A\x03R\x05value*\x9b\x01\n" +
+	"\x16optimized_open_request\x18\x01 \x01(\v2&.google.bigtable.v2.OpenSessionRequestR\x14optimizedOpenRequest\x12S\n" +
+	"\bmetadata\x18\x02 \x03(\v21.google.bigtable.v2.SessionRefreshConfig.MetadataB\x04\xe2A\x01\x03R\bmetadata\x1a>\n" +
+	"\bMetadata\x12\x16\n" +
+	"\x03key\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x03key\x12\x1a\n" +
+	"\x05value\x18\x02 \x01(\fB\x04\xe2A\x01\x03R\x05value*\x9b\x01\n" +
 	"\vSessionType\x12\x16\n" +
 	"\x12SESSION_TYPE_UNSET\x10\x00\x12\x16\n" +
 	"\x12SESSION_TYPE_TABLE\x10\x01\x12 \n" +

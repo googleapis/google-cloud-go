@@ -398,35 +398,35 @@ var File_google_cloud_ces_v1beta_tool_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1beta_tool_proto_rawDesc = "" +
 	"\n" +
-	"\"google/cloud/ces/v1beta/tool.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/ces/v1beta/agent_card.proto\x1a(google/cloud/ces/v1beta/agent_tool.proto\x1a-google/cloud/ces/v1beta/client_function.proto\x1a$google/cloud/ces/v1beta/common.proto\x1a,google/cloud/ces/v1beta/connector_tool.proto\x1a-google/cloud/ces/v1beta/data_store_tool.proto\x1a#google/cloud/ces/v1beta/fakes.proto\x1a.google/cloud/ces/v1beta/file_search_tool.proto\x1a0google/cloud/ces/v1beta/google_search_tool.proto\x1a&google/cloud/ces/v1beta/mcp_tool.proto\x1a+google/cloud/ces/v1beta/open_api_tool.proto\x1a-google/cloud/ces/v1beta/python_function.proto\x1a)google/cloud/ces/v1beta/system_tool.proto\x1a)google/cloud/ces/v1beta/widget_tool.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdf\f\n" +
-	"\x04Tool\x12W\n" +
-	"\x0fclient_function\x18\x02 \x01(\v2'.google.cloud.ces.v1beta.ClientFunctionB\x03\xe0A\x01H\x00R\x0eclientFunction\x12O\n" +
-	"\ropen_api_tool\x18\x03 \x01(\v2$.google.cloud.ces.v1beta.OpenApiToolB\x03\xe0A\x01H\x00R\vopenApiTool\x12^\n" +
-	"\x12google_search_tool\x18\x05 \x01(\v2).google.cloud.ces.v1beta.GoogleSearchToolB\x03\xe0A\x01H\x00R\x10googleSearchTool\x12T\n" +
-	"\x0econnector_tool\x18\b \x01(\v2&.google.cloud.ces.v1beta.ConnectorToolB\x03\xe0A\x01H\x00R\rconnectorTool\x12U\n" +
+	"\"google/cloud/ces/v1beta/tool.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/ces/v1beta/agent_card.proto\x1a(google/cloud/ces/v1beta/agent_tool.proto\x1a-google/cloud/ces/v1beta/client_function.proto\x1a$google/cloud/ces/v1beta/common.proto\x1a,google/cloud/ces/v1beta/connector_tool.proto\x1a-google/cloud/ces/v1beta/data_store_tool.proto\x1a#google/cloud/ces/v1beta/fakes.proto\x1a.google/cloud/ces/v1beta/file_search_tool.proto\x1a0google/cloud/ces/v1beta/google_search_tool.proto\x1a&google/cloud/ces/v1beta/mcp_tool.proto\x1a+google/cloud/ces/v1beta/open_api_tool.proto\x1a-google/cloud/ces/v1beta/python_function.proto\x1a)google/cloud/ces/v1beta/system_tool.proto\x1a)google/cloud/ces/v1beta/widget_tool.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf3\f\n" +
+	"\x04Tool\x12X\n" +
+	"\x0fclient_function\x18\x02 \x01(\v2'.google.cloud.ces.v1beta.ClientFunctionB\x04\xe2A\x01\x01H\x00R\x0eclientFunction\x12P\n" +
+	"\ropen_api_tool\x18\x03 \x01(\v2$.google.cloud.ces.v1beta.OpenApiToolB\x04\xe2A\x01\x01H\x00R\vopenApiTool\x12_\n" +
+	"\x12google_search_tool\x18\x05 \x01(\v2).google.cloud.ces.v1beta.GoogleSearchToolB\x04\xe2A\x01\x01H\x00R\x10googleSearchTool\x12U\n" +
+	"\x0econnector_tool\x18\b \x01(\v2&.google.cloud.ces.v1beta.ConnectorToolB\x04\xe2A\x01\x01H\x00R\rconnectorTool\x12V\n" +
 	"\x0fdata_store_tool\x18\n" +
-	" \x01(\v2&.google.cloud.ces.v1beta.DataStoreToolB\x03\xe0A\x01H\x00R\rdataStoreTool\x12W\n" +
-	"\x0fpython_function\x18\v \x01(\v2'.google.cloud.ces.v1beta.PythonFunctionB\x03\xe0A\x01H\x00R\x0epythonFunction\x12B\n" +
-	"\bmcp_tool\x18\x10 \x01(\v2 .google.cloud.ces.v1beta.McpToolB\x03\xe0A\x01H\x00R\amcpTool\x12X\n" +
-	"\x10file_search_tool\x18\x11 \x01(\v2'.google.cloud.ces.v1beta.FileSearchToolB\x03\xe0A\x01H\x00R\x0efileSearchTool\x12K\n" +
-	"\vsystem_tool\x18\x12 \x01(\v2#.google.cloud.ces.v1beta.SystemToolB\x03\xe0A\x01H\x00R\n" +
-	"systemTool\x12H\n" +
+	" \x01(\v2&.google.cloud.ces.v1beta.DataStoreToolB\x04\xe2A\x01\x01H\x00R\rdataStoreTool\x12X\n" +
+	"\x0fpython_function\x18\v \x01(\v2'.google.cloud.ces.v1beta.PythonFunctionB\x04\xe2A\x01\x01H\x00R\x0epythonFunction\x12C\n" +
+	"\bmcp_tool\x18\x10 \x01(\v2 .google.cloud.ces.v1beta.McpToolB\x04\xe2A\x01\x01H\x00R\amcpTool\x12Y\n" +
+	"\x10file_search_tool\x18\x11 \x01(\v2'.google.cloud.ces.v1beta.FileSearchToolB\x04\xe2A\x01\x01H\x00R\x0efileSearchTool\x12L\n" +
+	"\vsystem_tool\x18\x12 \x01(\v2#.google.cloud.ces.v1beta.SystemToolB\x04\xe2A\x01\x01H\x00R\n" +
+	"systemTool\x12I\n" +
 	"\n" +
-	"agent_tool\x18\x17 \x01(\v2\".google.cloud.ces.v1beta.AgentToolB\x03\xe0A\x01H\x00R\tagentTool\x12K\n" +
-	"\vwidget_tool\x18\x18 \x01(\v2#.google.cloud.ces.v1beta.WidgetToolB\x03\xe0A\x01H\x00R\n" +
-	"widgetTool\x12[\n" +
-	"\x11remote_agent_tool\x18\x19 \x01(\v2(.google.cloud.ces.v1beta.RemoteAgentToolB\x03\xe0A\x01H\x00R\x0fremoteAgentTool\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\r \x01(\tB\x03\xe0A\x03R\vdisplayName\x12R\n" +
-	"\x0eexecution_type\x18\f \x01(\x0e2&.google.cloud.ces.v1beta.ExecutionTypeB\x03\xe0A\x01R\rexecutionType\x128\n" +
-	"\atimeout\x18\x16 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\atimeout\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"agent_tool\x18\x17 \x01(\v2\".google.cloud.ces.v1beta.AgentToolB\x04\xe2A\x01\x01H\x00R\tagentTool\x12L\n" +
+	"\vwidget_tool\x18\x18 \x01(\v2#.google.cloud.ces.v1beta.WidgetToolB\x04\xe2A\x01\x01H\x00R\n" +
+	"widgetTool\x12\\\n" +
+	"\x11remote_agent_tool\x18\x19 \x01(\v2(.google.cloud.ces.v1beta.RemoteAgentToolB\x04\xe2A\x01\x01H\x00R\x0fremoteAgentTool\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\r \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12S\n" +
+	"\x0eexecution_type\x18\f \x01(\x0e2&.google.cloud.ces.v1beta.ExecutionTypeB\x04\xe2A\x01\x01R\rexecutionType\x129\n" +
+	"\atimeout\x18\x16 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\atimeout\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12\x12\n" +
-	"\x04etag\x18\x0e \x01(\tR\x04etag\x120\n" +
-	"\x11generated_summary\x18\x0f \x01(\tB\x03\xe0A\x03R\x10generatedSummary\x12V\n" +
-	"\x10tool_fake_config\x18\x14 \x01(\v2'.google.cloud.ces.v1beta.ToolFakeConfigB\x03\xe0A\x01R\x0etoolFakeConfig:j\xeaAg\n" +
+	"\x04etag\x18\x0e \x01(\tR\x04etag\x121\n" +
+	"\x11generated_summary\x18\x0f \x01(\tB\x04\xe2A\x01\x03R\x10generatedSummary\x12W\n" +
+	"\x10tool_fake_config\x18\x14 \x01(\v2'.google.cloud.ces.v1beta.ToolFakeConfigB\x04\xe2A\x01\x01R\x0etoolFakeConfig:j\xeaAg\n" +
 	"\x17ces.googleapis.com/Tool\x12?projects/{project}/locations/{location}/apps/{app}/tools/{tool}*\x05tools2\x04toolB\v\n" +
 	"\ttool_typeBY\n" +
 	"\x1bcom.google.cloud.ces.v1betaB\tToolProtoP\x01Z-cloud.google.com/go/ces/apiv1beta/cespb;cespbb\x06proto3"

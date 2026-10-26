@@ -1975,7 +1975,7 @@ const file_google_datastore_v1_query_proto_rawDesc = "" +
 	"\x04FULL\x10\x01\x12\x0e\n" +
 	"\n" +
 	"PROJECTION\x10\x02\x12\f\n" +
-	"\bKEY_ONLY\x10\x03\"\x90\x04\n" +
+	"\bKEY_ONLY\x10\x03\"\x91\x04\n" +
 	"\x05Query\x12?\n" +
 	"\n" +
 	"projection\x18\x02 \x03(\v2\x1f.google.datastore.v1.ProjectionR\n" +
@@ -1990,18 +1990,18 @@ const file_google_datastore_v1_query_proto_rawDesc = "" +
 	"end_cursor\x18\b \x01(\fR\tendCursor\x12\x16\n" +
 	"\x06offset\x18\n" +
 	" \x01(\x05R\x06offset\x121\n" +
-	"\x05limit\x18\f \x01(\v2\x1b.google.protobuf.Int32ValueR\x05limit\x12H\n" +
-	"\ffind_nearest\x18\r \x01(\v2 .google.datastore.v1.FindNearestB\x03\xe0A\x01R\vfindNearest\"\xb1\x05\n" +
+	"\x05limit\x18\f \x01(\v2\x1b.google.protobuf.Int32ValueR\x05limit\x12I\n" +
+	"\ffind_nearest\x18\r \x01(\v2 .google.datastore.v1.FindNearestB\x04\xe2A\x01\x01R\vfindNearest\"\xb4\x05\n" +
 	"\x10AggregationQuery\x12?\n" +
-	"\fnested_query\x18\x01 \x01(\v2\x1a.google.datastore.v1.QueryH\x00R\vnestedQuery\x12Z\n" +
-	"\faggregations\x18\x03 \x03(\v21.google.datastore.v1.AggregationQuery.AggregationB\x03\xe0A\x01R\faggregations\x1a\xf1\x03\n" +
+	"\fnested_query\x18\x01 \x01(\v2\x1a.google.datastore.v1.QueryH\x00R\vnestedQuery\x12[\n" +
+	"\faggregations\x18\x03 \x03(\v21.google.datastore.v1.AggregationQuery.AggregationB\x04\xe2A\x01\x01R\faggregations\x1a\xf3\x03\n" +
 	"\vAggregation\x12O\n" +
 	"\x05count\x18\x01 \x01(\v27.google.datastore.v1.AggregationQuery.Aggregation.CountH\x00R\x05count\x12I\n" +
 	"\x03sum\x18\x02 \x01(\v25.google.datastore.v1.AggregationQuery.Aggregation.SumH\x00R\x03sum\x12I\n" +
-	"\x03avg\x18\x03 \x01(\v25.google.datastore.v1.AggregationQuery.Aggregation.AvgH\x00R\x03avg\x12\x19\n" +
-	"\x05alias\x18\a \x01(\tB\x03\xe0A\x01R\x05alias\x1a>\n" +
-	"\x05Count\x125\n" +
-	"\x05up_to\x18\x01 \x01(\v2\x1b.google.protobuf.Int64ValueB\x03\xe0A\x01R\x04upTo\x1aI\n" +
+	"\x03avg\x18\x03 \x01(\v25.google.datastore.v1.AggregationQuery.Aggregation.AvgH\x00R\x03avg\x12\x1a\n" +
+	"\x05alias\x18\a \x01(\tB\x04\xe2A\x01\x01R\x05alias\x1a?\n" +
+	"\x05Count\x126\n" +
+	"\x05up_to\x18\x01 \x01(\v2\x1b.google.protobuf.Int64ValueB\x04\xe2A\x01\x01R\x04upTo\x1aI\n" +
 	"\x03Sum\x12B\n" +
 	"\bproperty\x18\x01 \x01(\v2&.google.datastore.v1.PropertyReferenceR\bproperty\x1aI\n" +
 	"\x03Avg\x12B\n" +
@@ -2051,14 +2051,14 @@ const file_google_datastore_v1_query_proto_rawDesc = "" +
 	"\tNOT_EQUAL\x10\t\x12\x10\n" +
 	"\fHAS_ANCESTOR\x10\v\x12\n" +
 	"\n" +
-	"\x06NOT_IN\x10\r\"\xb3\x04\n" +
-	"\vFindNearest\x12T\n" +
-	"\x0fvector_property\x18\x01 \x01(\v2&.google.datastore.v1.PropertyReferenceB\x03\xe0A\x02R\x0evectorProperty\x12B\n" +
-	"\fquery_vector\x18\x02 \x01(\v2\x1a.google.datastore.v1.ValueB\x03\xe0A\x02R\vqueryVector\x12`\n" +
-	"\x10distance_measure\x18\x03 \x01(\x0e20.google.datastore.v1.FindNearest.DistanceMeasureB\x03\xe0A\x02R\x0fdistanceMeasure\x126\n" +
-	"\x05limit\x18\x04 \x01(\v2\x1b.google.protobuf.Int32ValueB\x03\xe0A\x02R\x05limit\x12=\n" +
-	"\x18distance_result_property\x18\x05 \x01(\tB\x03\xe0A\x01R\x16distanceResultProperty\x12P\n" +
-	"\x12distance_threshold\x18\x06 \x01(\v2\x1c.google.protobuf.DoubleValueB\x03\xe0A\x01R\x11distanceThreshold\"_\n" +
+	"\x06NOT_IN\x10\r\"\xb9\x04\n" +
+	"\vFindNearest\x12U\n" +
+	"\x0fvector_property\x18\x01 \x01(\v2&.google.datastore.v1.PropertyReferenceB\x04\xe2A\x01\x02R\x0evectorProperty\x12C\n" +
+	"\fquery_vector\x18\x02 \x01(\v2\x1a.google.datastore.v1.ValueB\x04\xe2A\x01\x02R\vqueryVector\x12a\n" +
+	"\x10distance_measure\x18\x03 \x01(\x0e20.google.datastore.v1.FindNearest.DistanceMeasureB\x04\xe2A\x01\x02R\x0fdistanceMeasure\x127\n" +
+	"\x05limit\x18\x04 \x01(\v2\x1b.google.protobuf.Int32ValueB\x04\xe2A\x01\x02R\x05limit\x12>\n" +
+	"\x18distance_result_property\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x16distanceResultProperty\x12Q\n" +
+	"\x12distance_threshold\x18\x06 \x01(\v2\x1c.google.protobuf.DoubleValueB\x04\xe2A\x01\x01R\x11distanceThreshold\"_\n" +
 	"\x0fDistanceMeasure\x12 \n" +
 	"\x1cDISTANCE_MEASURE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tEUCLIDEAN\x10\x01\x12\n" +

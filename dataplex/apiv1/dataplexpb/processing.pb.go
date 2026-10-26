@@ -530,30 +530,30 @@ var File_google_cloud_dataplex_v1_processing_proto protoreflect.FileDescriptor
 
 const file_google_cloud_dataplex_v1_processing_proto_rawDesc = "" +
 	"\n" +
-	")google/cloud/dataplex/v1/processing.proto\x12\x18google.cloud.dataplex.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\"\x85\x03\n" +
+	")google/cloud/dataplex/v1/processing.proto\x12\x18google.cloud.dataplex.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\"\x87\x03\n" +
 	"\aTrigger\x12I\n" +
 	"\ton_demand\x18d \x01(\v2*.google.cloud.dataplex.v1.Trigger.OnDemandH\x00R\bonDemand\x12H\n" +
 	"\bschedule\x18e \x01(\v2*.google.cloud.dataplex.v1.Trigger.ScheduleH\x00R\bschedule\x12F\n" +
 	"\bone_time\x18f \x01(\v2).google.cloud.dataplex.v1.Trigger.OneTimeH\x00R\aoneTime\x1a\n" +
 	"\n" +
-	"\bOnDemand\x1a#\n" +
-	"\bSchedule\x12\x17\n" +
-	"\x04cron\x18\x01 \x01(\tB\x03\xe0A\x02R\x04cron\x1ad\n" +
-	"\aOneTime\x12Y\n" +
-	"\x19ttl_after_scan_completion\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x16ttlAfterScanCompletionB\x06\n" +
-	"\x04mode\"{\n" +
+	"\bOnDemand\x1a$\n" +
+	"\bSchedule\x12\x18\n" +
+	"\x04cron\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04cron\x1ae\n" +
+	"\aOneTime\x12Z\n" +
+	"\x19ttl_after_scan_completion\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x16ttlAfterScanCompletionB\x06\n" +
+	"\x04mode\"}\n" +
 	"\n" +
-	"DataSource\x12@\n" +
-	"\x06entity\x18d \x01(\tB&\xe0A\x05\xfaA \n" +
-	"\x1edataplex.googleapis.com/EntityH\x00R\x06entity\x12!\n" +
-	"\bresource\x18e \x01(\tB\x03\xe0A\x05H\x00R\bresourceB\b\n" +
-	"\x06source\"\xe3\x01\n" +
+	"DataSource\x12A\n" +
+	"\x06entity\x18d \x01(\tB'\xe2A\x01\x05\xfaA \n" +
+	"\x1edataplex.googleapis.com/EntityH\x00R\x06entity\x12\"\n" +
+	"\bresource\x18e \x01(\tB\x04\xe2A\x01\x05H\x00R\bresourceB\b\n" +
+	"\x06source\"\xe6\x01\n" +
 	"\vScannedData\x12e\n" +
-	"\x11incremental_field\x18\x01 \x01(\v26.google.cloud.dataplex.v1.ScannedData.IncrementalFieldH\x00R\x10incrementalField\x1a_\n" +
-	"\x10IncrementalField\x12\x19\n" +
-	"\x05field\x18\x01 \x01(\tB\x03\xe0A\x03R\x05field\x12\x19\n" +
-	"\x05start\x18\x02 \x01(\tB\x03\xe0A\x03R\x05start\x12\x15\n" +
-	"\x03end\x18\x03 \x01(\tB\x03\xe0A\x03R\x03endB\f\n" +
+	"\x11incremental_field\x18\x01 \x01(\v26.google.cloud.dataplex.v1.ScannedData.IncrementalFieldH\x00R\x10incrementalField\x1ab\n" +
+	"\x10IncrementalField\x12\x1a\n" +
+	"\x05field\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x05field\x12\x1a\n" +
+	"\x05start\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x05start\x12\x16\n" +
+	"\x03end\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x03endB\f\n" +
 	"\n" +
 	"data_rangeBk\n" +
 	"\x1ccom.google.cloud.dataplex.v1B\x0fProcessingProtoP\x01Z8cloud.google.com/go/dataplex/apiv1/dataplexpb;dataplexpbb\x06proto3"

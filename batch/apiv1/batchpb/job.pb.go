@@ -2249,19 +2249,19 @@ var File_google_cloud_batch_v1_job_proto protoreflect.FileDescriptor
 
 const file_google_cloud_batch_v1_job_proto_rawDesc = "" +
 	"\n" +
-	"\x1fgoogle/cloud/batch/v1/job.proto\x12\x15google.cloud.batch.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/cloud/batch/v1/task.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x92\x06\n" +
-	"\x03Job\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x15\n" +
-	"\x03uid\x18\x02 \x01(\tB\x03\xe0A\x03R\x03uid\x12\x1a\n" +
-	"\bpriority\x18\x03 \x01(\x03R\bpriority\x12F\n" +
-	"\vtask_groups\x18\x04 \x03(\v2 .google.cloud.batch.v1.TaskGroupB\x03\xe0A\x02R\n" +
+	"\x1fgoogle/cloud/batch/v1/job.proto\x12\x15google.cloud.batch.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/cloud/batch/v1/task.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x98\x06\n" +
+	"\x03Job\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x16\n" +
+	"\x03uid\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12\x1a\n" +
+	"\bpriority\x18\x03 \x01(\x03R\bpriority\x12G\n" +
+	"\vtask_groups\x18\x04 \x03(\v2 .google.cloud.batch.v1.TaskGroupB\x04\xe2A\x01\x02R\n" +
 	"taskGroups\x12T\n" +
 	"\x11allocation_policy\x18\a \x01(\v2'.google.cloud.batch.v1.AllocationPolicyR\x10allocationPolicy\x12>\n" +
-	"\x06labels\x18\b \x03(\v2&.google.cloud.batch.v1.Job.LabelsEntryR\x06labels\x12=\n" +
-	"\x06status\x18\t \x01(\v2 .google.cloud.batch.v1.JobStatusB\x03\xe0A\x03R\x06status\x12@\n" +
-	"\vcreate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x06labels\x18\b \x03(\v2&.google.cloud.batch.v1.Job.LabelsEntryR\x06labels\x12>\n" +
+	"\x06status\x18\t \x01(\v2 .google.cloud.batch.v1.JobStatusB\x04\xe2A\x01\x03R\x06status\x12A\n" +
+	"\vcreate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12B\n" +
 	"\vlogs_policy\x18\r \x01(\v2!.google.cloud.batch.v1.LogsPolicyR\n" +
 	"logsPolicy\x12L\n" +
@@ -2269,14 +2269,14 @@ const file_google_cloud_batch_v1_job_proto_rawDesc = "" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:Q\xeaAN\n" +
-	"\x18batch.googleapis.com/Job\x122projects/{project}/locations/{location}/jobs/{job}\"\x99\x03\n" +
+	"\x18batch.googleapis.com/Job\x122projects/{project}/locations/{location}/jobs/{job}\"\x9b\x03\n" +
 	"\n" +
 	"LogsPolicy\x12O\n" +
 	"\vdestination\x18\x01 \x01(\x0e2-.google.cloud.batch.v1.LogsPolicy.DestinationR\vdestination\x12\x1b\n" +
-	"\tlogs_path\x18\x02 \x01(\tR\blogsPath\x12k\n" +
-	"\x14cloud_logging_option\x18\x03 \x01(\v24.google.cloud.batch.v1.LogsPolicy.CloudLoggingOptionB\x03\xe0A\x01R\x12cloudLoggingOption\x1ag\n" +
-	"\x12CloudLoggingOption\x12Q\n" +
-	"#use_generic_task_monitored_resource\x18\x01 \x01(\bB\x03\xe0A\x01R\x1fuseGenericTaskMonitoredResource\"G\n" +
+	"\tlogs_path\x18\x02 \x01(\tR\blogsPath\x12l\n" +
+	"\x14cloud_logging_option\x18\x03 \x01(\v24.google.cloud.batch.v1.LogsPolicy.CloudLoggingOptionB\x04\xe2A\x01\x01R\x12cloudLoggingOption\x1ah\n" +
+	"\x12CloudLoggingOption\x12R\n" +
+	"#use_generic_task_monitored_resource\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x1fuseGenericTaskMonitoredResource\"G\n" +
 	"\vDestination\x12\x1b\n" +
 	"\x17DESTINATION_UNSPECIFIED\x10\x00\x12\x11\n" +
 	"\rCLOUD_LOGGING\x10\x01\x12\b\n" +
@@ -2323,7 +2323,7 @@ const file_google_cloud_batch_v1_job_proto_rawDesc = "" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x15\n" +
 	"\x11JOB_STATE_CHANGED\x10\x01\x12\x16\n" +
-	"\x12TASK_STATE_CHANGED\x10\x02\"\xd5\x14\n" +
+	"\x12TASK_STATE_CHANGED\x10\x02\"\xdb\x14\n" +
 	"\x10AllocationPolicy\x12R\n" +
 	"\blocation\x18\x01 \x01(\v26.google.cloud.batch.v1.AllocationPolicy.LocationPolicyR\blocation\x12^\n" +
 	"\tinstances\x18\b \x03(\v2@.google.cloud.batch.v1.AllocationPolicy.InstancePolicyOrTemplateR\tinstances\x12N\n" +
@@ -2331,8 +2331,8 @@ const file_google_cloud_batch_v1_job_proto_rawDesc = "" +
 	"\x06labels\x18\x06 \x03(\v23.google.cloud.batch.v1.AllocationPolicy.LabelsEntryR\x06labels\x12O\n" +
 	"\anetwork\x18\a \x01(\v25.google.cloud.batch.v1.AllocationPolicy.NetworkPolicyR\anetwork\x12U\n" +
 	"\tplacement\x18\n" +
-	" \x01(\v27.google.cloud.batch.v1.AllocationPolicy.PlacementPolicyR\tplacement\x12\x17\n" +
-	"\x04tags\x18\v \x03(\tB\x03\xe0A\x01R\x04tags\x1a=\n" +
+	" \x01(\v27.google.cloud.batch.v1.AllocationPolicy.PlacementPolicyR\tplacement\x12\x18\n" +
+	"\x04tags\x18\v \x03(\tB\x04\xe2A\x01\x01R\x04tags\x1a=\n" +
 	"\x0eLocationPolicy\x12+\n" +
 	"\x11allowed_locations\x18\x01 \x03(\tR\x10allowedLocations\x1a\x9f\x01\n" +
 	"\x04Disk\x12\x16\n" +
@@ -2348,34 +2348,34 @@ const file_google_cloud_batch_v1_job_proto_rawDesc = "" +
 	"\vdevice_name\x18\x03 \x01(\tR\n" +
 	"deviceNameB\n" +
 	"\n" +
-	"\battached\x1a\x97\x01\n" +
+	"\battached\x1a\x98\x01\n" +
 	"\vAccelerator\x12\x12\n" +
 	"\x04type\x18\x01 \x01(\tR\x04type\x12\x14\n" +
 	"\x05count\x18\x02 \x01(\x03R\x05count\x122\n" +
-	"\x13install_gpu_drivers\x18\x03 \x01(\bB\x02\x18\x01R\x11installGpuDrivers\x12*\n" +
-	"\x0edriver_version\x18\x04 \x01(\tB\x03\xe0A\x01R\rdriverVersion\x1a\xde\x03\n" +
+	"\x13install_gpu_drivers\x18\x03 \x01(\bB\x02\x18\x01R\x11installGpuDrivers\x12+\n" +
+	"\x0edriver_version\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\rdriverVersion\x1a\xdf\x03\n" +
 	"\x0eInstancePolicy\x12!\n" +
 	"\fmachine_type\x18\x02 \x01(\tR\vmachineType\x12(\n" +
 	"\x10min_cpu_platform\x18\x03 \x01(\tR\x0eminCpuPlatform\x12h\n" +
 	"\x12provisioning_model\x18\x04 \x01(\x0e29.google.cloud.batch.v1.AllocationPolicy.ProvisioningModelR\x11provisioningModel\x12W\n" +
 	"\faccelerators\x18\x05 \x03(\v23.google.cloud.batch.v1.AllocationPolicy.AcceleratorR\faccelerators\x12I\n" +
 	"\tboot_disk\x18\b \x01(\v2,.google.cloud.batch.v1.AllocationPolicy.DiskR\bbootDisk\x12J\n" +
-	"\x05disks\x18\x06 \x03(\v24.google.cloud.batch.v1.AllocationPolicy.AttachedDiskR\x05disks\x12%\n" +
-	"\vreservation\x18\a \x01(\tB\x03\xe0A\x01R\vreservation\x1a\xc9\x02\n" +
+	"\x05disks\x18\x06 \x03(\v24.google.cloud.batch.v1.AllocationPolicy.AttachedDiskR\x05disks\x12&\n" +
+	"\vreservation\x18\a \x01(\tB\x04\xe2A\x01\x01R\vreservation\x1a\xcb\x02\n" +
 	"\x18InstancePolicyOrTemplate\x12P\n" +
 	"\x06policy\x18\x01 \x01(\v26.google.cloud.batch.v1.AllocationPolicy.InstancePolicyH\x00R\x06policy\x12-\n" +
 	"\x11instance_template\x18\x02 \x01(\tH\x00R\x10instanceTemplate\x12.\n" +
-	"\x13install_gpu_drivers\x18\x03 \x01(\bR\x11installGpuDrivers\x12/\n" +
-	"\x11install_ops_agent\x18\x04 \x01(\bB\x03\xe0A\x01R\x0finstallOpsAgent\x128\n" +
-	"\x16block_project_ssh_keys\x18\x05 \x01(\bB\x03\xe0A\x01R\x13blockProjectSshKeysB\x11\n" +
-	"\x0fpolicy_template\x1a\xbb\x02\n" +
+	"\x13install_gpu_drivers\x18\x03 \x01(\bR\x11installGpuDrivers\x120\n" +
+	"\x11install_ops_agent\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x0finstallOpsAgent\x129\n" +
+	"\x16block_project_ssh_keys\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\x13blockProjectSshKeysB\x11\n" +
+	"\x0fpolicy_template\x1a\xbc\x02\n" +
 	"\x10NetworkInterface\x12\x18\n" +
 	"\anetwork\x18\x01 \x01(\tR\anetwork\x12\x1e\n" +
 	"\n" +
 	"subnetwork\x18\x02 \x01(\tR\n" +
 	"subnetwork\x123\n" +
-	"\x16no_external_ip_address\x18\x03 \x01(\bR\x13noExternalIpAddress\x12e\n" +
-	"\bnic_type\x18\a \x01(\x0e2@.google.cloud.batch.v1.AllocationPolicy.NetworkInterface.NicTypeB\x03\xe0A\x01H\x00R\anicType\x88\x01\x01\"D\n" +
+	"\x16no_external_ip_address\x18\x03 \x01(\bR\x13noExternalIpAddress\x12f\n" +
+	"\bnic_type\x18\a \x01(\x0e2@.google.cloud.batch.v1.AllocationPolicy.NetworkInterface.NicTypeB\x04\xe2A\x01\x01H\x00R\anicType\x88\x01\x01\"D\n" +
 	"\aNicType\x12\x18\n" +
 	"\x14NIC_TYPE_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05GVNIC\x10\x01\x12\t\n" +
@@ -2397,10 +2397,10 @@ const file_google_cloud_batch_v1_job_proto_rawDesc = "" +
 	"\vPREEMPTIBLE\x10\x03\x1a\x02\b\x01\x12\x15\n" +
 	"\x11RESERVATION_BOUND\x10\x04\x12\x0e\n" +
 	"\n" +
-	"FLEX_START\x10\x05\"\xd8\x05\n" +
-	"\tTaskGroup\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12A\n" +
-	"\ttask_spec\x18\x03 \x01(\v2\x1f.google.cloud.batch.v1.TaskSpecB\x03\xe0A\x02R\btaskSpec\x12\x1d\n" +
+	"FLEX_START\x10\x05\"\xdb\x05\n" +
+	"\tTaskGroup\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12B\n" +
+	"\ttask_spec\x18\x03 \x01(\v2\x1f.google.cloud.batch.v1.TaskSpecB\x04\xe2A\x01\x02R\btaskSpec\x12\x1d\n" +
 	"\n" +
 	"task_count\x18\x04 \x01(\x03R\ttaskCount\x12 \n" +
 	"\vparallelism\x18\x05 \x01(\x03R\vparallelism\x12^\n" +
@@ -2409,8 +2409,8 @@ const file_google_cloud_batch_v1_job_proto_rawDesc = "" +
 	"\x13task_count_per_node\x18\n" +
 	" \x01(\x03R\x10taskCountPerNode\x12,\n" +
 	"\x12require_hosts_file\x18\v \x01(\bR\x10requireHostsFile\x12%\n" +
-	"\x0epermissive_ssh\x18\f \x01(\bR\rpermissiveSsh\x12*\n" +
-	"\x0frun_as_non_root\x18\x0e \x01(\bB\x03\xe0A\x01R\frunAsNonRoot\"\\\n" +
+	"\x0epermissive_ssh\x18\f \x01(\bR\rpermissiveSsh\x12+\n" +
+	"\x0frun_as_non_root\x18\x0e \x01(\bB\x04\xe2A\x01\x01R\frunAsNonRoot\"\\\n" +
 	"\x10SchedulingPolicy\x12!\n" +
 	"\x1dSCHEDULING_POLICY_UNSPECIFIED\x10\x00\x12\x17\n" +
 	"\x13AS_SOON_AS_POSSIBLE\x10\x01\x12\f\n" +

@@ -233,13 +233,13 @@ var File_google_cloud_texttospeech_v1_cloud_tts_lrs_proto protoreflect.FileDescr
 
 const file_google_cloud_texttospeech_v1_cloud_tts_lrs_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/texttospeech/v1/cloud_tts_lrs.proto\x12\x1cgoogle.cloud.texttospeech.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a,google/cloud/texttospeech/v1/cloud_tts.proto\x1a#google/longrunning/operations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xca\x02\n" +
+	"0google/cloud/texttospeech/v1/cloud_tts_lrs.proto\x12\x1cgoogle.cloud.texttospeech.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a,google/cloud/texttospeech/v1/cloud_tts.proto\x1a#google/longrunning/operations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xce\x02\n" +
 	"\x1aSynthesizeLongAudioRequest\x12\x16\n" +
-	"\x06parent\x18\x01 \x01(\tR\x06parent\x12G\n" +
-	"\x05input\x18\x02 \x01(\v2,.google.cloud.texttospeech.v1.SynthesisInputB\x03\xe0A\x02R\x05input\x12Q\n" +
-	"\faudio_config\x18\x03 \x01(\v2).google.cloud.texttospeech.v1.AudioConfigB\x03\xe0A\x02R\vaudioConfig\x12)\n" +
-	"\x0eoutput_gcs_uri\x18\x04 \x01(\tB\x03\xe0A\x02R\foutputGcsUri\x12M\n" +
-	"\x05voice\x18\x05 \x01(\v22.google.cloud.texttospeech.v1.VoiceSelectionParamsB\x03\xe0A\x02R\x05voice\"\x1d\n" +
+	"\x06parent\x18\x01 \x01(\tR\x06parent\x12H\n" +
+	"\x05input\x18\x02 \x01(\v2,.google.cloud.texttospeech.v1.SynthesisInputB\x04\xe2A\x01\x02R\x05input\x12R\n" +
+	"\faudio_config\x18\x03 \x01(\v2).google.cloud.texttospeech.v1.AudioConfigB\x04\xe2A\x01\x02R\vaudioConfig\x12*\n" +
+	"\x0eoutput_gcs_uri\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\foutputGcsUri\x12N\n" +
+	"\x05voice\x18\x05 \x01(\v22.google.cloud.texttospeech.v1.VoiceSelectionParamsB\x04\xe2A\x01\x02R\x05voice\"\x1d\n" +
 	"\x1bSynthesizeLongAudioResponse\"\xd3\x01\n" +
 	"\x1bSynthesizeLongAudioMetadata\x129\n" +
 	"\n" +
