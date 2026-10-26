@@ -142,13 +142,19 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (client st
 		}()
 	}
 
-	if clientMetrics != nil && creds != nil {
-		*creds = *wrapAuthCredentials(creds, clientMetrics)
-		s.clientOption = append(s.clientOption, option.WithAuthCredentials(creds))
-	}
-	if isOTelTracingDevEnabled() && creds != nil {
-		*creds = *wrapAuthCredentialsForTracing(creds)
-		s.clientOption = append(s.clientOption, option.WithAuthCredentials(creds))
+	if creds != nil {
+		tracingEnabled := isOTelTracingDevEnabled()
+		// Wrap in place: htransport.NewClient in NewClient already holds this
+		// pointer, so its transport must observe the wrapped TokenProvider.
+		if clientMetrics != nil {
+			*creds = *wrapAuthCredentials(creds, clientMetrics)
+		}
+		if tracingEnabled {
+			*creds = *wrapAuthCredentialsForTracing(creds)
+		}
+		if clientMetrics != nil || tracingEnabled {
+			s.clientOption = append(s.clientOption, option.WithAuthCredentials(creds))
+		}
 	}
 
 	// htransport selects the correct endpoint among WithEndpoint (user override), WithDefaultEndpointTemplate, and WithDefaultMTLSEndpoint.

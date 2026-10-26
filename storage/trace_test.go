@@ -1879,7 +1879,9 @@ func TestTracedTokenProviderError(t *testing.T) {
 		TokenProvider: &staticAuthTokenProvider{err: wantErr},
 	})
 
-	_, err := creds.Token(ctx)
+	parentCtx, _ := startSpan(ctx, "Object.Writer")
+	_, err := creds.Token(parentCtx)
+	endSpan(parentCtx, nil)
 	if !errors.Is(err, wantErr) {
 		t.Fatalf("got err %v, want %v", err, wantErr)
 	}
@@ -1921,9 +1923,11 @@ func TestTracedTokenProviderCacheHit(t *testing.T) {
 	creds := wrapAuthCredentialsForTracing(&auth.Credentials{
 		TokenProvider: provider,
 	})
+	parentCtx, _ := startSpan(ctx, "Object.Writer")
+	t.Cleanup(func() { endSpan(parentCtx, nil) })
 
 	// First fetch obtains a new token -> emits 1 span.
-	if _, err := creds.Token(ctx); err != nil {
+	if _, err := creds.Token(parentCtx); err != nil {
 		t.Fatalf("first creds.Token: %v", err)
 	}
 	const wantSpanName = "cloud.google.com/go/storage.Auth.RefreshAccessToken"
@@ -1932,7 +1936,7 @@ func TestTracedTokenProviderCacheHit(t *testing.T) {
 	}
 
 	// Second fetch returns the same *auth.Token pointer (cache hit) -> no new span.
-	if _, err := creds.Token(ctx); err != nil {
+	if _, err := creds.Token(parentCtx); err != nil {
 		t.Fatalf("second creds.Token: %v", err)
 	}
 	if got := len(findSpansByName(te.Spans(), wantSpanName)); got != 1 {
@@ -1941,7 +1945,7 @@ func TestTracedTokenProviderCacheHit(t *testing.T) {
 
 	// Third fetch returns a newly refreshed *auth.Token pointer -> emits a 2nd span.
 	provider.token = &auth.Token{Value: "refreshed-token"}
-	if _, err := creds.Token(ctx); err != nil {
+	if _, err := creds.Token(parentCtx); err != nil {
 		t.Fatalf("third creds.Token: %v", err)
 	}
 	if got := len(findSpansByName(te.Spans(), wantSpanName)); got != 2 {
@@ -2000,7 +2004,10 @@ func TestHTTPClientAuthTracingWithMetrics(t *testing.T) {
 	if client.creds != hc.creds {
 		t.Errorf("NewClient creds (%p) and httpStorageClient creds (%p) must be the same clone", client.creds, hc.creds)
 	}
-	if _, err := hc.creds.Token(ctx); err != nil {
+	parentCtx, _ := startSpan(ctx, "Bucket.Attrs")
+	_, err = hc.creds.Token(parentCtx)
+	endSpan(parentCtx, nil)
+	if err != nil {
 		t.Fatalf("hc.creds.Token: %v", err)
 	}
 
@@ -2018,6 +2025,9 @@ func TestTracedTokenProviderDevTracingDisabled(t *testing.T) {
 		te.Unregister(ctx)
 	})
 	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "false")
+	// newHTTPStorageClient prepends WithoutAuthentication under the emulator,
+	// which conflicts with WithAuthCredentials.
+	t.Setenv("STORAGE_EMULATOR_HOST", "")
 
 	baseCreds := &auth.Credentials{
 		TokenProvider: &staticAuthTokenProvider{token: &auth.Token{Value: "fake-token"}},
@@ -2044,5 +2054,54 @@ func TestTracedTokenProviderDevTracingDisabled(t *testing.T) {
 	const wantSpanName = "cloud.google.com/go/storage.Auth.RefreshAccessToken"
 	if got := len(findSpansByName(te.Spans(), wantSpanName)); got > 0 {
 		t.Fatalf("expected 0 %q spans when dev tracing is disabled, got %d", wantSpanName, got)
+	}
+}
+
+func TestTracedTokenProviderRequiresRecordingSpan(t *testing.T) {
+	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() {
+		te.Unregister(ctx)
+	})
+	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+	provider := &staticAuthTokenProvider{token: &auth.Token{Value: "first-token"}}
+	creds := wrapAuthCredentialsForTracing(&auth.Credentials{
+		TokenProvider: provider,
+	})
+	const wantSpanName = "cloud.google.com/go/storage.Auth.RefreshAccessToken"
+
+	// A fetch without a recording span in ctx, such as the auth library's
+	// background refresh of a stale token, emits no span.
+	if _, err := creds.Token(ctx); err != nil {
+		t.Fatalf("creds.Token without span: %v", err)
+	}
+	if got := len(findSpansByName(te.Spans(), wantSpanName)); got != 0 {
+		t.Fatalf("without a recording span: expected 0 %q spans, got %d", wantSpanName, got)
+	}
+
+	parentCtx, parentSpan := startSpan(ctx, "Object.Reader")
+	t.Cleanup(func() { endSpan(parentCtx, nil) })
+
+	// The token obtained above was still tracked, so returning it again
+	// under a recording span is a cache hit and emits no span.
+	if _, err := creds.Token(parentCtx); err != nil {
+		t.Fatalf("creds.Token cache hit: %v", err)
+	}
+	if got := len(findSpansByName(te.Spans(), wantSpanName)); got != 0 {
+		t.Fatalf("after cache hit: expected 0 %q spans, got %d", wantSpanName, got)
+	}
+
+	// A new token under a recording span emits a child span.
+	provider.token = &auth.Token{Value: "second-token"}
+	if _, err := creds.Token(parentCtx); err != nil {
+		t.Fatalf("creds.Token with span: %v", err)
+	}
+	authSpans := findSpansByName(te.Spans(), wantSpanName)
+	if len(authSpans) != 1 {
+		t.Fatalf("with a recording span: expected 1 %q span, got %d", wantSpanName, len(authSpans))
+	}
+	if got, want := authSpans[0].Parent.SpanID(), parentSpan.SpanContext().SpanID(); got != want {
+		t.Errorf("got parent span ID %v, want %v", got, want)
 	}
 }

@@ -392,6 +392,13 @@ func isOneshotUpload(w *Writer) bool {
 	return w.opened && w.closed && atomic.LoadInt64(&w.bytesWritten) < int64(gRPCChunkSize(w.ChunkSize))
 }
 
+// tracedTokenProvider wraps an auth.TokenProvider to record an
+// Auth.RefreshAccessToken span, as a child of the recording span in ctx, when
+// a token fetch blocks a request (the first fetch, a fetch after expiry, or a
+// failed fetch). No span is recorded for cache hits, which return the same
+// *auth.Token, or when ctx has no recording span: the auth library refreshes
+// stale tokens asynchronously on a background goroutine with its own context,
+// and those refreshes do not block any request.
 type tracedTokenProvider struct {
 	base auth.TokenProvider
 	last atomic.Pointer[auth.Token] // cache hits return the same *auth.Token
@@ -400,22 +407,23 @@ type tracedTokenProvider struct {
 func (p *tracedTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 	start := time.Now()
 	tok, err := p.base.Token(ctx)
+	// Update the last-seen token regardless of ctx so cache-hit detection
+	// stays correct for later calls.
 	if err == nil && p.last.Swap(tok) == tok {
 		return tok, nil // cache hit, no span
 	}
-	_, span := tracer().Start(ctx, appendPackageName("Auth.RefreshAccessToken"),
-		append(getCommonTraceOptions(), trace.WithTimestamp(start))...)
-	if err != nil {
-		span.SetStatus(otelcodes.Error, err.Error())
-		span.RecordError(err)
+	if !trace.SpanFromContext(ctx).IsRecording() {
+		return tok, err
 	}
-	span.End()
+	ctx, _ = startSpan(ctx, "Auth.RefreshAccessToken", trace.WithTimestamp(start))
+	endSpan(ctx, err)
 	return tok, err
 }
 
 // wrapAuthCredentialsForTracing wraps an auth.Credentials object to record
 // Auth.RefreshAccessToken internal operation spans on blocking token fetches
-// and refreshes (cache hits do not emit spans).
+// and refreshes made under a recording span (cache hits and background
+// refreshes do not emit spans).
 func wrapAuthCredentialsForTracing(c *auth.Credentials) *auth.Credentials {
 	if c == nil || c.TokenProvider == nil {
 		return c
