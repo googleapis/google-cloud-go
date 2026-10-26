@@ -13,7 +13,6 @@
 // limitations under the License.
 
 //go:build !psdebug
-// +build !psdebug
 
 package pubsub
 

@@ -1331,7 +1331,7 @@ func (t *Topic) initBundler() {
 		workers = 25 * runtime.GOMAXPROCS(0)
 	}
 
-	t.scheduler = scheduler.NewPublishScheduler(workers, func(bundle interface{}) {
+	t.scheduler = scheduler.NewPublishScheduler(workers, func(bundle any) {
 		// Use a context detached from the one passed to NewClient.
 		ctx := context.Background()
 		if timeout != 0 {
@@ -1355,10 +1355,7 @@ func (t *Topic) initBundler() {
 		}
 	})
 	t.scheduler.DelayThreshold = t.PublishSettings.DelayThreshold
-	t.scheduler.BundleCountThreshold = t.PublishSettings.CountThreshold
-	if t.scheduler.BundleCountThreshold > MaxPublishRequestCount {
-		t.scheduler.BundleCountThreshold = MaxPublishRequestCount
-	}
+	t.scheduler.BundleCountThreshold = min(t.PublishSettings.CountThreshold, MaxPublishRequestCount)
 	t.scheduler.BundleByteThreshold = t.PublishSettings.ByteThreshold
 
 	fcs := DefaultPublishSettings.FlowControlSettings
