@@ -1859,6 +1859,8 @@ func (s *chunkTraceTestServer) BidiWriteObject(stream storagepb.Storage_BidiWrit
 // uploadChunkSpanInfo describes an exported Storage.UploadChunk span.
 type uploadChunkSpanInfo struct {
 	Number int64
+	Offset int64
+	Size   int64
 	Failed bool
 }
 
@@ -1884,22 +1886,27 @@ func uploadChunkSpans(t *testing.T, spans tracetest.SpanStubs) []uploadChunkSpan
 		if gotID, wantID := s.Parent.SpanID(), writer.SpanContext.SpanID(); gotID != wantID {
 			t.Errorf("%s span parent = %v, want Object.Writer span %v", uploadChunkSpanName, gotID, wantID)
 		}
-		info := uploadChunkSpanInfo{Number: -1, Failed: s.Status.Code == otcodes.Error}
+		info := uploadChunkSpanInfo{Number: -1, Offset: -1, Size: -1, Failed: s.Status.Code == otcodes.Error}
 		for _, a := range s.Attributes {
-			if a.Key == uploadChunkNumberAttr {
+			switch a.Key {
+			case uploadChunkNumberAttr:
 				info.Number = a.Value.AsInt64()
+			case payloadOffsetAttr:
+				info.Offset = a.Value.AsInt64()
+			case payloadSizeBytesAttr:
+				info.Size = a.Value.AsInt64()
 			}
 		}
 		got = append(got, info)
 	}
-	// No other span, such as the gRPC attempt span, carries the attribute.
+	// No other span, such as the gRPC attempt span, carries the attributes.
 	for _, s := range spans {
 		if s.Name == appendPackageName(uploadChunkSpanName) {
 			continue
 		}
 		for _, a := range s.Attributes {
-			if a.Key == uploadChunkNumberAttr {
-				t.Errorf("span %q has attribute %s, want it only on %s spans", s.Name, uploadChunkNumberAttr, uploadChunkSpanName)
+			if a.Key == uploadChunkNumberAttr || a.Key == payloadOffsetAttr || a.Key == payloadSizeBytesAttr {
+				t.Errorf("span %q has attribute %s, want it only on %s spans", s.Name, a.Key, uploadChunkSpanName)
 			}
 		}
 	}
@@ -1923,21 +1930,36 @@ func TestGRPCWriterUploadChunkSpans(t *testing.T) {
 			devTracing: true,
 			chunkSize:  256 * kib,
 			write:      writeBytes(mib),
-			want:       []uploadChunkSpanInfo{{Number: 1}, {Number: 2}, {Number: 3}, {Number: 4}},
+			want: []uploadChunkSpanInfo{
+				{Number: 1, Offset: 0, Size: 256 * kib},
+				{Number: 2, Offset: 256 * kib, Size: 256 * kib},
+				{Number: 3, Offset: 512 * kib, Size: 256 * kib},
+				{Number: 4, Offset: 768 * kib, Size: 256 * kib},
+			},
 		},
 		{
 			name:       "final partial chunk",
 			devTracing: true,
 			chunkSize:  256 * kib,
 			write:      writeBytes(mib + 100*kib),
-			want:       []uploadChunkSpanInfo{{Number: 1}, {Number: 2}, {Number: 3}, {Number: 4}, {Number: 5}},
+			want: []uploadChunkSpanInfo{
+				{Number: 1, Offset: 0, Size: 256 * kib},
+				{Number: 2, Offset: 256 * kib, Size: 256 * kib},
+				{Number: 3, Offset: 512 * kib, Size: 256 * kib},
+				{Number: 4, Offset: 768 * kib, Size: 256 * kib},
+				{Number: 5, Offset: mib, Size: 100 * kib},
+			},
 		},
 		{
 			name:       "chunk sent as several messages",
 			devTracing: true,
 			chunkSize:  4 * mib, // Two 2 MiB messages per chunk; one span each.
 			write:      writeBytes(10 * mib),
-			want:       []uploadChunkSpanInfo{{Number: 1}, {Number: 2}, {Number: 3}},
+			want: []uploadChunkSpanInfo{
+				{Number: 1, Offset: 0, Size: 4 * mib},
+				{Number: 2, Offset: 4 * mib, Size: 4 * mib},
+				{Number: 3, Offset: 8 * mib, Size: 2 * mib},
+			},
 		},
 		{
 			name:       "dev tracing disabled",
@@ -1980,20 +2002,27 @@ func TestGRPCWriterUploadChunkSpansRetry(t *testing.T) {
 	te := runChunkTraceUpload(t, srv, true, 256*kib, writeBytes(1024*kib))
 
 	got := uploadChunkSpans(t, te.Spans())
-	okSpans := map[int64]int{}
-	failedSpans := map[int64]int{}
+	var okSpans []uploadChunkSpanInfo
+	failedSpans := map[int64]uploadChunkSpanInfo{}
 	for _, s := range got {
 		if s.Failed {
-			failedSpans[s.Number]++
+			failedSpans[s.Number] = s
 		} else {
-			okSpans[s.Number]++
+			okSpans = append(okSpans, s)
 		}
 	}
-	if diff := cmp.Diff(map[int64]int{1: 1, 2: 1, 3: 1, 4: 1}, okSpans); diff != "" {
-		t.Errorf("successful %s spans by chunk number mismatch (-want +got):\n%s", uploadChunkSpanName, diff)
+	wantOK := []uploadChunkSpanInfo{
+		{Number: 1, Offset: 0, Size: 256 * kib},
+		{Number: 2, Offset: 256 * kib, Size: 256 * kib},
+		{Number: 3, Offset: 512 * kib, Size: 256 * kib},
+		{Number: 4, Offset: 768 * kib, Size: 256 * kib},
 	}
-	if failedSpans[3] != 1 {
-		t.Errorf("got %d failed spans for chunk 3, want 1; all spans: %+v", failedSpans[3], got)
+	if diff := cmp.Diff(wantOK, okSpans); diff != "" {
+		t.Errorf("successful %s spans mismatch (-want +got):\n%s", uploadChunkSpanName, diff)
+	}
+	wantFailed3 := uploadChunkSpanInfo{Number: 3, Offset: 512 * kib, Size: 256 * kib, Failed: true}
+	if diff := cmp.Diff(wantFailed3, failedSpans[3]); diff != "" {
+		t.Errorf("failed chunk 3 span mismatch (-want +got):\n%s", diff)
 	}
 	for n := range failedSpans {
 		// Chunk 4 can be in flight when chunk 3 fails, so it may also fail.
@@ -2063,14 +2092,25 @@ func TestHTTPWriterUploadChunkSpans(t *testing.T) {
 			devTracing: true,
 			chunkSize:  256 * kib,
 			write:      writeBytes(mib),
-			want:       []uploadChunkSpanInfo{{Number: 1}, {Number: 2}, {Number: 3}, {Number: 4}},
+			want: []uploadChunkSpanInfo{
+				{Number: 1, Offset: 0, Size: 256 * kib},
+				{Number: 2, Offset: 256 * kib, Size: 256 * kib},
+				{Number: 3, Offset: 512 * kib, Size: 256 * kib},
+				{Number: 4, Offset: 768 * kib, Size: 256 * kib},
+			},
 		},
 		{
 			name:       "final partial chunk",
 			devTracing: true,
 			chunkSize:  256 * kib,
 			write:      writeBytes(mib + 100*kib),
-			want:       []uploadChunkSpanInfo{{Number: 1}, {Number: 2}, {Number: 3}, {Number: 4}, {Number: 5}},
+			want: []uploadChunkSpanInfo{
+				{Number: 1, Offset: 0, Size: 256 * kib},
+				{Number: 2, Offset: 256 * kib, Size: 256 * kib},
+				{Number: 3, Offset: 512 * kib, Size: 256 * kib},
+				{Number: 4, Offset: 768 * kib, Size: 256 * kib},
+				{Number: 5, Offset: mib, Size: 100 * kib},
+			},
 		},
 		{
 			name:       "dev tracing disabled",
@@ -2109,11 +2149,11 @@ func TestHTTPWriterUploadChunkSpansRetry(t *testing.T) {
 
 	got := uploadChunkSpans(t, te.Spans())
 	want := []uploadChunkSpanInfo{
-		{Number: 1},
-		{Number: 2},
-		{Number: 3, Failed: true},
-		{Number: 3},
-		{Number: 4},
+		{Number: 1, Offset: 0, Size: 256 * kib},
+		{Number: 2, Offset: 256 * kib, Size: 256 * kib},
+		{Number: 3, Offset: 512 * kib, Size: 256 * kib, Failed: true},
+		{Number: 3, Offset: 512 * kib, Size: 256 * kib},
+		{Number: 4, Offset: 768 * kib, Size: 256 * kib},
 	}
 	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("%s spans mismatch (-want +got):\n%s", uploadChunkSpanName, diff)

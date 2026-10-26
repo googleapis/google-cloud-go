@@ -231,9 +231,13 @@ func (t *trackingTransport) RoundTrip(req *http.Request) (*http.Response, error)
 	if baseRT == nil {
 		baseRT = http.DefaultTransport
 	}
-	if chunkNum, ok := httpUploadChunkNumber(req.Context(), req.Header); ok {
+	if chunkNum, offset, size, ok := httpUploadChunkInfo(req.Context(), req.Header); ok {
 		spanCtx, _ := startSpan(req.Context(), uploadChunkSpanName,
-			trace.WithAttributes(attribute.Int64(uploadChunkNumberAttr, chunkNum)))
+			trace.WithAttributes(
+				attribute.Int64(uploadChunkNumberAttr, chunkNum),
+				attribute.Int64(payloadOffsetAttr, offset),
+				attribute.Int64(payloadSizeBytesAttr, size),
+			))
 		req = req.WithContext(spanCtx)
 		resp, err := t.roundTripWithFeatures(baseRT, req)
 		endSpan(spanCtx, httpUploadChunkError(resp, err))

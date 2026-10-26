@@ -568,13 +568,17 @@ func (w *gRPCWriter) handleCompletion(c gRPCBidiWriteCompletion) {
 const (
 	uploadChunkSpanName   = "Storage.UploadChunk"
 	uploadChunkNumberAttr = "gcp.storage.upload.chunk.number"
+	payloadOffsetAttr     = "gcp.storage.payload.offset"
+	payloadSizeBytesAttr  = "gcp.storage.payload.size_bytes"
 )
 
 // uploadChunkSpan is the Storage.UploadChunk span of one logical chunk of a
 // resumable upload, which is usually sent as several messages.
 type uploadChunkSpan struct {
-	ctx context.Context // holds the span; never used for RPCs
-	end int64           // offset just past the chunk
+	ctx  context.Context // holds the span; never used for RPCs
+	span trace.Span
+	end  int64 // offset just past the chunk
+	size int64 // bytes sent for this chunk
 }
 
 // traceChunkRequest starts a Storage.UploadChunk span if req carries the first
@@ -585,19 +589,30 @@ func (w *gRPCWriter) traceChunkRequest(req gRPCBidiWriteRequest) {
 		return
 	}
 	if n := len(w.chunkSpans); n > 0 && req.offset < w.chunkSpans[n-1].end {
+		w.chunkSpans[n-1].size += int64(len(req.buf))
 		return // The chunk already has an open span.
 	}
 	number := req.offset/int64(w.chunkSize) + 1
-	ctx, _ := startSpan(w.preRunCtx, uploadChunkSpanName,
-		trace.WithAttributes(attribute.Int64(uploadChunkNumberAttr, number)))
-	w.chunkSpans = append(w.chunkSpans, uploadChunkSpan{ctx: ctx, end: number * int64(w.chunkSize)})
+	ctx, span := startSpan(w.preRunCtx, uploadChunkSpanName,
+		trace.WithAttributes(
+			attribute.Int64(uploadChunkNumberAttr, number),
+			attribute.Int64(payloadOffsetAttr, req.offset),
+		))
+	w.chunkSpans = append(w.chunkSpans, uploadChunkSpan{
+		ctx:  ctx,
+		span: span,
+		end:  number * int64(w.chunkSize),
+		size: int64(len(req.buf)),
+	})
 }
 
 // traceChunkCompletion ends the spans of the chunks confirmed by c. A returned
 // object means every byte sent has been persisted, including a short last chunk.
 func (w *gRPCWriter) traceChunkCompletion(c gRPCBidiWriteCompletion) {
 	for len(w.chunkSpans) > 0 && (c.resource != nil || c.flushOffset >= w.chunkSpans[0].end) {
-		endSpan(w.chunkSpans[0].ctx, nil)
+		s := w.chunkSpans[0]
+		s.span.SetAttributes(attribute.Int64(payloadSizeBytesAttr, s.size))
+		endSpan(s.ctx, nil)
 		w.chunkSpans = w.chunkSpans[1:]
 	}
 }
@@ -606,6 +621,7 @@ func (w *gRPCWriter) traceChunkCompletion(c gRPCBidiWriteCompletion) {
 // writeLoop attempt ends.
 func (w *gRPCWriter) failChunkSpans(err error) {
 	for _, s := range w.chunkSpans {
+		s.span.SetAttributes(attribute.Int64(payloadSizeBytesAttr, s.size))
 		endSpan(s.ctx, err)
 	}
 	w.chunkSpans = nil
