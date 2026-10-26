@@ -968,6 +968,11 @@ func (c *dataA2ARESTClient) SendMessage(ctx context.Context, req *geminidataanal
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetTenant(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/a2a/%v/v1/message:send", req.GetTenant())
 
 	params := url.Values{}
@@ -1027,6 +1032,11 @@ func (c *dataA2ARESTClient) SendStreamingMessage(ctx context.Context, req *gemin
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetTenant(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/a2a/%v/v1/message:stream", req.GetTenant())
@@ -1129,6 +1139,11 @@ func (c *dataA2ARESTClient) GetAgentCard(ctx context.Context, req *geminidataana
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetTenant(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/a2a/%v/v1/card", req.GetTenant())
 
 	params := url.Values{}
@@ -1181,6 +1196,11 @@ func (c *dataA2ARESTClient) GetAgentCard(ctx context.Context, req *geminidataana
 func (c *dataA2ARESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -1265,6 +1285,11 @@ func (c *dataA2ARESTClient) ListLocations(ctx context.Context, req *locationpb.L
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -1339,6 +1364,11 @@ func (c *dataA2ARESTClient) CancelOperation(ctx context.Context, req *longrunnin
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1378,6 +1408,11 @@ func (c *dataA2ARESTClient) DeleteOperation(ctx context.Context, req *longrunnin
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -1415,6 +1450,11 @@ func (c *dataA2ARESTClient) DeleteOperation(ctx context.Context, req *longrunnin
 func (c *dataA2ARESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -1482,6 +1522,11 @@ func (c *dataA2ARESTClient) ListOperations(ctx context.Context, req *longrunning
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/operations", req.GetName())

@@ -875,6 +875,11 @@ func (c *policyBindingsRESTClient) CreatePolicyBinding(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v/policyBindings", req.GetParent())
 
 	params := url.Values{}
@@ -940,6 +945,11 @@ func (c *policyBindingsRESTClient) GetPolicyBinding(ctx context.Context, req *ia
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
 
 	params := url.Values{}
@@ -1001,6 +1011,11 @@ func (c *policyBindingsRESTClient) UpdatePolicyBinding(ctx context.Context, req 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetPolicyBinding().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetPolicyBinding().GetName())
@@ -1074,6 +1089,11 @@ func (c *policyBindingsRESTClient) UpdatePolicyBinding(ctx context.Context, req 
 func (c *policyBindingsRESTClient) DeletePolicyBinding(ctx context.Context, req *iampb.DeletePolicyBindingRequest, opts ...gax.CallOption) (*DeletePolicyBindingOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
@@ -1154,6 +1174,11 @@ func (c *policyBindingsRESTClient) ListPolicyBindings(ctx context.Context, req *
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v3/%v/policyBindings", req.GetParent())
@@ -1238,6 +1263,11 @@ func (c *policyBindingsRESTClient) SearchTargetPolicyBindings(ctx context.Contex
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v3/%v/policyBindings:searchTargetPolicyBindings", req.GetParent())
 
 		params := url.Values{}
@@ -1305,6 +1335,11 @@ func (c *policyBindingsRESTClient) SearchTargetPolicyBindings(ctx context.Contex
 func (c *policyBindingsRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())

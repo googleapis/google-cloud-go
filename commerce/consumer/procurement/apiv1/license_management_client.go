@@ -615,6 +615,11 @@ func (c *licenseManagementRESTClient) GetLicensePool(ctx context.Context, req *p
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -674,6 +679,11 @@ func (c *licenseManagementRESTClient) UpdateLicensePool(ctx context.Context, req
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetLicensePool().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetLicensePool().GetName())
@@ -743,6 +753,11 @@ func (c *licenseManagementRESTClient) Assign(ctx context.Context, req *procureme
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:assign", req.GetParent())
 
 	params := url.Values{}
@@ -801,6 +816,11 @@ func (c *licenseManagementRESTClient) Unassign(ctx context.Context, req *procure
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:unassign", req.GetParent())
@@ -870,6 +890,11 @@ func (c *licenseManagementRESTClient) EnumerateLicensedUsers(ctx context.Context
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:enumerateLicensedUsers", req.GetParent())
 
 		params := url.Values{}
@@ -933,6 +958,11 @@ func (c *licenseManagementRESTClient) EnumerateLicensedUsers(ctx context.Context
 func (c *licenseManagementRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())

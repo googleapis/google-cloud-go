@@ -412,6 +412,12 @@ func (c *interconnectsRESTClient) Delete(ctx context.Context, req *computepb.Del
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInterconnect(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnects/%v", req.GetProject(), req.GetInterconnect())
 
 	params := url.Values{}
@@ -476,6 +482,12 @@ func (c *interconnectsRESTClient) Get(ctx context.Context, req *computepb.GetInt
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInterconnect(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnects/%v", req.GetProject(), req.GetInterconnect())
 
 	// Build HTTP headers from client and context metadata.
@@ -534,6 +546,12 @@ func (c *interconnectsRESTClient) GetDiagnostics(ctx context.Context, req *compu
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInterconnect(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnects/%v/getDiagnostics", req.GetProject(), req.GetInterconnect())
 
 	// Build HTTP headers from client and context metadata.
@@ -582,6 +600,12 @@ func (c *interconnectsRESTClient) GetDiagnostics(ctx context.Context, req *compu
 func (c *interconnectsRESTClient) GetMacsecConfig(ctx context.Context, req *computepb.GetMacsecConfigInterconnectRequest, opts ...gax.CallOption) (*computepb.InterconnectsGetMacsecConfigResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInterconnect(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnects/%v/getMacsecConfig", req.GetProject(), req.GetInterconnect())
@@ -639,6 +663,11 @@ func (c *interconnectsRESTClient) Insert(ctx context.Context, req *computepb.Ins
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnects", req.GetProject())
@@ -715,6 +744,11 @@ func (c *interconnectsRESTClient) List(ctx context.Context, req *computepb.ListI
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnects", req.GetProject())
@@ -797,6 +831,12 @@ func (c *interconnectsRESTClient) Patch(ctx context.Context, req *computepb.Patc
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInterconnect(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnects/%v", req.GetProject(), req.GetInterconnect())
 
 	params := url.Values{}
@@ -869,6 +909,12 @@ func (c *interconnectsRESTClient) SetLabels(ctx context.Context, req *computepb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnects/%v/setLabels", req.GetProject(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -930,6 +976,12 @@ func (c *interconnectsRESTClient) SetName(ctx context.Context, req *computepb.Se
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInterconnect(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnects/%v/setName", req.GetProject(), req.GetInterconnect())

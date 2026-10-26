@@ -261,6 +261,12 @@ func (c *regionZonesRESTClient) List(ctx context.Context, req *computepb.ListReg
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/zones", req.GetProject(), req.GetRegion())
 
 		params := url.Values{}

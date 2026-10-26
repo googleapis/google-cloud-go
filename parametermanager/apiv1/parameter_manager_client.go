@@ -1518,6 +1518,11 @@ func (c *restClient) ListParameters(ctx context.Context, req *parametermanagerpb
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/parameters", req.GetParent())
 
 		params := url.Values{}
@@ -1589,6 +1594,11 @@ func (c *restClient) GetParameter(ctx context.Context, req *parametermanagerpb.G
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1648,6 +1658,11 @@ func (c *restClient) CreateParameter(ctx context.Context, req *parametermanagerp
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/parameters", req.GetParent())
@@ -1715,6 +1730,11 @@ func (c *restClient) UpdateParameter(ctx context.Context, req *parametermanagerp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParameter().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetParameter().GetName())
 
 	params := url.Values{}
@@ -1779,6 +1799,11 @@ func (c *restClient) DeleteParameter(ctx context.Context, req *parametermanagerp
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1832,6 +1857,11 @@ func (c *restClient) ListParameterVersions(ctx context.Context, req *parameterma
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/versions", req.GetParent())
@@ -1905,6 +1935,11 @@ func (c *restClient) GetParameterVersion(ctx context.Context, req *parametermana
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1960,6 +1995,11 @@ func (c *restClient) GetParameterVersion(ctx context.Context, req *parametermana
 func (c *restClient) RenderParameterVersion(ctx context.Context, req *parametermanagerpb.RenderParameterVersionRequest, opts ...gax.CallOption) (*parametermanagerpb.RenderParameterVersionResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:render", req.GetName())
@@ -2021,6 +2061,11 @@ func (c *restClient) CreateParameterVersion(ctx context.Context, req *parameterm
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/versions", req.GetParent())
@@ -2088,6 +2133,11 @@ func (c *restClient) UpdateParameterVersion(ctx context.Context, req *parameterm
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParameterVersion().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetParameterVersion().GetName())
 
 	params := url.Values{}
@@ -2152,6 +2202,11 @@ func (c *restClient) DeleteParameterVersion(ctx context.Context, req *parameterm
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2205,6 +2260,11 @@ func (c *restClient) ListTemplates(ctx context.Context, req *parametermanagerpb.
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/templates", req.GetParent())
@@ -2278,6 +2338,11 @@ func (c *restClient) GetTemplate(ctx context.Context, req *parametermanagerpb.Ge
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2337,6 +2402,11 @@ func (c *restClient) CreateTemplate(ctx context.Context, req *parametermanagerpb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/templates", req.GetParent())
@@ -2404,6 +2474,11 @@ func (c *restClient) UpdateTemplate(ctx context.Context, req *parametermanagerpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetTemplate().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetTemplate().GetName())
 
 	params := url.Values{}
@@ -2468,6 +2543,11 @@ func (c *restClient) DeleteTemplate(ctx context.Context, req *parametermanagerpb
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2521,6 +2601,11 @@ func (c *restClient) ListTemplateVersions(ctx context.Context, req *parameterman
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/versions", req.GetParent())
@@ -2594,6 +2679,11 @@ func (c *restClient) GetTemplateVersion(ctx context.Context, req *parametermanag
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2656,6 +2746,11 @@ func (c *restClient) CreateTemplateVersion(ctx context.Context, req *parameterma
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/versions", req.GetParent())
@@ -2723,6 +2818,11 @@ func (c *restClient) UpdateTemplateVersion(ctx context.Context, req *parameterma
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetTemplateVersion().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetTemplateVersion().GetName())
 
 	params := url.Values{}
@@ -2787,6 +2887,11 @@ func (c *restClient) DeleteTemplateVersion(ctx context.Context, req *parameterma
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2827,6 +2932,11 @@ func (c *restClient) DeleteTemplateVersion(ctx context.Context, req *parameterma
 func (c *restClient) RenderTemplateVersion(ctx context.Context, req *parametermanagerpb.RenderTemplateVersionRequest, opts ...gax.CallOption) (*parametermanagerpb.RenderTemplateVersionResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:render", req.GetName())
@@ -2882,6 +2992,11 @@ func (c *restClient) RenderTemplateVersion(ctx context.Context, req *parameterma
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2964,6 +3079,11 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())

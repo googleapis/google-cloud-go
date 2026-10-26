@@ -728,6 +728,11 @@ func (c *directAccessRESTClient) CreateDeviceSession(ctx context.Context, req *d
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/deviceSessions", req.GetParent())
 
 	params := url.Values{}
@@ -796,6 +801,11 @@ func (c *directAccessRESTClient) ListDeviceSessions(ctx context.Context, req *de
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/deviceSessions", req.GetParent())
@@ -868,6 +878,11 @@ func (c *directAccessRESTClient) GetDeviceSession(ctx context.Context, req *devi
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -932,6 +947,11 @@ func (c *directAccessRESTClient) CancelDeviceSession(ctx context.Context, req *d
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -977,6 +997,11 @@ func (c *directAccessRESTClient) UpdateDeviceSession(ctx context.Context, req *d
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDeviceSession().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDeviceSession().GetName())

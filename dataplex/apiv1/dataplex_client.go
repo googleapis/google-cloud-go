@@ -2513,6 +2513,11 @@ func (c *restClient) CreateLake(ctx context.Context, req *dataplexpb.CreateLakeR
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/lakes", req.GetParent())
 
 	params := url.Values{}
@@ -2585,6 +2590,11 @@ func (c *restClient) UpdateLake(ctx context.Context, req *dataplexpb.UpdateLakeR
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetLake().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetLake().GetName())
 
 	params := url.Values{}
@@ -2655,6 +2665,11 @@ func (c *restClient) UpdateLake(ctx context.Context, req *dataplexpb.UpdateLakeR
 func (c *restClient) DeleteLake(ctx context.Context, req *dataplexpb.DeleteLakeRequest, opts ...gax.CallOption) (*DeleteLakeOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2731,6 +2746,11 @@ func (c *restClient) ListLakes(ctx context.Context, req *dataplexpb.ListLakesReq
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/lakes", req.GetParent())
 
 		params := url.Values{}
@@ -2802,6 +2822,11 @@ func (c *restClient) GetLake(ctx context.Context, req *dataplexpb.GetLakeRequest
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2867,6 +2892,11 @@ func (c *restClient) ListLakeActions(ctx context.Context, req *dataplexpb.ListLa
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/actions", req.GetParent())
@@ -2941,6 +2971,11 @@ func (c *restClient) CreateZone(ctx context.Context, req *dataplexpb.CreateZoneR
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/zones", req.GetParent())
 
 	params := url.Values{}
@@ -3013,6 +3048,11 @@ func (c *restClient) UpdateZone(ctx context.Context, req *dataplexpb.UpdateZoneR
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetZone().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetZone().GetName())
 
 	params := url.Values{}
@@ -3083,6 +3123,11 @@ func (c *restClient) UpdateZone(ctx context.Context, req *dataplexpb.UpdateZoneR
 func (c *restClient) DeleteZone(ctx context.Context, req *dataplexpb.DeleteZoneRequest, opts ...gax.CallOption) (*DeleteZoneOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3159,6 +3204,11 @@ func (c *restClient) ListZones(ctx context.Context, req *dataplexpb.ListZonesReq
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/zones", req.GetParent())
 
 		params := url.Values{}
@@ -3230,6 +3280,11 @@ func (c *restClient) GetZone(ctx context.Context, req *dataplexpb.GetZoneRequest
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3295,6 +3350,11 @@ func (c *restClient) ListZoneActions(ctx context.Context, req *dataplexpb.ListZo
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/actions", req.GetParent())
@@ -3369,6 +3429,11 @@ func (c *restClient) CreateAsset(ctx context.Context, req *dataplexpb.CreateAsse
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/assets", req.GetParent())
 
 	params := url.Values{}
@@ -3441,6 +3506,11 @@ func (c *restClient) UpdateAsset(ctx context.Context, req *dataplexpb.UpdateAsse
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAsset().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetAsset().GetName())
 
 	params := url.Values{}
@@ -3511,6 +3581,11 @@ func (c *restClient) UpdateAsset(ctx context.Context, req *dataplexpb.UpdateAsse
 func (c *restClient) DeleteAsset(ctx context.Context, req *dataplexpb.DeleteAssetRequest, opts ...gax.CallOption) (*DeleteAssetOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3587,6 +3662,11 @@ func (c *restClient) ListAssets(ctx context.Context, req *dataplexpb.ListAssetsR
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/assets", req.GetParent())
 
 		params := url.Values{}
@@ -3658,6 +3738,11 @@ func (c *restClient) GetAsset(ctx context.Context, req *dataplexpb.GetAssetReque
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3723,6 +3808,11 @@ func (c *restClient) ListAssetActions(ctx context.Context, req *dataplexpb.ListA
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/actions", req.GetParent())
@@ -3797,6 +3887,11 @@ func (c *restClient) CreateTask(ctx context.Context, req *dataplexpb.CreateTaskR
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/tasks", req.GetParent())
 
 	params := url.Values{}
@@ -3869,6 +3964,11 @@ func (c *restClient) UpdateTask(ctx context.Context, req *dataplexpb.UpdateTaskR
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetTask().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetTask().GetName())
 
 	params := url.Values{}
@@ -3938,6 +4038,11 @@ func (c *restClient) UpdateTask(ctx context.Context, req *dataplexpb.UpdateTaskR
 func (c *restClient) DeleteTask(ctx context.Context, req *dataplexpb.DeleteTaskRequest, opts ...gax.CallOption) (*DeleteTaskOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -4014,6 +4119,11 @@ func (c *restClient) ListTasks(ctx context.Context, req *dataplexpb.ListTasksReq
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/tasks", req.GetParent())
 
 		params := url.Values{}
@@ -4085,6 +4195,11 @@ func (c *restClient) GetTask(ctx context.Context, req *dataplexpb.GetTaskRequest
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4150,6 +4265,11 @@ func (c *restClient) ListJobs(ctx context.Context, req *dataplexpb.ListJobsReque
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/jobs", req.GetParent())
@@ -4223,6 +4343,11 @@ func (c *restClient) RunTask(ctx context.Context, req *dataplexpb.RunTaskRequest
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:run", req.GetName())
 
 	params := url.Values{}
@@ -4275,6 +4400,11 @@ func (c *restClient) RunTask(ctx context.Context, req *dataplexpb.RunTaskRequest
 func (c *restClient) GetJob(ctx context.Context, req *dataplexpb.GetJobRequest, opts ...gax.CallOption) (*dataplexpb.Job, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -4337,6 +4467,11 @@ func (c *restClient) CancelJob(ctx context.Context, req *dataplexpb.CancelJobReq
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -4374,6 +4509,11 @@ func (c *restClient) CancelJob(ctx context.Context, req *dataplexpb.CancelJobReq
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -4458,6 +4598,11 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -4527,6 +4672,11 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -4592,6 +4742,11 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
@@ -4660,6 +4815,11 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -4720,6 +4880,11 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -4759,6 +4924,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4796,6 +4966,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -4863,6 +5038,11 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

@@ -1683,6 +1683,11 @@ func (c *dataAgentRESTClient) ListDataAgents(ctx context.Context, req *geminidat
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/dataAgents", req.GetParent())
 
 		params := url.Values{}
@@ -1774,6 +1779,11 @@ func (c *dataAgentRESTClient) ListAccessibleDataAgents(ctx context.Context, req 
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/dataAgents:listAccessible", req.GetParent())
 
 		params := url.Values{}
@@ -1851,6 +1861,11 @@ func (c *dataAgentRESTClient) GetDataAgent(ctx context.Context, req *geminidataa
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1910,6 +1925,11 @@ func (c *dataAgentRESTClient) CreateDataAgent(ctx context.Context, req *geminida
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/dataAgents", req.GetParent())
@@ -1986,6 +2006,11 @@ func (c *dataAgentRESTClient) CreateDataAgentSync(ctx context.Context, req *gemi
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/dataAgents:createSync", req.GetParent())
 
 	params := url.Values{}
@@ -2051,6 +2076,11 @@ func (c *dataAgentRESTClient) UpdateDataAgent(ctx context.Context, req *geminida
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDataAgent().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDataAgent().GetName())
@@ -2131,6 +2161,11 @@ func (c *dataAgentRESTClient) UpdateDataAgentSync(ctx context.Context, req *gemi
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDataAgent().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:updateSync", req.GetDataAgent().GetName())
 
 	params := url.Values{}
@@ -2193,6 +2228,11 @@ func (c *dataAgentRESTClient) UpdateDataAgentSync(ctx context.Context, req *gemi
 func (c *dataAgentRESTClient) DeleteDataAgent(ctx context.Context, req *geminidataanalyticspb.DeleteDataAgentRequest, opts ...gax.CallOption) (*DeleteDataAgentOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2259,6 +2299,11 @@ func (c *dataAgentRESTClient) DeleteDataAgentSync(ctx context.Context, req *gemi
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:deleteSync", req.GetName())
 
 	params := url.Values{}
@@ -2305,6 +2350,11 @@ func (c *dataAgentRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIa
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
@@ -2365,6 +2415,11 @@ func (c *dataAgentRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIa
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
@@ -2429,6 +2484,11 @@ func (c *dataAgentRESTClient) SetAgentOpsObservability(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/observabilitySettings:setAgentOpsObservability", req.GetParent())
 
 	params := url.Values{}
@@ -2490,6 +2550,11 @@ func (c *dataAgentRESTClient) RetrieveAgentOpsObservability(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:retrieveAgentOpsObservability", req.GetParent())
 
 	params := url.Values{}
@@ -2543,6 +2608,11 @@ func (c *dataAgentRESTClient) RetrieveAgentOpsObservability(ctx context.Context,
 func (c *dataAgentRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2627,6 +2697,11 @@ func (c *dataAgentRESTClient) ListLocations(ctx context.Context, req *locationpb
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -2701,6 +2776,11 @@ func (c *dataAgentRESTClient) CancelOperation(ctx context.Context, req *longrunn
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -2740,6 +2820,11 @@ func (c *dataAgentRESTClient) DeleteOperation(ctx context.Context, req *longrunn
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2777,6 +2862,11 @@ func (c *dataAgentRESTClient) DeleteOperation(ctx context.Context, req *longrunn
 func (c *dataAgentRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2844,6 +2934,11 @@ func (c *dataAgentRESTClient) ListOperations(ctx context.Context, req *longrunni
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

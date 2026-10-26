@@ -243,6 +243,13 @@ func (c *imageFamilyViewsRESTClient) Get(ctx context.Context, req *computepb.Get
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetFamily(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/imageFamilyViews/%v", req.GetProject(), req.GetZone(), req.GetFamily())
 
 	// Build HTTP headers from client and context metadata.

@@ -619,6 +619,11 @@ func (c *bigQueryReadRESTClient) CreateReadSession(ctx context.Context, req *sto
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetReadSession().GetTable(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v", req.GetReadSession().GetTable())
 
 	// Build HTTP headers from client and context metadata.
@@ -672,6 +677,11 @@ func (c *bigQueryReadRESTClient) CreateReadSession(ctx context.Context, req *sto
 func (c *bigQueryReadRESTClient) ReadRows(ctx context.Context, req *storagepb.ReadRowsRequest, opts ...gax.CallOption) (storagepb.BigQueryRead_ReadRowsClient, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetReadStream(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v", req.GetReadStream())
@@ -785,6 +795,11 @@ func (c *readRowsRESTStreamClient) RecvMsg(m interface{}) error {
 func (c *bigQueryReadRESTClient) SplitReadStream(ctx context.Context, req *storagepb.SplitReadStreamRequest, opts ...gax.CallOption) (*storagepb.SplitReadStreamResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v", req.GetName())

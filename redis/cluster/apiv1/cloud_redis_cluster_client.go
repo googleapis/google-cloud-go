@@ -2335,6 +2335,11 @@ func (c *cloudRedisClusterRESTClient) ListClusters(ctx context.Context, req *clu
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/clusters", req.GetParent())
 
 		params := url.Values{}
@@ -2421,6 +2426,11 @@ func (c *cloudRedisClusterRESTClient) ListAclPolicies(ctx context.Context, req *
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/aclPolicies", req.GetParent())
 
 		params := url.Values{}
@@ -2486,6 +2496,11 @@ func (c *cloudRedisClusterRESTClient) GetCluster(ctx context.Context, req *clust
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2538,6 +2553,11 @@ func (c *cloudRedisClusterRESTClient) GetCluster(ctx context.Context, req *clust
 func (c *cloudRedisClusterRESTClient) GetAclPolicy(ctx context.Context, req *clusterpb.GetAclPolicyRequest, opts ...gax.CallOption) (*clusterpb.AclPolicy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2603,6 +2623,11 @@ func (c *cloudRedisClusterRESTClient) UpdateCluster(ctx context.Context, req *cl
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCluster().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetCluster().GetName())
@@ -2692,6 +2717,11 @@ func (c *cloudRedisClusterRESTClient) UpdateAclPolicy(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAclPolicy().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetAclPolicy().GetName())
 
 	params := url.Values{}
@@ -2764,6 +2794,11 @@ func (c *cloudRedisClusterRESTClient) DeleteCluster(ctx context.Context, req *cl
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2828,6 +2863,11 @@ func (c *cloudRedisClusterRESTClient) DeleteCluster(ctx context.Context, req *cl
 func (c *cloudRedisClusterRESTClient) DeleteAclPolicy(ctx context.Context, req *clusterpb.DeleteAclPolicyRequest, opts ...gax.CallOption) (*DeleteAclPolicyOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2897,6 +2937,11 @@ func (c *cloudRedisClusterRESTClient) GetAclPolicyRevision(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2962,6 +3007,11 @@ func (c *cloudRedisClusterRESTClient) ListAclPolicyRevisions(ctx context.Context
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/revisions", req.GetParent())
@@ -3043,6 +3093,11 @@ func (c *cloudRedisClusterRESTClient) CreateCluster(ctx context.Context, req *cl
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/clusters", req.GetParent())
 
 	params := url.Values{}
@@ -3117,6 +3172,11 @@ func (c *cloudRedisClusterRESTClient) CreateAclPolicy(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/aclPolicies", req.GetParent())
 
 	params := url.Values{}
@@ -3175,6 +3235,11 @@ func (c *cloudRedisClusterRESTClient) GetClusterCertificateAuthority(ctx context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3228,6 +3293,11 @@ func (c *cloudRedisClusterRESTClient) GetClusterCertificateAuthority(ctx context
 func (c *cloudRedisClusterRESTClient) GetSharedRegionalCertificateAuthority(ctx context.Context, req *clusterpb.GetSharedRegionalCertificateAuthorityRequest, opts ...gax.CallOption) (*clusterpb.SharedRegionalCertificateAuthority, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3288,6 +3358,11 @@ func (c *cloudRedisClusterRESTClient) RescheduleClusterMaintenance(ctx context.C
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:rescheduleClusterMaintenance", req.GetName())
@@ -3368,6 +3443,11 @@ func (c *cloudRedisClusterRESTClient) ListBackupCollections(ctx context.Context,
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/backupCollections", req.GetParent())
 
 		params := url.Values{}
@@ -3431,6 +3511,11 @@ func (c *cloudRedisClusterRESTClient) ListBackupCollections(ctx context.Context,
 func (c *cloudRedisClusterRESTClient) GetBackupCollection(ctx context.Context, req *clusterpb.GetBackupCollectionRequest, opts ...gax.CallOption) (*clusterpb.BackupCollection, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3500,6 +3585,11 @@ func (c *cloudRedisClusterRESTClient) ListBackups(ctx context.Context, req *clus
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/backups", req.GetParent())
 
 		params := url.Values{}
@@ -3565,6 +3655,11 @@ func (c *cloudRedisClusterRESTClient) GetBackup(ctx context.Context, req *cluste
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3617,6 +3712,11 @@ func (c *cloudRedisClusterRESTClient) GetBackup(ctx context.Context, req *cluste
 func (c *cloudRedisClusterRESTClient) DeleteBackup(ctx context.Context, req *clusterpb.DeleteBackupRequest, opts ...gax.CallOption) (*DeleteBackupOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3687,6 +3787,11 @@ func (c *cloudRedisClusterRESTClient) ExportBackup(ctx context.Context, req *clu
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:export", req.GetName())
@@ -3767,6 +3872,11 @@ func (c *cloudRedisClusterRESTClient) BackupCluster(ctx context.Context, req *cl
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:backup", req.GetName())
 
 	params := url.Values{}
@@ -3841,6 +3951,11 @@ func (c *cloudRedisClusterRESTClient) ListTokenAuthUsers(ctx context.Context, re
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/tokenAuthUsers", req.GetParent())
 
 		params := url.Values{}
@@ -3912,6 +4027,11 @@ func (c *cloudRedisClusterRESTClient) GetTokenAuthUser(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3977,6 +4097,11 @@ func (c *cloudRedisClusterRESTClient) ListAuthTokens(ctx context.Context, req *c
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/authTokens", req.GetParent())
@@ -4050,6 +4175,11 @@ func (c *cloudRedisClusterRESTClient) GetAuthToken(ctx context.Context, req *clu
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4108,6 +4238,11 @@ func (c *cloudRedisClusterRESTClient) AddTokenAuthUser(ctx context.Context, req 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCluster(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:addTokenAuthUser", req.GetCluster())
@@ -4169,6 +4304,11 @@ func (c *cloudRedisClusterRESTClient) AddTokenAuthUser(ctx context.Context, req 
 func (c *cloudRedisClusterRESTClient) DeleteTokenAuthUser(ctx context.Context, req *clusterpb.DeleteTokenAuthUserRequest, opts ...gax.CallOption) (*DeleteTokenAuthUserOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -4244,6 +4384,11 @@ func (c *cloudRedisClusterRESTClient) AddAuthToken(ctx context.Context, req *clu
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetTokenAuthUser(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:addAuthToken", req.GetTokenAuthUser())
 
 	params := url.Values{}
@@ -4305,6 +4450,11 @@ func (c *cloudRedisClusterRESTClient) DeleteAuthToken(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4364,6 +4514,11 @@ func (c *cloudRedisClusterRESTClient) DeleteAuthToken(ctx context.Context, req *
 func (c *cloudRedisClusterRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -4431,6 +4586,11 @@ func (c *cloudRedisClusterRESTClient) ListLocations(ctx context.Context, req *lo
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
@@ -4501,6 +4661,11 @@ func (c *cloudRedisClusterRESTClient) CancelOperation(ctx context.Context, req *
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -4540,6 +4705,11 @@ func (c *cloudRedisClusterRESTClient) DeleteOperation(ctx context.Context, req *
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4577,6 +4747,11 @@ func (c *cloudRedisClusterRESTClient) DeleteOperation(ctx context.Context, req *
 func (c *cloudRedisClusterRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -4644,6 +4819,11 @@ func (c *cloudRedisClusterRESTClient) ListOperations(ctx context.Context, req *l
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

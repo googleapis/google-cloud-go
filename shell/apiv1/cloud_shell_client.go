@@ -709,6 +709,11 @@ func (c *cloudShellRESTClient) GetEnvironment(ctx context.Context, req *shellpb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -772,6 +777,11 @@ func (c *cloudShellRESTClient) StartEnvironment(ctx context.Context, req *shellp
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:start", req.GetName())
@@ -844,6 +854,11 @@ func (c *cloudShellRESTClient) AuthorizeEnvironment(ctx context.Context, req *sh
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:authorize", req.GetName())
 
 	params := url.Values{}
@@ -911,6 +926,11 @@ func (c *cloudShellRESTClient) AddPublicKey(ctx context.Context, req *shellpb.Ad
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetEnvironment(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:addPublicKey", req.GetEnvironment())
@@ -981,6 +1001,11 @@ func (c *cloudShellRESTClient) RemovePublicKey(ctx context.Context, req *shellpb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetEnvironment(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:removePublicKey", req.GetEnvironment())

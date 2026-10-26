@@ -925,6 +925,13 @@ func (c *instanceGroupManagersRESTClient) AbandonInstances(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstanceGroupManager(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instanceGroupManagers/%v/abandonInstances", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager())
 
 	params := url.Values{}
@@ -1003,6 +1010,11 @@ func (c *instanceGroupManagersRESTClient) AggregatedList(ctx context.Context, re
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/aggregated/instanceGroupManagers", req.GetProject())
@@ -1099,6 +1111,13 @@ func (c *instanceGroupManagersRESTClient) ApplyUpdatesToInstances(ctx context.Co
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstanceGroupManager(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instanceGroupManagers/%v/applyUpdatesToInstances", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager())
 
 	// Build HTTP headers from client and context metadata.
@@ -1161,6 +1180,13 @@ func (c *instanceGroupManagersRESTClient) ConfigureAcceleratorTopologies(ctx con
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstanceGroupManager(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instanceGroupManagers/%v/configureAcceleratorTopologies", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager())
@@ -1237,6 +1263,13 @@ func (c *instanceGroupManagersRESTClient) CreateInstances(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstanceGroupManager(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instanceGroupManagers/%v/createInstances", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager())
 
 	params := url.Values{}
@@ -1302,6 +1335,13 @@ func (c *instanceGroupManagersRESTClient) CreateInstances(ctx context.Context, r
 func (c *instanceGroupManagersRESTClient) Delete(ctx context.Context, req *computepb.DeleteInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstanceGroupManager(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instanceGroupManagers/%v", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager())
@@ -1392,6 +1432,13 @@ func (c *instanceGroupManagersRESTClient) DeleteInstances(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstanceGroupManager(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instanceGroupManagers/%v/deleteInstances", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager())
 
 	params := url.Values{}
@@ -1467,6 +1514,13 @@ func (c *instanceGroupManagersRESTClient) DeletePerInstanceConfigs(ctx context.C
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstanceGroupManager(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instanceGroupManagers/%v/deletePerInstanceConfigs", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager())
 
 	// Build HTTP headers from client and context metadata.
@@ -1524,6 +1578,13 @@ func (c *instanceGroupManagersRESTClient) Get(ctx context.Context, req *computep
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstanceGroupManager(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instanceGroupManagers/%v", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager())
 
 	// Build HTTP headers from client and context metadata.
@@ -1571,6 +1632,13 @@ func (c *instanceGroupManagersRESTClient) Get(ctx context.Context, req *computep
 func (c *instanceGroupManagersRESTClient) GetAvailableAcceleratorTopologies(ctx context.Context, req *computepb.GetAvailableAcceleratorTopologiesInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.InstanceGroupManagersGetAvailableAcceleratorTopologiesResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetResourceId(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instanceGroupManagers/%v/getAvailableAcceleratorTopologies", req.GetProject(), req.GetZone(), req.GetResourceId())
@@ -1637,6 +1705,12 @@ func (c *instanceGroupManagersRESTClient) Insert(ctx context.Context, req *compu
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instanceGroupManagers", req.GetProject(), req.GetZone())
@@ -1715,6 +1789,12 @@ func (c *instanceGroupManagersRESTClient) List(ctx context.Context, req *compute
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetZone(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instanceGroupManagers", req.GetProject(), req.GetZone())
@@ -1803,6 +1883,13 @@ func (c *instanceGroupManagersRESTClient) ListErrors(ctx context.Context, req *c
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetZone(),
+			req.GetInstanceGroupManager(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instanceGroupManagers/%v/listErrors", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager())
@@ -1899,6 +1986,13 @@ func (c *instanceGroupManagersRESTClient) ListManagedInstances(ctx context.Conte
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetZone(),
+			req.GetInstanceGroupManager(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instanceGroupManagers/%v/listManagedInstances", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager())
 
 		params := url.Values{}
@@ -1984,6 +2078,13 @@ func (c *instanceGroupManagersRESTClient) ListPerInstanceConfigs(ctx context.Con
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetZone(),
+			req.GetInstanceGroupManager(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instanceGroupManagers/%v/listPerInstanceConfigs", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager())
@@ -2080,6 +2181,13 @@ func (c *instanceGroupManagersRESTClient) Patch(ctx context.Context, req *comput
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstanceGroupManager(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instanceGroupManagers/%v", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager())
 
 	params := url.Values{}
@@ -2151,6 +2259,13 @@ func (c *instanceGroupManagersRESTClient) PatchPerInstanceConfigs(ctx context.Co
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstanceGroupManager(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instanceGroupManagers/%v/patchPerInstanceConfigs", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager())
@@ -2234,6 +2349,13 @@ func (c *instanceGroupManagersRESTClient) RecreateInstances(ctx context.Context,
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstanceGroupManager(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instanceGroupManagers/%v/recreateInstances", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager())
@@ -2328,6 +2450,13 @@ func (c *instanceGroupManagersRESTClient) Resize(ctx context.Context, req *compu
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstanceGroupManager(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instanceGroupManagers/%v/resize", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager())
 
 	params := url.Values{}
@@ -2413,6 +2542,13 @@ func (c *instanceGroupManagersRESTClient) ResizeAdvanced(ctx context.Context, re
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstanceGroupManager(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instanceGroupManagers/%v/resizeAdvanced", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager())
@@ -2501,6 +2637,13 @@ func (c *instanceGroupManagersRESTClient) ResumeInstances(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstanceGroupManager(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instanceGroupManagers/%v/resumeInstances", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager())
 
 	params := url.Values{}
@@ -2574,6 +2717,13 @@ func (c *instanceGroupManagersRESTClient) SetAutoHealingPolicies(ctx context.Con
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstanceGroupManager(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instanceGroupManagers/%v/setAutoHealingPolicies", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager())
 
 	params := url.Values{}
@@ -2645,6 +2795,13 @@ func (c *instanceGroupManagersRESTClient) SetInstanceTemplate(ctx context.Contex
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstanceGroupManager(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instanceGroupManagers/%v/setInstanceTemplate", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager())
@@ -2721,6 +2878,13 @@ func (c *instanceGroupManagersRESTClient) SetTargetPools(ctx context.Context, re
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstanceGroupManager(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instanceGroupManagers/%v/setTargetPools", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager())
@@ -2807,6 +2971,13 @@ func (c *instanceGroupManagersRESTClient) StartInstances(ctx context.Context, re
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstanceGroupManager(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instanceGroupManagers/%v/startInstances", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager())
@@ -2902,6 +3073,13 @@ func (c *instanceGroupManagersRESTClient) StopInstances(ctx context.Context, req
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstanceGroupManager(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instanceGroupManagers/%v/stopInstances", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager())
@@ -3002,6 +3180,13 @@ func (c *instanceGroupManagersRESTClient) SuspendInstances(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstanceGroupManager(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instanceGroupManagers/%v/suspendInstances", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager())
 
 	params := url.Values{}
@@ -3073,6 +3258,13 @@ func (c *instanceGroupManagersRESTClient) TestIamPermissions(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instanceGroupManagers/%v/testIamPermissions", req.GetProject(), req.GetZone(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -3138,6 +3330,13 @@ func (c *instanceGroupManagersRESTClient) Update(ctx context.Context, req *compu
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstanceGroupManager(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instanceGroupManagers/%v", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager())
@@ -3211,6 +3410,13 @@ func (c *instanceGroupManagersRESTClient) UpdatePerInstanceConfigs(ctx context.C
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstanceGroupManager(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instanceGroupManagers/%v/updatePerInstanceConfigs", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager())

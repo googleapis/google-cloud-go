@@ -966,6 +966,11 @@ func (c *binauthzManagementRESTClient) GetPolicy(ctx context.Context, req *binar
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1030,6 +1035,11 @@ func (c *binauthzManagementRESTClient) UpdatePolicy(ctx context.Context, req *bi
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetPolicy().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetPolicy().GetName())
@@ -1098,6 +1108,11 @@ func (c *binauthzManagementRESTClient) CreateAttestor(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/attestors", req.GetParent())
 
 	params := url.Values{}
@@ -1153,6 +1168,11 @@ func (c *binauthzManagementRESTClient) CreateAttestor(ctx context.Context, req *
 func (c *binauthzManagementRESTClient) GetAttestor(ctx context.Context, req *binaryauthorizationpb.GetAttestorRequest, opts ...gax.CallOption) (*binaryauthorizationpb.Attestor, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1216,6 +1236,11 @@ func (c *binauthzManagementRESTClient) UpdateAttestor(ctx context.Context, req *
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAttestor().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetAttestor().GetName())
@@ -1286,6 +1311,11 @@ func (c *binauthzManagementRESTClient) ListAttestors(ctx context.Context, req *b
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/attestors", req.GetParent())
 
 		params := url.Values{}
@@ -1353,6 +1383,11 @@ func (c *binauthzManagementRESTClient) DeleteAttestor(ctx context.Context, req *
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1391,6 +1426,11 @@ func (c *binauthzManagementRESTClient) DeleteAttestor(ctx context.Context, req *
 func (c *binauthzManagementRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
@@ -1460,6 +1500,11 @@ func (c *binauthzManagementRESTClient) SetIamPolicy(ctx context.Context, req *ia
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -1524,6 +1569,11 @@ func (c *binauthzManagementRESTClient) TestIamPermissions(ctx context.Context, r
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())

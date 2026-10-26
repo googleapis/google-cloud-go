@@ -1308,6 +1308,11 @@ func (c *dataChatRESTClient) Chat(ctx context.Context, req *geminidataanalyticsp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:chat", req.GetParent())
 
 	params := url.Values{}
@@ -1416,6 +1421,11 @@ func (c *dataChatRESTClient) CreateConversation(ctx context.Context, req *gemini
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/conversations", req.GetParent())
 
 	params := url.Values{}
@@ -1476,6 +1486,11 @@ func (c *dataChatRESTClient) DeleteConversation(ctx context.Context, req *gemini
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -1520,6 +1535,11 @@ func (c *dataChatRESTClient) UpdateConversation(ctx context.Context, req *gemini
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetConversation().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetConversation().GetName())
@@ -1584,6 +1604,11 @@ func (c *dataChatRESTClient) UpdateConversation(ctx context.Context, req *gemini
 func (c *dataChatRESTClient) GetConversation(ctx context.Context, req *geminidataanalyticspb.GetConversationRequest, opts ...gax.CallOption) (*geminidataanalyticspb.Conversation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -1651,6 +1676,11 @@ func (c *dataChatRESTClient) ListConversations(ctx context.Context, req *geminid
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/conversations", req.GetParent())
@@ -1734,6 +1764,11 @@ func (c *dataChatRESTClient) ListMessages(ctx context.Context, req *geminidataan
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/messages", req.GetParent())
 
 		params := url.Values{}
@@ -1808,6 +1843,11 @@ func (c *dataChatRESTClient) QueryData(ctx context.Context, req *geminidataanaly
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:queryData", req.GetParent())
 
 	params := url.Values{}
@@ -1860,6 +1900,11 @@ func (c *dataChatRESTClient) QueryData(ctx context.Context, req *geminidataanaly
 func (c *dataChatRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -1944,6 +1989,11 @@ func (c *dataChatRESTClient) ListLocations(ctx context.Context, req *locationpb.
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -2018,6 +2068,11 @@ func (c *dataChatRESTClient) CancelOperation(ctx context.Context, req *longrunni
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -2057,6 +2112,11 @@ func (c *dataChatRESTClient) DeleteOperation(ctx context.Context, req *longrunni
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -2094,6 +2154,11 @@ func (c *dataChatRESTClient) DeleteOperation(ctx context.Context, req *longrunni
 func (c *dataChatRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -2161,6 +2226,11 @@ func (c *dataChatRESTClient) ListOperations(ctx context.Context, req *longrunnin
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/operations", req.GetName())

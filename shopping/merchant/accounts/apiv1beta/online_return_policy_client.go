@@ -687,6 +687,11 @@ func (c *onlineReturnPolicyRESTClient) GetOnlineReturnPolicy(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -752,6 +757,11 @@ func (c *onlineReturnPolicyRESTClient) ListOnlineReturnPolicies(ctx context.Cont
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/accounts/v1beta/%v/onlineReturnPolicies", req.GetParent())
@@ -826,6 +836,11 @@ func (c *onlineReturnPolicyRESTClient) CreateOnlineReturnPolicy(ctx context.Cont
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1beta/%v/onlineReturnPolicies", req.GetParent())
 
 	params := url.Values{}
@@ -887,6 +902,11 @@ func (c *onlineReturnPolicyRESTClient) UpdateOnlineReturnPolicy(ctx context.Cont
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetOnlineReturnPolicy().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1beta/%v", req.GetOnlineReturnPolicy().GetName())
 
 	params := url.Values{}
@@ -946,6 +966,11 @@ func (c *onlineReturnPolicyRESTClient) UpdateOnlineReturnPolicy(ctx context.Cont
 func (c *onlineReturnPolicyRESTClient) DeleteOnlineReturnPolicy(ctx context.Context, req *accountspb.DeleteOnlineReturnPolicyRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1beta/%v", req.GetName())
