@@ -21,6 +21,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"sync/atomic"
 	"time"
@@ -390,3 +391,55 @@ func isOneshotUpload(w *Writer) bool {
 	}
 	return w.opened && w.closed && atomic.LoadInt64(&w.bytesWritten) < int64(gRPCChunkSize(w.ChunkSize))
 }
+
+type httpUploadChunkSizeKey struct{}
+
+// withHTTPUploadChunkSize attaches the 256 KiB-aligned chunk size to ctx for
+// resumable HTTP uploads when dev tracing is enabled.
+func withHTTPUploadChunkSize(ctx context.Context, chunkSize int) context.Context {
+	if chunkSize <= 0 {
+		return ctx
+	}
+	if _, ok := recordingSpan(ctx); !ok {
+		return ctx
+	}
+	return context.WithValue(ctx, httpUploadChunkSizeKey{}, int64(gRPCChunkSize(chunkSize)))
+}
+
+// httpUploadChunkNumber parses the Content-Range header of an HTTP resumable
+// upload chunk request and returns its 1-based chunk number.
+// A zero-byte finalization request ("bytes */<size>") does not upload a chunk
+// and returns false.
+func httpUploadChunkNumber(ctx context.Context, h http.Header) (int64, bool) {
+	cr := h.Get("Content-Range")
+	if !strings.HasPrefix(cr, "bytes ") {
+		return 0, false
+	}
+	chunkSize, ok := ctx.Value(httpUploadChunkSizeKey{}).(int64)
+	if !ok || chunkSize <= 0 {
+		return 0, false
+	}
+	rest := strings.TrimPrefix(cr, "bytes ")
+	dash := strings.IndexByte(rest, '-')
+	if dash <= 0 {
+		return 0, false
+	}
+	offset, err := strconv.ParseInt(rest[:dash], 10, 64)
+	if err != nil || offset < 0 {
+		return 0, false
+	}
+	return offset/chunkSize + 1, true
+}
+
+// httpUploadChunkError returns the error to record on an HTTP
+// Storage.UploadChunk span for a RoundTrip result.
+func httpUploadChunkError(resp *http.Response, err error) error {
+	if err != nil {
+		return err
+	}
+	if resp != nil && (resp.StatusCode < 200 || resp.StatusCode > 299) && resp.StatusCode != 308 {
+		return &googleapi.Error{Code: resp.StatusCode}
+	}
+	return nil
+}
+

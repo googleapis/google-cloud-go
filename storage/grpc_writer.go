@@ -30,6 +30,8 @@ import (
 	gapic "cloud.google.com/go/storage/internal/apiv2"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -331,6 +333,14 @@ type gRPCWriter struct {
 	streamSender         gRPCBidiWriteBufferSender
 	watchdog             *writeStallWatchdog
 
+	// chunkSpansEnabled reports whether Storage.UploadChunk spans are
+	// recorded. It is set once, before the first writeLoop attempt.
+	chunkSpansEnabled bool
+	// chunkSpans holds the Storage.UploadChunk spans of chunks that have been
+	// at least partly sent but not yet confirmed by GCS, oldest first. Only
+	// accessed by the writer goroutine.
+	chunkSpans []uploadChunkSpan
+
 	// Communication from the user goroutine to the stream management goroutines
 	writesChan     chan gRPCWriterCommand
 	currentCommand gRPCWriterCommand
@@ -457,6 +467,7 @@ func (w *gRPCWriter) pickBufferSender() gRPCBidiWriteBufferSender {
 		return w.newGRPCOneshotBidiWriteBufferSender()
 	}
 	// Resumable write semantics
+	_, w.chunkSpansEnabled = recordingSpan(w.preRunCtx)
 	return w.newGRPCResumableBidiWriteBufferSender()
 }
 
@@ -490,6 +501,7 @@ func (w *gRPCWriter) sendBufferToTarget(cs gRPCWriterCommandHandleChans, buf []b
 		if req.flush && w.watchdog != nil {
 			w.watchdog.resume()
 		}
+		w.traceChunkRequest(req)
 		if !cs.deliverRequestUnlessCompleted(req, handleCompletion) {
 			return baseOffset + int64(sent), false
 		}
@@ -513,6 +525,9 @@ func (w *gRPCWriter) handleCompletion(c gRPCBidiWriteCompletion) {
 	if c.resource != nil {
 		w.setObj(newObjectFromProto(c.resource))
 	}
+	// Before the duplicate check below: a final resource can repeat the last
+	// confirmed offset, for example after an empty finish_write.
+	w.traceChunkCompletion(c)
 
 	// prevConfirmed is the highest offset GCS had confirmed before this
 	// completion; it is meaningless until the first completion.
@@ -548,6 +563,52 @@ func (w *gRPCWriter) handleCompletion(c gRPCBidiWriteCompletion) {
 	if progressed && w.watchdog != nil {
 		w.watchdog.reset()
 	}
+}
+
+const (
+	uploadChunkSpanName   = "Storage.UploadChunk"
+	uploadChunkNumberAttr = "gcp.storage.upload.chunk.number"
+)
+
+// uploadChunkSpan is the Storage.UploadChunk span of one logical chunk of a
+// resumable upload, which is usually sent as several messages.
+type uploadChunkSpan struct {
+	ctx context.Context // holds the span; never used for RPCs
+	end int64           // offset just past the chunk
+}
+
+// traceChunkRequest starts a Storage.UploadChunk span if req carries the first
+// bytes sent for a chunk. The chunk number is derived from the offset, so a
+// chunk that is resent after a failed attempt keeps its number.
+func (w *gRPCWriter) traceChunkRequest(req gRPCBidiWriteRequest) {
+	if !w.chunkSpansEnabled || len(req.buf) == 0 {
+		return
+	}
+	if n := len(w.chunkSpans); n > 0 && req.offset < w.chunkSpans[n-1].end {
+		return // The chunk already has an open span.
+	}
+	number := req.offset/int64(w.chunkSize) + 1
+	ctx, _ := startSpan(w.preRunCtx, uploadChunkSpanName,
+		trace.WithAttributes(attribute.Int64(uploadChunkNumberAttr, number)))
+	w.chunkSpans = append(w.chunkSpans, uploadChunkSpan{ctx: ctx, end: number * int64(w.chunkSize)})
+}
+
+// traceChunkCompletion ends the spans of the chunks confirmed by c. A returned
+// object means every byte sent has been persisted, including a short last chunk.
+func (w *gRPCWriter) traceChunkCompletion(c gRPCBidiWriteCompletion) {
+	for len(w.chunkSpans) > 0 && (c.resource != nil || c.flushOffset >= w.chunkSpans[0].end) {
+		endSpan(w.chunkSpans[0].ctx, nil)
+		w.chunkSpans = w.chunkSpans[1:]
+	}
+}
+
+// failChunkSpans ends all open Storage.UploadChunk spans with err when a
+// writeLoop attempt ends.
+func (w *gRPCWriter) failChunkSpans(err error) {
+	for _, s := range w.chunkSpans {
+		endSpan(s.ctx, err)
+	}
+	w.chunkSpans = nil
 }
 
 // Gather write commands before starting the actual write. Returns nil if the
@@ -599,6 +660,9 @@ func (w *gRPCWriter) gatherFirstBuffer() error {
 }
 
 func (w *gRPCWriter) writeLoop(ctx context.Context) (retErr error) {
+	// Registered first so that it runs last and sees the final error,
+	// including a stall error substituted by the watchdog's deferred func.
+	defer func() { w.failChunkSpans(retErr) }()
 	w.budget.attempts++
 	if w.isActive() {
 		w.budget.start()
@@ -752,6 +816,7 @@ Loop:
 			finishWrite: true,
 		}
 		finalOffset = req.offset + int64(len(req.buf))
+		w.traceChunkRequest(req)
 		if !chcs.deliverRequestUnlessCompleted(req, w.handleCompletion) {
 			return w.streamSender.err()
 		}
