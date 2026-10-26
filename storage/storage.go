@@ -179,8 +179,11 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		// Don't error out here. The user may have passed in their own HTTP
 		// client which does not auth with ADC or other common conventions.
 		c, err := internaloption.AuthCreds(ctx, opts)
-		if err == nil {
-			creds = c
+		if err == nil && c != nil {
+			// Clone so that credential wrapping in newHTTPStorageClient never
+			// mutates caller-owned credentials passed via WithAuthCredentials.
+			clone := *c
+			creds = &clone
 			opts = append(opts, option.WithAuthCredentials(creds))
 		}
 	} else {

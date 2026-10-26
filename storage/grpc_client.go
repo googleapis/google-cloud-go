@@ -194,15 +194,27 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 
 	var clientMetrics *clientMetrics
 	var metricsCleanup func()
-	if isOtelMetricsEnabled(&config) {
-		clientMetrics, metricsCleanup = initGRPCMetricsAndWrapCredentials(ctx, &config, s)
-		if clientMetrics != nil {
-			unaryInt, streamInt := metricsInterceptors(clientMetrics)
-			s.clientOption = append(s.clientOption,
-				option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(unaryInt)),
-				option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(streamInt)),
-			)
-			s.clientOption = append(s.clientOption, grpcNetworkMetricsDialOptions("storage.googleapis.com", clientMetrics)...)
+	metricsEnabled := isOtelMetricsEnabled(&config)
+	tracingEnabled := isOTelTracingDevEnabled()
+	if metricsEnabled || tracingEnabled {
+		authCreds, project := resolveGRPCAuthCredentials(ctx, s)
+		if metricsEnabled {
+			clientMetrics, metricsCleanup = initClientMetrics(ctx, project, &config)
+			if clientMetrics != nil {
+				authCreds = wrapAuthCredentials(authCreds, clientMetrics)
+				unaryInt, streamInt := metricsInterceptors(clientMetrics)
+				s.clientOption = append(s.clientOption,
+					option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(unaryInt)),
+					option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(streamInt)),
+				)
+				s.clientOption = append(s.clientOption, grpcNetworkMetricsDialOptions("storage.googleapis.com", clientMetrics)...)
+			}
+		}
+		if tracingEnabled {
+			authCreds = wrapAuthCredentialsForTracing(authCreds)
+		}
+		if authCreds != nil {
+			s.clientOption = append(s.clientOption, option.WithAuthCredentials(authCreds))
 		}
 	}
 
@@ -260,26 +272,21 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 	return c, nil
 }
 
-func initGRPCMetricsAndWrapCredentials(ctx context.Context, config *storageConfig, s *settings) (*clientMetrics, func()) {
-	var project string
-	var authCreds *auth.Credentials
-
-	credsOpts := append([]option.ClientOption{option.WithScopes(gapic.DefaultAuthScopes()...)}, s.clientOption...)
-	if c, err := internaloption.AuthCreds(ctx, credsOpts); err == nil {
-		authCreds = c
-		project, _ = authCreds.ProjectID(ctx)
-	} else if c, err := transport.Creds(ctx, credsOpts...); err == nil {
-		project = c.ProjectID
-	}
-
-	clientMetrics, metricsCleanup := initClientMetrics(ctx, project, config)
-	if clientMetrics != nil {
-		if authCreds != nil {
-			authCreds = wrapAuthCredentials(authCreds, clientMetrics)
-			s.clientOption = append(s.clientOption, option.WithAuthCredentials(authCreds))
+func resolveGRPCAuthCredentials(ctx context.Context, s *settings) (*auth.Credentials, string) {
+	if res, err := internaloption.NewUnsafeResolver(s.clientOption...); err == nil {
+		if res.ResolvedGRPCConnIsCustom() || res.ResolvedWithoutAuthentication() {
+			return nil, ""
 		}
 	}
-	return clientMetrics, metricsCleanup
+	credsOpts := append([]option.ClientOption{option.WithScopes(gapic.DefaultAuthScopes()...)}, s.clientOption...)
+	if c, err := internaloption.AuthCreds(ctx, credsOpts); err == nil && c != nil {
+		project, _ := c.ProjectID(ctx)
+		return c, project
+	}
+	if c, err := transport.Creds(ctx, credsOpts...); err == nil && c != nil {
+		return nil, c.ProjectID
+	}
+	return nil, ""
 }
 
 // configureStreamingTimeouts explicitly overrides default call timeouts to 0 (unbounded)

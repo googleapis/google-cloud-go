@@ -26,6 +26,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"cloud.google.com/go/auth"
 	internalTrace "cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/storage/internal"
 	"github.com/googleapis/gax-go/v2/apierror"
@@ -237,11 +238,9 @@ func errorDomain(err error) string {
 	return ""
 }
 
-// endSpan retrieves the current span from ctx and completes the span.
-// If an error occurs, the error.type and, when known, gcp.errors.domain
-// attributes are set, the error is recorded as an exception span event for
-// this span, and the span status is set in the form of a code and a
-// description.
+// endSpan ends the operation span in ctx. On a not-found error it also evicts
+// the operation's bucket from the bucket metadata cache, then calls finishSpan.
+// Non-operation spans should call finishSpan directly.
 func endSpan(ctx context.Context, err error) {
 	if err != nil && isNotFoundError(err) {
 		isBucket, _ := ctx.Value(isBucketContextKey).(bool)
@@ -252,7 +251,15 @@ func endSpan(ctx context.Context, err error) {
 			cache.evict(bucket)
 		}
 	}
+	finishSpan(ctx, err)
+}
 
+// finishSpan retrieves the current span from ctx and completes the span.
+// If an error occurs, the error.type and, when known, gcp.errors.domain
+// attributes are set, the error is recorded as an exception span event for
+// this span, and the span status is set in the form of a code and a
+// description.
+func finishSpan(ctx context.Context, err error) {
 	// TODO: Remove internalTrace upon experimental launch.
 	if !isOTelTracingDevEnabled() {
 		internalTrace.EndSpan(ctx, err)
@@ -299,8 +306,8 @@ func recordRetryBackoff(ctx context.Context, start time.Time) {
 	if !span.IsRecording() {
 		return
 	}
-	_, backoffSpan := startSpan(ctx, "RetryBackoff", trace.WithTimestamp(start))
-	backoffSpan.End()
+	backoffCtx, _ := startSpan(ctx, "RetryBackoff", trace.WithTimestamp(start))
+	finishSpan(backoffCtx, nil)
 }
 
 // retryAttemptKey is the context key under which run records the attempt it
@@ -407,6 +414,60 @@ func isOneshotUpload(w *Writer) bool {
 		return true
 	}
 	return w.opened && w.closed && atomic.LoadInt64(&w.bytesWritten) < int64(gRPCChunkSize(w.ChunkSize))
+}
+
+// tracedTokenProvider records an Auth.RefreshAccessToken span for token fetches
+// that block a request. Cache hits and background refreshes (no recording span
+// in ctx) are skipped.
+type tracedTokenProvider struct {
+	base auth.TokenProvider
+	last atomic.Pointer[auth.Token] // cache hits return the same *auth.Token
+}
+
+func (p *tracedTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
+	start := time.Now()
+	tok, err := p.base.Token(ctx)
+	// Update the last-seen token regardless of ctx so cache-hit detection
+	// stays correct for later calls.
+	if err == nil && p.last.Swap(tok) == tok {
+		return tok, nil // cache hit, no span
+	}
+	if !trace.SpanFromContext(ctx).IsRecording() {
+		return tok, err
+	}
+	ctx, _ = startSpan(ctx, "Auth.RefreshAccessToken", trace.WithTimestamp(start))
+	finishSpan(ctx, err)
+	return tok, err
+}
+
+// wrapAuthCredentialsForTracing wraps an auth.Credentials object to record
+// Auth.RefreshAccessToken internal operation spans on blocking token fetches
+// and refreshes made under a recording span (cache hits and background
+// refreshes do not emit spans).
+func wrapAuthCredentialsForTracing(c *auth.Credentials) *auth.Credentials {
+	if c == nil || c.TokenProvider == nil {
+		return c
+	}
+	if hasTracedTokenProvider(c.TokenProvider) {
+		return c
+	}
+	clone := *c
+	clone.TokenProvider = &tracedTokenProvider{base: c.TokenProvider}
+	return &clone
+}
+
+func hasTracedTokenProvider(tp auth.TokenProvider) bool {
+	for tp != nil {
+		switch p := tp.(type) {
+		case *tracedTokenProvider:
+			return true
+		case *metricsTokenProvider:
+			tp = p.base
+		default:
+			return false
+		}
+	}
+	return false
 }
 
 // recordUploadID sets gcp.storage.upload.id on the span in ctx.
