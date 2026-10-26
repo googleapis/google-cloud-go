@@ -132,6 +132,10 @@ type Client struct {
 	grpcAppendableUploads bool
 
 	bucketMetadataCache *bucketMetadataCache
+
+	// rpcSystem is the OTel rpc.system.name span attribute for this client's
+	// transport (rpcSystemHTTP or rpcSystemGRPC).
+	rpcSystem attribute.KeyValue
 }
 
 // credsJSON returns the raw JSON of the Client's creds and true, or an empty slice
@@ -175,8 +179,11 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		// Don't error out here. The user may have passed in their own HTTP
 		// client which does not auth with ADC or other common conventions.
 		c, err := internaloption.AuthCreds(ctx, opts)
-		if err == nil {
-			creds = c
+		if err == nil && c != nil {
+			// Clone so that credential wrapping in newHTTPStorageClient never
+			// mutates caller-owned credentials passed via WithAuthCredentials.
+			clone := *c
+			creds = &clone
 			opts = append(opts, option.WithAuthCredentials(creds))
 		}
 	} else {
@@ -239,12 +246,13 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	}
 
 	c := &Client{
-		hc:      hc,
-		raw:     rawService,
-		scheme:  u.Scheme,
-		xmlHost: u.Host,
-		creds:   creds,
-		tc:      tcWrapped,
+		hc:        hc,
+		raw:       rawService,
+		scheme:    u.Scheme,
+		xmlHost:   u.Host,
+		creds:     creds,
+		tc:        tcWrapped,
+		rpcSystem: rpcSystemHTTP,
 	}
 	if isACOEnabled() {
 		c.bucketMetadataCache = newBucketMetadataCache(defaultBucketMetadataCacheLimit, c.tc)
@@ -280,6 +288,7 @@ func NewGRPCClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 	c := &Client{
 		tc:                    tcWrapped,
 		grpcAppendableUploads: tc.config.grpcAppendableUploads,
+		rpcSystem:             rpcSystemGRPC,
 	}
 	if isACOEnabled() {
 		c.bucketMetadataCache = newBucketMetadataCache(defaultBucketMetadataCacheLimit, c.tc)

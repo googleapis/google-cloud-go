@@ -612,7 +612,7 @@ func (w *gRPCWriter) traceChunkCompletion(c gRPCBidiWriteCompletion) {
 	for len(w.chunkSpans) > 0 && (c.resource != nil || c.flushOffset >= w.chunkSpans[0].end) {
 		s := w.chunkSpans[0]
 		s.span.SetAttributes(attribute.Int64(payloadSizeBytesAttr, s.size))
-		endSpan(s.ctx, nil)
+		finishSpan(s.ctx, nil)
 		w.chunkSpans = w.chunkSpans[1:]
 	}
 }
@@ -622,7 +622,7 @@ func (w *gRPCWriter) traceChunkCompletion(c gRPCBidiWriteCompletion) {
 func (w *gRPCWriter) failChunkSpans(err error) {
 	for _, s := range w.chunkSpans {
 		s.span.SetAttributes(attribute.Int64(payloadSizeBytesAttr, s.size))
-		endSpan(s.ctx, err)
+		finishSpan(s.ctx, err)
 	}
 	w.chunkSpans = nil
 }
@@ -1685,6 +1685,8 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 		}
 		cs.completions <- gRPCBidiWriteCompletion{flushOffset: q.GetPersistedSize()}
 	}
+	// Record the upload ID for both new and resumed uploads.
+	recordUploadID(ctx, s.upid)
 
 	var rotate atomic.Bool
 
