@@ -2413,27 +2413,27 @@ var File_google_cloud_dataplex_v1_metadata_proto protoreflect.FileDescriptor
 
 const file_google_cloud_dataplex_v1_metadata_proto_rawDesc = "" +
 	"\n" +
-	"'google/cloud/dataplex/v1/metadata.proto\x12\x18google.cloud.dataplex.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbc\x01\n" +
-	"\x13CreateEntityRequest\x12<\n" +
-	"\x06parent\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cdataplex.googleapis.com/ZoneR\x06parent\x12=\n" +
-	"\x06entity\x18\x03 \x01(\v2 .google.cloud.dataplex.v1.EntityB\x03\xe0A\x02R\x06entity\x12(\n" +
-	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"~\n" +
-	"\x13UpdateEntityRequest\x12=\n" +
-	"\x06entity\x18\x02 \x01(\v2 .google.cloud.dataplex.v1.EntityB\x03\xe0A\x02R\x06entity\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"j\n" +
-	"\x13DeleteEntityRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1edataplex.googleapis.com/EntityR\x04name\x12\x17\n" +
-	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x02R\x04etag\"\xce\x02\n" +
-	"\x13ListEntitiesRequest\x12<\n" +
-	"\x06parent\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cdataplex.googleapis.com/ZoneR\x06parent\x12Q\n" +
-	"\x04view\x18\x02 \x01(\x0e28.google.cloud.dataplex.v1.ListEntitiesRequest.EntityViewB\x03\xe0A\x02R\x04view\x12 \n" +
-	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"'google/cloud/dataplex/v1/metadata.proto\x12\x18google.cloud.dataplex.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbf\x01\n" +
+	"\x13CreateEntityRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cdataplex.googleapis.com/ZoneR\x06parent\x12>\n" +
+	"\x06entity\x18\x03 \x01(\v2 .google.cloud.dataplex.v1.EntityB\x04\xe2A\x01\x02R\x06entity\x12)\n" +
+	"\rvalidate_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\x80\x01\n" +
+	"\x13UpdateEntityRequest\x12>\n" +
+	"\x06entity\x18\x02 \x01(\v2 .google.cloud.dataplex.v1.EntityB\x04\xe2A\x01\x02R\x06entity\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"l\n" +
+	"\x13DeleteEntityRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1edataplex.googleapis.com/EntityR\x04name\x12\x18\n" +
+	"\x04etag\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04etag\"\xd3\x02\n" +
+	"\x13ListEntitiesRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cdataplex.googleapis.com/ZoneR\x06parent\x12R\n" +
+	"\x04view\x18\x02 \x01(\x0e28.google.cloud.dataplex.v1.ListEntitiesRequest.EntityViewB\x04\xe2A\x01\x02R\x04view\x12!\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x05 \x01(\tB\x03\xe0A\x01R\x06filter\"C\n" +
+	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"C\n" +
 	"\n" +
 	"EntityView\x12\x1b\n" +
 	"\x17ENTITY_VIEW_UNSPECIFIED\x10\x00\x12\n" +
@@ -2442,100 +2442,100 @@ const file_google_cloud_dataplex_v1_metadata_proto_rawDesc = "" +
 	"\bFILESETS\x10\x02\"|\n" +
 	"\x14ListEntitiesResponse\x12<\n" +
 	"\bentities\x18\x01 \x03(\v2 .google.cloud.dataplex.v1.EntityR\bentities\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xea\x01\n" +
-	"\x10GetEntityRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1edataplex.googleapis.com/EntityR\x04name\x12N\n" +
-	"\x04view\x18\x02 \x01(\x0e25.google.cloud.dataplex.v1.GetEntityRequest.EntityViewB\x03\xe0A\x01R\x04view\"J\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xec\x01\n" +
+	"\x10GetEntityRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1edataplex.googleapis.com/EntityR\x04name\x12O\n" +
+	"\x04view\x18\x02 \x01(\x0e25.google.cloud.dataplex.v1.GetEntityRequest.EntityViewB\x04\xe2A\x01\x01R\x04view\"J\n" +
 	"\n" +
 	"EntityView\x12\x1b\n" +
 	"\x17ENTITY_VIEW_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05BASIC\x10\x01\x12\n" +
 	"\n" +
 	"\x06SCHEMA\x10\x02\x12\b\n" +
-	"\x04FULL\x10\x04\"\xba\x01\n" +
-	"\x15ListPartitionsRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1edataplex.googleapis.com/EntityR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x04FULL\x10\x04\"\xbe\x01\n" +
+	"\x15ListPartitionsRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1edataplex.googleapis.com/EntityR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\xca\x01\n" +
-	"\x16CreatePartitionRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1edataplex.googleapis.com/EntityR\x06parent\x12F\n" +
-	"\tpartition\x18\x03 \x01(\v2#.google.cloud.dataplex.v1.PartitionB\x03\xe0A\x02R\tpartition\x12(\n" +
-	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"r\n" +
-	"\x16DeletePartitionRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!dataplex.googleapis.com/PartitionR\x04name\x12\x19\n" +
-	"\x04etag\x18\x02 \x01(\tB\x05\xe0A\x01\x18\x01R\x04etag\"\x85\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xcd\x01\n" +
+	"\x16CreatePartitionRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1edataplex.googleapis.com/EntityR\x06parent\x12G\n" +
+	"\tpartition\x18\x03 \x01(\v2#.google.cloud.dataplex.v1.PartitionB\x04\xe2A\x01\x02R\tpartition\x12)\n" +
+	"\rvalidate_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"t\n" +
+	"\x16DeletePartitionRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!dataplex.googleapis.com/PartitionR\x04name\x12\x1a\n" +
+	"\x04etag\x18\x02 \x01(\tB\x06\xe2A\x01\x01\x18\x01R\x04etag\"\x85\x01\n" +
 	"\x16ListPartitionsResponse\x12C\n" +
 	"\n" +
 	"partitions\x18\x01 \x03(\v2#.google.cloud.dataplex.v1.PartitionR\n" +
 	"partitions\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"T\n" +
-	"\x13GetPartitionRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!dataplex.googleapis.com/PartitionR\x04name\"\xa2\v\n" +
-	"\x06Entity\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x03\xfaA \n" +
-	"\x1edataplex.googleapis.com/EntityR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x13\n" +
-	"\x02id\x18\a \x01(\tB\x03\xe0A\x02R\x02id\x12\x17\n" +
-	"\x04etag\x18\b \x01(\tB\x03\xe0A\x01R\x04etag\x12A\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"U\n" +
+	"\x13GetPartitionRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!dataplex.googleapis.com/PartitionR\x04name\"\xb0\v\n" +
+	"\x06Entity\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x03\xfaA \n" +
+	"\x1edataplex.googleapis.com/EntityR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x14\n" +
+	"\x02id\x18\a \x01(\tB\x04\xe2A\x01\x02R\x02id\x12\x18\n" +
+	"\x04etag\x18\b \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12@\n" +
 	"\x04type\x18\n" +
-	" \x01(\x0e2%.google.cloud.dataplex.v1.Entity.TypeB\x06\xe0A\x02\xe0A\x05R\x04type\x12\x1c\n" +
-	"\x05asset\x18\v \x01(\tB\x06\xe0A\x02\xe0A\x05R\x05asset\x12#\n" +
-	"\tdata_path\x18\f \x01(\tB\x06\xe0A\x02\xe0A\x05R\bdataPath\x12/\n" +
-	"\x11data_path_pattern\x18\r \x01(\tB\x03\xe0A\x01R\x0fdataPathPattern\x12(\n" +
-	"\rcatalog_entry\x18\x0e \x01(\tB\x03\xe0A\x03R\fcatalogEntry\x12G\n" +
-	"\x06system\x18\x0f \x01(\x0e2'.google.cloud.dataplex.v1.StorageSystemB\x06\xe0A\x02\xe0A\x05R\x06system\x12D\n" +
-	"\x06format\x18\x10 \x01(\v2'.google.cloud.dataplex.v1.StorageFormatB\x03\xe0A\x02R\x06format\x12_\n" +
-	"\rcompatibility\x18\x13 \x01(\v24.google.cloud.dataplex.v1.Entity.CompatibilityStatusB\x03\xe0A\x03R\rcompatibility\x12D\n" +
-	"\x06access\x18\x15 \x01(\v2'.google.cloud.dataplex.v1.StorageAccessB\x03\xe0A\x03R\x06access\x12\x15\n" +
-	"\x03uid\x18\x16 \x01(\tB\x03\xe0A\x03R\x03uid\x12=\n" +
-	"\x06schema\x182 \x01(\v2 .google.cloud.dataplex.v1.SchemaB\x03\xe0A\x02R\x06schema\x1a\xbd\x02\n" +
-	"\x13CompatibilityStatus\x12n\n" +
-	"\x0ehive_metastore\x18\x01 \x01(\v2B.google.cloud.dataplex.v1.Entity.CompatibilityStatus.CompatibilityB\x03\xe0A\x03R\rhiveMetastore\x12c\n" +
-	"\bbigquery\x18\x02 \x01(\v2B.google.cloud.dataplex.v1.Entity.CompatibilityStatus.CompatibilityB\x03\xe0A\x03R\bbigquery\x1aQ\n" +
-	"\rCompatibility\x12#\n" +
+	" \x01(\x0e2%.google.cloud.dataplex.v1.Entity.TypeB\x05\xe2A\x02\x02\x05R\x04type\x12\x1b\n" +
+	"\x05asset\x18\v \x01(\tB\x05\xe2A\x02\x02\x05R\x05asset\x12\"\n" +
+	"\tdata_path\x18\f \x01(\tB\x05\xe2A\x02\x02\x05R\bdataPath\x120\n" +
+	"\x11data_path_pattern\x18\r \x01(\tB\x04\xe2A\x01\x01R\x0fdataPathPattern\x12)\n" +
+	"\rcatalog_entry\x18\x0e \x01(\tB\x04\xe2A\x01\x03R\fcatalogEntry\x12F\n" +
+	"\x06system\x18\x0f \x01(\x0e2'.google.cloud.dataplex.v1.StorageSystemB\x05\xe2A\x02\x02\x05R\x06system\x12E\n" +
+	"\x06format\x18\x10 \x01(\v2'.google.cloud.dataplex.v1.StorageFormatB\x04\xe2A\x01\x02R\x06format\x12`\n" +
+	"\rcompatibility\x18\x13 \x01(\v24.google.cloud.dataplex.v1.Entity.CompatibilityStatusB\x04\xe2A\x01\x03R\rcompatibility\x12E\n" +
+	"\x06access\x18\x15 \x01(\v2'.google.cloud.dataplex.v1.StorageAccessB\x04\xe2A\x01\x03R\x06access\x12\x16\n" +
+	"\x03uid\x18\x16 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12>\n" +
+	"\x06schema\x182 \x01(\v2 .google.cloud.dataplex.v1.SchemaB\x04\xe2A\x01\x02R\x06schema\x1a\xc1\x02\n" +
+	"\x13CompatibilityStatus\x12o\n" +
+	"\x0ehive_metastore\x18\x01 \x01(\v2B.google.cloud.dataplex.v1.Entity.CompatibilityStatus.CompatibilityB\x04\xe2A\x01\x03R\rhiveMetastore\x12d\n" +
+	"\bbigquery\x18\x02 \x01(\v2B.google.cloud.dataplex.v1.Entity.CompatibilityStatus.CompatibilityB\x04\xe2A\x01\x03R\bbigquery\x1aS\n" +
+	"\rCompatibility\x12$\n" +
 	"\n" +
-	"compatible\x18\x01 \x01(\bB\x03\xe0A\x03R\n" +
-	"compatible\x12\x1b\n" +
-	"\x06reason\x18\x02 \x01(\tB\x03\xe0A\x03R\x06reason\"4\n" +
+	"compatible\x18\x01 \x01(\bB\x04\xe2A\x01\x03R\n" +
+	"compatible\x12\x1c\n" +
+	"\x06reason\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x06reason\"4\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05TABLE\x10\x01\x12\v\n" +
 	"\aFILESET\x10\x02:x\xeaAu\n" +
 	"\x1edataplex.googleapis.com/Entity\x12Sprojects/{project}/locations/{location}/lakes/{lake}/zones/{zone}/entities/{entity}\"\xbf\x02\n" +
-	"\tPartition\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x03\xfaA#\n" +
-	"!dataplex.googleapis.com/PartitionR\x04name\x12\x1e\n" +
-	"\x06values\x18\x02 \x03(\tB\x06\xe0A\x02\xe0A\x05R\x06values\x12\"\n" +
-	"\blocation\x18\x03 \x01(\tB\x06\xe0A\x02\xe0A\x05R\blocation\x12\x19\n" +
-	"\x04etag\x18\x04 \x01(\tB\x05\xe0A\x01\x18\x01R\x04etag:\x93\x01\xeaA\x8f\x01\n" +
-	"!dataplex.googleapis.com/Partition\x12jprojects/{project}/locations/{location}/lakes/{lake}/zones/{zone}/entities/{entity}/partitions/{partition}\"\xa0\b\n" +
-	"\x06Schema\x12&\n" +
-	"\fuser_managed\x18\x01 \x01(\bB\x03\xe0A\x02R\vuserManaged\x12I\n" +
-	"\x06fields\x18\x02 \x03(\v2,.google.cloud.dataplex.v1.Schema.SchemaFieldB\x03\xe0A\x01R\x06fields\x12_\n" +
-	"\x10partition_fields\x18\x03 \x03(\v2/.google.cloud.dataplex.v1.Schema.PartitionFieldB\x03\xe0A\x01R\x0fpartitionFields\x12]\n" +
-	"\x0fpartition_style\x18\x04 \x01(\x0e2/.google.cloud.dataplex.v1.Schema.PartitionStyleB\x03\xe0A\x01R\x0epartitionStyle\x1a\x98\x02\n" +
-	"\vSchemaField\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12>\n" +
-	"\x04type\x18\x03 \x01(\x0e2%.google.cloud.dataplex.v1.Schema.TypeB\x03\xe0A\x02R\x04type\x12>\n" +
-	"\x04mode\x18\x04 \x01(\x0e2%.google.cloud.dataplex.v1.Schema.ModeB\x03\xe0A\x02R\x04mode\x12I\n" +
+	"\tPartition\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x03\xfaA#\n" +
+	"!dataplex.googleapis.com/PartitionR\x04name\x12\x1d\n" +
+	"\x06values\x18\x02 \x03(\tB\x05\xe2A\x02\x02\x05R\x06values\x12!\n" +
+	"\blocation\x18\x03 \x01(\tB\x05\xe2A\x02\x02\x05R\blocation\x12\x1a\n" +
+	"\x04etag\x18\x04 \x01(\tB\x06\xe2A\x01\x01\x18\x01R\x04etag:\x93\x01\xeaA\x8f\x01\n" +
+	"!dataplex.googleapis.com/Partition\x12jprojects/{project}/locations/{location}/lakes/{lake}/zones/{zone}/entities/{entity}/partitions/{partition}\"\xa9\b\n" +
+	"\x06Schema\x12'\n" +
+	"\fuser_managed\x18\x01 \x01(\bB\x04\xe2A\x01\x02R\vuserManaged\x12J\n" +
+	"\x06fields\x18\x02 \x03(\v2,.google.cloud.dataplex.v1.Schema.SchemaFieldB\x04\xe2A\x01\x01R\x06fields\x12`\n" +
+	"\x10partition_fields\x18\x03 \x03(\v2/.google.cloud.dataplex.v1.Schema.PartitionFieldB\x04\xe2A\x01\x01R\x0fpartitionFields\x12^\n" +
+	"\x0fpartition_style\x18\x04 \x01(\x0e2/.google.cloud.dataplex.v1.Schema.PartitionStyleB\x04\xe2A\x01\x01R\x0epartitionStyle\x1a\x9d\x02\n" +
+	"\vSchemaField\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12?\n" +
+	"\x04type\x18\x03 \x01(\x0e2%.google.cloud.dataplex.v1.Schema.TypeB\x04\xe2A\x01\x02R\x04type\x12?\n" +
+	"\x04mode\x18\x04 \x01(\x0e2%.google.cloud.dataplex.v1.Schema.ModeB\x04\xe2A\x01\x02R\x04mode\x12J\n" +
 	"\x06fields\x18\n" +
-	" \x03(\v2,.google.cloud.dataplex.v1.Schema.SchemaFieldB\x03\xe0A\x01R\x06fields\x1al\n" +
-	"\x0ePartitionField\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12A\n" +
-	"\x04type\x18\x02 \x01(\x0e2%.google.cloud.dataplex.v1.Schema.TypeB\x06\xe0A\x02\xe0A\x05R\x04type\"\xc9\x01\n" +
+	" \x03(\v2,.google.cloud.dataplex.v1.Schema.SchemaFieldB\x04\xe2A\x01\x01R\x06fields\x1al\n" +
+	"\x0ePartitionField\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12@\n" +
+	"\x04type\x18\x02 \x01(\x0e2%.google.cloud.dataplex.v1.Schema.TypeB\x05\xe2A\x02\x02\x05R\x04type\"\xc9\x01\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aBOOLEAN\x10\x01\x12\b\n" +
@@ -2565,26 +2565,26 @@ const file_google_cloud_dataplex_v1_metadata_proto_rawDesc = "" +
 	"\bREPEATED\x10\x03\"F\n" +
 	"\x0ePartitionStyle\x12\x1f\n" +
 	"\x1bPARTITION_STYLE_UNSPECIFIED\x10\x00\x12\x13\n" +
-	"\x0fHIVE_COMPATIBLE\x10\x01\"\xf2\a\n" +
-	"\rStorageFormat\x12K\n" +
-	"\x06format\x18\x01 \x01(\x0e2..google.cloud.dataplex.v1.StorageFormat.FormatB\x03\xe0A\x03R\x06format\x12m\n" +
-	"\x12compression_format\x18\x02 \x01(\x0e29.google.cloud.dataplex.v1.StorageFormat.CompressionFormatB\x03\xe0A\x01R\x11compressionFormat\x12 \n" +
-	"\tmime_type\x18\x03 \x01(\tB\x03\xe0A\x02R\bmimeType\x12K\n" +
+	"\x0fHIVE_COMPATIBLE\x10\x01\"\xfe\a\n" +
+	"\rStorageFormat\x12L\n" +
+	"\x06format\x18\x01 \x01(\x0e2..google.cloud.dataplex.v1.StorageFormat.FormatB\x04\xe2A\x01\x03R\x06format\x12n\n" +
+	"\x12compression_format\x18\x02 \x01(\x0e29.google.cloud.dataplex.v1.StorageFormat.CompressionFormatB\x04\xe2A\x01\x01R\x11compressionFormat\x12!\n" +
+	"\tmime_type\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\bmimeType\x12L\n" +
 	"\x03csv\x18\n" +
-	" \x01(\v22.google.cloud.dataplex.v1.StorageFormat.CsvOptionsB\x03\xe0A\x01H\x00R\x03csv\x12N\n" +
-	"\x04json\x18\v \x01(\v23.google.cloud.dataplex.v1.StorageFormat.JsonOptionsB\x03\xe0A\x01H\x00R\x04json\x12W\n" +
-	"\aiceberg\x18\f \x01(\v26.google.cloud.dataplex.v1.StorageFormat.IcebergOptionsB\x03\xe0A\x01H\x00R\aiceberg\x1a\x91\x01\n" +
+	" \x01(\v22.google.cloud.dataplex.v1.StorageFormat.CsvOptionsB\x04\xe2A\x01\x01H\x00R\x03csv\x12O\n" +
+	"\x04json\x18\v \x01(\v23.google.cloud.dataplex.v1.StorageFormat.JsonOptionsB\x04\xe2A\x01\x01H\x00R\x04json\x12X\n" +
+	"\aiceberg\x18\f \x01(\v26.google.cloud.dataplex.v1.StorageFormat.IcebergOptionsB\x04\xe2A\x01\x01H\x00R\aiceberg\x1a\x95\x01\n" +
 	"\n" +
-	"CsvOptions\x12\x1f\n" +
-	"\bencoding\x18\x01 \x01(\tB\x03\xe0A\x01R\bencoding\x12$\n" +
-	"\vheader_rows\x18\x02 \x01(\x05B\x03\xe0A\x01R\n" +
-	"headerRows\x12!\n" +
-	"\tdelimiter\x18\x03 \x01(\tB\x03\xe0A\x01R\tdelimiter\x12\x19\n" +
-	"\x05quote\x18\x04 \x01(\tB\x03\xe0A\x01R\x05quote\x1a.\n" +
-	"\vJsonOptions\x12\x1f\n" +
-	"\bencoding\x18\x01 \x01(\tB\x03\xe0A\x01R\bencoding\x1aB\n" +
-	"\x0eIcebergOptions\x120\n" +
-	"\x11metadata_location\x18\x01 \x01(\tB\x03\xe0A\x01R\x10metadataLocation\"\xab\x01\n" +
+	"CsvOptions\x12 \n" +
+	"\bencoding\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\bencoding\x12%\n" +
+	"\vheader_rows\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\n" +
+	"headerRows\x12\"\n" +
+	"\tdelimiter\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tdelimiter\x12\x1a\n" +
+	"\x05quote\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x05quote\x1a/\n" +
+	"\vJsonOptions\x12 \n" +
+	"\bencoding\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\bencoding\x1aC\n" +
+	"\x0eIcebergOptions\x121\n" +
+	"\x11metadata_location\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x10metadataLocation\"\xab\x01\n" +
 	"\x06Format\x12\x16\n" +
 	"\x12FORMAT_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aPARQUET\x10\x01\x12\b\n" +
@@ -2607,9 +2607,9 @@ const file_google_cloud_dataplex_v1_metadata_proto_rawDesc = "" +
 	"\x1eCOMPRESSION_FORMAT_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04GZIP\x10\x02\x12\t\n" +
 	"\x05BZIP2\x10\x03B\t\n" +
-	"\aoptions\"\xa0\x01\n" +
-	"\rStorageAccess\x12K\n" +
-	"\x04read\x18\x15 \x01(\x0e22.google.cloud.dataplex.v1.StorageAccess.AccessModeB\x03\xe0A\x03R\x04read\"B\n" +
+	"\aoptions\"\xa1\x01\n" +
+	"\rStorageAccess\x12L\n" +
+	"\x04read\x18\x15 \x01(\x0e22.google.cloud.dataplex.v1.StorageAccess.AccessModeB\x04\xe2A\x01\x03R\x04read\"B\n" +
 	"\n" +
 	"AccessMode\x12\x1b\n" +
 	"\x17ACCESS_MODE_UNSPECIFIED\x10\x00\x12\n" +

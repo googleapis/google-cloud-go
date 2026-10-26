@@ -1069,37 +1069,37 @@ var File_google_cloud_discoveryengine_v1_engine_proto protoreflect.FileDescripto
 
 const file_google_cloud_discoveryengine_v1_engine_proto_rawDesc = "" +
 	"\n" +
-	",google/cloud/discoveryengine/v1/engine.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/discoveryengine/v1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb4\x19\n" +
+	",google/cloud/discoveryengine/v1/engine.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/discoveryengine/v1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc1\x19\n" +
 	"\x06Engine\x12h\n" +
 	"\x12chat_engine_config\x18\v \x01(\v28.google.cloud.discoveryengine.v1.Engine.ChatEngineConfigH\x00R\x10chatEngineConfig\x12n\n" +
 	"\x14search_engine_config\x18\r \x01(\v2:.google.cloud.discoveryengine.v1.Engine.SearchEngineConfigH\x00R\x12searchEngineConfig\x12\x96\x01\n" +
-	"\"media_recommendation_engine_config\x18\x0e \x01(\v2G.google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfigH\x00R\x1fmediaRecommendationEngineConfig\x12s\n" +
-	"\x14chat_engine_metadata\x18\f \x01(\v2:.google.cloud.discoveryengine.v1.Engine.ChatEngineMetadataB\x03\xe0A\x03H\x01R\x12chatEngineMetadata\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x05\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12)\n" +
-	"\x0edata_store_ids\x18\x05 \x03(\tB\x03\xe0A\x01R\fdataStoreIds\x12W\n" +
-	"\rsolution_type\x18\x06 \x01(\x0e2-.google.cloud.discoveryengine.v1.SolutionTypeB\x03\xe0A\x02R\fsolutionType\x12c\n" +
-	"\x11industry_vertical\x18\x10 \x01(\x0e21.google.cloud.discoveryengine.v1.IndustryVerticalB\x03\xe0A\x01R\x10industryVertical\x12Y\n" +
-	"\rcommon_config\x18\x0f \x01(\v24.google.cloud.discoveryengine.v1.Engine.CommonConfigR\fcommonConfig\x120\n" +
-	"\x11disable_analytics\x18\x1a \x01(\bB\x03\xe0A\x01R\x10disableAnalytics\x1a\xb6\x01\n" +
+	"\"media_recommendation_engine_config\x18\x0e \x01(\v2G.google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfigH\x00R\x1fmediaRecommendationEngineConfig\x12t\n" +
+	"\x14chat_engine_metadata\x18\f \x01(\v2:.google.cloud.discoveryengine.v1.Engine.ChatEngineMetadataB\x04\xe2A\x01\x03H\x01R\x12chatEngineMetadata\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x05\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12*\n" +
+	"\x0edata_store_ids\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\fdataStoreIds\x12X\n" +
+	"\rsolution_type\x18\x06 \x01(\x0e2-.google.cloud.discoveryengine.v1.SolutionTypeB\x04\xe2A\x01\x02R\fsolutionType\x12d\n" +
+	"\x11industry_vertical\x18\x10 \x01(\x0e21.google.cloud.discoveryengine.v1.IndustryVerticalB\x04\xe2A\x01\x01R\x10industryVertical\x12Y\n" +
+	"\rcommon_config\x18\x0f \x01(\v24.google.cloud.discoveryengine.v1.Engine.CommonConfigR\fcommonConfig\x121\n" +
+	"\x11disable_analytics\x18\x1a \x01(\bB\x04\xe2A\x01\x01R\x10disableAnalytics\x1a\xb6\x01\n" +
 	"\x12SearchEngineConfig\x12L\n" +
 	"\vsearch_tier\x18\x01 \x01(\x0e2+.google.cloud.discoveryengine.v1.SearchTierR\n" +
 	"searchTier\x12R\n" +
-	"\x0esearch_add_ons\x18\x02 \x03(\x0e2,.google.cloud.discoveryengine.v1.SearchAddOnR\fsearchAddOns\x1a\x89\n" +
+	"\x0esearch_add_ons\x18\x02 \x03(\x0e2,.google.cloud.discoveryengine.v1.SearchAddOnR\fsearchAddOns\x1a\x8d\n" +
 	"\n" +
-	"\x1fMediaRecommendationEngineConfig\x12\x17\n" +
-	"\x04type\x18\x01 \x01(\tB\x03\xe0A\x02R\x04type\x125\n" +
+	"\x1fMediaRecommendationEngineConfig\x12\x18\n" +
+	"\x04type\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04type\x125\n" +
 	"\x16optimization_objective\x18\x02 \x01(\tR\x15optimizationObjective\x12\xa7\x01\n" +
 	"\x1doptimization_objective_config\x18\x03 \x01(\v2c.google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfig.OptimizationObjectiveConfigR\x1boptimizationObjectiveConfig\x12|\n" +
-	"\x0etraining_state\x18\x04 \x01(\x0e2U.google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfig.TrainingStateR\rtrainingState\x12\x97\x01\n" +
-	"\x16engine_features_config\x18\x05 \x01(\v2\\.google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfig.EngineFeaturesConfigB\x03\xe0A\x01R\x14engineFeaturesConfig\x1a\x83\x01\n" +
-	"\x1bOptimizationObjectiveConfig\x12&\n" +
-	"\ftarget_field\x18\x01 \x01(\tB\x03\xe0A\x02R\vtargetField\x12<\n" +
-	"\x18target_field_value_float\x18\x02 \x01(\x02B\x03\xe0A\x02R\x15targetFieldValueFloat\x1a\xec\x02\n" +
+	"\x0etraining_state\x18\x04 \x01(\x0e2U.google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfig.TrainingStateR\rtrainingState\x12\x98\x01\n" +
+	"\x16engine_features_config\x18\x05 \x01(\v2\\.google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfig.EngineFeaturesConfigB\x04\xe2A\x01\x01R\x14engineFeaturesConfig\x1a\x85\x01\n" +
+	"\x1bOptimizationObjectiveConfig\x12'\n" +
+	"\ftarget_field\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vtargetField\x12=\n" +
+	"\x18target_field_value_float\x18\x02 \x01(\x02B\x04\xe2A\x01\x02R\x15targetFieldValueFloat\x1a\xec\x02\n" +
 	"\x14EngineFeaturesConfig\x12\xa5\x01\n" +
 	"\x1arecommended_for_you_config\x18\x01 \x01(\v2f.google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfig.RecommendedForYouFeatureConfigH\x00R\x17recommendedForYouConfig\x12\x92\x01\n" +
 	"\x13most_popular_config\x18\x02 \x01(\v2`.google.cloud.discoveryengine.v1.Engine.MediaRecommendationEngineConfig.MostPopularFeatureConfigH\x00R\x11mostPopularConfigB\x17\n" +
@@ -1112,15 +1112,15 @@ const file_google_cloud_discoveryengine_v1_engine_proto_rawDesc = "" +
 	"\x1aTRAINING_STATE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06PAUSED\x10\x01\x12\f\n" +
-	"\bTRAINING\x10\x02\x1a\xa7\x03\n" +
+	"\bTRAINING\x10\x02\x1a\xa9\x03\n" +
 	"\x10ChatEngineConfig\x12\x80\x01\n" +
 	"\x15agent_creation_config\x18\x01 \x01(\v2L.google.cloud.discoveryengine.v1.Engine.ChatEngineConfig.AgentCreationConfigR\x13agentCreationConfig\x127\n" +
-	"\x18dialogflow_agent_to_link\x18\x02 \x01(\tR\x15dialogflowAgentToLink\x121\n" +
-	"\x12allow_cross_region\x18\x03 \x01(\bB\x03\xe0A\x01R\x10allowCrossRegion\x1a\xa3\x01\n" +
+	"\x18dialogflow_agent_to_link\x18\x02 \x01(\tR\x15dialogflowAgentToLink\x122\n" +
+	"\x12allow_cross_region\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x10allowCrossRegion\x1a\xa4\x01\n" +
 	"\x13AgentCreationConfig\x12\x1a\n" +
 	"\bbusiness\x18\x01 \x01(\tR\bbusiness\x122\n" +
-	"\x15default_language_code\x18\x02 \x01(\tR\x13defaultLanguageCode\x12 \n" +
-	"\ttime_zone\x18\x03 \x01(\tB\x03\xe0A\x02R\btimeZone\x12\x1a\n" +
+	"\x15default_language_code\x18\x02 \x01(\tR\x13defaultLanguageCode\x12!\n" +
+	"\ttime_zone\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\btimeZone\x12\x1a\n" +
 	"\blocation\x18\x04 \x01(\tR\blocation\x1a1\n" +
 	"\fCommonConfig\x12!\n" +
 	"\fcompany_name\x18\x01 \x01(\tR\vcompanyName\x1a?\n" +

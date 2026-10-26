@@ -239,24 +239,24 @@ var File_google_cloud_ces_v1beta_toolset_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1beta_toolset_proto_rawDesc = "" +
 	"\n" +
-	"%google/cloud/ces/v1beta/toolset.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a$google/cloud/ces/v1beta/common.proto\x1a/google/cloud/ces/v1beta/connector_toolset.proto\x1a#google/cloud/ces/v1beta/fakes.proto\x1a)google/cloud/ces/v1beta/mcp_toolset.proto\x1a.google/cloud/ces/v1beta/open_api_toolset.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x80\a\n" +
-	"\aToolset\x12K\n" +
-	"\vmcp_toolset\x18\x06 \x01(\v2#.google.cloud.ces.v1beta.McpToolsetB\x03\xe0A\x01H\x00R\n" +
-	"mcpToolset\x12X\n" +
-	"\x10open_api_toolset\x18\a \x01(\v2'.google.cloud.ces.v1beta.OpenApiToolsetB\x03\xe0A\x01H\x00R\x0eopenApiToolset\x12]\n" +
-	"\x11connector_toolset\x18\b \x01(\v2).google.cloud.ces.v1beta.ConnectorToolsetB\x03\xe0A\x01H\x00R\x10connectorToolset\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12%\n" +
+	"%google/cloud/ces/v1beta/toolset.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a$google/cloud/ces/v1beta/common.proto\x1a/google/cloud/ces/v1beta/connector_toolset.proto\x1a#google/cloud/ces/v1beta/fakes.proto\x1a)google/cloud/ces/v1beta/mcp_toolset.proto\x1a.google/cloud/ces/v1beta/open_api_toolset.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8b\a\n" +
+	"\aToolset\x12L\n" +
+	"\vmcp_toolset\x18\x06 \x01(\v2#.google.cloud.ces.v1beta.McpToolsetB\x04\xe2A\x01\x01H\x00R\n" +
+	"mcpToolset\x12Y\n" +
+	"\x10open_api_toolset\x18\a \x01(\v2'.google.cloud.ces.v1beta.OpenApiToolsetB\x04\xe2A\x01\x01H\x00R\x0eopenApiToolset\x12^\n" +
+	"\x11connector_toolset\x18\b \x01(\v2).google.cloud.ces.v1beta.ConnectorToolsetB\x04\xe2A\x01\x01H\x00R\x10connectorToolset\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12&\n" +
 	"\vdescription\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\vdescription\x128\n" +
-	"\atimeout\x18\f \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\atimeout\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\vdescription\x129\n" +
+	"\atimeout\x18\f \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\atimeout\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12\x12\n" +
-	"\x04etag\x18\x05 \x01(\tR\x04etag\x12R\n" +
-	"\x0eexecution_type\x18\t \x01(\x0e2&.google.cloud.ces.v1beta.ExecutionTypeB\x03\xe0A\x01R\rexecutionType\x12V\n" +
-	"\x10tool_fake_config\x18\v \x01(\v2'.google.cloud.ces.v1beta.ToolFakeConfigB\x03\xe0A\x01R\x0etoolFakeConfig:y\xeaAv\n" +
+	"\x04etag\x18\x05 \x01(\tR\x04etag\x12S\n" +
+	"\x0eexecution_type\x18\t \x01(\x0e2&.google.cloud.ces.v1beta.ExecutionTypeB\x04\xe2A\x01\x01R\rexecutionType\x12W\n" +
+	"\x10tool_fake_config\x18\v \x01(\v2'.google.cloud.ces.v1beta.ToolFakeConfigB\x04\xe2A\x01\x01R\x0etoolFakeConfig:y\xeaAv\n" +
 	"\x1aces.googleapis.com/Toolset\x12Eprojects/{project}/locations/{location}/apps/{app}/toolsets/{toolset}*\btoolsets2\atoolsetB\x0e\n" +
 	"\ftoolset_typeB\\\n" +
 	"\x1bcom.google.cloud.ces.v1betaB\fToolsetProtoP\x01Z-cloud.google.com/go/ces/apiv1beta/cespb;cespbb\x06proto3"

@@ -786,52 +786,52 @@ var File_google_cloud_dataplex_v1_data_discovery_proto protoreflect.FileDescript
 
 const file_google_cloud_dataplex_v1_data_discovery_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/dataplex/v1/data_discovery.proto\x12\x18google.cloud.dataplex.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xad\f\n" +
-	"\x11DataDiscoverySpec\x12\x87\x01\n" +
-	"\x1abigquery_publishing_config\x18\x01 \x01(\v2D.google.cloud.dataplex.v1.DataDiscoverySpec.BigQueryPublishingConfigB\x03\xe0A\x01R\x18bigqueryPublishingConfig\x12b\n" +
-	"\x0estorage_config\x18d \x01(\v29.google.cloud.dataplex.v1.DataDiscoverySpec.StorageConfigH\x00R\rstorageConfig\x1a\x98\x03\n" +
-	"\x18BigQueryPublishingConfig\x12r\n" +
+	"-google/cloud/dataplex/v1/data_discovery.proto\x12\x18google.cloud.dataplex.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xbf\f\n" +
+	"\x11DataDiscoverySpec\x12\x88\x01\n" +
+	"\x1abigquery_publishing_config\x18\x01 \x01(\v2D.google.cloud.dataplex.v1.DataDiscoverySpec.BigQueryPublishingConfigB\x04\xe2A\x01\x01R\x18bigqueryPublishingConfig\x12b\n" +
+	"\x0estorage_config\x18d \x01(\v29.google.cloud.dataplex.v1.DataDiscoverySpec.StorageConfigH\x00R\rstorageConfig\x1a\x9c\x03\n" +
+	"\x18BigQueryPublishingConfig\x12s\n" +
 	"\n" +
-	"table_type\x18\x02 \x01(\x0e2N.google.cloud.dataplex.v1.DataDiscoverySpec.BigQueryPublishingConfig.TableTypeB\x03\xe0A\x01R\ttableType\x12T\n" +
+	"table_type\x18\x02 \x01(\x0e2N.google.cloud.dataplex.v1.DataDiscoverySpec.BigQueryPublishingConfig.TableTypeB\x04\xe2A\x01\x01R\ttableType\x12U\n" +
 	"\n" +
-	"connection\x18\x03 \x01(\tB4\xe0A\x01\xfaA.\n" +
+	"connection\x18\x03 \x01(\tB5\xe2A\x01\x01\xfaA.\n" +
 	",bigqueryconnection.googleapis.com/ConnectionR\n" +
-	"connection\x12\x1f\n" +
-	"\blocation\x18\x04 \x01(\tB\x03\xe0A\x01R\blocation\x12M\n" +
-	"\aproject\x18\x05 \x01(\tB3\xe0A\x01\xfaA-\n" +
+	"connection\x12 \n" +
+	"\blocation\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\blocation\x12N\n" +
+	"\aproject\x18\x05 \x01(\tB4\xe2A\x01\x01\xfaA-\n" +
 	"+cloudresourcemanager.googleapis.com/ProjectR\aproject\"B\n" +
 	"\tTableType\x12\x1a\n" +
 	"\x16TABLE_TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bEXTERNAL\x10\x01\x12\v\n" +
-	"\aBIGLAKE\x10\x02\x1a\xfb\x06\n" +
-	"\rStorageConfig\x12.\n" +
-	"\x10include_patterns\x18\x01 \x03(\tB\x03\xe0A\x01R\x0fincludePatterns\x12.\n" +
-	"\x10exclude_patterns\x18\x02 \x03(\tB\x03\xe0A\x01R\x0fexcludePatterns\x12j\n" +
-	"\vcsv_options\x18\x03 \x01(\v2D.google.cloud.dataplex.v1.DataDiscoverySpec.StorageConfig.CsvOptionsB\x03\xe0A\x01R\n" +
-	"csvOptions\x12m\n" +
-	"\fjson_options\x18\x04 \x01(\v2E.google.cloud.dataplex.v1.DataDiscoverySpec.StorageConfig.JsonOptionsB\x03\xe0A\x01R\vjsonOptions\x12\x92\x01\n" +
-	"\x19unstructured_data_options\x18\x05 \x01(\v2Q.google.cloud.dataplex.v1.DataDiscoverySpec.StorageConfig.UnstructuredDataOptionsB\x03\xe0A\x01R\x17unstructuredDataOptions\x1a\xce\x01\n" +
+	"\aBIGLAKE\x10\x02\x1a\x88\a\n" +
+	"\rStorageConfig\x12/\n" +
+	"\x10include_patterns\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\x0fincludePatterns\x12/\n" +
+	"\x10exclude_patterns\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x0fexcludePatterns\x12k\n" +
+	"\vcsv_options\x18\x03 \x01(\v2D.google.cloud.dataplex.v1.DataDiscoverySpec.StorageConfig.CsvOptionsB\x04\xe2A\x01\x01R\n" +
+	"csvOptions\x12n\n" +
+	"\fjson_options\x18\x04 \x01(\v2E.google.cloud.dataplex.v1.DataDiscoverySpec.StorageConfig.JsonOptionsB\x04\xe2A\x01\x01R\vjsonOptions\x12\x93\x01\n" +
+	"\x19unstructured_data_options\x18\x05 \x01(\v2Q.google.cloud.dataplex.v1.DataDiscoverySpec.StorageConfig.UnstructuredDataOptionsB\x04\xe2A\x01\x01R\x17unstructuredDataOptions\x1a\xd3\x01\n" +
 	"\n" +
-	"CsvOptions\x12$\n" +
-	"\vheader_rows\x18\x01 \x01(\x05B\x03\xe0A\x01R\n" +
-	"headerRows\x12!\n" +
-	"\tdelimiter\x18\x02 \x01(\tB\x03\xe0A\x01R\tdelimiter\x12\x1f\n" +
-	"\bencoding\x18\x03 \x01(\tB\x03\xe0A\x01R\bencoding\x12;\n" +
-	"\x17type_inference_disabled\x18\x04 \x01(\bB\x03\xe0A\x01R\x15typeInferenceDisabled\x12\x19\n" +
-	"\x05quote\x18\x05 \x01(\tB\x03\xe0A\x01R\x05quote\x1ak\n" +
-	"\vJsonOptions\x12\x1f\n" +
-	"\bencoding\x18\x01 \x01(\tB\x03\xe0A\x01R\bencoding\x12;\n" +
-	"\x17type_inference_disabled\x18\x02 \x01(\bB\x03\xe0A\x01R\x15typeInferenceDisabled\x1a\\\n" +
-	"\x17UnstructuredDataOptions\x12A\n" +
-	"\x1asemantic_inference_enabled\x18\x02 \x01(\bB\x03\xe0A\x01R\x18semanticInferenceEnabledB\x11\n" +
-	"\x0fresource_config\"\x83\x06\n" +
-	"\x13DataDiscoveryResult\x12v\n" +
-	"\x13bigquery_publishing\x18\x01 \x01(\v2@.google.cloud.dataplex.v1.DataDiscoveryResult.BigQueryPublishingB\x03\xe0A\x03R\x12bigqueryPublishing\x12j\n" +
-	"\x0fscan_statistics\x18\x02 \x01(\v2<.google.cloud.dataplex.v1.DataDiscoveryResult.ScanStatisticsB\x03\xe0A\x03R\x0escanStatistics\x1ax\n" +
-	"\x12BigQueryPublishing\x12A\n" +
-	"\adataset\x18\x01 \x01(\tB'\xe0A\x03\xfaA!\n" +
-	"\x1fbigquery.googleapis.com/DatasetR\adataset\x12\x1f\n" +
-	"\blocation\x18\x02 \x01(\tB\x03\xe0A\x03R\blocation\x1a\x8d\x03\n" +
+	"CsvOptions\x12%\n" +
+	"\vheader_rows\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\n" +
+	"headerRows\x12\"\n" +
+	"\tdelimiter\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\tdelimiter\x12 \n" +
+	"\bencoding\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\bencoding\x12<\n" +
+	"\x17type_inference_disabled\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x15typeInferenceDisabled\x12\x1a\n" +
+	"\x05quote\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x05quote\x1am\n" +
+	"\vJsonOptions\x12 \n" +
+	"\bencoding\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\bencoding\x12<\n" +
+	"\x17type_inference_disabled\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x15typeInferenceDisabled\x1a]\n" +
+	"\x17UnstructuredDataOptions\x12B\n" +
+	"\x1asemantic_inference_enabled\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x18semanticInferenceEnabledB\x11\n" +
+	"\x0fresource_config\"\x87\x06\n" +
+	"\x13DataDiscoveryResult\x12w\n" +
+	"\x13bigquery_publishing\x18\x01 \x01(\v2@.google.cloud.dataplex.v1.DataDiscoveryResult.BigQueryPublishingB\x04\xe2A\x01\x03R\x12bigqueryPublishing\x12k\n" +
+	"\x0fscan_statistics\x18\x02 \x01(\v2<.google.cloud.dataplex.v1.DataDiscoveryResult.ScanStatisticsB\x04\xe2A\x01\x03R\x0escanStatistics\x1az\n" +
+	"\x12BigQueryPublishing\x12B\n" +
+	"\adataset\x18\x01 \x01(\tB(\xe2A\x01\x03\xfaA!\n" +
+	"\x1fbigquery.googleapis.com/DatasetR\adataset\x12 \n" +
+	"\blocation\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\blocation\x1a\x8d\x03\n" +
 	"\x0eScanStatistics\x12,\n" +
 	"\x12scanned_file_count\x18\x01 \x01(\x05R\x10scannedFileCount\x120\n" +
 	"\x14data_processed_bytes\x18\x02 \x01(\x03R\x12dataProcessedBytes\x12%\n" +

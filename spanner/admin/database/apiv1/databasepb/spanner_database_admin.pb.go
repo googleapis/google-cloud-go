@@ -2530,97 +2530,97 @@ const file_google_spanner_admin_database_v1_spanner_database_admin_proto_rawDesc
 	"sourceType\x12O\n" +
 	"\vbackup_info\x18\x02 \x01(\v2,.google.spanner.admin.database.v1.BackupInfoH\x00R\n" +
 	"backupInfoB\r\n" +
-	"\vsource_info\"\x82\b\n" +
-	"\bDatabase\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12K\n" +
-	"\x05state\x18\x02 \x01(\x0e20.google.spanner.admin.database.v1.Database.StateB\x03\xe0A\x03R\x05state\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12U\n" +
-	"\frestore_info\x18\x04 \x01(\v2-.google.spanner.admin.database.v1.RestoreInfoB\x03\xe0A\x03R\vrestoreInfo\x12d\n" +
-	"\x11encryption_config\x18\x05 \x01(\v22.google.spanner.admin.database.v1.EncryptionConfigB\x03\xe0A\x03R\x10encryptionConfig\x12^\n" +
-	"\x0fencryption_info\x18\b \x03(\v20.google.spanner.admin.database.v1.EncryptionInfoB\x03\xe0A\x03R\x0eencryptionInfo\x12=\n" +
-	"\x18version_retention_period\x18\x06 \x01(\tB\x03\xe0A\x03R\x16versionRetentionPeriod\x12S\n" +
-	"\x15earliest_version_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x13earliestVersionTime\x12*\n" +
-	"\x0edefault_leader\x18\t \x01(\tB\x03\xe0A\x03R\rdefaultLeader\x12a\n" +
+	"\vsource_info\"\x8d\b\n" +
+	"\bDatabase\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12L\n" +
+	"\x05state\x18\x02 \x01(\x0e20.google.spanner.admin.database.v1.Database.StateB\x04\xe2A\x01\x03R\x05state\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12V\n" +
+	"\frestore_info\x18\x04 \x01(\v2-.google.spanner.admin.database.v1.RestoreInfoB\x04\xe2A\x01\x03R\vrestoreInfo\x12e\n" +
+	"\x11encryption_config\x18\x05 \x01(\v22.google.spanner.admin.database.v1.EncryptionConfigB\x04\xe2A\x01\x03R\x10encryptionConfig\x12_\n" +
+	"\x0fencryption_info\x18\b \x03(\v20.google.spanner.admin.database.v1.EncryptionInfoB\x04\xe2A\x01\x03R\x0eencryptionInfo\x12>\n" +
+	"\x18version_retention_period\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x16versionRetentionPeriod\x12T\n" +
+	"\x15earliest_version_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x13earliestVersionTime\x12+\n" +
+	"\x0edefault_leader\x18\t \x01(\tB\x04\xe2A\x01\x03R\rdefaultLeader\x12b\n" +
 	"\x10database_dialect\x18\n" +
-	" \x01(\x0e21.google.spanner.admin.database.v1.DatabaseDialectB\x03\xe0A\x03R\x0fdatabaseDialect\x124\n" +
-	"\x16enable_drop_protection\x18\v \x01(\bR\x14enableDropProtection\x12%\n" +
-	"\vreconciling\x18\f \x01(\bB\x03\xe0A\x03R\vreconciling\"M\n" +
+	" \x01(\x0e21.google.spanner.admin.database.v1.DatabaseDialectB\x04\xe2A\x01\x03R\x0fdatabaseDialect\x124\n" +
+	"\x16enable_drop_protection\x18\v \x01(\bR\x14enableDropProtection\x12&\n" +
+	"\vreconciling\x18\f \x01(\bB\x04\xe2A\x01\x03R\vreconciling\"M\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bCREATING\x10\x01\x12\t\n" +
 	"\x05READY\x10\x02\x12\x14\n" +
 	"\x10READY_OPTIMIZING\x10\x03:b\xeaA_\n" +
-	"\x1fspanner.googleapis.com/Database\x12<projects/{project}/instances/{instance}/databases/{database}\"\x93\x01\n" +
-	"\x14ListDatabasesRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
+	"\x1fspanner.googleapis.com/Database\x12<projects/{project}/instances/{instance}/databases/{database}\"\x94\x01\n" +
+	"\x14ListDatabasesRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
 	"\x1fspanner.googleapis.com/InstanceR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x04 \x01(\tR\tpageToken\"\x89\x01\n" +
 	"\x15ListDatabasesResponse\x12H\n" +
 	"\tdatabases\x18\x01 \x03(\v2*.google.spanner.admin.database.v1.DatabaseR\tdatabases\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb3\x03\n" +
-	"\x15CreateDatabaseRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fspanner.googleapis.com/InstanceR\x06parent\x12.\n" +
-	"\x10create_statement\x18\x02 \x01(\tB\x03\xe0A\x02R\x0fcreateStatement\x12.\n" +
-	"\x10extra_statements\x18\x03 \x03(\tB\x03\xe0A\x01R\x0fextraStatements\x12d\n" +
-	"\x11encryption_config\x18\x04 \x01(\v22.google.spanner.admin.database.v1.EncryptionConfigB\x03\xe0A\x01R\x10encryptionConfig\x12a\n" +
-	"\x10database_dialect\x18\x05 \x01(\x0e21.google.spanner.admin.database.v1.DatabaseDialectB\x03\xe0A\x01R\x0fdatabaseDialect\x120\n" +
-	"\x11proto_descriptors\x18\x06 \x01(\fB\x03\xe0A\x01R\x10protoDescriptors\"Z\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb9\x03\n" +
+	"\x15CreateDatabaseRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fspanner.googleapis.com/InstanceR\x06parent\x12/\n" +
+	"\x10create_statement\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0fcreateStatement\x12/\n" +
+	"\x10extra_statements\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x0fextraStatements\x12e\n" +
+	"\x11encryption_config\x18\x04 \x01(\v22.google.spanner.admin.database.v1.EncryptionConfigB\x04\xe2A\x01\x01R\x10encryptionConfig\x12b\n" +
+	"\x10database_dialect\x18\x05 \x01(\x0e21.google.spanner.admin.database.v1.DatabaseDialectB\x04\xe2A\x01\x01R\x0fdatabaseDialect\x121\n" +
+	"\x11proto_descriptors\x18\x06 \x01(\fB\x04\xe2A\x01\x01R\x10protoDescriptors\"Z\n" +
 	"\x16CreateDatabaseMetadata\x12@\n" +
 	"\bdatabase\x18\x01 \x01(\tB$\xfaA!\n" +
-	"\x1fspanner.googleapis.com/DatabaseR\bdatabase\"Q\n" +
-	"\x12GetDatabaseRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fspanner.googleapis.com/DatabaseR\x04name\"\xa6\x01\n" +
-	"\x15UpdateDatabaseRequest\x12K\n" +
-	"\bdatabase\x18\x01 \x01(\v2*.google.spanner.admin.database.v1.DatabaseB\x03\xe0A\x02R\bdatabase\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
+	"\x1fspanner.googleapis.com/DatabaseR\bdatabase\"R\n" +
+	"\x12GetDatabaseRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fspanner.googleapis.com/DatabaseR\x04name\"\xa8\x01\n" +
+	"\x15UpdateDatabaseRequest\x12L\n" +
+	"\bdatabase\x18\x01 \x01(\v2*.google.spanner.admin.database.v1.DatabaseB\x04\xe2A\x01\x02R\bdatabase\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
 	"updateMask\"\xf9\x01\n" +
 	"\x16UpdateDatabaseMetadata\x12Q\n" +
 	"\arequest\x18\x01 \x01(\v27.google.spanner.admin.database.v1.UpdateDatabaseRequestR\arequest\x12O\n" +
 	"\bprogress\x18\x02 \x01(\v23.google.spanner.admin.database.v1.OperationProgressR\bprogress\x12;\n" +
 	"\vcancel_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"cancelTime\"\x87\x02\n" +
-	"\x18UpdateDatabaseDdlRequest\x12C\n" +
-	"\bdatabase\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fspanner.googleapis.com/DatabaseR\bdatabase\x12#\n" +
+	"cancelTime\"\x8b\x02\n" +
+	"\x18UpdateDatabaseDdlRequest\x12D\n" +
+	"\bdatabase\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fspanner.googleapis.com/DatabaseR\bdatabase\x12$\n" +
 	"\n" +
-	"statements\x18\x02 \x03(\tB\x03\xe0A\x02R\n" +
+	"statements\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\n" +
 	"statements\x12!\n" +
-	"\foperation_id\x18\x03 \x01(\tR\voperationId\x120\n" +
-	"\x11proto_descriptors\x18\x04 \x01(\fB\x03\xe0A\x01R\x10protoDescriptors\x12,\n" +
-	"\x0fthroughput_mode\x18\x05 \x01(\bB\x03\xe0A\x01R\x0ethroughputMode\"t\n" +
+	"\foperation_id\x18\x03 \x01(\tR\voperationId\x121\n" +
+	"\x11proto_descriptors\x18\x04 \x01(\fB\x04\xe2A\x01\x01R\x10protoDescriptors\x12-\n" +
+	"\x0fthroughput_mode\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\x0ethroughputMode\"t\n" +
 	"\x16DdlStatementActionInfo\x12\x16\n" +
 	"\x06action\x18\x01 \x01(\tR\x06action\x12\x1f\n" +
 	"\ventity_type\x18\x02 \x01(\tR\n" +
 	"entityType\x12!\n" +
-	"\fentity_names\x18\x03 \x03(\tR\ventityNames\"\x8e\x03\n" +
+	"\fentity_names\x18\x03 \x03(\tR\ventityNames\"\x8f\x03\n" +
 	"\x19UpdateDatabaseDdlMetadata\x12@\n" +
 	"\bdatabase\x18\x01 \x01(\tB$\xfaA!\n" +
 	"\x1fspanner.googleapis.com/DatabaseR\bdatabase\x12\x1e\n" +
 	"\n" +
 	"statements\x18\x02 \x03(\tR\n" +
 	"statements\x12G\n" +
-	"\x11commit_timestamps\x18\x03 \x03(\v2\x1a.google.protobuf.TimestampR\x10commitTimestamps\x12!\n" +
-	"\tthrottled\x18\x04 \x01(\bB\x03\xe0A\x03R\tthrottled\x12O\n" +
+	"\x11commit_timestamps\x18\x03 \x03(\v2\x1a.google.protobuf.TimestampR\x10commitTimestamps\x12\"\n" +
+	"\tthrottled\x18\x04 \x01(\bB\x04\xe2A\x01\x03R\tthrottled\x12O\n" +
 	"\bprogress\x18\x05 \x03(\v23.google.spanner.admin.database.v1.OperationProgressR\bprogress\x12R\n" +
-	"\aactions\x18\x06 \x03(\v28.google.spanner.admin.database.v1.DdlStatementActionInfoR\aactions\"Z\n" +
-	"\x13DropDatabaseRequest\x12C\n" +
-	"\bdatabase\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fspanner.googleapis.com/DatabaseR\bdatabase\"\\\n" +
-	"\x15GetDatabaseDdlRequest\x12C\n" +
-	"\bdatabase\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
+	"\aactions\x18\x06 \x03(\v28.google.spanner.admin.database.v1.DdlStatementActionInfoR\aactions\"[\n" +
+	"\x13DropDatabaseRequest\x12D\n" +
+	"\bdatabase\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fspanner.googleapis.com/DatabaseR\bdatabase\"]\n" +
+	"\x15GetDatabaseDdlRequest\x12D\n" +
+	"\bdatabase\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
 	"\x1fspanner.googleapis.com/DatabaseR\bdatabase\"e\n" +
 	"\x16GetDatabaseDdlResponse\x12\x1e\n" +
 	"\n" +
 	"statements\x18\x01 \x03(\tR\n" +
 	"statements\x12+\n" +
-	"\x11proto_descriptors\x18\x02 \x01(\fR\x10protoDescriptors\"\xb4\x01\n" +
-	"\x1dListDatabaseOperationsRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
+	"\x11proto_descriptors\x18\x02 \x01(\fR\x10protoDescriptors\"\xb5\x01\n" +
+	"\x1dListDatabaseOperationsRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
 	"\x1fspanner.googleapis.com/InstanceR\x06parent\x12\x16\n" +
 	"\x06filter\x18\x02 \x01(\tR\x06filter\x12\x1b\n" +
 	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12\x1d\n" +
@@ -2630,22 +2630,22 @@ const file_google_spanner_admin_database_v1_spanner_database_admin_proto_rawDesc
 	"\n" +
 	"operations\x18\x01 \x03(\v2\x1d.google.longrunning.OperationR\n" +
 	"operations\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xbc\x02\n" +
-	"\x16RestoreDatabaseRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fspanner.googleapis.com/InstanceR\x06parent\x12$\n" +
-	"\vdatabase_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xbf\x02\n" +
+	"\x16RestoreDatabaseRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fspanner.googleapis.com/InstanceR\x06parent\x12%\n" +
+	"\vdatabase_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
 	"databaseId\x12<\n" +
 	"\x06backup\x18\x03 \x01(\tB\"\xfaA\x1f\n" +
-	"\x1dspanner.googleapis.com/BackupH\x00R\x06backup\x12s\n" +
-	"\x11encryption_config\x18\x04 \x01(\v2A.google.spanner.admin.database.v1.RestoreDatabaseEncryptionConfigB\x03\xe0A\x01R\x10encryptionConfigB\b\n" +
-	"\x06source\"\xde\x03\n" +
-	"\x1fRestoreDatabaseEncryptionConfig\x12~\n" +
-	"\x0fencryption_type\x18\x01 \x01(\x0e2P.google.spanner.admin.database.v1.RestoreDatabaseEncryptionConfig.EncryptionTypeB\x03\xe0A\x02R\x0eencryptionType\x12K\n" +
-	"\fkms_key_name\x18\x02 \x01(\tB)\xe0A\x01\xfaA#\n" +
+	"\x1dspanner.googleapis.com/BackupH\x00R\x06backup\x12t\n" +
+	"\x11encryption_config\x18\x04 \x01(\v2A.google.spanner.admin.database.v1.RestoreDatabaseEncryptionConfigB\x04\xe2A\x01\x01R\x10encryptionConfigB\b\n" +
+	"\x06source\"\xe1\x03\n" +
+	"\x1fRestoreDatabaseEncryptionConfig\x12\x7f\n" +
+	"\x0fencryption_type\x18\x01 \x01(\x0e2P.google.spanner.admin.database.v1.RestoreDatabaseEncryptionConfig.EncryptionTypeB\x04\xe2A\x01\x02R\x0eencryptionType\x12L\n" +
+	"\fkms_key_name\x18\x02 \x01(\tB*\xe2A\x01\x01\xfaA#\n" +
 	"!cloudkms.googleapis.com/CryptoKeyR\n" +
-	"kmsKeyName\x12M\n" +
-	"\rkms_key_names\x18\x03 \x03(\tB)\xe0A\x01\xfaA#\n" +
+	"kmsKeyName\x12N\n" +
+	"\rkms_key_names\x18\x03 \x03(\tB*\xe2A\x01\x01\xfaA#\n" +
 	"!cloudkms.googleapis.com/CryptoKeyR\vkmsKeyNames\"\x9e\x01\n" +
 	"\x0eEncryptionType\x12\x1f\n" +
 	"\x1bENCRYPTION_TYPE_UNSPECIFIED\x10\x00\x12+\n" +
@@ -2667,40 +2667,40 @@ const file_google_spanner_admin_database_v1_spanner_database_admin_proto_rawDesc
 	" OptimizeRestoredDatabaseMetadata\x128\n" +
 	"\x04name\x18\x01 \x01(\tB$\xfaA!\n" +
 	"\x1fspanner.googleapis.com/DatabaseR\x04name\x12O\n" +
-	"\bprogress\x18\x02 \x01(\v23.google.spanner.admin.database.v1.OperationProgressR\bprogress\"\xa4\x01\n" +
-	"\fDatabaseRole\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name:{\xeaAx\n" +
-	"#spanner.googleapis.com/DatabaseRole\x12Qprojects/{project}/instances/{instance}/databases/{database}/databaseRoles/{role}\"\x97\x01\n" +
-	"\x18ListDatabaseRolesRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
+	"\bprogress\x18\x02 \x01(\v23.google.spanner.admin.database.v1.OperationProgressR\bprogress\"\xa5\x01\n" +
+	"\fDatabaseRole\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name:{\xeaAx\n" +
+	"#spanner.googleapis.com/DatabaseRole\x12Qprojects/{project}/instances/{instance}/databases/{database}/databaseRoles/{role}\"\x98\x01\n" +
+	"\x18ListDatabaseRolesRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
 	"\x1fspanner.googleapis.com/DatabaseR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x9a\x01\n" +
 	"\x19ListDatabaseRolesResponse\x12U\n" +
 	"\x0edatabase_roles\x18\x01 \x03(\v2..google.spanner.admin.database.v1.DatabaseRoleR\rdatabaseRoles\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xd6\x01\n" +
-	"\x15AddSplitPointsRequest\x12C\n" +
-	"\bdatabase\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fspanner.googleapis.com/DatabaseR\bdatabase\x12U\n" +
-	"\fsplit_points\x18\x02 \x03(\v2-.google.spanner.admin.database.v1.SplitPointsB\x03\xe0A\x02R\vsplitPoints\x12!\n" +
-	"\tinitiator\x18\x03 \x01(\tB\x03\xe0A\x01R\tinitiator\"\x18\n" +
-	"\x16AddSplitPointsResponse\"\x8c\x02\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xd9\x01\n" +
+	"\x15AddSplitPointsRequest\x12D\n" +
+	"\bdatabase\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fspanner.googleapis.com/DatabaseR\bdatabase\x12V\n" +
+	"\fsplit_points\x18\x02 \x03(\v2-.google.spanner.admin.database.v1.SplitPointsB\x04\xe2A\x01\x02R\vsplitPoints\x12\"\n" +
+	"\tinitiator\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tinitiator\"\x18\n" +
+	"\x16AddSplitPointsResponse\"\x8f\x02\n" +
 	"\vSplitPoints\x12\x14\n" +
 	"\x05table\x18\x01 \x01(\tR\x05table\x12\x14\n" +
-	"\x05index\x18\x02 \x01(\tR\x05index\x12J\n" +
-	"\x04keys\x18\x03 \x03(\v21.google.spanner.admin.database.v1.SplitPoints.KeyB\x03\xe0A\x02R\x04keys\x12@\n" +
-	"\vexpire_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\n" +
-	"expireTime\x1aC\n" +
-	"\x03Key\x12<\n" +
-	"\tkey_parts\x18\x01 \x01(\v2\x1a.google.protobuf.ListValueB\x03\xe0A\x02R\bkeyParts\"\x95\x02\n" +
-	"#InternalUpdateGraphOperationRequest\x12C\n" +
-	"\bdatabase\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fspanner.googleapis.com/DatabaseR\bdatabase\x12&\n" +
-	"\foperation_id\x18\x02 \x01(\tB\x03\xe0A\x02R\voperationId\x12/\n" +
-	"\x11vm_identity_token\x18\x05 \x01(\tB\x03\xe0A\x02R\x0fvmIdentityToken\x12\x1f\n" +
-	"\bprogress\x18\x03 \x01(\x01B\x03\xe0A\x01R\bprogress\x12/\n" +
-	"\x06status\x18\x06 \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x01R\x06status\"&\n" +
+	"\x05index\x18\x02 \x01(\tR\x05index\x12K\n" +
+	"\x04keys\x18\x03 \x03(\v21.google.spanner.admin.database.v1.SplitPoints.KeyB\x04\xe2A\x01\x02R\x04keys\x12A\n" +
+	"\vexpire_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\n" +
+	"expireTime\x1aD\n" +
+	"\x03Key\x12=\n" +
+	"\tkey_parts\x18\x01 \x01(\v2\x1a.google.protobuf.ListValueB\x04\xe2A\x01\x02R\bkeyParts\"\x9a\x02\n" +
+	"#InternalUpdateGraphOperationRequest\x12D\n" +
+	"\bdatabase\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fspanner.googleapis.com/DatabaseR\bdatabase\x12'\n" +
+	"\foperation_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\voperationId\x120\n" +
+	"\x11vm_identity_token\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\x0fvmIdentityToken\x12 \n" +
+	"\bprogress\x18\x03 \x01(\x01B\x04\xe2A\x01\x01R\bprogress\x120\n" +
+	"\x06status\x18\x06 \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x01R\x06status\"&\n" +
 	"$InternalUpdateGraphOperationResponse*5\n" +
 	"\x11RestoreSourceType\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\n" +

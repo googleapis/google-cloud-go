@@ -28,6 +28,7 @@ import (
 
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
+	"go.opentelemetry.io/otel/trace"
 )
 
 var crc32cTable = crc32.MakeTable(crc32.Castagnoli)
@@ -119,7 +120,12 @@ func (o *ObjectHandle) NewReader(ctx context.Context, opts ...ReaderOption) (*Re
 func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64, opts ...ReaderOption) (r *Reader, err error) {
 	// This span covers the life of the reader. It is closed via the context
 	// in Reader.Close.
-	ctx, _ = startSpanWithBucket(ctx, o.c, o.bucket, "Object.Reader")
+	readMode := "range"
+	if offset == 0 && length < 0 {
+		readMode = "full"
+	}
+	ctx, _ = startSpanWithObject(ctx, o.c, o.bucket, o.object, "Object.Reader",
+		trace.WithAttributes(attribute.String("gcp.storage.read.mode", readMode)))
 	defer func() { endSpan(ctx, err) }()
 
 	if err := o.validate(); err != nil {
@@ -265,7 +271,8 @@ func (o *ObjectHandle) NewMultiRangeDownloader(ctx context.Context, opts ...MRDO
 	// This span covers the life of the MRD. It is closed via the context
 	// in MultiRangeDownloader.Close.
 	var spanCtx context.Context
-	spanCtx, _ = startSpanWithBucket(ctx, o.c, o.bucket, "Object.MultiRangeDownloader")
+	spanCtx, _ = startSpanWithObject(ctx, o.c, o.bucket, o.object, "Object.MultiRangeDownloader",
+		trace.WithAttributes(attribute.String("gcp.storage.read.mode", "multi_range")))
 	defer func() {
 		if err != nil {
 			endSpan(spanCtx, err)

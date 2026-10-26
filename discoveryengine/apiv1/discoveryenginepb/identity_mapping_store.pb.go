@@ -223,18 +223,18 @@ var File_google_cloud_discoveryengine_v1_identity_mapping_store_proto protorefle
 
 const file_google_cloud_discoveryengine_v1_identity_mapping_store_proto_rawDesc = "" +
 	"\n" +
-	"<google/cloud/discoveryengine/v1/identity_mapping_store.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a9google/cloud/discoveryengine/v1/cmek_config_service.proto\"\xbd\x02\n" +
-	"\x14IdentityMappingStore\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12%\n" +
-	"\fkms_key_name\x18\x03 \x01(\tB\x03\xe0A\x04R\n" +
-	"kmsKeyName\x12Q\n" +
-	"\vcmek_config\x18\x04 \x01(\v2+.google.cloud.discoveryengine.v1.CmekConfigB\x03\xe0A\x03R\n" +
+	"<google/cloud/discoveryengine/v1/identity_mapping_store.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a9google/cloud/discoveryengine/v1/cmek_config_service.proto\"\xc0\x02\n" +
+	"\x14IdentityMappingStore\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12&\n" +
+	"\fkms_key_name\x18\x03 \x01(\tB\x04\xe2A\x01\x04R\n" +
+	"kmsKeyName\x12R\n" +
+	"\vcmek_config\x18\x04 \x01(\v2+.google.cloud.discoveryengine.v1.CmekConfigB\x04\xe2A\x01\x03R\n" +
 	"cmekConfig:\x91\x01\xeaA\x8d\x01\n" +
-	"3discoveryengine.googleapis.com/IdentityMappingStore\x12Vprojects/{project}/locations/{location}/identityMappingStores/{identity_mapping_store}\"\x98\x01\n" +
+	"3discoveryengine.googleapis.com/IdentityMappingStore\x12Vprojects/{project}/locations/{location}/identityMappingStores/{identity_mapping_store}\"\x99\x01\n" +
 	"\x14IdentityMappingEntry\x12\x19\n" +
 	"\auser_id\x18\x02 \x01(\tH\x00R\x06userId\x12\x1b\n" +
-	"\bgroup_id\x18\x03 \x01(\tH\x00R\agroupId\x120\n" +
-	"\x11external_identity\x18\x01 \x01(\tB\x03\xe0A\x02R\x10externalIdentityB\x16\n" +
+	"\bgroup_id\x18\x03 \x01(\tH\x00R\agroupId\x121\n" +
+	"\x11external_identity\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x10externalIdentityB\x16\n" +
 	"\x14identity_provider_idB\x8c\x02\n" +
 	"#com.google.cloud.discoveryengine.v1B\x19IdentityMappingStoreProtoP\x01ZMcloud.google.com/go/discoveryengine/apiv1/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02\x1fGoogle.Cloud.DiscoveryEngine.V1\xca\x02\x1fGoogle\\Cloud\\DiscoveryEngine\\V1\xea\x02\"Google::Cloud::DiscoveryEngine::V1b\x06proto3"
 

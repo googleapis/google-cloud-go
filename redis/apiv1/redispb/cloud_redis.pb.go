@@ -2727,49 +2727,49 @@ var File_google_cloud_redis_v1_cloud_redis_proto protoreflect.FileDescriptor
 
 const file_google_cloud_redis_v1_cloud_redis_proto_rawDesc = "" +
 	"\n" +
-	"'google/cloud/redis/v1/cloud_redis.proto\x12\x15google.cloud.redis.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bgoogle/type/dayofweek.proto\x1a\x1bgoogle/type/timeofday.proto\"8\n" +
-	"\bNodeInfo\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x03R\x02id\x12\x17\n" +
-	"\x04zone\x18\x02 \x01(\tB\x03\xe0A\x03R\x04zone\"\xb5\x17\n" +
-	"\bInstance\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12!\n" +
+	"'google/cloud/redis/v1/cloud_redis.proto\x12\x15google.cloud.redis.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bgoogle/type/dayofweek.proto\x1a\x1bgoogle/type/timeofday.proto\":\n" +
+	"\bNodeInfo\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x02id\x12\x18\n" +
+	"\x04zone\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x04zone\"\xd6\x17\n" +
+	"\bInstance\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12C\n" +
-	"\x06labels\x18\x03 \x03(\v2+.google.cloud.redis.v1.Instance.LabelsEntryR\x06labels\x12$\n" +
-	"\vlocation_id\x18\x04 \x01(\tB\x03\xe0A\x01R\n" +
-	"locationId\x12;\n" +
-	"\x17alternative_location_id\x18\x05 \x01(\tB\x03\xe0A\x01R\x15alternativeLocationId\x12(\n" +
-	"\rredis_version\x18\a \x01(\tB\x03\xe0A\x01R\fredisVersion\x12/\n" +
-	"\x11reserved_ip_range\x18\t \x01(\tB\x03\xe0A\x01R\x0freservedIpRange\x121\n" +
-	"\x12secondary_ip_range\x18\x1e \x01(\tB\x03\xe0A\x01R\x10secondaryIpRange\x12\x17\n" +
+	"\x06labels\x18\x03 \x03(\v2+.google.cloud.redis.v1.Instance.LabelsEntryR\x06labels\x12%\n" +
+	"\vlocation_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"locationId\x12<\n" +
+	"\x17alternative_location_id\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x15alternativeLocationId\x12)\n" +
+	"\rredis_version\x18\a \x01(\tB\x04\xe2A\x01\x01R\fredisVersion\x120\n" +
+	"\x11reserved_ip_range\x18\t \x01(\tB\x04\xe2A\x01\x01R\x0freservedIpRange\x122\n" +
+	"\x12secondary_ip_range\x18\x1e \x01(\tB\x04\xe2A\x01\x01R\x10secondaryIpRange\x12\x18\n" +
 	"\x04host\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R\x04host\x12\x17\n" +
-	"\x04port\x18\v \x01(\x05B\x03\xe0A\x03R\x04port\x123\n" +
-	"\x13current_location_id\x18\f \x01(\tB\x03\xe0A\x03R\x11currentLocationId\x12@\n" +
-	"\vcreate_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\x05state\x18\x0e \x01(\x0e2%.google.cloud.redis.v1.Instance.StateB\x03\xe0A\x03R\x05state\x12*\n" +
-	"\x0estatus_message\x18\x0f \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12[\n" +
-	"\rredis_configs\x18\x10 \x03(\v21.google.cloud.redis.v1.Instance.RedisConfigsEntryB\x03\xe0A\x01R\fredisConfigs\x12=\n" +
-	"\x04tier\x18\x11 \x01(\x0e2$.google.cloud.redis.v1.Instance.TierB\x03\xe0A\x02R\x04tier\x12)\n" +
-	"\x0ememory_size_gb\x18\x12 \x01(\x05B\x03\xe0A\x02R\fmemorySizeGb\x122\n" +
-	"\x12authorized_network\x18\x14 \x01(\tB\x03\xe0A\x01R\x11authorizedNetwork\x12=\n" +
-	"\x18persistence_iam_identity\x18\x15 \x01(\tB\x03\xe0A\x03R\x16persistenceIamIdentity\x12S\n" +
-	"\fconnect_mode\x18\x16 \x01(\x0e2+.google.cloud.redis.v1.Instance.ConnectModeB\x03\xe0A\x01R\vconnectMode\x12&\n" +
-	"\fauth_enabled\x18\x17 \x01(\bB\x03\xe0A\x01R\vauthEnabled\x12R\n" +
-	"\x0fserver_ca_certs\x18\x19 \x03(\v2%.google.cloud.redis.v1.TlsCertificateB\x03\xe0A\x03R\rserverCaCerts\x12r\n" +
-	"\x17transit_encryption_mode\x18\x1a \x01(\x0e25.google.cloud.redis.v1.Instance.TransitEncryptionModeB\x03\xe0A\x01R\x15transitEncryptionMode\x12\\\n" +
-	"\x12maintenance_policy\x18\x1b \x01(\v2(.google.cloud.redis.v1.MaintenancePolicyB\x03\xe0A\x01R\x11maintenancePolicy\x12b\n" +
-	"\x14maintenance_schedule\x18\x1c \x01(\v2*.google.cloud.redis.v1.MaintenanceScheduleB\x03\xe0A\x03R\x13maintenanceSchedule\x12(\n" +
-	"\rreplica_count\x18\x1f \x01(\x05B\x03\xe0A\x01R\freplicaCount\x12:\n" +
-	"\x05nodes\x18  \x03(\v2\x1f.google.cloud.redis.v1.NodeInfoB\x03\xe0A\x03R\x05nodes\x12(\n" +
-	"\rread_endpoint\x18! \x01(\tB\x03\xe0A\x03R\freadEndpoint\x121\n" +
-	"\x12read_endpoint_port\x18\" \x01(\x05B\x03\xe0A\x03R\x10readEndpointPort\x12c\n" +
-	"\x12read_replicas_mode\x18# \x01(\x0e20.google.cloud.redis.v1.Instance.ReadReplicasModeB\x03\xe0A\x01R\x10readReplicasMode\x125\n" +
-	"\x14customer_managed_key\x18$ \x01(\tB\x03\xe0A\x01R\x12customerManagedKey\x12\\\n" +
-	"\x12persistence_config\x18% \x01(\v2(.google.cloud.redis.v1.PersistenceConfigB\x03\xe0A\x01R\x11persistenceConfig\x12d\n" +
-	"\x12suspension_reasons\x18& \x03(\x0e20.google.cloud.redis.v1.Instance.SuspensionReasonB\x03\xe0A\x01R\x11suspensionReasons\x124\n" +
-	"\x13maintenance_version\x18' \x01(\tB\x03\xe0A\x01R\x12maintenanceVersion\x12I\n" +
-	"\x1eavailable_maintenance_versions\x18( \x03(\tB\x03\xe0A\x01R\x1cavailableMaintenanceVersions\x1a9\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R\x04host\x12\x18\n" +
+	"\x04port\x18\v \x01(\x05B\x04\xe2A\x01\x03R\x04port\x124\n" +
+	"\x13current_location_id\x18\f \x01(\tB\x04\xe2A\x01\x03R\x11currentLocationId\x12A\n" +
+	"\vcreate_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\x05state\x18\x0e \x01(\x0e2%.google.cloud.redis.v1.Instance.StateB\x04\xe2A\x01\x03R\x05state\x12+\n" +
+	"\x0estatus_message\x18\x0f \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12\\\n" +
+	"\rredis_configs\x18\x10 \x03(\v21.google.cloud.redis.v1.Instance.RedisConfigsEntryB\x04\xe2A\x01\x01R\fredisConfigs\x12>\n" +
+	"\x04tier\x18\x11 \x01(\x0e2$.google.cloud.redis.v1.Instance.TierB\x04\xe2A\x01\x02R\x04tier\x12*\n" +
+	"\x0ememory_size_gb\x18\x12 \x01(\x05B\x04\xe2A\x01\x02R\fmemorySizeGb\x123\n" +
+	"\x12authorized_network\x18\x14 \x01(\tB\x04\xe2A\x01\x01R\x11authorizedNetwork\x12>\n" +
+	"\x18persistence_iam_identity\x18\x15 \x01(\tB\x04\xe2A\x01\x03R\x16persistenceIamIdentity\x12T\n" +
+	"\fconnect_mode\x18\x16 \x01(\x0e2+.google.cloud.redis.v1.Instance.ConnectModeB\x04\xe2A\x01\x01R\vconnectMode\x12'\n" +
+	"\fauth_enabled\x18\x17 \x01(\bB\x04\xe2A\x01\x01R\vauthEnabled\x12S\n" +
+	"\x0fserver_ca_certs\x18\x19 \x03(\v2%.google.cloud.redis.v1.TlsCertificateB\x04\xe2A\x01\x03R\rserverCaCerts\x12s\n" +
+	"\x17transit_encryption_mode\x18\x1a \x01(\x0e25.google.cloud.redis.v1.Instance.TransitEncryptionModeB\x04\xe2A\x01\x01R\x15transitEncryptionMode\x12]\n" +
+	"\x12maintenance_policy\x18\x1b \x01(\v2(.google.cloud.redis.v1.MaintenancePolicyB\x04\xe2A\x01\x01R\x11maintenancePolicy\x12c\n" +
+	"\x14maintenance_schedule\x18\x1c \x01(\v2*.google.cloud.redis.v1.MaintenanceScheduleB\x04\xe2A\x01\x03R\x13maintenanceSchedule\x12)\n" +
+	"\rreplica_count\x18\x1f \x01(\x05B\x04\xe2A\x01\x01R\freplicaCount\x12;\n" +
+	"\x05nodes\x18  \x03(\v2\x1f.google.cloud.redis.v1.NodeInfoB\x04\xe2A\x01\x03R\x05nodes\x12)\n" +
+	"\rread_endpoint\x18! \x01(\tB\x04\xe2A\x01\x03R\freadEndpoint\x122\n" +
+	"\x12read_endpoint_port\x18\" \x01(\x05B\x04\xe2A\x01\x03R\x10readEndpointPort\x12d\n" +
+	"\x12read_replicas_mode\x18# \x01(\x0e20.google.cloud.redis.v1.Instance.ReadReplicasModeB\x04\xe2A\x01\x01R\x10readReplicasMode\x126\n" +
+	"\x14customer_managed_key\x18$ \x01(\tB\x04\xe2A\x01\x01R\x12customerManagedKey\x12]\n" +
+	"\x12persistence_config\x18% \x01(\v2(.google.cloud.redis.v1.PersistenceConfigB\x04\xe2A\x01\x01R\x11persistenceConfig\x12e\n" +
+	"\x12suspension_reasons\x18& \x03(\x0e20.google.cloud.redis.v1.Instance.SuspensionReasonB\x04\xe2A\x01\x01R\x11suspensionReasons\x125\n" +
+	"\x13maintenance_version\x18' \x01(\tB\x04\xe2A\x01\x01R\x12maintenanceVersion\x12J\n" +
+	"\x1eavailable_maintenance_versions\x18( \x03(\tB\x04\xe2A\x01\x01R\x1cavailableMaintenanceVersions\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a?\n" +
@@ -2805,12 +2805,12 @@ const file_google_cloud_redis_v1_cloud_redis_proto_rawDesc = "" +
 	"\x10SuspensionReason\x12!\n" +
 	"\x1dSUSPENSION_REASON_UNSPECIFIED\x10\x00\x12\x1e\n" +
 	"\x1aCUSTOMER_MANAGED_KEY_ISSUE\x10\x01:`\xeaA]\n" +
-	"\x1dredis.googleapis.com/Instance\x12<projects/{project}/locations/{location}/instances/{instance}\"\xde\x04\n" +
-	"\x11PersistenceConfig\x12h\n" +
-	"\x10persistence_mode\x18\x01 \x01(\x0e28.google.cloud.redis.v1.PersistenceConfig.PersistenceModeB\x03\xe0A\x01R\x0fpersistenceMode\x12l\n" +
-	"\x13rdb_snapshot_period\x18\x02 \x01(\x0e27.google.cloud.redis.v1.PersistenceConfig.SnapshotPeriodB\x03\xe0A\x01R\x11rdbSnapshotPeriod\x12T\n" +
-	"\x16rdb_next_snapshot_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x13rdbNextSnapshotTime\x12V\n" +
-	"\x17rdb_snapshot_start_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\x14rdbSnapshotStartTime\"J\n" +
+	"\x1dredis.googleapis.com/Instance\x12<projects/{project}/locations/{location}/instances/{instance}\"\xe2\x04\n" +
+	"\x11PersistenceConfig\x12i\n" +
+	"\x10persistence_mode\x18\x01 \x01(\x0e28.google.cloud.redis.v1.PersistenceConfig.PersistenceModeB\x04\xe2A\x01\x01R\x0fpersistenceMode\x12m\n" +
+	"\x13rdb_snapshot_period\x18\x02 \x01(\x0e27.google.cloud.redis.v1.PersistenceConfig.SnapshotPeriodB\x04\xe2A\x01\x01R\x11rdbSnapshotPeriod\x12U\n" +
+	"\x16rdb_next_snapshot_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x13rdbNextSnapshotTime\x12W\n" +
+	"\x17rdb_snapshot_start_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\x14rdbSnapshotStartTime\"J\n" +
 	"\x0fPersistenceMode\x12 \n" +
 	"\x1cPERSISTENCE_MODE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDISABLED\x10\x01\x12\a\n" +
@@ -2820,37 +2820,37 @@ const file_google_cloud_redis_v1_cloud_redis_proto_rawDesc = "" +
 	"\bONE_HOUR\x10\x03\x12\r\n" +
 	"\tSIX_HOURS\x10\x04\x12\x10\n" +
 	"\fTWELVE_HOURS\x10\x05\x12\x15\n" +
-	"\x11TWENTY_FOUR_HOURS\x10\x06\"\x81\x03\n" +
-	"\x1cRescheduleMaintenanceRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dredis.googleapis.com/InstanceR\x04name\x12p\n" +
-	"\x0freschedule_type\x18\x02 \x01(\x0e2B.google.cloud.redis.v1.RescheduleMaintenanceRequest.RescheduleTypeB\x03\xe0A\x02R\x0erescheduleType\x12D\n" +
-	"\rschedule_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\fscheduleTime\"n\n" +
+	"\x11TWENTY_FOUR_HOURS\x10\x06\"\x84\x03\n" +
+	"\x1cRescheduleMaintenanceRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dredis.googleapis.com/InstanceR\x04name\x12q\n" +
+	"\x0freschedule_type\x18\x02 \x01(\x0e2B.google.cloud.redis.v1.RescheduleMaintenanceRequest.RescheduleTypeB\x04\xe2A\x01\x02R\x0erescheduleType\x12E\n" +
+	"\rschedule_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\fscheduleTime\"n\n" +
 	"\x0eRescheduleType\x12\x1f\n" +
 	"\x1bRESCHEDULE_TYPE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tIMMEDIATE\x10\x01\x12\x19\n" +
 	"\x15NEXT_AVAILABLE_WINDOW\x10\x02\x12\x11\n" +
-	"\rSPECIFIC_TIME\x10\x03\"\xaf\x02\n" +
-	"\x11MaintenancePolicy\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12o\n" +
-	"\x19weekly_maintenance_window\x18\x04 \x03(\v2..google.cloud.redis.v1.WeeklyMaintenanceWindowB\x03\xe0A\x01R\x17weeklyMaintenanceWindow\"\xc0\x01\n" +
-	"\x17WeeklyMaintenanceWindow\x12-\n" +
-	"\x03day\x18\x01 \x01(\x0e2\x16.google.type.DayOfWeekB\x03\xe0A\x02R\x03day\x12:\n" +
+	"\rSPECIFIC_TIME\x10\x03\"\xb3\x02\n" +
+	"\x11MaintenancePolicy\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12p\n" +
+	"\x19weekly_maintenance_window\x18\x04 \x03(\v2..google.cloud.redis.v1.WeeklyMaintenanceWindowB\x04\xe2A\x01\x01R\x17weeklyMaintenanceWindow\"\xc3\x01\n" +
+	"\x17WeeklyMaintenanceWindow\x12.\n" +
+	"\x03day\x18\x01 \x01(\x0e2\x16.google.type.DayOfWeekB\x04\xe2A\x01\x02R\x03day\x12;\n" +
 	"\n" +
-	"start_time\x18\x02 \x01(\v2\x16.google.type.TimeOfDayB\x03\xe0A\x02R\tstartTime\x12:\n" +
-	"\bduration\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x03R\bduration\"\x93\x02\n" +
-	"\x13MaintenanceSchedule\x12>\n" +
+	"start_time\x18\x02 \x01(\v2\x16.google.type.TimeOfDayB\x04\xe2A\x01\x02R\tstartTime\x12;\n" +
+	"\bduration\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x03R\bduration\"\x96\x02\n" +
+	"\x13MaintenanceSchedule\x12?\n" +
 	"\n" +
-	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12)\n" +
-	"\x0ecan_reschedule\x18\x03 \x01(\bB\x02\x18\x01R\rcanReschedule\x12U\n" +
-	"\x16schedule_deadline_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x14scheduleDeadlineTime\"\x95\x01\n" +
-	"\x14ListInstancesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12)\n" +
+	"\x0ecan_reschedule\x18\x03 \x01(\bB\x02\x18\x01R\rcanReschedule\x12V\n" +
+	"\x16schedule_deadline_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x14scheduleDeadlineTime\"\x96\x01\n" +
+	"\x14ListInstancesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -2858,54 +2858,54 @@ const file_google_cloud_redis_v1_cloud_redis_proto_rawDesc = "" +
 	"\x15ListInstancesResponse\x12=\n" +
 	"\tinstances\x18\x01 \x03(\v2\x1f.google.cloud.redis.v1.InstanceR\tinstances\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"O\n" +
-	"\x12GetInstanceRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dredis.googleapis.com/InstanceR\x04name\"Y\n" +
-	"\x1cGetInstanceAuthStringRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"P\n" +
+	"\x12GetInstanceRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dredis.googleapis.com/InstanceR\x04name\"Z\n" +
+	"\x1cGetInstanceAuthStringRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
 	"\x1dredis.googleapis.com/InstanceR\x04name\"5\n" +
 	"\x12InstanceAuthString\x12\x1f\n" +
 	"\vauth_string\x18\x01 \x01(\tR\n" +
-	"authString\"\xc2\x01\n" +
-	"\x15CreateInstanceRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12$\n" +
-	"\vinstance_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"instanceId\x12@\n" +
-	"\binstance\x18\x03 \x01(\v2\x1f.google.cloud.redis.v1.InstanceB\x03\xe0A\x02R\binstance\"\x9b\x01\n" +
-	"\x15UpdateInstanceRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12@\n" +
-	"\binstance\x18\x02 \x01(\v2\x1f.google.cloud.redis.v1.InstanceB\x03\xe0A\x02R\binstance\"}\n" +
-	"\x16UpgradeInstanceRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dredis.googleapis.com/InstanceR\x04name\x12(\n" +
-	"\rredis_version\x18\x02 \x01(\tB\x03\xe0A\x02R\fredisVersion\"R\n" +
-	"\x15DeleteInstanceRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dredis.googleapis.com/InstanceR\x04name\"\"\n" +
-	"\tGcsSource\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x02R\x03uri\"Z\n" +
+	"authString\"\xc5\x01\n" +
+	"\x15CreateInstanceRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12%\n" +
+	"\vinstance_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"instanceId\x12A\n" +
+	"\binstance\x18\x03 \x01(\v2\x1f.google.cloud.redis.v1.InstanceB\x04\xe2A\x01\x02R\binstance\"\x9d\x01\n" +
+	"\x15UpdateInstanceRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12A\n" +
+	"\binstance\x18\x02 \x01(\v2\x1f.google.cloud.redis.v1.InstanceB\x04\xe2A\x01\x02R\binstance\"\x7f\n" +
+	"\x16UpgradeInstanceRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dredis.googleapis.com/InstanceR\x04name\x12)\n" +
+	"\rredis_version\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\fredisVersion\"S\n" +
+	"\x15DeleteInstanceRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dredis.googleapis.com/InstanceR\x04name\"#\n" +
+	"\tGcsSource\x12\x16\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03uri\"Z\n" +
 	"\vInputConfig\x12A\n" +
 	"\n" +
 	"gcs_source\x18\x01 \x01(\v2 .google.cloud.redis.v1.GcsSourceH\x00R\tgcsSourceB\b\n" +
-	"\x06source\"|\n" +
-	"\x15ImportInstanceRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12J\n" +
-	"\finput_config\x18\x03 \x01(\v2\".google.cloud.redis.v1.InputConfigB\x03\xe0A\x02R\vinputConfig\"'\n" +
-	"\x0eGcsDestination\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x02R\x03uri\"o\n" +
+	"\x06source\"~\n" +
+	"\x15ImportInstanceRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12K\n" +
+	"\finput_config\x18\x03 \x01(\v2\".google.cloud.redis.v1.InputConfigB\x04\xe2A\x01\x02R\vinputConfig\"(\n" +
+	"\x0eGcsDestination\x12\x16\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03uri\"o\n" +
 	"\fOutputConfig\x12P\n" +
 	"\x0fgcs_destination\x18\x01 \x01(\v2%.google.cloud.redis.v1.GcsDestinationH\x00R\x0egcsDestinationB\r\n" +
-	"\vdestination\"\x7f\n" +
-	"\x15ExportInstanceRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12M\n" +
-	"\routput_config\x18\x03 \x01(\v2#.google.cloud.redis.v1.OutputConfigB\x03\xe0A\x02R\foutputConfig\"\xb6\x02\n" +
-	"\x17FailoverInstanceRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dredis.googleapis.com/InstanceR\x04name\x12x\n" +
-	"\x14data_protection_mode\x18\x02 \x01(\x0e2A.google.cloud.redis.v1.FailoverInstanceRequest.DataProtectionModeB\x03\xe0A\x01R\x12dataProtectionMode\"f\n" +
+	"\vdestination\"\x81\x01\n" +
+	"\x15ExportInstanceRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12N\n" +
+	"\routput_config\x18\x03 \x01(\v2#.google.cloud.redis.v1.OutputConfigB\x04\xe2A\x01\x02R\foutputConfig\"\xb8\x02\n" +
+	"\x17FailoverInstanceRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dredis.googleapis.com/InstanceR\x04name\x12y\n" +
+	"\x14data_protection_mode\x18\x02 \x01(\x0e2A.google.cloud.redis.v1.FailoverInstanceRequest.DataProtectionModeB\x04\xe2A\x01\x01R\x12dataProtectionMode\"f\n" +
 	"\x12DataProtectionMode\x12$\n" +
 	" DATA_PROTECTION_MODE_UNSPECIFIED\x10\x00\x12\x15\n" +
 	"\x11LIMITED_DATA_LOSS\x10\x01\x12\x13\n" +
@@ -2919,19 +2919,19 @@ const file_google_cloud_redis_v1_cloud_redis_proto_rawDesc = "" +
 	"\rstatus_detail\x18\x05 \x01(\tR\fstatusDetail\x12)\n" +
 	"\x10cancel_requested\x18\x06 \x01(\bR\x0fcancelRequested\x12\x1f\n" +
 	"\vapi_version\x18\a \x01(\tR\n" +
-	"apiVersion\"\xe5\x01\n" +
-	"\x10LocationMetadata\x12i\n" +
-	"\x0favailable_zones\x18\x01 \x03(\v2;.google.cloud.redis.v1.LocationMetadata.AvailableZonesEntryB\x03\xe0A\x03R\x0eavailableZones\x1af\n" +
+	"apiVersion\"\xe6\x01\n" +
+	"\x10LocationMetadata\x12j\n" +
+	"\x0favailable_zones\x18\x01 \x03(\v2;.google.cloud.redis.v1.LocationMetadata.AvailableZonesEntryB\x04\xe2A\x01\x03R\x0eavailableZones\x1af\n" +
 	"\x13AvailableZonesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x129\n" +
 	"\x05value\x18\x02 \x01(\v2#.google.cloud.redis.v1.ZoneMetadataR\x05value:\x028\x01\"\x0e\n" +
-	"\fZoneMetadata\"\xf8\x01\n" +
+	"\fZoneMetadata\"\xfa\x01\n" +
 	"\x0eTlsCertificate\x12#\n" +
 	"\rserial_number\x18\x01 \x01(\tR\fserialNumber\x12\x12\n" +
-	"\x04cert\x18\x02 \x01(\tR\x04cert\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vexpire_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x04cert\x18\x02 \x01(\tR\x04cert\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vexpire_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"expireTime\x12)\n" +
 	"\x10sha1_fingerprint\x18\x05 \x01(\tR\x0fsha1Fingerprint2\xa8\x15\n" +
 	"\n" +

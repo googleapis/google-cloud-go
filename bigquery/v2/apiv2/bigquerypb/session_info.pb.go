@@ -87,10 +87,10 @@ var File_google_cloud_bigquery_v2_session_info_proto protoreflect.FileDescriptor
 
 const file_google_cloud_bigquery_v2_session_info_proto_rawDesc = "" +
 	"\n" +
-	"+google/cloud/bigquery/v2/session_info.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\"1\n" +
-	"\vSessionInfo\x12\"\n" +
+	"+google/cloud/bigquery/v2/session_info.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\"2\n" +
+	"\vSessionInfo\x12#\n" +
 	"\n" +
-	"session_id\x18\x01 \x01(\tB\x03\xe0A\x03R\tsessionIdBo\n" +
+	"session_id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\tsessionIdBo\n" +
 	"\x1ccom.google.cloud.bigquery.v2B\x10SessionInfoProtoP\x01Z;cloud.google.com/go/bigquery/v2/apiv2/bigquerypb;bigquerypbb\x06proto3"
 
 var (

@@ -245,16 +245,16 @@ var File_google_chat_v1_user_proto protoreflect.FileDescriptor
 
 const file_google_chat_v1_user_proto_rawDesc = "" +
 	"\n" +
-	"\x19google/chat/v1/user.proto\x12\x0egoogle.chat.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xa7\x02\n" +
+	"\x19google/chat/v1/user.proto\x12\x0egoogle.chat.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xab\x02\n" +
 	"\x04User\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12\"\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12#\n" +
 	"\n" +
-	"avatar_url\x18\x03 \x01(\tB\x03\xe0A\x03R\tavatarUrl\x12\x19\n" +
-	"\x05email\x18\x04 \x01(\tB\x03\xe0A\x03R\x05email\x12\x1b\n" +
+	"avatar_url\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\tavatarUrl\x12\x1a\n" +
+	"\x05email\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x05email\x12\x1b\n" +
 	"\tdomain_id\x18\x06 \x01(\tR\bdomainId\x12-\n" +
-	"\x04type\x18\x05 \x01(\x0e2\x19.google.chat.v1.User.TypeR\x04type\x12&\n" +
-	"\fis_anonymous\x18\a \x01(\bB\x03\xe0A\x03R\visAnonymous\"0\n" +
+	"\x04type\x18\x05 \x01(\x0e2\x19.google.chat.v1.User.TypeR\x04type\x12'\n" +
+	"\fis_anonymous\x18\a \x01(\bB\x04\xe2A\x01\x03R\visAnonymous\"0\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05HUMAN\x10\x01\x12\a\n" +

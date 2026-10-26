@@ -111,11 +111,11 @@ var File_google_cloud_servicedirectory_v1_namespace_proto protoreflect.FileDescr
 
 const file_google_cloud_servicedirectory_v1_namespace_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/servicedirectory/v1/namespace.proto\x12 google.cloud.servicedirectory.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xbc\x02\n" +
-	"\tNamespace\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12T\n" +
-	"\x06labels\x18\x02 \x03(\v27.google.cloud.servicedirectory.v1.Namespace.LabelsEntryB\x03\xe0A\x01R\x06labels\x12\x15\n" +
-	"\x03uid\x18\x05 \x01(\tB\x03\xe0A\x03R\x03uid\x1a9\n" +
+	"0google/cloud/servicedirectory/v1/namespace.proto\x12 google.cloud.servicedirectory.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xbf\x02\n" +
+	"\tNamespace\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12U\n" +
+	"\x06labels\x18\x02 \x03(\v27.google.cloud.servicedirectory.v1.Namespace.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12\x16\n" +
+	"\x03uid\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:n\xeaAk\n" +

@@ -590,16 +590,16 @@ var File_google_cloud_run_v2_condition_proto protoreflect.FileDescriptor
 
 const file_google_cloud_run_v2_condition_proto_rawDesc = "" +
 	"\n" +
-	"#google/cloud/run/v2/condition.proto\x12\x13google.cloud.run.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbf\r\n" +
+	"#google/cloud/run/v2/condition.proto\x12\x13google.cloud.run.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc2\r\n" +
 	"\tCondition\x12\x12\n" +
 	"\x04type\x18\x01 \x01(\tR\x04type\x12:\n" +
 	"\x05state\x18\x02 \x01(\x0e2$.google.cloud.run.v2.Condition.StateR\x05state\x12\x18\n" +
 	"\amessage\x18\x03 \x01(\tR\amessage\x12L\n" +
 	"\x14last_transition_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\x12lastTransitionTime\x12C\n" +
-	"\bseverity\x18\x05 \x01(\x0e2'.google.cloud.run.v2.Condition.SeverityR\bseverity\x12J\n" +
-	"\x06reason\x18\x06 \x01(\x0e2+.google.cloud.run.v2.Condition.CommonReasonB\x03\xe0A\x03H\x00R\x06reason\x12]\n" +
-	"\x0frevision_reason\x18\t \x01(\x0e2-.google.cloud.run.v2.Condition.RevisionReasonB\x03\xe0A\x03H\x00R\x0erevisionReason\x12`\n" +
-	"\x10execution_reason\x18\v \x01(\x0e2..google.cloud.run.v2.Condition.ExecutionReasonB\x03\xe0A\x03H\x00R\x0fexecutionReason\"\x7f\n" +
+	"\bseverity\x18\x05 \x01(\x0e2'.google.cloud.run.v2.Condition.SeverityR\bseverity\x12K\n" +
+	"\x06reason\x18\x06 \x01(\x0e2+.google.cloud.run.v2.Condition.CommonReasonB\x04\xe2A\x01\x03H\x00R\x06reason\x12^\n" +
+	"\x0frevision_reason\x18\t \x01(\x0e2-.google.cloud.run.v2.Condition.RevisionReasonB\x04\xe2A\x01\x03H\x00R\x0erevisionReason\x12a\n" +
+	"\x10execution_reason\x18\v \x01(\x0e2..google.cloud.run.v2.Condition.ExecutionReasonB\x04\xe2A\x01\x03H\x00R\x0fexecutionReason\"\x7f\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\x15\n" +
 	"\x11CONDITION_PENDING\x10\x01\x12\x19\n" +

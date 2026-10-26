@@ -449,14 +449,14 @@ var File_google_cloud_discoveryengine_v1alpha_estimate_billing_service_proto pro
 
 const file_google_cloud_discoveryengine_v1alpha_estimate_billing_service_proto_rawDesc = "" +
 	"\n" +
-	"Cgoogle/cloud/discoveryengine/v1alpha/estimate_billing_service.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a8google/cloud/discoveryengine/v1alpha/import_config.proto\x1a#google/longrunning/operations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x83\a\n" +
+	"Cgoogle/cloud/discoveryengine/v1alpha/estimate_billing_service.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a8google/cloud/discoveryengine/v1alpha/import_config.proto\x1a#google/longrunning/operations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x85\a\n" +
 	"\x17EstimateDataSizeRequest\x12\x81\x01\n" +
 	"\x13website_data_source\x18\x02 \x01(\v2O.google.cloud.discoveryengine.v1alpha.EstimateDataSizeRequest.WebsiteDataSourceH\x00R\x11websiteDataSource\x12x\n" +
-	"\x10file_data_source\x18\x03 \x01(\v2L.google.cloud.discoveryengine.v1alpha.EstimateDataSizeRequest.FileDataSourceH\x00R\x0efileDataSource\x12K\n" +
-	"\blocation\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'discoveryengine.googleapis.com/LocationR\blocation\x1a\xbd\x02\n" +
-	"\x11WebsiteDataSource\x12\x9e\x01\n" +
-	"\x16estimator_uri_patterns\x18\x01 \x03(\v2c.google.cloud.discoveryengine.v1alpha.EstimateDataSizeRequest.WebsiteDataSource.EstimatorUriPatternB\x03\xe0A\x02R\x14estimatorUriPatterns\x1a\x86\x01\n" +
+	"\x10file_data_source\x18\x03 \x01(\v2L.google.cloud.discoveryengine.v1alpha.EstimateDataSizeRequest.FileDataSourceH\x00R\x0efileDataSource\x12L\n" +
+	"\blocation\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'discoveryengine.googleapis.com/LocationR\blocation\x1a\xbe\x02\n" +
+	"\x11WebsiteDataSource\x12\x9f\x01\n" +
+	"\x16estimator_uri_patterns\x18\x01 \x03(\v2c.google.cloud.discoveryengine.v1alpha.EstimateDataSizeRequest.WebsiteDataSource.EstimatorUriPatternB\x04\xe2A\x01\x02R\x14estimatorUriPatterns\x1a\x86\x01\n" +
 	"\x13EstimatorUriPattern\x120\n" +
 	"\x14provided_uri_pattern\x18\x01 \x01(\tR\x12providedUriPattern\x12\x1f\n" +
 	"\vexact_match\x18\x02 \x01(\bR\n" +

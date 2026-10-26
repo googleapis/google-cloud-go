@@ -653,18 +653,18 @@ const file_google_devtools_cloudprofiler_v2_profiler_proto_rawDesc = "" +
 	"\x14UpdateProfileRequest\x12C\n" +
 	"\aprofile\x18\x01 \x01(\v2).google.devtools.cloudprofiler.v2.ProfileR\aprofile\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"\xc4\x04\n" +
-	"\aProfile\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12P\n" +
+	"updateMask\"\xc8\x04\n" +
+	"\aProfile\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12P\n" +
 	"\fprofile_type\x18\x02 \x01(\x0e2-.google.devtools.cloudprofiler.v2.ProfileTypeR\vprofileType\x12L\n" +
 	"\n" +
 	"deployment\x18\x03 \x01(\v2,.google.devtools.cloudprofiler.v2.DeploymentR\n" +
 	"deployment\x125\n" +
-	"\bduration\x18\x04 \x01(\v2\x19.google.protobuf.DurationR\bduration\x12(\n" +
-	"\rprofile_bytes\x18\x05 \x01(\fB\x03\xe0A\x04R\fprofileBytes\x12R\n" +
-	"\x06labels\x18\x06 \x03(\v25.google.devtools.cloudprofiler.v2.Profile.LabelsEntryB\x03\xe0A\x04R\x06labels\x12>\n" +
+	"\bduration\x18\x04 \x01(\v2\x19.google.protobuf.DurationR\bduration\x12)\n" +
+	"\rprofile_bytes\x18\x05 \x01(\fB\x04\xe2A\x01\x04R\fprofileBytes\x12S\n" +
+	"\x06labels\x18\x06 \x03(\v25.google.devtools.cloudprofiler.v2.Profile.LabelsEntryB\x04\xe2A\x01\x04R\x06labels\x12?\n" +
 	"\n" +
-	"start_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x1a9\n" +
+	"start_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:P\xeaAM\n" +
@@ -677,9 +677,9 @@ const file_google_devtools_cloudprofiler_v2_profiler_proto_rawDesc = "" +
 	"\x06labels\x18\x03 \x03(\v28.google.devtools.cloudprofiler.v2.Deployment.LabelsEntryR\x06labels\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x9e\x01\n" +
-	"\x13ListProfilesRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x9f\x01\n" +
+	"\x13ListProfilesRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
 	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +

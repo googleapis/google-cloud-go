@@ -153,10 +153,10 @@ var File_google_cloud_agentregistry_v1_properties_proto protoreflect.FileDescrip
 
 const file_google_cloud_agentregistry_v1_properties_proto_rawDesc = "" +
 	"\n" +
-	".google/cloud/agentregistry/v1/properties.proto\x12\x1dgoogle.cloud.agentregistry.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xe7\x01\n" +
-	"\tInterface\x12\x15\n" +
-	"\x03url\x18\x01 \x01(\tB\x03\xe0A\x02R\x03url\x12h\n" +
-	"\x10protocol_binding\x18\x02 \x01(\x0e28.google.cloud.agentregistry.v1.Interface.ProtocolBindingB\x03\xe0A\x02R\x0fprotocolBinding\"Y\n" +
+	".google/cloud/agentregistry/v1/properties.proto\x12\x1dgoogle.cloud.agentregistry.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xe9\x01\n" +
+	"\tInterface\x12\x16\n" +
+	"\x03url\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03url\x12i\n" +
+	"\x10protocol_binding\x18\x02 \x01(\x0e28.google.cloud.agentregistry.v1.Interface.ProtocolBindingB\x04\xe2A\x01\x02R\x0fprotocolBinding\"Y\n" +
 	"\x0fProtocolBinding\x12 \n" +
 	"\x1cPROTOCOL_BINDING_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aJSONRPC\x10\x01\x12\b\n" +

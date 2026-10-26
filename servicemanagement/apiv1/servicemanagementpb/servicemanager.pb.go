@@ -1271,64 +1271,64 @@ const file_google_api_servicemanagement_v1_servicemanager_proto_rawDesc = "" +
 	"consumerId\"\x8b\x01\n" +
 	"\x14ListServicesResponse\x12K\n" +
 	"\bservices\x18\x01 \x03(\v2/.google.api.servicemanagement.v1.ManagedServiceR\bservices\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\";\n" +
-	"\x11GetServiceRequest\x12&\n" +
-	"\fservice_name\x18\x01 \x01(\tB\x03\xe0A\x02R\vserviceName\"f\n" +
-	"\x14CreateServiceRequest\x12N\n" +
-	"\aservice\x18\x01 \x01(\v2/.google.api.servicemanagement.v1.ManagedServiceB\x03\xe0A\x02R\aservice\">\n" +
-	"\x14DeleteServiceRequest\x12&\n" +
-	"\fservice_name\x18\x01 \x01(\tB\x03\xe0A\x02R\vserviceName\"@\n" +
-	"\x16UndeleteServiceRequest\x12&\n" +
-	"\fservice_name\x18\x01 \x01(\tB\x03\xe0A\x02R\vserviceName\"d\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"<\n" +
+	"\x11GetServiceRequest\x12'\n" +
+	"\fservice_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vserviceName\"g\n" +
+	"\x14CreateServiceRequest\x12O\n" +
+	"\aservice\x18\x01 \x01(\v2/.google.api.servicemanagement.v1.ManagedServiceB\x04\xe2A\x01\x02R\aservice\"?\n" +
+	"\x14DeleteServiceRequest\x12'\n" +
+	"\fservice_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vserviceName\"A\n" +
+	"\x16UndeleteServiceRequest\x12'\n" +
+	"\fservice_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vserviceName\"d\n" +
 	"\x17UndeleteServiceResponse\x12I\n" +
-	"\aservice\x18\x01 \x01(\v2/.google.api.servicemanagement.v1.ManagedServiceR\aservice\"\xdf\x01\n" +
-	"\x17GetServiceConfigRequest\x12&\n" +
-	"\fservice_name\x18\x01 \x01(\tB\x03\xe0A\x02R\vserviceName\x12 \n" +
-	"\tconfig_id\x18\x02 \x01(\tB\x03\xe0A\x02R\bconfigId\x12W\n" +
+	"\aservice\x18\x01 \x01(\v2/.google.api.servicemanagement.v1.ManagedServiceR\aservice\"\xe1\x01\n" +
+	"\x17GetServiceConfigRequest\x12'\n" +
+	"\fservice_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vserviceName\x12!\n" +
+	"\tconfig_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\bconfigId\x12W\n" +
 	"\x04view\x18\x03 \x01(\x0e2C.google.api.servicemanagement.v1.GetServiceConfigRequest.ConfigViewR\x04view\"!\n" +
 	"\n" +
 	"ConfigView\x12\t\n" +
 	"\x05BASIC\x10\x00\x12\b\n" +
-	"\x04FULL\x10\x01\"\x7f\n" +
-	"\x19ListServiceConfigsRequest\x12&\n" +
-	"\fservice_name\x18\x01 \x01(\tB\x03\xe0A\x02R\vserviceName\x12\x1d\n" +
+	"\x04FULL\x10\x01\"\x80\x01\n" +
+	"\x19ListServiceConfigsRequest\x12'\n" +
+	"\fservice_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vserviceName\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x02 \x01(\tR\tpageToken\x12\x1b\n" +
 	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\"\x82\x01\n" +
 	"\x1aListServiceConfigsResponse\x12<\n" +
 	"\x0fservice_configs\x18\x01 \x03(\v2\x13.google.api.ServiceR\x0eserviceConfigs\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x85\x01\n" +
-	"\x1aCreateServiceConfigRequest\x12&\n" +
-	"\fservice_name\x18\x01 \x01(\tB\x03\xe0A\x02R\vserviceName\x12?\n" +
-	"\x0eservice_config\x18\x02 \x01(\v2\x13.google.api.ServiceB\x03\xe0A\x02R\rserviceConfig\"\xc6\x01\n" +
-	"\x19SubmitConfigSourceRequest\x12&\n" +
-	"\fservice_name\x18\x01 \x01(\tB\x03\xe0A\x02R\vserviceName\x12W\n" +
-	"\rconfig_source\x18\x02 \x01(\v2-.google.api.servicemanagement.v1.ConfigSourceB\x03\xe0A\x02R\fconfigSource\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"X\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x87\x01\n" +
+	"\x1aCreateServiceConfigRequest\x12'\n" +
+	"\fservice_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vserviceName\x12@\n" +
+	"\x0eservice_config\x18\x02 \x01(\v2\x13.google.api.ServiceB\x04\xe2A\x01\x02R\rserviceConfig\"\xc9\x01\n" +
+	"\x19SubmitConfigSourceRequest\x12'\n" +
+	"\fservice_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vserviceName\x12X\n" +
+	"\rconfig_source\x18\x02 \x01(\v2-.google.api.servicemanagement.v1.ConfigSourceB\x04\xe2A\x01\x02R\fconfigSource\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"X\n" +
 	"\x1aSubmitConfigSourceResponse\x12:\n" +
-	"\x0eservice_config\x18\x01 \x01(\v2\x13.google.api.ServiceR\rserviceConfig\"\x8e\x01\n" +
-	"\x1bCreateServiceRolloutRequest\x12&\n" +
-	"\fservice_name\x18\x01 \x01(\tB\x03\xe0A\x02R\vserviceName\x12G\n" +
-	"\arollout\x18\x02 \x01(\v2(.google.api.servicemanagement.v1.RolloutB\x03\xe0A\x02R\arollout\"\x9d\x01\n" +
-	"\x1aListServiceRolloutsRequest\x12&\n" +
-	"\fservice_name\x18\x01 \x01(\tB\x03\xe0A\x02R\vserviceName\x12\x1d\n" +
+	"\x0eservice_config\x18\x01 \x01(\v2\x13.google.api.ServiceR\rserviceConfig\"\x90\x01\n" +
+	"\x1bCreateServiceRolloutRequest\x12'\n" +
+	"\fservice_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vserviceName\x12H\n" +
+	"\arollout\x18\x02 \x01(\v2(.google.api.servicemanagement.v1.RolloutB\x04\xe2A\x01\x02R\arollout\"\x9f\x01\n" +
+	"\x1aListServiceRolloutsRequest\x12'\n" +
+	"\fservice_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vserviceName\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x02 \x01(\tR\tpageToken\x12\x1b\n" +
-	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x02R\x06filter\"\x8b\x01\n" +
+	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\x06filter\"\x8b\x01\n" +
 	"\x1bListServiceRolloutsResponse\x12D\n" +
 	"\brollouts\x18\x01 \x03(\v2(.google.api.servicemanagement.v1.RolloutR\brollouts\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"f\n" +
-	"\x18GetServiceRolloutRequest\x12&\n" +
-	"\fservice_name\x18\x01 \x01(\tB\x03\xe0A\x02R\vserviceName\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"h\n" +
+	"\x18GetServiceRolloutRequest\x12'\n" +
+	"\fservice_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vserviceName\x12#\n" +
 	"\n" +
-	"rollout_id\x18\x02 \x01(\tB\x03\xe0A\x02R\trolloutId\"\x17\n" +
-	"\x15EnableServiceResponse\"\x91\x01\n" +
-	"\x1bGenerateConfigReportRequest\x128\n" +
+	"rollout_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\trolloutId\"\x17\n" +
+	"\x15EnableServiceResponse\"\x93\x01\n" +
+	"\x1bGenerateConfigReportRequest\x129\n" +
 	"\n" +
-	"new_config\x18\x01 \x01(\v2\x14.google.protobuf.AnyB\x03\xe0A\x02R\tnewConfig\x128\n" +
+	"new_config\x18\x01 \x01(\v2\x14.google.protobuf.AnyB\x04\xe2A\x01\x02R\tnewConfig\x129\n" +
 	"\n" +
-	"old_config\x18\x02 \x01(\v2\x14.google.protobuf.AnyB\x03\xe0A\x01R\toldConfig\"\xf6\x01\n" +
+	"old_config\x18\x02 \x01(\v2\x14.google.protobuf.AnyB\x04\xe2A\x01\x01R\toldConfig\"\xf6\x01\n" +
 	"\x1cGenerateConfigReportResponse\x12!\n" +
 	"\fservice_name\x18\x01 \x01(\tR\vserviceName\x12\x0e\n" +
 	"\x02id\x18\x02 \x01(\tR\x02id\x12T\n" +

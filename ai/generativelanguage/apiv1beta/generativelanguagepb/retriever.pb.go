@@ -841,42 +841,42 @@ var File_google_ai_generativelanguage_v1beta_retriever_proto protoreflect.FileDe
 
 const file_google_ai_generativelanguage_v1beta_retriever_proto_rawDesc = "" +
 	"\n" +
-	"3google/ai/generativelanguage/v1beta/retriever.proto\x12#google.ai.generativelanguage.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa2\x02\n" +
-	"\x06Corpus\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\b\xe0A\x05R\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"3google/ai/generativelanguage/v1beta/retriever.proto\x12#google.ai.generativelanguage.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa4\x02\n" +
+	"\x06Corpus\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\b\x05R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime:P\xeaAM\n" +
-	"(generativelanguage.googleapis.com/Corpus\x12\x10corpora/{corpus}*\acorpora2\x06corpus\"\xa2\x03\n" +
-	"\bDocument\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\b\xe0A\x05R\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12a\n" +
-	"\x0fcustom_metadata\x18\x03 \x03(\v23.google.ai.generativelanguage.v1beta.CustomMetadataB\x03\xe0A\x01R\x0ecustomMetadata\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"(generativelanguage.googleapis.com/Corpus\x12\x10corpora/{corpus}*\acorpora2\x06corpus\"\xa5\x03\n" +
+	"\bDocument\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\b\x05R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12b\n" +
+	"\x0fcustom_metadata\x18\x03 \x03(\v23.google.ai.generativelanguage.v1beta.CustomMetadataB\x04\xe2A\x01\x01R\x0ecustomMetadata\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"createTime:k\xeaAh\n" +
 	"*generativelanguage.googleapis.com/Document\x12%corpora/{corpus}/documents/{document}*\tdocuments2\bdocument\"$\n" +
 	"\n" +
 	"StringList\x12\x16\n" +
-	"\x06values\x18\x01 \x03(\tR\x06values\"\xdb\x01\n" +
+	"\x06values\x18\x01 \x03(\tR\x06values\"\xdc\x01\n" +
 	"\x0eCustomMetadata\x12#\n" +
 	"\fstring_value\x18\x02 \x01(\tH\x00R\vstringValue\x12]\n" +
 	"\x11string_list_value\x18\x06 \x01(\v2/.google.ai.generativelanguage.v1beta.StringListH\x00R\x0fstringListValue\x12%\n" +
-	"\rnumeric_value\x18\a \x01(\x02H\x00R\fnumericValue\x12\x15\n" +
-	"\x03key\x18\x01 \x01(\tB\x03\xe0A\x02R\x03keyB\a\n" +
-	"\x05value\"|\n" +
-	"\x0eMetadataFilter\x12\x15\n" +
-	"\x03key\x18\x01 \x01(\tB\x03\xe0A\x02R\x03key\x12S\n" +
+	"\rnumeric_value\x18\a \x01(\x02H\x00R\fnumericValue\x12\x16\n" +
+	"\x03key\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03keyB\a\n" +
+	"\x05value\"~\n" +
+	"\x0eMetadataFilter\x12\x16\n" +
+	"\x03key\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03key\x12T\n" +
 	"\n" +
-	"conditions\x18\x02 \x03(\v2..google.ai.generativelanguage.v1beta.ConditionB\x03\xe0A\x02R\n" +
-	"conditions\"\xd3\x02\n" +
+	"conditions\x18\x02 \x03(\v2..google.ai.generativelanguage.v1beta.ConditionB\x04\xe2A\x01\x02R\n" +
+	"conditions\"\xd4\x02\n" +
 	"\tCondition\x12#\n" +
 	"\fstring_value\x18\x01 \x01(\tH\x00R\vstringValue\x12%\n" +
-	"\rnumeric_value\x18\x06 \x01(\x02H\x00R\fnumericValue\x12Z\n" +
-	"\toperation\x18\x05 \x01(\x0e27.google.ai.generativelanguage.v1beta.Condition.OperatorB\x03\xe0A\x02R\toperation\"\x94\x01\n" +
+	"\rnumeric_value\x18\x06 \x01(\x02H\x00R\fnumericValue\x12[\n" +
+	"\toperation\x18\x05 \x01(\x0e27.google.ai.generativelanguage.v1beta.Condition.OperatorB\x04\xe2A\x01\x02R\toperation\"\x94\x01\n" +
 	"\bOperator\x12\x18\n" +
 	"\x14OPERATOR_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04LESS\x10\x01\x12\x0e\n" +
@@ -888,16 +888,16 @@ const file_google_ai_generativelanguage_v1beta_retriever_proto_rawDesc = "" +
 	"\tNOT_EQUAL\x10\x06\x12\f\n" +
 	"\bINCLUDES\x10\a\x12\f\n" +
 	"\bEXCLUDES\x10\bB\a\n" +
-	"\x05value\"\xf5\x04\n" +
-	"\x05Chunk\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\b\xe0A\x05R\x04name\x12G\n" +
-	"\x04data\x18\x02 \x01(\v2..google.ai.generativelanguage.v1beta.ChunkDataB\x03\xe0A\x02R\x04data\x12a\n" +
-	"\x0fcustom_metadata\x18\x03 \x03(\v23.google.ai.generativelanguage.v1beta.CustomMetadataB\x03\xe0A\x01R\x0ecustomMetadata\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12K\n" +
-	"\x05state\x18\x06 \x01(\x0e20.google.ai.generativelanguage.v1beta.Chunk.StateB\x03\xe0A\x03R\x05state\"`\n" +
+	"\x05value\"\xf9\x04\n" +
+	"\x05Chunk\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\b\x05R\x04name\x12H\n" +
+	"\x04data\x18\x02 \x01(\v2..google.ai.generativelanguage.v1beta.ChunkDataB\x04\xe2A\x01\x02R\x04data\x12b\n" +
+	"\x0fcustom_metadata\x18\x03 \x03(\v23.google.ai.generativelanguage.v1beta.CustomMetadataB\x04\xe2A\x01\x01R\x0ecustomMetadata\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12L\n" +
+	"\x05state\x18\x06 \x01(\x0e20.google.ai.generativelanguage.v1beta.Chunk.StateB\x04\xe2A\x01\x03R\x05state\"`\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\x1c\n" +
 	"\x18STATE_PENDING_PROCESSING\x10\x01\x12\x10\n" +
