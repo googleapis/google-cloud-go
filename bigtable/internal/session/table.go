@@ -199,6 +199,25 @@ func (t *sessionTable) MutateRow(ctx context.Context, req *btpb.SessionMutateRow
 	})
 }
 
+// CheckAndMutateRow dispatches a proto-native CheckAndMutateRow through a
+// lazily-opened READ_WRITE session pool. Errors with ErrWriteNotSupported when
+// the resource has no read-write pool (materialized views).
+//
+// Conditional mutations are never idempotent because evaluating the predicate
+// after applying the mutation may yield a different branch on retry.
+func (t *sessionTable) CheckAndMutateRow(ctx context.Context, req *btpb.SessionCheckAndMutateRowRequest) (*btpb.SessionCheckAndMutateRowResponse, error) {
+	if req == nil {
+		return nil, errors.New("bigtable/session: SessionCheckAndMutateRowRequest is nil")
+	}
+	return dispatch[*btpb.SessionCheckAndMutateRowRequest, btpb.SessionCheckAndMutateRowResponse, *btpb.SessionCheckAndMutateRowResponse](ctx, t, opSpec[*btpb.SessionCheckAndMutateRowRequest, btpb.SessionCheckAndMutateRowResponse, *btpb.SessionCheckAndMutateRowResponse]{
+		pool:       t.readWritePool,
+		desc:       btransport.CHECK_AND_MUTATE_ROW,
+		idempotent: false,
+		req:        req,
+		errNoPool:  ErrWriteNotSupported,
+	})
+}
+
 // opSpec parameterises dispatch over the per-operation axes: pool, method
 // descriptor, idempotence, request proto, and the error to return when the
 // lazy pool resolves to nil.
