@@ -852,6 +852,11 @@ func (c *engineRESTClient) CreateEngine(ctx context.Context, req *discoveryengin
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/engines", req.GetParent())
 
 	params := url.Values{}
@@ -912,6 +917,11 @@ func (c *engineRESTClient) CreateEngine(ctx context.Context, req *discoveryengin
 func (c *engineRESTClient) DeleteEngine(ctx context.Context, req *discoveryenginepb.DeleteEngineRequest, opts ...gax.CallOption) (*DeleteEngineOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -982,6 +992,11 @@ func (c *engineRESTClient) UpdateEngine(ctx context.Context, req *discoveryengin
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetEngine().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetEngine().GetName())
 
 	params := url.Values{}
@@ -1041,6 +1056,11 @@ func (c *engineRESTClient) UpdateEngine(ctx context.Context, req *discoveryengin
 func (c *engineRESTClient) GetEngine(ctx context.Context, req *discoveryenginepb.GetEngineRequest, opts ...gax.CallOption) (*discoveryenginepb.Engine, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1109,6 +1129,11 @@ func (c *engineRESTClient) ListEngines(ctx context.Context, req *discoveryengine
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/engines", req.GetParent())
@@ -1185,6 +1210,11 @@ func (c *engineRESTClient) CancelOperation(ctx context.Context, req *longrunning
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1222,6 +1252,11 @@ func (c *engineRESTClient) CancelOperation(ctx context.Context, req *longrunning
 func (c *engineRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1289,6 +1324,11 @@ func (c *engineRESTClient) ListOperations(ctx context.Context, req *longrunningp
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

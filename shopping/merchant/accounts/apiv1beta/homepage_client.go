@@ -608,6 +608,11 @@ func (c *homepageRESTClient) GetHomepage(ctx context.Context, req *accountspb.Ge
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -667,6 +672,11 @@ func (c *homepageRESTClient) UpdateHomepage(ctx context.Context, req *accountspb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetHomepage().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1beta/%v", req.GetHomepage().GetName())
@@ -749,6 +759,11 @@ func (c *homepageRESTClient) ClaimHomepage(ctx context.Context, req *accountspb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1beta/%v:claim", req.GetName())
 
 	params := url.Values{}
@@ -807,6 +822,11 @@ func (c *homepageRESTClient) UnclaimHomepage(ctx context.Context, req *accountsp
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1beta/%v:unclaim", req.GetName())

@@ -399,6 +399,11 @@ func (c *publicDelegatedPrefixesRESTClient) AggregatedList(ctx context.Context, 
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/publicDelegatedPrefixes", req.GetProject())
 
 		params := url.Values{}
@@ -482,6 +487,13 @@ func (c *publicDelegatedPrefixesRESTClient) Announce(ctx context.Context, req *c
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetPublicDelegatedPrefix(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/publicDelegatedPrefixes/%v/announce", req.GetProject(), req.GetRegion(), req.GetPublicDelegatedPrefix())
 
 	params := url.Values{}
@@ -544,6 +556,13 @@ func (c *publicDelegatedPrefixesRESTClient) Announce(ctx context.Context, req *c
 func (c *publicDelegatedPrefixesRESTClient) Delete(ctx context.Context, req *computepb.DeletePublicDelegatedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetPublicDelegatedPrefix(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/publicDelegatedPrefixes/%v", req.GetProject(), req.GetRegion(), req.GetPublicDelegatedPrefix())
@@ -610,6 +629,13 @@ func (c *publicDelegatedPrefixesRESTClient) Get(ctx context.Context, req *comput
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetPublicDelegatedPrefix(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/publicDelegatedPrefixes/%v", req.GetProject(), req.GetRegion(), req.GetPublicDelegatedPrefix())
 
 	// Build HTTP headers from client and context metadata.
@@ -665,6 +691,12 @@ func (c *publicDelegatedPrefixesRESTClient) Insert(ctx context.Context, req *com
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/publicDelegatedPrefixes", req.GetProject(), req.GetRegion())
@@ -742,6 +774,12 @@ func (c *publicDelegatedPrefixesRESTClient) List(ctx context.Context, req *compu
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/publicDelegatedPrefixes", req.GetProject(), req.GetRegion())
@@ -824,6 +862,13 @@ func (c *publicDelegatedPrefixesRESTClient) Patch(ctx context.Context, req *comp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetPublicDelegatedPrefix(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/publicDelegatedPrefixes/%v", req.GetProject(), req.GetRegion(), req.GetPublicDelegatedPrefix())
 
 	params := url.Values{}
@@ -886,6 +931,13 @@ func (c *publicDelegatedPrefixesRESTClient) Patch(ctx context.Context, req *comp
 func (c *publicDelegatedPrefixesRESTClient) Withdraw(ctx context.Context, req *computepb.WithdrawPublicDelegatedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetPublicDelegatedPrefix(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/publicDelegatedPrefixes/%v/withdraw", req.GetProject(), req.GetRegion(), req.GetPublicDelegatedPrefix())

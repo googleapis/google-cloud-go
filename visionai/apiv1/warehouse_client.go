@@ -4928,6 +4928,11 @@ func (c *warehouseRESTClient) CreateAsset(ctx context.Context, req *visionaipb.C
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/assets", req.GetParent())
 
 	params := url.Values{}
@@ -4992,6 +4997,11 @@ func (c *warehouseRESTClient) UpdateAsset(ctx context.Context, req *visionaipb.U
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAsset().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetAsset().GetName())
 
 	params := url.Values{}
@@ -5051,6 +5061,11 @@ func (c *warehouseRESTClient) UpdateAsset(ctx context.Context, req *visionaipb.U
 func (c *warehouseRESTClient) GetAsset(ctx context.Context, req *visionaipb.GetAssetRequest, opts ...gax.CallOption) (*visionaipb.Asset, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -5120,6 +5135,11 @@ func (c *warehouseRESTClient) ListAssets(ctx context.Context, req *visionaipb.Li
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/assets", req.GetParent())
 
 		params := url.Values{}
@@ -5186,6 +5206,11 @@ func (c *warehouseRESTClient) ListAssets(ctx context.Context, req *visionaipb.Li
 func (c *warehouseRESTClient) DeleteAsset(ctx context.Context, req *visionaipb.DeleteAssetRequest, opts ...gax.CallOption) (*DeleteAssetOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -5264,6 +5289,11 @@ func (c *warehouseRESTClient) UploadAsset(ctx context.Context, req *visionaipb.U
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:upload", req.GetName())
 
 	params := url.Values{}
@@ -5333,6 +5363,11 @@ func (c *warehouseRESTClient) GenerateRetrievalUrl(ctx context.Context, req *vis
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:generateRetrievalUrl", req.GetName())
 
 	params := url.Values{}
@@ -5391,6 +5426,11 @@ func (c *warehouseRESTClient) AnalyzeAsset(ctx context.Context, req *visionaipb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:analyze", req.GetName())
@@ -5461,6 +5501,11 @@ func (c *warehouseRESTClient) IndexAsset(ctx context.Context, req *visionaipb.In
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:index", req.GetName())
 
 	params := url.Values{}
@@ -5527,6 +5572,11 @@ func (c *warehouseRESTClient) RemoveIndexAsset(ctx context.Context, req *visiona
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:removeIndex", req.GetName())
@@ -5601,6 +5651,11 @@ func (c *warehouseRESTClient) ViewIndexedAssets(ctx context.Context, req *vision
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetIndex(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:viewAssets", req.GetIndex())
@@ -5678,6 +5733,11 @@ func (c *warehouseRESTClient) CreateIndex(ctx context.Context, req *visionaipb.C
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/indexes", req.GetParent())
 
 	params := url.Values{}
@@ -5751,6 +5811,11 @@ func (c *warehouseRESTClient) UpdateIndex(ctx context.Context, req *visionaipb.U
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetIndex().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetIndex().GetName())
 
 	params := url.Values{}
@@ -5817,6 +5882,11 @@ func (c *warehouseRESTClient) UpdateIndex(ctx context.Context, req *visionaipb.U
 func (c *warehouseRESTClient) GetIndex(ctx context.Context, req *visionaipb.GetIndexRequest, opts ...gax.CallOption) (*visionaipb.Index, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -5886,6 +5956,11 @@ func (c *warehouseRESTClient) ListIndexes(ctx context.Context, req *visionaipb.L
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/indexes", req.GetParent())
 
 		params := url.Values{}
@@ -5950,6 +6025,11 @@ func (c *warehouseRESTClient) ListIndexes(ctx context.Context, req *visionaipb.L
 func (c *warehouseRESTClient) DeleteIndex(ctx context.Context, req *visionaipb.DeleteIndexRequest, opts ...gax.CallOption) (*DeleteIndexOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -6020,6 +6100,11 @@ func (c *warehouseRESTClient) CreateCorpus(ctx context.Context, req *visionaipb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/corpora", req.GetParent())
 
 	params := url.Values{}
@@ -6081,6 +6166,11 @@ func (c *warehouseRESTClient) GetCorpus(ctx context.Context, req *visionaipb.Get
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -6140,6 +6230,11 @@ func (c *warehouseRESTClient) UpdateCorpus(ctx context.Context, req *visionaipb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCorpus().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetCorpus().GetName())
@@ -6216,6 +6311,11 @@ func (c *warehouseRESTClient) ListCorpora(ctx context.Context, req *visionaipb.L
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/corpora", req.GetParent())
 
 		params := url.Values{}
@@ -6285,6 +6385,11 @@ func (c *warehouseRESTClient) DeleteCorpus(ctx context.Context, req *visionaipb.
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -6328,6 +6433,11 @@ func (c *warehouseRESTClient) AnalyzeCorpus(ctx context.Context, req *visionaipb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:analyze", req.GetName())
@@ -6398,6 +6508,11 @@ func (c *warehouseRESTClient) CreateDataSchema(ctx context.Context, req *visiona
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/dataSchemas", req.GetParent())
 
 	params := url.Values{}
@@ -6457,6 +6572,11 @@ func (c *warehouseRESTClient) UpdateDataSchema(ctx context.Context, req *visiona
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDataSchema().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDataSchema().GetName())
@@ -6520,6 +6640,11 @@ func (c *warehouseRESTClient) GetDataSchema(ctx context.Context, req *visionaipb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -6574,6 +6699,11 @@ func (c *warehouseRESTClient) DeleteDataSchema(ctx context.Context, req *visiona
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -6624,6 +6754,11 @@ func (c *warehouseRESTClient) ListDataSchemas(ctx context.Context, req *visionai
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/dataSchemas", req.GetParent())
@@ -6698,6 +6833,11 @@ func (c *warehouseRESTClient) CreateAnnotation(ctx context.Context, req *visiona
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/annotations", req.GetParent())
 
 	params := url.Values{}
@@ -6753,6 +6893,11 @@ func (c *warehouseRESTClient) CreateAnnotation(ctx context.Context, req *visiona
 func (c *warehouseRESTClient) GetAnnotation(ctx context.Context, req *visionaipb.GetAnnotationRequest, opts ...gax.CallOption) (*visionaipb.Annotation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -6820,6 +6965,11 @@ func (c *warehouseRESTClient) ListAnnotations(ctx context.Context, req *visionai
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/annotations", req.GetParent())
@@ -6897,6 +7047,11 @@ func (c *warehouseRESTClient) UpdateAnnotation(ctx context.Context, req *visiona
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAnnotation().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetAnnotation().GetName())
 
 	params := url.Values{}
@@ -6958,6 +7113,11 @@ func (c *warehouseRESTClient) DeleteAnnotation(ctx context.Context, req *visiona
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -7016,6 +7176,11 @@ func (c *warehouseRESTClient) ClipAsset(ctx context.Context, req *visionaipb.Cli
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:clip", req.GetName())
@@ -7080,6 +7245,11 @@ func (c *warehouseRESTClient) GenerateHlsUri(ctx context.Context, req *visionaip
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:generateHlsUri", req.GetName())
 
 	params := url.Values{}
@@ -7140,6 +7310,11 @@ func (c *warehouseRESTClient) ImportAssets(ctx context.Context, req *visionaipb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/assets:import", req.GetParent())
@@ -7230,6 +7405,11 @@ func (c *warehouseRESTClient) CreateSearchConfig(ctx context.Context, req *visio
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/searchConfigs", req.GetParent())
 
 	params := url.Values{}
@@ -7311,6 +7491,11 @@ func (c *warehouseRESTClient) UpdateSearchConfig(ctx context.Context, req *visio
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSearchConfig().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetSearchConfig().GetName())
 
 	params := url.Values{}
@@ -7372,6 +7557,11 @@ func (c *warehouseRESTClient) GetSearchConfig(ctx context.Context, req *visionai
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -7429,6 +7619,11 @@ func (c *warehouseRESTClient) DeleteSearchConfig(ctx context.Context, req *visio
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -7479,6 +7674,11 @@ func (c *warehouseRESTClient) ListSearchConfigs(ctx context.Context, req *vision
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/searchConfigs", req.GetParent())
@@ -7553,6 +7753,11 @@ func (c *warehouseRESTClient) CreateSearchHypernym(ctx context.Context, req *vis
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/searchHypernyms", req.GetParent())
 
 	params := url.Values{}
@@ -7617,6 +7822,11 @@ func (c *warehouseRESTClient) UpdateSearchHypernym(ctx context.Context, req *vis
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSearchHypernym().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetSearchHypernym().GetName())
 
 	params := url.Values{}
@@ -7678,6 +7888,11 @@ func (c *warehouseRESTClient) GetSearchHypernym(ctx context.Context, req *vision
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -7732,6 +7947,11 @@ func (c *warehouseRESTClient) DeleteSearchHypernym(ctx context.Context, req *vis
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -7782,6 +8002,11 @@ func (c *warehouseRESTClient) ListSearchHypernyms(ctx context.Context, req *visi
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/searchHypernyms", req.GetParent())
@@ -7868,6 +8093,11 @@ func (c *warehouseRESTClient) SearchAssets(ctx context.Context, req *visionaipb.
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetCorpus(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:searchAssets", req.GetCorpus())
 
 		params := url.Values{}
@@ -7946,6 +8176,11 @@ func (c *warehouseRESTClient) SearchIndexEndpoint(ctx context.Context, req *visi
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetIndexEndpoint(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:searchIndexEndpoint", req.GetIndexEndpoint())
 
 		params := url.Values{}
@@ -8012,6 +8247,11 @@ func (c *warehouseRESTClient) CreateIndexEndpoint(ctx context.Context, req *visi
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/indexEndpoints", req.GetParent())
 
 	params := url.Values{}
@@ -8074,6 +8314,11 @@ func (c *warehouseRESTClient) CreateIndexEndpoint(ctx context.Context, req *visi
 func (c *warehouseRESTClient) GetIndexEndpoint(ctx context.Context, req *visionaipb.GetIndexEndpointRequest, opts ...gax.CallOption) (*visionaipb.IndexEndpoint, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -8141,6 +8386,11 @@ func (c *warehouseRESTClient) ListIndexEndpoints(ctx context.Context, req *visio
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/indexEndpoints", req.GetParent())
@@ -8218,6 +8468,11 @@ func (c *warehouseRESTClient) UpdateIndexEndpoint(ctx context.Context, req *visi
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetIndexEndpoint().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetIndexEndpoint().GetName())
 
 	params := url.Values{}
@@ -8284,6 +8539,11 @@ func (c *warehouseRESTClient) UpdateIndexEndpoint(ctx context.Context, req *visi
 func (c *warehouseRESTClient) DeleteIndexEndpoint(ctx context.Context, req *visionaipb.DeleteIndexEndpointRequest, opts ...gax.CallOption) (*DeleteIndexEndpointOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -8353,6 +8613,11 @@ func (c *warehouseRESTClient) DeployIndex(ctx context.Context, req *visionaipb.D
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetIndexEndpoint(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:deployIndex", req.GetIndexEndpoint())
 
 	params := url.Values{}
@@ -8418,6 +8683,11 @@ func (c *warehouseRESTClient) UndeployIndex(ctx context.Context, req *visionaipb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetIndexEndpoint(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:undeployIndex", req.GetIndexEndpoint())
@@ -8488,6 +8758,11 @@ func (c *warehouseRESTClient) CreateCollection(ctx context.Context, req *visiona
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/collections", req.GetParent())
 
 	params := url.Values{}
@@ -8552,6 +8827,11 @@ func (c *warehouseRESTClient) DeleteCollection(ctx context.Context, req *visiona
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -8613,6 +8893,11 @@ func (c *warehouseRESTClient) GetCollection(ctx context.Context, req *visionaipb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -8672,6 +8957,11 @@ func (c *warehouseRESTClient) UpdateCollection(ctx context.Context, req *visiona
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCollection().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetCollection().GetName())
@@ -8748,6 +9038,11 @@ func (c *warehouseRESTClient) ListCollections(ctx context.Context, req *visionai
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/collections", req.GetParent())
 
 		params := url.Values{}
@@ -8819,6 +9114,11 @@ func (c *warehouseRESTClient) AddCollectionItem(ctx context.Context, req *vision
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetItem().GetCollection(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:addCollectionItem", req.GetItem().GetCollection())
 
 	params := url.Values{}
@@ -8877,6 +9177,11 @@ func (c *warehouseRESTClient) RemoveCollectionItem(ctx context.Context, req *vis
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetItem().GetCollection(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:removeCollectionItem", req.GetItem().GetCollection())
@@ -8946,6 +9251,11 @@ func (c *warehouseRESTClient) ViewCollectionItems(ctx context.Context, req *visi
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetCollection(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:viewCollectionItems", req.GetCollection())
 
 		params := url.Values{}
@@ -9009,6 +9319,11 @@ func (c *warehouseRESTClient) ViewCollectionItems(ctx context.Context, req *visi
 func (c *warehouseRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -9076,6 +9391,11 @@ func (c *warehouseRESTClient) ListLocations(ctx context.Context, req *locationpb
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
@@ -9152,6 +9472,11 @@ func (c *warehouseRESTClient) CancelOperation(ctx context.Context, req *longrunn
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -9191,6 +9516,11 @@ func (c *warehouseRESTClient) DeleteOperation(ctx context.Context, req *longrunn
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -9228,6 +9558,11 @@ func (c *warehouseRESTClient) DeleteOperation(ctx context.Context, req *longrunn
 func (c *warehouseRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -9295,6 +9630,11 @@ func (c *warehouseRESTClient) ListOperations(ctx context.Context, req *longrunni
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

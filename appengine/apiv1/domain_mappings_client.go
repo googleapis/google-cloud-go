@@ -695,6 +695,11 @@ func (c *domainMappingsRESTClient) ListDomainMappings(ctx context.Context, req *
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/domainMappings", req.GetParent())
 
 		params := url.Values{}
@@ -760,6 +765,11 @@ func (c *domainMappingsRESTClient) GetDomainMapping(ctx context.Context, req *ap
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -821,6 +831,11 @@ func (c *domainMappingsRESTClient) CreateDomainMapping(ctx context.Context, req 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/domainMappings", req.GetParent())
@@ -897,6 +912,11 @@ func (c *domainMappingsRESTClient) UpdateDomainMapping(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -965,6 +985,11 @@ func (c *domainMappingsRESTClient) UpdateDomainMapping(ctx context.Context, req 
 func (c *domainMappingsRESTClient) DeleteDomainMapping(ctx context.Context, req *appenginepb.DeleteDomainMappingRequest, opts ...gax.CallOption) (*DeleteDomainMappingOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())

@@ -886,6 +886,11 @@ func (c *adaptationRESTClient) CreatePhraseSet(ctx context.Context, req *speechp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1p1beta1/%v/phraseSets", req.GetParent())
 
 	params := url.Values{}
@@ -938,6 +943,11 @@ func (c *adaptationRESTClient) CreatePhraseSet(ctx context.Context, req *speechp
 func (c *adaptationRESTClient) GetPhraseSet(ctx context.Context, req *speechpb.GetPhraseSetRequest, opts ...gax.CallOption) (*speechpb.PhraseSet, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1p1beta1/%v", req.GetName())
@@ -1005,6 +1015,11 @@ func (c *adaptationRESTClient) ListPhraseSet(ctx context.Context, req *speechpb.
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1p1beta1/%v/phraseSets", req.GetParent())
@@ -1079,6 +1094,11 @@ func (c *adaptationRESTClient) UpdatePhraseSet(ctx context.Context, req *speechp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetPhraseSet().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1p1beta1/%v", req.GetPhraseSet().GetName())
 
 	params := url.Values{}
@@ -1140,6 +1160,11 @@ func (c *adaptationRESTClient) DeletePhraseSet(ctx context.Context, req *speechp
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1p1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1183,6 +1208,11 @@ func (c *adaptationRESTClient) CreateCustomClass(ctx context.Context, req *speec
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1p1beta1/%v/customClasses", req.GetParent())
@@ -1237,6 +1267,11 @@ func (c *adaptationRESTClient) CreateCustomClass(ctx context.Context, req *speec
 func (c *adaptationRESTClient) GetCustomClass(ctx context.Context, req *speechpb.GetCustomClassRequest, opts ...gax.CallOption) (*speechpb.CustomClass, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1p1beta1/%v", req.GetName())
@@ -1304,6 +1339,11 @@ func (c *adaptationRESTClient) ListCustomClasses(ctx context.Context, req *speec
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1p1beta1/%v/customClasses", req.GetParent())
@@ -1378,6 +1418,11 @@ func (c *adaptationRESTClient) UpdateCustomClass(ctx context.Context, req *speec
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCustomClass().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1p1beta1/%v", req.GetCustomClass().GetName())
 
 	params := url.Values{}
@@ -1439,6 +1484,11 @@ func (c *adaptationRESTClient) DeleteCustomClass(ctx context.Context, req *speec
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1p1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1476,6 +1526,11 @@ func (c *adaptationRESTClient) DeleteCustomClass(ctx context.Context, req *speec
 func (c *adaptationRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1p1beta1/operations/%v", req.GetName())

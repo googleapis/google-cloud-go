@@ -441,6 +441,11 @@ func (c *publicCertificateAuthorityRESTClient) CreateExternalAccountKey(ctx cont
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/externalAccountKeys", req.GetParent())
 
 	params := url.Values{}

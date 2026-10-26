@@ -413,6 +413,11 @@ func (c *instanceTemplatesRESTClient) AggregatedList(ctx context.Context, req *c
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/instanceTemplates", req.GetProject())
 
 		params := url.Values{}
@@ -498,6 +503,12 @@ func (c *instanceTemplatesRESTClient) Delete(ctx context.Context, req *computepb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstanceTemplate(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/instanceTemplates/%v", req.GetProject(), req.GetInstanceTemplate())
 
 	params := url.Values{}
@@ -561,6 +572,12 @@ func (c *instanceTemplatesRESTClient) Get(ctx context.Context, req *computepb.Ge
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstanceTemplate(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/instanceTemplates/%v", req.GetProject(), req.GetInstanceTemplate())
 
 	// Build HTTP headers from client and context metadata.
@@ -609,6 +626,12 @@ func (c *instanceTemplatesRESTClient) Get(ctx context.Context, req *computepb.Ge
 func (c *instanceTemplatesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyInstanceTemplateRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/instanceTemplates/%v/getIamPolicy", req.GetProject(), req.GetResource())
@@ -676,6 +699,11 @@ func (c *instanceTemplatesRESTClient) Insert(ctx context.Context, req *computepb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/instanceTemplates", req.GetProject())
@@ -753,6 +781,11 @@ func (c *instanceTemplatesRESTClient) List(ctx context.Context, req *computepb.L
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/instanceTemplates", req.GetProject())
@@ -833,6 +866,12 @@ func (c *instanceTemplatesRESTClient) SetIamPolicy(ctx context.Context, req *com
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/instanceTemplates/%v/setIamPolicy", req.GetProject(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -887,6 +926,12 @@ func (c *instanceTemplatesRESTClient) TestIamPermissions(ctx context.Context, re
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/instanceTemplates/%v/testIamPermissions", req.GetProject(), req.GetResource())

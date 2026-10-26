@@ -1152,6 +1152,11 @@ func (c *restClient) ExecutePatchJob(ctx context.Context, req *osconfigpb.Execut
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/patchJobs:execute", req.GetParent())
 
 	params := url.Values{}
@@ -1205,6 +1210,11 @@ func (c *restClient) ExecutePatchJob(ctx context.Context, req *osconfigpb.Execut
 func (c *restClient) GetPatchJob(ctx context.Context, req *osconfigpb.GetPatchJobRequest, opts ...gax.CallOption) (*osconfigpb.PatchJob, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1266,6 +1276,11 @@ func (c *restClient) CancelPatchJob(ctx context.Context, req *osconfigpb.CancelP
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
@@ -1333,6 +1348,11 @@ func (c *restClient) ListPatchJobs(ctx context.Context, req *osconfigpb.ListPatc
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/patchJobs", req.GetParent())
@@ -1416,6 +1436,11 @@ func (c *restClient) ListPatchJobInstanceDetails(ctx context.Context, req *oscon
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/instanceDetails", req.GetParent())
 
 		params := url.Values{}
@@ -1491,6 +1516,11 @@ func (c *restClient) CreatePatchDeployment(ctx context.Context, req *osconfigpb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/patchDeployments", req.GetParent())
 
 	params := url.Values{}
@@ -1544,6 +1574,11 @@ func (c *restClient) CreatePatchDeployment(ctx context.Context, req *osconfigpb.
 func (c *restClient) GetPatchDeployment(ctx context.Context, req *osconfigpb.GetPatchDeploymentRequest, opts ...gax.CallOption) (*osconfigpb.PatchDeployment, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1613,6 +1648,11 @@ func (c *restClient) ListPatchDeployments(ctx context.Context, req *osconfigpb.L
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/patchDeployments", req.GetParent())
 
 		params := url.Values{}
@@ -1678,6 +1718,11 @@ func (c *restClient) DeletePatchDeployment(ctx context.Context, req *osconfigpb.
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1722,6 +1767,11 @@ func (c *restClient) UpdatePatchDeployment(ctx context.Context, req *osconfigpb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetPatchDeployment().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetPatchDeployment().GetName())
@@ -1792,6 +1842,11 @@ func (c *restClient) PausePatchDeployment(ctx context.Context, req *osconfigpb.P
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:pause", req.GetName())
 
 	params := url.Values{}
@@ -1851,6 +1906,11 @@ func (c *restClient) ResumePatchDeployment(ctx context.Context, req *osconfigpb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:resume", req.GetName())

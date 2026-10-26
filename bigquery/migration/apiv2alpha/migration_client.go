@@ -792,6 +792,11 @@ func (c *restClient) CreateMigrationWorkflow(ctx context.Context, req *migration
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v/workflows", req.GetParent())
 
 	// Build HTTP headers from client and context metadata.
@@ -839,6 +844,11 @@ func (c *restClient) CreateMigrationWorkflow(ctx context.Context, req *migration
 func (c *restClient) GetMigrationWorkflow(ctx context.Context, req *migrationpb.GetMigrationWorkflowRequest, opts ...gax.CallOption) (*migrationpb.MigrationWorkflow, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetName())
@@ -914,6 +924,11 @@ func (c *restClient) ListMigrationWorkflows(ctx context.Context, req *migrationp
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2alpha/%v/workflows", req.GetParent())
 
 		params := url.Values{}
@@ -985,6 +1000,11 @@ func (c *restClient) DeleteMigrationWorkflow(ctx context.Context, req *migration
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
@@ -1028,6 +1048,11 @@ func (c *restClient) StartMigrationWorkflow(ctx context.Context, req *migrationp
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v:start", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
@@ -1060,6 +1085,11 @@ func (c *restClient) StartMigrationWorkflow(ctx context.Context, req *migrationp
 func (c *restClient) GetMigrationSubtask(ctx context.Context, req *migrationpb.GetMigrationSubtaskRequest, opts ...gax.CallOption) (*migrationpb.MigrationSubtask, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetName())
@@ -1133,6 +1163,11 @@ func (c *restClient) ListMigrationSubtasks(ctx context.Context, req *migrationpb
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2alpha/%v/subtasks", req.GetParent())

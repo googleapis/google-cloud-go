@@ -363,6 +363,12 @@ func (c *globalNetworkEndpointGroupsRESTClient) AttachNetworkEndpoints(ctx conte
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetNetworkEndpointGroup(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/networkEndpointGroups/%v/attachNetworkEndpoints", req.GetProject(), req.GetNetworkEndpointGroup())
 
 	params := url.Values{}
@@ -425,6 +431,12 @@ func (c *globalNetworkEndpointGroupsRESTClient) AttachNetworkEndpoints(ctx conte
 func (c *globalNetworkEndpointGroupsRESTClient) Delete(ctx context.Context, req *computepb.DeleteGlobalNetworkEndpointGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetNetworkEndpointGroup(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/networkEndpointGroups/%v", req.GetProject(), req.GetNetworkEndpointGroup())
@@ -497,6 +509,12 @@ func (c *globalNetworkEndpointGroupsRESTClient) DetachNetworkEndpoints(ctx conte
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetNetworkEndpointGroup(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/networkEndpointGroups/%v/detachNetworkEndpoints", req.GetProject(), req.GetNetworkEndpointGroup())
 
 	params := url.Values{}
@@ -560,6 +578,12 @@ func (c *globalNetworkEndpointGroupsRESTClient) Get(ctx context.Context, req *co
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetNetworkEndpointGroup(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/networkEndpointGroups/%v", req.GetProject(), req.GetNetworkEndpointGroup())
 
 	// Build HTTP headers from client and context metadata.
@@ -617,6 +641,11 @@ func (c *globalNetworkEndpointGroupsRESTClient) Insert(ctx context.Context, req 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/networkEndpointGroups", req.GetProject())
@@ -694,6 +723,11 @@ func (c *globalNetworkEndpointGroupsRESTClient) List(ctx context.Context, req *c
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/networkEndpointGroups", req.GetProject())
@@ -777,6 +811,12 @@ func (c *globalNetworkEndpointGroupsRESTClient) ListNetworkEndpoints(ctx context
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetNetworkEndpointGroup(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/networkEndpointGroups/%v/listNetworkEndpoints", req.GetProject(), req.GetNetworkEndpointGroup())

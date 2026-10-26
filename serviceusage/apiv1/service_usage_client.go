@@ -854,6 +854,11 @@ func (c *restClient) EnableService(ctx context.Context, req *serviceusagepb.Enab
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:enable", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
@@ -922,6 +927,11 @@ func (c *restClient) DisableService(ctx context.Context, req *serviceusagepb.Dis
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:disable", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
@@ -976,6 +986,11 @@ func (c *restClient) DisableService(ctx context.Context, req *serviceusagepb.Dis
 func (c *restClient) GetService(ctx context.Context, req *serviceusagepb.GetServiceRequest, opts ...gax.CallOption) (*serviceusagepb.Service, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1050,6 +1065,11 @@ func (c *restClient) ListServices(ctx context.Context, req *serviceusagepb.ListS
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/services", req.GetParent())
@@ -1127,6 +1147,11 @@ func (c *restClient) BatchEnableServices(ctx context.Context, req *serviceusagep
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/services:batchEnable", req.GetParent())
 
 	// Build HTTP headers from client and context metadata.
@@ -1182,6 +1207,11 @@ func (c *restClient) BatchEnableServices(ctx context.Context, req *serviceusagep
 func (c *restClient) BatchGetServices(ctx context.Context, req *serviceusagepb.BatchGetServicesRequest, opts ...gax.CallOption) (*serviceusagepb.BatchGetServicesResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/services:batchGet", req.GetParent())
@@ -1240,6 +1270,11 @@ func (c *restClient) BatchGetServices(ctx context.Context, req *serviceusagepb.B
 func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())

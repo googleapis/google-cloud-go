@@ -2151,6 +2151,11 @@ func (c *saasDeploymentsRESTClient) ListSaas(ctx context.Context, req *saasservi
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/saas", req.GetParent())
 
 		params := url.Values{}
@@ -2222,6 +2227,11 @@ func (c *saasDeploymentsRESTClient) GetSaas(ctx context.Context, req *saasservic
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2281,6 +2291,11 @@ func (c *saasDeploymentsRESTClient) CreateSaas(ctx context.Context, req *saasser
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/saas", req.GetParent())
@@ -2351,6 +2366,11 @@ func (c *saasDeploymentsRESTClient) UpdateSaas(ctx context.Context, req *saasser
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSaas().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetSaas().GetName())
 
 	params := url.Values{}
@@ -2418,6 +2438,11 @@ func (c *saasDeploymentsRESTClient) DeleteSaas(ctx context.Context, req *saasser
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2477,6 +2502,11 @@ func (c *saasDeploymentsRESTClient) ListTenants(ctx context.Context, req *saasse
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/tenants", req.GetParent())
@@ -2550,6 +2580,11 @@ func (c *saasDeploymentsRESTClient) GetTenant(ctx context.Context, req *saasserv
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2609,6 +2644,11 @@ func (c *saasDeploymentsRESTClient) CreateTenant(ctx context.Context, req *saass
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/tenants", req.GetParent())
@@ -2679,6 +2719,11 @@ func (c *saasDeploymentsRESTClient) UpdateTenant(ctx context.Context, req *saass
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetTenant().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetTenant().GetName())
 
 	params := url.Values{}
@@ -2746,6 +2791,11 @@ func (c *saasDeploymentsRESTClient) DeleteTenant(ctx context.Context, req *saass
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2805,6 +2855,11 @@ func (c *saasDeploymentsRESTClient) ListUnitKinds(ctx context.Context, req *saas
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/unitKinds", req.GetParent())
@@ -2878,6 +2933,11 @@ func (c *saasDeploymentsRESTClient) GetUnitKind(ctx context.Context, req *saasse
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2937,6 +2997,11 @@ func (c *saasDeploymentsRESTClient) CreateUnitKind(ctx context.Context, req *saa
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/unitKinds", req.GetParent())
@@ -3007,6 +3072,11 @@ func (c *saasDeploymentsRESTClient) UpdateUnitKind(ctx context.Context, req *saa
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetUnitKind().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetUnitKind().GetName())
 
 	params := url.Values{}
@@ -3074,6 +3144,11 @@ func (c *saasDeploymentsRESTClient) DeleteUnitKind(ctx context.Context, req *saa
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3133,6 +3208,11 @@ func (c *saasDeploymentsRESTClient) ListUnits(ctx context.Context, req *saasserv
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/units", req.GetParent())
@@ -3206,6 +3286,11 @@ func (c *saasDeploymentsRESTClient) GetUnit(ctx context.Context, req *saasservic
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3265,6 +3350,11 @@ func (c *saasDeploymentsRESTClient) CreateUnit(ctx context.Context, req *saasser
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/units", req.GetParent())
@@ -3335,6 +3425,11 @@ func (c *saasDeploymentsRESTClient) UpdateUnit(ctx context.Context, req *saasser
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetUnit().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetUnit().GetName())
 
 	params := url.Values{}
@@ -3402,6 +3497,11 @@ func (c *saasDeploymentsRESTClient) DeleteUnit(ctx context.Context, req *saasser
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3461,6 +3561,11 @@ func (c *saasDeploymentsRESTClient) ListUnitOperations(ctx context.Context, req 
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/unitOperations", req.GetParent())
@@ -3534,6 +3639,11 @@ func (c *saasDeploymentsRESTClient) GetUnitOperation(ctx context.Context, req *s
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3593,6 +3703,11 @@ func (c *saasDeploymentsRESTClient) CreateUnitOperation(ctx context.Context, req
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/unitOperations", req.GetParent())
@@ -3663,6 +3778,11 @@ func (c *saasDeploymentsRESTClient) UpdateUnitOperation(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetUnitOperation().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetUnitOperation().GetName())
 
 	params := url.Values{}
@@ -3730,6 +3850,11 @@ func (c *saasDeploymentsRESTClient) DeleteUnitOperation(ctx context.Context, req
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3789,6 +3914,11 @@ func (c *saasDeploymentsRESTClient) ListReleases(ctx context.Context, req *saass
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/releases", req.GetParent())
@@ -3862,6 +3992,11 @@ func (c *saasDeploymentsRESTClient) GetRelease(ctx context.Context, req *saasser
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3921,6 +4056,11 @@ func (c *saasDeploymentsRESTClient) CreateRelease(ctx context.Context, req *saas
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/releases", req.GetParent())
@@ -3991,6 +4131,11 @@ func (c *saasDeploymentsRESTClient) UpdateRelease(ctx context.Context, req *saas
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetRelease().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetRelease().GetName())
 
 	params := url.Values{}
@@ -4058,6 +4203,11 @@ func (c *saasDeploymentsRESTClient) DeleteRelease(ctx context.Context, req *saas
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4104,6 +4254,11 @@ func (c *saasDeploymentsRESTClient) DeleteRelease(ctx context.Context, req *saas
 func (c *saasDeploymentsRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
@@ -4186,6 +4341,11 @@ func (c *saasDeploymentsRESTClient) ListLocations(ctx context.Context, req *loca
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/locations", req.GetName())

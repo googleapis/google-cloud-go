@@ -361,6 +361,12 @@ func (c *globalForwardingRulesRESTClient) Delete(ctx context.Context, req *compu
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetForwardingRule(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/forwardingRules/%v", req.GetProject(), req.GetForwardingRule())
 
 	params := url.Values{}
@@ -425,6 +431,12 @@ func (c *globalForwardingRulesRESTClient) Get(ctx context.Context, req *computep
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetForwardingRule(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/forwardingRules/%v", req.GetProject(), req.GetForwardingRule())
 
 	params := url.Values{}
@@ -487,6 +499,11 @@ func (c *globalForwardingRulesRESTClient) Insert(ctx context.Context, req *compu
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/forwardingRules", req.GetProject())
@@ -564,6 +581,11 @@ func (c *globalForwardingRulesRESTClient) List(ctx context.Context, req *compute
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/forwardingRules", req.GetProject())
@@ -647,6 +669,12 @@ func (c *globalForwardingRulesRESTClient) Patch(ctx context.Context, req *comput
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetForwardingRule(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/forwardingRules/%v", req.GetProject(), req.GetForwardingRule())
 
 	params := url.Values{}
@@ -719,6 +747,12 @@ func (c *globalForwardingRulesRESTClient) SetLabels(ctx context.Context, req *co
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/forwardingRules/%v/setLabels", req.GetProject(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -781,6 +815,12 @@ func (c *globalForwardingRulesRESTClient) SetTarget(ctx context.Context, req *co
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetForwardingRule(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/forwardingRules/%v/setTarget", req.GetProject(), req.GetForwardingRule())

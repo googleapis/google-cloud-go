@@ -423,6 +423,11 @@ func (c *networkAttachmentsRESTClient) AggregatedList(ctx context.Context, req *
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/networkAttachments", req.GetProject())
 
 		params := url.Values{}
@@ -506,6 +511,13 @@ func (c *networkAttachmentsRESTClient) Delete(ctx context.Context, req *computep
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetNetworkAttachment(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/networkAttachments/%v", req.GetProject(), req.GetRegion(), req.GetNetworkAttachment())
 
 	params := url.Values{}
@@ -570,6 +582,13 @@ func (c *networkAttachmentsRESTClient) Get(ctx context.Context, req *computepb.G
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetNetworkAttachment(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/networkAttachments/%v", req.GetProject(), req.GetRegion(), req.GetNetworkAttachment())
 
 	// Build HTTP headers from client and context metadata.
@@ -618,6 +637,13 @@ func (c *networkAttachmentsRESTClient) Get(ctx context.Context, req *computepb.G
 func (c *networkAttachmentsRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyNetworkAttachmentRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/networkAttachments/%v/getIamPolicy", req.GetProject(), req.GetRegion(), req.GetResource())
@@ -682,6 +708,12 @@ func (c *networkAttachmentsRESTClient) Insert(ctx context.Context, req *computep
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/networkAttachments", req.GetProject(), req.GetRegion())
@@ -759,6 +791,12 @@ func (c *networkAttachmentsRESTClient) List(ctx context.Context, req *computepb.
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/networkAttachments", req.GetProject(), req.GetRegion())
@@ -841,6 +879,13 @@ func (c *networkAttachmentsRESTClient) Patch(ctx context.Context, req *computepb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetNetworkAttachment(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/networkAttachments/%v", req.GetProject(), req.GetRegion(), req.GetNetworkAttachment())
 
 	params := url.Values{}
@@ -913,6 +958,13 @@ func (c *networkAttachmentsRESTClient) SetIamPolicy(ctx context.Context, req *co
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/networkAttachments/%v/setIamPolicy", req.GetProject(), req.GetRegion(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -967,6 +1019,13 @@ func (c *networkAttachmentsRESTClient) TestIamPermissions(ctx context.Context, r
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/networkAttachments/%v/testIamPermissions", req.GetProject(), req.GetRegion(), req.GetResource())

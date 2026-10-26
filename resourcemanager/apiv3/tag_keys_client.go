@@ -1011,6 +1011,11 @@ func (c *tagKeysRESTClient) GetTagKey(ctx context.Context, req *resourcemanagerp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
 
 	params := url.Values{}
@@ -1197,6 +1202,11 @@ func (c *tagKeysRESTClient) UpdateTagKey(ctx context.Context, req *resourcemanag
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetTagKey().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetTagKey().GetName())
 
 	params := url.Values{}
@@ -1267,6 +1277,11 @@ func (c *tagKeysRESTClient) UpdateTagKey(ctx context.Context, req *resourcemanag
 func (c *tagKeysRESTClient) DeleteTagKey(ctx context.Context, req *resourcemanagerpb.DeleteTagKeyRequest, opts ...gax.CallOption) (*DeleteTagKeyOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
@@ -1347,6 +1362,11 @@ func (c *tagKeysRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamP
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -1409,6 +1429,11 @@ func (c *tagKeysRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamP
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v:setIamPolicy", req.GetResource())
@@ -1475,6 +1500,11 @@ func (c *tagKeysRESTClient) TestIamPermissions(ctx context.Context, req *iampb.T
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -1527,6 +1557,11 @@ func (c *tagKeysRESTClient) TestIamPermissions(ctx context.Context, req *iampb.T
 func (c *tagKeysRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())

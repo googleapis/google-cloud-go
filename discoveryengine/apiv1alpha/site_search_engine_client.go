@@ -1294,6 +1294,11 @@ func (c *siteSearchEngineRESTClient) GetSiteSearchEngine(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -1353,6 +1358,11 @@ func (c *siteSearchEngineRESTClient) CreateTargetSite(ctx context.Context, req *
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/targetSites", req.GetParent())
@@ -1423,6 +1433,11 @@ func (c *siteSearchEngineRESTClient) BatchCreateTargetSites(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/targetSites:batchCreate", req.GetParent())
 
 	params := url.Values{}
@@ -1482,6 +1497,11 @@ func (c *siteSearchEngineRESTClient) BatchCreateTargetSites(ctx context.Context,
 func (c *siteSearchEngineRESTClient) GetTargetSite(ctx context.Context, req *discoveryenginepb.GetTargetSiteRequest, opts ...gax.CallOption) (*discoveryenginepb.TargetSite, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -1545,6 +1565,11 @@ func (c *siteSearchEngineRESTClient) UpdateTargetSite(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetTargetSite().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetTargetSite().GetName())
 
 	params := url.Values{}
@@ -1604,6 +1629,11 @@ func (c *siteSearchEngineRESTClient) UpdateTargetSite(ctx context.Context, req *
 func (c *siteSearchEngineRESTClient) DeleteTargetSite(ctx context.Context, req *discoveryenginepb.DeleteTargetSiteRequest, opts ...gax.CallOption) (*DeleteTargetSiteOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -1681,6 +1711,11 @@ func (c *siteSearchEngineRESTClient) ListTargetSites(ctx context.Context, req *d
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/targetSites", req.GetParent())
 
 		params := url.Values{}
@@ -1752,6 +1787,11 @@ func (c *siteSearchEngineRESTClient) EnableAdvancedSiteSearch(ctx context.Contex
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSiteSearchEngine(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:enableAdvancedSiteSearch", req.GetSiteSearchEngine())
 
 	params := url.Values{}
@@ -1817,6 +1857,11 @@ func (c *siteSearchEngineRESTClient) DisableAdvancedSiteSearch(ctx context.Conte
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSiteSearchEngine(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:disableAdvancedSiteSearch", req.GetSiteSearchEngine())
@@ -1886,6 +1931,11 @@ func (c *siteSearchEngineRESTClient) RecrawlUris(ctx context.Context, req *disco
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSiteSearchEngine(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:recrawlUris", req.GetSiteSearchEngine())
 
 	params := url.Values{}
@@ -1953,6 +2003,11 @@ func (c *siteSearchEngineRESTClient) BatchVerifyTargetSites(ctx context.Context,
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:batchVerifyTargetSites", req.GetParent())
@@ -2031,6 +2086,11 @@ func (c *siteSearchEngineRESTClient) FetchDomainVerificationStatus(ctx context.C
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetSiteSearchEngine(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v:fetchDomainVerificationStatus", req.GetSiteSearchEngine())
 
 		params := url.Values{}
@@ -2103,6 +2163,11 @@ func (c *siteSearchEngineRESTClient) SetUriPatternDocumentData(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSiteSearchEngine(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:setUriPatternDocumentData", req.GetSiteSearchEngine())
 
 	params := url.Values{}
@@ -2165,6 +2230,11 @@ func (c *siteSearchEngineRESTClient) GetUriPatternDocumentData(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSiteSearchEngine(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:getUriPatternDocumentData", req.GetSiteSearchEngine())
 
 	params := url.Values{}
@@ -2225,6 +2295,11 @@ func (c *siteSearchEngineRESTClient) CancelOperation(ctx context.Context, req *l
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -2262,6 +2337,11 @@ func (c *siteSearchEngineRESTClient) CancelOperation(ctx context.Context, req *l
 func (c *siteSearchEngineRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -2329,6 +2409,11 @@ func (c *siteSearchEngineRESTClient) ListOperations(ctx context.Context, req *lo
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/operations", req.GetName())

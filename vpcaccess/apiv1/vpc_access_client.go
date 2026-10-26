@@ -808,6 +808,11 @@ func (c *restClient) CreateConnector(ctx context.Context, req *vpcaccesspb.Creat
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/connectors", req.GetParent())
 
 	params := url.Values{}
@@ -869,6 +874,11 @@ func (c *restClient) CreateConnector(ctx context.Context, req *vpcaccesspb.Creat
 func (c *restClient) GetConnector(ctx context.Context, req *vpcaccesspb.GetConnectorRequest, opts ...gax.CallOption) (*vpcaccesspb.Connector, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -938,6 +948,11 @@ func (c *restClient) ListConnectors(ctx context.Context, req *vpcaccesspb.ListCo
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/connectors", req.GetParent())
 
 		params := url.Values{}
@@ -1002,6 +1017,11 @@ func (c *restClient) ListConnectors(ctx context.Context, req *vpcaccesspb.ListCo
 func (c *restClient) DeleteConnector(ctx context.Context, req *vpcaccesspb.DeleteConnectorRequest, opts ...gax.CallOption) (*DeleteConnectorOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1078,6 +1098,11 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -1146,6 +1171,11 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1211,6 +1241,11 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

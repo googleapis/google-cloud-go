@@ -1293,6 +1293,11 @@ func (c *addressGroupRESTClient) ListAddressGroups(ctx context.Context, req *net
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/addressGroups", req.GetParent())
 
 		params := url.Values{}
@@ -1361,6 +1366,11 @@ func (c *addressGroupRESTClient) GetAddressGroup(ctx context.Context, req *netwo
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1420,6 +1430,11 @@ func (c *addressGroupRESTClient) CreateAddressGroup(ctx context.Context, req *ne
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/addressGroups", req.GetParent())
@@ -1492,6 +1507,11 @@ func (c *addressGroupRESTClient) UpdateAddressGroup(ctx context.Context, req *ne
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAddressGroup().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetAddressGroup().GetName())
@@ -1571,6 +1591,11 @@ func (c *addressGroupRESTClient) AddAddressGroupItems(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAddressGroup(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:addItems", req.GetAddressGroup())
 
 	params := url.Values{}
@@ -1636,6 +1661,11 @@ func (c *addressGroupRESTClient) RemoveAddressGroupItems(ctx context.Context, re
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAddressGroup(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:removeItems", req.GetAddressGroup())
@@ -1705,6 +1735,11 @@ func (c *addressGroupRESTClient) CloneAddressGroupItems(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAddressGroup(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cloneItems", req.GetAddressGroup())
 
 	params := url.Values{}
@@ -1764,6 +1799,11 @@ func (c *addressGroupRESTClient) CloneAddressGroupItems(ctx context.Context, req
 func (c *addressGroupRESTClient) DeleteAddressGroup(ctx context.Context, req *networksecuritypb.DeleteAddressGroupRequest, opts ...gax.CallOption) (*DeleteAddressGroupOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1843,6 +1883,11 @@ func (c *addressGroupRESTClient) ListAddressGroupReferences(ctx context.Context,
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetAddressGroup(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:listReferences", req.GetAddressGroup())
 
 		params := url.Values{}
@@ -1906,6 +1951,11 @@ func (c *addressGroupRESTClient) ListAddressGroupReferences(ctx context.Context,
 func (c *addressGroupRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1990,6 +2040,11 @@ func (c *addressGroupRESTClient) ListLocations(ctx context.Context, req *locatio
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -2059,6 +2114,11 @@ func (c *addressGroupRESTClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -2124,6 +2184,11 @@ func (c *addressGroupRESTClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
@@ -2192,6 +2257,11 @@ func (c *addressGroupRESTClient) TestIamPermissions(ctx context.Context, req *ia
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -2252,6 +2322,11 @@ func (c *addressGroupRESTClient) CancelOperation(ctx context.Context, req *longr
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -2291,6 +2366,11 @@ func (c *addressGroupRESTClient) DeleteOperation(ctx context.Context, req *longr
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2328,6 +2408,11 @@ func (c *addressGroupRESTClient) DeleteOperation(ctx context.Context, req *longr
 func (c *addressGroupRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2395,6 +2480,11 @@ func (c *addressGroupRESTClient) ListOperations(ctx context.Context, req *longru
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

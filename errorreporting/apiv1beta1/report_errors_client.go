@@ -466,6 +466,11 @@ func (c *reportErrorsRESTClient) ReportErrorEvent(ctx context.Context, req *erro
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/events:report", req.GetProjectName())
 
 	params := url.Values{}

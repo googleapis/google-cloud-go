@@ -358,6 +358,11 @@ func (c *sslCertificatesRESTClient) AggregatedList(ctx context.Context, req *com
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/sslCertificates", req.GetProject())
 
 		params := url.Values{}
@@ -441,6 +446,12 @@ func (c *sslCertificatesRESTClient) Delete(ctx context.Context, req *computepb.D
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetSslCertificate(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/sslCertificates/%v", req.GetProject(), req.GetSslCertificate())
 
 	params := url.Values{}
@@ -504,6 +515,12 @@ func (c *sslCertificatesRESTClient) Get(ctx context.Context, req *computepb.GetS
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetSslCertificate(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/sslCertificates/%v", req.GetProject(), req.GetSslCertificate())
 
 	// Build HTTP headers from client and context metadata.
@@ -559,6 +576,11 @@ func (c *sslCertificatesRESTClient) Insert(ctx context.Context, req *computepb.I
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/sslCertificates", req.GetProject())
@@ -636,6 +658,11 @@ func (c *sslCertificatesRESTClient) List(ctx context.Context, req *computepb.Lis
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/sslCertificates", req.GetProject())

@@ -492,6 +492,13 @@ func (c *nodeGroupsRESTClient) AddNodes(ctx context.Context, req *computepb.AddN
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetNodeGroup(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/nodeGroups/%v/addNodes", req.GetProject(), req.GetZone(), req.GetNodeGroup())
 
 	params := url.Values{}
@@ -571,6 +578,11 @@ func (c *nodeGroupsRESTClient) AggregatedList(ctx context.Context, req *computep
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/nodeGroups", req.GetProject())
@@ -656,6 +668,13 @@ func (c *nodeGroupsRESTClient) Delete(ctx context.Context, req *computepb.Delete
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetNodeGroup(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/nodeGroups/%v", req.GetProject(), req.GetZone(), req.GetNodeGroup())
 
 	params := url.Values{}
@@ -727,6 +746,13 @@ func (c *nodeGroupsRESTClient) DeleteNodes(ctx context.Context, req *computepb.D
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetNodeGroup(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/nodeGroups/%v/deleteNodes", req.GetProject(), req.GetZone(), req.GetNodeGroup())
 
 	params := url.Values{}
@@ -794,6 +820,13 @@ func (c *nodeGroupsRESTClient) Get(ctx context.Context, req *computepb.GetNodeGr
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetNodeGroup(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/nodeGroups/%v", req.GetProject(), req.GetZone(), req.GetNodeGroup())
 
 	// Build HTTP headers from client and context metadata.
@@ -842,6 +875,13 @@ func (c *nodeGroupsRESTClient) Get(ctx context.Context, req *computepb.GetNodeGr
 func (c *nodeGroupsRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyNodeGroupRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/nodeGroups/%v/getIamPolicy", req.GetProject(), req.GetZone(), req.GetResource())
@@ -906,6 +946,12 @@ func (c *nodeGroupsRESTClient) Insert(ctx context.Context, req *computepb.Insert
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/nodeGroups", req.GetProject(), req.GetZone())
@@ -985,6 +1031,12 @@ func (c *nodeGroupsRESTClient) List(ctx context.Context, req *computepb.ListNode
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetZone(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/nodeGroups", req.GetProject(), req.GetZone())
@@ -1070,6 +1122,13 @@ func (c *nodeGroupsRESTClient) ListNodes(ctx context.Context, req *computepb.Lis
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetZone(),
+			req.GetNodeGroup(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/nodeGroups/%v/listNodes", req.GetProject(), req.GetZone(), req.GetNodeGroup())
 
 		params := url.Values{}
@@ -1147,6 +1206,13 @@ func (c *nodeGroupsRESTClient) Patch(ctx context.Context, req *computepb.PatchNo
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetNodeGroup(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/nodeGroups/%v", req.GetProject(), req.GetZone(), req.GetNodeGroup())
 
 	params := url.Values{}
@@ -1216,6 +1282,13 @@ func (c *nodeGroupsRESTClient) PerformMaintenance(ctx context.Context, req *comp
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetNodeGroup(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/nodeGroups/%v/performMaintenance", req.GetProject(), req.GetZone(), req.GetNodeGroup())
@@ -1290,6 +1363,13 @@ func (c *nodeGroupsRESTClient) SetIamPolicy(ctx context.Context, req *computepb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/nodeGroups/%v/setIamPolicy", req.GetProject(), req.GetZone(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -1344,6 +1424,13 @@ func (c *nodeGroupsRESTClient) SetNodeTemplate(ctx context.Context, req *compute
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetNodeGroup(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/nodeGroups/%v/setNodeTemplate", req.GetProject(), req.GetZone(), req.GetNodeGroup())
@@ -1417,6 +1504,13 @@ func (c *nodeGroupsRESTClient) SimulateMaintenanceEvent(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetNodeGroup(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/nodeGroups/%v/simulateMaintenanceEvent", req.GetProject(), req.GetZone(), req.GetNodeGroup())
 
 	params := url.Values{}
@@ -1486,6 +1580,13 @@ func (c *nodeGroupsRESTClient) TestIamPermissions(ctx context.Context, req *comp
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/nodeGroups/%v/testIamPermissions", req.GetProject(), req.GetZone(), req.GetResource())

@@ -302,6 +302,13 @@ func (c *zoneOperationsRESTClient) Delete(ctx context.Context, req *computepb.De
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetOperation(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/operations/%v", req.GetProject(), req.GetZone(), req.GetOperation())
 
 	// Build HTTP headers from client and context metadata.
@@ -349,6 +356,13 @@ func (c *zoneOperationsRESTClient) Delete(ctx context.Context, req *computepb.De
 func (c *zoneOperationsRESTClient) Get(ctx context.Context, req *computepb.GetZoneOperationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetOperation(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/operations/%v", req.GetProject(), req.GetZone(), req.GetOperation())
@@ -412,6 +426,12 @@ func (c *zoneOperationsRESTClient) List(ctx context.Context, req *computepb.List
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetZone(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/operations", req.GetProject(), req.GetZone())
@@ -488,6 +508,13 @@ func (c *zoneOperationsRESTClient) List(ctx context.Context, req *computepb.List
 func (c *zoneOperationsRESTClient) Wait(ctx context.Context, req *computepb.WaitZoneOperationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetOperation(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/operations/%v/wait", req.GetProject(), req.GetZone(), req.GetOperation())

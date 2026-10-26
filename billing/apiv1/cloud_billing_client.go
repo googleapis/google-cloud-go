@@ -1107,6 +1107,11 @@ func (c *cloudBillingRESTClient) GetBillingAccount(ctx context.Context, req *bil
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1257,6 +1262,11 @@ func (c *cloudBillingRESTClient) UpdateBillingAccount(ctx context.Context, req *
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1414,6 +1424,11 @@ func (c *cloudBillingRESTClient) ListProjectBillingInfo(ctx context.Context, req
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/projects", req.GetName())
 
 		params := url.Values{}
@@ -1481,6 +1496,11 @@ func (c *cloudBillingRESTClient) ListProjectBillingInfo(ctx context.Context, req
 func (c *cloudBillingRESTClient) GetProjectBillingInfo(ctx context.Context, req *billingpb.GetProjectBillingInfoRequest, opts ...gax.CallOption) (*billingpb.ProjectBillingInfo, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/billingInfo", req.GetName())
@@ -1574,6 +1594,11 @@ func (c *cloudBillingRESTClient) UpdateProjectBillingInfo(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/billingInfo", req.GetName())
 
 	params := url.Values{}
@@ -1629,6 +1654,11 @@ func (c *cloudBillingRESTClient) UpdateProjectBillingInfo(ctx context.Context, r
 func (c *cloudBillingRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
@@ -1698,6 +1728,11 @@ func (c *cloudBillingRESTClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -1760,6 +1795,11 @@ func (c *cloudBillingRESTClient) TestIamPermissions(ctx context.Context, req *ia
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -1818,6 +1858,11 @@ func (c *cloudBillingRESTClient) MoveBillingAccount(ctx context.Context, req *bi
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:move", req.GetName())

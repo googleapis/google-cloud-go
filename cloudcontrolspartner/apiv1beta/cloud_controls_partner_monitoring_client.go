@@ -535,6 +535,11 @@ func (c *cloudControlsPartnerMonitoringRESTClient) ListViolations(ctx context.Co
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/violations", req.GetParent())
 
 		params := url.Values{}
@@ -618,6 +623,11 @@ func (c *cloudControlsPartnerMonitoringRESTClient) ListViolations(ctx context.Co
 func (c *cloudControlsPartnerMonitoringRESTClient) GetViolation(ctx context.Context, req *cloudcontrolspartnerpb.GetViolationRequest, opts ...gax.CallOption) (*cloudcontrolspartnerpb.Violation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())

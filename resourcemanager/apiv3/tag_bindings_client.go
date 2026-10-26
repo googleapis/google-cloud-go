@@ -854,6 +854,11 @@ func (c *tagBindingsRESTClient) DeleteTagBinding(ctx context.Context, req *resou
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
 
 	params := url.Values{}
@@ -993,6 +998,11 @@ func (c *tagBindingsRESTClient) ListEffectiveTags(ctx context.Context, req *reso
 func (c *tagBindingsRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())

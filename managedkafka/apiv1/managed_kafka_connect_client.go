@@ -1415,6 +1415,11 @@ func (c *managedKafkaConnectRESTClient) ListConnectClusters(ctx context.Context,
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/connectClusters", req.GetParent())
 
 		params := url.Values{}
@@ -1486,6 +1491,11 @@ func (c *managedKafkaConnectRESTClient) GetConnectCluster(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1545,6 +1555,11 @@ func (c *managedKafkaConnectRESTClient) CreateConnectCluster(ctx context.Context
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/connectClusters", req.GetParent())
@@ -1619,6 +1634,11 @@ func (c *managedKafkaConnectRESTClient) UpdateConnectCluster(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetConnectCluster().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetConnectCluster().GetName())
 
 	params := url.Values{}
@@ -1688,6 +1708,11 @@ func (c *managedKafkaConnectRESTClient) UpdateConnectCluster(ctx context.Context
 func (c *managedKafkaConnectRESTClient) DeleteConnectCluster(ctx context.Context, req *managedkafkapb.DeleteConnectClusterRequest, opts ...gax.CallOption) (*DeleteConnectClusterOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1767,6 +1792,11 @@ func (c *managedKafkaConnectRESTClient) ListConnectors(ctx context.Context, req 
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/connectors", req.GetParent())
 
 		params := url.Values{}
@@ -1832,6 +1862,11 @@ func (c *managedKafkaConnectRESTClient) GetConnector(ctx context.Context, req *m
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1891,6 +1926,11 @@ func (c *managedKafkaConnectRESTClient) CreateConnector(ctx context.Context, req
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/connectors", req.GetParent())
@@ -1955,6 +1995,11 @@ func (c *managedKafkaConnectRESTClient) UpdateConnector(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetConnector().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetConnector().GetName())
 
 	params := url.Values{}
@@ -2016,6 +2061,11 @@ func (c *managedKafkaConnectRESTClient) DeleteConnector(ctx context.Context, req
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2059,6 +2109,11 @@ func (c *managedKafkaConnectRESTClient) PauseConnector(ctx context.Context, req 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:pause", req.GetName())
@@ -2121,6 +2176,11 @@ func (c *managedKafkaConnectRESTClient) ResumeConnector(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:resume", req.GetName())
 
 	params := url.Values{}
@@ -2179,6 +2239,11 @@ func (c *managedKafkaConnectRESTClient) RestartConnector(ctx context.Context, re
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:restart", req.GetName())
@@ -2241,6 +2306,11 @@ func (c *managedKafkaConnectRESTClient) StopConnector(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:stop", req.GetName())
 
 	params := url.Values{}
@@ -2293,6 +2363,11 @@ func (c *managedKafkaConnectRESTClient) StopConnector(ctx context.Context, req *
 func (c *managedKafkaConnectRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2360,6 +2435,11 @@ func (c *managedKafkaConnectRESTClient) ListLocations(ctx context.Context, req *
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
@@ -2436,6 +2516,11 @@ func (c *managedKafkaConnectRESTClient) CancelOperation(ctx context.Context, req
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -2475,6 +2560,11 @@ func (c *managedKafkaConnectRESTClient) DeleteOperation(ctx context.Context, req
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2512,6 +2602,11 @@ func (c *managedKafkaConnectRESTClient) DeleteOperation(ctx context.Context, req
 func (c *managedKafkaConnectRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2579,6 +2674,11 @@ func (c *managedKafkaConnectRESTClient) ListOperations(ctx context.Context, req 
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

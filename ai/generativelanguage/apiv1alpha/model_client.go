@@ -835,6 +835,11 @@ func (c *modelRESTClient) GetModel(ctx context.Context, req *generativelanguagep
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -966,6 +971,11 @@ func (c *modelRESTClient) ListModels(ctx context.Context, req *generativelanguag
 func (c *modelRESTClient) GetTunedModel(ctx context.Context, req *generativelanguagepb.GetTunedModelRequest, opts ...gax.CallOption) (*generativelanguagepb.TunedModel, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -1184,6 +1194,11 @@ func (c *modelRESTClient) UpdateTunedModel(ctx context.Context, req *generativel
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetTunedModel().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetTunedModel().GetName())
 
 	params := url.Values{}
@@ -1245,6 +1260,11 @@ func (c *modelRESTClient) DeleteTunedModel(ctx context.Context, req *generativel
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -1282,6 +1302,11 @@ func (c *modelRESTClient) DeleteTunedModel(ctx context.Context, req *generativel
 func (c *modelRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -1349,6 +1374,11 @@ func (c *modelRESTClient) ListOperations(ctx context.Context, req *longrunningpb
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/operations", req.GetName())

@@ -596,6 +596,11 @@ func (c *restClient) ListNotifications(ctx context.Context, req *advisorynotific
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/notifications", req.GetParent())
 
 		params := url.Values{}
@@ -667,6 +672,11 @@ func (c *restClient) GetNotification(ctx context.Context, req *advisorynotificat
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -722,6 +732,11 @@ func (c *restClient) GetNotification(ctx context.Context, req *advisorynotificat
 func (c *restClient) GetSettings(ctx context.Context, req *advisorynotificationspb.GetSettingsRequest, opts ...gax.CallOption) (*advisorynotificationspb.Settings, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -783,6 +798,11 @@ func (c *restClient) UpdateSettings(ctx context.Context, req *advisorynotificati
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSettings().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetSettings().GetName())

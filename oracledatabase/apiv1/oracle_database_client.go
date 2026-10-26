@@ -5984,6 +5984,11 @@ func (c *restClient) ListCloudExadataInfrastructures(ctx context.Context, req *o
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/cloudExadataInfrastructures", req.GetParent())
 
 		params := url.Values{}
@@ -6055,6 +6060,11 @@ func (c *restClient) GetCloudExadataInfrastructure(ctx context.Context, req *ora
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -6114,6 +6124,11 @@ func (c *restClient) CreateCloudExadataInfrastructure(ctx context.Context, req *
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/cloudExadataInfrastructures", req.GetParent())
@@ -6179,6 +6194,11 @@ func (c *restClient) CreateCloudExadataInfrastructure(ctx context.Context, req *
 func (c *restClient) DeleteCloudExadataInfrastructure(ctx context.Context, req *oracledatabasepb.DeleteCloudExadataInfrastructureRequest, opts ...gax.CallOption) (*DeleteCloudExadataInfrastructureOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -6252,6 +6272,11 @@ func (c *restClient) ConfigureExascaleCloudExadataInfrastructure(ctx context.Con
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:configureExascale", req.GetName())
@@ -6328,6 +6353,11 @@ func (c *restClient) ListCloudVmClusters(ctx context.Context, req *oracledatabas
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/cloudVmClusters", req.GetParent())
 
 		params := url.Values{}
@@ -6396,6 +6426,11 @@ func (c *restClient) GetCloudVmCluster(ctx context.Context, req *oracledatabasep
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -6455,6 +6490,11 @@ func (c *restClient) CreateCloudVmCluster(ctx context.Context, req *oracledataba
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/cloudVmClusters", req.GetParent())
@@ -6520,6 +6560,11 @@ func (c *restClient) CreateCloudVmCluster(ctx context.Context, req *oracledataba
 func (c *restClient) DeleteCloudVmCluster(ctx context.Context, req *oracledatabasepb.DeleteCloudVmClusterRequest, opts ...gax.CallOption) (*DeleteCloudVmClusterOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -6602,6 +6647,11 @@ func (c *restClient) ListEntitlements(ctx context.Context, req *oracledatabasepb
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/entitlements", req.GetParent())
 
 		params := url.Values{}
@@ -6678,6 +6728,11 @@ func (c *restClient) ListDbServers(ctx context.Context, req *oracledatabasepb.Li
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/dbServers", req.GetParent())
@@ -6758,6 +6813,11 @@ func (c *restClient) ListDbNodes(ctx context.Context, req *oracledatabasepb.List
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/dbNodes", req.GetParent())
 
 		params := url.Values{}
@@ -6835,6 +6895,11 @@ func (c *restClient) ListGiVersions(ctx context.Context, req *oracledatabasepb.L
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/giVersions", req.GetParent())
@@ -6919,6 +6984,11 @@ func (c *restClient) ListMinorVersions(ctx context.Context, req *oracledatabasep
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/minorVersions", req.GetParent())
 
 		params := url.Values{}
@@ -6998,6 +7068,11 @@ func (c *restClient) ListDbSystemShapes(ctx context.Context, req *oracledatabase
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/dbSystemShapes", req.GetParent())
@@ -7081,6 +7156,11 @@ func (c *restClient) ListAutonomousDatabases(ctx context.Context, req *oracledat
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/autonomousDatabases", req.GetParent())
 
 		params := url.Values{}
@@ -7152,6 +7232,11 @@ func (c *restClient) GetAutonomousDatabase(ctx context.Context, req *oracledatab
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -7211,6 +7296,11 @@ func (c *restClient) CreateAutonomousDatabase(ctx context.Context, req *oracleda
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/autonomousDatabases", req.GetParent())
@@ -7285,6 +7375,11 @@ func (c *restClient) UpdateAutonomousDatabase(ctx context.Context, req *oracleda
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAutonomousDatabase().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetAutonomousDatabase().GetName())
 
 	params := url.Values{}
@@ -7354,6 +7449,11 @@ func (c *restClient) UpdateAutonomousDatabase(ctx context.Context, req *oracleda
 func (c *restClient) DeleteAutonomousDatabase(ctx context.Context, req *oracledatabasepb.DeleteAutonomousDatabaseRequest, opts ...gax.CallOption) (*DeleteAutonomousDatabaseOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -7426,6 +7526,11 @@ func (c *restClient) RestoreAutonomousDatabase(ctx context.Context, req *oracled
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:restore", req.GetName())
 
 	params := url.Values{}
@@ -7491,6 +7596,11 @@ func (c *restClient) GenerateAutonomousDatabaseWallet(ctx context.Context, req *
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:generateWallet", req.GetName())
@@ -7559,6 +7669,11 @@ func (c *restClient) ListAutonomousDbVersions(ctx context.Context, req *oracleda
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/autonomousDbVersions", req.GetParent())
@@ -7637,6 +7752,11 @@ func (c *restClient) ListAutonomousDatabaseCharacterSets(ctx context.Context, re
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/autonomousDatabaseCharacterSets", req.GetParent())
@@ -7720,6 +7840,11 @@ func (c *restClient) ListAutonomousDatabaseBackups(ctx context.Context, req *ora
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/autonomousDatabaseBackups", req.GetParent())
 
 		params := url.Values{}
@@ -7794,6 +7919,11 @@ func (c *restClient) StopAutonomousDatabase(ctx context.Context, req *oracledata
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:stop", req.GetName())
 
 	params := url.Values{}
@@ -7861,6 +7991,11 @@ func (c *restClient) StartAutonomousDatabase(ctx context.Context, req *oracledat
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:start", req.GetName())
 
 	params := url.Values{}
@@ -7926,6 +8061,11 @@ func (c *restClient) RestartAutonomousDatabase(ctx context.Context, req *oracled
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:restart", req.GetName())
@@ -7996,6 +8136,11 @@ func (c *restClient) SwitchoverAutonomousDatabase(ctx context.Context, req *orac
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:switchover", req.GetName())
 
 	params := url.Values{}
@@ -8062,6 +8207,11 @@ func (c *restClient) FailoverAutonomousDatabase(ctx context.Context, req *oracle
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:failover", req.GetName())
@@ -8131,6 +8281,11 @@ func (c *restClient) RefreshAutonomousDatabase(ctx context.Context, req *oracled
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:refresh", req.GetName())
 
 	params := url.Values{}
@@ -8190,6 +8345,11 @@ func (c *restClient) RefreshAutonomousDatabase(ctx context.Context, req *oracled
 func (c *restClient) GetAutonomousDatabaseRefreshableClones(ctx context.Context, req *oracledatabasepb.GetAutonomousDatabaseRefreshableClonesRequest, opts ...gax.CallOption) (*oracledatabasepb.AutonomousDatabaseRefreshableClones, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getRefreshableClones", req.GetName())
@@ -8257,6 +8417,11 @@ func (c *restClient) ListOdbNetworks(ctx context.Context, req *oracledatabasepb.
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/odbNetworks", req.GetParent())
@@ -8330,6 +8495,11 @@ func (c *restClient) GetOdbNetwork(ctx context.Context, req *oracledatabasepb.Ge
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -8389,6 +8559,11 @@ func (c *restClient) CreateOdbNetwork(ctx context.Context, req *oracledatabasepb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/odbNetworks", req.GetParent())
@@ -8454,6 +8629,11 @@ func (c *restClient) CreateOdbNetwork(ctx context.Context, req *oracledatabasepb
 func (c *restClient) DeleteOdbNetwork(ctx context.Context, req *oracledatabasepb.DeleteOdbNetworkRequest, opts ...gax.CallOption) (*DeleteOdbNetworkOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -8533,6 +8713,11 @@ func (c *restClient) ListOdbSubnets(ctx context.Context, req *oracledatabasepb.L
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/odbSubnets", req.GetParent())
 
 		params := url.Values{}
@@ -8604,6 +8789,11 @@ func (c *restClient) GetOdbSubnet(ctx context.Context, req *oracledatabasepb.Get
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -8663,6 +8853,11 @@ func (c *restClient) CreateOdbSubnet(ctx context.Context, req *oracledatabasepb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/odbSubnets", req.GetParent())
@@ -8728,6 +8923,11 @@ func (c *restClient) CreateOdbSubnet(ctx context.Context, req *oracledatabasepb.
 func (c *restClient) DeleteOdbSubnet(ctx context.Context, req *oracledatabasepb.DeleteOdbSubnetRequest, opts ...gax.CallOption) (*DeleteOdbSubnetOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -8808,6 +9008,11 @@ func (c *restClient) ListExadbVmClusters(ctx context.Context, req *oracledatabas
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/exadbVmClusters", req.GetParent())
 
 		params := url.Values{}
@@ -8879,6 +9084,11 @@ func (c *restClient) GetExadbVmCluster(ctx context.Context, req *oracledatabasep
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -8938,6 +9148,11 @@ func (c *restClient) CreateExadbVmCluster(ctx context.Context, req *oracledataba
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/exadbVmClusters", req.GetParent())
@@ -9003,6 +9218,11 @@ func (c *restClient) CreateExadbVmCluster(ctx context.Context, req *oracledataba
 func (c *restClient) DeleteExadbVmCluster(ctx context.Context, req *oracledatabasepb.DeleteExadbVmClusterRequest, opts ...gax.CallOption) (*DeleteExadbVmClusterOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -9075,6 +9295,11 @@ func (c *restClient) UpdateExadbVmCluster(ctx context.Context, req *oracledataba
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetExadbVmCluster().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetExadbVmCluster().GetName())
@@ -9154,6 +9379,11 @@ func (c *restClient) RemoveVirtualMachineExadbVmCluster(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:removeVirtualMachine", req.GetName())
 
 	params := url.Values{}
@@ -9229,6 +9459,11 @@ func (c *restClient) ListExascaleDbStorageVaults(ctx context.Context, req *oracl
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/exascaleDbStorageVaults", req.GetParent())
 
 		params := url.Values{}
@@ -9300,6 +9535,11 @@ func (c *restClient) GetExascaleDbStorageVault(ctx context.Context, req *oracled
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -9359,6 +9599,11 @@ func (c *restClient) CreateExascaleDbStorageVault(ctx context.Context, req *orac
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/exascaleDbStorageVaults", req.GetParent())
@@ -9424,6 +9669,11 @@ func (c *restClient) CreateExascaleDbStorageVault(ctx context.Context, req *orac
 func (c *restClient) DeleteExascaleDbStorageVault(ctx context.Context, req *oracledatabasepb.DeleteExascaleDbStorageVaultRequest, opts ...gax.CallOption) (*DeleteExascaleDbStorageVaultOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -9504,6 +9754,11 @@ func (c *restClient) ListDbSystemInitialStorageSizes(ctx context.Context, req *o
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/dbSystemInitialStorageSizes", req.GetParent())
 
 		params := url.Values{}
@@ -9582,6 +9837,11 @@ func (c *restClient) ListDatabases(ctx context.Context, req *oracledatabasepb.Li
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/databases", req.GetParent())
 
 		params := url.Values{}
@@ -9648,6 +9908,11 @@ func (c *restClient) ListDatabases(ctx context.Context, req *oracledatabasepb.Li
 func (c *restClient) GetDatabase(ctx context.Context, req *oracledatabasepb.GetDatabaseRequest, opts ...gax.CallOption) (*oracledatabasepb.Database, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -9718,6 +9983,11 @@ func (c *restClient) ListPluggableDatabases(ctx context.Context, req *oracledata
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/pluggableDatabases", req.GetParent())
 
 		params := url.Values{}
@@ -9786,6 +10056,11 @@ func (c *restClient) GetPluggableDatabase(ctx context.Context, req *oracledataba
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -9851,6 +10126,11 @@ func (c *restClient) ListDbSystems(ctx context.Context, req *oracledatabasepb.Li
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/dbSystems", req.GetParent())
@@ -9924,6 +10204,11 @@ func (c *restClient) GetDbSystem(ctx context.Context, req *oracledatabasepb.GetD
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -9983,6 +10268,11 @@ func (c *restClient) CreateDbSystem(ctx context.Context, req *oracledatabasepb.C
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/dbSystems", req.GetParent())
@@ -10048,6 +10338,11 @@ func (c *restClient) CreateDbSystem(ctx context.Context, req *oracledatabasepb.C
 func (c *restClient) DeleteDbSystem(ctx context.Context, req *oracledatabasepb.DeleteDbSystemRequest, opts ...gax.CallOption) (*DeleteDbSystemOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -10127,6 +10422,11 @@ func (c *restClient) ListGoldengateDeployments(ctx context.Context, req *oracled
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/goldengateDeployments", req.GetParent())
 
 		params := url.Values{}
@@ -10198,6 +10498,11 @@ func (c *restClient) GetGoldengateDeployment(ctx context.Context, req *oracledat
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -10257,6 +10562,11 @@ func (c *restClient) CreateGoldengateDeployment(ctx context.Context, req *oracle
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/goldengateDeployments", req.GetParent())
@@ -10322,6 +10632,11 @@ func (c *restClient) CreateGoldengateDeployment(ctx context.Context, req *oracle
 func (c *restClient) DeleteGoldengateDeployment(ctx context.Context, req *oracledatabasepb.DeleteGoldengateDeploymentRequest, opts ...gax.CallOption) (*DeleteGoldengateDeploymentOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -10394,6 +10709,11 @@ func (c *restClient) StopGoldengateDeployment(ctx context.Context, req *oracleda
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:stop", req.GetName())
 
 	params := url.Values{}
@@ -10459,6 +10779,11 @@ func (c *restClient) StartGoldengateDeployment(ctx context.Context, req *oracled
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:start", req.GetName())
@@ -10535,6 +10860,11 @@ func (c *restClient) ListGoldengateConnections(ctx context.Context, req *oracled
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/goldengateConnections", req.GetParent())
 
 		params := url.Values{}
@@ -10606,6 +10936,11 @@ func (c *restClient) GetGoldengateConnection(ctx context.Context, req *oracledat
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -10665,6 +11000,11 @@ func (c *restClient) CreateGoldengateConnection(ctx context.Context, req *oracle
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/goldengateConnections", req.GetParent())
@@ -10730,6 +11070,11 @@ func (c *restClient) CreateGoldengateConnection(ctx context.Context, req *oracle
 func (c *restClient) DeleteGoldengateConnection(ctx context.Context, req *oracledatabasepb.DeleteGoldengateConnectionRequest, opts ...gax.CallOption) (*DeleteGoldengateConnectionOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -10807,6 +11152,11 @@ func (c *restClient) ListGoldengateDeploymentVersions(ctx context.Context, req *
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/goldengateDeploymentVersions", req.GetParent())
@@ -10888,6 +11238,11 @@ func (c *restClient) ListGoldengateDeploymentTypes(ctx context.Context, req *ora
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/goldengateDeploymentTypes", req.GetParent())
@@ -10974,6 +11329,11 @@ func (c *restClient) ListGoldengateDeploymentEnvironments(ctx context.Context, r
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/goldengateDeploymentEnvironments", req.GetParent())
 
 		params := url.Values{}
@@ -11050,6 +11410,11 @@ func (c *restClient) ListGoldengateConnectionTypes(ctx context.Context, req *ora
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/goldengateConnectionTypes", req.GetParent())
@@ -11133,6 +11498,11 @@ func (c *restClient) ListDbVersions(ctx context.Context, req *oracledatabasepb.L
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/dbVersions", req.GetParent())
 
 		params := url.Values{}
@@ -11212,6 +11582,11 @@ func (c *restClient) ListDatabaseCharacterSets(ctx context.Context, req *oracled
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/databaseCharacterSets", req.GetParent())
@@ -11295,6 +11670,11 @@ func (c *restClient) ListGoldengateConnectionAssignments(ctx context.Context, re
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/goldengateConnectionAssignments", req.GetParent())
 
 		params := url.Values{}
@@ -11366,6 +11746,11 @@ func (c *restClient) GetGoldengateConnectionAssignment(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -11426,6 +11811,11 @@ func (c *restClient) CreateGoldengateConnectionAssignment(ctx context.Context, r
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/goldengateConnectionAssignments", req.GetParent())
@@ -11491,6 +11881,11 @@ func (c *restClient) CreateGoldengateConnectionAssignment(ctx context.Context, r
 func (c *restClient) DeleteGoldengateConnectionAssignment(ctx context.Context, req *oracledatabasepb.DeleteGoldengateConnectionAssignmentRequest, opts ...gax.CallOption) (*DeleteGoldengateConnectionAssignmentOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -11563,6 +11958,11 @@ func (c *restClient) TestGoldengateConnectionAssignment(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:test", req.GetName())
 
 	params := url.Values{}
@@ -11615,6 +12015,11 @@ func (c *restClient) TestGoldengateConnectionAssignment(ctx context.Context, req
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -11699,6 +12104,11 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -11773,6 +12183,11 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -11812,6 +12227,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -11849,6 +12269,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -11916,6 +12341,11 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())
