@@ -116,6 +116,14 @@ type MutateRowArgs struct {
 	Mutations []*btpb.Mutation
 }
 
+// CheckAndMutateRowArgs contains arguments required for a virtual RPC CheckAndMutateRow call.
+type CheckAndMutateRowArgs struct {
+	RowKey          string
+	PredicateFilter *btpb.RowFilter
+	TrueMutations   []*btpb.Mutation
+	FalseMutations  []*btpb.Mutation
+}
+
 func encodeReadRow(args ReadRowArgs) *btpb.SessionReadRowRequest {
 	return &btpb.SessionReadRowRequest{
 		Key:    []byte(args.RowKey),
@@ -127,6 +135,15 @@ func encodeMutateRow(args MutateRowArgs) *btpb.SessionMutateRowRequest {
 	return &btpb.SessionMutateRowRequest{
 		Key:       []byte(args.RowKey),
 		Mutations: args.Mutations,
+	}
+}
+
+func encodeCheckAndMutateRow(args CheckAndMutateRowArgs) *btpb.SessionCheckAndMutateRowRequest {
+	return &btpb.SessionCheckAndMutateRowRequest{
+		Key:             []byte(args.RowKey),
+		PredicateFilter: args.PredicateFilter,
+		TrueMutations:   args.TrueMutations,
+		FalseMutations:  args.FalseMutations,
 	}
 }
 
@@ -159,6 +176,20 @@ var (
 		}),
 	}
 
+	// CHECK_AND_MUTATE_ROW executes Conditional Point Mutations on standard tables.
+	CHECK_AND_MUTATE_ROW = &VRpcDescriptorImpl{
+		MethodName: "CheckAndMutateRow",
+		EncodeFn: createTableEncoder(func(req interface{}, env *btpb.TableRequest) {
+			args := req.(CheckAndMutateRowArgs)
+			env.Payload = &btpb.TableRequest_CheckAndMutateRow{
+				CheckAndMutateRow: encodeCheckAndMutateRow(args),
+			}
+		}),
+		DecodeFn: createTableDecoder(func(env *btpb.TableResponse) interface{} {
+			return env.GetCheckAndMutateRow()
+		}),
+	}
+
 	// READ_ROW_AUTH_VIEW executes Point Reads on Authorized Views.
 	READ_ROW_AUTH_VIEW = &VRpcDescriptorImpl{
 		MethodName: "ReadRow",
@@ -184,6 +215,20 @@ var (
 		}),
 		DecodeFn: createAuthViewDecoder(func(env *btpb.AuthorizedViewResponse) interface{} {
 			return env.GetMutateRow()
+		}),
+	}
+
+	// CHECK_AND_MUTATE_ROW_AUTH_VIEW executes Conditional Point Mutations on Authorized Views.
+	CHECK_AND_MUTATE_ROW_AUTH_VIEW = &VRpcDescriptorImpl{
+		MethodName: "CheckAndMutateRow",
+		EncodeFn: createAuthViewEncoder(func(req interface{}, env *btpb.AuthorizedViewRequest) {
+			args := req.(CheckAndMutateRowArgs)
+			env.Payload = &btpb.AuthorizedViewRequest_CheckAndMutateRow{
+				CheckAndMutateRow: encodeCheckAndMutateRow(args),
+			}
+		}),
+		DecodeFn: createAuthViewDecoder(func(env *btpb.AuthorizedViewResponse) interface{} {
+			return env.GetCheckAndMutateRow()
 		}),
 	}
 
