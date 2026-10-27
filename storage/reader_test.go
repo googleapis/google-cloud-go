@@ -1093,13 +1093,13 @@ func TestRangeReaderCompressedReopen(t *testing.T) {
 								if !errors.Is(err, tc.wantReadErr) {
 									t.Fatalf("%s(r) err = %v, want %v", rm.name, err, tc.wantReadErr)
 								}
-								return
-							}
-							if err != nil {
-								t.Fatalf("%s(r) err = %v, want nil", rm.name, err)
-							}
-							if got := string(gotBytes); got != tc.wantData {
-								t.Errorf("%s(r) = %q, want %q", rm.name, got, tc.wantData)
+							} else {
+								if err != nil {
+									t.Fatalf("%s(r) err = %v, want nil", rm.name, err)
+								}
+								if got := string(gotBytes); got != tc.wantData {
+									t.Errorf("%s(r) = %q, want %q", rm.name, got, tc.wantData)
+								}
 							}
 							if diff := cmp.Diff(tc.wantRanges, gotRanges); diff != "" {
 								t.Errorf("Range headers mismatch (-want +got):\n%s", diff)
