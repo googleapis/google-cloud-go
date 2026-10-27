@@ -566,23 +566,18 @@ func (w *gRPCWriter) handleCompletion(c gRPCBidiWriteCompletion) {
 	}
 }
 
-const (
-	uploadChunkSpanName   = "Storage.UploadChunk"
-	uploadChunkNumberAttr = "gcp.storage.upload.chunk.number"
-	payloadOffsetAttr     = "gcp.storage.payload.offset"
-	payloadSizeBytesAttr  = "gcp.storage.payload.size_bytes"
-)
-
 // uploadChunkSpan is the Storage.UploadChunk span of one logical chunk of a
 // resumable upload, which is usually sent as several messages.
 type uploadChunkSpan struct {
 	// ctx holds the span and is never used for RPCs.
 	ctx  context.Context
 	span trace.Span
-	// endOffset is the byte offset just past the chunk.
+	// endOffset is the byte offset just past the bytes sent so far for this chunk.
 	endOffset int64
 	// sizeBytes is the number of bytes sent for this chunk.
 	sizeBytes int64
+	// flushed reports whether the final message for this chunk has been queued.
+	flushed bool
 }
 
 func (s uploadChunkSpan) finish(err error) {
@@ -597,8 +592,10 @@ func (w *gRPCWriter) traceChunkRequest(req gRPCBidiWriteRequest) {
 	if !w.chunkSpansEnabled || len(req.buf) == 0 {
 		return
 	}
-	if n := len(w.chunkSpans); n > 0 && req.offset < w.chunkSpans[n-1].endOffset {
+	if n := len(w.chunkSpans); n > 0 && !w.chunkSpans[n-1].flushed {
+		w.chunkSpans[n-1].endOffset = req.offset + int64(len(req.buf))
 		w.chunkSpans[n-1].sizeBytes += int64(len(req.buf))
+		w.chunkSpans[n-1].flushed = req.flush
 		return // The chunk already has an open span.
 	}
 	number := req.offset/int64(w.chunkSize) + 1
@@ -610,8 +607,9 @@ func (w *gRPCWriter) traceChunkRequest(req gRPCBidiWriteRequest) {
 	w.chunkSpans = append(w.chunkSpans, uploadChunkSpan{
 		ctx:       ctx,
 		span:      span,
-		endOffset: number * int64(w.chunkSize),
+		endOffset: req.offset + int64(len(req.buf)),
 		sizeBytes: int64(len(req.buf)),
+		flushed:   req.flush,
 	})
 }
 
@@ -619,7 +617,7 @@ func (w *gRPCWriter) traceChunkRequest(req gRPCBidiWriteRequest) {
 // object means every byte sent has been persisted, including a short last chunk.
 func (w *gRPCWriter) traceChunkCompletion(c gRPCBidiWriteCompletion) {
 	i := 0
-	for i < len(w.chunkSpans) && (c.resource != nil || c.flushOffset >= w.chunkSpans[i].endOffset) {
+	for i < len(w.chunkSpans) && (c.resource != nil || (w.chunkSpans[i].flushed && c.flushOffset >= w.chunkSpans[i].endOffset)) {
 		w.chunkSpans[i].finish(nil)
 		i++
 	}

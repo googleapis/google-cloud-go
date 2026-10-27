@@ -1952,38 +1952,33 @@ func extractAndVerifyUploadChunkSpans(t *testing.T, spans tracetest.SpanStubs) [
 	}
 	var got []uploadChunkSpanInfo
 	for _, s := range spans {
-		if s.Name != appendPackageName(uploadChunkSpanName) {
-			continue
-		}
-		if writer == nil {
-			t.Fatalf("got %s span without an Object.Writer span", uploadChunkSpanName)
-		}
-		if gotID, wantID := s.Parent.SpanID(), writer.SpanContext.SpanID(); gotID != wantID {
-			t.Errorf("%s span parent = %v, want Object.Writer span %v", uploadChunkSpanName, gotID, wantID)
-		}
-		info := uploadChunkSpanInfo{Number: -1, Offset: -1, SizeBytes: -1, Failed: s.Status.Code == otcodes.Error}
-		for _, a := range s.Attributes {
-			switch a.Key {
-			case uploadChunkNumberAttr:
-				info.Number = a.Value.AsInt64()
-			case payloadOffsetAttr:
-				info.Offset = a.Value.AsInt64()
-			case payloadSizeBytesAttr:
-				info.SizeBytes = a.Value.AsInt64()
-			case "error.type":
-				info.ErrorType = a.Value.AsString()
-			}
-		}
-		got = append(got, info)
-	}
-	// No other span, such as the gRPC attempt span, carries the attributes.
-	for _, s := range spans {
 		if s.Name == appendPackageName(uploadChunkSpanName) {
-			continue
-		}
-		for _, a := range s.Attributes {
-			if a.Key == uploadChunkNumberAttr || a.Key == payloadOffsetAttr || a.Key == payloadSizeBytesAttr {
-				t.Errorf("span %q has attribute %s, want it only on %s spans", s.Name, a.Key, uploadChunkSpanName)
+			if writer == nil {
+				t.Fatalf("got %s span without an Object.Writer span", uploadChunkSpanName)
+			}
+			if gotID, wantID := s.Parent.SpanID(), writer.SpanContext.SpanID(); gotID != wantID {
+				t.Errorf("%s span parent = %v, want Object.Writer span %v", uploadChunkSpanName, gotID, wantID)
+			}
+			info := uploadChunkSpanInfo{Number: -1, Offset: -1, SizeBytes: -1, Failed: s.Status.Code == otcodes.Error}
+			for _, a := range s.Attributes {
+				switch a.Key {
+				case uploadChunkNumberAttr:
+					info.Number = a.Value.AsInt64()
+				case payloadOffsetAttr:
+					info.Offset = a.Value.AsInt64()
+				case payloadSizeBytesAttr:
+					info.SizeBytes = a.Value.AsInt64()
+				case "error.type":
+					info.ErrorType = a.Value.AsString()
+				}
+			}
+			got = append(got, info)
+		} else {
+			// No other span, such as the gRPC attempt span, carries the attributes.
+			for _, a := range s.Attributes {
+				if a.Key == uploadChunkNumberAttr || a.Key == payloadOffsetAttr || a.Key == payloadSizeBytesAttr {
+					t.Errorf("span %q has attribute %s, want it only on %s spans", s.Name, a.Key, uploadChunkSpanName)
+				}
 			}
 		}
 	}
@@ -2085,34 +2080,20 @@ func TestGRPCWriterUploadChunkSpansRetry(t *testing.T) {
 	srv := &chunkTraceTestServer{failAt: 600 * kib}
 	te := runChunkTraceUpload(t, srv, true, 256*kib, 1024*kib, false)
 
-	got := extractAndVerifyUploadChunkSpans(t, te.Spans())
-	var okSpans []uploadChunkSpanInfo
-	failedSpans := map[int64]uploadChunkSpanInfo{}
-	for _, s := range got {
-		if s.Failed {
-			failedSpans[s.Number] = s
-		} else {
-			okSpans = append(okSpans, s)
-		}
-	}
-	wantOK := []uploadChunkSpanInfo{
+	// Chunk 4 can be in flight when chunk 3 fails, so it may also fail before
+	// the retry succeeds.
+	got := slices.DeleteFunc(extractAndVerifyUploadChunkSpans(t, te.Spans()), func(s uploadChunkSpanInfo) bool {
+		return s.Failed && s.Number == 4
+	})
+	want := []uploadChunkSpanInfo{
 		{Number: 1, Offset: 0, SizeBytes: 256 * kib},
 		{Number: 2, Offset: 256 * kib, SizeBytes: 256 * kib},
+		{Number: 3, Offset: 512 * kib, SizeBytes: 256 * kib, Failed: true, ErrorType: "UNAVAILABLE"},
 		{Number: 3, Offset: 512 * kib, SizeBytes: 256 * kib},
 		{Number: 4, Offset: 768 * kib, SizeBytes: 256 * kib},
 	}
-	if diff := cmp.Diff(wantOK, okSpans); diff != "" {
-		t.Errorf("successful %s spans mismatch (-want +got):\n%s", uploadChunkSpanName, diff)
-	}
-	wantFailed3 := uploadChunkSpanInfo{Number: 3, Offset: 512 * kib, SizeBytes: 256 * kib, Failed: true, ErrorType: "UNAVAILABLE"}
-	if diff := cmp.Diff(wantFailed3, failedSpans[3]); diff != "" {
-		t.Errorf("failed chunk 3 span mismatch (-want +got):\n%s", diff)
-	}
-	for n := range failedSpans {
-		// Chunk 4 can be in flight when chunk 3 fails, so it may also fail.
-		if n != 3 && n != 4 {
-			t.Errorf("got failed span for chunk %d, want only chunks 3 and 4 to fail; all spans: %+v", n, got)
-		}
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("%s spans mismatch (-want +got):\n%s", uploadChunkSpanName, diff)
 	}
 	srv.mu.Lock()
 	defer srv.mu.Unlock()
@@ -2126,26 +2107,16 @@ func TestGRPCWriterUploadChunkSpansTerminalFailure(t *testing.T) {
 	srv := &chunkTraceTestServer{failAt: 600 * kib, failCode: codes.PermissionDenied}
 	te := runChunkTraceUpload(t, srv, true, 256*kib, 1024*kib, true)
 
-	got := extractAndVerifyUploadChunkSpans(t, te.Spans())
-	var okSpans []uploadChunkSpanInfo
-	failedSpans := map[int64]uploadChunkSpanInfo{}
-	for _, s := range got {
-		if s.Failed {
-			failedSpans[s.Number] = s
-		} else {
-			okSpans = append(okSpans, s)
-		}
-	}
-	wantOK := []uploadChunkSpanInfo{
+	got := slices.DeleteFunc(extractAndVerifyUploadChunkSpans(t, te.Spans()), func(s uploadChunkSpanInfo) bool {
+		return s.Failed && s.Number == 4
+	})
+	want := []uploadChunkSpanInfo{
 		{Number: 1, Offset: 0, SizeBytes: 256 * kib},
 		{Number: 2, Offset: 256 * kib, SizeBytes: 256 * kib},
+		{Number: 3, Offset: 512 * kib, SizeBytes: 256 * kib, Failed: true, ErrorType: "PERMISSION_DENIED"},
 	}
-	if diff := cmp.Diff(wantOK, okSpans); diff != "" {
-		t.Errorf("successful %s spans mismatch (-want +got):\n%s", uploadChunkSpanName, diff)
-	}
-	wantFailed3 := uploadChunkSpanInfo{Number: 3, Offset: 512 * kib, SizeBytes: 256 * kib, Failed: true, ErrorType: "PERMISSION_DENIED"}
-	if diff := cmp.Diff(wantFailed3, failedSpans[3]); diff != "" {
-		t.Errorf("failed chunk 3 span mismatch (-want +got):\n%s", diff)
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("%s spans mismatch (-want +got):\n%s", uploadChunkSpanName, diff)
 	}
 }
 

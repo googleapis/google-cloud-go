@@ -419,6 +419,13 @@ func isOneshotUpload(w *Writer) bool {
 	return w.opened && w.closed && atomic.LoadInt64(&w.bytesWritten) < int64(gRPCChunkSize(w.ChunkSize))
 }
 
+const (
+	uploadChunkSpanName   = "Storage.UploadChunk"
+	uploadChunkNumberAttr = "gcp.storage.upload.chunk.number"
+	payloadOffsetAttr     = "gcp.storage.payload.offset"
+	payloadSizeBytesAttr  = "gcp.storage.payload.size_bytes"
+)
+
 type httpUploadChunkSizeKey struct{}
 
 // withHTTPUploadChunkSize attaches the 256 KiB-aligned chunk size to ctx for
@@ -438,26 +445,28 @@ func withHTTPUploadChunkSize(ctx context.Context, chunkSize int) context.Context
 // payload size in bytes.
 // A zero-byte finalization request ("bytes */<size>") does not upload a chunk
 // and returns false.
-func httpUploadChunkInfo(ctx context.Context, h http.Header) (int64, int64, int64, bool) {
-	cr := h.Get("Content-Range")
-	if !strings.HasPrefix(cr, "bytes ") {
+func httpUploadChunkInfo(ctx context.Context, h http.Header) (chunkNum, offset, sizeBytes int64, ok bool) {
+	rest, found := strings.CutPrefix(h.Get("Content-Range"), "bytes ")
+	if !found {
 		return 0, 0, 0, false
 	}
-	chunkSize, ok := ctx.Value(httpUploadChunkSizeKey{}).(int64)
-	if !ok || chunkSize <= 0 {
+	chunkSize, valid := ctx.Value(httpUploadChunkSizeKey{}).(int64)
+	if !valid || chunkSize <= 0 {
 		return 0, 0, 0, false
 	}
-	rest := strings.TrimPrefix(cr, "bytes ")
-	dash := strings.IndexByte(rest, '-')
-	slash := strings.IndexByte(rest, '/')
-	if dash <= 0 || slash <= dash+1 {
+	rangePart, _, found := strings.Cut(rest, "/")
+	if !found {
 		return 0, 0, 0, false
 	}
-	offset, err := strconv.ParseInt(rest[:dash], 10, 64)
+	startStr, endStr, found := strings.Cut(rangePart, "-")
+	if !found {
+		return 0, 0, 0, false
+	}
+	offset, err := strconv.ParseInt(startStr, 10, 64)
 	if err != nil || offset < 0 {
 		return 0, 0, 0, false
 	}
-	end, err := strconv.ParseInt(rest[dash+1:slash], 10, 64)
+	end, err := strconv.ParseInt(endStr, 10, 64)
 	if err != nil || end < offset {
 		return 0, 0, 0, false
 	}
@@ -471,7 +480,7 @@ func httpUploadChunkError(resp *http.Response, err error) error {
 		return err
 	}
 	if resp != nil && (resp.StatusCode < 200 || resp.StatusCode > 299) && resp.StatusCode != 308 {
-		return &googleapi.Error{Code: resp.StatusCode}
+		return &googleapi.Error{Code: resp.StatusCode, Message: http.StatusText(resp.StatusCode)}
 	}
 	return nil
 }
