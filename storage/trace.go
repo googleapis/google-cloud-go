@@ -22,13 +22,16 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strconv"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"time"
 
 	"cloud.google.com/go/auth"
 	internalTrace "cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/storage/internal"
+	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/googleapis/gax-go/v2/apierror"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
@@ -36,6 +39,7 @@ import (
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/stats"
 	"google.golang.org/grpc/status"
@@ -320,13 +324,13 @@ type retryAttempt struct {
 	// to the service. It restarts at 1 when run is given withProgressReset.
 	number int
 	// parent is the span context of the span in run's ctx, usually the
-	// operation span. It lets retryAttemptStatsHandler tell the transport's
+	// operation span. It lets attemptStatsHandler tell the transport's
 	// attempt span apart from it.
 	parent trace.SpanContext
 }
 
 // withRetryAttempt returns ctx annotated with the given attempt number so that
-// retryAttemptStatsHandler can record it on the gRPC attempt span.
+// attemptStatsHandler can record it on the gRPC attempt span.
 func withRetryAttempt(ctx context.Context, attempt int) context.Context {
 	if !isOTelTracingDevEnabled() {
 		return ctx
@@ -337,37 +341,133 @@ func withRetryAttempt(ctx context.Context, attempt int) context.Context {
 	})
 }
 
-// retryAttemptStatsHandler records gcp.client.retry.attempt_number on the
-// transport's gRPC attempt span.
-type retryAttemptStatsHandler struct{}
+// attemptStatsHandler records gcp.client.retry.attempt_number and the payload
+// offset and size on the transport's gRPC attempt span.
+type attemptStatsHandler struct{}
+
+// payloadAttemptKey is the context key of a gRPC attempt's payloadAttempt.
+type payloadAttemptKey struct{}
+
+// payloadAttempt tracks the object bytes sent or received on one gRPC stream.
+type payloadAttempt struct {
+	mu        sync.Mutex
+	span      trace.Span
+	hasOffset bool
+	size      int64
+}
+
+// isAttemptSpan reports whether span is a recording transport attempt span
+// distinct from parent, which is the operation span.
+func isAttemptSpan(span trace.Span, parent trace.SpanContext) bool {
+	return span.IsRecording() && span.SpanContext().SpanID() != parent.SpanID()
+}
 
 // TagRPC implements stats.Handler.
-func (retryAttemptStatsHandler) TagRPC(ctx context.Context, _ *stats.RPCTagInfo) context.Context {
+func (attemptStatsHandler) TagRPC(ctx context.Context, _ *stats.RPCTagInfo) context.Context {
 	attempt, ok := ctx.Value(retryAttemptKey{}).(retryAttempt)
 	if !ok {
 		return ctx
 	}
+	// Without a transport attempt span (for example because telemetry is
+	// disabled), the span in ctx is the operation span and is not tagged.
 	span := trace.SpanFromContext(ctx)
-	// If the transport did not start an attempt span (for example because
-	// telemetry is disabled), the span in ctx is still the operation span,
-	// which must not be tagged.
-	if !span.IsRecording() || span.SpanContext().SpanID() == attempt.parent.SpanID() {
+	if !isAttemptSpan(span, attempt.parent) {
 		return ctx
 	}
 	span.SetAttributes(attribute.Int("gcp.client.retry.attempt_number", attempt.number))
-	return ctx
+	return context.WithValue(ctx, payloadAttemptKey{}, &payloadAttempt{span: span})
 }
 
-// HandleRPC implements stats.Handler.
-func (retryAttemptStatsHandler) HandleRPC(context.Context, stats.RPCStats) {}
+// HandleRPC implements stats.Handler. It records outgoing write payloads and
+// read request offsets as each message is sent, because the transport's
+// OpenTelemetry handler ends the span before this handler sees stats.End.
+func (attemptStatsHandler) HandleRPC(ctx context.Context, rs stats.RPCStats) {
+	pa, ok := ctx.Value(payloadAttemptKey{}).(*payloadAttempt)
+	if !ok {
+		return
+	}
+	out, ok := rs.(*stats.OutPayload)
+	if !ok || !out.Client {
+		return
+	}
+	switch req := out.Payload.(type) {
+	case *storagepb.BidiWriteObjectRequest:
+		pa.recordWrite(req)
+	case *storagepb.ReadObjectRequest:
+		pa.record(req.GetReadOffset(), 0)
+	case *storagepb.BidiReadObjectRequest:
+		if r := req.GetReadRanges(); len(r) > 0 {
+			// Ranges resent after a multi-range download reconnects have no
+			// stable order, so record the lowest offset.
+			offset := r[0].GetReadOffset()
+			for _, rr := range r[1:] {
+				offset = min(offset, rr.GetReadOffset())
+			}
+			pa.record(offset, 0)
+		}
+	}
+}
+
+// recordReadPayload adds n object bytes decoded from a response on stream to
+// its attempt span; stream.Context() carries the payloadAttempt from TagRPC.
+// Must be called after a successful Recv: stream.Context() commits the gRPC
+// attempt, which disables transparent retries for the stream.
+func recordReadPayload(stream grpc.ClientStream, n int64) {
+	if n <= 0 {
+		return
+	}
+	if pa, ok := stream.Context().Value(payloadAttemptKey{}).(*payloadAttempt); ok {
+		pa.add(n)
+	}
+}
+
+// recordWrite records the offset and data of a write message, ignoring
+// messages that carry no data and neither flush nor finish the write.
+func (pa *payloadAttempt) recordWrite(req *storagepb.BidiWriteObjectRequest) {
+	// Data may be a typed nil, on which GetChecksummedData panics.
+	var data *storagepb.ChecksummedData
+	if d, ok := req.GetData().(*storagepb.BidiWriteObjectRequest_ChecksummedData); ok && d != nil {
+		data = d.ChecksummedData
+	}
+	if len(data.GetContent()) == 0 && !req.GetFlush() && !req.GetFinishWrite() {
+		return
+	}
+	pa.record(req.GetWriteOffset(), int64(len(data.GetContent())))
+}
+
+// record sets the stream's offset if it is not set yet, then adds n to its
+// size.
+func (pa *payloadAttempt) record(offset, n int64) {
+	pa.mu.Lock()
+	defer pa.mu.Unlock()
+	pa.size += n
+	if !pa.hasOffset {
+		pa.hasOffset = true
+		pa.span.SetAttributes(
+			attribute.Int64("gcp.storage.payload.offset", offset),
+			attribute.Int64("gcp.storage.payload.size_bytes", pa.size),
+		)
+	} else if n != 0 {
+		pa.span.SetAttributes(attribute.Int64("gcp.storage.payload.size_bytes", pa.size))
+	}
+}
+
+// add adds n to the stream's size, even before its offset is recorded: a
+// multi-range response can be decoded before HandleRPC sees its request.
+func (pa *payloadAttempt) add(n int64) {
+	pa.mu.Lock()
+	defer pa.mu.Unlock()
+	pa.size += n
+	pa.span.SetAttributes(attribute.Int64("gcp.storage.payload.size_bytes", pa.size))
+}
 
 // TagConn implements stats.Handler.
-func (retryAttemptStatsHandler) TagConn(ctx context.Context, _ *stats.ConnTagInfo) context.Context {
+func (attemptStatsHandler) TagConn(ctx context.Context, _ *stats.ConnTagInfo) context.Context {
 	return ctx
 }
 
 // HandleConn implements stats.Handler.
-func (retryAttemptStatsHandler) HandleConn(context.Context, stats.ConnStats) {}
+func (attemptStatsHandler) HandleConn(context.Context, stats.ConnStats) {}
 
 func recordingSpan(ctx context.Context) (trace.Span, bool) {
 	if !isOTelTracingDevEnabled() {
@@ -485,4 +585,121 @@ func recordUploadIDFromHeader(ctx context.Context, h http.Header) {
 			recordUploadID(ctx, u.Query().Get("upload_id"))
 		}
 	}
+}
+
+// uploadBytesKey is the context key of an HTTP upload's media byte count.
+type uploadBytesKey struct{}
+
+// countingReader counts the bytes read through it.
+type countingReader struct {
+	r io.Reader
+	n *atomic.Int64
+}
+
+func (c countingReader) Read(p []byte) (int, error) {
+	n, err := c.r.Read(p)
+	c.n.Add(int64(n))
+	return n, err
+}
+
+// withUploadBytes wraps media to count the bytes read from it for the request
+// and stores the count in ctx. A buffered upload (ChunkSize > 0) reads the
+// whole object before its first attempt, so every attempt reports the object
+// size; an unbuffered one reports what has been copied into the request body.
+func withUploadBytes(ctx context.Context, media io.Reader) (context.Context, io.Reader) {
+	if !isOTelTracingDevEnabled() {
+		return ctx, media
+	}
+	n := &atomic.Int64{}
+	return context.WithValue(ctx, uploadBytesKey{}, n), countingReader{r: media, n: n}
+}
+
+// httpAttemptSpan returns the otelhttp attempt span of resp. otelhttp runs
+// below the storage client, so the span is found through resp.Request; ctx
+// carries the operation span, which is never returned.
+func httpAttemptSpan(ctx context.Context, resp *http.Response) (trace.Span, bool) {
+	if !isOTelTracingDevEnabled() || resp == nil || resp.Request == nil {
+		return nil, false
+	}
+	span := trace.SpanFromContext(resp.Request.Context())
+	if !isAttemptSpan(span, trace.SpanContextFromContext(ctx)) {
+		return nil, false
+	}
+	return span, true
+}
+
+// setPayloadAttributes sets the payload offset and, unless size is negative
+// because it is unknown, the payload size on span.
+func setPayloadAttributes(span trace.Span, offset, size int64) {
+	span.SetAttributes(attribute.Int64("gcp.storage.payload.offset", offset))
+	if size >= 0 {
+		span.SetAttributes(attribute.Int64("gcp.storage.payload.size_bytes", size))
+	}
+}
+
+// recordHTTPWritePayload records the payload of an upload request on its
+// attempt span.
+func recordHTTPWritePayload(req *http.Request, resp *http.Response) {
+	span, ok := httpAttemptSpan(req.Context(), resp)
+	if !ok {
+		return
+	}
+	if offset, size, ok := httpWritePayload(req); ok {
+		setPayloadAttributes(span, offset, size)
+	}
+}
+
+// recordHTTPReadPayload records a read of length bytes from offset on its
+// attempt span. The size is the response's Content-Length: 0 for an error
+// response or a zero-length read, and omitted when unknown, as for a response
+// decompressed on the fly.
+func recordHTTPReadPayload(ctx context.Context, resp *http.Response, offset, length int64) {
+	span, ok := httpAttemptSpan(ctx, resp)
+	if !ok {
+		return
+	}
+	size := resp.ContentLength
+	if resp.StatusCode < 200 || resp.StatusCode > 299 || length == 0 {
+		size = 0
+	}
+	setPayloadAttributes(span, offset, size)
+}
+
+// httpWritePayload returns the offset and size of an upload request: from
+// Content-Range and Content-Length for a resumable chunk, or 0 and the media
+// bytes read for a single-request (multipart) upload. Other requests return
+// ok == false.
+func httpWritePayload(req *http.Request) (offset, size int64, ok bool) {
+	if cr := req.Header.Get("Content-Range"); cr != "" {
+		offset, ok = parseUploadContentRangeOffset(cr)
+		return offset, req.ContentLength, ok
+	}
+	n, ok := req.Context().Value(uploadBytesKey{}).(*atomic.Int64)
+	if !ok || req.URL == nil || req.URL.Query().Get("uploadType") != "multipart" {
+		return 0, 0, false
+	}
+	return 0, n.Load(), true
+}
+
+// parseUploadContentRangeOffset returns the first byte of a chunk's
+// "bytes <first>-<last>/<total>", or <total> for the empty "bytes */<total>".
+func parseUploadContentRangeOffset(cr string) (int64, bool) {
+	cr, ok := strings.CutPrefix(cr, "bytes ")
+	if !ok {
+		return 0, false
+	}
+	rng, num, ok := strings.Cut(cr, "/")
+	if !ok {
+		return 0, false
+	}
+	if rng != "*" {
+		if num, _, ok = strings.Cut(rng, "-"); !ok {
+			return 0, false
+		}
+	}
+	n, err := strconv.ParseInt(num, 10, 64)
+	if err != nil || n < 0 {
+		return 0, false
+	}
+	return n, true
 }

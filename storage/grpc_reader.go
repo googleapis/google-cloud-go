@@ -157,6 +157,9 @@ func (c *grpcStorageClient) NewRangeReaderReadObject(ctx context.Context, params
 				databufs: databufs,
 			}
 			err = decoder.readFullObjectResponse()
+			if err == nil {
+				recordReadPayload(stream, decoder.dataLen)
+			}
 			return err
 		}
 
@@ -571,7 +574,11 @@ func (r *gRPCReadObjectReader) recv() error {
 	}
 
 	r.currMsg = &readObjectResponseDecoder{databufs: databufs}
-	return r.currMsg.readFullObjectResponse()
+	if err := r.currMsg.readFullObjectResponse(); err != nil {
+		return err
+	}
+	recordReadPayload(r.stream, r.currMsg.dataLen)
+	return nil
 }
 
 // ReadObjectResponse field and subfield numbers.
@@ -595,6 +602,7 @@ type readObjectResponseDecoder struct {
 	currOff uint64 // offset in the current buffer
 	// Processed data
 	msg         *storagepb.ReadObjectResponse // processed response message with all fields other than object data populated
+	dataLen     int64                         // object bytes in this message.
 	dataOffsets bufferSliceOffsetsReadObject  // offsets of the object data in the message.
 	done        bool                          // true if the data has been completely read.
 }
@@ -826,7 +834,12 @@ func (d *readObjectResponseDecoder) consumeFieldValue(fieldNum protowire.Number,
 	case protowire.Fixed64Type:
 		_, err = d.consumeFixed64()
 	case protowire.BytesType:
-		_, err = d.consumeBytes()
+		// Skip the field without counting it as object data, which
+		// consumeContent does.
+		var m uint64
+		if m, err = d.consumeVarint(); err == nil {
+			err = d.advanceOffset(m)
+		}
 	default:
 		return fmt.Errorf("unknown field type %v in field %v", fieldType, fieldNum)
 	}
@@ -837,9 +850,9 @@ func (d *readObjectResponseDecoder) consumeFieldValue(fieldNum protowire.Number,
 	return nil
 }
 
-// Consume a bytes field from the input. Returns offsets for the data in the buffer slices
-// and an error.
-func (d *readObjectResponseDecoder) consumeBytes() (bufferSliceOffsetsReadObject, error) {
+// consumeContent consumes the object data field and adds its length to
+// d.dataLen. Returns offsets for the data in the buffer slices and an error.
+func (d *readObjectResponseDecoder) consumeContent() (bufferSliceOffsetsReadObject, error) {
 	// m is the length of the data past the tag.
 	m, err := d.consumeVarint()
 	if err != nil {
@@ -854,6 +867,7 @@ func (d *readObjectResponseDecoder) consumeBytes() (bufferSliceOffsetsReadObject
 
 	// Advance offsets to lengths of bytes field and capture where we end.
 	d.advanceOffset(m)
+	d.dataLen += int64(m)
 	offsets.endBuf = d.currBuf
 	offsets.endOff = d.currOff
 	return offsets, nil
@@ -918,7 +932,7 @@ func (d *readObjectResponseDecoder) readFullObjectResponse() error {
 				switch {
 				case gotNum == checksummedDataContentFieldReadObject && gotTyp == protowire.BytesType:
 					// Get the offsets of the content bytes.
-					d.dataOffsets, err = d.consumeBytes()
+					d.dataOffsets, err = d.consumeContent()
 					if err != nil {
 						return fmt.Errorf("invalid ReadObjectResponse.ChecksummedData.Content: %w", err)
 					}

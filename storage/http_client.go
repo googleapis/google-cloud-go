@@ -256,6 +256,7 @@ func (t *trackingTransport) RoundTrip(req *http.Request) (*http.Response, error)
 	}
 	if resp != nil {
 		recordUploadIDFromHeader(req.Context(), resp.Header)
+		recordHTTPWritePayload(req, resp)
 	}
 	return resp, err
 }
@@ -1182,10 +1183,11 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 		if attrs.MD5 != nil {
 			rawObj.Md5Hash = base64.StdEncoding.EncodeToString(attrs.MD5)
 		}
+		uploadCtx, media := withUploadBytes(params.ctx, pr)
 		call := c.raw.Objects.Insert(params.bucket, rawObj).
-			Media(pr, mediaOpts...).
+			Media(media, mediaOpts...).
 			Projection("full").
-			Context(params.ctx).
+			Context(uploadCtx).
 			Name(params.attrs.Name)
 		call.ProgressUpdater(func(n, _ int64) { progress(n) })
 
@@ -1597,6 +1599,7 @@ func readerReopen(ctx context.Context, header http.Header, params *newRangeReade
 		var res *http.Response
 		err = run(ctx, func(ctx context.Context) error {
 			res, err = doDownload(ctx)
+			recordHTTPReadPayload(ctx, res, start, params.length)
 			if err != nil {
 				return formatObjectErr(err)
 			}
