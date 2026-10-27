@@ -859,3 +859,273 @@ func TestMRDRunCallbackNilGuard(t *testing.T) {
 	m.runCallback(0, 100, nil, nil)
 	m.callbackWg.Wait()
 }
+
+type roundTripFunc func(*http.Request) (*http.Response, error)
+
+func (f roundTripFunc) RoundTrip(req *http.Request) (*http.Response, error) {
+	return f(req)
+}
+
+func TestRangeReaderCompressedReopen(t *testing.T) {
+	internalErr := http2Error("INTERNAL_ERROR")
+	fullCRC := crc32.Checksum([]byte(readData), crc32cTable)
+
+	type step struct {
+		status        int
+		contentLength int64
+		contentRange  string
+		crc32c        uint32
+		decompressed  bool
+		body          string
+		err           error
+	}
+
+	tests := []struct {
+		name                string
+		readCompressed      bool
+		offset              int64
+		length              int64
+		steps               []step
+		wantData            string
+		wantReadErr         error
+		wantRanges          []string
+		wantAcceptEncodings []string
+		wantDecompressed    bool
+		wantCheckCRC        bool
+		wantCRC             uint32
+		wantRemain          int64
+		wantStartOffset     int64
+	}{
+		{
+			name:           "ReadCompressed partial range with multiple 206 reopens",
+			readCompressed: true,
+			offset:         2,
+			length:         6,
+			steps: []step{
+				{status: http.StatusPartialContent, contentLength: 6, contentRange: "bytes 2-7/10", body: readData[2:4], err: internalErr},
+				{status: http.StatusPartialContent, contentLength: 4, contentRange: "bytes 4-7/10", body: readData[4:6], err: internalErr},
+				{status: http.StatusPartialContent, contentLength: 2, contentRange: "bytes 6-7/10", body: readData[6:8], err: io.EOF},
+			},
+			wantData:            readData[2:8],
+			wantRanges:          []string{"bytes=2-7", "bytes=4-7", "bytes=6-7"},
+			wantAcceptEncodings: []string{"gzip", "gzip", "gzip"},
+			wantRemain:          0,
+			wantStartOffset:     2,
+		},
+		{
+			name:           "ReadCompressed open-ended range with 206 reopen",
+			readCompressed: true,
+			offset:         3,
+			length:         -1,
+			steps: []step{
+				{status: http.StatusPartialContent, contentLength: 7, contentRange: "bytes 3-9/10", body: readData[3:6], err: internalErr},
+				{status: http.StatusPartialContent, contentLength: 4, contentRange: "bytes 6-9/10", body: readData[6:], err: io.EOF},
+			},
+			wantData:            readData[3:],
+			wantRanges:          []string{"bytes=3-", "bytes=6-"},
+			wantAcceptEncodings: []string{"gzip", "gzip"},
+			wantRemain:          0,
+			wantStartOffset:     3,
+		},
+		{
+			name:           "ReadCompressed suffix range with 206 reopen",
+			readCompressed: true,
+			offset:         -6,
+			length:         -1,
+			steps: []step{
+				{status: http.StatusPartialContent, contentLength: 6, contentRange: "bytes 4-9/10", body: readData[4:6], err: internalErr},
+				{status: http.StatusPartialContent, contentLength: 4, contentRange: "bytes 6-9/10", body: readData[6:], err: io.EOF},
+			},
+			wantData:            readData[4:],
+			wantRanges:          []string{"bytes=-6", "bytes=-4"},
+			wantAcceptEncodings: []string{"gzip", "gzip"},
+			wantRemain:          0,
+			wantStartOffset:     4,
+		},
+		{
+			name:           "ReadCompressed full-object 200 followed by 206 reopen verifies CRC",
+			readCompressed: true,
+			offset:         0,
+			length:         -1,
+			steps: []step{
+				{status: http.StatusOK, contentLength: 10, crc32c: fullCRC, body: readData[:4], err: internalErr},
+				{status: http.StatusPartialContent, contentLength: 6, contentRange: "bytes 4-9/10", body: readData[4:], err: io.EOF},
+			},
+			wantData:            readData,
+			wantRanges:          []string{"", "bytes=4-"},
+			wantAcceptEncodings: []string{"gzip", "gzip"},
+			wantCheckCRC:        true,
+			wantCRC:             fullCRC,
+			wantRemain:          0,
+			wantStartOffset:     0,
+		},
+		{
+			name:           "ReadCompressed full-object 200 followed by corrupted 206 reopen fails CRC",
+			readCompressed: true,
+			offset:         0,
+			length:         -1,
+			steps: []step{
+				{status: http.StatusOK, contentLength: 10, crc32c: fullCRC, body: readData[:4], err: internalErr},
+				{status: http.StatusPartialContent, contentLength: 6, contentRange: "bytes 4-9/10", body: "XXXXXX", err: io.EOF},
+			},
+			wantReadErr:         errChecksumMismatch,
+			wantRanges:          []string{"", "bytes=4-"},
+			wantAcceptEncodings: []string{"gzip", "gzip"},
+			wantCheckCRC:        true,
+			wantCRC:             fullCRC,
+		},
+		{
+			name:           "Gzip 206 partial content reopen without ReadCompressed",
+			readCompressed: false,
+			offset:         2,
+			length:         6,
+			steps: []step{
+				{status: http.StatusPartialContent, contentLength: 6, contentRange: "bytes 2-7/10", body: readData[2:4], err: internalErr},
+				{status: http.StatusPartialContent, contentLength: 4, contentRange: "bytes 4-7/10", body: readData[4:8], err: io.EOF},
+			},
+			wantData:            readData[2:8],
+			wantRanges:          []string{"bytes=2-7", "bytes=4-7"},
+			wantAcceptEncodings: []string{"", ""},
+			wantRemain:          0,
+			wantStartOffset:     2,
+		},
+		{
+			name:           "Decompressive transcoding 200 full-object reopen discards seen bytes",
+			readCompressed: false,
+			offset:         2,
+			length:         6,
+			steps: []step{
+				{status: http.StatusOK, contentLength: -1, decompressed: true, body: readData[:4], err: internalErr},
+				{status: http.StatusOK, contentLength: -1, decompressed: true, body: readData, err: io.EOF},
+			},
+			wantData:            readData,
+			wantRanges:          []string{"bytes=2-7", "bytes=6-7"},
+			wantAcceptEncodings: []string{"", ""},
+			wantDecompressed:    true,
+			wantRemain:          -1,
+			wantStartOffset:     0,
+		},
+	}
+
+	readMethods := []struct {
+		name string
+		read func(r *Reader) ([]byte, error)
+	}{
+		{
+			name: "Read",
+			read: func(r *Reader) ([]byte, error) { return io.ReadAll(r) },
+		},
+		{
+			name: "WriteTo",
+			read: func(r *Reader) ([]byte, error) {
+				var buf bytes.Buffer
+				_, err := r.WriteTo(&buf)
+				return buf.Bytes(), err
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			for _, transport := range []struct {
+				name string
+				opt  option.ClientOption
+			}{
+				{name: "xmlReads", opt: WithXMLReads()},
+				{name: "jsonReads", opt: WithJSONReads()},
+			} {
+				// google-api-go-client rejects custom Accept-Encoding headers on JSON downloads (#7786).
+				if transport.name == "jsonReads" && tc.readCompressed {
+					continue
+				}
+				t.Run(transport.name, func(t *testing.T) {
+					for _, rm := range readMethods {
+						t.Run(rm.name, func(t *testing.T) {
+							ctx := t.Context()
+							var callIdx int
+							var gotRanges, gotAcceptEncodings []string
+
+							rt := roundTripFunc(func(req *http.Request) (*http.Response, error) {
+								gotRanges = append(gotRanges, req.Header.Get("Range"))
+								gotAcceptEncodings = append(gotAcceptEncodings, req.Header.Get("Accept-Encoding"))
+								if callIdx >= len(tc.steps) {
+									return nil, fmt.Errorf("unexpected HTTP request #%d (Range=%q)", callIdx+1, req.Header.Get("Range"))
+								}
+								s := tc.steps[callIdx]
+								callIdx++
+
+								h := make(http.Header)
+								h.Set("X-Goog-Stored-Content-Encoding", "gzip")
+								if !s.decompressed {
+									h.Set("Content-Encoding", "gzip")
+								}
+								if s.contentRange != "" {
+									h.Set("Content-Range", s.contentRange)
+								}
+								if s.crc32c != 0 {
+									h.Set("X-Goog-Hash", "crc32c="+encodeUint32(s.crc32c))
+								}
+								return &http.Response{
+									StatusCode:    s.status,
+									ContentLength: s.contentLength,
+									Uncompressed:  s.decompressed,
+									Header:        h,
+									Body:          &fakeReadCloser{data: []byte(s.body), counts: []int{len(s.body)}, err: s.err},
+								}, nil
+							})
+
+							hc := &http.Client{Transport: rt}
+							client, err := NewClient(ctx, option.WithHTTPClient(hc), option.WithoutAuthentication(), transport.opt)
+							if err != nil {
+								t.Fatalf("NewClient() err = %v, want nil", err)
+							}
+							defer client.Close()
+
+							obj := client.Bucket("b").Object("o").ReadCompressed(tc.readCompressed)
+							r, err := obj.NewRangeReader(ctx, tc.offset, tc.length)
+							if err != nil {
+								t.Fatalf("NewRangeReader(%d, %d) err = %v, want nil", tc.offset, tc.length, err)
+							}
+							defer r.Close()
+
+							gotBytes, err := rm.read(r)
+							if tc.wantReadErr != nil {
+								if !errors.Is(err, tc.wantReadErr) {
+									t.Fatalf("%s(r) err = %v, want %v", rm.name, err, tc.wantReadErr)
+								}
+								return
+							}
+							if err != nil {
+								t.Fatalf("%s(r) err = %v, want nil", rm.name, err)
+							}
+							if got := string(gotBytes); got != tc.wantData {
+								t.Errorf("%s(r) = %q, want %q", rm.name, got, tc.wantData)
+							}
+							if diff := cmp.Diff(tc.wantRanges, gotRanges); diff != "" {
+								t.Errorf("Range headers mismatch (-want +got):\n%s", diff)
+							}
+							if diff := cmp.Diff(tc.wantAcceptEncodings, gotAcceptEncodings); diff != "" {
+								t.Errorf("Accept-Encoding headers mismatch (-want +got):\n%s", diff)
+							}
+							if got := r.Attrs.Decompressed; got != tc.wantDecompressed {
+								t.Errorf("r.Attrs.Decompressed = %v, want %v", got, tc.wantDecompressed)
+							}
+							if got := r.Attrs.StartOffset; got != tc.wantStartOffset {
+								t.Errorf("r.Attrs.StartOffset = %d, want %d", got, tc.wantStartOffset)
+							}
+							if got := r.checkCRC; got != tc.wantCheckCRC {
+								t.Errorf("r.checkCRC = %v, want %v", got, tc.wantCheckCRC)
+							}
+							if got := r.Attrs.CRC32C; got != tc.wantCRC {
+								t.Errorf("r.Attrs.CRC32C = %d, want %d", got, tc.wantCRC)
+							}
+							if got := r.Remain(); got != tc.wantRemain {
+								t.Errorf("r.Remain() = %d, want %d", got, tc.wantRemain)
+							}
+						})
+					}
+				})
+			}
+		})
+	}
+}
