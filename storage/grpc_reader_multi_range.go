@@ -812,17 +812,19 @@ func (m *multiRangeDownloaderManager) createNewSession(id int, readSpec *storage
 			newSession.Shutdown()
 			newSession = nil
 		}
-		for {
-			select {
-			case stale := <-m.sessionResps:
-				if stale.decoder != nil {
-					stale.decoder.databufs.Free()
+		if waitForResult {
+			for {
+				select {
+				case stale := <-m.sessionResps:
+					if stale.decoder != nil {
+						stale.decoder.databufs.Free()
+					}
+					if stale.session != nil {
+						stale.session.Shutdown()
+					}
+				default:
+					return
 				}
-				if stale.session != nil {
-					stale.session.Shutdown()
-				}
-			default:
-				return
 			}
 		}
 	}
@@ -1510,6 +1512,12 @@ func (s *bidiReadStreamSession) receiveLoop() {
 		case <-s.managerCtx.Done():
 			return
 		}
+	}
+	s.mu.RLock()
+	isManual := s.manualShutdown
+	s.mu.RUnlock()
+	if isManual {
+		return
 	}
 	for {
 		// Receive message without a copy.

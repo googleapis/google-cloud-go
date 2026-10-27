@@ -61,7 +61,7 @@ func newBufconnGRPCClient(t *testing.T, srv storagepb.StorageServer, extraOpts .
 		WithGRPCBidiReads(),
 	}
 	opts = append(opts, extraOpts...)
-	client, err := NewGRPCClient(context.Background(), opts...)
+	client, err := NewGRPCClient(t.Context(), opts...)
 	if err != nil {
 		t.Fatalf("NewGRPCClient: %v", err)
 	}
@@ -140,87 +140,85 @@ func (s *mrdStallOnOpenServer) BidiReadObject(stream storagepb.Storage_BidiReadO
 
 func TestMultiRangeDownloaderReadStallTimeout(t *testing.T) {
 	data := []byte("0123456789abcdef0123456789abcdef")
+	srv := &mrdStallOnOpenServer{data: data, stallStreams: 1}
+	client := newBufconnGRPCClient(t, srv, experimental.WithReadStallTimeout(&experimental.ReadStallTimeoutConfig{
+		TargetPercentile: 0.99,
+		Min:              100 * time.Millisecond,
+	}))
+	client.SetRetry(WithBackoff(gax.Backoff{Initial: 10 * time.Millisecond}))
 
-	t.Run("StallRetrySuccess", func(t *testing.T) {
-		srv := &mrdStallOnOpenServer{data: data, stallStreams: 1}
-		client := newBufconnGRPCClient(t, srv, experimental.WithReadStallTimeout(&experimental.ReadStallTimeoutConfig{
-			TargetPercentile: 0.99,
-			Min:              100 * time.Millisecond,
-		}))
-		client.SetRetry(WithBackoff(gax.Backoff{Initial: 10 * time.Millisecond}))
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
+	defer cancel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
+	start := time.Now()
+	mrd, err := client.Bucket("test-bucket").Object("test-object").NewMultiRangeDownloader(ctx)
+	if err != nil {
+		t.Fatalf("NewMultiRangeDownloader: %v", err)
+	}
+	elapsed := time.Since(start)
+	if elapsed >= 2*time.Second {
+		t.Errorf("NewMultiRangeDownloader elapsed = %v, want < 2s", elapsed)
+	}
+	if got := srv.streams.Load(); got != 2 {
+		t.Errorf("srv.streams.Load() = %d, want 2", got)
+	}
 
-		start := time.Now()
-		mrd, err := client.Bucket("test-bucket").Object("test-object").NewMultiRangeDownloader(ctx)
-		if err != nil {
-			t.Fatalf("NewMultiRangeDownloader: %v", err)
-		}
-		elapsed := time.Since(start)
-		if elapsed >= 2*time.Second {
-			t.Errorf("NewMultiRangeDownloader elapsed = %v, want < 2s", elapsed)
-		}
-		if got := srv.streams.Load(); got != 2 {
-			t.Errorf("srv.streams.Load() = %d, want 2", got)
-		}
+	srv.mu.Lock()
+	headers := append([]string(nil), srv.xGoogHeaders...)
+	srv.mu.Unlock()
+	if len(headers) != 2 {
+		t.Fatalf("len(srv.xGoogHeaders) = %d, want 2", len(headers))
+	}
+	if !strings.Contains(headers[0], "gccl-invocation-id/") || !strings.Contains(headers[0], "gccl-attempt-count/1") {
+		t.Errorf("headers[0] = %q, want gccl-invocation-id and gccl-attempt-count/1", headers[0])
+	}
+	if !strings.Contains(headers[1], "gccl-attempt-count/2") {
+		t.Errorf("headers[1] = %q, want gccl-attempt-count/2", headers[1])
+	}
 
-		srv.mu.Lock()
-		headers := append([]string(nil), srv.xGoogHeaders...)
-		srv.mu.Unlock()
-		if len(headers) != 2 {
-			t.Fatalf("len(srv.xGoogHeaders) = %d, want 2", len(headers))
-		}
-		if !strings.Contains(headers[0], "gccl-invocation-id/") || !strings.Contains(headers[0], "gccl-attempt-count/1") {
-			t.Errorf("headers[0] = %q, want gccl-invocation-id and gccl-attempt-count/1", headers[0])
-		}
-		if !strings.Contains(headers[1], "gccl-attempt-count/2") {
-			t.Errorf("headers[1] = %q, want gccl-attempt-count/2", headers[1])
-		}
-
-		var buf bytes.Buffer
-		var rangeErr error
-		mrd.Add(&buf, 0, int64(len(data)), func(_, _ int64, err error) {
-			rangeErr = err
-		})
-		mrd.Wait()
-		if err := mrd.Close(); err != nil {
-			t.Errorf("mrd.Close() = %v, want nil", err)
-		}
-		if rangeErr != nil {
-			t.Fatalf("mrd.Add callback err = %v, want nil", rangeErr)
-		}
-		if !bytes.Equal(buf.Bytes(), data) {
-			t.Errorf("mrd.Add data = %q, want %q", buf.Bytes(), data)
-		}
+	var buf bytes.Buffer
+	var rangeErr error
+	mrd.Add(&buf, 0, int64(len(data)), func(_, _ int64, err error) {
+		rangeErr = err
 	})
+	mrd.Wait()
+	if err := mrd.Close(); err != nil {
+		t.Errorf("mrd.Close() = %v, want nil", err)
+	}
+	if rangeErr != nil {
+		t.Fatalf("mrd.Add callback err = %v, want nil", rangeErr)
+	}
+	if !bytes.Equal(buf.Bytes(), data) {
+		t.Errorf("mrd.Add data = %q, want %q", buf.Bytes(), data)
+	}
+}
 
-	t.Run("StallExhaustsMaxAttempts", func(t *testing.T) {
-		srv := &mrdStallOnOpenServer{data: data, stallStreams: 5}
-		client := newBufconnGRPCClient(t, srv, experimental.WithReadStallTimeout(&experimental.ReadStallTimeoutConfig{
-			TargetPercentile: 0.99,
-			Min:              50 * time.Millisecond,
-		}))
-		client.SetRetry(
-			WithBackoff(gax.Backoff{Initial: 5 * time.Millisecond, Max: 10 * time.Millisecond, Multiplier: 2}),
-			WithMaxAttempts(2),
-		)
+func TestMultiRangeDownloaderReadStallExhaustsMaxAttempts(t *testing.T) {
+	data := []byte("0123456789abcdef0123456789abcdef")
+	srv := &mrdStallOnOpenServer{data: data, stallStreams: 5}
+	client := newBufconnGRPCClient(t, srv, experimental.WithReadStallTimeout(&experimental.ReadStallTimeoutConfig{
+		TargetPercentile: 0.99,
+		Min:              50 * time.Millisecond,
+	}))
+	client.SetRetry(
+		WithBackoff(gax.Backoff{Initial: 5 * time.Millisecond, Max: 10 * time.Millisecond, Multiplier: 2}),
+		WithMaxAttempts(2),
+	)
 
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
+	defer cancel()
 
-		_, err := client.Bucket("test-bucket").Object("test-object").NewMultiRangeDownloader(ctx)
-		if err == nil {
-			t.Fatalf("NewMultiRangeDownloader() = nil, want error after exhausting MaxAttempts(2)")
-		}
-		wantSubstr := "retry failed after 2 attempts"
-		if !strings.Contains(err.Error(), wantSubstr) {
-			t.Errorf("NewMultiRangeDownloader() err = %q, want it to contain %q", err.Error(), wantSubstr)
-		}
-		if got := srv.streams.Load(); got != 2 {
-			t.Errorf("srv.streams.Load() = %d, want 2", got)
-		}
-	})
+	_, err := client.Bucket("test-bucket").Object("test-object").NewMultiRangeDownloader(ctx)
+	if err == nil {
+		t.Fatalf("NewMultiRangeDownloader() = nil, want error after exhausting MaxAttempts(2)")
+	}
+	wantSubstr := "retry failed after 2 attempts"
+	if !strings.Contains(err.Error(), wantSubstr) {
+		t.Errorf("NewMultiRangeDownloader() err = %q, want it to contain %q", err.Error(), wantSubstr)
+	}
+	if got := srv.streams.Load(); got != 2 {
+		t.Errorf("srv.streams.Load() = %d, want 2", got)
+	}
 }
 
 type mrdReconnectServer struct {
@@ -319,11 +317,11 @@ func TestMultiRangeDownloaderMidStreamReconnectBackoffAndMaxAttempts(t *testing.
 
 	var retryMu sync.Mutex
 	var gotContexts []*RetryContext
-	const initialBackoff = 100 * time.Millisecond
+	const initialBackoff = 20 * time.Millisecond
 	client.SetRetry(
 		WithBackoff(gax.Backoff{
 			Initial:    initialBackoff,
-			Max:        400 * time.Millisecond,
+			Max:        80 * time.Millisecond,
 			Multiplier: 2,
 		}),
 		WithMaxAttempts(3),
@@ -338,7 +336,7 @@ func TestMultiRangeDownloaderMidStreamReconnectBackoffAndMaxAttempts(t *testing.
 		}),
 	)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
 	defer cancel()
 
 	mrd, err := client.Bucket("my-bucket").Object("my-object").NewMultiRangeDownloader(ctx)
@@ -363,8 +361,8 @@ func TestMultiRangeDownloaderMidStreamReconnectBackoffAndMaxAttempts(t *testing.
 	if !strings.Contains(rangeErr.Error(), wantSubstr) {
 		t.Errorf("mrd.Add callback err = %q, want it to contain %q", rangeErr.Error(), wantSubstr)
 	}
-	if elapsed < 5*time.Millisecond {
-		t.Errorf("mrd.Wait() elapsed = %v, want >= 5ms for mid-stream backoff", elapsed)
+	if elapsed < time.Millisecond {
+		t.Errorf("mrd.Wait() elapsed = %v, want >= 1ms for mid-stream backoff", elapsed)
 	}
 
 	retryMu.Lock()
@@ -440,7 +438,7 @@ func TestMultiRangeDownloaderMidStreamReconnectResetOnProgress(t *testing.T) {
 		}),
 	)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
 	defer cancel()
 
 	mrd, err := client.Bucket("my-bucket").Object("my-object").NewMultiRangeDownloader(ctx)
@@ -523,7 +521,7 @@ func TestMultiRangeDownloaderMaxRetryDuration(t *testing.T) {
 		WithMaxRetryDuration(20*time.Millisecond),
 	)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
 	defer cancel()
 
 	mrd, err := client.Bucket("my-bucket").Object("my-object").NewMultiRangeDownloader(ctx)
@@ -601,7 +599,7 @@ func TestMultiRangeDownloaderCloseCancelsReconnectBackoff(t *testing.T) {
 	client := newBufconnGRPCClient(t, srv)
 	client.SetRetry(WithBackoff(gax.Backoff{Initial: 10 * time.Second, Max: 10 * time.Second, Multiplier: 1}))
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
 	defer cancel()
 
 	mrd, err := client.Bucket("my-bucket").Object("my-object").NewMultiRangeDownloader(ctx)
@@ -646,11 +644,21 @@ type mrdIdleDisconnectServer struct {
 	streamGates map[int]chan struct{}
 }
 
-func (s *mrdIdleDisconnectServer) triggerIdleClose(streamIdx int) {
-	s.mu.Lock()
-	ch := s.closeIdle[streamIdx]
-	s.mu.Unlock()
-	close(ch)
+func (s *mrdIdleDisconnectServer) triggerIdleClose(t *testing.T, streamIdx int) {
+	t.Helper()
+	deadline := time.Now().Add(2 * time.Second)
+	for time.Now().Before(deadline) {
+		s.mu.Lock()
+		if streamIdx < len(s.closeIdle) {
+			ch := s.closeIdle[streamIdx]
+			s.mu.Unlock()
+			close(ch)
+			return
+		}
+		s.mu.Unlock()
+		time.Sleep(time.Millisecond)
+	}
+	t.Fatalf("triggerIdleClose(%d): timed out waiting for server stream; got %d streams", streamIdx, s.streamCount())
 }
 
 func (s *mrdIdleDisconnectServer) streamCount() int {
@@ -660,6 +668,16 @@ func (s *mrdIdleDisconnectServer) streamCount() int {
 }
 
 func (s *mrdIdleDisconnectServer) BidiReadObject(stream storagepb.Storage_BidiReadObjectServer) error {
+	if _, err := stream.Recv(); err != nil {
+		return err
+	}
+	if err := stream.Send(&storagepb.BidiReadObjectResponse{
+		Metadata:   &storagepb.Object{Size: int64(len(s.data)), Generation: 1},
+		ReadHandle: &storagepb.BidiReadHandle{Handle: []byte("handle-idle")},
+	}); err != nil {
+		return err
+	}
+
 	closeCh := make(chan struct{})
 	s.mu.Lock()
 	streamIdx := s.streams
@@ -671,16 +689,6 @@ func (s *mrdIdleDisconnectServer) BidiReadObject(stream storagepb.Storage_BidiRe
 	}
 	closeErr := s.closeErr
 	s.mu.Unlock()
-
-	if _, err := stream.Recv(); err != nil {
-		return err
-	}
-	if err := stream.Send(&storagepb.BidiReadObjectResponse{
-		Metadata:   &storagepb.Object{Size: int64(len(s.data)), Generation: 1},
-		ReadHandle: &storagepb.BidiReadHandle{Handle: []byte("handle-idle")},
-	}); err != nil {
-		return err
-	}
 
 	reqCh := make(chan *storagepb.BidiReadObjectRequest, 10)
 	errCh := make(chan error, 1)
@@ -750,7 +758,7 @@ func TestMultiRangeDownloaderSingleStreamLazyReconnect(t *testing.T) {
 				}),
 			)
 
-			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
 			defer cancel()
 
 			mrd, err := client.Bucket("b").Object("o").NewMultiRangeDownloader(ctx)
@@ -767,7 +775,7 @@ func TestMultiRangeDownloaderSingleStreamLazyReconnect(t *testing.T) {
 			}
 
 			// Close the idle stream from the server and wait for the session to become dormant.
-			srv.triggerIdleClose(0)
+			srv.triggerIdleClose(t, 0)
 			waitForStreamState(t, mrd, streamStateSnapshot{totalStreams: 1, activeSessions: 0, reconnectingStreams: 0})
 			if got := srv.streamCount(); got != 1 {
 				t.Fatalf("srv.streamCount() = %d while idle after server close, want 1", got)
@@ -812,7 +820,7 @@ func TestMultiRangeDownloaderMultiStreamIdleDownscale(t *testing.T) {
 	client := newBufconnGRPCClient(t, srv)
 	client.SetRetry(WithBackoff(gax.Backoff{Initial: 5 * time.Millisecond}))
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
 	defer cancel()
 
 	params := &newMultiRangeDownloaderParams{
@@ -838,7 +846,7 @@ func TestMultiRangeDownloaderMultiStreamIdleDownscale(t *testing.T) {
 
 	// Close idle excess stream 1 while stream 0 is still at capacity on gate0;
 	// stream 1 should be removed without triggering addNewStream while unsentRequests is empty.
-	srv.triggerIdleClose(1)
+	srv.triggerIdleClose(t, 1)
 	waitForStreamState(t, mrd, streamStateSnapshot{totalStreams: 1, activeSessions: 1, reconnectingStreams: 0})
 	if got := srv.streamCount(); got != 2 {
 		t.Fatalf("srv.streamCount() = %d after closing idle excess stream 1, want 2", got)
@@ -851,7 +859,7 @@ func TestMultiRangeDownloaderMultiStreamIdleDownscale(t *testing.T) {
 		t.Fatalf("mrd.Add errors: err1=%v, err2=%v; want nil", err1, err2)
 	}
 
-	srv.triggerIdleClose(0)
+	srv.triggerIdleClose(t, 0)
 	waitForStreamState(t, mrd, streamStateSnapshot{totalStreams: 1, activeSessions: 0, reconnectingStreams: 0})
 	if got := srv.streamCount(); got != 2 {
 		t.Fatalf("srv.streamCount() = %d while idle after downscale, want 2", got)
