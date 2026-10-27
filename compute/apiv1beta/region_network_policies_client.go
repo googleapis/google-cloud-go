@@ -467,6 +467,13 @@ func (c *regionNetworkPoliciesRESTClient) AddAssociation(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetNetworkPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/networkPolicies/%v/addAssociation", req.GetProject(), req.GetRegion(), req.GetNetworkPolicy())
 
 	params := url.Values{}
@@ -536,6 +543,13 @@ func (c *regionNetworkPoliciesRESTClient) AddTrafficClassificationRule(ctx conte
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetNetworkPolicy(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/networkPolicies/%v/addTrafficClassificationRule", req.GetProject(), req.GetRegion(), req.GetNetworkPolicy())
@@ -616,6 +630,11 @@ func (c *regionNetworkPoliciesRESTClient) AggregatedList(ctx context.Context, re
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/aggregated/networkPolicies", req.GetProject())
@@ -704,6 +723,13 @@ func (c *regionNetworkPoliciesRESTClient) Delete(ctx context.Context, req *compu
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetNetworkPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/networkPolicies/%v", req.GetProject(), req.GetRegion(), req.GetNetworkPolicy())
 
 	params := url.Values{}
@@ -768,6 +794,13 @@ func (c *regionNetworkPoliciesRESTClient) Get(ctx context.Context, req *computep
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetNetworkPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/networkPolicies/%v", req.GetProject(), req.GetRegion(), req.GetNetworkPolicy())
 
 	// Build HTTP headers from client and context metadata.
@@ -815,6 +848,13 @@ func (c *regionNetworkPoliciesRESTClient) Get(ctx context.Context, req *computep
 func (c *regionNetworkPoliciesRESTClient) GetAssociation(ctx context.Context, req *computepb.GetAssociationRegionNetworkPolicyRequest, opts ...gax.CallOption) (*computepb.NetworkPolicyAssociation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetNetworkPolicy(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/networkPolicies/%v/getAssociation", req.GetProject(), req.GetRegion(), req.GetNetworkPolicy())
@@ -871,6 +911,13 @@ func (c *regionNetworkPoliciesRESTClient) GetAssociation(ctx context.Context, re
 func (c *regionNetworkPoliciesRESTClient) GetTrafficClassificationRule(ctx context.Context, req *computepb.GetTrafficClassificationRuleRegionNetworkPolicyRequest, opts ...gax.CallOption) (*computepb.NetworkPolicyTrafficClassificationRule, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetNetworkPolicy(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/networkPolicies/%v/getTrafficClassificationRule", req.GetProject(), req.GetRegion(), req.GetNetworkPolicy())
@@ -935,6 +982,12 @@ func (c *regionNetworkPoliciesRESTClient) Insert(ctx context.Context, req *compu
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/networkPolicies", req.GetProject(), req.GetRegion())
@@ -1013,6 +1066,12 @@ func (c *regionNetworkPoliciesRESTClient) List(ctx context.Context, req *compute
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/networkPolicies", req.GetProject(), req.GetRegion())
@@ -1096,6 +1155,13 @@ func (c *regionNetworkPoliciesRESTClient) Patch(ctx context.Context, req *comput
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetNetworkPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/networkPolicies/%v", req.GetProject(), req.GetRegion(), req.GetNetworkPolicy())
 
 	params := url.Values{}
@@ -1167,6 +1233,13 @@ func (c *regionNetworkPoliciesRESTClient) PatchTrafficClassificationRule(ctx con
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetNetworkPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/networkPolicies/%v/patchTrafficClassificationRule", req.GetProject(), req.GetRegion(), req.GetNetworkPolicy())
 
 	params := url.Values{}
@@ -1234,6 +1307,13 @@ func (c *regionNetworkPoliciesRESTClient) RemoveAssociation(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetNetworkPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/networkPolicies/%v/removeAssociation", req.GetProject(), req.GetRegion(), req.GetNetworkPolicy())
 
 	params := url.Values{}
@@ -1299,6 +1379,13 @@ func (c *regionNetworkPoliciesRESTClient) RemoveAssociation(ctx context.Context,
 func (c *regionNetworkPoliciesRESTClient) RemoveTrafficClassificationRule(ctx context.Context, req *computepb.RemoveTrafficClassificationRuleRegionNetworkPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetNetworkPolicy(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/networkPolicies/%v/removeTrafficClassificationRule", req.GetProject(), req.GetRegion(), req.GetNetworkPolicy())

@@ -142,9 +142,19 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (client st
 		}()
 	}
 
-	if clientMetrics != nil && creds != nil {
-		creds = wrapAuthCredentials(creds, clientMetrics)
-		s.clientOption = append(s.clientOption, option.WithAuthCredentials(creds))
+	if creds != nil {
+		tracingEnabled := isOTelTracingDevEnabled()
+		// Wrap in place: htransport.NewClient in NewClient already holds this
+		// pointer, so its transport must observe the wrapped TokenProvider.
+		if clientMetrics != nil {
+			*creds = *wrapAuthCredentials(creds, clientMetrics)
+		}
+		if tracingEnabled {
+			*creds = *wrapAuthCredentialsForTracing(creds)
+		}
+		if clientMetrics != nil || tracingEnabled {
+			s.clientOption = append(s.clientOption, option.WithAuthCredentials(creds))
+		}
 	}
 
 	// htransport selects the correct endpoint among WithEndpoint (user override), WithDefaultEndpointTemplate, and WithDefaultMTLSEndpoint.
@@ -232,14 +242,22 @@ func (t *trackingTransport) RoundTrip(req *http.Request) (*http.Response, error)
 	features := t.features | featureAttributes(req.Context())
 	// Merge all existing headers for this key.
 	features |= mergeFeatureAttributes(req.Header.Values(featureTrackerHeaderName))
+	var (
+		resp *http.Response
+		err  error
+	)
 	if features > 0 {
 		// Clone the request to avoid modifying the original one.
 		clonedReq := req.Clone(req.Context())
 		clonedReq.Header.Set(featureTrackerHeaderName, encodeUint32(features))
-		return baseRT.RoundTrip(clonedReq)
+		resp, err = baseRT.RoundTrip(clonedReq)
+	} else {
+		resp, err = baseRT.RoundTrip(req)
 	}
-
-	return baseRT.RoundTrip(req)
+	if resp != nil {
+		recordUploadIDFromHeader(req.Context(), resp.Header)
+	}
+	return resp, err
 }
 
 func (t *trackingTransport) CloseIdleConnections() {
@@ -448,7 +466,8 @@ func (c *httpStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		ctx, record := startMetricsOp(it.ctx, "ListObjects", true)
 		defer func() { record(err) }()
 		// Add trace span around List API call within the fetch.
-		ctx, _ = startSpan(ctx, "httpStorageClient.ObjectsListCall")
+		// Bucket.Objects has no operation span, so gcp.storage.uri is recorded on each per-page ObjectsListCall span.
+		ctx, _ = startSpan(ctx, "httpStorageClient.ObjectsListCall", withStorageURI(bucket, ""), rpcSystemHTTPOpt)
 		defer func() { endSpan(ctx, err) }()
 		req := c.raw.Objects.List(bucket)
 		if it.query.SoftDeleted {
@@ -971,7 +990,7 @@ func (c *httpStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 }
 
 func (c *httpStorageClient) NewRangeReader(ctx context.Context, params *newRangeReaderParams, opts ...storageOption) (r *Reader, err error) {
-	ctx, _ = startSpan(ctx, "httpStorageClient.NewRangeReader")
+	ctx, _ = startSpan(ctx, "httpStorageClient.NewRangeReader", rpcSystemHTTPOpt)
 	defer func() { endSpan(ctx, err) }()
 
 	s := callSettings(c.settings, opts...)
@@ -1090,7 +1109,7 @@ func (hiw *httpInternalWriter) validateChecksumFromServer() error {
 	// Do not check for channel closure as error is already set on the writer
 	// if serverChecksumChan is closed without checksum
 	if ok && hiw.fullObjectChecksum != serverChecksum {
-		return fmt.Errorf("storage: object checksum mismatch: computed %q, server %q; the bucket may contain corrupted object", encodeUint32(hiw.fullObjectChecksum), encodeUint32(serverChecksum))
+		return fmt.Errorf("%w: computed %q, server %q; the bucket may contain corrupted object", errChecksumMismatch, encodeUint32(hiw.fullObjectChecksum), encodeUint32(serverChecksum))
 	}
 	return nil
 }
@@ -1508,7 +1527,7 @@ func (r *httpReader) Read(p []byte) (int, error) {
 			// anything worth looking at.
 			if r.checkCRC {
 				if r.gotCRC != r.wantCRC {
-					return n, fmt.Errorf("storage: bad CRC on read: got %d, want %d",
+					return n, fmt.Errorf("%w: bad CRC on read: got %d, want %d", errChecksumMismatch,
 						r.gotCRC, r.wantCRC)
 				}
 			}

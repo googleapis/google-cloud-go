@@ -70,7 +70,7 @@ func NewReceiveScheduler(workers int) *ReceiveScheduler {
 // that requests batches of messages to pull. A backed up ReceiveScheduler.Add
 // call causes pushback to the pubsub service (less Receive calls on the
 // long-lived stream), which keeps memory footprint stable.
-func (s *ReceiveScheduler) Add(key string, item interface{}, handle func(item interface{})) error {
+func (s *ReceiveScheduler) Add(key string, item any, handle func(item any)) error {
 	select {
 	case <-s.done:
 		return ErrReceiveDraining

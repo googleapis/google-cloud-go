@@ -732,6 +732,11 @@ func (c *restClient) GeocodePlace(ctx context.Context, req *geocodepb.GeocodePla
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetPlace(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v4/geocode/%v", req.GetPlace())
 
 	params := url.Values{}

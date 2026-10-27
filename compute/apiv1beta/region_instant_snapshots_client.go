@@ -389,6 +389,13 @@ func (c *regionInstantSnapshotsRESTClient) Delete(ctx context.Context, req *comp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetInstantSnapshot(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/instantSnapshots/%v", req.GetProject(), req.GetRegion(), req.GetInstantSnapshot())
 
 	params := url.Values{}
@@ -453,6 +460,13 @@ func (c *regionInstantSnapshotsRESTClient) Get(ctx context.Context, req *compute
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetInstantSnapshot(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/instantSnapshots/%v", req.GetProject(), req.GetRegion(), req.GetInstantSnapshot())
 
 	// Build HTTP headers from client and context metadata.
@@ -501,6 +515,13 @@ func (c *regionInstantSnapshotsRESTClient) Get(ctx context.Context, req *compute
 func (c *regionInstantSnapshotsRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyRegionInstantSnapshotRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/instantSnapshots/%v/getIamPolicy", req.GetProject(), req.GetRegion(), req.GetResource())
@@ -564,6 +585,12 @@ func (c *regionInstantSnapshotsRESTClient) Insert(ctx context.Context, req *comp
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/instantSnapshots", req.GetProject(), req.GetRegion())
@@ -642,6 +669,12 @@ func (c *regionInstantSnapshotsRESTClient) List(ctx context.Context, req *comput
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/instantSnapshots", req.GetProject(), req.GetRegion())
@@ -725,6 +758,13 @@ func (c *regionInstantSnapshotsRESTClient) SetIamPolicy(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/instantSnapshots/%v/setIamPolicy", req.GetProject(), req.GetRegion(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -781,6 +821,13 @@ func (c *regionInstantSnapshotsRESTClient) SetLabels(ctx context.Context, req *c
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/instantSnapshots/%v/setLabels", req.GetProject(), req.GetRegion(), req.GetResource())
@@ -852,6 +899,13 @@ func (c *regionInstantSnapshotsRESTClient) TestIamPermissions(ctx context.Contex
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/instantSnapshots/%v/testIamPermissions", req.GetProject(), req.GetRegion(), req.GetResource())

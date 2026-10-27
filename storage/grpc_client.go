@@ -194,15 +194,27 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 
 	var clientMetrics *clientMetrics
 	var metricsCleanup func()
-	if isOtelMetricsEnabled(&config) {
-		clientMetrics, metricsCleanup = initGRPCMetricsAndWrapCredentials(ctx, &config, s)
-		if clientMetrics != nil {
-			unaryInt, streamInt := metricsInterceptors(clientMetrics)
-			s.clientOption = append(s.clientOption,
-				option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(unaryInt)),
-				option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(streamInt)),
-			)
-			s.clientOption = append(s.clientOption, grpcNetworkMetricsDialOptions("storage.googleapis.com", clientMetrics)...)
+	metricsEnabled := isOtelMetricsEnabled(&config)
+	tracingEnabled := isOTelTracingDevEnabled()
+	if metricsEnabled || tracingEnabled {
+		authCreds, project := resolveGRPCAuthCredentials(ctx, s)
+		if metricsEnabled {
+			clientMetrics, metricsCleanup = initClientMetrics(ctx, project, &config)
+			if clientMetrics != nil {
+				authCreds = wrapAuthCredentials(authCreds, clientMetrics)
+				unaryInt, streamInt := metricsInterceptors(clientMetrics)
+				s.clientOption = append(s.clientOption,
+					option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(unaryInt)),
+					option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(streamInt)),
+				)
+				s.clientOption = append(s.clientOption, grpcNetworkMetricsDialOptions("storage.googleapis.com", clientMetrics)...)
+			}
+		}
+		if tracingEnabled {
+			authCreds = wrapAuthCredentialsForTracing(authCreds)
+		}
+		if authCreds != nil {
+			s.clientOption = append(s.clientOption, option.WithAuthCredentials(authCreds))
 		}
 	}
 
@@ -260,26 +272,21 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 	return c, nil
 }
 
-func initGRPCMetricsAndWrapCredentials(ctx context.Context, config *storageConfig, s *settings) (*clientMetrics, func()) {
-	var project string
-	var authCreds *auth.Credentials
-
-	credsOpts := append([]option.ClientOption{option.WithScopes(gapic.DefaultAuthScopes()...)}, s.clientOption...)
-	if c, err := internaloption.AuthCreds(ctx, credsOpts); err == nil {
-		authCreds = c
-		project, _ = authCreds.ProjectID(ctx)
-	} else if c, err := transport.Creds(ctx, credsOpts...); err == nil {
-		project = c.ProjectID
-	}
-
-	clientMetrics, metricsCleanup := initClientMetrics(ctx, project, config)
-	if clientMetrics != nil {
-		if authCreds != nil {
-			authCreds = wrapAuthCredentials(authCreds, clientMetrics)
-			s.clientOption = append(s.clientOption, option.WithAuthCredentials(authCreds))
+func resolveGRPCAuthCredentials(ctx context.Context, s *settings) (*auth.Credentials, string) {
+	if res, err := internaloption.NewUnsafeResolver(s.clientOption...); err == nil {
+		if res.ResolvedGRPCConnIsCustom() || res.ResolvedWithoutAuthentication() {
+			return nil, ""
 		}
 	}
-	return clientMetrics, metricsCleanup
+	credsOpts := append([]option.ClientOption{option.WithScopes(gapic.DefaultAuthScopes()...)}, s.clientOption...)
+	if c, err := internaloption.AuthCreds(ctx, credsOpts); err == nil && c != nil {
+		project, _ := c.ProjectID(ctx)
+		return c, project
+	}
+	if c, err := transport.Creds(ctx, credsOpts...); err == nil && c != nil {
+		return nil, c.ProjectID
+	}
+	return nil, ""
 }
 
 // configureStreamingTimeouts explicitly overrides default call timeouts to 0 (unbounded)
@@ -671,7 +678,8 @@ func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		ctx, record := startMetricsOp(it.ctx, "ListObjects", false)
 		defer func() { record(err) }()
 		// Add trace span around List API call within the fetch.
-		ctx, _ = startSpan(ctx, "grpcStorageClient.ObjectsListCall")
+		// Bucket.Objects has no operation span, so gcp.storage.uri is recorded on each per-page ObjectsListCall span.
+		ctx, _ = startSpan(ctx, "grpcStorageClient.ObjectsListCall", withStorageURI(bucket, ""), rpcSystemGRPCOpt)
 		defer func() { endSpan(ctx, err) }()
 		var objects []*storagepb.Object
 		var gitr *gapic.ObjectIterator
@@ -1308,7 +1316,7 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 		return c.NewRangeReaderReadObject(ctx, params, opts...)
 	}
 
-	ctx, _ = startSpan(ctx, "grpcStorageClient.NewRangeReader")
+	ctx, _ = startSpan(ctx, "grpcStorageClient.NewRangeReader", rpcSystemGRPCOpt)
 	defer func() { endSpan(ctx, err) }()
 
 	s := callSettings(c.settings, opts...)
@@ -1738,7 +1746,7 @@ func (r *gRPCReader) updateCRC(b []byte) {
 // Checks whether the CRC matches at the conclusion of a read, if CRC checking was enabled.
 func (r *gRPCReader) runCRCCheck() error {
 	if r.checkCRC && r.gotCRC != r.wantCRC {
-		return fmt.Errorf("storage: bad CRC on read: got %d, want %d", r.gotCRC, r.wantCRC)
+		return fmt.Errorf("%w: bad CRC on read: got %d, want %d", errChecksumMismatch, r.gotCRC, r.wantCRC)
 	}
 	return nil
 }
@@ -1746,7 +1754,7 @@ func (r *gRPCReader) runCRCCheck() error {
 // checkAndResetChunkCRC verifies the chunk CRC if present, and resets the chunk CRC state.
 func (r *gRPCReader) checkAndResetChunkCRC() error {
 	if r.chunkCRCPresent && r.gotChunkCRC != r.wantChunkCRC {
-		return fmt.Errorf("storage: bad CRC on chunk read: got %d, want %d", r.gotChunkCRC, r.wantChunkCRC)
+		return fmt.Errorf("%w: bad CRC on chunk read: got %d, want %d", errChecksumMismatch, r.gotChunkCRC, r.wantChunkCRC)
 	}
 	r.gotChunkCRC = 0
 	r.chunkCRCPresent = false
@@ -2151,7 +2159,7 @@ func (d *readResponseDecoder) verifyChecksums() {
 			if d.crcErrs == nil {
 				d.crcErrs = make(map[int64]error)
 			}
-			d.crcErrs[readID] = fmt.Errorf("storage: bad CRC on chunk read: got %d, want %d", gotCRC, wantCRC)
+			d.crcErrs[readID] = fmt.Errorf("%w: bad CRC on chunk read: got %d, want %d", errChecksumMismatch, gotCRC, wantCRC)
 		}
 	}
 }

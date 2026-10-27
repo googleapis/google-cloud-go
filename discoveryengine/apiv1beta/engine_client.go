@@ -1070,6 +1070,11 @@ func (c *engineRESTClient) CreateEngine(ctx context.Context, req *discoveryengin
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/engines", req.GetParent())
 
 	params := url.Values{}
@@ -1130,6 +1135,11 @@ func (c *engineRESTClient) CreateEngine(ctx context.Context, req *discoveryengin
 func (c *engineRESTClient) DeleteEngine(ctx context.Context, req *discoveryenginepb.DeleteEngineRequest, opts ...gax.CallOption) (*DeleteEngineOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -1200,6 +1210,11 @@ func (c *engineRESTClient) UpdateEngine(ctx context.Context, req *discoveryengin
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetEngine().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetEngine().GetName())
 
 	params := url.Values{}
@@ -1259,6 +1274,11 @@ func (c *engineRESTClient) UpdateEngine(ctx context.Context, req *discoveryengin
 func (c *engineRESTClient) GetEngine(ctx context.Context, req *discoveryenginepb.GetEngineRequest, opts ...gax.CallOption) (*discoveryenginepb.Engine, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -1327,6 +1347,11 @@ func (c *engineRESTClient) ListEngines(ctx context.Context, req *discoveryengine
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/engines", req.GetParent())
@@ -1406,6 +1431,11 @@ func (c *engineRESTClient) PauseEngine(ctx context.Context, req *discoveryengine
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:pause", req.GetName())
 
 	params := url.Values{}
@@ -1467,6 +1497,11 @@ func (c *engineRESTClient) ResumeEngine(ctx context.Context, req *discoveryengin
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:resume", req.GetName())
@@ -1532,6 +1567,11 @@ func (c *engineRESTClient) TuneEngine(ctx context.Context, req *discoveryenginep
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:tune", req.GetName())
 
 	params := url.Values{}
@@ -1594,6 +1634,11 @@ func (c *engineRESTClient) TuneEngine(ctx context.Context, req *discoveryenginep
 func (c *engineRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:getIamPolicy", req.GetResource())
@@ -1671,6 +1716,11 @@ func (c *engineRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPo
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:setIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -1731,6 +1781,11 @@ func (c *engineRESTClient) CancelOperation(ctx context.Context, req *longrunning
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1768,6 +1823,11 @@ func (c *engineRESTClient) CancelOperation(ctx context.Context, req *longrunning
 func (c *engineRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -1835,6 +1895,11 @@ func (c *engineRESTClient) ListOperations(ctx context.Context, req *longrunningp
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/operations", req.GetName())

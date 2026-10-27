@@ -473,6 +473,11 @@ func (c *restClient) CreateTrip(ctx context.Context, req *navconnectpb.CreateTri
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/trips", req.GetParent())
 
 	params := url.Values{}
@@ -526,6 +531,11 @@ func (c *restClient) CreateTrip(ctx context.Context, req *navconnectpb.CreateTri
 func (c *restClient) GetTrip(ctx context.Context, req *navconnectpb.GetTripRequest, opts ...gax.CallOption) (*navconnectpb.Trip, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())

@@ -272,6 +272,13 @@ func (c *imageViewsRESTClient) Get(ctx context.Context, req *computepb.GetImageV
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResourceId(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/imageViews/%v", req.GetProject(), req.GetRegion(), req.GetResourceId())
 
 	// Build HTTP headers from client and context metadata.
@@ -333,6 +340,12 @@ func (c *imageViewsRESTClient) List(ctx context.Context, req *computepb.ListImag
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/imageViews", req.GetProject(), req.GetRegion())

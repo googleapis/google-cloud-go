@@ -318,6 +318,12 @@ func (c *regionsRESTClient) Get(ctx context.Context, req *computepb.GetRegionReq
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v", req.GetProject(), req.GetRegion())
 
 	// Build HTTP headers from client and context metadata.
@@ -396,6 +402,11 @@ func (c *regionsRESTClient) List(ctx context.Context, req *computepb.ListRegions
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions", req.GetProject())

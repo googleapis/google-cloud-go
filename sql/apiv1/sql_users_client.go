@@ -566,6 +566,12 @@ func (c *sqlUsersRESTClient) Delete(ctx context.Context, req *sqlpb.SqlUsersDele
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/users", req.GetProject(), req.GetInstance())
 
 	params := url.Values{}
@@ -627,6 +633,13 @@ func (c *sqlUsersRESTClient) Delete(ctx context.Context, req *sqlpb.SqlUsersDele
 func (c *sqlUsersRESTClient) Get(ctx context.Context, req *sqlpb.SqlUsersGetRequest, opts ...gax.CallOption) (*sqlpb.User, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/users/%v", req.GetProject(), req.GetInstance(), req.GetName())
@@ -696,6 +709,12 @@ func (c *sqlUsersRESTClient) Insert(ctx context.Context, req *sqlpb.SqlUsersInse
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/users", req.GetProject(), req.GetInstance())
 
 	params := url.Values{}
@@ -751,6 +770,12 @@ func (c *sqlUsersRESTClient) Insert(ctx context.Context, req *sqlpb.SqlUsersInse
 func (c *sqlUsersRESTClient) List(ctx context.Context, req *sqlpb.SqlUsersListRequest, opts ...gax.CallOption) (*sqlpb.UsersListResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/users", req.GetProject(), req.GetInstance())
@@ -815,6 +840,12 @@ func (c *sqlUsersRESTClient) Update(ctx context.Context, req *sqlpb.SqlUsersUpda
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/users", req.GetProject(), req.GetInstance())

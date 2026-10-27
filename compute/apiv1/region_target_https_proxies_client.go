@@ -356,6 +356,13 @@ func (c *regionTargetHttpsProxiesRESTClient) Delete(ctx context.Context, req *co
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetTargetHttpsProxy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/targetHttpsProxies/%v", req.GetProject(), req.GetRegion(), req.GetTargetHttpsProxy())
 
 	params := url.Values{}
@@ -420,6 +427,13 @@ func (c *regionTargetHttpsProxiesRESTClient) Get(ctx context.Context, req *compu
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetTargetHttpsProxy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/targetHttpsProxies/%v", req.GetProject(), req.GetRegion(), req.GetTargetHttpsProxy())
 
 	// Build HTTP headers from client and context metadata.
@@ -475,6 +489,12 @@ func (c *regionTargetHttpsProxiesRESTClient) Insert(ctx context.Context, req *co
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/targetHttpsProxies", req.GetProject(), req.GetRegion())
@@ -553,6 +573,12 @@ func (c *regionTargetHttpsProxiesRESTClient) List(ctx context.Context, req *comp
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/targetHttpsProxies", req.GetProject(), req.GetRegion())
@@ -635,6 +661,13 @@ func (c *regionTargetHttpsProxiesRESTClient) Patch(ctx context.Context, req *com
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetTargetHttpsProxy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/targetHttpsProxies/%v", req.GetProject(), req.GetRegion(), req.GetTargetHttpsProxy())
 
 	params := url.Values{}
@@ -706,6 +739,13 @@ func (c *regionTargetHttpsProxiesRESTClient) SetSslCertificates(ctx context.Cont
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetTargetHttpsProxy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/targetHttpsProxies/%v/setSslCertificates", req.GetProject(), req.GetRegion(), req.GetTargetHttpsProxy())
 
 	params := url.Values{}
@@ -775,6 +815,13 @@ func (c *regionTargetHttpsProxiesRESTClient) SetUrlMap(ctx context.Context, req 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetTargetHttpsProxy(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/targetHttpsProxies/%v/setUrlMap", req.GetProject(), req.GetRegion(), req.GetTargetHttpsProxy())

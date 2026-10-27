@@ -1386,6 +1386,11 @@ func (c *conversationalSearchRESTClient) ConverseConversation(ctx context.Contex
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:converse", req.GetName())
 
 	params := url.Values{}
@@ -1450,6 +1455,11 @@ func (c *conversationalSearchRESTClient) CreateConversation(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/conversations", req.GetParent())
 
 	params := url.Values{}
@@ -1507,6 +1517,11 @@ func (c *conversationalSearchRESTClient) DeleteConversation(ctx context.Context,
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -1556,6 +1571,11 @@ func (c *conversationalSearchRESTClient) UpdateConversation(ctx context.Context,
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetConversation().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetConversation().GetName())
@@ -1617,6 +1637,11 @@ func (c *conversationalSearchRESTClient) UpdateConversation(ctx context.Context,
 func (c *conversationalSearchRESTClient) GetConversation(ctx context.Context, req *discoveryenginepb.GetConversationRequest, opts ...gax.CallOption) (*discoveryenginepb.Conversation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -1685,6 +1710,11 @@ func (c *conversationalSearchRESTClient) ListConversations(ctx context.Context, 
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/conversations", req.GetParent())
@@ -1764,6 +1794,11 @@ func (c *conversationalSearchRESTClient) AnswerQuery(ctx context.Context, req *d
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetServingConfig(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:answer", req.GetServingConfig())
 
 	params := url.Values{}
@@ -1816,6 +1851,11 @@ func (c *conversationalSearchRESTClient) AnswerQuery(ctx context.Context, req *d
 func (c *conversationalSearchRESTClient) GetAnswer(ctx context.Context, req *discoveryenginepb.GetAnswerRequest, opts ...gax.CallOption) (*discoveryenginepb.Answer, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -1882,6 +1922,11 @@ func (c *conversationalSearchRESTClient) CreateSession(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/sessions", req.GetParent())
 
 	params := url.Values{}
@@ -1939,6 +1984,11 @@ func (c *conversationalSearchRESTClient) DeleteSession(ctx context.Context, req 
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -1987,6 +2037,11 @@ func (c *conversationalSearchRESTClient) UpdateSession(ctx context.Context, req 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSession().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetSession().GetName())
@@ -2048,6 +2103,11 @@ func (c *conversationalSearchRESTClient) UpdateSession(ctx context.Context, req 
 func (c *conversationalSearchRESTClient) GetSession(ctx context.Context, req *discoveryenginepb.GetSessionRequest, opts ...gax.CallOption) (*discoveryenginepb.Session, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -2119,6 +2179,11 @@ func (c *conversationalSearchRESTClient) ListSessions(ctx context.Context, req *
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/sessions", req.GetParent())
@@ -2198,6 +2263,11 @@ func (c *conversationalSearchRESTClient) CancelOperation(ctx context.Context, re
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -2235,6 +2305,11 @@ func (c *conversationalSearchRESTClient) CancelOperation(ctx context.Context, re
 func (c *conversationalSearchRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -2302,6 +2377,11 @@ func (c *conversationalSearchRESTClient) ListOperations(ctx context.Context, req
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/operations", req.GetName())

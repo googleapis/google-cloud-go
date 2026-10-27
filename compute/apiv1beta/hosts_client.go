@@ -296,6 +296,14 @@ func (c *hostsRESTClient) Get(ctx context.Context, req *computepb.GetHostRequest
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetAssociation(),
+		req.GetHost(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/%v/hosts/%v", req.GetProject(), req.GetZone(), req.GetAssociation(), req.GetHost())
 
 	// Build HTTP headers from client and context metadata.
@@ -350,6 +358,14 @@ func (c *hostsRESTClient) GetVersion(ctx context.Context, req *computepb.GetVers
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetAssociation(),
+		req.GetHost(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/%v/hosts/%v/getVersion", req.GetProject(), req.GetZone(), req.GetAssociation(), req.GetHost())
@@ -427,6 +443,13 @@ func (c *hostsRESTClient) List(ctx context.Context, req *computepb.ListHostsRequ
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetZone(),
+			req.GetAssociation(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/%v/hosts", req.GetProject(), req.GetZone(), req.GetAssociation())

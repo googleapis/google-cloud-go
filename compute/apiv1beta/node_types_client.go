@@ -309,6 +309,11 @@ func (c *nodeTypesRESTClient) AggregatedList(ctx context.Context, req *computepb
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/aggregated/nodeTypes", req.GetProject())
 
 		params := url.Values{}
@@ -395,6 +400,13 @@ func (c *nodeTypesRESTClient) Get(ctx context.Context, req *computepb.GetNodeTyp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetNodeType(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/nodeTypes/%v", req.GetProject(), req.GetZone(), req.GetNodeType())
 
 	// Build HTTP headers from client and context metadata.
@@ -456,6 +468,12 @@ func (c *nodeTypesRESTClient) List(ctx context.Context, req *computepb.ListNodeT
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetZone(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/nodeTypes", req.GetProject(), req.GetZone())

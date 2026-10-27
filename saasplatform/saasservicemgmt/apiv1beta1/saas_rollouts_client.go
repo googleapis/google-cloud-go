@@ -1051,6 +1051,11 @@ func (c *saasRolloutsRESTClient) ListRollouts(ctx context.Context, req *saasserv
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/rollouts", req.GetParent())
 
 		params := url.Values{}
@@ -1122,6 +1127,11 @@ func (c *saasRolloutsRESTClient) GetRollout(ctx context.Context, req *saasservic
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1181,6 +1191,11 @@ func (c *saasRolloutsRESTClient) CreateRollout(ctx context.Context, req *saasser
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/rollouts", req.GetParent())
@@ -1251,6 +1266,11 @@ func (c *saasRolloutsRESTClient) UpdateRollout(ctx context.Context, req *saasser
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetRollout().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetRollout().GetName())
 
 	params := url.Values{}
@@ -1318,6 +1338,11 @@ func (c *saasRolloutsRESTClient) DeleteRollout(ctx context.Context, req *saasser
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1377,6 +1402,11 @@ func (c *saasRolloutsRESTClient) ListRolloutKinds(ctx context.Context, req *saas
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/rolloutKinds", req.GetParent())
@@ -1450,6 +1480,11 @@ func (c *saasRolloutsRESTClient) GetRolloutKind(ctx context.Context, req *saasse
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1509,6 +1544,11 @@ func (c *saasRolloutsRESTClient) CreateRolloutKind(ctx context.Context, req *saa
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/rolloutKinds", req.GetParent())
@@ -1579,6 +1619,11 @@ func (c *saasRolloutsRESTClient) UpdateRolloutKind(ctx context.Context, req *saa
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetRolloutKind().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetRolloutKind().GetName())
 
 	params := url.Values{}
@@ -1646,6 +1691,11 @@ func (c *saasRolloutsRESTClient) DeleteRolloutKind(ctx context.Context, req *saa
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1692,6 +1742,11 @@ func (c *saasRolloutsRESTClient) DeleteRolloutKind(ctx context.Context, req *saa
 func (c *saasRolloutsRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
@@ -1774,6 +1829,11 @@ func (c *saasRolloutsRESTClient) ListLocations(ctx context.Context, req *locatio
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/locations", req.GetName())

@@ -481,6 +481,11 @@ func (c *predictionRESTClient) Predict(ctx context.Context, req *recommendatione
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v:predict", req.GetName())
 
 		params := url.Values{}

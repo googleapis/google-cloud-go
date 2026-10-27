@@ -1045,6 +1045,11 @@ func (c *restClient) ListTemplates(ctx context.Context, req *modelarmorpb.ListTe
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/templates", req.GetParent())
 
 		params := url.Values{}
@@ -1116,6 +1121,11 @@ func (c *restClient) GetTemplate(ctx context.Context, req *modelarmorpb.GetTempl
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1175,6 +1185,11 @@ func (c *restClient) CreateTemplate(ctx context.Context, req *modelarmorpb.Creat
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/templates", req.GetParent())
@@ -1242,6 +1257,11 @@ func (c *restClient) UpdateTemplate(ctx context.Context, req *modelarmorpb.Updat
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetTemplate().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetTemplate().GetName())
 
 	params := url.Values{}
@@ -1306,6 +1326,11 @@ func (c *restClient) DeleteTemplate(ctx context.Context, req *modelarmorpb.Delet
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1346,6 +1371,11 @@ func (c *restClient) DeleteTemplate(ctx context.Context, req *modelarmorpb.Delet
 func (c *restClient) GetFloorSetting(ctx context.Context, req *modelarmorpb.GetFloorSettingRequest, opts ...gax.CallOption) (*modelarmorpb.FloorSetting, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1407,6 +1437,11 @@ func (c *restClient) UpdateFloorSetting(ctx context.Context, req *modelarmorpb.U
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetFloorSetting().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetFloorSetting().GetName())
@@ -1476,6 +1511,11 @@ func (c *restClient) SanitizeUserPrompt(ctx context.Context, req *modelarmorpb.S
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:sanitizeUserPrompt", req.GetName())
 
 	params := url.Values{}
@@ -1534,6 +1574,11 @@ func (c *restClient) SanitizeModelResponse(ctx context.Context, req *modelarmorp
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:sanitizeModelResponse", req.GetName())
@@ -1602,6 +1647,11 @@ func (c *restClient) StreamSanitizeModelResponse(ctx context.Context, opts ...ga
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1684,6 +1734,11 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())

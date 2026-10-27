@@ -27,6 +27,7 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/auth"
 	"cloud.google.com/go/storage/experimental"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/go-cmp/cmp"
@@ -719,7 +720,7 @@ func TestVerifyChecksums(t *testing.T) {
 			},
 			databufs: mem.BufferSlice{},
 			wantErrs: map[int64]string{
-				1: "storage: bad CRC on chunk read: got",
+				1: "storage: checksum mismatch: bad CRC on chunk read: got",
 			},
 		},
 		{
@@ -796,7 +797,7 @@ func TestVerifyChecksums(t *testing.T) {
 				1: {startBuf: 0, endBuf: 0, startOff: 0, endOff: 11},
 			},
 			wantErrs: map[int64]string{
-				1: "storage: bad CRC on chunk read: got",
+				1: "storage: checksum mismatch: bad CRC on chunk read: got",
 			},
 		},
 		{
@@ -842,7 +843,7 @@ func TestVerifyChecksums(t *testing.T) {
 				1: {startBuf: 0, endBuf: 1, startOff: 7, endOff: 6},
 			},
 			wantErrs: map[int64]string{
-				1: "storage: bad CRC on chunk read: got",
+				1: "storage: checksum mismatch: bad CRC on chunk read: got",
 			},
 		},
 		{
@@ -895,7 +896,7 @@ func TestVerifyChecksums(t *testing.T) {
 				30: {startBuf: 0, endBuf: 0, startOff: 0, endOff: 11},
 			},
 			wantErrs: map[int64]string{
-				20: "storage: bad CRC on chunk read: got",
+				20: "storage: checksum mismatch: bad CRC on chunk read: got",
 			},
 		},
 		{
@@ -1151,5 +1152,84 @@ func TestRangeReaderRemainLargeObject(t *testing.T) {
 		if got := rangeReaderRemain(size, offset, length); got != length {
 			t.Errorf("rangeReaderRemain(%d, %d, %d) = %d, want %d", int64(size), offset, int64(length), got, int64(length))
 		}
+	}
+}
+
+// authCredentialsOptions returns the option.WithAuthCredentials options in opts.
+func authCredentialsOptions(opts []option.ClientOption) []option.ClientOption {
+	credsOptType := reflect.TypeOf(option.WithAuthCredentials(nil))
+	var matched []option.ClientOption
+	for _, o := range opts {
+		if reflect.TypeOf(o) == credsOptType {
+			matched = append(matched, o)
+		}
+	}
+	return matched
+}
+
+func TestNewGRPCStorageClient_AuthTracingCustomCredentials(t *testing.T) {
+	ctx := context.Background()
+	t.Setenv(storageOtelTracingDevVar, "true")
+	t.Setenv("STORAGE_EMULATOR_HOST", "")
+	t.Setenv("STORAGE_EMULATOR_HOST_GRPC", "")
+	// Keep the test hermetic: skip DirectPath and GCE metadata probing.
+	t.Setenv(directPathDisableEnvVar, "true")
+
+	baseProvider := &staticAuthTokenProvider{token: &auth.Token{Value: "fake-token"}}
+	baseCreds := &auth.Credentials{TokenProvider: baseProvider}
+	client, err := newGRPCStorageClient(ctx,
+		withClientOptions(
+			option.WithAuthCredentials(baseCreds),
+			WithDisabledClientMetrics(),
+		),
+	)
+	if err != nil {
+		t.Fatalf("newGRPCStorageClient: %v", err)
+	}
+	defer client.Close()
+
+	if got := len(authCredentialsOptions(client.settings.clientOption)); got != 2 {
+		t.Errorf("got %d WithAuthCredentials options, want 2 (caller's and traced)", got)
+	}
+	resolved, err := internaloption.AuthCreds(ctx, client.settings.clientOption)
+	if err != nil {
+		t.Fatalf("internaloption.AuthCreds: %v", err)
+	}
+	if resolved == baseCreds {
+		t.Fatal("resolved credentials alias the caller's credentials; want a wrapped copy")
+	}
+	traced, ok := resolved.TokenProvider.(*tracedTokenProvider)
+	if !ok {
+		t.Fatalf("got resolved TokenProvider %T, want *tracedTokenProvider", resolved.TokenProvider)
+	}
+	if traced.base != auth.TokenProvider(baseProvider) {
+		t.Errorf("got traced base TokenProvider %T, want the caller's provider", traced.base)
+	}
+	// Caller-owned credentials must not be mutated by client construction.
+	if baseCreds.TokenProvider != auth.TokenProvider(baseProvider) {
+		t.Errorf("caller-owned credentials were mutated: got TokenProvider %T, want %T", baseCreds.TokenProvider, baseProvider)
+	}
+}
+
+func TestNewGRPCStorageClient_AuthTracingWithoutAuthentication(t *testing.T) {
+	ctx := context.Background()
+	t.Setenv(storageOtelTracingDevVar, "true")
+	t.Setenv("STORAGE_EMULATOR_HOST", "")
+	t.Setenv("STORAGE_EMULATOR_HOST_GRPC", "")
+
+	client, err := newGRPCStorageClient(ctx,
+		withClientOptions(
+			option.WithoutAuthentication(),
+			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+			WithDisabledClientMetrics(),
+		),
+	)
+	if err != nil {
+		t.Fatalf("newGRPCStorageClient: %v", err)
+	}
+	defer client.Close()
+
+	if got := len(authCredentialsOptions(client.settings.clientOption)); got != 0 {
+		t.Errorf("got %d WithAuthCredentials options, want 0 with WithoutAuthentication", got)
 	}
 }

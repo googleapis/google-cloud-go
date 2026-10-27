@@ -951,6 +951,11 @@ func (c *restClient) GetTable(ctx context.Context, req *tablespb.GetTableRequest
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1081,6 +1086,11 @@ func (c *restClient) ListTables(ctx context.Context, req *tablespb.ListTablesReq
 func (c *restClient) GetWorkspace(ctx context.Context, req *tablespb.GetWorkspaceRequest, opts ...gax.CallOption) (*tablespb.Workspace, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetName())
@@ -1215,6 +1225,11 @@ func (c *restClient) GetRow(ctx context.Context, req *tablespb.GetRowRequest, op
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1283,6 +1298,11 @@ func (c *restClient) ListRows(ctx context.Context, req *tablespb.ListRowsRequest
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha1/%v/rows", req.GetParent())
@@ -1363,6 +1383,11 @@ func (c *restClient) CreateRow(ctx context.Context, req *tablespb.CreateRowReque
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v/rows", req.GetParent())
 
 	params := url.Values{}
@@ -1426,6 +1451,11 @@ func (c *restClient) BatchCreateRows(ctx context.Context, req *tablespb.BatchCre
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v/rows:batchCreate", req.GetParent())
 
 	params := url.Values{}
@@ -1485,6 +1515,11 @@ func (c *restClient) UpdateRow(ctx context.Context, req *tablespb.UpdateRowReque
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetRow().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetRow().GetName())
@@ -1557,6 +1592,11 @@ func (c *restClient) BatchUpdateRows(ctx context.Context, req *tablespb.BatchUpd
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v/rows:batchUpdate", req.GetParent())
 
 	params := url.Values{}
@@ -1611,6 +1651,11 @@ func (c *restClient) DeleteRow(ctx context.Context, req *tablespb.DeleteRowReque
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1654,6 +1699,11 @@ func (c *restClient) BatchDeleteRows(ctx context.Context, req *tablespb.BatchDel
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v/rows:batchDelete", req.GetParent())

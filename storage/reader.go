@@ -124,7 +124,7 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64,
 	if offset == 0 && length < 0 {
 		readMode = "full"
 	}
-	ctx, _ = startSpanWithBucket(ctx, o.c, o.bucket, "Object.Reader",
+	ctx, _ = startSpanWithObject(ctx, o.c, o.bucket, o.object, "Object.Reader",
 		trace.WithAttributes(attribute.String("gcp.storage.read.mode", readMode)))
 	defer func() { endSpan(ctx, err) }()
 
@@ -271,7 +271,7 @@ func (o *ObjectHandle) NewMultiRangeDownloader(ctx context.Context, opts ...MRDO
 	// This span covers the life of the MRD. It is closed via the context
 	// in MultiRangeDownloader.Close.
 	var spanCtx context.Context
-	spanCtx, _ = startSpanWithBucket(ctx, o.c, o.bucket, "Object.MultiRangeDownloader",
+	spanCtx, _ = startSpanWithObject(ctx, o.c, o.bucket, o.object, "Object.MultiRangeDownloader",
 		trace.WithAttributes(attribute.String("gcp.storage.read.mode", "multi_range")))
 	defer func() {
 		if err != nil {

@@ -407,6 +407,13 @@ func (c *regionSnapshotsRESTClient) Delete(ctx context.Context, req *computepb.D
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetSnapshot(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/snapshots/%v", req.GetProject(), req.GetRegion(), req.GetSnapshot())
 
 	params := url.Values{}
@@ -471,6 +478,13 @@ func (c *regionSnapshotsRESTClient) Get(ctx context.Context, req *computepb.GetR
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetSnapshot(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/snapshots/%v", req.GetProject(), req.GetRegion(), req.GetSnapshot())
 
 	// Build HTTP headers from client and context metadata.
@@ -519,6 +533,13 @@ func (c *regionSnapshotsRESTClient) Get(ctx context.Context, req *computepb.GetR
 func (c *regionSnapshotsRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyRegionSnapshotRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/snapshots/%v/getIamPolicy", req.GetProject(), req.GetRegion(), req.GetResource())
@@ -583,6 +604,12 @@ func (c *regionSnapshotsRESTClient) Insert(ctx context.Context, req *computepb.I
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/snapshots", req.GetProject(), req.GetRegion())
@@ -663,6 +690,12 @@ func (c *regionSnapshotsRESTClient) List(ctx context.Context, req *computepb.Lis
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/snapshots", req.GetProject(), req.GetRegion())
 
 		params := url.Values{}
@@ -741,6 +774,13 @@ func (c *regionSnapshotsRESTClient) SetIamPolicy(ctx context.Context, req *compu
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/snapshots/%v/setIamPolicy", req.GetProject(), req.GetRegion(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -797,6 +837,13 @@ func (c *regionSnapshotsRESTClient) SetLabels(ctx context.Context, req *computep
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/snapshots/%v/setLabels", req.GetProject(), req.GetRegion(), req.GetResource())
@@ -870,6 +917,13 @@ func (c *regionSnapshotsRESTClient) TestIamPermissions(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/snapshots/%v/testIamPermissions", req.GetProject(), req.GetRegion(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -925,6 +979,13 @@ func (c *regionSnapshotsRESTClient) UpdateKmsKey(ctx context.Context, req *compu
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetSnapshot(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/snapshots/%v/updateKmsKey", req.GetProject(), req.GetRegion(), req.GetSnapshot())

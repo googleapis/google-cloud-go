@@ -409,6 +409,11 @@ func (c *sqlTiersRESTClient) List(ctx context.Context, req *sqlpb.SqlTiersListRe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/tiers", req.GetProject())
 
 	params := url.Values{}

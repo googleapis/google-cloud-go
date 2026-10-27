@@ -2492,6 +2492,11 @@ func (c *restClient) CreateDataset(ctx context.Context, req *datalabelingpb.Crea
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/datasets", req.GetParent())
 
 	params := url.Values{}
@@ -2544,6 +2549,11 @@ func (c *restClient) CreateDataset(ctx context.Context, req *datalabelingpb.Crea
 func (c *restClient) GetDataset(ctx context.Context, req *datalabelingpb.GetDatasetRequest, opts ...gax.CallOption) (*datalabelingpb.Dataset, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
@@ -2611,6 +2621,11 @@ func (c *restClient) ListDatasets(ctx context.Context, req *datalabelingpb.ListD
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/datasets", req.GetParent())
@@ -2681,6 +2696,11 @@ func (c *restClient) DeleteDataset(ctx context.Context, req *datalabelingpb.Dele
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2728,6 +2748,11 @@ func (c *restClient) ImportData(ctx context.Context, req *datalabelingpb.ImportD
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:importData", req.GetName())
@@ -2797,6 +2822,11 @@ func (c *restClient) ExportData(ctx context.Context, req *datalabelingpb.ExportD
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:exportData", req.GetName())
 
 	params := url.Values{}
@@ -2857,6 +2887,11 @@ func (c *restClient) ExportData(ctx context.Context, req *datalabelingpb.ExportD
 func (c *restClient) GetDataItem(ctx context.Context, req *datalabelingpb.GetDataItemRequest, opts ...gax.CallOption) (*datalabelingpb.DataItem, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
@@ -2927,6 +2962,11 @@ func (c *restClient) ListDataItems(ctx context.Context, req *datalabelingpb.List
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/dataItems", req.GetParent())
 
 		params := url.Values{}
@@ -2995,6 +3035,11 @@ func (c *restClient) GetAnnotatedDataset(ctx context.Context, req *datalabelingp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3060,6 +3105,11 @@ func (c *restClient) ListAnnotatedDatasets(ctx context.Context, req *datalabelin
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/annotatedDatasets", req.GetParent())
@@ -3130,6 +3180,11 @@ func (c *restClient) DeleteAnnotatedDataset(ctx context.Context, req *datalabeli
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3174,6 +3229,11 @@ func (c *restClient) LabelImage(ctx context.Context, req *datalabelingpb.LabelIm
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/image:label", req.GetParent())
@@ -3244,6 +3304,11 @@ func (c *restClient) LabelVideo(ctx context.Context, req *datalabelingpb.LabelVi
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/video:label", req.GetParent())
 
 	params := url.Values{}
@@ -3312,6 +3377,11 @@ func (c *restClient) LabelText(ctx context.Context, req *datalabelingpb.LabelTex
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/text:label", req.GetParent())
 
 	params := url.Values{}
@@ -3371,6 +3441,11 @@ func (c *restClient) LabelText(ctx context.Context, req *datalabelingpb.LabelTex
 func (c *restClient) GetExample(ctx context.Context, req *datalabelingpb.GetExampleRequest, opts ...gax.CallOption) (*datalabelingpb.Example, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
@@ -3441,6 +3516,11 @@ func (c *restClient) ListExamples(ctx context.Context, req *datalabelingpb.ListE
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/examples", req.GetParent())
@@ -3517,6 +3597,11 @@ func (c *restClient) CreateAnnotationSpecSet(ctx context.Context, req *datalabel
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/annotationSpecSets", req.GetParent())
 
 	params := url.Values{}
@@ -3569,6 +3654,11 @@ func (c *restClient) CreateAnnotationSpecSet(ctx context.Context, req *datalabel
 func (c *restClient) GetAnnotationSpecSet(ctx context.Context, req *datalabelingpb.GetAnnotationSpecSetRequest, opts ...gax.CallOption) (*datalabelingpb.AnnotationSpecSet, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
@@ -3636,6 +3726,11 @@ func (c *restClient) ListAnnotationSpecSets(ctx context.Context, req *datalabeli
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/annotationSpecSets", req.GetParent())
@@ -3706,6 +3801,11 @@ func (c *restClient) DeleteAnnotationSpecSet(ctx context.Context, req *datalabel
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3749,6 +3849,11 @@ func (c *restClient) CreateInstruction(ctx context.Context, req *datalabelingpb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/instructions", req.GetParent())
@@ -3810,6 +3915,11 @@ func (c *restClient) CreateInstruction(ctx context.Context, req *datalabelingpb.
 func (c *restClient) GetInstruction(ctx context.Context, req *datalabelingpb.GetInstructionRequest, opts ...gax.CallOption) (*datalabelingpb.Instruction, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
@@ -3877,6 +3987,11 @@ func (c *restClient) ListInstructions(ctx context.Context, req *datalabelingpb.L
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/instructions", req.GetParent())
@@ -3947,6 +4062,11 @@ func (c *restClient) DeleteInstruction(ctx context.Context, req *datalabelingpb.
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3985,6 +4105,11 @@ func (c *restClient) DeleteInstruction(ctx context.Context, req *datalabelingpb.
 func (c *restClient) GetEvaluation(ctx context.Context, req *datalabelingpb.GetEvaluationRequest, opts ...gax.CallOption) (*datalabelingpb.Evaluation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
@@ -4052,6 +4177,11 @@ func (c *restClient) SearchEvaluations(ctx context.Context, req *datalabelingpb.
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/evaluations:search", req.GetParent())
@@ -4143,6 +4273,11 @@ func (c *restClient) SearchExampleComparisons(ctx context.Context, req *datalabe
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/exampleComparisons:search", req.GetParent())
 
 		params := url.Values{}
@@ -4206,6 +4341,11 @@ func (c *restClient) CreateEvaluationJob(ctx context.Context, req *datalabelingp
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/evaluationJobs", req.GetParent())
@@ -4274,6 +4414,11 @@ func (c *restClient) UpdateEvaluationJob(ctx context.Context, req *datalabelingp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetEvaluationJob().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetEvaluationJob().GetName())
 
 	params := url.Values{}
@@ -4333,6 +4478,11 @@ func (c *restClient) UpdateEvaluationJob(ctx context.Context, req *datalabelingp
 func (c *restClient) GetEvaluationJob(ctx context.Context, req *datalabelingpb.GetEvaluationJobRequest, opts ...gax.CallOption) (*datalabelingpb.EvaluationJob, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
@@ -4396,6 +4546,11 @@ func (c *restClient) PauseEvaluationJob(ctx context.Context, req *datalabelingpb
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:pause", req.GetName())
 
 	params := url.Values{}
@@ -4442,6 +4597,11 @@ func (c *restClient) ResumeEvaluationJob(ctx context.Context, req *datalabelingp
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:resume", req.GetName())
 
 	params := url.Values{}
@@ -4479,6 +4639,11 @@ func (c *restClient) ResumeEvaluationJob(ctx context.Context, req *datalabelingp
 func (c *restClient) DeleteEvaluationJob(ctx context.Context, req *datalabelingpb.DeleteEvaluationJobRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
@@ -4532,6 +4697,11 @@ func (c *restClient) ListEvaluationJobs(ctx context.Context, req *datalabelingpb
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/evaluationJobs", req.GetParent())

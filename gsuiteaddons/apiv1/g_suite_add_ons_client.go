@@ -944,6 +944,11 @@ func (c *restClient) GetAuthorization(ctx context.Context, req *gsuiteaddonspb.G
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1003,6 +1008,11 @@ func (c *restClient) CreateDeployment(ctx context.Context, req *gsuiteaddonspb.C
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/deployments", req.GetParent())
@@ -1067,6 +1077,11 @@ func (c *restClient) ReplaceDeployment(ctx context.Context, req *gsuiteaddonspb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDeployment().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDeployment().GetName())
 
 	params := url.Values{}
@@ -1119,6 +1134,11 @@ func (c *restClient) ReplaceDeployment(ctx context.Context, req *gsuiteaddonspb.
 func (c *restClient) GetDeployment(ctx context.Context, req *gsuiteaddonspb.GetDeploymentRequest, opts ...gax.CallOption) (*gsuiteaddonspb.Deployment, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1188,6 +1208,11 @@ func (c *restClient) ListDeployments(ctx context.Context, req *gsuiteaddonspb.Li
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/deployments", req.GetParent())
 
 		params := url.Values{}
@@ -1253,6 +1278,11 @@ func (c *restClient) DeleteDeployment(ctx context.Context, req *gsuiteaddonspb.D
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1303,6 +1333,11 @@ func (c *restClient) InstallDeployment(ctx context.Context, req *gsuiteaddonspb.
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:install", req.GetName())
 
 	params := url.Values{}
@@ -1350,6 +1385,11 @@ func (c *restClient) UninstallDeployment(ctx context.Context, req *gsuiteaddonsp
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:uninstall", req.GetName())
 
 	params := url.Values{}
@@ -1387,6 +1427,11 @@ func (c *restClient) UninstallDeployment(ctx context.Context, req *gsuiteaddonsp
 func (c *restClient) GetInstallStatus(ctx context.Context, req *gsuiteaddonspb.GetInstallStatusRequest, opts ...gax.CallOption) (*gsuiteaddonspb.InstallStatus, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())

@@ -212,7 +212,7 @@ func TestValidateChecksumFromServer(t *testing.T) {
 		{
 			name:          "wrong checksum",
 			wrongChecksum: true,
-			wantErr:       fmt.Errorf("storage: object checksum mismatch: computed %q, server %q; the bucket may contain corrupted object", encodeUint32(2), encodeUint32(1)),
+			wantErr:       fmt.Errorf("storage: checksum mismatch: computed %q, server %q; the bucket may contain corrupted object", encodeUint32(2), encodeUint32(1)),
 		},
 	}
 	for _, test := range tests {

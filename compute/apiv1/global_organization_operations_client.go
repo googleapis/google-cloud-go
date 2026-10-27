@@ -284,6 +284,11 @@ func (c *globalOrganizationOperationsRESTClient) Delete(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetOperation(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/operations/%v", req.GetOperation())
 
 	params := url.Values{}
@@ -339,6 +344,11 @@ func (c *globalOrganizationOperationsRESTClient) Delete(ctx context.Context, req
 func (c *globalOrganizationOperationsRESTClient) Get(ctx context.Context, req *computepb.GetGlobalOrganizationOperationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetOperation(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/operations/%v", req.GetOperation())
