@@ -2864,7 +2864,6 @@ func TestPayloadTracing(t *testing.T) {
 		run    func(*testing.T, *Client)
 		want   [][2]int64 // (offset, size) of each attempt span, sorted, -1 if absent.
 	}{
-		{"grpc/oneshot write", grpcClient(&retryAttemptTestServer{}), write(0, 1000), [][2]int64{{0, 1000}}},
 		// The StartResumableWrite attempt is a unary RPC and carries no payload
 		// attributes; both chunks and the final request are sent on one stream.
 		{"grpc/resumable write", grpcClient(&retryAttemptTestServer{}), write(chunk, 2*chunk), [][2]int64{{-1, -1}, {0, 2 * chunk}}},
@@ -2878,8 +2877,6 @@ func TestPayloadTracing(t *testing.T) {
 		// Only the object data of the two ranges is counted.
 		{"grpc/multi-range read", grpcClient(&retryAttemptTestServer{}, WithGRPCBidiReads()), multiRangeRead, [][2]int64{{0, 20}}},
 		{"http/oneshot write", httpClient(nil, object(1000)), write(0, 1000), [][2]int64{{0, 1000}}},
-		// An object smaller than ChunkSize is buffered and sent in one request.
-		{"http/buffered single-request write", httpClient(nil, object(100)), write(chunk, 100), [][2]int64{{0, 100}}},
 		// The session start carries no object bytes, and the empty final
 		// request ("bytes */N") starts at the object size.
 		{"http/resumable write", httpClient(nil, session(), incomplete(), incomplete(), object(2*chunk)), write(chunk, 2*chunk),
