@@ -22,6 +22,7 @@ import (
 	"hash/crc32"
 	"io"
 	"math/rand"
+	"net"
 	"reflect"
 	"strings"
 	"testing"
@@ -40,10 +41,12 @@ import (
 	"google.golang.org/grpc/mem"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"google.golang.org/grpc/test/bufconn"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/protoadapt"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/testing/protocmp"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestBytesCodecV2(t *testing.T) {
@@ -988,17 +991,38 @@ func TestBidiReadStreamSessionGracefulShutdown(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	session := &bidiReadStreamSession{
-		reqC:   make(chan *storagepb.BidiReadObjectRequest, 5),
-		ctx:    ctx,
-		cancel: cancel,
+	fakeStream := &fakeBidiReadObjectClient{
+		closeSendCh:   make(chan struct{}),
+		msgsBeforeEOF: 2,
+		streamCtx:     ctx,
 	}
+	session := &bidiReadStreamSession{
+		reqC:       make(chan *storagepb.BidiReadObjectRequest, 5),
+		ctx:        ctx,
+		managerCtx: ctx,
+		cancel:     cancel,
+		stream:     fakeStream,
+		params:     &newMultiRangeDownloaderParams{disableMRDReadChecksum: true},
+	}
+	session.wg.Add(2)
+	go session.sendLoop()
+	go session.receiveLoop()
 
-	// Initial shutdown should close reqC and set manualShutdown.
+	// Initial shutdown should close reqC, set manualShutdown, and drain
+	// remaining messages on the stream until EOF before cancelling ctx.
 	session.Shutdown()
 
 	if !session.manualShutdown {
-		t.Errorf("expected session.manualShutdown to be true")
+		t.Errorf("got session.manualShutdown = false, want true")
+	}
+	if !fakeStream.closeSendCalled {
+		t.Errorf("got fakeStream.closeSendCalled = false, want true")
+	}
+	if got, want := fakeStream.recvCount, 3; got != want {
+		t.Errorf("got fakeStream.recvCount = %d, want %d (2 in-flight messages + EOF)", got, want)
+	}
+	if !fakeStream.eofBeforeCancel {
+		t.Errorf("got fakeStream.eofBeforeCancel = false, want true")
 	}
 
 	select {
@@ -1014,71 +1038,226 @@ func TestBidiReadStreamSessionGracefulShutdown(t *testing.T) {
 	session.Shutdown()
 }
 
+type fakeRangeReadServer struct {
+	storagepb.UnimplementedStorageServer
+	data             []byte
+	omitContentRange bool
+}
+
+func (s *fakeRangeReadServer) sliceRange(offset, limit int64) (start, end int64, slice []byte) {
+	end = int64(len(s.data))
+	start = offset
+	if start < 0 {
+		start = max(end+start, 0)
+	}
+	if limit > 0 && start+limit < end {
+		end = start + limit
+	}
+	return start, end, s.data[start:end]
+}
+
+func (s *fakeRangeReadServer) ReadObject(req *storagepb.ReadObjectRequest, stream storagepb.Storage_ReadObjectServer) error {
+	start, end, slice := s.sliceRange(req.GetReadOffset(), req.GetReadLimit())
+	var cr *storagepb.ContentRange
+	if !s.omitContentRange {
+		cr = &storagepb.ContentRange{Start: start, End: end, CompleteLength: int64(len(s.data))}
+	}
+	return stream.Send(&storagepb.ReadObjectResponse{
+		ChecksummedData: &storagepb.ChecksummedData{Content: slice},
+		ContentRange:    cr,
+		Metadata:        &storagepb.Object{Size: int64(len(s.data)), FinalizeTime: timestamppb.Now()},
+	})
+}
+
+func (s *fakeRangeReadServer) BidiReadObject(stream storagepb.Storage_BidiReadObjectServer) error {
+	req, err := stream.Recv()
+	if err != nil {
+		return err
+	}
+	rr := req.GetReadRanges()[0]
+	start, end, slice := s.sliceRange(rr.GetReadOffset(), rr.GetReadLength())
+	return stream.Send(&storagepb.BidiReadObjectResponse{
+		Metadata: &storagepb.Object{Size: int64(len(s.data)), FinalizeTime: timestamppb.Now()},
+		ObjectDataRanges: []*storagepb.ObjectRangeData{{
+			ChecksummedData: &storagepb.ChecksummedData{Content: slice},
+			ReadRange:       &storagepb.ReadRange{ReadOffset: start, ReadLength: end - start, ReadId: rr.GetReadId()},
+			RangeEnd:        true,
+		}},
+	})
+}
+
+func newFakeRangeReadStorageClient(t *testing.T, srv storagepb.StorageServer) *grpcStorageClient {
+	t.Helper()
+	lis := bufconn.Listen(1 << 20)
+	gs := grpc.NewServer()
+	storagepb.RegisterStorageServer(gs, srv)
+	go gs.Serve(lis)
+	t.Cleanup(gs.Stop)
+
+	ctx := context.Background()
+	c, err := newGRPCStorageClient(ctx, withClientOptions(
+		option.WithoutAuthentication(),
+		option.WithGRPCDialOption(grpc.WithContextDialer(func(ctx context.Context, _ string) (net.Conn, error) {
+			return lis.DialContext(ctx)
+		})),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+		WithDisabledClientMetrics(),
+		WithGRPCBidiReads(),
+	))
+	if err != nil {
+		t.Fatalf("newGRPCStorageClient: %v", err)
+	}
+	t.Cleanup(func() { c.Close() })
+	return c
+}
+
+type rangeDrainTestCase struct {
+	name             string
+	offset           int64
+	length           int64
+	readBytes        int
+	omitContentRange bool
+	wantDrained      bool
+}
+
+var rangeDrainTestCases = []rangeDrainTestCase{
+	{name: "full read", offset: 0, length: -1, readBytes: 100, wantDrained: true},
+	{name: "completed partial range read", offset: 20, length: 10, readBytes: 10, wantDrained: true},
+	{name: "open-ended range from offset", offset: 20, length: -1, readBytes: 80, wantDrained: true},
+	{name: "negative-offset suffix range", offset: -15, length: -1, readBytes: 15, wantDrained: true},
+	{name: "range length past object end", offset: 80, length: 50, readBytes: 20, wantDrained: true},
+	{name: "incomplete partial range read", offset: 20, length: 10, readBytes: 4, wantDrained: false},
+}
+
 func TestGRPCReaderCloseDrainOnCompletion(t *testing.T) {
-	var canceled bool
-	mockCancel := func() {
-		canceled = true
-	}
+	data := bytes.Repeat([]byte("0123456789"), 10) // 100 bytes
+	srv := &fakeRangeReadServer{data: data}
+	c := newFakeRangeReadStorageClient(t, srv)
 
-	fakeStream := &fakeBidiReadObjectClient{}
-	r := &gRPCReader{
-		size:      100,
-		seen:      100,
-		finalized: true,
-		cancel:    mockCancel,
-		stream:    fakeStream,
-		settings:  &settings{},
-	}
+	for _, tc := range rangeDrainTestCases {
+		t.Run(tc.name, func(t *testing.T) {
+			r, err := c.NewRangeReader(context.Background(), &newRangeReaderParams{
+				bucket: "b",
+				object: "o",
+				gen:    -1,
+				offset: tc.offset,
+				length: tc.length,
+			})
+			if err != nil {
+				t.Fatalf("NewRangeReader: %v", err)
+			}
+			gr := r.reader.(*gRPCReader)
+			fakeStream := &fakeBidiReadObjectClient{ClientStream: gr.stream}
+			gr.stream = fakeStream
+			var canceled bool
+			origCancel := gr.cancel
+			gr.cancel = func() {
+				canceled = true
+				origCancel()
+			}
 
-	if err := r.Close(); err != nil {
-		t.Fatalf("r.Close(): %v", err)
-	}
-
-	if !fakeStream.recvd {
-		t.Errorf("expected stream.RecvMsg to be drained on completed read Close")
-	}
-	if !canceled {
-		t.Errorf("expected cancel to be called")
-	}
-	if r.stream != nil {
-		t.Errorf("expected r.stream to be nil after Close")
+			if _, err := io.ReadFull(r, make([]byte, tc.readBytes)); err != nil {
+				t.Fatalf("io.ReadFull: %v", err)
+			}
+			if err := r.Close(); err != nil {
+				t.Fatalf("r.Close: %v", err)
+			}
+			if got := fakeStream.recvd; got != tc.wantDrained {
+				t.Errorf("got stream drained = %v, want %v", got, tc.wantDrained)
+			}
+			if !canceled {
+				t.Errorf("got canceled = false, want true")
+			}
+			if gr.stream != nil {
+				t.Errorf("got gr.stream = %v, want nil after Close", gr.stream)
+			}
+		})
 	}
 }
 
 func TestGRPCReadObjectReaderCloseDrainOnCompletion(t *testing.T) {
-	var canceled bool
-	mockCancel := func() {
-		canceled = true
-	}
+	data := bytes.Repeat([]byte("0123456789"), 10) // 100 bytes
+	srv := &fakeRangeReadServer{data: data}
+	c := newFakeRangeReadStorageClient(t, srv)
 
-	fakeStream := &fakeReadObjectClient{}
-	r := &gRPCReadObjectReader{
-		size:     100,
-		seen:     100,
-		cancel:   mockCancel,
-		stream:   fakeStream,
-		settings: &settings{},
-	}
+	cases := append([]rangeDrainTestCase(nil), rangeDrainTestCases...)
+	cases = append(cases, rangeDrainTestCase{
+		name:             "completed partial range read without ContentRange",
+		offset:           20,
+		length:           10,
+		readBytes:        10,
+		omitContentRange: true,
+		wantDrained:      true,
+	})
 
-	if err := r.Close(); err != nil {
-		t.Fatalf("r.Close(): %v", err)
-	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			srv.omitContentRange = tc.omitContentRange
+			r, err := c.NewRangeReaderReadObject(context.Background(), &newRangeReaderParams{
+				bucket: "b",
+				object: "o",
+				gen:    -1,
+				offset: tc.offset,
+				length: tc.length,
+			})
+			if err != nil {
+				t.Fatalf("NewRangeReaderReadObject: %v", err)
+			}
+			gr := r.reader.(*gRPCReadObjectReader)
+			fakeStream := &fakeReadObjectClient{ClientStream: gr.stream}
+			gr.stream = fakeStream
+			var canceled bool
+			origCancel := gr.cancel
+			gr.cancel = func() {
+				canceled = true
+				origCancel()
+			}
 
-	if !fakeStream.recvd {
-		t.Errorf("expected stream.RecvMsg to be drained on completed read Close")
-	}
-	if !canceled {
-		t.Errorf("expected cancel to be called")
+			if _, err := io.ReadFull(r, make([]byte, tc.readBytes)); err != nil {
+				t.Fatalf("io.ReadFull: %v", err)
+			}
+			if err := r.Close(); err != nil {
+				t.Fatalf("r.Close: %v", err)
+			}
+			if got := fakeStream.recvd; got != tc.wantDrained {
+				t.Errorf("got stream drained = %v, want %v", got, tc.wantDrained)
+			}
+			if !canceled {
+				t.Errorf("got canceled = false, want true")
+			}
+			if gr.stream != nil {
+				t.Errorf("got gr.stream = %v, want nil after Close", gr.stream)
+			}
+		})
 	}
 }
 
 type fakeBidiReadObjectClient struct {
 	grpc.ClientStream
-	recvd bool
+	recvd           bool
+	recvCount       int
+	msgsBeforeEOF   int
+	closeSendCh     chan struct{}
+	closeSendCalled bool
+	eofBeforeCancel bool
+	streamCtx       context.Context
 }
 
 func (f *fakeBidiReadObjectClient) RecvMsg(m interface{}) error {
 	f.recvd = true
+	if f.closeSendCh != nil {
+		<-f.closeSendCh
+	}
+	f.recvCount++
+	if f.recvCount <= f.msgsBeforeEOF {
+		return nil
+	}
+	if f.streamCtx != nil && f.streamCtx.Err() == nil {
+		f.eofBeforeCancel = true
+	}
+	if f.ClientStream != nil {
+		return f.ClientStream.RecvMsg(m)
+	}
 	return io.EOF
 }
 
@@ -1092,6 +1271,15 @@ func (f *fakeBidiReadObjectClient) Recv() (*storagepb.BidiReadObjectResponse, er
 }
 
 func (f *fakeBidiReadObjectClient) CloseSend() error {
+	if !f.closeSendCalled {
+		f.closeSendCalled = true
+		if f.closeSendCh != nil {
+			close(f.closeSendCh)
+		}
+	}
+	if f.ClientStream != nil {
+		return f.ClientStream.CloseSend()
+	}
 	return nil
 }
 
@@ -1102,6 +1290,9 @@ type fakeReadObjectClient struct {
 
 func (f *fakeReadObjectClient) RecvMsg(m interface{}) error {
 	f.recvd = true
+	if f.ClientStream != nil {
+		return f.ClientStream.RecvMsg(m)
+	}
 	return io.EOF
 }
 
