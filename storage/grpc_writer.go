@@ -22,6 +22,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"slices"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -617,10 +618,12 @@ func (w *gRPCWriter) traceChunkRequest(req gRPCBidiWriteRequest) {
 // traceChunkCompletion ends the spans of the chunks confirmed by c. A returned
 // object means every byte sent has been persisted, including a short last chunk.
 func (w *gRPCWriter) traceChunkCompletion(c gRPCBidiWriteCompletion) {
-	for len(w.chunkSpans) > 0 && (c.resource != nil || c.flushOffset >= w.chunkSpans[0].endOffset) {
-		w.chunkSpans[0].finish(nil)
-		w.chunkSpans = w.chunkSpans[1:]
+	i := 0
+	for i < len(w.chunkSpans) && (c.resource != nil || c.flushOffset >= w.chunkSpans[i].endOffset) {
+		w.chunkSpans[i].finish(nil)
+		i++
 	}
+	w.chunkSpans = slices.Delete(w.chunkSpans, 0, i)
 }
 
 // failChunkSpans ends all open Storage.UploadChunk spans with err when a
@@ -629,7 +632,8 @@ func (w *gRPCWriter) failChunkSpans(err error) {
 	for _, s := range w.chunkSpans {
 		s.finish(err)
 	}
-	w.chunkSpans = nil
+	clear(w.chunkSpans)
+	w.chunkSpans = w.chunkSpans[:0]
 }
 
 // Gather write commands before starting the actual write. Returns nil if the

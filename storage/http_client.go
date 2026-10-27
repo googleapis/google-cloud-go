@@ -241,39 +241,33 @@ func (t *trackingTransport) RoundTrip(req *http.Request) (*http.Response, error)
 	if baseRT == nil {
 		baseRT = http.DefaultTransport
 	}
-	if chunkNum, offset, sizeBytes, ok := httpUploadChunkInfo(req.Context(), req.Header); ok {
-		spanCtx, _ := startSpan(req.Context(), uploadChunkSpanName,
+	ctx := req.Context()
+	chunkNum, offset, sizeBytes, isChunk := httpUploadChunkInfo(ctx, req.Header)
+	if isChunk {
+		ctx, _ = startSpan(ctx, uploadChunkSpanName,
 			trace.WithAttributes(
 				attribute.Int64(uploadChunkNumberAttr, chunkNum),
 				attribute.Int64(payloadOffsetAttr, offset),
 				attribute.Int64(payloadSizeBytesAttr, sizeBytes),
 			))
-		req = req.WithContext(spanCtx)
-		resp, err := t.roundTripWithFeatures(baseRT, req)
-		finishSpan(spanCtx, httpUploadChunkError(resp, err))
-		return resp, err
 	}
-	return t.roundTripWithFeatures(baseRT, req)
-}
 
-func (t *trackingTransport) roundTripWithFeatures(baseRT http.RoundTripper, req *http.Request) (*http.Response, error) {
-	features := t.features | featureAttributes(req.Context())
+	features := t.features | featureAttributes(ctx)
 	// Merge all existing headers for this key.
 	features |= mergeFeatureAttributes(req.Header.Values(featureTrackerHeaderName))
-	var (
-		resp *http.Response
-		err  error
-	)
 	if features > 0 {
 		// Clone the request to avoid modifying the original one.
-		clonedReq := req.Clone(req.Context())
-		clonedReq.Header.Set(featureTrackerHeaderName, encodeUint32(features))
-		resp, err = baseRT.RoundTrip(clonedReq)
-	} else {
-		resp, err = baseRT.RoundTrip(req)
+		req = req.Clone(ctx)
+		req.Header.Set(featureTrackerHeaderName, encodeUint32(features))
+	} else if isChunk {
+		req = req.WithContext(ctx)
 	}
-	if resp != nil {
-		recordUploadIDFromHeader(req.Context(), resp.Header)
+
+	resp, err := baseRT.RoundTrip(req)
+	if isChunk {
+		finishSpan(ctx, httpUploadChunkError(resp, err))
+	} else if resp != nil {
+		recordUploadIDFromHeader(ctx, resp.Header)
 	}
 	return resp, err
 }

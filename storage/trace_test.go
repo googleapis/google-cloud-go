@@ -1618,6 +1618,7 @@ func TestWriterTraceWriteModeEmulated(t *testing.T) {
 		// wantUploadID is set when the upload creates a resumable session, whose
 		// server-generated ID must be recorded as gcp.storage.upload.id.
 		wantUploadID bool
+		wantChunks   []uploadChunkSpanInfo
 		// grpcOnly is set for upload modes that are not supported over HTTP.
 		grpcOnly bool
 	}{
@@ -1639,6 +1640,12 @@ func TestWriterTraceWriteModeEmulated(t *testing.T) {
 				attribute.String("gcp.storage.write.mode", "resumable"),
 			},
 			wantUploadID: true,
+			wantChunks: []uploadChunkSpanInfo{
+				{Number: 1, Offset: 0, SizeBytes: 256 * 1024},
+				{Number: 2, Offset: 256 * 1024, SizeBytes: 256 * 1024},
+				{Number: 3, Offset: 512 * 1024, SizeBytes: 256 * 1024},
+				{Number: 4, Offset: 768 * 1024, SizeBytes: 256 * 1024},
+			},
 		},
 		{
 			name: "appendable",
@@ -1723,6 +1730,9 @@ func TestWriterTraceWriteModeEmulated(t *testing.T) {
 						wantAttrs = append(wantAttrs, attribute.String("gcp.storage.upload.id", uploadID))
 					}
 					verifySingleSpanAttributes(t, writerSpans, wantAttrs)
+					if diff := cmp.Diff(tc.wantChunks, extractAndVerifyUploadChunkSpans(t, te.Spans())); diff != "" {
+						t.Errorf("%s spans mismatch (-want +got):\n%s", uploadChunkSpanName, diff)
+					}
 				})
 			}
 		})
@@ -1926,6 +1936,7 @@ type uploadChunkSpanInfo struct {
 	Offset    int64
 	SizeBytes int64
 	Failed    bool
+	ErrorType string
 }
 
 // extractAndVerifyUploadChunkSpans returns the Storage.UploadChunk spans in
@@ -1959,6 +1970,8 @@ func extractAndVerifyUploadChunkSpans(t *testing.T, spans tracetest.SpanStubs) [
 				info.Offset = a.Value.AsInt64()
 			case payloadSizeBytesAttr:
 				info.SizeBytes = a.Value.AsInt64()
+			case "error.type":
+				info.ErrorType = a.Value.AsString()
 			}
 		}
 		got = append(got, info)
@@ -2091,7 +2104,7 @@ func TestGRPCWriterUploadChunkSpansRetry(t *testing.T) {
 	if diff := cmp.Diff(wantOK, okSpans); diff != "" {
 		t.Errorf("successful %s spans mismatch (-want +got):\n%s", uploadChunkSpanName, diff)
 	}
-	wantFailed3 := uploadChunkSpanInfo{Number: 3, Offset: 512 * kib, SizeBytes: 256 * kib, Failed: true}
+	wantFailed3 := uploadChunkSpanInfo{Number: 3, Offset: 512 * kib, SizeBytes: 256 * kib, Failed: true, ErrorType: "UNAVAILABLE"}
 	if diff := cmp.Diff(wantFailed3, failedSpans[3]); diff != "" {
 		t.Errorf("failed chunk 3 span mismatch (-want +got):\n%s", diff)
 	}
@@ -2130,7 +2143,7 @@ func TestGRPCWriterUploadChunkSpansTerminalFailure(t *testing.T) {
 	if diff := cmp.Diff(wantOK, okSpans); diff != "" {
 		t.Errorf("successful %s spans mismatch (-want +got):\n%s", uploadChunkSpanName, diff)
 	}
-	wantFailed3 := uploadChunkSpanInfo{Number: 3, Offset: 512 * kib, SizeBytes: 256 * kib, Failed: true}
+	wantFailed3 := uploadChunkSpanInfo{Number: 3, Offset: 512 * kib, SizeBytes: 256 * kib, Failed: true, ErrorType: "PERMISSION_DENIED"}
 	if diff := cmp.Diff(wantFailed3, failedSpans[3]); diff != "" {
 		t.Errorf("failed chunk 3 span mismatch (-want +got):\n%s", diff)
 	}
@@ -2188,7 +2201,7 @@ func TestHTTPWriterUploadChunkSpansRetry(t *testing.T) {
 	want := []uploadChunkSpanInfo{
 		{Number: 1, Offset: 0, SizeBytes: 256 * kib},
 		{Number: 2, Offset: 256 * kib, SizeBytes: 256 * kib},
-		{Number: 3, Offset: 512 * kib, SizeBytes: 256 * kib, Failed: true},
+		{Number: 3, Offset: 512 * kib, SizeBytes: 256 * kib, Failed: true, ErrorType: "UNAVAILABLE"},
 		{Number: 3, Offset: 512 * kib, SizeBytes: 256 * kib},
 		{Number: 4, Offset: 768 * kib, SizeBytes: 256 * kib},
 	}
@@ -2206,7 +2219,7 @@ func TestHTTPWriterUploadChunkSpansTerminalFailure(t *testing.T) {
 	want := []uploadChunkSpanInfo{
 		{Number: 1, Offset: 0, SizeBytes: 256 * kib},
 		{Number: 2, Offset: 256 * kib, SizeBytes: 256 * kib},
-		{Number: 3, Offset: 512 * kib, SizeBytes: 256 * kib, Failed: true},
+		{Number: 3, Offset: 512 * kib, SizeBytes: 256 * kib, Failed: true, ErrorType: "PERMISSION_DENIED"},
 	}
 	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("%s spans mismatch (-want +got):\n%s", uploadChunkSpanName, diff)
