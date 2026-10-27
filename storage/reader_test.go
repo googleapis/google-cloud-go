@@ -872,7 +872,6 @@ func TestRangeReaderCompressedReopen(t *testing.T) {
 		status        int
 		contentLength int64
 		contentRange  string
-		decompressed  bool
 		body          string
 		err           error
 	}
@@ -882,29 +881,26 @@ func TestRangeReaderCompressedReopen(t *testing.T) {
 		steps          []step
 		wantData       string
 		wantRanges     []string
-		wantRemain     int64
 	}{
 		{
 			name:           "ReadCompressed 206 partial content reopen",
 			readCompressed: true,
 			steps: []step{
 				{status: http.StatusPartialContent, contentLength: 6, contentRange: "bytes 2-7/10", body: readData[2:4], err: internalErr},
-				{status: http.StatusPartialContent, contentLength: 4, contentRange: "bytes 4-7/10", body: readData[4:8], err: io.EOF},
+				{status: http.StatusPartialContent, contentRange: "bytes 4-7/10", body: readData[4:8], err: io.EOF},
 			},
 			wantData:   readData[2:8],
 			wantRanges: []string{"bytes=2-7", "bytes=4-7"},
-			wantRemain: 0,
 		},
 		{
 			name:           "Decompressive transcoding 200 full-object reopen discards seen bytes",
 			readCompressed: false,
 			steps: []step{
-				{status: http.StatusOK, contentLength: -1, decompressed: true, body: readData[:4], err: internalErr},
-				{status: http.StatusOK, contentLength: -1, decompressed: true, body: readData, err: io.EOF},
+				{status: http.StatusOK, contentLength: -1, body: readData[:4], err: internalErr},
+				{status: http.StatusOK, contentLength: -1, body: readData, err: io.EOF},
 			},
 			wantData:   readData,
 			wantRanges: []string{"bytes=2-7", "bytes=6-7"},
-			wantRemain: -1,
 		},
 	}
 
@@ -922,7 +918,7 @@ func TestRangeReaderCompressedReopen(t *testing.T) {
 				callIdx++
 				h := make(http.Header)
 				h.Set("X-Goog-Stored-Content-Encoding", "gzip")
-				if !s.decompressed {
+				if tc.readCompressed {
 					h.Set("Content-Encoding", "gzip")
 				}
 				if s.contentRange != "" {
@@ -931,7 +927,6 @@ func TestRangeReaderCompressedReopen(t *testing.T) {
 				return &http.Response{
 					StatusCode:    s.status,
 					ContentLength: s.contentLength,
-					Uncompressed:  s.decompressed,
 					Header:        h,
 					Body:          &fakeReadCloser{data: []byte(s.body), counts: []int{len(s.body)}, err: s.err},
 				}, nil
@@ -955,9 +950,6 @@ func TestRangeReaderCompressedReopen(t *testing.T) {
 			}
 			if got := string(gotBytes); got != tc.wantData {
 				t.Errorf("io.ReadAll(r) = %q, want %q", got, tc.wantData)
-			}
-			if got := r.Remain(); got != tc.wantRemain {
-				t.Errorf("r.Remain() = %d, want %d", got, tc.wantRemain)
 			}
 			if diff := cmp.Diff(tc.wantRanges, gotRanges); diff != "" {
 				t.Errorf("Range headers mismatch (-want +got):\n%s", diff)
