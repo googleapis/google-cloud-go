@@ -26,9 +26,9 @@ const pubSchedulerWorkers = 100
 
 func BenchmarkPublisher_Unkeyed(b *testing.B) {
 	wait := make(chan struct{}, b.N)
-	ps := scheduler.NewPublishScheduler(pubSchedulerWorkers, func(bundle interface{}) {
+	ps := scheduler.NewPublishScheduler(pubSchedulerWorkers, func(bundle any) {
 		nlen := reflect.ValueOf(bundle).Len()
-		for i := 0; i < nlen; i++ {
+		for range nlen {
 			wait <- struct{}{}
 		}
 	})
@@ -46,9 +46,9 @@ func BenchmarkPublisher_Unkeyed(b *testing.B) {
 
 func BenchmarkPublisher_SingleKey(b *testing.B) {
 	wait := make(chan struct{}, b.N)
-	ps := scheduler.NewPublishScheduler(pubSchedulerWorkers, func(bundle interface{}) {
+	ps := scheduler.NewPublishScheduler(pubSchedulerWorkers, func(bundle any) {
 		nlen := reflect.ValueOf(bundle).Len()
-		for i := 0; i < nlen; i++ {
+		for range nlen {
 			wait <- struct{}{}
 		}
 	})

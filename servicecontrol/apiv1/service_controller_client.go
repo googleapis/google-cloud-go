@@ -528,6 +528,11 @@ func (c *serviceControllerRESTClient) Check(ctx context.Context, req *servicecon
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetServiceName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/services/%v:check", req.GetServiceName())
 
 	params := url.Values{}
@@ -600,6 +605,11 @@ func (c *serviceControllerRESTClient) Report(ctx context.Context, req *serviceco
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetServiceName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/services/%v:report", req.GetServiceName())

@@ -10,6 +10,6 @@ require (
 
 require (
 	cloud.google.com/go/compute/metadata v0.9.0 // indirect
-	github.com/googleapis/gax-go/v2 v2.21.0 // indirect
-	golang.org/x/sys v0.42.0 // indirect
+	github.com/googleapis/gax-go/v2 v2.27.0 // indirect
+	golang.org/x/sys v0.49.0 // indirect
 )

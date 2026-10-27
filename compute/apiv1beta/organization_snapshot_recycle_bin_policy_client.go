@@ -271,6 +271,11 @@ func (c *organizationSnapshotRecycleBinPolicyRESTClient) Get(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetOrganization(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/%v/global/snapshotRecycleBinPolicy", req.GetOrganization())
 
 	// Build HTTP headers from client and context metadata.
@@ -325,6 +330,11 @@ func (c *organizationSnapshotRecycleBinPolicyRESTClient) Patch(ctx context.Conte
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetOrganization(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/%v/global/snapshotRecycleBinPolicy", req.GetOrganization())

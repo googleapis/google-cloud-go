@@ -561,6 +561,13 @@ func (c *metricsV1Beta3RESTClient) GetJobMetrics(ctx context.Context, req *dataf
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetLocation(),
+		req.GetJobId(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1b3/projects/%v/locations/%v/jobs/%v/metrics", req.GetProjectId(), req.GetLocation(), req.GetJobId())
 
 	params := url.Values{}
@@ -635,6 +642,13 @@ func (c *metricsV1Beta3RESTClient) GetJobExecutionDetails(ctx context.Context, r
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProjectId(),
+			req.GetLocation(),
+			req.GetJobId(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1b3/projects/%v/locations/%v/jobs/%v/executionDetails", req.GetProjectId(), req.GetLocation(), req.GetJobId())
@@ -716,6 +730,14 @@ func (c *metricsV1Beta3RESTClient) GetStageExecutionDetails(ctx context.Context,
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProjectId(),
+			req.GetLocation(),
+			req.GetJobId(),
+			req.GetStageId(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1b3/projects/%v/locations/%v/jobs/%v/stages/%v/executionDetails", req.GetProjectId(), req.GetLocation(), req.GetJobId(), req.GetStageId())

@@ -1875,6 +1875,11 @@ func (c *commerceTransactionRESTClient) ListServices(ctx context.Context, req *c
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/services", req.GetParent())
 
 		params := url.Values{}
@@ -1938,6 +1943,11 @@ func (c *commerceTransactionRESTClient) ListServices(ctx context.Context, req *c
 func (c *commerceTransactionRESTClient) GetService(ctx context.Context, req *commerceproducerpb.GetServiceRequest, opts ...gax.CallOption) (*commerceproducerpb.Service, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -2008,6 +2018,11 @@ func (c *commerceTransactionRESTClient) ListPrivateOffers(ctx context.Context, r
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/privateOffers", req.GetParent())
@@ -2081,6 +2096,11 @@ func (c *commerceTransactionRESTClient) GetPrivateOffer(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -2138,6 +2158,11 @@ func (c *commerceTransactionRESTClient) GetPrivateOffer(ctx context.Context, req
 func (c *commerceTransactionRESTClient) ResolveAmendmentTarget(ctx context.Context, req *commerceproducerpb.ResolveAmendmentTargetRequest, opts ...gax.CallOption) (*commerceproducerpb.ResolveAmendmentTargetResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/privateOffers:resolveAmendmentTarget", req.GetParent())
@@ -2203,6 +2228,11 @@ func (c *commerceTransactionRESTClient) CreatePrivateOffer(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/privateOffers", req.GetParent())
 
 	params := url.Values{}
@@ -2262,6 +2292,11 @@ func (c *commerceTransactionRESTClient) UpdatePrivateOffer(ctx context.Context, 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetPrivateOffer().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetPrivateOffer().GetName())
@@ -2331,6 +2366,11 @@ func (c *commerceTransactionRESTClient) PublishPrivateOffer(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:publish", req.GetName())
 
 	params := url.Values{}
@@ -2391,6 +2431,11 @@ func (c *commerceTransactionRESTClient) CancelPrivateOffer(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -2443,6 +2488,11 @@ func (c *commerceTransactionRESTClient) CancelPrivateOffer(ctx context.Context, 
 func (c *commerceTransactionRESTClient) DeletePrivateOffer(ctx context.Context, req *commerceproducerpb.DeletePrivateOfferRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -2498,6 +2548,11 @@ func (c *commerceTransactionRESTClient) ListPrivateOfferDocuments(ctx context.Co
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/documents", req.GetParent())
@@ -2565,6 +2620,11 @@ func (c *commerceTransactionRESTClient) GetPrivateOfferDocument(ctx context.Cont
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -2624,6 +2684,11 @@ func (c *commerceTransactionRESTClient) CreatePrivateOfferDocument(ctx context.C
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/documents", req.GetParent())
@@ -2687,6 +2752,11 @@ func (c *commerceTransactionRESTClient) UpdatePrivateOfferDocument(ctx context.C
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetPrivateOfferDocument().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetPrivateOfferDocument().GetName())
 
 	params := url.Values{}
@@ -2748,6 +2818,11 @@ func (c *commerceTransactionRESTClient) DeletePrivateOfferDocument(ctx context.C
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -2798,6 +2873,11 @@ func (c *commerceTransactionRESTClient) ListStandardOffers(ctx context.Context, 
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/standardOffers", req.GetParent())
@@ -2871,6 +2951,11 @@ func (c *commerceTransactionRESTClient) GetStandardOffer(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -2926,6 +3011,11 @@ func (c *commerceTransactionRESTClient) GetStandardOffer(ctx context.Context, re
 func (c *commerceTransactionRESTClient) GetSku(ctx context.Context, req *commerceproducerpb.GetSkuRequest, opts ...gax.CallOption) (*commerceproducerpb.Sku, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -2995,6 +3085,11 @@ func (c *commerceTransactionRESTClient) ListSkus(ctx context.Context, req *comme
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/skus", req.GetParent())
 
 		params := url.Values{}
@@ -3058,6 +3153,11 @@ func (c *commerceTransactionRESTClient) ListSkus(ctx context.Context, req *comme
 func (c *commerceTransactionRESTClient) GetSkuGroup(ctx context.Context, req *commerceproducerpb.GetSkuGroupRequest, opts ...gax.CallOption) (*commerceproducerpb.SkuGroup, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -3127,6 +3227,11 @@ func (c *commerceTransactionRESTClient) ListSkuGroups(ctx context.Context, req *
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/skuGroups", req.GetParent())
 
 		params := url.Values{}
@@ -3190,6 +3295,11 @@ func (c *commerceTransactionRESTClient) ListSkuGroups(ctx context.Context, req *
 func (c *commerceTransactionRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -3274,6 +3384,11 @@ func (c *commerceTransactionRESTClient) ListLocations(ctx context.Context, req *
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -3348,6 +3463,11 @@ func (c *commerceTransactionRESTClient) CancelOperation(ctx context.Context, req
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -3387,6 +3507,11 @@ func (c *commerceTransactionRESTClient) DeleteOperation(ctx context.Context, req
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -3424,6 +3549,11 @@ func (c *commerceTransactionRESTClient) DeleteOperation(ctx context.Context, req
 func (c *commerceTransactionRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -3491,6 +3621,11 @@ func (c *commerceTransactionRESTClient) ListOperations(ctx context.Context, req 
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/operations", req.GetName())

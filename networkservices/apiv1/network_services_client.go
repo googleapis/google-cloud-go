@@ -4186,6 +4186,11 @@ func (c *restClient) ListEndpointPolicies(ctx context.Context, req *networkservi
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/endpointPolicies", req.GetParent())
 
 		params := url.Values{}
@@ -4254,6 +4259,11 @@ func (c *restClient) GetEndpointPolicy(ctx context.Context, req *networkservices
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4313,6 +4323,11 @@ func (c *restClient) CreateEndpointPolicy(ctx context.Context, req *networkservi
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/endpointPolicies", req.GetParent())
@@ -4384,6 +4399,11 @@ func (c *restClient) UpdateEndpointPolicy(ctx context.Context, req *networkservi
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetEndpointPolicy().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetEndpointPolicy().GetName())
 
 	params := url.Values{}
@@ -4450,6 +4470,11 @@ func (c *restClient) UpdateEndpointPolicy(ctx context.Context, req *networkservi
 func (c *restClient) DeleteEndpointPolicy(ctx context.Context, req *networkservicespb.DeleteEndpointPolicyRequest, opts ...gax.CallOption) (*DeleteEndpointPolicyOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -4527,6 +4552,11 @@ func (c *restClient) ListWasmPluginVersions(ctx context.Context, req *networkser
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/versions", req.GetParent())
 
 		params := url.Values{}
@@ -4592,6 +4622,11 @@ func (c *restClient) GetWasmPluginVersion(ctx context.Context, req *networkservi
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4654,6 +4689,11 @@ func (c *restClient) CreateWasmPluginVersion(ctx context.Context, req *networkse
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/versions", req.GetParent())
 
 	params := url.Values{}
@@ -4714,6 +4754,11 @@ func (c *restClient) CreateWasmPluginVersion(ctx context.Context, req *networkse
 func (c *restClient) DeleteWasmPluginVersion(ctx context.Context, req *networkservicespb.DeleteWasmPluginVersionRequest, opts ...gax.CallOption) (*DeleteWasmPluginVersionOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -4791,6 +4836,11 @@ func (c *restClient) ListWasmPlugins(ctx context.Context, req *networkservicespb
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/wasmPlugins", req.GetParent())
 
 		params := url.Values{}
@@ -4856,6 +4906,11 @@ func (c *restClient) GetWasmPlugin(ctx context.Context, req *networkservicespb.G
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4919,6 +4974,11 @@ func (c *restClient) CreateWasmPlugin(ctx context.Context, req *networkservicesp
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/wasmPlugins", req.GetParent())
@@ -4990,6 +5050,11 @@ func (c *restClient) UpdateWasmPlugin(ctx context.Context, req *networkservicesp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetWasmPlugin().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetWasmPlugin().GetName())
 
 	params := url.Values{}
@@ -5056,6 +5121,11 @@ func (c *restClient) UpdateWasmPlugin(ctx context.Context, req *networkservicesp
 func (c *restClient) DeleteWasmPlugin(ctx context.Context, req *networkservicespb.DeleteWasmPluginRequest, opts ...gax.CallOption) (*DeleteWasmPluginOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -5132,6 +5202,11 @@ func (c *restClient) ListGateways(ctx context.Context, req *networkservicespb.Li
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/gateways", req.GetParent())
 
 		params := url.Values{}
@@ -5197,6 +5272,11 @@ func (c *restClient) GetGateway(ctx context.Context, req *networkservicespb.GetG
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -5256,6 +5336,11 @@ func (c *restClient) CreateGateway(ctx context.Context, req *networkservicespb.C
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/gateways", req.GetParent())
@@ -5327,6 +5412,11 @@ func (c *restClient) UpdateGateway(ctx context.Context, req *networkservicespb.U
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetGateway().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetGateway().GetName())
 
 	params := url.Values{}
@@ -5393,6 +5483,11 @@ func (c *restClient) UpdateGateway(ctx context.Context, req *networkservicespb.U
 func (c *restClient) DeleteGateway(ctx context.Context, req *networkservicespb.DeleteGatewayRequest, opts ...gax.CallOption) (*DeleteGatewayOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -5469,6 +5564,11 @@ func (c *restClient) ListGrpcRoutes(ctx context.Context, req *networkservicespb.
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/grpcRoutes", req.GetParent())
 
 		params := url.Values{}
@@ -5537,6 +5637,11 @@ func (c *restClient) GetGrpcRoute(ctx context.Context, req *networkservicespb.Ge
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -5596,6 +5701,11 @@ func (c *restClient) CreateGrpcRoute(ctx context.Context, req *networkservicespb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/grpcRoutes", req.GetParent())
@@ -5667,6 +5777,11 @@ func (c *restClient) UpdateGrpcRoute(ctx context.Context, req *networkservicespb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetGrpcRoute().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetGrpcRoute().GetName())
 
 	params := url.Values{}
@@ -5733,6 +5848,11 @@ func (c *restClient) UpdateGrpcRoute(ctx context.Context, req *networkservicespb
 func (c *restClient) DeleteGrpcRoute(ctx context.Context, req *networkservicespb.DeleteGrpcRouteRequest, opts ...gax.CallOption) (*DeleteGrpcRouteOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -5809,6 +5929,11 @@ func (c *restClient) ListHttpRoutes(ctx context.Context, req *networkservicespb.
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/httpRoutes", req.GetParent())
 
 		params := url.Values{}
@@ -5880,6 +6005,11 @@ func (c *restClient) GetHttpRoute(ctx context.Context, req *networkservicespb.Ge
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -5939,6 +6069,11 @@ func (c *restClient) CreateHttpRoute(ctx context.Context, req *networkservicespb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/httpRoutes", req.GetParent())
@@ -6013,6 +6148,11 @@ func (c *restClient) UpdateHttpRoute(ctx context.Context, req *networkservicespb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetHttpRoute().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetHttpRoute().GetName())
 
 	params := url.Values{}
@@ -6079,6 +6219,11 @@ func (c *restClient) UpdateHttpRoute(ctx context.Context, req *networkservicespb
 func (c *restClient) DeleteHttpRoute(ctx context.Context, req *networkservicespb.DeleteHttpRouteRequest, opts ...gax.CallOption) (*DeleteHttpRouteOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -6155,6 +6300,11 @@ func (c *restClient) ListTcpRoutes(ctx context.Context, req *networkservicespb.L
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/tcpRoutes", req.GetParent())
 
 		params := url.Values{}
@@ -6223,6 +6373,11 @@ func (c *restClient) GetTcpRoute(ctx context.Context, req *networkservicespb.Get
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -6282,6 +6437,11 @@ func (c *restClient) CreateTcpRoute(ctx context.Context, req *networkservicespb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/tcpRoutes", req.GetParent())
@@ -6353,6 +6513,11 @@ func (c *restClient) UpdateTcpRoute(ctx context.Context, req *networkservicespb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetTcpRoute().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetTcpRoute().GetName())
 
 	params := url.Values{}
@@ -6419,6 +6584,11 @@ func (c *restClient) UpdateTcpRoute(ctx context.Context, req *networkservicespb.
 func (c *restClient) DeleteTcpRoute(ctx context.Context, req *networkservicespb.DeleteTcpRouteRequest, opts ...gax.CallOption) (*DeleteTcpRouteOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -6495,6 +6665,11 @@ func (c *restClient) ListTlsRoutes(ctx context.Context, req *networkservicespb.L
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/tlsRoutes", req.GetParent())
 
 		params := url.Values{}
@@ -6563,6 +6738,11 @@ func (c *restClient) GetTlsRoute(ctx context.Context, req *networkservicespb.Get
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -6622,6 +6802,11 @@ func (c *restClient) CreateTlsRoute(ctx context.Context, req *networkservicespb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/tlsRoutes", req.GetParent())
@@ -6693,6 +6878,11 @@ func (c *restClient) UpdateTlsRoute(ctx context.Context, req *networkservicespb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetTlsRoute().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetTlsRoute().GetName())
 
 	params := url.Values{}
@@ -6759,6 +6949,11 @@ func (c *restClient) UpdateTlsRoute(ctx context.Context, req *networkservicespb.
 func (c *restClient) DeleteTlsRoute(ctx context.Context, req *networkservicespb.DeleteTlsRouteRequest, opts ...gax.CallOption) (*DeleteTlsRouteOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -6835,6 +7030,11 @@ func (c *restClient) ListServiceBindings(ctx context.Context, req *networkservic
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/serviceBindings", req.GetParent())
 
 		params := url.Values{}
@@ -6900,6 +7100,11 @@ func (c *restClient) GetServiceBinding(ctx context.Context, req *networkservices
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -6959,6 +7164,11 @@ func (c *restClient) CreateServiceBinding(ctx context.Context, req *networkservi
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/serviceBindings", req.GetParent())
@@ -7030,6 +7240,11 @@ func (c *restClient) UpdateServiceBinding(ctx context.Context, req *networkservi
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetServiceBinding().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetServiceBinding().GetName())
 
 	params := url.Values{}
@@ -7096,6 +7311,11 @@ func (c *restClient) UpdateServiceBinding(ctx context.Context, req *networkservi
 func (c *restClient) DeleteServiceBinding(ctx context.Context, req *networkservicespb.DeleteServiceBindingRequest, opts ...gax.CallOption) (*DeleteServiceBindingOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -7172,6 +7392,11 @@ func (c *restClient) ListMeshes(ctx context.Context, req *networkservicespb.List
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/meshes", req.GetParent())
 
 		params := url.Values{}
@@ -7240,6 +7465,11 @@ func (c *restClient) GetMesh(ctx context.Context, req *networkservicespb.GetMesh
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -7299,6 +7529,11 @@ func (c *restClient) CreateMesh(ctx context.Context, req *networkservicespb.Crea
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/meshes", req.GetParent())
@@ -7370,6 +7605,11 @@ func (c *restClient) UpdateMesh(ctx context.Context, req *networkservicespb.Upda
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetMesh().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetMesh().GetName())
 
 	params := url.Values{}
@@ -7436,6 +7676,11 @@ func (c *restClient) UpdateMesh(ctx context.Context, req *networkservicespb.Upda
 func (c *restClient) DeleteMesh(ctx context.Context, req *networkservicespb.DeleteMeshRequest, opts ...gax.CallOption) (*DeleteMeshOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -7512,6 +7757,11 @@ func (c *restClient) ListServiceLbPolicies(ctx context.Context, req *networkserv
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/serviceLbPolicies", req.GetParent())
 
 		params := url.Values{}
@@ -7577,6 +7827,11 @@ func (c *restClient) GetServiceLbPolicy(ctx context.Context, req *networkservice
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -7636,6 +7891,11 @@ func (c *restClient) CreateServiceLbPolicy(ctx context.Context, req *networkserv
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/serviceLbPolicies", req.GetParent())
@@ -7707,6 +7967,11 @@ func (c *restClient) UpdateServiceLbPolicy(ctx context.Context, req *networkserv
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetServiceLbPolicy().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetServiceLbPolicy().GetName())
 
 	params := url.Values{}
@@ -7775,6 +8040,11 @@ func (c *restClient) DeleteServiceLbPolicy(ctx context.Context, req *networkserv
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -7836,6 +8106,11 @@ func (c *restClient) GetGatewayRouteView(ctx context.Context, req *networkservic
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -7888,6 +8163,11 @@ func (c *restClient) GetGatewayRouteView(ctx context.Context, req *networkservic
 func (c *restClient) GetMeshRouteView(ctx context.Context, req *networkservicespb.GetMeshRouteViewRequest, opts ...gax.CallOption) (*networkservicespb.MeshRouteView, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -7955,6 +8235,11 @@ func (c *restClient) ListGatewayRouteViews(ctx context.Context, req *networkserv
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/routeViews", req.GetParent())
@@ -8035,6 +8320,11 @@ func (c *restClient) ListMeshRouteViews(ctx context.Context, req *networkservice
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/routeViews", req.GetParent())
 
 		params := url.Values{}
@@ -8113,6 +8403,11 @@ func (c *restClient) ListAgentGateways(ctx context.Context, req *networkservices
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/agentGateways", req.GetParent())
 
 		params := url.Values{}
@@ -8181,6 +8476,11 @@ func (c *restClient) GetAgentGateway(ctx context.Context, req *networkservicespb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -8240,6 +8540,11 @@ func (c *restClient) CreateAgentGateway(ctx context.Context, req *networkservice
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/agentGateways", req.GetParent())
@@ -8311,6 +8616,11 @@ func (c *restClient) UpdateAgentGateway(ctx context.Context, req *networkservice
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAgentGateway().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetAgentGateway().GetName())
 
 	params := url.Values{}
@@ -8379,6 +8689,11 @@ func (c *restClient) DeleteAgentGateway(ctx context.Context, req *networkservice
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -8441,6 +8756,11 @@ func (c *restClient) DeleteAgentGateway(ctx context.Context, req *networkservice
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -8508,6 +8828,11 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
@@ -8579,6 +8904,11 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -8644,6 +8974,11 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
@@ -8712,6 +9047,11 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -8772,6 +9112,11 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -8811,6 +9156,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -8848,6 +9198,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -8915,6 +9270,11 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

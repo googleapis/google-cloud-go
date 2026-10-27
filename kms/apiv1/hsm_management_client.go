@@ -1375,6 +1375,11 @@ func (c *hsmManagementRESTClient) ListSingleTenantHsmInstances(ctx context.Conte
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/singleTenantHsmInstances", req.GetParent())
 
 		params := url.Values{}
@@ -1450,6 +1455,11 @@ func (c *hsmManagementRESTClient) GetSingleTenantHsmInstance(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1513,6 +1523,11 @@ func (c *hsmManagementRESTClient) CreateSingleTenantHsmInstance(ctx context.Cont
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/singleTenantHsmInstances", req.GetParent())
@@ -1587,6 +1602,11 @@ func (c *hsmManagementRESTClient) CreateSingleTenantHsmInstanceProposal(ctx cont
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/proposals", req.GetParent())
@@ -1665,6 +1685,11 @@ func (c *hsmManagementRESTClient) ApproveSingleTenantHsmInstanceProposal(ctx con
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:approve", req.GetName())
 
 	params := url.Values{}
@@ -1731,6 +1756,11 @@ func (c *hsmManagementRESTClient) ExecuteSingleTenantHsmInstanceProposal(ctx con
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:execute", req.GetName())
 
 	params := url.Values{}
@@ -1791,6 +1821,11 @@ func (c *hsmManagementRESTClient) ExecuteSingleTenantHsmInstanceProposal(ctx con
 func (c *hsmManagementRESTClient) GetSingleTenantHsmInstanceProposal(ctx context.Context, req *kmspb.GetSingleTenantHsmInstanceProposalRequest, opts ...gax.CallOption) (*kmspb.SingleTenantHsmInstanceProposal, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1859,6 +1894,11 @@ func (c *hsmManagementRESTClient) ListSingleTenantHsmInstanceProposals(ctx conte
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/proposals", req.GetParent())
@@ -1936,6 +1976,11 @@ func (c *hsmManagementRESTClient) DeleteSingleTenantHsmInstanceProposal(ctx cont
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1973,6 +2018,11 @@ func (c *hsmManagementRESTClient) DeleteSingleTenantHsmInstanceProposal(ctx cont
 func (c *hsmManagementRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2057,6 +2107,11 @@ func (c *hsmManagementRESTClient) ListLocations(ctx context.Context, req *locati
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -2126,6 +2181,11 @@ func (c *hsmManagementRESTClient) GetIamPolicy(ctx context.Context, req *iampb.G
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -2191,6 +2251,11 @@ func (c *hsmManagementRESTClient) SetIamPolicy(ctx context.Context, req *iampb.S
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
@@ -2259,6 +2324,11 @@ func (c *hsmManagementRESTClient) TestIamPermissions(ctx context.Context, req *i
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -2311,6 +2381,11 @@ func (c *hsmManagementRESTClient) TestIamPermissions(ctx context.Context, req *i
 func (c *hsmManagementRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())

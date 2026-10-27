@@ -722,6 +722,11 @@ func (c *controlRESTClient) CreateControl(ctx context.Context, req *retailpb.Cre
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v/controls", req.GetParent())
 
 	params := url.Values{}
@@ -780,6 +785,11 @@ func (c *controlRESTClient) DeleteControl(ctx context.Context, req *retailpb.Del
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -829,6 +839,11 @@ func (c *controlRESTClient) UpdateControl(ctx context.Context, req *retailpb.Upd
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetControl().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetControl().GetName())
@@ -890,6 +905,11 @@ func (c *controlRESTClient) UpdateControl(ctx context.Context, req *retailpb.Upd
 func (c *controlRESTClient) GetControl(ctx context.Context, req *retailpb.GetControlRequest, opts ...gax.CallOption) (*retailpb.Control, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetName())
@@ -960,6 +980,11 @@ func (c *controlRESTClient) ListControls(ctx context.Context, req *retailpb.List
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2beta/%v/controls", req.GetParent())
 
 		params := url.Values{}
@@ -1028,6 +1053,11 @@ func (c *controlRESTClient) GetOperation(ctx context.Context, req *longrunningpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -1093,6 +1123,11 @@ func (c *controlRESTClient) ListOperations(ctx context.Context, req *longrunning
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2beta/%v/operations", req.GetName())

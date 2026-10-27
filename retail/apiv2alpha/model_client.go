@@ -1109,6 +1109,11 @@ func (c *modelRESTClient) CreateModel(ctx context.Context, req *retailpb.CreateM
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v/models", req.GetParent())
 
 	params := url.Values{}
@@ -1173,6 +1178,11 @@ func (c *modelRESTClient) GetModel(ctx context.Context, req *retailpb.GetModelRe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -1231,6 +1241,11 @@ func (c *modelRESTClient) PauseModel(ctx context.Context, req *retailpb.PauseMod
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v:pause", req.GetName())
@@ -1293,6 +1308,11 @@ func (c *modelRESTClient) ResumeModel(ctx context.Context, req *retailpb.ResumeM
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v:resume", req.GetName())
 
 	params := url.Values{}
@@ -1347,6 +1367,11 @@ func (c *modelRESTClient) DeleteModel(ctx context.Context, req *retailpb.DeleteM
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -1397,6 +1422,11 @@ func (c *modelRESTClient) ListModels(ctx context.Context, req *retailpb.ListMode
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2alpha/%v/models", req.GetParent())
@@ -1474,6 +1504,11 @@ func (c *modelRESTClient) UpdateModel(ctx context.Context, req *retailpb.UpdateM
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetModel().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetModel().GetName())
 
 	params := url.Values{}
@@ -1541,6 +1576,11 @@ func (c *modelRESTClient) TuneModel(ctx context.Context, req *retailpb.TuneModel
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v:tune", req.GetName())
 
 	params := url.Values{}
@@ -1600,6 +1640,11 @@ func (c *modelRESTClient) TuneModel(ctx context.Context, req *retailpb.TuneModel
 func (c *modelRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetName())
@@ -1667,6 +1712,11 @@ func (c *modelRESTClient) ListOperations(ctx context.Context, req *longrunningpb
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2alpha/%v/operations", req.GetName())

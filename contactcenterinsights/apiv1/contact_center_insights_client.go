@@ -5307,6 +5307,11 @@ func (c *restClient) CreateConversation(ctx context.Context, req *contactcenteri
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/conversations", req.GetParent())
 
 	params := url.Values{}
@@ -5370,6 +5375,11 @@ func (c *restClient) UploadConversation(ctx context.Context, req *contactcenteri
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/conversations:upload", req.GetParent())
@@ -5440,6 +5450,11 @@ func (c *restClient) UpdateConversation(ctx context.Context, req *contactcenteri
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetConversation().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetConversation().GetName())
 
 	params := url.Values{}
@@ -5499,6 +5514,11 @@ func (c *restClient) UpdateConversation(ctx context.Context, req *contactcenteri
 func (c *restClient) GetConversation(ctx context.Context, req *contactcenterinsightspb.GetConversationRequest, opts ...gax.CallOption) (*contactcenterinsightspb.Conversation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -5569,6 +5589,11 @@ func (c *restClient) ListConversations(ctx context.Context, req *contactcenterin
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/conversations", req.GetParent())
@@ -5645,6 +5670,11 @@ func (c *restClient) DeleteConversation(ctx context.Context, req *contactcenteri
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -5693,6 +5723,11 @@ func (c *restClient) CreateAnalysis(ctx context.Context, req *contactcenterinsig
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/analyses", req.GetParent())
@@ -5754,6 +5789,11 @@ func (c *restClient) CreateAnalysis(ctx context.Context, req *contactcenterinsig
 func (c *restClient) GetAnalysis(ctx context.Context, req *contactcenterinsightspb.GetAnalysisRequest, opts ...gax.CallOption) (*contactcenterinsightspb.Analysis, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -5821,6 +5861,11 @@ func (c *restClient) ListAnalyses(ctx context.Context, req *contactcenterinsight
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/analyses", req.GetParent())
@@ -5891,6 +5936,11 @@ func (c *restClient) DeleteAnalysis(ctx context.Context, req *contactcenterinsig
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -5934,6 +5984,11 @@ func (c *restClient) BulkAnalyzeConversations(ctx context.Context, req *contactc
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/conversations:bulkAnalyze", req.GetParent())
@@ -6001,6 +6056,11 @@ func (c *restClient) BulkDeleteConversations(ctx context.Context, req *contactce
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/conversations:bulkDelete", req.GetParent())
@@ -6071,6 +6131,11 @@ func (c *restClient) IngestConversations(ctx context.Context, req *contactcenter
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/conversations:ingest", req.GetParent())
 
 	params := url.Values{}
@@ -6136,6 +6201,11 @@ func (c *restClient) ExportInsightsData(ctx context.Context, req *contactcenteri
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/insightsdata:export", req.GetParent())
@@ -6206,6 +6276,11 @@ func (c *restClient) CreateIssueModel(ctx context.Context, req *contactcenterins
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/issueModels", req.GetParent())
 
 	params := url.Values{}
@@ -6274,6 +6349,11 @@ func (c *restClient) UpdateIssueModel(ctx context.Context, req *contactcenterins
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetIssueModel().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetIssueModel().GetName())
 
 	params := url.Values{}
@@ -6335,6 +6415,11 @@ func (c *restClient) GetIssueModel(ctx context.Context, req *contactcenterinsigh
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -6389,6 +6474,11 @@ func (c *restClient) ListIssueModels(ctx context.Context, req *contactcenterinsi
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/issueModels", req.GetParent())
 
 	params := url.Values{}
@@ -6441,6 +6531,11 @@ func (c *restClient) ListIssueModels(ctx context.Context, req *contactcenterinsi
 func (c *restClient) DeleteIssueModel(ctx context.Context, req *contactcenterinsightspb.DeleteIssueModelRequest, opts ...gax.CallOption) (*DeleteIssueModelOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -6511,6 +6606,11 @@ func (c *restClient) DeployIssueModel(ctx context.Context, req *contactcenterins
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:deploy", req.GetName())
 
 	params := url.Values{}
@@ -6577,6 +6677,11 @@ func (c *restClient) UndeployIssueModel(ctx context.Context, req *contactcenteri
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:undeploy", req.GetName())
@@ -6646,6 +6751,11 @@ func (c *restClient) ExportIssueModel(ctx context.Context, req *contactcenterins
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:export", req.GetName())
 
 	params := url.Values{}
@@ -6713,6 +6823,11 @@ func (c *restClient) ImportIssueModel(ctx context.Context, req *contactcenterins
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/issueModels:import", req.GetParent())
 
 	params := url.Values{}
@@ -6774,6 +6889,11 @@ func (c *restClient) GetIssue(ctx context.Context, req *contactcenterinsightspb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -6826,6 +6946,11 @@ func (c *restClient) GetIssue(ctx context.Context, req *contactcenterinsightspb.
 func (c *restClient) ListIssues(ctx context.Context, req *contactcenterinsightspb.ListIssuesRequest, opts ...gax.CallOption) (*contactcenterinsightspb.ListIssuesResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/issues", req.GetParent())
@@ -6889,6 +7014,11 @@ func (c *restClient) UpdateIssue(ctx context.Context, req *contactcenterinsights
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetIssue().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetIssue().GetName())
 
 	params := url.Values{}
@@ -6950,6 +7080,11 @@ func (c *restClient) DeleteIssue(ctx context.Context, req *contactcenterinsights
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -6987,6 +7122,11 @@ func (c *restClient) DeleteIssue(ctx context.Context, req *contactcenterinsights
 func (c *restClient) CalculateIssueModelStats(ctx context.Context, req *contactcenterinsightspb.CalculateIssueModelStatsRequest, opts ...gax.CallOption) (*contactcenterinsightspb.CalculateIssueModelStatsResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetIssueModel(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:calculateIssueModelStats", req.GetIssueModel())
@@ -7050,6 +7190,11 @@ func (c *restClient) CreatePhraseMatcher(ctx context.Context, req *contactcenter
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/phraseMatchers", req.GetParent())
 
 	params := url.Values{}
@@ -7102,6 +7247,11 @@ func (c *restClient) CreatePhraseMatcher(ctx context.Context, req *contactcenter
 func (c *restClient) GetPhraseMatcher(ctx context.Context, req *contactcenterinsightspb.GetPhraseMatcherRequest, opts ...gax.CallOption) (*contactcenterinsightspb.PhraseMatcher, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -7169,6 +7319,11 @@ func (c *restClient) ListPhraseMatchers(ctx context.Context, req *contactcenteri
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/phraseMatchers", req.GetParent())
@@ -7239,6 +7394,11 @@ func (c *restClient) DeletePhraseMatcher(ctx context.Context, req *contactcenter
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -7283,6 +7443,11 @@ func (c *restClient) UpdatePhraseMatcher(ctx context.Context, req *contactcenter
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetPhraseMatcher().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetPhraseMatcher().GetName())
@@ -7346,6 +7511,11 @@ func (c *restClient) CalculateStats(ctx context.Context, req *contactcenterinsig
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetLocation(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/conversations:calculateStats", req.GetLocation())
 
 	params := url.Values{}
@@ -7401,6 +7571,11 @@ func (c *restClient) CalculateStats(ctx context.Context, req *contactcenterinsig
 func (c *restClient) GetSettings(ctx context.Context, req *contactcenterinsightspb.GetSettingsRequest, opts ...gax.CallOption) (*contactcenterinsightspb.Settings, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -7462,6 +7637,11 @@ func (c *restClient) UpdateSettings(ctx context.Context, req *contactcenterinsig
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSettings().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetSettings().GetName())
@@ -7532,6 +7712,11 @@ func (c *restClient) CreateAnalysisRule(ctx context.Context, req *contactcenteri
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/analysisRules", req.GetParent())
 
 	params := url.Values{}
@@ -7584,6 +7769,11 @@ func (c *restClient) CreateAnalysisRule(ctx context.Context, req *contactcenteri
 func (c *restClient) GetAnalysisRule(ctx context.Context, req *contactcenterinsightspb.GetAnalysisRuleRequest, opts ...gax.CallOption) (*contactcenterinsightspb.AnalysisRule, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -7651,6 +7841,11 @@ func (c *restClient) ListAnalysisRules(ctx context.Context, req *contactcenterin
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/analysisRules", req.GetParent())
@@ -7725,6 +7920,11 @@ func (c *restClient) UpdateAnalysisRule(ctx context.Context, req *contactcenteri
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAnalysisRule().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetAnalysisRule().GetName())
 
 	params := url.Values{}
@@ -7786,6 +7986,11 @@ func (c *restClient) DeleteAnalysisRule(ctx context.Context, req *contactcenteri
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -7823,6 +8028,11 @@ func (c *restClient) DeleteAnalysisRule(ctx context.Context, req *contactcenteri
 func (c *restClient) GetEncryptionSpec(ctx context.Context, req *contactcenterinsightspb.GetEncryptionSpecRequest, opts ...gax.CallOption) (*contactcenterinsightspb.EncryptionSpec, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -7887,6 +8097,11 @@ func (c *restClient) InitializeEncryptionSpec(ctx context.Context, req *contactc
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetEncryptionSpec().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:initialize", req.GetEncryptionSpec().GetName())
@@ -7957,6 +8172,11 @@ func (c *restClient) CreateView(ctx context.Context, req *contactcenterinsightsp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/views", req.GetParent())
 
 	params := url.Values{}
@@ -8009,6 +8229,11 @@ func (c *restClient) CreateView(ctx context.Context, req *contactcenterinsightsp
 func (c *restClient) GetView(ctx context.Context, req *contactcenterinsightspb.GetViewRequest, opts ...gax.CallOption) (*contactcenterinsightspb.View, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -8076,6 +8301,11 @@ func (c *restClient) ListViews(ctx context.Context, req *contactcenterinsightspb
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/views", req.GetParent())
@@ -8150,6 +8380,11 @@ func (c *restClient) UpdateView(ctx context.Context, req *contactcenterinsightsp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetView().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetView().GetName())
 
 	params := url.Values{}
@@ -8211,6 +8446,11 @@ func (c *restClient) DeleteView(ctx context.Context, req *contactcenterinsightsp
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -8254,6 +8494,11 @@ func (c *restClient) QueryMetrics(ctx context.Context, req *contactcenterinsight
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetLocation(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:queryMetrics", req.GetLocation())
@@ -8324,6 +8569,11 @@ func (c *restClient) CreateQaQuestion(ctx context.Context, req *contactcenterins
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/qaQuestions", req.GetParent())
 
 	params := url.Values{}
@@ -8379,6 +8629,11 @@ func (c *restClient) CreateQaQuestion(ctx context.Context, req *contactcenterins
 func (c *restClient) GetQaQuestion(ctx context.Context, req *contactcenterinsightspb.GetQaQuestionRequest, opts ...gax.CallOption) (*contactcenterinsightspb.QaQuestion, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -8442,6 +8697,11 @@ func (c *restClient) UpdateQaQuestion(ctx context.Context, req *contactcenterins
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetQaQuestion().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetQaQuestion().GetName())
 
 	params := url.Values{}
@@ -8503,6 +8763,11 @@ func (c *restClient) DeleteQaQuestion(ctx context.Context, req *contactcenterins
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -8553,6 +8818,11 @@ func (c *restClient) ListQaQuestions(ctx context.Context, req *contactcenterinsi
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/qaQuestions", req.GetParent())
@@ -8627,6 +8897,11 @@ func (c *restClient) CreateQaScorecard(ctx context.Context, req *contactcenterin
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/qaScorecards", req.GetParent())
 
 	params := url.Values{}
@@ -8682,6 +8957,11 @@ func (c *restClient) CreateQaScorecard(ctx context.Context, req *contactcenterin
 func (c *restClient) GetQaScorecard(ctx context.Context, req *contactcenterinsightspb.GetQaScorecardRequest, opts ...gax.CallOption) (*contactcenterinsightspb.QaScorecard, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -8745,6 +9025,11 @@ func (c *restClient) UpdateQaScorecard(ctx context.Context, req *contactcenterin
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetQaScorecard().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetQaScorecard().GetName())
 
 	params := url.Values{}
@@ -8806,6 +9091,11 @@ func (c *restClient) DeleteQaScorecard(ctx context.Context, req *contactcenterin
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -8859,6 +9149,11 @@ func (c *restClient) ListQaScorecards(ctx context.Context, req *contactcenterins
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/qaScorecards", req.GetParent())
@@ -8933,6 +9228,11 @@ func (c *restClient) CreateQaScorecardRevision(ctx context.Context, req *contact
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/revisions", req.GetParent())
 
 	params := url.Values{}
@@ -8988,6 +9288,11 @@ func (c *restClient) CreateQaScorecardRevision(ctx context.Context, req *contact
 func (c *restClient) GetQaScorecardRevision(ctx context.Context, req *contactcenterinsightspb.GetQaScorecardRevisionRequest, opts ...gax.CallOption) (*contactcenterinsightspb.QaScorecardRevision, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -9048,6 +9353,11 @@ func (c *restClient) TuneQaScorecardRevision(ctx context.Context, req *contactce
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:tuneQaScorecardRevision", req.GetParent())
@@ -9117,6 +9427,11 @@ func (c *restClient) DeployQaScorecardRevision(ctx context.Context, req *contact
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:deploy", req.GetName())
 
 	params := url.Values{}
@@ -9177,6 +9492,11 @@ func (c *restClient) UndeployQaScorecardRevision(ctx context.Context, req *conta
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:undeploy", req.GetName())
 
 	params := url.Values{}
@@ -9229,6 +9549,11 @@ func (c *restClient) UndeployQaScorecardRevision(ctx context.Context, req *conta
 func (c *restClient) DeleteQaScorecardRevision(ctx context.Context, req *contactcenterinsightspb.DeleteQaScorecardRevisionRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -9284,6 +9609,11 @@ func (c *restClient) ListQaScorecardRevisions(ctx context.Context, req *contactc
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/revisions", req.GetParent())
@@ -9361,6 +9691,11 @@ func (c *restClient) CreateFeedbackLabel(ctx context.Context, req *contactcenter
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/feedbackLabels", req.GetParent())
 
 	params := url.Values{}
@@ -9431,6 +9766,11 @@ func (c *restClient) ListFeedbackLabels(ctx context.Context, req *contactcenteri
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/feedbackLabels", req.GetParent())
 
 		params := url.Values{}
@@ -9499,6 +9839,11 @@ func (c *restClient) GetFeedbackLabel(ctx context.Context, req *contactcenterins
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -9558,6 +9903,11 @@ func (c *restClient) UpdateFeedbackLabel(ctx context.Context, req *contactcenter
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetFeedbackLabel().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetFeedbackLabel().GetName())
@@ -9621,6 +9971,11 @@ func (c *restClient) DeleteFeedbackLabel(ctx context.Context, req *contactcenter
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -9671,6 +10026,11 @@ func (c *restClient) ListAllFeedbackLabels(ctx context.Context, req *contactcent
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:listAllFeedbackLabels", req.GetParent())
@@ -9747,6 +10107,11 @@ func (c *restClient) BulkUploadFeedbackLabels(ctx context.Context, req *contactc
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:bulkUploadFeedbackLabels", req.GetParent())
 
 	params := url.Values{}
@@ -9814,6 +10179,11 @@ func (c *restClient) BulkDownloadFeedbackLabels(ctx context.Context, req *contac
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:bulkDownloadFeedbackLabels", req.GetParent())
 
 	params := url.Values{}
@@ -9875,6 +10245,11 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -9912,6 +10287,11 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -9979,6 +10359,11 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

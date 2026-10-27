@@ -564,6 +564,11 @@ func (c *restClient) RenderAccountIssues(ctx context.Context, req *issueresoluti
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/issueresolution/v1beta/%v:renderaccountissues", req.GetName())
 
 	params := url.Values{}
@@ -631,6 +636,11 @@ func (c *restClient) RenderProductIssues(ctx context.Context, req *issueresoluti
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/issueresolution/v1beta/%v:renderproductissues", req.GetName())
@@ -708,6 +718,11 @@ func (c *restClient) TriggerAction(ctx context.Context, req *issueresolutionpb.T
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/issueresolution/v1beta/%v:triggeraction", req.GetName())

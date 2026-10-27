@@ -946,6 +946,11 @@ func (c *toolsRESTClient) CreateTool(ctx context.Context, req *dialogflowpb.Crea
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v/tools", req.GetParent())
 
 	params := url.Values{}
@@ -1001,6 +1006,11 @@ func (c *toolsRESTClient) CreateTool(ctx context.Context, req *dialogflowpb.Crea
 func (c *toolsRESTClient) GetTool(ctx context.Context, req *dialogflowpb.GetToolRequest, opts ...gax.CallOption) (*dialogflowpb.Tool, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetName())
@@ -1070,6 +1080,11 @@ func (c *toolsRESTClient) ListTools(ctx context.Context, req *dialogflowpb.ListT
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2beta1/%v/tools", req.GetParent())
 
 		params := url.Values{}
@@ -1135,6 +1150,11 @@ func (c *toolsRESTClient) DeleteTool(ctx context.Context, req *dialogflowpb.Dele
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1179,6 +1199,11 @@ func (c *toolsRESTClient) UpdateTool(ctx context.Context, req *dialogflowpb.Upda
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetTool().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetTool().GetName())
@@ -1240,6 +1265,11 @@ func (c *toolsRESTClient) UpdateTool(ctx context.Context, req *dialogflowpb.Upda
 func (c *toolsRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetName())
@@ -1324,6 +1354,11 @@ func (c *toolsRESTClient) ListLocations(ctx context.Context, req *locationpb.Lis
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2beta1/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -1392,6 +1427,11 @@ func (c *toolsRESTClient) CancelOperation(ctx context.Context, req *longrunningp
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1429,6 +1469,11 @@ func (c *toolsRESTClient) CancelOperation(ctx context.Context, req *longrunningp
 func (c *toolsRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetName())
@@ -1496,6 +1541,11 @@ func (c *toolsRESTClient) ListOperations(ctx context.Context, req *longrunningpb
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2beta1/%v/operations", req.GetName())

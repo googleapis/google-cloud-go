@@ -1070,6 +1070,11 @@ func (c *completionRESTClient) CompleteQuery(ctx context.Context, req *discovery
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDataStore(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:completeQuery", req.GetDataStore())
 
 	params := url.Values{}
@@ -1140,6 +1145,11 @@ func (c *completionRESTClient) AdvancedCompleteQuery(ctx context.Context, req *d
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCompletionConfig(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:completeQuery", req.GetCompletionConfig())
 
 	params := url.Values{}
@@ -1200,6 +1210,11 @@ func (c *completionRESTClient) ImportSuggestionDenyListEntries(ctx context.Conte
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/suggestionDenyListEntries:import", req.GetParent())
@@ -1271,6 +1286,11 @@ func (c *completionRESTClient) PurgeSuggestionDenyListEntries(ctx context.Contex
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/suggestionDenyListEntries:purge", req.GetParent())
 
 	params := url.Values{}
@@ -1340,6 +1360,11 @@ func (c *completionRESTClient) ImportCompletionSuggestions(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/completionSuggestions:import", req.GetParent())
 
 	params := url.Values{}
@@ -1407,6 +1432,11 @@ func (c *completionRESTClient) PurgeCompletionSuggestions(ctx context.Context, r
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/completionSuggestions:purge", req.GetParent())
@@ -1480,6 +1510,11 @@ func (c *completionRESTClient) RemoveSuggestion(ctx context.Context, req *discov
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCompletionConfig(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:removeSuggestion", req.GetCompletionConfig())
 
 	params := url.Values{}
@@ -1540,6 +1575,11 @@ func (c *completionRESTClient) CancelOperation(ctx context.Context, req *longrun
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1577,6 +1617,11 @@ func (c *completionRESTClient) CancelOperation(ctx context.Context, req *longrun
 func (c *completionRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -1644,6 +1689,11 @@ func (c *completionRESTClient) ListOperations(ctx context.Context, req *longrunn
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/operations", req.GetName())
