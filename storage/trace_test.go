@@ -2724,51 +2724,6 @@ func TestAttemptStatsHandlerPayload(t *testing.T) {
 	}
 }
 
-func TestRecordHTTPReadPayload(t *testing.T) {
-	t.Setenv(storageOtelTracingDevVar, "true")
-	for _, tc := range []struct {
-		name           string
-		offset, length int64
-		status         int
-		contentLength  int64
-		noAttemptSpan  bool     // The response carries the operation span.
-		want           [2]int64 // Attempt span (offset, size), -1 if absent.
-	}{
-		{"range", 10, 20, 206, 20, false, [2]int64{10, 20}},
-		{"suffix range", -15, -1, 206, 15, false, [2]int64{-15, 15}},
-		// The response describes the whole object, which is not read.
-		{"zero-length read", 10, 0, 200, 100, false, [2]int64{10, 0}},
-		// Failed attempts serve no object bytes, as for gRPC.
-		{"error response", 10, 20, 503, 52, false, [2]int64{10, 0}},
-		{"unknown length", 0, -1, 200, -1, false, [2]int64{0, -1}},
-		{"operation span is not tagged", 10, 20, 206, 20, true, [2]int64{-1, -1}},
-	} {
-		t.Run(tc.name, func(t *testing.T) {
-			ctx := context.Background()
-			te := testutil.NewOpenTelemetryTestExporter()
-			t.Cleanup(func() { te.Unregister(ctx) })
-			opCtx, opSpan := tracer().Start(ctx, "operation")
-			respCtx, attSpan := tracer().Start(opCtx, "attempt")
-			if tc.noAttemptSpan {
-				respCtx = opCtx
-			}
-			req, _ := http.NewRequestWithContext(respCtx, "GET", "https://example.com/bucket/object", nil)
-			recordHTTPReadPayload(opCtx, &http.Response{StatusCode: tc.status, ContentLength: tc.contentLength, Request: req}, tc.offset, tc.length)
-			attSpan.End()
-			opSpan.End()
-			for _, s := range te.Spans() {
-				want := [2]int64{-1, -1}
-				if s.Name == "attempt" {
-					want = tc.want
-				}
-				if got := payloadAttrs(s.Attributes); got != want {
-					t.Errorf("%s span: got (offset, size) %v, want %v", s.Name, got, want)
-				}
-			}
-		})
-	}
-}
-
 func TestBufferSliceLen(t *testing.T) {
 	bufs := mem.BufferSlice{mem.SliceBuffer(make([]byte, 3)), mem.SliceBuffer(make([]byte, 4)), mem.SliceBuffer(make([]byte, 5))}
 	for _, tc := range []struct {
@@ -2839,9 +2794,17 @@ func TestPayloadTracing(t *testing.T) {
 			if err != nil {
 				t.Fatalf("NewClient: %v", err)
 			}
+			c.SetRetry(WithBackoff(gax.Backoff{Initial: time.Millisecond, Max: time.Millisecond}))
 			return c
 		}
 	}
+	untraced := func(client func(*testing.T) *Client) func(*testing.T) *Client {
+		return func(t *testing.T) *Client {
+			t.Setenv(storageOtelTracingDevVar, "false")
+			return client(t)
+		}
+	}
+	body := func(n int) io.ReadCloser { return bodyReader(strings.Repeat("a", n)) }
 	object := func(size int) *http.Response {
 		return &http.Response{StatusCode: 200, Header: http.Header{"Content-Type": {"application/json"}}, Body: bodyReader(fmt.Sprintf(`{"bucket":"bucket","name":"object","size":"%d"}`, size))}
 	}
@@ -2868,16 +2831,19 @@ func TestPayloadTracing(t *testing.T) {
 			}
 		}
 	}
-	read := func(t *testing.T, c *Client) {
-		r, err := c.Bucket("bucket").Object("object").NewRangeReader(ctx, 10, 20)
-		if err != nil {
-			t.Fatalf("NewRangeReader: %v", err)
-		}
-		defer r.Close()
-		if n, err := io.Copy(io.Discard, r); err != nil || n != 20 {
-			t.Fatalf("read %d bytes, err %v; want 20 bytes", n, err)
+	readRange := func(offset, length, wantN int64) func(*testing.T, *Client) {
+		return func(t *testing.T, c *Client) {
+			r, err := c.Bucket("bucket").Object("object").NewRangeReader(ctx, offset, length)
+			if err != nil {
+				t.Fatalf("NewRangeReader: %v", err)
+			}
+			defer r.Close()
+			if n, err := io.Copy(io.Discard, r); err != nil || n != wantN {
+				t.Fatalf("read %d bytes, err %v; want %d bytes", n, err, wantN)
+			}
 		}
 	}
+	read := readRange(10, 20, 20)
 	multiRangeRead := func(t *testing.T, c *Client) {
 		mrd, err := c.Bucket("bucket").Object("object").NewMultiRangeDownloader(ctx)
 		if err != nil {
@@ -2918,14 +2884,26 @@ func TestPayloadTracing(t *testing.T) {
 		// request ("bytes */N") starts at the object size.
 		{"http/resumable write", httpClient(nil, session(), incomplete(), incomplete(), object(2*chunk)), write(chunk, 2*chunk),
 			[][2]int64{{-1, -1}, {0, chunk}, {chunk, chunk}, {2 * chunk, 0}}},
-		{"http/XML range read", httpClient(nil, rangeResp(10, 20, bodyReader(strings.Repeat("a", 20)))), read, [][2]int64{{10, 20}}},
-		{"http/JSON range read", httpClient([]option.ClientOption{WithJSONReads()}, rangeResp(10, 20, bodyReader(strings.Repeat("a", 20)))), read, [][2]int64{{10, 20}}},
+		{"http/XML range read", httpClient(nil, rangeResp(10, 20, body(20))), read, [][2]int64{{10, 20}}},
+		{"http/JSON range read", httpClient([]option.ClientOption{WithJSONReads()}, rangeResp(10, 20, body(20))), read, [][2]int64{{10, 20}}},
+		{"http/suffix range read", httpClient(nil, rangeResp(85, 15, body(15))), readRange(-15, -1, 15), [][2]int64{{-15, 15}}},
+		// Failed attempts serve no object bytes, as for gRPC.
+		{"http/range read retried", httpClient(nil, &http.Response{StatusCode: 503, Body: body(0)}, rangeResp(10, 20, body(20))), read,
+			[][2]int64{{10, 0}, {10, 20}}},
+		// The response describes the whole object, which is not read.
+		{"http/zero-length read", httpClient(nil, &http.Response{StatusCode: 200, ContentLength: 100, Body: body(100)}), readRange(10, 0, 0),
+			[][2]int64{{10, 0}}},
+		{"http/unknown-length read", httpClient(nil, &http.Response{StatusCode: 206, Header: http.Header{"Content-Range": {"bytes 10-29/100"}}, ContentLength: -1, Body: body(20)}),
+			read, [][2]int64{{10, -1}}},
+		// Without the dev flag no span (the otelhttp attempt and the two
+		// non-dev storage spans) carries payload attributes.
+		{"http/untraced read", untraced(httpClient(nil, rangeResp(10, 20, body(20)))), read, [][2]int64{{-1, -1}, {-1, -1}, {-1, -1}}},
 		// The read is reopened where the broken body stopped, after the
 		// NewRangeReader span ended; the first response still reports its
 		// full Content-Length.
 		{"http/range read reopened mid-body", httpClient(nil,
 			rangeResp(10, 20, io.NopCloser(io.MultiReader(bytes.NewReader(make([]byte, 5)), iotest.ErrReader(io.ErrUnexpectedEOF)))),
-			rangeResp(15, 15, bodyReader(strings.Repeat("a", 15)))), read, [][2]int64{{10, 20}, {15, 15}}},
+			rangeResp(15, 15, body(15))), read, [][2]int64{{10, 20}, {15, 15}}},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			te := testutil.NewOpenTelemetryTestExporter()
