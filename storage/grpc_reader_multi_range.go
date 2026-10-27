@@ -1498,6 +1498,7 @@ func readerAttrsFromObject(o *ObjectAttrs) ReaderObjectAttrs {
 		Generation:      o.Generation,
 		Metageneration:  o.Metageneration,
 		CRC32C:          o.CRC32C,
+		Unfinalized:     o.Finalized.IsZero(),
 	}
 }
 

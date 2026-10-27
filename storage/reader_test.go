@@ -29,6 +29,7 @@ import (
 	"strconv"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/api/option"
@@ -858,4 +859,25 @@ func TestMRDRunCallbackNilGuard(t *testing.T) {
 	// Calling runCallback with a nil callback should safely return without panicking.
 	m.runCallback(0, 100, nil, nil)
 	m.callbackWg.Wait()
+}
+
+func TestReaderUnfinalizedAttrs(t *testing.T) {
+	r := &Reader{
+		remain: 42,
+		Attrs:  ReaderObjectAttrs{Unfinalized: true},
+	}
+	if got := r.Remain(); got != -1 {
+		t.Errorf("Remain() with Unfinalized=true: got %d, want -1", got)
+	}
+	r.Attrs.Unfinalized = false
+	if got := r.Remain(); got != 42 {
+		t.Errorf("Remain() with Unfinalized=false: got %d, want 42", got)
+	}
+
+	if attrs := readerAttrsFromObject(&ObjectAttrs{Size: 10}); !attrs.Unfinalized {
+		t.Errorf("readerAttrsFromObject with zero Finalized: got Unfinalized=false, want true")
+	}
+	if attrs := readerAttrsFromObject(&ObjectAttrs{Size: 10, Finalized: time.Now()}); attrs.Unfinalized {
+		t.Errorf("readerAttrsFromObject with non-zero Finalized: got Unfinalized=true, want false")
+	}
 }
