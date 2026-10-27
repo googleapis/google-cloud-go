@@ -54,6 +54,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/mem"
 	"google.golang.org/grpc/stats"
 	"google.golang.org/grpc/status"
 	"google.golang.org/grpc/test/bufconn"
@@ -1206,9 +1207,9 @@ func payloadAttrs(attrs []attribute.KeyValue) [2]int64 {
 	got := [2]int64{-1, -1}
 	for _, a := range attrs {
 		switch a.Key {
-		case "gcp.storage.payload.offset":
+		case payloadOffsetAttr:
 			got[0] = a.Value.AsInt64()
-		case "gcp.storage.payload.size_bytes":
+		case payloadSizeBytesAttr:
 			got[1] = a.Value.AsInt64()
 		}
 	}
@@ -2707,7 +2708,7 @@ func TestAttemptStatsHandlerPayload(t *testing.T) {
 			te := testutil.NewOpenTelemetryTestExporter()
 			t.Cleanup(func() { te.Unregister(ctx) })
 			ctx, span := tracer().Start(ctx, "attempt")
-			ctx = context.WithValue(ctx, payloadAttemptKey{}, &payloadAttempt{span: span})
+			ctx = context.WithValue(ctx, payloadAttemptKey, &payloadAttempt{span: span})
 			for _, m := range tc.msgs {
 				if n, ok := m.(int64); ok {
 					recordReadPayload(contextStream{ctx: ctx}, n)
@@ -2765,6 +2766,24 @@ func TestRecordHTTPReadPayload(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+func TestBufferSliceLen(t *testing.T) {
+	bufs := mem.BufferSlice{mem.SliceBuffer(make([]byte, 3)), mem.SliceBuffer(make([]byte, 4)), mem.SliceBuffer(make([]byte, 5))}
+	for _, tc := range []struct {
+		startBuf, endBuf int
+		startOff, endOff uint64
+		want             int64
+	}{
+		{0, 0, 1, 3, 2}, // Within one buffer.
+		{0, 2, 1, 2, 8}, // Across three buffers: 2 + 4 + 2.
+		{1, 3, 0, 0, 9}, // Ends with the last buffer: 4 + 5.
+		{0, 0, 0, 0, 0}, // No data.
+	} {
+		if got := bufferSliceLen(bufs, tc.startBuf, tc.startOff, tc.endBuf, tc.endOff); got != tc.want {
+			t.Errorf("bufferSliceLen(%d:%d, %d:%d) = %d, want %d", tc.startBuf, tc.startOff, tc.endBuf, tc.endOff, got, tc.want)
+		}
 	}
 }
 

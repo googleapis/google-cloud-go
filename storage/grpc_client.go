@@ -1435,9 +1435,7 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 				databufs: databufs,
 			}
 			err = decoder.readFullObjectResponse()
-			if err == nil {
-				recordReadPayload(stream, decoder.dataLen)
-			}
+			traceBidiReadResponse(stream, decoder, err) // Payload size for tracing.
 			return err
 		}
 
@@ -1963,11 +1961,9 @@ func (r *gRPCReader) recv() error {
 	}
 
 	r.currMsg = &readResponseDecoder{databufs: databufs}
-	if err := r.currMsg.readFullObjectResponse(); err != nil {
-		return err
-	}
-	recordReadPayload(r.stream, r.currMsg.dataLen)
-	return nil
+	err = r.currMsg.readFullObjectResponse()
+	traceBidiReadResponse(r.stream, r.currMsg, err) // Payload size for tracing.
+	return err
 }
 
 // ReadObjectResponse field and subfield numbers.
@@ -1996,7 +1992,6 @@ type readResponseDecoder struct {
 	currOff uint64 // offset in the current buffer
 	// Processed data
 	msg         *storagepb.BidiReadObjectResponse // processed response message with all fields other than object data populated
-	dataLen     int64                             // object bytes in this message, summed over all read ranges.
 	dataOffsets map[int64]bufferSliceOffsets      // Map ReadId to the offsets of the object data for that ID in the message.
 	done        bool                              // true if the data has been completely read.
 	crcErrs     map[int64]error                   // Map ReadId to the CRC validation error if it failed.
@@ -2303,12 +2298,7 @@ func (d *readResponseDecoder) consumeFieldValue(fieldNum protowire.Number, field
 	case protowire.Fixed64Type:
 		_, err = d.consumeFixed64()
 	case protowire.BytesType:
-		// Skip the field without counting it as object data, which
-		// consumeContent does.
-		var m uint64
-		if m, err = d.consumeVarint(); err == nil {
-			err = d.advanceOffset(m)
-		}
+		_, err = d.consumeBytes()
 	default:
 		return fmt.Errorf("unknown field type %v in field %v", fieldType, fieldNum)
 	}
@@ -2319,9 +2309,9 @@ func (d *readResponseDecoder) consumeFieldValue(fieldNum protowire.Number, field
 	return nil
 }
 
-// consumeContent consumes the object data field and adds its length to
-// d.dataLen. Returns offsets for the data in the buffer slices and an error.
-func (d *readResponseDecoder) consumeContent() (bufferSliceOffsets, error) {
+// Consume a bytes field from the input. Returns offsets for the data in the buffer slices
+// and an error.
+func (d *readResponseDecoder) consumeBytes() (bufferSliceOffsets, error) {
 	// m is the length of the data past the tag.
 	m, err := d.consumeVarint()
 	if err != nil {
@@ -2336,7 +2326,6 @@ func (d *readResponseDecoder) consumeContent() (bufferSliceOffsets, error) {
 
 	// Advance offsets to lengths of bytes field and capture where we end.
 	d.advanceOffset(m)
-	d.dataLen += int64(m)
 	offsets.endBuf = d.currBuf
 	offsets.endOff = d.currOff
 	return offsets, nil
@@ -2425,7 +2414,7 @@ func (d *readResponseDecoder) readFullObjectResponse() error {
 						switch {
 						case gotNum == checksummedDataContentField && gotTyp == protowire.BytesType:
 							// Get the offsets of the content bytes.
-							contentOffsets, err = d.consumeContent()
+							contentOffsets, err = d.consumeBytes()
 							if err != nil {
 								return fmt.Errorf("invalid BidiReadObjectResponse.ChecksummedData.Content: %w", err)
 							}
