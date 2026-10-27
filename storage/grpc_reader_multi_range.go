@@ -835,7 +835,6 @@ func (m *multiRangeDownloaderManager) createNewSession(id int, readSpec *storage
 			return executeWithReadStallTimeout(ctx, m.client.readStallMgr, m.params.bucket, openStream, func(stallTimeout time.Duration) {
 				target := stripPort(metricsStateFromContext(ctx).getTarget())
 				m.client.metrics.recordStallDuration(ctx, stallTimeout, "ReadObject", "grpc", target)
-				cleanupAttempt()
 			})
 		}
 		return openStream(ctx)
@@ -1223,6 +1222,10 @@ func (m *multiRangeDownloaderManager) handleStreamEnd(result mrdSessionResult, s
 }
 
 func (m *multiRangeDownloaderManager) retryOrFailStream(stream *mrdStream, err error) {
+	retry := m.settings.retry
+	if retry == nil {
+		retry = defaultRetry
+	}
 	if stream.reconnectAttempts == 0 {
 		stream.reconnectAttempts = 1
 		if stream.reconnectInvocationID == "" {
@@ -1230,10 +1233,10 @@ func (m *multiRangeDownloaderManager) retryOrFailStream(stream *mrdStream, err e
 		}
 		stream.reconnectStartTime = time.Now()
 		bo := gax.Backoff{}
-		if m.settings.retry != nil && m.settings.retry.backoff != nil {
-			bo.Initial = m.settings.retry.backoff.Initial
-			bo.Max = m.settings.retry.backoff.Max
-			bo.Multiplier = m.settings.retry.backoff.Multiplier
+		if retry.backoff != nil {
+			bo.Initial = retry.backoff.Initial
+			bo.Max = retry.backoff.Max
+			bo.Multiplier = retry.backoff.Multiplier
 		}
 		stream.reconnectBackoff = &bo
 	}
@@ -1246,10 +1249,6 @@ func (m *multiRangeDownloaderManager) retryOrFailStream(stream *mrdStream, err e
 		Object:       m.params.object,
 	}
 
-	retry := m.settings.retry
-	if retry == nil {
-		retry = defaultRetry
-	}
 	retryable := retry.policy != RetryNever && retry.runShouldRetry(err, retryCtx)
 	ctxErr := m.ctx.Err()
 	if errors.Is(ctxErr, context.Canceled) || errors.Is(ctxErr, context.DeadlineExceeded) {
