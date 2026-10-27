@@ -239,6 +239,7 @@ func (t *trackingTransport) RoundTrip(req *http.Request) (*http.Response, error)
 	if baseRT == nil {
 		baseRT = http.DefaultTransport
 	}
+	// Start a Storage.UploadChunk span if req is a resumable upload chunk request.
 	ctx, isChunk := startHTTPUploadChunkSpan(req.Context(), req.Header)
 
 	features := t.features | featureAttributes(ctx)
@@ -1183,6 +1184,7 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 		if attrs.MD5 != nil {
 			rawObj.Md5Hash = base64.StdEncoding.EncodeToString(attrs.MD5)
 		}
+		// Attach the aligned chunk size so trackingTransport can record Storage.UploadChunk spans.
 		uploadCtx := withUploadChunkSize(params.ctx, params.chunkSize)
 		call := c.raw.Objects.Insert(params.bucket, rawObj).
 			Media(pr, mediaOpts...).

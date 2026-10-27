@@ -1990,6 +1990,9 @@ type uploadChunkSpanTestCase struct {
 	devTracing  bool
 	chunkSize   int
 	payloadSize int
+	failCode    codes.Code
+	failStatus  int
+	wantErr     bool
 	want        []uploadChunkSpanInfo
 }
 
@@ -2042,11 +2045,41 @@ func commonUploadChunkSpanTestCases() []uploadChunkSpanTestCase {
 			chunkSize:   256 * kib,
 			payloadSize: 100 * kib,
 		},
+		{
+			name:        "retry failed chunk",
+			devTracing:  true,
+			chunkSize:   256 * kib,
+			payloadSize: mib,
+			failCode:    codes.Unavailable,
+			failStatus:  http.StatusServiceUnavailable,
+			want: []uploadChunkSpanInfo{
+				{Number: 1, Offset: 0, SizeBytes: 256 * kib},
+				{Number: 2, Offset: 256 * kib, SizeBytes: 256 * kib},
+				{Number: 3, Offset: 512 * kib, SizeBytes: 256 * kib, Failed: true, ErrorType: "UNAVAILABLE"},
+				{Number: 3, Offset: 512 * kib, SizeBytes: 256 * kib},
+				{Number: 4, Offset: 768 * kib, SizeBytes: 256 * kib},
+			},
+		},
+		{
+			name:        "terminal failure",
+			devTracing:  true,
+			chunkSize:   256 * kib,
+			payloadSize: mib,
+			failCode:    codes.PermissionDenied,
+			failStatus:  http.StatusForbidden,
+			wantErr:     true,
+			want: []uploadChunkSpanInfo{
+				{Number: 1, Offset: 0, SizeBytes: 256 * kib},
+				{Number: 2, Offset: 256 * kib, SizeBytes: 256 * kib},
+				{Number: 3, Offset: 512 * kib, SizeBytes: 256 * kib, Failed: true, ErrorType: "PERMISSION_DENIED"},
+			},
+		},
 	}
 }
 
 func TestGRPCWriterUploadChunkSpans(t *testing.T) {
-	const mib = 1024 * 1024
+	const kib = 1024
+	const mib = 1024 * kib
 
 	cases := append(commonUploadChunkSpanTestCases(), uploadChunkSpanTestCase{
 		name:        "chunk sent as several messages",
@@ -2062,61 +2095,31 @@ func TestGRPCWriterUploadChunkSpans(t *testing.T) {
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			srv := &chunkTraceTestServer{}
-			te := runChunkTraceUpload(t, srv, tc.devTracing, tc.chunkSize, tc.payloadSize, false)
+			var failAt int64
+			if tc.failCode != codes.OK {
+				// Chunk 3 covers [512 KiB, 768 KiB). Fail mid-chunk before GCS persists it.
+				failAt = 600 * kib
+			}
+			srv := &chunkTraceTestServer{failAt: failAt, failCode: tc.failCode}
+			te := runChunkTraceUpload(t, srv, tc.devTracing, tc.chunkSize, tc.payloadSize, tc.wantErr)
 
-			got := extractAndVerifyUploadChunkSpans(t, te.Spans())
+			// Chunk 4 can be in flight when chunk 3 fails, so it may also fail
+			// before the retry or terminal failure completes.
+			got := slices.DeleteFunc(extractAndVerifyUploadChunkSpans(t, te.Spans()), func(s uploadChunkSpanInfo) bool {
+				return failAt > 0 && s.Failed && s.Number == 4
+			})
 			if diff := cmp.Diff(tc.want, got); diff != "" {
 				t.Errorf("%s spans mismatch (-want +got):\n%s", uploadChunkSpanName, diff)
 			}
+			if failAt > 0 {
+				srv.mu.Lock()
+				failed := srv.failed
+				srv.mu.Unlock()
+				if !failed {
+					t.Error("server did not inject the stream failure")
+				}
+			}
 		})
-	}
-}
-
-func TestGRPCWriterUploadChunkSpansRetry(t *testing.T) {
-	const kib = 1024
-	// Chunk 3 covers [512 KiB, 768 KiB). Its stream fails mid-chunk, before
-	// GCS persists it, and the upload resumes from 512 KiB.
-	srv := &chunkTraceTestServer{failAt: 600 * kib}
-	te := runChunkTraceUpload(t, srv, true, 256*kib, 1024*kib, false)
-
-	// Chunk 4 can be in flight when chunk 3 fails, so it may also fail before
-	// the retry succeeds.
-	got := slices.DeleteFunc(extractAndVerifyUploadChunkSpans(t, te.Spans()), func(s uploadChunkSpanInfo) bool {
-		return s.Failed && s.Number == 4
-	})
-	want := []uploadChunkSpanInfo{
-		{Number: 1, Offset: 0, SizeBytes: 256 * kib},
-		{Number: 2, Offset: 256 * kib, SizeBytes: 256 * kib},
-		{Number: 3, Offset: 512 * kib, SizeBytes: 256 * kib, Failed: true, ErrorType: "UNAVAILABLE"},
-		{Number: 3, Offset: 512 * kib, SizeBytes: 256 * kib},
-		{Number: 4, Offset: 768 * kib, SizeBytes: 256 * kib},
-	}
-	if diff := cmp.Diff(want, got); diff != "" {
-		t.Errorf("%s spans mismatch (-want +got):\n%s", uploadChunkSpanName, diff)
-	}
-	srv.mu.Lock()
-	defer srv.mu.Unlock()
-	if !srv.failed {
-		t.Error("server did not inject the stream failure")
-	}
-}
-
-func TestGRPCWriterUploadChunkSpansTerminalFailure(t *testing.T) {
-	const kib = 1024
-	srv := &chunkTraceTestServer{failAt: 600 * kib, failCode: codes.PermissionDenied}
-	te := runChunkTraceUpload(t, srv, true, 256*kib, 1024*kib, true)
-
-	got := slices.DeleteFunc(extractAndVerifyUploadChunkSpans(t, te.Spans()), func(s uploadChunkSpanInfo) bool {
-		return s.Failed && s.Number == 4
-	})
-	want := []uploadChunkSpanInfo{
-		{Number: 1, Offset: 0, SizeBytes: 256 * kib},
-		{Number: 2, Offset: 256 * kib, SizeBytes: 256 * kib},
-		{Number: 3, Offset: 512 * kib, SizeBytes: 256 * kib, Failed: true, ErrorType: "PERMISSION_DENIED"},
-	}
-	if diff := cmp.Diff(want, got); diff != "" {
-		t.Errorf("%s spans mismatch (-want +got):\n%s", uploadChunkSpanName, diff)
 	}
 }
 
@@ -2151,49 +2154,22 @@ func runChunkTraceUpload(t *testing.T, srv *chunkTraceTestServer, devTracing boo
 }
 
 func TestHTTPWriterUploadChunkSpans(t *testing.T) {
+	const kib = 1024
+
 	for _, tc := range commonUploadChunkSpanTestCases() {
 		t.Run(tc.name, func(t *testing.T) {
-			te := runHTTPChunkTraceUpload(t, 0, 0, tc.devTracing, tc.chunkSize, tc.payloadSize, false)
+			var failOffset int64
+			if tc.failStatus != 0 {
+				// Fail the first attempt of chunk 3 (offset 512 KiB).
+				failOffset = 512 * kib
+			}
+			te := runHTTPChunkTraceUpload(t, failOffset, tc.failStatus, tc.devTracing, tc.chunkSize, tc.payloadSize, tc.wantErr)
 
 			got := extractAndVerifyUploadChunkSpans(t, te.Spans())
 			if diff := cmp.Diff(tc.want, got); diff != "" {
 				t.Errorf("%s spans mismatch (-want +got):\n%s", uploadChunkSpanName, diff)
 			}
 		})
-	}
-}
-
-func TestHTTPWriterUploadChunkSpansRetry(t *testing.T) {
-	const kib = 1024
-	// Fail the first attempt of chunk 3 (offset 512 KiB).
-	te := runHTTPChunkTraceUpload(t, 512*kib, http.StatusServiceUnavailable, true, 256*kib, 1024*kib, false)
-
-	got := extractAndVerifyUploadChunkSpans(t, te.Spans())
-	want := []uploadChunkSpanInfo{
-		{Number: 1, Offset: 0, SizeBytes: 256 * kib},
-		{Number: 2, Offset: 256 * kib, SizeBytes: 256 * kib},
-		{Number: 3, Offset: 512 * kib, SizeBytes: 256 * kib, Failed: true, ErrorType: "UNAVAILABLE"},
-		{Number: 3, Offset: 512 * kib, SizeBytes: 256 * kib},
-		{Number: 4, Offset: 768 * kib, SizeBytes: 256 * kib},
-	}
-	if diff := cmp.Diff(want, got); diff != "" {
-		t.Errorf("%s spans mismatch (-want +got):\n%s", uploadChunkSpanName, diff)
-	}
-}
-
-func TestHTTPWriterUploadChunkSpansTerminalFailure(t *testing.T) {
-	const kib = 1024
-	// Permanently fail chunk 3 (offset 512 KiB) with 403 Forbidden.
-	te := runHTTPChunkTraceUpload(t, 512*kib, http.StatusForbidden, true, 256*kib, 1024*kib, true)
-
-	got := extractAndVerifyUploadChunkSpans(t, te.Spans())
-	want := []uploadChunkSpanInfo{
-		{Number: 1, Offset: 0, SizeBytes: 256 * kib},
-		{Number: 2, Offset: 256 * kib, SizeBytes: 256 * kib},
-		{Number: 3, Offset: 512 * kib, SizeBytes: 256 * kib, Failed: true, ErrorType: "PERMISSION_DENIED"},
-	}
-	if diff := cmp.Diff(want, got); diff != "" {
-		t.Errorf("%s spans mismatch (-want +got):\n%s", uploadChunkSpanName, diff)
 	}
 }
 

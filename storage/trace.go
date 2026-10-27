@@ -52,6 +52,8 @@ const (
 	bucketContextKey   traceContextKey = "bucketName"
 	isBucketContextKey traceContextKey = "isBucketOp"
 	traceAttributesKey traceContextKey = "traceAttributes"
+	uploadChunkSizeKey traceContextKey = "uploadChunkSize"
+	grpcUploadChunkKey traceContextKey = "grpcUploadChunk"
 )
 
 func contextWithTraceAttributes(ctx context.Context, attrs []attribute.KeyValue) context.Context {
@@ -64,10 +66,14 @@ func traceAttributesFromContext(ctx context.Context) ([]attribute.KeyValue, bool
 }
 
 const (
-	defaultTracerName = "cloud.google.com/go/storage"
-	gcpClientArtifact = "cloud.google.com/go/storage"
-	gcpClientService  = "storage"
-	storageURIAttrKey = "gcp.storage.uri"
+	defaultTracerName     = "cloud.google.com/go/storage"
+	gcpClientArtifact     = "cloud.google.com/go/storage"
+	gcpClientService      = "storage"
+	storageURIAttrKey     = "gcp.storage.uri"
+	uploadChunkSpanName   = "Storage.UploadChunk"
+	uploadChunkNumberAttr = "gcp.storage.upload.chunk.number"
+	payloadOffsetAttr     = "gcp.storage.payload.offset"
+	payloadSizeBytesAttr  = "gcp.storage.payload.size_bytes"
 )
 
 // rpcSystemNameKey is the OTel semantic convention attribute key for the RPC
@@ -365,9 +371,9 @@ func (retryAttemptStatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagIn
 	if span.IsRecording() && span.SpanContext().SpanID() != attempt.parent.SpanID() {
 		span.SetAttributes(attribute.Int("gcp.client.retry.attempt_number", attempt.number))
 	}
-	if chunkSize, ok := ctx.Value(uploadChunkSizeKey{}).(int64); ok && chunkSize > 0 &&
+	if chunkSize, ok := ctx.Value(uploadChunkSizeKey).(int64); ok && chunkSize > 0 &&
 		info != nil && strings.HasSuffix(info.FullMethodName, "/BidiWriteObject") {
-		ctx = context.WithValue(ctx, grpcUploadChunkKey{}, &grpcUploadChunkTracker{
+		ctx = context.WithValue(ctx, grpcUploadChunkKey, &grpcUploadChunkTracker{
 			parentCtx: attempt.parentCtx,
 			chunkSize: chunkSize,
 		})
@@ -377,7 +383,7 @@ func (retryAttemptStatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagIn
 
 // HandleRPC implements stats.Handler.
 func (retryAttemptStatsHandler) HandleRPC(ctx context.Context, rs stats.RPCStats) {
-	ct, ok := ctx.Value(grpcUploadChunkKey{}).(*grpcUploadChunkTracker)
+	ct, ok := ctx.Value(grpcUploadChunkKey).(*grpcUploadChunkTracker)
 	if !ok {
 		return
 	}
@@ -452,26 +458,13 @@ func isOneshotUpload(w *Writer) bool {
 	return w.opened && w.closed && atomic.LoadInt64(&w.bytesWritten) < int64(gRPCChunkSize(w.ChunkSize))
 }
 
-const (
-	uploadChunkSpanName   = "Storage.UploadChunk"
-	uploadChunkNumberAttr = "gcp.storage.upload.chunk.number"
-	payloadOffsetAttr     = "gcp.storage.payload.offset"
-	payloadSizeBytesAttr  = "gcp.storage.payload.size_bytes"
-)
-
-type uploadChunkSizeKey struct{}
-type grpcUploadChunkKey struct{}
-
 // withUploadChunkSize attaches the 256 KiB-aligned chunk size to ctx for
 // resumable uploads when dev tracing is enabled.
 func withUploadChunkSize(ctx context.Context, chunkSize int) context.Context {
-	if chunkSize <= 0 {
+	if _, ok := recordingSpan(ctx); !ok || chunkSize <= 0 {
 		return ctx
 	}
-	if _, ok := recordingSpan(ctx); !ok {
-		return ctx
-	}
-	return context.WithValue(ctx, uploadChunkSizeKey{}, int64(gRPCChunkSize(chunkSize)))
+	return context.WithValue(ctx, uploadChunkSizeKey, int64(gRPCChunkSize(chunkSize)))
 }
 
 // uploadChunkSpan is the Storage.UploadChunk span of one logical chunk of a
@@ -616,12 +609,12 @@ func startHTTPUploadChunkSpan(ctx context.Context, h http.Header) (context.Conte
 // A zero-byte finalization request ("bytes */<size>") does not upload a chunk
 // and returns false.
 func httpUploadChunkInfo(ctx context.Context, h http.Header) (chunkNum, offset, sizeBytes int64, ok bool) {
-	rest, found := strings.CutPrefix(h.Get("Content-Range"), "bytes ")
-	if !found {
+	chunkSize, valid := ctx.Value(uploadChunkSizeKey).(int64)
+	if !valid || chunkSize <= 0 {
 		return 0, 0, 0, false
 	}
-	chunkSize, valid := ctx.Value(uploadChunkSizeKey{}).(int64)
-	if !valid || chunkSize <= 0 {
+	rest, found := strings.CutPrefix(h.Get("Content-Range"), "bytes ")
+	if !found {
 		return 0, 0, 0, false
 	}
 	rangePart, _, found := strings.Cut(rest, "/")
