@@ -1607,6 +1607,8 @@ func TestRecordWriterTraceAttributes(t *testing.T) {
 
 func TestWriterTraceWriteModeEmulated(t *testing.T) {
 	checkEmulatorEnvironment(t)
+	// TODO: Remove setting development env var upon launch.
+	t.Setenv(storageOtelTracingDevVar, "true")
 
 	ctx := context.Background()
 
@@ -1680,7 +1682,19 @@ func TestWriterTraceWriteModeEmulated(t *testing.T) {
 
 	for _, transport := range []string{"grpc", "http"} {
 		t.Run(transport, func(t *testing.T) {
-			c := &Client{tc: emulatorClients[transport]}
+			var (
+				c   *Client
+				err error
+			)
+			if transport == "grpc" {
+				c, err = NewGRPCClient(ctx)
+			} else {
+				c, err = NewClient(ctx)
+			}
+			if err != nil {
+				t.Fatalf("new %s client: %v", transport, err)
+			}
+			t.Cleanup(func() { c.Close() })
 			bucket := fmt.Sprintf("%s-trace-bucket-%d", transport, time.Now().UnixNano())
 			if err := c.Bucket(bucket).Create(ctx, "project", nil); err != nil {
 				t.Fatalf("Bucket.Create: %v", err)
@@ -1695,8 +1709,6 @@ func TestWriterTraceWriteModeEmulated(t *testing.T) {
 					t.Cleanup(func() {
 						te.Unregister(ctx)
 					})
-					// TODO: Remove setting development env var upon launch.
-					t.Setenv(storageOtelTracingDevVar, "true")
 
 					objName := fmt.Sprintf("object-%s-%d", tc.name, time.Now().UnixNano())
 					w := c.Bucket(bucket).Object(objName).NewWriter(ctx)
