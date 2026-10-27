@@ -51,6 +51,18 @@ func (m *mockSessionTableAPI) MutateRow(ctx context.Context, req *v2pb.SessionMu
 	return &v2pb.SessionMutateRowResponse{}, nil
 }
 
+func (m *mockSessionTableAPI) CheckAndMutateRow(ctx context.Context, req *v2pb.SessionCheckAndMutateRowRequest) (*v2pb.SessionCheckAndMutateRowResponse, error) {
+	return &v2pb.SessionCheckAndMutateRowResponse{}, nil
+}
+
+func (m *mockSessionTableAPI) ReadModifyWriteRow(ctx context.Context, req *v2pb.SessionReadModifyWriteRowRequest) (*v2pb.SessionReadModifyWriteRowResponse, error) {
+	return &v2pb.SessionReadModifyWriteRowResponse{}, nil
+}
+
+func (m *mockSessionTableAPI) MutateRows(ctx context.Context, req *v2pb.SessionMutateRowsRequest) (*v2pb.SessionMutateRowsResponse, error) {
+	return &v2pb.SessionMutateRowsResponse{}, nil
+}
+
 func (m *mockSessionTableAPI) Close() error { return nil }
 
 // mockSessionClient hands back a fixed SessionTableApi for any resource and

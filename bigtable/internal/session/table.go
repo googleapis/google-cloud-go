@@ -58,24 +58,29 @@ type sessionTable struct {
 	//   materialized view → "" (classic never sets Table.table for MV)
 	// Must NOT be the fully-qualified resource name; that would break
 	// dashboards that group by short table id across classic + session.
-	tableID        string
-	readPool       *lazyPool
-	writePool      *lazyPool
-	readVRpcDesc   btransport.VRpcDescriptor
-	writeVRpcDesc  btransport.VRpcDescriptor
-	md             metadata.MD
-	metricsFactory *metrics.Factory
-	// closeRead / closeWrite tear down the specific pools this
-	// sessionTable's openers created, on its Close(). Both are supplied by
+	tableID                    string
+	readPool                   *lazyPool
+	writePool                  *lazyPool
+	readWritePool              *lazyPool
+	readVRpcDesc               btransport.VRpcDescriptor
+	writeVRpcDesc              btransport.VRpcDescriptor
+	checkAndMutateRowVRpcDesc  btransport.VRpcDescriptor
+	readModifyWriteRowVRpcDesc btransport.VRpcDescriptor
+	mutateRowsVRpcDesc         btransport.VRpcDescriptor
+	md                         metadata.MD
+	metricsFactory             *metrics.Factory
+	// closeRead / closeWrite / closeReadWrite tear down the specific pools this
+	// sessionTable's openers created, on its Close(). All are supplied by
 	// sessionClient as a per-owner poolCloser.Close (see client.go's
 	// poolCloser): they close exactly the pool the matching opener minted,
 	// by captured identity — never a sibling sessionTable's pool that
 	// happens to share a poolKey — and no-op cleanly when the pool was
-	// never opened or the client already tore itself down. closeWrite is
-	// nil for materialized views (read-only resources), mirroring the nil
-	// write side of the openRead/openWrite pair.
-	closeRead  func() error
-	closeWrite func() error
+	// never opened or the client already tore itself down. closeWrite and
+	// closeReadWrite are nil for materialized views (read-only resources),
+	// mirroring the nil write / read-write side of the openers.
+	closeRead      func() error
+	closeWrite     func() error
+	closeReadWrite func() error
 	// closed is set by Close() BEFORE the releasers run, and re-checked
 	// inside the lazy-open wrapper (guardOpen) around openRead/openWrite
 	// so an opener whose slow path straddles Close cleans up its own
@@ -87,33 +92,54 @@ type sessionTable struct {
 // newSessionTable is the internal constructor. Callers (sessionClient)
 // build the lazyPool open + release closures, supply the vRPC
 // descriptors, and resource-scoped metadata. metricsFactory may be nil
-// to disable per-attempt metrics. closeWrite may be nil for
-// materialized views (no write side).
+// to disable per-attempt metrics. closeWrite and closeReadWrite may be nil for
+// materialized views (no write or read-write side).
 func newSessionTable(
 	tableID string,
 	openRead func() (Invoker, error),
 	openWrite func() (Invoker, error),
+	openReadWrite func() (Invoker, error),
 	closeRead func() error,
 	closeWrite func() error,
+	closeReadWrite func() error,
 	readVRpcDesc btransport.VRpcDescriptor,
 	writeVRpcDesc btransport.VRpcDescriptor,
 	md metadata.MD,
 	metricsFactory *metrics.Factory,
 ) *sessionTable {
+	var checkAndMutateDesc, rmwDesc, mutateRowsDesc btransport.VRpcDescriptor
+	switch writeVRpcDesc {
+	case nil:
+		// Materialized view (read-only) — no write descriptors.
+	case btransport.MUTATE_ROW_AUTH_VIEW:
+		checkAndMutateDesc = btransport.CHECK_AND_MUTATE_ROW_AUTH_VIEW
+		rmwDesc = btransport.READ_MODIFY_WRITE_ROW_AUTH_VIEW
+		mutateRowsDesc = btransport.MUTATE_ROWS_AUTH_VIEW
+	default:
+		checkAndMutateDesc = btransport.CHECK_AND_MUTATE_ROW
+		rmwDesc = btransport.READ_MODIFY_WRITE_ROW
+		mutateRowsDesc = btransport.MUTATE_ROWS
+	}
+
 	t := &sessionTable{
-		tableID:        tableID,
-		readVRpcDesc:   readVRpcDesc,
-		writeVRpcDesc:  writeVRpcDesc,
-		md:             md,
-		metricsFactory: metricsFactory,
-		closeRead:      closeRead,
-		closeWrite:     closeWrite,
+		tableID:                    tableID,
+		readVRpcDesc:               readVRpcDesc,
+		writeVRpcDesc:              writeVRpcDesc,
+		checkAndMutateRowVRpcDesc:  checkAndMutateDesc,
+		readModifyWriteRowVRpcDesc: rmwDesc,
+		mutateRowsVRpcDesc:         mutateRowsDesc,
+		md:                         md,
+		metricsFactory:             metricsFactory,
+		closeRead:                  closeRead,
+		closeWrite:                 closeWrite,
+		closeReadWrite:             closeReadWrite,
 	}
 	// Wrap the raw openers with a closed-bit guard so an open racing
 	// with Close either bails early or cleans up its own insert. Nil
 	// openers stay nil to preserve the MV-write-side "no pool" contract.
 	t.readPool = &lazyPool{open: t.guardOpen(openRead, closeRead)}
 	t.writePool = &lazyPool{open: t.guardOpen(openWrite, closeWrite)}
+	t.readWritePool = &lazyPool{open: t.guardOpen(openReadWrite, closeReadWrite)}
 	return t
 }
 
@@ -207,6 +233,74 @@ func (t *sessionTable) MutateRow(ctx context.Context, req *btpb.SessionMutateRow
 	})
 }
 
+// CheckAndMutateRow dispatches a proto-native CheckAndMutateRow through a
+// lazily-opened READ_WRITE session pool. Errors with ErrWriteNotSupported when
+// the resource has no read-write pool (materialized views).
+//
+// Conditional mutations are never idempotent because evaluating the predicate
+// after applying the mutation may yield a different branch on retry.
+func (t *sessionTable) CheckAndMutateRow(ctx context.Context, req *btpb.SessionCheckAndMutateRowRequest) (*btpb.SessionCheckAndMutateRowResponse, error) {
+	if req == nil {
+		return nil, errors.New("bigtable/session: SessionCheckAndMutateRowRequest is nil")
+	}
+	return dispatch[btransport.CheckAndMutateRowArgs, btpb.SessionCheckAndMutateRowResponse, *btpb.SessionCheckAndMutateRowResponse](ctx, t, opSpec[btransport.CheckAndMutateRowArgs, btpb.SessionCheckAndMutateRowResponse, *btpb.SessionCheckAndMutateRowResponse]{
+		method:     "CheckAndMutateRow",
+		pool:       t.readWritePool,
+		desc:       t.checkAndMutateRowVRpcDesc,
+		idempotent: false,
+		args: btransport.CheckAndMutateRowArgs{
+			RowKey:          string(req.GetKey()),
+			PredicateFilter: req.GetPredicateFilter(),
+			TrueMutations:   req.GetTrueMutations(),
+			FalseMutations:  req.GetFalseMutations(),
+		},
+		errNoPool: ErrWriteNotSupported,
+	})
+}
+
+// ReadModifyWriteRow dispatches a proto-native ReadModifyWriteRow through a
+// lazily-opened READ_WRITE session pool. Errors with ErrWriteNotSupported when
+// the resource has no read-write pool (materialized views).
+//
+// ReadModifyWrite operations (increment/append) are never idempotent.
+func (t *sessionTable) ReadModifyWriteRow(ctx context.Context, req *btpb.SessionReadModifyWriteRowRequest) (*btpb.SessionReadModifyWriteRowResponse, error) {
+	if req == nil {
+		return nil, errors.New("bigtable/session: SessionReadModifyWriteRowRequest is nil")
+	}
+	return dispatch[btransport.ReadModifyWriteRowArgs, btpb.SessionReadModifyWriteRowResponse, *btpb.SessionReadModifyWriteRowResponse](ctx, t, opSpec[btransport.ReadModifyWriteRowArgs, btpb.SessionReadModifyWriteRowResponse, *btpb.SessionReadModifyWriteRowResponse]{
+		method:     "ReadModifyWriteRow",
+		pool:       t.readWritePool,
+		desc:       t.readModifyWriteRowVRpcDesc,
+		idempotent: false,
+		args: btransport.ReadModifyWriteRowArgs{
+			RowKey: string(req.GetKey()),
+			Rules:  req.GetRules(),
+		},
+		errNoPool: ErrWriteNotSupported,
+	})
+}
+
+// MutateRows dispatches a proto-native MutateRows through a lazily-opened
+// WRITE session pool. Errors with ErrWriteNotSupported when the resource
+// has no write pool (materialized views).
+//
+// Idempotency is true iff every entry's mutations satisfy mutationsAreRetryable.
+func (t *sessionTable) MutateRows(ctx context.Context, req *btpb.SessionMutateRowsRequest) (*btpb.SessionMutateRowsResponse, error) {
+	if req == nil {
+		return nil, errors.New("bigtable/session: SessionMutateRowsRequest is nil")
+	}
+	return dispatch[btransport.MutateRowsArgs, btpb.SessionMutateRowsResponse, *btpb.SessionMutateRowsResponse](ctx, t, opSpec[btransport.MutateRowsArgs, btpb.SessionMutateRowsResponse, *btpb.SessionMutateRowsResponse]{
+		method:     "MutateRows",
+		pool:       t.writePool,
+		desc:       t.mutateRowsVRpcDesc,
+		idempotent: mutateRowsAreRetryable(req.GetEntries()),
+		args: btransport.MutateRowsArgs{
+			Entries: req.GetEntries(),
+		},
+		errNoPool: ErrWriteNotSupported,
+	})
+}
+
 // opSpec parameterises dispatch over the six axes that used to differ
 // between ReadRow and MutateRow: RPC method label (for tracer + error
 // context), pool, descriptor, idempotence, encoded args, and the
@@ -286,8 +380,8 @@ func dispatch[Args any, R any, Resp interface {
 	return resp, nil
 }
 
-// Close releases this sessionTable's underlying read + write session
-// pools from the sessionClient's per-resource keyed map. Both release
+// Close releases this sessionTable's underlying read, write, and read-write
+// session pools from the sessionClient's per-resource keyed map. All release
 // closures are idempotent (second call finds the map entry absent
 // and no-ops) so double-close from the cache sweeper + explicit
 // caller is safe.
@@ -306,8 +400,8 @@ func dispatch[Args any, R any, Resp interface {
 // ever gains a caller that bypasses that cache, this method must gain
 // a refcount on the sessionClient side (or the caller must add its own).
 //
-// Returns the joined read + write teardown errors (nil for the
-// materialized-view case where closeWrite is nil).
+// Returns the joined read, write, and read-write teardown errors (nil for the
+// materialized-view case where closeWrite and closeReadWrite are nil).
 func (t *sessionTable) Close() error {
 	t.closed.Store(true)
 	var errs []error
@@ -318,6 +412,11 @@ func (t *sessionTable) Close() error {
 	}
 	if t.closeWrite != nil {
 		if err := t.closeWrite(); err != nil {
+			errs = append(errs, err)
+		}
+	}
+	if t.closeReadWrite != nil {
+		if err := t.closeReadWrite(); err != nil {
 			errs = append(errs, err)
 		}
 	}
@@ -414,6 +513,15 @@ func mutationsAreRetryable(muts []*btpb.Mutation) bool {
 			return false
 		}
 		if mut.GetAddToCell() != nil || mut.GetMergeToCell() != nil {
+			return false
+		}
+	}
+	return true
+}
+
+func mutateRowsAreRetryable(entries []*btpb.SessionMutateRowsRequest_Entry) bool {
+	for _, entry := range entries {
+		if !mutationsAreRetryable(entry.GetMutations()) {
 			return false
 		}
 	}

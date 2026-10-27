@@ -54,6 +54,7 @@ type fakeBigtableServer struct {
 	// test snapshotting requests and later reading stream indexes cannot
 	// race an in-flight append.
 	captured           []capturedVRpc
+	openTableRequests  []*btpb.OpenTableRequest
 	openSessionCnt     int
 	closeSessionCnt    int
 	getClientConfigCnt int
@@ -136,6 +137,14 @@ func (s *fakeBigtableServer) getClientConfigCount() int {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	return s.getClientConfigCnt
+}
+
+func (s *fakeBigtableServer) getOpenTableRequests() []*btpb.OpenTableRequest {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	copied := make([]*btpb.OpenTableRequest, len(s.openTableRequests))
+	copy(copied, s.openTableRequests)
+	return copied
 }
 
 func newFakeBigtableServer(t *testing.T) *fakeBigtableServer {
@@ -382,8 +391,11 @@ func (s *fakeBigtableServer) OpenTable(stream btpb.Bigtable_OpenTableServer) err
 	// Stamp per-stream state before the reply so handleOpenSession sees a
 	// consistent OpenSession count when it lands.
 	streamIdx := s.nextPeerInfoIdx.Add(1) - 1
+	var openReq btpb.OpenTableRequest
+	_ = proto.Unmarshal(first.GetOpenSession().GetPayload(), &openReq)
 	s.mu.Lock()
 	s.openSessionCnt++
+	s.openTableRequests = append(s.openTableRequests, &openReq)
 	s.mu.Unlock()
 
 	// If configured, send the bigtable-peer-info header BEFORE the first
@@ -500,11 +512,66 @@ func (s *fakeBigtableServer) OpenTable(stream btpb.Bigtable_OpenTableServer) err
 		s.mu.Unlock()
 
 		var payload []byte
-		switch tableReq.Payload.(type) {
+		switch p := tableReq.Payload.(type) {
 		case *btpb.TableRequest_ReadRow:
 			payload = readBytes
 		case *btpb.TableRequest_MutateRow:
 			payload = writeBytes
+		case *btpb.TableRequest_CheckAndMutateRow:
+			b, err := proto.Marshal(&btpb.TableResponse{
+				Payload: &btpb.TableResponse_CheckAndMutateRow{
+					CheckAndMutateRow: &btpb.SessionCheckAndMutateRowResponse{
+						PredicateMatched: true,
+					},
+				},
+			})
+			if err != nil {
+				return err
+			}
+			payload = b
+		case *btpb.TableRequest_ReadModifyWriteRow:
+			b, err := proto.Marshal(&btpb.TableResponse{
+				Payload: &btpb.TableResponse_ReadModifyWriteRow{
+					ReadModifyWriteRow: &btpb.SessionReadModifyWriteRowResponse{
+						Row: &btpb.Row{
+							Key: p.ReadModifyWriteRow.GetKey(),
+							Families: []*btpb.Family{{
+								Name: "fam1",
+								Columns: []*btpb.Column{{
+									Qualifier: []byte("col1"),
+									Cells: []*btpb.Cell{{
+										Value:           []byte("rmw-value"),
+										TimestampMicros: 2000,
+									}},
+								}},
+							}},
+						},
+					},
+				},
+			})
+			if err != nil {
+				return err
+			}
+			payload = b
+		case *btpb.TableRequest_MutateRows:
+			entries := make([]*btpb.SessionMutateRowsResponse_Entry, len(p.MutateRows.GetEntries()))
+			for i := range p.MutateRows.GetEntries() {
+				entries[i] = &btpb.SessionMutateRowsResponse_Entry{
+					Index:  int64(i),
+					Status: &rpcstatus.Status{Code: 0},
+				}
+			}
+			b, err := proto.Marshal(&btpb.TableResponse{
+				Payload: &btpb.TableResponse_MutateRows{
+					MutateRows: &btpb.SessionMutateRowsResponse{
+						Entries: entries,
+					},
+				},
+			})
+			if err != nil {
+				return err
+			}
+			payload = b
 		default:
 			return fmt.Errorf("fakeBigtableServer: unsupported TableRequest payload %T", tableReq.Payload)
 		}

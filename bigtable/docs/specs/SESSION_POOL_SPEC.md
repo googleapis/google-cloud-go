@@ -12,13 +12,13 @@
 
 ---
 
-### 1. Every resource has two session pools — read and write — except MaterializedView, which has read only
+### 1. Every resource has three session pools — read, write, and read-write — except MaterializedView, which has read only
 
-- `SessionClient.OpenTable(name)` → `sessionTable{readPool, writePool}` with descriptors `READ_ROW` / `MUTATE_ROW` (`client.go:369`).
-- `SessionClient.OpenAuthorizedView(view)` → `sessionTable{readPool, writePool}` with descriptors `READ_ROW_AUTH_VIEW` / `MUTATE_ROW_AUTH_VIEW` (`client.go:397`).
-- `SessionClient.OpenMaterializedView(view)` → `sessionTable{readPool, writePool=nil}` with `READ_ROW_MAT_VIEW`; **MatView is read-only by contract** (`client.go:403-415`). `MutateRow` on a MatView MUST return `ErrWriteNotSupported` (`table.go:29-31, 154`).
+- `SessionClient.OpenTable(name)` → `sessionTable{readPool, writePool, readWritePool}` with read descriptor `READ_ROW`, write descriptors `MUTATE_ROW`, `MUTATE_ROWS`, and read-write descriptors `CHECK_AND_MUTATE_ROW`, `READ_MODIFY_WRITE_ROW` (`client.go`).
+- `SessionClient.OpenAuthorizedView(view)` → `sessionTable{readPool, writePool, readWritePool}` with read descriptor `READ_ROW_AUTH_VIEW`, write descriptors `MUTATE_ROW_AUTH_VIEW`, `MUTATE_ROWS_AUTH_VIEW`, and read-write descriptors `CHECK_AND_MUTATE_ROW_AUTH_VIEW`, `READ_MODIFY_WRITE_ROW_AUTH_VIEW` (`client.go`).
+- `SessionClient.OpenMaterializedView(view)` → `sessionTable{readPool, writePool=nil, readWritePool=nil}` with `READ_ROW_MAT_VIEW`; **MatView is read-only by contract** (`client.go`). `MutateRow`, `CheckAndMutateRow`, `ReadModifyWriteRow`, and `MutateRows` on a MatView MUST return `ErrWriteNotSupported` (`table.go`).
 - Pools are **`lazyPool`** — opened on first `ReadRow` / `Apply`, not at `OpenTable`. Failed opens are **not cached** (a transient `proto.Marshal` failure MUST NOT strand the table); the next call retries. See `SESSION_CLIENT_SPEC.md #1` for the two-layer lazy-creation topology.
-- **Read and write pools do not share sessions.** Each pool holds its own set of Sessions typed for its direction (via `SessionType` on the underlying `Session`), each running its own OpenSession bidi stream. This is what keeps the multiplex=1 rule (`SESSION_SPEC.md #2`) from starving cross-direction traffic.
+- **Read, write, and read-write pools do not share sessions.** Each pool holds its own set of Sessions typed for its direction (via `SessionType` on the underlying `Session`), each running its own OpenSession bidi stream. This is what keeps the multiplex=1 rule (`SESSION_SPEC.md #2`) from starving cross-direction traffic.
 - Behavioral shift vs classic path: marshal failures on session payloads surface on first `ReadRow`/`Apply`, not at `OpenTable`. Callers that expected eager failure will see it later.
 
 ### 2. The AFE picker is two-tier, K-choice, and PeakEwma-OK-gated — Java-parity
@@ -91,12 +91,12 @@ Any new pool method that reads `p.picker.Name()` from a method called by `Checko
 | `ReadRows` — `arg` addresses exactly one row, i.e. one of: a `RowList` of length 1 (what `SingleRow(k)` returns), a closed-closed `RowRange` with `start == end` (what `NewClosedRange(k, k)` returns), or a `RowRangeList` of length 1 whose sole element is such a range | via Diverter | semantically equivalent to `ReadRow`; converted to `SessionReadRowRequest` in the shim, and the resulting row handed to the caller's callback |
 | `ReadRows` — anything else: multi-key `RowList` (including length 0), any non-closed-closed `RowRange` (open, unbounded, or the empty same-start/end shapes `NewRange(k,k)` / `NewOpenRange(k,k)` / `NewOpenClosedRange(k,k)`), any multi-element `RowRangeList` or length-0 `RowRangeList` or one whose sole element is not a single-row range, `LimitRows(<1)` on any single-row shape, or a nil `RowSet` | always classic | streaming reads not in vRPC surface |
 | `Apply` (non-conditional) | via Diverter | `SessionMutateRow` vRPC exists |
-| `Apply` (conditional, `m.isConditional`) | **always classic** | `CheckAndMutateRow` has no vRPC equivalent |
+| `Apply` (conditional, `m.isConditional`) | via Diverter | `SessionCheckAndMutateRow` vRPC exists |
 | `SampleRowKeys` | always classic | no vRPC equivalent |
-| `ApplyBulk` | always classic | no vRPC equivalent |
-| `ApplyReadModifyWrite` | always classic | no vRPC equivalent |
+| `ApplyBulk` | via Diverter | `SessionMutateRows` vRPC exists |
+| `ApplyReadModifyWrite` | via Diverter | `SessionReadModifyWriteRow` vRPC exists |
 
-- **Read/write direction determines which of the two session pools is engaged** (`SESSION_POOL_SPEC.md #1`): `ReadRow` → session table's read pool; `Apply` → write pool. The Diverter's decision precedes the pool split — it says "session vs classic", then the direction picks read-pool vs write-pool inside the session side. Single-key `ReadRows` is a `ReadRow` in disguise and follows the same read-pool routing.
+- **Read/write/read-write direction determines which of the three session pools is engaged** (`SESSION_POOL_SPEC.md #1`): `ReadRow` → session table's read pool; `Apply` (`MutateRow`) and `ApplyBulk` (`MutateRows`) → write pool; `Apply` (`CheckAndMutateRow`) and `ApplyReadModifyWrite` (`ReadModifyWriteRow`) → read-write pool. The Diverter's decision precedes the pool split — it says "session vs classic", then the direction picks read-pool vs write-pool vs read-write-pool inside the session side. Single-key `ReadRows` is a `ReadRow` in disguise and follows the same read-pool routing.
 - Response-side plumbing lives in the shim, not the session package: `WithFullReadStats` callbacks fire from `TableShim.ReadRow` (and from the single-key branch of `TableShim.ReadRows`) after `protoRowToRow` converts the response. `RowFilter` propagates via the same `makeReadSettings` path in both branches; other `ReadOption`s that have no effect on a single-key request (e.g. `ReverseScan`, `LimitRows(N>=1)`) are accepted silently.
 - **The classic side of `ReadRows` is always `classic.ReadRows`, never `classic.ReadRow`** — for every non-session branch: Diverter off, session unavailable, `Unimplemented` breaker tripped, or an `Unimplemented` response falling back. The two are not interchangeable: `ReadRow` buffers into a return value, so it drops rows already streamed when the stream later fails and keeps only the last row if the server sends more than one, whereas `ReadRows` invokes the callback as rows arrive and then returns the error. The `bigtable` `ReadRows` conformance suite (`internal/conformance/testdata/readrows.json`) pins this; routing the classic side through `ReadRow` fails cases such as `invalid - last row missing commit`. For the same reason `Table.readRowClassic` calls `readRowsClassic` directly rather than the divertible-gated `Table.ReadRows`.
 - Errors from either side are surfaced to the caller as-is — the shim does NOT retry a session-side failure on classic. That would violate the retry-oracle contract (`SESSION_SPEC.md #9`): a session `TransportFailure` on a non-idempotent `Apply` is not automatically safe to re-run on classic.

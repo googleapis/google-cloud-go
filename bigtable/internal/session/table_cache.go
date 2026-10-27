@@ -184,6 +184,27 @@ func (h *TableHandle) MutateRow(ctx context.Context, req *btpb.SessionMutateRowR
 	return d.api.MutateRow(ctx, req)
 }
 
+// CheckAndMutateRow proxies to the underlying TableAPI, same shape as MutateRow.
+func (h *TableHandle) CheckAndMutateRow(ctx context.Context, req *btpb.SessionCheckAndMutateRowRequest) (*btpb.SessionCheckAndMutateRowResponse, error) {
+	d := h.dispatch()
+	d.touch()
+	return d.api.CheckAndMutateRow(ctx, req)
+}
+
+// ReadModifyWriteRow proxies to the underlying TableAPI, same shape as MutateRow.
+func (h *TableHandle) ReadModifyWriteRow(ctx context.Context, req *btpb.SessionReadModifyWriteRowRequest) (*btpb.SessionReadModifyWriteRowResponse, error) {
+	d := h.dispatch()
+	d.touch()
+	return d.api.ReadModifyWriteRow(ctx, req)
+}
+
+// MutateRows proxies to the underlying TableAPI, same shape as MutateRow.
+func (h *TableHandle) MutateRows(ctx context.Context, req *btpb.SessionMutateRowsRequest) (*btpb.SessionMutateRowsResponse, error) {
+	d := h.dispatch()
+	d.touch()
+	return d.api.MutateRows(ctx, req)
+}
+
 // resolveSuccessor returns the currently-live handle registered under
 // h.key, minting a fresh one via openFn on cache miss. Returns nil when
 // the cache is closed or openFn refused. Called exclusively from
