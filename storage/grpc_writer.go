@@ -22,7 +22,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"slices"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -31,8 +30,6 @@ import (
 	gapic "cloud.google.com/go/storage/internal/apiv2"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	gax "github.com/googleapis/gax-go/v2"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -334,14 +331,6 @@ type gRPCWriter struct {
 	streamSender         gRPCBidiWriteBufferSender
 	watchdog             *writeStallWatchdog
 
-	// chunkSpansEnabled reports whether Storage.UploadChunk spans are
-	// recorded. It is set once, before the first writeLoop attempt.
-	chunkSpansEnabled bool
-	// chunkSpans holds the Storage.UploadChunk spans of chunks that have been
-	// at least partly sent but not yet confirmed by GCS, oldest first. Only
-	// accessed by the writer goroutine.
-	chunkSpans []uploadChunkSpan
-
 	// Communication from the user goroutine to the stream management goroutines
 	writesChan     chan gRPCWriterCommand
 	currentCommand gRPCWriterCommand
@@ -467,8 +456,8 @@ func (w *gRPCWriter) pickBufferSender() gRPCBidiWriteBufferSender {
 		w.progress = func(int64) {}
 		return w.newGRPCOneshotBidiWriteBufferSender()
 	}
-	// Resumable write semantics.
-	_, w.chunkSpansEnabled = recordingSpan(w.preRunCtx)
+	// Resumable write semantics
+	w.preRunCtx = withUploadChunkSize(w.preRunCtx, w.chunkSize)
 	return w.newGRPCResumableBidiWriteBufferSender()
 }
 
@@ -505,7 +494,6 @@ func (w *gRPCWriter) sendBufferToTarget(cs gRPCWriterCommandHandleChans, buf []b
 		if !cs.deliverRequestUnlessCompleted(req, handleCompletion) {
 			return baseOffset + int64(sent), false
 		}
-		w.traceChunkRequest(req)
 		buf = buf[q:]
 		sent += q
 	}
@@ -526,9 +514,6 @@ func (w *gRPCWriter) handleCompletion(c gRPCBidiWriteCompletion) {
 	if c.resource != nil {
 		w.setObj(newObjectFromProto(c.resource))
 	}
-	// Before the duplicate check below: a final resource can repeat the last
-	// confirmed offset, for example after an empty finish_write.
-	w.traceChunkCompletion(c)
 
 	// prevConfirmed is the highest offset GCS had confirmed before this
 	// completion; it is meaningless until the first completion.
@@ -564,74 +549,6 @@ func (w *gRPCWriter) handleCompletion(c gRPCBidiWriteCompletion) {
 	if progressed && w.watchdog != nil {
 		w.watchdog.reset()
 	}
-}
-
-// uploadChunkSpan is the Storage.UploadChunk span of one logical chunk of a
-// resumable upload, which is usually sent as several messages.
-type uploadChunkSpan struct {
-	// ctx holds the span and is never used for RPCs.
-	ctx  context.Context
-	span trace.Span
-	// endOffset is the byte offset just past the bytes sent so far for this chunk.
-	endOffset int64
-	// sizeBytes is the number of bytes sent for this chunk.
-	sizeBytes int64
-	// flushed reports whether the final message for this chunk has been queued.
-	flushed bool
-}
-
-func (s uploadChunkSpan) finish(err error) {
-	s.span.SetAttributes(attribute.Int64(payloadSizeBytesAttr, s.sizeBytes))
-	finishSpan(s.ctx, err)
-}
-
-// traceChunkRequest starts a Storage.UploadChunk span if req carries the first
-// bytes sent for a chunk. The chunk number is derived from the offset, so a
-// chunk that is resent after a failed attempt keeps its number.
-func (w *gRPCWriter) traceChunkRequest(req gRPCBidiWriteRequest) {
-	if !w.chunkSpansEnabled || len(req.buf) == 0 {
-		return
-	}
-	if n := len(w.chunkSpans); n > 0 && !w.chunkSpans[n-1].flushed {
-		w.chunkSpans[n-1].endOffset = req.offset + int64(len(req.buf))
-		w.chunkSpans[n-1].sizeBytes += int64(len(req.buf))
-		w.chunkSpans[n-1].flushed = req.flush
-		return // The chunk already has an open span.
-	}
-	number := req.offset/int64(w.chunkSize) + 1
-	ctx, span := startSpan(w.preRunCtx, uploadChunkSpanName,
-		trace.WithAttributes(
-			attribute.Int64(uploadChunkNumberAttr, number),
-			attribute.Int64(payloadOffsetAttr, req.offset),
-		))
-	w.chunkSpans = append(w.chunkSpans, uploadChunkSpan{
-		ctx:       ctx,
-		span:      span,
-		endOffset: req.offset + int64(len(req.buf)),
-		sizeBytes: int64(len(req.buf)),
-		flushed:   req.flush,
-	})
-}
-
-// traceChunkCompletion ends the spans of the chunks confirmed by c. A returned
-// object means every byte sent has been persisted, including a short last chunk.
-func (w *gRPCWriter) traceChunkCompletion(c gRPCBidiWriteCompletion) {
-	i := 0
-	for i < len(w.chunkSpans) && (c.resource != nil || (w.chunkSpans[i].flushed && c.flushOffset >= w.chunkSpans[i].endOffset)) {
-		w.chunkSpans[i].finish(nil)
-		i++
-	}
-	w.chunkSpans = slices.Delete(w.chunkSpans, 0, i)
-}
-
-// failChunkSpans ends all open Storage.UploadChunk spans with err when a
-// writeLoop attempt ends.
-func (w *gRPCWriter) failChunkSpans(err error) {
-	for _, s := range w.chunkSpans {
-		s.finish(err)
-	}
-	clear(w.chunkSpans)
-	w.chunkSpans = w.chunkSpans[:0]
 }
 
 // Gather write commands before starting the actual write. Returns nil if the
@@ -683,9 +600,6 @@ func (w *gRPCWriter) gatherFirstBuffer() error {
 }
 
 func (w *gRPCWriter) writeLoop(ctx context.Context) (retErr error) {
-	// Registered first so that it runs last and sees the final error,
-	// including a stall error substituted by the watchdog's deferred func.
-	defer func() { w.failChunkSpans(retErr) }()
 	w.budget.attempts++
 	if w.isActive() {
 		w.budget.start()
@@ -842,7 +756,6 @@ Loop:
 		if !chcs.deliverRequestUnlessCompleted(req, w.handleCompletion) {
 			return w.streamSender.err()
 		}
-		w.traceChunkRequest(req)
 	} else {
 		// Unclean shutdown. Cancel the context so we clean up expeditiously.
 		attemptCancel()

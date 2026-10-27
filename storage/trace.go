@@ -22,14 +22,17 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"time"
 
 	"cloud.google.com/go/auth"
 	internalTrace "cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/storage/internal"
+	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/googleapis/gax-go/v2/apierror"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
@@ -322,6 +325,9 @@ type retryAttempt struct {
 	// number is the attempt number, matching the gccl-attempt-count value sent
 	// to the service. It restarts at 1 when run is given withProgressReset.
 	number int
+	// parentCtx is the context passed to run, whose active span is the
+	// operation span.
+	parentCtx context.Context
 	// parent is the span context of the span in run's ctx, usually the
 	// operation span. It lets retryAttemptStatsHandler tell the transport's
 	// attempt span apart from it.
@@ -335,17 +341,19 @@ func withRetryAttempt(ctx context.Context, attempt int) context.Context {
 		return ctx
 	}
 	return context.WithValue(ctx, retryAttemptKey{}, retryAttempt{
-		number: attempt,
-		parent: trace.SpanContextFromContext(ctx),
+		number:    attempt,
+		parentCtx: ctx,
+		parent:    trace.SpanContextFromContext(ctx),
 	})
 }
 
 // retryAttemptStatsHandler records gcp.client.retry.attempt_number on the
-// transport's gRPC attempt span.
+// transport's gRPC attempt span and Storage.UploadChunk spans for resumable
+// BidiWriteObject streams.
 type retryAttemptStatsHandler struct{}
 
 // TagRPC implements stats.Handler.
-func (retryAttemptStatsHandler) TagRPC(ctx context.Context, _ *stats.RPCTagInfo) context.Context {
+func (retryAttemptStatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) context.Context {
 	attempt, ok := ctx.Value(retryAttemptKey{}).(retryAttempt)
 	if !ok {
 		return ctx
@@ -354,15 +362,40 @@ func (retryAttemptStatsHandler) TagRPC(ctx context.Context, _ *stats.RPCTagInfo)
 	// If the transport did not start an attempt span (for example because
 	// telemetry is disabled), the span in ctx is still the operation span,
 	// which must not be tagged.
-	if !span.IsRecording() || span.SpanContext().SpanID() == attempt.parent.SpanID() {
-		return ctx
+	if span.IsRecording() && span.SpanContext().SpanID() != attempt.parent.SpanID() {
+		span.SetAttributes(attribute.Int("gcp.client.retry.attempt_number", attempt.number))
 	}
-	span.SetAttributes(attribute.Int("gcp.client.retry.attempt_number", attempt.number))
+	if chunkSize, ok := ctx.Value(uploadChunkSizeKey{}).(int64); ok && chunkSize > 0 &&
+		info != nil && strings.HasSuffix(info.FullMethodName, "/BidiWriteObject") {
+		ctx = context.WithValue(ctx, grpcUploadChunkKey{}, &grpcUploadChunkTracker{
+			parentCtx: attempt.parentCtx,
+			chunkSize: chunkSize,
+		})
+	}
 	return ctx
 }
 
 // HandleRPC implements stats.Handler.
-func (retryAttemptStatsHandler) HandleRPC(context.Context, stats.RPCStats) {}
+func (retryAttemptStatsHandler) HandleRPC(ctx context.Context, rs stats.RPCStats) {
+	ct, ok := ctx.Value(grpcUploadChunkKey{}).(*grpcUploadChunkTracker)
+	if !ok {
+		return
+	}
+	switch s := rs.(type) {
+	case *stats.OutPayload:
+		if req, ok := s.Payload.(*storagepb.BidiWriteObjectRequest); ok && s.Client {
+			ct.onRequest(req)
+		}
+	case *stats.InPayload:
+		if resp, ok := s.Payload.(*storagepb.BidiWriteObjectResponse); ok && s.Client {
+			ct.onResponse(resp)
+		}
+	case *stats.End:
+		if s.Client {
+			ct.onEnd(s.Error)
+		}
+	}
+}
 
 // TagConn implements stats.Handler.
 func (retryAttemptStatsHandler) TagConn(ctx context.Context, _ *stats.ConnTagInfo) context.Context {
@@ -426,18 +459,155 @@ const (
 	payloadSizeBytesAttr  = "gcp.storage.payload.size_bytes"
 )
 
-type httpUploadChunkSizeKey struct{}
+type uploadChunkSizeKey struct{}
+type grpcUploadChunkKey struct{}
 
-// withHTTPUploadChunkSize attaches the 256 KiB-aligned chunk size to ctx for
-// resumable HTTP uploads when dev tracing is enabled.
-func withHTTPUploadChunkSize(ctx context.Context, chunkSize int) context.Context {
+// withUploadChunkSize attaches the 256 KiB-aligned chunk size to ctx for
+// resumable uploads when dev tracing is enabled.
+func withUploadChunkSize(ctx context.Context, chunkSize int) context.Context {
 	if chunkSize <= 0 {
 		return ctx
 	}
 	if _, ok := recordingSpan(ctx); !ok {
 		return ctx
 	}
-	return context.WithValue(ctx, httpUploadChunkSizeKey{}, int64(gRPCChunkSize(chunkSize)))
+	return context.WithValue(ctx, uploadChunkSizeKey{}, int64(gRPCChunkSize(chunkSize)))
+}
+
+// uploadChunkSpan is the Storage.UploadChunk span of one logical chunk of a
+// gRPC resumable upload, which may be sent across several messages.
+type uploadChunkSpan struct {
+	ctx       context.Context
+	span      trace.Span
+	endOffset int64
+	sizeBytes int64
+	flushed   bool
+}
+
+func (s uploadChunkSpan) finish(err error) {
+	s.span.SetAttributes(attribute.Int64(payloadSizeBytesAttr, s.sizeBytes))
+	finishSpan(s.ctx, err)
+}
+
+// grpcUploadChunkTracker tracks Storage.UploadChunk spans for one gRPC
+// BidiWriteObject stream.
+type grpcUploadChunkTracker struct {
+	parentCtx context.Context
+	chunkSize int64
+
+	mu              sync.Mutex
+	spans           []uploadChunkSpan
+	lastEndOffset   int64
+	confirmedOffset int64
+	finalized       bool
+	ended           bool
+	endErr          error
+}
+
+func (ct *grpcUploadChunkTracker) onRequest(req *storagepb.BidiWriteObjectRequest) {
+	n := int64(len(req.GetChecksummedData().GetContent()))
+	if n == 0 {
+		return
+	}
+	offset := req.GetWriteOffset()
+	flushed := req.GetFlush() || req.GetFinishWrite()
+
+	ct.mu.Lock()
+	defer ct.mu.Unlock()
+	if ct.ended && offset < ct.lastEndOffset {
+		return
+	}
+	if offset+n > ct.lastEndOffset {
+		ct.lastEndOffset = offset + n
+	}
+	if m := len(ct.spans); m > 0 && !ct.spans[m-1].flushed {
+		ct.spans[m-1].endOffset = offset + n
+		ct.spans[m-1].sizeBytes += n
+		ct.spans[m-1].flushed = flushed
+	} else {
+		number := offset/ct.chunkSize + 1
+		ctx, span := startSpan(ct.parentCtx, uploadChunkSpanName,
+			trace.WithAttributes(
+				attribute.Int64(uploadChunkNumberAttr, number),
+				attribute.Int64(payloadOffsetAttr, offset),
+			))
+		ct.spans = append(ct.spans, uploadChunkSpan{
+			ctx:       ctx,
+			span:      span,
+			endOffset: offset + n,
+			sizeBytes: n,
+			flushed:   flushed,
+		})
+	}
+	if ct.ended {
+		ct.finishAllLocked(ct.endErr)
+		return
+	}
+	ct.finishConfirmedLocked()
+}
+
+func (ct *grpcUploadChunkTracker) onResponse(resp *storagepb.BidiWriteObjectResponse) {
+	var flushOffset int64
+	var finalized bool
+	switch ws := resp.GetWriteStatus().(type) {
+	case *storagepb.BidiWriteObjectResponse_PersistedSize:
+		flushOffset = ws.PersistedSize
+	case *storagepb.BidiWriteObjectResponse_Resource:
+		flushOffset = ws.Resource.GetSize()
+		finalized = ws.Resource != nil
+	default:
+		return
+	}
+	ct.mu.Lock()
+	defer ct.mu.Unlock()
+	if flushOffset > ct.confirmedOffset {
+		ct.confirmedOffset = flushOffset
+	}
+	if finalized {
+		ct.finalized = true
+	}
+	ct.finishConfirmedLocked()
+}
+
+func (ct *grpcUploadChunkTracker) onEnd(err error) {
+	ct.mu.Lock()
+	defer ct.mu.Unlock()
+	ct.ended = true
+	ct.endErr = err
+	ct.finishAllLocked(err)
+}
+
+func (ct *grpcUploadChunkTracker) finishConfirmedLocked() {
+	i := 0
+	for i < len(ct.spans) && ct.spans[i].flushed && (ct.finalized || ct.confirmedOffset >= ct.spans[i].endOffset) {
+		ct.spans[i].finish(nil)
+		i++
+	}
+	ct.spans = slices.Delete(ct.spans, 0, i)
+}
+
+func (ct *grpcUploadChunkTracker) finishAllLocked(err error) {
+	for _, s := range ct.spans {
+		s.finish(err)
+	}
+	clear(ct.spans)
+	ct.spans = ct.spans[:0]
+}
+
+// startHTTPUploadChunkSpan starts a Storage.UploadChunk span for an HTTP
+// resumable upload chunk request when dev tracing is enabled.
+func startHTTPUploadChunkSpan(ctx context.Context, h http.Header) (context.Context, bool) {
+	chunkNum, offset, sizeBytes, ok := httpUploadChunkInfo(ctx, h)
+	if !ok {
+		return ctx, false
+	}
+	ctx, _ = startSpan(ctx, uploadChunkSpanName,
+		trace.WithAttributes(
+			attribute.Int64(uploadChunkNumberAttr, chunkNum),
+			attribute.Int64(payloadOffsetAttr, offset),
+			attribute.Int64(payloadSizeBytesAttr, sizeBytes),
+		))
+	return ctx, true
 }
 
 // httpUploadChunkInfo parses the Content-Range header of an HTTP resumable
@@ -450,7 +620,7 @@ func httpUploadChunkInfo(ctx context.Context, h http.Header) (chunkNum, offset, 
 	if !found {
 		return 0, 0, 0, false
 	}
-	chunkSize, valid := ctx.Value(httpUploadChunkSizeKey{}).(int64)
+	chunkSize, valid := ctx.Value(uploadChunkSizeKey{}).(int64)
 	if !valid || chunkSize <= 0 {
 		return 0, 0, 0, false
 	}

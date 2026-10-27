@@ -34,8 +34,6 @@ import (
 	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/internal/optional"
 	"github.com/googleapis/gax-go/v2/callctx"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/trace"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -241,16 +239,7 @@ func (t *trackingTransport) RoundTrip(req *http.Request) (*http.Response, error)
 	if baseRT == nil {
 		baseRT = http.DefaultTransport
 	}
-	ctx := req.Context()
-	chunkNum, offset, sizeBytes, isChunk := httpUploadChunkInfo(ctx, req.Header)
-	if isChunk {
-		ctx, _ = startSpan(ctx, uploadChunkSpanName,
-			trace.WithAttributes(
-				attribute.Int64(uploadChunkNumberAttr, chunkNum),
-				attribute.Int64(payloadOffsetAttr, offset),
-				attribute.Int64(payloadSizeBytesAttr, sizeBytes),
-			))
-	}
+	ctx, isChunk := startHTTPUploadChunkSpan(req.Context(), req.Header)
 
 	features := t.features | featureAttributes(ctx)
 	// Merge all existing headers for this key.
@@ -1194,7 +1183,7 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 		if attrs.MD5 != nil {
 			rawObj.Md5Hash = base64.StdEncoding.EncodeToString(attrs.MD5)
 		}
-		uploadCtx := withHTTPUploadChunkSize(params.ctx, params.chunkSize)
+		uploadCtx := withUploadChunkSize(params.ctx, params.chunkSize)
 		call := c.raw.Objects.Insert(params.bucket, rawObj).
 			Media(pr, mediaOpts...).
 			Projection("full").
