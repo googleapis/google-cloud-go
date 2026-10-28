@@ -88,8 +88,8 @@ type defaultBufferPool struct {
 	// out the most recently used (and most likely CPU-cache-warm) block.
 	free [][]byte
 
-	// live is the number of blocks currently owned by the pool, either cached
-	// in free or handed out to callers. It is used by tests to detect leaks.
+	// live is the number of blocks owned by the pool, cached or checked out;
+	// tests use it to detect leaks.
 	live atomic.Int64
 
 	// lastActive is the UnixNano timestamp of the last Get/TryGet/Put.
@@ -107,28 +107,28 @@ type defaultBufferPool struct {
 
 	// mu serializes starting and stopping background goroutines with close.
 	mu sync.Mutex
-	// lastEvict is when the cleaner last evicted blocks.
-	lastEvict time.Time
 	// stop is closed to terminate the cleaner goroutine.
 	stop chan struct{}
-	// wg tracks background goroutines; used by close and tests.
+	// wg tracks background goroutines; used by close.
 	wg sync.WaitGroup
 }
 
 // newDefaultBufferPool returns a defaultBufferPool with the SDK defaults.
 func newDefaultBufferPool() *defaultBufferPool {
 	return newDefaultBufferPoolWithConfig(defaultBufferPoolBlockSize,
-		defaultBufferPoolCleanInterval, defaultBufferPoolIdleTimeout)
+		defaultBufferPoolCleanInterval, defaultBufferPoolIdleTimeout, time.Now)
 }
 
 // newDefaultBufferPoolWithConfig returns a defaultBufferPool with the given
-// block size and eviction timings. Tests use it to shrink blocks and timers.
-func newDefaultBufferPoolWithConfig(blockSize int, cleanInterval, idleTimeout time.Duration) *defaultBufferPool {
+// block size, eviction timings and clock. Tests use it to shrink blocks and
+// timers and to inject a fake clock. cleanInterval must be positive, because
+// time.NewTicker panics otherwise.
+func newDefaultBufferPoolWithConfig(blockSize int, cleanInterval, idleTimeout time.Duration, now func() time.Time) *defaultBufferPool {
 	p := &defaultBufferPool{
 		blockSize:     blockSize,
 		cleanInterval: cleanInterval,
 		idleTimeout:   idleTimeout,
-		now:           time.Now,
+		now:           now,
 		stop:          make(chan struct{}),
 	}
 	p.touch()
@@ -145,7 +145,6 @@ func (p *defaultBufferPool) Get(maxSize int) ([]byte, error) {
 	p.touch()
 	b, ok, cached := p.pop()
 	if !ok {
-		p.live.Add(1)
 		b = p.allocate()
 	}
 	p.maybeRefill(maxSize, cached)
@@ -169,8 +168,10 @@ func (p *defaultBufferPool) TryGet(maxSize int) ([]byte, bool, error) {
 	return b[:min(maxSize, p.blockSize)], true, nil
 }
 
-// Put returns a buffer obtained from Get or TryGet to the pool. Buffers that
-// were not vended by this pool (wrong capacity) are ignored.
+// Put returns a buffer obtained from Get or TryGet to the pool. Buffers whose
+// capacity is not blockSize are dropped. A buffer from elsewhere with the same
+// capacity is adopted (without being counted in live), so callers must only
+// Put buffers this pool vended.
 //
 // Put must be called exactly once per buffer. Returning the same buffer twice
 // caches it twice, so two later callers would share, and corrupt, the same
@@ -236,8 +237,9 @@ func (p *defaultBufferPool) evict(n int) {
 	p.live.Add(-int64(n))
 }
 
-// allocate returns a new zeroed block.
+// allocate returns a new zeroed block and counts it as owned by the pool.
 func (p *defaultBufferPool) allocate() []byte {
+	p.live.Add(1)
 	return make([]byte, p.blockSize)
 }
 
@@ -273,7 +275,6 @@ func (p *defaultBufferPool) maybeRefill(maxSize, cached int) {
 		defer p.wg.Done()
 		defer p.refilling.Store(false)
 		for p.cached() < want && !p.closed.Load() {
-			p.live.Add(1)
 			p.push(p.allocate())
 		}
 	}()
@@ -296,7 +297,6 @@ func (p *defaultBufferPool) ensureCleaner() {
 		return
 	}
 	p.cleanerRunning.Store(true)
-	p.lastEvict = time.Time{}
 	p.wg.Add(1)
 	go p.runCleaner()
 }
@@ -320,7 +320,8 @@ func (p *defaultBufferPool) runCleaner() {
 }
 
 // evictIfIdle halves the number of cached blocks if the pool has been idle for
-// at least idleTimeout and no eviction has happened in the last idleTimeout.
+// at least idleTimeout. An eviction counts as activity, so each further
+// halving needs another full idleTimeout without Get, TryGet or Put.
 // It returns true, after marking the cleaner as stopped, once the cache is
 // empty; the cleaner is restarted by the next push.
 //
@@ -334,11 +335,11 @@ func (p *defaultBufferPool) evictIfIdle() (stopped bool) {
 
 	now := p.now()
 	idleSince := time.Unix(0, p.lastActive.Load())
-	if now.Sub(idleSince) >= p.idleTimeout && now.Sub(p.lastEvict) >= p.idleTimeout {
+	if now.Sub(idleSince) >= p.idleTimeout {
 		n := p.cached()
 		// Evict ceil(n/2) so that a single cached block is eventually freed.
 		p.evict(n - n/2)
-		p.lastEvict = now
+		p.touch()
 	}
 
 	p.cleanerRunning.Store(false)
@@ -361,6 +362,12 @@ func (p *defaultBufferPool) close() {
 	close(p.stop)
 	p.mu.Unlock()
 	p.wg.Wait()
+
+	// The cleaner exits through stop without clearing cleanerRunning, so clear
+	// it here. closed is set, so ensureCleaner can no longer set it again.
+	p.mu.Lock()
+	p.cleanerRunning.Store(false)
+	p.mu.Unlock()
 
 	// closed is already set, so any push that acquires freeMu after this
 	// drain drops its block.

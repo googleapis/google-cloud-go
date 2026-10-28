@@ -35,9 +35,7 @@ const testBlockSize = 1024
 func newTestBufferPool(t *testing.T) (*defaultBufferPool, *fakeClock) {
 	t.Helper()
 	clk := newFakeClock()
-	p := newDefaultBufferPoolWithConfig(testBlockSize, time.Hour, 30*time.Second)
-	p.now = clk.Now
-	p.touch()
+	p := newDefaultBufferPoolWithConfig(testBlockSize, time.Hour, 30*time.Second, clk.Now)
 	t.Cleanup(p.close)
 	return p, clk
 }
@@ -205,7 +203,7 @@ func TestDefaultBufferPoolPutCloseRace(t *testing.T) {
 		workers = 16
 	)
 	for r := 0; r < rounds; r++ {
-		p := newDefaultBufferPoolWithConfig(testBlockSize, time.Hour, time.Hour)
+		p := newDefaultBufferPoolWithConfig(testBlockSize, time.Hour, time.Hour, time.Now)
 		held := make([][]byte, workers)
 		for i := range held {
 			held[i], _ = p.Get(testBlockSize)
@@ -238,37 +236,40 @@ func TestDefaultBufferPoolPutCloseRace(t *testing.T) {
 	}
 }
 
+// Put caches the block for reuse, re-extended to its full length, and the
+// cache hands out the most recently returned block first (LIFO).
 func TestDefaultBufferPoolReuse(t *testing.T) {
 	p, _ := newTestBufferPool(t)
-	b, err := p.Get(testBlockSize / 2)
+	b1, _ := p.Get(testBlockSize)
+	b2, err := p.Get(testBlockSize / 2)
 	if err != nil {
 		t.Fatal(err)
 	}
 	waitIdle(t, p)
-	p.evict(p.cached()) // Drop pre-allocated blocks so only b is cached.
+	p.evict(p.cached()) // Drop pre-allocated blocks so only b1 and b2 are cached.
 
-	// Put accepts the exact (possibly short) slice returned by Get.
-	p.Put(b)
-	b2, ok, err := p.TryGet(testBlockSize)
+	p.Put(b1)
+	// Put accepts the exact (possibly short) slice returned by Get and caches
+	// the block at full length. Get/TryGet re-slice up to cap, so the length
+	// must be checked on the cached slice itself.
+	p.Put(b2)
+	p.freeMu.Lock()
+	top := p.free[len(p.free)-1]
+	p.freeMu.Unlock()
+	if len(top) != testBlockSize {
+		t.Errorf("cached block len = %d, want %d", len(top), testBlockSize)
+	}
+
+	got, ok, err := p.TryGet(testBlockSize)
 	if !ok || err != nil {
 		t.Fatalf("TryGet after Put = %v, %v; want true, nil", ok, err)
 	}
-	if &b[0] != &b2[0] {
-		t.Error("TryGet after Put did not reuse the cached block")
-	}
-}
-
-func TestDefaultBufferPoolLIFO(t *testing.T) {
-	p, _ := newTestBufferPool(t)
-	b1, _ := p.Get(testBlockSize)
-	b2, _ := p.Get(testBlockSize)
-	waitIdle(t, p)
-	p.evict(p.cached())
-	p.Put(b1)
-	p.Put(b2)
-	got, _ := p.Get(testBlockSize)
 	if &got[0] != &b2[0] {
-		t.Error("Get did not return the most recently Put block")
+		t.Error("TryGet did not return the most recently Put block")
+	}
+	got, ok, _ = p.TryGet(testBlockSize)
+	if !ok || &got[0] != &b1[0] {
+		t.Error("second TryGet did not reuse the earlier Put block")
 	}
 }
 
@@ -363,29 +364,29 @@ func TestDefaultBufferPoolCleanerLifecycle(t *testing.T) {
 	// A fast real ticker drives the cleaner goroutine, while the fake clock
 	// decides when the pool counts as idle, so eviction never happens early.
 	clk := newFakeClock()
-	p := newDefaultBufferPoolWithConfig(testBlockSize, time.Millisecond, 30*time.Second)
-	p.now = clk.Now
-	p.touch()
+	p := newDefaultBufferPoolWithConfig(testBlockSize, time.Millisecond, 30*time.Second, clk.Now)
 	defer p.close()
 
 	if p.cleanerRunning.Load() {
 		t.Fatal("cleaner running before any block was cached")
 	}
+	// The first cached block starts the cleaner. That block may come from the
+	// refill started by Get or from the Put below.
 	b, _ := p.Get(testBlockSize)
 	p.Put(b)
 	if !p.cleanerRunning.Load() {
-		t.Fatal("cleaner not started after Put")
+		t.Fatal("cleaner not started after a block was cached")
 	}
 	waitFor(t, "cleaner to drain the pool and stop", func() bool {
 		clk.Advance(30 * time.Second)
 		return p.cached() == 0 && !p.refilling.Load() && !p.cleanerRunning.Load()
 	})
 
-	// The next Put restarts the cleaner.
+	// The next cached block restarts the cleaner.
 	b, _ = p.Get(testBlockSize)
 	p.Put(b)
 	if !p.cleanerRunning.Load() {
-		t.Fatal("cleaner not restarted after Put")
+		t.Fatal("cleaner not restarted after a block was cached")
 	}
 }
 
@@ -394,7 +395,7 @@ func TestDefaultBufferPoolCleanerLifecycle(t *testing.T) {
 func TestDefaultBufferPoolCleanerStopRace(t *testing.T) {
 	// idleTimeout 0 makes every tick evict, so the cleaner stops and restarts
 	// as often as possible.
-	p := newDefaultBufferPoolWithConfig(testBlockSize, time.Millisecond, 0)
+	p := newDefaultBufferPoolWithConfig(testBlockSize, time.Millisecond, 0, time.Now)
 	defer p.close()
 
 	const (
@@ -421,7 +422,7 @@ func TestDefaultBufferPoolCleanerStopRace(t *testing.T) {
 }
 
 func TestDefaultBufferPoolClose(t *testing.T) {
-	p := newDefaultBufferPoolWithConfig(testBlockSize, time.Hour, time.Hour)
+	p := newDefaultBufferPoolWithConfig(testBlockSize, time.Hour, time.Hour, time.Now)
 	b1, _ := p.Get(testBlockSize)
 	b2, _ := p.Get(testBlockSize)
 	p.Put(b1)
@@ -432,10 +433,14 @@ func TestDefaultBufferPoolClose(t *testing.T) {
 	if p.cached() != 0 {
 		t.Errorf("cached = %d after close, want 0", p.cached())
 	}
-	// Buffers returned after close are dropped.
+	// Buffers returned after close are dropped and must not restart the
+	// cleaner goroutine.
 	p.Put(b2)
 	if p.cached() != 0 || p.live.Load() != 0 {
 		t.Errorf("after close: cached=%d live=%d, want 0, 0", p.cached(), p.live.Load())
+	}
+	if p.cleanerRunning.Load() {
+		t.Error("cleaner restarted by Put after close")
 	}
 	// TryGet finds nothing and must not start pre-allocation; Get still works.
 	if _, ok, err := p.TryGet(testBlockSize); ok || err != nil {
@@ -447,6 +452,9 @@ func TestDefaultBufferPoolClose(t *testing.T) {
 	if _, err := p.Get(testBlockSize); err != nil {
 		t.Errorf("Get after close: %v", err)
 	}
+	if p.refilling.Load() {
+		t.Error("pre-allocation started by Get after close")
+	}
 }
 
 func TestDefaultBufferPoolConcurrency(t *testing.T) {
@@ -454,7 +462,10 @@ func TestDefaultBufferPoolConcurrency(t *testing.T) {
 		workers = 32
 		iters   = 500
 	)
-	p := newDefaultBufferPoolWithConfig(testBlockSize, time.Millisecond, 2*time.Millisecond)
+	// Eviction is disabled so that live and cached can be compared at the end
+	// without the cleaner changing them in between. Cleaner-vs-Put races are
+	// covered by TestDefaultBufferPoolCleanerStopRace.
+	p := newDefaultBufferPoolWithConfig(testBlockSize, time.Hour, time.Hour, time.Now)
 	defer p.close()
 
 	var wg sync.WaitGroup
@@ -495,6 +506,31 @@ func TestDefaultBufferPoolConcurrency(t *testing.T) {
 	// Nothing is outstanding, so every live block must be cached.
 	if live, cached := p.live.Load(), int64(p.cached()); live != cached {
 		t.Errorf("leaked blocks: live=%d cached=%d", live, cached)
+	}
+}
+
+// Steady-state Get/Put must not allocate (design doc §3). Benchmarks do not run
+// in CI, so this asserts it deterministically.
+func TestDefaultBufferPoolZeroAllocs(t *testing.T) {
+	p := newDefaultBufferPoolWithConfig(testBlockSize, time.Hour, time.Hour, time.Now)
+	defer p.close()
+	// Warm the cache with at least 2 blocks so that a Get leaves one cached
+	// and does not start a refill.
+	b1, _ := p.Get(testBlockSize)
+	b2, _ := p.Get(testBlockSize)
+	waitIdle(t, p)
+	p.Put(b1)
+	p.Put(b2)
+	waitIdle(t, p)
+	if got := p.cached(); got < 2 {
+		t.Fatalf("cached = %d after warm-up, want >= 2", got)
+	}
+	allocs := testing.AllocsPerRun(1000, func() {
+		b, _ := p.Get(testBlockSize)
+		p.Put(b)
+	})
+	if allocs != 0 {
+		t.Errorf("Get+Put allocs = %v, want 0", allocs)
 	}
 }
 

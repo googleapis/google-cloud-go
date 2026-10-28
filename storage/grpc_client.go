@@ -234,13 +234,20 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 		}
 	}
 
+	// Use the application's pool if one was set; otherwise the SDK's default.
+	// Creating the default pool starts no goroutines, so it needs no cleanup
+	// if client construction fails below.
+	bufferPool := config.bufferPool
+	if bufferPool == nil {
+		bufferPool = newDefaultBufferPool()
+	}
 	c := &grpcStorageClient{
 		settings:       s,
 		config:         &config,
 		metrics:        clientMetrics,
 		metricsCleanup: metricsCleanup,
 		readStallMgr:   bd,
-		bufferPool:     config.bufferPool,
+		bufferPool:     bufferPool,
 	}
 	// Add routing interceptors to inject headers.
 	ui, si := c.routingInterceptors()
@@ -255,9 +262,6 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 	}
 	configureStreamingTimeouts(g)
 	c.raw = g
-	if c.bufferPool == nil {
-		c.bufferPool = newDefaultBufferPool()
-	}
 	return c, nil
 }
 
