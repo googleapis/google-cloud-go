@@ -5553,11 +5553,11 @@ const file_google_cloud_alloydb_v1_resources_proto_rawDesc = "" +
 	"'google/cloud/alloydb/v1/resources.proto\x12\x17google.cloud.alloydb.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/alloydb/v1/csql_resources.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x16google/type/date.proto\x1a\x1bgoogle/type/dayofweek.proto\x1a\x1bgoogle/type/timeofday.proto\">\n" +
 	"\fUserPassword\x12\x12\n" +
 	"\x04user\x18\x01 \x01(\tR\x04user\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword\"\x86\x02\n" +
-	"\x0fMigrationSource\x12 \n" +
-	"\thost_port\x18\x01 \x01(\tB\x03\xe0A\x03R\bhostPort\x12&\n" +
-	"\freference_id\x18\x02 \x01(\tB\x03\xe0A\x03R\vreferenceId\x12b\n" +
-	"\vsource_type\x18\x03 \x01(\x0e2<.google.cloud.alloydb.v1.MigrationSource.MigrationSourceTypeB\x03\xe0A\x03R\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\"\x89\x02\n" +
+	"\x0fMigrationSource\x12!\n" +
+	"\thost_port\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\bhostPort\x12'\n" +
+	"\freference_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vreferenceId\x12c\n" +
+	"\vsource_type\x18\x03 \x01(\x0e2<.google.cloud.alloydb.v1.MigrationSource.MigrationSourceTypeB\x04\xe2A\x01\x03R\n" +
 	"sourceType\"E\n" +
 	"\x13MigrationSourceType\x12%\n" +
 	"!MIGRATION_SOURCE_TYPE_UNSPECIFIED\x10\x00\x12\a\n" +
@@ -5565,18 +5565,18 @@ const file_google_cloud_alloydb_v1_resources_proto_rawDesc = "" +
 	"\x10EncryptionConfig\x12H\n" +
 	"\fkms_key_name\x18\x01 \x01(\tB&\xfaA#\n" +
 	"!cloudkms.googleapis.com/CryptoKeyR\n" +
-	"kmsKeyName\"\xa6\x02\n" +
-	"\x0eEncryptionInfo\x12Z\n" +
-	"\x0fencryption_type\x18\x01 \x01(\x0e2,.google.cloud.alloydb.v1.EncryptionInfo.TypeB\x03\xe0A\x03R\x0eencryptionType\x12Z\n" +
-	"\x10kms_key_versions\x18\x02 \x03(\tB0\xe0A\x03\xfaA*\n" +
+	"kmsKeyName\"\xa8\x02\n" +
+	"\x0eEncryptionInfo\x12[\n" +
+	"\x0fencryption_type\x18\x01 \x01(\x0e2,.google.cloud.alloydb.v1.EncryptionInfo.TypeB\x04\xe2A\x01\x03R\x0eencryptionType\x12[\n" +
+	"\x10kms_key_versions\x18\x02 \x03(\tB1\xe2A\x01\x03\xfaA*\n" +
 	"(cloudkms.googleapis.com/CryptoKeyVersionR\x0ekmsKeyVersions\"\\\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x1d\n" +
 	"\x19GOOGLE_DEFAULT_ENCRYPTION\x10\x01\x12\x1f\n" +
-	"\x1bCUSTOMER_MANAGED_ENCRYPTION\x10\x02\"\x91\x03\n" +
-	"\tSslConfig\x12J\n" +
-	"\bssl_mode\x18\x01 \x01(\x0e2*.google.cloud.alloydb.v1.SslConfig.SslModeB\x03\xe0A\x01R\asslMode\x12M\n" +
-	"\tca_source\x18\x02 \x01(\x0e2+.google.cloud.alloydb.v1.SslConfig.CaSourceB\x03\xe0A\x01R\bcaSource\"\xaa\x01\n" +
+	"\x1bCUSTOMER_MANAGED_ENCRYPTION\x10\x02\"\x93\x03\n" +
+	"\tSslConfig\x12K\n" +
+	"\bssl_mode\x18\x01 \x01(\x0e2*.google.cloud.alloydb.v1.SslConfig.SslModeB\x04\xe2A\x01\x01R\asslMode\x12N\n" +
+	"\tca_source\x18\x02 \x01(\x0e2+.google.cloud.alloydb.v1.SslConfig.CaSourceB\x04\xe2A\x01\x01R\bcaSource\"\xaa\x01\n" +
 	"\aSslMode\x12\x18\n" +
 	"\x14SSL_MODE_UNSPECIFIED\x10\x00\x12\x16\n" +
 	"\x0eSSL_MODE_ALLOW\x10\x01\x1a\x02\b\x01\x12\x18\n" +
@@ -5586,14 +5586,14 @@ const file_google_cloud_alloydb_v1_resources_proto_rawDesc = "" +
 	"\x0eENCRYPTED_ONLY\x10\x05\"<\n" +
 	"\bCaSource\x12\x19\n" +
 	"\x15CA_SOURCE_UNSPECIFIED\x10\x00\x12\x15\n" +
-	"\x11CA_SOURCE_MANAGED\x10\x01\"\x9a\b\n" +
+	"\x11CA_SOURCE_MANAGED\x10\x01\"\x9b\b\n" +
 	"\x15AutomatedBackupPolicy\x12h\n" +
 	"\x0fweekly_schedule\x18\x02 \x01(\v2=.google.cloud.alloydb.v1.AutomatedBackupPolicy.WeeklyScheduleH\x00R\x0eweeklySchedule\x12u\n" +
 	"\x14time_based_retention\x18\x04 \x01(\v2A.google.cloud.alloydb.v1.AutomatedBackupPolicy.TimeBasedRetentionH\x01R\x12timeBasedRetention\x12\x81\x01\n" +
 	"\x18quantity_based_retention\x18\x05 \x01(\v2E.google.cloud.alloydb.v1.AutomatedBackupPolicy.QuantityBasedRetentionH\x01R\x16quantityBasedRetention\x12\x1d\n" +
 	"\aenabled\x18\x01 \x01(\bH\x02R\aenabled\x88\x01\x01\x12>\n" +
-	"\rbackup_window\x18\x03 \x01(\v2\x19.google.protobuf.DurationR\fbackupWindow\x12[\n" +
-	"\x11encryption_config\x18\b \x01(\v2).google.cloud.alloydb.v1.EncryptionConfigB\x03\xe0A\x01R\x10encryptionConfig\x12\x1a\n" +
+	"\rbackup_window\x18\x03 \x01(\v2\x19.google.protobuf.DurationR\fbackupWindow\x12\\\n" +
+	"\x11encryption_config\x18\b \x01(\v2).google.cloud.alloydb.v1.EncryptionConfigB\x04\xe2A\x01\x01R\x10encryptionConfig\x12\x1a\n" +
 	"\blocation\x18\x06 \x01(\tR\blocation\x12R\n" +
 	"\x06labels\x18\a \x03(\v2:.google.cloud.alloydb.v1.AutomatedBackupPolicy.LabelsEntryR\x06labels\x1a\x83\x01\n" +
 	"\x0eWeeklySchedule\x127\n" +
@@ -5618,21 +5618,21 @@ const file_google_cloud_alloydb_v1_resources_proto_rawDesc = "" +
 	"\x14recovery_window_days\x18\x04 \x01(\x05R\x12recoveryWindowDays\x12V\n" +
 	"\x11encryption_config\x18\x03 \x01(\v2).google.cloud.alloydb.v1.EncryptionConfigR\x10encryptionConfigB\n" +
 	"\n" +
-	"\b_enabled\"\xc5\x02\n" +
-	"\x14ContinuousBackupInfo\x12U\n" +
-	"\x0fencryption_info\x18\x01 \x01(\v2'.google.cloud.alloydb.v1.EncryptionInfoB\x03\xe0A\x03R\x0eencryptionInfo\x12B\n" +
-	"\fenabled_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\venabledTime\x127\n" +
-	"\bschedule\x18\x03 \x03(\x0e2\x16.google.type.DayOfWeekB\x03\xe0A\x03R\bschedule\x12Y\n" +
-	"\x18earliest_restorable_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x16earliestRestorableTime\"z\n" +
-	"\fBackupSource\x12\"\n" +
+	"\b_enabled\"\xc9\x02\n" +
+	"\x14ContinuousBackupInfo\x12V\n" +
+	"\x0fencryption_info\x18\x01 \x01(\v2'.google.cloud.alloydb.v1.EncryptionInfoB\x04\xe2A\x01\x03R\x0eencryptionInfo\x12C\n" +
+	"\fenabled_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\venabledTime\x128\n" +
+	"\bschedule\x18\x03 \x03(\x0e2\x16.google.type.DayOfWeekB\x04\xe2A\x01\x03R\bschedule\x12Z\n" +
+	"\x18earliest_restorable_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x16earliestRestorableTime\"|\n" +
+	"\fBackupSource\x12#\n" +
 	"\n" +
-	"backup_uid\x18\x02 \x01(\tB\x03\xe0A\x03R\tbackupUid\x12F\n" +
-	"\vbackup_name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
+	"backup_uid\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\tbackupUid\x12G\n" +
+	"\vbackup_name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
 	"\x1dalloydb.googleapis.com/BackupR\n" +
-	"backupName\"|\n" +
-	"\x16ContinuousBackupSource\x12\x1d\n" +
-	"\acluster\x18\x01 \x01(\tB\x03\xe0A\x02R\acluster\x12C\n" +
-	"\rpoint_in_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\vpointInTime\"\xad\x04\n" +
+	"backupName\"~\n" +
+	"\x16ContinuousBackupSource\x12\x1e\n" +
+	"\acluster\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\acluster\x12D\n" +
+	"\rpoint_in_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\vpointInTime\"\xad\x04\n" +
 	"\x17MaintenanceUpdatePolicy\x12s\n" +
 	"\x13maintenance_windows\x18\x01 \x03(\v2B.google.cloud.alloydb.v1.MaintenanceUpdatePolicy.MaintenanceWindowR\x12maintenanceWindows\x12\x80\x01\n" +
 	"\x18deny_maintenance_periods\x18\x02 \x03(\v2F.google.cloud.alloydb.v1.MaintenanceUpdatePolicy.DenyMaintenancePeriodR\x16denyMaintenancePeriods\x1at\n" +
@@ -5644,67 +5644,67 @@ const file_google_cloud_alloydb_v1_resources_proto_rawDesc = "" +
 	"\n" +
 	"start_date\x18\x01 \x01(\v2\x11.google.type.DateR\tstartDate\x12,\n" +
 	"\bend_date\x18\x02 \x01(\v2\x11.google.type.DateR\aendDate\x12*\n" +
-	"\x04time\x18\x03 \x01(\v2\x16.google.type.TimeOfDayR\x04time\"U\n" +
-	"\x13MaintenanceSchedule\x12>\n" +
+	"\x04time\x18\x03 \x01(\v2\x16.google.type.TimeOfDayR\x04time\"V\n" +
+	"\x13MaintenanceSchedule\x12?\n" +
 	"\n" +
-	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\"\xd4\x1f\n" +
-	"\aCluster\x12Q\n" +
-	"\rbackup_source\x18\x0f \x01(\v2%.google.cloud.alloydb.v1.BackupSourceB\x03\xe0A\x03H\x00R\fbackupSource\x12Z\n" +
-	"\x10migration_source\x18\x10 \x01(\v2(.google.cloud.alloydb.v1.MigrationSourceB\x03\xe0A\x03H\x00R\x0fmigrationSource\x12t\n" +
-	"\x1acloudsql_backup_run_source\x18* \x01(\v20.google.cloud.alloydb.v1.CloudSQLBackupRunSourceB\x03\xe0A\x03H\x00R\x17cloudsqlBackupRunSource\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12!\n" +
-	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x15\n" +
-	"\x03uid\x18\x03 \x01(\tB\x03\xe0A\x03R\x03uid\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12@\n" +
-	"\vdelete_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\"\xf1\x1f\n" +
+	"\aCluster\x12R\n" +
+	"\rbackup_source\x18\x0f \x01(\v2%.google.cloud.alloydb.v1.BackupSourceB\x04\xe2A\x01\x03H\x00R\fbackupSource\x12[\n" +
+	"\x10migration_source\x18\x10 \x01(\v2(.google.cloud.alloydb.v1.MigrationSourceB\x04\xe2A\x01\x03H\x00R\x0fmigrationSource\x12u\n" +
+	"\x1acloudsql_backup_run_source\x18* \x01(\v20.google.cloud.alloydb.v1.CloudSQLBackupRunSourceB\x04\xe2A\x01\x03H\x00R\x17cloudsqlBackupRunSource\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12!\n" +
+	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x16\n" +
+	"\x03uid\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12A\n" +
+	"\vdelete_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"deleteTime\x12D\n" +
-	"\x06labels\x18\a \x03(\v2,.google.cloud.alloydb.v1.Cluster.LabelsEntryR\x06labels\x12A\n" +
-	"\x05state\x18\b \x01(\x0e2&.google.cloud.alloydb.v1.Cluster.StateB\x03\xe0A\x03R\x05state\x12T\n" +
-	"\fcluster_type\x18\x18 \x01(\x0e2,.google.cloud.alloydb.v1.Cluster.ClusterTypeB\x03\xe0A\x03R\vclusterType\x12X\n" +
-	"\x10database_version\x18\t \x01(\x0e2(.google.cloud.alloydb.v1.DatabaseVersionB\x03\xe0A\x01R\x0fdatabaseVersion\x12Z\n" +
-	"\x0enetwork_config\x18\x1d \x01(\v2..google.cloud.alloydb.v1.Cluster.NetworkConfigB\x03\xe0A\x01R\rnetworkConfig\x12B\n" +
+	"\x06labels\x18\a \x03(\v2,.google.cloud.alloydb.v1.Cluster.LabelsEntryR\x06labels\x12B\n" +
+	"\x05state\x18\b \x01(\x0e2&.google.cloud.alloydb.v1.Cluster.StateB\x04\xe2A\x01\x03R\x05state\x12U\n" +
+	"\fcluster_type\x18\x18 \x01(\x0e2,.google.cloud.alloydb.v1.Cluster.ClusterTypeB\x04\xe2A\x01\x03R\vclusterType\x12Y\n" +
+	"\x10database_version\x18\t \x01(\x0e2(.google.cloud.alloydb.v1.DatabaseVersionB\x04\xe2A\x01\x01R\x0fdatabaseVersion\x12[\n" +
+	"\x0enetwork_config\x18\x1d \x01(\v2..google.cloud.alloydb.v1.Cluster.NetworkConfigB\x04\xe2A\x01\x01R\rnetworkConfig\x12C\n" +
 	"\anetwork\x18\n" +
-	" \x01(\tB(\xe0A\x02\xfaA \n" +
+	" \x01(\tB)\xe2A\x01\x02\xfaA \n" +
 	"\x1ecompute.googleapis.com/Network\x18\x01R\anetwork\x12\x12\n" +
 	"\x04etag\x18\v \x01(\tR\x04etag\x12S\n" +
-	"\vannotations\x18\f \x03(\v21.google.cloud.alloydb.v1.Cluster.AnnotationsEntryR\vannotations\x12%\n" +
-	"\vreconciling\x18\r \x01(\bB\x03\xe0A\x03R\vreconciling\x12M\n" +
-	"\finitial_user\x18\x0e \x01(\v2%.google.cloud.alloydb.v1.UserPasswordB\x03\xe0A\x04R\vinitialUser\x12f\n" +
+	"\vannotations\x18\f \x03(\v21.google.cloud.alloydb.v1.Cluster.AnnotationsEntryR\vannotations\x12&\n" +
+	"\vreconciling\x18\r \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12N\n" +
+	"\finitial_user\x18\x0e \x01(\v2%.google.cloud.alloydb.v1.UserPasswordB\x04\xe2A\x01\x04R\vinitialUser\x12f\n" +
 	"\x17automated_backup_policy\x18\x11 \x01(\v2..google.cloud.alloydb.v1.AutomatedBackupPolicyR\x15automatedBackupPolicy\x12E\n" +
 	"\n" +
-	"ssl_config\x18\x12 \x01(\v2\".google.cloud.alloydb.v1.SslConfigB\x02\x18\x01R\tsslConfig\x12[\n" +
-	"\x11encryption_config\x18\x13 \x01(\v2).google.cloud.alloydb.v1.EncryptionConfigB\x03\xe0A\x01R\x10encryptionConfig\x12U\n" +
-	"\x0fencryption_info\x18\x14 \x01(\v2'.google.cloud.alloydb.v1.EncryptionInfoB\x03\xe0A\x03R\x0eencryptionInfo\x12n\n" +
-	"\x18continuous_backup_config\x18\x1b \x01(\v2/.google.cloud.alloydb.v1.ContinuousBackupConfigB\x03\xe0A\x01R\x16continuousBackupConfig\x12h\n" +
-	"\x16continuous_backup_info\x18\x1c \x01(\v2-.google.cloud.alloydb.v1.ContinuousBackupInfoB\x03\xe0A\x03R\x14continuousBackupInfo\x12[\n" +
-	"\x10secondary_config\x18\x16 \x01(\v20.google.cloud.alloydb.v1.Cluster.SecondaryConfigR\x0fsecondaryConfig\x12Z\n" +
-	"\x0eprimary_config\x18\x17 \x01(\v2..google.cloud.alloydb.v1.Cluster.PrimaryConfigB\x03\xe0A\x03R\rprimaryConfig\x12(\n" +
-	"\rsatisfies_pzs\x18\x1e \x01(\bB\x03\xe0A\x03R\fsatisfiesPzs\x12N\n" +
+	"ssl_config\x18\x12 \x01(\v2\".google.cloud.alloydb.v1.SslConfigB\x02\x18\x01R\tsslConfig\x12\\\n" +
+	"\x11encryption_config\x18\x13 \x01(\v2).google.cloud.alloydb.v1.EncryptionConfigB\x04\xe2A\x01\x01R\x10encryptionConfig\x12V\n" +
+	"\x0fencryption_info\x18\x14 \x01(\v2'.google.cloud.alloydb.v1.EncryptionInfoB\x04\xe2A\x01\x03R\x0eencryptionInfo\x12o\n" +
+	"\x18continuous_backup_config\x18\x1b \x01(\v2/.google.cloud.alloydb.v1.ContinuousBackupConfigB\x04\xe2A\x01\x01R\x16continuousBackupConfig\x12i\n" +
+	"\x16continuous_backup_info\x18\x1c \x01(\v2-.google.cloud.alloydb.v1.ContinuousBackupInfoB\x04\xe2A\x01\x03R\x14continuousBackupInfo\x12[\n" +
+	"\x10secondary_config\x18\x16 \x01(\v20.google.cloud.alloydb.v1.Cluster.SecondaryConfigR\x0fsecondaryConfig\x12[\n" +
+	"\x0eprimary_config\x18\x17 \x01(\v2..google.cloud.alloydb.v1.Cluster.PrimaryConfigB\x04\xe2A\x01\x03R\rprimaryConfig\x12)\n" +
+	"\rsatisfies_pzs\x18\x1e \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzs\x12O\n" +
 	"\n" +
-	"psc_config\x18\x1f \x01(\v2*.google.cloud.alloydb.v1.Cluster.PscConfigB\x03\xe0A\x01R\tpscConfig\x12q\n" +
-	"\x19maintenance_update_policy\x18  \x01(\v20.google.cloud.alloydb.v1.MaintenanceUpdatePolicyB\x03\xe0A\x01R\x17maintenanceUpdatePolicy\x12d\n" +
-	"\x14maintenance_schedule\x18% \x01(\v2,.google.cloud.alloydb.v1.MaintenanceScheduleB\x03\xe0A\x03R\x13maintenanceSchedule\x12[\n" +
-	"\x11subscription_type\x18& \x01(\x0e2).google.cloud.alloydb.v1.SubscriptionTypeB\x03\xe0A\x01R\x10subscriptionType\x12Z\n" +
-	"\x0etrial_metadata\x18' \x01(\v2..google.cloud.alloydb.v1.Cluster.TrialMetadataB\x03\xe0A\x03R\rtrialMetadata\x12I\n" +
-	"\x04tags\x18) \x03(\v2*.google.cloud.alloydb.v1.Cluster.TagsEntryB\t\xe0A\x04\xe0A\x05\xe0A\x01R\x04tags\x12]\n" +
-	"\x0fdataplex_config\x18/ \x01(\v2/.google.cloud.alloydb.v1.Cluster.DataplexConfigB\x03\xe0A\x01R\x0edataplexConfig\x1a\x84\x01\n" +
-	"\rNetworkConfig\x12@\n" +
-	"\anetwork\x18\x01 \x01(\tB&\xe0A\x01\xfaA \n" +
-	"\x1ecompute.googleapis.com/NetworkR\anetwork\x121\n" +
-	"\x12allocated_ip_range\x18\x02 \x01(\tB\x03\xe0A\x01R\x10allocatedIpRange\x1ah\n" +
+	"psc_config\x18\x1f \x01(\v2*.google.cloud.alloydb.v1.Cluster.PscConfigB\x04\xe2A\x01\x01R\tpscConfig\x12r\n" +
+	"\x19maintenance_update_policy\x18  \x01(\v20.google.cloud.alloydb.v1.MaintenanceUpdatePolicyB\x04\xe2A\x01\x01R\x17maintenanceUpdatePolicy\x12e\n" +
+	"\x14maintenance_schedule\x18% \x01(\v2,.google.cloud.alloydb.v1.MaintenanceScheduleB\x04\xe2A\x01\x03R\x13maintenanceSchedule\x12\\\n" +
+	"\x11subscription_type\x18& \x01(\x0e2).google.cloud.alloydb.v1.SubscriptionTypeB\x04\xe2A\x01\x01R\x10subscriptionType\x12[\n" +
+	"\x0etrial_metadata\x18' \x01(\v2..google.cloud.alloydb.v1.Cluster.TrialMetadataB\x04\xe2A\x01\x03R\rtrialMetadata\x12F\n" +
+	"\x04tags\x18) \x03(\v2*.google.cloud.alloydb.v1.Cluster.TagsEntryB\x06\xe2A\x03\x04\x05\x01R\x04tags\x12^\n" +
+	"\x0fdataplex_config\x18/ \x01(\v2/.google.cloud.alloydb.v1.Cluster.DataplexConfigB\x04\xe2A\x01\x01R\x0edataplexConfig\x1a\x86\x01\n" +
+	"\rNetworkConfig\x12A\n" +
+	"\anetwork\x18\x01 \x01(\tB'\xe2A\x01\x01\xfaA \n" +
+	"\x1ecompute.googleapis.com/NetworkR\anetwork\x122\n" +
+	"\x12allocated_ip_range\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x10allocatedIpRange\x1ah\n" +
 	"\x0fSecondaryConfig\x12U\n" +
 	"\x14primary_cluster_name\x18\x01 \x01(\tB#\xfaA \n" +
-	"\x1ealloydb.googleapis.com/ClusterR\x12primaryClusterName\x1ao\n" +
-	"\rPrimaryConfig\x12^\n" +
-	"\x17secondary_cluster_names\x18\x01 \x03(\tB&\xe0A\x03\xfaA \n" +
-	"\x1ealloydb.googleapis.com/ClusterR\x15secondaryClusterNames\x1aw\n" +
-	"\tPscConfig\x12$\n" +
-	"\vpsc_enabled\x18\x01 \x01(\bB\x03\xe0A\x01R\n" +
-	"pscEnabled\x12D\n" +
-	"\x1cservice_owned_project_number\x18\x03 \x01(\x03B\x03\xe0A\x03R\x19serviceOwnedProjectNumber\x1a\x82\x02\n" +
+	"\x1ealloydb.googleapis.com/ClusterR\x12primaryClusterName\x1ap\n" +
+	"\rPrimaryConfig\x12_\n" +
+	"\x17secondary_cluster_names\x18\x01 \x03(\tB'\xe2A\x01\x03\xfaA \n" +
+	"\x1ealloydb.googleapis.com/ClusterR\x15secondaryClusterNames\x1ay\n" +
+	"\tPscConfig\x12%\n" +
+	"\vpsc_enabled\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\n" +
+	"pscEnabled\x12E\n" +
+	"\x1cservice_owned_project_number\x18\x03 \x01(\x03B\x04\xe2A\x01\x03R\x19serviceOwnedProjectNumber\x1a\x82\x02\n" +
 	"\rTrialMetadata\x129\n" +
 	"\n" +
 	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x125\n" +
@@ -5739,53 +5739,53 @@ const file_google_cloud_alloydb_v1_resources_proto_rawDesc = "" +
 	"\aPRIMARY\x10\x01\x12\r\n" +
 	"\tSECONDARY\x10\x02:u\xeaAr\n" +
 	"\x1ealloydb.googleapis.com/Cluster\x12:projects/{project}/locations/{location}/clusters/{cluster}*\bclusters2\aclusterR\x01\x01B\b\n" +
-	"\x06source\"\x995\n" +
-	"\bInstance\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12!\n" +
-	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x15\n" +
-	"\x03uid\x18\x03 \x01(\tB\x03\xe0A\x03R\x03uid\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12@\n" +
-	"\vdelete_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x06source\"\xd25\n" +
+	"\bInstance\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12!\n" +
+	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x16\n" +
+	"\x03uid\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12A\n" +
+	"\vdelete_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"deleteTime\x12E\n" +
-	"\x06labels\x18\a \x03(\v2-.google.cloud.alloydb.v1.Instance.LabelsEntryR\x06labels\x12B\n" +
-	"\x05state\x18\b \x01(\x0e2'.google.cloud.alloydb.v1.Instance.StateB\x03\xe0A\x03R\x05state\x12X\n" +
-	"\rinstance_type\x18\t \x01(\x0e2..google.cloud.alloydb.v1.Instance.InstanceTypeB\x03\xe0A\x02R\finstanceType\x12V\n" +
+	"\x06labels\x18\a \x03(\v2-.google.cloud.alloydb.v1.Instance.LabelsEntryR\x06labels\x12C\n" +
+	"\x05state\x18\b \x01(\x0e2'.google.cloud.alloydb.v1.Instance.StateB\x04\xe2A\x01\x03R\x05state\x12Y\n" +
+	"\rinstance_type\x18\t \x01(\x0e2..google.cloud.alloydb.v1.Instance.InstanceTypeB\x04\xe2A\x01\x02R\finstanceType\x12V\n" +
 	"\x0emachine_config\x18\n" +
 	" \x01(\v2/.google.cloud.alloydb.v1.Instance.MachineConfigR\rmachineConfig\x12_\n" +
 	"\x11availability_type\x18\v \x01(\x0e22.google.cloud.alloydb.v1.Instance.AvailabilityTypeR\x10availabilityType\x12\x19\n" +
 	"\bgce_zone\x18\f \x01(\tR\agceZone\x12[\n" +
-	"\x0edatabase_flags\x18\r \x03(\v24.google.cloud.alloydb.v1.Instance.DatabaseFlagsEntryR\rdatabaseFlags\x12P\n" +
-	"\rwritable_node\x18\x13 \x01(\v2&.google.cloud.alloydb.v1.Instance.NodeB\x03\xe0A\x03R\fwritableNode\x12A\n" +
-	"\x05nodes\x18\x14 \x03(\v2&.google.cloud.alloydb.v1.Instance.NodeB\x03\xe0A\x03R\x05nodes\x12q\n" +
-	"\x15query_insights_config\x18\x15 \x01(\v2=.google.cloud.alloydb.v1.Instance.QueryInsightsInstanceConfigR\x13queryInsightsConfig\x12p\n" +
-	"\x13query_insights_info\x18/ \x01(\v2;.google.cloud.alloydb.v1.Instance.QueryInsightsInstanceInfoB\x03\xe0A\x03R\x11queryInsightsInfo\x12p\n" +
-	"\x14observability_config\x18\x1a \x01(\v2=.google.cloud.alloydb.v1.Instance.ObservabilityInstanceConfigR\x13observabilityConfig\x12\x80\x01\n" +
-	"\x1bobservability_instance_info\x18, \x01(\v2;.google.cloud.alloydb.v1.Instance.ObservabilityInstanceInfoB\x03\xe0A\x03R\x19observabilityInstanceInfo\x12Z\n" +
-	"\x10read_pool_config\x18\x0e \x01(\v20.google.cloud.alloydb.v1.Instance.ReadPoolConfigR\x0ereadPoolConfig\x12\"\n" +
+	"\x0edatabase_flags\x18\r \x03(\v24.google.cloud.alloydb.v1.Instance.DatabaseFlagsEntryR\rdatabaseFlags\x12Q\n" +
+	"\rwritable_node\x18\x13 \x01(\v2&.google.cloud.alloydb.v1.Instance.NodeB\x04\xe2A\x01\x03R\fwritableNode\x12B\n" +
+	"\x05nodes\x18\x14 \x03(\v2&.google.cloud.alloydb.v1.Instance.NodeB\x04\xe2A\x01\x03R\x05nodes\x12q\n" +
+	"\x15query_insights_config\x18\x15 \x01(\v2=.google.cloud.alloydb.v1.Instance.QueryInsightsInstanceConfigR\x13queryInsightsConfig\x12q\n" +
+	"\x13query_insights_info\x18/ \x01(\v2;.google.cloud.alloydb.v1.Instance.QueryInsightsInstanceInfoB\x04\xe2A\x01\x03R\x11queryInsightsInfo\x12p\n" +
+	"\x14observability_config\x18\x1a \x01(\v2=.google.cloud.alloydb.v1.Instance.ObservabilityInstanceConfigR\x13observabilityConfig\x12\x81\x01\n" +
+	"\x1bobservability_instance_info\x18, \x01(\v2;.google.cloud.alloydb.v1.Instance.ObservabilityInstanceInfoB\x04\xe2A\x01\x03R\x19observabilityInstanceInfo\x12Z\n" +
+	"\x10read_pool_config\x18\x0e \x01(\v20.google.cloud.alloydb.v1.Instance.ReadPoolConfigR\x0ereadPoolConfig\x12#\n" +
 	"\n" +
-	"ip_address\x18\x0f \x01(\tB\x03\xe0A\x03R\tipAddress\x127\n" +
-	"\x11public_ip_address\x18\x1b \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x02R\x0fpublicIpAddress\x12%\n" +
-	"\vreconciling\x18\x10 \x01(\bB\x03\xe0A\x03R\vreconciling\x12\x12\n" +
+	"ip_address\x18\x0f \x01(\tB\x04\xe2A\x01\x03R\tipAddress\x128\n" +
+	"\x11public_ip_address\x18\x1b \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x02R\x0fpublicIpAddress\x12&\n" +
+	"\vreconciling\x18\x10 \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12\x12\n" +
 	"\x04etag\x18\x11 \x01(\tR\x04etag\x12T\n" +
-	"\vannotations\x18\x12 \x03(\v22.google.cloud.alloydb.v1.Instance.AnnotationsEntryR\vannotations\x12w\n" +
-	"\x18client_connection_config\x18\x17 \x01(\v28.google.cloud.alloydb.v1.Instance.ClientConnectionConfigB\x03\xe0A\x01R\x16clientConnectionConfig\x12(\n" +
-	"\rsatisfies_pzs\x18\x18 \x01(\bB\x03\xe0A\x03R\fsatisfiesPzs\x12h\n" +
-	"\x13psc_instance_config\x18\x1c \x01(\v23.google.cloud.alloydb.v1.Instance.PscInstanceConfigB\x03\xe0A\x01R\x11pscInstanceConfig\x12c\n" +
-	"\x0enetwork_config\x18\x1d \x01(\v27.google.cloud.alloydb.v1.Instance.InstanceNetworkConfigB\x03\xe0A\x01R\rnetworkConfig\x12L\n" +
-	"\x1coutbound_public_ip_addresses\x18\" \x03(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x02R\x19outboundPublicIpAddresses\x12d\n" +
-	"\x11activation_policy\x18# \x01(\x0e22.google.cloud.alloydb.v1.Instance.ActivationPolicyB\x03\xe0A\x01R\x10activationPolicy\x12q\n" +
-	"\x16connection_pool_config\x18% \x01(\v26.google.cloud.alloydb.v1.Instance.ConnectionPoolConfigB\x03\xe0A\x01R\x14connectionPoolConfig\x1aO\n" +
+	"\vannotations\x18\x12 \x03(\v22.google.cloud.alloydb.v1.Instance.AnnotationsEntryR\vannotations\x12x\n" +
+	"\x18client_connection_config\x18\x17 \x01(\v28.google.cloud.alloydb.v1.Instance.ClientConnectionConfigB\x04\xe2A\x01\x01R\x16clientConnectionConfig\x12)\n" +
+	"\rsatisfies_pzs\x18\x18 \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzs\x12i\n" +
+	"\x13psc_instance_config\x18\x1c \x01(\v23.google.cloud.alloydb.v1.Instance.PscInstanceConfigB\x04\xe2A\x01\x01R\x11pscInstanceConfig\x12d\n" +
+	"\x0enetwork_config\x18\x1d \x01(\v27.google.cloud.alloydb.v1.Instance.InstanceNetworkConfigB\x04\xe2A\x01\x01R\rnetworkConfig\x12M\n" +
+	"\x1coutbound_public_ip_addresses\x18\" \x03(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x02R\x19outboundPublicIpAddresses\x12e\n" +
+	"\x11activation_policy\x18# \x01(\x0e22.google.cloud.alloydb.v1.Instance.ActivationPolicyB\x04\xe2A\x01\x01R\x10activationPolicy\x12r\n" +
+	"\x16connection_pool_config\x18% \x01(\v26.google.cloud.alloydb.v1.Instance.ConnectionPoolConfigB\x04\xe2A\x01\x01R\x14connectionPoolConfig\x1aO\n" +
 	"\rMachineConfig\x12\x1b\n" +
 	"\tcpu_count\x18\x01 \x01(\x05R\bcpuCount\x12!\n" +
-	"\fmachine_type\x18\x04 \x01(\tR\vmachineType\x1ai\n" +
-	"\x04Node\x12\x1c\n" +
-	"\azone_id\x18\x01 \x01(\tB\x03\xe0A\x03R\x06zoneId\x12\x13\n" +
-	"\x02id\x18\x02 \x01(\tB\x03\xe0A\x03R\x02id\x12\x13\n" +
-	"\x02ip\x18\x03 \x01(\tB\x03\xe0A\x03R\x02ip\x12\x19\n" +
-	"\x05state\x18\x04 \x01(\tB\x03\xe0A\x03R\x05state\x1a\xce\x02\n" +
+	"\fmachine_type\x18\x04 \x01(\tR\vmachineType\x1am\n" +
+	"\x04Node\x12\x1d\n" +
+	"\azone_id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x06zoneId\x12\x14\n" +
+	"\x02id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x02id\x12\x14\n" +
+	"\x02ip\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x02ip\x12\x1a\n" +
+	"\x05state\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x05state\x1a\xce\x02\n" +
 	"\x1bQueryInsightsInstanceConfig\x12;\n" +
 	"\x17record_application_tags\x18\x02 \x01(\bH\x00R\x15recordApplicationTags\x88\x01\x01\x127\n" +
 	"\x15record_client_address\x18\x03 \x01(\bH\x01R\x13recordClientAddress\x88\x01\x01\x12.\n" +
@@ -5793,18 +5793,18 @@ const file_google_cloud_alloydb_v1_resources_proto_rawDesc = "" +
 	"\x16query_plans_per_minute\x18\x05 \x01(\rH\x02R\x13queryPlansPerMinute\x88\x01\x01B\x1a\n" +
 	"\x18_record_application_tagsB\x18\n" +
 	"\x16_record_client_addressB\x19\n" +
-	"\x17_query_plans_per_minute\x1a\x9f\x02\n" +
-	"\x19QueryInsightsInstanceInfo\x12\x1d\n" +
-	"\aenabled\x18\x01 \x01(\bB\x03\xe0A\x03R\aenabled\x12;\n" +
-	"\x17record_application_tags\x18\x02 \x01(\bB\x03\xe0A\x03R\x15recordApplicationTags\x127\n" +
-	"\x15record_client_address\x18\x03 \x01(\bB\x03\xe0A\x03R\x13recordClientAddress\x123\n" +
-	"\x13query_string_length\x18\x04 \x01(\rB\x03\xe0A\x03R\x11queryStringLength\x128\n" +
-	"\x16query_plans_per_minute\x18\x05 \x01(\rB\x03\xe0A\x03R\x13queryPlansPerMinute\x1a\x87\x05\n" +
+	"\x17_query_plans_per_minute\x1a\xa4\x02\n" +
+	"\x19QueryInsightsInstanceInfo\x12\x1e\n" +
+	"\aenabled\x18\x01 \x01(\bB\x04\xe2A\x01\x03R\aenabled\x12<\n" +
+	"\x17record_application_tags\x18\x02 \x01(\bB\x04\xe2A\x01\x03R\x15recordApplicationTags\x128\n" +
+	"\x15record_client_address\x18\x03 \x01(\bB\x04\xe2A\x01\x03R\x13recordClientAddress\x124\n" +
+	"\x13query_string_length\x18\x04 \x01(\rB\x04\xe2A\x01\x03R\x11queryStringLength\x129\n" +
+	"\x16query_plans_per_minute\x18\x05 \x01(\rB\x04\xe2A\x01\x03R\x13queryPlansPerMinute\x1a\x88\x05\n" +
 	"\x1bObservabilityInstanceConfig\x12\x1d\n" +
 	"\aenabled\x18\x01 \x01(\bH\x00R\aenabled\x88\x01\x01\x120\n" +
 	"\x11preserve_comments\x18\x02 \x01(\bH\x01R\x10preserveComments\x88\x01\x01\x12/\n" +
-	"\x11track_wait_events\x18\x03 \x01(\bH\x02R\x0ftrackWaitEvents\x88\x01\x01\x12=\n" +
-	"\x16track_wait_event_types\x18\x04 \x01(\bB\x03\xe0A\x03H\x03R\x13trackWaitEventTypes\x88\x01\x01\x12:\n" +
+	"\x11track_wait_events\x18\x03 \x01(\bH\x02R\x0ftrackWaitEvents\x88\x01\x01\x12>\n" +
+	"\x16track_wait_event_types\x18\x04 \x01(\bB\x04\xe2A\x01\x03H\x03R\x13trackWaitEventTypes\x88\x01\x01\x12:\n" +
 	"\x17max_query_string_length\x18\x05 \x01(\x05H\x04R\x14maxQueryStringLength\x88\x01\x01\x12;\n" +
 	"\x17record_application_tags\x18\x06 \x01(\bH\x05R\x15recordApplicationTags\x88\x01\x01\x128\n" +
 	"\x16query_plans_per_minute\x18\a \x01(\x05H\x06R\x13queryPlansPerMinute\x88\x01\x01\x125\n" +
@@ -5817,54 +5817,54 @@ const file_google_cloud_alloydb_v1_resources_proto_rawDesc = "" +
 	"\x18_max_query_string_lengthB\x1a\n" +
 	"\x18_record_application_tagsB\x19\n" +
 	"\x17_query_plans_per_minuteB\x17\n" +
-	"\x15_track_active_queries\x1a\xc1\x03\n" +
-	"\x19ObservabilityInstanceInfo\x12\x1d\n" +
-	"\aenabled\x18\x02 \x01(\bB\x03\xe0A\x03R\aenabled\x120\n" +
-	"\x11preserve_comments\x18\x03 \x01(\bB\x03\xe0A\x03R\x10preserveComments\x12/\n" +
-	"\x11track_wait_events\x18\x04 \x01(\bB\x03\xe0A\x03R\x0ftrackWaitEvents\x128\n" +
-	"\x16track_wait_event_types\x18\x05 \x01(\bB\x03\xe0A\x03R\x13trackWaitEventTypes\x12:\n" +
-	"\x17max_query_string_length\x18\x06 \x01(\x05B\x03\xe0A\x03R\x14maxQueryStringLength\x12;\n" +
-	"\x17record_application_tags\x18\a \x01(\bB\x03\xe0A\x03R\x15recordApplicationTags\x128\n" +
-	"\x16query_plans_per_minute\x18\b \x01(\x05B\x03\xe0A\x03R\x13queryPlansPerMinute\x125\n" +
-	"\x14track_active_queries\x18\t \x01(\bB\x03\xe0A\x03R\x12trackActiveQueries\x1a/\n" +
+	"\x15_track_active_queries\x1a\xc9\x03\n" +
+	"\x19ObservabilityInstanceInfo\x12\x1e\n" +
+	"\aenabled\x18\x02 \x01(\bB\x04\xe2A\x01\x03R\aenabled\x121\n" +
+	"\x11preserve_comments\x18\x03 \x01(\bB\x04\xe2A\x01\x03R\x10preserveComments\x120\n" +
+	"\x11track_wait_events\x18\x04 \x01(\bB\x04\xe2A\x01\x03R\x0ftrackWaitEvents\x129\n" +
+	"\x16track_wait_event_types\x18\x05 \x01(\bB\x04\xe2A\x01\x03R\x13trackWaitEventTypes\x12;\n" +
+	"\x17max_query_string_length\x18\x06 \x01(\x05B\x04\xe2A\x01\x03R\x14maxQueryStringLength\x12<\n" +
+	"\x17record_application_tags\x18\a \x01(\bB\x04\xe2A\x01\x03R\x15recordApplicationTags\x129\n" +
+	"\x16query_plans_per_minute\x18\b \x01(\x05B\x04\xe2A\x01\x03R\x13queryPlansPerMinute\x126\n" +
+	"\x14track_active_queries\x18\t \x01(\bB\x04\xe2A\x01\x03R\x12trackActiveQueries\x1a/\n" +
 	"\x0eReadPoolConfig\x12\x1d\n" +
 	"\n" +
-	"node_count\x18\x01 \x01(\x05R\tnodeCount\x1a\x94\x01\n" +
-	"\x16ClientConnectionConfig\x122\n" +
-	"\x12require_connectors\x18\x01 \x01(\bB\x03\xe0A\x01R\x11requireConnectors\x12F\n" +
+	"node_count\x18\x01 \x01(\x05R\tnodeCount\x1a\x96\x01\n" +
+	"\x16ClientConnectionConfig\x123\n" +
+	"\x12require_connectors\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x11requireConnectors\x12G\n" +
 	"\n" +
-	"ssl_config\x18\x02 \x01(\v2\".google.cloud.alloydb.v1.SslConfigB\x03\xe0A\x01R\tsslConfig\x1aT\n" +
+	"ssl_config\x18\x02 \x01(\v2\".google.cloud.alloydb.v1.SslConfigB\x04\xe2A\x01\x01R\tsslConfig\x1aT\n" +
 	"\x12PscInterfaceConfig\x12>\n" +
-	"\x1bnetwork_attachment_resource\x18\x01 \x01(\tR\x19networkAttachmentResource\x1a\xf5\x01\n" +
+	"\x1bnetwork_attachment_resource\x18\x01 \x01(\tR\x19networkAttachmentResource\x1a\xf8\x01\n" +
 	"\x17PscAutoConnectionConfig\x12)\n" +
 	"\x10consumer_project\x18\x01 \x01(\tR\x0fconsumerProject\x12)\n" +
-	"\x10consumer_network\x18\x02 \x01(\tR\x0fconsumerNetwork\x12*\n" +
+	"\x10consumer_network\x18\x02 \x01(\tR\x0fconsumerNetwork\x12+\n" +
 	"\n" +
-	"ip_address\x18\x03 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x02R\tipAddress\x12\x1b\n" +
-	"\x06status\x18\x04 \x01(\tB\x03\xe0A\x03R\x06status\x12;\n" +
-	"\x17consumer_network_status\x18\x05 \x01(\tB\x03\xe0A\x03R\x15consumerNetworkStatus\x1a\xc6\x03\n" +
-	"\x11PscInstanceConfig\x12h\n" +
-	"\x17service_attachment_link\x18\x01 \x01(\tB0\xe0A\x03\xfaA*\n" +
-	"(compute.googleapis.com/ServiceAttachmentR\x15serviceAttachmentLink\x12?\n" +
-	"\x19allowed_consumer_projects\x18\x02 \x03(\tB\x03\xe0A\x01R\x17allowedConsumerProjects\x12%\n" +
-	"\fpsc_dns_name\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"pscDnsName\x12m\n" +
-	"\x15psc_interface_configs\x18\b \x03(\v24.google.cloud.alloydb.v1.Instance.PscInterfaceConfigB\x03\xe0A\x01R\x13pscInterfaceConfigs\x12p\n" +
-	"\x14psc_auto_connections\x18\t \x03(\v29.google.cloud.alloydb.v1.Instance.PscAutoConnectionConfigB\x03\xe0A\x01R\x12pscAutoConnections\x1a\xdd\x03\n" +
-	"\x15InstanceNetworkConfig\x12\x90\x01\n" +
-	"\x1cauthorized_external_networks\x18\x01 \x03(\v2I.google.cloud.alloydb.v1.Instance.InstanceNetworkConfig.AuthorizedNetworkB\x03\xe0A\x01R\x1aauthorizedExternalNetworks\x12-\n" +
-	"\x10enable_public_ip\x18\x02 \x01(\bB\x03\xe0A\x01R\x0eenablePublicIp\x12>\n" +
-	"\x19enable_outbound_public_ip\x18\x03 \x01(\bB\x03\xe0A\x01R\x16enableOutboundPublicIp\x12@\n" +
-	"\anetwork\x18\x04 \x01(\tB&\xe0A\x03\xfaA \n" +
-	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12B\n" +
-	"\x1ballocated_ip_range_override\x18\x05 \x01(\tB\x03\xe0A\x01R\x18allocatedIpRangeOverride\x1a<\n" +
+	"ip_address\x18\x03 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x02R\tipAddress\x12\x1c\n" +
+	"\x06status\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x06status\x12<\n" +
+	"\x17consumer_network_status\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x15consumerNetworkStatus\x1a\xcb\x03\n" +
+	"\x11PscInstanceConfig\x12i\n" +
+	"\x17service_attachment_link\x18\x01 \x01(\tB1\xe2A\x01\x03\xfaA*\n" +
+	"(compute.googleapis.com/ServiceAttachmentR\x15serviceAttachmentLink\x12@\n" +
+	"\x19allowed_consumer_projects\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x17allowedConsumerProjects\x12&\n" +
+	"\fpsc_dns_name\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"pscDnsName\x12n\n" +
+	"\x15psc_interface_configs\x18\b \x03(\v24.google.cloud.alloydb.v1.Instance.PscInterfaceConfigB\x04\xe2A\x01\x01R\x13pscInterfaceConfigs\x12q\n" +
+	"\x14psc_auto_connections\x18\t \x03(\v29.google.cloud.alloydb.v1.Instance.PscAutoConnectionConfigB\x04\xe2A\x01\x01R\x12pscAutoConnections\x1a\xe2\x03\n" +
+	"\x15InstanceNetworkConfig\x12\x91\x01\n" +
+	"\x1cauthorized_external_networks\x18\x01 \x03(\v2I.google.cloud.alloydb.v1.Instance.InstanceNetworkConfig.AuthorizedNetworkB\x04\xe2A\x01\x01R\x1aauthorizedExternalNetworks\x12.\n" +
+	"\x10enable_public_ip\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x0eenablePublicIp\x12?\n" +
+	"\x19enable_outbound_public_ip\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x16enableOutboundPublicIp\x12A\n" +
+	"\anetwork\x18\x04 \x01(\tB'\xe2A\x01\x03\xfaA \n" +
+	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12C\n" +
+	"\x1ballocated_ip_range_override\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x18allocatedIpRangeOverride\x1a<\n" +
 	"\x11AuthorizedNetwork\x12'\n" +
 	"\n" +
-	"cidr_range\x18\x01 \x01(\tB\b\xe2\x8c\xcf\xd7\b\x02\b\x02R\tcidrRange\x1a\xf5\x01\n" +
-	"\x14ConnectionPoolConfig\x12\x1d\n" +
-	"\aenabled\x18\f \x01(\bB\x03\xe0A\x01R\aenabled\x12\\\n" +
-	"\x05flags\x18\r \x03(\v2A.google.cloud.alloydb.v1.Instance.ConnectionPoolConfig.FlagsEntryB\x03\xe0A\x01R\x05flags\x12&\n" +
-	"\fpooler_count\x18\x0e \x01(\x05B\x03\xe0A\x03R\vpoolerCount\x1a8\n" +
+	"cidr_range\x18\x01 \x01(\tB\b\xe2\x8c\xcf\xd7\b\x02\b\x02R\tcidrRange\x1a\xf8\x01\n" +
+	"\x14ConnectionPoolConfig\x12\x1e\n" +
+	"\aenabled\x18\f \x01(\bB\x04\xe2A\x01\x01R\aenabled\x12]\n" +
+	"\x05flags\x18\r \x03(\v2A.google.cloud.alloydb.v1.Instance.ConnectionPoolConfig.FlagsEntryB\x04\xe2A\x01\x01R\x05flags\x12'\n" +
+	"\fpooler_count\x18\x0e \x01(\x05B\x04\xe2A\x01\x03R\vpoolerCount\x1a8\n" +
 	"\n" +
 	"FlagsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -5903,50 +5903,50 @@ const file_google_cloud_alloydb_v1_resources_proto_rawDesc = "" +
 	"\n" +
 	"\x06ALWAYS\x10\x01\x12\t\n" +
 	"\x05NEVER\x10\x02:\x8e\x01\xeaA\x8a\x01\n" +
-	"\x1falloydb.googleapis.com/Instance\x12Oprojects/{project}/locations/{location}/clusters/{cluster}/instances/{instance}*\tinstances2\binstanceR\x01\x01\"\xd8\x02\n" +
+	"\x1falloydb.googleapis.com/Instance\x12Oprojects/{project}/locations/{location}/clusters/{cluster}/instances/{instance}*\tinstances2\binstanceR\x01\x01\"\xdb\x02\n" +
 	"\x0eConnectionInfo\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12\"\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12#\n" +
 	"\n" +
-	"ip_address\x18\x02 \x01(\tB\x03\xe0A\x03R\tipAddress\x127\n" +
-	"\x11public_ip_address\x18\x05 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x02R\x0fpublicIpAddress\x12&\n" +
-	"\finstance_uid\x18\x04 \x01(\tB\x03\xe0A\x03R\vinstanceUid:\xac\x01\xeaA\xa8\x01\n" +
-	"%alloydb.googleapis.com/ConnectionInfo\x12^projects/{project}/locations/{location}/clusters/{cluster}/instances/{instance}/connectionInfo*\x0fconnectionInfos2\x0econnectionInfo\"\xe9\x0f\n" +
-	"\x06Backup\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12!\n" +
-	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x15\n" +
-	"\x03uid\x18\x03 \x01(\tB\x03\xe0A\x03R\x03uid\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12@\n" +
-	"\vdelete_time\x18\x0f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"deleteTime\x12U\n" +
-	"\x16create_completion_time\x18\x1a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x14createCompletionTime\x12C\n" +
-	"\x06labels\x18\x06 \x03(\v2+.google.cloud.alloydb.v1.Backup.LabelsEntryR\x06labels\x12@\n" +
-	"\x05state\x18\a \x01(\x0e2%.google.cloud.alloydb.v1.Backup.StateB\x03\xe0A\x03R\x05state\x128\n" +
+	"ip_address\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\tipAddress\x128\n" +
+	"\x11public_ip_address\x18\x05 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x02R\x0fpublicIpAddress\x12'\n" +
+	"\finstance_uid\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\vinstanceUid:\xac\x01\xeaA\xa8\x01\n" +
+	"%alloydb.googleapis.com/ConnectionInfo\x12^projects/{project}/locations/{location}/clusters/{cluster}/instances/{instance}/connectionInfo*\x0fconnectionInfos2\x0econnectionInfo\"\xf9\x0f\n" +
+	"\x06Backup\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12!\n" +
+	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x16\n" +
+	"\x03uid\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12A\n" +
+	"\vdelete_time\x18\x0f \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"deleteTime\x12V\n" +
+	"\x16create_completion_time\x18\x1a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x14createCompletionTime\x12C\n" +
+	"\x06labels\x18\x06 \x03(\v2+.google.cloud.alloydb.v1.Backup.LabelsEntryR\x06labels\x12A\n" +
+	"\x05state\x18\a \x01(\x0e2%.google.cloud.alloydb.v1.Backup.StateB\x04\xe2A\x01\x03R\x05state\x128\n" +
 	"\x04type\x18\b \x01(\x0e2$.google.cloud.alloydb.v1.Backup.TypeR\x04type\x12 \n" +
-	"\vdescription\x18\t \x01(\tR\vdescription\x12$\n" +
-	"\vcluster_uid\x18\x12 \x01(\tB\x03\xe0A\x03R\n" +
-	"clusterUid\x12I\n" +
+	"\vdescription\x18\t \x01(\tR\vdescription\x12%\n" +
+	"\vcluster_uid\x18\x12 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"clusterUid\x12J\n" +
 	"\fcluster_name\x18\n" +
-	" \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1ealloydb.googleapis.com/ClusterR\vclusterName\x12%\n" +
-	"\vreconciling\x18\v \x01(\bB\x03\xe0A\x03R\vreconciling\x12[\n" +
-	"\x11encryption_config\x18\f \x01(\v2).google.cloud.alloydb.v1.EncryptionConfigB\x03\xe0A\x01R\x10encryptionConfig\x12U\n" +
-	"\x0fencryption_info\x18\r \x01(\v2'.google.cloud.alloydb.v1.EncryptionInfoB\x03\xe0A\x03R\x0eencryptionInfo\x12\x12\n" +
+	" \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1ealloydb.googleapis.com/ClusterR\vclusterName\x12&\n" +
+	"\vreconciling\x18\v \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12\\\n" +
+	"\x11encryption_config\x18\f \x01(\v2).google.cloud.alloydb.v1.EncryptionConfigB\x04\xe2A\x01\x01R\x10encryptionConfig\x12V\n" +
+	"\x0fencryption_info\x18\r \x01(\v2'.google.cloud.alloydb.v1.EncryptionInfoB\x04\xe2A\x01\x03R\x0eencryptionInfo\x12\x12\n" +
 	"\x04etag\x18\x0e \x01(\tR\x04etag\x12R\n" +
-	"\vannotations\x18\x10 \x03(\v20.google.cloud.alloydb.v1.Backup.AnnotationsEntryR\vannotations\x12\"\n" +
+	"\vannotations\x18\x10 \x03(\v20.google.cloud.alloydb.v1.Backup.AnnotationsEntryR\vannotations\x12#\n" +
 	"\n" +
-	"size_bytes\x18\x11 \x01(\x03B\x03\xe0A\x03R\tsizeBytes\x12@\n" +
-	"\vexpiry_time\x18\x13 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"expiryTime\x12a\n" +
-	"\x0fexpiry_quantity\x18\x14 \x01(\v23.google.cloud.alloydb.v1.Backup.QuantityBasedExpiryB\x03\xe0A\x03R\x0eexpiryQuantity\x12(\n" +
-	"\rsatisfies_pzs\x18\x15 \x01(\bB\x03\xe0A\x03R\fsatisfiesPzs\x12X\n" +
-	"\x10database_version\x18\x16 \x01(\x0e2(.google.cloud.alloydb.v1.DatabaseVersionB\x03\xe0A\x03R\x0fdatabaseVersion\x12H\n" +
-	"\x04tags\x18\x19 \x03(\v2).google.cloud.alloydb.v1.Backup.TagsEntryB\t\xe0A\x04\xe0A\x05\xe0A\x01R\x04tags\x1a|\n" +
-	"\x13QuantityBasedExpiry\x12,\n" +
-	"\x0fretention_count\x18\x01 \x01(\x05B\x03\xe0A\x03R\x0eretentionCount\x127\n" +
-	"\x15total_retention_count\x18\x02 \x01(\x05B\x03\xe0A\x03R\x13totalRetentionCount\x1a9\n" +
+	"size_bytes\x18\x11 \x01(\x03B\x04\xe2A\x01\x03R\tsizeBytes\x12A\n" +
+	"\vexpiry_time\x18\x13 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"expiryTime\x12b\n" +
+	"\x0fexpiry_quantity\x18\x14 \x01(\v23.google.cloud.alloydb.v1.Backup.QuantityBasedExpiryB\x04\xe2A\x01\x03R\x0eexpiryQuantity\x12)\n" +
+	"\rsatisfies_pzs\x18\x15 \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzs\x12Y\n" +
+	"\x10database_version\x18\x16 \x01(\x0e2(.google.cloud.alloydb.v1.DatabaseVersionB\x04\xe2A\x01\x03R\x0fdatabaseVersion\x12E\n" +
+	"\x04tags\x18\x19 \x03(\v2).google.cloud.alloydb.v1.Backup.TagsEntryB\x06\xe2A\x03\x04\x05\x01R\x04tags\x1a~\n" +
+	"\x13QuantityBasedExpiry\x12-\n" +
+	"\x0fretention_count\x18\x01 \x01(\x05B\x04\xe2A\x01\x03R\x0eretentionCount\x128\n" +
+	"\x15total_retention_count\x18\x02 \x01(\x05B\x04\xe2A\x01\x03R\x13totalRetentionCount\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a>\n" +
@@ -6003,25 +6003,25 @@ const file_google_cloud_alloydb_v1_resources_proto_rawDesc = "" +
 	"\x0fCONNECTION_POOL\x10\x02:\x97\x01\xeaA\x93\x01\n" +
 	",alloydb.googleapis.com/SupportedDatabaseFlag\x124projects/{project}/locations/{location}/flags/{flag}*\x16supportedDatabaseFlags2\x15supportedDatabaseFlagB\x0e\n" +
 	"\frestrictionsB\x13\n" +
-	"\x11recommended_value\"\xb3\x03\n" +
-	"\x04User\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x1f\n" +
-	"\bpassword\x18\x02 \x01(\tB\x03\xe0A\x04R\bpassword\x12*\n" +
-	"\x0edatabase_roles\x18\x04 \x03(\tB\x03\xe0A\x01R\rdatabaseRoles\x12H\n" +
-	"\tuser_type\x18\x05 \x01(\x0e2&.google.cloud.alloydb.v1.User.UserTypeB\x03\xe0A\x01R\buserType\x12-\n" +
-	"\x10keep_extra_roles\x18\x06 \x01(\bB\x03\xe0A\x04R\x0ekeepExtraRoles\"Q\n" +
+	"\x11recommended_value\"\xb8\x03\n" +
+	"\x04User\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12 \n" +
+	"\bpassword\x18\x02 \x01(\tB\x04\xe2A\x01\x04R\bpassword\x12+\n" +
+	"\x0edatabase_roles\x18\x04 \x03(\tB\x04\xe2A\x01\x01R\rdatabaseRoles\x12I\n" +
+	"\tuser_type\x18\x05 \x01(\x0e2&.google.cloud.alloydb.v1.User.UserTypeB\x04\xe2A\x01\x01R\buserType\x12.\n" +
+	"\x10keep_extra_roles\x18\x06 \x01(\bB\x04\xe2A\x01\x04R\x0ekeepExtraRoles\"Q\n" +
 	"\bUserType\x12\x19\n" +
 	"\x15USER_TYPE_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10ALLOYDB_BUILT_IN\x10\x01\x12\x14\n" +
 	"\x10ALLOYDB_IAM_USER\x10\x02:y\xeaAv\n" +
-	"\x1balloydb.googleapis.com/User\x12Gprojects/{project}/locations/{location}/clusters/{cluster}/users/{user}*\x05users2\x04userR\x01\x01\"\xb5\x03\n" +
-	"\bDatabase\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12 \n" +
-	"\acharset\x18\x02 \x01(\tB\x06\xe0A\x01\xe0A\x05R\acharset\x12$\n" +
-	"\tcollation\x18\x03 \x01(\tB\x06\xe0A\x01\xe0A\x05R\tcollation\x12-\n" +
-	"\x0echaracter_type\x18\x04 \x01(\tB\x06\xe0A\x01\xe0A\x05R\rcharacterType\x123\n" +
-	"\x11database_template\x18\x06 \x01(\tB\x06\xe0A\x04\xe0A\x05R\x10databaseTemplate\x12:\n" +
-	"\x14is_template_database\x18\a \x01(\bB\x03\xe0A\x01H\x00R\x12isTemplateDatabase\x88\x01\x01:\x8e\x01\xeaA\x8a\x01\n" +
+	"\x1balloydb.googleapis.com/User\x12Gprojects/{project}/locations/{location}/clusters/{cluster}/users/{user}*\x05users2\x04userR\x01\x01\"\xb3\x03\n" +
+	"\bDatabase\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x1f\n" +
+	"\acharset\x18\x02 \x01(\tB\x05\xe2A\x02\x01\x05R\acharset\x12#\n" +
+	"\tcollation\x18\x03 \x01(\tB\x05\xe2A\x02\x01\x05R\tcollation\x12,\n" +
+	"\x0echaracter_type\x18\x04 \x01(\tB\x05\xe2A\x02\x01\x05R\rcharacterType\x122\n" +
+	"\x11database_template\x18\x06 \x01(\tB\x05\xe2A\x02\x04\x05R\x10databaseTemplate\x12;\n" +
+	"\x14is_template_database\x18\a \x01(\bB\x04\xe2A\x01\x01H\x00R\x12isTemplateDatabase\x88\x01\x01:\x8e\x01\xeaA\x8a\x01\n" +
 	"\x1falloydb.googleapis.com/Database\x12Oprojects/{project}/locations/{location}/clusters/{cluster}/databases/{database}*\tdatabases2\bdatabaseR\x01\x01B\x17\n" +
 	"\x15_is_template_database*^\n" +
 	"\fInstanceView\x12\x1d\n" +

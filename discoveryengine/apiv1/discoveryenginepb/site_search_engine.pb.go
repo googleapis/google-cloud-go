@@ -675,23 +675,23 @@ const file_google_cloud_discoveryengine_v1_site_search_engine_proto_rawDesc = ""
 	"8google/cloud/discoveryengine/v1/site_search_engine.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x9b\x02\n" +
 	"\x10SiteSearchEngine\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name:\xf2\x01\xeaA\xee\x01\n" +
-	"/discoveryengine.googleapis.com/SiteSearchEngine\x12Pprojects/{project}/locations/{location}/dataStores/{data_store}/siteSearchEngine\x12iprojects/{project}/locations/{location}/collections/{collection}/dataStores/{data_store}/siteSearchEngine\"\xea\n" +
+	"/discoveryengine.googleapis.com/SiteSearchEngine\x12Pprojects/{project}/locations/{location}/dataStores/{data_store}/siteSearchEngine\x12iprojects/{project}/locations/{location}/collections/{collection}/dataStores/{data_store}/siteSearchEngine\"\xf1\n" +
 	"\n" +
 	"\n" +
-	"TargetSite\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x128\n" +
-	"\x14provided_uri_pattern\x18\x02 \x01(\tB\x06\xe0A\x02\xe0A\x04R\x12providedUriPattern\x12D\n" +
-	"\x04type\x18\x03 \x01(\x0e20.google.cloud.discoveryengine.v1.TargetSite.TypeR\x04type\x12$\n" +
-	"\vexact_match\x18\x06 \x01(\bB\x03\xe0A\x05R\n" +
-	"exactMatch\x127\n" +
-	"\x15generated_uri_pattern\x18\x04 \x01(\tB\x03\xe0A\x03R\x13generatedUriPattern\x12+\n" +
+	"TargetSite\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x127\n" +
+	"\x14provided_uri_pattern\x18\x02 \x01(\tB\x05\xe2A\x02\x02\x04R\x12providedUriPattern\x12D\n" +
+	"\x04type\x18\x03 \x01(\x0e20.google.cloud.discoveryengine.v1.TargetSite.TypeR\x04type\x12%\n" +
+	"\vexact_match\x18\x06 \x01(\bB\x04\xe2A\x01\x05R\n" +
+	"exactMatch\x128\n" +
+	"\x15generated_uri_pattern\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x13generatedUriPattern\x12,\n" +
 	"\x0froot_domain_uri\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R\rrootDomainUri\x12p\n" +
-	"\x16site_verification_info\x18\a \x01(\v25.google.cloud.discoveryengine.v1.SiteVerificationInfoB\x03\xe0A\x03R\x14siteVerificationInfo\x12h\n" +
-	"\x0findexing_status\x18\b \x01(\x0e2:.google.cloud.discoveryengine.v1.TargetSite.IndexingStatusB\x03\xe0A\x03R\x0eindexingStatus\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12e\n" +
-	"\x0efailure_reason\x18\t \x01(\v29.google.cloud.discoveryengine.v1.TargetSite.FailureReasonB\x03\xe0A\x03R\rfailureReason\x1a\xcb\x01\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R\rrootDomainUri\x12q\n" +
+	"\x16site_verification_info\x18\a \x01(\v25.google.cloud.discoveryengine.v1.SiteVerificationInfoB\x04\xe2A\x01\x03R\x14siteVerificationInfo\x12i\n" +
+	"\x0findexing_status\x18\b \x01(\x0e2:.google.cloud.discoveryengine.v1.TargetSite.IndexingStatusB\x04\xe2A\x01\x03R\x0eindexingStatus\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12f\n" +
+	"\x0efailure_reason\x18\t \x01(\v29.google.cloud.discoveryengine.v1.TargetSite.FailureReasonB\x04\xe2A\x01\x03R\rfailureReason\x1a\xcb\x01\n" +
 	"\rFailureReason\x12m\n" +
 	"\rquota_failure\x18\x01 \x01(\v2F.google.cloud.discoveryengine.v1.TargetSite.FailureReason.QuotaFailureH\x00R\fquotaFailure\x1a@\n" +
 	"\fQuotaFailure\x120\n" +
@@ -720,11 +720,11 @@ const file_google_cloud_discoveryengine_v1_site_search_engine_proto_rawDesc = ""
 	"\bVERIFIED\x10\x01\x12\x0e\n" +
 	"\n" +
 	"UNVERIFIED\x10\x02\x12\f\n" +
-	"\bEXEMPTED\x10\x03\"\x92\x03\n" +
+	"\bEXEMPTED\x10\x03\"\x94\x03\n" +
 	"\aSitemap\x12\x12\n" +
-	"\x03uri\x18\x02 \x01(\tH\x00R\x03uri\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x03uri\x18\x02 \x01(\tH\x00R\x03uri\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"createTime:\x8f\x02\xeaA\x8b\x02\n" +
 	"&discoveryengine.googleapis.com/Sitemap\x12cprojects/{project}/locations/{location}/dataStores/{data_store}/siteSearchEngine/sitemaps/{sitemap}\x12|projects/{project}/locations/{location}/collections/{collection}/dataStores/{data_store}/siteSearchEngine/sitemaps/{sitemap}B\x06\n" +
 	"\x04feedB\x88\x02\n" +

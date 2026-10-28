@@ -3399,22 +3399,22 @@ var File_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto prot
 
 const file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDesc = "" +
 	"\n" +
-	"Bgoogle/cloud/hypercomputecluster/v1beta/hypercompute_cluster.proto\x12'google.cloud.hypercomputecluster.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a@google/cloud/hypercomputecluster/v1beta/operation_metadata.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd5\n" +
+	"Bgoogle/cloud/hypercomputecluster/v1beta/hypercompute_cluster.proto\x12'google.cloud.hypercomputecluster.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a@google/cloud/hypercomputecluster/v1beta/operation_metadata.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdf\n" +
 	"\n" +
-	"\aCluster\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12%\n" +
-	"\vdescription\x18\t \x01(\tB\x03\xe0A\x01R\vdescription\x12Y\n" +
-	"\x06labels\x18\x04 \x03(\v2<.google.cloud.hypercomputecluster.v1beta.Cluster.LabelsEntryB\x03\xe0A\x01R\x06labels\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12%\n" +
+	"\aCluster\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12&\n" +
+	"\vdescription\x18\t \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12Z\n" +
+	"\x06labels\x18\x04 \x03(\v2<.google.cloud.hypercomputecluster.v1beta.Cluster.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12&\n" +
 	"\vreconciling\x18\n" +
-	" \x01(\bB\x03\xe0A\x03R\vreconciling\x12x\n" +
-	"\x11network_resources\x18\v \x03(\v2F.google.cloud.hypercomputecluster.v1beta.Cluster.NetworkResourcesEntryB\x03\xe0A\x01R\x10networkResources\x12x\n" +
-	"\x11storage_resources\x18\f \x03(\v2F.google.cloud.hypercomputecluster.v1beta.Cluster.StorageResourcesEntryB\x03\xe0A\x01R\x10storageResources\x12x\n" +
-	"\x11compute_resources\x18\r \x03(\v2F.google.cloud.hypercomputecluster.v1beta.Cluster.ComputeResourcesEntryB\x03\xe0A\x01R\x10computeResources\x12^\n" +
-	"\forchestrator\x18\b \x01(\v25.google.cloud.hypercomputecluster.v1beta.OrchestratorB\x03\xe0A\x01R\forchestrator\x1a9\n" +
+	" \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12y\n" +
+	"\x11network_resources\x18\v \x03(\v2F.google.cloud.hypercomputecluster.v1beta.Cluster.NetworkResourcesEntryB\x04\xe2A\x01\x01R\x10networkResources\x12y\n" +
+	"\x11storage_resources\x18\f \x03(\v2F.google.cloud.hypercomputecluster.v1beta.Cluster.StorageResourcesEntryB\x04\xe2A\x01\x01R\x10storageResources\x12y\n" +
+	"\x11compute_resources\x18\r \x03(\v2F.google.cloud.hypercomputecluster.v1beta.Cluster.ComputeResourcesEntryB\x04\xe2A\x01\x01R\x10computeResources\x12_\n" +
+	"\forchestrator\x18\b \x01(\v25.google.cloud.hypercomputecluster.v1beta.OrchestratorB\x04\xe2A\x01\x01R\forchestrator\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a}\n" +
@@ -3427,99 +3427,99 @@ const file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_ra
 	"\x15ComputeResourcesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12N\n" +
 	"\x05value\x18\x02 \x01(\v28.google.cloud.hypercomputecluster.v1beta.ComputeResourceR\x05value:\x028\x01:~\xeaA{\n" +
-	"*hypercomputecluster.googleapis.com/Cluster\x12:projects/{project}/locations/{location}/clusters/{cluster}*\bclusters2\acluster\"\xe4\x01\n" +
-	"\x13ListClustersRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*hypercomputecluster.googleapis.com/ClusterR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"*hypercomputecluster.googleapis.com/Cluster\x12:projects/{project}/locations/{location}/clusters/{cluster}*\bclusters2\acluster\"\xe9\x01\n" +
+	"\x13ListClustersRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*hypercomputecluster.googleapis.com/ClusterR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xae\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xae\x01\n" +
 	"\x14ListClustersResponse\x12L\n" +
 	"\bclusters\x18\x01 \x03(\v20.google.cloud.hypercomputecluster.v1beta.ClusterR\bclusters\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"[\n" +
-	"\x11GetClusterRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*hypercomputecluster.googleapis.com/ClusterR\x04name\"\x83\x02\n" +
-	"\x14CreateClusterRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*hypercomputecluster.googleapis.com/ClusterR\x06parent\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\\\n" +
+	"\x11GetClusterRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*hypercomputecluster.googleapis.com/ClusterR\x04name\"\x87\x02\n" +
+	"\x14CreateClusterRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*hypercomputecluster.googleapis.com/ClusterR\x06parent\x12#\n" +
 	"\n" +
-	"cluster_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tclusterId\x12O\n" +
-	"\acluster\x18\x03 \x01(\v20.google.cloud.hypercomputecluster.v1beta.ClusterB\x03\xe0A\x02R\acluster\x12*\n" +
+	"cluster_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tclusterId\x12P\n" +
+	"\acluster\x18\x03 \x01(\v20.google.cloud.hypercomputecluster.v1beta.ClusterB\x04\xe2A\x01\x02R\acluster\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xd5\x01\n" +
-	"\x14UpdateClusterRequest\x12O\n" +
-	"\acluster\x18\x02 \x01(\v20.google.cloud.hypercomputecluster.v1beta.ClusterB\x03\xe0A\x02R\acluster\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xd8\x01\n" +
+	"\x14UpdateClusterRequest\x12P\n" +
+	"\acluster\x18\x02 \x01(\v20.google.cloud.hypercomputecluster.v1beta.ClusterB\x04\xe2A\x01\x02R\acluster\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x8a\x01\n" +
-	"\x14DeleteClusterRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*hypercomputecluster.googleapis.com/ClusterR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x8c\x01\n" +
+	"\x14DeleteClusterRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*hypercomputecluster.googleapis.com/ClusterR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xd2\x01\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xd3\x01\n" +
 	"\x0fNetworkResource\x12U\n" +
-	"\anetwork\x18\x03 \x01(\v29.google.cloud.hypercomputecluster.v1beta.NetworkReferenceH\x00R\anetwork\x12[\n" +
-	"\x06config\x18\x02 \x01(\v2>.google.cloud.hypercomputecluster.v1beta.NetworkResourceConfigB\x03\xe0A\x05R\x06configB\v\n" +
-	"\treference\"\x9f\x01\n" +
-	"\x10NetworkReference\x12@\n" +
-	"\anetwork\x18\x01 \x01(\tB&\xe0A\x03\xfaA \n" +
-	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12I\n" +
+	"\anetwork\x18\x03 \x01(\v29.google.cloud.hypercomputecluster.v1beta.NetworkReferenceH\x00R\anetwork\x12\\\n" +
+	"\x06config\x18\x02 \x01(\v2>.google.cloud.hypercomputecluster.v1beta.NetworkResourceConfigB\x04\xe2A\x01\x05R\x06configB\v\n" +
+	"\treference\"\xa1\x01\n" +
+	"\x10NetworkReference\x12A\n" +
+	"\anetwork\x18\x01 \x01(\tB'\xe2A\x01\x03\xfaA \n" +
+	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12J\n" +
 	"\n" +
-	"subnetwork\x18\x02 \x01(\tB)\xe0A\x03\xfaA#\n" +
+	"subnetwork\x18\x02 \x01(\tB*\xe2A\x01\x03\xfaA#\n" +
 	"!compute.googleapis.com/SubnetworkR\n" +
-	"subnetwork\"\xfc\x01\n" +
-	"\x15NetworkResourceConfig\x12d\n" +
-	"\vnew_network\x18\x03 \x01(\v29.google.cloud.hypercomputecluster.v1beta.NewNetworkConfigB\x06\xe0A\x01\xe0A\x05H\x00R\n" +
-	"newNetwork\x12s\n" +
-	"\x10existing_network\x18\x04 \x01(\v2>.google.cloud.hypercomputecluster.v1beta.ExistingNetworkConfigB\x06\xe0A\x01\xe0A\x05H\x00R\x0fexistingNetworkB\b\n" +
-	"\x06config\"\x81\x01\n" +
-	"\x10NewNetworkConfig\x12C\n" +
-	"\anetwork\x18\x01 \x01(\tB)\xe0A\x02\xe0A\x05\xfaA \n" +
-	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12(\n" +
-	"\vdescription\x18\x02 \x01(\tB\x06\xe0A\x01\xe0A\x05R\vdescription\"\xaa\x01\n" +
-	"\x15ExistingNetworkConfig\x12C\n" +
-	"\anetwork\x18\x01 \x01(\tB)\xe0A\x02\xe0A\x05\xfaA \n" +
-	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12L\n" +
+	"subnetwork\"\xfa\x01\n" +
+	"\x15NetworkResourceConfig\x12c\n" +
+	"\vnew_network\x18\x03 \x01(\v29.google.cloud.hypercomputecluster.v1beta.NewNetworkConfigB\x05\xe2A\x02\x01\x05H\x00R\n" +
+	"newNetwork\x12r\n" +
+	"\x10existing_network\x18\x04 \x01(\v2>.google.cloud.hypercomputecluster.v1beta.ExistingNetworkConfigB\x05\xe2A\x02\x01\x05H\x00R\x0fexistingNetworkB\b\n" +
+	"\x06config\"\x7f\n" +
+	"\x10NewNetworkConfig\x12B\n" +
+	"\anetwork\x18\x01 \x01(\tB(\xe2A\x02\x02\x05\xfaA \n" +
+	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12'\n" +
+	"\vdescription\x18\x02 \x01(\tB\x05\xe2A\x02\x01\x05R\vdescription\"\xa8\x01\n" +
+	"\x15ExistingNetworkConfig\x12B\n" +
+	"\anetwork\x18\x01 \x01(\tB(\xe2A\x02\x02\x05\xfaA \n" +
+	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12K\n" +
 	"\n" +
-	"subnetwork\x18\x02 \x01(\tB,\xe0A\x02\xe0A\x05\xfaA#\n" +
+	"subnetwork\x18\x02 \x01(\tB+\xe2A\x02\x02\x05\xfaA#\n" +
 	"!compute.googleapis.com/SubnetworkR\n" +
-	"subnetwork\"\x83\x03\n" +
+	"subnetwork\"\x82\x03\n" +
 	"\x0fStorageResource\x12[\n" +
 	"\tfilestore\x18\x01 \x01(\v2;.google.cloud.hypercomputecluster.v1beta.FilestoreReferenceH\x00R\tfilestore\x12R\n" +
 	"\x06bucket\x18\x02 \x01(\v28.google.cloud.hypercomputecluster.v1beta.BucketReferenceH\x00R\x06bucket\x12R\n" +
-	"\x06lustre\x18\x03 \x01(\v28.google.cloud.hypercomputecluster.v1beta.LustreReferenceH\x00R\x06lustre\x12^\n" +
-	"\x06config\x18\x04 \x01(\v2>.google.cloud.hypercomputecluster.v1beta.StorageResourceConfigB\x06\xe0A\x02\xe0A\x05R\x06configB\v\n" +
-	"\treference\"\\\n" +
-	"\x12FilestoreReference\x12F\n" +
-	"\tfilestore\x18\x01 \x01(\tB(\xe0A\x03\xfaA\"\n" +
-	" file.googleapis.com/FileInstanceR\tfilestore\"P\n" +
-	"\x0fBucketReference\x12=\n" +
-	"\x06bucket\x18\x01 \x01(\tB%\xe0A\x03\xfaA\x1f\n" +
-	"\x1dstorage.googleapis.com/BucketR\x06bucket\"W\n" +
-	"\x0fLustreReference\x12D\n" +
-	"\x06lustre\x18\x01 \x01(\tB,\xe0A\x03\xfaA&\n" +
-	"$lustre.googleapis.com/LustreInstanceR\x06lustre\"\xb2\x05\n" +
-	"\x15StorageResourceConfig\x12j\n" +
-	"\rnew_filestore\x18\x01 \x01(\v2;.google.cloud.hypercomputecluster.v1beta.NewFilestoreConfigB\x06\xe0A\x01\xe0A\x05H\x00R\fnewFilestore\x12y\n" +
-	"\x12existing_filestore\x18\x02 \x01(\v2@.google.cloud.hypercomputecluster.v1beta.ExistingFilestoreConfigB\x06\xe0A\x01\xe0A\x05H\x00R\x11existingFilestore\x12a\n" +
+	"\x06lustre\x18\x03 \x01(\v28.google.cloud.hypercomputecluster.v1beta.LustreReferenceH\x00R\x06lustre\x12]\n" +
+	"\x06config\x18\x04 \x01(\v2>.google.cloud.hypercomputecluster.v1beta.StorageResourceConfigB\x05\xe2A\x02\x02\x05R\x06configB\v\n" +
+	"\treference\"]\n" +
+	"\x12FilestoreReference\x12G\n" +
+	"\tfilestore\x18\x01 \x01(\tB)\xe2A\x01\x03\xfaA\"\n" +
+	" file.googleapis.com/FileInstanceR\tfilestore\"Q\n" +
+	"\x0fBucketReference\x12>\n" +
+	"\x06bucket\x18\x01 \x01(\tB&\xe2A\x01\x03\xfaA\x1f\n" +
+	"\x1dstorage.googleapis.com/BucketR\x06bucket\"X\n" +
+	"\x0fLustreReference\x12E\n" +
+	"\x06lustre\x18\x01 \x01(\tB-\xe2A\x01\x03\xfaA&\n" +
+	"$lustre.googleapis.com/LustreInstanceR\x06lustre\"\xac\x05\n" +
+	"\x15StorageResourceConfig\x12i\n" +
+	"\rnew_filestore\x18\x01 \x01(\v2;.google.cloud.hypercomputecluster.v1beta.NewFilestoreConfigB\x05\xe2A\x02\x01\x05H\x00R\fnewFilestore\x12x\n" +
+	"\x12existing_filestore\x18\x02 \x01(\v2@.google.cloud.hypercomputecluster.v1beta.ExistingFilestoreConfigB\x05\xe2A\x02\x01\x05H\x00R\x11existingFilestore\x12`\n" +
 	"\n" +
-	"new_bucket\x18\x03 \x01(\v28.google.cloud.hypercomputecluster.v1beta.NewBucketConfigB\x06\xe0A\x01\xe0A\x05H\x00R\tnewBucket\x12p\n" +
-	"\x0fexisting_bucket\x18\x04 \x01(\v2=.google.cloud.hypercomputecluster.v1beta.ExistingBucketConfigB\x06\xe0A\x01\xe0A\x05H\x00R\x0eexistingBucket\x12a\n" +
+	"new_bucket\x18\x03 \x01(\v28.google.cloud.hypercomputecluster.v1beta.NewBucketConfigB\x05\xe2A\x02\x01\x05H\x00R\tnewBucket\x12o\n" +
+	"\x0fexisting_bucket\x18\x04 \x01(\v2=.google.cloud.hypercomputecluster.v1beta.ExistingBucketConfigB\x05\xe2A\x02\x01\x05H\x00R\x0eexistingBucket\x12`\n" +
 	"\n" +
-	"new_lustre\x18\x05 \x01(\v28.google.cloud.hypercomputecluster.v1beta.NewLustreConfigB\x06\xe0A\x01\xe0A\x05H\x00R\tnewLustre\x12p\n" +
-	"\x0fexisting_lustre\x18\x06 \x01(\v2=.google.cloud.hypercomputecluster.v1beta.ExistingLustreConfigB\x06\xe0A\x01\xe0A\x05H\x00R\x0eexistingLustreB\b\n" +
-	"\x06config\"\xab\x04\n" +
-	"\x12NewFilestoreConfig\x12I\n" +
-	"\tfilestore\x18\x01 \x01(\tB+\xe0A\x02\xe0A\x05\xfaA\"\n" +
-	" file.googleapis.com/FileInstanceR\tfilestore\x12(\n" +
-	"\vdescription\x18\x04 \x01(\tB\x06\xe0A\x01\xe0A\x05R\vdescription\x12a\n" +
-	"\vfile_shares\x18\x02 \x03(\v28.google.cloud.hypercomputecluster.v1beta.FileShareConfigB\x06\xe0A\x02\xe0A\x05R\n" +
-	"fileShares\x12\\\n" +
-	"\x04tier\x18\x03 \x01(\x0e2@.google.cloud.hypercomputecluster.v1beta.NewFilestoreConfig.TierB\x06\xe0A\x02\xe0A\x05R\x04tier\x12k\n" +
-	"\bprotocol\x18\x05 \x01(\x0e2D.google.cloud.hypercomputecluster.v1beta.NewFilestoreConfig.ProtocolB\t\xe0A\x01\xe0A\x01\xe0A\x05R\bprotocol\"5\n" +
+	"new_lustre\x18\x05 \x01(\v28.google.cloud.hypercomputecluster.v1beta.NewLustreConfigB\x05\xe2A\x02\x01\x05H\x00R\tnewLustre\x12o\n" +
+	"\x0fexisting_lustre\x18\x06 \x01(\v2=.google.cloud.hypercomputecluster.v1beta.ExistingLustreConfigB\x05\xe2A\x02\x01\x05H\x00R\x0eexistingLustreB\b\n" +
+	"\x06config\"\xa4\x04\n" +
+	"\x12NewFilestoreConfig\x12H\n" +
+	"\tfilestore\x18\x01 \x01(\tB*\xe2A\x02\x02\x05\xfaA\"\n" +
+	" file.googleapis.com/FileInstanceR\tfilestore\x12'\n" +
+	"\vdescription\x18\x04 \x01(\tB\x05\xe2A\x02\x01\x05R\vdescription\x12`\n" +
+	"\vfile_shares\x18\x02 \x03(\v28.google.cloud.hypercomputecluster.v1beta.FileShareConfigB\x05\xe2A\x02\x02\x05R\n" +
+	"fileShares\x12[\n" +
+	"\x04tier\x18\x03 \x01(\x0e2@.google.cloud.hypercomputecluster.v1beta.NewFilestoreConfig.TierB\x05\xe2A\x02\x02\x05R\x04tier\x12h\n" +
+	"\bprotocol\x18\x05 \x01(\x0e2D.google.cloud.hypercomputecluster.v1beta.NewFilestoreConfig.ProtocolB\x06\xe2A\x03\x01\x01\x05R\bprotocol\"5\n" +
 	"\x04Tier\x12\x14\n" +
 	"\x10TIER_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05ZONAL\x10\x04\x12\f\n" +
@@ -3528,129 +3528,129 @@ const file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_ra
 	"\x14PROTOCOL_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05NFSV3\x10\x01\x12\n" +
 	"\n" +
-	"\x06NFSV41\x10\x02\"[\n" +
-	"\x0fFileShareConfig\x12$\n" +
-	"\vcapacity_gb\x18\x01 \x01(\x03B\x03\xe0A\x02R\n" +
-	"capacityGb\x12\"\n" +
+	"\x06NFSV41\x10\x02\"]\n" +
+	"\x0fFileShareConfig\x12%\n" +
+	"\vcapacity_gb\x18\x01 \x01(\x03B\x04\xe2A\x01\x02R\n" +
+	"capacityGb\x12#\n" +
 	"\n" +
-	"file_share\x18\x02 \x01(\tB\x03\xe0A\x02R\tfileShare\"d\n" +
-	"\x17ExistingFilestoreConfig\x12I\n" +
-	"\tfilestore\x18\x01 \x01(\tB+\xe0A\x02\xe0A\x05\xfaA\"\n" +
-	" file.googleapis.com/FileInstanceR\tfilestore\"\xa7\x04\n" +
-	"\x0fNewBucketConfig\x12c\n" +
-	"\tautoclass\x18\x02 \x01(\v2;.google.cloud.hypercomputecluster.v1beta.GcsAutoclassConfigB\x06\xe0A\x01\xe0A\x05H\x00R\tautoclass\x12t\n" +
-	"\rstorage_class\x18\x03 \x01(\x0e2E.google.cloud.hypercomputecluster.v1beta.NewBucketConfig.StorageClassB\x06\xe0A\x01\xe0A\x05H\x00R\fstorageClass\x12@\n" +
-	"\x06bucket\x18\x01 \x01(\tB(\xe0A\x02\xe0A\x05\xfaA\x1f\n" +
-	"\x1dstorage.googleapis.com/BucketR\x06bucket\x12\x86\x01\n" +
-	"\x16hierarchical_namespace\x18\x04 \x01(\v2G.google.cloud.hypercomputecluster.v1beta.GcsHierarchicalNamespaceConfigB\x06\xe0A\x01\xe0A\x05R\x15hierarchicalNamespace\"d\n" +
+	"file_share\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tfileShare\"c\n" +
+	"\x17ExistingFilestoreConfig\x12H\n" +
+	"\tfilestore\x18\x01 \x01(\tB*\xe2A\x02\x02\x05\xfaA\"\n" +
+	" file.googleapis.com/FileInstanceR\tfilestore\"\xa3\x04\n" +
+	"\x0fNewBucketConfig\x12b\n" +
+	"\tautoclass\x18\x02 \x01(\v2;.google.cloud.hypercomputecluster.v1beta.GcsAutoclassConfigB\x05\xe2A\x02\x01\x05H\x00R\tautoclass\x12s\n" +
+	"\rstorage_class\x18\x03 \x01(\x0e2E.google.cloud.hypercomputecluster.v1beta.NewBucketConfig.StorageClassB\x05\xe2A\x02\x01\x05H\x00R\fstorageClass\x12?\n" +
+	"\x06bucket\x18\x01 \x01(\tB'\xe2A\x02\x02\x05\xfaA\x1f\n" +
+	"\x1dstorage.googleapis.com/BucketR\x06bucket\x12\x85\x01\n" +
+	"\x16hierarchical_namespace\x18\x04 \x01(\v2G.google.cloud.hypercomputecluster.v1beta.GcsHierarchicalNamespaceConfigB\x05\xe2A\x02\x01\x05R\x15hierarchicalNamespace\"d\n" +
 	"\fStorageClass\x12\x1d\n" +
 	"\x19STORAGE_CLASS_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bSTANDARD\x10\x01\x12\f\n" +
 	"\bNEARLINE\x10\x02\x12\f\n" +
 	"\bCOLDLINE\x10\x03\x12\v\n" +
 	"\aARCHIVE\x10\x04B\b\n" +
-	"\x06option\"\x81\x02\n" +
-	"\x12GcsAutoclassConfig\x12\x1d\n" +
-	"\aenabled\x18\x01 \x01(\bB\x03\xe0A\x02R\aenabled\x12\x8b\x01\n" +
-	"\x16terminal_storage_class\x18\x02 \x01(\x0e2P.google.cloud.hypercomputecluster.v1beta.GcsAutoclassConfig.TerminalStorageClassB\x03\xe0A\x01R\x14terminalStorageClass\">\n" +
+	"\x06option\"\x83\x02\n" +
+	"\x12GcsAutoclassConfig\x12\x1e\n" +
+	"\aenabled\x18\x01 \x01(\bB\x04\xe2A\x01\x02R\aenabled\x12\x8c\x01\n" +
+	"\x16terminal_storage_class\x18\x02 \x01(\x0e2P.google.cloud.hypercomputecluster.v1beta.GcsAutoclassConfig.TerminalStorageClassB\x04\xe2A\x01\x01R\x14terminalStorageClass\">\n" +
 	"\x14TerminalStorageClass\x12&\n" +
-	"\"TERMINAL_STORAGE_CLASS_UNSPECIFIED\x10\x00\"?\n" +
-	"\x1eGcsHierarchicalNamespaceConfig\x12\x1d\n" +
-	"\aenabled\x18\x01 \x01(\bB\x03\xe0A\x02R\aenabled\"X\n" +
-	"\x14ExistingBucketConfig\x12@\n" +
-	"\x06bucket\x18\x01 \x01(\tB(\xe0A\x02\xe0A\x05\xfaA\x1f\n" +
-	"\x1dstorage.googleapis.com/BucketR\x06bucket\"\xac\x01\n" +
-	"\x0fNewLustreConfig\x12\x1e\n" +
-	"\x06lustre\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\x05R\x06lustre\x12(\n" +
-	"\vdescription\x18\x02 \x01(\tB\x06\xe0A\x01\xe0A\x05R\vdescription\x12&\n" +
+	"\"TERMINAL_STORAGE_CLASS_UNSPECIFIED\x10\x00\"@\n" +
+	"\x1eGcsHierarchicalNamespaceConfig\x12\x1e\n" +
+	"\aenabled\x18\x01 \x01(\bB\x04\xe2A\x01\x02R\aenabled\"W\n" +
+	"\x14ExistingBucketConfig\x12?\n" +
+	"\x06bucket\x18\x01 \x01(\tB'\xe2A\x02\x02\x05\xfaA\x1f\n" +
+	"\x1dstorage.googleapis.com/BucketR\x06bucket\"\xa8\x01\n" +
+	"\x0fNewLustreConfig\x12\x1d\n" +
+	"\x06lustre\x18\x01 \x01(\tB\x05\xe2A\x02\x02\x05R\x06lustre\x12'\n" +
+	"\vdescription\x18\x02 \x01(\tB\x05\xe2A\x02\x01\x05R\vdescription\x12%\n" +
 	"\n" +
-	"filesystem\x18\x03 \x01(\tB\x06\xe0A\x02\xe0A\x05R\n" +
-	"filesystem\x12'\n" +
-	"\vcapacity_gb\x18\x04 \x01(\x03B\x06\xe0A\x02\xe0A\x05R\n" +
-	"capacityGb\"_\n" +
-	"\x14ExistingLustreConfig\x12G\n" +
-	"\x06lustre\x18\x01 \x01(\tB/\xe0A\x02\xe0A\x05\xfaA&\n" +
-	"$lustre.googleapis.com/LustreInstanceR\x06lustre\"q\n" +
-	"\x0fComputeResource\x12^\n" +
-	"\x06config\x18\x06 \x01(\v2>.google.cloud.hypercomputecluster.v1beta.ComputeResourceConfigB\x06\xe0A\x02\xe0A\x05R\x06config\"\xb1\x04\n" +
-	"\x15ComputeResourceConfig\x12\x84\x01\n" +
-	"\x17new_on_demand_instances\x18\x01 \x01(\v2C.google.cloud.hypercomputecluster.v1beta.NewOnDemandInstancesConfigB\x06\xe0A\x01\xe0A\x05H\x00R\x14newOnDemandInstances\x12w\n" +
-	"\x12new_spot_instances\x18\x02 \x01(\v2?.google.cloud.hypercomputecluster.v1beta.NewSpotInstancesConfigB\x06\xe0A\x01\xe0A\x05H\x00R\x10newSpotInstances\x12\x83\x01\n" +
-	"\x16new_reserved_instances\x18\x03 \x01(\v2C.google.cloud.hypercomputecluster.v1beta.NewReservedInstancesConfigB\x06\xe0A\x01\xe0A\x05H\x00R\x14newReservedInstances\x12\x87\x01\n" +
-	"\x18new_flex_start_instances\x18\x05 \x01(\v2D.google.cloud.hypercomputecluster.v1beta.NewFlexStartInstancesConfigB\x06\xe0A\x01\xe0A\x05H\x00R\x15newFlexStartInstancesB\b\n" +
-	"\x06config\"c\n" +
-	"\x1aNewOnDemandInstancesConfig\x12\x1a\n" +
-	"\x04zone\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\x05R\x04zone\x12)\n" +
-	"\fmachine_type\x18\x02 \x01(\tB\x06\xe0A\x02\xe0A\x05R\vmachineType\"_\n" +
-	"\x16NewSpotInstancesConfig\x12\x1a\n" +
-	"\x04zone\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\x05R\x04zone\x12)\n" +
-	"\fmachine_type\x18\x02 \x01(\tB\x06\xe0A\x02\xe0A\x05R\vmachineType\"y\n" +
-	"\x1aNewReservedInstancesConfig\x12Q\n" +
-	"\vreservation\x18\x01 \x01(\tB-\xe0A\x01\xe0A\x05\xfaA$\n" +
+	"filesystem\x18\x03 \x01(\tB\x05\xe2A\x02\x02\x05R\n" +
+	"filesystem\x12&\n" +
+	"\vcapacity_gb\x18\x04 \x01(\x03B\x05\xe2A\x02\x02\x05R\n" +
+	"capacityGb\"^\n" +
+	"\x14ExistingLustreConfig\x12F\n" +
+	"\x06lustre\x18\x01 \x01(\tB.\xe2A\x02\x02\x05\xfaA&\n" +
+	"$lustre.googleapis.com/LustreInstanceR\x06lustre\"p\n" +
+	"\x0fComputeResource\x12]\n" +
+	"\x06config\x18\x06 \x01(\v2>.google.cloud.hypercomputecluster.v1beta.ComputeResourceConfigB\x05\xe2A\x02\x02\x05R\x06config\"\xad\x04\n" +
+	"\x15ComputeResourceConfig\x12\x83\x01\n" +
+	"\x17new_on_demand_instances\x18\x01 \x01(\v2C.google.cloud.hypercomputecluster.v1beta.NewOnDemandInstancesConfigB\x05\xe2A\x02\x01\x05H\x00R\x14newOnDemandInstances\x12v\n" +
+	"\x12new_spot_instances\x18\x02 \x01(\v2?.google.cloud.hypercomputecluster.v1beta.NewSpotInstancesConfigB\x05\xe2A\x02\x01\x05H\x00R\x10newSpotInstances\x12\x82\x01\n" +
+	"\x16new_reserved_instances\x18\x03 \x01(\v2C.google.cloud.hypercomputecluster.v1beta.NewReservedInstancesConfigB\x05\xe2A\x02\x01\x05H\x00R\x14newReservedInstances\x12\x86\x01\n" +
+	"\x18new_flex_start_instances\x18\x05 \x01(\v2D.google.cloud.hypercomputecluster.v1beta.NewFlexStartInstancesConfigB\x05\xe2A\x02\x01\x05H\x00R\x15newFlexStartInstancesB\b\n" +
+	"\x06config\"a\n" +
+	"\x1aNewOnDemandInstancesConfig\x12\x19\n" +
+	"\x04zone\x18\x01 \x01(\tB\x05\xe2A\x02\x02\x05R\x04zone\x12(\n" +
+	"\fmachine_type\x18\x02 \x01(\tB\x05\xe2A\x02\x02\x05R\vmachineType\"]\n" +
+	"\x16NewSpotInstancesConfig\x12\x19\n" +
+	"\x04zone\x18\x01 \x01(\tB\x05\xe2A\x02\x02\x05R\x04zone\x12(\n" +
+	"\fmachine_type\x18\x02 \x01(\tB\x05\xe2A\x02\x02\x05R\vmachineType\"x\n" +
+	"\x1aNewReservedInstancesConfig\x12P\n" +
+	"\vreservation\x18\x01 \x01(\tB,\xe2A\x02\x01\x05\xfaA$\n" +
 	"\"compute.googleapis.com/ReservationH\x00R\vreservationB\b\n" +
-	"\x06source\"\xaa\x01\n" +
-	"\x1bNewFlexStartInstancesConfig\x12\x1a\n" +
-	"\x04zone\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\x05R\x04zone\x12)\n" +
-	"\fmachine_type\x18\x02 \x01(\tB\x06\xe0A\x02\xe0A\x05R\vmachineType\x12D\n" +
-	"\fmax_duration\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x06\xe0A\x02\xe0A\x05R\vmaxDuration\"k\n" +
-	"\bBootDisk\x12>\n" +
-	"\x04type\x18\x01 \x01(\tB*\xe0A\x02\xe0A\x05\xfaA!\n" +
-	"\x1fcompute.googleapis.com/DiskTypeR\x04type\x12\x1f\n" +
-	"\asize_gb\x18\x02 \x01(\x03B\x06\xe0A\x02\xe0A\x05R\x06sizeGb\"q\n" +
-	"\fOrchestrator\x12W\n" +
-	"\x05slurm\x18\x01 \x01(\v2:.google.cloud.hypercomputecluster.v1beta.SlurmOrchestratorB\x03\xe0A\x01H\x00R\x05slurmB\b\n" +
-	"\x06option\"\xc6\x03\n" +
-	"\x11SlurmOrchestrator\x12^\n" +
-	"\vlogin_nodes\x18\x06 \x01(\v28.google.cloud.hypercomputecluster.v1beta.SlurmLoginNodesB\x03\xe0A\x02R\n" +
-	"loginNodes\x12W\n" +
-	"\tnode_sets\x18\x01 \x03(\v25.google.cloud.hypercomputecluster.v1beta.SlurmNodeSetB\x03\xe0A\x02R\bnodeSets\x12\\\n" +
+	"\x06source\"\xa7\x01\n" +
+	"\x1bNewFlexStartInstancesConfig\x12\x19\n" +
+	"\x04zone\x18\x01 \x01(\tB\x05\xe2A\x02\x02\x05R\x04zone\x12(\n" +
+	"\fmachine_type\x18\x02 \x01(\tB\x05\xe2A\x02\x02\x05R\vmachineType\x12C\n" +
+	"\fmax_duration\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x05\xe2A\x02\x02\x05R\vmaxDuration\"i\n" +
+	"\bBootDisk\x12=\n" +
+	"\x04type\x18\x01 \x01(\tB)\xe2A\x02\x02\x05\xfaA!\n" +
+	"\x1fcompute.googleapis.com/DiskTypeR\x04type\x12\x1e\n" +
+	"\asize_gb\x18\x02 \x01(\x03B\x05\xe2A\x02\x02\x05R\x06sizeGb\"r\n" +
+	"\fOrchestrator\x12X\n" +
+	"\x05slurm\x18\x01 \x01(\v2:.google.cloud.hypercomputecluster.v1beta.SlurmOrchestratorB\x04\xe2A\x01\x01H\x00R\x05slurmB\b\n" +
+	"\x06option\"\xcc\x03\n" +
+	"\x11SlurmOrchestrator\x12_\n" +
+	"\vlogin_nodes\x18\x06 \x01(\v28.google.cloud.hypercomputecluster.v1beta.SlurmLoginNodesB\x04\xe2A\x01\x02R\n" +
+	"loginNodes\x12X\n" +
+	"\tnode_sets\x18\x01 \x03(\v25.google.cloud.hypercomputecluster.v1beta.SlurmNodeSetB\x04\xe2A\x01\x02R\bnodeSets\x12]\n" +
 	"\n" +
-	"partitions\x18\x02 \x03(\v27.google.cloud.hypercomputecluster.v1beta.SlurmPartitionB\x03\xe0A\x02R\n" +
-	"partitions\x120\n" +
-	"\x11default_partition\x18\x03 \x01(\tB\x03\xe0A\x01R\x10defaultPartition\x123\n" +
-	"\x13prolog_bash_scripts\x18\x04 \x03(\tB\x03\xe0A\x01R\x11prologBashScripts\x123\n" +
-	"\x13epilog_bash_scripts\x18\x05 \x03(\tB\x03\xe0A\x01R\x11epilogBashScripts\"\x98\x03\n" +
-	"\fSlurmNodeSet\x12v\n" +
-	"\x10compute_instance\x18\x11 \x01(\v2D.google.cloud.hypercomputecluster.v1beta.ComputeInstanceSlurmNodeSetB\x03\xe0A\x01H\x00R\x0fcomputeInstance\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\x12\"\n" +
+	"partitions\x18\x02 \x03(\v27.google.cloud.hypercomputecluster.v1beta.SlurmPartitionB\x04\xe2A\x01\x02R\n" +
+	"partitions\x121\n" +
+	"\x11default_partition\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x10defaultPartition\x124\n" +
+	"\x13prolog_bash_scripts\x18\x04 \x03(\tB\x04\xe2A\x01\x01R\x11prologBashScripts\x124\n" +
+	"\x13epilog_bash_scripts\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\x11epilogBashScripts\"\x9e\x03\n" +
+	"\fSlurmNodeSet\x12w\n" +
+	"\x10compute_instance\x18\x11 \x01(\v2D.google.cloud.hypercomputecluster.v1beta.ComputeInstanceSlurmNodeSetB\x04\xe2A\x01\x01H\x00R\x0fcomputeInstance\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x02id\x12#\n" +
 	"\n" +
-	"compute_id\x18\x10 \x01(\tB\x03\xe0A\x01R\tcomputeId\x12d\n" +
-	"\x0fstorage_configs\x18\x03 \x03(\v26.google.cloud.hypercomputecluster.v1beta.StorageConfigB\x03\xe0A\x01R\x0estorageConfigs\x12/\n" +
-	"\x11static_node_count\x18\x04 \x01(\x03B\x03\xe0A\x01R\x0fstaticNodeCount\x128\n" +
-	"\x16max_dynamic_node_count\x18\x05 \x01(\x03B\x03\xe0A\x01R\x13maxDynamicNodeCountB\x06\n" +
-	"\x04type\"\xc8\x02\n" +
-	"\x1bComputeInstanceSlurmNodeSet\x12*\n" +
-	"\x0estartup_script\x18\x01 \x01(\tB\x03\xe0A\x01R\rstartupScript\x12m\n" +
-	"\x06labels\x18\x02 \x03(\v2P.google.cloud.hypercomputecluster.v1beta.ComputeInstanceSlurmNodeSet.LabelsEntryB\x03\xe0A\x01R\x06labels\x12S\n" +
-	"\tboot_disk\x18\x03 \x01(\v21.google.cloud.hypercomputecluster.v1beta.BootDiskB\x03\xe0A\x01R\bbootDisk\x1a9\n" +
+	"compute_id\x18\x10 \x01(\tB\x04\xe2A\x01\x01R\tcomputeId\x12e\n" +
+	"\x0fstorage_configs\x18\x03 \x03(\v26.google.cloud.hypercomputecluster.v1beta.StorageConfigB\x04\xe2A\x01\x01R\x0estorageConfigs\x120\n" +
+	"\x11static_node_count\x18\x04 \x01(\x03B\x04\xe2A\x01\x01R\x0fstaticNodeCount\x129\n" +
+	"\x16max_dynamic_node_count\x18\x05 \x01(\x03B\x04\xe2A\x01\x01R\x13maxDynamicNodeCountB\x06\n" +
+	"\x04type\"\xcb\x02\n" +
+	"\x1bComputeInstanceSlurmNodeSet\x12+\n" +
+	"\x0estartup_script\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\rstartupScript\x12n\n" +
+	"\x06labels\x18\x02 \x03(\v2P.google.cloud.hypercomputecluster.v1beta.ComputeInstanceSlurmNodeSet.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12T\n" +
+	"\tboot_disk\x18\x03 \x01(\v21.google.cloud.hypercomputecluster.v1beta.BootDiskB\x04\xe2A\x01\x01R\bbootDisk\x1a9\n" +
+	"\vLabelsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"N\n" +
+	"\x0eSlurmPartition\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x02id\x12&\n" +
+	"\fnode_set_ids\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\n" +
+	"nodeSetIds\"\xb7\x05\n" +
+	"\x0fSlurmLoginNodes\x12\x1a\n" +
+	"\x05count\x18\x03 \x01(\x03B\x04\xe2A\x01\x02R\x05count\x12\x18\n" +
+	"\x04zone\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04zone\x12'\n" +
+	"\fmachine_type\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vmachineType\x12+\n" +
+	"\x0estartup_script\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\rstartupScript\x12,\n" +
+	"\x0fenable_os_login\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\renableOsLogin\x120\n" +
+	"\x11enable_public_ips\x18\a \x01(\bB\x04\xe2A\x01\x01R\x0fenablePublicIps\x12b\n" +
+	"\x06labels\x18\b \x03(\v2D.google.cloud.hypercomputecluster.v1beta.SlurmLoginNodes.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12e\n" +
+	"\x0fstorage_configs\x18\f \x03(\v26.google.cloud.hypercomputecluster.v1beta.StorageConfigB\x04\xe2A\x01\x01R\x0estorageConfigs\x12\\\n" +
+	"\tinstances\x18\n" +
+	" \x03(\v28.google.cloud.hypercomputecluster.v1beta.ComputeInstanceB\x04\xe2A\x01\x03R\tinstances\x12T\n" +
+	"\tboot_disk\x18\r \x01(\v21.google.cloud.hypercomputecluster.v1beta.BootDiskB\x04\xe2A\x01\x01R\bbootDisk\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"L\n" +
-	"\x0eSlurmPartition\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\x12%\n" +
-	"\fnode_set_ids\x18\x02 \x03(\tB\x03\xe0A\x02R\n" +
-	"nodeSetIds\"\xad\x05\n" +
-	"\x0fSlurmLoginNodes\x12\x19\n" +
-	"\x05count\x18\x03 \x01(\x03B\x03\xe0A\x02R\x05count\x12\x17\n" +
-	"\x04zone\x18\x02 \x01(\tB\x03\xe0A\x02R\x04zone\x12&\n" +
-	"\fmachine_type\x18\x01 \x01(\tB\x03\xe0A\x02R\vmachineType\x12*\n" +
-	"\x0estartup_script\x18\x05 \x01(\tB\x03\xe0A\x01R\rstartupScript\x12+\n" +
-	"\x0fenable_os_login\x18\x06 \x01(\bB\x03\xe0A\x01R\renableOsLogin\x12/\n" +
-	"\x11enable_public_ips\x18\a \x01(\bB\x03\xe0A\x01R\x0fenablePublicIps\x12a\n" +
-	"\x06labels\x18\b \x03(\v2D.google.cloud.hypercomputecluster.v1beta.SlurmLoginNodes.LabelsEntryB\x03\xe0A\x01R\x06labels\x12d\n" +
-	"\x0fstorage_configs\x18\f \x03(\v26.google.cloud.hypercomputecluster.v1beta.StorageConfigB\x03\xe0A\x01R\x0estorageConfigs\x12[\n" +
-	"\tinstances\x18\n" +
-	" \x03(\v28.google.cloud.hypercomputecluster.v1beta.ComputeInstanceB\x03\xe0A\x03R\tinstances\x12S\n" +
-	"\tboot_disk\x18\r \x01(\v21.google.cloud.hypercomputecluster.v1beta.BootDiskB\x03\xe0A\x01R\bbootDisk\x1a9\n" +
-	"\vLabelsEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"J\n" +
-	"\rStorageConfig\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\x12$\n" +
-	"\vlocal_mount\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"localMount\"]\n" +
-	"\x0fComputeInstance\x12J\n" +
-	"\binstance\x18\x01 \x01(\tB.\xe0A\x03\xfaA(\n" +
+	"\rStorageConfig\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x02id\x12%\n" +
+	"\vlocal_mount\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"localMount\"^\n" +
+	"\x0fComputeInstance\x12K\n" +
+	"\binstance\x18\x01 \x01(\tB/\xe2A\x01\x03\xfaA(\n" +
 	"&compute.googleapis.com/ComputeInstanceR\binstance2\xb8\t\n" +
 	"\x13HypercomputeCluster\x12\xce\x01\n" +
 	"\fListClusters\x12<.google.cloud.hypercomputecluster.v1beta.ListClustersRequest\x1a=.google.cloud.hypercomputecluster.v1beta.ListClustersResponse\"A\xdaA\x06parent\x82\xd3\xe4\x93\x022\x120/v1beta/{parent=projects/*/locations/*}/clusters\x12\xbb\x01\n" +

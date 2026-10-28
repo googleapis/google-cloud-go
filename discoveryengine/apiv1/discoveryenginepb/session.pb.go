@@ -394,36 +394,36 @@ var File_google_cloud_discoveryengine_v1_session_proto protoreflect.FileDescript
 
 const file_google_cloud_discoveryengine_v1_session_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/discoveryengine/v1/session.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/discoveryengine/v1/answer.proto\x1a3google/cloud/discoveryengine/v1/assist_answer.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcc\n" +
+	"-google/cloud/discoveryengine/v1/session.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/discoveryengine/v1/answer.proto\x1a3google/cloud/discoveryengine/v1/assist_answer.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd7\n" +
 	"\n" +
-	"\aSession\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12&\n" +
-	"\fdisplay_name\x18\a \x01(\tB\x03\xe0A\x01R\vdisplayName\x12D\n" +
+	"\aSession\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12'\n" +
+	"\fdisplay_name\x18\a \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12D\n" +
 	"\x05state\x18\x02 \x01(\x0e2..google.cloud.discoveryengine.v1.Session.StateR\x05state\x12$\n" +
 	"\x0euser_pseudo_id\x18\x03 \x01(\tR\fuserPseudoId\x12C\n" +
-	"\x05turns\x18\x04 \x03(\v2-.google.cloud.discoveryengine.v1.Session.TurnR\x05turns\x12\x1b\n" +
-	"\x06labels\x18\t \x03(\tB\x03\xe0A\x01R\x06labels\x12>\n" +
+	"\x05turns\x18\x04 \x03(\v2-.google.cloud.discoveryengine.v1.Session.TurnR\x05turns\x12\x1c\n" +
+	"\x06labels\x18\t \x03(\tB\x04\xe2A\x01\x01R\x06labels\x12?\n" +
 	"\n" +
-	"start_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12 \n" +
-	"\tis_pinned\x18\b \x01(\bB\x03\xe0A\x01R\bisPinned\x1a\xf9\x03\n" +
-	"\x04Turn\x12A\n" +
-	"\x05query\x18\x01 \x01(\v2&.google.cloud.discoveryengine.v1.QueryB\x03\xe0A\x01R\x05query\x12E\n" +
-	"\x06answer\x18\x02 \x01(\tB-\xe0A\x01\xfaA'\n" +
-	"%discoveryengine.googleapis.com/AnswerR\x06answer\x12U\n" +
-	"\x0fdetailed_answer\x18\a \x01(\v2'.google.cloud.discoveryengine.v1.AnswerB\x03\xe0A\x03R\x0edetailedAnswer\x12h\n" +
-	"\x16detailed_assist_answer\x18\b \x01(\v2-.google.cloud.discoveryengine.v1.AssistAnswerB\x03\xe0A\x03R\x14detailedAssistAnswer\x12f\n" +
-	"\fquery_config\x18\x10 \x03(\v2>.google.cloud.discoveryengine.v1.Session.Turn.QueryConfigEntryB\x03\xe0A\x01R\vqueryConfig\x1a>\n" +
+	"start_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12!\n" +
+	"\tis_pinned\x18\b \x01(\bB\x04\xe2A\x01\x01R\bisPinned\x1a\xfe\x03\n" +
+	"\x04Turn\x12B\n" +
+	"\x05query\x18\x01 \x01(\v2&.google.cloud.discoveryengine.v1.QueryB\x04\xe2A\x01\x01R\x05query\x12F\n" +
+	"\x06answer\x18\x02 \x01(\tB.\xe2A\x01\x01\xfaA'\n" +
+	"%discoveryengine.googleapis.com/AnswerR\x06answer\x12V\n" +
+	"\x0fdetailed_answer\x18\a \x01(\v2'.google.cloud.discoveryengine.v1.AnswerB\x04\xe2A\x01\x03R\x0edetailedAnswer\x12i\n" +
+	"\x16detailed_assist_answer\x18\b \x01(\v2-.google.cloud.discoveryengine.v1.AssistAnswerB\x04\xe2A\x01\x03R\x14detailedAssistAnswer\x12g\n" +
+	"\fquery_config\x18\x10 \x03(\v2>.google.cloud.discoveryengine.v1.Session.Turn.QueryConfigEntryB\x04\xe2A\x01\x01R\vqueryConfig\x1a>\n" +
 	"\x10QueryConfigEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"/\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vIN_PROGRESS\x10\x01:\xe6\x02\xeaA\xe2\x02\n" +
-	"&discoveryengine.googleapis.com/Session\x12Rprojects/{project}/locations/{location}/dataStores/{data_store}/sessions/{session}\x12kprojects/{project}/locations/{location}/collections/{collection}/dataStores/{data_store}/sessions/{session}\x12dprojects/{project}/locations/{location}/collections/{collection}/engines/{engine}/sessions/{session}*\bsessions2\asession\"H\n" +
+	"&discoveryengine.googleapis.com/Session\x12Rprojects/{project}/locations/{location}/dataStores/{data_store}/sessions/{session}\x12kprojects/{project}/locations/{location}/collections/{collection}/dataStores/{data_store}/sessions/{session}\x12dprojects/{project}/locations/{location}/collections/{collection}/engines/{engine}/sessions/{session}*\bsessions2\asession\"I\n" +
 	"\x05Query\x12\x14\n" +
-	"\x04text\x18\x02 \x01(\tH\x00R\x04text\x12\x1e\n" +
-	"\bquery_id\x18\x01 \x01(\tB\x03\xe0A\x03R\aqueryIdB\t\n" +
+	"\x04text\x18\x02 \x01(\tH\x00R\x04text\x12\x1f\n" +
+	"\bquery_id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\aqueryIdB\t\n" +
 	"\acontentB\xff\x01\n" +
 	"#com.google.cloud.discoveryengine.v1B\fSessionProtoP\x01ZMcloud.google.com/go/discoveryengine/apiv1/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02\x1fGoogle.Cloud.DiscoveryEngine.V1\xca\x02\x1fGoogle\\Cloud\\DiscoveryEngine\\V1\xea\x02\"Google::Cloud::DiscoveryEngine::V1b\x06proto3"
 

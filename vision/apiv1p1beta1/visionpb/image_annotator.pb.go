@@ -2186,9 +2186,9 @@ const file_google_cloud_vision_v1p1beta1_image_annotator_proto_rawDesc = "" +
 	"\x1bimage_properties_annotation\x18\b \x01(\v2..google.cloud.vision.v1p1beta1.ImagePropertiesR\x19imagePropertiesAnnotation\x12f\n" +
 	"\x15crop_hints_annotation\x18\v \x01(\v22.google.cloud.vision.v1p1beta1.CropHintsAnnotationR\x13cropHintsAnnotation\x12P\n" +
 	"\rweb_detection\x18\r \x01(\v2+.google.cloud.vision.v1p1beta1.WebDetectionR\fwebDetection\x12(\n" +
-	"\x05error\x18\t \x01(\v2\x12.google.rpc.StatusR\x05error\"r\n" +
-	"\x1aBatchAnnotateImagesRequest\x12T\n" +
-	"\brequests\x18\x01 \x03(\v23.google.cloud.vision.v1p1beta1.AnnotateImageRequestB\x03\xe0A\x02R\brequests\"q\n" +
+	"\x05error\x18\t \x01(\v2\x12.google.rpc.StatusR\x05error\"s\n" +
+	"\x1aBatchAnnotateImagesRequest\x12U\n" +
+	"\brequests\x18\x01 \x03(\v23.google.cloud.vision.v1p1beta1.AnnotateImageRequestB\x04\xe2A\x01\x02R\brequests\"q\n" +
 	"\x1bBatchAnnotateImagesResponse\x12R\n" +
 	"\tresponses\x18\x01 \x03(\v24.google.cloud.vision.v1p1beta1.AnnotateImageResponseR\tresponses*e\n" +
 	"\n" +

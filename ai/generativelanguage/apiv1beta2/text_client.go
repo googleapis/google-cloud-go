@@ -496,6 +496,11 @@ func (c *textRESTClient) GenerateText(ctx context.Context, req *generativelangua
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetModel(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v:generateText", req.GetModel())
 
 	params := url.Values{}
@@ -554,6 +559,11 @@ func (c *textRESTClient) EmbedText(ctx context.Context, req *generativelanguagep
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetModel(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v:embedText", req.GetModel())

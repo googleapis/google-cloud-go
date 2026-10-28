@@ -540,36 +540,36 @@ var File_google_cloud_dialogflow_v2_session_entity_type_proto protoreflect.FileD
 
 const file_google_cloud_dialogflow_v2_session_entity_type_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/dialogflow/v2/session_entity_type.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/dialogflow/v2/entity_type.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xc5\x06\n" +
-	"\x11SessionEntityType\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12w\n" +
-	"\x14entity_override_mode\x18\x02 \x01(\x0e2@.google.cloud.dialogflow.v2.SessionEntityType.EntityOverrideModeB\x03\xe0A\x02R\x12entityOverrideMode\x12N\n" +
-	"\bentities\x18\x03 \x03(\v2-.google.cloud.dialogflow.v2.EntityType.EntityB\x03\xe0A\x02R\bentities\"\x82\x01\n" +
+	"4google/cloud/dialogflow/v2/session_entity_type.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/dialogflow/v2/entity_type.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xc8\x06\n" +
+	"\x11SessionEntityType\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12x\n" +
+	"\x14entity_override_mode\x18\x02 \x01(\x0e2@.google.cloud.dialogflow.v2.SessionEntityType.EntityOverrideModeB\x04\xe2A\x01\x02R\x12entityOverrideMode\x12O\n" +
+	"\bentities\x18\x03 \x03(\v2-.google.cloud.dialogflow.v2.EntityType.EntityB\x04\xe2A\x01\x02R\bentities\"\x82\x01\n" +
 	"\x12EntityOverrideMode\x12$\n" +
 	" ENTITY_OVERRIDE_MODE_UNSPECIFIED\x10\x00\x12!\n" +
 	"\x1dENTITY_OVERRIDE_MODE_OVERRIDE\x10\x01\x12#\n" +
 	"\x1fENTITY_OVERRIDE_MODE_SUPPLEMENT\x10\x02:\xc8\x03\xeaA\xc4\x03\n" +
-	"+dialogflow.googleapis.com/SessionEntityType\x12Eprojects/{project}/agent/sessions/{session}/entityTypes/{entity_type}\x12mprojects/{project}/agent/environments/{environment}/users/{user}/sessions/{session}/entityTypes/{entity_type}\x12Zprojects/{project}/locations/{location}/agent/sessions/{session}/entityTypes/{entity_type}\x12\x82\x01projects/{project}/locations/{location}/agent/environments/{environment}/users/{user}/sessions/{session}/entityTypes/{entity_type}\"\xb2\x01\n" +
-	"\x1dListSessionEntityTypesRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+dialogflow.googleapis.com/SessionEntityTypeR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"+dialogflow.googleapis.com/SessionEntityType\x12Eprojects/{project}/agent/sessions/{session}/entityTypes/{entity_type}\x12mprojects/{project}/agent/environments/{environment}/users/{user}/sessions/{session}/entityTypes/{entity_type}\x12Zprojects/{project}/locations/{location}/agent/sessions/{session}/entityTypes/{entity_type}\x12\x82\x01projects/{project}/locations/{location}/agent/environments/{environment}/users/{user}/sessions/{session}/entityTypes/{entity_type}\"\xb5\x01\n" +
+	"\x1dListSessionEntityTypesRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+dialogflow.googleapis.com/SessionEntityTypeR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xa9\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xa9\x01\n" +
 	"\x1eListSessionEntityTypesResponse\x12_\n" +
 	"\x14session_entity_types\x18\x01 \x03(\v2-.google.cloud.dialogflow.v2.SessionEntityTypeR\x12sessionEntityTypes\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"f\n" +
-	"\x1bGetSessionEntityTypeRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+dialogflow.googleapis.com/SessionEntityTypeR\x04name\"\xd1\x01\n" +
-	"\x1eCreateSessionEntityTypeRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+dialogflow.googleapis.com/SessionEntityTypeR\x06parent\x12b\n" +
-	"\x13session_entity_type\x18\x02 \x01(\v2-.google.cloud.dialogflow.v2.SessionEntityTypeB\x03\xe0A\x02R\x11sessionEntityType\"\xc6\x01\n" +
-	"\x1eUpdateSessionEntityTypeRequest\x12b\n" +
-	"\x13session_entity_type\x18\x01 \x01(\v2-.google.cloud.dialogflow.v2.SessionEntityTypeB\x03\xe0A\x02R\x11sessionEntityType\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"i\n" +
-	"\x1eDeleteSessionEntityTypeRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"g\n" +
+	"\x1bGetSessionEntityTypeRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+dialogflow.googleapis.com/SessionEntityTypeR\x04name\"\xd3\x01\n" +
+	"\x1eCreateSessionEntityTypeRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+dialogflow.googleapis.com/SessionEntityTypeR\x06parent\x12c\n" +
+	"\x13session_entity_type\x18\x02 \x01(\v2-.google.cloud.dialogflow.v2.SessionEntityTypeB\x04\xe2A\x01\x02R\x11sessionEntityType\"\xc8\x01\n" +
+	"\x1eUpdateSessionEntityTypeRequest\x12c\n" +
+	"\x13session_entity_type\x18\x01 \x01(\v2-.google.cloud.dialogflow.v2.SessionEntityTypeB\x04\xe2A\x01\x02R\x11sessionEntityType\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"j\n" +
+	"\x1eDeleteSessionEntityTypeRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
 	"+dialogflow.googleapis.com/SessionEntityTypeR\x04name2\xea\x14\n" +
 	"\x12SessionEntityTypes\x12\xc6\x03\n" +
 	"\x16ListSessionEntityTypes\x129.google.cloud.dialogflow.v2.ListSessionEntityTypesRequest\x1a:.google.cloud.dialogflow.v2.ListSessionEntityTypesResponse\"\xb4\x02\xdaA\x06parent\x82\xd3\xe4\x93\x02\xa4\x02ZM\x12K/v2/{parent=projects/*/agent/environments/*/users/*/sessions/*}/entityTypesZB\x12@/v2/{parent=projects/*/locations/*/agent/sessions/*}/entityTypesZY\x12W/v2/{parent=projects/*/locations/*/agent/environments/*/users/*/sessions/*}/entityTypes\x124/v2/{parent=projects/*/agent/sessions/*}/entityTypes\x12\xb3\x03\n" +

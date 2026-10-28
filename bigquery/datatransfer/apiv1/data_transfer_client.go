@@ -1411,6 +1411,11 @@ func (c *restClient) GetDataSource(ctx context.Context, req *datatransferpb.GetD
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1476,6 +1481,11 @@ func (c *restClient) ListDataSources(ctx context.Context, req *datatransferpb.Li
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/dataSources", req.GetParent())
@@ -1550,6 +1560,11 @@ func (c *restClient) CreateTransferConfig(ctx context.Context, req *datatransfer
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/transferConfigs", req.GetParent())
 
 	params := url.Values{}
@@ -1619,6 +1634,11 @@ func (c *restClient) UpdateTransferConfig(ctx context.Context, req *datatransfer
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetTransferConfig().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetTransferConfig().GetName())
@@ -1692,6 +1712,11 @@ func (c *restClient) DeleteTransferConfig(ctx context.Context, req *datatransfer
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1729,6 +1754,11 @@ func (c *restClient) DeleteTransferConfig(ctx context.Context, req *datatransfer
 func (c *restClient) GetTransferConfig(ctx context.Context, req *datatransferpb.GetTransferConfigRequest, opts ...gax.CallOption) (*datatransferpb.TransferConfig, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1797,6 +1827,11 @@ func (c *restClient) ListTransferConfigs(ctx context.Context, req *datatransferp
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/transferConfigs", req.GetParent())
@@ -1881,6 +1916,11 @@ func (c *restClient) ScheduleTransferRuns(ctx context.Context, req *datatransfer
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:scheduleRuns", req.GetParent())
 
 	params := url.Values{}
@@ -1944,6 +1984,11 @@ func (c *restClient) StartManualTransferRuns(ctx context.Context, req *datatrans
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:startManualRuns", req.GetParent())
 
 	params := url.Values{}
@@ -1996,6 +2041,11 @@ func (c *restClient) StartManualTransferRuns(ctx context.Context, req *datatrans
 func (c *restClient) GetTransferRun(ctx context.Context, req *datatransferpb.GetTransferRunRequest, opts ...gax.CallOption) (*datatransferpb.TransferRun, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2052,6 +2102,11 @@ func (c *restClient) DeleteTransferRun(ctx context.Context, req *datatransferpb.
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2102,6 +2157,11 @@ func (c *restClient) ListTransferRuns(ctx context.Context, req *datatransferpb.L
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/runs", req.GetParent())
@@ -2190,6 +2250,11 @@ func (c *restClient) ListTransferLogs(ctx context.Context, req *datatransferpb.L
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/transferLogs", req.GetParent())
 
 		params := url.Values{}
@@ -2267,6 +2332,11 @@ func (c *restClient) CheckValidCreds(ctx context.Context, req *datatransferpb.Ch
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:checkValidCreds", req.GetName())
 
 	params := url.Values{}
@@ -2334,6 +2404,11 @@ func (c *restClient) EnrollDataSources(ctx context.Context, req *datatransferpb.
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:enrollDataSources", req.GetName())
 
 	params := url.Values{}
@@ -2383,6 +2458,11 @@ func (c *restClient) UnenrollDataSources(ctx context.Context, req *datatransferp
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:unenrollDataSources", req.GetName())
 
 	params := url.Values{}
@@ -2420,6 +2500,11 @@ func (c *restClient) UnenrollDataSources(ctx context.Context, req *datatransferp
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2487,6 +2572,11 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())

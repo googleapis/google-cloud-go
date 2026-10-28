@@ -3225,14 +3225,14 @@ const file_google_cloud_retail_v2alpha_search_service_proto_rawDesc = "" +
 	"\x17product_attribute_value\x18\x01 \x01(\v22.google.cloud.retail.v2alpha.ProductAttributeValueH\x00R\x15productAttributeValue\x12u\n" +
 	"\x1aproduct_attribute_interval\x18\x02 \x01(\v25.google.cloud.retail.v2alpha.ProductAttributeIntervalH\x00R\x18productAttributeInterval\x12:\n" +
 	"\x19representative_product_id\x18\x03 \x01(\tR\x17representativeProductIdB\x13\n" +
-	"\x11product_attribute\"\xdb%\n" +
-	"\rSearchRequest\x12!\n" +
-	"\tplacement\x18\x01 \x01(\tB\x03\xe0A\x02R\tplacement\x129\n" +
+	"\x11product_attribute\"\xe6%\n" +
+	"\rSearchRequest\x12\"\n" +
+	"\tplacement\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tplacement\x129\n" +
 	"\x06branch\x18\x02 \x01(\tB!\xfaA\x1e\n" +
 	"\x1cretail.googleapis.com/BranchR\x06branch\x12\x14\n" +
-	"\x05query\x18\x03 \x01(\tR\x05query\x12\"\n" +
+	"\x05query\x18\x03 \x01(\tR\x05query\x12#\n" +
 	"\n" +
-	"visitor_id\x18\x04 \x01(\tB\x03\xe0A\x02R\tvisitorId\x12B\n" +
+	"visitor_id\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\tvisitorId\x12B\n" +
 	"\tuser_info\x18\x05 \x01(\v2%.google.cloud.retail.v2alpha.UserInfoR\buserInfo\x12\x1b\n" +
 	"\tpage_size\x18\a \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -3249,29 +3249,29 @@ const file_google_cloud_retail_v2alpha_search_service_proto_rawDesc = "" +
 	"boost_spec\x18\r \x01(\v24.google.cloud.retail.v2alpha.SearchRequest.BoostSpecR\tboostSpec\x12o\n" +
 	"\x14query_expansion_spec\x18\x0e \x01(\v2=.google.cloud.retail.v2alpha.SearchRequest.QueryExpansionSpecR\x12queryExpansionSpec\x12n\n" +
 	"\x13relevance_threshold\x18\x0f \x01(\x0e2=.google.cloud.retail.v2alpha.SearchRequest.RelevanceThresholdR\x12relevanceThreshold\x12.\n" +
-	"\x13variant_rollup_keys\x18\x11 \x03(\tR\x11variantRollupKeys\x12(\n" +
-	"\rexperiment_id\x18\x12 \x01(\tB\x03\xe0A\x01R\fexperimentId\x12'\n" +
+	"\x13variant_rollup_keys\x18\x11 \x03(\tR\x11variantRollupKeys\x12)\n" +
+	"\rexperiment_id\x18\x12 \x01(\tB\x04\xe2A\x01\x01R\fexperimentId\x12'\n" +
 	"\x0fpage_categories\x18\x17 \x03(\tR\x0epageCategories\x12V\n" +
 	"\vsearch_mode\x18\x1f \x01(\x0e25.google.cloud.retail.v2alpha.SearchRequest.SearchModeR\n" +
 	"searchMode\x12q\n" +
 	"\x14personalization_spec\x18  \x01(\v2>.google.cloud.retail.v2alpha.SearchRequest.PersonalizationSpecR\x13personalizationSpec\x12N\n" +
 	"\x06labels\x18\" \x03(\v26.google.cloud.retail.v2alpha.SearchRequest.LabelsEntryR\x06labels\x12w\n" +
 	"\x15spell_correction_spec\x18# \x01(\v2>.google.cloud.retail.v2alpha.SearchRequest.SpellCorrectionSpecH\x00R\x13spellCorrectionSpec\x88\x01\x01\x12\x16\n" +
-	"\x06entity\x18& \x01(\tR\x06entity\x12\x86\x01\n" +
-	"\x1aconversational_search_spec\x18( \x01(\v2C.google.cloud.retail.v2alpha.SearchRequest.ConversationalSearchSpecB\x03\xe0A\x01R\x18conversationalSearchSpec\x12t\n" +
-	"\x14tile_navigation_spec\x18) \x01(\v2=.google.cloud.retail.v2alpha.SearchRequest.TileNavigationSpecB\x03\xe0A\x01R\x12tileNavigationSpec\x12(\n" +
-	"\rlanguage_code\x18+ \x01(\tB\x03\xe0A\x01R\flanguageCode\x12$\n" +
-	"\vregion_code\x18, \x01(\tB\x03\xe0A\x01R\n" +
-	"regionCode\x12\x1e\n" +
-	"\bplace_id\x18. \x01(\tB\x03\xe0A\x01R\aplaceId\x12l\n" +
-	"\x0fuser_attributes\x18/ \x03(\v2>.google.cloud.retail.v2alpha.SearchRequest.UserAttributesEntryB\x03\xe0A\x01R\x0euserAttributes\x1a\xbc\x04\n" +
-	"\tFacetSpec\x12_\n" +
-	"\tfacet_key\x18\x01 \x01(\v2=.google.cloud.retail.v2alpha.SearchRequest.FacetSpec.FacetKeyB\x03\xe0A\x02R\bfacetKey\x12\x14\n" +
+	"\x06entity\x18& \x01(\tR\x06entity\x12\x87\x01\n" +
+	"\x1aconversational_search_spec\x18( \x01(\v2C.google.cloud.retail.v2alpha.SearchRequest.ConversationalSearchSpecB\x04\xe2A\x01\x01R\x18conversationalSearchSpec\x12u\n" +
+	"\x14tile_navigation_spec\x18) \x01(\v2=.google.cloud.retail.v2alpha.SearchRequest.TileNavigationSpecB\x04\xe2A\x01\x01R\x12tileNavigationSpec\x12)\n" +
+	"\rlanguage_code\x18+ \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\x12%\n" +
+	"\vregion_code\x18, \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"regionCode\x12\x1f\n" +
+	"\bplace_id\x18. \x01(\tB\x04\xe2A\x01\x01R\aplaceId\x12m\n" +
+	"\x0fuser_attributes\x18/ \x03(\v2>.google.cloud.retail.v2alpha.SearchRequest.UserAttributesEntryB\x04\xe2A\x01\x01R\x0euserAttributes\x1a\xbe\x04\n" +
+	"\tFacetSpec\x12`\n" +
+	"\tfacet_key\x18\x01 \x01(\v2=.google.cloud.retail.v2alpha.SearchRequest.FacetSpec.FacetKeyB\x04\xe2A\x01\x02R\bfacetKey\x12\x14\n" +
 	"\x05limit\x18\x02 \x01(\x05R\x05limit\x120\n" +
 	"\x14excluded_filter_keys\x18\x03 \x03(\tR\x12excludedFilterKeys\x126\n" +
-	"\x17enable_dynamic_position\x18\x04 \x01(\bR\x15enableDynamicPosition\x1a\xcd\x02\n" +
-	"\bFacetKey\x12\x15\n" +
-	"\x03key\x18\x01 \x01(\tB\x03\xe0A\x02R\x03key\x12C\n" +
+	"\x17enable_dynamic_position\x18\x04 \x01(\bR\x15enableDynamicPosition\x1a\xce\x02\n" +
+	"\bFacetKey\x12\x16\n" +
+	"\x03key\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03key\x12C\n" +
 	"\tintervals\x18\x02 \x03(\v2%.google.cloud.retail.v2alpha.IntervalR\tintervals\x12+\n" +
 	"\x11restricted_values\x18\x03 \x03(\tR\x10restrictedValues\x12\x1a\n" +
 	"\bprefixes\x18\b \x03(\tR\bprefixes\x12\x1a\n" +

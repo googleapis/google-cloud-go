@@ -898,24 +898,24 @@ const file_google_cloud_asset_v1p2beta1_asset_service_proto_rawDesc = "" +
 	"\tread_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\breadTime\x12O\n" +
 	"\routput_config\x18\x02 \x01(\v2*.google.cloud.asset.v1p2beta1.OutputConfigR\foutputConfig\"d\n" +
 	"\x1dBatchGetAssetsHistoryResponse\x12C\n" +
-	"\x06assets\x18\x01 \x03(\v2+.google.cloud.asset.v1p2beta1.TemporalAssetR\x06assets\"\x8b\x01\n" +
-	"\x11CreateFeedRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12\x1c\n" +
-	"\afeed_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x06feedId\x12;\n" +
-	"\x04feed\x18\x03 \x01(\v2\".google.cloud.asset.v1p2beta1.FeedB\x03\xe0A\x02R\x04feed\"L\n" +
-	"\x0eGetFeedRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1ecloudasset.googleapis.com/FeedR\x04name\"/\n" +
-	"\x10ListFeedsRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\"M\n" +
+	"\x06assets\x18\x01 \x03(\v2+.google.cloud.asset.v1p2beta1.TemporalAssetR\x06assets\"\x8e\x01\n" +
+	"\x11CreateFeedRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12\x1d\n" +
+	"\afeed_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06feedId\x12<\n" +
+	"\x04feed\x18\x03 \x01(\v2\".google.cloud.asset.v1p2beta1.FeedB\x04\xe2A\x01\x02R\x04feed\"M\n" +
+	"\x0eGetFeedRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1ecloudasset.googleapis.com/FeedR\x04name\"0\n" +
+	"\x10ListFeedsRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\"M\n" +
 	"\x11ListFeedsResponse\x128\n" +
-	"\x05feeds\x18\x01 \x03(\v2\".google.cloud.asset.v1p2beta1.FeedR\x05feeds\"\x92\x01\n" +
-	"\x11UpdateFeedRequest\x12;\n" +
-	"\x04feed\x18\x01 \x01(\v2\".google.cloud.asset.v1p2beta1.FeedB\x03\xe0A\x02R\x04feed\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"O\n" +
-	"\x11DeleteFeedRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
+	"\x05feeds\x18\x01 \x03(\v2\".google.cloud.asset.v1p2beta1.FeedR\x05feeds\"\x94\x01\n" +
+	"\x11UpdateFeedRequest\x12<\n" +
+	"\x04feed\x18\x01 \x01(\v2\".google.cloud.asset.v1p2beta1.FeedB\x04\xe2A\x01\x02R\x04feed\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"P\n" +
+	"\x11DeleteFeedRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
 	"\x1ecloudasset.googleapis.com/FeedR\x04name\"v\n" +
 	"\fOutputConfig\x12W\n" +
 	"\x0fgcs_destination\x18\x01 \x01(\v2,.google.cloud.asset.v1p2beta1.GcsDestinationH\x00R\x0egcsDestinationB\r\n" +
@@ -928,15 +928,15 @@ const file_google_cloud_asset_v1p2beta1_asset_service_proto_rawDesc = "" +
 	"\x05topic\x18\x01 \x01(\tR\x05topic\"\x83\x01\n" +
 	"\x10FeedOutputConfig\x12`\n" +
 	"\x12pubsub_destination\x18\x01 \x01(\v2/.google.cloud.asset.v1p2beta1.PubsubDestinationH\x00R\x11pubsubDestinationB\r\n" +
-	"\vdestination\"\xa6\x03\n" +
-	"\x04Feed\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x1f\n" +
+	"\vdestination\"\xa8\x03\n" +
+	"\x04Feed\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12\x1f\n" +
 	"\vasset_names\x18\x02 \x03(\tR\n" +
 	"assetNames\x12\x1f\n" +
 	"\vasset_types\x18\x03 \x03(\tR\n" +
 	"assetTypes\x12L\n" +
-	"\fcontent_type\x18\x04 \x01(\x0e2).google.cloud.asset.v1p2beta1.ContentTypeR\vcontentType\x12a\n" +
-	"\x12feed_output_config\x18\x05 \x01(\v2..google.cloud.asset.v1p2beta1.FeedOutputConfigB\x03\xe0A\x02R\x10feedOutputConfig:\x91\x01\xeaA\x8d\x01\n" +
+	"\fcontent_type\x18\x04 \x01(\x0e2).google.cloud.asset.v1p2beta1.ContentTypeR\vcontentType\x12b\n" +
+	"\x12feed_output_config\x18\x05 \x01(\v2..google.cloud.asset.v1p2beta1.FeedOutputConfigB\x04\xe2A\x01\x02R\x10feedOutputConfig:\x91\x01\xeaA\x8d\x01\n" +
 	"\x1ecloudasset.googleapis.com/Feed\x12\x1fprojects/{project}/feeds/{feed}\x12\x1dfolders/{folder}/feeds/{feed}\x12)organizations/{organization}/feeds/{feed} \x01*I\n" +
 	"\vContentType\x12\x1c\n" +
 	"\x18CONTENT_TYPE_UNSPECIFIED\x10\x00\x12\f\n" +

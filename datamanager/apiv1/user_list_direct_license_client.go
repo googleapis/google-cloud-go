@@ -568,6 +568,11 @@ func (c *userListDirectLicenseRESTClient) CreateUserListDirectLicense(ctx contex
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/userListDirectLicenses", req.GetParent())
 
 	params := url.Values{}
@@ -622,6 +627,11 @@ func (c *userListDirectLicenseRESTClient) CreateUserListDirectLicense(ctx contex
 func (c *userListDirectLicenseRESTClient) GetUserListDirectLicense(ctx context.Context, req *datamanagerpb.GetUserListDirectLicenseRequest, opts ...gax.CallOption) (*datamanagerpb.UserListDirectLicense, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -685,6 +695,11 @@ func (c *userListDirectLicenseRESTClient) UpdateUserListDirectLicense(ctx contex
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetUserListDirectLicense().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetUserListDirectLicense().GetName())
@@ -761,6 +776,11 @@ func (c *userListDirectLicenseRESTClient) ListUserListDirectLicenses(ctx context
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/userListDirectLicenses", req.GetParent())

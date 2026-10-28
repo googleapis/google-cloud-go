@@ -1800,6 +1800,11 @@ func (c *documentProcessorRESTClient) ProcessDocument(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:process", req.GetName())
 
 	params := url.Values{}
@@ -1859,6 +1864,11 @@ func (c *documentProcessorRESTClient) BatchProcessDocuments(ctx context.Context,
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:batchProcess", req.GetName())
@@ -1922,6 +1932,11 @@ func (c *documentProcessorRESTClient) BatchProcessDocuments(ctx context.Context,
 func (c *documentProcessorRESTClient) FetchProcessorTypes(ctx context.Context, req *documentaipb.FetchProcessorTypesRequest, opts ...gax.CallOption) (*documentaipb.FetchProcessorTypesResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:fetchProcessorTypes", req.GetParent())
@@ -1991,6 +2006,11 @@ func (c *documentProcessorRESTClient) ListProcessorTypes(ctx context.Context, re
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/processorTypes", req.GetParent())
 
 		params := url.Values{}
@@ -2054,6 +2074,11 @@ func (c *documentProcessorRESTClient) ListProcessorTypes(ctx context.Context, re
 func (c *documentProcessorRESTClient) GetProcessorType(ctx context.Context, req *documentaipb.GetProcessorTypeRequest, opts ...gax.CallOption) (*documentaipb.ProcessorType, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2123,6 +2148,11 @@ func (c *documentProcessorRESTClient) ListProcessors(ctx context.Context, req *d
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/processors", req.GetParent())
 
 		params := url.Values{}
@@ -2188,6 +2218,11 @@ func (c *documentProcessorRESTClient) GetProcessor(ctx context.Context, req *doc
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2250,6 +2285,11 @@ func (c *documentProcessorRESTClient) TrainProcessorVersion(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/processorVersions:train", req.GetParent())
 
 	params := url.Values{}
@@ -2309,6 +2349,11 @@ func (c *documentProcessorRESTClient) TrainProcessorVersion(ctx context.Context,
 func (c *documentProcessorRESTClient) GetProcessorVersion(ctx context.Context, req *documentaipb.GetProcessorVersionRequest, opts ...gax.CallOption) (*documentaipb.ProcessorVersion, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2378,6 +2423,11 @@ func (c *documentProcessorRESTClient) ListProcessorVersions(ctx context.Context,
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/processorVersions", req.GetParent())
 
 		params := url.Values{}
@@ -2442,6 +2492,11 @@ func (c *documentProcessorRESTClient) ListProcessorVersions(ctx context.Context,
 func (c *documentProcessorRESTClient) DeleteProcessorVersion(ctx context.Context, req *documentaipb.DeleteProcessorVersionRequest, opts ...gax.CallOption) (*DeleteProcessorVersionOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2511,6 +2566,11 @@ func (c *documentProcessorRESTClient) DeployProcessorVersion(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:deploy", req.GetName())
 
 	params := url.Values{}
@@ -2576,6 +2636,11 @@ func (c *documentProcessorRESTClient) UndeployProcessorVersion(ctx context.Conte
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:undeploy", req.GetName())
@@ -2652,6 +2717,11 @@ func (c *documentProcessorRESTClient) CreateProcessor(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/processors", req.GetParent())
 
 	params := url.Values{}
@@ -2705,6 +2775,11 @@ func (c *documentProcessorRESTClient) CreateProcessor(ctx context.Context, req *
 func (c *documentProcessorRESTClient) DeleteProcessor(ctx context.Context, req *documentaipb.DeleteProcessorRequest, opts ...gax.CallOption) (*DeleteProcessorOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2774,6 +2849,11 @@ func (c *documentProcessorRESTClient) EnableProcessor(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:enable", req.GetName())
 
 	params := url.Values{}
@@ -2839,6 +2919,11 @@ func (c *documentProcessorRESTClient) DisableProcessor(ctx context.Context, req 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:disable", req.GetName())
@@ -2912,6 +2997,11 @@ func (c *documentProcessorRESTClient) SetDefaultProcessorVersion(ctx context.Con
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProcessor(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setDefaultProcessorVersion", req.GetProcessor())
 
 	params := url.Values{}
@@ -2978,6 +3068,11 @@ func (c *documentProcessorRESTClient) ReviewDocument(ctx context.Context, req *d
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetHumanReviewConfig(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:reviewDocument", req.GetHumanReviewConfig())
@@ -3048,6 +3143,11 @@ func (c *documentProcessorRESTClient) EvaluateProcessorVersion(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProcessorVersion(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:evaluateProcessorVersion", req.GetProcessorVersion())
 
 	params := url.Values{}
@@ -3107,6 +3207,11 @@ func (c *documentProcessorRESTClient) EvaluateProcessorVersion(ctx context.Conte
 func (c *documentProcessorRESTClient) GetEvaluation(ctx context.Context, req *documentaipb.GetEvaluationRequest, opts ...gax.CallOption) (*documentaipb.Evaluation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3176,6 +3281,11 @@ func (c *documentProcessorRESTClient) ListEvaluations(ctx context.Context, req *
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/evaluations", req.GetParent())
 
 		params := url.Values{}
@@ -3239,6 +3349,11 @@ func (c *documentProcessorRESTClient) ListEvaluations(ctx context.Context, req *
 func (c *documentProcessorRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3306,6 +3421,11 @@ func (c *documentProcessorRESTClient) ListLocations(ctx context.Context, req *lo
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
@@ -3376,6 +3496,11 @@ func (c *documentProcessorRESTClient) CancelOperation(ctx context.Context, req *
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -3413,6 +3538,11 @@ func (c *documentProcessorRESTClient) CancelOperation(ctx context.Context, req *
 func (c *documentProcessorRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3480,6 +3610,11 @@ func (c *documentProcessorRESTClient) ListOperations(ctx context.Context, req *l
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())

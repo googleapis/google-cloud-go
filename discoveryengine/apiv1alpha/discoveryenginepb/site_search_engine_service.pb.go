@@ -2117,45 +2117,45 @@ var File_google_cloud_discoveryengine_v1alpha_site_search_engine_service_proto p
 
 const file_google_cloud_discoveryengine_v1alpha_site_search_engine_service_proto_rawDesc = "" +
 	"\n" +
-	"Egoogle/cloud/discoveryengine/v1alpha/site_search_engine_service.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a=google/cloud/discoveryengine/v1alpha/site_search_engine.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"i\n" +
-	"\x1aGetSiteSearchEngineRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/discoveryengine.googleapis.com/SiteSearchEngineR\x04name\"\xc2\x01\n" +
-	"\x17CreateTargetSiteRequest\x12O\n" +
-	"\x06parent\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/discoveryengine.googleapis.com/SiteSearchEngineR\x06parent\x12V\n" +
-	"\vtarget_site\x18\x02 \x01(\v20.google.cloud.discoveryengine.v1alpha.TargetSiteB\x03\xe0A\x02R\n" +
+	"Egoogle/cloud/discoveryengine/v1alpha/site_search_engine_service.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a=google/cloud/discoveryengine/v1alpha/site_search_engine.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"j\n" +
+	"\x1aGetSiteSearchEngineRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/discoveryengine.googleapis.com/SiteSearchEngineR\x04name\"\xc4\x01\n" +
+	"\x17CreateTargetSiteRequest\x12P\n" +
+	"\x06parent\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/discoveryengine.googleapis.com/SiteSearchEngineR\x06parent\x12W\n" +
+	"\vtarget_site\x18\x02 \x01(\v20.google.cloud.discoveryengine.v1alpha.TargetSiteB\x04\xe2A\x01\x02R\n" +
 	"targetSite\"\x94\x01\n" +
 	"\x18CreateTargetSiteMetadata\x12;\n" +
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12;\n" +
 	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"updateTime\"\xd0\x01\n" +
-	"\x1dBatchCreateTargetSitesRequest\x12O\n" +
-	"\x06parent\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/discoveryengine.googleapis.com/SiteSearchEngineR\x06parent\x12^\n" +
-	"\brequests\x18\x02 \x03(\v2=.google.cloud.discoveryengine.v1alpha.CreateTargetSiteRequestB\x03\xe0A\x02R\brequests\"]\n" +
-	"\x14GetTargetSiteRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")discoveryengine.googleapis.com/TargetSiteR\x04name\"q\n" +
-	"\x17UpdateTargetSiteRequest\x12V\n" +
-	"\vtarget_site\x18\x01 \x01(\v20.google.cloud.discoveryengine.v1alpha.TargetSiteB\x03\xe0A\x02R\n" +
+	"updateTime\"\xd2\x01\n" +
+	"\x1dBatchCreateTargetSitesRequest\x12P\n" +
+	"\x06parent\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/discoveryengine.googleapis.com/SiteSearchEngineR\x06parent\x12_\n" +
+	"\brequests\x18\x02 \x03(\v2=.google.cloud.discoveryengine.v1alpha.CreateTargetSiteRequestB\x04\xe2A\x01\x02R\brequests\"^\n" +
+	"\x14GetTargetSiteRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")discoveryengine.googleapis.com/TargetSiteR\x04name\"r\n" +
+	"\x17UpdateTargetSiteRequest\x12W\n" +
+	"\vtarget_site\x18\x01 \x01(\v20.google.cloud.discoveryengine.v1alpha.TargetSiteB\x04\xe2A\x01\x02R\n" +
 	"targetSite\"\x94\x01\n" +
 	"\x18UpdateTargetSiteMetadata\x12;\n" +
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12;\n" +
 	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"updateTime\"`\n" +
-	"\x17DeleteTargetSiteRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
+	"updateTime\"a\n" +
+	"\x17DeleteTargetSiteRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
 	")discoveryengine.googleapis.com/TargetSiteR\x04name\"\x94\x01\n" +
 	"\x18DeleteTargetSiteMetadata\x12;\n" +
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12;\n" +
 	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"updateTime\"\xa5\x01\n" +
-	"\x16ListTargetSitesRequest\x12O\n" +
-	"\x06parent\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
+	"updateTime\"\xa6\x01\n" +
+	"\x16ListTargetSitesRequest\x12P\n" +
+	"\x06parent\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
 	"/discoveryengine.googleapis.com/SiteSearchEngineR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -2171,29 +2171,29 @@ const file_google_cloud_discoveryengine_v1alpha_site_search_engine_service_proto
 	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"updateTime\"u\n" +
 	"\x1eBatchCreateTargetSitesResponse\x12S\n" +
-	"\ftarget_sites\x18\x01 \x03(\v20.google.cloud.discoveryengine.v1alpha.TargetSiteR\vtargetSites\"\x88\x01\n" +
-	"\x1fEnableAdvancedSiteSearchRequest\x12e\n" +
-	"\x12site_search_engine\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
+	"\ftarget_sites\x18\x01 \x03(\v20.google.cloud.discoveryengine.v1alpha.TargetSiteR\vtargetSites\"\x89\x01\n" +
+	"\x1fEnableAdvancedSiteSearchRequest\x12f\n" +
+	"\x12site_search_engine\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
 	"/discoveryengine.googleapis.com/SiteSearchEngineR\x10siteSearchEngine\"\"\n" +
 	" EnableAdvancedSiteSearchResponse\"\x9c\x01\n" +
 	" EnableAdvancedSiteSearchMetadata\x12;\n" +
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12;\n" +
 	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"updateTime\"\x89\x01\n" +
-	" DisableAdvancedSiteSearchRequest\x12e\n" +
-	"\x12site_search_engine\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
+	"updateTime\"\x8a\x01\n" +
+	" DisableAdvancedSiteSearchRequest\x12f\n" +
+	"\x12site_search_engine\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
 	"/discoveryengine.googleapis.com/SiteSearchEngineR\x10siteSearchEngine\"#\n" +
 	"!DisableAdvancedSiteSearchResponse\"\x9d\x01\n" +
 	"!DisableAdvancedSiteSearchMetadata\x12;\n" +
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12;\n" +
 	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"updateTime\"\x94\x01\n" +
-	"\x12RecrawlUrisRequest\x12e\n" +
-	"\x12site_search_engine\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/discoveryengine.googleapis.com/SiteSearchEngineR\x10siteSearchEngine\x12\x17\n" +
-	"\x04uris\x18\x02 \x03(\tB\x03\xe0A\x02R\x04uris\"\xc2\x04\n" +
+	"updateTime\"\x96\x01\n" +
+	"\x12RecrawlUrisRequest\x12f\n" +
+	"\x12site_search_engine\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/discoveryengine.googleapis.com/SiteSearchEngineR\x10siteSearchEngine\x12\x18\n" +
+	"\x04uris\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\x04uris\"\xc2\x04\n" +
 	"\x13RecrawlUrisResponse\x12n\n" +
 	"\x0ffailure_samples\x18\x01 \x03(\v2E.google.cloud.discoveryengine.v1alpha.RecrawlUrisResponse.FailureInfoR\x0efailureSamples\x12\x1f\n" +
 	"\vfailed_uris\x18\x02 \x03(\tR\n" +
@@ -2220,18 +2220,18 @@ const file_google_cloud_discoveryengine_v1alpha_site_search_engine_service_proto
 	"\x10valid_uris_count\x18\x04 \x01(\x05R\x0evalidUrisCount\x12#\n" +
 	"\rsuccess_count\x18\x05 \x01(\x05R\fsuccessCount\x12#\n" +
 	"\rpending_count\x18\x06 \x01(\x05R\fpendingCount\x120\n" +
-	"\x14quota_exceeded_count\x18\a \x01(\x05R\x12quotaExceededCount\"p\n" +
-	"\x1dBatchVerifyTargetSitesRequest\x12O\n" +
-	"\x06parent\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
+	"\x14quota_exceeded_count\x18\a \x01(\x05R\x12quotaExceededCount\"q\n" +
+	"\x1dBatchVerifyTargetSitesRequest\x12P\n" +
+	"\x06parent\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
 	"/discoveryengine.googleapis.com/SiteSearchEngineR\x06parent\" \n" +
 	"\x1eBatchVerifyTargetSitesResponse\"\x9a\x01\n" +
 	"\x1eBatchVerifyTargetSitesMetadata\x12;\n" +
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12;\n" +
 	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"updateTime\"\xc9\x01\n" +
-	"$FetchDomainVerificationStatusRequest\x12e\n" +
-	"\x12site_search_engine\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
+	"updateTime\"\xca\x01\n" +
+	"$FetchDomainVerificationStatusRequest\x12f\n" +
+	"\x12site_search_engine\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
 	"/discoveryengine.googleapis.com/SiteSearchEngineR\x10siteSearchEngine\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -2240,9 +2240,9 @@ const file_google_cloud_discoveryengine_v1alpha_site_search_engine_service_proto
 	"\ftarget_sites\x18\x01 \x03(\v20.google.cloud.discoveryengine.v1alpha.TargetSiteR\vtargetSites\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12\x1d\n" +
 	"\n" +
-	"total_size\x18\x03 \x01(\x05R\ttotalSize\"\xd8\x03\n" +
-	" SetUriPatternDocumentDataRequest\x12e\n" +
-	"\x12site_search_engine\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
+	"total_size\x18\x03 \x01(\x05R\ttotalSize\"\xd9\x03\n" +
+	" SetUriPatternDocumentDataRequest\x12f\n" +
+	"\x12site_search_engine\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
 	"/discoveryengine.googleapis.com/SiteSearchEngineR\x10siteSearchEngine\x12\x87\x01\n" +
 	"\x11document_data_map\x18\x02 \x03(\v2[.google.cloud.discoveryengine.v1alpha.SetUriPatternDocumentDataRequest.DocumentDataMapEntryR\x0fdocumentDataMap\x125\n" +
 	"\x17empty_document_data_map\x18\x04 \x01(\bR\x14emptyDocumentDataMap\x12/\n" +
@@ -2255,9 +2255,9 @@ const file_google_cloud_discoveryengine_v1alpha_site_search_engine_service_proto
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12;\n" +
 	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"updateTime\"\x89\x01\n" +
-	" GetUriPatternDocumentDataRequest\x12e\n" +
-	"\x12site_search_engine\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
+	"updateTime\"\x8a\x01\n" +
+	" GetUriPatternDocumentDataRequest\x12f\n" +
+	"\x12site_search_engine\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
 	"/discoveryengine.googleapis.com/SiteSearchEngineR\x10siteSearchEngine\"\x8b\x02\n" +
 	"!GetUriPatternDocumentDataResponse\x12\x88\x01\n" +
 	"\x11document_data_map\x18\x01 \x03(\v2\\.google.cloud.discoveryengine.v1alpha.GetUriPatternDocumentDataResponse.DocumentDataMapEntryR\x0fdocumentDataMap\x1a[\n" +

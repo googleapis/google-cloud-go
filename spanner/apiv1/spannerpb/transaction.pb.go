@@ -921,17 +921,17 @@ var File_google_spanner_v1_transaction_proto protoreflect.FileDescriptor
 
 const file_google_spanner_v1_transaction_proto_rawDesc = "" +
 	"\n" +
-	"#google/spanner/v1/transaction.proto\x12\x11google.spanner.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/spanner/v1/location.proto\"\xdc\t\n" +
+	"#google/spanner/v1/transaction.proto\x12\x11google.spanner.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/spanner/v1/location.proto\"\xdd\t\n" +
 	"\x12TransactionOptions\x12P\n" +
 	"\n" +
 	"read_write\x18\x01 \x01(\v2/.google.spanner.v1.TransactionOptions.ReadWriteH\x00R\treadWrite\x12_\n" +
 	"\x0fpartitioned_dml\x18\x03 \x01(\v24.google.spanner.v1.TransactionOptions.PartitionedDmlH\x00R\x0epartitionedDml\x12M\n" +
 	"\tread_only\x18\x02 \x01(\v2..google.spanner.v1.TransactionOptions.ReadOnlyH\x00R\breadOnly\x12D\n" +
 	"\x1fexclude_txn_from_change_streams\x18\x05 \x01(\bR\x1bexcludeTxnFromChangeStreams\x12]\n" +
-	"\x0fisolation_level\x18\x06 \x01(\x0e24.google.spanner.v1.TransactionOptions.IsolationLevelR\x0eisolationLevel\x1a\xa3\x02\n" +
+	"\x0fisolation_level\x18\x06 \x01(\x0e24.google.spanner.v1.TransactionOptions.IsolationLevelR\x0eisolationLevel\x1a\xa4\x02\n" +
 	"\tReadWrite\x12b\n" +
-	"\x0eread_lock_mode\x18\x01 \x01(\x0e2<.google.spanner.v1.TransactionOptions.ReadWrite.ReadLockModeR\freadLockMode\x12a\n" +
-	"+multiplexed_session_previous_transaction_id\x18\x02 \x01(\fB\x03\xe0A\x01R'multiplexedSessionPreviousTransactionId\"O\n" +
+	"\x0eread_lock_mode\x18\x01 \x01(\x0e2<.google.spanner.v1.TransactionOptions.ReadWrite.ReadLockModeR\freadLockMode\x12b\n" +
+	"+multiplexed_session_previous_transaction_id\x18\x02 \x01(\fB\x04\xe2A\x01\x01R'multiplexedSessionPreviousTransactionId\"O\n" +
 	"\fReadLockMode\x12\x1e\n" +
 	"\x1aREAD_LOCK_MODE_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vPESSIMISTIC\x10\x01\x12\x0e\n" +
@@ -950,12 +950,12 @@ const file_google_spanner_v1_transaction_proto_rawDesc = "" +
 	"\x1bISOLATION_LEVEL_UNSPECIFIED\x10\x00\x12\x10\n" +
 	"\fSERIALIZABLE\x10\x01\x12\x13\n" +
 	"\x0fREPEATABLE_READ\x10\x02B\x06\n" +
-	"\x04mode\"\x86\x02\n" +
+	"\x04mode\"\x87\x02\n" +
 	"\vTransaction\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\fR\x02id\x12A\n" +
 	"\x0eread_timestamp\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\rreadTimestamp\x12\\\n" +
-	"\x0fprecommit_token\x18\x03 \x01(\v23.google.spanner.v1.MultiplexedSessionPrecommitTokenR\x0eprecommitToken\x12F\n" +
-	"\fcache_update\x18\x05 \x01(\v2\x1e.google.spanner.v1.CacheUpdateB\x03\xe0A\x01R\vcacheUpdate\"\xba\x01\n" +
+	"\x0fprecommit_token\x18\x03 \x01(\v23.google.spanner.v1.MultiplexedSessionPrecommitTokenR\x0eprecommitToken\x12G\n" +
+	"\fcache_update\x18\x05 \x01(\v2\x1e.google.spanner.v1.CacheUpdateB\x04\xe2A\x01\x01R\vcacheUpdate\"\xba\x01\n" +
 	"\x13TransactionSelector\x12F\n" +
 	"\n" +
 	"single_use\x18\x01 \x01(\v2%.google.spanner.v1.TransactionOptionsH\x00R\tsingleUse\x12\x10\n" +

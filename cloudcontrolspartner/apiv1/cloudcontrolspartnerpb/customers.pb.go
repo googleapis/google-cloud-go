@@ -667,51 +667,51 @@ var File_google_cloud_cloudcontrolspartner_v1_customers_proto protoreflect.FileD
 
 const file_google_cloud_cloudcontrolspartner_v1_customers_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/cloudcontrolspartner/v1/customers.proto\x12$google.cloud.cloudcontrolspartner.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a;google/cloud/cloudcontrolspartner/v1/completion_state.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbb\x03\n" +
-	"\bCustomer\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12~\n" +
-	"\x19customer_onboarding_state\x18\x03 \x01(\v2=.google.cloud.cloudcontrolspartner.v1.CustomerOnboardingStateB\x03\xe0A\x03R\x17customerOnboardingState\x12&\n" +
-	"\fis_onboarded\x18\x04 \x01(\bB\x03\xe0A\x03R\visOnboarded\x124\n" +
-	"\x13organization_domain\x18\x05 \x01(\tB\x03\xe0A\x03R\x12organizationDomain:\x8f\x01\xeaA\x8b\x01\n" +
-	",cloudcontrolspartner.googleapis.com/Customer\x12Forganizations/{organization}/locations/{location}/customers/{customer}*\tcustomers2\bcustomer\"\xdd\x01\n" +
-	"\x14ListCustomersRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,cloudcontrolspartner.googleapis.com/CustomerR\x06parent\x12\x1b\n" +
+	"4google/cloud/cloudcontrolspartner/v1/customers.proto\x12$google.cloud.cloudcontrolspartner.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a;google/cloud/cloudcontrolspartner/v1/completion_state.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc0\x03\n" +
+	"\bCustomer\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12\x7f\n" +
+	"\x19customer_onboarding_state\x18\x03 \x01(\v2=.google.cloud.cloudcontrolspartner.v1.CustomerOnboardingStateB\x04\xe2A\x01\x03R\x17customerOnboardingState\x12'\n" +
+	"\fis_onboarded\x18\x04 \x01(\bB\x04\xe2A\x01\x03R\visOnboarded\x125\n" +
+	"\x13organization_domain\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x12organizationDomain:\x8f\x01\xeaA\x8b\x01\n" +
+	",cloudcontrolspartner.googleapis.com/Customer\x12Forganizations/{organization}/locations/{location}/customers/{customer}*\tcustomers2\bcustomer\"\xe0\x01\n" +
+	"\x14ListCustomersRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,cloudcontrolspartner.googleapis.com/CustomerR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xaf\x01\n" +
+	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xaf\x01\n" +
 	"\x15ListCustomersResponse\x12L\n" +
 	"\tcustomers\x18\x01 \x03(\v2..google.cloud.cloudcontrolspartner.v1.CustomerR\tcustomers\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xdc\x01\n" +
-	"\x15CreateCustomerRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,cloudcontrolspartner.googleapis.com/CustomerR\x06parent\x12O\n" +
-	"\bcustomer\x18\x02 \x01(\v2..google.cloud.cloudcontrolspartner.v1.CustomerB\x03\xe0A\x02R\bcustomer\x12$\n" +
-	"\vcustomer_id\x18\x03 \x01(\tB\x03\xe0A\x02R\n" +
-	"customerId\"^\n" +
-	"\x12GetCustomerRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xdf\x01\n" +
+	"\x15CreateCustomerRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,cloudcontrolspartner.googleapis.com/CustomerR\x06parent\x12P\n" +
+	"\bcustomer\x18\x02 \x01(\v2..google.cloud.cloudcontrolspartner.v1.CustomerB\x04\xe2A\x01\x02R\bcustomer\x12%\n" +
+	"\vcustomer_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"customerId\"_\n" +
+	"\x12GetCustomerRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
 	",cloudcontrolspartner.googleapis.com/CustomerR\x04name\"\x82\x01\n" +
 	"\x17CustomerOnboardingState\x12g\n" +
-	"\x10onboarding_steps\x18\x01 \x03(\v2<.google.cloud.cloudcontrolspartner.v1.CustomerOnboardingStepR\x0fonboardingSteps\"\xa2\x03\n" +
+	"\x10onboarding_steps\x18\x01 \x03(\v2<.google.cloud.cloudcontrolspartner.v1.CustomerOnboardingStepR\x0fonboardingSteps\"\xa3\x03\n" +
 	"\x16CustomerOnboardingStep\x12U\n" +
 	"\x04step\x18\x01 \x01(\x0e2A.google.cloud.cloudcontrolspartner.v1.CustomerOnboardingStep.StepR\x04step\x129\n" +
 	"\n" +
 	"start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x12C\n" +
-	"\x0fcompletion_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\x0ecompletionTime\x12e\n" +
-	"\x10completion_state\x18\x04 \x01(\x0e25.google.cloud.cloudcontrolspartner.v1.CompletionStateB\x03\xe0A\x03R\x0fcompletionState\"J\n" +
+	"\x0fcompletion_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\x0ecompletionTime\x12f\n" +
+	"\x10completion_state\x18\x04 \x01(\x0e25.google.cloud.cloudcontrolspartner.v1.CompletionStateB\x04\xe2A\x01\x03R\x0fcompletionState\"J\n" +
 	"\x04Step\x12\x14\n" +
 	"\x10STEP_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eKAJ_ENROLLMENT\x10\x01\x12\x18\n" +
-	"\x14CUSTOMER_ENVIRONMENT\x10\x02\"\xaa\x01\n" +
-	"\x15UpdateCustomerRequest\x12O\n" +
-	"\bcustomer\x18\x01 \x01(\v2..google.cloud.cloudcontrolspartner.v1.CustomerB\x03\xe0A\x02R\bcustomer\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"a\n" +
-	"\x15DeleteCustomerRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
+	"\x14CUSTOMER_ENVIRONMENT\x10\x02\"\xac\x01\n" +
+	"\x15UpdateCustomerRequest\x12P\n" +
+	"\bcustomer\x18\x01 \x01(\v2..google.cloud.cloudcontrolspartner.v1.CustomerB\x04\xe2A\x01\x02R\bcustomer\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"b\n" +
+	"\x15DeleteCustomerRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
 	",cloudcontrolspartner.googleapis.com/CustomerR\x04nameB\x92\x02\n" +
 	"(com.google.cloud.cloudcontrolspartner.v1B\x0eCustomersProtoP\x01Z\\cloud.google.com/go/cloudcontrolspartner/apiv1/cloudcontrolspartnerpb;cloudcontrolspartnerpb\xaa\x02$Google.Cloud.CloudControlsPartner.V1\xca\x02$Google\\Cloud\\CloudControlsPartner\\V1\xea\x02'Google::Cloud::CloudControlsPartner::V1b\x06proto3"
 

@@ -631,6 +631,11 @@ func (c *textRESTClient) GenerateText(ctx context.Context, req *generativelangua
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetModel(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:generateText", req.GetModel())
 
 	params := url.Values{}
@@ -689,6 +694,11 @@ func (c *textRESTClient) EmbedText(ctx context.Context, req *generativelanguagep
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetModel(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:embedText", req.GetModel())
@@ -752,6 +762,11 @@ func (c *textRESTClient) BatchEmbedText(ctx context.Context, req *generativelang
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetModel(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:batchEmbedText", req.GetModel())
 
 	params := url.Values{}
@@ -812,6 +827,11 @@ func (c *textRESTClient) CountTextTokens(ctx context.Context, req *generativelan
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetModel(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:countTextTokens", req.GetModel())
 
 	params := url.Values{}
@@ -864,6 +884,11 @@ func (c *textRESTClient) CountTextTokens(ctx context.Context, req *generativelan
 func (c *textRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -931,6 +956,11 @@ func (c *textRESTClient) ListOperations(ctx context.Context, req *longrunningpb.
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/operations", req.GetName())

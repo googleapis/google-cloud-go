@@ -242,18 +242,18 @@ var File_google_devtools_clouderrorreporting_v1beta1_report_errors_service_proto
 
 const file_google_devtools_clouderrorreporting_v1beta1_report_errors_service_proto_rawDesc = "" +
 	"\n" +
-	"Ggoogle/devtools/clouderrorreporting/v1beta1/report_errors_service.proto\x12+google.devtools.clouderrorreporting.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a8google/devtools/clouderrorreporting/v1beta1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcd\x01\n" +
-	"\x17ReportErrorEventRequest\x12V\n" +
-	"\fproject_name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\vprojectName\x12Z\n" +
-	"\x05event\x18\x02 \x01(\v2?.google.devtools.clouderrorreporting.v1beta1.ReportedErrorEventB\x03\xe0A\x02R\x05event\"\x1a\n" +
-	"\x18ReportErrorEventResponse\"\xb8\x02\n" +
-	"\x12ReportedErrorEvent\x12>\n" +
+	"Ggoogle/devtools/clouderrorreporting/v1beta1/report_errors_service.proto\x12+google.devtools.clouderrorreporting.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a8google/devtools/clouderrorreporting/v1beta1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcf\x01\n" +
+	"\x17ReportErrorEventRequest\x12W\n" +
+	"\fproject_name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\vprojectName\x12[\n" +
+	"\x05event\x18\x02 \x01(\v2?.google.devtools.clouderrorreporting.v1beta1.ReportedErrorEventB\x04\xe2A\x01\x02R\x05event\"\x1a\n" +
+	"\x18ReportErrorEventResponse\"\xbc\x02\n" +
+	"\x12ReportedErrorEvent\x12?\n" +
 	"\n" +
-	"event_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\teventTime\x12i\n" +
-	"\x0fservice_context\x18\x02 \x01(\v2;.google.devtools.clouderrorreporting.v1beta1.ServiceContextB\x03\xe0A\x02R\x0eserviceContext\x12\x1d\n" +
-	"\amessage\x18\x03 \x01(\tB\x03\xe0A\x02R\amessage\x12X\n" +
-	"\acontext\x18\x04 \x01(\v29.google.devtools.clouderrorreporting.v1beta1.ErrorContextB\x03\xe0A\x01R\acontext2\xe5\x02\n" +
+	"event_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\teventTime\x12j\n" +
+	"\x0fservice_context\x18\x02 \x01(\v2;.google.devtools.clouderrorreporting.v1beta1.ServiceContextB\x04\xe2A\x01\x02R\x0eserviceContext\x12\x1e\n" +
+	"\amessage\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\amessage\x12Y\n" +
+	"\acontext\x18\x04 \x01(\v29.google.devtools.clouderrorreporting.v1beta1.ErrorContextB\x04\xe2A\x01\x01R\acontext2\xe5\x02\n" +
 	"\x13ReportErrorsService\x12\xf5\x01\n" +
 	"\x10ReportErrorEvent\x12D.google.devtools.clouderrorreporting.v1beta1.ReportErrorEventRequest\x1aE.google.devtools.clouderrorreporting.v1beta1.ReportErrorEventResponse\"T\xdaA\x12project_name,event\x82\xd3\xe4\x93\x029:\x05event\"0/v1beta1/{project_name=projects/*}/events:report\x1aV\xcaA\"clouderrorreporting.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\x96\x02\n" +
 	"/com.google.devtools.clouderrorreporting.v1beta1B\x18ReportErrorsServiceProtoP\x01ZOcloud.google.com/go/errorreporting/apiv1beta1/errorreportingpb;errorreportingpb\xf8\x01\x01\xaa\x02#Google.Cloud.ErrorReporting.V1Beta1\xca\x02#Google\\Cloud\\ErrorReporting\\V1beta1\xea\x02&Google::Cloud::ErrorReporting::V1beta1b\x06proto3"

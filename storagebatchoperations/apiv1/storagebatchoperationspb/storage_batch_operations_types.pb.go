@@ -2013,28 +2013,28 @@ var File_google_cloud_storagebatchoperations_v1_storage_batch_operations_types_p
 
 const file_google_cloud_storagebatchoperations_v1_storage_batch_operations_types_proto_rawDesc = "" +
 	"\n" +
-	"Kgoogle/cloud/storagebatchoperations/v1/storage_batch_operations_types.proto\x12&google.cloud.storagebatchoperations.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x15google/rpc/code.proto\"\x90\f\n" +
-	"\x03Job\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12U\n" +
+	"Kgoogle/cloud/storagebatchoperations/v1/storage_batch_operations_types.proto\x12&google.cloud.storagebatchoperations.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x15google/rpc/code.proto\"\x9b\f\n" +
+	"\x03Job\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12U\n" +
 	"\vbucket_list\x18\x13 \x01(\v22.google.cloud.storagebatchoperations.v1.BucketListH\x00R\n" +
 	"bucketList\x12_\n" +
 	"\x0fput_object_hold\x18\x05 \x01(\v25.google.cloud.storagebatchoperations.v1.PutObjectHoldH\x01R\rputObjectHold\x12[\n" +
 	"\rdelete_object\x18\x06 \x01(\v24.google.cloud.storagebatchoperations.v1.DeleteObjectH\x01R\fdeleteObject\x12X\n" +
 	"\fput_metadata\x18\b \x01(\v23.google.cloud.storagebatchoperations.v1.PutMetadataH\x01R\vputMetadata\x12^\n" +
 	"\x0erewrite_object\x18\x14 \x01(\v25.google.cloud.storagebatchoperations.v1.RewriteObjectH\x01R\rrewriteObject\x12\x84\x01\n" +
-	"\x1cupdate_object_custom_context\x18\x17 \x01(\v2A.google.cloud.storagebatchoperations.v1.UpdateObjectCustomContextH\x01R\x19updateObjectCustomContext\x12a\n" +
-	"\x0elogging_config\x18\t \x01(\v25.google.cloud.storagebatchoperations.v1.LoggingConfigB\x03\xe0A\x01R\rloggingConfig\x12@\n" +
+	"\x1cupdate_object_custom_context\x18\x17 \x01(\v2A.google.cloud.storagebatchoperations.v1.UpdateObjectCustomContextH\x01R\x19updateObjectCustomContext\x12b\n" +
+	"\x0elogging_config\x18\t \x01(\v25.google.cloud.storagebatchoperations.v1.LoggingConfigB\x04\xe2A\x01\x01R\rloggingConfig\x12A\n" +
 	"\vcreate_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12D\n" +
-	"\rschedule_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\fscheduleTime\x12D\n" +
-	"\rcomplete_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\fcompleteTime\x12Q\n" +
-	"\bcounters\x18\r \x01(\v20.google.cloud.storagebatchoperations.v1.CountersB\x03\xe0A\x03R\bcounters\x12b\n" +
-	"\x0ferror_summaries\x18\x0e \x03(\v24.google.cloud.storagebatchoperations.v1.ErrorSummaryB\x03\xe0A\x03R\x0eerrorSummaries\x12L\n" +
-	"\x05state\x18\x0f \x01(\x0e21.google.cloud.storagebatchoperations.v1.Job.StateB\x03\xe0A\x03R\x05state\x12\x1c\n" +
-	"\adry_run\x18\x16 \x01(\bB\x03\xe0A\x01R\x06dryRun\x122\n" +
-	"\x13is_multi_bucket_job\x18\x18 \x01(\bB\x03\xe0A\x03R\x10isMultiBucketJob\"`\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12E\n" +
+	"\rschedule_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\fscheduleTime\x12E\n" +
+	"\rcomplete_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\fcompleteTime\x12R\n" +
+	"\bcounters\x18\r \x01(\v20.google.cloud.storagebatchoperations.v1.CountersB\x04\xe2A\x01\x03R\bcounters\x12c\n" +
+	"\x0ferror_summaries\x18\x0e \x03(\v24.google.cloud.storagebatchoperations.v1.ErrorSummaryB\x04\xe2A\x01\x03R\x0eerrorSummaries\x12M\n" +
+	"\x05state\x18\x0f \x01(\x0e21.google.cloud.storagebatchoperations.v1.Job.StateB\x04\xe2A\x01\x03R\x05state\x12\x1d\n" +
+	"\adry_run\x18\x16 \x01(\bB\x04\xe2A\x01\x01R\x06dryRun\x123\n" +
+	"\x13is_multi_bucket_job\x18\x18 \x01(\bB\x04\xe2A\x01\x03R\x10isMultiBucketJob\"`\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aRUNNING\x10\x01\x12\r\n" +
@@ -2046,9 +2046,9 @@ const file_google_cloud_storagebatchoperations_v1_storage_batch_operations_types
 	"\x06QUEUED\x10\x05:m\xeaAj\n" +
 	")storagebatchoperations.googleapis.com/Job\x122projects/{project}/locations/{location}/jobs/{job}*\x04jobs2\x03jobB\b\n" +
 	"\x06sourceB\x10\n" +
-	"\x0etransformation\"\x8f\f\n" +
-	"\x0fBucketOperation\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1f\n" +
+	"\x0etransformation\"\x96\f\n" +
+	"\x0fBucketOperation\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x1f\n" +
 	"\vbucket_name\x18\x02 \x01(\tR\n" +
 	"bucketName\x12U\n" +
 	"\vprefix_list\x18\x03 \x01(\v22.google.cloud.storagebatchoperations.v1.PrefixListH\x00R\n" +
@@ -2058,16 +2058,16 @@ const file_google_cloud_storagebatchoperations_v1_storage_batch_operations_types
 	"\rdelete_object\x18\f \x01(\v24.google.cloud.storagebatchoperations.v1.DeleteObjectH\x01R\fdeleteObject\x12X\n" +
 	"\fput_metadata\x18\r \x01(\v23.google.cloud.storagebatchoperations.v1.PutMetadataH\x01R\vputMetadata\x12^\n" +
 	"\x0erewrite_object\x18\x0e \x01(\v25.google.cloud.storagebatchoperations.v1.RewriteObjectH\x01R\rrewriteObject\x12\x84\x01\n" +
-	"\x1cupdate_object_custom_context\x18\x0f \x01(\v2A.google.cloud.storagebatchoperations.v1.UpdateObjectCustomContextH\x01R\x19updateObjectCustomContext\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12>\n" +
+	"\x1cupdate_object_custom_context\x18\x0f \x01(\v2A.google.cloud.storagebatchoperations.v1.UpdateObjectCustomContextH\x01R\x19updateObjectCustomContext\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12?\n" +
 	"\n" +
-	"start_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12D\n" +
-	"\rcomplete_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\fcompleteTime\x12Q\n" +
-	"\bcounters\x18\b \x01(\v20.google.cloud.storagebatchoperations.v1.CountersB\x03\xe0A\x03R\bcounters\x12b\n" +
-	"\x0ferror_summaries\x18\t \x03(\v24.google.cloud.storagebatchoperations.v1.ErrorSummaryB\x03\xe0A\x03R\x0eerrorSummaries\x12X\n" +
+	"start_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12E\n" +
+	"\rcomplete_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\fcompleteTime\x12R\n" +
+	"\bcounters\x18\b \x01(\v20.google.cloud.storagebatchoperations.v1.CountersB\x04\xe2A\x01\x03R\bcounters\x12c\n" +
+	"\x0ferror_summaries\x18\t \x03(\v24.google.cloud.storagebatchoperations.v1.ErrorSummaryB\x04\xe2A\x01\x03R\x0eerrorSummaries\x12Y\n" +
 	"\x05state\x18\n" +
-	" \x01(\x0e2=.google.cloud.storagebatchoperations.v1.BucketOperation.StateB\x03\xe0A\x03R\x05state\"`\n" +
+	" \x01(\x0e2=.google.cloud.storagebatchoperations.v1.BucketOperation.StateB\x04\xe2A\x01\x03R\x05state\"`\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
@@ -2079,56 +2079,56 @@ const file_google_cloud_storagebatchoperations_v1_storage_batch_operations_types
 	"\x06FAILED\x10\x05:\xb6\x01\xeaA\xb2\x01\n" +
 	"5storagebatchoperations.googleapis.com/BucketOperation\x12Vprojects/{project}/locations/{location}/jobs/{job}/bucketOperations/{bucket_operation}*\x10bucketoperations2\x0fbucketOperationB\x16\n" +
 	"\x14object_configurationB\x10\n" +
-	"\x0etransformation\"\xcd\x02\n" +
+	"\x0etransformation\"\xcf\x02\n" +
 	"\n" +
-	"BucketList\x12X\n" +
-	"\abuckets\x18\x01 \x03(\v29.google.cloud.storagebatchoperations.v1.BucketList.BucketB\x03\xe0A\x02R\abuckets\x1a\xe4\x01\n" +
-	"\x06Bucket\x12\x1b\n" +
-	"\x06bucket\x18\x01 \x01(\tB\x03\xe0A\x02R\x06bucket\x12U\n" +
+	"BucketList\x12Y\n" +
+	"\abuckets\x18\x01 \x03(\v29.google.cloud.storagebatchoperations.v1.BucketList.BucketB\x04\xe2A\x01\x02R\abuckets\x1a\xe5\x01\n" +
+	"\x06Bucket\x12\x1c\n" +
+	"\x06bucket\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06bucket\x12U\n" +
 	"\vprefix_list\x18\x02 \x01(\v22.google.cloud.storagebatchoperations.v1.PrefixListH\x00R\n" +
 	"prefixList\x12N\n" +
 	"\bmanifest\x18\x03 \x01(\v20.google.cloud.storagebatchoperations.v1.ManifestH\x00R\bmanifestB\x16\n" +
-	"\x14object_configuration\"<\n" +
-	"\bManifest\x120\n" +
-	"\x11manifest_location\x18\x02 \x01(\tB\x03\xe0A\x02R\x10manifestLocation\"K\n" +
+	"\x14object_configuration\"=\n" +
+	"\bManifest\x121\n" +
+	"\x11manifest_location\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x10manifestLocation\"L\n" +
 	"\n" +
-	"PrefixList\x12=\n" +
-	"\x18included_object_prefixes\x18\x02 \x03(\tB\x03\xe0A\x01R\x16includedObjectPrefixes\"\xad\x02\n" +
-	"\rPutObjectHold\x12l\n" +
-	"\x0etemporary_hold\x18\x01 \x01(\x0e2@.google.cloud.storagebatchoperations.v1.PutObjectHold.HoldStatusB\x03\xe0A\x02R\rtemporaryHold\x12o\n" +
-	"\x10event_based_hold\x18\x02 \x01(\x0e2@.google.cloud.storagebatchoperations.v1.PutObjectHold.HoldStatusB\x03\xe0A\x02R\x0eeventBasedHold\"=\n" +
+	"PrefixList\x12>\n" +
+	"\x18included_object_prefixes\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x16includedObjectPrefixes\"\xaf\x02\n" +
+	"\rPutObjectHold\x12m\n" +
+	"\x0etemporary_hold\x18\x01 \x01(\x0e2@.google.cloud.storagebatchoperations.v1.PutObjectHold.HoldStatusB\x04\xe2A\x01\x02R\rtemporaryHold\x12p\n" +
+	"\x10event_based_hold\x18\x02 \x01(\x0e2@.google.cloud.storagebatchoperations.v1.PutObjectHold.HoldStatusB\x04\xe2A\x01\x02R\x0eeventBasedHold\"=\n" +
 	"\n" +
 	"HoldStatus\x12\x1b\n" +
 	"\x17HOLD_STATUS_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03SET\x10\x01\x12\t\n" +
-	"\x05UNSET\x10\x02\"^\n" +
-	"\fDeleteObject\x12N\n" +
-	"!permanent_object_deletion_enabled\x18\x01 \x01(\bB\x03\xe0A\x02R\x1epermanentObjectDeletionEnabled\"d\n" +
-	"\rRewriteObject\x12G\n" +
-	"\akms_key\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x05UNSET\x10\x02\"_\n" +
+	"\fDeleteObject\x12O\n" +
+	"!permanent_object_deletion_enabled\x18\x01 \x01(\bB\x04\xe2A\x01\x02R\x1epermanentObjectDeletionEnabled\"e\n" +
+	"\rRewriteObject\x12H\n" +
+	"\akms_key\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!cloudkms.googleapis.com/CryptoKeyH\x00R\x06kmsKey\x88\x01\x01B\n" +
 	"\n" +
-	"\b_kms_key\"\xb3\x02\n" +
-	"\x0fObjectRetention\x124\n" +
-	"\x11retain_until_time\x18\x01 \x01(\tB\x03\xe0A\x02H\x00R\x0fretainUntilTime\x88\x01\x01\x12v\n" +
-	"\x0eretention_mode\x18\x02 \x01(\x0e2E.google.cloud.storagebatchoperations.v1.ObjectRetention.RetentionModeB\x03\xe0A\x02H\x01R\rretentionMode\x88\x01\x01\"I\n" +
+	"\b_kms_key\"\xb5\x02\n" +
+	"\x0fObjectRetention\x125\n" +
+	"\x11retain_until_time\x18\x01 \x01(\tB\x04\xe2A\x01\x02H\x00R\x0fretainUntilTime\x88\x01\x01\x12w\n" +
+	"\x0eretention_mode\x18\x02 \x01(\x0e2E.google.cloud.storagebatchoperations.v1.ObjectRetention.RetentionModeB\x04\xe2A\x01\x02H\x01R\rretentionMode\x88\x01\x01\"I\n" +
 	"\rRetentionMode\x12\x1e\n" +
 	"\x1aRETENTION_MODE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06LOCKED\x10\x01\x12\f\n" +
 	"\bUNLOCKED\x10\x02B\x14\n" +
 	"\x12_retain_until_timeB\x11\n" +
-	"\x0f_retention_mode\"\xeb\x05\n" +
-	"\vPutMetadata\x129\n" +
-	"\x13content_disposition\x18\x01 \x01(\tB\x03\xe0A\x01H\x00R\x12contentDisposition\x88\x01\x01\x123\n" +
-	"\x10content_encoding\x18\x02 \x01(\tB\x03\xe0A\x01H\x01R\x0fcontentEncoding\x88\x01\x01\x123\n" +
-	"\x10content_language\x18\x03 \x01(\tB\x03\xe0A\x01H\x02R\x0fcontentLanguage\x88\x01\x01\x12+\n" +
-	"\fcontent_type\x18\x04 \x01(\tB\x03\xe0A\x01H\x03R\vcontentType\x88\x01\x01\x12-\n" +
-	"\rcache_control\x18\x05 \x01(\tB\x03\xe0A\x01H\x04R\fcacheControl\x88\x01\x01\x12)\n" +
-	"\vcustom_time\x18\x06 \x01(\tB\x03\xe0A\x01H\x05R\n" +
-	"customTime\x88\x01\x01\x12u\n" +
-	"\x0fcustom_metadata\x18\a \x03(\v2G.google.cloud.storagebatchoperations.v1.PutMetadata.CustomMetadataEntryB\x03\xe0A\x01R\x0ecustomMetadata\x12l\n" +
-	"\x10object_retention\x18\b \x01(\v27.google.cloud.storagebatchoperations.v1.ObjectRetentionB\x03\xe0A\x01H\x06R\x0fobjectRetention\x88\x01\x01\x1aA\n" +
+	"\x0f_retention_mode\"\xf3\x05\n" +
+	"\vPutMetadata\x12:\n" +
+	"\x13content_disposition\x18\x01 \x01(\tB\x04\xe2A\x01\x01H\x00R\x12contentDisposition\x88\x01\x01\x124\n" +
+	"\x10content_encoding\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x01R\x0fcontentEncoding\x88\x01\x01\x124\n" +
+	"\x10content_language\x18\x03 \x01(\tB\x04\xe2A\x01\x01H\x02R\x0fcontentLanguage\x88\x01\x01\x12,\n" +
+	"\fcontent_type\x18\x04 \x01(\tB\x04\xe2A\x01\x01H\x03R\vcontentType\x88\x01\x01\x12.\n" +
+	"\rcache_control\x18\x05 \x01(\tB\x04\xe2A\x01\x01H\x04R\fcacheControl\x88\x01\x01\x12*\n" +
+	"\vcustom_time\x18\x06 \x01(\tB\x04\xe2A\x01\x01H\x05R\n" +
+	"customTime\x88\x01\x01\x12v\n" +
+	"\x0fcustom_metadata\x18\a \x03(\v2G.google.cloud.storagebatchoperations.v1.PutMetadata.CustomMetadataEntryB\x04\xe2A\x01\x01R\x0ecustomMetadata\x12m\n" +
+	"\x10object_retention\x18\b \x01(\v27.google.cloud.storagebatchoperations.v1.ObjectRetentionB\x04\xe2A\x01\x01H\x06R\x0fobjectRetention\x88\x01\x01\x1aA\n" +
 	"\x13CustomMetadataEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\x16\n" +
@@ -2141,43 +2141,43 @@ const file_google_cloud_storagebatchoperations_v1_storage_batch_operations_types
 	"\x11_object_retention\"A\n" +
 	"\x1aObjectCustomContextPayload\x12\x19\n" +
 	"\x05value\x18\x01 \x01(\tH\x00R\x05value\x88\x01\x01B\b\n" +
-	"\x06_value\"\xa9\x02\n" +
-	"\x14CustomContextUpdates\x12h\n" +
-	"\aupdates\x18\x01 \x03(\v2I.google.cloud.storagebatchoperations.v1.CustomContextUpdates.UpdatesEntryB\x03\xe0A\x01R\aupdates\x12'\n" +
-	"\rkeys_to_clear\x18\x02 \x03(\tB\x03\xe0A\x01R\vkeysToClear\x1a~\n" +
+	"\x06_value\"\xab\x02\n" +
+	"\x14CustomContextUpdates\x12i\n" +
+	"\aupdates\x18\x01 \x03(\v2I.google.cloud.storagebatchoperations.v1.CustomContextUpdates.UpdatesEntryB\x04\xe2A\x01\x01R\aupdates\x12(\n" +
+	"\rkeys_to_clear\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\vkeysToClear\x1a~\n" +
 	"\fUpdatesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12X\n" +
 	"\x05value\x18\x02 \x01(\v2B.google.cloud.storagebatchoperations.v1.ObjectCustomContextPayloadR\x05value:\x028\x01\"\xba\x01\n" +
 	"\x19UpdateObjectCustomContext\x12t\n" +
 	"\x16custom_context_updates\x18\x01 \x01(\v2<.google.cloud.storagebatchoperations.v1.CustomContextUpdatesH\x00R\x14customContextUpdates\x12\x1d\n" +
 	"\tclear_all\x18\x02 \x01(\bH\x00R\bclearAllB\b\n" +
-	"\x06action\"\xd2\x01\n" +
-	"\fErrorSummary\x124\n" +
+	"\x06action\"\xd5\x01\n" +
+	"\fErrorSummary\x125\n" +
 	"\n" +
-	"error_code\x18\x01 \x01(\x0e2\x10.google.rpc.CodeB\x03\xe0A\x02R\terrorCode\x12$\n" +
-	"\verror_count\x18\x02 \x01(\x03B\x03\xe0A\x02R\n" +
-	"errorCount\x12f\n" +
-	"\x11error_log_entries\x18\x03 \x03(\v25.google.cloud.storagebatchoperations.v1.ErrorLogEntryB\x03\xe0A\x02R\x0ferrorLogEntries\"c\n" +
-	"\rErrorLogEntry\x12%\n" +
+	"error_code\x18\x01 \x01(\x0e2\x10.google.rpc.CodeB\x04\xe2A\x01\x02R\terrorCode\x12%\n" +
+	"\verror_count\x18\x02 \x01(\x03B\x04\xe2A\x01\x02R\n" +
+	"errorCount\x12g\n" +
+	"\x11error_log_entries\x18\x03 \x03(\v25.google.cloud.storagebatchoperations.v1.ErrorLogEntryB\x04\xe2A\x01\x02R\x0ferrorLogEntries\"a\n" +
+	"\rErrorLogEntry\x12$\n" +
 	"\n" +
-	"object_uri\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\x03R\tobjectUri\x12+\n" +
-	"\rerror_details\x18\x03 \x03(\tB\x06\xe0A\x01\xe0A\x03R\ferrorDetails\"\xcf\x04\n" +
-	"\bCounters\x121\n" +
-	"\x12total_object_count\x18\x01 \x01(\x03B\x03\xe0A\x03R\x10totalObjectCount\x129\n" +
-	"\x16succeeded_object_count\x18\x02 \x01(\x03B\x03\xe0A\x03R\x14succeededObjectCount\x123\n" +
-	"\x13failed_object_count\x18\x03 \x01(\x03B\x03\xe0A\x03R\x11failedObjectCount\x124\n" +
-	"\x11total_bytes_found\x18\x04 \x01(\x03B\x03\xe0A\x03H\x00R\x0ftotalBytesFound\x88\x01\x01\x12M\n" +
-	"\x1eobject_custom_contexts_created\x18\x05 \x01(\x03B\x03\xe0A\x03H\x01R\x1bobjectCustomContextsCreated\x88\x01\x01\x12M\n" +
-	"\x1eobject_custom_contexts_deleted\x18\x06 \x01(\x03B\x03\xe0A\x03H\x02R\x1bobjectCustomContextsDeleted\x88\x01\x01\x12M\n" +
-	"\x1eobject_custom_contexts_updated\x18\a \x01(\x03B\x03\xe0A\x03H\x03R\x1bobjectCustomContextsUpdated\x88\x01\x01B\x14\n" +
+	"object_uri\x18\x01 \x01(\tB\x05\xe2A\x02\x02\x03R\tobjectUri\x12*\n" +
+	"\rerror_details\x18\x03 \x03(\tB\x05\xe2A\x02\x01\x03R\ferrorDetails\"\xd6\x04\n" +
+	"\bCounters\x122\n" +
+	"\x12total_object_count\x18\x01 \x01(\x03B\x04\xe2A\x01\x03R\x10totalObjectCount\x12:\n" +
+	"\x16succeeded_object_count\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\x14succeededObjectCount\x124\n" +
+	"\x13failed_object_count\x18\x03 \x01(\x03B\x04\xe2A\x01\x03R\x11failedObjectCount\x125\n" +
+	"\x11total_bytes_found\x18\x04 \x01(\x03B\x04\xe2A\x01\x03H\x00R\x0ftotalBytesFound\x88\x01\x01\x12N\n" +
+	"\x1eobject_custom_contexts_created\x18\x05 \x01(\x03B\x04\xe2A\x01\x03H\x01R\x1bobjectCustomContextsCreated\x88\x01\x01\x12N\n" +
+	"\x1eobject_custom_contexts_deleted\x18\x06 \x01(\x03B\x04\xe2A\x01\x03H\x02R\x1bobjectCustomContextsDeleted\x88\x01\x01\x12N\n" +
+	"\x1eobject_custom_contexts_updated\x18\a \x01(\x03B\x04\xe2A\x01\x03H\x03R\x1bobjectCustomContextsUpdated\x88\x01\x01B\x14\n" +
 	"\x12_total_bytes_foundB!\n" +
 	"\x1f_object_custom_contexts_createdB!\n" +
 	"\x1f_object_custom_contexts_deletedB!\n" +
-	"\x1f_object_custom_contexts_updated\"\x92\x03\n" +
-	"\rLoggingConfig\x12j\n" +
-	"\vlog_actions\x18\x01 \x03(\x0e2D.google.cloud.storagebatchoperations.v1.LoggingConfig.LoggableActionB\x03\xe0A\x02R\n" +
-	"logActions\x12z\n" +
-	"\x11log_action_states\x18\x02 \x03(\x0e2I.google.cloud.storagebatchoperations.v1.LoggingConfig.LoggableActionStateB\x03\xe0A\x02R\x0flogActionStates\"@\n" +
+	"\x1f_object_custom_contexts_updated\"\x94\x03\n" +
+	"\rLoggingConfig\x12k\n" +
+	"\vlog_actions\x18\x01 \x03(\x0e2D.google.cloud.storagebatchoperations.v1.LoggingConfig.LoggableActionB\x04\xe2A\x01\x02R\n" +
+	"logActions\x12{\n" +
+	"\x11log_action_states\x18\x02 \x03(\x0e2I.google.cloud.storagebatchoperations.v1.LoggingConfig.LoggableActionStateB\x04\xe2A\x01\x02R\x0flogActionStates\"@\n" +
 	"\x0eLoggableAction\x12\x1f\n" +
 	"\x1bLOGGABLE_ACTION_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tTRANSFORM\x10\x06\"W\n" +

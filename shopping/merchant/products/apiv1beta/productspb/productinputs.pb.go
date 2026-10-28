@@ -456,37 +456,37 @@ var File_google_shopping_merchant_products_v1beta_productinputs_proto protorefle
 
 const file_google_shopping_merchant_products_v1beta_productinputs_proto_rawDesc = "" +
 	"\n" +
-	"<google/shopping/merchant/products/v1beta/productinputs.proto\x12(google.shopping.merchant.products.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a>google/shopping/merchant/products/v1beta/products_common.proto\x1a google/shopping/type/types.proto\"\x84\x05\n" +
-	"\fProductInput\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1d\n" +
-	"\aproduct\x18\x02 \x01(\tB\x03\xe0A\x03R\aproduct\x12H\n" +
-	"\achannel\x18\x03 \x01(\x0e2).google.shopping.type.Channel.ChannelEnumB\x03\xe0A\x05R\achannel\x12!\n" +
-	"\boffer_id\x18\x04 \x01(\tB\x06\xe0A\x02\xe0A\x05R\aofferId\x121\n" +
-	"\x10content_language\x18\x05 \x01(\tB\x06\xe0A\x02\xe0A\x05R\x0fcontentLanguage\x12%\n" +
+	"<google/shopping/merchant/products/v1beta/productinputs.proto\x12(google.shopping.merchant.products.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a>google/shopping/merchant/products/v1beta/products_common.proto\x1a google/shopping/type/types.proto\"\x85\x05\n" +
+	"\fProductInput\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x1e\n" +
+	"\aproduct\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\aproduct\x12I\n" +
+	"\achannel\x18\x03 \x01(\x0e2).google.shopping.type.Channel.ChannelEnumB\x04\xe2A\x01\x05R\achannel\x12 \n" +
+	"\boffer_id\x18\x04 \x01(\tB\x05\xe2A\x02\x02\x05R\aofferId\x120\n" +
+	"\x10content_language\x18\x05 \x01(\tB\x05\xe2A\x02\x02\x05R\x0fcontentLanguage\x12$\n" +
 	"\n" +
-	"feed_label\x18\x06 \x01(\tB\x06\xe0A\x02\xe0A\x05R\tfeedLabel\x122\n" +
-	"\x0eversion_number\x18\a \x01(\x03B\x06\xe0A\x01\xe0A\x05H\x00R\rversionNumber\x88\x01\x01\x12Y\n" +
+	"feed_label\x18\x06 \x01(\tB\x05\xe2A\x02\x02\x05R\tfeedLabel\x121\n" +
+	"\x0eversion_number\x18\a \x01(\x03B\x05\xe2A\x02\x01\x05H\x00R\rversionNumber\x88\x01\x01\x12Z\n" +
 	"\n" +
-	"attributes\x18\b \x01(\v24.google.shopping.merchant.products.v1beta.AttributesB\x03\xe0A\x01R\n" +
-	"attributes\x12W\n" +
-	"\x11custom_attributes\x18\t \x03(\v2%.google.shopping.type.CustomAttributeB\x03\xe0A\x01R\x10customAttributes:z\xeaAw\n" +
+	"attributes\x18\b \x01(\v24.google.shopping.merchant.products.v1beta.AttributesB\x04\xe2A\x01\x01R\n" +
+	"attributes\x12X\n" +
+	"\x11custom_attributes\x18\t \x03(\v2%.google.shopping.type.CustomAttributeB\x04\xe2A\x01\x01R\x10customAttributes:z\xeaAw\n" +
 	"'merchantapi.googleapis.com/ProductInput\x12/accounts/{account}/productInputs/{productinput}*\rproductInputs2\fproductInputB\x11\n" +
-	"\x0f_version_number\"\xe7\x01\n" +
-	"\x19InsertProductInputRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"merchantapi.googleapis.com/ProductR\x06parent\x12`\n" +
-	"\rproduct_input\x18\x02 \x01(\v26.google.shopping.merchant.products.v1beta.ProductInputB\x03\xe0A\x02R\fproductInput\x12$\n" +
-	"\vdata_source\x18\x03 \x01(\tB\x03\xe0A\x02R\n" +
-	"dataSource\"\xe5\x01\n" +
-	"\x19UpdateProductInputRequest\x12`\n" +
-	"\rproduct_input\x18\x01 \x01(\v26.google.shopping.merchant.products.v1beta.ProductInputB\x03\xe0A\x02R\fproductInput\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12$\n" +
-	"\vdata_source\x18\x03 \x01(\tB\x03\xe0A\x02R\n" +
-	"dataSource\"\x86\x01\n" +
-	"\x19DeleteProductInputRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'merchantapi.googleapis.com/ProductInputR\x04name\x12$\n" +
-	"\vdata_source\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
+	"\x0f_version_number\"\xea\x01\n" +
+	"\x19InsertProductInputRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"merchantapi.googleapis.com/ProductR\x06parent\x12a\n" +
+	"\rproduct_input\x18\x02 \x01(\v26.google.shopping.merchant.products.v1beta.ProductInputB\x04\xe2A\x01\x02R\fproductInput\x12%\n" +
+	"\vdata_source\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"dataSource\"\xe8\x01\n" +
+	"\x19UpdateProductInputRequest\x12a\n" +
+	"\rproduct_input\x18\x01 \x01(\v26.google.shopping.merchant.products.v1beta.ProductInputB\x04\xe2A\x01\x02R\fproductInput\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12%\n" +
+	"\vdata_source\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"dataSource\"\x88\x01\n" +
+	"\x19DeleteProductInputRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'merchantapi.googleapis.com/ProductInputR\x04name\x12%\n" +
+	"\vdata_source\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
 	"dataSource2\x85\x06\n" +
 	"\x14ProductInputsService\x12\xe3\x01\n" +
 	"\x12InsertProductInput\x12C.google.shopping.merchant.products.v1beta.InsertProductInputRequest\x1a6.google.shopping.merchant.products.v1beta.ProductInput\"P\x82\xd3\xe4\x93\x02J:\rproduct_input\"9/products/v1beta/{parent=accounts/*}/productInputs:insert\x12\x86\x02\n" +

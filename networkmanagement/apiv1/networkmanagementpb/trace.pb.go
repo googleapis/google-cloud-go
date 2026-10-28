@@ -7859,7 +7859,7 @@ const file_google_cloud_networkmanagement_v1_trace_proto_rawDesc = "" +
 	"subnet_uri\x18\n" +
 	" \x01(\tR\tsubnetUri\x12\x1f\n" +
 	"\vnetwork_uri\x18\v \x01(\tR\n" +
-	"networkUri\"\xb3\x06\n" +
+	"networkUri\"\xb4\x06\n" +
 	"\x17LoadBalancerBackendInfo\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12!\n" +
 	"\finstance_uri\x18\x02 \x01(\tR\vinstanceUri\x12.\n" +
@@ -7870,8 +7870,8 @@ const file_google_cloud_networkmanagement_v1_trace_proto_rawDesc = "" +
 	"\x1apsc_service_attachment_uri\x18\t \x01(\tR\x17pscServiceAttachmentUri\x121\n" +
 	"\x15psc_google_api_target\x18\n" +
 	" \x01(\tR\x12pscGoogleApiTarget\x12(\n" +
-	"\x10health_check_uri\x18\x06 \x01(\tR\x0ehealthCheckUri\x12\xad\x01\n" +
-	"#health_check_firewalls_config_state\x18\a \x01(\x0e2Z.google.cloud.networkmanagement.v1.LoadBalancerBackendInfo.HealthCheckFirewallsConfigStateB\x03\xe0A\x03R\x1fhealthCheckFirewallsConfigState\"\xcd\x01\n" +
+	"\x10health_check_uri\x18\x06 \x01(\tR\x0ehealthCheckUri\x12\xae\x01\n" +
+	"#health_check_firewalls_config_state\x18\a \x01(\x0e2Z.google.cloud.networkmanagement.v1.LoadBalancerBackendInfo.HealthCheckFirewallsConfigStateB\x04\xe2A\x01\x03R\x1fhealthCheckFirewallsConfigState\"\xcd\x01\n" +
 	"\x1fHealthCheckFirewallsConfigState\x123\n" +
 	"/HEALTH_CHECK_FIREWALLS_CONFIG_STATE_UNSPECIFIED\x10\x00\x12\x18\n" +
 	"\x14FIREWALLS_CONFIGURED\x10\x01\x12\"\n" +

@@ -481,47 +481,47 @@ var File_google_cloud_oracledatabase_v1_autonomous_db_backup_proto protoreflect.
 
 const file_google_cloud_oracledatabase_v1_autonomous_db_backup_proto_rawDesc = "" +
 	"\n" +
-	"9google/cloud/oracledatabase/v1/autonomous_db_backup.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa1\x05\n" +
-	"\x18AutonomousDatabaseBackup\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12i\n" +
-	"\x13autonomous_database\x18\x02 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0oracledatabase.googleapis.com/AutonomousDatabaseR\x12autonomousDatabase\x12&\n" +
-	"\fdisplay_name\x18\x03 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12g\n" +
+	"9google/cloud/oracledatabase/v1/autonomous_db_backup.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa6\x05\n" +
+	"\x18AutonomousDatabaseBackup\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12j\n" +
+	"\x13autonomous_database\x18\x02 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0oracledatabase.googleapis.com/AutonomousDatabaseR\x12autonomousDatabase\x12'\n" +
+	"\fdisplay_name\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12h\n" +
 	"\n" +
-	"properties\x18\x04 \x01(\v2B.google.cloud.oracledatabase.v1.AutonomousDatabaseBackupPropertiesB\x03\xe0A\x01R\n" +
-	"properties\x12a\n" +
-	"\x06labels\x18\x05 \x03(\v2D.google.cloud.oracledatabase.v1.AutonomousDatabaseBackup.LabelsEntryB\x03\xe0A\x01R\x06labels\x1a9\n" +
+	"properties\x18\x04 \x01(\v2B.google.cloud.oracledatabase.v1.AutonomousDatabaseBackupPropertiesB\x04\xe2A\x01\x01R\n" +
+	"properties\x12b\n" +
+	"\x06labels\x18\x05 \x03(\v2D.google.cloud.oracledatabase.v1.AutonomousDatabaseBackup.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\xd1\x01\xeaA\xcd\x01\n" +
-	"6oracledatabase.googleapis.com/AutonomousDatabaseBackup\x12^projects/{project}/locations/{location}/autonomousDatabaseBackups/{autonomous_database_backup}*\x19autonomousDatabaseBackups2\x18autonomousDatabaseBackup\"\x81\n" +
+	"6oracledatabase.googleapis.com/AutonomousDatabaseBackup\x12^projects/{project}/locations/{location}/autonomousDatabaseBackups/{autonomous_database_backup}*\x19autonomousDatabaseBackups2\x18autonomousDatabaseBackup\"\x95\n" +
 	"\n" +
-	"\"AutonomousDatabaseBackupProperties\x12\x17\n" +
-	"\x04ocid\x18\x01 \x01(\tB\x03\xe0A\x03R\x04ocid\x127\n" +
-	"\x15retention_period_days\x18\x02 \x01(\x05B\x03\xe0A\x01R\x13retentionPeriodDays\x12*\n" +
-	"\x0ecompartment_id\x18\x03 \x01(\tB\x03\xe0A\x03R\rcompartmentId\x12-\n" +
-	"\x10database_size_tb\x18\x04 \x01(\x02B\x03\xe0A\x03R\x0edatabaseSizeTb\x12\"\n" +
+	"\"AutonomousDatabaseBackupProperties\x12\x18\n" +
+	"\x04ocid\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04ocid\x128\n" +
+	"\x15retention_period_days\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x13retentionPeriodDays\x12+\n" +
+	"\x0ecompartment_id\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\rcompartmentId\x12.\n" +
+	"\x10database_size_tb\x18\x04 \x01(\x02B\x04\xe2A\x01\x03R\x0edatabaseSizeTb\x12#\n" +
 	"\n" +
-	"db_version\x18\x05 \x01(\tB\x03\xe0A\x03R\tdbVersion\x122\n" +
-	"\x13is_long_term_backup\x18\x06 \x01(\bB\x03\xe0A\x03R\x10isLongTermBackup\x123\n" +
-	"\x13is_automatic_backup\x18\a \x01(\bB\x03\xe0A\x03R\x11isAutomaticBackup\x12(\n" +
-	"\ris_restorable\x18\b \x01(\bB\x03\xe0A\x03R\fisRestorable\x12%\n" +
-	"\fkey_store_id\x18\t \x01(\tB\x03\xe0A\x01R\n" +
-	"keyStoreId\x12-\n" +
+	"db_version\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\tdbVersion\x123\n" +
+	"\x13is_long_term_backup\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x10isLongTermBackup\x124\n" +
+	"\x13is_automatic_backup\x18\a \x01(\bB\x04\xe2A\x01\x03R\x11isAutomaticBackup\x12)\n" +
+	"\ris_restorable\x18\b \x01(\bB\x04\xe2A\x01\x03R\fisRestorable\x12&\n" +
+	"\fkey_store_id\x18\t \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"keyStoreId\x12.\n" +
 	"\x10key_store_wallet\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\x0ekeyStoreWallet\x12!\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\x0ekeyStoreWallet\x12\"\n" +
 	"\n" +
-	"kms_key_id\x18\v \x01(\tB\x03\xe0A\x01R\bkmsKeyId\x120\n" +
-	"\x12kms_key_version_id\x18\f \x01(\tB\x03\xe0A\x01R\x0fkmsKeyVersionId\x120\n" +
-	"\x11lifecycle_details\x18\r \x01(\tB\x03\xe0A\x03R\x10lifecycleDetails\x12v\n" +
-	"\x0flifecycle_state\x18\x0e \x01(\x0e2H.google.cloud.oracledatabase.v1.AutonomousDatabaseBackupProperties.StateB\x03\xe0A\x03R\x0elifecycleState\x12\x1c\n" +
-	"\asize_tb\x18\x0f \x01(\x02B\x03\xe0A\x03R\x06sizeTb\x12O\n" +
-	"\x13available_till_time\x18\x10 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x11availableTillTime\x12:\n" +
-	"\bend_time\x18\x11 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12>\n" +
+	"kms_key_id\x18\v \x01(\tB\x04\xe2A\x01\x01R\bkmsKeyId\x121\n" +
+	"\x12kms_key_version_id\x18\f \x01(\tB\x04\xe2A\x01\x01R\x0fkmsKeyVersionId\x121\n" +
+	"\x11lifecycle_details\x18\r \x01(\tB\x04\xe2A\x01\x03R\x10lifecycleDetails\x12w\n" +
+	"\x0flifecycle_state\x18\x0e \x01(\x0e2H.google.cloud.oracledatabase.v1.AutonomousDatabaseBackupProperties.StateB\x04\xe2A\x01\x03R\x0elifecycleState\x12\x1d\n" +
+	"\asize_tb\x18\x0f \x01(\x02B\x04\xe2A\x01\x03R\x06sizeTb\x12P\n" +
+	"\x13available_till_time\x18\x10 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x11availableTillTime\x12;\n" +
+	"\bend_time\x18\x11 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12?\n" +
 	"\n" +
-	"start_time\x18\x12 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12`\n" +
-	"\x04type\x18\x13 \x01(\x0e2G.google.cloud.oracledatabase.v1.AutonomousDatabaseBackupProperties.TypeB\x03\xe0A\x03R\x04type\x12\x1e\n" +
-	"\bvault_id\x18\x14 \x01(\tB\x03\xe0A\x01R\avaultId\"m\n" +
+	"start_time\x18\x12 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12a\n" +
+	"\x04type\x18\x13 \x01(\x0e2G.google.cloud.oracledatabase.v1.AutonomousDatabaseBackupProperties.TypeB\x04\xe2A\x01\x03R\x04type\x12\x1f\n" +
+	"\bvault_id\x18\x14 \x01(\tB\x04\xe2A\x01\x01R\avaultId\"m\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bCREATING\x10\x01\x12\n" +

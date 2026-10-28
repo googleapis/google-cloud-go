@@ -802,6 +802,11 @@ func (c *servingConfigRESTClient) CreateServingConfig(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v/servingConfigs", req.GetParent())
 
 	params := url.Values{}
@@ -859,6 +864,11 @@ func (c *servingConfigRESTClient) DeleteServingConfig(ctx context.Context, req *
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -903,6 +913,11 @@ func (c *servingConfigRESTClient) UpdateServingConfig(ctx context.Context, req *
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetServingConfig().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetServingConfig().GetName())
@@ -966,6 +981,11 @@ func (c *servingConfigRESTClient) UpdateServingConfig(ctx context.Context, req *
 func (c *servingConfigRESTClient) GetServingConfig(ctx context.Context, req *retailpb.GetServingConfigRequest, opts ...gax.CallOption) (*retailpb.ServingConfig, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetName())
@@ -1033,6 +1053,11 @@ func (c *servingConfigRESTClient) ListServingConfigs(ctx context.Context, req *r
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2alpha/%v/servingConfigs", req.GetParent())
@@ -1112,6 +1137,11 @@ func (c *servingConfigRESTClient) AddControl(ctx context.Context, req *retailpb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetServingConfig(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v:addControl", req.GetServingConfig())
 
 	params := url.Values{}
@@ -1175,6 +1205,11 @@ func (c *servingConfigRESTClient) RemoveControl(ctx context.Context, req *retail
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetServingConfig(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v:removeControl", req.GetServingConfig())
 
 	params := url.Values{}
@@ -1227,6 +1262,11 @@ func (c *servingConfigRESTClient) RemoveControl(ctx context.Context, req *retail
 func (c *servingConfigRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetName())
@@ -1294,6 +1334,11 @@ func (c *servingConfigRESTClient) ListOperations(ctx context.Context, req *longr
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2alpha/%v/operations", req.GetName())

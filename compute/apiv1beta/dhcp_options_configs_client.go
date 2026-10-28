@@ -339,6 +339,13 @@ func (c *dhcpOptionsConfigsRESTClient) Delete(ctx context.Context, req *computep
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetDhcpOptionsConfig(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/dhcpOptionsConfigs/%v", req.GetProject(), req.GetRegion(), req.GetDhcpOptionsConfig())
 
 	params := url.Values{}
@@ -403,6 +410,13 @@ func (c *dhcpOptionsConfigsRESTClient) Get(ctx context.Context, req *computepb.G
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetDhcpOptionsConfig(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/dhcpOptionsConfigs/%v", req.GetProject(), req.GetRegion(), req.GetDhcpOptionsConfig())
 
 	// Build HTTP headers from client and context metadata.
@@ -458,6 +472,12 @@ func (c *dhcpOptionsConfigsRESTClient) Insert(ctx context.Context, req *computep
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/dhcpOptionsConfigs", req.GetProject(), req.GetRegion())
@@ -535,6 +555,12 @@ func (c *dhcpOptionsConfigsRESTClient) List(ctx context.Context, req *computepb.
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/dhcpOptionsConfigs", req.GetProject(), req.GetRegion())
@@ -620,6 +646,13 @@ func (c *dhcpOptionsConfigsRESTClient) Patch(ctx context.Context, req *computepb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetDhcpOptionsConfig(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/dhcpOptionsConfigs/%v", req.GetProject(), req.GetRegion(), req.GetDhcpOptionsConfig())
 
 	params := url.Values{}
@@ -692,6 +725,13 @@ func (c *dhcpOptionsConfigsRESTClient) TestIamPermissions(ctx context.Context, r
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/dhcpOptionsConfigs/%v/testIamPermissions", req.GetProject(), req.GetRegion(), req.GetResource())

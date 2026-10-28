@@ -847,31 +847,31 @@ var File_google_cloud_baremetalsolution_v2_nfs_share_proto protoreflect.FileDesc
 
 const file_google_cloud_baremetalsolution_v2_nfs_share_proto_rawDesc = "" +
 	"\n" +
-	"1google/cloud/baremetalsolution/v2/nfs_share.proto\x12!google.cloud.baremetalsolution.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\"\xe9\n" +
+	"1google/cloud/baremetalsolution/v2/nfs_share.proto\x12!google.cloud.baremetalsolution.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\"\xf1\n" +
 	"\n" +
-	"\bNfsShare\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12%\n" +
-	"\fnfs_share_id\x18\x02 \x01(\tB\x03\xe0A\x03R\n" +
-	"nfsShareId\x12\x13\n" +
-	"\x02id\x18\b \x01(\tB\x03\xe0A\x03R\x02id\x12L\n" +
-	"\x05state\x18\x03 \x01(\x0e21.google.cloud.baremetalsolution.v2.NfsShare.StateB\x03\xe0A\x03R\x05state\x12G\n" +
-	"\x06volume\x18\x04 \x01(\tB/\xe0A\x03\xfaA)\n" +
+	"\bNfsShare\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12&\n" +
+	"\fnfs_share_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"nfsShareId\x12\x14\n" +
+	"\x02id\x18\b \x01(\tB\x04\xe2A\x01\x03R\x02id\x12M\n" +
+	"\x05state\x18\x03 \x01(\x0e21.google.cloud.baremetalsolution.v2.NfsShare.StateB\x04\xe2A\x01\x03R\x05state\x12H\n" +
+	"\x06volume\x18\x04 \x01(\tB0\xe2A\x01\x03\xfaA)\n" +
 	"'baremetalsolution.googleapis.com/VolumeR\x06volume\x12b\n" +
 	"\x0fallowed_clients\x18\x05 \x03(\v29.google.cloud.baremetalsolution.v2.NfsShare.AllowedClientR\x0eallowedClients\x12O\n" +
 	"\x06labels\x18\x06 \x03(\v27.google.cloud.baremetalsolution.v2.NfsShare.LabelsEntryR\x06labels\x12,\n" +
-	"\x12requested_size_gib\x18\a \x01(\x03R\x10requestedSizeGib\x12_\n" +
-	"\fstorage_type\x18\t \x01(\x0e27.google.cloud.baremetalsolution.v2.NfsShare.StorageTypeB\x03\xe0A\x05R\vstorageType\x1a\x97\x03\n" +
+	"\x12requested_size_gib\x18\a \x01(\x03R\x10requestedSizeGib\x12`\n" +
+	"\fstorage_type\x18\t \x01(\x0e27.google.cloud.baremetalsolution.v2.NfsShare.StorageTypeB\x04\xe2A\x01\x05R\vstorageType\x1a\x99\x03\n" +
 	"\rAllowedClient\x12G\n" +
 	"\anetwork\x18\x01 \x01(\tB-\xfaA*\n" +
-	"(baremetalsolution.googleapis.com/NetworkR\anetwork\x12\x1e\n" +
-	"\bshare_ip\x18\x02 \x01(\tB\x03\xe0A\x03R\ashareIp\x120\n" +
+	"(baremetalsolution.googleapis.com/NetworkR\anetwork\x12\x1f\n" +
+	"\bshare_ip\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\ashareIp\x120\n" +
 	"\x14allowed_clients_cidr\x18\x03 \x01(\tR\x12allowedClientsCidr\x12i\n" +
 	"\x11mount_permissions\x18\x04 \x01(\x0e2<.google.cloud.baremetalsolution.v2.NfsShare.MountPermissionsR\x10mountPermissions\x12\x1b\n" +
 	"\tallow_dev\x18\x05 \x01(\bR\ballowDev\x12\x1d\n" +
 	"\n" +
 	"allow_suid\x18\x06 \x01(\bR\tallowSuid\x12$\n" +
-	"\x0eno_root_squash\x18\a \x01(\bR\fnoRootSquash\x12\x1e\n" +
-	"\bnfs_path\x18\b \x01(\tB\x03\xe0A\x03R\anfsPath\x1a9\n" +
+	"\x0eno_root_squash\x18\a \x01(\bR\fnoRootSquash\x12\x1f\n" +
+	"\bnfs_path\x18\b \x01(\tB\x04\xe2A\x01\x03R\anfsPath\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"Y\n" +
@@ -890,12 +890,12 @@ const file_google_cloud_baremetalsolution_v2_nfs_share_proto_rawDesc = "" +
 	"\x18STORAGE_TYPE_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03SSD\x10\x01\x12\a\n" +
 	"\x03HDD\x10\x02:m\xeaAj\n" +
-	")baremetalsolution.googleapis.com/NFSShare\x12=projects/{project}/locations/{location}/nfsShares/{nfs_share}\"[\n" +
-	"\x12GetNfsShareRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")baremetalsolution.googleapis.com/NFSShareR\x04name\"\xad\x01\n" +
-	"\x14ListNfsSharesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	")baremetalsolution.googleapis.com/NFSShare\x12=projects/{project}/locations/{location}/nfsShares/{nfs_share}\"\\\n" +
+	"\x12GetNfsShareRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")baremetalsolution.googleapis.com/NFSShareR\x04name\"\xae\x01\n" +
+	"\x14ListNfsSharesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -905,21 +905,21 @@ const file_google_cloud_baremetalsolution_v2_nfs_share_proto_rawDesc = "" +
 	"\n" +
 	"nfs_shares\x18\x01 \x03(\v2+.google.cloud.baremetalsolution.v2.NfsShareR\tnfsShares\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xa3\x01\n" +
-	"\x15UpdateNfsShareRequest\x12M\n" +
-	"\tnfs_share\x18\x01 \x01(\v2+.google.cloud.baremetalsolution.v2.NfsShareB\x03\xe0A\x02R\bnfsShare\x12;\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xa4\x01\n" +
+	"\x15UpdateNfsShareRequest\x12N\n" +
+	"\tnfs_share\x18\x01 \x01(\v2+.google.cloud.baremetalsolution.v2.NfsShareB\x04\xe2A\x01\x02R\bnfsShare\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"\x8b\x01\n" +
-	"\x15RenameNfsShareRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")baremetalsolution.googleapis.com/NFSShareR\x04name\x12+\n" +
-	"\x0fnew_nfsshare_id\x18\x02 \x01(\tB\x03\xe0A\x02R\rnewNfsshareId\"\xa9\x01\n" +
-	"\x15CreateNfsShareRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12M\n" +
-	"\tnfs_share\x18\x02 \x01(\v2+.google.cloud.baremetalsolution.v2.NfsShareB\x03\xe0A\x02R\bnfsShare\"^\n" +
-	"\x15DeleteNfsShareRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
+	"updateMask\"\x8d\x01\n" +
+	"\x15RenameNfsShareRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")baremetalsolution.googleapis.com/NFSShareR\x04name\x12,\n" +
+	"\x0fnew_nfsshare_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\rnewNfsshareId\"\xab\x01\n" +
+	"\x15CreateNfsShareRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12N\n" +
+	"\tnfs_share\x18\x02 \x01(\v2+.google.cloud.baremetalsolution.v2.NfsShareB\x04\xe2A\x01\x02R\bnfsShare\"_\n" +
+	"\x15DeleteNfsShareRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
 	")baremetalsolution.googleapis.com/NFSShareR\x04nameB\xfc\x01\n" +
 	"%com.google.cloud.baremetalsolution.v2B\rNfsShareProtoP\x01ZScloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb;baremetalsolutionpb\xaa\x02!Google.Cloud.BareMetalSolution.V2\xca\x02!Google\\Cloud\\BareMetalSolution\\V2\xea\x02$Google::Cloud::BareMetalSolution::V2b\x06proto3"
 

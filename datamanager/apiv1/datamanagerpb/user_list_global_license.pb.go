@@ -305,35 +305,35 @@ var File_google_ads_datamanager_v1_user_list_global_license_proto protoreflect.F
 
 const file_google_ads_datamanager_v1_user_list_global_license_proto_rawDesc = "" +
 	"\n" +
-	"8google/ads/datamanager/v1/user_list_global_license.proto\x12\x19google.ads.datamanager.v1\x1a=google/ads/datamanager/v1/user_list_global_license_type.proto\x1aEgoogle/ads/datamanager/v1/user_list_license_client_account_type.proto\x1a9google/ads/datamanager/v1/user_list_license_metrics.proto\x1a9google/ads/datamanager/v1/user_list_license_pricing.proto\x1a8google/ads/datamanager/v1/user_list_license_status.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xd1\x06\n" +
-	"\x15UserListGlobalLicense\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12*\n" +
-	"\fuser_list_id\x18\x02 \x01(\x03B\x03\xe0A\x05H\x00R\n" +
-	"userListId\x88\x01\x01\x128\n" +
-	"\x16user_list_display_name\x18\x03 \x01(\tB\x03\xe0A\x03R\x13userListDisplayName\x12a\n" +
-	"\flicense_type\x18\x04 \x01(\x0e24.google.ads.datamanager.v1.UserListGlobalLicenseTypeB\x03\xe0A\x05H\x01R\vlicenseType\x88\x01\x01\x12R\n" +
-	"\x06status\x18\x05 \x01(\x0e20.google.ads.datamanager.v1.UserListLicenseStatusB\x03\xe0A\x01H\x02R\x06status\x88\x01\x01\x12P\n" +
-	"\apricing\x18\x06 \x01(\v21.google.ads.datamanager.v1.UserListLicensePricingB\x03\xe0A\x01R\apricing\x12g\n" +
-	"\x13historical_pricings\x18\a \x03(\v21.google.ads.datamanager.v1.UserListLicensePricingB\x03\xe0A\x03R\x12historicalPricings\x12P\n" +
-	"\ametrics\x18\b \x01(\v21.google.ads.datamanager.v1.UserListLicenseMetricsB\x03\xe0A\x03R\ametrics:\xc7\x01\xeaA\xc3\x01\n" +
+	"8google/ads/datamanager/v1/user_list_global_license.proto\x12\x19google.ads.datamanager.v1\x1a=google/ads/datamanager/v1/user_list_global_license_type.proto\x1aEgoogle/ads/datamanager/v1/user_list_license_client_account_type.proto\x1a9google/ads/datamanager/v1/user_list_license_metrics.proto\x1a9google/ads/datamanager/v1/user_list_license_pricing.proto\x1a8google/ads/datamanager/v1/user_list_license_status.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xd9\x06\n" +
+	"\x15UserListGlobalLicense\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12+\n" +
+	"\fuser_list_id\x18\x02 \x01(\x03B\x04\xe2A\x01\x05H\x00R\n" +
+	"userListId\x88\x01\x01\x129\n" +
+	"\x16user_list_display_name\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x13userListDisplayName\x12b\n" +
+	"\flicense_type\x18\x04 \x01(\x0e24.google.ads.datamanager.v1.UserListGlobalLicenseTypeB\x04\xe2A\x01\x05H\x01R\vlicenseType\x88\x01\x01\x12S\n" +
+	"\x06status\x18\x05 \x01(\x0e20.google.ads.datamanager.v1.UserListLicenseStatusB\x04\xe2A\x01\x01H\x02R\x06status\x88\x01\x01\x12Q\n" +
+	"\apricing\x18\x06 \x01(\v21.google.ads.datamanager.v1.UserListLicensePricingB\x04\xe2A\x01\x01R\apricing\x12h\n" +
+	"\x13historical_pricings\x18\a \x03(\v21.google.ads.datamanager.v1.UserListLicensePricingB\x04\xe2A\x01\x03R\x12historicalPricings\x12Q\n" +
+	"\ametrics\x18\b \x01(\v21.google.ads.datamanager.v1.UserListLicenseMetricsB\x04\xe2A\x01\x03R\ametrics:\xc7\x01\xeaA\xc3\x01\n" +
 	"0datamanager.googleapis.com/UserListGlobalLicense\x12`accountTypes/{account_type}/accounts/{account}/userListGlobalLicenses/{user_list_global_license}*\x16userListGlobalLicenses2\x15userListGlobalLicenseB\x0f\n" +
 	"\r_user_list_idB\x0f\n" +
 	"\r_license_typeB\t\n" +
-	"\a_status\"\xd3\b\n" +
-	"!UserListGlobalLicenseCustomerInfo\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12%\n" +
-	"\fuser_list_id\x18\x02 \x01(\x03B\x03\xe0A\x03R\n" +
-	"userListId\x128\n" +
-	"\x16user_list_display_name\x18\x03 \x01(\tB\x03\xe0A\x03R\x13userListDisplayName\x12\\\n" +
-	"\flicense_type\x18\x04 \x01(\x0e24.google.ads.datamanager.v1.UserListGlobalLicenseTypeB\x03\xe0A\x03R\vlicenseType\x12M\n" +
-	"\x06status\x18\x05 \x01(\x0e20.google.ads.datamanager.v1.UserListLicenseStatusB\x03\xe0A\x03R\x06status\x12P\n" +
-	"\apricing\x18\x06 \x01(\v21.google.ads.datamanager.v1.UserListLicensePricingB\x03\xe0A\x03R\apricing\x12p\n" +
-	"\x13client_account_type\x18\a \x01(\x0e2;.google.ads.datamanager.v1.UserListLicenseClientAccountTypeB\x03\xe0A\x03R\x11clientAccountType\x12/\n" +
-	"\x11client_account_id\x18\b \x01(\x03B\x03\xe0A\x03R\x0fclientAccountId\x12B\n" +
-	"\x1bclient_account_display_name\x18\t \x01(\tB\x03\xe0A\x03R\x18clientAccountDisplayName\x12g\n" +
+	"\a_status\"\xde\b\n" +
+	"!UserListGlobalLicenseCustomerInfo\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12&\n" +
+	"\fuser_list_id\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\n" +
+	"userListId\x129\n" +
+	"\x16user_list_display_name\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x13userListDisplayName\x12]\n" +
+	"\flicense_type\x18\x04 \x01(\x0e24.google.ads.datamanager.v1.UserListGlobalLicenseTypeB\x04\xe2A\x01\x03R\vlicenseType\x12N\n" +
+	"\x06status\x18\x05 \x01(\x0e20.google.ads.datamanager.v1.UserListLicenseStatusB\x04\xe2A\x01\x03R\x06status\x12Q\n" +
+	"\apricing\x18\x06 \x01(\v21.google.ads.datamanager.v1.UserListLicensePricingB\x04\xe2A\x01\x03R\apricing\x12q\n" +
+	"\x13client_account_type\x18\a \x01(\x0e2;.google.ads.datamanager.v1.UserListLicenseClientAccountTypeB\x04\xe2A\x01\x03R\x11clientAccountType\x120\n" +
+	"\x11client_account_id\x18\b \x01(\x03B\x04\xe2A\x01\x03R\x0fclientAccountId\x12C\n" +
+	"\x1bclient_account_display_name\x18\t \x01(\tB\x04\xe2A\x01\x03R\x18clientAccountDisplayName\x12h\n" +
 	"\x13historical_pricings\x18\n" +
-	" \x03(\v21.google.ads.datamanager.v1.UserListLicensePricingB\x03\xe0A\x03R\x12historicalPricings\x12P\n" +
-	"\ametrics\x18\v \x01(\v21.google.ads.datamanager.v1.UserListLicenseMetricsB\x03\xe0A\x03R\ametrics:\x92\x02\xeaA\x8e\x02\n" +
+	" \x03(\v21.google.ads.datamanager.v1.UserListLicensePricingB\x04\xe2A\x01\x03R\x12historicalPricings\x12Q\n" +
+	"\ametrics\x18\v \x01(\v21.google.ads.datamanager.v1.UserListLicenseMetricsB\x04\xe2A\x01\x03R\ametrics:\x92\x02\xeaA\x8e\x02\n" +
 	"<datamanager.googleapis.com/UserListGlobalLicenseCustomerInfo\x12\x86\x01accountTypes/{account_type}/accounts/{account}/userListGlobalLicenses/{user_list_global_license}/customerInfos/{license_customer_info}*\"userListGlobalLicenseCustomerInfos2!userListGlobalLicenseCustomerInfoB\xd7\x01\n" +
 	"\x1dcom.google.ads.datamanager.v1B\x1aUserListGlobalLicenseProtoP\x01ZAcloud.google.com/go/datamanager/apiv1/datamanagerpb;datamanagerpb\xaa\x02\x19Google.Ads.DataManager.V1\xca\x02\x19Google\\Ads\\DataManager\\V1\xea\x02\x1cGoogle::Ads::DataManager::V1b\x06proto3"
 

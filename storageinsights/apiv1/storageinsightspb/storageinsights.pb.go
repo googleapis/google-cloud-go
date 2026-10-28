@@ -3381,9 +3381,9 @@ var File_google_cloud_storageinsights_v1_storageinsights_proto protoreflect.File
 
 const file_google_cloud_storageinsights_v1_storageinsights_proto_rawDesc = "" +
 	"\n" +
-	"5google/cloud/storageinsights/v1/storageinsights.proto\x12\x1fgoogle.cloud.storageinsights.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\x1a\x16google/type/date.proto\x1a\x1agoogle/type/datetime.proto\"\xd6\x01\n" +
-	"\x18ListReportConfigsRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+storageinsights.googleapis.com/ReportConfigR\x06parent\x12\x1b\n" +
+	"5google/cloud/storageinsights/v1/storageinsights.proto\x12\x1fgoogle.cloud.storageinsights.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\x1a\x16google/type/date.proto\x1a\x1agoogle/type/datetime.proto\"\xd7\x01\n" +
+	"\x18ListReportConfigsRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+storageinsights.googleapis.com/ReportConfigR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -3392,27 +3392,27 @@ const file_google_cloud_storageinsights_v1_storageinsights_proto_rawDesc = "" +
 	"\x19ListReportConfigsResponse\x12T\n" +
 	"\x0ereport_configs\x18\x01 \x03(\v2-.google.cloud.storageinsights.v1.ReportConfigR\rreportConfigs\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"a\n" +
-	"\x16GetReportConfigRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+storageinsights.googleapis.com/ReportConfigR\x04name\"\xe5\x01\n" +
-	"\x19CreateReportConfigRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+storageinsights.googleapis.com/ReportConfigR\x06parent\x12W\n" +
-	"\rreport_config\x18\x03 \x01(\v2-.google.cloud.storageinsights.v1.ReportConfigB\x03\xe0A\x02R\freportConfig\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"b\n" +
+	"\x16GetReportConfigRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+storageinsights.googleapis.com/ReportConfigR\x04name\"\xe8\x01\n" +
+	"\x19CreateReportConfigRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+storageinsights.googleapis.com/ReportConfigR\x06parent\x12X\n" +
+	"\rreport_config\x18\x03 \x01(\v2-.google.cloud.storageinsights.v1.ReportConfigB\x04\xe2A\x01\x02R\freportConfig\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xda\x01\n" +
-	"\x19UpdateReportConfigRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12W\n" +
-	"\rreport_config\x18\x02 \x01(\v2-.google.cloud.storageinsights.v1.ReportConfigB\x03\xe0A\x02R\freportConfig\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xdd\x01\n" +
+	"\x19UpdateReportConfigRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12X\n" +
+	"\rreport_config\x18\x02 \x01(\v2-.google.cloud.storageinsights.v1.ReportConfigB\x04\xe2A\x01\x02R\freportConfig\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"\xa3\x01\n" +
-	"\x19DeleteReportConfigRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+storageinsights.googleapis.com/ReportConfigR\x04name\x12\x19\n" +
-	"\x05force\x18\x02 \x01(\bB\x03\xe0A\x01R\x05force\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xa6\x01\n" +
+	"\x19DeleteReportConfigRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+storageinsights.googleapis.com/ReportConfigR\x04name\x12\x1a\n" +
+	"\x05force\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x05force\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"\xe8\x05\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xe8\x05\n" +
 	"\fReportDetail\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12?\n" +
 	"\rsnapshot_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\fsnapshotTime\x12,\n" +
@@ -3427,9 +3427,9 @@ const file_google_cloud_storageinsights_v1_storageinsights_proto_rawDesc = "" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x96\x01\xeaA\x92\x01\n" +
-	"+storageinsights.googleapis.com/ReportDetail\x12cprojects/{project}/locations/{location}/reportConfigs/{report_config}/reportDetails/{report_detail}\"\xd6\x01\n" +
-	"\x18ListReportDetailsRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+storageinsights.googleapis.com/ReportDetailR\x06parent\x12\x1b\n" +
+	"+storageinsights.googleapis.com/ReportDetail\x12cprojects/{project}/locations/{location}/reportConfigs/{report_config}/reportDetails/{report_detail}\"\xd7\x01\n" +
+	"\x18ListReportDetailsRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+storageinsights.googleapis.com/ReportDetailR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -3438,19 +3438,19 @@ const file_google_cloud_storageinsights_v1_storageinsights_proto_rawDesc = "" +
 	"\x19ListReportDetailsResponse\x12T\n" +
 	"\x0ereport_details\x18\x01 \x03(\v2-.google.cloud.storageinsights.v1.ReportDetailR\rreportDetails\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"a\n" +
-	"\x16GetReportDetailRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+storageinsights.googleapis.com/ReportDetailR\x04name\"\xd5\x02\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"b\n" +
+	"\x16GetReportDetailRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+storageinsights.googleapis.com/ReportDetailR\x04name\"\xdc\x02\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
 	"apiVersion\"\x8c\x02\n" +
 	"\x10FrequencyOptions\x12Y\n" +
 	"\tfrequency\x18\x01 \x01(\x0e2;.google.cloud.storageinsights.v1.FrequencyOptions.FrequencyR\tfrequency\x120\n" +
@@ -3478,12 +3478,12 @@ const file_google_cloud_storageinsights_v1_storageinsights_proto_rawDesc = "" +
 	"\x0fstorage_filters\x18\x02 \x01(\v24.google.cloud.storageinsights.v1.CloudStorageFiltersH\x00R\x0estorageFilters\x12\x81\x01\n" +
 	"\x1bstorage_destination_options\x18\x03 \x01(\v2?.google.cloud.storageinsights.v1.CloudStorageDestinationOptionsH\x01R\x19storageDestinationOptionsB\b\n" +
 	"\x06filterB\x15\n" +
-	"\x13destination_options\"\x82\a\n" +
+	"\x13destination_options\"\x84\a\n" +
 	"\fReportConfig\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12^\n" +
 	"\x11frequency_options\x18\x05 \x01(\v21.google.cloud.storageinsights.v1.FrequencyOptionsR\x10frequencyOptions\x12N\n" +
 	"\vcsv_options\x18\x06 \x01(\v2+.google.cloud.storageinsights.v1.CSVOptionsH\x00R\n" +
@@ -3498,44 +3498,44 @@ const file_google_cloud_storageinsights_v1_storageinsights_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:w\xeaAt\n" +
 	"+storageinsights.googleapis.com/ReportConfig\x12Eprojects/{project}/locations/{location}/reportConfigs/{report_config}B\x0f\n" +
 	"\rreport_formatB\r\n" +
-	"\vreport_kind\"\xdb\x01\n" +
-	"\bIdentity\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12J\n" +
+	"\vreport_kind\"\xdc\x01\n" +
+	"\bIdentity\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12J\n" +
 	"\x04type\x18\x02 \x01(\x0e26.google.cloud.storageinsights.v1.Identity.IdentityTypeR\x04type\"j\n" +
 	"\fIdentityType\x12\x1d\n" +
 	"\x19IDENTITY_TYPE_UNSPECIFIED\x10\x00\x12\x1c\n" +
 	"\x18IDENTITY_TYPE_PER_CONFIG\x10\x01\x12\x1d\n" +
-	"\x19IDENTITY_TYPE_PER_PROJECT\x10\x02\"\xbd#\n" +
-	"\rDatasetConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x19IDENTITY_TYPE_PER_PROJECT\x10\x02\"\xdd#\n" +
+	"\rDatasetConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12R\n" +
-	"\x06labels\x18\x04 \x03(\v2:.google.cloud.storageinsights.v1.DatasetConfig.LabelsEntryR\x06labels\x12\x15\n" +
-	"\x03uid\x18\x05 \x01(\tB\x03\xe0A\x03R\x03uid\x124\n" +
-	"\x13organization_number\x18\x16 \x01(\x03B\x03\xe0A\x01R\x12organizationNumber\x12h\n" +
+	"\x06labels\x18\x04 \x03(\v2:.google.cloud.storageinsights.v1.DatasetConfig.LabelsEntryR\x06labels\x12\x16\n" +
+	"\x03uid\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x125\n" +
+	"\x13organization_number\x18\x16 \x01(\x03B\x04\xe2A\x01\x01R\x12organizationNumber\x12h\n" +
 	"\x0fsource_projects\x18\a \x01(\v2=.google.cloud.storageinsights.v1.DatasetConfig.SourceProjectsH\x00R\x0esourceProjects\x12e\n" +
 	"\x0esource_folders\x18\x18 \x01(\v2<.google.cloud.storageinsights.v1.DatasetConfig.SourceFoldersH\x00R\rsourceFolders\x12/\n" +
-	"\x12organization_scope\x18\x19 \x01(\bH\x00R\x11organizationScope\x12@\n" +
-	"\x19cloud_storage_object_path\x18\x15 \x01(\tB\x03\xe0A\x04H\x00R\x16cloudStorageObjectPath\x12\x8d\x01\n" +
+	"\x12organization_scope\x18\x19 \x01(\bH\x00R\x11organizationScope\x12A\n" +
+	"\x19cloud_storage_object_path\x18\x15 \x01(\tB\x04\xe2A\x01\x04H\x00R\x16cloudStorageObjectPath\x12\x8d\x01\n" +
 	"\x1finclude_cloud_storage_locations\x18\b \x01(\v2D.google.cloud.storageinsights.v1.DatasetConfig.CloudStorageLocationsH\x01R\x1cincludeCloudStorageLocations\x12\x8d\x01\n" +
 	"\x1fexclude_cloud_storage_locations\x18\t \x01(\v2D.google.cloud.storageinsights.v1.DatasetConfig.CloudStorageLocationsH\x01R\x1cexcludeCloudStorageLocations\x12\x87\x01\n" +
 	"\x1dinclude_cloud_storage_buckets\x18\n" +
 	" \x01(\v2B.google.cloud.storageinsights.v1.DatasetConfig.CloudStorageBucketsH\x02R\x1aincludeCloudStorageBuckets\x12\x87\x01\n" +
 	"\x1dexclude_cloud_storage_buckets\x18\v \x01(\v2B.google.cloud.storageinsights.v1.DatasetConfig.CloudStorageBucketsH\x02R\x1aexcludeCloudStorageBuckets\x12A\n" +
-	"\x1dinclude_newly_created_buckets\x18\f \x01(\bR\x1aincludeNewlyCreatedBuckets\x12F\n" +
-	"\x1cskip_verification_and_ingest\x18\x13 \x01(\bB\x05\xe0A\x01\x18\x01R\x19skipVerificationAndIngest\x122\n" +
+	"\x1dinclude_newly_created_buckets\x18\f \x01(\bR\x1aincludeNewlyCreatedBuckets\x12G\n" +
+	"\x1cskip_verification_and_ingest\x18\x13 \x01(\bB\x06\xe2A\x01\x01\x18\x01R\x19skipVerificationAndIngest\x122\n" +
 	"\x15retention_period_days\x18\x0e \x01(\x05R\x13retentionPeriodDays\x12G\n" +
 	"\x04link\x18\x0f \x01(\v23.google.cloud.storageinsights.v1.DatasetConfig.LinkR\x04link\x12E\n" +
-	"\bidentity\x18\x10 \x01(\v2).google.cloud.storageinsights.v1.IdentityR\bidentity\x12/\n" +
-	"\x06status\x18\x11 \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x06status\x12q\n" +
-	"\x14dataset_config_state\x18\x12 \x01(\x0e2:.google.cloud.storageinsights.v1.DatasetConfig.ConfigStateB\x03\xe0A\x03R\x12datasetConfigState\x12%\n" +
-	"\vdescription\x18\x14 \x01(\tB\x03\xe0A\x01R\vdescription\x1a9\n" +
+	"\bidentity\x18\x10 \x01(\v2).google.cloud.storageinsights.v1.IdentityR\bidentity\x120\n" +
+	"\x06status\x18\x11 \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\x06status\x12r\n" +
+	"\x14dataset_config_state\x18\x12 \x01(\x0e2:.google.cloud.storageinsights.v1.DatasetConfig.ConfigStateB\x04\xe2A\x01\x03R\x12datasetConfigState\x12&\n" +
+	"\vdescription\x18\x14 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x1a9\n" +
 	"\x0eSourceProjects\x12'\n" +
-	"\x0fproject_numbers\x18\x01 \x03(\x03R\x0eprojectNumbers\x1a;\n" +
-	"\rSourceFolders\x12*\n" +
-	"\x0efolder_numbers\x18\x01 \x03(\x03B\x03\xe0A\x01R\rfolderNumbers\x1a5\n" +
+	"\x0fproject_numbers\x18\x01 \x03(\x03R\x0eprojectNumbers\x1a<\n" +
+	"\rSourceFolders\x12+\n" +
+	"\x0efolder_numbers\x18\x01 \x03(\x03B\x04\xe2A\x01\x01R\rfolderNumbers\x1a5\n" +
 	"\x15CloudStorageLocations\x12\x1c\n" +
 	"\tlocations\x18\x01 \x03(\tR\tlocations\x1a\xa5\x02\n" +
 	"\x13CloudStorageBuckets\x12\x89\x01\n" +
@@ -3544,39 +3544,39 @@ const file_google_cloud_storageinsights_v1_storageinsights_proto_rawDesc = "" +
 	"\vbucket_name\x18\x01 \x01(\tH\x00R\n" +
 	"bucketName\x120\n" +
 	"\x13bucket_prefix_regex\x18\x02 \x01(\tH\x00R\x11bucketPrefixRegexB\x16\n" +
-	"\x14cloud_storage_bucket\x1aB\n" +
-	"\x04Link\x12\x1d\n" +
-	"\adataset\x18\x01 \x01(\tB\x03\xe0A\x03R\adataset\x12\x1b\n" +
-	"\x06linked\x18\x02 \x01(\bB\x03\xe0A\x03R\x06linked\x1a\x86\x04\n" +
-	"\fBucketErrors\x12,\n" +
-	"\x0fvalidated_count\x18\x01 \x01(\x03B\x03\xe0A\x01R\x0evalidatedCount\x12;\n" +
-	"\x17permission_denied_count\x18\x02 \x01(\x03B\x03\xe0A\x01R\x15permissionDeniedCount\x12D\n" +
-	"\x1cpermission_denied_bucket_ids\x18\x03 \x03(\tB\x03\xe0A\x01R\x19permissionDeniedBucketIds\x12O\n" +
-	"!non_management_hub_entitled_count\x18\x05 \x01(\x03B\x05\xe0A\x01\x18\x01R\x1dnonManagementHubEntitledCount\x125\n" +
-	"\x14internal_error_count\x18\x04 \x01(\x03B\x03\xe0A\x01R\x12internalErrorCount\x12Y\n" +
-	"'non_storage_intelligence_entitled_count\x18\a \x01(\x03B\x03\xe0A\x01R#nonStorageIntelligenceEntitledCount\x12b\n" +
-	",non_storage_intelligence_entitled_bucket_ids\x18\b \x03(\tB\x03\xe0A\x01R'nonStorageIntelligenceEntitledBucketIds\x1a\x9c\b\n" +
-	"\rProjectErrors\x121\n" +
-	"\x0fvalidated_count\x18\x01 \x01(\x03B\x03\xe0A\x01H\x01R\x0evalidatedCount\x88\x01\x01\x12?\n" +
-	"\x17outside_org_error_count\x18\x02 \x01(\x03B\x03\xe0A\x01H\x02R\x14outsideOrgErrorCount\x88\x01\x01\x12B\n" +
-	"\x1boutside_org_project_numbers\x18\x03 \x03(\x03B\x03\xe0A\x01R\x18outsideOrgProjectNumbers\x12_\n" +
-	"'non_management_hub_entitled_error_count\x18\a \x01(\x03B\x05\xe0A\x01\x18\x01H\x03R\"nonManagementHubEntitledErrorCount\x88\x01\x01\x12b\n" +
-	"+non_management_hub_entitled_project_numbers\x18\b \x03(\x03B\x05\xe0A\x01\x18\x01R&nonManagementHubEntitledProjectNumbers\x12i\n" +
-	"-non_storage_intelligence_entitled_error_count\x18\t \x01(\x03B\x03\xe0A\x01H\x04R(nonStorageIntelligenceEntitledErrorCount\x88\x01\x01\x12l\n" +
+	"\x14cloud_storage_bucket\x1aD\n" +
+	"\x04Link\x12\x1e\n" +
+	"\adataset\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\adataset\x12\x1c\n" +
+	"\x06linked\x18\x02 \x01(\bB\x04\xe2A\x01\x03R\x06linked\x1a\x8d\x04\n" +
+	"\fBucketErrors\x12-\n" +
+	"\x0fvalidated_count\x18\x01 \x01(\x03B\x04\xe2A\x01\x01R\x0evalidatedCount\x12<\n" +
+	"\x17permission_denied_count\x18\x02 \x01(\x03B\x04\xe2A\x01\x01R\x15permissionDeniedCount\x12E\n" +
+	"\x1cpermission_denied_bucket_ids\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x19permissionDeniedBucketIds\x12P\n" +
+	"!non_management_hub_entitled_count\x18\x05 \x01(\x03B\x06\xe2A\x01\x01\x18\x01R\x1dnonManagementHubEntitledCount\x126\n" +
+	"\x14internal_error_count\x18\x04 \x01(\x03B\x04\xe2A\x01\x01R\x12internalErrorCount\x12Z\n" +
+	"'non_storage_intelligence_entitled_count\x18\a \x01(\x03B\x04\xe2A\x01\x01R#nonStorageIntelligenceEntitledCount\x12c\n" +
+	",non_storage_intelligence_entitled_bucket_ids\x18\b \x03(\tB\x04\xe2A\x01\x01R'nonStorageIntelligenceEntitledBucketIds\x1a\xa6\b\n" +
+	"\rProjectErrors\x122\n" +
+	"\x0fvalidated_count\x18\x01 \x01(\x03B\x04\xe2A\x01\x01H\x01R\x0evalidatedCount\x88\x01\x01\x12@\n" +
+	"\x17outside_org_error_count\x18\x02 \x01(\x03B\x04\xe2A\x01\x01H\x02R\x14outsideOrgErrorCount\x88\x01\x01\x12C\n" +
+	"\x1boutside_org_project_numbers\x18\x03 \x03(\x03B\x04\xe2A\x01\x01R\x18outsideOrgProjectNumbers\x12`\n" +
+	"'non_management_hub_entitled_error_count\x18\a \x01(\x03B\x06\xe2A\x01\x01\x18\x01H\x03R\"nonManagementHubEntitledErrorCount\x88\x01\x01\x12c\n" +
+	"+non_management_hub_entitled_project_numbers\x18\b \x03(\x03B\x06\xe2A\x01\x01\x18\x01R&nonManagementHubEntitledProjectNumbers\x12j\n" +
+	"-non_storage_intelligence_entitled_error_count\x18\t \x01(\x03B\x04\xe2A\x01\x01H\x04R(nonStorageIntelligenceEntitledErrorCount\x88\x01\x01\x12m\n" +
 	"1non_storage_intelligence_entitled_project_numbers\x18\n" +
-	" \x03(\x03B\x03\xe0A\x01R,nonStorageIntelligenceEntitledProjectNumbers\x12:\n" +
-	"\x14internal_error_count\x18\x04 \x01(\x03B\x03\xe0A\x01H\x05R\x12internalErrorCount\x88\x01\x01\x12H\n" +
-	"\x1ddestination_project_org_error\x18\x05 \x01(\bB\x03\xe0A\x01H\x00R\x1adestinationProjectOrgError\x12d\n" +
-	",destination_project_check_has_internal_error\x18\x06 \x01(\bB\x03\xe0A\x01H\x00R'destinationProjectCheckHasInternalErrorB\"\n" +
+	" \x03(\x03B\x04\xe2A\x01\x01R,nonStorageIntelligenceEntitledProjectNumbers\x12;\n" +
+	"\x14internal_error_count\x18\x04 \x01(\x03B\x04\xe2A\x01\x01H\x05R\x12internalErrorCount\x88\x01\x01\x12I\n" +
+	"\x1ddestination_project_org_error\x18\x05 \x01(\bB\x04\xe2A\x01\x01H\x00R\x1adestinationProjectOrgError\x12e\n" +
+	",destination_project_check_has_internal_error\x18\x06 \x01(\bB\x04\xe2A\x01\x01H\x00R'destinationProjectCheckHasInternalErrorB\"\n" +
 	" destination_project_check_resultB\x12\n" +
 	"\x10_validated_countB\x1a\n" +
 	"\x18_outside_org_error_countB*\n" +
 	"(_non_management_hub_entitled_error_countB0\n" +
 	"._non_storage_intelligence_entitled_error_countB\x17\n" +
-	"\x15_internal_error_count\x1a\xf2\x01\n" +
-	"\x1fValidationErrorsBeforeIngestion\x12e\n" +
-	"\rbucket_errors\x18\x01 \x01(\v2;.google.cloud.storageinsights.v1.DatasetConfig.BucketErrorsB\x03\xe0A\x01R\fbucketErrors\x12h\n" +
-	"\x0eproject_errors\x18\x02 \x01(\v2<.google.cloud.storageinsights.v1.DatasetConfig.ProjectErrorsB\x03\xe0A\x01R\rprojectErrors\x1a9\n" +
+	"\x15_internal_error_count\x1a\xf4\x01\n" +
+	"\x1fValidationErrorsBeforeIngestion\x12f\n" +
+	"\rbucket_errors\x18\x01 \x01(\v2;.google.cloud.storageinsights.v1.DatasetConfig.BucketErrorsB\x04\xe2A\x01\x01R\fbucketErrors\x12i\n" +
+	"\x0eproject_errors\x18\x02 \x01(\v2<.google.cloud.storageinsights.v1.DatasetConfig.ProjectErrorsB\x04\xe2A\x01\x01R\rprojectErrors\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xa6\x01\n" +
@@ -3589,9 +3589,9 @@ const file_google_cloud_storageinsights_v1_storageinsights_proto_rawDesc = "" +
 	",storageinsights.googleapis.com/DatasetConfig\x12Gprojects/{project}/locations/{location}/datasetConfigs/{dataset_config}B\x10\n" +
 	"\x0esource_optionsB\x19\n" +
 	"\x17cloud_storage_locationsB\x17\n" +
-	"\x15cloud_storage_buckets\"\xd8\x01\n" +
-	"\x19ListDatasetConfigsRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,storageinsights.googleapis.com/DatasetConfigR\x06parent\x12\x1b\n" +
+	"\x15cloud_storage_buckets\"\xd9\x01\n" +
+	"\x19ListDatasetConfigsRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,storageinsights.googleapis.com/DatasetConfigR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -3600,33 +3600,33 @@ const file_google_cloud_storageinsights_v1_storageinsights_proto_rawDesc = "" +
 	"\x1aListDatasetConfigsResponse\x12W\n" +
 	"\x0fdataset_configs\x18\x01 \x03(\v2..google.cloud.storageinsights.v1.DatasetConfigR\x0edatasetConfigs\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"c\n" +
-	"\x17GetDatasetConfigRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",storageinsights.googleapis.com/DatasetConfigR\x04name\"\x9b\x02\n" +
-	"\x1aCreateDatasetConfigRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,storageinsights.googleapis.com/DatasetConfigR\x06parent\x12/\n" +
-	"\x11dataset_config_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x0fdatasetConfigId\x12Z\n" +
-	"\x0edataset_config\x18\x03 \x01(\v2..google.cloud.storageinsights.v1.DatasetConfigB\x03\xe0A\x02R\rdatasetConfig\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"d\n" +
+	"\x17GetDatasetConfigRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",storageinsights.googleapis.com/DatasetConfigR\x04name\"\x9f\x02\n" +
+	"\x1aCreateDatasetConfigRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,storageinsights.googleapis.com/DatasetConfigR\x06parent\x120\n" +
+	"\x11dataset_config_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0fdatasetConfigId\x12[\n" +
+	"\x0edataset_config\x18\x03 \x01(\v2..google.cloud.storageinsights.v1.DatasetConfigB\x04\xe2A\x01\x02R\rdatasetConfig\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xde\x01\n" +
-	"\x1aUpdateDatasetConfigRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12Z\n" +
-	"\x0edataset_config\x18\x02 \x01(\v2..google.cloud.storageinsights.v1.DatasetConfigB\x03\xe0A\x02R\rdatasetConfig\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xe1\x01\n" +
+	"\x1aUpdateDatasetConfigRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12[\n" +
+	"\x0edataset_config\x18\x02 \x01(\v2..google.cloud.storageinsights.v1.DatasetConfigB\x04\xe2A\x01\x02R\rdatasetConfig\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"\x8a\x01\n" +
-	"\x1aDeleteDatasetConfigRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",storageinsights.googleapis.com/DatasetConfigR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x8c\x01\n" +
+	"\x1aDeleteDatasetConfigRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",storageinsights.googleapis.com/DatasetConfigR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"^\n" +
-	"\x12LinkDatasetRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"_\n" +
+	"\x12LinkDatasetRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
 	",storageinsights.googleapis.com/DatasetConfigR\x04name\"\x15\n" +
-	"\x13LinkDatasetResponse\"`\n" +
-	"\x14UnlinkDatasetRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
+	"\x13LinkDatasetResponse\"a\n" +
+	"\x14UnlinkDatasetRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
 	",storageinsights.googleapis.com/DatasetConfigR\x04name\"\x84\x01\n" +
 	"\x10LocationMetadata\x126\n" +
 	"\x17report_config_available\x18\x01 \x01(\bR\x15reportConfigAvailable\x128\n" +

@@ -803,40 +803,40 @@ var File_google_cloud_batch_v1_batch_proto protoreflect.FileDescriptor
 
 const file_google_cloud_batch_v1_batch_proto_rawDesc = "" +
 	"\n" +
-	"!google/cloud/batch/v1/batch.proto\x12\x15google.cloud.batch.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/cloud/batch/v1/job.proto\x1a google/cloud/batch/v1/task.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xba\x01\n" +
-	"\x10CreateJobRequest\x128\n" +
-	"\x06parent\x18\x01 \x01(\tB \xe0A\x02\xfaA\x1a\x12\x18batch.googleapis.com/JobR\x06parent\x12\x15\n" +
-	"\x06job_id\x18\x02 \x01(\tR\x05jobId\x121\n" +
-	"\x03job\x18\x03 \x01(\v2\x1a.google.cloud.batch.v1.JobB\x03\xe0A\x02R\x03job\x12\"\n" +
+	"!google/cloud/batch/v1/batch.proto\x12\x15google.cloud.batch.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/cloud/batch/v1/job.proto\x1a google/cloud/batch/v1/task.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbd\x01\n" +
+	"\x10CreateJobRequest\x129\n" +
+	"\x06parent\x18\x01 \x01(\tB!\xe2A\x01\x02\xfaA\x1a\x12\x18batch.googleapis.com/JobR\x06parent\x12\x15\n" +
+	"\x06job_id\x18\x02 \x01(\tR\x05jobId\x122\n" +
+	"\x03job\x18\x03 \x01(\v2\x1a.google.cloud.batch.v1.JobB\x04\xe2A\x01\x02R\x03job\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"E\n" +
-	"\rGetJobRequest\x124\n" +
-	"\x04name\x18\x01 \x01(\tB \xe0A\x02\xfaA\x1a\n" +
-	"\x18batch.googleapis.com/JobR\x04name\"g\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"F\n" +
+	"\rGetJobRequest\x125\n" +
+	"\x04name\x18\x01 \x01(\tB!\xe2A\x01\x02\xfaA\x1a\n" +
+	"\x18batch.googleapis.com/JobR\x04name\"i\n" +
 	"\x10DeleteJobRequest\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1b\n" +
-	"\x06reason\x18\x02 \x01(\tB\x03\xe0A\x01R\x06reason\x12\"\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1c\n" +
+	"\x06reason\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06reason\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"t\n" +
-	"\x10CancelJobRequest\x124\n" +
-	"\x04name\x18\x01 \x01(\tB \xe0A\x02\xfaA\x1a\n" +
-	"\x18batch.googleapis.com/JobR\x04name\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"v\n" +
+	"\x10CancelJobRequest\x125\n" +
+	"\x04name\x18\x01 \x01(\tB!\xe2A\x01\x02\xfaA\x1a\n" +
+	"\x18batch.googleapis.com/JobR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x13\n" +
-	"\x11CancelJobResponse\"\x9d\x01\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x13\n" +
+	"\x11CancelJobResponse\"\x9e\x01\n" +
 	"\x0fListJobsRequest\x12\x16\n" +
 	"\x06parent\x18\x01 \x01(\tR\x06parent\x12\x16\n" +
-	"\x06filter\x18\x04 \x01(\tR\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\x12\x1b\n" +
+	"\x06filter\x18\x04 \x01(\tR\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x8c\x01\n" +
 	"\x10ListJobsResponse\x12.\n" +
 	"\x04jobs\x18\x01 \x03(\v2\x1a.google.cloud.batch.v1.JobR\x04jobs\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xa6\x01\n" +
-	"\x10ListTasksRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xa7\x01\n" +
+	"\x10ListTasksRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
 	"\x1ebatch.googleapis.com/TaskGroupR\x06parent\x12\x16\n" +
 	"\x06filter\x18\x02 \x01(\tR\x06filter\x12\x1b\n" +
 	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12\x1d\n" +
@@ -845,19 +845,19 @@ const file_google_cloud_batch_v1_batch_proto_rawDesc = "" +
 	"\x11ListTasksResponse\x121\n" +
 	"\x05tasks\x18\x01 \x03(\v2\x1b.google.cloud.batch.v1.TaskR\x05tasks\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"G\n" +
-	"\x0eGetTaskRequest\x125\n" +
-	"\x04name\x18\x01 \x01(\tB!\xe0A\x02\xfaA\x1b\n" +
-	"\x19batch.googleapis.com/TaskR\x04name\"\xd5\x02\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"H\n" +
+	"\x0eGetTaskRequest\x126\n" +
+	"\x04name\x18\x01 \x01(\tB\"\xe2A\x01\x02\xfaA\x1b\n" +
+	"\x19batch.googleapis.com/TaskR\x04name\"\xdc\x02\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
 	"apiVersion2\xa5\n" +
 	"\n" +
 	"\fBatchService\x12\x9b\x01\n" +

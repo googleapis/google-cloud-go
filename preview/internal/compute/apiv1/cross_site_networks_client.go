@@ -329,6 +329,12 @@ func (c *crossSiteNetworksRESTClient) Delete(ctx context.Context, req *computepb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetCrossSiteNetwork(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/crossSiteNetworks/%v", req.GetProject(), req.GetCrossSiteNetwork())
 
 	params := url.Values{}
@@ -392,6 +398,12 @@ func (c *crossSiteNetworksRESTClient) Get(ctx context.Context, req *computepb.Ge
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetCrossSiteNetwork(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/crossSiteNetworks/%v", req.GetProject(), req.GetCrossSiteNetwork())
 
 	// Build HTTP headers from client and context metadata.
@@ -447,6 +459,11 @@ func (c *crossSiteNetworksRESTClient) Insert(ctx context.Context, req *computepb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/crossSiteNetworks", req.GetProject())
@@ -528,6 +545,11 @@ func (c *crossSiteNetworksRESTClient) List(ctx context.Context, req *computepb.L
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/crossSiteNetworks", req.GetProject())
 
 		params := url.Values{}
@@ -606,6 +628,12 @@ func (c *crossSiteNetworksRESTClient) Patch(ctx context.Context, req *computepb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetCrossSiteNetwork(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/crossSiteNetworks/%v", req.GetProject(), req.GetCrossSiteNetwork())

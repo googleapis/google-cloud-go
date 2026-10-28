@@ -222,10 +222,10 @@ var File_google_maps_fleetengine_delivery_v1_task_tracking_info_proto protorefle
 
 const file_google_maps_fleetengine_delivery_v1_task_tracking_info_proto_rawDesc = "" +
 	"\n" +
-	"<google/maps/fleetengine/delivery/v1/task_tracking_info.proto\x12\x1cmaps.fleetengine.delivery.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/maps/fleetengine/delivery/v1/common.proto\x1a;google/maps/fleetengine/delivery/v1/delivery_vehicles.proto\x1a/google/maps/fleetengine/delivery/v1/tasks.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x18google/type/latlng.proto\"\xa1\t\n" +
+	"<google/maps/fleetengine/delivery/v1/task_tracking_info.proto\x12\x1cmaps.fleetengine.delivery.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/maps/fleetengine/delivery/v1/common.proto\x1a;google/maps/fleetengine/delivery/v1/delivery_vehicles.proto\x1a/google/maps/fleetengine/delivery/v1/tasks.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x18google/type/latlng.proto\"\xa3\t\n" +
 	"\x10TaskTrackingInfo\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12$\n" +
-	"\vtracking_id\x18\x02 \x01(\tB\x03\xe0A\x05R\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12%\n" +
+	"\vtracking_id\x18\x02 \x01(\tB\x04\xe2A\x01\x05R\n" +
 	"trackingId\x12`\n" +
 	"\x10vehicle_location\x18\x03 \x01(\v25.maps.fleetengine.delivery.v1.DeliveryVehicleLocationR\x0fvehicleLocation\x12G\n" +
 	"\x15route_polyline_points\x18\x04 \x03(\v2\x13.google.type.LatLngR\x13routePolylinePoints\x12M\n" +
@@ -235,9 +235,9 @@ const file_google_maps_fleetengine_delivery_v1_task_tracking_info_proto_rawDesc 
 	"\x1eestimated_task_completion_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\x1bestimatedTaskCompletionTime\x12>\n" +
 	"\x05state\x18\v \x01(\x0e2(.maps.fleetengine.delivery.v1.Task.StateR\x05state\x12Q\n" +
 	"\ftask_outcome\x18\t \x01(\x0e2..maps.fleetengine.delivery.v1.Task.TaskOutcomeR\vtaskOutcome\x12F\n" +
-	"\x11task_outcome_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampR\x0ftaskOutcomeTime\x12Z\n" +
+	"\x11task_outcome_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampR\x0ftaskOutcomeTime\x12[\n" +
 	"\x10planned_location\x18\n" +
-	" \x01(\v2*.maps.fleetengine.delivery.v1.LocationInfoB\x03\xe0A\x05R\x0fplannedLocation\x12V\n" +
+	" \x01(\v2*.maps.fleetengine.delivery.v1.LocationInfoB\x04\xe2A\x01\x05R\x0fplannedLocation\x12V\n" +
 	"\x12target_time_window\x18\r \x01(\v2(.maps.fleetengine.delivery.v1.TimeWindowR\x10targetTimeWindow\x12K\n" +
 	"\n" +
 	"attributes\x18\x0e \x03(\v2+.maps.fleetengine.delivery.v1.TaskAttributeR\n" +

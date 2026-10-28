@@ -504,18 +504,18 @@ var File_google_cloud_dialogflow_cx_v3_safety_settings_proto protoreflect.FileDe
 
 const file_google_cloud_dialogflow_cx_v3_safety_settings_proto_rawDesc = "" +
 	"\n" +
-	"3google/cloud/dialogflow/cx/v3/safety_settings.proto\x12\x1dgoogle.cloud.dialogflow.cx.v3\x1a\x1fgoogle/api/field_behavior.proto\"\xde\v\n" +
-	"\x0eSafetySettings\x12\x96\x01\n" +
-	"$default_banned_phrase_match_strategy\x18\x04 \x01(\x0e2A.google.cloud.dialogflow.cx.v3.SafetySettings.PhraseMatchStrategyB\x03\xe0A\x01R defaultBannedPhraseMatchStrategy\x12[\n" +
-	"\x0ebanned_phrases\x18\x01 \x03(\v24.google.cloud.dialogflow.cx.v3.SafetySettings.PhraseR\rbannedPhrases\x12a\n" +
-	"\frai_settings\x18\x02 \x01(\v29.google.cloud.dialogflow.cx.v3.SafetySettings.RaiSettingsB\x03\xe0A\x01R\vraiSettings\x12s\n" +
-	"\x14default_rai_settings\x18\x03 \x01(\v29.google.cloud.dialogflow.cx.v3.SafetySettings.RaiSettingsB\x06\xe0A\x01\xe0A\x05R\x12defaultRaiSettings\x12\x83\x01\n" +
-	"\x18prompt_security_settings\x18\b \x01(\v2D.google.cloud.dialogflow.cx.v3.SafetySettings.PromptSecuritySettingsB\x03\xe0A\x01R\x16promptSecuritySettings\x1aK\n" +
-	"\x06Phrase\x12\x17\n" +
-	"\x04text\x18\x01 \x01(\tB\x03\xe0A\x02R\x04text\x12(\n" +
-	"\rlanguage_code\x18\x02 \x01(\tB\x03\xe0A\x02R\flanguageCode\x1a\xf4\x04\n" +
-	"\vRaiSettings\x12x\n" +
-	"\x10category_filters\x18\x03 \x03(\v2H.google.cloud.dialogflow.cx.v3.SafetySettings.RaiSettings.CategoryFilterB\x03\xe0A\x01R\x0fcategoryFilters\x1a\xe6\x01\n" +
+	"3google/cloud/dialogflow/cx/v3/safety_settings.proto\x12\x1dgoogle.cloud.dialogflow.cx.v3\x1a\x1fgoogle/api/field_behavior.proto\"\xe4\v\n" +
+	"\x0eSafetySettings\x12\x97\x01\n" +
+	"$default_banned_phrase_match_strategy\x18\x04 \x01(\x0e2A.google.cloud.dialogflow.cx.v3.SafetySettings.PhraseMatchStrategyB\x04\xe2A\x01\x01R defaultBannedPhraseMatchStrategy\x12[\n" +
+	"\x0ebanned_phrases\x18\x01 \x03(\v24.google.cloud.dialogflow.cx.v3.SafetySettings.PhraseR\rbannedPhrases\x12b\n" +
+	"\frai_settings\x18\x02 \x01(\v29.google.cloud.dialogflow.cx.v3.SafetySettings.RaiSettingsB\x04\xe2A\x01\x01R\vraiSettings\x12r\n" +
+	"\x14default_rai_settings\x18\x03 \x01(\v29.google.cloud.dialogflow.cx.v3.SafetySettings.RaiSettingsB\x05\xe2A\x02\x01\x05R\x12defaultRaiSettings\x12\x84\x01\n" +
+	"\x18prompt_security_settings\x18\b \x01(\v2D.google.cloud.dialogflow.cx.v3.SafetySettings.PromptSecuritySettingsB\x04\xe2A\x01\x01R\x16promptSecuritySettings\x1aM\n" +
+	"\x06Phrase\x12\x18\n" +
+	"\x04text\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04text\x12)\n" +
+	"\rlanguage_code\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\flanguageCode\x1a\xf5\x04\n" +
+	"\vRaiSettings\x12y\n" +
+	"\x10category_filters\x18\x03 \x03(\v2H.google.cloud.dialogflow.cx.v3.SafetySettings.RaiSettings.CategoryFilterB\x04\xe2A\x01\x01R\x0fcategoryFilters\x1a\xe6\x01\n" +
 	"\x0eCategoryFilter\x12d\n" +
 	"\bcategory\x18\x01 \x01(\x0e2H.google.cloud.dialogflow.cx.v3.SafetySettings.RaiSettings.SafetyCategoryR\bcategory\x12n\n" +
 	"\ffilter_level\x18\x02 \x01(\x0e2K.google.cloud.dialogflow.cx.v3.SafetySettings.RaiSettings.SafetyFilterLevelR\vfilterLevel\"w\n" +
@@ -534,9 +534,9 @@ const file_google_cloud_dialogflow_cx_v3_safety_settings_proto_rawDesc = "" +
 	"\vHATE_SPEECH\x10\x02\x12\x0e\n" +
 	"\n" +
 	"HARASSMENT\x10\x03\x12\x1d\n" +
-	"\x19SEXUALLY_EXPLICIT_CONTENT\x10\x04\x1aS\n" +
-	"\x16PromptSecuritySettings\x129\n" +
-	"\x16enable_prompt_security\x18\x01 \x01(\bB\x03\xe0A\x01R\x14enablePromptSecurity\"_\n" +
+	"\x19SEXUALLY_EXPLICIT_CONTENT\x10\x04\x1aT\n" +
+	"\x16PromptSecuritySettings\x12:\n" +
+	"\x16enable_prompt_security\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x14enablePromptSecurity\"_\n" +
 	"\x13PhraseMatchStrategy\x12%\n" +
 	"!PHRASE_MATCH_STRATEGY_UNSPECIFIED\x10\x00\x12\x11\n" +
 	"\rPARTIAL_MATCH\x10\x01\x12\x0e\n" +

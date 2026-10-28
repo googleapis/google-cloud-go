@@ -1444,6 +1444,11 @@ func (c *repositoryManagerRESTClient) CreateConnection(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/connections", req.GetParent())
 
 	params := url.Values{}
@@ -1504,6 +1509,11 @@ func (c *repositoryManagerRESTClient) CreateConnection(ctx context.Context, req 
 func (c *repositoryManagerRESTClient) GetConnection(ctx context.Context, req *cloudbuildpb.GetConnectionRequest, opts ...gax.CallOption) (*cloudbuildpb.Connection, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -1571,6 +1581,11 @@ func (c *repositoryManagerRESTClient) ListConnections(ctx context.Context, req *
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/connections", req.GetParent())
@@ -1643,6 +1658,11 @@ func (c *repositoryManagerRESTClient) UpdateConnection(ctx context.Context, req 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetConnection().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetConnection().GetName())
@@ -1719,6 +1739,11 @@ func (c *repositoryManagerRESTClient) DeleteConnection(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -1793,6 +1818,11 @@ func (c *repositoryManagerRESTClient) CreateRepository(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/repositories", req.GetParent())
 
 	params := url.Values{}
@@ -1861,6 +1891,11 @@ func (c *repositoryManagerRESTClient) BatchCreateRepositories(ctx context.Contex
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/repositories:batchCreate", req.GetParent())
 
 	params := url.Values{}
@@ -1920,6 +1955,11 @@ func (c *repositoryManagerRESTClient) BatchCreateRepositories(ctx context.Contex
 func (c *repositoryManagerRESTClient) GetRepository(ctx context.Context, req *cloudbuildpb.GetRepositoryRequest, opts ...gax.CallOption) (*cloudbuildpb.Repository, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -1989,6 +2029,11 @@ func (c *repositoryManagerRESTClient) ListRepositories(ctx context.Context, req 
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/repositories", req.GetParent())
 
 		params := url.Values{}
@@ -2055,6 +2100,11 @@ func (c *repositoryManagerRESTClient) ListRepositories(ctx context.Context, req 
 func (c *repositoryManagerRESTClient) DeleteRepository(ctx context.Context, req *cloudbuildpb.DeleteRepositoryRequest, opts ...gax.CallOption) (*DeleteRepositoryOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -2130,6 +2180,11 @@ func (c *repositoryManagerRESTClient) FetchReadWriteToken(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetRepository(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:accessReadWriteToken", req.GetRepository())
 
 	params := url.Values{}
@@ -2188,6 +2243,11 @@ func (c *repositoryManagerRESTClient) FetchReadToken(ctx context.Context, req *c
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetRepository(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:accessReadToken", req.GetRepository())
@@ -2258,6 +2318,11 @@ func (c *repositoryManagerRESTClient) FetchLinkableRepositories(ctx context.Cont
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetConnection(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v:fetchLinkableRepositories", req.GetConnection())
 
 		params := url.Values{}
@@ -2323,6 +2388,11 @@ func (c *repositoryManagerRESTClient) FetchGitRefs(ctx context.Context, req *clo
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetRepository(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:fetchGitRefs", req.GetRepository())
 
 	params := url.Values{}
@@ -2379,6 +2449,11 @@ func (c *repositoryManagerRESTClient) FetchGitRefs(ctx context.Context, req *clo
 func (c *repositoryManagerRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:getIamPolicy", req.GetResource())
@@ -2448,6 +2523,11 @@ func (c *repositoryManagerRESTClient) SetIamPolicy(ctx context.Context, req *iam
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:setIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -2514,6 +2594,11 @@ func (c *repositoryManagerRESTClient) TestIamPermissions(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -2574,6 +2659,11 @@ func (c *repositoryManagerRESTClient) CancelOperation(ctx context.Context, req *
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -2611,6 +2701,11 @@ func (c *repositoryManagerRESTClient) CancelOperation(ctx context.Context, req *
 func (c *repositoryManagerRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())

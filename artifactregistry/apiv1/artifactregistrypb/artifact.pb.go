@@ -1293,10 +1293,10 @@ var File_google_devtools_artifactregistry_v1_artifact_proto protoreflect.FileDes
 
 const file_google_devtools_artifactregistry_v1_artifact_proto_rawDesc = "" +
 	"\n" +
-	"2google/devtools/artifactregistry/v1/artifact.proto\x12#google.devtools.artifactregistry.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xee\x04\n" +
-	"\vDockerImage\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x15\n" +
-	"\x03uri\x18\x02 \x01(\tB\x03\xe0A\x02R\x03uri\x12\x12\n" +
+	"2google/devtools/artifactregistry/v1/artifact.proto\x12#google.devtools.artifactregistry.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf2\x04\n" +
+	"\vDockerImage\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12\x16\n" +
+	"\x03uri\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x03uri\x12\x12\n" +
 	"\x04tags\x18\x03 \x03(\tR\x04tags\x12(\n" +
 	"\x10image_size_bytes\x18\x04 \x01(\x03R\x0eimageSizeBytes\x12;\n" +
 	"\vupload_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
@@ -1304,100 +1304,100 @@ const file_google_devtools_artifactregistry_v1_artifact_proto_rawDesc = "" +
 	"\n" +
 	"media_type\x18\x06 \x01(\tR\tmediaType\x129\n" +
 	"\n" +
-	"build_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tbuildTime\x12@\n" +
-	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"build_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tbuildTime\x12A\n" +
+	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12#\n" +
-	"\rartifact_type\x18\t \x01(\tR\fartifactType\x12`\n" +
-	"\x0fimage_manifests\x18\v \x03(\v22.google.devtools.artifactregistry.v1.ImageManifestB\x03\xe0A\x01R\x0eimageManifests:\x90\x01\xeaA\x8c\x01\n" +
-	"+artifactregistry.googleapis.com/DockerImage\x12]projects/{project}/locations/{location}/repositories/{repository}/dockerImages/{docker_image}\"\xf7\x01\n" +
-	"\rImageManifest\x12'\n" +
-	"\farchitecture\x18\x01 \x01(\tB\x03\xe0A\x01R\farchitecture\x12\x13\n" +
-	"\x02os\x18\x02 \x01(\tB\x03\xe0A\x01R\x02os\x12\x1b\n" +
-	"\x06digest\x18\x03 \x01(\tB\x03\xe0A\x01R\x06digest\x12\"\n" +
+	"\rartifact_type\x18\t \x01(\tR\fartifactType\x12a\n" +
+	"\x0fimage_manifests\x18\v \x03(\v22.google.devtools.artifactregistry.v1.ImageManifestB\x04\xe2A\x01\x01R\x0eimageManifests:\x90\x01\xeaA\x8c\x01\n" +
+	"+artifactregistry.googleapis.com/DockerImage\x12]projects/{project}/locations/{location}/repositories/{repository}/dockerImages/{docker_image}\"\xfe\x01\n" +
+	"\rImageManifest\x12(\n" +
+	"\farchitecture\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\farchitecture\x12\x14\n" +
+	"\x02os\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x02os\x12\x1c\n" +
+	"\x06digest\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x06digest\x12#\n" +
 	"\n" +
-	"media_type\x18\x04 \x01(\tB\x03\xe0A\x01R\tmediaType\x12\"\n" +
+	"media_type\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tmediaType\x12#\n" +
 	"\n" +
-	"os_version\x18\x05 \x01(\tB\x03\xe0A\x01R\tosVersion\x12$\n" +
-	"\vos_features\x18\x06 \x03(\tB\x03\xe0A\x01R\n" +
-	"osFeatures\x12\x1d\n" +
-	"\avariant\x18\a \x01(\tB\x03\xe0A\x01R\avariant\"\x8d\x01\n" +
-	"\x17ListDockerImagesRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12\x1b\n" +
+	"os_version\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\tosVersion\x12%\n" +
+	"\vos_features\x18\x06 \x03(\tB\x04\xe2A\x01\x01R\n" +
+	"osFeatures\x12\x1e\n" +
+	"\avariant\x18\a \x01(\tB\x04\xe2A\x01\x01R\avariant\"\x8e\x01\n" +
+	"\x17ListDockerImagesRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x19\n" +
 	"\border_by\x18\x04 \x01(\tR\aorderBy\"\x99\x01\n" +
 	"\x18ListDockerImagesResponse\x12U\n" +
 	"\rdocker_images\x18\x01 \x03(\v20.google.devtools.artifactregistry.v1.DockerImageR\fdockerImages\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"`\n" +
-	"\x15GetDockerImageRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+artifactregistry.googleapis.com/DockerImageR\x04name\"\xb9\x03\n" +
-	"\rMavenArtifact\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x1c\n" +
-	"\apom_uri\x18\x02 \x01(\tB\x03\xe0A\x02R\x06pomUri\x12\x19\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"a\n" +
+	"\x15GetDockerImageRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+artifactregistry.googleapis.com/DockerImageR\x04name\"\xbd\x03\n" +
+	"\rMavenArtifact\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12\x1d\n" +
+	"\apom_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06pomUri\x12\x19\n" +
 	"\bgroup_id\x18\x03 \x01(\tR\agroupId\x12\x1f\n" +
 	"\vartifact_id\x18\x04 \x01(\tR\n" +
 	"artifactId\x12\x18\n" +
-	"\aversion\x18\x05 \x01(\tR\aversion\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\aversion\x18\x05 \x01(\tR\aversion\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime:\x96\x01\xeaA\x92\x01\n" +
-	"-artifactregistry.googleapis.com/MavenArtifact\x12aprojects/{project}/locations/{location}/repositories/{repository}/mavenArtifacts/{maven_artifact}\"\xa6\x01\n" +
-	"\x19ListMavenArtifactsRequest\x12M\n" +
-	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\x12-artifactregistry.googleapis.com/MavenArtifactR\x06parent\x12\x1b\n" +
+	"-artifactregistry.googleapis.com/MavenArtifact\x12aprojects/{project}/locations/{location}/repositories/{repository}/mavenArtifacts/{maven_artifact}\"\xa7\x01\n" +
+	"\x19ListMavenArtifactsRequest\x12N\n" +
+	"\x06parent\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\x12-artifactregistry.googleapis.com/MavenArtifactR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xa1\x01\n" +
 	"\x1aListMavenArtifactsResponse\x12[\n" +
 	"\x0fmaven_artifacts\x18\x01 \x03(\v22.google.devtools.artifactregistry.v1.MavenArtifactR\x0emavenArtifacts\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"d\n" +
-	"\x17GetMavenArtifactRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-artifactregistry.googleapis.com/MavenArtifactR\x04name\"\x8a\x03\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"e\n" +
+	"\x17GetMavenArtifactRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-artifactregistry.googleapis.com/MavenArtifactR\x04name\"\x8d\x03\n" +
 	"\n" +
-	"NpmPackage\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12!\n" +
+	"NpmPackage\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12!\n" +
 	"\fpackage_name\x18\x03 \x01(\tR\vpackageName\x12\x18\n" +
 	"\aversion\x18\x04 \x01(\tR\aversion\x12\x12\n" +
-	"\x04tags\x18\x05 \x03(\tR\x04tags\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x04tags\x18\x05 \x03(\tR\x04tags\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime:\x8d\x01\xeaA\x89\x01\n" +
-	"*artifactregistry.googleapis.com/NpmPackage\x12[projects/{project}/locations/{location}/repositories/{repository}/npmPackages/{npm_package}\"\xa0\x01\n" +
-	"\x16ListNpmPackagesRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*artifactregistry.googleapis.com/NpmPackageR\x06parent\x12\x1b\n" +
+	"*artifactregistry.googleapis.com/NpmPackage\x12[projects/{project}/locations/{location}/repositories/{repository}/npmPackages/{npm_package}\"\xa1\x01\n" +
+	"\x16ListNpmPackagesRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*artifactregistry.googleapis.com/NpmPackageR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x95\x01\n" +
 	"\x17ListNpmPackagesResponse\x12R\n" +
 	"\fnpm_packages\x18\x01 \x03(\v2/.google.devtools.artifactregistry.v1.NpmPackageR\vnpmPackages\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"^\n" +
-	"\x14GetNpmPackageRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*artifactregistry.googleapis.com/NpmPackageR\x04name\"\x99\x03\n" +
-	"\rPythonPackage\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x15\n" +
-	"\x03uri\x18\x02 \x01(\tB\x03\xe0A\x02R\x03uri\x12!\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"_\n" +
+	"\x14GetNpmPackageRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*artifactregistry.googleapis.com/NpmPackageR\x04name\"\x9d\x03\n" +
+	"\rPythonPackage\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12\x16\n" +
+	"\x03uri\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x03uri\x12!\n" +
 	"\fpackage_name\x18\x03 \x01(\tR\vpackageName\x12\x18\n" +
-	"\aversion\x18\x04 \x01(\tR\aversion\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\aversion\x18\x04 \x01(\tR\aversion\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime:\x96\x01\xeaA\x92\x01\n" +
-	"-artifactregistry.googleapis.com/PythonPackage\x12aprojects/{project}/locations/{location}/repositories/{repository}/pythonPackages/{python_package}\"\xa6\x01\n" +
-	"\x19ListPythonPackagesRequest\x12M\n" +
-	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\x12-artifactregistry.googleapis.com/PythonPackageR\x06parent\x12\x1b\n" +
+	"-artifactregistry.googleapis.com/PythonPackage\x12aprojects/{project}/locations/{location}/repositories/{repository}/pythonPackages/{python_package}\"\xa7\x01\n" +
+	"\x19ListPythonPackagesRequest\x12N\n" +
+	"\x06parent\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\x12-artifactregistry.googleapis.com/PythonPackageR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xa1\x01\n" +
 	"\x1aListPythonPackagesResponse\x12[\n" +
 	"\x0fpython_packages\x18\x01 \x03(\v22.google.devtools.artifactregistry.v1.PythonPackageR\x0epythonPackages\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"d\n" +
-	"\x17GetPythonPackageRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"e\n" +
+	"\x17GetPythonPackageRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
 	"-artifactregistry.googleapis.com/PythonPackageR\x04nameB\xf8\x01\n" +
 	"'com.google.devtools.artifactregistry.v1B\rArtifactProtoP\x01ZPcloud.google.com/go/artifactregistry/apiv1/artifactregistrypb;artifactregistrypb\xaa\x02 Google.Cloud.ArtifactRegistry.V1\xca\x02 Google\\Cloud\\ArtifactRegistry\\V1\xea\x02#Google::Cloud::ArtifactRegistry::V1b\x06proto3"
 

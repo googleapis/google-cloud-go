@@ -2336,13 +2336,13 @@ var File_google_maps_solar_v1_solar_service_proto protoreflect.FileDescriptor
 
 const file_google_maps_solar_v1_solar_service_proto_rawDesc = "" +
 	"\n" +
-	"(google/maps/solar/v1/solar_service.proto\x12\x14google.maps.solar.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/httpbody.proto\x1a\x16google/type/date.proto\x1a\x18google/type/latlng.proto\x1a\x17google/type/money.proto\"\x94\x03\n" +
-	"\"FindClosestBuildingInsightsRequest\x124\n" +
-	"\blocation\x18\x01 \x01(\v2\x13.google.type.LatLngB\x03\xe0A\x02R\blocation\x12T\n" +
-	"\x10required_quality\x18\x03 \x01(\x0e2$.google.maps.solar.v1.ImageryQualityB\x03\xe0A\x01R\x0frequiredQuality\x129\n" +
-	"\x16exact_quality_required\x18\x04 \x01(\bB\x03\xe0A\x01R\x14exactQualityRequired\x12G\n" +
-	"\vexperiments\x18\x05 \x03(\x0e2 .google.maps.solar.v1.ExperimentB\x03\xe0A\x01R\vexperiments\x12^\n" +
-	"\x13additional_insights\x18\x06 \x03(\x0e2(.google.maps.solar.v1.AdditionalInsightsB\x03\xe0A\x01R\x12additionalInsights\"U\n" +
+	"(google/maps/solar/v1/solar_service.proto\x12\x14google.maps.solar.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/httpbody.proto\x1a\x16google/type/date.proto\x1a\x18google/type/latlng.proto\x1a\x17google/type/money.proto\"\x99\x03\n" +
+	"\"FindClosestBuildingInsightsRequest\x125\n" +
+	"\blocation\x18\x01 \x01(\v2\x13.google.type.LatLngB\x04\xe2A\x01\x02R\blocation\x12U\n" +
+	"\x10required_quality\x18\x03 \x01(\x0e2$.google.maps.solar.v1.ImageryQualityB\x04\xe2A\x01\x01R\x0frequiredQuality\x12:\n" +
+	"\x16exact_quality_required\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x14exactQualityRequired\x12H\n" +
+	"\vexperiments\x18\x05 \x03(\x0e2 .google.maps.solar.v1.ExperimentB\x04\xe2A\x01\x01R\vexperiments\x12_\n" +
+	"\x13additional_insights\x18\x06 \x03(\x0e2(.google.maps.solar.v1.AdditionalInsightsB\x04\xe2A\x01\x01R\x12additionalInsights\"U\n" +
 	"\tLatLngBox\x12#\n" +
 	"\x02sw\x18\x01 \x01(\v2\x13.google.type.LatLngR\x02sw\x12#\n" +
 	"\x02ne\x18\x02 \x01(\v2\x13.google.type.LatLngR\x02ne\"\xa6\b\n" +
@@ -2468,15 +2468,15 @@ const file_google_maps_solar_v1_solar_service_proto_rawDesc = "" +
 	"\x13annual_loan_payment\x18\x01 \x01(\v2\x12.google.type.MoneyR\x11annualLoanPayment\x125\n" +
 	"\frebate_value\x18\x02 \x01(\v2\x12.google.type.MoneyR\vrebateValue\x12,\n" +
 	"\x12loan_interest_rate\x18\x03 \x01(\x02R\x10loanInterestRate\x12?\n" +
-	"\asavings\x18\x04 \x01(\v2%.google.maps.solar.v1.SavingsOverTimeR\asavings\"\xbf\x03\n" +
-	"\x14GetDataLayersRequest\x124\n" +
-	"\blocation\x18\x01 \x01(\v2\x13.google.type.LatLngB\x03\xe0A\x02R\blocation\x12(\n" +
-	"\rradius_meters\x18\x02 \x01(\x02B\x03\xe0A\x02R\fradiusMeters\x12<\n" +
-	"\x04view\x18\x03 \x01(\x0e2#.google.maps.solar.v1.DataLayerViewB\x03\xe0A\x01R\x04view\x12T\n" +
-	"\x10required_quality\x18\x05 \x01(\x0e2$.google.maps.solar.v1.ImageryQualityB\x03\xe0A\x01R\x0frequiredQuality\x12/\n" +
-	"\x11pixel_size_meters\x18\x06 \x01(\x02B\x03\xe0A\x01R\x0fpixelSizeMeters\x129\n" +
-	"\x16exact_quality_required\x18\a \x01(\bB\x03\xe0A\x01R\x14exactQualityRequired\x12G\n" +
-	"\vexperiments\x18\b \x03(\x0e2 .google.maps.solar.v1.ExperimentB\x03\xe0A\x01R\vexperiments\"\xa5\x03\n" +
+	"\asavings\x18\x04 \x01(\v2%.google.maps.solar.v1.SavingsOverTimeR\asavings\"\xc6\x03\n" +
+	"\x14GetDataLayersRequest\x125\n" +
+	"\blocation\x18\x01 \x01(\v2\x13.google.type.LatLngB\x04\xe2A\x01\x02R\blocation\x12)\n" +
+	"\rradius_meters\x18\x02 \x01(\x02B\x04\xe2A\x01\x02R\fradiusMeters\x12=\n" +
+	"\x04view\x18\x03 \x01(\x0e2#.google.maps.solar.v1.DataLayerViewB\x04\xe2A\x01\x01R\x04view\x12U\n" +
+	"\x10required_quality\x18\x05 \x01(\x0e2$.google.maps.solar.v1.ImageryQualityB\x04\xe2A\x01\x01R\x0frequiredQuality\x120\n" +
+	"\x11pixel_size_meters\x18\x06 \x01(\x02B\x04\xe2A\x01\x01R\x0fpixelSizeMeters\x12:\n" +
+	"\x16exact_quality_required\x18\a \x01(\bB\x04\xe2A\x01\x01R\x14exactQualityRequired\x12H\n" +
+	"\vexperiments\x18\b \x03(\x0e2 .google.maps.solar.v1.ExperimentB\x04\xe2A\x01\x01R\vexperiments\"\xa5\x03\n" +
 	"\n" +
 	"DataLayers\x124\n" +
 	"\fimagery_date\x18\x01 \x01(\v2\x11.google.type.DateR\vimageryDate\x12G\n" +
@@ -2487,9 +2487,9 @@ const file_google_maps_solar_v1_solar_service_proto_rawDesc = "" +
 	"\x0fannual_flux_url\x18\x06 \x01(\tR\rannualFluxUrl\x12(\n" +
 	"\x10monthly_flux_url\x18\a \x01(\tR\x0emonthlyFluxUrl\x12*\n" +
 	"\x11hourly_shade_urls\x18\b \x03(\tR\x0fhourlyShadeUrls\x12M\n" +
-	"\x0fimagery_quality\x18\t \x01(\x0e2$.google.maps.solar.v1.ImageryQualityR\x0eimageryQuality\"(\n" +
-	"\x11GetGeoTiffRequest\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id*N\n" +
+	"\x0fimagery_quality\x18\t \x01(\x0e2$.google.maps.solar.v1.ImageryQualityR\x0eimageryQuality\")\n" +
+	"\x11GetGeoTiffRequest\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x02id*N\n" +
 	"\x12AdditionalInsights\x12#\n" +
 	"\x1fADDITIONAL_INSIGHTS_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fDETECTED_ARRAYS\x10\x02*\xa9\x01\n" +

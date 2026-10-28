@@ -508,6 +508,11 @@ func (c *caseAttachmentRESTClient) ListAttachments(ctx context.Context, req *sup
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/attachments", req.GetParent())
 
 		params := url.Values{}
@@ -577,6 +582,11 @@ func (c *caseAttachmentRESTClient) ListAttachments(ctx context.Context, req *sup
 func (c *caseAttachmentRESTClient) GetAttachment(ctx context.Context, req *supportpb.GetAttachmentRequest, opts ...gax.CallOption) (*supportpb.Attachment, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())

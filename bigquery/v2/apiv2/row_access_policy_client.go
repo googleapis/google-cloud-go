@@ -802,6 +802,13 @@ func (c *rowAccessPolicyRESTClient) ListRowAccessPolicies(ctx context.Context, r
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProjectId(),
+			req.GetDatasetId(),
+			req.GetTableId(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/datasets/%v/tables/%v/rowAccessPolicies", req.GetProjectId(), req.GetDatasetId(), req.GetTableId())
 
 		params := url.Values{}
@@ -868,6 +875,14 @@ func (c *rowAccessPolicyRESTClient) GetRowAccessPolicy(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetDatasetId(),
+		req.GetTableId(),
+		req.GetPolicyId(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/datasets/%v/tables/%v/rowAccessPolicies/%v", req.GetProjectId(), req.GetDatasetId(), req.GetTableId(), req.GetPolicyId())
 
 	// Build HTTP headers from client and context metadata.
@@ -930,6 +945,13 @@ func (c *rowAccessPolicyRESTClient) CreateRowAccessPolicy(ctx context.Context, r
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetDatasetId(),
+		req.GetTableId(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/datasets/%v/tables/%v/rowAccessPolicies", req.GetProjectId(), req.GetDatasetId(), req.GetTableId())
@@ -996,6 +1018,14 @@ func (c *rowAccessPolicyRESTClient) UpdateRowAccessPolicy(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetDatasetId(),
+		req.GetTableId(),
+		req.GetPolicyId(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/datasets/%v/tables/%v/rowAccessPolicies/%v", req.GetProjectId(), req.GetDatasetId(), req.GetTableId(), req.GetPolicyId())
 
 	// Build HTTP headers from client and context metadata.
@@ -1051,6 +1081,14 @@ func (c *rowAccessPolicyRESTClient) DeleteRowAccessPolicy(ctx context.Context, r
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetDatasetId(),
+		req.GetTableId(),
+		req.GetPolicyId(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/datasets/%v/tables/%v/rowAccessPolicies/%v", req.GetProjectId(), req.GetDatasetId(), req.GetTableId(), req.GetPolicyId())
 
 	params := url.Values{}
@@ -1102,6 +1140,13 @@ func (c *rowAccessPolicyRESTClient) BatchDeleteRowAccessPolicies(ctx context.Con
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetDatasetId(),
+		req.GetTableId(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/datasets/%v/tables/%v/rowAccessPolicies:batchDelete", req.GetProjectId(), req.GetDatasetId(), req.GetTableId())

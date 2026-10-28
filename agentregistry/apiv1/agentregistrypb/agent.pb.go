@@ -519,46 +519,46 @@ var File_google_cloud_agentregistry_v1_agent_proto protoreflect.FileDescriptor
 
 const file_google_cloud_agentregistry_v1_agent_proto_rawDesc = "" +
 	"\n" +
-	")google/cloud/agentregistry/v1/agent.proto\x12\x1dgoogle.cloud.agentregistry.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a.google/cloud/agentregistry/v1/properties.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdb\v\n" +
-	"\x05Agent\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1e\n" +
-	"\bagent_id\x18\x02 \x01(\tB\x03\xe0A\x03R\aagentId\x12\x1f\n" +
-	"\blocation\x18\x04 \x01(\tB\x03\xe0A\x03R\blocation\x12&\n" +
-	"\fdisplay_name\x18\x05 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x06 \x01(\tB\x03\xe0A\x03R\vdescription\x12\x1d\n" +
-	"\aversion\x18\a \x01(\tB\x03\xe0A\x03R\aversion\x12P\n" +
-	"\tprotocols\x18\b \x03(\v2-.google.cloud.agentregistry.v1.Agent.ProtocolB\x03\xe0A\x03R\tprotocols\x12G\n" +
-	"\x06skills\x18\t \x03(\v2*.google.cloud.agentregistry.v1.Agent.SkillB\x03\xe0A\x03R\x06skills\x12\x1d\n" +
+	")google/cloud/agentregistry/v1/agent.proto\x12\x1dgoogle.cloud.agentregistry.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a.google/cloud/agentregistry/v1/properties.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf2\v\n" +
+	"\x05Agent\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x1f\n" +
+	"\bagent_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\aagentId\x12 \n" +
+	"\blocation\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\blocation\x12'\n" +
+	"\fdisplay_name\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\vdescription\x12\x1e\n" +
+	"\aversion\x18\a \x01(\tB\x04\xe2A\x01\x03R\aversion\x12Q\n" +
+	"\tprotocols\x18\b \x03(\v2-.google.cloud.agentregistry.v1.Agent.ProtocolB\x04\xe2A\x01\x03R\tprotocols\x12H\n" +
+	"\x06skills\x18\t \x03(\v2*.google.cloud.agentregistry.v1.Agent.SkillB\x04\xe2A\x01\x03R\x06skills\x12\x1e\n" +
 	"\x03uid\x18\n" +
-	" \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12@\n" +
-	"\vcreate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12Y\n" +
+	" \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12A\n" +
+	"\vcreate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12Z\n" +
 	"\n" +
-	"attributes\x18\r \x03(\v24.google.cloud.agentregistry.v1.Agent.AttributesEntryB\x03\xe0A\x03R\n" +
-	"attributes\x12B\n" +
-	"\x04card\x18\x0e \x01(\v2).google.cloud.agentregistry.v1.Agent.CardB\x03\xe0A\x03R\x04card\x1a\x8f\x02\n" +
-	"\bProtocol\x12K\n" +
-	"\x04type\x18\x01 \x01(\x0e22.google.cloud.agentregistry.v1.Agent.Protocol.TypeB\x03\xe0A\x03R\x04type\x12.\n" +
-	"\x10protocol_version\x18\x02 \x01(\tB\x03\xe0A\x03R\x0fprotocolVersion\x12M\n" +
+	"attributes\x18\r \x03(\v24.google.cloud.agentregistry.v1.Agent.AttributesEntryB\x04\xe2A\x01\x03R\n" +
+	"attributes\x12C\n" +
+	"\x04card\x18\x0e \x01(\v2).google.cloud.agentregistry.v1.Agent.CardB\x04\xe2A\x01\x03R\x04card\x1a\x92\x02\n" +
+	"\bProtocol\x12L\n" +
+	"\x04type\x18\x01 \x01(\x0e22.google.cloud.agentregistry.v1.Agent.Protocol.TypeB\x04\xe2A\x01\x03R\x04type\x12/\n" +
+	"\x10protocol_version\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x0fprotocolVersion\x12N\n" +
 	"\n" +
-	"interfaces\x18\x03 \x03(\v2(.google.cloud.agentregistry.v1.InterfaceB\x03\xe0A\x03R\n" +
+	"interfaces\x18\x03 \x03(\v2(.google.cloud.agentregistry.v1.InterfaceB\x04\xe2A\x01\x03R\n" +
 	"interfaces\"7\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tA2A_AGENT\x10\x01\x12\n" +
 	"\n" +
-	"\x06CUSTOM\x10\x02\x1a\x96\x01\n" +
-	"\x05Skill\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x03R\x02id\x12\x17\n" +
-	"\x04name\x18\x02 \x01(\tB\x03\xe0A\x03R\x04name\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x03R\vdescription\x12\x17\n" +
-	"\x04tags\x18\x04 \x03(\tB\x03\xe0A\x03R\x04tags\x12\x1f\n" +
-	"\bexamples\x18\x05 \x03(\tB\x03\xe0A\x03R\bexamples\x1a\xb9\x01\n" +
-	"\x04Card\x12G\n" +
-	"\x04type\x18\x01 \x01(\x0e2..google.cloud.agentregistry.v1.Agent.Card.TypeB\x03\xe0A\x03R\x04type\x126\n" +
-	"\acontent\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x03R\acontent\"0\n" +
+	"\x06CUSTOM\x10\x02\x1a\x9b\x01\n" +
+	"\x05Skill\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x02id\x12\x18\n" +
+	"\x04name\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\vdescription\x12\x18\n" +
+	"\x04tags\x18\x04 \x03(\tB\x04\xe2A\x01\x03R\x04tags\x12 \n" +
+	"\bexamples\x18\x05 \x03(\tB\x04\xe2A\x01\x03R\bexamples\x1a\xbb\x01\n" +
+	"\x04Card\x12H\n" +
+	"\x04type\x18\x01 \x01(\x0e2..google.cloud.agentregistry.v1.Agent.Card.TypeB\x04\xe2A\x01\x03R\x04type\x127\n" +
+	"\acontent\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x03R\acontent\"0\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eA2A_AGENT_CARD\x10\x01\x1aV\n" +

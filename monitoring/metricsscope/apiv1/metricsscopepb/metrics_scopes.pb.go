@@ -425,20 +425,20 @@ var File_google_monitoring_metricsscope_v1_metrics_scopes_proto protoreflect.Fil
 
 const file_google_monitoring_metricsscope_v1_metrics_scopes_proto_rawDesc = "" +
 	"\n" +
-	"6google/monitoring/metricsscope/v1/metrics_scopes.proto\x12!google.monitoring.metricsscope.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a5google/monitoring/metricsscope/v1/metrics_scope.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\\\n" +
-	"\x16GetMetricsScopeRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&monitoring.googleapis.com/MetricsScopeR\x04name\"s\n" +
-	"*ListMetricsScopesByMonitoredProjectRequest\x12E\n" +
-	"\x1cmonitored_resource_container\x18\x01 \x01(\tB\x03\xe0A\x02R\x1amonitoredResourceContainer\"\x85\x01\n" +
+	"6google/monitoring/metricsscope/v1/metrics_scopes.proto\x12!google.monitoring.metricsscope.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a5google/monitoring/metricsscope/v1/metrics_scope.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"]\n" +
+	"\x16GetMetricsScopeRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&monitoring.googleapis.com/MetricsScopeR\x04name\"t\n" +
+	"*ListMetricsScopesByMonitoredProjectRequest\x12F\n" +
+	"\x1cmonitored_resource_container\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x1amonitoredResourceContainer\"\x85\x01\n" +
 	"+ListMetricsScopesByMonitoredProjectResponse\x12V\n" +
-	"\x0emetrics_scopes\x18\x01 \x03(\v2/.google.monitoring.metricsscope.v1.MetricsScopeR\rmetricsScopes\"\xce\x01\n" +
-	"\x1dCreateMonitoredProjectRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&monitoring.googleapis.com/MetricsScopeR\x06parent\x12e\n" +
-	"\x11monitored_project\x18\x02 \x01(\v23.google.monitoring.metricsscope.v1.MonitoredProjectB\x03\xe0A\x02R\x10monitoredProject\"g\n" +
-	"\x1dDeleteMonitoredProjectRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
+	"\x0emetrics_scopes\x18\x01 \x03(\v2/.google.monitoring.metricsscope.v1.MetricsScopeR\rmetricsScopes\"\xd0\x01\n" +
+	"\x1dCreateMonitoredProjectRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&monitoring.googleapis.com/MetricsScopeR\x06parent\x12f\n" +
+	"\x11monitored_project\x18\x02 \x01(\v23.google.monitoring.metricsscope.v1.MonitoredProjectB\x04\xe2A\x01\x02R\x10monitoredProject\"h\n" +
+	"\x1dDeleteMonitoredProjectRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
 	"*monitoring.googleapis.com/MonitoredProjectR\x04name\"\xb2\x02\n" +
 	"\x11OperationMetadata\x12P\n" +
 	"\x05state\x18\x01 \x01(\x0e2:.google.monitoring.metricsscope.v1.OperationMetadata.StateR\x05state\x12;\n" +

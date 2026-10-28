@@ -349,16 +349,16 @@ var File_google_cloud_discoveryengine_v1alpha_chunk_proto protoreflect.FileDescr
 
 const file_google_cloud_discoveryengine_v1alpha_chunk_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/discoveryengine/v1alpha/chunk.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xa6\t\n" +
+	"0google/cloud/discoveryengine/v1alpha/chunk.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xa9\t\n" +
 	"\x05Chunk\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x0e\n" +
 	"\x02id\x18\x02 \x01(\tR\x02id\x12\x18\n" +
-	"\acontent\x18\x03 \x01(\tR\acontent\x121\n" +
-	"\x0frelevance_score\x18\b \x01(\x01B\x03\xe0A\x03H\x00R\x0erelevanceScore\x88\x01\x01\x12i\n" +
-	"\x11document_metadata\x18\x05 \x01(\v2<.google.cloud.discoveryengine.v1alpha.Chunk.DocumentMetadataR\x10documentMetadata\x12L\n" +
-	"\x13derived_struct_data\x18\x04 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x03R\x11derivedStructData\x12Q\n" +
-	"\tpage_span\x18\x06 \x01(\v24.google.cloud.discoveryengine.v1alpha.Chunk.PageSpanR\bpageSpan\x12e\n" +
-	"\x0echunk_metadata\x18\a \x01(\v29.google.cloud.discoveryengine.v1alpha.Chunk.ChunkMetadataB\x03\xe0A\x03R\rchunkMetadata\x1at\n" +
+	"\acontent\x18\x03 \x01(\tR\acontent\x122\n" +
+	"\x0frelevance_score\x18\b \x01(\x01B\x04\xe2A\x01\x03H\x00R\x0erelevanceScore\x88\x01\x01\x12i\n" +
+	"\x11document_metadata\x18\x05 \x01(\v2<.google.cloud.discoveryengine.v1alpha.Chunk.DocumentMetadataR\x10documentMetadata\x12M\n" +
+	"\x13derived_struct_data\x18\x04 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x03R\x11derivedStructData\x12Q\n" +
+	"\tpage_span\x18\x06 \x01(\v24.google.cloud.discoveryengine.v1alpha.Chunk.PageSpanR\bpageSpan\x12f\n" +
+	"\x0echunk_metadata\x18\a \x01(\v29.google.cloud.discoveryengine.v1alpha.Chunk.ChunkMetadataB\x04\xe2A\x01\x03R\rchunkMetadata\x1at\n" +
 	"\x10DocumentMetadata\x12\x10\n" +
 	"\x03uri\x18\x01 \x01(\tR\x03uri\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x128\n" +

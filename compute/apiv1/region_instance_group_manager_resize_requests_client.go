@@ -335,6 +335,14 @@ func (c *regionInstanceGroupManagerResizeRequestsRESTClient) Cancel(ctx context.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetInstanceGroupManager(),
+		req.GetResizeRequest(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers/%v/resizeRequests/%v/cancel", req.GetProject(), req.GetRegion(), req.GetInstanceGroupManager(), req.GetResizeRequest())
 
 	params := url.Values{}
@@ -401,6 +409,14 @@ func (c *regionInstanceGroupManagerResizeRequestsRESTClient) Delete(ctx context.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetInstanceGroupManager(),
+		req.GetResizeRequest(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers/%v/resizeRequests/%v", req.GetProject(), req.GetRegion(), req.GetInstanceGroupManager(), req.GetResizeRequest())
 
 	params := url.Values{}
@@ -465,6 +481,14 @@ func (c *regionInstanceGroupManagerResizeRequestsRESTClient) Get(ctx context.Con
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetInstanceGroupManager(),
+		req.GetResizeRequest(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers/%v/resizeRequests/%v", req.GetProject(), req.GetRegion(), req.GetInstanceGroupManager(), req.GetResizeRequest())
 
 	// Build HTTP headers from client and context metadata.
@@ -520,6 +544,13 @@ func (c *regionInstanceGroupManagerResizeRequestsRESTClient) Insert(ctx context.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetInstanceGroupManager(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers/%v/resizeRequests", req.GetProject(), req.GetRegion(), req.GetInstanceGroupManager())
@@ -598,6 +629,13 @@ func (c *regionInstanceGroupManagerResizeRequestsRESTClient) List(ctx context.Co
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+			req.GetInstanceGroupManager(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers/%v/resizeRequests", req.GetProject(), req.GetRegion(), req.GetInstanceGroupManager())

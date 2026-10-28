@@ -1494,6 +1494,11 @@ func (c *streetViewPublishRESTClient) GetPhoto(ctx context.Context, req *publish
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetPhotoId(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/photo/%v", req.GetPhotoId())
 
 	params := url.Values{}
@@ -1745,6 +1750,11 @@ func (c *streetViewPublishRESTClient) UpdatePhoto(ctx context.Context, req *publ
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetPhoto().GetPhotoId().GetId(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/photo/%v", req.GetPhoto().GetPhotoId().GetId())
 
 	params := url.Values{}
@@ -1901,6 +1911,11 @@ func (c *streetViewPublishRESTClient) BatchUpdatePhotos(ctx context.Context, req
 func (c *streetViewPublishRESTClient) DeletePhoto(ctx context.Context, req *publishpb.DeletePhotoRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetPhotoId(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/photo/%v", req.GetPhotoId())
@@ -2188,6 +2203,11 @@ func (c *streetViewPublishRESTClient) GetPhotoSequence(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSequenceId(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/photoSequence/%v", req.GetSequenceId())
 
 	params := url.Values{}
@@ -2347,6 +2367,11 @@ func (c *streetViewPublishRESTClient) ListPhotoSequences(ctx context.Context, re
 func (c *streetViewPublishRESTClient) DeletePhotoSequence(ctx context.Context, req *publishpb.DeletePhotoSequenceRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSequenceId(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/photoSequence/%v", req.GetSequenceId())

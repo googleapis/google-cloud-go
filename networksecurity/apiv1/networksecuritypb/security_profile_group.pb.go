@@ -443,46 +443,46 @@ var File_google_cloud_networksecurity_v1_security_profile_group_proto protorefle
 
 const file_google_cloud_networksecurity_v1_security_profile_group_proto_rawDesc = "" +
 	"\n" +
-	"<google/cloud/networksecurity/v1/security_profile_group.proto\x12\x1fgoogle.cloud.networksecurity.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1aFgoogle/cloud/networksecurity/v1/security_profile_group_intercept.proto\x1aFgoogle/cloud/networksecurity/v1/security_profile_group_mirroring.proto\x1aMgoogle/cloud/networksecurity/v1/security_profile_group_threatprevention.proto\x1aIgoogle/cloud/networksecurity/v1/security_profile_group_urlfiltering.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf2\b\n" +
-	"\x14SecurityProfileGroup\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x05\xe0A\bR\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x17\n" +
-	"\x04etag\x18\x05 \x01(\tB\x03\xe0A\x03R\x04etag\x12%\n" +
-	"\fdata_path_id\x18\f \x01(\x04B\x03\xe0A\x03R\n" +
-	"dataPathId\x12^\n" +
-	"\x06labels\x18\a \x03(\v2A.google.cloud.networksecurity.v1.SecurityProfileGroup.LabelsEntryB\x03\xe0A\x01R\x06labels\x12r\n" +
-	"\x19threat_prevention_profile\x18\x06 \x01(\tB6\xe0A\x01\xfaA0\n" +
-	".networksecurity.googleapis.com/SecurityProfileR\x17threatPreventionProfile\x12p\n" +
-	"\x18custom_mirroring_profile\x18\b \x01(\tB6\xe0A\x01\xfaA0\n" +
-	".networksecurity.googleapis.com/SecurityProfileR\x16customMirroringProfile\x12p\n" +
-	"\x18custom_intercept_profile\x18\t \x01(\tB6\xe0A\x01\xfaA0\n" +
-	".networksecurity.googleapis.com/SecurityProfileR\x16customInterceptProfile\x12j\n" +
-	"\x15url_filtering_profile\x18\v \x01(\tB6\xe0A\x01\xfaA0\n" +
+	"<google/cloud/networksecurity/v1/security_profile_group.proto\x12\x1fgoogle.cloud.networksecurity.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1aFgoogle/cloud/networksecurity/v1/security_profile_group_intercept.proto\x1aFgoogle/cloud/networksecurity/v1/security_profile_group_mirroring.proto\x1aMgoogle/cloud/networksecurity/v1/security_profile_group_threatprevention.proto\x1aIgoogle/cloud/networksecurity/v1/security_profile_group_urlfiltering.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfb\b\n" +
+	"\x14SecurityProfileGroup\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x05\bR\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x18\n" +
+	"\x04etag\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x04etag\x12&\n" +
+	"\fdata_path_id\x18\f \x01(\x04B\x04\xe2A\x01\x03R\n" +
+	"dataPathId\x12_\n" +
+	"\x06labels\x18\a \x03(\v2A.google.cloud.networksecurity.v1.SecurityProfileGroup.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12s\n" +
+	"\x19threat_prevention_profile\x18\x06 \x01(\tB7\xe2A\x01\x01\xfaA0\n" +
+	".networksecurity.googleapis.com/SecurityProfileR\x17threatPreventionProfile\x12q\n" +
+	"\x18custom_mirroring_profile\x18\b \x01(\tB7\xe2A\x01\x01\xfaA0\n" +
+	".networksecurity.googleapis.com/SecurityProfileR\x16customMirroringProfile\x12q\n" +
+	"\x18custom_intercept_profile\x18\t \x01(\tB7\xe2A\x01\x01\xfaA0\n" +
+	".networksecurity.googleapis.com/SecurityProfileR\x16customInterceptProfile\x12k\n" +
+	"\x15url_filtering_profile\x18\v \x01(\tB7\xe2A\x01\x01\xfaA0\n" +
 	".networksecurity.googleapis.com/SecurityProfileR\x13urlFilteringProfile\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\xf3\x01\xeaA\xef\x01\n" +
-	"3networksecurity.googleapis.com/SecurityProfileGroup\x12`organizations/{organization}/locations/{location}/securityProfileGroups/{security_profile_group}\x12Vprojects/{project}/locations/{location}/securityProfileGroups/{security_profile_group}\"\x96\n" +
+	"3networksecurity.googleapis.com/SecurityProfileGroup\x12`organizations/{organization}/locations/{location}/securityProfileGroups/{security_profile_group}\x12Vprojects/{project}/locations/{location}/securityProfileGroups/{security_profile_group}\"\x9b\n" +
 	"\n" +
 	"\x0fSecurityProfile\x12v\n" +
 	"\x19threat_prevention_profile\x18\a \x01(\v28.google.cloud.networksecurity.v1.ThreatPreventionProfileH\x00R\x17threatPreventionProfile\x12s\n" +
 	"\x18custom_mirroring_profile\x18\t \x01(\v27.google.cloud.networksecurity.v1.CustomMirroringProfileH\x00R\x16customMirroringProfile\x12s\n" +
 	"\x18custom_intercept_profile\x18\n" +
 	" \x01(\v27.google.cloud.networksecurity.v1.CustomInterceptProfileH\x00R\x16customInterceptProfile\x12j\n" +
-	"\x15url_filtering_profile\x18\f \x01(\v24.google.cloud.networksecurity.v1.UrlFilteringProfileH\x00R\x13urlFilteringProfile\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x05\xe0A\bR\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x17\n" +
-	"\x04etag\x18\x05 \x01(\tB\x03\xe0A\x03R\x04etag\x12Y\n" +
-	"\x06labels\x18\b \x03(\v2<.google.cloud.networksecurity.v1.SecurityProfile.LabelsEntryB\x03\xe0A\x01R\x06labels\x12U\n" +
-	"\x04type\x18\x06 \x01(\x0e2<.google.cloud.networksecurity.v1.SecurityProfile.ProfileTypeB\x03\xe0A\x05R\x04type\x1a9\n" +
+	"\x15url_filtering_profile\x18\f \x01(\v24.google.cloud.networksecurity.v1.UrlFilteringProfileH\x00R\x13urlFilteringProfile\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x05\bR\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x18\n" +
+	"\x04etag\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x04etag\x12Z\n" +
+	"\x06labels\x18\b \x03(\v2<.google.cloud.networksecurity.v1.SecurityProfile.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12V\n" +
+	"\x04type\x18\x06 \x01(\x0e2<.google.cloud.networksecurity.v1.SecurityProfile.ProfileTypeB\x04\xe2A\x01\x05R\x04type\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x81\x01\n" +

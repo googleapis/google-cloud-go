@@ -147,16 +147,16 @@ var File_google_cloud_cloudcontrolspartner_v1beta_core_proto protoreflect.FileDe
 
 const file_google_cloud_cloudcontrolspartner_v1beta_core_proto_rawDesc = "" +
 	"\n" +
-	"3google/cloud/cloudcontrolspartner/v1beta/core.proto\x12(google.cloud.cloudcontrolspartner.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1aGgoogle/cloud/cloudcontrolspartner/v1beta/access_approval_requests.proto\x1aAgoogle/cloud/cloudcontrolspartner/v1beta/customer_workloads.proto\x1a8google/cloud/cloudcontrolspartner/v1beta/customers.proto\x1a>google/cloud/cloudcontrolspartner/v1beta/ekm_connections.proto\x1aBgoogle/cloud/cloudcontrolspartner/v1beta/partner_permissions.proto\x1a7google/cloud/cloudcontrolspartner/v1beta/partners.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd5\x02\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
+	"3google/cloud/cloudcontrolspartner/v1beta/core.proto\x12(google.cloud.cloudcontrolspartner.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1aGgoogle/cloud/cloudcontrolspartner/v1beta/access_approval_requests.proto\x1aAgoogle/cloud/cloudcontrolspartner/v1beta/customer_workloads.proto\x1a8google/cloud/cloudcontrolspartner/v1beta/customers.proto\x1a>google/cloud/cloudcontrolspartner/v1beta/ekm_connections.proto\x1aBgoogle/cloud/cloudcontrolspartner/v1beta/partner_permissions.proto\x1a7google/cloud/cloudcontrolspartner/v1beta/partners.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdc\x02\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
 	"apiVersion2\xd3\x14\n" +
 	"\x18CloudControlsPartnerCore\x12\xd2\x01\n" +
 	"\vGetWorkload\x12<.google.cloud.cloudcontrolspartner.v1beta.GetWorkloadRequest\x1a2.google.cloud.cloudcontrolspartner.v1beta.Workload\"Q\xdaA\x04name\x82\xd3\xe4\x93\x02D\x12B/v1beta/{name=organizations/*/locations/*/customers/*/workloads/*}\x12\xe5\x01\n" +

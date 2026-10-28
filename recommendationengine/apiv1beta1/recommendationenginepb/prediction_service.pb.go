@@ -381,19 +381,19 @@ var File_google_cloud_recommendationengine_v1beta1_prediction_service_proto prot
 
 const file_google_cloud_recommendationengine_v1beta1_prediction_service_proto_rawDesc = "" +
 	"\n" +
-	"Bgoogle/cloud/recommendationengine/v1beta1/prediction_service.proto\x12)google.cloud.recommendationengine.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a:google/cloud/recommendationengine/v1beta1/user_event.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x17google/api/client.proto\"\x8c\x05\n" +
-	"\x0ePredictRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-recommendationengine.googleapis.com/PlacementR\x04name\x12X\n" +
+	"Bgoogle/cloud/recommendationengine/v1beta1/prediction_service.proto\x12)google.cloud.recommendationengine.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a:google/cloud/recommendationengine/v1beta1/user_event.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x17google/api/client.proto\"\x94\x05\n" +
+	"\x0ePredictRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-recommendationengine.googleapis.com/PlacementR\x04name\x12Y\n" +
 	"\n" +
-	"user_event\x18\x02 \x01(\v24.google.cloud.recommendationengine.v1beta1.UserEventB\x03\xe0A\x02R\tuserEvent\x12 \n" +
-	"\tpage_size\x18\a \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"user_event\x18\x02 \x01(\v24.google.cloud.recommendationengine.v1beta1.UserEventB\x04\xe2A\x01\x02R\tuserEvent\x12!\n" +
+	"\tpage_size\x18\a \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\b \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x03 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1c\n" +
-	"\adry_run\x18\x04 \x01(\bB\x03\xe0A\x01R\x06dryRun\x12b\n" +
-	"\x06params\x18\x06 \x03(\v2E.google.cloud.recommendationengine.v1beta1.PredictRequest.ParamsEntryB\x03\xe0A\x01R\x06params\x12b\n" +
-	"\x06labels\x18\t \x03(\v2E.google.cloud.recommendationengine.v1beta1.PredictRequest.LabelsEntryB\x03\xe0A\x01R\x06labels\x1aQ\n" +
+	"page_token\x18\b \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1d\n" +
+	"\adry_run\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x06dryRun\x12c\n" +
+	"\x06params\x18\x06 \x03(\v2E.google.cloud.recommendationengine.v1beta1.PredictRequest.ParamsEntryB\x04\xe2A\x01\x01R\x06params\x12c\n" +
+	"\x06labels\x18\t \x03(\v2E.google.cloud.recommendationengine.v1beta1.PredictRequest.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x1aQ\n" +
 	"\vParamsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12,\n" +
 	"\x05value\x18\x02 \x01(\v2\x16.google.protobuf.ValueR\x05value:\x028\x01\x1a9\n" +

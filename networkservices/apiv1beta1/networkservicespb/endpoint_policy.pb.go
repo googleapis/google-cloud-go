@@ -602,24 +602,24 @@ var File_google_cloud_networkservices_v1beta1_endpoint_policy_proto protoreflect
 
 const file_google_cloud_networkservices_v1beta1_endpoint_policy_proto_rawDesc = "" +
 	"\n" +
-	":google/cloud/networkservices/v1beta1/endpoint_policy.proto\x12$google.cloud.networkservices.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a1google/cloud/networkservices/v1beta1/common.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc4\t\n" +
-	"\x0eEndpointPolicy\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12]\n" +
-	"\x06labels\x18\x04 \x03(\v2@.google.cloud.networkservices.v1beta1.EndpointPolicy.LabelsEntryB\x03\xe0A\x01R\x06labels\x12`\n" +
-	"\x04type\x18\x05 \x01(\x0e2G.google.cloud.networkservices.v1beta1.EndpointPolicy.EndpointPolicyTypeB\x03\xe0A\x02R\x04type\x12m\n" +
-	"\x14authorization_policy\x18\a \x01(\tB:\xe0A\x01\xfaA4\n" +
-	"2networksecurity.googleapis.com/AuthorizationPolicyR\x13authorizationPolicy\x12e\n" +
-	"\x10endpoint_matcher\x18\t \x01(\v25.google.cloud.networkservices.v1beta1.EndpointMatcherB\x03\xe0A\x02R\x0fendpointMatcher\x12r\n" +
+	":google/cloud/networkservices/v1beta1/endpoint_policy.proto\x12$google.cloud.networkservices.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a1google/cloud/networkservices/v1beta1/common.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcf\t\n" +
+	"\x0eEndpointPolicy\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12^\n" +
+	"\x06labels\x18\x04 \x03(\v2@.google.cloud.networkservices.v1beta1.EndpointPolicy.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12a\n" +
+	"\x04type\x18\x05 \x01(\x0e2G.google.cloud.networkservices.v1beta1.EndpointPolicy.EndpointPolicyTypeB\x04\xe2A\x01\x02R\x04type\x12n\n" +
+	"\x14authorization_policy\x18\a \x01(\tB;\xe2A\x01\x01\xfaA4\n" +
+	"2networksecurity.googleapis.com/AuthorizationPolicyR\x13authorizationPolicy\x12f\n" +
+	"\x10endpoint_matcher\x18\t \x01(\v25.google.cloud.networkservices.v1beta1.EndpointMatcherB\x04\xe2A\x01\x02R\x0fendpointMatcher\x12s\n" +
 	"\x15traffic_port_selector\x18\n" +
-	" \x01(\v29.google.cloud.networkservices.v1beta1.TrafficPortSelectorB\x03\xe0A\x01R\x13trafficPortSelector\x12%\n" +
-	"\vdescription\x18\v \x01(\tB\x03\xe0A\x01R\vdescription\x12b\n" +
-	"\x11server_tls_policy\x18\f \x01(\tB6\xe0A\x01\xfaA0\n" +
-	".networksecurity.googleapis.com/ServerTlsPolicyR\x0fserverTlsPolicy\x12d\n" +
-	"\x11client_tls_policy\x18\r \x01(\tB8\xe0A\x01\xfaA0\n" +
+	" \x01(\v29.google.cloud.networkservices.v1beta1.TrafficPortSelectorB\x04\xe2A\x01\x01R\x13trafficPortSelector\x12&\n" +
+	"\vdescription\x18\v \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12c\n" +
+	"\x11server_tls_policy\x18\f \x01(\tB7\xe2A\x01\x01\xfaA0\n" +
+	".networksecurity.googleapis.com/ServerTlsPolicyR\x0fserverTlsPolicy\x12e\n" +
+	"\x11client_tls_policy\x18\r \x01(\tB9\xe2A\x01\x01\xfaA0\n" +
 	".networksecurity.googleapis.com/ClientTlsPolicy\x18\x01R\x0fclientTlsPolicy\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -628,28 +628,28 @@ const file_google_cloud_networkservices_v1beta1_endpoint_policy_proto_rawDesc = 
 	" ENDPOINT_POLICY_TYPE_UNSPECIFIED\x10\x00\x12\x11\n" +
 	"\rSIDECAR_PROXY\x10\x01\x12\x0f\n" +
 	"\vGRPC_SERVER\x10\x02:~\xeaA{\n" +
-	"-networkservices.googleapis.com/EndpointPolicy\x12Jprojects/{project}/locations/{location}/endpointPolicies/{endpoint_policy}\"\xa8\x01\n" +
-	"\x1bListEndpointPoliciesRequest\x12M\n" +
-	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\x12-networkservices.googleapis.com/EndpointPolicyR\x06parent\x12\x1b\n" +
+	"-networkservices.googleapis.com/EndpointPolicy\x12Jprojects/{project}/locations/{location}/endpointPolicies/{endpoint_policy}\"\xa9\x01\n" +
+	"\x1bListEndpointPoliciesRequest\x12N\n" +
+	"\x06parent\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\x12-networkservices.googleapis.com/EndpointPolicyR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xa9\x01\n" +
 	"\x1cListEndpointPoliciesResponse\x12a\n" +
 	"\x11endpoint_policies\x18\x01 \x03(\v24.google.cloud.networkservices.v1beta1.EndpointPolicyR\x10endpointPolicies\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"e\n" +
-	"\x18GetEndpointPolicyRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-networkservices.googleapis.com/EndpointPolicyR\x04name\"\x83\x02\n" +
-	"\x1bCreateEndpointPolicyRequest\x12M\n" +
-	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\x12-networkservices.googleapis.com/EndpointPolicyR\x06parent\x121\n" +
-	"\x12endpoint_policy_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x10endpointPolicyId\x12b\n" +
-	"\x0fendpoint_policy\x18\x03 \x01(\v24.google.cloud.networkservices.v1beta1.EndpointPolicyB\x03\xe0A\x02R\x0eendpointPolicy\"\xc3\x01\n" +
-	"\x1bUpdateEndpointPolicyRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12b\n" +
-	"\x0fendpoint_policy\x18\x02 \x01(\v24.google.cloud.networkservices.v1beta1.EndpointPolicyB\x03\xe0A\x02R\x0eendpointPolicy\"h\n" +
-	"\x1bDeleteEndpointPolicyRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"f\n" +
+	"\x18GetEndpointPolicyRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-networkservices.googleapis.com/EndpointPolicyR\x04name\"\x86\x02\n" +
+	"\x1bCreateEndpointPolicyRequest\x12N\n" +
+	"\x06parent\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\x12-networkservices.googleapis.com/EndpointPolicyR\x06parent\x122\n" +
+	"\x12endpoint_policy_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x10endpointPolicyId\x12c\n" +
+	"\x0fendpoint_policy\x18\x03 \x01(\v24.google.cloud.networkservices.v1beta1.EndpointPolicyB\x04\xe2A\x01\x02R\x0eendpointPolicy\"\xc5\x01\n" +
+	"\x1bUpdateEndpointPolicyRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12c\n" +
+	"\x0fendpoint_policy\x18\x02 \x01(\v24.google.cloud.networkservices.v1beta1.EndpointPolicyB\x04\xe2A\x01\x02R\x0eendpointPolicy\"i\n" +
+	"\x1bDeleteEndpointPolicyRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
 	"-networkservices.googleapis.com/EndpointPolicyR\x04nameB\x9f\x05\xeaA\x8a\x01\n" +
 	"2networksecurity.googleapis.com/AuthorizationPolicy\x12Tprojects/{project}/locations/{location}/authorizationPolicies/{authorization_policy}\xeaA\x7f\n" +
 	".networksecurity.googleapis.com/ServerTlsPolicy\x12Mprojects/{project}/locations/{location}/serverTlsPolicies/{server_tls_policy}\xeaA\x7f\n" +

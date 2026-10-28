@@ -2036,6 +2036,11 @@ func (c *restClient) GetAccessPolicy(ctx context.Context, req *accesscontextmana
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2170,6 +2175,11 @@ func (c *restClient) UpdateAccessPolicy(ctx context.Context, req *accesscontextm
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetPolicy().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetPolicy().GetName())
 
 	params := url.Values{}
@@ -2240,6 +2250,11 @@ func (c *restClient) UpdateAccessPolicy(ctx context.Context, req *accesscontextm
 func (c *restClient) DeleteAccessPolicy(ctx context.Context, req *accesscontextmanagerpb.DeleteAccessPolicyRequest, opts ...gax.CallOption) (*DeleteAccessPolicyOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2318,6 +2333,11 @@ func (c *restClient) ListAccessLevels(ctx context.Context, req *accesscontextman
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/accessLevels", req.GetParent())
 
 		params := url.Values{}
@@ -2388,6 +2408,11 @@ func (c *restClient) GetAccessLevel(ctx context.Context, req *accesscontextmanag
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2456,6 +2481,11 @@ func (c *restClient) CreateAccessLevel(ctx context.Context, req *accesscontextma
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/accessLevels", req.GetParent())
@@ -2533,6 +2563,11 @@ func (c *restClient) UpdateAccessLevel(ctx context.Context, req *accesscontextma
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAccessLevel().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetAccessLevel().GetName())
 
 	params := url.Values{}
@@ -2604,6 +2639,11 @@ func (c *restClient) UpdateAccessLevel(ctx context.Context, req *accesscontextma
 func (c *restClient) DeleteAccessLevel(ctx context.Context, req *accesscontextmanagerpb.DeleteAccessLevelRequest, opts ...gax.CallOption) (*DeleteAccessLevelOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2689,6 +2729,11 @@ func (c *restClient) ReplaceAccessLevels(ctx context.Context, req *accesscontext
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/accessLevels:replaceAll", req.GetParent())
 
 	params := url.Values{}
@@ -2765,6 +2810,11 @@ func (c *restClient) ListServicePerimeters(ctx context.Context, req *accessconte
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/servicePerimeters", req.GetParent())
 
 		params := url.Values{}
@@ -2830,6 +2880,11 @@ func (c *restClient) ListServicePerimeters(ctx context.Context, req *accessconte
 func (c *restClient) GetServicePerimeter(ctx context.Context, req *accesscontextmanagerpb.GetServicePerimeterRequest, opts ...gax.CallOption) (*accesscontextmanagerpb.ServicePerimeter, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2898,6 +2953,11 @@ func (c *restClient) CreateServicePerimeter(ctx context.Context, req *accesscont
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/servicePerimeters", req.GetParent())
@@ -2975,6 +3035,11 @@ func (c *restClient) UpdateServicePerimeter(ctx context.Context, req *accesscont
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetServicePerimeter().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetServicePerimeter().GetName())
 
 	params := url.Values{}
@@ -3046,6 +3111,11 @@ func (c *restClient) UpdateServicePerimeter(ctx context.Context, req *accesscont
 func (c *restClient) DeleteServicePerimeter(ctx context.Context, req *accesscontextmanagerpb.DeleteServicePerimeterRequest, opts ...gax.CallOption) (*DeleteServicePerimeterOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3125,6 +3195,11 @@ func (c *restClient) ReplaceServicePerimeters(ctx context.Context, req *accessco
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/servicePerimeters:replaceAll", req.GetParent())
@@ -3208,6 +3283,11 @@ func (c *restClient) CommitServicePerimeters(ctx context.Context, req *accesscon
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/servicePerimeters:commit", req.GetParent())
 
 	params := url.Values{}
@@ -3284,6 +3364,11 @@ func (c *restClient) ListGcpUserAccessBindings(ctx context.Context, req *accessc
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/gcpUserAccessBindings", req.GetParent())
 
 		params := url.Values{}
@@ -3349,6 +3434,11 @@ func (c *restClient) ListGcpUserAccessBindings(ctx context.Context, req *accessc
 func (c *restClient) GetGcpUserAccessBinding(ctx context.Context, req *accesscontextmanagerpb.GetGcpUserAccessBindingRequest, opts ...gax.CallOption) (*accesscontextmanagerpb.GcpUserAccessBinding, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3419,6 +3509,11 @@ func (c *restClient) CreateGcpUserAccessBinding(ctx context.Context, req *access
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/gcpUserAccessBindings", req.GetParent())
@@ -3493,6 +3588,11 @@ func (c *restClient) UpdateGcpUserAccessBinding(ctx context.Context, req *access
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetGcpUserAccessBinding().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetGcpUserAccessBinding().GetName())
 
 	params := url.Values{}
@@ -3563,6 +3663,11 @@ func (c *restClient) UpdateGcpUserAccessBinding(ctx context.Context, req *access
 func (c *restClient) DeleteGcpUserAccessBinding(ctx context.Context, req *accesscontextmanagerpb.DeleteGcpUserAccessBindingRequest, opts ...gax.CallOption) (*DeleteGcpUserAccessBindingOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3637,6 +3742,11 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -3696,6 +3806,11 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
@@ -3763,6 +3878,11 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -3815,6 +3935,11 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())

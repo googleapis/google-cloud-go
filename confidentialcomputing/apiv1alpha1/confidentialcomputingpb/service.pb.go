@@ -517,27 +517,27 @@ var File_google_cloud_confidentialcomputing_v1alpha1_service_proto protoreflect.
 
 const file_google_cloud_confidentialcomputing_v1alpha1_service_proto_rawDesc = "" +
 	"\n" +
-	"9google/cloud/confidentialcomputing/v1alpha1/service.proto\x12+google.cloud.confidentialcomputing.v1alpha1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcc\x02\n" +
-	"\tChallenge\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vexpire_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"expireTime\x12\x17\n" +
-	"\x04used\x18\x04 \x01(\bB\x03\xe0A\x03R\x04used\x12\x19\n" +
-	"\x05nonce\x18\x05 \x01(\fB\x03\xe0A\x03R\x05nonce:n\xeaAk\n" +
-	".confidentialcomputing.googleapis.com/Challenge\x129projects/{project}/locations/{location}/challenges/{uuid}\"\xb6\x01\n" +
-	"\x16CreateChallengeRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12Y\n" +
-	"\tchallenge\x18\x02 \x01(\v26.google.cloud.confidentialcomputing.v1alpha1.ChallengeB\x03\xe0A\x02R\tchallenge\"\xc6\x02\n" +
-	"\x18VerifyAttestationRequest\x12T\n" +
-	"\tchallenge\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".confidentialcomputing.googleapis.com/ChallengeR\tchallenge\x12i\n" +
-	"\x0fgcp_credentials\x18\x02 \x01(\v2;.google.cloud.confidentialcomputing.v1alpha1.GcpCredentialsB\x03\xe0A\x01R\x0egcpCredentials\x12i\n" +
-	"\x0ftpm_attestation\x18\x03 \x01(\v2;.google.cloud.confidentialcomputing.v1alpha1.TpmAttestationB\x03\xe0A\x02R\x0etpmAttestation\"C\n" +
-	"\x19VerifyAttestationResponse\x12&\n" +
-	"\fclaims_token\x18\x01 \x01(\fB\x03\xe0A\x03R\vclaimsToken\"-\n" +
+	"9google/cloud/confidentialcomputing/v1alpha1/service.proto\x12+google.cloud.confidentialcomputing.v1alpha1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd1\x02\n" +
+	"\tChallenge\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vexpire_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"expireTime\x12\x18\n" +
+	"\x04used\x18\x04 \x01(\bB\x04\xe2A\x01\x03R\x04used\x12\x1a\n" +
+	"\x05nonce\x18\x05 \x01(\fB\x04\xe2A\x01\x03R\x05nonce:n\xeaAk\n" +
+	".confidentialcomputing.googleapis.com/Challenge\x129projects/{project}/locations/{location}/challenges/{uuid}\"\xb8\x01\n" +
+	"\x16CreateChallengeRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12Z\n" +
+	"\tchallenge\x18\x02 \x01(\v26.google.cloud.confidentialcomputing.v1alpha1.ChallengeB\x04\xe2A\x01\x02R\tchallenge\"\xc9\x02\n" +
+	"\x18VerifyAttestationRequest\x12U\n" +
+	"\tchallenge\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".confidentialcomputing.googleapis.com/ChallengeR\tchallenge\x12j\n" +
+	"\x0fgcp_credentials\x18\x02 \x01(\v2;.google.cloud.confidentialcomputing.v1alpha1.GcpCredentialsB\x04\xe2A\x01\x01R\x0egcpCredentials\x12j\n" +
+	"\x0ftpm_attestation\x18\x03 \x01(\v2;.google.cloud.confidentialcomputing.v1alpha1.TpmAttestationB\x04\xe2A\x01\x02R\x0etpmAttestation\"D\n" +
+	"\x19VerifyAttestationResponse\x12'\n" +
+	"\fclaims_token\x18\x01 \x01(\fB\x04\xe2A\x01\x03R\vclaimsToken\"-\n" +
 	"\x0eGcpCredentials\x12\x1b\n" +
 	"\tid_tokens\x18\x01 \x03(\fR\bidTokens\"\x8f\x04\n" +
 	"\x0eTpmAttestation\x12Y\n" +

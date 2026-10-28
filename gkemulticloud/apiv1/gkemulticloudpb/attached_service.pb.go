@@ -991,65 +991,65 @@ var File_google_cloud_gkemulticloud_v1_attached_service_proto protoreflect.FileD
 
 const file_google_cloud_gkemulticloud_v1_attached_service_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/gkemulticloud/v1/attached_service.proto\x12\x1dgoogle.cloud.gkemulticloud.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a6google/cloud/gkemulticloud/v1/attached_resources.proto\x1a4google/cloud/gkemulticloud/v1/common_resources.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xbe\x02\n" +
-	"-GenerateAttachedClusterInstallManifestRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,gkemulticloud.googleapis.com/AttachedClusterR\x06parent\x123\n" +
-	"\x13attached_cluster_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x11attachedClusterId\x12.\n" +
-	"\x10platform_version\x18\x03 \x01(\tB\x03\xe0A\x02R\x0fplatformVersion\x12Z\n" +
-	"\fproxy_config\x18\x04 \x01(\v22.google.cloud.gkemulticloud.v1.AttachedProxyConfigB\x03\xe0A\x01R\vproxyConfig\"L\n" +
+	"4google/cloud/gkemulticloud/v1/attached_service.proto\x12\x1dgoogle.cloud.gkemulticloud.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a6google/cloud/gkemulticloud/v1/attached_resources.proto\x1a4google/cloud/gkemulticloud/v1/common_resources.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xc2\x02\n" +
+	"-GenerateAttachedClusterInstallManifestRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,gkemulticloud.googleapis.com/AttachedClusterR\x06parent\x124\n" +
+	"\x13attached_cluster_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x11attachedClusterId\x12/\n" +
+	"\x10platform_version\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x0fplatformVersion\x12[\n" +
+	"\fproxy_config\x18\x04 \x01(\v22.google.cloud.gkemulticloud.v1.AttachedProxyConfigB\x04\xe2A\x01\x01R\vproxyConfig\"L\n" +
 	".GenerateAttachedClusterInstallManifestResponse\x12\x1a\n" +
-	"\bmanifest\x18\x01 \x01(\tR\bmanifest\"\xa6\x02\n" +
-	"\x1cCreateAttachedClusterRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,gkemulticloud.googleapis.com/AttachedClusterR\x06parent\x12^\n" +
-	"\x10attached_cluster\x18\x02 \x01(\v2..google.cloud.gkemulticloud.v1.AttachedClusterB\x03\xe0A\x02R\x0fattachedCluster\x123\n" +
-	"\x13attached_cluster_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x11attachedClusterId\x12#\n" +
-	"\rvalidate_only\x18\x04 \x01(\bR\fvalidateOnly\"\xf6\x02\n" +
-	"\x1cImportAttachedClusterRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,gkemulticloud.googleapis.com/AttachedClusterR\x06parent\x12#\n" +
-	"\rvalidate_only\x18\x02 \x01(\bR\fvalidateOnly\x12.\n" +
-	"\x10fleet_membership\x18\x03 \x01(\tB\x03\xe0A\x02R\x0ffleetMembership\x12.\n" +
-	"\x10platform_version\x18\x04 \x01(\tB\x03\xe0A\x02R\x0fplatformVersion\x12'\n" +
-	"\fdistribution\x18\x05 \x01(\tB\x03\xe0A\x02R\fdistribution\x12Z\n" +
-	"\fproxy_config\x18\x06 \x01(\v22.google.cloud.gkemulticloud.v1.AttachedProxyConfigB\x03\xe0A\x01R\vproxyConfig\"\xe5\x01\n" +
-	"\x1cUpdateAttachedClusterRequest\x12^\n" +
-	"\x10attached_cluster\x18\x01 \x01(\v2..google.cloud.gkemulticloud.v1.AttachedClusterB\x03\xe0A\x02R\x0fattachedCluster\x12#\n" +
-	"\rvalidate_only\x18\x02 \x01(\bR\fvalidateOnly\x12@\n" +
-	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"e\n" +
-	"\x19GetAttachedClusterRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",gkemulticloud.googleapis.com/AttachedClusterR\x04name\"\xa7\x01\n" +
-	"\x1bListAttachedClustersRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,gkemulticloud.googleapis.com/AttachedClusterR\x06parent\x12\x1b\n" +
+	"\bmanifest\x18\x01 \x01(\tR\bmanifest\"\xa9\x02\n" +
+	"\x1cCreateAttachedClusterRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,gkemulticloud.googleapis.com/AttachedClusterR\x06parent\x12_\n" +
+	"\x10attached_cluster\x18\x02 \x01(\v2..google.cloud.gkemulticloud.v1.AttachedClusterB\x04\xe2A\x01\x02R\x0fattachedCluster\x124\n" +
+	"\x13attached_cluster_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x11attachedClusterId\x12#\n" +
+	"\rvalidate_only\x18\x04 \x01(\bR\fvalidateOnly\"\xfb\x02\n" +
+	"\x1cImportAttachedClusterRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,gkemulticloud.googleapis.com/AttachedClusterR\x06parent\x12#\n" +
+	"\rvalidate_only\x18\x02 \x01(\bR\fvalidateOnly\x12/\n" +
+	"\x10fleet_membership\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x0ffleetMembership\x12/\n" +
+	"\x10platform_version\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\x0fplatformVersion\x12(\n" +
+	"\fdistribution\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\fdistribution\x12[\n" +
+	"\fproxy_config\x18\x06 \x01(\v22.google.cloud.gkemulticloud.v1.AttachedProxyConfigB\x04\xe2A\x01\x01R\vproxyConfig\"\xe7\x01\n" +
+	"\x1cUpdateAttachedClusterRequest\x12_\n" +
+	"\x10attached_cluster\x18\x01 \x01(\v2..google.cloud.gkemulticloud.v1.AttachedClusterB\x04\xe2A\x01\x02R\x0fattachedCluster\x12#\n" +
+	"\rvalidate_only\x18\x02 \x01(\bR\fvalidateOnly\x12A\n" +
+	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"f\n" +
+	"\x19GetAttachedClusterRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",gkemulticloud.googleapis.com/AttachedClusterR\x04name\"\xa8\x01\n" +
+	"\x1bListAttachedClustersRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,gkemulticloud.googleapis.com/AttachedClusterR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xa3\x01\n" +
 	"\x1cListAttachedClustersResponse\x12[\n" +
 	"\x11attached_clusters\x18\x01 \x03(\v2..google.cloud.gkemulticloud.v1.AttachedClusterR\x10attachedClusters\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xeb\x01\n" +
-	"\x1cDeleteAttachedClusterRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xec\x01\n" +
+	"\x1cDeleteAttachedClusterRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
 	",gkemulticloud.googleapis.com/AttachedClusterR\x04name\x12#\n" +
 	"\rvalidate_only\x18\x02 \x01(\bR\fvalidateOnly\x12#\n" +
 	"\rallow_missing\x18\x03 \x01(\bR\fallowMissing\x12#\n" +
 	"\rignore_errors\x18\x05 \x01(\bR\fignoreErrors\x12\x12\n" +
-	"\x04etag\x18\x04 \x01(\tR\x04etag\"o\n" +
-	"\x1eGetAttachedServerConfigRequest\x12M\n" +
-	"\x04name\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
-	"1gkemulticloud.googleapis.com/AttachedServerConfigR\x04name\"\xbd\x03\n" +
-	"(GenerateAttachedClusterAgentTokenRequest\x12_\n" +
-	"\x10attached_cluster\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",gkemulticloud.googleapis.com/AttachedClusterR\x0fattachedCluster\x12(\n" +
-	"\rsubject_token\x18\x02 \x01(\tB\x03\xe0A\x02R\fsubjectToken\x121\n" +
-	"\x12subject_token_type\x18\x03 \x01(\tB\x03\xe0A\x02R\x10subjectTokenType\x12\x1d\n" +
-	"\aversion\x18\x04 \x01(\tB\x03\xe0A\x02R\aversion\x12\"\n" +
+	"\x04etag\x18\x04 \x01(\tR\x04etag\"p\n" +
+	"\x1eGetAttachedServerConfigRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1gkemulticloud.googleapis.com/AttachedServerConfigR\x04name\"\xc6\x03\n" +
+	"(GenerateAttachedClusterAgentTokenRequest\x12`\n" +
+	"\x10attached_cluster\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",gkemulticloud.googleapis.com/AttachedClusterR\x0fattachedCluster\x12)\n" +
+	"\rsubject_token\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\fsubjectToken\x122\n" +
+	"\x12subject_token_type\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x10subjectTokenType\x12\x1e\n" +
+	"\aversion\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\aversion\x12#\n" +
 	"\n" +
-	"grant_type\x18\x06 \x01(\tB\x03\xe0A\x01R\tgrantType\x12\x1f\n" +
-	"\baudience\x18\a \x01(\tB\x03\xe0A\x01R\baudience\x12\x19\n" +
-	"\x05scope\x18\b \x01(\tB\x03\xe0A\x01R\x05scope\x125\n" +
-	"\x14requested_token_type\x18\t \x01(\tB\x03\xe0A\x01R\x12requestedTokenType\x12\x1d\n" +
+	"grant_type\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\tgrantType\x12 \n" +
+	"\baudience\x18\a \x01(\tB\x04\xe2A\x01\x01R\baudience\x12\x1a\n" +
+	"\x05scope\x18\b \x01(\tB\x04\xe2A\x01\x01R\x05scope\x126\n" +
+	"\x14requested_token_type\x18\t \x01(\tB\x04\xe2A\x01\x01R\x12requestedTokenType\x12\x1e\n" +
 	"\aoptions\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\aoptions\"\x8f\x01\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\aoptions\"\x8f\x01\n" +
 	")GenerateAttachedClusterAgentTokenResponse\x12\"\n" +
 	"\faccess_token\x18\x01 \x01(\tR\faccess_token\x12\x1e\n" +
 	"\n" +

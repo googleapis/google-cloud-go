@@ -1088,10 +1088,10 @@ const file_google_api_servicemanagement_v1_resources_proto_rawDesc = "" +
 	"\tConfigRef\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\"O\n" +
 	"\fChangeReport\x12?\n" +
-	"\x0econfig_changes\x18\x01 \x03(\v2\x18.google.api.ConfigChangeR\rconfigChanges\"\xf8\x06\n" +
-	"\aRollout\x12\"\n" +
+	"\x0econfig_changes\x18\x01 \x03(\v2\x18.google.api.ConfigChangeR\rconfigChanges\"\xf9\x06\n" +
+	"\aRollout\x12#\n" +
 	"\n" +
-	"rollout_id\x18\x01 \x01(\tB\x03\xe0A\x01R\trolloutId\x12;\n" +
+	"rollout_id\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\trolloutId\x12;\n" +
 	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12\x1d\n" +
 	"\n" +

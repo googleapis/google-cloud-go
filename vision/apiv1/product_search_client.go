@@ -1831,6 +1831,11 @@ func (c *productSearchRESTClient) CreateProductSet(ctx context.Context, req *vis
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/productSets", req.GetParent())
 
 	params := url.Values{}
@@ -1906,6 +1911,11 @@ func (c *productSearchRESTClient) ListProductSets(ctx context.Context, req *visi
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/productSets", req.GetParent())
 
 		params := url.Values{}
@@ -1973,6 +1983,11 @@ func (c *productSearchRESTClient) ListProductSets(ctx context.Context, req *visi
 func (c *productSearchRESTClient) GetProductSet(ctx context.Context, req *visionpb.GetProductSetRequest, opts ...gax.CallOption) (*visionpb.ProductSet, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2044,6 +2059,11 @@ func (c *productSearchRESTClient) UpdateProductSet(ctx context.Context, req *vis
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProductSet().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetProductSet().GetName())
 
 	params := url.Values{}
@@ -2108,6 +2128,11 @@ func (c *productSearchRESTClient) DeleteProductSet(ctx context.Context, req *vis
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2161,6 +2186,11 @@ func (c *productSearchRESTClient) CreateProduct(ctx context.Context, req *vision
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/products", req.GetParent())
@@ -2237,6 +2267,11 @@ func (c *productSearchRESTClient) ListProducts(ctx context.Context, req *visionp
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/products", req.GetParent())
 
 		params := url.Values{}
@@ -2304,6 +2339,11 @@ func (c *productSearchRESTClient) ListProducts(ctx context.Context, req *visionp
 func (c *productSearchRESTClient) GetProduct(ctx context.Context, req *visionpb.GetProductRequest, opts ...gax.CallOption) (*visionpb.Product, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2384,6 +2424,11 @@ func (c *productSearchRESTClient) UpdateProduct(ctx context.Context, req *vision
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProduct().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetProduct().GetName())
 
 	params := url.Values{}
@@ -2447,6 +2492,11 @@ func (c *productSearchRESTClient) UpdateProduct(ctx context.Context, req *vision
 func (c *productSearchRESTClient) DeleteProduct(ctx context.Context, req *visionpb.DeleteProductRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2516,6 +2566,11 @@ func (c *productSearchRESTClient) CreateReferenceImage(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/referenceImages", req.GetParent())
 
 	params := url.Values{}
@@ -2579,6 +2634,11 @@ func (c *productSearchRESTClient) DeleteReferenceImage(ctx context.Context, req 
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2636,6 +2696,11 @@ func (c *productSearchRESTClient) ListReferenceImages(ctx context.Context, req *
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/referenceImages", req.GetParent())
@@ -2707,6 +2772,11 @@ func (c *productSearchRESTClient) GetReferenceImage(ctx context.Context, req *vi
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2774,6 +2844,11 @@ func (c *productSearchRESTClient) AddProductToProductSet(ctx context.Context, re
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:addProduct", req.GetName())
 
 	params := url.Values{}
@@ -2817,6 +2892,11 @@ func (c *productSearchRESTClient) RemoveProductFromProductSet(ctx context.Contex
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:removeProduct", req.GetName())
@@ -2875,6 +2955,11 @@ func (c *productSearchRESTClient) ListProductsInProductSet(ctx context.Context, 
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/products", req.GetName())
@@ -2956,6 +3041,11 @@ func (c *productSearchRESTClient) ImportProductSets(ctx context.Context, req *vi
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/productSets:import", req.GetParent())
@@ -3048,6 +3138,11 @@ func (c *productSearchRESTClient) PurgeProducts(ctx context.Context, req *vision
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/products:purge", req.GetParent())
 
 	params := url.Values{}
@@ -3107,6 +3202,11 @@ func (c *productSearchRESTClient) PurgeProducts(ctx context.Context, req *vision
 func (c *productSearchRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())

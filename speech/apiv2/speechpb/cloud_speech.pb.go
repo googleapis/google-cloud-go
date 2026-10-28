@@ -6420,14 +6420,14 @@ var File_google_cloud_speech_v2_cloud_speech_proto protoreflect.FileDescriptor
 
 const file_google_cloud_speech_v2_cloud_speech_proto_rawDesc = "" +
 	"\n" +
-	")google/cloud/speech/v2/cloud_speech.proto\x12\x16google.cloud.speech.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xee\x01\n" +
-	"\x17CreateRecognizerRequest\x12G\n" +
+	")google/cloud/speech/v2/cloud_speech.proto\x12\x16google.cloud.speech.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xf0\x01\n" +
+	"\x17CreateRecognizerRequest\x12H\n" +
 	"\n" +
-	"recognizer\x18\x01 \x01(\v2\".google.cloud.speech.v2.RecognizerB\x03\xe0A\x02R\n" +
+	"recognizer\x18\x01 \x01(\v2\".google.cloud.speech.v2.RecognizerB\x04\xe2A\x01\x02R\n" +
 	"recognizer\x12#\n" +
 	"\rvalidate_only\x18\x02 \x01(\bR\fvalidateOnly\x12#\n" +
-	"\rrecognizer_id\x18\x03 \x01(\tR\frecognizerId\x12@\n" +
-	"\x06parent\x18\x04 \x01(\tB(\xe0A\x02\xfaA\"\x12 speech.googleapis.com/RecognizerR\x06parent\"\xb7\x10\n" +
+	"\rrecognizer_id\x18\x03 \x01(\tR\frecognizerId\x12A\n" +
+	"\x06parent\x18\x04 \x01(\tB)\xe2A\x01\x02\xfaA\"\x12 speech.googleapis.com/RecognizerR\x06parent\"\xb7\x10\n" +
 	"\x11OperationMetadata\x12;\n" +
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12;\n" +
@@ -6459,9 +6459,9 @@ const file_google_cloud_speech_v2_cloud_speech_proto_rawDesc = "" +
 	"\x18batch_recognize_metadata\x18\x17 \x01(\v2..google.cloud.speech.v2.BatchRecognizeMetadataH\x01R\x16batchRecognizeMetadataB\t\n" +
 	"\arequestB\n" +
 	"\n" +
-	"\bmetadata\"\xba\x01\n" +
-	"\x16ListRecognizersRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\bmetadata\"\xbb\x01\n" +
+	"\x16ListRecognizersRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -6469,53 +6469,53 @@ const file_google_cloud_speech_v2_cloud_speech_proto_rawDesc = "" +
 	"\fshow_deleted\x18\x04 \x01(\bR\vshowDeleted\"\x87\x01\n" +
 	"\x17ListRecognizersResponse\x12D\n" +
 	"\vrecognizers\x18\x01 \x03(\v2\".google.cloud.speech.v2.RecognizerR\vrecognizers\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"T\n" +
-	"\x14GetRecognizerRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" speech.googleapis.com/RecognizerR\x04name\"\xc4\x01\n" +
-	"\x17UpdateRecognizerRequest\x12G\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"U\n" +
+	"\x14GetRecognizerRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" speech.googleapis.com/RecognizerR\x04name\"\xc5\x01\n" +
+	"\x17UpdateRecognizerRequest\x12H\n" +
 	"\n" +
-	"recognizer\x18\x01 \x01(\v2\".google.cloud.speech.v2.RecognizerB\x03\xe0A\x02R\n" +
+	"recognizer\x18\x01 \x01(\v2\".google.cloud.speech.v2.RecognizerB\x04\xe2A\x01\x02R\n" +
 	"recognizer\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"updateMask\x12#\n" +
-	"\rvalidate_only\x18\x04 \x01(\bR\fvalidateOnly\"\xb5\x01\n" +
-	"\x17DeleteRecognizerRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
+	"\rvalidate_only\x18\x04 \x01(\bR\fvalidateOnly\"\xb6\x01\n" +
+	"\x17DeleteRecognizerRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
 	" speech.googleapis.com/RecognizerR\x04name\x12#\n" +
 	"\rvalidate_only\x18\x02 \x01(\bR\fvalidateOnly\x12#\n" +
 	"\rallow_missing\x18\x04 \x01(\bR\fallowMissing\x12\x12\n" +
-	"\x04etag\x18\x03 \x01(\tR\x04etag\"\x92\x01\n" +
-	"\x19UndeleteRecognizerRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
+	"\x04etag\x18\x03 \x01(\tR\x04etag\"\x93\x01\n" +
+	"\x19UndeleteRecognizerRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
 	" speech.googleapis.com/RecognizerR\x04name\x12#\n" +
 	"\rvalidate_only\x18\x03 \x01(\bR\fvalidateOnly\x12\x12\n" +
-	"\x04etag\x18\x04 \x01(\tR\x04etag\"\x8f\t\n" +
+	"\x04etag\x18\x04 \x01(\tR\x04etag\"\x9a\t\n" +
 	"\n" +
-	"Recognizer\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x12\x15\n" +
-	"\x03uid\x18\x02 \x01(\tB\x03\xe0A\x03R\x03uid\x12!\n" +
-	"\fdisplay_name\x18\x03 \x01(\tR\vdisplayName\x12\x1b\n" +
-	"\x05model\x18\x04 \x01(\tB\x05\xe0A\x01\x18\x01R\x05model\x12,\n" +
-	"\x0elanguage_codes\x18\x11 \x03(\tB\x05\xe0A\x01\x18\x01R\rlanguageCodes\x12g\n" +
+	"Recognizer\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\bR\x04name\x12\x16\n" +
+	"\x03uid\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12!\n" +
+	"\fdisplay_name\x18\x03 \x01(\tR\vdisplayName\x12\x1c\n" +
+	"\x05model\x18\x04 \x01(\tB\x06\xe2A\x01\x01\x18\x01R\x05model\x12-\n" +
+	"\x0elanguage_codes\x18\x11 \x03(\tB\x06\xe2A\x01\x01\x18\x01R\rlanguageCodes\x12g\n" +
 	"\x1adefault_recognition_config\x18\x06 \x01(\v2).google.cloud.speech.v2.RecognitionConfigR\x18defaultRecognitionConfig\x12U\n" +
-	"\vannotations\x18\a \x03(\v23.google.cloud.speech.v2.Recognizer.AnnotationsEntryR\vannotations\x12C\n" +
-	"\x05state\x18\b \x01(\x0e2(.google.cloud.speech.v2.Recognizer.StateB\x03\xe0A\x03R\x05state\x12@\n" +
-	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
+	"\vannotations\x18\a \x03(\v23.google.cloud.speech.v2.Recognizer.AnnotationsEntryR\vannotations\x12D\n" +
+	"\x05state\x18\b \x01(\x0e2(.google.cloud.speech.v2.Recognizer.StateB\x04\xe2A\x01\x03R\x05state\x12A\n" +
+	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
 	"\vupdate_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12@\n" +
-	"\vdelete_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"deleteTime\x12@\n" +
-	"\vexpire_time\x18\x0e \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"expireTime\x12\x17\n" +
-	"\x04etag\x18\f \x01(\tB\x03\xe0A\x03R\x04etag\x12%\n" +
-	"\vreconciling\x18\r \x01(\bB\x03\xe0A\x03R\vreconciling\x12K\n" +
-	"\fkms_key_name\x18\x0f \x01(\tB)\xe0A\x03\xfaA#\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12A\n" +
+	"\vdelete_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"deleteTime\x12A\n" +
+	"\vexpire_time\x18\x0e \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"expireTime\x12\x18\n" +
+	"\x04etag\x18\f \x01(\tB\x04\xe2A\x01\x03R\x04etag\x12&\n" +
+	"\vreconciling\x18\r \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12L\n" +
+	"\fkms_key_name\x18\x0f \x01(\tB*\xe2A\x01\x03\xfaA#\n" +
 	"!cloudkms.googleapis.com/CryptoKeyR\n" +
-	"kmsKeyName\x12a\n" +
-	"\x14kms_key_version_name\x18\x10 \x01(\tB0\xe0A\x03\xfaA*\n" +
+	"kmsKeyName\x12b\n" +
+	"\x14kms_key_version_name\x18\x10 \x01(\tB1\xe2A\x01\x03\xfaA*\n" +
 	"(cloudkms.googleapis.com/CryptoKeyVersionR\x11kmsKeyVersionName\x1a>\n" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -6526,11 +6526,11 @@ const file_google_cloud_speech_v2_cloud_speech_proto_rawDesc = "" +
 	"\x06ACTIVE\x10\x02\x12\v\n" +
 	"\aDELETED\x10\x04:j\xeaAg\n" +
 	" speech.googleapis.com/Recognizer\x12@projects/{project}/locations/{location}/recognizers/{recognizer}R\x01\x01\"\x1a\n" +
-	"\x18AutoDetectDecodingConfig\"\x9e\x03\n" +
-	"\x16ExplicitDecodingConfig\x12]\n" +
-	"\bencoding\x18\x01 \x01(\x0e2<.google.cloud.speech.v2.ExplicitDecodingConfig.AudioEncodingB\x03\xe0A\x02R\bencoding\x12/\n" +
-	"\x11sample_rate_hertz\x18\x02 \x01(\x05B\x03\xe0A\x01R\x0fsampleRateHertz\x123\n" +
-	"\x13audio_channel_count\x18\x03 \x01(\x05B\x03\xe0A\x01R\x11audioChannelCount\"\xbe\x01\n" +
+	"\x18AutoDetectDecodingConfig\"\xa1\x03\n" +
+	"\x16ExplicitDecodingConfig\x12^\n" +
+	"\bencoding\x18\x01 \x01(\x0e2<.google.cloud.speech.v2.ExplicitDecodingConfig.AudioEncodingB\x04\xe2A\x01\x02R\bencoding\x120\n" +
+	"\x11sample_rate_hertz\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x0fsampleRateHertz\x124\n" +
+	"\x13audio_channel_count\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\x11audioChannelCount\"\xbe\x01\n" +
 	"\rAudioEncoding\x12\x1e\n" +
 	"\x1aAUDIO_ENCODING_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bLINEAR16\x10\x01\x12\t\n" +
@@ -6546,12 +6546,12 @@ const file_google_cloud_speech_v2_cloud_speech_proto_rawDesc = "" +
 	"\aMP4_AAC\x10\n" +
 	"\x12\v\n" +
 	"\aM4A_AAC\x10\v\x12\v\n" +
-	"\aMOV_AAC\x10\f\"|\n" +
-	"\x18SpeakerDiarizationConfig\x12/\n" +
-	"\x11min_speaker_count\x18\x02 \x01(\x05B\x03\xe0A\x01R\x0fminSpeakerCount\x12/\n" +
-	"\x11max_speaker_count\x18\x03 \x01(\x05B\x03\xe0A\x01R\x0fmaxSpeakerCount\">\n" +
-	"\x12CustomPromptConfig\x12(\n" +
-	"\rcustom_prompt\x18\x01 \x01(\tB\x03\xe0A\x01R\fcustomPrompt\"\x98\x06\n" +
+	"\aMOV_AAC\x10\f\"~\n" +
+	"\x18SpeakerDiarizationConfig\x120\n" +
+	"\x11min_speaker_count\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x0fminSpeakerCount\x120\n" +
+	"\x11max_speaker_count\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\x0fmaxSpeakerCount\"?\n" +
+	"\x12CustomPromptConfig\x12)\n" +
+	"\rcustom_prompt\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\fcustomPrompt\"\x99\x06\n" +
 	"\x13RecognitionFeatures\x12)\n" +
 	"\x10profanity_filter\x18\x01 \x01(\bR\x0fprofanityFilter\x127\n" +
 	"\x18enable_word_time_offsets\x18\x02 \x01(\bR\x15enableWordTimeOffsets\x124\n" +
@@ -6561,8 +6561,8 @@ const file_google_cloud_speech_v2_cloud_speech_proto_rawDesc = "" +
 	"\x14enable_spoken_emojis\x18\x0f \x01(\bR\x12enableSpokenEmojis\x12j\n" +
 	"\x12multi_channel_mode\x18\x11 \x01(\x0e2<.google.cloud.speech.v2.RecognitionFeatures.MultiChannelModeR\x10multiChannelMode\x12_\n" +
 	"\x12diarization_config\x18\t \x01(\v20.google.cloud.speech.v2.SpeakerDiarizationConfigR\x11diarizationConfig\x12)\n" +
-	"\x10max_alternatives\x18\x10 \x01(\x05R\x0fmaxAlternatives\x12a\n" +
-	"\x14custom_prompt_config\x18\x12 \x01(\v2*.google.cloud.speech.v2.CustomPromptConfigB\x03\xe0A\x01R\x12customPromptConfig\"\\\n" +
+	"\x10max_alternatives\x18\x10 \x01(\x05R\x0fmaxAlternatives\x12b\n" +
+	"\x14custom_prompt_config\x18\x12 \x01(\v2*.google.cloud.speech.v2.CustomPromptConfigB\x04\xe2A\x01\x01R\x12customPromptConfig\"\\\n" +
 	"\x10MultiChannelMode\x12\"\n" +
 	"\x1eMULTI_CHANNEL_MODE_UNSPECIFIED\x10\x00\x12$\n" +
 	" SEPARATE_RECOGNITION_PER_CHANNEL\x10\x01\"\xcc\x01\n" +
@@ -6571,9 +6571,9 @@ const file_google_cloud_speech_v2_cloud_speech_proto_rawDesc = "" +
 	"\x05Entry\x12\x16\n" +
 	"\x06search\x18\x01 \x01(\tR\x06search\x12\x18\n" +
 	"\areplace\x18\x02 \x01(\tR\areplace\x12%\n" +
-	"\x0ecase_sensitive\x18\x03 \x01(\bR\rcaseSensitive\"A\n" +
-	"\x11TranslationConfig\x12,\n" +
-	"\x0ftarget_language\x18\x01 \x01(\tB\x03\xe0A\x02R\x0etargetLanguage\"\xf6\x02\n" +
+	"\x0ecase_sensitive\x18\x03 \x01(\bR\rcaseSensitive\"B\n" +
+	"\x11TranslationConfig\x12-\n" +
+	"\x0ftarget_language\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x0etargetLanguage\"\xf6\x02\n" +
 	"\x10SpeechAdaptation\x12]\n" +
 	"\vphrase_sets\x18\x01 \x03(\v2<.google.cloud.speech.v2.SpeechAdaptation.AdaptationPhraseSetR\n" +
 	"phraseSets\x12J\n" +
@@ -6586,24 +6586,24 @@ const file_google_cloud_speech_v2_cloud_speech_proto_rawDesc = "" +
 	"\x05value\"Z\n" +
 	"\x0eDenoiserConfig\x12#\n" +
 	"\rdenoise_audio\x18\x01 \x01(\bR\fdenoiseAudio\x12#\n" +
-	"\rsnr_threshold\x18\x02 \x01(\x02R\fsnrThreshold\"\xf8\x05\n" +
+	"\rsnr_threshold\x18\x02 \x01(\x02R\fsnrThreshold\"\xfd\x05\n" +
 	"\x11RecognitionConfig\x12d\n" +
 	"\x14auto_decoding_config\x18\a \x01(\v20.google.cloud.speech.v2.AutoDetectDecodingConfigH\x00R\x12autoDecodingConfig\x12j\n" +
-	"\x18explicit_decoding_config\x18\b \x01(\v2..google.cloud.speech.v2.ExplicitDecodingConfigH\x00R\x16explicitDecodingConfig\x12\x19\n" +
-	"\x05model\x18\t \x01(\tB\x03\xe0A\x01R\x05model\x12*\n" +
+	"\x18explicit_decoding_config\x18\b \x01(\v2..google.cloud.speech.v2.ExplicitDecodingConfigH\x00R\x16explicitDecodingConfig\x12\x1a\n" +
+	"\x05model\x18\t \x01(\tB\x04\xe2A\x01\x01R\x05model\x12+\n" +
 	"\x0elanguage_codes\x18\n" +
-	" \x03(\tB\x03\xe0A\x01R\rlanguageCodes\x12G\n" +
+	" \x03(\tB\x04\xe2A\x01\x01R\rlanguageCodes\x12G\n" +
 	"\bfeatures\x18\x02 \x01(\v2+.google.cloud.speech.v2.RecognitionFeaturesR\bfeatures\x12H\n" +
 	"\n" +
 	"adaptation\x18\x06 \x01(\v2(.google.cloud.speech.v2.SpeechAdaptationR\n" +
-	"adaptation\x12o\n" +
-	"\x18transcript_normalization\x18\v \x01(\v2/.google.cloud.speech.v2.TranscriptNormalizationB\x03\xe0A\x01R\x17transcriptNormalization\x12]\n" +
-	"\x12translation_config\x18\x0f \x01(\v2).google.cloud.speech.v2.TranslationConfigB\x03\xe0A\x01R\x11translationConfig\x12T\n" +
-	"\x0fdenoiser_config\x18\x10 \x01(\v2&.google.cloud.speech.v2.DenoiserConfigB\x03\xe0A\x01R\x0edenoiserConfigB\x11\n" +
-	"\x0fdecoding_config\"\x9c\x02\n" +
-	"\x10RecognizeRequest\x12H\n" +
+	"adaptation\x12p\n" +
+	"\x18transcript_normalization\x18\v \x01(\v2/.google.cloud.speech.v2.TranscriptNormalizationB\x04\xe2A\x01\x01R\x17transcriptNormalization\x12^\n" +
+	"\x12translation_config\x18\x0f \x01(\v2).google.cloud.speech.v2.TranslationConfigB\x04\xe2A\x01\x01R\x11translationConfig\x12U\n" +
+	"\x0fdenoiser_config\x18\x10 \x01(\v2&.google.cloud.speech.v2.DenoiserConfigB\x04\xe2A\x01\x01R\x0edenoiserConfigB\x11\n" +
+	"\x0fdecoding_config\"\x9d\x02\n" +
+	"\x10RecognizeRequest\x12I\n" +
 	"\n" +
-	"recognizer\x18\x03 \x01(\tB(\xe0A\x02\xfaA\"\n" +
+	"recognizer\x18\x03 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
 	" speech.googleapis.com/RecognizerR\n" +
 	"recognizer\x12A\n" +
 	"\x06config\x18\x01 \x01(\v2).google.cloud.speech.v2.RecognitionConfigR\x06config\x12;\n" +
@@ -6611,13 +6611,13 @@ const file_google_cloud_speech_v2_cloud_speech_proto_rawDesc = "" +
 	"configMask\x12\x1a\n" +
 	"\acontent\x18\x05 \x01(\fH\x00R\acontent\x12\x12\n" +
 	"\x03uri\x18\x06 \x01(\tH\x00R\x03uriB\x0e\n" +
-	"\faudio_source\"\xc5\x01\n" +
+	"\faudio_source\"\xc4\x01\n" +
 	"\x1bRecognitionResponseMetadata\x12'\n" +
 	"\n" +
 	"request_id\x18\t \x01(\tB\b\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12M\n" +
-	"\x15total_billed_duration\x18\x06 \x01(\v2\x19.google.protobuf.DurationR\x13totalBilledDuration\x12#\n" +
+	"\x15total_billed_duration\x18\x06 \x01(\v2\x19.google.protobuf.DurationR\x13totalBilledDuration\x12\"\n" +
 	"\x06prompt\x18\n" +
-	" \x01(\tB\x06\xe0A\x03\xe0A\x01H\x00R\x06prompt\x88\x01\x01B\t\n" +
+	" \x01(\tB\x05\xe2A\x02\x03\x01H\x00R\x06prompt\x88\x01\x01B\t\n" +
 	"\a_prompt\"\x96\x01\n" +
 	"\x1cSpeechRecognitionAlternative\x12\x1e\n" +
 	"\n" +
@@ -6635,21 +6635,21 @@ const file_google_cloud_speech_v2_cloud_speech_proto_rawDesc = "" +
 	"\n" +
 	"confidence\x18\x04 \x01(\x02R\n" +
 	"confidence\x12#\n" +
-	"\rspeaker_label\x18\x06 \x01(\tR\fspeakerLabel\"\x85\x02\n" +
+	"\rspeaker_label\x18\x06 \x01(\tR\fspeakerLabel\"\x86\x02\n" +
 	"\x17SpeechRecognitionResult\x12X\n" +
 	"\falternatives\x18\x01 \x03(\v24.google.cloud.speech.v2.SpeechRecognitionAlternativeR\falternatives\x12\x1f\n" +
 	"\vchannel_tag\x18\x02 \x01(\x05R\n" +
 	"channelTag\x12E\n" +
-	"\x11result_end_offset\x18\x04 \x01(\v2\x19.google.protobuf.DurationR\x0fresultEndOffset\x12(\n" +
-	"\rlanguage_code\x18\x05 \x01(\tB\x03\xe0A\x03R\flanguageCode\"\xaf\x01\n" +
+	"\x11result_end_offset\x18\x04 \x01(\v2\x19.google.protobuf.DurationR\x0fresultEndOffset\x12)\n" +
+	"\rlanguage_code\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\flanguageCode\"\xaf\x01\n" +
 	"\x11RecognizeResponse\x12I\n" +
 	"\aresults\x18\x03 \x03(\v2/.google.cloud.speech.v2.SpeechRecognitionResultR\aresults\x12O\n" +
-	"\bmetadata\x18\x02 \x01(\v23.google.cloud.speech.v2.RecognitionResponseMetadataR\bmetadata\"\xf9\x05\n" +
+	"\bmetadata\x18\x02 \x01(\v23.google.cloud.speech.v2.RecognitionResponseMetadataR\bmetadata\"\xfa\x05\n" +
 	"\x1cStreamingRecognitionFeatures\x12?\n" +
 	"\x1cenable_voice_activity_events\x18\x01 \x01(\bR\x19enableVoiceActivityEvents\x12'\n" +
 	"\x0finterim_results\x18\x02 \x01(\bR\x0einterimResults\x12\x7f\n" +
-	"\x16voice_activity_timeout\x18\x03 \x01(\v2I.google.cloud.speech.v2.StreamingRecognitionFeatures.VoiceActivityTimeoutR\x14voiceActivityTimeout\x12\x89\x01\n" +
-	"\x17endpointing_sensitivity\x18\b \x01(\x0e2K.google.cloud.speech.v2.StreamingRecognitionFeatures.EndpointingSensitivityB\x03\xe0A\x01R\x16endpointingSensitivity\x1a\xac\x01\n" +
+	"\x16voice_activity_timeout\x18\x03 \x01(\v2I.google.cloud.speech.v2.StreamingRecognitionFeatures.VoiceActivityTimeoutR\x14voiceActivityTimeout\x12\x8a\x01\n" +
+	"\x17endpointing_sensitivity\x18\b \x01(\x0e2K.google.cloud.speech.v2.StreamingRecognitionFeatures.EndpointingSensitivityB\x04\xe2A\x01\x01R\x16endpointingSensitivity\x1a\xac\x01\n" +
 	"\x14VoiceActivityTimeout\x12K\n" +
 	"\x14speech_start_timeout\x18\x01 \x01(\v2\x19.google.protobuf.DurationR\x12speechStartTimeout\x12G\n" +
 	"\x12speech_end_timeout\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\x10speechEndTimeout\"\xb2\x01\n" +
@@ -6657,23 +6657,23 @@ const file_google_cloud_speech_v2_cloud_speech_proto_rawDesc = "" +
 	"#ENDPOINTING_SENSITIVITY_UNSPECIFIED\x10\x00\x12$\n" +
 	" ENDPOINTING_SENSITIVITY_STANDARD\x10\x01\x12&\n" +
 	"\"ENDPOINTING_SENSITIVITY_SUPERSHORT\x10\x02\x12!\n" +
-	"\x1dENDPOINTING_SENSITIVITY_SHORT\x10\x03\"\x86\x02\n" +
-	"\x1aStreamingRecognitionConfig\x12F\n" +
-	"\x06config\x18\x01 \x01(\v2).google.cloud.speech.v2.RecognitionConfigB\x03\xe0A\x02R\x06config\x12;\n" +
+	"\x1dENDPOINTING_SENSITIVITY_SHORT\x10\x03\"\x87\x02\n" +
+	"\x1aStreamingRecognitionConfig\x12G\n" +
+	"\x06config\x18\x01 \x01(\v2).google.cloud.speech.v2.RecognitionConfigB\x04\xe2A\x01\x02R\x06config\x12;\n" +
 	"\vconfig_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"configMask\x12c\n" +
-	"\x12streaming_features\x18\x02 \x01(\v24.google.cloud.speech.v2.StreamingRecognitionFeaturesR\x11streamingFeatures\"\xf3\x01\n" +
-	"\x19StreamingRecognizeRequest\x12H\n" +
+	"\x12streaming_features\x18\x02 \x01(\v24.google.cloud.speech.v2.StreamingRecognitionFeaturesR\x11streamingFeatures\"\xf4\x01\n" +
+	"\x19StreamingRecognizeRequest\x12I\n" +
 	"\n" +
-	"recognizer\x18\x03 \x01(\tB(\xe0A\x02\xfaA\"\n" +
+	"recognizer\x18\x03 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
 	" speech.googleapis.com/RecognizerR\n" +
 	"recognizer\x12_\n" +
 	"\x10streaming_config\x18\x06 \x01(\v22.google.cloud.speech.v2.StreamingRecognitionConfigH\x00R\x0fstreamingConfig\x12\x16\n" +
 	"\x05audio\x18\x05 \x01(\fH\x00R\x05audioB\x13\n" +
-	"\x11streaming_request\"\xdc\x04\n" +
-	"\x15BatchRecognizeRequest\x12H\n" +
+	"\x11streaming_request\"\xdd\x04\n" +
+	"\x15BatchRecognizeRequest\x12I\n" +
 	"\n" +
-	"recognizer\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
+	"recognizer\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
 	" speech.googleapis.com/RecognizerR\n" +
 	"recognizer\x12A\n" +
 	"\x06config\x18\x04 \x01(\v2).google.cloud.speech.v2.RecognitionConfigR\x06config\x12;\n" +
@@ -6694,11 +6694,11 @@ const file_google_cloud_speech_v2_cloud_speech_proto_rawDesc = "" +
 	"\x12OutputFormatConfig\x12L\n" +
 	"\x06native\x18\x01 \x01(\v24.google.cloud.speech.v2.NativeOutputFileFormatConfigR\x06native\x12C\n" +
 	"\x03vtt\x18\x02 \x01(\v21.google.cloud.speech.v2.VttOutputFileFormatConfigR\x03vtt\x12C\n" +
-	"\x03srt\x18\x03 \x01(\v21.google.cloud.speech.v2.SrtOutputFileFormatConfigR\x03srt\"\xc1\x02\n" +
+	"\x03srt\x18\x03 \x01(\v21.google.cloud.speech.v2.SrtOutputFileFormatConfigR\x03srt\"\xc2\x02\n" +
 	"\x17RecognitionOutputConfig\x12U\n" +
 	"\x11gcs_output_config\x18\x01 \x01(\v2'.google.cloud.speech.v2.GcsOutputConfigH\x00R\x0fgcsOutputConfig\x12b\n" +
-	"\x16inline_response_config\x18\x02 \x01(\v2*.google.cloud.speech.v2.InlineOutputConfigH\x00R\x14inlineResponseConfig\x12a\n" +
-	"\x14output_format_config\x18\x03 \x01(\v2*.google.cloud.speech.v2.OutputFormatConfigB\x03\xe0A\x01R\x12outputFormatConfigB\b\n" +
+	"\x16inline_response_config\x18\x02 \x01(\v2*.google.cloud.speech.v2.InlineOutputConfigH\x00R\x14inlineResponseConfig\x12b\n" +
+	"\x14output_format_config\x18\x03 \x01(\v2*.google.cloud.speech.v2.OutputFormatConfigB\x04\xe2A\x01\x01R\x12outputFormatConfigB\b\n" +
 	"\x06output\"\xac\x02\n" +
 	"\x16BatchRecognizeResponse\x12U\n" +
 	"\aresults\x18\x01 \x03(\v2;.google.cloud.speech.v2.BatchRecognizeResponse.ResultsEntryR\aresults\x12M\n" +
@@ -6743,15 +6743,15 @@ const file_google_cloud_speech_v2_cloud_speech_proto_rawDesc = "" +
 	"\x06config\x18\x04 \x01(\v2).google.cloud.speech.v2.RecognitionConfigR\x06config\x12;\n" +
 	"\vconfig_mask\x18\x05 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"configMaskB\x0e\n" +
-	"\faudio_source\"\xc1\x02\n" +
+	"\faudio_source\"\xc2\x02\n" +
 	"\x1aStreamingRecognitionResult\x12X\n" +
 	"\falternatives\x18\x01 \x03(\v24.google.cloud.speech.v2.SpeechRecognitionAlternativeR\falternatives\x12\x19\n" +
 	"\bis_final\x18\x02 \x01(\bR\aisFinal\x12\x1c\n" +
 	"\tstability\x18\x03 \x01(\x02R\tstability\x12E\n" +
 	"\x11result_end_offset\x18\x04 \x01(\v2\x19.google.protobuf.DurationR\x0fresultEndOffset\x12\x1f\n" +
 	"\vchannel_tag\x18\x05 \x01(\x05R\n" +
-	"channelTag\x12(\n" +
-	"\rlanguage_code\x18\x06 \x01(\tB\x03\xe0A\x03R\flanguageCode\"\xfe\x03\n" +
+	"channelTag\x12)\n" +
+	"\rlanguage_code\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\flanguageCode\"\xfe\x03\n" +
 	"\x1aStreamingRecognizeResponse\x12L\n" +
 	"\aresults\x18\x06 \x03(\v22.google.cloud.speech.v2.StreamingRecognitionResultR\aresults\x12n\n" +
 	"\x11speech_event_type\x18\x03 \x01(\x0e2B.google.cloud.speech.v2.StreamingRecognizeResponse.SpeechEventTypeR\x0fspeechEventType\x12I\n" +
@@ -6761,44 +6761,44 @@ const file_google_cloud_speech_v2_cloud_speech_proto_rawDesc = "" +
 	"\x1dSPEECH_EVENT_TYPE_UNSPECIFIED\x10\x00\x12\x1b\n" +
 	"\x17END_OF_SINGLE_UTTERANCE\x10\x01\x12\x19\n" +
 	"\x15SPEECH_ACTIVITY_BEGIN\x10\x02\x12\x17\n" +
-	"\x13SPEECH_ACTIVITY_END\x10\x03\"\x86\x02\n" +
-	"\x06Config\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x12K\n" +
-	"\fkms_key_name\x18\x02 \x01(\tB)\xe0A\x01\xfaA#\n" +
+	"\x13SPEECH_ACTIVITY_END\x10\x03\"\x87\x02\n" +
+	"\x06Config\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\bR\x04name\x12L\n" +
+	"\fkms_key_name\x18\x02 \x01(\tB*\xe2A\x01\x01\xfaA#\n" +
 	"!cloudkms.googleapis.com/CryptoKeyR\n" +
-	"kmsKeyName\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"kmsKeyName\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime:Q\xeaAN\n" +
-	"\x1cspeech.googleapis.com/Config\x12.projects/{project}/locations/{location}/config\"L\n" +
-	"\x10GetConfigRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cspeech.googleapis.com/ConfigR\x04name\"\x8f\x01\n" +
-	"\x13UpdateConfigRequest\x12;\n" +
-	"\x06config\x18\x01 \x01(\v2\x1e.google.cloud.speech.v2.ConfigB\x03\xe0A\x02R\x06config\x12;\n" +
+	"\x1cspeech.googleapis.com/Config\x12.projects/{project}/locations/{location}/config\"M\n" +
+	"\x10GetConfigRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cspeech.googleapis.com/ConfigR\x04name\"\x90\x01\n" +
+	"\x13UpdateConfigRequest\x12<\n" +
+	"\x06config\x18\x01 \x01(\v2\x1e.google.cloud.speech.v2.ConfigB\x04\xe2A\x01\x02R\x06config\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"\xd5\b\n" +
-	"\vCustomClass\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x12\x15\n" +
-	"\x03uid\x18\x02 \x01(\tB\x03\xe0A\x03R\x03uid\x12&\n" +
-	"\fdisplay_name\x18\x04 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12C\n" +
-	"\x05items\x18\x05 \x03(\v2-.google.cloud.speech.v2.CustomClass.ClassItemR\x05items\x12D\n" +
-	"\x05state\x18\x0f \x01(\x0e2).google.cloud.speech.v2.CustomClass.StateB\x03\xe0A\x03R\x05state\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12@\n" +
-	"\vdelete_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"deleteTime\x12@\n" +
-	"\vexpire_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"expireTime\x12[\n" +
+	"updateMask\"\xe0\b\n" +
+	"\vCustomClass\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\bR\x04name\x12\x16\n" +
+	"\x03uid\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12'\n" +
+	"\fdisplay_name\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12C\n" +
+	"\x05items\x18\x05 \x03(\v2-.google.cloud.speech.v2.CustomClass.ClassItemR\x05items\x12E\n" +
+	"\x05state\x18\x0f \x01(\x0e2).google.cloud.speech.v2.CustomClass.StateB\x04\xe2A\x01\x03R\x05state\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12A\n" +
+	"\vdelete_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"deleteTime\x12A\n" +
+	"\vexpire_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"expireTime\x12\\\n" +
 	"\vannotations\x18\n" +
-	" \x03(\v24.google.cloud.speech.v2.CustomClass.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12\x17\n" +
-	"\x04etag\x18\v \x01(\tB\x03\xe0A\x03R\x04etag\x12%\n" +
-	"\vreconciling\x18\f \x01(\bB\x03\xe0A\x03R\vreconciling\x12K\n" +
-	"\fkms_key_name\x18\r \x01(\tB)\xe0A\x03\xfaA#\n" +
+	" \x03(\v24.google.cloud.speech.v2.CustomClass.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12\x18\n" +
+	"\x04etag\x18\v \x01(\tB\x04\xe2A\x01\x03R\x04etag\x12&\n" +
+	"\vreconciling\x18\f \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12L\n" +
+	"\fkms_key_name\x18\r \x01(\tB*\xe2A\x01\x03\xfaA#\n" +
 	"!cloudkms.googleapis.com/CryptoKeyR\n" +
-	"kmsKeyName\x12a\n" +
-	"\x14kms_key_version_name\x18\x0e \x01(\tB0\xe0A\x03\xfaA*\n" +
+	"kmsKeyName\x12b\n" +
+	"\x14kms_key_version_name\x18\x0e \x01(\tB1\xe2A\x01\x03\xfaA*\n" +
 	"(cloudkms.googleapis.com/CryptoKeyVersionR\x11kmsKeyVersionName\x1a!\n" +
 	"\tClassItem\x12\x14\n" +
 	"\x05value\x18\x01 \x01(\tR\x05value\x1a>\n" +
@@ -6810,30 +6810,30 @@ const file_google_cloud_speech_v2_cloud_speech_proto_rawDesc = "" +
 	"\n" +
 	"\x06ACTIVE\x10\x02\x12\v\n" +
 	"\aDELETED\x10\x04:o\xeaAl\n" +
-	"!speech.googleapis.com/CustomClass\x12Dprojects/{project}/locations/{location}/customClasses/{custom_class}R\x01\x01\"\xe6\b\n" +
-	"\tPhraseSet\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x12\x15\n" +
-	"\x03uid\x18\x02 \x01(\tB\x03\xe0A\x03R\x03uid\x12B\n" +
+	"!speech.googleapis.com/CustomClass\x12Dprojects/{project}/locations/{location}/customClasses/{custom_class}R\x01\x01\"\xef\b\n" +
+	"\tPhraseSet\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\bR\x04name\x12\x16\n" +
+	"\x03uid\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12B\n" +
 	"\aphrases\x18\x03 \x03(\v2(.google.cloud.speech.v2.PhraseSet.PhraseR\aphrases\x12\x14\n" +
 	"\x05boost\x18\x04 \x01(\x02R\x05boost\x12!\n" +
-	"\fdisplay_name\x18\x05 \x01(\tR\vdisplayName\x12B\n" +
-	"\x05state\x18\x0f \x01(\x0e2'.google.cloud.speech.v2.PhraseSet.StateB\x03\xe0A\x03R\x05state\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12@\n" +
-	"\vdelete_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"deleteTime\x12@\n" +
-	"\vexpire_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\fdisplay_name\x18\x05 \x01(\tR\vdisplayName\x12C\n" +
+	"\x05state\x18\x0f \x01(\x0e2'.google.cloud.speech.v2.PhraseSet.StateB\x04\xe2A\x01\x03R\x05state\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12A\n" +
+	"\vdelete_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"deleteTime\x12A\n" +
+	"\vexpire_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"expireTime\x12T\n" +
 	"\vannotations\x18\n" +
-	" \x03(\v22.google.cloud.speech.v2.PhraseSet.AnnotationsEntryR\vannotations\x12\x17\n" +
-	"\x04etag\x18\v \x01(\tB\x03\xe0A\x03R\x04etag\x12%\n" +
-	"\vreconciling\x18\f \x01(\bB\x03\xe0A\x03R\vreconciling\x12K\n" +
-	"\fkms_key_name\x18\r \x01(\tB)\xe0A\x03\xfaA#\n" +
+	" \x03(\v22.google.cloud.speech.v2.PhraseSet.AnnotationsEntryR\vannotations\x12\x18\n" +
+	"\x04etag\x18\v \x01(\tB\x04\xe2A\x01\x03R\x04etag\x12&\n" +
+	"\vreconciling\x18\f \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12L\n" +
+	"\fkms_key_name\x18\r \x01(\tB*\xe2A\x01\x03\xfaA#\n" +
 	"!cloudkms.googleapis.com/CryptoKeyR\n" +
-	"kmsKeyName\x12a\n" +
-	"\x14kms_key_version_name\x18\x0e \x01(\tB0\xe0A\x03\xfaA*\n" +
+	"kmsKeyName\x12b\n" +
+	"\x14kms_key_version_name\x18\x0e \x01(\tB1\xe2A\x01\x03\xfaA*\n" +
 	"(cloudkms.googleapis.com/CryptoKeyVersionR\x11kmsKeyVersionName\x1a4\n" +
 	"\x06Phrase\x12\x14\n" +
 	"\x05value\x18\x01 \x01(\tR\x05value\x12\x14\n" +
@@ -6846,14 +6846,14 @@ const file_google_cloud_speech_v2_cloud_speech_proto_rawDesc = "" +
 	"\n" +
 	"\x06ACTIVE\x10\x02\x12\v\n" +
 	"\aDELETED\x10\x04:h\xeaAe\n" +
-	"\x1fspeech.googleapis.com/PhraseSet\x12?projects/{project}/locations/{location}/phraseSets/{phrase_set}R\x01\x01\"\xf7\x01\n" +
-	"\x18CreateCustomClassRequest\x12K\n" +
-	"\fcustom_class\x18\x01 \x01(\v2#.google.cloud.speech.v2.CustomClassB\x03\xe0A\x02R\vcustomClass\x12#\n" +
+	"\x1fspeech.googleapis.com/PhraseSet\x12?projects/{project}/locations/{location}/phraseSets/{phrase_set}R\x01\x01\"\xf9\x01\n" +
+	"\x18CreateCustomClassRequest\x12L\n" +
+	"\fcustom_class\x18\x01 \x01(\v2#.google.cloud.speech.v2.CustomClassB\x04\xe2A\x01\x02R\vcustomClass\x12#\n" +
 	"\rvalidate_only\x18\x02 \x01(\bR\fvalidateOnly\x12&\n" +
-	"\x0fcustom_class_id\x18\x03 \x01(\tR\rcustomClassId\x12A\n" +
-	"\x06parent\x18\x04 \x01(\tB)\xe0A\x02\xfaA#\x12!speech.googleapis.com/CustomClassR\x06parent\"\xbc\x01\n" +
-	"\x18ListCustomClassesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x0fcustom_class_id\x18\x03 \x01(\tR\rcustomClassId\x12B\n" +
+	"\x06parent\x18\x04 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!speech.googleapis.com/CustomClassR\x06parent\"\xbd\x01\n" +
+	"\x18ListCustomClassesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -6861,34 +6861,34 @@ const file_google_cloud_speech_v2_cloud_speech_proto_rawDesc = "" +
 	"\fshow_deleted\x18\x04 \x01(\bR\vshowDeleted\"\x8f\x01\n" +
 	"\x19ListCustomClassesResponse\x12J\n" +
 	"\x0ecustom_classes\x18\x01 \x03(\v2#.google.cloud.speech.v2.CustomClassR\rcustomClasses\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"V\n" +
-	"\x15GetCustomClassRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!speech.googleapis.com/CustomClassR\x04name\"\xc9\x01\n" +
-	"\x18UpdateCustomClassRequest\x12K\n" +
-	"\fcustom_class\x18\x01 \x01(\v2#.google.cloud.speech.v2.CustomClassB\x03\xe0A\x02R\vcustomClass\x12;\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"W\n" +
+	"\x15GetCustomClassRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!speech.googleapis.com/CustomClassR\x04name\"\xca\x01\n" +
+	"\x18UpdateCustomClassRequest\x12L\n" +
+	"\fcustom_class\x18\x01 \x01(\v2#.google.cloud.speech.v2.CustomClassB\x04\xe2A\x01\x02R\vcustomClass\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"updateMask\x12#\n" +
-	"\rvalidate_only\x18\x04 \x01(\bR\fvalidateOnly\"\xb7\x01\n" +
-	"\x18DeleteCustomClassRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\rvalidate_only\x18\x04 \x01(\bR\fvalidateOnly\"\xb8\x01\n" +
+	"\x18DeleteCustomClassRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!speech.googleapis.com/CustomClassR\x04name\x12#\n" +
 	"\rvalidate_only\x18\x02 \x01(\bR\fvalidateOnly\x12#\n" +
 	"\rallow_missing\x18\x04 \x01(\bR\fallowMissing\x12\x12\n" +
-	"\x04etag\x18\x03 \x01(\tR\x04etag\"\x94\x01\n" +
-	"\x1aUndeleteCustomClassRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x04etag\x18\x03 \x01(\tR\x04etag\"\x95\x01\n" +
+	"\x1aUndeleteCustomClassRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!speech.googleapis.com/CustomClassR\x04name\x12#\n" +
 	"\rvalidate_only\x18\x03 \x01(\bR\fvalidateOnly\x12\x12\n" +
-	"\x04etag\x18\x04 \x01(\tR\x04etag\"\xe9\x01\n" +
-	"\x16CreatePhraseSetRequest\x12E\n" +
+	"\x04etag\x18\x04 \x01(\tR\x04etag\"\xeb\x01\n" +
+	"\x16CreatePhraseSetRequest\x12F\n" +
 	"\n" +
-	"phrase_set\x18\x01 \x01(\v2!.google.cloud.speech.v2.PhraseSetB\x03\xe0A\x02R\tphraseSet\x12#\n" +
+	"phrase_set\x18\x01 \x01(\v2!.google.cloud.speech.v2.PhraseSetB\x04\xe2A\x01\x02R\tphraseSet\x12#\n" +
 	"\rvalidate_only\x18\x02 \x01(\bR\fvalidateOnly\x12\"\n" +
-	"\rphrase_set_id\x18\x03 \x01(\tR\vphraseSetId\x12?\n" +
-	"\x06parent\x18\x04 \x01(\tB'\xe0A\x02\xfaA!\x12\x1fspeech.googleapis.com/PhraseSetR\x06parent\"\xb9\x01\n" +
-	"\x15ListPhraseSetsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\rphrase_set_id\x18\x03 \x01(\tR\vphraseSetId\x12@\n" +
+	"\x06parent\x18\x04 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1fspeech.googleapis.com/PhraseSetR\x06parent\"\xba\x01\n" +
+	"\x15ListPhraseSetsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -6897,24 +6897,24 @@ const file_google_cloud_speech_v2_cloud_speech_proto_rawDesc = "" +
 	"\x16ListPhraseSetsResponse\x12B\n" +
 	"\vphrase_sets\x18\x01 \x03(\v2!.google.cloud.speech.v2.PhraseSetR\n" +
 	"phraseSets\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"R\n" +
-	"\x13GetPhraseSetRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fspeech.googleapis.com/PhraseSetR\x04name\"\xc1\x01\n" +
-	"\x16UpdatePhraseSetRequest\x12E\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"S\n" +
+	"\x13GetPhraseSetRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fspeech.googleapis.com/PhraseSetR\x04name\"\xc2\x01\n" +
+	"\x16UpdatePhraseSetRequest\x12F\n" +
 	"\n" +
-	"phrase_set\x18\x01 \x01(\v2!.google.cloud.speech.v2.PhraseSetB\x03\xe0A\x02R\tphraseSet\x12;\n" +
+	"phrase_set\x18\x01 \x01(\v2!.google.cloud.speech.v2.PhraseSetB\x04\xe2A\x01\x02R\tphraseSet\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"updateMask\x12#\n" +
-	"\rvalidate_only\x18\x04 \x01(\bR\fvalidateOnly\"\xb3\x01\n" +
-	"\x16DeletePhraseSetRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
+	"\rvalidate_only\x18\x04 \x01(\bR\fvalidateOnly\"\xb4\x01\n" +
+	"\x16DeletePhraseSetRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
 	"\x1fspeech.googleapis.com/PhraseSetR\x04name\x12#\n" +
 	"\rvalidate_only\x18\x02 \x01(\bR\fvalidateOnly\x12#\n" +
 	"\rallow_missing\x18\x04 \x01(\bR\fallowMissing\x12\x12\n" +
-	"\x04etag\x18\x03 \x01(\tR\x04etag\"\x90\x01\n" +
-	"\x18UndeletePhraseSetRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
+	"\x04etag\x18\x03 \x01(\tR\x04etag\"\x91\x01\n" +
+	"\x18UndeletePhraseSetRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
 	"\x1fspeech.googleapis.com/PhraseSetR\x04name\x12#\n" +
 	"\rvalidate_only\x18\x03 \x01(\bR\fvalidateOnly\x12\x12\n" +
 	"\x04etag\x18\x04 \x01(\tR\x04etag2\xbf%\n" +

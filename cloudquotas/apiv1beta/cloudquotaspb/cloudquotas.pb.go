@@ -601,44 +601,44 @@ var File_google_api_cloudquotas_v1beta_cloudquotas_proto protoreflect.FileDescri
 
 const file_google_api_cloudquotas_v1beta_cloudquotas_proto_rawDesc = "" +
 	"\n" +
-	"/google/api/cloudquotas/v1beta/cloudquotas.proto\x12\x1dgoogle.api.cloudquotas.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a-google/api/cloudquotas/v1beta/resources.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\"\xa3\x01\n" +
-	"\x15ListQuotaInfosRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$cloudquotas.googleapis.com/QuotaInfoR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"/google/api/cloudquotas/v1beta/cloudquotas.proto\x12\x1dgoogle.api.cloudquotas.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a-google/api/cloudquotas/v1beta/resources.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\"\xa6\x01\n" +
+	"\x15ListQuotaInfosRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$cloudquotas.googleapis.com/QuotaInfoR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x8b\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x8b\x01\n" +
 	"\x16ListQuotaInfosResponse\x12I\n" +
 	"\vquota_infos\x18\x01 \x03(\v2(.google.api.cloudquotas.v1beta.QuotaInfoR\n" +
 	"quotaInfos\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"W\n" +
-	"\x13GetQuotaInfoRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$cloudquotas.googleapis.com/QuotaInfoR\x04name\"\xec\x01\n" +
-	"\x1bListQuotaPreferencesRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*cloudquotas.googleapis.com/QuotaPreferenceR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"X\n" +
+	"\x13GetQuotaInfoRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$cloudquotas.googleapis.com/QuotaInfoR\x04name\"\xf1\x01\n" +
+	"\x1bListQuotaPreferencesRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*cloudquotas.googleapis.com/QuotaPreferenceR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xc5\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xc5\x01\n" +
 	"\x1cListQuotaPreferencesResponse\x12[\n" +
 	"\x11quota_preferences\x18\x01 \x03(\v2..google.api.cloudquotas.v1beta.QuotaPreferenceR\x10quotaPreferences\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"c\n" +
-	"\x19GetQuotaPreferenceRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*cloudquotas.googleapis.com/QuotaPreferenceR\x04name\"\xe2\x02\n" +
-	"\x1cCreateQuotaPreferenceRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*cloudquotas.googleapis.com/QuotaPreferenceR\x06parent\x123\n" +
-	"\x13quota_preference_id\x18\x02 \x01(\tB\x03\xe0A\x01R\x11quotaPreferenceId\x12^\n" +
-	"\x10quota_preference\x18\x03 \x01(\v2..google.api.cloudquotas.v1beta.QuotaPreferenceB\x03\xe0A\x02R\x0fquotaPreference\x12a\n" +
-	"\x14ignore_safety_checks\x18\x04 \x03(\x0e2/.google.api.cloudquotas.v1beta.QuotaSafetyCheckR\x12ignoreSafetyChecks\"\xf7\x02\n" +
-	"\x1cUpdateQuotaPreferenceRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12^\n" +
-	"\x10quota_preference\x18\x02 \x01(\v2..google.api.cloudquotas.v1beta.QuotaPreferenceB\x03\xe0A\x02R\x0fquotaPreference\x12(\n" +
-	"\rallow_missing\x18\x03 \x01(\bB\x03\xe0A\x01R\fallowMissing\x12(\n" +
-	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12a\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"d\n" +
+	"\x19GetQuotaPreferenceRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*cloudquotas.googleapis.com/QuotaPreferenceR\x04name\"\xe5\x02\n" +
+	"\x1cCreateQuotaPreferenceRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*cloudquotas.googleapis.com/QuotaPreferenceR\x06parent\x124\n" +
+	"\x13quota_preference_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x11quotaPreferenceId\x12_\n" +
+	"\x10quota_preference\x18\x03 \x01(\v2..google.api.cloudquotas.v1beta.QuotaPreferenceB\x04\xe2A\x01\x02R\x0fquotaPreference\x12a\n" +
+	"\x14ignore_safety_checks\x18\x04 \x03(\x0e2/.google.api.cloudquotas.v1beta.QuotaSafetyCheckR\x12ignoreSafetyChecks\"\xfb\x02\n" +
+	"\x1cUpdateQuotaPreferenceRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12_\n" +
+	"\x10quota_preference\x18\x02 \x01(\v2..google.api.cloudquotas.v1beta.QuotaPreferenceB\x04\xe2A\x01\x02R\x0fquotaPreference\x12)\n" +
+	"\rallow_missing\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fallowMissing\x12)\n" +
+	"\rvalidate_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12a\n" +
 	"\x14ignore_safety_checks\x18\x05 \x03(\x0e2/.google.api.cloudquotas.v1beta.QuotaSafetyCheckR\x12ignoreSafetyChecks2\xb1\x12\n" +
 	"\vCloudQuotas\x12\xd5\x02\n" +
 	"\x0eListQuotaInfos\x124.google.api.cloudquotas.v1beta.ListQuotaInfosRequest\x1a5.google.api.cloudquotas.v1beta.ListQuotaInfosResponse\"\xd5\x01\xdaA\x06parent\x82\xd3\xe4\x93\x02\xc5\x01ZD\x12B/v1beta/{parent=organizations/*/locations/*/services/*}/quotaInfosZ>\x12</v1beta/{parent=folders/*/locations/*/services/*}/quotaInfos\x12=/v1beta/{parent=projects/*/locations/*/services/*}/quotaInfos\x12\xc2\x02\n" +

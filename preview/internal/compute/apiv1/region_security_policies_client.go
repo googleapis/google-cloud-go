@@ -415,6 +415,13 @@ func (c *regionSecurityPoliciesRESTClient) AddRule(ctx context.Context, req *com
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetSecurityPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/securityPolicies/%v/addRule", req.GetProject(), req.GetRegion(), req.GetSecurityPolicy())
 
 	params := url.Values{}
@@ -477,6 +484,13 @@ func (c *regionSecurityPoliciesRESTClient) AddRule(ctx context.Context, req *com
 func (c *regionSecurityPoliciesRESTClient) Delete(ctx context.Context, req *computepb.DeleteRegionSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetSecurityPolicy(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/securityPolicies/%v", req.GetProject(), req.GetRegion(), req.GetSecurityPolicy())
@@ -543,6 +557,13 @@ func (c *regionSecurityPoliciesRESTClient) Get(ctx context.Context, req *compute
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetSecurityPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/securityPolicies/%v", req.GetProject(), req.GetRegion(), req.GetSecurityPolicy())
 
 	// Build HTTP headers from client and context metadata.
@@ -590,6 +611,13 @@ func (c *regionSecurityPoliciesRESTClient) Get(ctx context.Context, req *compute
 func (c *regionSecurityPoliciesRESTClient) GetRule(ctx context.Context, req *computepb.GetRuleRegionSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.SecurityPolicyRule, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetSecurityPolicy(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/securityPolicies/%v/getRule", req.GetProject(), req.GetRegion(), req.GetSecurityPolicy())
@@ -654,6 +682,12 @@ func (c *regionSecurityPoliciesRESTClient) Insert(ctx context.Context, req *comp
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/securityPolicies", req.GetProject(), req.GetRegion())
@@ -737,6 +771,12 @@ func (c *regionSecurityPoliciesRESTClient) List(ctx context.Context, req *comput
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/securityPolicies", req.GetProject(), req.GetRegion())
 
 		params := url.Values{}
@@ -818,6 +858,13 @@ func (c *regionSecurityPoliciesRESTClient) Patch(ctx context.Context, req *compu
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetSecurityPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/securityPolicies/%v", req.GetProject(), req.GetRegion(), req.GetSecurityPolicy())
 
 	params := url.Values{}
@@ -893,6 +940,13 @@ func (c *regionSecurityPoliciesRESTClient) PatchRule(ctx context.Context, req *c
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetSecurityPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/securityPolicies/%v/patchRule", req.GetProject(), req.GetRegion(), req.GetSecurityPolicy())
 
 	params := url.Values{}
@@ -961,6 +1015,13 @@ func (c *regionSecurityPoliciesRESTClient) PatchRule(ctx context.Context, req *c
 func (c *regionSecurityPoliciesRESTClient) RemoveRule(ctx context.Context, req *computepb.RemoveRuleRegionSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetSecurityPolicy(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/securityPolicies/%v/removeRule", req.GetProject(), req.GetRegion(), req.GetSecurityPolicy())
@@ -1034,6 +1095,13 @@ func (c *regionSecurityPoliciesRESTClient) SetLabels(ctx context.Context, req *c
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/securityPolicies/%v/setLabels", req.GetProject(), req.GetRegion(), req.GetResource())
