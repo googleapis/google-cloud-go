@@ -1185,12 +1185,13 @@ type ApplicationTemplateSystemRevision struct {
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 	// Output only. Annotations from agentic workflows or other system processes.
 	// For example:
-	// {
-	//   "designcenter.googleapis.com/agent_id": "gemini-3-flash-v1",
-	//   "designcenter.googleapis.com/llm_agent_summary": "Added a Cloud SQL
-	//   instance", "designcenter.googleapis.com/external_ref_id":
-	//   "trace-uuid-88921-xyz"
-	// }
+	//
+	//	{
+	//	  "designcenter.googleapis.com/agent_id": "gemini-3-flash-v1",
+	//	  "designcenter.googleapis.com/llm_agent_summary": "Added a Cloud SQL
+	//	  instance", "designcenter.googleapis.com/external_ref_id":
+	//	  "trace-uuid-88921-xyz"
+	//	}
 	Annotations map[string]string `protobuf:"bytes,3,rep,name=annotations,proto3" json:"annotations,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	// Output only. The serialized application template snapshot at this revision.
 	Snapshot      *SerializedApplicationTemplate `protobuf:"bytes,4,opt,name=snapshot,proto3" json:"snapshot,omitempty"`

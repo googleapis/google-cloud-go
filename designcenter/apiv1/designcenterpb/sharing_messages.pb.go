@@ -108,8 +108,9 @@ type ListSharesRequest struct {
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. The maximum number of results to return from this request.
 	// Non-positive
-	//  values are ignored. The presence of nextPageToken in the response
-	//  indicates that more results might be available.
+	//
+	//	values are ignored. The presence of nextPageToken in the response
+	//	indicates that more results might be available.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// Optional. If present, then retrieve the next batch of results from the
 	// preceding call to this method. pageToken must be the value of nextPageToken
@@ -627,8 +628,9 @@ type ListSharedTemplateRevisionsRequest struct {
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. The maximum number of results to return from this request.
 	// Non-positive
-	//  values are ignored. The presence of nextPageToken in the response
-	//  indicates that more results might be available.
+	//
+	//	values are ignored. The presence of nextPageToken in the response
+	//	indicates that more results might be available.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// Optional. If present, then retrieve the next batch of results from the
 	// preceding call to this method. pageToken must be the value of nextPageToken

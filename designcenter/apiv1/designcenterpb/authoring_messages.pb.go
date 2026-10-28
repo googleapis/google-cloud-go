@@ -204,8 +204,9 @@ type ListApplicationTemplatesRequest struct {
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. The maximum number of results to return from this request.
 	// Non-positive
-	//  values are ignored. The presence of nextPageToken in the response
-	//  indicates that more results might be available.
+	//
+	//	values are ignored. The presence of nextPageToken in the response
+	//	indicates that more results might be available.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// Optional. If present, then retrieve the next batch of results from the
 	// preceding call to this method. pageToken must be the value of nextPageToken
@@ -731,12 +732,13 @@ type ImportApplicationTemplateRequest struct {
 	// Optional. Annotations to be stored with the new system revision created as
 	// a result of this import. Sample annotations from agentic workflows might
 	// look like
-	// {
-	//   "designcenter.googleapis.com/agent_id": "gemini-3-flash-v1",
-	//   "designcenter.googleapis.com/llm_agent_summary": "Restored to revision
-	//   Rev-100", "designcenter.googleapis.com/external_ref_id":
-	//   "trace-uuid-88921-xyz",
-	// }
+	//
+	//	{
+	//	  "designcenter.googleapis.com/agent_id": "gemini-3-flash-v1",
+	//	  "designcenter.googleapis.com/llm_agent_summary": "Restored to revision
+	//	  Rev-100", "designcenter.googleapis.com/external_ref_id":
+	//	  "trace-uuid-88921-xyz",
+	//	}
 	Annotations   map[string]string `protobuf:"bytes,7,rep,name=annotations,proto3" json:"annotations,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1801,8 +1803,9 @@ type ListComponentsRequest struct {
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. The maximum number of results to return from this request.
 	// Non-positive
-	//  values are ignored. The presence of nextPageToken in the response
-	//  indicates that more results might be available.
+	//
+	//	values are ignored. The presence of nextPageToken in the response
+	//	indicates that more results might be available.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// Optional. If present, then retrieve the next batch of results from the
 	// preceding call to this method. pageToken must be the value of nextPageToken
@@ -2599,8 +2602,9 @@ type ListApplicationTemplateRevisionsRequest struct {
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. The maximum number of results to return from this request.
 	// Non-positive
-	//  values are ignored. The presence of nextPageToken in the response
-	//  indicates that more results might be available.
+	//
+	//	values are ignored. The presence of nextPageToken in the response
+	//	indicates that more results might be available.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// Optional. If present, then retrieve the next batch of results from the
 	// preceding call to this method. pageToken must be the value of nextPageToken

@@ -281,8 +281,9 @@ type ListApplicationsRequest struct {
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. The maximum number of results to return from this request.
 	// Non-positive
-	//  values are ignored. The presence of nextPageToken in the response
-	//  indicates that more results might be available.
+	//
+	//	values are ignored. The presence of nextPageToken in the response
+	//	indicates that more results might be available.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// Optional. If present, then retrieve the next batch of results from the
 	// preceding call to this method. pageToken must be the value of nextPageToken
@@ -563,16 +564,17 @@ type DeployApplicationRequest struct {
 	// Optional. The email address of the service account to use for this
 	// deployment.
 	//
-	// - If provided, this service account will be used to execute the deployment
-	//   process, taking precedence over any service_account specified on the
-	//   Application resource.
-	// - The caller must have the 'iam.serviceAccounts.actAs' permission on this
-	//   service account.
-	// - If this field is omitted, the system will use the 'service_account'
-	//   defined within the Application resource.
-	// - We recommend that you provide a service account here or on the
-	//   Application resource. If you don't provide a service account, the
-	//   deployment will fail.
+	//   - If provided, this service account will be used to execute the deployment
+	//     process, taking precedence over any service_account specified on the
+	//     Application resource.
+	//   - The caller must have the 'iam.serviceAccounts.actAs' permission on this
+	//     service account.
+	//   - If this field is omitted, the system will use the 'service_account'
+	//     defined within the Application resource.
+	//   - We recommend that you provide a service account here or on the
+	//     Application resource. If you don't provide a service account, the
+	//     deployment will fail.
+	//
 	// Format: projects/{PROJECT}/serviceAccounts/{EMAIL_ADDRESS}
 	ServiceAccount string `protobuf:"bytes,5,opt,name=service_account,json=serviceAccount,proto3" json:"service_account,omitempty"`
 	// Optional. If set to true, the request is validated, but no actual
@@ -1249,16 +1251,17 @@ type PreviewApplicationRequest struct {
 	// Optional. The email address of the service account to use for this preview
 	// operation.
 	//
-	// - If provided, this service account will be used to execute the preview
-	//   process, taking precedence over any service_account specified on the
-	//   Application resource.
-	// - The caller must have the 'iam.serviceAccounts.actAs' permission on this
-	//   service account.
-	// - If this field is omitted, the system will use the 'service_account'
-	//   defined within the Application resource.
-	// - We recommend that you provide a service account here or on the
-	//   Application resource. If you don't provide a service account, the preview
-	//   will fail.
+	//   - If provided, this service account will be used to execute the preview
+	//     process, taking precedence over any service_account specified on the
+	//     Application resource.
+	//   - The caller must have the 'iam.serviceAccounts.actAs' permission on this
+	//     service account.
+	//   - If this field is omitted, the system will use the 'service_account'
+	//     defined within the Application resource.
+	//   - We recommend that you provide a service account here or on the
+	//     Application resource. If you don't provide a service account, the preview
+	//     will fail.
+	//
 	// Format: projects/{PROJECT}/serviceAccounts/{EMAIL_ADDRESS}
 	ServiceAccount string `protobuf:"bytes,3,opt,name=service_account,json=serviceAccount,proto3" json:"service_account,omitempty"`
 	unknownFields  protoimpl.UnknownFields
@@ -1482,11 +1485,12 @@ type ConfigureAndDeployTemplateRequest struct {
 	// Optional. The resource name of the service account to use for this
 	// deployment.
 	//
-	// - If provided, this service account will be used to execute the deployment
-	//   process.
-	// - The caller must have the `iam.serviceAccounts.actAs` permission on this
-	//   service account.
-	// - If this field is omitted, a default system service account will be used.
+	//   - If provided, this service account will be used to execute the deployment
+	//     process.
+	//   - The caller must have the `iam.serviceAccounts.actAs` permission on this
+	//     service account.
+	//   - If this field is omitted, a default system service account will be used.
+	//
 	// Format: projects/{PROJECT}/serviceAccounts/{EMAIL_ADDRESS}
 	ServiceAccount string `protobuf:"bytes,5,opt,name=service_account,json=serviceAccount,proto3" json:"service_account,omitempty"`
 	unknownFields  protoimpl.UnknownFields

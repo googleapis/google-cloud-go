@@ -124,8 +124,10 @@ type Space struct {
 	// Optional. Input only. Immutable. Tags are key/values bound to space
 	// resource. Example:
 	// ```
-	//   "123/environment": "production"
-	//   "123/costCenter": "marketing"
+	//
+	//	"123/environment": "production"
+	//	"123/costCenter": "marketing"
+	//
 	// ```
 	//
 	// For more information on tag creation and management, see

@@ -234,10 +234,11 @@ type GenerateApplicationTemplateAssessmentReportRequest struct {
 	// Optional. Deprecated: This field is no longer used since we moved to fast
 	// plan assessment.
 	//
-	// - This service account will be used to execute the preview
-	//   process.
-	// - The caller must have the 'iam.serviceAccounts.actAs' permission on this
-	//   service account.
+	//   - This service account will be used to execute the preview
+	//     process.
+	//   - The caller must have the 'iam.serviceAccounts.actAs' permission on this
+	//     service account.
+	//
 	// Format: projects/{PROJECT}/serviceAccounts/{EMAIL_ADDRESS}
 	//
 	// Deprecated: Marked as deprecated in google/cloud/designcenter/v1/best_practices_messages.proto.
