@@ -541,6 +541,11 @@ func (c *firewallPoliciesRESTClient) AddAssociation(ctx context.Context, req *co
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetFirewallPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/%v/addAssociation", req.GetFirewallPolicy())
 
 	params := url.Values{}
@@ -613,6 +618,11 @@ func (c *firewallPoliciesRESTClient) AddRule(ctx context.Context, req *computepb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetFirewallPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/%v/addRule", req.GetFirewallPolicy())
 
 	params := url.Values{}
@@ -673,6 +683,11 @@ func (c *firewallPoliciesRESTClient) AddRule(ctx context.Context, req *computepb
 func (c *firewallPoliciesRESTClient) CloneRules(ctx context.Context, req *computepb.CloneRulesFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetFirewallPolicy(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/%v/cloneRules", req.GetFirewallPolicy())
@@ -740,6 +755,11 @@ func (c *firewallPoliciesRESTClient) Delete(ctx context.Context, req *computepb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetFirewallPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/%v", req.GetFirewallPolicy())
 
 	params := url.Values{}
@@ -802,6 +822,11 @@ func (c *firewallPoliciesRESTClient) Get(ctx context.Context, req *computepb.Get
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetFirewallPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/%v", req.GetFirewallPolicy())
 
 	// Build HTTP headers from client and context metadata.
@@ -849,6 +874,11 @@ func (c *firewallPoliciesRESTClient) Get(ctx context.Context, req *computepb.Get
 func (c *firewallPoliciesRESTClient) GetAssociation(ctx context.Context, req *computepb.GetAssociationFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.FirewallPolicyAssociation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetFirewallPolicy(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/%v/getAssociation", req.GetFirewallPolicy())
@@ -908,6 +938,11 @@ func (c *firewallPoliciesRESTClient) GetIamPolicy(ctx context.Context, req *comp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/%v/getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -962,6 +997,11 @@ func (c *firewallPoliciesRESTClient) GetIamPolicy(ctx context.Context, req *comp
 func (c *firewallPoliciesRESTClient) GetRule(ctx context.Context, req *computepb.GetRuleFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.FirewallPolicyRule, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetFirewallPolicy(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/%v/getRule", req.GetFirewallPolicy())
@@ -1233,6 +1273,11 @@ func (c *firewallPoliciesRESTClient) Move(ctx context.Context, req *computepb.Mo
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetFirewallPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/%v/move", req.GetFirewallPolicy())
 
 	params := url.Values{}
@@ -1305,6 +1350,11 @@ func (c *firewallPoliciesRESTClient) Patch(ctx context.Context, req *computepb.P
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetFirewallPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/%v", req.GetFirewallPolicy())
 
 	params := url.Values{}
@@ -1374,6 +1424,11 @@ func (c *firewallPoliciesRESTClient) PatchRule(ctx context.Context, req *compute
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetFirewallPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/%v/patchRule", req.GetFirewallPolicy())
 
 	params := url.Values{}
@@ -1439,6 +1494,11 @@ func (c *firewallPoliciesRESTClient) RemoveAssociation(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetFirewallPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/%v/removeAssociation", req.GetFirewallPolicy())
 
 	params := url.Values{}
@@ -1502,6 +1562,11 @@ func (c *firewallPoliciesRESTClient) RemoveAssociation(ctx context.Context, req 
 func (c *firewallPoliciesRESTClient) RemoveRule(ctx context.Context, req *computepb.RemoveRuleFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetFirewallPolicy(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/%v/removeRule", req.GetFirewallPolicy())
@@ -1577,6 +1642,11 @@ func (c *firewallPoliciesRESTClient) SetIamPolicy(ctx context.Context, req *comp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/%v/setIamPolicy", req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -1631,6 +1701,11 @@ func (c *firewallPoliciesRESTClient) TestIamPermissions(ctx context.Context, req
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/%v/testIamPermissions", req.GetResource())

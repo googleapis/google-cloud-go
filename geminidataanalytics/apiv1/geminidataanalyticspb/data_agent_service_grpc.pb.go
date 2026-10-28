@@ -80,8 +80,7 @@ type DataAgentServiceClient interface {
 	// Sets the IAM policy for a DataAgent.
 	SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
 	// Enables/Disables required GCP services and configures AgentOps
-	// observability settings calling the Admin Settings executable node to
-	// update the AgentOps Observability feature.
+	// observability settings.
 	SetAgentOpsObservability(ctx context.Context, in *SetAgentOpsObservabilityRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets AgentOps observability settings and status of required services.
 	RetrieveAgentOpsObservability(ctx context.Context, in *RetrieveAgentOpsObservabilityRequest, opts ...grpc.CallOption) (*RetrieveAgentOpsObservabilityResponse, error)
@@ -240,8 +239,7 @@ type DataAgentServiceServer interface {
 	// Sets the IAM policy for a DataAgent.
 	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error)
 	// Enables/Disables required GCP services and configures AgentOps
-	// observability settings calling the Admin Settings executable node to
-	// update the AgentOps Observability feature.
+	// observability settings.
 	SetAgentOpsObservability(context.Context, *SetAgentOpsObservabilityRequest) (*longrunningpb.Operation, error)
 	// Gets AgentOps observability settings and status of required services.
 	RetrieveAgentOpsObservability(context.Context, *RetrieveAgentOpsObservabilityRequest) (*RetrieveAgentOpsObservabilityResponse, error)

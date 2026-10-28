@@ -215,6 +215,11 @@
                 "PositionSection"
               ]
             },
+            "ReplaceMessageCards": {
+              "methods": [
+                "ReplaceMessageCards"
+              ]
+            },
             "SearchMessages": {
               "methods": [
                 "SearchMessages"
@@ -478,6 +483,11 @@
             "PositionSection": {
               "methods": [
                 "PositionSection"
+              ]
+            },
+            "ReplaceMessageCards": {
+              "methods": [
+                "ReplaceMessageCards"
               ]
             },
             "SearchMessages": {

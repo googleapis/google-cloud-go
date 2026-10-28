@@ -586,6 +586,11 @@ func (c *cloudFtpRESTClient) ListServers(ctx context.Context, req *ftppb.ListSer
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/servers", req.GetParent())
 
 		params := url.Values{}
@@ -660,6 +665,11 @@ func (c *cloudFtpRESTClient) GetServer(ctx context.Context, req *ftppb.GetServer
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -722,6 +732,11 @@ func (c *cloudFtpRESTClient) CreateServer(ctx context.Context, req *ftppb.Create
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/servers", req.GetParent())
@@ -796,6 +811,11 @@ func (c *cloudFtpRESTClient) UpdateServer(ctx context.Context, req *ftppb.Update
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetServer().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetServer().GetName())
 
 	params := url.Values{}
@@ -865,6 +885,11 @@ func (c *cloudFtpRESTClient) UpdateServer(ctx context.Context, req *ftppb.Update
 func (c *cloudFtpRESTClient) DeleteServer(ctx context.Context, req *ftppb.DeleteServerRequest, opts ...gax.CallOption) (*DeleteServerOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -941,6 +966,11 @@ func (c *cloudFtpRESTClient) ListUsers(ctx context.Context, req *ftppb.ListUsers
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/users", req.GetParent())
 
 		params := url.Values{}
@@ -1015,6 +1045,11 @@ func (c *cloudFtpRESTClient) GetUser(ctx context.Context, req *ftppb.GetUserRequ
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1077,6 +1112,11 @@ func (c *cloudFtpRESTClient) CreateUser(ctx context.Context, req *ftppb.CreateUs
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/users", req.GetParent())
@@ -1151,6 +1191,11 @@ func (c *cloudFtpRESTClient) UpdateUser(ctx context.Context, req *ftppb.UpdateUs
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetUser().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetUser().GetName())
 
 	params := url.Values{}
@@ -1217,6 +1262,11 @@ func (c *cloudFtpRESTClient) UpdateUser(ctx context.Context, req *ftppb.UpdateUs
 func (c *cloudFtpRESTClient) DeleteUser(ctx context.Context, req *ftppb.DeleteUserRequest, opts ...gax.CallOption) (*DeleteUserOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1289,6 +1339,11 @@ func (c *cloudFtpRESTClient) StartServer(ctx context.Context, req *ftppb.StartSe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:start", req.GetName())
 
 	params := url.Values{}
@@ -1356,6 +1411,11 @@ func (c *cloudFtpRESTClient) StopServer(ctx context.Context, req *ftppb.StopServ
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:stop", req.GetName())
 
 	params := url.Values{}
@@ -1415,6 +1475,11 @@ func (c *cloudFtpRESTClient) StopServer(ctx context.Context, req *ftppb.StopServ
 func (c *cloudFtpRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1499,6 +1564,11 @@ func (c *cloudFtpRESTClient) ListLocations(ctx context.Context, req *locationpb.
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -1573,6 +1643,11 @@ func (c *cloudFtpRESTClient) CancelOperation(ctx context.Context, req *longrunni
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1612,6 +1687,11 @@ func (c *cloudFtpRESTClient) DeleteOperation(ctx context.Context, req *longrunni
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1649,6 +1729,11 @@ func (c *cloudFtpRESTClient) DeleteOperation(ctx context.Context, req *longrunni
 func (c *cloudFtpRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1716,6 +1801,11 @@ func (c *cloudFtpRESTClient) ListOperations(ctx context.Context, req *longrunnin
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

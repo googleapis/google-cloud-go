@@ -3609,6 +3609,11 @@ func (c *restClient) ListManagementServers(ctx context.Context, req *backupdrpb.
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/managementServers", req.GetParent())
 
 		params := url.Values{}
@@ -3680,6 +3685,11 @@ func (c *restClient) GetManagementServer(ctx context.Context, req *backupdrpb.Ge
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -3739,6 +3749,11 @@ func (c *restClient) CreateManagementServer(ctx context.Context, req *backupdrpb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/managementServers", req.GetParent())
@@ -3804,6 +3819,11 @@ func (c *restClient) CreateManagementServer(ctx context.Context, req *backupdrpb
 func (c *restClient) DeleteManagementServer(ctx context.Context, req *backupdrpb.DeleteManagementServerRequest, opts ...gax.CallOption) (*DeleteManagementServerOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -3875,6 +3895,11 @@ func (c *restClient) CreateBackupVault(ctx context.Context, req *backupdrpb.Crea
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/backupVaults", req.GetParent())
@@ -3956,6 +3981,11 @@ func (c *restClient) ListBackupVaults(ctx context.Context, req *backupdrpb.ListB
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/backupVaults", req.GetParent())
@@ -4047,6 +4077,11 @@ func (c *restClient) FetchUsableBackupVaults(ctx context.Context, req *backupdrp
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/backupVaults:fetchUsable", req.GetParent())
 
 		params := url.Values{}
@@ -4118,6 +4153,11 @@ func (c *restClient) GetBackupVault(ctx context.Context, req *backupdrpb.GetBack
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -4180,6 +4220,11 @@ func (c *restClient) UpdateBackupVault(ctx context.Context, req *backupdrpb.Upda
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetBackupVault().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetBackupVault().GetName())
@@ -4260,6 +4305,11 @@ func (c *restClient) UpdateBackupVault(ctx context.Context, req *backupdrpb.Upda
 func (c *restClient) DeleteBackupVault(ctx context.Context, req *backupdrpb.DeleteBackupVaultRequest, opts ...gax.CallOption) (*DeleteBackupVaultOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -4354,6 +4404,11 @@ func (c *restClient) ListDataSources(ctx context.Context, req *backupdrpb.ListDa
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/dataSources", req.GetParent())
 
 		params := url.Values{}
@@ -4425,6 +4480,11 @@ func (c *restClient) GetDataSource(ctx context.Context, req *backupdrpb.GetDataS
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -4484,6 +4544,11 @@ func (c *restClient) UpdateDataSource(ctx context.Context, req *backupdrpb.Updat
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDataSource().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetDataSource().GetName())
@@ -4573,6 +4638,11 @@ func (c *restClient) ListBackups(ctx context.Context, req *backupdrpb.ListBackup
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/backups", req.GetParent())
 
 		params := url.Values{}
@@ -4660,6 +4730,11 @@ func (c *restClient) FetchBackupsForResourceType(ctx context.Context, req *backu
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/backups:fetchForResourceType", req.GetParent())
 
 		params := url.Values{}
@@ -4735,6 +4810,11 @@ func (c *restClient) GetBackup(ctx context.Context, req *backupdrpb.GetBackupReq
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -4797,6 +4877,11 @@ func (c *restClient) UpdateBackup(ctx context.Context, req *backupdrpb.UpdateBac
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetBackup().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetBackup().GetName())
@@ -4870,6 +4955,11 @@ func (c *restClient) DeleteBackup(ctx context.Context, req *backupdrpb.DeleteBac
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -4940,6 +5030,11 @@ func (c *restClient) RestoreBackup(ctx context.Context, req *backupdrpb.RestoreB
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:restore", req.GetName())
 
 	params := url.Values{}
@@ -5006,6 +5101,11 @@ func (c *restClient) CreateBackupPlan(ctx context.Context, req *backupdrpb.Creat
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/backupPlans", req.GetParent())
@@ -5080,6 +5180,11 @@ func (c *restClient) UpdateBackupPlan(ctx context.Context, req *backupdrpb.Updat
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetBackupPlan().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetBackupPlan().GetName())
 
 	params := url.Values{}
@@ -5151,6 +5256,11 @@ func (c *restClient) GetBackupPlan(ctx context.Context, req *backupdrpb.GetBacku
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -5216,6 +5326,11 @@ func (c *restClient) ListBackupPlans(ctx context.Context, req *backupdrpb.ListBa
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/backupPlans", req.GetParent())
@@ -5289,6 +5404,11 @@ func (c *restClient) DeleteBackupPlan(ctx context.Context, req *backupdrpb.Delet
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -5351,6 +5471,11 @@ func (c *restClient) DeleteBackupPlan(ctx context.Context, req *backupdrpb.Delet
 func (c *restClient) GetBackupPlanRevision(ctx context.Context, req *backupdrpb.GetBackupPlanRevisionRequest, opts ...gax.CallOption) (*backupdrpb.BackupPlanRevision, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -5418,6 +5543,11 @@ func (c *restClient) ListBackupPlanRevisions(ctx context.Context, req *backupdrp
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/revisions", req.GetParent())
@@ -5492,6 +5622,11 @@ func (c *restClient) CreateBackupPlanAssociation(ctx context.Context, req *backu
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/backupPlanAssociations", req.GetParent())
 
 	params := url.Values{}
@@ -5562,6 +5697,11 @@ func (c *restClient) UpdateBackupPlanAssociation(ctx context.Context, req *backu
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetBackupPlanAssociation().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetBackupPlanAssociation().GetName())
@@ -5635,6 +5775,11 @@ func (c *restClient) GetBackupPlanAssociation(ctx context.Context, req *backupdr
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -5700,6 +5845,11 @@ func (c *restClient) ListBackupPlanAssociations(ctx context.Context, req *backup
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/backupPlanAssociations", req.GetParent())
@@ -5783,6 +5933,11 @@ func (c *restClient) FetchBackupPlanAssociationsForResourceType(ctx context.Cont
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/backupPlanAssociations:fetchForResourceType", req.GetParent())
 
 		params := url.Values{}
@@ -5853,6 +6008,11 @@ func (c *restClient) FetchBackupPlanAssociationsForResourceType(ctx context.Cont
 func (c *restClient) DeleteBackupPlanAssociation(ctx context.Context, req *backupdrpb.DeleteBackupPlanAssociationRequest, opts ...gax.CallOption) (*DeleteBackupPlanAssociationOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -5928,6 +6088,11 @@ func (c *restClient) TriggerBackup(ctx context.Context, req *backupdrpb.TriggerB
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:triggerBackup", req.GetName())
 
 	params := url.Values{}
@@ -5987,6 +6152,11 @@ func (c *restClient) TriggerBackup(ctx context.Context, req *backupdrpb.TriggerB
 func (c *restClient) GetDataSourceReference(ctx context.Context, req *backupdrpb.GetDataSourceReferenceRequest, opts ...gax.CallOption) (*backupdrpb.DataSourceReference, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -6054,6 +6224,11 @@ func (c *restClient) ListDataSourceReferences(ctx context.Context, req *backupdr
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/dataSourceReferences", req.GetParent())
@@ -6140,6 +6315,11 @@ func (c *restClient) FetchDataSourceReferencesForResourceType(ctx context.Contex
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/dataSourceReferences:fetchForResourceType", req.GetParent())
 
 		params := url.Values{}
@@ -6218,6 +6398,11 @@ func (c *restClient) InitializeService(ctx context.Context, req *backupdrpb.Init
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:initialize", req.GetName())
 
 	params := url.Values{}
@@ -6284,6 +6469,11 @@ func (c *restClient) CreateAutoProtectionPolicy(ctx context.Context, req *backup
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/autoProtectionPolicies", req.GetParent())
@@ -6361,6 +6551,11 @@ func (c *restClient) ListAutoProtectionPolicies(ctx context.Context, req *backup
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/autoProtectionPolicies", req.GetParent())
 
 		params := url.Values{}
@@ -6432,6 +6627,11 @@ func (c *restClient) GetAutoProtectionPolicy(ctx context.Context, req *backupdrp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -6491,6 +6691,11 @@ func (c *restClient) UpdateAutoProtectionPolicy(ctx context.Context, req *backup
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAutoProtectionPolicy().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetAutoProtectionPolicy().GetName())
@@ -6559,6 +6764,11 @@ func (c *restClient) UpdateAutoProtectionPolicy(ctx context.Context, req *backup
 func (c *restClient) DeleteAutoProtectionPolicy(ctx context.Context, req *backupdrpb.DeleteAutoProtectionPolicyRequest, opts ...gax.CallOption) (*DeleteAutoProtectionPolicyOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -6633,6 +6843,11 @@ func (c *restClient) CreateAutoProtectionPolicyBinding(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/bindings", req.GetParent())
 
 	params := url.Values{}
@@ -6693,6 +6908,11 @@ func (c *restClient) CreateAutoProtectionPolicyBinding(ctx context.Context, req 
 func (c *restClient) GetAutoProtectionPolicyBinding(ctx context.Context, req *backupdrpb.GetAutoProtectionPolicyBindingRequest, opts ...gax.CallOption) (*backupdrpb.AutoProtectionPolicyBinding, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -6760,6 +6980,11 @@ func (c *restClient) ListAutoProtectionPolicyBindings(ctx context.Context, req *
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/bindings", req.GetParent())
@@ -6846,6 +7071,11 @@ func (c *restClient) ListAppliedAutoProtectionPolicies(ctx context.Context, req 
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/appliedAutoProtectionPolicies", req.GetParent())
 
 		params := url.Values{}
@@ -6924,6 +7154,11 @@ func (c *restClient) InitiateDeleteAutoProtectionPolicyBinding(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:initiateDelete", req.GetName())
 
 	params := url.Values{}
@@ -6983,6 +7218,11 @@ func (c *restClient) InitiateDeleteAutoProtectionPolicyBinding(ctx context.Conte
 func (c *restClient) GetBindingMatchingResource(ctx context.Context, req *backupdrpb.GetBindingMatchingResourceRequest, opts ...gax.CallOption) (*backupdrpb.BindingMatchingResource, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -7050,6 +7290,11 @@ func (c *restClient) ListBindingMatchingResources(ctx context.Context, req *back
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/matchingResources", req.GetParent())
@@ -7121,6 +7366,11 @@ func (c *restClient) ListBindingMatchingResources(ctx context.Context, req *back
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -7205,6 +7455,11 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -7274,6 +7529,11 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -7339,6 +7599,11 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:setIamPolicy", req.GetResource())
@@ -7407,6 +7672,11 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -7467,6 +7737,11 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -7506,6 +7781,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -7543,6 +7823,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -7610,6 +7895,11 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/operations", req.GetName())

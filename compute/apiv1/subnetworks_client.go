@@ -472,6 +472,11 @@ func (c *subnetworksRESTClient) AggregatedList(ctx context.Context, req *compute
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/subnetworks", req.GetProject())
 
 		params := url.Values{}
@@ -558,6 +563,13 @@ func (c *subnetworksRESTClient) Delete(ctx context.Context, req *computepb.Delet
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetSubnetwork(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/subnetworks/%v", req.GetProject(), req.GetRegion(), req.GetSubnetwork())
 
 	params := url.Values{}
@@ -629,6 +641,13 @@ func (c *subnetworksRESTClient) ExpandIpCidrRange(ctx context.Context, req *comp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetSubnetwork(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/subnetworks/%v/expandIpCidrRange", req.GetProject(), req.GetRegion(), req.GetSubnetwork())
 
 	params := url.Values{}
@@ -693,6 +712,13 @@ func (c *subnetworksRESTClient) Get(ctx context.Context, req *computepb.GetSubne
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetSubnetwork(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/subnetworks/%v", req.GetProject(), req.GetRegion(), req.GetSubnetwork())
 
 	params := url.Values{}
@@ -748,6 +774,13 @@ func (c *subnetworksRESTClient) Get(ctx context.Context, req *computepb.GetSubne
 func (c *subnetworksRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicySubnetworkRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/subnetworks/%v/getIamPolicy", req.GetProject(), req.GetRegion(), req.GetResource())
@@ -812,6 +845,12 @@ func (c *subnetworksRESTClient) Insert(ctx context.Context, req *computepb.Inser
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/subnetworks", req.GetProject(), req.GetRegion())
@@ -890,6 +929,12 @@ func (c *subnetworksRESTClient) List(ctx context.Context, req *computepb.ListSub
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/subnetworks", req.GetProject(), req.GetRegion())
@@ -978,6 +1023,11 @@ func (c *subnetworksRESTClient) ListUsable(ctx context.Context, req *computepb.L
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/subnetworks/listUsable", req.GetProject())
 
 		params := url.Values{}
@@ -1062,6 +1112,13 @@ func (c *subnetworksRESTClient) Patch(ctx context.Context, req *computepb.PatchS
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetSubnetwork(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/subnetworks/%v", req.GetProject(), req.GetRegion(), req.GetSubnetwork())
 
 	params := url.Values{}
@@ -1137,6 +1194,13 @@ func (c *subnetworksRESTClient) SetIamPolicy(ctx context.Context, req *computepb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/subnetworks/%v/setIamPolicy", req.GetProject(), req.GetRegion(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -1192,6 +1256,13 @@ func (c *subnetworksRESTClient) SetPrivateIpGoogleAccess(ctx context.Context, re
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetSubnetwork(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/subnetworks/%v/setPrivateIpGoogleAccess", req.GetProject(), req.GetRegion(), req.GetSubnetwork())
@@ -1263,6 +1334,13 @@ func (c *subnetworksRESTClient) TestIamPermissions(ctx context.Context, req *com
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/subnetworks/%v/testIamPermissions", req.GetProject(), req.GetRegion(), req.GetResource())

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -442,10 +442,10 @@ const file_google_shopping_merchant_quota_v1_accountlimits_proto_rawDesc = "" +
 	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\x06filter\"\x9b\x01\n" +
 	"\x19ListAccountLimitsResponse\x12V\n" +
 	"\x0eaccount_limits\x18\x01 \x03(\v2/.google.shopping.merchant.quota.v1.AccountLimitR\raccountLimits\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken2\xe2\x03\n" +
-	"\x14AccountLimitsService\x12\xb5\x01\n" +
-	"\x0fGetAccountLimit\x129.google.shopping.merchant.quota.v1.GetAccountLimitRequest\x1a/.google.shopping.merchant.quota.v1.AccountLimit\"6\xdaA\x04name\x82\xd3\xe4\x93\x02)\x12'/accounts/v1/{name=accounts/*/limits/*}\x12\xc8\x01\n" +
-	"\x11ListAccountLimits\x12;.google.shopping.merchant.quota.v1.ListAccountLimitsRequest\x1a<.google.shopping.merchant.quota.v1.ListAccountLimitsResponse\"8\xdaA\x06parent\x82\xd3\xe4\x93\x02)\x12'/accounts/v1/{parent=accounts/*}/limits\x1aG\xcaA\x1amerchantapi.googleapis.com\xd2A'https://www.googleapis.com/auth/contentB\xf0\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken2\xdc\x03\n" +
+	"\x14AccountLimitsService\x12\xb2\x01\n" +
+	"\x0fGetAccountLimit\x129.google.shopping.merchant.quota.v1.GetAccountLimitRequest\x1a/.google.shopping.merchant.quota.v1.AccountLimit\"3\xdaA\x04name\x82\xd3\xe4\x93\x02&\x12$/quota/v1/{name=accounts/*/limits/*}\x12\xc5\x01\n" +
+	"\x11ListAccountLimits\x12;.google.shopping.merchant.quota.v1.ListAccountLimitsRequest\x1a<.google.shopping.merchant.quota.v1.ListAccountLimitsResponse\"5\xdaA\x06parent\x82\xd3\xe4\x93\x02&\x12$/quota/v1/{parent=accounts/*}/limits\x1aG\xcaA\x1amerchantapi.googleapis.com\xd2A'https://www.googleapis.com/auth/contentB\xf0\x01\n" +
 	"%com.google.shopping.merchant.quota.v1B\x12AccountLimitsProtoP\x01ZAcloud.google.com/go/shopping/merchant/quota/apiv1/quotapb;quotapb\xaa\x02!Google.Shopping.Merchant.Quota.V1\xca\x02!Google\\Shopping\\Merchant\\Quota\\V1\xea\x02%Google::Shopping::Merchant::Quota::V1b\x06proto3"
 
 var (

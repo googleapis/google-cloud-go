@@ -206,8 +206,20 @@ type BigQueryTableReferences struct {
 	// message names retain the original term for backward compatibility; both
 	// refer to the same resource.
 	PropertyGraphReferences []*BigQueryPropertyGraphReference `protobuf:"bytes,2,rep,name=property_graph_references,json=propertyGraphReferences,proto3" json:"property_graph_references,omitempty"`
-	unknownFields           protoimpl.UnknownFields
-	sizeCache               protoimpl.SizeCache
+	// Optional. Search over BigQuery resources to discover most relevant tables
+	// to the query.
+	//
+	// When set, at least one of `include_project_ids` or
+	// `include_dataset_references` must be populated with non-blank identifiers.
+	// Matches from the two fields are unioned (OR-ed).
+	//
+	// Note: `search_scope` is only supported for standalone conversations
+	// (`ChatRequest.inline_context` or
+	// `ClientManagedResourceContext.inline_context`) and is not supported in
+	// [DataAgent][google.cloud.geminidataanalytics.v1.DataAgent].
+	SearchScope   *SearchScope `protobuf:"bytes,3,opt,name=search_scope,json=searchScope,proto3" json:"search_scope,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *BigQueryTableReferences) Reset() {
@@ -250,6 +262,13 @@ func (x *BigQueryTableReferences) GetTableReferences() []*BigQueryTableReference
 func (x *BigQueryTableReferences) GetPropertyGraphReferences() []*BigQueryPropertyGraphReference {
 	if x != nil {
 		return x.PropertyGraphReferences
+	}
+	return nil
+}
+
+func (x *BigQueryTableReferences) GetSearchScope() *SearchScope {
+	if x != nil {
+		return x.SearchScope
 	}
 	return nil
 }
@@ -327,6 +346,125 @@ func (x *BigQueryTableReference) GetSchema() *Schema {
 	return nil
 }
 
+// Message representing a reference to a single BigQuery dataset.
+type BigQueryDatasetReference struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The project ID that the dataset belongs to.
+	ProjectId string `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
+	// Required. The dataset ID.
+	DatasetId     string `protobuf:"bytes,2,opt,name=dataset_id,json=datasetId,proto3" json:"dataset_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BigQueryDatasetReference) Reset() {
+	*x = BigQueryDatasetReference{}
+	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BigQueryDatasetReference) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BigQueryDatasetReference) ProtoMessage() {}
+
+func (x *BigQueryDatasetReference) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BigQueryDatasetReference.ProtoReflect.Descriptor instead.
+func (*BigQueryDatasetReference) Descriptor() ([]byte, []int) {
+	return file_google_cloud_geminidataanalytics_v1_datasource_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *BigQueryDatasetReference) GetProjectId() string {
+	if x != nil {
+		return x.ProjectId
+	}
+	return ""
+}
+
+func (x *BigQueryDatasetReference) GetDatasetId() string {
+	if x != nil {
+		return x.DatasetId
+	}
+	return ""
+}
+
+// Message representing filters to apply to search over BigQuery tables.
+//
+// At least one of `include_project_ids` or `include_dataset_references` must be
+// populated with non-blank identifiers. Tables matching either field are
+// included, so the two fields are unioned (OR-ed) rather than intersected.
+//
+// Note: `SearchScope` is only supported for standalone conversations
+// (`ChatRequest.inline_context` or
+// `ClientManagedResourceContext.inline_context`) and is not supported in
+// [DataAgent][google.cloud.geminidataanalytics.v1.DataAgent].
+type SearchScope struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. The BigQuery project ids to search over.
+	IncludeProjectIds []string `protobuf:"bytes,1,rep,name=include_project_ids,json=includeProjectIds,proto3" json:"include_project_ids,omitempty"`
+	// Optional. The BigQuery dataset references to search over.
+	IncludeDatasetReferences []*BigQueryDatasetReference `protobuf:"bytes,2,rep,name=include_dataset_references,json=includeDatasetReferences,proto3" json:"include_dataset_references,omitempty"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
+}
+
+func (x *SearchScope) Reset() {
+	*x = SearchScope{}
+	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SearchScope) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SearchScope) ProtoMessage() {}
+
+func (x *SearchScope) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SearchScope.ProtoReflect.Descriptor instead.
+func (*SearchScope) Descriptor() ([]byte, []int) {
+	return file_google_cloud_geminidataanalytics_v1_datasource_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *SearchScope) GetIncludeProjectIds() []string {
+	if x != nil {
+		return x.IncludeProjectIds
+	}
+	return nil
+}
+
+func (x *SearchScope) GetIncludeDatasetReferences() []*BigQueryDatasetReference {
+	if x != nil {
+		return x.IncludeDatasetReferences
+	}
+	return nil
+}
+
 // Message representing references to Looker Studio datasources.
 type StudioDatasourceReferences struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -338,7 +476,7 @@ type StudioDatasourceReferences struct {
 
 func (x *StudioDatasourceReferences) Reset() {
 	*x = StudioDatasourceReferences{}
-	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[3]
+	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -350,7 +488,7 @@ func (x *StudioDatasourceReferences) String() string {
 func (*StudioDatasourceReferences) ProtoMessage() {}
 
 func (x *StudioDatasourceReferences) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[3]
+	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -363,7 +501,7 @@ func (x *StudioDatasourceReferences) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StudioDatasourceReferences.ProtoReflect.Descriptor instead.
 func (*StudioDatasourceReferences) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1_datasource_proto_rawDescGZIP(), []int{3}
+	return file_google_cloud_geminidataanalytics_v1_datasource_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *StudioDatasourceReferences) GetStudioReferences() []*StudioDatasourceReference {
@@ -384,7 +522,7 @@ type StudioDatasourceReference struct {
 
 func (x *StudioDatasourceReference) Reset() {
 	*x = StudioDatasourceReference{}
-	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[4]
+	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -396,7 +534,7 @@ func (x *StudioDatasourceReference) String() string {
 func (*StudioDatasourceReference) ProtoMessage() {}
 
 func (x *StudioDatasourceReference) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[4]
+	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -409,7 +547,7 @@ func (x *StudioDatasourceReference) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StudioDatasourceReference.ProtoReflect.Descriptor instead.
 func (*StudioDatasourceReference) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1_datasource_proto_rawDescGZIP(), []int{4}
+	return file_google_cloud_geminidataanalytics_v1_datasource_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *StudioDatasourceReference) GetDatasourceId() string {
@@ -430,7 +568,7 @@ type LookerExploreReferences struct {
 
 func (x *LookerExploreReferences) Reset() {
 	*x = LookerExploreReferences{}
-	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[5]
+	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -442,7 +580,7 @@ func (x *LookerExploreReferences) String() string {
 func (*LookerExploreReferences) ProtoMessage() {}
 
 func (x *LookerExploreReferences) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[5]
+	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -455,7 +593,7 @@ func (x *LookerExploreReferences) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LookerExploreReferences.ProtoReflect.Descriptor instead.
 func (*LookerExploreReferences) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1_datasource_proto_rawDescGZIP(), []int{5}
+	return file_google_cloud_geminidataanalytics_v1_datasource_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *LookerExploreReferences) GetExploreReferences() []*LookerExploreReference {
@@ -493,7 +631,7 @@ type LookerExploreReference struct {
 
 func (x *LookerExploreReference) Reset() {
 	*x = LookerExploreReference{}
-	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[6]
+	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -505,7 +643,7 @@ func (x *LookerExploreReference) String() string {
 func (*LookerExploreReference) ProtoMessage() {}
 
 func (x *LookerExploreReference) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[6]
+	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -518,7 +656,7 @@ func (x *LookerExploreReference) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LookerExploreReference.ProtoReflect.Descriptor instead.
 func (*LookerExploreReference) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1_datasource_proto_rawDescGZIP(), []int{6}
+	return file_google_cloud_geminidataanalytics_v1_datasource_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *LookerExploreReference) GetInstance() isLookerExploreReference_Instance {
@@ -600,7 +738,7 @@ type BigQueryPropertyGraphReference struct {
 
 func (x *BigQueryPropertyGraphReference) Reset() {
 	*x = BigQueryPropertyGraphReference{}
-	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[7]
+	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -612,7 +750,7 @@ func (x *BigQueryPropertyGraphReference) String() string {
 func (*BigQueryPropertyGraphReference) ProtoMessage() {}
 
 func (x *BigQueryPropertyGraphReference) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[7]
+	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -625,7 +763,7 @@ func (x *BigQueryPropertyGraphReference) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BigQueryPropertyGraphReference.ProtoReflect.Descriptor instead.
 func (*BigQueryPropertyGraphReference) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1_datasource_proto_rawDescGZIP(), []int{7}
+	return file_google_cloud_geminidataanalytics_v1_datasource_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *BigQueryPropertyGraphReference) GetProjectId() string {
@@ -663,7 +801,7 @@ type PrivateLookerInstanceInfo struct {
 
 func (x *PrivateLookerInstanceInfo) Reset() {
 	*x = PrivateLookerInstanceInfo{}
-	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[8]
+	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -675,7 +813,7 @@ func (x *PrivateLookerInstanceInfo) String() string {
 func (*PrivateLookerInstanceInfo) ProtoMessage() {}
 
 func (x *PrivateLookerInstanceInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[8]
+	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -688,7 +826,7 @@ func (x *PrivateLookerInstanceInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PrivateLookerInstanceInfo.ProtoReflect.Descriptor instead.
 func (*PrivateLookerInstanceInfo) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1_datasource_proto_rawDescGZIP(), []int{8}
+	return file_google_cloud_geminidataanalytics_v1_datasource_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *PrivateLookerInstanceInfo) GetLookerInstanceId() string {
@@ -732,7 +870,7 @@ type Datasource struct {
 
 func (x *Datasource) Reset() {
 	*x = Datasource{}
-	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[9]
+	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -744,7 +882,7 @@ func (x *Datasource) String() string {
 func (*Datasource) ProtoMessage() {}
 
 func (x *Datasource) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[9]
+	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -757,7 +895,7 @@ func (x *Datasource) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Datasource.ProtoReflect.Descriptor instead.
 func (*Datasource) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1_datasource_proto_rawDescGZIP(), []int{9}
+	return file_google_cloud_geminidataanalytics_v1_datasource_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *Datasource) GetReference() isDatasource_Reference {
@@ -879,7 +1017,7 @@ type Schema struct {
 
 func (x *Schema) Reset() {
 	*x = Schema{}
-	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[10]
+	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -891,7 +1029,7 @@ func (x *Schema) String() string {
 func (*Schema) ProtoMessage() {}
 
 func (x *Schema) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[10]
+	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -904,7 +1042,7 @@ func (x *Schema) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Schema.ProtoReflect.Descriptor instead.
 func (*Schema) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1_datasource_proto_rawDescGZIP(), []int{10}
+	return file_google_cloud_geminidataanalytics_v1_datasource_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *Schema) GetFields() []*Field {
@@ -984,7 +1122,7 @@ type Field struct {
 
 func (x *Field) Reset() {
 	*x = Field{}
-	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[11]
+	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -996,7 +1134,7 @@ func (x *Field) String() string {
 func (*Field) ProtoMessage() {}
 
 func (x *Field) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[11]
+	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1009,7 +1147,7 @@ func (x *Field) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Field.ProtoReflect.Descriptor instead.
 func (*Field) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1_datasource_proto_rawDescGZIP(), []int{11}
+	return file_google_cloud_geminidataanalytics_v1_datasource_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *Field) GetName() string {
@@ -1101,7 +1239,7 @@ type DataFilter struct {
 
 func (x *DataFilter) Reset() {
 	*x = DataFilter{}
-	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[12]
+	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1113,7 +1251,7 @@ func (x *DataFilter) String() string {
 func (*DataFilter) ProtoMessage() {}
 
 func (x *DataFilter) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[12]
+	mi := &file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1126,7 +1264,7 @@ func (x *DataFilter) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DataFilter.ProtoReflect.Descriptor instead.
 func (*DataFilter) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1_datasource_proto_rawDescGZIP(), []int{12}
+	return file_google_cloud_geminidataanalytics_v1_datasource_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *DataFilter) GetField() string {
@@ -1160,17 +1298,26 @@ const file_google_cloud_geminidataanalytics_v1_datasource_proto_rawDesc = "" +
 	"\x06studio\x18\x02 \x01(\v2?.google.cloud.geminidataanalytics.v1.StudioDatasourceReferencesH\x00R\x06studio\x12V\n" +
 	"\x06looker\x18\x03 \x01(\v2<.google.cloud.geminidataanalytics.v1.LookerExploreReferencesH\x00R\x06lookerB\f\n" +
 	"\n" +
-	"references\"\x8f\x02\n" +
+	"references\"\xea\x02\n" +
 	"\x17BigQueryTableReferences\x12l\n" +
 	"\x10table_references\x18\x01 \x03(\v2;.google.cloud.geminidataanalytics.v1.BigQueryTableReferenceB\x04\xe2A\x01\x01R\x0ftableReferences\x12\x85\x01\n" +
-	"\x19property_graph_references\x18\x02 \x03(\v2C.google.cloud.geminidataanalytics.v1.BigQueryPropertyGraphReferenceB\x04\xe2A\x01\x01R\x17propertyGraphReferences\"\xce\x01\n" +
+	"\x19property_graph_references\x18\x02 \x03(\v2C.google.cloud.geminidataanalytics.v1.BigQueryPropertyGraphReferenceB\x04\xe2A\x01\x01R\x17propertyGraphReferences\x12Y\n" +
+	"\fsearch_scope\x18\x03 \x01(\v20.google.cloud.geminidataanalytics.v1.SearchScopeB\x04\xe2A\x01\x01R\vsearchScope\"\xce\x01\n" +
 	"\x16BigQueryTableReference\x12#\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12#\n" +
 	"\n" +
 	"dataset_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\tdatasetId\x12\x1f\n" +
 	"\btable_id\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\atableId\x12I\n" +
-	"\x06schema\x18\x06 \x01(\v2+.google.cloud.geminidataanalytics.v1.SchemaB\x04\xe2A\x01\x01R\x06schema\"\x8f\x01\n" +
+	"\x06schema\x18\x06 \x01(\v2+.google.cloud.geminidataanalytics.v1.SchemaB\x04\xe2A\x01\x01R\x06schema\"d\n" +
+	"\x18BigQueryDatasetReference\x12#\n" +
+	"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12#\n" +
+	"\n" +
+	"dataset_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tdatasetId\"\xc7\x01\n" +
+	"\vSearchScope\x124\n" +
+	"\x13include_project_ids\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\x11includeProjectIds\x12\x81\x01\n" +
+	"\x1ainclude_dataset_references\x18\x02 \x03(\v2=.google.cloud.geminidataanalytics.v1.BigQueryDatasetReferenceB\x04\xe2A\x01\x01R\x18includeDatasetReferences\"\x8f\x01\n" +
 	"\x1aStudioDatasourceReferences\x12q\n" +
 	"\x11studio_references\x18\x02 \x03(\v2>.google.cloud.geminidataanalytics.v1.StudioDatasourceReferenceB\x04\xe2A\x01\x01R\x10studioReferences\"F\n" +
 	"\x19StudioDatasourceReference\x12)\n" +
@@ -1247,49 +1394,53 @@ func file_google_cloud_geminidataanalytics_v1_datasource_proto_rawDescGZIP() []b
 }
 
 var file_google_cloud_geminidataanalytics_v1_datasource_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
+var file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
 var file_google_cloud_geminidataanalytics_v1_datasource_proto_goTypes = []any{
 	(DataFilterType)(0),                    // 0: google.cloud.geminidataanalytics.v1.DataFilterType
 	(*DatasourceReferences)(nil),           // 1: google.cloud.geminidataanalytics.v1.DatasourceReferences
 	(*BigQueryTableReferences)(nil),        // 2: google.cloud.geminidataanalytics.v1.BigQueryTableReferences
 	(*BigQueryTableReference)(nil),         // 3: google.cloud.geminidataanalytics.v1.BigQueryTableReference
-	(*StudioDatasourceReferences)(nil),     // 4: google.cloud.geminidataanalytics.v1.StudioDatasourceReferences
-	(*StudioDatasourceReference)(nil),      // 5: google.cloud.geminidataanalytics.v1.StudioDatasourceReference
-	(*LookerExploreReferences)(nil),        // 6: google.cloud.geminidataanalytics.v1.LookerExploreReferences
-	(*LookerExploreReference)(nil),         // 7: google.cloud.geminidataanalytics.v1.LookerExploreReference
-	(*BigQueryPropertyGraphReference)(nil), // 8: google.cloud.geminidataanalytics.v1.BigQueryPropertyGraphReference
-	(*PrivateLookerInstanceInfo)(nil),      // 9: google.cloud.geminidataanalytics.v1.PrivateLookerInstanceInfo
-	(*Datasource)(nil),                     // 10: google.cloud.geminidataanalytics.v1.Datasource
-	(*Schema)(nil),                         // 11: google.cloud.geminidataanalytics.v1.Schema
-	(*Field)(nil),                          // 12: google.cloud.geminidataanalytics.v1.Field
-	(*DataFilter)(nil),                     // 13: google.cloud.geminidataanalytics.v1.DataFilter
-	(*structpb.Struct)(nil),                // 14: google.protobuf.Struct
+	(*BigQueryDatasetReference)(nil),       // 4: google.cloud.geminidataanalytics.v1.BigQueryDatasetReference
+	(*SearchScope)(nil),                    // 5: google.cloud.geminidataanalytics.v1.SearchScope
+	(*StudioDatasourceReferences)(nil),     // 6: google.cloud.geminidataanalytics.v1.StudioDatasourceReferences
+	(*StudioDatasourceReference)(nil),      // 7: google.cloud.geminidataanalytics.v1.StudioDatasourceReference
+	(*LookerExploreReferences)(nil),        // 8: google.cloud.geminidataanalytics.v1.LookerExploreReferences
+	(*LookerExploreReference)(nil),         // 9: google.cloud.geminidataanalytics.v1.LookerExploreReference
+	(*BigQueryPropertyGraphReference)(nil), // 10: google.cloud.geminidataanalytics.v1.BigQueryPropertyGraphReference
+	(*PrivateLookerInstanceInfo)(nil),      // 11: google.cloud.geminidataanalytics.v1.PrivateLookerInstanceInfo
+	(*Datasource)(nil),                     // 12: google.cloud.geminidataanalytics.v1.Datasource
+	(*Schema)(nil),                         // 13: google.cloud.geminidataanalytics.v1.Schema
+	(*Field)(nil),                          // 14: google.cloud.geminidataanalytics.v1.Field
+	(*DataFilter)(nil),                     // 15: google.cloud.geminidataanalytics.v1.DataFilter
+	(*structpb.Struct)(nil),                // 16: google.protobuf.Struct
 }
 var file_google_cloud_geminidataanalytics_v1_datasource_proto_depIdxs = []int32{
 	2,  // 0: google.cloud.geminidataanalytics.v1.DatasourceReferences.bq:type_name -> google.cloud.geminidataanalytics.v1.BigQueryTableReferences
-	4,  // 1: google.cloud.geminidataanalytics.v1.DatasourceReferences.studio:type_name -> google.cloud.geminidataanalytics.v1.StudioDatasourceReferences
-	6,  // 2: google.cloud.geminidataanalytics.v1.DatasourceReferences.looker:type_name -> google.cloud.geminidataanalytics.v1.LookerExploreReferences
+	6,  // 1: google.cloud.geminidataanalytics.v1.DatasourceReferences.studio:type_name -> google.cloud.geminidataanalytics.v1.StudioDatasourceReferences
+	8,  // 2: google.cloud.geminidataanalytics.v1.DatasourceReferences.looker:type_name -> google.cloud.geminidataanalytics.v1.LookerExploreReferences
 	3,  // 3: google.cloud.geminidataanalytics.v1.BigQueryTableReferences.table_references:type_name -> google.cloud.geminidataanalytics.v1.BigQueryTableReference
-	8,  // 4: google.cloud.geminidataanalytics.v1.BigQueryTableReferences.property_graph_references:type_name -> google.cloud.geminidataanalytics.v1.BigQueryPropertyGraphReference
-	11, // 5: google.cloud.geminidataanalytics.v1.BigQueryTableReference.schema:type_name -> google.cloud.geminidataanalytics.v1.Schema
-	5,  // 6: google.cloud.geminidataanalytics.v1.StudioDatasourceReferences.studio_references:type_name -> google.cloud.geminidataanalytics.v1.StudioDatasourceReference
-	7,  // 7: google.cloud.geminidataanalytics.v1.LookerExploreReferences.explore_references:type_name -> google.cloud.geminidataanalytics.v1.LookerExploreReference
-	9,  // 8: google.cloud.geminidataanalytics.v1.LookerExploreReference.private_looker_instance_info:type_name -> google.cloud.geminidataanalytics.v1.PrivateLookerInstanceInfo
-	11, // 9: google.cloud.geminidataanalytics.v1.LookerExploreReference.schema:type_name -> google.cloud.geminidataanalytics.v1.Schema
-	3,  // 10: google.cloud.geminidataanalytics.v1.Datasource.bigquery_table_reference:type_name -> google.cloud.geminidataanalytics.v1.BigQueryTableReference
-	7,  // 11: google.cloud.geminidataanalytics.v1.Datasource.looker_explore_reference:type_name -> google.cloud.geminidataanalytics.v1.LookerExploreReference
-	8,  // 12: google.cloud.geminidataanalytics.v1.Datasource.bigquery_property_graph_reference:type_name -> google.cloud.geminidataanalytics.v1.BigQueryPropertyGraphReference
-	11, // 13: google.cloud.geminidataanalytics.v1.Datasource.schema:type_name -> google.cloud.geminidataanalytics.v1.Schema
-	14, // 14: google.cloud.geminidataanalytics.v1.Datasource.struct_schema:type_name -> google.protobuf.Struct
-	12, // 15: google.cloud.geminidataanalytics.v1.Schema.fields:type_name -> google.cloud.geminidataanalytics.v1.Field
-	13, // 16: google.cloud.geminidataanalytics.v1.Schema.filters:type_name -> google.cloud.geminidataanalytics.v1.DataFilter
-	12, // 17: google.cloud.geminidataanalytics.v1.Field.subfields:type_name -> google.cloud.geminidataanalytics.v1.Field
-	0,  // 18: google.cloud.geminidataanalytics.v1.DataFilter.type:type_name -> google.cloud.geminidataanalytics.v1.DataFilterType
-	19, // [19:19] is the sub-list for method output_type
-	19, // [19:19] is the sub-list for method input_type
-	19, // [19:19] is the sub-list for extension type_name
-	19, // [19:19] is the sub-list for extension extendee
-	0,  // [0:19] is the sub-list for field type_name
+	10, // 4: google.cloud.geminidataanalytics.v1.BigQueryTableReferences.property_graph_references:type_name -> google.cloud.geminidataanalytics.v1.BigQueryPropertyGraphReference
+	5,  // 5: google.cloud.geminidataanalytics.v1.BigQueryTableReferences.search_scope:type_name -> google.cloud.geminidataanalytics.v1.SearchScope
+	13, // 6: google.cloud.geminidataanalytics.v1.BigQueryTableReference.schema:type_name -> google.cloud.geminidataanalytics.v1.Schema
+	4,  // 7: google.cloud.geminidataanalytics.v1.SearchScope.include_dataset_references:type_name -> google.cloud.geminidataanalytics.v1.BigQueryDatasetReference
+	7,  // 8: google.cloud.geminidataanalytics.v1.StudioDatasourceReferences.studio_references:type_name -> google.cloud.geminidataanalytics.v1.StudioDatasourceReference
+	9,  // 9: google.cloud.geminidataanalytics.v1.LookerExploreReferences.explore_references:type_name -> google.cloud.geminidataanalytics.v1.LookerExploreReference
+	11, // 10: google.cloud.geminidataanalytics.v1.LookerExploreReference.private_looker_instance_info:type_name -> google.cloud.geminidataanalytics.v1.PrivateLookerInstanceInfo
+	13, // 11: google.cloud.geminidataanalytics.v1.LookerExploreReference.schema:type_name -> google.cloud.geminidataanalytics.v1.Schema
+	3,  // 12: google.cloud.geminidataanalytics.v1.Datasource.bigquery_table_reference:type_name -> google.cloud.geminidataanalytics.v1.BigQueryTableReference
+	9,  // 13: google.cloud.geminidataanalytics.v1.Datasource.looker_explore_reference:type_name -> google.cloud.geminidataanalytics.v1.LookerExploreReference
+	10, // 14: google.cloud.geminidataanalytics.v1.Datasource.bigquery_property_graph_reference:type_name -> google.cloud.geminidataanalytics.v1.BigQueryPropertyGraphReference
+	13, // 15: google.cloud.geminidataanalytics.v1.Datasource.schema:type_name -> google.cloud.geminidataanalytics.v1.Schema
+	16, // 16: google.cloud.geminidataanalytics.v1.Datasource.struct_schema:type_name -> google.protobuf.Struct
+	14, // 17: google.cloud.geminidataanalytics.v1.Schema.fields:type_name -> google.cloud.geminidataanalytics.v1.Field
+	15, // 18: google.cloud.geminidataanalytics.v1.Schema.filters:type_name -> google.cloud.geminidataanalytics.v1.DataFilter
+	14, // 19: google.cloud.geminidataanalytics.v1.Field.subfields:type_name -> google.cloud.geminidataanalytics.v1.Field
+	0,  // 20: google.cloud.geminidataanalytics.v1.DataFilter.type:type_name -> google.cloud.geminidataanalytics.v1.DataFilterType
+	21, // [21:21] is the sub-list for method output_type
+	21, // [21:21] is the sub-list for method input_type
+	21, // [21:21] is the sub-list for extension type_name
+	21, // [21:21] is the sub-list for extension extendee
+	0,  // [0:21] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_geminidataanalytics_v1_datasource_proto_init() }
@@ -1302,11 +1453,11 @@ func file_google_cloud_geminidataanalytics_v1_datasource_proto_init() {
 		(*DatasourceReferences_Studio)(nil),
 		(*DatasourceReferences_Looker)(nil),
 	}
-	file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[6].OneofWrappers = []any{
+	file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[8].OneofWrappers = []any{
 		(*LookerExploreReference_LookerInstanceUri)(nil),
 		(*LookerExploreReference_PrivateLookerInstanceInfo)(nil),
 	}
-	file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[9].OneofWrappers = []any{
+	file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[11].OneofWrappers = []any{
 		(*Datasource_BigqueryTableReference)(nil),
 		(*Datasource_StudioDatasourceId)(nil),
 		(*Datasource_LookerExploreReference)(nil),
@@ -1318,7 +1469,7 @@ func file_google_cloud_geminidataanalytics_v1_datasource_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_geminidataanalytics_v1_datasource_proto_rawDesc), len(file_google_cloud_geminidataanalytics_v1_datasource_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   13,
+			NumMessages:   15,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

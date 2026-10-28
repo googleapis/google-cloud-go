@@ -300,6 +300,12 @@ func (c *previewFeaturesRESTClient) Get(ctx context.Context, req *computepb.GetP
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetPreviewFeature(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/previewFeatures/%v", req.GetProject(), req.GetPreviewFeature())
 
 	// Build HTTP headers from client and context metadata.
@@ -360,6 +366,11 @@ func (c *previewFeaturesRESTClient) List(ctx context.Context, req *computepb.Lis
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/previewFeatures", req.GetProject())
@@ -438,6 +449,12 @@ func (c *previewFeaturesRESTClient) Update(ctx context.Context, req *computepb.U
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetPreviewFeature(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/previewFeatures/%v", req.GetProject(), req.GetPreviewFeature())

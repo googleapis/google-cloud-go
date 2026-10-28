@@ -522,16 +522,6 @@
         }
       ]
     },
-    "chronicle": {
-      "component": "chronicle",
-      "extra-files": [
-        {
-          "jsonpath": "$.clientLibrary.version",
-          "path": "examples/apiv1/snippet_metadata.google.cloud.chronicle.v1.json",
-          "type": "json"
-        }
-      ]
-    },
     "cloudbuild": {
       "component": "cloudbuild",
       "extra-files": [
@@ -879,6 +869,16 @@
         {
           "jsonpath": "$.clientLibrary.version",
           "path": "examples/apiv1/snippet_metadata.google.cloud.deploy.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "designcenter": {
+      "component": "designcenter",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.designcenter.v1.json",
           "type": "json"
         }
       ]

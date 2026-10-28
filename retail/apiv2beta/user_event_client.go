@@ -974,6 +974,11 @@ func (c *userEventRESTClient) WriteUserEvent(ctx context.Context, req *retailpb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v/userEvents:write", req.GetParent())
 
 	params := url.Values{}
@@ -1035,6 +1040,11 @@ func (c *userEventRESTClient) WriteUserEvent(ctx context.Context, req *retailpb.
 func (c *userEventRESTClient) CollectUserEvent(ctx context.Context, req *retailpb.CollectUserEventRequest, opts ...gax.CallOption) (*httpbodypb.HttpBody, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v/userEvents:collect", req.GetParent())
@@ -1113,6 +1123,11 @@ func (c *userEventRESTClient) PurgeUserEvents(ctx context.Context, req *retailpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v/userEvents:purge", req.GetParent())
 
 	params := url.Values{}
@@ -1186,6 +1201,11 @@ func (c *userEventRESTClient) ImportUserEvents(ctx context.Context, req *retailp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v/userEvents:import", req.GetParent())
 
 	params := url.Values{}
@@ -1254,6 +1274,11 @@ func (c *userEventRESTClient) ExportUserEvents(ctx context.Context, req *retailp
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v/userEvents:export", req.GetParent())
@@ -1330,6 +1355,11 @@ func (c *userEventRESTClient) RejoinUserEvents(ctx context.Context, req *retailp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v/userEvents:rejoin", req.GetParent())
 
 	params := url.Values{}
@@ -1389,6 +1419,11 @@ func (c *userEventRESTClient) RejoinUserEvents(ctx context.Context, req *retailp
 func (c *userEventRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetName())
@@ -1456,6 +1491,11 @@ func (c *userEventRESTClient) ListOperations(ctx context.Context, req *longrunni
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2beta/%v/operations", req.GetName())

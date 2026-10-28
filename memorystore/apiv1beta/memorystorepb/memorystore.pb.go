@@ -4197,6 +4197,13 @@ type ZoneDistributionConfig struct {
 	// Optional. Defines zone where all resources will be allocated with
 	// SINGLE_ZONE mode. Ignored for MULTI_ZONE mode.
 	Zone string `protobuf:"bytes,2,opt,name=zone,proto3" json:"zone,omitempty"`
+	// Optional. Specify the zones of a multi-zone instance where Memorystore
+	// instance allocates resources. This flag isn't applicable for single-zone
+	// instances.
+	Zones []string `protobuf:"bytes,3,rep,name=zones,proto3" json:"zones,omitempty"`
+	// Output only. The exact list of zones where the instance currently has
+	// active VMs.
+	ActiveZones []string `protobuf:"bytes,4,rep,name=active_zones,json=activeZones,proto3" json:"active_zones,omitempty"`
 	// Optional. Current zone distribution mode. Defaults to MULTI_ZONE.
 	Mode          ZoneDistributionConfig_ZoneDistributionMode `protobuf:"varint,1,opt,name=mode,proto3,enum=google.cloud.memorystore.v1beta.ZoneDistributionConfig_ZoneDistributionMode" json:"mode,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -4238,6 +4245,20 @@ func (x *ZoneDistributionConfig) GetZone() string {
 		return x.Zone
 	}
 	return ""
+}
+
+func (x *ZoneDistributionConfig) GetZones() []string {
+	if x != nil {
+		return x.Zones
+	}
+	return nil
+}
+
+func (x *ZoneDistributionConfig) GetActiveZones() []string {
+	if x != nil {
+		return x.ActiveZones
+	}
+	return nil
 }
 
 func (x *ZoneDistributionConfig) GetMode() ZoneDistributionConfig_ZoneDistributionMode {
@@ -8301,9 +8322,11 @@ const file_google_cloud_memorystore_v1beta_memorystore_proto_rawDesc = "" +
 	"\x03AOF\x10\x03\"+\n" +
 	"\n" +
 	"NodeConfig\x12\x1d\n" +
-	"\asize_gb\x18\x01 \x01(\x01B\x04\xe2A\x01\x03R\x06sizeGb\"\xfb\x01\n" +
+	"\asize_gb\x18\x01 \x01(\x01B\x04\xe2A\x01\x03R\x06sizeGb\"\xc0\x02\n" +
 	"\x16ZoneDistributionConfig\x12\x18\n" +
-	"\x04zone\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04zone\x12f\n" +
+	"\x04zone\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04zone\x12\x1a\n" +
+	"\x05zones\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x05zones\x12'\n" +
+	"\factive_zones\x18\x04 \x03(\tB\x04\xe2A\x01\x03R\vactiveZones\x12f\n" +
 	"\x04mode\x18\x01 \x01(\x0e2L.google.cloud.memorystore.v1beta.ZoneDistributionConfig.ZoneDistributionModeB\x04\xe2A\x01\x01R\x04mode\"_\n" +
 	"\x14ZoneDistributionMode\x12&\n" +
 	"\"ZONE_DISTRIBUTION_MODE_UNSPECIFIED\x10\x00\x12\x0e\n" +

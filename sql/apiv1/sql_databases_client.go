@@ -612,6 +612,13 @@ func (c *sqlDatabasesRESTClient) Delete(ctx context.Context, req *sqlpb.SqlDatab
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+		req.GetDatabase(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/databases/%v", req.GetProject(), req.GetInstance(), req.GetDatabase())
 
 	params := url.Values{}
@@ -668,6 +675,13 @@ func (c *sqlDatabasesRESTClient) Delete(ctx context.Context, req *sqlpb.SqlDatab
 func (c *sqlDatabasesRESTClient) Get(ctx context.Context, req *sqlpb.SqlDatabasesGetRequest, opts ...gax.CallOption) (*sqlpb.Database, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+		req.GetDatabase(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/databases/%v", req.GetProject(), req.GetInstance(), req.GetDatabase())
@@ -737,6 +751,12 @@ func (c *sqlDatabasesRESTClient) Insert(ctx context.Context, req *sqlpb.SqlDatab
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/databases", req.GetProject(), req.GetInstance())
 
 	params := url.Values{}
@@ -792,6 +812,12 @@ func (c *sqlDatabasesRESTClient) Insert(ctx context.Context, req *sqlpb.SqlDatab
 func (c *sqlDatabasesRESTClient) List(ctx context.Context, req *sqlpb.SqlDatabasesListRequest, opts ...gax.CallOption) (*sqlpb.DatabasesListResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/databases", req.GetProject(), req.GetInstance())
@@ -859,6 +885,13 @@ func (c *sqlDatabasesRESTClient) Patch(ctx context.Context, req *sqlpb.SqlDataba
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+		req.GetDatabase(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/databases/%v", req.GetProject(), req.GetInstance(), req.GetDatabase())
 
 	params := url.Values{}
@@ -922,6 +955,13 @@ func (c *sqlDatabasesRESTClient) Update(ctx context.Context, req *sqlpb.SqlDatab
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+		req.GetDatabase(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/databases/%v", req.GetProject(), req.GetInstance(), req.GetDatabase())

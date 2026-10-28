@@ -1841,6 +1841,11 @@ func (c *interceptRESTClient) ListInterceptEndpointGroups(ctx context.Context, r
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/interceptEndpointGroups", req.GetParent())
 
 		params := url.Values{}
@@ -1913,6 +1918,11 @@ func (c *interceptRESTClient) GetInterceptEndpointGroup(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1973,6 +1983,11 @@ func (c *interceptRESTClient) CreateInterceptEndpointGroup(ctx context.Context, 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/interceptEndpointGroups", req.GetParent())
@@ -2048,6 +2063,11 @@ func (c *interceptRESTClient) UpdateInterceptEndpointGroup(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetInterceptEndpointGroup().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetInterceptEndpointGroup().GetName())
 
 	params := url.Values{}
@@ -2118,6 +2138,11 @@ func (c *interceptRESTClient) UpdateInterceptEndpointGroup(ctx context.Context, 
 func (c *interceptRESTClient) DeleteInterceptEndpointGroup(ctx context.Context, req *networksecuritypb.DeleteInterceptEndpointGroupRequest, opts ...gax.CallOption) (*DeleteInterceptEndpointGroupOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2198,6 +2223,11 @@ func (c *interceptRESTClient) ListInterceptEndpointGroupAssociations(ctx context
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/interceptEndpointGroupAssociations", req.GetParent())
 
 		params := url.Values{}
@@ -2270,6 +2300,11 @@ func (c *interceptRESTClient) GetInterceptEndpointGroupAssociation(ctx context.C
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2330,6 +2365,11 @@ func (c *interceptRESTClient) CreateInterceptEndpointGroupAssociation(ctx contex
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/interceptEndpointGroupAssociations", req.GetParent())
@@ -2407,6 +2447,11 @@ func (c *interceptRESTClient) UpdateInterceptEndpointGroupAssociation(ctx contex
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetInterceptEndpointGroupAssociation().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetInterceptEndpointGroupAssociation().GetName())
 
 	params := url.Values{}
@@ -2477,6 +2522,11 @@ func (c *interceptRESTClient) UpdateInterceptEndpointGroupAssociation(ctx contex
 func (c *interceptRESTClient) DeleteInterceptEndpointGroupAssociation(ctx context.Context, req *networksecuritypb.DeleteInterceptEndpointGroupAssociationRequest, opts ...gax.CallOption) (*DeleteInterceptEndpointGroupAssociationOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2557,6 +2607,11 @@ func (c *interceptRESTClient) ListInterceptDeploymentGroups(ctx context.Context,
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/interceptDeploymentGroups", req.GetParent())
 
 		params := url.Values{}
@@ -2629,6 +2684,11 @@ func (c *interceptRESTClient) GetInterceptDeploymentGroup(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2689,6 +2749,11 @@ func (c *interceptRESTClient) CreateInterceptDeploymentGroup(ctx context.Context
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/interceptDeploymentGroups", req.GetParent())
@@ -2764,6 +2829,11 @@ func (c *interceptRESTClient) UpdateInterceptDeploymentGroup(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetInterceptDeploymentGroup().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetInterceptDeploymentGroup().GetName())
 
 	params := url.Values{}
@@ -2834,6 +2904,11 @@ func (c *interceptRESTClient) UpdateInterceptDeploymentGroup(ctx context.Context
 func (c *interceptRESTClient) DeleteInterceptDeploymentGroup(ctx context.Context, req *networksecuritypb.DeleteInterceptDeploymentGroupRequest, opts ...gax.CallOption) (*DeleteInterceptDeploymentGroupOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2914,6 +2989,11 @@ func (c *interceptRESTClient) ListInterceptDeployments(ctx context.Context, req 
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/interceptDeployments", req.GetParent())
 
 		params := url.Values{}
@@ -2986,6 +3066,11 @@ func (c *interceptRESTClient) GetInterceptDeployment(ctx context.Context, req *n
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3046,6 +3131,11 @@ func (c *interceptRESTClient) CreateInterceptDeployment(ctx context.Context, req
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/interceptDeployments", req.GetParent())
@@ -3121,6 +3211,11 @@ func (c *interceptRESTClient) UpdateInterceptDeployment(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetInterceptDeployment().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetInterceptDeployment().GetName())
 
 	params := url.Values{}
@@ -3193,6 +3288,11 @@ func (c *interceptRESTClient) DeleteInterceptDeployment(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3255,6 +3355,11 @@ func (c *interceptRESTClient) DeleteInterceptDeployment(ctx context.Context, req
 func (c *interceptRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3339,6 +3444,11 @@ func (c *interceptRESTClient) ListLocations(ctx context.Context, req *locationpb
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -3408,6 +3518,11 @@ func (c *interceptRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIa
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -3473,6 +3588,11 @@ func (c *interceptRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIa
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
@@ -3541,6 +3661,11 @@ func (c *interceptRESTClient) TestIamPermissions(ctx context.Context, req *iampb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -3601,6 +3726,11 @@ func (c *interceptRESTClient) CancelOperation(ctx context.Context, req *longrunn
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -3640,6 +3770,11 @@ func (c *interceptRESTClient) DeleteOperation(ctx context.Context, req *longrunn
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3677,6 +3812,11 @@ func (c *interceptRESTClient) DeleteOperation(ctx context.Context, req *longrunn
 func (c *interceptRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3744,6 +3884,11 @@ func (c *interceptRESTClient) ListOperations(ctx context.Context, req *longrunni
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

@@ -239,23 +239,34 @@ func (t *trackingTransport) RoundTrip(req *http.Request) (*http.Response, error)
 	if baseRT == nil {
 		baseRT = http.DefaultTransport
 	}
-	features := t.features | featureAttributes(req.Context())
+	// Start a Storage.UploadChunk span if req is a resumable upload chunk request.
+	ctx, isChunk := startHTTPUploadChunkSpan(req.Context(), req.Header)
+
+	features := t.features | featureAttributes(ctx)
 	// Merge all existing headers for this key.
-	features |= mergeFeatureAttributes(req.Header.Values(featureTrackerHeaderName))
-	var (
-		resp *http.Response
-		err  error
-	)
-	if features > 0 {
+	existing := req.Header.Values(featureTrackerHeaderName)
+	features |= mergeFeatureAttributes(existing)
+	outReq := req
+	if features > 0 || len(existing) > 0 {
+		// This transport owns the feature header: it is always rewritten from the
+		// merged bitmask so that only a single, well-formed value is sent, and it
+		// is removed entirely when there is nothing to report (e.g. a value set on
+		// the context by a caller for an unrelated client must not be forwarded).
 		// Clone the request to avoid modifying the original one.
-		clonedReq := req.Clone(req.Context())
-		clonedReq.Header.Set(featureTrackerHeaderName, encodeUint32(features))
-		resp, err = baseRT.RoundTrip(clonedReq)
-	} else {
-		resp, err = baseRT.RoundTrip(req)
+		outReq = req.Clone(ctx)
+		if features > 0 {
+			outReq.Header.Set(featureTrackerHeaderName, encodeFeatureMask(features))
+		} else {
+			outReq.Header.Del(featureTrackerHeaderName)
+		}
+	} else if isChunk {
+		outReq = req.WithContext(ctx)
 	}
-	if resp != nil {
-		recordUploadIDFromHeader(req.Context(), resp.Header)
+	resp, err := baseRT.RoundTrip(outReq)
+	if isChunk {
+		finishSpan(ctx, httpUploadChunkError(resp, err))
+	} else if resp != nil {
+		recordUploadIDFromHeader(ctx, resp.Header)
 	}
 	return resp, err
 }
@@ -1182,10 +1193,12 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 		if attrs.MD5 != nil {
 			rawObj.Md5Hash = base64.StdEncoding.EncodeToString(attrs.MD5)
 		}
+		// Attach the aligned chunk size so trackingTransport can record Storage.UploadChunk spans.
+		uploadCtx := withUploadChunkSize(params.ctx, params.chunkSize)
 		call := c.raw.Objects.Insert(params.bucket, rawObj).
 			Media(pr, mediaOpts...).
 			Projection("full").
-			Context(params.ctx).
+			Context(uploadCtx).
 			Name(params.attrs.Name)
 		call.ProgressUpdater(func(n, _ int64) { progress(n) })
 
@@ -1629,8 +1642,9 @@ func readerReopen(ctx context.Context, header http.Header, params *newRangeReade
 			// With "Content-Encoding": "gzip" aka decompressive transcoding, GCS serves
 			// back the whole file regardless of the range count passed in as per:
 			//      https://cloud.google.com/storage/docs/transcoding#range,
-			// thus we have to manually move the body forward by seen bytes.
-			if decompressiveTranscoding(res) && seen > 0 {
+			// thus we have to manually move the body forward by seen bytes when a
+			// full-object (non-206) response is returned.
+			if decompressiveTranscoding(res) && seen > 0 && res.StatusCode != http.StatusPartialContent {
 				_, _ = io.CopyN(io.Discard, res.Body, seen)
 			}
 

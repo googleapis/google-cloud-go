@@ -271,6 +271,12 @@ func (c *regionSnapshotSettingsRESTClient) Get(ctx context.Context, req *compute
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/snapshotSettings", req.GetProject(), req.GetRegion())
 
 	// Build HTTP headers from client and context metadata.
@@ -325,6 +331,12 @@ func (c *regionSnapshotSettingsRESTClient) Patch(ctx context.Context, req *compu
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/snapshotSettings", req.GetProject(), req.GetRegion())

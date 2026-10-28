@@ -361,6 +361,12 @@ func (c *snapshotGroupsRESTClient) Delete(ctx context.Context, req *computepb.De
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetSnapshotGroup(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/snapshotGroups/%v", req.GetProject(), req.GetSnapshotGroup())
 
 	params := url.Values{}
@@ -424,6 +430,12 @@ func (c *snapshotGroupsRESTClient) Get(ctx context.Context, req *computepb.GetSn
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetSnapshotGroup(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/snapshotGroups/%v", req.GetProject(), req.GetSnapshotGroup())
 
 	// Build HTTP headers from client and context metadata.
@@ -472,6 +484,12 @@ func (c *snapshotGroupsRESTClient) Get(ctx context.Context, req *computepb.GetSn
 func (c *snapshotGroupsRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicySnapshotGroupRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/snapshotGroups/%v/getIamPolicy", req.GetProject(), req.GetResource())
@@ -536,6 +554,11 @@ func (c *snapshotGroupsRESTClient) Insert(ctx context.Context, req *computepb.In
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/snapshotGroups", req.GetProject())
@@ -613,6 +636,11 @@ func (c *snapshotGroupsRESTClient) List(ctx context.Context, req *computepb.List
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/snapshotGroups", req.GetProject())
@@ -696,6 +724,12 @@ func (c *snapshotGroupsRESTClient) SetIamPolicy(ctx context.Context, req *comput
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/snapshotGroups/%v/setIamPolicy", req.GetProject(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -750,6 +784,12 @@ func (c *snapshotGroupsRESTClient) TestIamPermissions(ctx context.Context, req *
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/snapshotGroups/%v/testIamPermissions", req.GetProject(), req.GetResource())

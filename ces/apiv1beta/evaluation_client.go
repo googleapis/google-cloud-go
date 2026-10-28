@@ -3021,6 +3021,11 @@ func (c *evaluationRESTClient) RunEvaluation(ctx context.Context, req *cespb.Run
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetApp(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:runEvaluation", req.GetApp())
 
 	params := url.Values{}
@@ -3091,6 +3096,11 @@ func (c *evaluationRESTClient) UploadEvaluationAudio(ctx context.Context, req *c
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:uploadEvaluationAudio", req.GetName())
 
 	params := url.Values{}
@@ -3150,6 +3160,11 @@ func (c *evaluationRESTClient) CreateEvaluation(ctx context.Context, req *cespb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/evaluations", req.GetParent())
@@ -3213,6 +3228,11 @@ func (c *evaluationRESTClient) GenerateEvaluation(ctx context.Context, req *cesp
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetConversation(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:generateEvaluation", req.GetConversation())
@@ -3280,6 +3300,11 @@ func (c *evaluationRESTClient) ImportEvaluations(ctx context.Context, req *cespb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:importEvaluations", req.GetParent())
@@ -3350,6 +3375,11 @@ func (c *evaluationRESTClient) CreateEvaluationDataset(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/evaluationDatasets", req.GetParent())
 
 	params := url.Values{}
@@ -3412,6 +3442,11 @@ func (c *evaluationRESTClient) UpdateEvaluation(ctx context.Context, req *cespb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetEvaluation().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetEvaluation().GetName())
@@ -3482,6 +3517,11 @@ func (c *evaluationRESTClient) UpdateEvaluationDataset(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetEvaluationDataset().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetEvaluationDataset().GetName())
 
 	params := url.Values{}
@@ -3543,6 +3583,11 @@ func (c *evaluationRESTClient) DeleteEvaluation(ctx context.Context, req *cespb.
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -3588,6 +3633,11 @@ func (c *evaluationRESTClient) DeleteEvaluationResult(ctx context.Context, req *
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -3625,6 +3675,11 @@ func (c *evaluationRESTClient) DeleteEvaluationResult(ctx context.Context, req *
 func (c *evaluationRESTClient) DeleteEvaluationDataset(ctx context.Context, req *cespb.DeleteEvaluationDatasetRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -3667,6 +3722,11 @@ func (c *evaluationRESTClient) DeleteEvaluationDataset(ctx context.Context, req 
 func (c *evaluationRESTClient) DeleteEvaluationRun(ctx context.Context, req *cespb.DeleteEvaluationRunRequest, opts ...gax.CallOption) (*DeleteEvaluationRunOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -3730,6 +3790,11 @@ func (c *evaluationRESTClient) GetEvaluation(ctx context.Context, req *cespb.Get
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -3782,6 +3847,11 @@ func (c *evaluationRESTClient) GetEvaluation(ctx context.Context, req *cespb.Get
 func (c *evaluationRESTClient) GetEvaluationResult(ctx context.Context, req *cespb.GetEvaluationResultRequest, opts ...gax.CallOption) (*cespb.EvaluationResult, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -3838,6 +3908,11 @@ func (c *evaluationRESTClient) GetEvaluationDataset(ctx context.Context, req *ce
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -3890,6 +3965,11 @@ func (c *evaluationRESTClient) GetEvaluationDataset(ctx context.Context, req *ce
 func (c *evaluationRESTClient) GetEvaluationRun(ctx context.Context, req *cespb.GetEvaluationRunRequest, opts ...gax.CallOption) (*cespb.EvaluationRun, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -3957,6 +4037,11 @@ func (c *evaluationRESTClient) ListEvaluations(ctx context.Context, req *cespb.L
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/evaluations", req.GetParent())
@@ -4052,6 +4137,11 @@ func (c *evaluationRESTClient) ListEvaluationResults(ctx context.Context, req *c
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/results", req.GetParent())
 
 		params := url.Values{}
@@ -4134,6 +4224,11 @@ func (c *evaluationRESTClient) ListEvaluationDatasets(ctx context.Context, req *
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/evaluationDatasets", req.GetParent())
@@ -4220,6 +4315,11 @@ func (c *evaluationRESTClient) ListEvaluationRuns(ctx context.Context, req *cesp
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/evaluationRuns", req.GetParent())
 
 		params := url.Values{}
@@ -4304,6 +4404,11 @@ func (c *evaluationRESTClient) ListEvaluationExpectations(ctx context.Context, r
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/evaluationExpectations", req.GetParent())
 
 		params := url.Values{}
@@ -4375,6 +4480,11 @@ func (c *evaluationRESTClient) GetEvaluationExpectation(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -4434,6 +4544,11 @@ func (c *evaluationRESTClient) CreateEvaluationExpectation(ctx context.Context, 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/evaluationExpectations", req.GetParent())
@@ -4500,6 +4615,11 @@ func (c *evaluationRESTClient) UpdateEvaluationExpectation(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetEvaluationExpectation().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetEvaluationExpectation().GetName())
 
 	params := url.Values{}
@@ -4561,6 +4681,11 @@ func (c *evaluationRESTClient) DeleteEvaluationExpectation(ctx context.Context, 
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -4608,6 +4733,11 @@ func (c *evaluationRESTClient) CreateScheduledEvaluationRun(ctx context.Context,
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/scheduledEvaluationRuns", req.GetParent())
@@ -4665,6 +4795,11 @@ func (c *evaluationRESTClient) CreateScheduledEvaluationRun(ctx context.Context,
 func (c *evaluationRESTClient) GetScheduledEvaluationRun(ctx context.Context, req *cespb.GetScheduledEvaluationRunRequest, opts ...gax.CallOption) (*cespb.ScheduledEvaluationRun, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -4732,6 +4867,11 @@ func (c *evaluationRESTClient) ListScheduledEvaluationRuns(ctx context.Context, 
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/scheduledEvaluationRuns", req.GetParent())
@@ -4812,6 +4952,11 @@ func (c *evaluationRESTClient) UpdateScheduledEvaluationRun(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetScheduledEvaluationRun().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetScheduledEvaluationRun().GetName())
 
 	params := url.Values{}
@@ -4873,6 +5018,11 @@ func (c *evaluationRESTClient) DeleteScheduledEvaluationRun(ctx context.Context,
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -4919,6 +5069,11 @@ func (c *evaluationRESTClient) TestPersonaVoice(ctx context.Context, req *cespb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetApp(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:testPersonaVoice", req.GetApp())
@@ -4979,6 +5134,11 @@ func (c *evaluationRESTClient) ExportEvaluations(ctx context.Context, req *cespb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/evaluations:export", req.GetParent())
@@ -5048,6 +5208,11 @@ func (c *evaluationRESTClient) ExportEvaluationRuns(ctx context.Context, req *ce
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/evaluationRuns:export", req.GetParent())
 
 	params := url.Values{}
@@ -5113,6 +5278,11 @@ func (c *evaluationRESTClient) ExportEvaluationResults(ctx context.Context, req 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/results:export", req.GetParent())
@@ -5182,6 +5352,11 @@ func (c *evaluationRESTClient) RunEvaluationResultMetrics(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetEvaluationResultId(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:runEvaluationResultMetrics", req.GetEvaluationResultId())
 
 	params := url.Values{}
@@ -5241,6 +5416,11 @@ func (c *evaluationRESTClient) RunEvaluationResultMetrics(ctx context.Context, r
 func (c *evaluationRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -5325,6 +5505,11 @@ func (c *evaluationRESTClient) ListLocations(ctx context.Context, req *locationp
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -5399,6 +5584,11 @@ func (c *evaluationRESTClient) CancelOperation(ctx context.Context, req *longrun
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -5438,6 +5628,11 @@ func (c *evaluationRESTClient) DeleteOperation(ctx context.Context, req *longrun
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -5475,6 +5670,11 @@ func (c *evaluationRESTClient) DeleteOperation(ctx context.Context, req *longrun
 func (c *evaluationRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -5542,6 +5742,11 @@ func (c *evaluationRESTClient) ListOperations(ctx context.Context, req *longrunn
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/operations", req.GetName())

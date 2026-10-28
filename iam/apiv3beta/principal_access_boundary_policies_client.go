@@ -869,6 +869,11 @@ func (c *principalAccessBoundaryPoliciesRESTClient) CreatePrincipalAccessBoundar
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta/%v/principalAccessBoundaryPolicies", req.GetParent())
 
 	params := url.Values{}
@@ -934,6 +939,11 @@ func (c *principalAccessBoundaryPoliciesRESTClient) GetPrincipalAccessBoundaryPo
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -993,6 +1003,11 @@ func (c *principalAccessBoundaryPoliciesRESTClient) UpdatePrincipalAccessBoundar
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetPrincipalAccessBoundaryPolicy().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta/%v", req.GetPrincipalAccessBoundaryPolicy().GetName())
@@ -1064,6 +1079,11 @@ func (c *principalAccessBoundaryPoliciesRESTClient) UpdatePrincipalAccessBoundar
 func (c *principalAccessBoundaryPoliciesRESTClient) DeletePrincipalAccessBoundaryPolicy(ctx context.Context, req *iampb.DeletePrincipalAccessBoundaryPolicyRequest, opts ...gax.CallOption) (*DeletePrincipalAccessBoundaryPolicyOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta/%v", req.GetName())
@@ -1149,6 +1169,11 @@ func (c *principalAccessBoundaryPoliciesRESTClient) ListPrincipalAccessBoundaryP
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v3beta/%v/principalAccessBoundaryPolicies", req.GetParent())
 
 		params := url.Values{}
@@ -1228,6 +1253,11 @@ func (c *principalAccessBoundaryPoliciesRESTClient) SearchPrincipalAccessBoundar
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v3beta/%v:searchPolicyBindings", req.GetName())
 
 		params := url.Values{}
@@ -1291,6 +1321,11 @@ func (c *principalAccessBoundaryPoliciesRESTClient) SearchPrincipalAccessBoundar
 func (c *principalAccessBoundaryPoliciesRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta/%v", req.GetName())

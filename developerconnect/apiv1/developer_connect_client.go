@@ -2196,6 +2196,11 @@ func (c *restClient) ListConnections(ctx context.Context, req *developerconnectp
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/connections", req.GetParent())
 
 		params := url.Values{}
@@ -2267,6 +2272,11 @@ func (c *restClient) GetConnection(ctx context.Context, req *developerconnectpb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2326,6 +2336,11 @@ func (c *restClient) CreateConnection(ctx context.Context, req *developerconnect
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/connections", req.GetParent())
@@ -2403,6 +2418,11 @@ func (c *restClient) UpdateConnection(ctx context.Context, req *developerconnect
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetConnection().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetConnection().GetName())
 
 	params := url.Values{}
@@ -2478,6 +2498,11 @@ func (c *restClient) UpdateConnection(ctx context.Context, req *developerconnect
 func (c *restClient) DeleteConnection(ctx context.Context, req *developerconnectpb.DeleteConnectionRequest, opts ...gax.CallOption) (*DeleteConnectionOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2562,6 +2587,11 @@ func (c *restClient) CreateGitRepositoryLink(ctx context.Context, req *developer
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/gitRepositoryLinks", req.GetParent())
 
 	params := url.Values{}
@@ -2628,6 +2658,11 @@ func (c *restClient) CreateGitRepositoryLink(ctx context.Context, req *developer
 func (c *restClient) DeleteGitRepositoryLink(ctx context.Context, req *developerconnectpb.DeleteGitRepositoryLinkRequest, opts ...gax.CallOption) (*DeleteGitRepositoryLinkOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2713,6 +2748,11 @@ func (c *restClient) ListGitRepositoryLinks(ctx context.Context, req *developerc
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/gitRepositoryLinks", req.GetParent())
 
 		params := url.Values{}
@@ -2784,6 +2824,11 @@ func (c *restClient) GetGitRepositoryLink(ctx context.Context, req *developercon
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2844,6 +2889,11 @@ func (c *restClient) FetchReadWriteToken(ctx context.Context, req *developerconn
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetGitRepositoryLink(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:fetchReadWriteToken", req.GetGitRepositoryLink())
 
 	params := url.Values{}
@@ -2902,6 +2952,11 @@ func (c *restClient) FetchReadToken(ctx context.Context, req *developerconnectpb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetGitRepositoryLink(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:fetchReadToken", req.GetGitRepositoryLink())
@@ -2972,6 +3027,11 @@ func (c *restClient) FetchLinkableGitRepositories(ctx context.Context, req *deve
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetConnection(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:fetchLinkableGitRepositories", req.GetConnection())
 
 		params := url.Values{}
@@ -3040,6 +3100,11 @@ func (c *restClient) FetchGitHubInstallations(ctx context.Context, req *develope
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetConnection(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:fetchGitHubInstallations", req.GetConnection())
 
 	params := url.Values{}
@@ -3105,6 +3170,11 @@ func (c *restClient) FetchGitRefs(ctx context.Context, req *developerconnectpb.F
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetGitRepositoryLink(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:fetchGitRefs", req.GetGitRepositoryLink())
@@ -3186,6 +3256,11 @@ func (c *restClient) ListAccountConnectors(ctx context.Context, req *developerco
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/accountConnectors", req.GetParent())
 
 		params := url.Values{}
@@ -3257,6 +3332,11 @@ func (c *restClient) GetAccountConnector(ctx context.Context, req *developerconn
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3316,6 +3396,11 @@ func (c *restClient) CreateAccountConnector(ctx context.Context, req *developerc
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/accountConnectors", req.GetParent())
@@ -3393,6 +3478,11 @@ func (c *restClient) UpdateAccountConnector(ctx context.Context, req *developerc
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAccountConnector().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetAccountConnector().GetName())
 
 	params := url.Values{}
@@ -3468,6 +3558,11 @@ func (c *restClient) UpdateAccountConnector(ctx context.Context, req *developerc
 func (c *restClient) DeleteAccountConnector(ctx context.Context, req *developerconnectpb.DeleteAccountConnectorRequest, opts ...gax.CallOption) (*DeleteAccountConnectorOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3549,6 +3644,11 @@ func (c *restClient) FetchAccessToken(ctx context.Context, req *developerconnect
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAccountConnector(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/users:fetchAccessToken", req.GetAccountConnector())
 
 	params := url.Values{}
@@ -3614,6 +3714,11 @@ func (c *restClient) ListUsers(ctx context.Context, req *developerconnectpb.List
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/users", req.GetParent())
@@ -3687,6 +3792,11 @@ func (c *restClient) DeleteUser(ctx context.Context, req *developerconnectpb.Del
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3757,6 +3867,11 @@ func (c *restClient) FetchSelf(ctx context.Context, req *developerconnectpb.Fetc
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/users:fetchSelf", req.GetName())
 
 	params := url.Values{}
@@ -3809,6 +3924,11 @@ func (c *restClient) FetchSelf(ctx context.Context, req *developerconnectpb.Fetc
 func (c *restClient) DeleteSelf(ctx context.Context, req *developerconnectpb.DeleteSelfRequest, opts ...gax.CallOption) (*DeleteSelfOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/users:deleteSelf", req.GetName())
@@ -3872,6 +3992,11 @@ func (c *restClient) StartOAuth(ctx context.Context, req *developerconnectpb.Sta
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAccountConnector(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/users:startOAuthFlow", req.GetAccountConnector())
 
 	params := url.Values{}
@@ -3924,6 +4049,11 @@ func (c *restClient) StartOAuth(ctx context.Context, req *developerconnectpb.Sta
 func (c *restClient) FinishOAuth(ctx context.Context, req *developerconnectpb.FinishOAuthRequest, opts ...gax.CallOption) (*developerconnectpb.FinishOAuthResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAccountConnector(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/users:finishOAuthFlow", req.GetAccountConnector())
@@ -3989,6 +4119,11 @@ func (c *restClient) FinishOAuth(ctx context.Context, req *developerconnectpb.Fi
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -4066,6 +4201,11 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -4140,6 +4280,11 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -4179,6 +4324,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4216,6 +4366,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -4283,6 +4438,11 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

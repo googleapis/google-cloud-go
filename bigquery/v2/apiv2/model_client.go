@@ -627,6 +627,13 @@ func (c *modelRESTClient) GetModel(ctx context.Context, req *bigquerypb.GetModel
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetDatasetId(),
+		req.GetModelId(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/datasets/%v/models/%v", req.GetProjectId(), req.GetDatasetId(), req.GetModelId())
 
 	// Build HTTP headers from client and context metadata.
@@ -691,6 +698,12 @@ func (c *modelRESTClient) ListModels(ctx context.Context, req *bigquerypb.ListMo
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProjectId(),
+			req.GetDatasetId(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/datasets/%v/models", req.GetProjectId(), req.GetDatasetId())
@@ -772,6 +785,13 @@ func (c *modelRESTClient) PatchModel(ctx context.Context, req *bigquerypb.PatchM
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetDatasetId(),
+		req.GetModelId(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/datasets/%v/models/%v", req.GetProjectId(), req.GetDatasetId(), req.GetModelId())
 
 	// Build HTTP headers from client and context metadata.
@@ -821,6 +841,13 @@ func (c *modelRESTClient) PatchModel(ctx context.Context, req *bigquerypb.PatchM
 func (c *modelRESTClient) DeleteModel(ctx context.Context, req *bigquerypb.DeleteModelRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetDatasetId(),
+		req.GetModelId(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/bigquery/v2/projects/%v/datasets/%v/models/%v", req.GetProjectId(), req.GetDatasetId(), req.GetModelId())

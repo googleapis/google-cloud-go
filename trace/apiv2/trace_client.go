@@ -508,6 +508,11 @@ func (c *restClient) BatchWriteSpans(ctx context.Context, req *tracepb.BatchWrit
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/traces:batchWrite", req.GetName())
 
 	params := url.Values{}
@@ -551,6 +556,11 @@ func (c *restClient) CreateSpan(ctx context.Context, req *tracepb.Span, opts ...
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())

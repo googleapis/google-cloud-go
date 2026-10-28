@@ -1790,6 +1790,11 @@ func (c *restClient) ListEffectiveSecurityHealthAnalyticsCustomModules(ctx conte
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/effectiveSecurityHealthAnalyticsCustomModules", req.GetParent())
 
 		params := url.Values{}
@@ -1854,6 +1859,11 @@ func (c *restClient) ListEffectiveSecurityHealthAnalyticsCustomModules(ctx conte
 func (c *restClient) GetEffectiveSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycentermanagementpb.GetEffectiveSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) (*securitycentermanagementpb.EffectiveSecurityHealthAnalyticsCustomModule, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1925,6 +1935,11 @@ func (c *restClient) ListSecurityHealthAnalyticsCustomModules(ctx context.Contex
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/securityHealthAnalyticsCustomModules", req.GetParent())
@@ -2008,6 +2023,11 @@ func (c *restClient) ListDescendantSecurityHealthAnalyticsCustomModules(ctx cont
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/securityHealthAnalyticsCustomModules:listDescendant", req.GetParent())
 
 		params := url.Values{}
@@ -2074,6 +2094,11 @@ func (c *restClient) GetSecurityHealthAnalyticsCustomModule(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2138,6 +2163,11 @@ func (c *restClient) CreateSecurityHealthAnalyticsCustomModule(ctx context.Conte
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/securityHealthAnalyticsCustomModules", req.GetParent())
@@ -2210,6 +2240,11 @@ func (c *restClient) UpdateSecurityHealthAnalyticsCustomModule(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSecurityHealthAnalyticsCustomModule().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetSecurityHealthAnalyticsCustomModule().GetName())
 
 	params := url.Values{}
@@ -2277,6 +2312,11 @@ func (c *restClient) DeleteSecurityHealthAnalyticsCustomModule(ctx context.Conte
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2325,6 +2365,11 @@ func (c *restClient) SimulateSecurityHealthAnalyticsCustomModule(ctx context.Con
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/securityHealthAnalyticsCustomModules:simulate", req.GetParent())
@@ -2394,6 +2439,11 @@ func (c *restClient) ListEffectiveEventThreatDetectionCustomModules(ctx context.
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/effectiveEventThreatDetectionCustomModules", req.GetParent())
@@ -2472,6 +2522,11 @@ func (c *restClient) GetEffectiveEventThreatDetectionCustomModule(ctx context.Co
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2539,6 +2594,11 @@ func (c *restClient) ListEventThreatDetectionCustomModules(ctx context.Context, 
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/eventThreatDetectionCustomModules", req.GetParent())
@@ -2620,6 +2680,11 @@ func (c *restClient) ListDescendantEventThreatDetectionCustomModules(ctx context
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/eventThreatDetectionCustomModules:listDescendant", req.GetParent())
 
 		params := url.Values{}
@@ -2685,6 +2750,11 @@ func (c *restClient) GetEventThreatDetectionCustomModule(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2747,6 +2817,11 @@ func (c *restClient) CreateEventThreatDetectionCustomModule(ctx context.Context,
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/eventThreatDetectionCustomModules", req.GetParent())
@@ -2818,6 +2893,11 @@ func (c *restClient) UpdateEventThreatDetectionCustomModule(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetEventThreatDetectionCustomModule().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetEventThreatDetectionCustomModule().GetName())
 
 	params := url.Values{}
@@ -2884,6 +2964,11 @@ func (c *restClient) DeleteEventThreatDetectionCustomModule(ctx context.Context,
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2930,6 +3015,11 @@ func (c *restClient) ValidateEventThreatDetectionCustomModule(ctx context.Contex
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/eventThreatDetectionCustomModules:validate", req.GetParent())
@@ -2984,6 +3074,11 @@ func (c *restClient) ValidateEventThreatDetectionCustomModule(ctx context.Contex
 func (c *restClient) GetSecurityCenterService(ctx context.Context, req *securitycentermanagementpb.GetSecurityCenterServiceRequest, opts ...gax.CallOption) (*securitycentermanagementpb.SecurityCenterService, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3055,6 +3150,11 @@ func (c *restClient) ListSecurityCenterServices(ctx context.Context, req *securi
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/securityCenterServices", req.GetParent())
@@ -3132,6 +3232,11 @@ func (c *restClient) UpdateSecurityCenterService(ctx context.Context, req *secur
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSecurityCenterService().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetSecurityCenterService().GetName())
 
 	params := url.Values{}
@@ -3194,6 +3299,11 @@ func (c *restClient) UpdateSecurityCenterService(ctx context.Context, req *secur
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3261,6 +3371,11 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())

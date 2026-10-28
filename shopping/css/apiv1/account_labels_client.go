@@ -583,6 +583,11 @@ func (c *accountLabelsRESTClient) ListAccountLabels(ctx context.Context, req *cs
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/labels", req.GetParent())
 
 		params := url.Values{}
@@ -655,6 +660,11 @@ func (c *accountLabelsRESTClient) CreateAccountLabel(ctx context.Context, req *c
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/labels", req.GetParent())
 
 	params := url.Values{}
@@ -716,6 +726,11 @@ func (c *accountLabelsRESTClient) UpdateAccountLabel(ctx context.Context, req *c
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAccountLabel().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetAccountLabel().GetName())
 
 	params := url.Values{}
@@ -768,6 +783,11 @@ func (c *accountLabelsRESTClient) UpdateAccountLabel(ctx context.Context, req *c
 func (c *accountLabelsRESTClient) DeleteAccountLabel(ctx context.Context, req *csspb.DeleteAccountLabelRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
