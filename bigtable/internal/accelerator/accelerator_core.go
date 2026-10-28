@@ -168,6 +168,12 @@ func NewChannel(
 	if err != nil {
 		return nil, err
 	}
+	defaultOpts = append(defaultOpts,
+		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
+			grpc.MaxCallSendMsgSize(maxMsgSize),
+			grpc.MaxCallRecvMsgSize(maxMsgSize),
+		)),
+	)
 	opts = append(defaultOpts, opts...)
 
 	sc, err := newSessionClient(ctx, project, instance, appProfile, clientName, opts...)
