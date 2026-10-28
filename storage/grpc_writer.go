@@ -457,6 +457,8 @@ func (w *gRPCWriter) pickBufferSender() gRPCBidiWriteBufferSender {
 		return w.newGRPCOneshotBidiWriteBufferSender()
 	}
 	// Resumable write semantics
+	// Attach the aligned chunk size so retryAttemptStatsHandler can record Storage.UploadChunk spans.
+	w.preRunCtx = withUploadChunkSize(w.preRunCtx, w.chunkSize)
 	return w.newGRPCResumableBidiWriteBufferSender()
 }
 

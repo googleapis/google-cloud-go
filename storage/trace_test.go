@@ -21,8 +21,10 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"net/http/httptest"
 	"slices"
 	"strconv"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -86,6 +88,12 @@ func TestStorageTraceStartEndSpan(t *testing.T) {
 	}
 	if diff := testutil.Diff(gotSpan, wantSpan, opts...); diff != "" {
 		t.Errorf("diff: -got, +want:\n%s\n", diff)
+	}
+
+	childCtx, _ := startSpan(ctx, uploadChunkSpanName)
+	finishSpan(childCtx, nil)
+	if got := childCtx.Value(apiMethodKey{}); got != spanName {
+		t.Errorf("child startSpan apiMethodKey = %v, want %v", got, spanName)
 	}
 }
 func TestStorageTraceStartSpanOption(t *testing.T) {
@@ -1599,6 +1607,9 @@ func TestRecordWriterTraceAttributes(t *testing.T) {
 
 func TestWriterTraceWriteModeEmulated(t *testing.T) {
 	checkEmulatorEnvironment(t)
+	// TODO: Remove setting development env var upon launch.
+	t.Setenv(storageOtelTracingDevVar, "true")
+	t.Setenv(storageBucketMetadataDisabledVar, "true")
 
 	ctx := context.Background()
 
@@ -1610,6 +1621,7 @@ func TestWriterTraceWriteModeEmulated(t *testing.T) {
 		// wantUploadID is set when the upload creates a resumable session, whose
 		// server-generated ID must be recorded as gcp.storage.upload.id.
 		wantUploadID bool
+		wantChunks   []uploadChunkSpanInfo
 		// grpcOnly is set for upload modes that are not supported over HTTP.
 		grpcOnly bool
 	}{
@@ -1631,6 +1643,12 @@ func TestWriterTraceWriteModeEmulated(t *testing.T) {
 				attribute.String("gcp.storage.write.mode", "resumable"),
 			},
 			wantUploadID: true,
+			wantChunks: []uploadChunkSpanInfo{
+				{Number: 1, Offset: 0, SizeBytes: 256 * 1024},
+				{Number: 2, Offset: 256 * 1024, SizeBytes: 256 * 1024},
+				{Number: 3, Offset: 512 * 1024, SizeBytes: 256 * 1024},
+				{Number: 4, Offset: 768 * 1024, SizeBytes: 256 * 1024},
+			},
 		},
 		{
 			name: "appendable",
@@ -1665,7 +1683,19 @@ func TestWriterTraceWriteModeEmulated(t *testing.T) {
 
 	for _, transport := range []string{"grpc", "http"} {
 		t.Run(transport, func(t *testing.T) {
-			c := &Client{tc: emulatorClients[transport]}
+			var (
+				c   *Client
+				err error
+			)
+			if transport == "grpc" {
+				c, err = NewGRPCClient(ctx)
+			} else {
+				c, err = NewClient(ctx)
+			}
+			if err != nil {
+				t.Fatalf("new %s client: %v", transport, err)
+			}
+			t.Cleanup(func() { c.Close() })
 			bucket := fmt.Sprintf("%s-trace-bucket-%d", transport, time.Now().UnixNano())
 			if err := c.Bucket(bucket).Create(ctx, "project", nil); err != nil {
 				t.Fatalf("Bucket.Create: %v", err)
@@ -1680,8 +1710,6 @@ func TestWriterTraceWriteModeEmulated(t *testing.T) {
 					t.Cleanup(func() {
 						te.Unregister(ctx)
 					})
-					// TODO: Remove setting development env var upon launch.
-					t.Setenv(storageOtelTracingDevVar, "true")
 
 					objName := fmt.Sprintf("object-%s-%d", tc.name, time.Now().UnixNano())
 					w := c.Bucket(bucket).Object(objName).NewWriter(ctx)
@@ -1700,7 +1728,8 @@ func TestWriterTraceWriteModeEmulated(t *testing.T) {
 						}
 					}
 					wantAttrs := append(slices.Clone(tc.wantAttrs),
-						attribute.String(storageURIAttrKey, "gs://"+bucket+"/"+objName))
+						attribute.String(storageURIAttrKey, "gs://"+bucket+"/"+objName),
+						rpcSystemNameKey.String(transport))
 					if tc.wantUploadID && len(writerSpans) == 1 {
 						// The upload ID is server-generated, so only check that it is present.
 						var uploadID string
@@ -1715,6 +1744,9 @@ func TestWriterTraceWriteModeEmulated(t *testing.T) {
 						wantAttrs = append(wantAttrs, attribute.String("gcp.storage.upload.id", uploadID))
 					}
 					verifySingleSpanAttributes(t, writerSpans, wantAttrs)
+					if diff := cmp.Diff(tc.wantChunks, extractAndVerifyUploadChunkSpans(t, te.Spans())); diff != "" {
+						t.Errorf("%s spans mismatch (-want +got):\n%s", uploadChunkSpanName, diff)
+					}
 				})
 			}
 		})
@@ -1837,6 +1869,348 @@ func verifySingleSpanAttributes(t *testing.T, spans tracetest.SpanStubs, wantAtt
 		t.Errorf("span %s attributes mismatch:\n got: %s\nwant: %s", spans[0].Name,
 			got.Encoded(attribute.DefaultEncoder()), want.Encoded(attribute.DefaultEncoder()))
 	}
+}
+
+// chunkTraceTestServer is a fake storage server for resumable and oneshot
+// BidiWriteObject uploads. If failAt is positive, the first stream to receive
+// data past offset failAt fails with failCode (defaulting to UNAVAILABLE)
+// before persisting it.
+type chunkTraceTestServer struct {
+	storagepb.UnimplementedStorageServer
+	failAt   int64
+	failCode codes.Code
+
+	mu        sync.Mutex
+	persisted int64
+	failed    bool
+}
+
+func (s *chunkTraceTestServer) StartResumableWrite(context.Context, *storagepb.StartResumableWriteRequest) (*storagepb.StartResumableWriteResponse, error) {
+	return &storagepb.StartResumableWriteResponse{UploadId: "upload-id"}, nil
+}
+
+func (s *chunkTraceTestServer) QueryWriteStatus(context.Context, *storagepb.QueryWriteStatusRequest) (*storagepb.QueryWriteStatusResponse, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return &storagepb.QueryWriteStatusResponse{
+		WriteStatus: &storagepb.QueryWriteStatusResponse_PersistedSize{PersistedSize: s.persisted},
+	}, nil
+}
+
+func (s *chunkTraceTestServer) BidiWriteObject(stream storagepb.Storage_BidiWriteObjectServer) error {
+	for {
+		req, err := stream.Recv()
+		if err == io.EOF {
+			return nil
+		}
+		if err != nil {
+			return err
+		}
+		n := int64(len(req.GetChecksummedData().GetContent()))
+		size := req.GetWriteOffset() + n
+
+		s.mu.Lock()
+		if s.failAt > 0 && !s.failed && size > s.failAt {
+			s.failed = true
+			code := s.failCode
+			if code == codes.OK {
+				code = codes.Unavailable
+			}
+			s.mu.Unlock()
+			return status.Error(code, "injected stream failure")
+		}
+		if req.GetFlush() || req.GetFinishWrite() {
+			if size > s.persisted {
+				s.persisted = size
+			}
+		}
+		persisted := s.persisted
+		s.mu.Unlock()
+
+		if req.GetFinishWrite() {
+			return stream.Send(&storagepb.BidiWriteObjectResponse{
+				WriteStatus: &storagepb.BidiWriteObjectResponse_Resource{
+					Resource: &storagepb.Object{Bucket: "projects/_/buckets/bucket", Name: "object", Size: persisted},
+				},
+			})
+		}
+		if req.GetStateLookup() {
+			if err := stream.Send(&storagepb.BidiWriteObjectResponse{
+				WriteStatus: &storagepb.BidiWriteObjectResponse_PersistedSize{PersistedSize: persisted},
+			}); err != nil {
+				return err
+			}
+		}
+	}
+}
+
+// uploadChunkSpanInfo describes an exported Storage.UploadChunk span.
+type uploadChunkSpanInfo struct {
+	Number    int64
+	Offset    int64
+	SizeBytes int64
+	Failed    bool
+	ErrorType string
+}
+
+// extractAndVerifyUploadChunkSpans returns the Storage.UploadChunk spans in
+// spans in the order they ended, and verifies that each is a child of the
+// Object.Writer span and that no other span carries chunk attributes.
+func extractAndVerifyUploadChunkSpans(t *testing.T, spans tracetest.SpanStubs) []uploadChunkSpanInfo {
+	t.Helper()
+	var writer *tracetest.SpanStub
+	for i := range spans {
+		if spans[i].Name == appendPackageName("Object.Writer") {
+			writer = &spans[i]
+		}
+	}
+	var got []uploadChunkSpanInfo
+	for _, s := range spans {
+		if s.Name == appendPackageName(uploadChunkSpanName) {
+			if writer == nil {
+				t.Fatalf("got %s span without an Object.Writer span", uploadChunkSpanName)
+			}
+			if gotID, wantID := s.Parent.SpanID(), writer.SpanContext.SpanID(); gotID != wantID {
+				t.Errorf("%s span parent = %v, want Object.Writer span %v", uploadChunkSpanName, gotID, wantID)
+			}
+			info := uploadChunkSpanInfo{Number: -1, Offset: -1, SizeBytes: -1, Failed: s.Status.Code == otcodes.Error}
+			for _, a := range s.Attributes {
+				switch a.Key {
+				case uploadChunkNumberAttr:
+					info.Number = a.Value.AsInt64()
+				case payloadOffsetAttr:
+					info.Offset = a.Value.AsInt64()
+				case payloadSizeBytesAttr:
+					info.SizeBytes = a.Value.AsInt64()
+				case "error.type":
+					info.ErrorType = a.Value.AsString()
+				}
+			}
+			got = append(got, info)
+		} else {
+			// No other span, such as the gRPC attempt span, carries the attributes.
+			for _, a := range s.Attributes {
+				if a.Key == uploadChunkNumberAttr || a.Key == payloadOffsetAttr || a.Key == payloadSizeBytesAttr {
+					t.Errorf("span %q has attribute %s, want it only on %s spans", s.Name, a.Key, uploadChunkSpanName)
+				}
+			}
+		}
+	}
+	return got
+}
+
+func TestWriterUploadChunkSpans(t *testing.T) {
+	const kib = 1024
+	const mib = 1024 * kib
+	testCases := []struct {
+		name        string
+		devTracing  bool
+		chunkSize   int
+		payloadSize int
+		failCode    codes.Code
+		failStatus  int
+		wantErr     bool
+		grpcOnly    bool
+		want        []uploadChunkSpanInfo
+	}{
+		{
+			name:        "multiple chunks",
+			devTracing:  true,
+			chunkSize:   256 * kib,
+			payloadSize: mib,
+			want: []uploadChunkSpanInfo{
+				{Number: 1, Offset: 0, SizeBytes: 256 * kib},
+				{Number: 2, Offset: 256 * kib, SizeBytes: 256 * kib},
+				{Number: 3, Offset: 512 * kib, SizeBytes: 256 * kib},
+				{Number: 4, Offset: 768 * kib, SizeBytes: 256 * kib},
+			},
+		},
+		{
+			name:        "final partial chunk",
+			devTracing:  true,
+			chunkSize:   256 * kib,
+			payloadSize: mib + 100*kib,
+			want: []uploadChunkSpanInfo{
+				{Number: 1, Offset: 0, SizeBytes: 256 * kib},
+				{Number: 2, Offset: 256 * kib, SizeBytes: 256 * kib},
+				{Number: 3, Offset: 512 * kib, SizeBytes: 256 * kib},
+				{Number: 4, Offset: 768 * kib, SizeBytes: 256 * kib},
+				{Number: 5, Offset: mib, SizeBytes: 100 * kib},
+			},
+		},
+		{
+			name:        "dev tracing disabled",
+			devTracing:  false,
+			chunkSize:   256 * kib,
+			payloadSize: mib,
+		},
+		{
+			name:        "oneshot",
+			devTracing:  true,
+			chunkSize:   0,
+			payloadSize: mib,
+		},
+		{
+			// An object that fits in one chunk is sent as a oneshot upload
+			// (see gatherFirstBuffer), so no chunk spans are recorded.
+			name:        "payload smaller than one chunk",
+			devTracing:  true,
+			chunkSize:   256 * kib,
+			payloadSize: 100 * kib,
+		},
+		{
+			name:        "retry failed chunk",
+			devTracing:  true,
+			chunkSize:   256 * kib,
+			payloadSize: mib,
+			failCode:    codes.Unavailable,
+			failStatus:  http.StatusServiceUnavailable,
+			want: []uploadChunkSpanInfo{
+				{Number: 1, Offset: 0, SizeBytes: 256 * kib},
+				{Number: 2, Offset: 256 * kib, SizeBytes: 256 * kib},
+				{Number: 3, Offset: 512 * kib, SizeBytes: 256 * kib, Failed: true, ErrorType: "UNAVAILABLE"},
+				{Number: 3, Offset: 512 * kib, SizeBytes: 256 * kib},
+				{Number: 4, Offset: 768 * kib, SizeBytes: 256 * kib},
+			},
+		},
+		{
+			name:        "terminal failure",
+			devTracing:  true,
+			chunkSize:   256 * kib,
+			payloadSize: mib,
+			failCode:    codes.PermissionDenied,
+			failStatus:  http.StatusForbidden,
+			wantErr:     true,
+			want: []uploadChunkSpanInfo{
+				{Number: 1, Offset: 0, SizeBytes: 256 * kib},
+				{Number: 2, Offset: 256 * kib, SizeBytes: 256 * kib},
+				{Number: 3, Offset: 512 * kib, SizeBytes: 256 * kib, Failed: true, ErrorType: "PERMISSION_DENIED"},
+			},
+		},
+		{
+			name:        "chunk sent as several messages",
+			devTracing:  true,
+			chunkSize:   4 * mib, // Two 2 MiB messages per chunk; one span each.
+			payloadSize: 10 * mib,
+			grpcOnly:    true,
+			want: []uploadChunkSpanInfo{
+				{Number: 1, Offset: 0, SizeBytes: 4 * mib},
+				{Number: 2, Offset: 4 * mib, SizeBytes: 4 * mib},
+				{Number: 3, Offset: 8 * mib, SizeBytes: 2 * mib},
+			},
+		},
+	}
+
+	for _, transport := range []string{"grpc", "http"} {
+		t.Run(transport, func(t *testing.T) {
+			for _, tc := range testCases {
+				if tc.grpcOnly && transport != "grpc" {
+					continue
+				}
+				t.Run(tc.name, func(t *testing.T) {
+					ctx := t.Context()
+					te := testutil.NewOpenTelemetryTestExporter()
+					t.Cleanup(func() { te.Unregister(context.Background()) })
+					t.Setenv(storageOtelTracingDevVar, strconv.FormatBool(tc.devTracing))
+					t.Setenv(storageBucketMetadataDisabledVar, "true")
+
+					var (
+						client  *Client
+						grpcSrv *chunkTraceTestServer
+						err     error
+					)
+					if transport == "grpc" {
+						var failAt int64
+						if tc.failCode != codes.OK {
+							// Chunk 3 covers [512 KiB, 768 KiB). Fail mid-chunk before GCS persists it.
+							failAt = 600 * kib
+						}
+						grpcSrv = &chunkTraceTestServer{failAt: failAt, failCode: tc.failCode}
+						startFakeStorageServer(t, grpcSrv)
+						client, err = NewGRPCClient(ctx)
+					} else {
+						var failOffset int64
+						if tc.failStatus != 0 {
+							// Fail the first attempt of chunk 3 (offset 512 KiB).
+							failOffset = 512 * kib
+						}
+						httpSrv := newHTTPChunkTraceTestServer(t, failOffset, tc.failStatus)
+						client, err = NewClient(ctx, option.WithEndpoint(httpSrv.URL), option.WithoutAuthentication())
+					}
+					if err != nil {
+						t.Fatalf("new %s client: %v", transport, err)
+					}
+					t.Cleanup(func() { client.Close() })
+					retryOpts := []RetryOption{WithBackoff(gax.Backoff{Initial: time.Millisecond, Max: time.Millisecond})}
+					if !tc.wantErr {
+						retryOpts = append(retryOpts, WithPolicy(RetryAlways))
+					}
+					client.SetRetry(retryOpts...)
+
+					w := client.Bucket("bucket").Object("object").NewWriter(ctx)
+					w.ChunkSize = tc.chunkSize
+					w.DisableAutoChecksum = true
+					_, writeErr := w.Write(make([]byte, tc.payloadSize))
+					closeErr := w.Close()
+					if (errors.Join(writeErr, closeErr) != nil) != tc.wantErr {
+						t.Fatalf("upload error = %v, wantErr %v", errors.Join(writeErr, closeErr), tc.wantErr)
+					}
+
+					// Chunk 4 can be in flight on a gRPC stream when chunk 3 fails,
+					// so it may also fail before the retry or terminal failure completes.
+					got := slices.DeleteFunc(extractAndVerifyUploadChunkSpans(t, te.Spans()), func(s uploadChunkSpanInfo) bool {
+						return grpcSrv != nil && grpcSrv.failAt > 0 && s.Failed && s.Number == 4
+					})
+					if diff := cmp.Diff(tc.want, got); diff != "" {
+						t.Errorf("%s spans mismatch (-want +got):\n%s", uploadChunkSpanName, diff)
+					}
+					if grpcSrv != nil && grpcSrv.failAt > 0 {
+						grpcSrv.mu.Lock()
+						failed := grpcSrv.failed
+						grpcSrv.mu.Unlock()
+						if !failed {
+							t.Error("server did not inject the stream failure")
+						}
+					}
+				})
+			}
+		})
+	}
+}
+
+func newHTTPChunkTraceTestServer(t *testing.T, failOffset int64, failStatus int) *httptest.Server {
+	t.Helper()
+	var mu sync.Mutex
+	var failedOnce bool
+	var srv *httptest.Server
+	srv = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		io.Copy(io.Discard, r.Body)
+		if r.URL.Query().Get("uploadType") == "resumable" && r.Header.Get("Content-Range") == "" {
+			w.Header().Set("Location", srv.URL+"/upload?upload_id=test-session")
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+		if cr := r.Header.Get("Content-Range"); cr != "" {
+			mu.Lock()
+			if failOffset > 0 && !failedOnce && strings.HasPrefix(cr, fmt.Sprintf("bytes %d-", failOffset)) {
+				failedOnce = true
+				mu.Unlock()
+				w.WriteHeader(failStatus)
+				return
+			}
+			mu.Unlock()
+			if strings.HasSuffix(cr, "/*") {
+				w.Header().Set("X-Http-Status-Code-Override", "308")
+				w.WriteHeader(http.StatusOK)
+				return
+			}
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"name":"object","bucket":"bucket"}`))
+	}))
+	t.Cleanup(srv.Close)
+	return srv
 }
 
 type staticAuthTokenProvider struct {
