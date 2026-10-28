@@ -101,6 +101,129 @@ func TestIntegration_SessionVRpc_Apply(t *testing.T) {
 	}
 }
 
+// TestIntegration_SessionVRpc_CheckAndMutateRow exercises conditional Apply
+// end-to-end through the vRPC session path and asserts a CheckAndMutateRow
+// TableRequest reached the wire and GetCondMutationResult reports matched=true.
+func TestIntegration_SessionVRpc_CheckAndMutateRow(t *testing.T) {
+	h := newSessionTestHarness(t)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	tbl := h.client.OpenTable("test-table")
+	mtrue := NewMutation()
+	mtrue.Set("fam1", "col1", Timestamp(1000), []byte("v"))
+	cond := NewCondMutation(PassAllFilter(), mtrue, nil)
+
+	var matched bool
+	if err := tbl.Apply(ctx, "test-row", cond, GetCondMutationResult(&matched)); err != nil {
+		t.Fatalf("Apply(conditional): %v", err)
+	}
+	if !matched {
+		t.Errorf("GetCondMutationResult matched = false, want true")
+	}
+
+	vrpcs := waitForVRpcs(t, h.server, 1, 2*time.Second)
+	if len(vrpcs) != 1 {
+		t.Errorf("server saw %d vRPCs, want exactly 1", len(vrpcs))
+	}
+	var tr btpb.TableRequest
+	if err := proto.Unmarshal(vrpcs[0].req.Payload, &tr); err != nil {
+		t.Fatalf("decode captured TableRequest: %v", err)
+	}
+	if tr.GetCheckAndMutateRow() == nil {
+		t.Errorf("captured TableRequest was not CheckAndMutateRow shape: %T", tr.Payload)
+	}
+	openReqs := h.server.getOpenTableRequests()
+	if len(openReqs) == 0 {
+		t.Fatalf("expected at least 1 OpenTableRequest")
+	}
+	if got := openReqs[len(openReqs)-1].GetPermission(); got != btpb.OpenTableRequest_PERMISSION_READ_WRITE {
+		t.Errorf("OpenTable permission = %v, want PERMISSION_READ_WRITE", got)
+	}
+}
+
+// TestIntegration_SessionVRpc_ReadModifyWriteRow exercises ApplyReadModifyWrite
+// end-to-end through the vRPC session path and asserts a ReadModifyWriteRow
+// TableRequest reached the wire and the updated row is decoded.
+func TestIntegration_SessionVRpc_ReadModifyWriteRow(t *testing.T) {
+	h := newSessionTestHarness(t)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	tbl := h.client.OpenTable("test-table")
+	rmw := NewReadModifyWrite()
+	rmw.AppendValue("fam1", "col1", []byte("-suffix"))
+
+	row, err := tbl.ApplyReadModifyWrite(ctx, "test-row", rmw)
+	if err != nil {
+		t.Fatalf("ApplyReadModifyWrite: %v", err)
+	}
+	if row.Key() != "test-row" || len(row["fam1"]) == 0 || string(row["fam1"][0].Value) != "rmw-value" {
+		t.Errorf("ApplyReadModifyWrite row = %+v, want fam1:col1=rmw-value", row)
+	}
+
+	vrpcs := waitForVRpcs(t, h.server, 1, 2*time.Second)
+	if len(vrpcs) != 1 {
+		t.Errorf("server saw %d vRPCs, want exactly 1", len(vrpcs))
+	}
+	var tr btpb.TableRequest
+	if err := proto.Unmarshal(vrpcs[0].req.Payload, &tr); err != nil {
+		t.Fatalf("decode captured TableRequest: %v", err)
+	}
+	if tr.GetReadModifyWriteRow() == nil {
+		t.Errorf("captured TableRequest was not ReadModifyWriteRow shape: %T", tr.Payload)
+	}
+	openReqs := h.server.getOpenTableRequests()
+	if len(openReqs) == 0 {
+		t.Fatalf("expected at least 1 OpenTableRequest")
+	}
+	if got := openReqs[len(openReqs)-1].GetPermission(); got != btpb.OpenTableRequest_PERMISSION_READ_WRITE {
+		t.Errorf("OpenTable permission = %v, want PERMISSION_READ_WRITE", got)
+	}
+}
+
+// TestIntegration_SessionVRpc_MutateRows exercises ApplyBulk end-to-end
+// through the vRPC session path and asserts a MutateRows TableRequest
+// reached the wire.
+func TestIntegration_SessionVRpc_MutateRows(t *testing.T) {
+	h := newSessionTestHarness(t)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	tbl := h.client.OpenTable("test-table")
+	m1 := NewMutation()
+	m1.Set("fam1", "col1", Timestamp(1000), []byte("v1"))
+	m2 := NewMutation()
+	m2.Set("fam1", "col1", Timestamp(1000), []byte("v2"))
+
+	errs, err := tbl.ApplyBulk(ctx, []string{"r1", "r2"}, []*Mutation{m1, m2})
+	if err != nil || len(errs) != 0 {
+		t.Fatalf("ApplyBulk = (%v, %v), want (nil, nil)", errs, err)
+	}
+
+	vrpcs := waitForVRpcs(t, h.server, 1, 2*time.Second)
+	if len(vrpcs) != 1 {
+		t.Errorf("server saw %d vRPCs, want exactly 1", len(vrpcs))
+	}
+	var tr btpb.TableRequest
+	if err := proto.Unmarshal(vrpcs[0].req.Payload, &tr); err != nil {
+		t.Fatalf("decode captured TableRequest: %v", err)
+	}
+	if tr.GetMutateRows() == nil || len(tr.GetMutateRows().GetEntries()) != 2 {
+		t.Errorf("captured TableRequest was not MutateRows shape with 2 entries: %+v", &tr)
+	}
+	openReqs := h.server.getOpenTableRequests()
+	if len(openReqs) == 0 {
+		t.Fatalf("expected at least 1 OpenTableRequest")
+	}
+	if got := openReqs[len(openReqs)-1].GetPermission(); got != btpb.OpenTableRequest_PERMISSION_WRITE {
+		t.Errorf("OpenTable permission = %v, want PERMISSION_WRITE", got)
+	}
+}
+
 // TestIntegration_SessionVRpc_RequestCarriesDeadline asserts the per-vRPC
 // Deadline field is populated from the caller's context deadline. The exact
 // remaining budget will be slightly less than the parent (encode + send
@@ -688,5 +811,72 @@ func TestIntegration_SessionVRpc_ClientCloseSendsCloseSession(t *testing.T) {
 	if got := fakeSrv.closeSessionCount(); got < 1 {
 		t.Errorf("closeSessionCount = %d after Close, want >= 1 (sessions must send CloseSession on shutdown, opened=%d)",
 			got, sessionsBeforeClose)
+	}
+}
+
+// TestIntegration_SessionVRpc_PerScopeDiversion exercises end-to-end
+// GetClientConfiguration -> Diverter -> TableShim routing with
+// PerScopeDiversion configured for the "method" scope.
+func TestIntegration_SessionVRpc_PerScopeDiversion(t *testing.T) {
+	divCfg := &btpb.SessionDiversionConfiguration{
+		DiversionStrategy: &btpb.SessionDiversionConfiguration_PerScopeDiversion_{
+			PerScopeDiversion: &btpb.SessionDiversionConfiguration_PerScopeDiversion{
+				ScopeDiversions: map[string]*btpb.SessionScopeDiversionConfiguration{
+					"method:Bigtable.ReadRow":            {SessionLoad: 1.0},
+					"method:Bigtable.MutateRow":          {SessionLoad: 0.0},
+					"method:Bigtable.CheckAndMutateRow":  {SessionLoad: 1.0},
+					"method:Bigtable.ReadModifyWriteRow": {SessionLoad: 0.0},
+					"method:Bigtable.MutateRows":         {SessionLoad: 1.0},
+				},
+			},
+		},
+	}
+	h := newSessionTestHarness(t, withFakeSetup(func(s *fakeBigtableServer) {
+		s.setSessionDiversionConfiguration(divCfg)
+	}))
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	tbl := h.client.Open("test-table")
+
+	// 1. ReadRow (load 1.0) -> succeeds on session path
+	if _, err := tbl.ReadRow(ctx, "row-1"); err != nil {
+		t.Fatalf("ReadRow (load=1.0) failed: %v", err)
+	}
+
+	// 2. Conditional Apply / CheckAndMutateRow (load 1.0) -> succeeds on session path
+	mut := NewMutation()
+	mut.Set("fam", "col", 1000, []byte("val"))
+	condMut := NewCondMutation(PassAllFilter(), mut, nil)
+	if err := tbl.Apply(ctx, "row-1", condMut); err != nil {
+		t.Fatalf("Apply(conditional, load=1.0) failed: %v", err)
+	}
+
+	// 3. ApplyBulk / MutateRows (load 1.0) -> succeeds on session path
+	if errs, err := tbl.ApplyBulk(ctx, []string{"row-1"}, []*Mutation{mut}); err != nil || len(errs) != 0 {
+		t.Fatalf("ApplyBulk (load=1.0) errs=%v err=%v", errs, err)
+	}
+
+	// 4. Non-conditional Apply / MutateRow (load 0.0) -> routes to classic
+	// (which fakeBigtableServer leaves Unimplemented).
+	err := tbl.Apply(ctx, "row-1", mut)
+	if status.Code(err) != codes.Unimplemented {
+		t.Errorf("Apply(non-conditional, load=0.0) err = %v, want codes.Unimplemented from classic server", err)
+	}
+
+	// 5. ApplyReadModifyWrite / ReadModifyWriteRow (load 0.0) -> routes to classic
+	rmw := NewReadModifyWrite()
+	rmw.AppendValue("fam", "col", []byte("x"))
+	_, err = tbl.ApplyReadModifyWrite(ctx, "row-1", rmw)
+	if status.Code(err) != codes.Unimplemented {
+		t.Errorf("ApplyReadModifyWrite (load=0.0) err = %v, want codes.Unimplemented from classic server", err)
+	}
+
+	// Verify that only the 3 session-enabled vRPCs (ReadRow, CheckAndMutateRow, MutateRows)
+	// reached the fake server's session stream.
+	captured := h.server.snapshotVRpcs()
+	if len(captured) != 3 {
+		t.Fatalf("captured vRPC count = %d, want 3 (ReadRow, CheckAndMutateRow, MutateRows)", len(captured))
 	}
 }

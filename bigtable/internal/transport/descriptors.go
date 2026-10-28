@@ -116,6 +116,25 @@ type MutateRowArgs struct {
 	Mutations []*btpb.Mutation
 }
 
+// CheckAndMutateRowArgs contains arguments required for a virtual RPC CheckAndMutateRow call.
+type CheckAndMutateRowArgs struct {
+	RowKey          string
+	PredicateFilter *btpb.RowFilter
+	TrueMutations   []*btpb.Mutation
+	FalseMutations  []*btpb.Mutation
+}
+
+// ReadModifyWriteRowArgs contains arguments required for a virtual RPC ReadModifyWriteRow call.
+type ReadModifyWriteRowArgs struct {
+	RowKey string
+	Rules  []*btpb.ReadModifyWriteRule
+}
+
+// MutateRowsArgs contains arguments required for a virtual RPC MutateRows call.
+type MutateRowsArgs struct {
+	Entries []*btpb.SessionMutateRowsRequest_Entry
+}
+
 func encodeReadRow(args ReadRowArgs) *btpb.SessionReadRowRequest {
 	return &btpb.SessionReadRowRequest{
 		Key:    []byte(args.RowKey),
@@ -127,6 +146,28 @@ func encodeMutateRow(args MutateRowArgs) *btpb.SessionMutateRowRequest {
 	return &btpb.SessionMutateRowRequest{
 		Key:       []byte(args.RowKey),
 		Mutations: args.Mutations,
+	}
+}
+
+func encodeCheckAndMutateRow(args CheckAndMutateRowArgs) *btpb.SessionCheckAndMutateRowRequest {
+	return &btpb.SessionCheckAndMutateRowRequest{
+		Key:             []byte(args.RowKey),
+		PredicateFilter: args.PredicateFilter,
+		TrueMutations:   args.TrueMutations,
+		FalseMutations:  args.FalseMutations,
+	}
+}
+
+func encodeReadModifyWriteRow(args ReadModifyWriteRowArgs) *btpb.SessionReadModifyWriteRowRequest {
+	return &btpb.SessionReadModifyWriteRowRequest{
+		Key:   []byte(args.RowKey),
+		Rules: args.Rules,
+	}
+}
+
+func encodeMutateRows(args MutateRowsArgs) *btpb.SessionMutateRowsRequest {
+	return &btpb.SessionMutateRowsRequest{
+		Entries: args.Entries,
 	}
 }
 
@@ -159,6 +200,48 @@ var (
 		}),
 	}
 
+	// CHECK_AND_MUTATE_ROW executes Conditional Point Mutations on standard tables.
+	CHECK_AND_MUTATE_ROW = &VRpcDescriptorImpl{
+		MethodName: "CheckAndMutateRow",
+		EncodeFn: createTableEncoder(func(req interface{}, env *btpb.TableRequest) {
+			args := req.(CheckAndMutateRowArgs)
+			env.Payload = &btpb.TableRequest_CheckAndMutateRow{
+				CheckAndMutateRow: encodeCheckAndMutateRow(args),
+			}
+		}),
+		DecodeFn: createTableDecoder(func(env *btpb.TableResponse) interface{} {
+			return env.GetCheckAndMutateRow()
+		}),
+	}
+
+	// READ_MODIFY_WRITE_ROW executes ReadModifyWrite operations on standard tables.
+	READ_MODIFY_WRITE_ROW = &VRpcDescriptorImpl{
+		MethodName: "ReadModifyWriteRow",
+		EncodeFn: createTableEncoder(func(req interface{}, env *btpb.TableRequest) {
+			args := req.(ReadModifyWriteRowArgs)
+			env.Payload = &btpb.TableRequest_ReadModifyWriteRow{
+				ReadModifyWriteRow: encodeReadModifyWriteRow(args),
+			}
+		}),
+		DecodeFn: createTableDecoder(func(env *btpb.TableResponse) interface{} {
+			return env.GetReadModifyWriteRow()
+		}),
+	}
+
+	// MUTATE_ROWS executes Bulk Mutations on standard tables.
+	MUTATE_ROWS = &VRpcDescriptorImpl{
+		MethodName: "MutateRows",
+		EncodeFn: createTableEncoder(func(req interface{}, env *btpb.TableRequest) {
+			args := req.(MutateRowsArgs)
+			env.Payload = &btpb.TableRequest_MutateRows{
+				MutateRows: encodeMutateRows(args),
+			}
+		}),
+		DecodeFn: createTableDecoder(func(env *btpb.TableResponse) interface{} {
+			return env.GetMutateRows()
+		}),
+	}
+
 	// READ_ROW_AUTH_VIEW executes Point Reads on Authorized Views.
 	READ_ROW_AUTH_VIEW = &VRpcDescriptorImpl{
 		MethodName: "ReadRow",
@@ -184,6 +267,48 @@ var (
 		}),
 		DecodeFn: createAuthViewDecoder(func(env *btpb.AuthorizedViewResponse) interface{} {
 			return env.GetMutateRow()
+		}),
+	}
+
+	// CHECK_AND_MUTATE_ROW_AUTH_VIEW executes Conditional Point Mutations on Authorized Views.
+	CHECK_AND_MUTATE_ROW_AUTH_VIEW = &VRpcDescriptorImpl{
+		MethodName: "CheckAndMutateRow",
+		EncodeFn: createAuthViewEncoder(func(req interface{}, env *btpb.AuthorizedViewRequest) {
+			args := req.(CheckAndMutateRowArgs)
+			env.Payload = &btpb.AuthorizedViewRequest_CheckAndMutateRow{
+				CheckAndMutateRow: encodeCheckAndMutateRow(args),
+			}
+		}),
+		DecodeFn: createAuthViewDecoder(func(env *btpb.AuthorizedViewResponse) interface{} {
+			return env.GetCheckAndMutateRow()
+		}),
+	}
+
+	// READ_MODIFY_WRITE_ROW_AUTH_VIEW executes ReadModifyWrite operations on Authorized Views.
+	READ_MODIFY_WRITE_ROW_AUTH_VIEW = &VRpcDescriptorImpl{
+		MethodName: "ReadModifyWriteRow",
+		EncodeFn: createAuthViewEncoder(func(req interface{}, env *btpb.AuthorizedViewRequest) {
+			args := req.(ReadModifyWriteRowArgs)
+			env.Payload = &btpb.AuthorizedViewRequest_ReadModifyWriteRow{
+				ReadModifyWriteRow: encodeReadModifyWriteRow(args),
+			}
+		}),
+		DecodeFn: createAuthViewDecoder(func(env *btpb.AuthorizedViewResponse) interface{} {
+			return env.GetReadModifyWriteRow()
+		}),
+	}
+
+	// MUTATE_ROWS_AUTH_VIEW executes Bulk Mutations on Authorized Views.
+	MUTATE_ROWS_AUTH_VIEW = &VRpcDescriptorImpl{
+		MethodName: "MutateRows",
+		EncodeFn: createAuthViewEncoder(func(req interface{}, env *btpb.AuthorizedViewRequest) {
+			args := req.(MutateRowsArgs)
+			env.Payload = &btpb.AuthorizedViewRequest_MutateRows{
+				MutateRows: encodeMutateRows(args),
+			}
+		}),
+		DecodeFn: createAuthViewDecoder(func(env *btpb.AuthorizedViewResponse) interface{} {
+			return env.GetMutateRows()
 		}),
 	}
 

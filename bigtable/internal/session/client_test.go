@@ -303,19 +303,19 @@ func TestSessionClient_MetricsFactory_ReturnsInjected(t *testing.T) {
 	}
 }
 
-// TestSessionClient_AddSessionLoadListener_NilManagerNoop confirms the
+// TestSessionClient_AddSessionDiversionListener_NilManagerNoop confirms the
 // documented fallback: when no ClientConfigurationManager is wired
 // (stub nil at construction), the returned unregister thunk is a
 // non-nil no-op so callers can call it unconditionally.
-func TestSessionClient_AddSessionLoadListener_NilManagerNoop(t *testing.T) {
+func TestSessionClient_AddSessionDiversionListener_NilManagerNoop(t *testing.T) {
 	sc := newTestClient(t, nil, Config{})
 	defer sc.Close()
 
-	unreg := sc.AddSessionLoadListener(func(float64) {})
-	if unreg == nil {
-		t.Fatal("AddSessionLoadListener returned nil unregister, want non-nil no-op")
+	unregDiv := sc.AddSessionDiversionListener(func(*btpb.SessionClientConfiguration) {})
+	if unregDiv == nil {
+		t.Fatal("AddSessionDiversionListener returned nil unregister, want non-nil no-op")
 	}
-	unreg() // must not panic
+	unregDiv() // must not panic
 }
 
 // TestSessionClient_Close_NilSafe pins the "everything nil" happy path
@@ -471,8 +471,10 @@ func TestPoolKey_DisplayName(t *testing.T) {
 	}{
 		{"table read", poolKey{resourceName: "table:my-table", perm: permissionRead}, "my-table-READ"},
 		{"table write", poolKey{resourceName: "table:my-table", perm: permissionWrite}, "my-table-WRITE"},
+		{"table read-write", poolKey{resourceName: "table:my-table", perm: permissionReadWrite}, "my-table-READ_WRITE"},
 		{"authorized view read", poolKey{resourceName: "av:my-table:my-view", perm: permissionRead}, "my-table/my-view-READ"},
 		{"authorized view write", poolKey{resourceName: "av:my-table:my-view", perm: permissionWrite}, "my-table/my-view-WRITE"},
+		{"authorized view read-write", poolKey{resourceName: "av:my-table:my-view", perm: permissionReadWrite}, "my-table/my-view-READ_WRITE"},
 		{"authorized view — same view id, different tables must not collide",
 			poolKey{resourceName: "av:other-table:my-view", perm: permissionRead}, "other-table/my-view-READ"},
 		{"materialized view read", poolKey{resourceName: "mv:my-mat-view", perm: permissionRead}, "my-mat-view-READ"},

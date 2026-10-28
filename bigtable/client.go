@@ -55,7 +55,7 @@ type Client struct {
 	// diverter picks between the classic and session data path on every
 	// Open* return. Initialized with sessionLoad=0.0 so all traffic
 	// stays on the classic path until the session backend's
-	// ConfigurationManager bumps the ratio via AddSessionLoadListener.
+	// ConfigurationManager updates diversion via AddSessionDiversionListener.
 	diverter *btransport.Diverter
 	// sessionImpl is the session data-plane client. Constructed by
 	// NewClientWithConfig by default so a control-plane session-load
@@ -114,7 +114,7 @@ type ClientConfig struct {
 	//
 	// Effect on Table: Open() returns a *Table whose divertible field is
 	// still built (Diverter is a classic-side concern), but its session
-	// side is nil, so TableShim.useSession() reports false and every
+	// side is nil, so TableShim.useSessionForMethod reports false and every
 	// Apply / ReadRow routes to the classic path unconditionally.
 	//
 	// Intended for callers who have specific reasons to opt out of the
@@ -283,10 +283,10 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	//  2. On session.NewClient failure, tear down the classic pool
 	//     since we won't return c to the caller.
 	//
-	// When both guardrails pass, wire AddSessionLoadListener so the
-	// server-driven SessionLoad from ClientConfigurationManager retargets
-	// traffic through this Client's Diverter — a control-plane update
-	// then shifts traffic across every open TableShim without a client
+	// When both guardrails pass, wire AddSessionDiversionListener so the
+	// server-driven SessionClientConfiguration from ClientConfigurationManager
+	// retargets traffic through this Client's Diverter — a control-plane
+	// update then shifts traffic across every open TableShim without a client
 	// restart.
 	// Inspect the merged option list (o), not the raw caller opts.
 	// BIGTABLE_EMULATOR_HOST injects option.WithGRPCConn inside
@@ -321,7 +321,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 			_ = mPool.Close()
 			return nil, fmt.Errorf("bigtable: session.NewClient: %w", sessionErr)
 		}
-		sc.AddSessionLoadListener(c.diverter.SetSessionLoad)
+		sc.AddSessionDiversionListener(c.diverter.ApplySessionClientConfiguration)
 		c.sessionImpl = sc
 
 		// Per-resource TableAPI cache with TTL-on-idle eviction. The

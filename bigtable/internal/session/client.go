@@ -94,12 +94,6 @@ type Config struct {
 	// server rejects OpenSession with INVALID_ARGUMENT on mismatch).
 	FeatureFlagsProto *btpb.FeatureFlags
 
-	// SessionLoadListener is invoked whenever the server-driven
-	// ClientConfigurationManager reports a new session-load ratio. The
-	// bigtable Client wires this to Diverter.SetSessionLoad so the
-	// classic/session traffic split follows the server's directive.
-	SessionLoadListener func(load float64)
-
 	// BackgroundCtx is the parent context for the Client's own
 	// process-lifetime loops (today: ClientConfigurationManager polling).
 	// Cancelled by Client teardown.
@@ -203,6 +197,7 @@ type permission int
 const (
 	permissionRead permission = iota
 	permissionWrite
+	permissionReadWrite
 )
 
 // display returns the label used in pool display names (e.g. "READ").
@@ -212,6 +207,8 @@ func (p permission) display() string {
 		return "READ"
 	case permissionWrite:
 		return "WRITE"
+	case permissionReadWrite:
+		return "READ_WRITE"
 	}
 	return ""
 }
@@ -295,7 +292,7 @@ type sessionClient struct {
 	metricsFactory *metrics.Factory
 	// configManager runs the server-driven GetClientConfiguration poll
 	// loop for the lifetime of this Client. Production runtime state
-	// (not debug/test) — its output drives Diverter.SetSessionLoad,
+	// (not debug/test) — its output drives Diverter.ApplySessionClientConfiguration,
 	// per-pool UpdateConfig reshapes (bounds, picker, load-balancing
 	// strategy), and future eager-scale directives. Also surfaced on
 	// /debug/configz for operator visibility.
@@ -348,7 +345,7 @@ type sessionClient struct {
 // polls, which reshape live pools via SessionPoolImpl.UpdateConfig.
 //
 // The load-balancing hook for a mixed-mode setup lives at
-// AddSessionLoadListener — call it after construction if you're
+// AddSessionDiversionListener — call it after construction if you're
 // composing this Client with a bigtable.Client Diverter.
 //
 // clientName sets the client_name attribute on exported client-side metrics.
@@ -482,17 +479,13 @@ func newSessionClientFromParts(channelPool ChannelPool, stub btpb.BigtableClient
 	// path (unit tests wiring a fake ChannelPool without a real gRPC stub).
 	// In that mode we do NOT construct a ClientConfigurationManager, do
 	// NOT poll GetClientConfiguration, and do NOT fall back to any
-	// default config — pools open with whatever seed the test supplies,
-	// and SessionLoadListener never fires. Production NewClient always
-	// supplies a stub.
+	// default config — pools open with whatever seed the test supplies.
+	// Production NewClient always supplies a stub.
 	if stub != nil {
 		sc.configManager = btransport.NewClientConfigurationManager(
 			stub, sc.fullInstanceName(), cfg.AppProfile, cfg.ConfigMD, nil,
 		)
 		sc.configManager.Start(cfg.BackgroundCtx)
-		if cfg.SessionLoadListener != nil {
-			sc.configManager.AddSessionLoadListener(cfg.SessionLoadListener)
-		}
 	}
 	return sc
 }
@@ -504,14 +497,14 @@ func (sc *sessionClient) MeterProvider() otelmetric.MeterProvider {
 	return sc.metricsFactory.OtelMeterProvider
 }
 
-// AddSessionLoadListener forwards to the internal
+// AddSessionDiversionListener forwards to the internal
 // ClientConfigurationManager. Returns a no-op unregister when no
 // manager is wired (stub == nil at construction).
-func (sc *sessionClient) AddSessionLoadListener(fn func(load float64)) func() {
+func (sc *sessionClient) AddSessionDiversionListener(fn func(cfg *btpb.SessionClientConfiguration)) func() {
 	if sc.configManager == nil {
 		return func() {}
 	}
-	return sc.configManager.AddSessionLoadListener(fn)
+	return sc.configManager.AddSessionDiversionListener(fn)
 }
 
 // MetricsFactory returns the *metrics.Factory the Client was
@@ -528,13 +521,17 @@ func (sc *sessionClient) OpenTable(tableID string) TableAPI {
 	resource := "table:" + tableID
 	readOwner := &poolCloser{}
 	writeOwner := &poolCloser{}
+	readWriteOwner := &poolCloser{}
 	openRead := sc.buildLazyOpener(fullName, btransport.TABLE_SESSION, streamFactory,
 		&btpb.OpenTableRequest{TableName: fullName, AppProfileId: sc.cfg.AppProfile, Permission: btpb.OpenTableRequest_PERMISSION_READ},
 		poolKey{resource, permissionRead}, readOwner)
 	openWrite := sc.buildLazyOpener(fullName, btransport.TABLE_SESSION, streamFactory,
 		&btpb.OpenTableRequest{TableName: fullName, AppProfileId: sc.cfg.AppProfile, Permission: btpb.OpenTableRequest_PERMISSION_WRITE},
 		poolKey{resource, permissionWrite}, writeOwner)
-	return newSessionTable(tableID, openRead, openWrite, readOwner.Close, writeOwner.Close, btransport.READ_ROW, btransport.MUTATE_ROW, sc.perResourceMetadata(fullName, "table_name", fullName), sc.metricsFactory)
+	openReadWrite := sc.buildLazyOpener(fullName, btransport.TABLE_SESSION, streamFactory,
+		&btpb.OpenTableRequest{TableName: fullName, AppProfileId: sc.cfg.AppProfile, Permission: btpb.OpenTableRequest_PERMISSION_READ_WRITE},
+		poolKey{resource, permissionReadWrite}, readWriteOwner)
+	return newSessionTable(tableID, openRead, openWrite, openReadWrite, readOwner.Close, writeOwner.Close, readWriteOwner.Close, btransport.READ_ROW, btransport.MUTATE_ROW, sc.perResourceMetadata(fullName, "table_name", fullName), sc.metricsFactory)
 }
 
 // OpenAuthorizedView returns a TableAPI for an authorized view.
@@ -544,18 +541,22 @@ func (sc *sessionClient) OpenAuthorizedView(table, view string) TableAPI {
 	resource := fmt.Sprintf("av:%s:%s", table, view)
 	readOwner := &poolCloser{}
 	writeOwner := &poolCloser{}
+	readWriteOwner := &poolCloser{}
 	openRead := sc.buildLazyOpener(fullName, btransport.AUTHORIZED_VIEW_SESSION, streamFactory,
 		&btpb.OpenAuthorizedViewRequest{AuthorizedViewName: fullName, AppProfileId: sc.cfg.AppProfile, Permission: btpb.OpenAuthorizedViewRequest_PERMISSION_READ},
 		poolKey{resource, permissionRead}, readOwner)
 	openWrite := sc.buildLazyOpener(fullName, btransport.AUTHORIZED_VIEW_SESSION, streamFactory,
 		&btpb.OpenAuthorizedViewRequest{AuthorizedViewName: fullName, AppProfileId: sc.cfg.AppProfile, Permission: btpb.OpenAuthorizedViewRequest_PERMISSION_WRITE},
 		poolKey{resource, permissionWrite}, writeOwner)
-	return newSessionTable(table, openRead, openWrite, readOwner.Close, writeOwner.Close, btransport.READ_ROW_AUTH_VIEW, btransport.MUTATE_ROW_AUTH_VIEW, sc.perResourceMetadata(fullName, "authorized_view_name", fullName), sc.metricsFactory)
+	openReadWrite := sc.buildLazyOpener(fullName, btransport.AUTHORIZED_VIEW_SESSION, streamFactory,
+		&btpb.OpenAuthorizedViewRequest{AuthorizedViewName: fullName, AppProfileId: sc.cfg.AppProfile, Permission: btpb.OpenAuthorizedViewRequest_PERMISSION_READ_WRITE},
+		poolKey{resource, permissionReadWrite}, readWriteOwner)
+	return newSessionTable(table, openRead, openWrite, openReadWrite, readOwner.Close, writeOwner.Close, readWriteOwner.Close, btransport.READ_ROW_AUTH_VIEW, btransport.MUTATE_ROW_AUTH_VIEW, sc.perResourceMetadata(fullName, "authorized_view_name", fullName), sc.metricsFactory)
 }
 
 // OpenMaterializedView returns a read-only TableAPI for a
-// materialized view. Only a read pool is opened; MutateRow errors
-// cleanly via the nil openWrite passed to newSessionTable.
+// materialized view. Only a read pool is opened; MutateRow, CheckAndMutateRow,
+// ReadModifyWriteRow, and MutateRows error cleanly via the nil openWrite/openReadWrite passed to newSessionTable.
 func (sc *sessionClient) OpenMaterializedView(view string) TableAPI {
 	fullName := sc.fullMaterializedViewName(view)
 	readOwner := &poolCloser{}
@@ -567,7 +568,7 @@ func (sc *sessionClient) OpenMaterializedView(view string) TableAPI {
 			Permission:           btpb.OpenMaterializedViewRequest_PERMISSION_READ,
 		},
 		poolKey{"mv:" + view, permissionRead}, readOwner)
-	return newSessionTable("", openRead, nil, readOwner.Close, nil, btransport.READ_ROW_MAT_VIEW, nil, sc.perResourceMetadata(fullName, "materialized_view_name", fullName), sc.metricsFactory)
+	return newSessionTable("", openRead, nil, nil, readOwner.Close, nil, nil, btransport.READ_ROW_MAT_VIEW, nil, sc.perResourceMetadata(fullName, "materialized_view_name", fullName), sc.metricsFactory)
 }
 
 // Close tears down in a phased order that keeps late callbacks from

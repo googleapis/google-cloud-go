@@ -54,7 +54,7 @@ Every knob that governs a session pool's **size, admission, load-balancing, and 
 
 | Field | Governs |
 |---|---|
-| `Session.SessionLoad` (float64, 0.0–1.0) | Fraction of traffic the `Diverter` sends via session pools vs classic. Emitted to callers via `SessionLoadListener` → `Diverter.SetSessionLoad`. |
+| `Session.SessionLoad` (float64, 0.0–1.0) / `Session.SessionDiversionConfiguration` (`GlobalDiversion` or `PerScopeDiversion` for `"method:Bigtable.<Method>"`) | Fraction of traffic (globally or per served method scope) the `Diverter` sends via session pools vs classic. Emitted to callers via `AddSessionDiversionListener` → `Diverter.ApplySessionClientConfiguration`. |
 | `Session.ChannelPool.MinServerCount` / `MaxServerCount` | Channel-pool sizing bounds. |
 | `Session.ChannelPool.PerServerSessionCount` | Target sessions per sub-channel; drives the pool's steady-state session count. |
 | `Session.ChannelPool.DirectAccessCheckInterval` / `DirectAccessErrorThreshold` | DirectAccess health probe cadence + trip threshold. |
@@ -81,13 +81,13 @@ The wire-level `bigtable.v2.OpenSessionRequest` is deliberately resource-agnosti
 
 | Resource | Inner proto | Bidi RPC method | Distinguishing fields | Route header key |
 |---|---|---|---|---|
-| Table | `btpb.OpenTableRequest` | `stub.OpenTable(ctx)` | `TableName`, `AppProfileId`, `Permission ∈ {READ, WRITE}` | `open_session.payload.table_name` |
-| Authorized view | `btpb.OpenAuthorizedViewRequest` | `stub.OpenAuthorizedView(ctx)` | `AuthorizedViewName`, `AppProfileId`, `Permission ∈ {READ, WRITE}` | `open_session.payload.authorized_view_name` |
+| Table | `btpb.OpenTableRequest` | `stub.OpenTable(ctx)` | `TableName`, `AppProfileId`, `Permission ∈ {READ, WRITE, READ_WRITE}` | `open_session.payload.table_name` |
+| Authorized view | `btpb.OpenAuthorizedViewRequest` | `stub.OpenAuthorizedView(ctx)` | `AuthorizedViewName`, `AppProfileId`, `Permission ∈ {READ, WRITE, READ_WRITE}` | `open_session.payload.authorized_view_name` |
 | Materialized view | `btpb.OpenMaterializedViewRequest` | `stub.OpenMaterializedView(ctx)` | `MaterializedViewName`, `AppProfileId` (no `Permission` — MatView is read-only) | `open_session.payload.materialized_view_name` |
 
 **The three RPC methods are distinct stub methods**, not one polymorphic method dispatched on payload type. `OpenTable` / `OpenAuthorizedView` / `OpenMaterializedView` each open a separate bidi stream — the RPC method itself is what tells the server which resource kind is being opened; the `OpenSessionRequest.Payload` bytes carry the resource-scoped fields for *that* RPC. The server MUST NOT need to peek at `Payload` to know the resource kind; it MUST NOT need to peek at the RPC method to decode `Payload`. Both are self-consistent.
 
-**`Permission` is baked into the pool key** (`SESSION_CLIENT_SPEC.md #1`). For Table and AuthorizedView, `Permission ∈ {PERMISSION_READ, PERMISSION_WRITE}` is encoded into the inner proto at pool construction time. This is *the* reason read and write pools are separate `*SessionPoolImpl` instances (`SESSION_POOL_SPEC.md #1`) — the `OpenSessionRequest.Payload` bytes for the read pool encode `Permission=READ` and the write pool encodes `Permission=WRITE`, so the server issues a session scoped to the right permission. MaterializedView has no `Permission` field on its inner proto and no write pool — attempting `MutateRow` on a MatView returns `ErrWriteNotSupported` client-side without any wire traffic (`SESSION_POOL_SPEC.md #1`).
+**`Permission` is baked into the pool key** (`SESSION_CLIENT_SPEC.md #1`). For Table and AuthorizedView, `Permission ∈ {PERMISSION_READ, PERMISSION_WRITE, PERMISSION_READ_WRITE}` is encoded into the inner proto at pool construction time. This is *the* reason read, write, and read-write pools are separate `*SessionPoolImpl` instances (`SESSION_POOL_SPEC.md #1`) — the `OpenSessionRequest.Payload` bytes for the read pool encode `Permission=READ`, the write pool encodes `Permission=WRITE`, and the read-write pool encodes `Permission=READ_WRITE`, so the server issues a session scoped to the right permission. MaterializedView has no `Permission` field on its inner proto and no write or read-write pool — attempting `MutateRow`, `CheckAndMutateRow`, `ReadModifyWriteRow`, or `MutateRows` on a MatView returns `ErrWriteNotSupported` client-side without any wire traffic (`SESSION_POOL_SPEC.md #1`).
 
 **Payload construction happens once per pool.** `createSessionPoolForPayload` (`internal/session/client.go:481-531`) marshals the inner proto into `Payload` bytes at pool creation time and stashes the resulting `OpenSessionRequest` on the pool as its `handshake`. The same `handshake` is re-used **verbatim** for every session that pool opens over its lifetime — the payload bytes are immutable per pool. This is what keeps `OpenSession` cheap: no per-session proto encoding.
 

@@ -65,6 +65,11 @@ func (f *fakeInvoker) callCount() int {
 // returned reader can be Collect()ed to inspect emitted histograms.
 func newTestTable(t *testing.T, readInv, writeInv Invoker) (*sessionTable, *sdkmetric.ManualReader) {
 	t.Helper()
+	return newTestTableWithReadWrite(t, readInv, writeInv, writeInv)
+}
+
+func newTestTableWithReadWrite(t *testing.T, readInv, writeInv, readWriteInv Invoker) (*sessionTable, *sdkmetric.ManualReader) {
+	t.Helper()
 	reader := sdkmetric.NewManualReader()
 	mp := sdkmetric.NewMeterProvider(sdkmetric.WithReader(reader))
 	factory, err := metrics.NewFactoryForTest("test-project", "test-instance", "test-profile", mp)
@@ -73,18 +78,24 @@ func newTestTable(t *testing.T, readInv, writeInv Invoker) (*sessionTable, *sdkm
 	}
 	openRead := func() (Invoker, error) { return readInv, nil }
 	openWrite := func() (Invoker, error) { return writeInv, nil }
+	openReadWrite := func() (Invoker, error) { return readWriteInv, nil }
 	if readInv == nil {
 		openRead = nil
 	}
 	if writeInv == nil {
 		openWrite = nil
 	}
+	if readWriteInv == nil {
+		openReadWrite = nil
+	}
 	tbl := newSessionTable(
 		"test-table",
 		openRead,
 		openWrite,
+		openReadWrite,
 		nil, // closeRead — fake pools don't back a real poolCloser
 		nil, // closeWrite
+		nil, // closeReadWrite
 		&btransport.VRpcDescriptorImpl{MethodName: "test.ReadRow"},
 		&btransport.VRpcDescriptorImpl{MethodName: "test.MutateRow"},
 		nil,
@@ -488,16 +499,18 @@ func TestSessionTable_ReadAndWritePoolsDoNotShareSessions(t *testing.T) {
 
 // --- Close teardown ---------------------------------------------------------
 
-// TestSessionTable_Close_CallsBothReleasers verifies Close fires the
-// closeRead and closeWrite release closures exactly once each.
-func TestSessionTable_Close_CallsBothReleasers(t *testing.T) {
-	var reads, writes int
+// TestSessionTable_Close_CallsAllReleasers verifies Close fires the
+// closeRead, closeWrite, and closeReadWrite release closures exactly once each.
+func TestSessionTable_Close_CallsAllReleasers(t *testing.T) {
+	var reads, writes, readWrites int
 	tbl := newSessionTable(
 		"t",
 		func() (Invoker, error) { return nil, nil },
 		func() (Invoker, error) { return nil, nil },
+		func() (Invoker, error) { return nil, nil },
 		func() error { reads++; return nil },
 		func() error { writes++; return nil },
+		func() error { readWrites++; return nil },
 		&btransport.VRpcDescriptorImpl{MethodName: "test.ReadRow"},
 		&btransport.VRpcDescriptorImpl{MethodName: "test.MutateRow"},
 		nil, nil,
@@ -505,21 +518,23 @@ func TestSessionTable_Close_CallsBothReleasers(t *testing.T) {
 	if err := tbl.Close(); err != nil {
 		t.Fatalf("Close: %v", err)
 	}
-	if reads != 1 || writes != 1 {
-		t.Errorf("release call counts = (read=%d write=%d), want (1,1)", reads, writes)
+	if reads != 1 || writes != 1 || readWrites != 1 {
+		t.Errorf("release call counts = (read=%d write=%d readWrite=%d), want (1,1,1)", reads, writes, readWrites)
 	}
 }
 
 // TestSessionTable_Close_NilWriteReleaserOK covers the materialized-
-// view case: no write side means closeWrite is nil; Close must not
-// panic and must still call closeRead.
+// view case: no write side means closeWrite and closeReadWrite are nil;
+// Close must not panic and must still call closeRead.
 func TestSessionTable_Close_NilWriteReleaserOK(t *testing.T) {
 	var reads int
 	tbl := newSessionTable(
 		"",
 		func() (Invoker, error) { return nil, nil },
 		nil,
+		nil,
 		func() error { reads++; return nil },
+		nil,
 		nil,
 		&btransport.VRpcDescriptorImpl{MethodName: "test.ReadRow"},
 		nil,
@@ -533,18 +548,21 @@ func TestSessionTable_Close_NilWriteReleaserOK(t *testing.T) {
 	}
 }
 
-// TestSessionTable_Close_JoinsErrors: when BOTH release closures
+// TestSessionTable_Close_JoinsErrors: when release closures
 // return errors, Close returns them via errors.Join so callers see
-// both root causes rather than losing one to a first-error return.
+// all root causes rather than losing one to a first-error return.
 func TestSessionTable_Close_JoinsErrors(t *testing.T) {
 	readErr := status.Error(codes.Internal, "read pool teardown failed")
 	writeErr := status.Error(codes.Internal, "write pool teardown failed")
+	readWriteErr := status.Error(codes.Internal, "read-write pool teardown failed")
 	tbl := newSessionTable(
 		"t",
 		func() (Invoker, error) { return nil, nil },
 		func() (Invoker, error) { return nil, nil },
+		func() (Invoker, error) { return nil, nil },
 		func() error { return readErr },
 		func() error { return writeErr },
+		func() error { return readWriteErr },
 		&btransport.VRpcDescriptorImpl{MethodName: "test.ReadRow"},
 		&btransport.VRpcDescriptorImpl{MethodName: "test.MutateRow"},
 		nil, nil,
@@ -553,8 +571,8 @@ func TestSessionTable_Close_JoinsErrors(t *testing.T) {
 	if err == nil {
 		t.Fatal("Close returned nil, want joined errors")
 	}
-	if got := err.Error(); !strings.Contains(got, "read pool teardown failed") || !strings.Contains(got, "write pool teardown failed") {
-		t.Errorf("Close error = %q; want both read+write causes surfaced", got)
+	if got := err.Error(); !strings.Contains(got, "read pool teardown failed") || !strings.Contains(got, "write pool teardown failed") || !strings.Contains(got, "read-write pool teardown failed") {
+		t.Errorf("Close error = %q; want read+write+read-write causes surfaced", got)
 	}
 }
 
@@ -570,7 +588,9 @@ func TestSessionTable_Close_ReleasersIdempotent(t *testing.T) {
 		"t",
 		func() (Invoker, error) { return nil, nil },
 		nil,
+		nil,
 		func() error { reads++; return nil },
+		nil,
 		nil,
 		&btransport.VRpcDescriptorImpl{MethodName: "test.ReadRow"},
 		nil,
@@ -624,7 +644,9 @@ func TestSessionTable_Close_RacingLazyOpen_NoLeak(t *testing.T) {
 			return fakeInv, nil
 		},
 		nil,
+		nil,
 		func() error { releaseCalls.Add(1); return nil },
+		nil,
 		nil,
 		&btransport.VRpcDescriptorImpl{MethodName: "test.ReadRow"},
 		nil,
@@ -670,7 +692,9 @@ func TestSessionTable_Close_BeforeLazyOpen_EarlyBail(t *testing.T) {
 		"t",
 		func() (Invoker, error) { openCalled.Add(1); return nil, nil },
 		nil,
+		nil,
 		func() error { releaseCalls.Add(1); return nil },
+		nil,
 		nil,
 		&btransport.VRpcDescriptorImpl{MethodName: "test.ReadRow"},
 		nil,
@@ -692,5 +716,171 @@ func TestSessionTable_Close_BeforeLazyOpen_EarlyBail(t *testing.T) {
 	}
 	if releaseCalls.Load() != 1 {
 		t.Errorf("release called %d times, want 1 (Close's own release only; guardOpen never entered inner)", releaseCalls.Load())
+	}
+}
+
+func TestSessionTable_PoolSeparation(t *testing.T) {
+	readInv := &fakeInvoker{result: btransport.InvokeResult{Response: &btpb.SessionReadRowResponse{}}}
+	writeInv := &fakeInvoker{result: btransport.InvokeResult{Response: &btpb.SessionMutateRowResponse{}}}
+	readWriteInv := &fakeInvoker{result: btransport.InvokeResult{Response: &btpb.SessionMutateRowResponse{}}}
+
+	tbl, _ := newTestTableWithReadWrite(t, readInv, writeInv, readWriteInv)
+	if tbl.readPool == tbl.writePool || tbl.readPool == tbl.readWritePool || tbl.writePool == tbl.readWritePool {
+		t.Errorf("read, write, and read-write pools must be distinct lazyPool instances")
+	}
+}
+
+func TestSessionTableCheckAndMutateRow_NonIdempotentDoesNotRetryTransportFailure(t *testing.T) {
+	transportErr := btransport.TagErr(btransport.StateTransportFailure, status.Error(codes.Unavailable, "wire error"))
+	inv := &fakeInvoker{errBefore: 1000, err: transportErr}
+	tbl, _ := newTestTable(t, nil, inv)
+
+	_, err := tbl.CheckAndMutateRow(context.Background(), &btpb.SessionCheckAndMutateRowRequest{
+		Key:           []byte("row1"),
+		TrueMutations: []*btpb.Mutation{mutationSetCell(1_000_000)},
+	})
+	if err == nil {
+		t.Fatal("CheckAndMutateRow returned nil; want error")
+	}
+	if got := inv.callCount(); got != 1 {
+		t.Errorf("invoker calls = %d, want 1 (CheckAndMutateRow is non-idempotent)", got)
+	}
+}
+
+func TestSessionTableReadModifyWriteRow_NonIdempotentDoesNotRetryTransportFailure(t *testing.T) {
+	transportErr := btransport.TagErr(btransport.StateTransportFailure, status.Error(codes.Unavailable, "wire error"))
+	inv := &fakeInvoker{errBefore: 1000, err: transportErr}
+	tbl, _ := newTestTable(t, nil, inv)
+
+	_, err := tbl.ReadModifyWriteRow(context.Background(), &btpb.SessionReadModifyWriteRowRequest{
+		Key: []byte("row1"),
+		Rules: []*btpb.ReadModifyWriteRule{
+			{FamilyName: "cf", ColumnQualifier: []byte("q"), Rule: &btpb.ReadModifyWriteRule_IncrementAmount{IncrementAmount: 1}},
+		},
+	})
+	if err == nil {
+		t.Fatal("ReadModifyWriteRow returned nil; want error")
+	}
+	if got := inv.callCount(); got != 1 {
+		t.Errorf("invoker calls = %d, want 1 (ReadModifyWriteRow is non-idempotent)", got)
+	}
+}
+
+func TestSessionTableMutateRows_IdempotencyFlowsToRetry(t *testing.T) {
+	const serverTime int64 = -1
+	transportErr := btransport.TagErr(btransport.StateTransportFailure, status.Error(codes.Unavailable, "wire error"))
+
+	cases := []struct {
+		name           string
+		entries        []*btpb.SessionMutateRowsRequest_Entry
+		wantAttemptCap int
+	}{
+		{
+			name: "all_explicit_timestamps_idempotent_retries_full_budget",
+			entries: []*btpb.SessionMutateRowsRequest_Entry{
+				{Key: []byte("r1"), Mutations: []*btpb.Mutation{mutationSetCell(1_000_000)}},
+				{Key: []byte("r2"), Mutations: []*btpb.Mutation{mutationSetCell(2_000_000)}},
+			},
+			wantAttemptCap: 3,
+		},
+		{
+			name: "one_server_time_entry_non_idempotent_stops_at_one_attempt",
+			entries: []*btpb.SessionMutateRowsRequest_Entry{
+				{Key: []byte("r1"), Mutations: []*btpb.Mutation{mutationSetCell(1_000_000)}},
+				{Key: []byte("r2"), Mutations: []*btpb.Mutation{mutationSetCell(serverTime)}},
+			},
+			wantAttemptCap: 1,
+		},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			inv := &fakeInvoker{errBefore: 1000, err: transportErr}
+			tbl, _ := newTestTable(t, nil, inv)
+
+			_, err := tbl.MutateRows(context.Background(), &btpb.SessionMutateRowsRequest{
+				Entries: tc.entries,
+			})
+			if err == nil {
+				t.Fatal("MutateRows returned nil; want error")
+			}
+			if got := inv.callCount(); got != tc.wantAttemptCap {
+				t.Errorf("invoker calls = %d, want %d", got, tc.wantAttemptCap)
+			}
+		})
+	}
+}
+
+func TestSessionTable_MatView_WriteVRpcsReturnErrWriteNotSupported(t *testing.T) {
+	readInv := &fakeInvoker{result: btransport.InvokeResult{Response: &btpb.SessionReadRowResponse{}}}
+	tbl, _ := newTestTable(t, readInv, nil)
+
+	if _, err := tbl.CheckAndMutateRow(context.Background(), &btpb.SessionCheckAndMutateRowRequest{Key: []byte("r1")}); err != ErrWriteNotSupported {
+		t.Errorf("CheckAndMutateRow on MatView = %v, want ErrWriteNotSupported", err)
+	}
+	if _, err := tbl.ReadModifyWriteRow(context.Background(), &btpb.SessionReadModifyWriteRowRequest{Key: []byte("r1")}); err != ErrWriteNotSupported {
+		t.Errorf("ReadModifyWriteRow on MatView = %v, want ErrWriteNotSupported", err)
+	}
+	if _, err := tbl.MutateRows(context.Background(), &btpb.SessionMutateRowsRequest{}); err != ErrWriteNotSupported {
+		t.Errorf("MutateRows on MatView = %v, want ErrWriteNotSupported", err)
+	}
+}
+
+// TestSessionTable_PoolSelection verifies that ReadRow routes to readPool,
+// MutateRow and MutateRows route to writePool, and CheckAndMutateRow and
+// ReadModifyWriteRow route to readWritePool.
+func TestSessionTable_PoolSelection(t *testing.T) {
+	readInv := &fakeInvoker{result: btransport.InvokeResult{Response: &btpb.SessionReadRowResponse{}}}
+	writeInv := &fakeInvoker{result: btransport.InvokeResult{Response: &btpb.SessionMutateRowResponse{}}}
+	readWriteInv := &fakeInvoker{result: btransport.InvokeResult{Response: &btpb.SessionCheckAndMutateRowResponse{}}}
+
+	tbl, _ := newTestTableWithReadWrite(t, readInv, writeInv, readWriteInv)
+
+	// 1. ReadRow routes to readPool only
+	if _, err := tbl.ReadRow(context.Background(), &btpb.SessionReadRowRequest{Key: []byte("k")}); err != nil {
+		t.Fatalf("ReadRow: %v", err)
+	}
+	if readInv.callCount() != 1 || writeInv.callCount() != 0 || readWriteInv.callCount() != 0 {
+		t.Errorf("after ReadRow: calls=(read=%d, write=%d, rw=%d), want (1,0,0)",
+			readInv.callCount(), writeInv.callCount(), readWriteInv.callCount())
+	}
+
+	// 2. MutateRow routes to writePool only
+	if _, err := tbl.MutateRow(context.Background(), &btpb.SessionMutateRowRequest{Key: []byte("k")}); err != nil {
+		t.Fatalf("MutateRow: %v", err)
+	}
+	if readInv.callCount() != 1 || writeInv.callCount() != 1 || readWriteInv.callCount() != 0 {
+		t.Errorf("after MutateRow: calls=(read=%d, write=%d, rw=%d), want (1,1,0)",
+			readInv.callCount(), writeInv.callCount(), readWriteInv.callCount())
+	}
+
+	// 3. MutateRows routes to writePool only
+	writeInv.result = btransport.InvokeResult{Response: &btpb.SessionMutateRowsResponse{}}
+	if _, err := tbl.MutateRows(context.Background(), &btpb.SessionMutateRowsRequest{
+		Entries: []*btpb.SessionMutateRowsRequest_Entry{{Key: []byte("k")}},
+	}); err != nil {
+		t.Fatalf("MutateRows: %v", err)
+	}
+	if readInv.callCount() != 1 || writeInv.callCount() != 2 || readWriteInv.callCount() != 0 {
+		t.Errorf("after MutateRows: calls=(read=%d, write=%d, rw=%d), want (1,2,0)",
+			readInv.callCount(), writeInv.callCount(), readWriteInv.callCount())
+	}
+
+	// 4. CheckAndMutateRow routes to readWritePool only
+	if _, err := tbl.CheckAndMutateRow(context.Background(), &btpb.SessionCheckAndMutateRowRequest{Key: []byte("k")}); err != nil {
+		t.Fatalf("CheckAndMutateRow: %v", err)
+	}
+	if readInv.callCount() != 1 || writeInv.callCount() != 2 || readWriteInv.callCount() != 1 {
+		t.Errorf("after CheckAndMutateRow: calls=(read=%d, write=%d, rw=%d), want (1,2,1)",
+			readInv.callCount(), writeInv.callCount(), readWriteInv.callCount())
+	}
+
+	// 5. ReadModifyWriteRow routes to readWritePool only
+	readWriteInv.result = btransport.InvokeResult{Response: &btpb.SessionReadModifyWriteRowResponse{}}
+	if _, err := tbl.ReadModifyWriteRow(context.Background(), &btpb.SessionReadModifyWriteRowRequest{Key: []byte("k")}); err != nil {
+		t.Fatalf("ReadModifyWriteRow: %v", err)
+	}
+	if readInv.callCount() != 1 || writeInv.callCount() != 2 || readWriteInv.callCount() != 2 {
+		t.Errorf("after ReadModifyWriteRow: calls=(read=%d, write=%d, rw=%d), want (1,2,2)",
+			readInv.callCount(), writeInv.callCount(), readWriteInv.callCount())
 	}
 }

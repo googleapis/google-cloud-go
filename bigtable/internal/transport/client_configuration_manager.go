@@ -335,7 +335,7 @@ func (m *ClientConfigurationManager) Snapshot() ConfigSnapshot {
 // As a consequence, the listener callback runs under m.mu. Listeners
 // must not call back into the manager (e.g. getConfig, or any other
 // method that takes m.mu) from within the callback or they will
-// deadlock. The wrappers AddSessionPoolListener / AddSessionLoadListener
+// deadlock. The wrappers AddSessionPoolListener / AddSessionDiversionListener
 // and their downstream consumers stay self-contained, so the invariant
 // holds today.
 func (m *ClientConfigurationManager) addListener(listener configListener) func() {
@@ -399,45 +399,57 @@ func (m *ClientConfigurationManager) AddSessionPoolListener(listener func(*bigta
 // ClientConfiguration proto also carries a TelemetryConfiguration message
 // (see google/bigtable/v2/session.proto) that we currently ignore. Once the
 // telemetry surface stabilizes, add an AddTelemetryConfigurationListener
-// sibling of AddSessionPoolListener / AddSessionLoadListener and route the
+// sibling of AddSessionPoolListener / AddSessionDiversionListener and route the
 // server-supplied value through it. Raised by mutianf on PR #19986.
 
-// AddSessionLoadListener registers a callback that receives the server-driven
-// SessionLoad value (0.0 = all-classic, 1.0 = all-session) on every
-// configuration update from a successful poll. Returns an unregister thunk.
+// AddSessionDiversionListener registers a callback that receives the
+// server-driven SessionClientConfiguration whenever session diversion
+// settings (SessionLoad or SessionDiversionConfiguration) change on a
+// successful poll. Returns an unregister thunk.
 //
 // Unlike AddSessionPoolListener, this skips the immediate registration-time
-// fire that would otherwise deliver the default config (seq=0). Callers rely
-// on the bootstrap value they passed to NewDiverter remaining in effect until
-// the control plane actually responds — firing with seq=0's default
-// SessionLoad=0 would silently clobber that bootstrap.
-//
-// Subsequent fires are filtered by per-listener load diff: if the polled
-// SessionLoad equals the value last delivered to this listener, the inner
-// callback is skipped so SessionLoad reassignment doesn't ripple to the
-// Diverter on polls where only unrelated fields (e.g., PollingInterval)
-// changed.
-func (m *ClientConfigurationManager) AddSessionLoadListener(listener func(load float64)) func() {
+// fire (seq=0) so the Diverter's bootstrap configuration remains in effect
+// until the control plane responds.
+func (m *ClientConfigurationManager) AddSessionDiversionListener(listener func(*bigtablepb.SessionClientConfiguration)) func() {
 	var (
-		diffMu  sync.Mutex
-		hasPrev bool
-		prev    float64
+		diffMu     sync.Mutex
+		hasPrev    bool
+		prevLoad   float32
+		prevDivCfg *bigtablepb.SessionDiversionConfiguration
 	)
 	return m.addListener(func(cfg *bigtablepb.ClientConfiguration, seq int64) {
 		if seq == 0 {
 			return
 		}
-		load := float64(cfg.GetSessionConfiguration().GetSessionLoad())
+		sc := cfg.GetSessionConfiguration()
+		load := sc.GetSessionLoad()
+		divCfg := sc.GetSessionDiversionConfiguration()
 		diffMu.Lock()
-		if hasPrev && prev == load {
+		if hasPrev && prevLoad == load && proto.Equal(prevDivCfg, divCfg) {
 			diffMu.Unlock()
 			return
 		}
 		hasPrev = true
-		prev = load
+		prevLoad = load
+		if divCfg != nil {
+			prevDivCfg = proto.Clone(divCfg).(*bigtablepb.SessionDiversionConfiguration)
+		} else {
+			prevDivCfg = nil
+		}
 		diffMu.Unlock()
-		listener(load)
+		listener(sc)
 	})
+}
+
+// isSessionLoadZero reports whether sc diverts zero traffic across all served
+// method scopes using the shared resolveScopeSessionLoads rule.
+func isSessionLoadZero(sc *bigtablepb.SessionClientConfiguration) bool {
+	for _, load := range resolveScopeSessionLoads(sc) {
+		if load > 0 {
+			return false
+		}
+	}
+	return true
 }
 
 // pollingLoop continuously polls the Bigtable control plane at the configured interval.
@@ -574,7 +586,7 @@ func (m *ClientConfigurationManager) poll(ctx context.Context) {
 	// session_load, channel/session pool sizing, and LB options at zero.
 	if resp.GetSessionConfiguration() == nil {
 		recordDebugTag(tagClientConfigSessionConfigurationNull)
-	} else if resp.GetSessionConfiguration().GetSessionLoad() == 0 {
+	} else if isSessionLoadZero(resp.GetSessionConfiguration()) {
 		// Distinct from the null case: server sent a populated
 		// SessionClientConfiguration but explicitly set session_load=0
 		// (route 0% through session, 100% through classic). Legitimate

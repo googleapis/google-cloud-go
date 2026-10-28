@@ -54,6 +54,7 @@ type fakeBigtableServer struct {
 	// test snapshotting requests and later reading stream indexes cannot
 	// race an in-flight append.
 	captured           []capturedVRpc
+	openTableRequests  []*btpb.OpenTableRequest
 	openSessionCnt     int
 	closeSessionCnt    int
 	getClientConfigCnt int
@@ -112,6 +113,10 @@ type fakeBigtableServer struct {
 	// block until the stream context is cancelled (no reply, no
 	// heartbeat). Decremented under mu as each stall hits.
 	stallVRpcCount int
+
+	// diversionCfg, when non-nil, overrides the default GlobalDiversion(1.0)
+	// returned by GetClientConfiguration.
+	diversionCfg *btpb.SessionDiversionConfiguration
 }
 
 // fakeAttemptErr is one queued reply for a VirtualRpcRequest. RetryInfo is
@@ -136,6 +141,14 @@ func (s *fakeBigtableServer) getClientConfigCount() int {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	return s.getClientConfigCnt
+}
+
+func (s *fakeBigtableServer) getOpenTableRequests() []*btpb.OpenTableRequest {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	copied := make([]*btpb.OpenTableRequest, len(s.openTableRequests))
+	copy(copied, s.openTableRequests)
+	return copied
 }
 
 func newFakeBigtableServer(t *testing.T) *fakeBigtableServer {
@@ -336,18 +349,30 @@ func (s *fakeBigtableServer) PingAndWarm(ctx context.Context, req *btpb.PingAndW
 	return &btpb.PingAndWarmResponse{}, nil
 }
 
+func (s *fakeBigtableServer) setSessionDiversionConfiguration(divCfg *btpb.SessionDiversionConfiguration) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.diversionCfg = divCfg
+}
+
 func (s *fakeBigtableServer) GetClientConfiguration(ctx context.Context, req *btpb.GetClientConfigurationRequest) (*btpb.ClientConfiguration, error) {
 	s.mu.Lock()
 	s.getClientConfigCnt++
 	minC, maxC := s.poolMinCount, s.poolMaxCount
+	divCfg := s.diversionCfg
 	s.mu.Unlock()
-	// SessionLoad: 1.0 pins the Diverter to the session path so every
-	// ReadRow/Apply on the TableShim routes through SessionTable. Note: the
-	// AddSessionLoadListener listener is invoked at registration time with
-	// the manager's *default* config (SessionLoad=0), and is only flipped to
-	// 1.0 once this RPC's response is parsed by the configManager. Tests
-	// must wait for that to happen before issuing data calls — see
-	// waitForSessionRouting in the harness.
+	if divCfg == nil {
+		divCfg = &btpb.SessionDiversionConfiguration{
+			DiversionStrategy: &btpb.SessionDiversionConfiguration_GlobalDiversion{
+				GlobalDiversion: &btpb.SessionScopeDiversionConfiguration{
+					SessionLoad: 1.0,
+				},
+			},
+		}
+	}
+	// SessionLoad: 1.0 (plus GlobalDiversion: 1.0 by default) pins the
+	// Diverter to the session path so every session-eligible RPC on the
+	// TableShim routes through SessionTable.
 	//
 	// Explicit SessionPool sizing is included because ClientConfigurationManager
 	// treats server values as authoritative and overwrites the per-pool
@@ -356,7 +381,8 @@ func (s *fakeBigtableServer) GetClientConfiguration(ctx context.Context, req *bt
 	// more sessions than tests expect. See setSessionPoolSizing.
 	return &btpb.ClientConfiguration{
 		SessionConfiguration: &btpb.SessionClientConfiguration{
-			SessionLoad: 1.0,
+			SessionLoad:                   1.0,
+			SessionDiversionConfiguration: divCfg,
 			SessionPoolConfiguration: &btpb.SessionClientConfiguration_SessionPoolConfiguration{
 				MinSessionCount: minC,
 				MaxSessionCount: maxC,
@@ -382,8 +408,11 @@ func (s *fakeBigtableServer) OpenTable(stream btpb.Bigtable_OpenTableServer) err
 	// Stamp per-stream state before the reply so handleOpenSession sees a
 	// consistent OpenSession count when it lands.
 	streamIdx := s.nextPeerInfoIdx.Add(1) - 1
+	var openReq btpb.OpenTableRequest
+	_ = proto.Unmarshal(first.GetOpenSession().GetPayload(), &openReq)
 	s.mu.Lock()
 	s.openSessionCnt++
+	s.openTableRequests = append(s.openTableRequests, &openReq)
 	s.mu.Unlock()
 
 	// If configured, send the bigtable-peer-info header BEFORE the first
@@ -500,11 +529,66 @@ func (s *fakeBigtableServer) OpenTable(stream btpb.Bigtable_OpenTableServer) err
 		s.mu.Unlock()
 
 		var payload []byte
-		switch tableReq.Payload.(type) {
+		switch p := tableReq.Payload.(type) {
 		case *btpb.TableRequest_ReadRow:
 			payload = readBytes
 		case *btpb.TableRequest_MutateRow:
 			payload = writeBytes
+		case *btpb.TableRequest_CheckAndMutateRow:
+			b, err := proto.Marshal(&btpb.TableResponse{
+				Payload: &btpb.TableResponse_CheckAndMutateRow{
+					CheckAndMutateRow: &btpb.SessionCheckAndMutateRowResponse{
+						PredicateMatched: true,
+					},
+				},
+			})
+			if err != nil {
+				return err
+			}
+			payload = b
+		case *btpb.TableRequest_ReadModifyWriteRow:
+			b, err := proto.Marshal(&btpb.TableResponse{
+				Payload: &btpb.TableResponse_ReadModifyWriteRow{
+					ReadModifyWriteRow: &btpb.SessionReadModifyWriteRowResponse{
+						Row: &btpb.Row{
+							Key: p.ReadModifyWriteRow.GetKey(),
+							Families: []*btpb.Family{{
+								Name: "fam1",
+								Columns: []*btpb.Column{{
+									Qualifier: []byte("col1"),
+									Cells: []*btpb.Cell{{
+										Value:           []byte("rmw-value"),
+										TimestampMicros: 2000,
+									}},
+								}},
+							}},
+						},
+					},
+				},
+			})
+			if err != nil {
+				return err
+			}
+			payload = b
+		case *btpb.TableRequest_MutateRows:
+			entries := make([]*btpb.SessionMutateRowsResponse_Entry, len(p.MutateRows.GetEntries()))
+			for i := range p.MutateRows.GetEntries() {
+				entries[i] = &btpb.SessionMutateRowsResponse_Entry{
+					Index:  int64(i),
+					Status: &rpcstatus.Status{Code: 0},
+				}
+			}
+			b, err := proto.Marshal(&btpb.TableResponse{
+				Payload: &btpb.TableResponse_MutateRows{
+					MutateRows: &btpb.SessionMutateRowsResponse{
+						Entries: entries,
+					},
+				},
+			})
+			if err != nil {
+				return err
+			}
+			payload = b
 		default:
 			return fmt.Errorf("fakeBigtableServer: unsupported TableRequest payload %T", tableReq.Payload)
 		}
