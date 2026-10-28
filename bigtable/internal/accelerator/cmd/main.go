@@ -163,16 +163,16 @@ func main() {
 		log.Printf("warning: failed to write identity document: %v", err)
 	}
 
+	// Register signal handling before starting the server so that in LIFO defer
+	// order srv.Stop() completes before signal.Stop(sigCh) restores SIG_DFL.
+	sigCh := make(chan os.Signal, 1)
+	signal.Notify(sigCh, syscall.SIGTERM, syscall.SIGINT)
+	defer signal.Stop(sigCh)
+
 	if err := srv.Start(); err != nil {
 		log.Fatalf("failed to start accelerator server: %v", err)
 	}
 	defer srv.Stop()
-
-	// Block until either the watchdog (stdin EOF or parent-PID change) trips or
-	// the process receives a termination signal, then shut down cleanly.
-	sigCh := make(chan os.Signal, 1)
-	signal.Notify(sigCh, syscall.SIGTERM, syscall.SIGINT)
-	defer signal.Stop(sigCh)
 
 	select {
 	case <-srv.ShutdownChan():

@@ -38,6 +38,11 @@ import (
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 )
 
+// maxMsgSize matches the Bigtable server-side limit (256 MiB) used by the
+// classic client and emulator so responses > 4 MiB over UDS are not rejected
+// with ResourceExhausted.
+const maxMsgSize = 1 << 28
+
 // defaultHandshakeTimeout bounds how long Start waits for the parent process to
 // write the auth secret to stdin. Without it, a parent that never writes would
 // leave the daemon blocked in readSecret forever — never binding the socket and
@@ -45,8 +50,9 @@ import (
 const defaultHandshakeTimeout = 5 * time.Second
 
 // gracefulStopTimeout bounds the graceful drain in Stop before falling back to a
-// hard grpc.Server.Stop, so a wedged in-flight RPC can't hang shutdown forever.
-const gracefulStopTimeout = 5 * time.Second
+// hard grpc.Server.Stop, so a wedged in-flight RPC can't hang shutdown forever
+// or exceed the parent's stdin+SIGTERM grace window.
+const gracefulStopTimeout = 3 * time.Second
 
 // parentPidPollInterval is how often monitorParentPid samples the parent PID to
 // detect reparenting (original parent death).
@@ -155,6 +161,8 @@ func (s *Server) Start() error {
 		streamInterceptors = append([]grpc.StreamServerInterceptor{authStreamInterceptor(s.authSecret)}, streamInterceptors...)
 	}
 	s.grpcServer = grpc.NewServer(
+		grpc.MaxRecvMsgSize(maxMsgSize),
+		grpc.MaxSendMsgSize(maxMsgSize),
 		grpc.ChainUnaryInterceptor(unaryInterceptors...),
 		grpc.ChainStreamInterceptor(streamInterceptors...),
 	)
@@ -220,7 +228,7 @@ func (s *Server) Start() error {
 // monitors.
 func (s *Server) Stop() {
 	s.stopOnce.Do(func() {
-		close(s.shutdownChan)
+		defer close(s.shutdownChan)
 
 		// Flip to NOT_SERVING before draining so a caller probing mid-shutdown
 		// gets an honest answer instead of a SERVING reply from a server that is

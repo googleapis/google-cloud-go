@@ -15,10 +15,18 @@
 package accelerator
 
 import (
+	"bytes"
+	"context"
 	"os"
 	"path/filepath"
+	"sync/atomic"
 	"testing"
 	"time"
+
+	v2pb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/metadata"
 )
 
 func TestServer_Permissions(t *testing.T) {
@@ -219,5 +227,176 @@ func TestServer_StartFailure(t *testing.T) {
 	server := NewServer(udsPath, channel, WithStdinReader(nil))
 	if err := server.Start(); err == nil {
 		t.Error("expected error when starting server with nonexistent UDS path, but got nil")
+	}
+}
+
+type slowClosingTestChannel struct {
+	rpcStarted    chan struct{}
+	rpcRelease    chan struct{}
+	rpcCompleted  atomic.Bool
+	channelClosed atomic.Bool
+}
+
+func (c *slowClosingTestChannel) Invoke(ctx context.Context, _ string, _, _ any, _ ...grpc.CallOption) error {
+	select {
+	case c.rpcStarted <- struct{}{}:
+	default:
+	}
+	select {
+	case <-c.rpcRelease:
+		c.rpcCompleted.Store(true)
+		return nil
+	case <-ctx.Done():
+		return ctx.Err()
+	}
+}
+
+func (c *slowClosingTestChannel) NewStream(context.Context, *grpc.StreamDesc, string, ...grpc.CallOption) (grpc.ClientStream, error) {
+	return nil, nil
+}
+
+func (c *slowClosingTestChannel) Close() error {
+	c.channelClosed.Store(true)
+	return nil
+}
+
+func TestServer_ShutdownChanClosesAfterGracefulStopAndChannelClose(t *testing.T) {
+	udsPath := filepath.Join(t.TempDir(), "accel.sock")
+	r, w, err := os.Pipe()
+	if err != nil {
+		t.Fatalf("os.Pipe: %v", err)
+	}
+	defer r.Close()
+
+	const secret = "test-secret"
+	go func() { _, _ = w.WriteString(secret + "\n") }()
+
+	ch := &slowClosingTestChannel{
+		rpcStarted: make(chan struct{}, 1),
+		rpcRelease: make(chan struct{}),
+	}
+	srv := NewServer(udsPath, ch, WithStdinReader(r))
+	if err := srv.Start(); err != nil {
+		t.Fatalf("srv.Start: %v", err)
+	}
+	defer srv.Stop()
+
+	conn, err := grpc.NewClient("unix:"+udsPath, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		t.Fatalf("grpc.NewClient: %v", err)
+	}
+	defer conn.Close()
+	client := v2pb.NewBigtableClient(conn)
+
+	rpcDone := make(chan error, 1)
+	go func() {
+		ctx := metadata.NewOutgoingContext(context.Background(), metadata.Pairs("x-accelerator-token", secret))
+		_, err := client.MutateRow(ctx, &v2pb.MutateRowRequest{
+			TableName: "projects/p/instances/i/tables/t",
+			RowKey:    []byte("k"),
+		})
+		rpcDone <- err
+	}()
+
+	<-ch.rpcStarted
+
+	// Trigger monitorStdin -> s.Stop() and release the in-flight RPC shortly after.
+	_ = w.Close()
+	time.AfterFunc(100*time.Millisecond, func() {
+		close(ch.rpcRelease)
+	})
+
+	<-srv.ShutdownChan()
+	if !ch.rpcCompleted.Load() {
+		t.Error("rpcCompleted = false when ShutdownChan closed; want true")
+	}
+	if !ch.channelClosed.Load() {
+		t.Error("channelClosed = false when ShutdownChan closed; want true")
+	}
+	if err := <-rpcDone; err != nil {
+		t.Errorf("in-flight MutateRow returned error during graceful stop: %v", err)
+	}
+}
+
+func TestServer_LargeMessageOverUDS(t *testing.T) {
+	udsPath := filepath.Join(t.TempDir(), "accel-large.sock")
+	largeVal := bytes.Repeat([]byte("x"), 6*1024*1024) // 6 MiB (> 4 MiB default gRPC limit)
+
+	mockTable := &mockSessionTableAPI{
+		readRowFn: func(_ context.Context, _ *v2pb.SessionReadRowRequest) (*v2pb.SessionReadRowResponse, error) {
+			return &v2pb.SessionReadRowResponse{
+				Row: &v2pb.Row{
+					Key: []byte("rk-large"),
+					Families: []*v2pb.Family{{
+						Name: "cf",
+						Columns: []*v2pb.Column{{
+							Qualifier: []byte("q"),
+							Cells: []*v2pb.Cell{{
+								TimestampMicros: 1000,
+								Value:           largeVal,
+							}},
+						}},
+					}},
+				},
+			}, nil
+		},
+		mutateRowFn: func(_ context.Context, _ *v2pb.SessionMutateRowRequest) (*v2pb.SessionMutateRowResponse, error) {
+			return &v2pb.SessionMutateRowResponse{}, nil
+		},
+	}
+	channel := newTestChannel(t, &mockSessionClient{table: mockTable})
+
+	srv := NewServer(udsPath, channel, WithStdinReader(nil))
+	if err := srv.Start(); err != nil {
+		t.Fatalf("srv.Start: %v", err)
+	}
+	defer srv.Stop()
+
+	conn, err := grpc.NewClient(
+		"unix:"+udsPath,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithDefaultCallOptions(
+			grpc.MaxCallSendMsgSize(maxMsgSize),
+			grpc.MaxCallRecvMsgSize(maxMsgSize),
+		),
+	)
+	if err != nil {
+		t.Fatalf("grpc.NewClient: %v", err)
+	}
+	defer conn.Close()
+	client := v2pb.NewBigtableClient(conn)
+
+	// 1. 6 MiB MutateRow request (> 4 MiB server recv limit).
+	if _, err := client.MutateRow(context.Background(), &v2pb.MutateRowRequest{
+		TableName: "projects/p/instances/i/tables/t",
+		RowKey:    []byte("rk-large"),
+		Mutations: []*v2pb.Mutation{{
+			Mutation: &v2pb.Mutation_SetCell_{
+				SetCell: &v2pb.Mutation_SetCell{
+					FamilyName:      "cf",
+					ColumnQualifier: []byte("q"),
+					TimestampMicros: 1000,
+					Value:           largeVal,
+				},
+			},
+		}},
+	}); err != nil {
+		t.Fatalf("MutateRow(6 MiB) failed: %v", err)
+	}
+
+	// 2. 6 MiB ReadRows response (> 4 MiB server send limit).
+	stream, err := client.ReadRows(context.Background(), &v2pb.ReadRowsRequest{
+		TableName: "projects/p/instances/i/tables/t",
+		Rows:      &v2pb.RowSet{RowKeys: [][]byte{[]byte("rk-large")}},
+	})
+	if err != nil {
+		t.Fatalf("ReadRows failed: %v", err)
+	}
+	resp, err := stream.Recv()
+	if err != nil {
+		t.Fatalf("ReadRows Recv(6 MiB) failed: %v", err)
+	}
+	if len(resp.GetChunks()) == 0 || len(resp.GetChunks()[0].GetValue()) != len(largeVal) {
+		t.Fatalf("ReadRows chunk value len = %d; want %d", len(resp.GetChunks()[0].GetValue()), len(largeVal))
 	}
 }
