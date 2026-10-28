@@ -414,25 +414,33 @@ func (attemptStatsHandler) HandleRPC(ctx context.Context, rs stats.RPCStats) {
 // traceReadObjectResponse adds the object bytes of a ReadObject response that
 // d decoded, if decodeErr is nil, to the attempt span of stream.
 func traceReadObjectResponse(stream grpc.ClientStream, d *readObjectResponseDecoder, decodeErr error) {
-	if !isOTelTracingDevEnabled() || decodeErr != nil {
+	if decodeErr != nil {
+		return
+	}
+	pa, ok := streamPayloadAttempt(stream)
+	if !ok {
 		return
 	}
 	o := d.dataOffsets
-	recordReadPayload(stream, bufferSliceLen(d.databufs, o.startBuf, o.startOff, o.endBuf, o.endOff))
+	pa.add(bufferSliceLen(d.databufs, o.startBuf, o.startOff, o.endBuf, o.endOff))
 }
 
 // traceBidiReadResponse adds the object bytes of all read ranges of a
 // BidiReadObject response that d decoded, if decodeErr is nil, to the attempt
 // span of stream.
 func traceBidiReadResponse(stream grpc.ClientStream, d *readResponseDecoder, decodeErr error) {
-	if !isOTelTracingDevEnabled() || decodeErr != nil {
+	if decodeErr != nil {
+		return
+	}
+	pa, ok := streamPayloadAttempt(stream)
+	if !ok {
 		return
 	}
 	var n int64
 	for _, o := range d.dataOffsets {
 		n += bufferSliceLen(d.databufs, o.startBuf, o.startOff, o.endBuf, o.endOff)
 	}
-	recordReadPayload(stream, n)
+	pa.add(n)
 }
 
 // bufferSliceLen returns the number of bytes in bufs from offset startOff of
@@ -449,17 +457,16 @@ func bufferSliceLen(bufs mem.BufferSlice, startBuf int, startOff uint64, endBuf 
 	return n
 }
 
-// recordReadPayload adds n object bytes decoded from a response on stream to
-// its attempt span; stream.Context() carries the payloadAttempt from TagRPC.
+// streamPayloadAttempt returns the payloadAttempt that TagRPC stored in the
+// context of stream, which exists only for a recording attempt span.
 // Must be called after a successful Recv: stream.Context() commits the gRPC
 // attempt, which disables transparent retries for the stream.
-func recordReadPayload(stream grpc.ClientStream, n int64) {
-	if n <= 0 {
-		return
+func streamPayloadAttempt(stream grpc.ClientStream) (*payloadAttempt, bool) {
+	if !isOTelTracingDevEnabled() {
+		return nil, false
 	}
-	if pa, ok := stream.Context().Value(payloadAttemptKey).(*payloadAttempt); ok {
-		pa.add(n)
-	}
+	pa, ok := stream.Context().Value(payloadAttemptKey).(*payloadAttempt)
+	return pa, ok
 }
 
 // recordWrite records the offset and data of a write message, ignoring
@@ -493,9 +500,13 @@ func (pa *payloadAttempt) record(offset, n int64) {
 	}
 }
 
-// add adds n to the stream's size, even before its offset is recorded: a
-// multi-range response can be decoded before HandleRPC sees its request.
+// add adds a positive n to the stream's size, even before its offset is
+// recorded: a multi-range response can be decoded before HandleRPC sees its
+// request.
 func (pa *payloadAttempt) add(n int64) {
+	if n <= 0 {
+		return
+	}
 	pa.mu.Lock()
 	defer pa.mu.Unlock()
 	pa.size += n
@@ -631,7 +642,7 @@ func recordUploadIDFromHeader(ctx context.Context, h http.Header) {
 // withWriterBytes returns ctx carrying the Writer's bytesWritten counter, which
 // httpWritePayload reports as the size of a single-request HTTP upload.
 func withWriterBytes(ctx context.Context, n *atomic.Int64) context.Context {
-	if !isOTelTracingDevEnabled() {
+	if _, ok := recordingSpan(ctx); !ok {
 		return ctx
 	}
 	return context.WithValue(ctx, writerBytesKey, n)

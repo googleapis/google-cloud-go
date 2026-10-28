@@ -2662,7 +2662,7 @@ func TestGRPCResumableBidiWriteBufferSenderConnectUploadID(t *testing.T) {
 }
 
 // contextStream is a grpc.ClientStream that only provides a context, which is
-// all recordReadPayload uses.
+// all streamPayloadAttempt uses.
 type contextStream struct {
 	grpc.ClientStream
 	ctx context.Context
@@ -2671,8 +2671,9 @@ type contextStream struct {
 func (s contextStream) Context() context.Context { return s.ctx }
 
 // TestAttemptStatsHandlerPayload feeds the messages of one gRPC attempt to
-// attemptStatsHandler and recordReadPayload and checks the attempt span.
+// attemptStatsHandler and streamPayloadAttempt and checks the attempt span.
 func TestAttemptStatsHandlerPayload(t *testing.T) {
+	t.Setenv(storageOtelTracingDevVar, "true")
 	type wreq = storagepb.BidiWriteObjectRequest
 	data := func(n int) *storagepb.BidiWriteObjectRequest_ChecksummedData {
 		return &storagepb.BidiWriteObjectRequest_ChecksummedData{ChecksummedData: &storagepb.ChecksummedData{Content: make([]byte, n)}}
@@ -2711,7 +2712,9 @@ func TestAttemptStatsHandlerPayload(t *testing.T) {
 			ctx = context.WithValue(ctx, payloadAttemptKey, &payloadAttempt{span: span})
 			for _, m := range tc.msgs {
 				if n, ok := m.(int64); ok {
-					recordReadPayload(contextStream{ctx: ctx}, n)
+					if pa, ok := streamPayloadAttempt(contextStream{ctx: ctx}); ok {
+						pa.add(n)
+					}
 				} else {
 					attemptStatsHandler{}.HandleRPC(ctx, &stats.OutPayload{Client: true, Payload: m})
 				}
@@ -2890,7 +2893,7 @@ func TestPayloadTracing(t *testing.T) {
 		// The response describes the whole object, which is not read.
 		{"http/zero-length read", httpClient(nil, &http.Response{StatusCode: 200, ContentLength: 100, Body: body(100)}), readRange(10, 0, 0),
 			[][2]int64{{10, 0}}},
-		{"http/unknown-length read", httpClient(nil, &http.Response{StatusCode: 206, Header: http.Header{"Content-Range": {"bytes 10-29/100"}}, ContentLength: -1, Body: body(20)}),
+		{"http/unknown-length read", httpClient(nil, &http.Response{StatusCode: 206, Header: http.Header{"Content-Range": {"bytes 10-29/100"}}, ContentLength: -1, Uncompressed: true, Body: body(20)}),
 			read, [][2]int64{{10, -1}}},
 		// Without the dev flag no span (the otelhttp attempt and the two
 		// non-dev storage spans) carries payload attributes.
