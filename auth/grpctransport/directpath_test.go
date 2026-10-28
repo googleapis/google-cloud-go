@@ -261,6 +261,11 @@ func TestConfigureDirectPath_Interconnect(t *testing.T) {
 			endpoint: "storage-direct.googleapis.com:443",
 			want:     "google-c2p:///storage-direct.googleapis.com?force-xds",
 		},
+		{
+			name:     "preprod sandbox endpoint is rewritten after its first label",
+			endpoint: "storage-preprod.sandbox.googleapis.com:443",
+			want:     "google-c2p:///storage-preprod-direct.sandbox.googleapis.com?force-xds",
+		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			grpcOpts, gotEndpoint, err := configureDirectPath(nil, opts, tc.endpoint, creds, nil)
@@ -407,11 +412,22 @@ func TestInterconnectHostAndAuthority(t *testing.T) {
 			wantAuthorityOverride: "spanner.googleapis.com",
 		},
 		{
-			// Only the production Cloud Storage host omits the override.
-			name:                  "preprod storage host is overridden",
-			host:                  "storage-preprod-direct.sandbox.googleapis.com",
-			wantTargetHost:        "storage-preprod-direct.sandbox.googleapis.com",
-			wantAuthorityOverride: "storage-preprod.sandbox.googleapis.com",
+			name:           "preprod storage host is rewritten and keeps derived authority",
+			host:           "storage-preprod.sandbox.googleapis.com",
+			wantTargetHost: "storage-preprod-direct.sandbox.googleapis.com",
+		},
+		{
+			name:           "preprod storage-direct host keeps derived authority",
+			host:           "storage-preprod-direct.sandbox.googleapis.com",
+			wantTargetHost: "storage-preprod-direct.sandbox.googleapis.com",
+		},
+		{
+			// -direct is inserted after the first label, mirroring how the
+			// override removes it.
+			name:                  "other multi-label host is rewritten after its first label and overridden",
+			host:                  "foo.sandbox.googleapis.com",
+			wantTargetHost:        "foo-direct.sandbox.googleapis.com",
+			wantAuthorityOverride: "foo.sandbox.googleapis.com",
 		},
 		{
 			name:           "non-googleapis host is unchanged",
@@ -428,8 +444,8 @@ func TestInterconnectHostAndAuthority(t *testing.T) {
 	}
 }
 
-// TestConfigureDirectPath_Interconnect_Authority verifies that channels to
-// storage-direct.googleapis.com keep the :authority derived from the target,
+// TestConfigureDirectPath_Interconnect_Authority verifies that channels to the
+// Cloud Storage Interconnect hosts keep the :authority derived from the target,
 // while other hosts get a WithAuthority override.
 //
 // grpc.DialOption values are opaque, so the test detects the override by
@@ -535,11 +551,14 @@ func TestConfigureDirectPath_Interconnect_Authority(t *testing.T) {
 			wantAuthorityOverride: true,
 		},
 		{
-			// Only the production Cloud Storage host omits the override.
-			name:                  "preprod storage host keeps authority override",
-			opts:                  nonInterconnectOpts,
-			endpoint:              "storage-preprod-direct.sandbox.googleapis.com:443",
-			wantAuthorityOverride: true,
+			name:     "application-supplied preprod storage-direct endpoint",
+			opts:     nonInterconnectOpts,
+			endpoint: "storage-preprod-direct.sandbox.googleapis.com:443",
+		},
+		{
+			name:     "option enables interconnect for preprod endpoint",
+			opts:     interconnectOpts,
+			endpoint: "storage-preprod.sandbox.googleapis.com:443",
 		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {

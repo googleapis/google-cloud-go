@@ -35,6 +35,7 @@ import (
 
 const directPathInterconnectInfix = "-direct."
 const directPathInterconnectStorageHost = "storage-direct.googleapis.com"
+const directPathInterconnectStoragePreprodHost = "storage-preprod-direct.sandbox.googleapis.com"
 
 var logRateLimiter = rate.Sometimes{Interval: 1 * time.Second}
 
@@ -43,14 +44,14 @@ var logRateLimiter = rate.Sometimes{Interval: 1 * time.Second}
 // gRPC derives from the target.
 //
 // Cloud Storage identifies Interconnect traffic by the
-// storage-direct.googleapis.com :authority and treats RPCs sent with
-// storage.googleapis.com as regular traffic, so no override is returned for
-// directPathInterconnectStorageHost. Other hosts keep their non-direct
-// authority.
+// storage-direct.googleapis.com (or, in preprod,
+// storage-preprod-direct.sandbox.googleapis.com) :authority and treats RPCs
+// sent with the non-direct host as regular traffic, so no override is
+// returned for those hosts. Other hosts keep their non-direct authority.
 func interconnectHostAndAuthority(host string) (targetHost, authorityOverride string) {
 	switch {
 	case strings.HasSuffix(host, ".googleapis.com") && !strings.Contains(host, directPathInterconnectInfix):
-		targetHost = strings.TrimSuffix(host, ".googleapis.com") + directPathInterconnectInfix + "googleapis.com"
+		targetHost = strings.Replace(host, ".", directPathInterconnectInfix, 1)
 		authorityOverride = host
 	case strings.Contains(host, directPathInterconnectInfix):
 		targetHost = host
@@ -58,7 +59,8 @@ func interconnectHostAndAuthority(host string) (targetHost, authorityOverride st
 	default:
 		return host, ""
 	}
-	if targetHost == directPathInterconnectStorageHost {
+	switch targetHost {
+	case directPathInterconnectStorageHost, directPathInterconnectStoragePreprodHost:
 		return targetHost, ""
 	}
 	return targetHost, authorityOverride
