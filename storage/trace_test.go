@@ -1609,6 +1609,7 @@ func TestWriterTraceWriteModeEmulated(t *testing.T) {
 	checkEmulatorEnvironment(t)
 	// TODO: Remove setting development env var upon launch.
 	t.Setenv(storageOtelTracingDevVar, "true")
+	t.Setenv(storageBucketMetadataDisabledVar, "true")
 
 	ctx := context.Background()
 
@@ -1727,6 +1728,7 @@ func TestWriterTraceWriteModeEmulated(t *testing.T) {
 						}
 					}
 					wantAttrs := append(slices.Clone(tc.wantAttrs),
+						c.rpcSystem,
 						attribute.String(storageURIAttrKey, "gs://"+bucket+"/"+objName))
 					if tc.wantUploadID && len(writerSpans) == 1 {
 						// The upload ID is server-generated, so only check that it is present.
