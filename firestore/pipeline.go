@@ -251,6 +251,9 @@ func (p *Pipeline) Execute(ctx context.Context, opts ...ExecuteOption) *Pipeline
 		}
 	}
 
+	if newP.tx != nil || newP.executeSettings.Atomic {
+		ctx = withTransactionHeader(ctx)
+	}
 	ctx = withResourceHeader(ctx, newP.c.path())
 	ctx = withRequestParamsHeader(ctx, reqParamsHeaderVal(newP.c.path()))
 

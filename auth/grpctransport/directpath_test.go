@@ -261,6 +261,11 @@ func TestConfigureDirectPath_Interconnect(t *testing.T) {
 			endpoint: "storage-direct.googleapis.com:443",
 			want:     "google-c2p:///storage-direct.googleapis.com?force-xds",
 		},
+		{
+			name:     "preprod sandbox endpoint is rewritten after its first label",
+			endpoint: "storage-preprod.sandbox.googleapis.com:443",
+			want:     "google-c2p:///storage-preprod-direct.sandbox.googleapis.com?force-xds",
+		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			grpcOpts, gotEndpoint, err := configureDirectPath(nil, opts, tc.endpoint, creds, nil)
@@ -270,8 +275,8 @@ func TestConfigureDirectPath_Interconnect(t *testing.T) {
 			if gotEndpoint != tc.want {
 				t.Errorf("configureDirectPath(%q) endpoint = %q, want %q", tc.endpoint, gotEndpoint, tc.want)
 			}
-			if len(grpcOpts) < 2 {
-				t.Errorf("configureDirectPath(%q) len(grpcOpts) = %d, want >= 2 (credentials bundle + WithAuthority)", tc.endpoint, len(grpcOpts))
+			if len(grpcOpts) < 1 {
+				t.Errorf("configureDirectPath(%q) len(grpcOpts) = %d, want >= 1 (credentials bundle)", tc.endpoint, len(grpcOpts))
 			}
 		})
 	}
@@ -300,8 +305,8 @@ func TestConfigureDirectPath_Interconnect_EnvOverride(t *testing.T) {
 		if gotEndpoint != wantEndpoint {
 			t.Errorf("configureDirectPath() endpoint = %q, want %q", gotEndpoint, wantEndpoint)
 		}
-		if len(grpcOpts) < 2 {
-			t.Errorf("configureDirectPath() len(grpcOpts) = %d, want >= 2 (credentials bundle + WithAuthority)", len(grpcOpts))
+		if len(grpcOpts) < 1 {
+			t.Errorf("configureDirectPath() len(grpcOpts) = %d, want >= 1 (credentials bundle)", len(grpcOpts))
 		}
 	})
 
@@ -377,83 +382,305 @@ func TestConfigureDirectPath_Interconnect_CustomURI(t *testing.T) {
 	}
 }
 
+func TestInterconnectHostAndAuthority(t *testing.T) {
+	for _, tc := range []struct {
+		name                  string
+		host                  string
+		wantTargetHost        string
+		wantAuthorityOverride string
+	}{
+		{
+			name:           "storage host is rewritten and keeps derived authority",
+			host:           "storage.googleapis.com",
+			wantTargetHost: "storage-direct.googleapis.com",
+		},
+		{
+			name:           "storage-direct host keeps derived authority",
+			host:           "storage-direct.googleapis.com",
+			wantTargetHost: "storage-direct.googleapis.com",
+		},
+		{
+			name:                  "other service host is rewritten and overridden",
+			host:                  "spanner.googleapis.com",
+			wantTargetHost:        "spanner-direct.googleapis.com",
+			wantAuthorityOverride: "spanner.googleapis.com",
+		},
+		{
+			name:                  "other service -direct host is overridden",
+			host:                  "spanner-direct.googleapis.com",
+			wantTargetHost:        "spanner-direct.googleapis.com",
+			wantAuthorityOverride: "spanner.googleapis.com",
+		},
+		{
+			name:           "preprod storage host is rewritten and keeps derived authority",
+			host:           "storage-preprod.sandbox.googleapis.com",
+			wantTargetHost: "storage-preprod-direct.sandbox.googleapis.com",
+		},
+		{
+			name:           "preprod storage-direct host keeps derived authority",
+			host:           "storage-preprod-direct.sandbox.googleapis.com",
+			wantTargetHost: "storage-preprod-direct.sandbox.googleapis.com",
+		},
+		{
+			// -direct is inserted after the first label, mirroring how the
+			// override removes it.
+			name:                  "other multi-label host is rewritten after its first label and overridden",
+			host:                  "foo.sandbox.googleapis.com",
+			wantTargetHost:        "foo-direct.sandbox.googleapis.com",
+			wantAuthorityOverride: "foo.sandbox.googleapis.com",
+		},
+		{
+			name:           "non-googleapis host is unchanged",
+			host:           "localhost",
+			wantTargetHost: "localhost",
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			gotTargetHost, gotAuthorityOverride := interconnectHostAndAuthority(tc.host)
+			if gotTargetHost != tc.wantTargetHost || gotAuthorityOverride != tc.wantAuthorityOverride {
+				t.Errorf("interconnectHostAndAuthority(%q) = (%q, %q), want (%q, %q)", tc.host, gotTargetHost, gotAuthorityOverride, tc.wantTargetHost, tc.wantAuthorityOverride)
+			}
+		})
+	}
+}
+
+// TestConfigureDirectPath_Interconnect_Authority verifies that channels to the
+// Cloud Storage Interconnect hosts keep the :authority derived from the target,
+// while other hosts get a WithAuthority override.
+//
+// grpc.DialOption values are opaque, so the test detects the override by
+// comparing the number of dial options against a host known to receive one.
+func TestConfigureDirectPath_Interconnect_Authority(t *testing.T) {
+	t.Setenv(disableDirectPathEnvVar, "")
+	creds := auth.NewCredentials(&auth.CredentialsOptions{
+		TokenProvider: &staticTP{tok: &auth.Token{Value: "fakeToken"}},
+	})
+	interconnectOpts := &Options{
+		InternalOptions: &InternalOptions{
+			EnableDirectPath:                    true,
+			EnableDirectPathXds:                 true,
+			EnableDirectPathXdsOverInterconnect: true,
+		},
+	}
+	nonInterconnectOpts := &Options{
+		InternalOptions: &InternalOptions{
+			EnableDirectPath:    true,
+			EnableDirectPathXds: true,
+		},
+	}
+	numDialOptions := func(t *testing.T, opts *Options, endpoint string) int {
+		t.Helper()
+		grpcOpts, _, err := configureDirectPath(nil, opts, endpoint, creds, nil)
+		if err != nil {
+			t.Fatalf("configureDirectPath(%q) unexpected error: %v", endpoint, err)
+		}
+		return len(grpcOpts)
+	}
+	// t.Setenv cannot unset a variable; an empty value fails strconv.ParseBool
+	// and falls back to the option and endpoint, matching an unset variable.
+	t.Setenv(enableDirectPathXdsOverInterconnectEnvVar, "")
+	// Other services receive the WithAuthority override, establishing the baseline
+	// dial option count when an override is present.
+	withAuthorityOverride := numDialOptions(t, interconnectOpts, "pubsub.googleapis.com:443")
+	t.Setenv(enableDirectPathXdsOverInterconnectEnvVar, "true")
+	if got := numDialOptions(t, nonInterconnectOpts, "spanner.googleapis.com:443"); got != withAuthorityOverride {
+		t.Fatalf("configureDirectPath(%q) len(grpcOpts) = %d, want %d", "spanner.googleapis.com:443", got, withAuthorityOverride)
+	}
+
+	for _, tc := range []struct {
+		name                  string
+		env                   string
+		opts                  *Options
+		endpoint              string
+		wantAuthorityOverride bool
+	}{
+		{
+			name:     "option enables interconnect for default endpoint",
+			opts:     interconnectOpts,
+			endpoint: "storage.googleapis.com:443",
+		},
+		{
+			name:     "env true enables interconnect for default endpoint",
+			env:      "true",
+			opts:     nonInterconnectOpts,
+			endpoint: "storage.googleapis.com:443",
+		},
+		{
+			name:     "invalid env falls back to option",
+			env:      "yes",
+			opts:     interconnectOpts,
+			endpoint: "storage.googleapis.com:443",
+		},
+		{
+			name:     "application-supplied storage-direct endpoint",
+			opts:     nonInterconnectOpts,
+			endpoint: "storage-direct.googleapis.com:443",
+		},
+		{
+			name:     "application-supplied dns scheme storage-direct endpoint",
+			opts:     nonInterconnectOpts,
+			endpoint: "dns:///storage-direct.googleapis.com:443",
+		},
+		{
+			name:     "application-supplied google-c2p storage-direct target",
+			opts:     nonInterconnectOpts,
+			endpoint: "google-c2p:///storage-direct.googleapis.com?force-xds",
+		},
+		{
+			name:     "application-supplied google-c2p storage-direct target with other query",
+			opts:     interconnectOpts,
+			endpoint: "google-c2p:///storage-direct.googleapis.com?foo=bar",
+		},
+		{
+			// force-xds enables interconnect and rewrites the host to
+			// storage-direct.googleapis.com, so no authority override is added.
+			name:     "application-supplied force-xds target for storage.googleapis.com",
+			opts:     nonInterconnectOpts,
+			endpoint: "google-c2p:///storage.googleapis.com?force-xds",
+		},
+		{
+			name:                  "other service keeps authority override",
+			opts:                  interconnectOpts,
+			endpoint:              "spanner.googleapis.com:443",
+			wantAuthorityOverride: true,
+		},
+		{
+			name:                  "other service -direct endpoint keeps authority override",
+			opts:                  nonInterconnectOpts,
+			endpoint:              "spanner-direct.googleapis.com:443",
+			wantAuthorityOverride: true,
+		},
+		{
+			name:     "application-supplied preprod storage-direct endpoint",
+			opts:     nonInterconnectOpts,
+			endpoint: "storage-preprod-direct.sandbox.googleapis.com:443",
+		},
+		{
+			name:     "option enables interconnect for preprod endpoint",
+			opts:     interconnectOpts,
+			endpoint: "storage-preprod.sandbox.googleapis.com:443",
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Setenv(enableDirectPathXdsOverInterconnectEnvVar, tc.env)
+			want := withAuthorityOverride - 1
+			if tc.wantAuthorityOverride {
+				want = withAuthorityOverride
+			}
+			if got := numDialOptions(t, tc.opts, tc.endpoint); got != want {
+				t.Errorf("configureDirectPath(%q) len(grpcOpts) = %d, want %d (wantAuthorityOverride=%v)", tc.endpoint, got, want, tc.wantAuthorityOverride)
+			}
+		})
+	}
+}
+
 func TestConfigureDirectPath_Interconnect_FallbackPreservesEndpoint(t *testing.T) {
 	creds := auth.NewCredentials(&auth.CredentialsOptions{
 		TokenProvider: &staticTP{tok: &auth.Token{Value: "fakeToken"}},
 	})
 
-	t.Run("EnableDirectPath false preserves original endpoint", func(t *testing.T) {
-		t.Setenv(disableDirectPathEnvVar, "")
-		opts := &Options{
-			InternalOptions: &InternalOptions{
-				EnableDirectPath:                    false,
-				EnableDirectPathXds:                 true,
-				EnableDirectPathXdsOverInterconnect: true,
+	for _, tc := range []struct {
+		name            string
+		disableEnv      string
+		interconnectEnv string
+		opts            *Options
+		endpoint        string
+	}{
+		{
+			name: "EnableDirectPath false preserves original endpoint",
+			opts: &Options{
+				InternalOptions: &InternalOptions{
+					EnableDirectPath:                    false,
+					EnableDirectPathXds:                 true,
+					EnableDirectPathXdsOverInterconnect: true,
+				},
 			},
-		}
-		_, got, err := configureDirectPath(nil, opts, "storage.googleapis.com:443", creds, nil)
-		if err != nil {
-			t.Fatalf("configureDirectPath() unexpected error: %v", err)
-		}
-		if got != "storage.googleapis.com:443" {
-			t.Errorf("configureDirectPath() = %q, want %q", got, "storage.googleapis.com:443")
-		}
-	})
-
-	t.Run("GOOGLE_CLOUD_DISABLE_DIRECT_PATH=true preserves original endpoint", func(t *testing.T) {
-		t.Setenv(disableDirectPathEnvVar, "true")
-		opts := &Options{
-			InternalOptions: &InternalOptions{
-				EnableDirectPath:                    true,
-				EnableDirectPathXds:                 true,
-				EnableDirectPathXdsOverInterconnect: true,
+			endpoint: "storage.googleapis.com:443",
+		},
+		{
+			name:       "GOOGLE_CLOUD_DISABLE_DIRECT_PATH=true preserves original endpoint",
+			disableEnv: "true",
+			opts: &Options{
+				InternalOptions: &InternalOptions{
+					EnableDirectPath:                    true,
+					EnableDirectPathXds:                 true,
+					EnableDirectPathXdsOverInterconnect: true,
+				},
 			},
-		}
-		_, got, err := configureDirectPath(nil, opts, "storage.googleapis.com:443", creds, nil)
-		if err != nil {
-			t.Fatalf("configureDirectPath() unexpected error: %v", err)
-		}
-		if got != "storage.googleapis.com:443" {
-			t.Errorf("configureDirectPath() = %q, want %q", got, "storage.googleapis.com:443")
-		}
-	})
-
-	t.Run("non-GDU universe domain preserves original endpoint", func(t *testing.T) {
-		t.Setenv(disableDirectPathEnvVar, "")
-		opts := &Options{
-			UniverseDomain: "apis-tpclp.goog",
-			InternalOptions: &InternalOptions{
-				EnableDirectPath:                    true,
-				EnableDirectPathXds:                 true,
-				EnableDirectPathXdsOverInterconnect: true,
+			endpoint: "storage.googleapis.com:443",
+		},
+		{
+			name: "non-GDU universe domain preserves original endpoint",
+			opts: &Options{
+				UniverseDomain: "apis-tpclp.goog",
+				InternalOptions: &InternalOptions{
+					EnableDirectPath:                    true,
+					EnableDirectPathXds:                 true,
+					EnableDirectPathXdsOverInterconnect: true,
+				},
 			},
-		}
-		_, got, err := configureDirectPath(nil, opts, "storage.apis-tpclp.goog:443", creds, nil)
-		if err != nil {
-			t.Fatalf("configureDirectPath() unexpected error: %v", err)
-		}
-		if got != "storage.apis-tpclp.goog:443" {
-			t.Errorf("configureDirectPath() = %q, want %q", got, "storage.apis-tpclp.goog:443")
-		}
-	})
-
-	t.Run("lookalike domain rejected for interconnect DirectPath", func(t *testing.T) {
-		t.Setenv(disableDirectPathEnvVar, "")
-		opts := &Options{
-			InternalOptions: &InternalOptions{
-				EnableDirectPath:                    true,
-				EnableDirectPathXds:                 true,
-				EnableDirectPathXdsOverInterconnect: true,
+			endpoint: "storage.apis-tpclp.goog:443",
+		},
+		{
+			name: "lookalike domain rejected for interconnect DirectPath",
+			opts: &Options{
+				InternalOptions: &InternalOptions{
+					EnableDirectPath:                    true,
+					EnableDirectPathXds:                 true,
+					EnableDirectPathXdsOverInterconnect: true,
+				},
 			},
-		}
-		_, got, err := configureDirectPath(nil, opts, "storage.googleapis.com.evil.com:443", creds, nil)
-		if err != nil {
-			t.Fatalf("configureDirectPath() unexpected error: %v", err)
-		}
-		if got != "storage.googleapis.com.evil.com:443" {
-			t.Errorf("configureDirectPath() = %q, want %q", got, "storage.googleapis.com.evil.com:443")
-		}
-	})
+			endpoint: "storage.googleapis.com.evil.com:443",
+		},
+		{
+			// The env var disables interconnect even for an application-supplied
+			// storage-direct endpoint. Regular DirectPath then requires a GCE
+			// metadata-server token, which staticTP is not, so the caller's dial
+			// options and endpoint are returned unchanged and no authority
+			// override is added either.
+			name:            "env false preserves original storage-direct endpoint",
+			interconnectEnv: "false",
+			opts: &Options{
+				InternalOptions: &InternalOptions{
+					EnableDirectPath:    true,
+					EnableDirectPathXds: true,
+				},
+			},
+			endpoint: "storage-direct.googleapis.com:443",
+		},
+		{
+			// Only google-c2p:/// and dns:/// targets qualify for DirectPath, so
+			// the experimental scheme is passed through without an authority
+			// override.
+			name: "google-c2p-experimental scheme preserves original endpoint",
+			opts: &Options{
+				InternalOptions: &InternalOptions{
+					EnableDirectPath:                    true,
+					EnableDirectPathXds:                 true,
+					EnableDirectPathXdsOverInterconnect: true,
+				},
+			},
+			endpoint: "google-c2p-experimental:///storage-direct.googleapis.com?force-xds",
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Setenv(disableDirectPathEnvVar, tc.disableEnv)
+			// t.Setenv cannot unset a variable; an empty value fails
+			// strconv.ParseBool and falls back to the option and endpoint,
+			// matching an unset variable.
+			t.Setenv(enableDirectPathXdsOverInterconnectEnvVar, tc.interconnectEnv)
+			grpcOpts, got, err := configureDirectPath(nil, tc.opts, tc.endpoint, creds, nil)
+			if err != nil {
+				t.Fatalf("configureDirectPath(%q) unexpected error: %v", tc.endpoint, err)
+			}
+			if got != tc.endpoint {
+				t.Errorf("configureDirectPath(%q) = %q, want %q", tc.endpoint, got, tc.endpoint)
+			}
+			if len(grpcOpts) != 0 {
+				t.Errorf("configureDirectPath(%q) len(grpcOpts) = %d, want 0", tc.endpoint, len(grpcOpts))
+			}
+		})
+	}
 }
 
 func TestLogDirectPathMisconfig_Interconnect(t *testing.T) {
@@ -540,8 +767,8 @@ func TestConfigureDirectPath_PropagatesMetadataAndUniverseDomain(t *testing.T) {
 	if gotEndpoint != "google-c2p:///storage-direct.googleapis.com?force-xds" {
 		t.Errorf("gotEndpoint = %q, want google-c2p:///storage-direct.googleapis.com?force-xds", gotEndpoint)
 	}
-	if len(grpcOpts) < 2 {
-		t.Fatalf("configureDirectPath() returned %d dial options, want >= 2", len(grpcOpts))
+	if len(grpcOpts) < 1 {
+		t.Fatalf("configureDirectPath() returned %d dial options, want >= 1", len(grpcOpts))
 	}
 
 	// Verify grpcCredentialsProvider correctly propagates metadata and clientUniverseDomain
