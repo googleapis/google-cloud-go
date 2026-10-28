@@ -61,6 +61,8 @@ const (
 	User_CLOUD_IAM_WORKFORCE_IDENTITY User_SqlUserType = 6
 	// Microsoft Entra ID user.
 	User_ENTRAID_USER User_SqlUserType = 7
+	// Active Directory user.
+	User_ACTIVE_DIRECTORY_USER User_SqlUserType = 8
 )
 
 // Enum value maps for User_SqlUserType.
@@ -74,6 +76,7 @@ var (
 		5: "CLOUD_IAM_GROUP_SERVICE_ACCOUNT",
 		6: "CLOUD_IAM_WORKFORCE_IDENTITY",
 		7: "ENTRAID_USER",
+		8: "ACTIVE_DIRECTORY_USER",
 	}
 	User_SqlUserType_value = map[string]int32{
 		"BUILT_IN":                        0,
@@ -84,6 +87,7 @@ var (
 		"CLOUD_IAM_GROUP_SERVICE_ACCOUNT": 5,
 		"CLOUD_IAM_WORKFORCE_IDENTITY":    6,
 		"ENTRAID_USER":                    7,
+		"ACTIVE_DIRECTORY_USER":           8,
 	}
 )
 
@@ -1172,7 +1176,7 @@ const file_google_cloud_sql_v1beta4_cloud_sql_users_proto_rawDesc = "" +
 	"\x1cenable_password_verification\x18\x05 \x01(\bR\x1aenablePasswordVerification\"~\n" +
 	"\x0ePasswordStatus\x12\x16\n" +
 	"\x06locked\x18\x01 \x01(\bR\x06locked\x12T\n" +
-	"\x18password_expiration_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x16passwordExpirationTime\"\xb2\t\n" +
+	"\x18password_expiration_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x16passwordExpirationTime\"\xcd\t\n" +
 	"\x04User\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12\x1a\n" +
 	"\bpassword\x18\x02 \x01(\tR\bpassword\x12\x12\n" +
@@ -1189,7 +1193,7 @@ const file_google_cloud_sql_v1beta4_cloud_sql_users_proto_rawDesc = "" +
 	"\n" +
 	"iam_status\x18\x0e \x01(\x0e2(.google.cloud.sql.v1beta4.User.IamStatusH\x02R\tiamStatus\x88\x01\x01\x12+\n" +
 	"\x0edatabase_roles\x18\x0f \x03(\tB\x04\xe2A\x01\x01R\rdatabaseRoles\x12'\n" +
-	"\fserver_roles\x18\x10 \x03(\tB\x04\xe2A\x01\x01R\vserverRoles\"\xd6\x01\n" +
+	"\fserver_roles\x18\x10 \x03(\tB\x04\xe2A\x01\x01R\vserverRoles\"\xf1\x01\n" +
 	"\vSqlUserType\x12\f\n" +
 	"\bBUILT_IN\x10\x00\x12\x12\n" +
 	"\x0eCLOUD_IAM_USER\x10\x01\x12\x1d\n" +
@@ -1198,7 +1202,8 @@ const file_google_cloud_sql_v1beta4_cloud_sql_users_proto_rawDesc = "" +
 	"\x14CLOUD_IAM_GROUP_USER\x10\x04\x12#\n" +
 	"\x1fCLOUD_IAM_GROUP_SERVICE_ACCOUNT\x10\x05\x12 \n" +
 	"\x1cCLOUD_IAM_WORKFORCE_IDENTITY\x10\x06\x12\x10\n" +
-	"\fENTRAID_USER\x10\a\"|\n" +
+	"\fENTRAID_USER\x10\a\x12\x19\n" +
+	"\x15ACTIVE_DIRECTORY_USER\x10\b\"|\n" +
 	"\x10DualPasswordType\x12\"\n" +
 	"\x1eDUAL_PASSWORD_TYPE_UNSPECIFIED\x10\x00\x12\x1b\n" +
 	"\x17NO_MODIFY_DUAL_PASSWORD\x10\x01\x12\x14\n" +

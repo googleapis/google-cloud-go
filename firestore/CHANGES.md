@@ -1,5 +1,13 @@
 # Changes
 
+## [1.29.1](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.29.0...firestore/v1.29.1) (2026-10-28)
+
+
+### Bug Fixes
+
+* Adds additional validation for REST RPC requests ([#20753](https://github.com/googleapis/google-cloud-go/issues/20753)) ([7827181](https://github.com/googleapis/google-cloud-go/commit/7827181e7cb653fb69645c538b162b2c7490b0bb))
+* **firestore:** Set x-goog-is-transaction header for atomic transaction pipelines. ([#20744](https://github.com/googleapis/google-cloud-go/issues/20744)) ([932ca4a](https://github.com/googleapis/google-cloud-go/commit/932ca4a554702e43b5823e0760943eb954d7eb57))
+
 ## [1.29.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.28.0...firestore/v1.29.0) (2026-10-22)
 
 

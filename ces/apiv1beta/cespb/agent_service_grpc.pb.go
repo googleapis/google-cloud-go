@@ -82,6 +82,7 @@ const (
 	AgentService_ListAppVersions_FullMethodName          = "/google.cloud.ces.v1beta.AgentService/ListAppVersions"
 	AgentService_GetAppVersion_FullMethodName            = "/google.cloud.ces.v1beta.AgentService/GetAppVersion"
 	AgentService_CreateAppVersion_FullMethodName         = "/google.cloud.ces.v1beta.AgentService/CreateAppVersion"
+	AgentService_UpdateAppVersion_FullMethodName         = "/google.cloud.ces.v1beta.AgentService/UpdateAppVersion"
 	AgentService_DeleteAppVersion_FullMethodName         = "/google.cloud.ces.v1beta.AgentService/DeleteAppVersion"
 	AgentService_RestoreAppVersion_FullMethodName        = "/google.cloud.ces.v1beta.AgentService/RestoreAppVersion"
 	AgentService_GenerateAppResource_FullMethodName      = "/google.cloud.ces.v1beta.AgentService/GenerateAppResource"
@@ -185,6 +186,8 @@ type AgentServiceClient interface {
 	GetAppVersion(ctx context.Context, in *GetAppVersionRequest, opts ...grpc.CallOption) (*AppVersion, error)
 	// Creates a new app version in the given app.
 	CreateAppVersion(ctx context.Context, in *CreateAppVersionRequest, opts ...grpc.CallOption) (*AppVersion, error)
+	// Updates the specified app version.
+	UpdateAppVersion(ctx context.Context, in *UpdateAppVersionRequest, opts ...grpc.CallOption) (*AppVersion, error)
 	// Deletes the specified app version.
 	DeleteAppVersion(ctx context.Context, in *DeleteAppVersionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Restores the specified app version.
@@ -621,6 +624,15 @@ func (c *agentServiceClient) CreateAppVersion(ctx context.Context, in *CreateApp
 	return out, nil
 }
 
+func (c *agentServiceClient) UpdateAppVersion(ctx context.Context, in *UpdateAppVersionRequest, opts ...grpc.CallOption) (*AppVersion, error) {
+	out := new(AppVersion)
+	err := c.cc.Invoke(ctx, AgentService_UpdateAppVersion_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *agentServiceClient) DeleteAppVersion(ctx context.Context, in *DeleteAppVersionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, AgentService_DeleteAppVersion_FullMethodName, in, out, opts...)
@@ -762,6 +774,8 @@ type AgentServiceServer interface {
 	GetAppVersion(context.Context, *GetAppVersionRequest) (*AppVersion, error)
 	// Creates a new app version in the given app.
 	CreateAppVersion(context.Context, *CreateAppVersionRequest) (*AppVersion, error)
+	// Updates the specified app version.
+	UpdateAppVersion(context.Context, *UpdateAppVersionRequest) (*AppVersion, error)
 	// Deletes the specified app version.
 	DeleteAppVersion(context.Context, *DeleteAppVersionRequest) (*emptypb.Empty, error)
 	// Restores the specified app version.
@@ -917,6 +931,9 @@ func (UnimplementedAgentServiceServer) GetAppVersion(context.Context, *GetAppVer
 }
 func (UnimplementedAgentServiceServer) CreateAppVersion(context.Context, *CreateAppVersionRequest) (*AppVersion, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAppVersion not implemented")
+}
+func (UnimplementedAgentServiceServer) UpdateAppVersion(context.Context, *UpdateAppVersionRequest) (*AppVersion, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateAppVersion not implemented")
 }
 func (UnimplementedAgentServiceServer) DeleteAppVersion(context.Context, *DeleteAppVersionRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteAppVersion not implemented")
@@ -1773,6 +1790,24 @@ func _AgentService_CreateAppVersion_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AgentService_UpdateAppVersion_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateAppVersionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AgentServiceServer).UpdateAppVersion(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AgentService_UpdateAppVersion_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AgentServiceServer).UpdateAppVersion(ctx, req.(*UpdateAppVersionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AgentService_DeleteAppVersion_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeleteAppVersionRequest)
 	if err := dec(in); err != nil {
@@ -2053,6 +2088,10 @@ var AgentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateAppVersion",
 			Handler:    _AgentService_CreateAppVersion_Handler,
+		},
+		{
+			MethodName: "UpdateAppVersion",
+			Handler:    _AgentService_UpdateAppVersion_Handler,
 		},
 		{
 			MethodName: "DeleteAppVersion",

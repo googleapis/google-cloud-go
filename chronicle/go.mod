@@ -3,6 +3,7 @@ module cloud.google.com/go/chronicle
 go 1.26.0
 
 require (
+	cloud.google.com/go/backstory v0.2.0
 	cloud.google.com/go/longrunning v1.3.0
 	github.com/googleapis/gax-go/v2 v2.27.0
 	go.opentelemetry.io/otel/trace v1.47.0
