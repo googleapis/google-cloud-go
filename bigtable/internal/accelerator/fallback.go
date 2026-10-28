@@ -38,6 +38,7 @@ import (
 type classicFallback struct {
 	c           *bigtable.Client
 	scopePrefix string // "projects/<project>/instances/<instance>/"
+	appProfile  string
 	mu          sync.Mutex
 	tables      map[string]bigtable.TableAPI // keyed by full V2 resource name
 }
@@ -56,6 +57,7 @@ func newClassicFallback(ctx context.Context, project, instance, appProfile strin
 	return &classicFallback{
 		c:           c,
 		scopePrefix: scopePrefixFor(project, instance),
+		appProfile:  appProfile,
 		tables:      make(map[string]bigtable.TableAPI),
 	}, nil
 }
@@ -121,10 +123,22 @@ func (f *classicFallback) buildTableHandle(res adapters.Resource) (bigtable.Tabl
 	}
 }
 
+func (f *classicFallback) validateAppProfile(reqAppProfile string) error {
+	if reqAppProfile != "" && reqAppProfile != f.appProfile {
+		return status.Errorf(codes.InvalidArgument,
+			"accelerator fallback: request app_profile_id %q does not match channel app_profile_id %q",
+			reqAppProfile, f.appProfile)
+	}
+	return nil
+}
+
 // ReadRow executes a single-row read via the classic bigtable.Client and
 // returns a ReadRowsResponse (possibly with no chunks for a missing row).
 // req must have already passed validateSingleRowReadRequest.
 func (f *classicFallback) ReadRow(ctx context.Context, res adapters.Resource, req *v2pb.ReadRowsRequest) (*v2pb.ReadRowsResponse, error) {
+	if err := f.validateAppProfile(req.GetAppProfileId()); err != nil {
+		return nil, err
+	}
 	// Fetch the table handle first to fail fast on resource mismatches (wrong
 	// project/instance, unknown resource kind) before doing key extraction.
 	tbl, err := f.tableAPI(res)
@@ -158,6 +172,9 @@ func (f *classicFallback) ReadRow(ctx context.Context, res adapters.Resource, re
 
 // MutateRow executes a MutateRow via the classic bigtable.Client.
 func (f *classicFallback) MutateRow(ctx context.Context, res adapters.Resource, req *v2pb.MutateRowRequest) error {
+	if err := f.validateAppProfile(req.GetAppProfileId()); err != nil {
+		return err
+	}
 	tbl, err := f.tableAPI(res)
 	if err != nil {
 		return err

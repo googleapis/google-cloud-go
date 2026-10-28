@@ -79,7 +79,13 @@ type ReadRowResponseAdapter struct{}
 // boundary markers. It returns nil when the input or its row is nil, or when the
 // row contains no cells.
 func (a *ReadRowResponseAdapter) Adapt(from *v2pb.SessionReadRowResponse) (*v2pb.ReadRowsResponse, error) {
-	if from == nil || from.Row == nil {
+	if from == nil {
+		return nil, nil
+	}
+	if from.Row == nil {
+		if from.Stats != nil {
+			return &v2pb.ReadRowsResponse{RequestStats: from.Stats}, nil
+		}
 		return nil, nil
 	}
 	row := from.Row
@@ -113,8 +119,14 @@ func (a *ReadRowResponseAdapter) Adapt(from *v2pb.SessionReadRowResponse) (*v2pb
 		}
 	}
 	if len(chunks) == 0 {
+		if from.Stats != nil {
+			return &v2pb.ReadRowsResponse{RequestStats: from.Stats}, nil
+		}
 		return nil, nil
 	}
 	chunks[len(chunks)-1].RowStatus = &v2pb.ReadRowsResponse_CellChunk_CommitRow{CommitRow: true}
-	return &v2pb.ReadRowsResponse{Chunks: chunks}, nil
+	return &v2pb.ReadRowsResponse{
+		Chunks:       chunks,
+		RequestStats: from.Stats,
+	}, nil
 }

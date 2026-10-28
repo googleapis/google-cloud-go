@@ -419,3 +419,42 @@ func TestReadRowResponseAdapter_FamilyWithNoColumns(t *testing.T) {
 		{[]byte("rk"), "cf1", []byte("q"), 1, "v", true},
 	})
 }
+
+func TestReadRowResponseAdapter_PreservesRequestStats(t *testing.T) {
+	a := &ReadRowResponseAdapter{}
+	stats := &v2pb.RequestStats{
+		StatsView: &v2pb.RequestStats_FullReadStatsView{
+			FullReadStatsView: &v2pb.FullReadStatsView{
+				ReadIterationStats: &v2pb.ReadIterationStats{
+					RowsSeenCount:      1,
+					RowsReturnedCount:  1,
+					CellsSeenCount:     2,
+					CellsReturnedCount: 2,
+				},
+			},
+		},
+	}
+	resp := &v2pb.SessionReadRowResponse{
+		Row: &v2pb.Row{
+			Key: []byte("rk"),
+			Families: []*v2pb.Family{{
+				Name: "cf1",
+				Columns: []*v2pb.Column{{
+					Qualifier: []byte("q"),
+					Cells:     []*v2pb.Cell{oneCell(1, "v")},
+				}},
+			}},
+		},
+		Stats: stats,
+	}
+	got, err := a.Adapt(resp)
+	if err != nil {
+		t.Fatalf("Adapt error: %v", err)
+	}
+	if got.GetRequestStats() == nil {
+		t.Fatal("got.GetRequestStats() = nil; want non-nil")
+	}
+	if got.GetRequestStats().GetFullReadStatsView().GetReadIterationStats().GetCellsReturnedCount() != 2 {
+		t.Errorf("CellsReturnedCount = %d; want 2", got.GetRequestStats().GetFullReadStatsView().GetReadIterationStats().GetCellsReturnedCount())
+	}
+}

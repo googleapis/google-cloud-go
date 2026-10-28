@@ -141,6 +141,7 @@ var newSessionClient = func(
 type Channel struct {
 	sc            session.Client
 	scopePrefix   string
+	appProfile    string
 	sessionTables *session.TableCache
 }
 
@@ -183,6 +184,7 @@ func NewChannel(
 	return &Channel{
 		sc:            sc,
 		scopePrefix:   scopePrefixFor(project, instance),
+		appProfile:    appProfile,
 		sessionTables: session.NewTableCache(session.DefaultTableCacheTTL, session.DefaultTableCacheSweepInterval, nil /* time.Now */),
 	}, nil
 }
@@ -251,6 +253,15 @@ func (c *Channel) Invoke(ctx context.Context, method string, args, reply interfa
 	}
 }
 
+func (c *Channel) validateAppProfile(reqAppProfile string) error {
+	if reqAppProfile != "" && reqAppProfile != c.appProfile {
+		return status.Errorf(codes.InvalidArgument,
+			"accelerator: request app_profile_id %q does not match channel app_profile_id %q",
+			reqAppProfile, c.appProfile)
+	}
+	return nil
+}
+
 func (c *Channel) mutateRowImpl(ctx context.Context, args, reply interface{}) error {
 	reqV2, ok := args.(*v2pb.MutateRowRequest)
 	if !ok {
@@ -259,6 +270,9 @@ func (c *Channel) mutateRowImpl(ctx context.Context, args, reply interface{}) er
 	respV2, ok := reply.(*v2pb.MutateRowResponse)
 	if !ok {
 		return status.Errorf(codes.Internal, "accelerator: unexpected reply type %T for MutateRow", reply)
+	}
+	if err := c.validateAppProfile(reqV2.GetAppProfileId()); err != nil {
+		return err
 	}
 
 	reqAdapter := adapters.DefaultMutateRowRequestAdapter
@@ -376,6 +390,11 @@ func (s *readRowsClientStream) SendMsg(m any) error {
 	if err := validateSingleRowReadRequest(req); err != nil {
 		return err
 	}
+	if s.c != nil {
+		if err := s.c.validateAppProfile(req.GetAppProfileId()); err != nil {
+			return err
+		}
+	}
 	s.req = req
 	s.sent = true
 	return nil
@@ -465,6 +484,19 @@ func (s *readRowsClientStream) terminate(err error) error {
 func validateSingleRowReadRequest(req *v2pb.ReadRowsRequest) error {
 	if req == nil {
 		return status.Error(codes.InvalidArgument, "accelerator: nil ReadRowsRequest")
+	}
+	if req.RowsLimit < 0 {
+		return status.Error(codes.InvalidArgument, "accelerator: negative rows_limit not allowed")
+	}
+	if req.RowsLimit > 1 {
+		return status.Error(codes.Unimplemented, "accelerator: rows_limit > 1 not supported")
+	}
+	switch req.RequestStatsView {
+	case v2pb.ReadRowsRequest_REQUEST_STATS_VIEW_UNSPECIFIED,
+		v2pb.ReadRowsRequest_REQUEST_STATS_NONE,
+		v2pb.ReadRowsRequest_REQUEST_STATS_FULL:
+	default:
+		return status.Errorf(codes.Unimplemented, "accelerator: unsupported request_stats_view %v", req.RequestStatsView)
 	}
 	if req.Reversed {
 		return status.Error(codes.Unimplemented, "accelerator: reversed ReadRows not supported")
