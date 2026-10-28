@@ -244,16 +244,25 @@ func (t *trackingTransport) RoundTrip(req *http.Request) (*http.Response, error)
 
 	features := t.features | featureAttributes(ctx)
 	// Merge all existing headers for this key.
-	features |= mergeFeatureAttributes(req.Header.Values(featureTrackerHeaderName))
-	if features > 0 {
+	existing := req.Header.Values(featureTrackerHeaderName)
+	features |= mergeFeatureAttributes(existing)
+	outReq := req
+	if features > 0 || len(existing) > 0 {
+		// This transport owns the feature header: it is always rewritten from the
+		// merged bitmask so that only a single, well-formed value is sent, and it
+		// is removed entirely when there is nothing to report (e.g. a value set on
+		// the context by a caller for an unrelated client must not be forwarded).
 		// Clone the request to avoid modifying the original one.
-		req = req.Clone(ctx)
-		req.Header.Set(featureTrackerHeaderName, encodeUint32(features))
+		outReq = req.Clone(ctx)
+		if features > 0 {
+			outReq.Header.Set(featureTrackerHeaderName, encodeFeatureMask(features))
+		} else {
+			outReq.Header.Del(featureTrackerHeaderName)
+		}
 	} else if isChunk {
-		req = req.WithContext(ctx)
+		outReq = req.WithContext(ctx)
 	}
-
-	resp, err := baseRT.RoundTrip(req)
+	resp, err := baseRT.RoundTrip(outReq)
 	if isChunk {
 		finishSpan(ctx, httpUploadChunkError(resp, err))
 	} else if resp != nil {
@@ -1633,8 +1642,9 @@ func readerReopen(ctx context.Context, header http.Header, params *newRangeReade
 			// With "Content-Encoding": "gzip" aka decompressive transcoding, GCS serves
 			// back the whole file regardless of the range count passed in as per:
 			//      https://cloud.google.com/storage/docs/transcoding#range,
-			// thus we have to manually move the body forward by seen bytes.
-			if decompressiveTranscoding(res) && seen > 0 {
+			// thus we have to manually move the body forward by seen bytes when a
+			// full-object (non-206) response is returned.
+			if decompressiveTranscoding(res) && seen > 0 && res.StatusCode != http.StatusPartialContent {
 				_, _ = io.CopyN(io.Discard, res.Body, seen)
 			}
 
