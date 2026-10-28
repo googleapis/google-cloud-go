@@ -239,7 +239,10 @@ func (t *trackingTransport) RoundTrip(req *http.Request) (*http.Response, error)
 	if baseRT == nil {
 		baseRT = http.DefaultTransport
 	}
-	features := t.features | featureAttributes(req.Context())
+	// Start a Storage.UploadChunk span if req is a resumable upload chunk request.
+	ctx, isChunk := startHTTPUploadChunkSpan(req.Context(), req.Header)
+
+	features := t.features | featureAttributes(ctx)
 	// Merge all existing headers for this key.
 	existing := req.Header.Values(featureTrackerHeaderName)
 	features |= mergeFeatureAttributes(existing)
@@ -250,18 +253,22 @@ func (t *trackingTransport) RoundTrip(req *http.Request) (*http.Response, error)
 		// is removed entirely when there is nothing to report (e.g. a value set on
 		// the context by a caller for an unrelated client must not be forwarded).
 		// Clone the request to avoid modifying the original one.
-		outReq = req.Clone(req.Context())
+		outReq = req.Clone(ctx)
 		if features > 0 {
 			outReq.Header.Set(featureTrackerHeaderName, encodeFeatureMask(features))
 		} else {
 			outReq.Header.Del(featureTrackerHeaderName)
 		}
+	} else if isChunk {
+		outReq = req.WithContext(ctx)
 	}
 	resp, err := baseRT.RoundTrip(outReq)
-	if resp != nil {
-		recordUploadIDFromHeader(req.Context(), resp.Header)
-		recordHTTPWritePayload(req, resp) // Payload offset and size for tracing.
+	if isChunk {
+		finishSpan(ctx, httpUploadChunkError(resp, err))
+	} else if resp != nil {
+		recordUploadIDFromHeader(ctx, resp.Header)
 	}
+	recordHTTPWritePayload(req, resp) // Payload offset and size for tracing.
 	return resp, err
 }
 
@@ -1187,10 +1194,12 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 		if attrs.MD5 != nil {
 			rawObj.Md5Hash = base64.StdEncoding.EncodeToString(attrs.MD5)
 		}
+		// Attach the aligned chunk size so trackingTransport can record Storage.UploadChunk spans.
+		uploadCtx := withUploadChunkSize(params.ctx, params.chunkSize)
 		call := c.raw.Objects.Insert(params.bucket, rawObj).
 			Media(pr, mediaOpts...).
 			Projection("full").
-			Context(params.ctx).
+			Context(uploadCtx).
 			Name(params.attrs.Name)
 		call.ProgressUpdater(func(n, _ int64) { progress(n) })
 

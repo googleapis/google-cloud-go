@@ -19,9 +19,11 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"math"
 	"net/http"
 	"net/url"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
 	"sync"
@@ -53,6 +55,8 @@ const (
 	bucketContextKey   traceContextKey = "bucketName"
 	isBucketContextKey traceContextKey = "isBucketOp"
 	traceAttributesKey traceContextKey = "traceAttributes"
+	uploadChunkSizeKey traceContextKey = "uploadChunkSize"
+	grpcUploadChunkKey traceContextKey = "grpcUploadChunk"
 	payloadAttemptKey  traceContextKey = "payloadAttempt"
 	writerBytesKey     traceContextKey = "writerBytes"
 )
@@ -67,13 +71,14 @@ func traceAttributesFromContext(ctx context.Context) ([]attribute.KeyValue, bool
 }
 
 const (
-	defaultTracerName = "cloud.google.com/go/storage"
-	gcpClientArtifact = "cloud.google.com/go/storage"
-	gcpClientService  = "storage"
-	storageURIAttrKey = "gcp.storage.uri"
-
-	payloadOffsetAttr    = "gcp.storage.payload.offset"
-	payloadSizeBytesAttr = "gcp.storage.payload.size_bytes"
+	defaultTracerName     = "cloud.google.com/go/storage"
+	gcpClientArtifact     = "cloud.google.com/go/storage"
+	gcpClientService      = "storage"
+	storageURIAttrKey     = "gcp.storage.uri"
+	uploadChunkSpanName   = "Storage.UploadChunk"
+	uploadChunkNumberAttr = "gcp.storage.upload.chunk.number"
+	payloadOffsetAttr     = "gcp.storage.payload.offset"
+	payloadSizeBytesAttr  = "gcp.storage.payload.size_bytes"
 )
 
 // rpcSystemNameKey is the OTel semantic convention attribute key for the RPC
@@ -171,7 +176,9 @@ func destinationResourceName(resource string) string {
 // If the context.Context provided in `ctx` contains a span then the newly-created
 // span will be a child of that span, otherwise it will be a root span.
 func startSpan(ctx context.Context, name string, opts ...trace.SpanStartOption) (context.Context, trace.Span) {
-	ctx = context.WithValue(ctx, apiMethodKey{}, name)
+	if ctx.Value(apiMethodKey{}) == nil {
+		ctx = context.WithValue(ctx, apiMethodKey{}, name)
+	}
 	name = appendPackageName(name)
 	// TODO: Remove internalTrace upon experimental launch.
 	if !isOTelTracingDevEnabled() {
@@ -329,6 +336,9 @@ type retryAttempt struct {
 	// number is the attempt number, matching the gccl-attempt-count value sent
 	// to the service. It restarts at 1 when run is given withProgressReset.
 	number int
+	// parentCtx is the context passed to run, whose active span is the
+	// operation span.
+	parentCtx context.Context
 	// parent is the span context of the span in run's ctx, usually the
 	// operation span. It lets attemptStatsHandler tell the transport's
 	// attempt span apart from it.
@@ -342,13 +352,15 @@ func withRetryAttempt(ctx context.Context, attempt int) context.Context {
 		return ctx
 	}
 	return context.WithValue(ctx, retryAttemptKey{}, retryAttempt{
-		number: attempt,
-		parent: trace.SpanContextFromContext(ctx),
+		number:    attempt,
+		parentCtx: ctx,
+		parent:    trace.SpanContextFromContext(ctx),
 	})
 }
 
 // attemptStatsHandler records gcp.client.retry.attempt_number and the payload
-// offset and size on the transport's gRPC attempt span.
+// offset and size on the transport's gRPC attempt span, and Storage.UploadChunk
+// spans for resumable BidiWriteObject streams.
 type attemptStatsHandler struct{}
 
 // payloadAttempt tracks the object bytes sent or received on one gRPC stream.
@@ -366,7 +378,7 @@ func isAttemptSpan(span trace.Span, parent trace.SpanContext) bool {
 }
 
 // TagRPC implements stats.Handler.
-func (attemptStatsHandler) TagRPC(ctx context.Context, _ *stats.RPCTagInfo) context.Context {
+func (attemptStatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) context.Context {
 	attempt, ok := ctx.Value(retryAttemptKey{}).(retryAttempt)
 	if !ok {
 		return ctx
@@ -374,26 +386,54 @@ func (attemptStatsHandler) TagRPC(ctx context.Context, _ *stats.RPCTagInfo) cont
 	// Without a transport attempt span (for example because telemetry is
 	// disabled), the span in ctx is the operation span and is not tagged.
 	span := trace.SpanFromContext(ctx)
-	if !isAttemptSpan(span, attempt.parent) {
-		return ctx
+	if isAttemptSpan(span, attempt.parent) {
+		span.SetAttributes(attribute.Int("gcp.client.retry.attempt_number", attempt.number))
+		ctx = context.WithValue(ctx, payloadAttemptKey, &payloadAttempt{span: span})
 	}
-	span.SetAttributes(attribute.Int("gcp.client.retry.attempt_number", attempt.number))
-	return context.WithValue(ctx, payloadAttemptKey, &payloadAttempt{span: span})
+	if chunkSize, ok := ctx.Value(uploadChunkSizeKey).(int64); ok && chunkSize > 0 &&
+		info != nil && strings.HasSuffix(info.FullMethodName, "/BidiWriteObject") {
+		ctx = context.WithValue(ctx, grpcUploadChunkKey, &grpcUploadChunkTracker{
+			parentCtx: attempt.parentCtx,
+			chunkSize: chunkSize,
+		})
+	}
+	return ctx
 }
 
 // HandleRPC implements stats.Handler. It records outgoing write payloads and
 // read request offsets as each message is sent, because the transport's
-// OpenTelemetry handler ends the span before this handler sees stats.End.
+// OpenTelemetry handler ends the attempt span before this handler sees
+// stats.End.
 func (attemptStatsHandler) HandleRPC(ctx context.Context, rs stats.RPCStats) {
-	pa, ok := ctx.Value(payloadAttemptKey).(*payloadAttempt)
+	if pa, ok := ctx.Value(payloadAttemptKey).(*payloadAttempt); ok {
+		if out, ok := rs.(*stats.OutPayload); ok && out.Client {
+			pa.recordRequest(out.Payload)
+		}
+	}
+	ct, ok := ctx.Value(grpcUploadChunkKey).(*grpcUploadChunkTracker)
 	if !ok {
 		return
 	}
-	out, ok := rs.(*stats.OutPayload)
-	if !ok || !out.Client {
-		return
+	switch s := rs.(type) {
+	case *stats.OutPayload:
+		if req, ok := s.Payload.(*storagepb.BidiWriteObjectRequest); ok && s.Client {
+			ct.onRequest(req)
+		}
+	case *stats.InPayload:
+		if resp, ok := s.Payload.(*storagepb.BidiWriteObjectResponse); ok && s.Client {
+			ct.onResponse(resp)
+		}
+	case *stats.End:
+		if s.Client {
+			ct.onEnd(s.Error)
+		}
 	}
-	switch req := out.Payload.(type) {
+}
+
+// recordRequest records the offset, and for writes the data, of a request
+// sent on the stream.
+func (pa *payloadAttempt) recordRequest(m any) {
+	switch req := m.(type) {
 	case *storagepb.BidiWriteObjectRequest:
 		pa.recordWrite(req)
 	case *storagepb.ReadObjectRequest:
@@ -566,6 +606,184 @@ func isOneshotUpload(w *Writer) bool {
 		return true
 	}
 	return w.opened && w.closed && w.bytesWritten.Load() < int64(gRPCChunkSize(w.ChunkSize))
+}
+
+// withUploadChunkSize attaches the 256 KiB-aligned chunk size to ctx for
+// resumable uploads when dev tracing is enabled.
+func withUploadChunkSize(ctx context.Context, chunkSize int) context.Context {
+	if _, ok := recordingSpan(ctx); !ok || chunkSize <= 0 {
+		return ctx
+	}
+	return context.WithValue(ctx, uploadChunkSizeKey, int64(gRPCChunkSize(chunkSize)))
+}
+
+// uploadChunkSpan is the Storage.UploadChunk span of one logical chunk of a
+// gRPC resumable upload, which may be sent across several messages.
+type uploadChunkSpan struct {
+	ctx       context.Context
+	span      trace.Span
+	endOffset int64
+	sizeBytes int64
+	flushed   bool
+}
+
+func (s uploadChunkSpan) finish(err error) {
+	s.span.SetAttributes(attribute.Int64(payloadSizeBytesAttr, s.sizeBytes))
+	finishSpan(s.ctx, err)
+}
+
+// grpcUploadChunkTracker tracks Storage.UploadChunk spans for one gRPC
+// BidiWriteObject stream.
+type grpcUploadChunkTracker struct {
+	parentCtx context.Context
+	chunkSize int64
+
+	mu              sync.Mutex
+	spans           []uploadChunkSpan
+	lastEndOffset   int64
+	confirmedOffset int64
+	ended           bool
+	endErr          error
+}
+
+func (ct *grpcUploadChunkTracker) onRequest(req *storagepb.BidiWriteObjectRequest) {
+	var data *storagepb.ChecksummedData
+	if d, ok := req.GetData().(*storagepb.BidiWriteObjectRequest_ChecksummedData); ok && d != nil {
+		data = d.ChecksummedData
+	}
+	n := int64(len(data.GetContent()))
+	if n == 0 {
+		return
+	}
+	offset := req.GetWriteOffset()
+	number := offset/ct.chunkSize + 1
+	flushed := req.GetFlush() || req.GetFinishWrite()
+
+	ct.mu.Lock()
+	defer ct.mu.Unlock()
+	if ct.ended && number <= (ct.lastEndOffset+ct.chunkSize-1)/ct.chunkSize {
+		return
+	}
+	if offset+n > ct.lastEndOffset {
+		ct.lastEndOffset = offset + n
+	}
+	if m := len(ct.spans); m > 0 && !ct.spans[m-1].flushed {
+		ct.spans[m-1].endOffset = offset + n
+		ct.spans[m-1].sizeBytes += n
+		ct.spans[m-1].flushed = flushed
+	} else {
+		ctx, span := startSpan(ct.parentCtx, uploadChunkSpanName,
+			trace.WithAttributes(
+				attribute.Int64(uploadChunkNumberAttr, number),
+				attribute.Int64(payloadOffsetAttr, offset),
+			))
+		ct.spans = append(ct.spans, uploadChunkSpan{
+			ctx:       ctx,
+			span:      span,
+			endOffset: offset + n,
+			sizeBytes: n,
+			flushed:   flushed,
+		})
+	}
+	if ct.ended {
+		ct.finishAllLocked(ct.endErr)
+		return
+	}
+	ct.finishConfirmedLocked()
+}
+
+func (ct *grpcUploadChunkTracker) onResponse(resp *storagepb.BidiWriteObjectResponse) {
+	var flushOffset int64
+	switch ws := resp.GetWriteStatus().(type) {
+	case *storagepb.BidiWriteObjectResponse_PersistedSize:
+		flushOffset = ws.PersistedSize
+	case *storagepb.BidiWriteObjectResponse_Resource:
+		if ws.Resource != nil {
+			flushOffset = math.MaxInt64
+		}
+	default:
+		return
+	}
+	ct.mu.Lock()
+	defer ct.mu.Unlock()
+	if flushOffset > ct.confirmedOffset {
+		ct.confirmedOffset = flushOffset
+	}
+	ct.finishConfirmedLocked()
+}
+
+func (ct *grpcUploadChunkTracker) onEnd(err error) {
+	ct.mu.Lock()
+	defer ct.mu.Unlock()
+	ct.ended = true
+	ct.endErr = err
+	ct.finishAllLocked(err)
+}
+
+func (ct *grpcUploadChunkTracker) finishConfirmedLocked() {
+	i := 0
+	for i < len(ct.spans) && ct.spans[i].flushed && ct.confirmedOffset >= ct.spans[i].endOffset {
+		ct.spans[i].finish(nil)
+		i++
+	}
+	ct.spans = slices.Delete(ct.spans, 0, i)
+}
+
+func (ct *grpcUploadChunkTracker) finishAllLocked(err error) {
+	for _, s := range ct.spans {
+		s.finish(err)
+	}
+	ct.spans = nil
+}
+
+// startHTTPUploadChunkSpan starts a Storage.UploadChunk span for an HTTP
+// resumable upload chunk request when dev tracing is enabled.
+// A zero-byte finalization request ("bytes */<size>") does not upload a chunk
+// and returns false.
+func startHTTPUploadChunkSpan(ctx context.Context, h http.Header) (context.Context, bool) {
+	chunkSize, valid := ctx.Value(uploadChunkSizeKey).(int64)
+	if !valid || chunkSize <= 0 {
+		return ctx, false
+	}
+	rest, found := strings.CutPrefix(h.Get("Content-Range"), "bytes ")
+	if !found {
+		return ctx, false
+	}
+	rangePart, _, found := strings.Cut(rest, "/")
+	if !found {
+		return ctx, false
+	}
+	startStr, endStr, found := strings.Cut(rangePart, "-")
+	if !found {
+		return ctx, false
+	}
+	offset, err := strconv.ParseInt(startStr, 10, 64)
+	if err != nil || offset < 0 {
+		return ctx, false
+	}
+	end, err := strconv.ParseInt(endStr, 10, 64)
+	if err != nil || end < offset {
+		return ctx, false
+	}
+	ctx, _ = startSpan(ctx, uploadChunkSpanName,
+		trace.WithAttributes(
+			attribute.Int64(uploadChunkNumberAttr, offset/chunkSize+1),
+			attribute.Int64(payloadOffsetAttr, offset),
+			attribute.Int64(payloadSizeBytesAttr, end-offset+1),
+		))
+	return ctx, true
+}
+
+// httpUploadChunkError returns the error to record on an HTTP
+// Storage.UploadChunk span for a RoundTrip result.
+func httpUploadChunkError(resp *http.Response, err error) error {
+	if err != nil {
+		return err
+	}
+	if resp != nil && (resp.StatusCode < 200 || resp.StatusCode > 299) && resp.StatusCode != 308 {
+		return &googleapi.Error{Code: resp.StatusCode, Message: http.StatusText(resp.StatusCode)}
+	}
+	return nil
 }
 
 // tracedTokenProvider records an Auth.RefreshAccessToken span for token fetches
