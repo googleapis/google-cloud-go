@@ -553,6 +553,21 @@ type Message struct {
 	// authentication]
 	// (https://developers.google.com/workspace/chat/authenticate-authorize-chat-app).
 	AccessoryWidgets []*AccessoryWidget `protobuf:"bytes,44,rep,name=accessory_widgets,json=accessoryWidgets,proto3" json:"accessory_widgets,omitempty"`
+	// Optional. Additional message components, including inline `citations`
+	// (where each citation is associated with a specific portion of the message
+	// text) and `cited_sources` (which are general references used to generate
+	// the response and are not directly linked to specific segments of the text).
+	//
+	// On input, provide `elements` when creating or updating a message. On
+	// output, both `citations` and `cited_sources` are populated when reading a
+	// message that contains them. Callers can read structured citation metadata
+	// from `elements`, while `formatted_text` also includes inline citation tags
+	// or source links depending on `markup_syntax`.
+	//
+	// These differ from `annotations`, which are output-only and offer
+	// supplementary information tied to message fragments or the entire message
+	// text.
+	Elements *Elements `protobuf:"bytes,45,opt,name=elements,proto3" json:"elements,omitempty"`
 	// Optional. Specifies how the server interprets the message `text` field
 	// content.
 	MarkupSyntax  MarkupSyntax `protobuf:"varint,47,opt,name=markup_syntax,json=markupSyntax,proto3,enum=google.chat.v1.MarkupSyntax" json:"markup_syntax,omitempty"`
@@ -776,6 +791,13 @@ func (x *Message) GetAttachedGifs() []*AttachedGif {
 func (x *Message) GetAccessoryWidgets() []*AccessoryWidget {
 	if x != nil {
 		return x.AccessoryWidgets
+	}
+	return nil
+}
+
+func (x *Message) GetElements() *Elements {
+	if x != nil {
+		return x.Elements
 	}
 	return nil
 }
@@ -2770,7 +2792,7 @@ var File_google_chat_v1_message_proto protoreflect.FileDescriptor
 
 const file_google_chat_v1_message_proto_rawDesc = "" +
 	"\n" +
-	"\x1cgoogle/chat/v1/message.proto\x12\x0egoogle.chat.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/apps/card/v1/card.proto\x1a\"google/chat/v1/action_status.proto\x1a\x1fgoogle/chat/v1/annotation.proto\x1a\x1fgoogle/chat/v1/attachment.proto\x1a%google/chat/v1/contextual_addon.proto\x1a&google/chat/v1/deletion_metadata.proto\x1a\"google/chat/v1/markup_syntax.proto\x1a google/chat/v1/matched_url.proto\x1a\x1dgoogle/chat/v1/reaction.proto\x1a\"google/chat/v1/slash_command.proto\x1a\x1agoogle/chat/v1/space.proto\x1a/google/chat/v1/space_notification_setting.proto\x1a\x19google/chat/v1/user.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb5\x0e\n" +
+	"\x1cgoogle/chat/v1/message.proto\x12\x0egoogle.chat.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/apps/card/v1/card.proto\x1a\"google/chat/v1/action_status.proto\x1a\x1fgoogle/chat/v1/annotation.proto\x1a\x1fgoogle/chat/v1/attachment.proto\x1a%google/chat/v1/contextual_addon.proto\x1a&google/chat/v1/deletion_metadata.proto\x1a\x1dgoogle/chat/v1/elements.proto\x1a\"google/chat/v1/markup_syntax.proto\x1a google/chat/v1/matched_url.proto\x1a\x1dgoogle/chat/v1/reaction.proto\x1a\"google/chat/v1/slash_command.proto\x1a\x1agoogle/chat/v1/space.proto\x1a/google/chat/v1/space_notification_setting.proto\x1a\x19google/chat/v1/user.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf1\x0e\n" +
 	"\aMessage\x12\x18\n" +
 	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x122\n" +
 	"\x06sender\x18\x02 \x01(\v2\x14.google.chat.v1.UserB\x04\xe2A\x01\x03R\x06sender\x12B\n" +
@@ -2804,7 +2826,8 @@ const file_google_chat_v1_message_proto_rawDesc = "" +
 	"\x11deletion_metadata\x18& \x01(\v2 .google.chat.v1.DeletionMetadataB\x04\xe2A\x01\x03R\x10deletionMetadata\x12c\n" +
 	"\x17quoted_message_metadata\x18' \x01(\v2%.google.chat.v1.QuotedMessageMetadataB\x04\xe2A\x01\x01R\x15quotedMessageMetadata\x12F\n" +
 	"\rattached_gifs\x18* \x03(\v2\x1b.google.chat.v1.AttachedGifB\x04\xe2A\x01\x03R\fattachedGifs\x12R\n" +
-	"\x11accessory_widgets\x18, \x03(\v2\x1f.google.chat.v1.AccessoryWidgetB\x04\xe2A\x01\x01R\x10accessoryWidgets\x12G\n" +
+	"\x11accessory_widgets\x18, \x03(\v2\x1f.google.chat.v1.AccessoryWidgetB\x04\xe2A\x01\x01R\x10accessoryWidgets\x12:\n" +
+	"\belements\x18- \x01(\v2\x18.google.chat.v1.ElementsB\x04\xe2A\x01\x01R\belements\x12G\n" +
 	"\rmarkup_syntax\x18/ \x01(\x0e2\x1c.google.chat.v1.MarkupSyntaxB\x04\xe2A\x01\x01R\fmarkupSyntax:C\xeaA@\n" +
 	"\x1bchat.googleapis.com/Message\x12!spaces/{space}/messages/{message}\"%\n" +
 	"\vAttachedGif\x12\x16\n" +
@@ -3004,13 +3027,14 @@ var file_google_chat_v1_message_proto_goTypes = []any{
 	(*MatchedUrl)(nil),                        // 37: google.chat.v1.MatchedUrl
 	(*EmojiReactionSummary)(nil),              // 38: google.chat.v1.EmojiReactionSummary
 	(*DeletionMetadata)(nil),                  // 39: google.chat.v1.DeletionMetadata
-	(MarkupSyntax)(0),                         // 40: google.chat.v1.MarkupSyntax
-	(*v1.ButtonList)(nil),                     // 41: google.apps.card.v1.ButtonList
-	(*fieldmaskpb.FieldMask)(nil),             // 42: google.protobuf.FieldMask
-	(*ActionStatus)(nil),                      // 43: google.chat.v1.ActionStatus
-	(*v1.Card)(nil),                           // 44: google.apps.card.v1.Card
-	(SpaceNotificationSetting_MuteSetting)(0), // 45: google.chat.v1.SpaceNotificationSetting.MuteSetting
-	(*v1.SelectionInput_SelectionItem)(nil),   // 46: google.apps.card.v1.SelectionInput.SelectionItem
+	(*Elements)(nil),                          // 40: google.chat.v1.Elements
+	(MarkupSyntax)(0),                         // 41: google.chat.v1.MarkupSyntax
+	(*v1.ButtonList)(nil),                     // 42: google.apps.card.v1.ButtonList
+	(*fieldmaskpb.FieldMask)(nil),             // 43: google.protobuf.FieldMask
+	(*ActionStatus)(nil),                      // 44: google.chat.v1.ActionStatus
+	(*v1.Card)(nil),                           // 45: google.apps.card.v1.Card
+	(SpaceNotificationSetting_MuteSetting)(0), // 46: google.chat.v1.SpaceNotificationSetting.MuteSetting
+	(*v1.SelectionInput_SelectionItem)(nil),   // 47: google.apps.card.v1.SelectionInput.SelectionItem
 }
 var file_google_chat_v1_message_proto_depIdxs = []int32{
 	30, // 0: google.chat.v1.Message.sender:type_name -> google.chat.v1.User
@@ -3032,44 +3056,45 @@ var file_google_chat_v1_message_proto_depIdxs = []int32{
 	7,  // 16: google.chat.v1.Message.quoted_message_metadata:type_name -> google.chat.v1.QuotedMessageMetadata
 	6,  // 17: google.chat.v1.Message.attached_gifs:type_name -> google.chat.v1.AttachedGif
 	12, // 18: google.chat.v1.Message.accessory_widgets:type_name -> google.chat.v1.AccessoryWidget
-	40, // 19: google.chat.v1.Message.markup_syntax:type_name -> google.chat.v1.MarkupSyntax
-	31, // 20: google.chat.v1.QuotedMessageMetadata.last_update_time:type_name -> google.protobuf.Timestamp
-	0,  // 21: google.chat.v1.QuotedMessageMetadata.quote_type:type_name -> google.chat.v1.QuotedMessageMetadata.QuoteType
-	8,  // 22: google.chat.v1.QuotedMessageMetadata.quoted_message_snapshot:type_name -> google.chat.v1.QuotedMessageSnapshot
-	9,  // 23: google.chat.v1.QuotedMessageMetadata.forwarded_metadata:type_name -> google.chat.v1.ForwardedMetadata
-	33, // 24: google.chat.v1.QuotedMessageSnapshot.annotations:type_name -> google.chat.v1.Annotation
-	36, // 25: google.chat.v1.QuotedMessageSnapshot.attachments:type_name -> google.chat.v1.Attachment
-	1,  // 26: google.chat.v1.ActionResponse.type:type_name -> google.chat.v1.ActionResponse.ResponseType
-	20, // 27: google.chat.v1.ActionResponse.dialog_action:type_name -> google.chat.v1.DialogAction
-	29, // 28: google.chat.v1.ActionResponse.updated_widget:type_name -> google.chat.v1.ActionResponse.UpdatedWidget
-	41, // 29: google.chat.v1.AccessoryWidget.button_list:type_name -> google.apps.card.v1.ButtonList
-	40, // 30: google.chat.v1.GetMessageRequest.markup_syntax:type_name -> google.chat.v1.MarkupSyntax
-	5,  // 31: google.chat.v1.UpdateMessageRequest.message:type_name -> google.chat.v1.Message
-	42, // 32: google.chat.v1.UpdateMessageRequest.update_mask:type_name -> google.protobuf.FieldMask
-	5,  // 33: google.chat.v1.CreateMessageRequest.message:type_name -> google.chat.v1.Message
-	2,  // 34: google.chat.v1.CreateMessageRequest.message_reply_option:type_name -> google.chat.v1.CreateMessageRequest.MessageReplyOption
-	17, // 35: google.chat.v1.CreateMessageRequest.create_message_notification_options:type_name -> google.chat.v1.CreateMessageNotificationOptions
-	3,  // 36: google.chat.v1.CreateMessageNotificationOptions.notification_type:type_name -> google.chat.v1.CreateMessageNotificationOptions.NotificationType
-	40, // 37: google.chat.v1.ListMessagesRequest.markup_syntax:type_name -> google.chat.v1.MarkupSyntax
-	5,  // 38: google.chat.v1.ListMessagesResponse.messages:type_name -> google.chat.v1.Message
-	21, // 39: google.chat.v1.DialogAction.dialog:type_name -> google.chat.v1.Dialog
-	43, // 40: google.chat.v1.DialogAction.action_status:type_name -> google.chat.v1.ActionStatus
-	44, // 41: google.chat.v1.Dialog.body:type_name -> google.apps.card.v1.Card
-	44, // 42: google.chat.v1.CardWithId.card:type_name -> google.apps.card.v1.Card
-	30, // 43: google.chat.v1.CardWithId.owner_user:type_name -> google.chat.v1.User
-	22, // 44: google.chat.v1.ReplaceMessageCardsRequest.cards_v2:type_name -> google.chat.v1.CardWithId
-	40, // 45: google.chat.v1.SearchMessagesRequest.markup_syntax:type_name -> google.chat.v1.MarkupSyntax
-	4,  // 46: google.chat.v1.SearchMessagesRequest.view:type_name -> google.chat.v1.SearchMessagesRequest.SearchMessagesView
-	27, // 47: google.chat.v1.SearchMessagesResponse.results:type_name -> google.chat.v1.SearchMessageResult
-	5,  // 48: google.chat.v1.SearchMessageResult.message:type_name -> google.chat.v1.Message
-	45, // 49: google.chat.v1.SearchMessageResult.space_mute_setting:type_name -> google.chat.v1.SpaceNotificationSetting.MuteSetting
-	46, // 50: google.chat.v1.ActionResponse.SelectionItems.items:type_name -> google.apps.card.v1.SelectionInput.SelectionItem
-	28, // 51: google.chat.v1.ActionResponse.UpdatedWidget.suggestions:type_name -> google.chat.v1.ActionResponse.SelectionItems
-	52, // [52:52] is the sub-list for method output_type
-	52, // [52:52] is the sub-list for method input_type
-	52, // [52:52] is the sub-list for extension type_name
-	52, // [52:52] is the sub-list for extension extendee
-	0,  // [0:52] is the sub-list for field type_name
+	40, // 19: google.chat.v1.Message.elements:type_name -> google.chat.v1.Elements
+	41, // 20: google.chat.v1.Message.markup_syntax:type_name -> google.chat.v1.MarkupSyntax
+	31, // 21: google.chat.v1.QuotedMessageMetadata.last_update_time:type_name -> google.protobuf.Timestamp
+	0,  // 22: google.chat.v1.QuotedMessageMetadata.quote_type:type_name -> google.chat.v1.QuotedMessageMetadata.QuoteType
+	8,  // 23: google.chat.v1.QuotedMessageMetadata.quoted_message_snapshot:type_name -> google.chat.v1.QuotedMessageSnapshot
+	9,  // 24: google.chat.v1.QuotedMessageMetadata.forwarded_metadata:type_name -> google.chat.v1.ForwardedMetadata
+	33, // 25: google.chat.v1.QuotedMessageSnapshot.annotations:type_name -> google.chat.v1.Annotation
+	36, // 26: google.chat.v1.QuotedMessageSnapshot.attachments:type_name -> google.chat.v1.Attachment
+	1,  // 27: google.chat.v1.ActionResponse.type:type_name -> google.chat.v1.ActionResponse.ResponseType
+	20, // 28: google.chat.v1.ActionResponse.dialog_action:type_name -> google.chat.v1.DialogAction
+	29, // 29: google.chat.v1.ActionResponse.updated_widget:type_name -> google.chat.v1.ActionResponse.UpdatedWidget
+	42, // 30: google.chat.v1.AccessoryWidget.button_list:type_name -> google.apps.card.v1.ButtonList
+	41, // 31: google.chat.v1.GetMessageRequest.markup_syntax:type_name -> google.chat.v1.MarkupSyntax
+	5,  // 32: google.chat.v1.UpdateMessageRequest.message:type_name -> google.chat.v1.Message
+	43, // 33: google.chat.v1.UpdateMessageRequest.update_mask:type_name -> google.protobuf.FieldMask
+	5,  // 34: google.chat.v1.CreateMessageRequest.message:type_name -> google.chat.v1.Message
+	2,  // 35: google.chat.v1.CreateMessageRequest.message_reply_option:type_name -> google.chat.v1.CreateMessageRequest.MessageReplyOption
+	17, // 36: google.chat.v1.CreateMessageRequest.create_message_notification_options:type_name -> google.chat.v1.CreateMessageNotificationOptions
+	3,  // 37: google.chat.v1.CreateMessageNotificationOptions.notification_type:type_name -> google.chat.v1.CreateMessageNotificationOptions.NotificationType
+	41, // 38: google.chat.v1.ListMessagesRequest.markup_syntax:type_name -> google.chat.v1.MarkupSyntax
+	5,  // 39: google.chat.v1.ListMessagesResponse.messages:type_name -> google.chat.v1.Message
+	21, // 40: google.chat.v1.DialogAction.dialog:type_name -> google.chat.v1.Dialog
+	44, // 41: google.chat.v1.DialogAction.action_status:type_name -> google.chat.v1.ActionStatus
+	45, // 42: google.chat.v1.Dialog.body:type_name -> google.apps.card.v1.Card
+	45, // 43: google.chat.v1.CardWithId.card:type_name -> google.apps.card.v1.Card
+	30, // 44: google.chat.v1.CardWithId.owner_user:type_name -> google.chat.v1.User
+	22, // 45: google.chat.v1.ReplaceMessageCardsRequest.cards_v2:type_name -> google.chat.v1.CardWithId
+	41, // 46: google.chat.v1.SearchMessagesRequest.markup_syntax:type_name -> google.chat.v1.MarkupSyntax
+	4,  // 47: google.chat.v1.SearchMessagesRequest.view:type_name -> google.chat.v1.SearchMessagesRequest.SearchMessagesView
+	27, // 48: google.chat.v1.SearchMessagesResponse.results:type_name -> google.chat.v1.SearchMessageResult
+	5,  // 49: google.chat.v1.SearchMessageResult.message:type_name -> google.chat.v1.Message
+	46, // 50: google.chat.v1.SearchMessageResult.space_mute_setting:type_name -> google.chat.v1.SpaceNotificationSetting.MuteSetting
+	47, // 51: google.chat.v1.ActionResponse.SelectionItems.items:type_name -> google.apps.card.v1.SelectionInput.SelectionItem
+	28, // 52: google.chat.v1.ActionResponse.UpdatedWidget.suggestions:type_name -> google.chat.v1.ActionResponse.SelectionItems
+	53, // [53:53] is the sub-list for method output_type
+	53, // [53:53] is the sub-list for method input_type
+	53, // [53:53] is the sub-list for extension type_name
+	53, // [53:53] is the sub-list for extension extendee
+	0,  // [0:53] is the sub-list for field type_name
 }
 
 func init() { file_google_chat_v1_message_proto_init() }
@@ -3082,6 +3107,7 @@ func file_google_chat_v1_message_proto_init() {
 	file_google_chat_v1_attachment_proto_init()
 	file_google_chat_v1_contextual_addon_proto_init()
 	file_google_chat_v1_deletion_metadata_proto_init()
+	file_google_chat_v1_elements_proto_init()
 	file_google_chat_v1_markup_syntax_proto_init()
 	file_google_chat_v1_matched_url_proto_init()
 	file_google_chat_v1_reaction_proto_init()
