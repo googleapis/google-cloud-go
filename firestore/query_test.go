@@ -1999,7 +1999,10 @@ func TestAggregationQuery_Pipeline_Transaction(t *testing.T) {
 			}
 
 			snap := tc.pipe.Execute(context.Background())
-			streamIter := snap.iter.iter.(*streamPipelineResultIterator)
+			streamIter, ok := snap.iter.iter.(*streamPipelineResultIterator)
+			if !ok {
+				t.Fatalf("expected *streamPipelineResultIterator, got %T (err: %v)", snap.iter.iter, snap.iter.err)
+			}
 			md, _ := metadata.FromOutgoingContext(streamIter.ctx)
 			if got := md.Get(isTransactionHeader); len(got) != 1 || got[0] != "true" {
 				t.Errorf("%s header: got %v, want [true]", isTransactionHeader, got)
