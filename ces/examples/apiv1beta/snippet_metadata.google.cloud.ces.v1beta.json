@@ -2353,6 +2353,52 @@
           "fullName": "google.cloud.ces.v1beta.AgentClient",
           "shortName": "AgentClient"
         },
+        "fullName": "google.cloud.ces.v1beta.AgentClient.UpdateAppVersion",
+        "method": {
+          "fullName": "google.cloud.ces.v1beta.AgentService.UpdateAppVersion",
+          "service": {
+            "fullName": "google.cloud.ces.v1beta.AgentService",
+            "shortName": "AgentService"
+          },
+          "shortName": "UpdateAppVersion"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "cespb.UpdateAppVersionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*cespb.AppVersion",
+        "shortName": "UpdateAppVersion"
+      },
+      "description": "UpdateAppVersion updates the specified app version.",
+      "file": "AgentClient/UpdateAppVersion/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "ces_v1beta_generated_AgentService_UpdateAppVersion_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "ces UpdateAppVersion Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.ces.v1beta.AgentClient",
+          "shortName": "AgentClient"
+        },
         "fullName": "google.cloud.ces.v1beta.AgentClient.UpdateDeployment",
         "method": {
           "fullName": "google.cloud.ces.v1beta.AgentService.UpdateDeployment",
@@ -2622,6 +2668,555 @@
         }
       ],
       "title": "ces UpdateToolset Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.ces.v1beta.AssistantClient",
+          "shortName": "AssistantClient"
+        },
+        "fullName": "google.cloud.ces.v1beta.AssistantClient.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "AssistantClient/CancelOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "ces_v1beta_generated_AssistantService_CancelOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "ces CancelOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.ces.v1beta.AssistantClient",
+          "shortName": "AssistantClient"
+        },
+        "fullName": "google.cloud.ces.v1beta.AssistantClient.ChatAiAssistant",
+        "method": {
+          "fullName": "google.cloud.ces.v1beta.AssistantService.ChatAiAssistant",
+          "service": {
+            "fullName": "google.cloud.ces.v1beta.AssistantService",
+            "shortName": "AssistantService"
+          },
+          "shortName": "ChatAiAssistant"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "cespb.ChatAiAssistantRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*cespb.ChatAiAssistantResponse",
+        "shortName": "ChatAiAssistant"
+      },
+      "description": "ChatAiAssistant runs Arc, the AI assistant, for the specified assistant session.",
+      "file": "AssistantClient/ChatAiAssistant/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "ces_v1beta_generated_AssistantService_ChatAiAssistant_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "ces ChatAiAssistant Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.ces.v1beta.AssistantClient",
+          "shortName": "AssistantClient"
+        },
+        "fullName": "google.cloud.ces.v1beta.AssistantClient.CreateAssistantSession",
+        "method": {
+          "fullName": "google.cloud.ces.v1beta.AssistantService.CreateAssistantSession",
+          "service": {
+            "fullName": "google.cloud.ces.v1beta.AssistantService",
+            "shortName": "AssistantService"
+          },
+          "shortName": "CreateAssistantSession"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "cespb.CreateAssistantSessionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*cespb.AssistantSession",
+        "shortName": "CreateAssistantSession"
+      },
+      "description": "CreateAssistantSession creates a new assistant session in the given app.",
+      "file": "AssistantClient/CreateAssistantSession/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "ces_v1beta_generated_AssistantService_CreateAssistantSession_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "ces CreateAssistantSession Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.ces.v1beta.AssistantClient",
+          "shortName": "AssistantClient"
+        },
+        "fullName": "google.cloud.ces.v1beta.AssistantClient.DeleteAssistantSession",
+        "method": {
+          "fullName": "google.cloud.ces.v1beta.AssistantService.DeleteAssistantSession",
+          "service": {
+            "fullName": "google.cloud.ces.v1beta.AssistantService",
+            "shortName": "AssistantService"
+          },
+          "shortName": "DeleteAssistantSession"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "cespb.DeleteAssistantSessionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteAssistantSession"
+      },
+      "description": "DeleteAssistantSession deletes the specified assistant session.",
+      "file": "AssistantClient/DeleteAssistantSession/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "ces_v1beta_generated_AssistantService_DeleteAssistantSession_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "ces DeleteAssistantSession Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.ces.v1beta.AssistantClient",
+          "shortName": "AssistantClient"
+        },
+        "fullName": "google.cloud.ces.v1beta.AssistantClient.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "AssistantClient/DeleteOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "ces_v1beta_generated_AssistantService_DeleteOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "ces DeleteOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.ces.v1beta.AssistantClient",
+          "shortName": "AssistantClient"
+        },
+        "fullName": "google.cloud.ces.v1beta.AssistantClient.GetAssistantSession",
+        "method": {
+          "fullName": "google.cloud.ces.v1beta.AssistantService.GetAssistantSession",
+          "service": {
+            "fullName": "google.cloud.ces.v1beta.AssistantService",
+            "shortName": "AssistantService"
+          },
+          "shortName": "GetAssistantSession"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "cespb.GetAssistantSessionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*cespb.AssistantSession",
+        "shortName": "GetAssistantSession"
+      },
+      "description": "GetAssistantSession gets details of the specified assistant session.",
+      "file": "AssistantClient/GetAssistantSession/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "ces_v1beta_generated_AssistantService_GetAssistantSession_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "ces GetAssistantSession Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.ces.v1beta.AssistantClient",
+          "shortName": "AssistantClient"
+        },
+        "fullName": "google.cloud.ces.v1beta.AssistantClient.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "shortName": "GetLocation"
+      },
+      "description": "GetLocation gets information about a location.",
+      "file": "AssistantClient/GetLocation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "ces_v1beta_generated_AssistantService_GetLocation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "ces GetLocation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.ces.v1beta.AssistantClient",
+          "shortName": "AssistantClient"
+        },
+        "fullName": "google.cloud.ces.v1beta.AssistantClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "AssistantClient/GetOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "ces_v1beta_generated_AssistantService_GetOperation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "ces GetOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.ces.v1beta.AssistantClient",
+          "shortName": "AssistantClient"
+        },
+        "fullName": "google.cloud.ces.v1beta.AssistantClient.ListAssistantSessions",
+        "method": {
+          "fullName": "google.cloud.ces.v1beta.AssistantService.ListAssistantSessions",
+          "service": {
+            "fullName": "google.cloud.ces.v1beta.AssistantService",
+            "shortName": "AssistantService"
+          },
+          "shortName": "ListAssistantSessions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "cespb.ListAssistantSessionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "AssistantSessionIterator",
+        "shortName": "ListAssistantSessions"
+      },
+      "description": "ListAssistantSessions lists all assistant sessions in the given app.",
+      "file": "AssistantClient/ListAssistantSessions/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "ces_v1beta_generated_AssistantService_ListAssistantSessions_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "ces ListAssistantSessions Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.ces.v1beta.AssistantClient",
+          "shortName": "AssistantClient"
+        },
+        "fullName": "google.cloud.ces.v1beta.AssistantClient.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "shortName": "ListLocations"
+      },
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
+      "file": "AssistantClient/ListLocations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "ces_v1beta_generated_AssistantService_ListLocations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "ces ListLocations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.ces.v1beta.AssistantClient",
+          "shortName": "AssistantClient"
+        },
+        "fullName": "google.cloud.ces.v1beta.AssistantClient.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "AssistantClient/ListOperations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "ces_v1beta_generated_AssistantService_ListOperations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "ces ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.ces.v1beta.AssistantClient",
+          "shortName": "AssistantClient"
+        },
+        "fullName": "google.cloud.ces.v1beta.AssistantClient.RunAssistant",
+        "method": {
+          "fullName": "google.cloud.ces.v1beta.AssistantService.RunAssistant",
+          "service": {
+            "fullName": "google.cloud.ces.v1beta.AssistantService",
+            "shortName": "AssistantService"
+          },
+          "shortName": "RunAssistant"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "cespb.RunAssistantRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*cespb.RunAssistantResponse",
+        "shortName": "RunAssistant"
+      },
+      "description": "RunAssistant runs the assistant agent for the specified assistant session.",
+      "file": "AssistantClient/RunAssistant/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "ces_v1beta_generated_AssistantService_RunAssistant_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "ces RunAssistant Sample"
     },
     {
       "clientMethod": {
@@ -4550,6 +5145,52 @@
           "fullName": "google.cloud.ces.v1beta.SessionClient",
           "shortName": "SessionClient"
         },
+        "fullName": "google.cloud.ces.v1beta.SessionClient.CancelAssistantTurn",
+        "method": {
+          "fullName": "google.cloud.ces.v1beta.SessionService.CancelAssistantTurn",
+          "service": {
+            "fullName": "google.cloud.ces.v1beta.SessionService",
+            "shortName": "SessionService"
+          },
+          "shortName": "CancelAssistantTurn"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "cespb.CancelAssistantTurnRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*cespb.CancelAssistantTurnResponse",
+        "shortName": "CancelAssistantTurn"
+      },
+      "description": "CancelAssistantTurn cancels the assistant session's in-flight turn, if any: the explicit user\nstop for a turn running detached from any stream. A cancel landing on a\ntask that does not host the turn preempts it through the session turn\nepoch instead, ending it within one lease renewal.",
+      "file": "SessionClient/CancelAssistantTurn/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "ces_v1beta_generated_SessionService_CancelAssistantTurn_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "ces CancelAssistantTurn Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.ces.v1beta.SessionClient",
+          "shortName": "SessionClient"
+        },
         "fullName": "google.cloud.ces.v1beta.SessionClient.CancelOperation",
         "method": {
           "fullName": "google.longrunning.Operations.CancelOperation",
@@ -4633,6 +5274,52 @@
         }
       ],
       "title": "ces DeleteOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.ces.v1beta.SessionClient",
+          "shortName": "SessionClient"
+        },
+        "fullName": "google.cloud.ces.v1beta.SessionClient.GenerateOnboardingSuggestions",
+        "method": {
+          "fullName": "google.cloud.ces.v1beta.SessionService.GenerateOnboardingSuggestions",
+          "service": {
+            "fullName": "google.cloud.ces.v1beta.SessionService",
+            "shortName": "SessionService"
+          },
+          "shortName": "GenerateOnboardingSuggestions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "cespb.GenerateOnboardingSuggestionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*cespb.GenerateOnboardingSuggestionsResponse",
+        "shortName": "GenerateOnboardingSuggestions"
+      },
+      "description": "GenerateOnboardingSuggestions generates personalized onboarding suggestions for the Arc\nzero state: classifies the requesting user (new / exploring / returning)\nfrom their assistant-session history in the app and returns suggestion\nchips (resume a session, continue work, or start something new) to render\nbefore any message is sent.",
+      "file": "SessionClient/GenerateOnboardingSuggestions/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "ces_v1beta_generated_SessionService_GenerateOnboardingSuggestions_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "ces GenerateOnboardingSuggestions Sample"
     },
     {
       "clientMethod": {

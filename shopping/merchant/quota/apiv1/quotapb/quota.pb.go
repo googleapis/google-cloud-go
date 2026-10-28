@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ type QuotaGroup struct {
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. The current quota usage, meaning the number of calls already
 	// made on a given day to the methods in the group. The daily quota limits
-	// reset at at 12:00 PM midday UTC.
+	// reset at 12:00 PM midday UTC.
 	QuotaUsage int64 `protobuf:"varint,2,opt,name=quota_usage,json=quotaUsage,proto3" json:"quota_usage,omitempty"`
 	// Output only. The maximum number of calls allowed per day for the group.
 	QuotaLimit int64 `protobuf:"varint,3,opt,name=quota_limit,json=quotaLimit,proto3" json:"quota_limit,omitempty"`

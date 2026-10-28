@@ -730,7 +730,7 @@
         "resultType": "SetAgentOpsObservabilityOperation",
         "shortName": "SetAgentOpsObservability"
       },
-      "description": "SetAgentOpsObservability enables/Disables required GCP services and configures AgentOps\nobservability settings calling the Admin Settings executable node to\nupdate the AgentOps Observability feature.",
+      "description": "SetAgentOpsObservability enables/Disables required GCP services and configures AgentOps\nobservability settings.",
       "file": "DataAgentClient/SetAgentOpsObservability/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",

@@ -1897,6 +1897,52 @@
           "fullName": "google.chat.v1.Client",
           "shortName": "Client"
         },
+        "fullName": "google.chat.v1.Client.ReplaceMessageCards",
+        "method": {
+          "fullName": "google.chat.v1.ChatService.ReplaceMessageCards",
+          "service": {
+            "fullName": "google.chat.v1.ChatService",
+            "shortName": "ChatService"
+          },
+          "shortName": "ReplaceMessageCards"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chatpb.ReplaceMessageCardsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chatpb.ReplaceMessageCardsResponse",
+        "shortName": "ReplaceMessageCards"
+      },
+      "description": "ReplaceMessageCards replaces the cards included in a message.\n\nA Chat app can only replace cards on a human-created message if the message\nalready contains cards, and the cards were created by the app.\n\nIf the app replaces the cards with an empty list, the cards are removed.\nAfter removing the cards, the app cannot add cards back to the message.\n\nRequires [app\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-app)\nwith the [authorization\nscope](https: //developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes): \n- `https: //www.googleapis.com/auth/chat.bot`",
+      "file": "Client/ReplaceMessageCards/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chat_v1_generated_ChatService_ReplaceMessageCards_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chat ReplaceMessageCards Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.chat.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.chat.v1.Client.SearchMessages",
         "method": {
           "fullName": "google.chat.v1.ChatService.SearchMessages",

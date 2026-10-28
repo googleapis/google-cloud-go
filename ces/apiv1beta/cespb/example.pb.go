@@ -522,7 +522,9 @@ type Image struct {
 	//   - image/webp
 	MimeType string `protobuf:"bytes,1,opt,name=mime_type,json=mimeType,proto3" json:"mime_type,omitempty"`
 	// Required. Raw bytes of the image.
-	Data          []byte `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
+	Data []byte `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
+	// Optional. The alternative text for the image.
+	AltText       string `protobuf:"bytes,4,opt,name=alt_text,json=altText,proto3" json:"alt_text,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -571,6 +573,13 @@ func (x *Image) GetData() []byte {
 	return nil
 }
 
+func (x *Image) GetAltText() string {
+	if x != nil {
+		return x.AltText
+	}
+	return ""
+}
+
 // Request for the client or the agent to execute the specified tool.
 type ToolCall struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -590,7 +599,15 @@ type ToolCall struct {
 	DisplayName string `protobuf:"bytes,4,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
 	// Optional. The input parameters and values for the tool in JSON object
 	// format.
-	Args          *structpb.Struct `protobuf:"bytes,3,opt,name=args,proto3" json:"args,omitempty"`
+	Args *structpb.Struct `protobuf:"bytes,3,opt,name=args,proto3" json:"args,omitempty"`
+	// Output only. The id of the tool call that caused this one, when it was
+	// issued by a sub-agent working on behalf of a parent call. Empty for
+	// top-level calls. Lets a client group a sub-agent's work under the call that
+	// started it instead of rendering every step as a sibling.
+	ParentToolCallId string `protobuf:"bytes,6,opt,name=parent_tool_call_id,json=parentToolCallId,proto3" json:"parent_tool_call_id,omitempty"`
+	// Output only. Human-readable name of the agent that issued this call, e.g.
+	// "Contract Architect". Empty when the root agent issued it.
+	AgentName     string `protobuf:"bytes,7,opt,name=agent_name,json=agentName,proto3" json:"agent_name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -671,6 +688,20 @@ func (x *ToolCall) GetArgs() *structpb.Struct {
 	return nil
 }
 
+func (x *ToolCall) GetParentToolCallId() string {
+	if x != nil {
+		return x.ParentToolCallId
+	}
+	return ""
+}
+
+func (x *ToolCall) GetAgentName() string {
+	if x != nil {
+		return x.AgentName
+	}
+	return ""
+}
+
 type isToolCall_ToolIdentifier interface {
 	isToolCall_ToolIdentifier()
 }
@@ -710,7 +741,15 @@ type ToolResponse struct {
 	// Use "output" key to specify tool response and "error" key to specify
 	// error details (if any). If "output" and "error" keys are not specified,
 	// then whole "response" is treated as tool execution result.
-	Response      *structpb.Struct `protobuf:"bytes,3,opt,name=response,proto3" json:"response,omitempty"`
+	Response *structpb.Struct `protobuf:"bytes,3,opt,name=response,proto3" json:"response,omitempty"`
+	// Output only. The id of the tool call that caused this one, when it was
+	// issued by a sub-agent working on behalf of a parent call. Empty for
+	// top-level calls. Lets a client group a sub-agent's work under the call that
+	// started it instead of rendering every step as a sibling.
+	ParentToolCallId string `protobuf:"bytes,6,opt,name=parent_tool_call_id,json=parentToolCallId,proto3" json:"parent_tool_call_id,omitempty"`
+	// Output only. Human-readable name of the agent that issued this call, e.g.
+	// "Contract Architect". Empty when the root agent issued it.
+	AgentName     string `protobuf:"bytes,7,opt,name=agent_name,json=agentName,proto3" json:"agent_name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -789,6 +828,20 @@ func (x *ToolResponse) GetResponse() *structpb.Struct {
 		return x.Response
 	}
 	return nil
+}
+
+func (x *ToolResponse) GetParentToolCallId() string {
+	if x != nil {
+		return x.ParentToolCallId
+	}
+	return ""
+}
+
+func (x *ToolResponse) GetAgentName() string {
+	if x != nil {
+		return x.AgentName
+	}
+	return ""
 }
 
 type isToolResponse_ToolIdentifier interface {
@@ -910,25 +963,32 @@ const file_google_cloud_ces_v1beta_example_proto_rawDesc = "" +
 	"\x04data\"C\n" +
 	"\x04Blob\x12!\n" +
 	"\tmime_type\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bmimeType\x12\x18\n" +
-	"\x04data\x18\x02 \x01(\fB\x04\xe2A\x01\x02R\x04data\"D\n" +
+	"\x04data\x18\x02 \x01(\fB\x04\xe2A\x01\x02R\x04data\"e\n" +
 	"\x05Image\x12!\n" +
 	"\tmime_type\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bmimeType\x12\x18\n" +
-	"\x04data\x18\x02 \x01(\fB\x04\xe2A\x01\x02R\x04data\"\x98\x02\n" +
+	"\x04data\x18\x02 \x01(\fB\x04\xe2A\x01\x02R\x04data\x12\x1f\n" +
+	"\balt_text\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\aaltText\"\xf2\x02\n" +
 	"\bToolCall\x126\n" +
 	"\x04tool\x18\x02 \x01(\tB \xe2A\x01\x01\xfaA\x19\n" +
 	"\x17ces.googleapis.com/ToolH\x00R\x04tool\x12O\n" +
 	"\ftoolset_tool\x18\x05 \x01(\v2$.google.cloud.ces.v1beta.ToolsetToolB\x04\xe2A\x01\x01H\x00R\vtoolsetTool\x12\x14\n" +
 	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x02id\x12'\n" +
 	"\fdisplay_name\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x121\n" +
-	"\x04args\x18\x03 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\x04argsB\x11\n" +
-	"\x0ftool_identifier\"\xa4\x02\n" +
+	"\x04args\x18\x03 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\x04args\x123\n" +
+	"\x13parent_tool_call_id\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x10parentToolCallId\x12#\n" +
+	"\n" +
+	"agent_name\x18\a \x01(\tB\x04\xe2A\x01\x03R\tagentNameB\x11\n" +
+	"\x0ftool_identifier\"\xfe\x02\n" +
 	"\fToolResponse\x126\n" +
 	"\x04tool\x18\x02 \x01(\tB \xe2A\x01\x01\xfaA\x19\n" +
 	"\x17ces.googleapis.com/ToolH\x00R\x04tool\x12O\n" +
 	"\ftoolset_tool\x18\x05 \x01(\v2$.google.cloud.ces.v1beta.ToolsetToolB\x04\xe2A\x01\x01H\x00R\vtoolsetTool\x12\x14\n" +
 	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x02id\x12'\n" +
 	"\fdisplay_name\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x129\n" +
-	"\bresponse\x18\x03 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x02R\bresponseB\x11\n" +
+	"\bresponse\x18\x03 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x02R\bresponse\x123\n" +
+	"\x13parent_tool_call_id\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x10parentToolCallId\x12#\n" +
+	"\n" +
+	"agent_name\x18\a \x01(\tB\x04\xe2A\x01\x03R\tagentNameB\x11\n" +
 	"\x0ftool_identifier\"~\n" +
 	"\rAgentTransfer\x12D\n" +
 	"\ftarget_agent\x18\x01 \x01(\tB!\xe2A\x01\x02\xfaA\x1a\n" +

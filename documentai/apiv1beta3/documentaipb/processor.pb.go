@@ -302,6 +302,64 @@ func (Processor_State) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_documentai_v1beta3_processor_proto_rawDescGZIP(), []int{2, 0}
 }
 
+// Grounding type options.
+type GroundingSettings_GroundingType int32
+
+const (
+	// The default value. Behaves like HARD.
+	GroundingSettings_GROUNDING_TYPE_UNSPECIFIED GroundingSettings_GroundingType = 0
+	// Requires exact match with OCR text for extractions.
+	GroundingSettings_HARD GroundingSettings_GroundingType = 1
+	// Allows for minor discrepancies between LLM output and OCR text.
+	GroundingSettings_OCR_RELAXED GroundingSettings_GroundingType = 2
+	// LLM extractions are used without strict OCR matching. Bounding boxes may
+	// be approximated or absent.
+	GroundingSettings_NO_GROUNDING GroundingSettings_GroundingType = 3
+)
+
+// Enum value maps for GroundingSettings_GroundingType.
+var (
+	GroundingSettings_GroundingType_name = map[int32]string{
+		0: "GROUNDING_TYPE_UNSPECIFIED",
+		1: "HARD",
+		2: "OCR_RELAXED",
+		3: "NO_GROUNDING",
+	}
+	GroundingSettings_GroundingType_value = map[string]int32{
+		"GROUNDING_TYPE_UNSPECIFIED": 0,
+		"HARD":                       1,
+		"OCR_RELAXED":                2,
+		"NO_GROUNDING":               3,
+	}
+)
+
+func (x GroundingSettings_GroundingType) Enum() *GroundingSettings_GroundingType {
+	p := new(GroundingSettings_GroundingType)
+	*p = x
+	return p
+}
+
+func (x GroundingSettings_GroundingType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (GroundingSettings_GroundingType) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_documentai_v1beta3_processor_proto_enumTypes[4].Descriptor()
+}
+
+func (GroundingSettings_GroundingType) Type() protoreflect.EnumType {
+	return &file_google_cloud_documentai_v1beta3_processor_proto_enumTypes[4]
+}
+
+func (x GroundingSettings_GroundingType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use GroundingSettings_GroundingType.Descriptor instead.
+func (GroundingSettings_GroundingType) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_documentai_v1beta3_processor_proto_rawDescGZIP(), []int{3, 0}
+}
+
 // A processor version is an implementation of a processor. Each processor
 // can have multiple versions, pretrained by Google internally or uptrained
 // by the customer. A processor can only have one default version at a time.
@@ -341,8 +399,12 @@ type ProcessorVersion struct {
 	// Output only. Information about Generative AI model-based processor
 	// versions.
 	GenAiModelInfo *ProcessorVersion_GenAiModelInfo `protobuf:"bytes,18,opt,name=gen_ai_model_info,json=genAiModelInfo,proto3" json:"gen_ai_model_info,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	// Output only. The grounding settings of the processor version. This can only
+	// be set using TrainProcessorVersionRequest to override the default grounding
+	// settings.
+	GroundingSettings *GroundingSettings `protobuf:"bytes,21,opt,name=grounding_settings,json=groundingSettings,proto3" json:"grounding_settings,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *ProcessorVersion) Reset() {
@@ -469,6 +531,13 @@ func (x *ProcessorVersion) GetSatisfiesPzi() bool {
 func (x *ProcessorVersion) GetGenAiModelInfo() *ProcessorVersion_GenAiModelInfo {
 	if x != nil {
 		return x.GenAiModelInfo
+	}
+	return nil
+}
+
+func (x *ProcessorVersion) GetGroundingSettings() *GroundingSettings {
+	if x != nil {
+		return x.GroundingSettings
 	}
 	return nil
 }
@@ -670,6 +739,98 @@ func (x *Processor) GetSatisfiesPzi() bool {
 	return false
 }
 
+// Settings for grounding extractions.
+type GroundingSettings struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The type of grounding to apply.
+	GroundingType GroundingSettings_GroundingType `protobuf:"varint,1,opt,name=grounding_type,json=groundingType,proto3,enum=google.cloud.documentai.v1beta3.GroundingSettings_GroundingType" json:"grounding_type,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GroundingSettings) Reset() {
+	*x = GroundingSettings{}
+	mi := &file_google_cloud_documentai_v1beta3_processor_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GroundingSettings) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GroundingSettings) ProtoMessage() {}
+
+func (x *GroundingSettings) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_documentai_v1beta3_processor_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GroundingSettings.ProtoReflect.Descriptor instead.
+func (*GroundingSettings) Descriptor() ([]byte, []int) {
+	return file_google_cloud_documentai_v1beta3_processor_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *GroundingSettings) GetGroundingType() GroundingSettings_GroundingType {
+	if x != nil {
+		return x.GroundingType
+	}
+	return GroundingSettings_GROUNDING_TYPE_UNSPECIFIED
+}
+
+// Overrides to apply when creating a new processor version.
+type ProcessorVersionOverrides struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Grounding settings to override the default values.
+	GroundingSettings *GroundingSettings `protobuf:"bytes,1,opt,name=grounding_settings,json=groundingSettings,proto3" json:"grounding_settings,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *ProcessorVersionOverrides) Reset() {
+	*x = ProcessorVersionOverrides{}
+	mi := &file_google_cloud_documentai_v1beta3_processor_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ProcessorVersionOverrides) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProcessorVersionOverrides) ProtoMessage() {}
+
+func (x *ProcessorVersionOverrides) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_documentai_v1beta3_processor_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ProcessorVersionOverrides.ProtoReflect.Descriptor instead.
+func (*ProcessorVersionOverrides) Descriptor() ([]byte, []int) {
+	return file_google_cloud_documentai_v1beta3_processor_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *ProcessorVersionOverrides) GetGroundingSettings() *GroundingSettings {
+	if x != nil {
+		return x.GroundingSettings
+	}
+	return nil
+}
+
 // Information about the upcoming deprecation of this processor version.
 type ProcessorVersion_DeprecationInfo struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -683,7 +844,7 @@ type ProcessorVersion_DeprecationInfo struct {
 
 func (x *ProcessorVersion_DeprecationInfo) Reset() {
 	*x = ProcessorVersion_DeprecationInfo{}
-	mi := &file_google_cloud_documentai_v1beta3_processor_proto_msgTypes[3]
+	mi := &file_google_cloud_documentai_v1beta3_processor_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -695,7 +856,7 @@ func (x *ProcessorVersion_DeprecationInfo) String() string {
 func (*ProcessorVersion_DeprecationInfo) ProtoMessage() {}
 
 func (x *ProcessorVersion_DeprecationInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1beta3_processor_proto_msgTypes[3]
+	mi := &file_google_cloud_documentai_v1beta3_processor_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -742,7 +903,7 @@ type ProcessorVersion_GenAiModelInfo struct {
 
 func (x *ProcessorVersion_GenAiModelInfo) Reset() {
 	*x = ProcessorVersion_GenAiModelInfo{}
-	mi := &file_google_cloud_documentai_v1beta3_processor_proto_msgTypes[4]
+	mi := &file_google_cloud_documentai_v1beta3_processor_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -754,7 +915,7 @@ func (x *ProcessorVersion_GenAiModelInfo) String() string {
 func (*ProcessorVersion_GenAiModelInfo) ProtoMessage() {}
 
 func (x *ProcessorVersion_GenAiModelInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1beta3_processor_proto_msgTypes[4]
+	mi := &file_google_cloud_documentai_v1beta3_processor_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -829,7 +990,7 @@ type ProcessorVersion_GenAiModelInfo_FoundationGenAiModelInfo struct {
 
 func (x *ProcessorVersion_GenAiModelInfo_FoundationGenAiModelInfo) Reset() {
 	*x = ProcessorVersion_GenAiModelInfo_FoundationGenAiModelInfo{}
-	mi := &file_google_cloud_documentai_v1beta3_processor_proto_msgTypes[5]
+	mi := &file_google_cloud_documentai_v1beta3_processor_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -841,7 +1002,7 @@ func (x *ProcessorVersion_GenAiModelInfo_FoundationGenAiModelInfo) String() stri
 func (*ProcessorVersion_GenAiModelInfo_FoundationGenAiModelInfo) ProtoMessage() {}
 
 func (x *ProcessorVersion_GenAiModelInfo_FoundationGenAiModelInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1beta3_processor_proto_msgTypes[5]
+	mi := &file_google_cloud_documentai_v1beta3_processor_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -886,7 +1047,7 @@ type ProcessorVersion_GenAiModelInfo_CustomGenAiModelInfo struct {
 
 func (x *ProcessorVersion_GenAiModelInfo_CustomGenAiModelInfo) Reset() {
 	*x = ProcessorVersion_GenAiModelInfo_CustomGenAiModelInfo{}
-	mi := &file_google_cloud_documentai_v1beta3_processor_proto_msgTypes[6]
+	mi := &file_google_cloud_documentai_v1beta3_processor_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -898,7 +1059,7 @@ func (x *ProcessorVersion_GenAiModelInfo_CustomGenAiModelInfo) String() string {
 func (*ProcessorVersion_GenAiModelInfo_CustomGenAiModelInfo) ProtoMessage() {}
 
 func (x *ProcessorVersion_GenAiModelInfo_CustomGenAiModelInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1beta3_processor_proto_msgTypes[6]
+	mi := &file_google_cloud_documentai_v1beta3_processor_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -932,7 +1093,7 @@ var File_google_cloud_documentai_v1beta3_processor_proto protoreflect.FileDescri
 
 const file_google_cloud_documentai_v1beta3_processor_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/documentai/v1beta3/processor.proto\x12\x1fgoogle.cloud.documentai.v1beta3\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a5google/cloud/documentai/v1beta3/document_schema.proto\x1a0google/cloud/documentai/v1beta3/evaluation.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd9\x12\n" +
+	"/google/cloud/documentai/v1beta3/processor.proto\x12\x1fgoogle.cloud.documentai.v1beta3\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a5google/cloud/documentai/v1beta3/document_schema.proto\x1a0google/cloud/documentai/v1beta3/evaluation.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc2\x13\n" +
 	"\x10ProcessorVersion\x12\x18\n" +
 	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12^\n" +
@@ -951,7 +1112,8 @@ const file_google_cloud_documentai_v1beta3_processor_proto_rawDesc = "" +
 	"model_type\x18\x0f \x01(\x0e2;.google.cloud.documentai.v1beta3.ProcessorVersion.ModelTypeB\x04\xe2A\x01\x03R\tmodelType\x12)\n" +
 	"\rsatisfies_pzs\x18\x10 \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzs\x12)\n" +
 	"\rsatisfies_pzi\x18\x11 \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzi\x12q\n" +
-	"\x11gen_ai_model_info\x18\x12 \x01(\v2@.google.cloud.documentai.v1beta3.ProcessorVersion.GenAiModelInfoB\x04\xe2A\x01\x03R\x0egenAiModelInfo\x1a\xcd\x01\n" +
+	"\x11gen_ai_model_info\x18\x12 \x01(\v2@.google.cloud.documentai.v1beta3.ProcessorVersion.GenAiModelInfoB\x04\xe2A\x01\x03R\x0egenAiModelInfo\x12g\n" +
+	"\x12grounding_settings\x18\x15 \x01(\v22.google.cloud.documentai.v1beta3.GroundingSettingsB\x04\xe2A\x01\x03R\x11groundingSettings\x1a\xcd\x01\n" +
 	"\x0fDeprecationInfo\x12E\n" +
 	"\x10deprecation_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\x0fdeprecationTime\x12s\n" +
 	"\x1dreplacement_processor_version\x18\x02 \x01(\tB/\xfaA,\n" +
@@ -1019,7 +1181,16 @@ const file_google_cloud_documentai_v1beta3_processor_proto_rawDesc = "" +
 	"\n" +
 	"\x06FAILED\x10\x06\x12\f\n" +
 	"\bDELETING\x10\a:h\xeaAe\n" +
-	"#documentai.googleapis.com/Processor\x12>projects/{project}/locations/{location}/processors/{processor}B\xea\x01\n" +
+	"#documentai.googleapis.com/Processor\x12>projects/{project}/locations/{location}/processors/{processor}\"\xda\x01\n" +
+	"\x11GroundingSettings\x12g\n" +
+	"\x0egrounding_type\x18\x01 \x01(\x0e2@.google.cloud.documentai.v1beta3.GroundingSettings.GroundingTypeR\rgroundingType\"\\\n" +
+	"\rGroundingType\x12\x1e\n" +
+	"\x1aGROUNDING_TYPE_UNSPECIFIED\x10\x00\x12\b\n" +
+	"\x04HARD\x10\x01\x12\x0f\n" +
+	"\vOCR_RELAXED\x10\x02\x12\x10\n" +
+	"\fNO_GROUNDING\x10\x03\"\x84\x01\n" +
+	"\x19ProcessorVersionOverrides\x12g\n" +
+	"\x12grounding_settings\x18\x01 \x01(\v22.google.cloud.documentai.v1beta3.GroundingSettingsB\x04\xe2A\x01\x01R\x11groundingSettingsB\xea\x01\n" +
 	"#com.google.cloud.documentai.v1beta3B\x13DocumentAiProcessorP\x01ZCcloud.google.com/go/documentai/apiv1beta3/documentaipb;documentaipb\xaa\x02\x1fGoogle.Cloud.DocumentAI.V1Beta3\xca\x02\x1fGoogle\\Cloud\\DocumentAI\\V1beta3\xea\x02\"Google::Cloud::DocumentAI::V1beta3b\x06proto3"
 
 var (
@@ -1034,44 +1205,50 @@ func file_google_cloud_documentai_v1beta3_processor_proto_rawDescGZIP() []byte {
 	return file_google_cloud_documentai_v1beta3_processor_proto_rawDescData
 }
 
-var file_google_cloud_documentai_v1beta3_processor_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
-var file_google_cloud_documentai_v1beta3_processor_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_google_cloud_documentai_v1beta3_processor_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
+var file_google_cloud_documentai_v1beta3_processor_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_google_cloud_documentai_v1beta3_processor_proto_goTypes = []any{
 	(ProcessorVersion_State)(0),     // 0: google.cloud.documentai.v1beta3.ProcessorVersion.State
 	(ProcessorVersion_ModelType)(0), // 1: google.cloud.documentai.v1beta3.ProcessorVersion.ModelType
 	(ProcessorVersion_GenAiModelInfo_CustomGenAiModelInfo_CustomModelType)(0), // 2: google.cloud.documentai.v1beta3.ProcessorVersion.GenAiModelInfo.CustomGenAiModelInfo.CustomModelType
 	(Processor_State)(0),                                             // 3: google.cloud.documentai.v1beta3.Processor.State
-	(*ProcessorVersion)(nil),                                         // 4: google.cloud.documentai.v1beta3.ProcessorVersion
-	(*ProcessorVersionAlias)(nil),                                    // 5: google.cloud.documentai.v1beta3.ProcessorVersionAlias
-	(*Processor)(nil),                                                // 6: google.cloud.documentai.v1beta3.Processor
-	(*ProcessorVersion_DeprecationInfo)(nil),                         // 7: google.cloud.documentai.v1beta3.ProcessorVersion.DeprecationInfo
-	(*ProcessorVersion_GenAiModelInfo)(nil),                          // 8: google.cloud.documentai.v1beta3.ProcessorVersion.GenAiModelInfo
-	(*ProcessorVersion_GenAiModelInfo_FoundationGenAiModelInfo)(nil), // 9: google.cloud.documentai.v1beta3.ProcessorVersion.GenAiModelInfo.FoundationGenAiModelInfo
-	(*ProcessorVersion_GenAiModelInfo_CustomGenAiModelInfo)(nil),     // 10: google.cloud.documentai.v1beta3.ProcessorVersion.GenAiModelInfo.CustomGenAiModelInfo
-	(*DocumentSchema)(nil),                                           // 11: google.cloud.documentai.v1beta3.DocumentSchema
-	(*timestamppb.Timestamp)(nil),                                    // 12: google.protobuf.Timestamp
-	(*EvaluationReference)(nil),                                      // 13: google.cloud.documentai.v1beta3.EvaluationReference
+	(GroundingSettings_GroundingType)(0),                             // 4: google.cloud.documentai.v1beta3.GroundingSettings.GroundingType
+	(*ProcessorVersion)(nil),                                         // 5: google.cloud.documentai.v1beta3.ProcessorVersion
+	(*ProcessorVersionAlias)(nil),                                    // 6: google.cloud.documentai.v1beta3.ProcessorVersionAlias
+	(*Processor)(nil),                                                // 7: google.cloud.documentai.v1beta3.Processor
+	(*GroundingSettings)(nil),                                        // 8: google.cloud.documentai.v1beta3.GroundingSettings
+	(*ProcessorVersionOverrides)(nil),                                // 9: google.cloud.documentai.v1beta3.ProcessorVersionOverrides
+	(*ProcessorVersion_DeprecationInfo)(nil),                         // 10: google.cloud.documentai.v1beta3.ProcessorVersion.DeprecationInfo
+	(*ProcessorVersion_GenAiModelInfo)(nil),                          // 11: google.cloud.documentai.v1beta3.ProcessorVersion.GenAiModelInfo
+	(*ProcessorVersion_GenAiModelInfo_FoundationGenAiModelInfo)(nil), // 12: google.cloud.documentai.v1beta3.ProcessorVersion.GenAiModelInfo.FoundationGenAiModelInfo
+	(*ProcessorVersion_GenAiModelInfo_CustomGenAiModelInfo)(nil),     // 13: google.cloud.documentai.v1beta3.ProcessorVersion.GenAiModelInfo.CustomGenAiModelInfo
+	(*DocumentSchema)(nil),                                           // 14: google.cloud.documentai.v1beta3.DocumentSchema
+	(*timestamppb.Timestamp)(nil),                                    // 15: google.protobuf.Timestamp
+	(*EvaluationReference)(nil),                                      // 16: google.cloud.documentai.v1beta3.EvaluationReference
 }
 var file_google_cloud_documentai_v1beta3_processor_proto_depIdxs = []int32{
-	11, // 0: google.cloud.documentai.v1beta3.ProcessorVersion.document_schema:type_name -> google.cloud.documentai.v1beta3.DocumentSchema
+	14, // 0: google.cloud.documentai.v1beta3.ProcessorVersion.document_schema:type_name -> google.cloud.documentai.v1beta3.DocumentSchema
 	0,  // 1: google.cloud.documentai.v1beta3.ProcessorVersion.state:type_name -> google.cloud.documentai.v1beta3.ProcessorVersion.State
-	12, // 2: google.cloud.documentai.v1beta3.ProcessorVersion.create_time:type_name -> google.protobuf.Timestamp
-	13, // 3: google.cloud.documentai.v1beta3.ProcessorVersion.latest_evaluation:type_name -> google.cloud.documentai.v1beta3.EvaluationReference
-	7,  // 4: google.cloud.documentai.v1beta3.ProcessorVersion.deprecation_info:type_name -> google.cloud.documentai.v1beta3.ProcessorVersion.DeprecationInfo
+	15, // 2: google.cloud.documentai.v1beta3.ProcessorVersion.create_time:type_name -> google.protobuf.Timestamp
+	16, // 3: google.cloud.documentai.v1beta3.ProcessorVersion.latest_evaluation:type_name -> google.cloud.documentai.v1beta3.EvaluationReference
+	10, // 4: google.cloud.documentai.v1beta3.ProcessorVersion.deprecation_info:type_name -> google.cloud.documentai.v1beta3.ProcessorVersion.DeprecationInfo
 	1,  // 5: google.cloud.documentai.v1beta3.ProcessorVersion.model_type:type_name -> google.cloud.documentai.v1beta3.ProcessorVersion.ModelType
-	8,  // 6: google.cloud.documentai.v1beta3.ProcessorVersion.gen_ai_model_info:type_name -> google.cloud.documentai.v1beta3.ProcessorVersion.GenAiModelInfo
-	3,  // 7: google.cloud.documentai.v1beta3.Processor.state:type_name -> google.cloud.documentai.v1beta3.Processor.State
-	5,  // 8: google.cloud.documentai.v1beta3.Processor.processor_version_aliases:type_name -> google.cloud.documentai.v1beta3.ProcessorVersionAlias
-	12, // 9: google.cloud.documentai.v1beta3.Processor.create_time:type_name -> google.protobuf.Timestamp
-	12, // 10: google.cloud.documentai.v1beta3.ProcessorVersion.DeprecationInfo.deprecation_time:type_name -> google.protobuf.Timestamp
-	9,  // 11: google.cloud.documentai.v1beta3.ProcessorVersion.GenAiModelInfo.foundation_gen_ai_model_info:type_name -> google.cloud.documentai.v1beta3.ProcessorVersion.GenAiModelInfo.FoundationGenAiModelInfo
-	10, // 12: google.cloud.documentai.v1beta3.ProcessorVersion.GenAiModelInfo.custom_gen_ai_model_info:type_name -> google.cloud.documentai.v1beta3.ProcessorVersion.GenAiModelInfo.CustomGenAiModelInfo
-	2,  // 13: google.cloud.documentai.v1beta3.ProcessorVersion.GenAiModelInfo.CustomGenAiModelInfo.custom_model_type:type_name -> google.cloud.documentai.v1beta3.ProcessorVersion.GenAiModelInfo.CustomGenAiModelInfo.CustomModelType
-	14, // [14:14] is the sub-list for method output_type
-	14, // [14:14] is the sub-list for method input_type
-	14, // [14:14] is the sub-list for extension type_name
-	14, // [14:14] is the sub-list for extension extendee
-	0,  // [0:14] is the sub-list for field type_name
+	11, // 6: google.cloud.documentai.v1beta3.ProcessorVersion.gen_ai_model_info:type_name -> google.cloud.documentai.v1beta3.ProcessorVersion.GenAiModelInfo
+	8,  // 7: google.cloud.documentai.v1beta3.ProcessorVersion.grounding_settings:type_name -> google.cloud.documentai.v1beta3.GroundingSettings
+	3,  // 8: google.cloud.documentai.v1beta3.Processor.state:type_name -> google.cloud.documentai.v1beta3.Processor.State
+	6,  // 9: google.cloud.documentai.v1beta3.Processor.processor_version_aliases:type_name -> google.cloud.documentai.v1beta3.ProcessorVersionAlias
+	15, // 10: google.cloud.documentai.v1beta3.Processor.create_time:type_name -> google.protobuf.Timestamp
+	4,  // 11: google.cloud.documentai.v1beta3.GroundingSettings.grounding_type:type_name -> google.cloud.documentai.v1beta3.GroundingSettings.GroundingType
+	8,  // 12: google.cloud.documentai.v1beta3.ProcessorVersionOverrides.grounding_settings:type_name -> google.cloud.documentai.v1beta3.GroundingSettings
+	15, // 13: google.cloud.documentai.v1beta3.ProcessorVersion.DeprecationInfo.deprecation_time:type_name -> google.protobuf.Timestamp
+	12, // 14: google.cloud.documentai.v1beta3.ProcessorVersion.GenAiModelInfo.foundation_gen_ai_model_info:type_name -> google.cloud.documentai.v1beta3.ProcessorVersion.GenAiModelInfo.FoundationGenAiModelInfo
+	13, // 15: google.cloud.documentai.v1beta3.ProcessorVersion.GenAiModelInfo.custom_gen_ai_model_info:type_name -> google.cloud.documentai.v1beta3.ProcessorVersion.GenAiModelInfo.CustomGenAiModelInfo
+	2,  // 16: google.cloud.documentai.v1beta3.ProcessorVersion.GenAiModelInfo.CustomGenAiModelInfo.custom_model_type:type_name -> google.cloud.documentai.v1beta3.ProcessorVersion.GenAiModelInfo.CustomGenAiModelInfo.CustomModelType
+	17, // [17:17] is the sub-list for method output_type
+	17, // [17:17] is the sub-list for method input_type
+	17, // [17:17] is the sub-list for extension type_name
+	17, // [17:17] is the sub-list for extension extendee
+	0,  // [0:17] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_documentai_v1beta3_processor_proto_init() }
@@ -1081,7 +1258,7 @@ func file_google_cloud_documentai_v1beta3_processor_proto_init() {
 	}
 	file_google_cloud_documentai_v1beta3_document_schema_proto_init()
 	file_google_cloud_documentai_v1beta3_evaluation_proto_init()
-	file_google_cloud_documentai_v1beta3_processor_proto_msgTypes[4].OneofWrappers = []any{
+	file_google_cloud_documentai_v1beta3_processor_proto_msgTypes[6].OneofWrappers = []any{
 		(*ProcessorVersion_GenAiModelInfo_FoundationGenAiModelInfo_)(nil),
 		(*ProcessorVersion_GenAiModelInfo_CustomGenAiModelInfo_)(nil),
 	}
@@ -1090,8 +1267,8 @@ func file_google_cloud_documentai_v1beta3_processor_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_documentai_v1beta3_processor_proto_rawDesc), len(file_google_cloud_documentai_v1beta3_processor_proto_rawDesc)),
-			NumEnums:      4,
-			NumMessages:   7,
+			NumEnums:      5,
+			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

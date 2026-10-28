@@ -360,6 +360,36 @@ func ExampleClient_CreateGoldengateDeployment() {
 	_ = resp
 }
 
+func ExampleClient_CreateOdbDnsZone() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := oracledatabase.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &oracledatabasepb.CreateOdbDnsZoneRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/oracledatabase/apiv1/oracledatabasepb#CreateOdbDnsZoneRequest.
+	}
+	op, err := c.CreateOdbDnsZone(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_CreateOdbNetwork() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -662,6 +692,34 @@ func ExampleClient_DeleteGoldengateDeployment() {
 		// See https://pkg.go.dev/cloud.google.com/go/oracledatabase/apiv1/oracledatabasepb#DeleteGoldengateDeploymentRequest.
 	}
 	op, err := c.DeleteGoldengateDeployment(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_DeleteOdbDnsZone() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := oracledatabase.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &oracledatabasepb.DeleteOdbDnsZoneRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/oracledatabase/apiv1/oracledatabasepb#DeleteOdbDnsZoneRequest.
+	}
+	op, err := c.DeleteOdbDnsZone(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -1051,6 +1109,31 @@ func ExampleClient_GetGoldengateDeployment() {
 		// See https://pkg.go.dev/cloud.google.com/go/oracledatabase/apiv1/oracledatabasepb#GetGoldengateDeploymentRequest.
 	}
 	resp, err := c.GetGoldengateDeployment(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetOdbDnsZone() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := oracledatabase.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &oracledatabasepb.GetOdbDnsZoneRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/oracledatabase/apiv1/oracledatabasepb#GetOdbDnsZoneRequest.
+	}
+	resp, err := c.GetOdbDnsZone(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -2092,6 +2175,43 @@ func ExampleClient_ListMinorVersions() {
 		// Otherwise, remove this line. Only populated after
 		// first call to Next(). Not safe for concurrent access.
 		_ = it.Response.(*oracledatabasepb.ListMinorVersionsResponse)
+	}
+}
+
+func ExampleClient_ListOdbDnsZones() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := oracledatabase.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &oracledatabasepb.ListOdbDnsZonesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/oracledatabase/apiv1/oracledatabasepb#ListOdbDnsZonesRequest.
+	}
+	it := c.ListOdbDnsZones(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*oracledatabasepb.ListOdbDnsZonesResponse)
 	}
 }
 
