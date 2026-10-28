@@ -61,6 +61,7 @@ func main() {
 	// own client user agent here so the service sees both the caller and the
 	// daemon build, e.g. "python-bigtable/2.1.0 go-acc/v1.38.0".
 	userAgent := flag.String("user-agent", "", "user-agent prefix prepended to the daemon's own token (optional)")
+	callerUserAgent := flag.String("caller-user-agent", "", "alias for --user-agent (optional)")
 	flag.Parse()
 
 	if *udsPath == "" {
@@ -94,8 +95,9 @@ func main() {
 	// Prepend the caller's user-agent prefix to the daemon's own token. Appended
 	// after the channel's defaults so it overrides the default WithUserAgent; a
 	// blank flag leaves the default (daemon-token-only) user agent untouched.
-	if strings.TrimSpace(*userAgent) != "" {
-		opts = append(opts, option.WithUserAgent(accelerator.ComposeUserAgent(*userAgent)))
+	effectiveUserAgent := resolveUserAgent(*userAgent, *callerUserAgent)
+	if effectiveUserAgent != "" {
+		opts = append(opts, option.WithUserAgent(accelerator.ComposeUserAgent(effectiveUserAgent)))
 	}
 
 	ctx := context.Background()
@@ -122,7 +124,7 @@ func main() {
 	// metrics are attributed to both the calling client library and the daemon
 	// build, e.g. "python-bigtable/2.1.0 go-acc/v1.38.0". A blank --user-agent
 	// yields the daemon token alone ("go-acc/v1.38.0").
-	channel, err := accelerator.NewChannel(ctx, *project, *instance, *appProfile, accelerator.ComposeUserAgent(*userAgent), opts...)
+	channel, err := accelerator.NewChannel(ctx, *project, *instance, *appProfile, accelerator.ComposeUserAgent(effectiveUserAgent), opts...)
 	if err != nil {
 		log.Fatalf("failed to construct accelerator channel: %v", err)
 	}
@@ -141,7 +143,7 @@ func main() {
 		srv = accelerator.NewServer(*udsPath, channel)
 	}
 	log.Printf("Starting accelerator daemon on UDS=%s project=%s instance=%s app-profile=%q data-endpoint=%q universe-domain=%q scopes=%q quota-project=%q user-agent=%q",
-		*udsPath, *project, *instance, *appProfile, *dataEndpoint, *universeDomain, *scopesFlag, *quotaProject, accelerator.ComposeUserAgent(*userAgent))
+		*udsPath, *project, *instance, *appProfile, *dataEndpoint, *universeDomain, *scopesFlag, *quotaProject, accelerator.ComposeUserAgent(effectiveUserAgent))
 
 	// Resolve and publish the daemon's identity BEFORE binding the socket, so
 	// the file is present by the time the client detects a connectable UDS.
@@ -178,6 +180,15 @@ func main() {
 	case s := <-sigCh:
 		log.Printf("accelerator: received %s, shutting down...", s)
 	}
+}
+
+// resolveUserAgent returns the effective caller user-agent string, preferring
+// --user-agent when set and falling back to --caller-user-agent.
+func resolveUserAgent(userAgent, callerUserAgent string) string {
+	if ua := strings.TrimSpace(userAgent); ua != "" {
+		return ua
+	}
+	return strings.TrimSpace(callerUserAgent)
 }
 
 // splitScopes parses a comma-separated scopes flag into a trimmed, non-empty

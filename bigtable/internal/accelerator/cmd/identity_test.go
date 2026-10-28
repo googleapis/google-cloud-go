@@ -16,6 +16,8 @@ package main
 
 import (
 	"encoding/json"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"strings"
@@ -143,5 +145,94 @@ func TestWriteIdentity_WritesDocNextToSocket(t *testing.T) {
 	// The document must never contain the private key material.
 	if strings.Contains(string(b), "PRIVATE KEY") {
 		t.Errorf("identity doc leaked key material: %s", b)
+	}
+}
+
+func TestPrincipalFromCreds_NoGCEFallthroughForJSONOrNilCreds(t *testing.T) {
+	const gceEmail = "vm-default-sa@gce.iam.gserviceaccount.com"
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Metadata-Flavor", "Google")
+		if strings.HasSuffix(r.URL.Path, "/service-accounts/default/email") {
+			_, _ = w.Write([]byte(gceEmail))
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer ts.Close()
+	t.Setenv("GCE_METADATA_HOST", strings.TrimPrefix(ts.URL, "http://"))
+
+	for _, tc := range []struct {
+		name  string
+		creds *google.Credentials
+		want  string
+	}{
+		{
+			name:  "nil credentials do not query GCE metadata",
+			creds: nil,
+			want:  "",
+		},
+		{
+			name: "authorized_user JSON does not fall through to GCE metadata",
+			creds: &google.Credentials{
+				JSON: []byte(`{"type":"authorized_user","client_id":"abc","refresh_token":"tok"}`),
+			},
+			want: "",
+		},
+		{
+			name: "direct WIF external_account JSON without impersonation does not fall through to GCE metadata",
+			creds: &google.Credentials{
+				JSON: []byte(`{"type":"external_account","audience":"//iam.googleapis.com/projects/123/locations/global/workloadIdentityPools/p/providers/pr"}`),
+			},
+			want: "",
+		},
+		{
+			name:  "GCE metadata credentials without JSON resolve via metadata server",
+			creds: &google.Credentials{},
+			want:  gceEmail,
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			got, err := principalFromCreds(t.Context(), tc.creds)
+			if err != nil {
+				t.Fatalf("principalFromCreds: %v", err)
+			}
+			if got != tc.want {
+				t.Errorf("principalFromCreds() = %q, want %q", got, tc.want)
+			}
+		})
+	}
+}
+
+func TestResolveUserAgent(t *testing.T) {
+	for _, tc := range []struct {
+		name            string
+		userAgent       string
+		callerUserAgent string
+		want            string
+	}{
+		{
+			name:            "prefers --user-agent",
+			userAgent:       "ua-primary",
+			callerUserAgent: "ua-fallback",
+			want:            "ua-primary",
+		},
+		{
+			name:            "falls back to --caller-user-agent",
+			userAgent:       "",
+			callerUserAgent: " cbt-python-data/3.0.0 ",
+			want:            "cbt-python-data/3.0.0",
+		},
+		{
+			name:            "both empty",
+			userAgent:       "   ",
+			callerUserAgent: "",
+			want:            "",
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := resolveUserAgent(tc.userAgent, tc.callerUserAgent); got != tc.want {
+				t.Errorf("resolveUserAgent(%q, %q) = %q, want %q", tc.userAgent, tc.callerUserAgent, got, tc.want)
+			}
+		})
 	}
 }
