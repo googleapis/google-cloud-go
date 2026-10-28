@@ -522,16 +522,6 @@
         }
       ]
     },
-    "chronicle": {
-      "component": "chronicle",
-      "extra-files": [
-        {
-          "jsonpath": "$.clientLibrary.version",
-          "path": "examples/apiv1/snippet_metadata.google.cloud.chronicle.v1.json",
-          "type": "json"
-        }
-      ]
-    },
     "cloudbuild": {
       "component": "cloudbuild",
       "extra-files": [
