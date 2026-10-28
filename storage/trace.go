@@ -19,6 +19,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"math"
 	"net/http"
 	"net/url"
 	"os"
@@ -492,7 +493,6 @@ type grpcUploadChunkTracker struct {
 	spans           []uploadChunkSpan
 	lastEndOffset   int64
 	confirmedOffset int64
-	finalized       bool
 	ended           bool
 	endErr          error
 }
@@ -545,13 +545,13 @@ func (ct *grpcUploadChunkTracker) onRequest(req *storagepb.BidiWriteObjectReques
 
 func (ct *grpcUploadChunkTracker) onResponse(resp *storagepb.BidiWriteObjectResponse) {
 	var flushOffset int64
-	var finalized bool
 	switch ws := resp.GetWriteStatus().(type) {
 	case *storagepb.BidiWriteObjectResponse_PersistedSize:
 		flushOffset = ws.PersistedSize
 	case *storagepb.BidiWriteObjectResponse_Resource:
-		flushOffset = ws.Resource.GetSize()
-		finalized = ws.Resource != nil
+		if ws.Resource != nil {
+			flushOffset = math.MaxInt64
+		}
 	default:
 		return
 	}
@@ -559,9 +559,6 @@ func (ct *grpcUploadChunkTracker) onResponse(resp *storagepb.BidiWriteObjectResp
 	defer ct.mu.Unlock()
 	if flushOffset > ct.confirmedOffset {
 		ct.confirmedOffset = flushOffset
-	}
-	if finalized {
-		ct.finalized = true
 	}
 	ct.finishConfirmedLocked()
 }
@@ -576,7 +573,7 @@ func (ct *grpcUploadChunkTracker) onEnd(err error) {
 
 func (ct *grpcUploadChunkTracker) finishConfirmedLocked() {
 	i := 0
-	for i < len(ct.spans) && ct.spans[i].flushed && (ct.finalized || ct.confirmedOffset >= ct.spans[i].endOffset) {
+	for i < len(ct.spans) && ct.spans[i].flushed && ct.confirmedOffset >= ct.spans[i].endOffset {
 		ct.spans[i].finish(nil)
 		i++
 	}
@@ -587,57 +584,45 @@ func (ct *grpcUploadChunkTracker) finishAllLocked(err error) {
 	for _, s := range ct.spans {
 		s.finish(err)
 	}
-	clear(ct.spans)
-	ct.spans = ct.spans[:0]
+	ct.spans = nil
 }
 
 // startHTTPUploadChunkSpan starts a Storage.UploadChunk span for an HTTP
 // resumable upload chunk request when dev tracing is enabled.
+// A zero-byte finalization request ("bytes */<size>") does not upload a chunk
+// and returns false.
 func startHTTPUploadChunkSpan(ctx context.Context, h http.Header) (context.Context, bool) {
-	chunkNum, offset, sizeBytes, ok := httpUploadChunkInfo(ctx, h)
-	if !ok {
+	chunkSize, valid := ctx.Value(uploadChunkSizeKey).(int64)
+	if !valid || chunkSize <= 0 {
+		return ctx, false
+	}
+	rest, found := strings.CutPrefix(h.Get("Content-Range"), "bytes ")
+	if !found {
+		return ctx, false
+	}
+	rangePart, _, found := strings.Cut(rest, "/")
+	if !found {
+		return ctx, false
+	}
+	startStr, endStr, found := strings.Cut(rangePart, "-")
+	if !found {
+		return ctx, false
+	}
+	offset, err := strconv.ParseInt(startStr, 10, 64)
+	if err != nil || offset < 0 {
+		return ctx, false
+	}
+	end, err := strconv.ParseInt(endStr, 10, 64)
+	if err != nil || end < offset {
 		return ctx, false
 	}
 	ctx, _ = startSpan(ctx, uploadChunkSpanName,
 		trace.WithAttributes(
-			attribute.Int64(uploadChunkNumberAttr, chunkNum),
+			attribute.Int64(uploadChunkNumberAttr, offset/chunkSize+1),
 			attribute.Int64(payloadOffsetAttr, offset),
-			attribute.Int64(payloadSizeBytesAttr, sizeBytes),
+			attribute.Int64(payloadSizeBytesAttr, end-offset+1),
 		))
 	return ctx, true
-}
-
-// httpUploadChunkInfo parses the Content-Range header of an HTTP resumable
-// upload chunk request and returns its 1-based chunk number, byte offset, and
-// payload size in bytes.
-// A zero-byte finalization request ("bytes */<size>") does not upload a chunk
-// and returns false.
-func httpUploadChunkInfo(ctx context.Context, h http.Header) (chunkNum, offset, sizeBytes int64, ok bool) {
-	chunkSize, valid := ctx.Value(uploadChunkSizeKey).(int64)
-	if !valid || chunkSize <= 0 {
-		return 0, 0, 0, false
-	}
-	rest, found := strings.CutPrefix(h.Get("Content-Range"), "bytes ")
-	if !found {
-		return 0, 0, 0, false
-	}
-	rangePart, _, found := strings.Cut(rest, "/")
-	if !found {
-		return 0, 0, 0, false
-	}
-	startStr, endStr, found := strings.Cut(rangePart, "-")
-	if !found {
-		return 0, 0, 0, false
-	}
-	offset, err := strconv.ParseInt(startStr, 10, 64)
-	if err != nil || offset < 0 {
-		return 0, 0, 0, false
-	}
-	end, err := strconv.ParseInt(endStr, 10, 64)
-	if err != nil || end < offset {
-		return 0, 0, 0, false
-	}
-	return offset/chunkSize + 1, offset, end - offset + 1, true
 }
 
 // httpUploadChunkError returns the error to record on an HTTP

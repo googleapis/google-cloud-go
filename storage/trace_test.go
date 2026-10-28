@@ -1999,21 +1999,20 @@ func extractAndVerifyUploadChunkSpans(t *testing.T, spans tracetest.SpanStubs) [
 	return got
 }
 
-type uploadChunkSpanTestCase struct {
-	name        string
-	devTracing  bool
-	chunkSize   int
-	payloadSize int
-	failCode    codes.Code
-	failStatus  int
-	wantErr     bool
-	want        []uploadChunkSpanInfo
-}
-
-func commonUploadChunkSpanTestCases() []uploadChunkSpanTestCase {
+func TestWriterUploadChunkSpans(t *testing.T) {
 	const kib = 1024
 	const mib = 1024 * kib
-	return []uploadChunkSpanTestCase{
+	testCases := []struct {
+		name        string
+		devTracing  bool
+		chunkSize   int
+		payloadSize int
+		failCode    codes.Code
+		failStatus  int
+		wantErr     bool
+		grpcOnly    bool
+		want        []uploadChunkSpanInfo
+	}{
 		{
 			name:        "multiple chunks",
 			devTracing:  true,
@@ -2088,113 +2087,99 @@ func commonUploadChunkSpanTestCases() []uploadChunkSpanTestCase {
 				{Number: 3, Offset: 512 * kib, SizeBytes: 256 * kib, Failed: true, ErrorType: "PERMISSION_DENIED"},
 			},
 		},
-	}
-}
-
-func TestGRPCWriterUploadChunkSpans(t *testing.T) {
-	const kib = 1024
-	const mib = 1024 * kib
-
-	cases := append(commonUploadChunkSpanTestCases(), uploadChunkSpanTestCase{
-		name:        "chunk sent as several messages",
-		devTracing:  true,
-		chunkSize:   4 * mib, // Two 2 MiB messages per chunk; one span each.
-		payloadSize: 10 * mib,
-		want: []uploadChunkSpanInfo{
-			{Number: 1, Offset: 0, SizeBytes: 4 * mib},
-			{Number: 2, Offset: 4 * mib, SizeBytes: 4 * mib},
-			{Number: 3, Offset: 8 * mib, SizeBytes: 2 * mib},
+		{
+			name:        "chunk sent as several messages",
+			devTracing:  true,
+			chunkSize:   4 * mib, // Two 2 MiB messages per chunk; one span each.
+			payloadSize: 10 * mib,
+			grpcOnly:    true,
+			want: []uploadChunkSpanInfo{
+				{Number: 1, Offset: 0, SizeBytes: 4 * mib},
+				{Number: 2, Offset: 4 * mib, SizeBytes: 4 * mib},
+				{Number: 3, Offset: 8 * mib, SizeBytes: 2 * mib},
+			},
 		},
-	})
+	}
 
-	for _, tc := range cases {
-		t.Run(tc.name, func(t *testing.T) {
-			var failAt int64
-			if tc.failCode != codes.OK {
-				// Chunk 3 covers [512 KiB, 768 KiB). Fail mid-chunk before GCS persists it.
-				failAt = 600 * kib
-			}
-			srv := &chunkTraceTestServer{failAt: failAt, failCode: tc.failCode}
-			te := runChunkTraceUpload(t, srv, tc.devTracing, tc.chunkSize, tc.payloadSize, tc.wantErr)
-
-			// Chunk 4 can be in flight when chunk 3 fails, so it may also fail
-			// before the retry or terminal failure completes.
-			got := slices.DeleteFunc(extractAndVerifyUploadChunkSpans(t, te.Spans()), func(s uploadChunkSpanInfo) bool {
-				return failAt > 0 && s.Failed && s.Number == 4
-			})
-			if diff := cmp.Diff(tc.want, got); diff != "" {
-				t.Errorf("%s spans mismatch (-want +got):\n%s", uploadChunkSpanName, diff)
-			}
-			if failAt > 0 {
-				srv.mu.Lock()
-				failed := srv.failed
-				srv.mu.Unlock()
-				if !failed {
-					t.Error("server did not inject the stream failure")
+	for _, transport := range []string{"grpc", "http"} {
+		t.Run(transport, func(t *testing.T) {
+			for _, tc := range testCases {
+				if tc.grpcOnly && transport != "grpc" {
+					continue
 				}
+				t.Run(tc.name, func(t *testing.T) {
+					ctx := t.Context()
+					te := testutil.NewOpenTelemetryTestExporter()
+					t.Cleanup(func() { te.Unregister(context.Background()) })
+					t.Setenv(storageOtelTracingDevVar, strconv.FormatBool(tc.devTracing))
+					t.Setenv(storageBucketMetadataDisabledVar, "true")
+
+					var (
+						client  *Client
+						grpcSrv *chunkTraceTestServer
+						err     error
+					)
+					if transport == "grpc" {
+						var failAt int64
+						if tc.failCode != codes.OK {
+							// Chunk 3 covers [512 KiB, 768 KiB). Fail mid-chunk before GCS persists it.
+							failAt = 600 * kib
+						}
+						grpcSrv = &chunkTraceTestServer{failAt: failAt, failCode: tc.failCode}
+						startFakeStorageServer(t, grpcSrv)
+						client, err = NewGRPCClient(ctx)
+					} else {
+						var failOffset int64
+						if tc.failStatus != 0 {
+							// Fail the first attempt of chunk 3 (offset 512 KiB).
+							failOffset = 512 * kib
+						}
+						httpSrv := newHTTPChunkTraceTestServer(t, failOffset, tc.failStatus)
+						client, err = NewClient(ctx, option.WithEndpoint(httpSrv.URL), option.WithoutAuthentication())
+					}
+					if err != nil {
+						t.Fatalf("new %s client: %v", transport, err)
+					}
+					t.Cleanup(func() { client.Close() })
+					retryOpts := []RetryOption{WithBackoff(gax.Backoff{Initial: time.Millisecond, Max: time.Millisecond})}
+					if !tc.wantErr {
+						retryOpts = append(retryOpts, WithPolicy(RetryAlways))
+					}
+					client.SetRetry(retryOpts...)
+
+					w := client.Bucket("bucket").Object("object").NewWriter(ctx)
+					w.ChunkSize = tc.chunkSize
+					w.DisableAutoChecksum = true
+					_, writeErr := w.Write(make([]byte, tc.payloadSize))
+					closeErr := w.Close()
+					if (errors.Join(writeErr, closeErr) != nil) != tc.wantErr {
+						t.Fatalf("upload error = %v, wantErr %v", errors.Join(writeErr, closeErr), tc.wantErr)
+					}
+
+					// Chunk 4 can be in flight on a gRPC stream when chunk 3 fails,
+					// so it may also fail before the retry or terminal failure completes.
+					got := slices.DeleteFunc(extractAndVerifyUploadChunkSpans(t, te.Spans()), func(s uploadChunkSpanInfo) bool {
+						return grpcSrv != nil && grpcSrv.failAt > 0 && s.Failed && s.Number == 4
+					})
+					if diff := cmp.Diff(tc.want, got); diff != "" {
+						t.Errorf("%s spans mismatch (-want +got):\n%s", uploadChunkSpanName, diff)
+					}
+					if grpcSrv != nil && grpcSrv.failAt > 0 {
+						grpcSrv.mu.Lock()
+						failed := grpcSrv.failed
+						grpcSrv.mu.Unlock()
+						if !failed {
+							t.Error("server did not inject the stream failure")
+						}
+					}
+				})
 			}
 		})
 	}
 }
 
-// runChunkTraceUpload uploads an object of payloadSize bytes to srv over gRPC
-// with the given chunk size and returns the exporter holding the recorded spans.
-func runChunkTraceUpload(t *testing.T, srv *chunkTraceTestServer, devTracing bool, chunkSize, payloadSize int, wantErr bool) *testutil.OpenTelemetryTestExporter {
+func newHTTPChunkTraceTestServer(t *testing.T, failOffset int64, failStatus int) *httptest.Server {
 	t.Helper()
-	ctx := t.Context()
-	te := testutil.NewOpenTelemetryTestExporter()
-	t.Cleanup(func() { te.Unregister(context.Background()) })
-	t.Setenv(storageOtelTracingDevVar, strconv.FormatBool(devTracing))
-	t.Setenv(storageBucketMetadataDisabledVar, "true")
-	startFakeStorageServer(t, srv)
-
-	client, err := NewGRPCClient(ctx)
-	if err != nil {
-		t.Fatalf("NewGRPCClient: %v", err)
-	}
-	t.Cleanup(func() { client.Close() })
-	client.SetRetry(WithBackoff(gax.Backoff{Initial: time.Millisecond, Max: time.Millisecond}))
-
-	w := client.Bucket("bucket").Object("object").NewWriter(ctx)
-	w.ChunkSize = chunkSize
-	w.DisableAutoChecksum = true
-	_, writeErr := w.Write(make([]byte, payloadSize))
-	closeErr := w.Close()
-	err = errors.Join(writeErr, closeErr)
-	if (err != nil) != wantErr {
-		t.Fatalf("upload error = %v, wantErr %v", err, wantErr)
-	}
-	return te
-}
-
-func TestHTTPWriterUploadChunkSpans(t *testing.T) {
-	const kib = 1024
-
-	for _, tc := range commonUploadChunkSpanTestCases() {
-		t.Run(tc.name, func(t *testing.T) {
-			var failOffset int64
-			if tc.failStatus != 0 {
-				// Fail the first attempt of chunk 3 (offset 512 KiB).
-				failOffset = 512 * kib
-			}
-			te := runHTTPChunkTraceUpload(t, failOffset, tc.failStatus, tc.devTracing, tc.chunkSize, tc.payloadSize, tc.wantErr)
-
-			got := extractAndVerifyUploadChunkSpans(t, te.Spans())
-			if diff := cmp.Diff(tc.want, got); diff != "" {
-				t.Errorf("%s spans mismatch (-want +got):\n%s", uploadChunkSpanName, diff)
-			}
-		})
-	}
-}
-
-func runHTTPChunkTraceUpload(t *testing.T, failOffset int64, failStatus int, devTracing bool, chunkSize, payloadSize int, wantErr bool) *testutil.OpenTelemetryTestExporter {
-	t.Helper()
-	ctx := t.Context()
-	te := testutil.NewOpenTelemetryTestExporter()
-	t.Cleanup(func() { te.Unregister(context.Background()) })
-	t.Setenv(storageOtelTracingDevVar, strconv.FormatBool(devTracing))
-	t.Setenv(storageBucketMetadataDisabledVar, "true")
-
 	var mu sync.Mutex
 	var failedOnce bool
 	var srv *httptest.Server
@@ -2205,8 +2190,7 @@ func runHTTPChunkTraceUpload(t *testing.T, failOffset int64, failStatus int, dev
 			w.WriteHeader(http.StatusOK)
 			return
 		}
-		cr := r.Header.Get("Content-Range")
-		if cr != "" {
+		if cr := r.Header.Get("Content-Range"); cr != "" {
 			mu.Lock()
 			if failOffset > 0 && !failedOnce && strings.HasPrefix(cr, fmt.Sprintf("bytes %d-", failOffset)) {
 				failedOnce = true
@@ -2226,28 +2210,7 @@ func runHTTPChunkTraceUpload(t *testing.T, failOffset int64, failStatus int, dev
 		w.Write([]byte(`{"name":"object","bucket":"bucket"}`))
 	}))
 	t.Cleanup(srv.Close)
-
-	client, err := NewClient(ctx, option.WithEndpoint(srv.URL), option.WithoutAuthentication())
-	if err != nil {
-		t.Fatalf("NewClient: %v", err)
-	}
-	t.Cleanup(func() { client.Close() })
-	retryOpts := []RetryOption{WithBackoff(gax.Backoff{Initial: time.Millisecond, Max: time.Millisecond})}
-	if !wantErr {
-		retryOpts = append(retryOpts, WithPolicy(RetryAlways))
-	}
-	client.SetRetry(retryOpts...)
-
-	w := client.Bucket("bucket").Object("object").NewWriter(ctx)
-	w.ChunkSize = chunkSize
-	w.DisableAutoChecksum = true
-	_, writeErr := w.Write(make([]byte, payloadSize))
-	closeErr := w.Close()
-	err = errors.Join(writeErr, closeErr)
-	if (err != nil) != wantErr {
-		t.Fatalf("upload error = %v, wantErr %v", err, wantErr)
-	}
-	return te
+	return srv
 }
 
 type staticAuthTokenProvider struct {
