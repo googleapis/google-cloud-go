@@ -498,16 +498,21 @@ type grpcUploadChunkTracker struct {
 }
 
 func (ct *grpcUploadChunkTracker) onRequest(req *storagepb.BidiWriteObjectRequest) {
-	n := int64(len(req.GetChecksummedData().GetContent()))
+	var data *storagepb.ChecksummedData
+	if d, ok := req.GetData().(*storagepb.BidiWriteObjectRequest_ChecksummedData); ok && d != nil {
+		data = d.ChecksummedData
+	}
+	n := int64(len(data.GetContent()))
 	if n == 0 {
 		return
 	}
 	offset := req.GetWriteOffset()
+	number := offset/ct.chunkSize + 1
 	flushed := req.GetFlush() || req.GetFinishWrite()
 
 	ct.mu.Lock()
 	defer ct.mu.Unlock()
-	if ct.ended && offset < ct.lastEndOffset {
+	if ct.ended && number <= (ct.lastEndOffset+ct.chunkSize-1)/ct.chunkSize {
 		return
 	}
 	if offset+n > ct.lastEndOffset {
@@ -518,7 +523,6 @@ func (ct *grpcUploadChunkTracker) onRequest(req *storagepb.BidiWriteObjectReques
 		ct.spans[m-1].sizeBytes += n
 		ct.spans[m-1].flushed = flushed
 	} else {
-		number := offset/ct.chunkSize + 1
 		ctx, span := startSpan(ct.parentCtx, uploadChunkSpanName,
 			trace.WithAttributes(
 				attribute.Int64(uploadChunkNumberAttr, number),

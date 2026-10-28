@@ -1728,8 +1728,8 @@ func TestWriterTraceWriteModeEmulated(t *testing.T) {
 						}
 					}
 					wantAttrs := append(slices.Clone(tc.wantAttrs),
-						c.rpcSystem,
-						attribute.String(storageURIAttrKey, "gs://"+bucket+"/"+objName))
+						attribute.String(storageURIAttrKey, "gs://"+bucket+"/"+objName),
+						rpcSystemNameKey.String(transport))
 					if tc.wantUploadID && len(writerSpans) == 1 {
 						// The upload ID is server-generated, so only check that it is present.
 						var uploadID string
