@@ -258,6 +258,11 @@ func (c *globalFrontendSettingsRESTClient) Get(ctx context.Context, req *compute
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/globalFrontendSettings", req.GetProject())
 
 	// Build HTTP headers from client and context metadata.
@@ -312,6 +317,11 @@ func (c *globalFrontendSettingsRESTClient) Patch(ctx context.Context, req *compu
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/globalFrontendSettings", req.GetProject())

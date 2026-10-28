@@ -27,9 +27,11 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/auth"
 	"cloud.google.com/go/storage/experimental"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -597,13 +599,93 @@ func TestPrepareDirectPathMetadata_FeatureTracking(t *testing.T) {
 				t.Fatalf("features header missing, want %d", tc.wantFeatures)
 			}
 
-			decoded, err := decodeUint32(got[0])
+			decoded, err := decodeFeatureMask(got[0])
 			if err != nil {
 				t.Fatalf("failed to decode features: %v", err)
 			}
 
 			if decoded != tc.wantFeatures {
 				t.Errorf("got features %d, want %d", decoded, tc.wantFeatures)
+			}
+		})
+	}
+}
+
+// TestPrepareDirectPathMetadata_OwnsFeatureHeader verifies that the client
+// always rewrites the feature header in outgoing metadata from its own
+// bitmask: foreign or malformed values (e.g. set by a caller for a different
+// client) are replaced by the merged mask, or dropped when there is nothing
+// to report.
+func TestPrepareDirectPathMetadata_OwnsFeatureHeader(t *testing.T) {
+	foreign := strings.Repeat("Zm9v", 130) // ~390 bytes of non-mask payload.
+	tests := []struct {
+		desc           string
+		configFeatures uint32
+		ctxFeatures    []trackedFeature
+		incomingMD     []string
+		want           []string
+	}{
+		{
+			desc: "no features, no header: untouched",
+			want: nil,
+		},
+		{
+			desc:       "no features, zero mask header: dropped",
+			incomingMD: []string{encodeFeatureMask(0)},
+			want:       nil,
+		},
+		{
+			desc:       "no features, foreign value: dropped",
+			incomingMD: []string{foreign},
+			want:       nil,
+		},
+		{
+			desc:           "features, foreign value: replaced by mask",
+			configFeatures: uint32(1 << featurePCU),
+			incomingMD:     []string{foreign},
+			want:           []string{encodeFeatureMask(uint32(1 << featurePCU))},
+		},
+		{
+			desc:           "legacy standard-alphabet value is merged and re-encoded",
+			configFeatures: uint32(1 << featurePCU),
+			ctxFeatures:    []trackedFeature{featureMultistreamInMRD},
+			incomingMD:     []string{"AAAA+A=="}, // 0xF8 in standard base64 (bits 0 and 1 unset).
+			want:           []string{encodeFeatureMask(0xF8 | uint32(1<<featurePCU) | uint32(1<<featureMultistreamInMRD))},
+		},
+		{
+			desc:       "multiple values collapse to one",
+			incomingMD: []string{encodeFeatureMask(1), encodeFeatureMask(2), foreign},
+			want:       []string{encodeFeatureMask(3)},
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.desc, func(t *testing.T) {
+			c := &grpcStorageClient{
+				config:                  &storageConfig{},
+				configFeatureAttributes: tc.configFeatures,
+			}
+			ctx := context.Background()
+			if len(tc.ctxFeatures) > 0 {
+				ctx = addFeatureAttributes(ctx, tc.ctxFeatures...)
+			}
+			var callerMD metadata.MD
+			if len(tc.incomingMD) > 0 {
+				callerMD = metadata.MD{}
+				callerMD.Set(featureTrackerHeaderName, tc.incomingMD...)
+				ctx = metadata.NewOutgoingContext(ctx, callerMD)
+			}
+
+			newCtx, err := c.prepareDirectPathMetadata(ctx, directPathEndpointPrefix)
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+			md, _ := metadata.FromOutgoingContext(newCtx)
+			got := md.Get(featureTrackerHeaderName)
+			if diff := cmp.Diff(tc.want, got, cmpopts.EquateEmpty()); diff != "" {
+				t.Errorf("metadata %s mismatch (-want +got):\n%s", featureTrackerHeaderName, diff)
+			}
+			if diff := cmp.Diff(tc.incomingMD, callerMD.Get(featureTrackerHeaderName), cmpopts.EquateEmpty()); diff != "" {
+				t.Errorf("caller metadata %s modified (-want +got):\n%s", featureTrackerHeaderName, diff)
 			}
 		})
 	}
@@ -1151,5 +1233,84 @@ func TestRangeReaderRemainLargeObject(t *testing.T) {
 		if got := rangeReaderRemain(size, offset, length); got != length {
 			t.Errorf("rangeReaderRemain(%d, %d, %d) = %d, want %d", int64(size), offset, int64(length), got, int64(length))
 		}
+	}
+}
+
+// authCredentialsOptions returns the option.WithAuthCredentials options in opts.
+func authCredentialsOptions(opts []option.ClientOption) []option.ClientOption {
+	credsOptType := reflect.TypeOf(option.WithAuthCredentials(nil))
+	var matched []option.ClientOption
+	for _, o := range opts {
+		if reflect.TypeOf(o) == credsOptType {
+			matched = append(matched, o)
+		}
+	}
+	return matched
+}
+
+func TestNewGRPCStorageClient_AuthTracingCustomCredentials(t *testing.T) {
+	ctx := context.Background()
+	t.Setenv(storageOtelTracingDevVar, "true")
+	t.Setenv("STORAGE_EMULATOR_HOST", "")
+	t.Setenv("STORAGE_EMULATOR_HOST_GRPC", "")
+	// Keep the test hermetic: skip DirectPath and GCE metadata probing.
+	t.Setenv(directPathDisableEnvVar, "true")
+
+	baseProvider := &staticAuthTokenProvider{token: &auth.Token{Value: "fake-token"}}
+	baseCreds := &auth.Credentials{TokenProvider: baseProvider}
+	client, err := newGRPCStorageClient(ctx,
+		withClientOptions(
+			option.WithAuthCredentials(baseCreds),
+			WithDisabledClientMetrics(),
+		),
+	)
+	if err != nil {
+		t.Fatalf("newGRPCStorageClient: %v", err)
+	}
+	defer client.Close()
+
+	if got := len(authCredentialsOptions(client.settings.clientOption)); got != 2 {
+		t.Errorf("got %d WithAuthCredentials options, want 2 (caller's and traced)", got)
+	}
+	resolved, err := internaloption.AuthCreds(ctx, client.settings.clientOption)
+	if err != nil {
+		t.Fatalf("internaloption.AuthCreds: %v", err)
+	}
+	if resolved == baseCreds {
+		t.Fatal("resolved credentials alias the caller's credentials; want a wrapped copy")
+	}
+	traced, ok := resolved.TokenProvider.(*tracedTokenProvider)
+	if !ok {
+		t.Fatalf("got resolved TokenProvider %T, want *tracedTokenProvider", resolved.TokenProvider)
+	}
+	if traced.base != auth.TokenProvider(baseProvider) {
+		t.Errorf("got traced base TokenProvider %T, want the caller's provider", traced.base)
+	}
+	// Caller-owned credentials must not be mutated by client construction.
+	if baseCreds.TokenProvider != auth.TokenProvider(baseProvider) {
+		t.Errorf("caller-owned credentials were mutated: got TokenProvider %T, want %T", baseCreds.TokenProvider, baseProvider)
+	}
+}
+
+func TestNewGRPCStorageClient_AuthTracingWithoutAuthentication(t *testing.T) {
+	ctx := context.Background()
+	t.Setenv(storageOtelTracingDevVar, "true")
+	t.Setenv("STORAGE_EMULATOR_HOST", "")
+	t.Setenv("STORAGE_EMULATOR_HOST_GRPC", "")
+
+	client, err := newGRPCStorageClient(ctx,
+		withClientOptions(
+			option.WithoutAuthentication(),
+			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+			WithDisabledClientMetrics(),
+		),
+	)
+	if err != nil {
+		t.Fatalf("newGRPCStorageClient: %v", err)
+	}
+	defer client.Close()
+
+	if got := len(authCredentialsOptions(client.settings.clientOption)); got != 0 {
+		t.Errorf("got %d WithAuthCredentials options, want 0 with WithoutAuthentication", got)
 	}
 }

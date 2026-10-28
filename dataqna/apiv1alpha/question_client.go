@@ -644,6 +644,11 @@ func (c *questionRESTClient) GetQuestion(ctx context.Context, req *dataqnapb.Get
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -711,6 +716,11 @@ func (c *questionRESTClient) CreateQuestion(ctx context.Context, req *dataqnapb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/questions", req.GetParent())
 
 	// Build HTTP headers from client and context metadata.
@@ -766,6 +776,11 @@ func (c *questionRESTClient) ExecuteQuestion(ctx context.Context, req *dataqnapb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:execute", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
@@ -813,6 +828,11 @@ func (c *questionRESTClient) ExecuteQuestion(ctx context.Context, req *dataqnapb
 func (c *questionRESTClient) GetUserFeedback(ctx context.Context, req *dataqnapb.GetUserFeedbackRequest, opts ...gax.CallOption) (*dataqnapb.UserFeedback, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -870,6 +890,11 @@ func (c *questionRESTClient) UpdateUserFeedback(ctx context.Context, req *dataqn
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetUserFeedback().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetUserFeedback().GetName())

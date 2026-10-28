@@ -326,6 +326,12 @@ func (c *globalPublicDelegatedPrefixesRESTClient) Delete(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetPublicDelegatedPrefix(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/publicDelegatedPrefixes/%v", req.GetProject(), req.GetPublicDelegatedPrefix())
 
 	params := url.Values{}
@@ -389,6 +395,12 @@ func (c *globalPublicDelegatedPrefixesRESTClient) Get(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetPublicDelegatedPrefix(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/publicDelegatedPrefixes/%v", req.GetProject(), req.GetPublicDelegatedPrefix())
 
 	// Build HTTP headers from client and context metadata.
@@ -444,6 +456,11 @@ func (c *globalPublicDelegatedPrefixesRESTClient) Insert(ctx context.Context, re
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/publicDelegatedPrefixes", req.GetProject())
@@ -520,6 +537,11 @@ func (c *globalPublicDelegatedPrefixesRESTClient) List(ctx context.Context, req 
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/publicDelegatedPrefixes", req.GetProject())
@@ -603,6 +625,12 @@ func (c *globalPublicDelegatedPrefixesRESTClient) Patch(ctx context.Context, req
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetPublicDelegatedPrefix(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/publicDelegatedPrefixes/%v", req.GetProject(), req.GetPublicDelegatedPrefix())

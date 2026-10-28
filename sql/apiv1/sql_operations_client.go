@@ -512,6 +512,12 @@ func (c *sqlOperationsRESTClient) Get(ctx context.Context, req *sqlpb.SqlOperati
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetOperation(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/operations/%v", req.GetProject(), req.GetOperation())
 
 	params := url.Values{}
@@ -583,6 +589,11 @@ func (c *sqlOperationsRESTClient) List(ctx context.Context, req *sqlpb.SqlOperat
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/projects/%v/operations", req.GetProject())
 
 		params := url.Values{}
@@ -652,6 +663,12 @@ func (c *sqlOperationsRESTClient) List(ctx context.Context, req *sqlpb.SqlOperat
 func (c *sqlOperationsRESTClient) Cancel(ctx context.Context, req *sqlpb.SqlOperationsCancelRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetOperation(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/operations/%v/cancel", req.GetProject(), req.GetOperation())

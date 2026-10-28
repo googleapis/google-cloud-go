@@ -566,6 +566,11 @@ func (c *accountsRESTClient) ListChildAccounts(ctx context.Context, req *csspb.L
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:listChildAccounts", req.GetParent())
 
 		params := url.Values{}
@@ -637,6 +642,11 @@ func (c *accountsRESTClient) GetAccount(ctx context.Context, req *csspb.GetAccou
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -698,6 +708,11 @@ func (c *accountsRESTClient) UpdateLabels(ctx context.Context, req *csspb.Update
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:updateLabels", req.GetName())

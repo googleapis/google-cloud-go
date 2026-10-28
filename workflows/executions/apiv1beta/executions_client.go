@@ -561,6 +561,11 @@ func (c *restClient) ListExecutions(ctx context.Context, req *executionspb.ListE
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/executions", req.GetParent())
 
 		params := url.Values{}
@@ -635,6 +640,11 @@ func (c *restClient) CreateExecution(ctx context.Context, req *executionspb.Crea
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/executions", req.GetParent())
 
 	// Build HTTP headers from client and context metadata.
@@ -682,6 +692,11 @@ func (c *restClient) CreateExecution(ctx context.Context, req *executionspb.Crea
 func (c *restClient) GetExecution(ctx context.Context, req *executionspb.GetExecutionRequest, opts ...gax.CallOption) (*executionspb.Execution, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -744,6 +759,11 @@ func (c *restClient) CancelExecution(ctx context.Context, req *executionspb.Canc
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:cancel", req.GetName())

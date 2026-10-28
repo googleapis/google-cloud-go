@@ -2186,6 +2186,12 @@ func (c *sqlInstancesRESTClient) AddServerCa(ctx context.Context, req *sqlpb.Sql
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/addServerCa", req.GetProject(), req.GetInstance())
 
 	params := url.Values{}
@@ -2249,6 +2255,12 @@ func (c *sqlInstancesRESTClient) AddServerCertificate(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/addServerCertificate", req.GetProject(), req.GetInstance())
 
 	params := url.Values{}
@@ -2306,6 +2318,12 @@ func (c *sqlInstancesRESTClient) AddServerCertificate(ctx context.Context, req *
 func (c *sqlInstancesRESTClient) AddEntraIdCertificate(ctx context.Context, req *sqlpb.SqlInstancesAddEntraIdCertificateRequest, opts ...gax.CallOption) (*sqlpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/addEntraIdCertificate", req.GetProject(), req.GetInstance())
@@ -2373,6 +2391,12 @@ func (c *sqlInstancesRESTClient) Clone(ctx context.Context, req *sqlpb.SqlInstan
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/clone", req.GetProject(), req.GetInstance())
 
 	params := url.Values{}
@@ -2428,6 +2452,12 @@ func (c *sqlInstancesRESTClient) Clone(ctx context.Context, req *sqlpb.SqlInstan
 func (c *sqlInstancesRESTClient) Delete(ctx context.Context, req *sqlpb.SqlInstancesDeleteRequest, opts ...gax.CallOption) (*sqlpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v", req.GetProject(), req.GetInstance())
@@ -2511,6 +2541,12 @@ func (c *sqlInstancesRESTClient) DemoteMaster(ctx context.Context, req *sqlpb.Sq
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/demoteMaster", req.GetProject(), req.GetInstance())
 
 	params := url.Values{}
@@ -2576,6 +2612,12 @@ func (c *sqlInstancesRESTClient) Demote(ctx context.Context, req *sqlpb.SqlInsta
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/demote", req.GetProject(), req.GetInstance())
 
 	params := url.Values{}
@@ -2639,6 +2681,12 @@ func (c *sqlInstancesRESTClient) Export(ctx context.Context, req *sqlpb.SqlInsta
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/export", req.GetProject(), req.GetInstance())
@@ -2712,6 +2760,12 @@ func (c *sqlInstancesRESTClient) Failover(ctx context.Context, req *sqlpb.SqlIns
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/failover", req.GetProject(), req.GetInstance())
 
 	params := url.Values{}
@@ -2776,6 +2830,12 @@ func (c *sqlInstancesRESTClient) Reencrypt(ctx context.Context, req *sqlpb.SqlIn
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/reencrypt", req.GetProject(), req.GetInstance())
 
 	params := url.Values{}
@@ -2831,6 +2891,12 @@ func (c *sqlInstancesRESTClient) Reencrypt(ctx context.Context, req *sqlpb.SqlIn
 func (c *sqlInstancesRESTClient) Get(ctx context.Context, req *sqlpb.SqlInstancesGetRequest, opts ...gax.CallOption) (*sqlpb.DatabaseInstance, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v", req.GetProject(), req.GetInstance())
@@ -2898,6 +2964,12 @@ func (c *sqlInstancesRESTClient) Import(ctx context.Context, req *sqlpb.SqlInsta
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/import", req.GetProject(), req.GetInstance())
 
 	params := url.Values{}
@@ -2960,6 +3032,11 @@ func (c *sqlInstancesRESTClient) Insert(ctx context.Context, req *sqlpb.SqlInsta
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances", req.GetProject())
@@ -3044,6 +3121,11 @@ func (c *sqlInstancesRESTClient) List(ctx context.Context, req *sqlpb.SqlInstanc
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances", req.GetProject())
 
 		params := url.Values{}
@@ -3119,6 +3201,12 @@ func (c *sqlInstancesRESTClient) ListServerCas(ctx context.Context, req *sqlpb.S
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/listServerCas", req.GetProject(), req.GetInstance())
 
 	params := url.Values{}
@@ -3181,6 +3269,12 @@ func (c *sqlInstancesRESTClient) ListServerCertificates(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/listServerCertificates", req.GetProject(), req.GetInstance())
 
 	params := url.Values{}
@@ -3239,6 +3333,12 @@ func (c *sqlInstancesRESTClient) ListServerCertificates(ctx context.Context, req
 func (c *sqlInstancesRESTClient) ListEntraIdCertificates(ctx context.Context, req *sqlpb.SqlInstancesListEntraIdCertificatesRequest, opts ...gax.CallOption) (*sqlpb.InstancesListEntraIdCertificatesResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/listEntraIdCertificates", req.GetProject(), req.GetInstance())
@@ -3306,6 +3406,12 @@ func (c *sqlInstancesRESTClient) Patch(ctx context.Context, req *sqlpb.SqlInstan
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v", req.GetProject(), req.GetInstance())
 
 	params := url.Values{}
@@ -3371,6 +3477,12 @@ func (c *sqlInstancesRESTClient) PromoteReplica(ctx context.Context, req *sqlpb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/promoteReplica", req.GetProject(), req.GetInstance())
 
 	params := url.Values{}
@@ -3430,6 +3542,12 @@ func (c *sqlInstancesRESTClient) PromoteReplica(ctx context.Context, req *sqlpb.
 func (c *sqlInstancesRESTClient) Switchover(ctx context.Context, req *sqlpb.SqlInstancesSwitchoverRequest, opts ...gax.CallOption) (*sqlpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/switchover", req.GetProject(), req.GetInstance())
@@ -3497,6 +3615,12 @@ func (c *sqlInstancesRESTClient) ResetSslConfig(ctx context.Context, req *sqlpb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/resetSslConfig", req.GetProject(), req.GetInstance())
 
 	params := url.Values{}
@@ -3555,6 +3679,12 @@ func (c *sqlInstancesRESTClient) ResetSslConfig(ctx context.Context, req *sqlpb.
 func (c *sqlInstancesRESTClient) Restart(ctx context.Context, req *sqlpb.SqlInstancesRestartRequest, opts ...gax.CallOption) (*sqlpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/restart", req.GetProject(), req.GetInstance())
@@ -3620,6 +3750,12 @@ func (c *sqlInstancesRESTClient) RestoreBackup(ctx context.Context, req *sqlpb.S
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/restoreBackup", req.GetProject(), req.GetInstance())
@@ -3689,6 +3825,12 @@ func (c *sqlInstancesRESTClient) RotateServerCa(ctx context.Context, req *sqlpb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/rotateServerCa", req.GetProject(), req.GetInstance())
 
 	params := url.Values{}
@@ -3753,6 +3895,12 @@ func (c *sqlInstancesRESTClient) RotateServerCertificate(ctx context.Context, re
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/rotateServerCertificate", req.GetProject(), req.GetInstance())
@@ -3820,6 +3968,12 @@ func (c *sqlInstancesRESTClient) RotateEntraIdCertificate(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/rotateEntraIdCertificate", req.GetProject(), req.GetInstance())
 
 	params := url.Values{}
@@ -3877,6 +4031,12 @@ func (c *sqlInstancesRESTClient) StartReplica(ctx context.Context, req *sqlpb.Sq
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/startReplica", req.GetProject(), req.GetInstance())
 
 	params := url.Values{}
@@ -3932,6 +4092,12 @@ func (c *sqlInstancesRESTClient) StartReplica(ctx context.Context, req *sqlpb.Sq
 func (c *sqlInstancesRESTClient) StopReplica(ctx context.Context, req *sqlpb.SqlInstancesStopReplicaRequest, opts ...gax.CallOption) (*sqlpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/stopReplica", req.GetProject(), req.GetInstance())
@@ -3999,6 +4165,12 @@ func (c *sqlInstancesRESTClient) TruncateLog(ctx context.Context, req *sqlpb.Sql
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/truncateLog", req.GetProject(), req.GetInstance())
 
 	params := url.Values{}
@@ -4062,6 +4234,12 @@ func (c *sqlInstancesRESTClient) Update(ctx context.Context, req *sqlpb.SqlInsta
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v", req.GetProject(), req.GetInstance())
@@ -4131,6 +4309,12 @@ func (c *sqlInstancesRESTClient) CreateEphemeral(ctx context.Context, req *sqlpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/createEphemeral", req.GetProject(), req.GetInstance())
 
 	params := url.Values{}
@@ -4193,6 +4377,12 @@ func (c *sqlInstancesRESTClient) RescheduleMaintenance(ctx context.Context, req 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/rescheduleMaintenance", req.GetProject(), req.GetInstance())
@@ -4258,6 +4448,12 @@ func (c *sqlInstancesRESTClient) VerifyExternalSyncSettings(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/verifyExternalSyncSettings", req.GetProject(), req.GetInstance())
 
 	params := url.Values{}
@@ -4316,6 +4512,12 @@ func (c *sqlInstancesRESTClient) StartExternalSync(ctx context.Context, req *sql
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/startExternalSync", req.GetProject(), req.GetInstance())
@@ -4379,6 +4581,12 @@ func (c *sqlInstancesRESTClient) PerformDiskShrink(ctx context.Context, req *sql
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/performDiskShrink", req.GetProject(), req.GetInstance())
 
 	params := url.Values{}
@@ -4434,6 +4642,12 @@ func (c *sqlInstancesRESTClient) PerformDiskShrink(ctx context.Context, req *sql
 func (c *sqlInstancesRESTClient) GetDiskShrinkConfig(ctx context.Context, req *sqlpb.SqlInstancesGetDiskShrinkConfigRequest, opts ...gax.CallOption) (*sqlpb.SqlInstancesGetDiskShrinkConfigResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/getDiskShrinkConfig", req.GetProject(), req.GetInstance())
@@ -4499,6 +4713,12 @@ func (c *sqlInstancesRESTClient) ResetReplicaSize(ctx context.Context, req *sqlp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/resetReplicaSize", req.GetProject(), req.GetInstance())
 
 	params := url.Values{}
@@ -4551,6 +4771,12 @@ func (c *sqlInstancesRESTClient) ResetReplicaSize(ctx context.Context, req *sqlp
 func (c *sqlInstancesRESTClient) GetLatestRecoveryTime(ctx context.Context, req *sqlpb.SqlInstancesGetLatestRecoveryTimeRequest, opts ...gax.CallOption) (*sqlpb.SqlInstancesGetLatestRecoveryTimeResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/getLatestRecoveryTime", req.GetProject(), req.GetInstance())
@@ -4624,6 +4850,12 @@ func (c *sqlInstancesRESTClient) ExecuteSql(ctx context.Context, req *sqlpb.SqlI
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/executeSql", req.GetProject(), req.GetInstance())
 
 	params := url.Values{}
@@ -4688,6 +4920,12 @@ func (c *sqlInstancesRESTClient) AcquireSsrsLease(ctx context.Context, req *sqlp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/acquireSsrsLease", req.GetProject(), req.GetInstance())
 
 	params := url.Values{}
@@ -4743,6 +4981,12 @@ func (c *sqlInstancesRESTClient) AcquireSsrsLease(ctx context.Context, req *sqlp
 func (c *sqlInstancesRESTClient) ReleaseSsrsLease(ctx context.Context, req *sqlpb.SqlInstancesReleaseSsrsLeaseRequest, opts ...gax.CallOption) (*sqlpb.SqlInstancesReleaseSsrsLeaseResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/releaseSsrsLease", req.GetProject(), req.GetInstance())
@@ -4809,6 +5053,12 @@ func (c *sqlInstancesRESTClient) PreCheckMajorVersionUpgrade(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/preCheckMajorVersionUpgrade", req.GetProject(), req.GetInstance())
 
 	params := url.Values{}
@@ -4872,6 +5122,11 @@ func (c *sqlInstancesRESTClient) PointInTimeRestore(ctx context.Context, req *sq
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:pointInTimeRestore", req.GetParent())

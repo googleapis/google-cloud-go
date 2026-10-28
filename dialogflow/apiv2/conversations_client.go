@@ -1368,6 +1368,11 @@ func (c *conversationsRESTClient) CreateConversation(ctx context.Context, req *d
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/conversations", req.GetParent())
 
 	params := url.Values{}
@@ -1438,6 +1443,11 @@ func (c *conversationsRESTClient) ListConversations(ctx context.Context, req *di
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/conversations", req.GetParent())
 
 		params := url.Values{}
@@ -1506,6 +1516,11 @@ func (c *conversationsRESTClient) GetConversation(ctx context.Context, req *dial
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -1567,6 +1582,11 @@ func (c *conversationsRESTClient) CompleteConversation(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:complete", req.GetName())
 
 	params := url.Values{}
@@ -1626,6 +1646,11 @@ func (c *conversationsRESTClient) IngestContextReferences(ctx context.Context, r
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetConversation(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:ingestContextReferences", req.GetConversation())
@@ -1696,6 +1721,11 @@ func (c *conversationsRESTClient) ListMessages(ctx context.Context, req *dialogf
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/messages", req.GetParent())
@@ -1774,6 +1804,11 @@ func (c *conversationsRESTClient) SuggestConversationSummary(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetConversation(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/suggestions:suggestConversationSummary", req.GetConversation())
 
 	params := url.Values{}
@@ -1833,6 +1868,11 @@ func (c *conversationsRESTClient) GenerateStatelessSummary(ctx context.Context, 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetStatelessConversation().GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/suggestions:generateStatelessSummary", req.GetStatelessConversation().GetParent())
@@ -1896,6 +1936,11 @@ func (c *conversationsRESTClient) GenerateStatelessSuggestion(ctx context.Contex
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/statelessSuggestion:generate", req.GetParent())
 
 	params := url.Values{}
@@ -1954,6 +1999,11 @@ func (c *conversationsRESTClient) SearchKnowledge(ctx context.Context, req *dial
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/suggestions:searchKnowledge", req.GetParent())
@@ -2018,6 +2068,11 @@ func (c *conversationsRESTClient) GenerateSuggestions(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetConversation(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/suggestions:generate", req.GetConversation())
 
 	params := url.Values{}
@@ -2070,6 +2125,11 @@ func (c *conversationsRESTClient) GenerateSuggestions(ctx context.Context, req *
 func (c *conversationsRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -2154,6 +2214,11 @@ func (c *conversationsRESTClient) ListLocations(ctx context.Context, req *locati
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -2222,6 +2287,11 @@ func (c *conversationsRESTClient) CancelOperation(ctx context.Context, req *long
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -2259,6 +2329,11 @@ func (c *conversationsRESTClient) CancelOperation(ctx context.Context, req *long
 func (c *conversationsRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -2326,6 +2401,11 @@ func (c *conversationsRESTClient) ListOperations(ctx context.Context, req *longr
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/operations", req.GetName())

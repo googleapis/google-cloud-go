@@ -1363,6 +1363,11 @@ func (c *ruleRESTClient) CreateRule(ctx context.Context, req *chroniclepb.Create
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/rules", req.GetParent())
 
 	params := url.Values{}
@@ -1415,6 +1420,11 @@ func (c *ruleRESTClient) CreateRule(ctx context.Context, req *chroniclepb.Create
 func (c *ruleRESTClient) GetRule(ctx context.Context, req *chroniclepb.GetRuleRequest, opts ...gax.CallOption) (*chroniclepb.Rule, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1485,6 +1495,11 @@ func (c *ruleRESTClient) ListRules(ctx context.Context, req *chroniclepb.ListRul
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/rules", req.GetParent())
@@ -1565,6 +1580,11 @@ func (c *ruleRESTClient) UpdateRule(ctx context.Context, req *chroniclepb.Update
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetRule().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetRule().GetName())
 
 	params := url.Values{}
@@ -1626,6 +1646,11 @@ func (c *ruleRESTClient) DeleteRule(ctx context.Context, req *chroniclepb.Delete
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1672,6 +1697,11 @@ func (c *ruleRESTClient) VerifyRuleText(ctx context.Context, req *chroniclepb.Ve
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:verifyRuleText", req.GetInstance())
@@ -1739,6 +1769,11 @@ func (c *ruleRESTClient) ListRuleRevisions(ctx context.Context, req *chroniclepb
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:listRevisions", req.GetName())
@@ -1816,6 +1851,11 @@ func (c *ruleRESTClient) CreateRetrohunt(ctx context.Context, req *chroniclepb.C
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/retrohunts", req.GetParent())
 
 	params := url.Values{}
@@ -1875,6 +1915,11 @@ func (c *ruleRESTClient) CreateRetrohunt(ctx context.Context, req *chroniclepb.C
 func (c *ruleRESTClient) GetRetrohunt(ctx context.Context, req *chroniclepb.GetRetrohuntRequest, opts ...gax.CallOption) (*chroniclepb.Retrohunt, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1942,6 +1987,11 @@ func (c *ruleRESTClient) ListRetrohunts(ctx context.Context, req *chroniclepb.Li
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/retrohunts", req.GetParent())
@@ -2012,6 +2062,11 @@ func (c *ruleRESTClient) GetRuleDeployment(ctx context.Context, req *chroniclepb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2077,6 +2132,11 @@ func (c *ruleRESTClient) ListRuleDeployments(ctx context.Context, req *chronicle
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/deployments", req.GetParent())
@@ -2157,6 +2217,11 @@ func (c *ruleRESTClient) UpdateRuleDeployment(ctx context.Context, req *chronicl
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetRuleDeployment().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetRuleDeployment().GetName())
 
 	params := url.Values{}
@@ -2224,6 +2289,11 @@ func (c *ruleRESTClient) CancelOperation(ctx context.Context, req *longrunningpb
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -2263,6 +2333,11 @@ func (c *ruleRESTClient) DeleteOperation(ctx context.Context, req *longrunningpb
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2300,6 +2375,11 @@ func (c *ruleRESTClient) DeleteOperation(ctx context.Context, req *longrunningpb
 func (c *ruleRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2367,6 +2447,11 @@ func (c *ruleRESTClient) ListOperations(ctx context.Context, req *longrunningpb.
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

@@ -827,6 +827,11 @@ func (c *restClient) CreateJob(ctx context.Context, req *transcoderpb.CreateJobR
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/jobs", req.GetParent())
 
 	params := url.Values{}
@@ -892,6 +897,11 @@ func (c *restClient) ListJobs(ctx context.Context, req *transcoderpb.ListJobsReq
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/jobs", req.GetParent())
@@ -965,6 +975,11 @@ func (c *restClient) GetJob(ctx context.Context, req *transcoderpb.GetJobRequest
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1019,6 +1034,11 @@ func (c *restClient) DeleteJob(ctx context.Context, req *transcoderpb.DeleteJobR
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1066,6 +1086,11 @@ func (c *restClient) CreateJobTemplate(ctx context.Context, req *transcoderpb.Cr
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/jobTemplates", req.GetParent())
@@ -1134,6 +1159,11 @@ func (c *restClient) ListJobTemplates(ctx context.Context, req *transcoderpb.Lis
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/jobTemplates", req.GetParent())
@@ -1207,6 +1237,11 @@ func (c *restClient) GetJobTemplate(ctx context.Context, req *transcoderpb.GetJo
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1259,6 +1294,11 @@ func (c *restClient) GetJobTemplate(ctx context.Context, req *transcoderpb.GetJo
 func (c *restClient) DeleteJobTemplate(ctx context.Context, req *transcoderpb.DeleteJobTemplateRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())

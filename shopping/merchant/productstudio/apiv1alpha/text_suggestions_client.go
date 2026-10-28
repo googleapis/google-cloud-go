@@ -439,6 +439,11 @@ func (c *textSuggestionsRESTClient) GenerateProductTextSuggestions(ctx context.C
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/productstudio/v1alpha/%v:generateProductTextSuggestions", req.GetName())
 
 	params := url.Values{}

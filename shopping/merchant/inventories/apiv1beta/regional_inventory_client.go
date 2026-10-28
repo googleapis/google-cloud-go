@@ -602,6 +602,11 @@ func (c *regionalInventoryRESTClient) ListRegionalInventories(ctx context.Contex
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/inventories/v1beta/%v/regionalInventories", req.GetParent())
 
 		params := url.Values{}
@@ -682,6 +687,11 @@ func (c *regionalInventoryRESTClient) InsertRegionalInventory(ctx context.Contex
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/inventories/v1beta/%v/regionalInventories:insert", req.GetParent())
 
 	params := url.Values{}
@@ -738,6 +748,11 @@ func (c *regionalInventoryRESTClient) InsertRegionalInventory(ctx context.Contex
 func (c *regionalInventoryRESTClient) DeleteRegionalInventory(ctx context.Context, req *inventoriespb.DeleteRegionalInventoryRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/inventories/v1beta/%v", req.GetName())

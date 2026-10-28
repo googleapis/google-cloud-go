@@ -854,6 +854,11 @@ func (c *identityAwareProxyAdminRESTClient) SetIamPolicy(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -915,6 +920,11 @@ func (c *identityAwareProxyAdminRESTClient) GetIamPolicy(ctx context.Context, re
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
@@ -980,6 +990,11 @@ func (c *identityAwareProxyAdminRESTClient) TestIamPermissions(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -1032,6 +1047,11 @@ func (c *identityAwareProxyAdminRESTClient) TestIamPermissions(ctx context.Conte
 func (c *identityAwareProxyAdminRESTClient) GetIapSettings(ctx context.Context, req *iappb.GetIapSettingsRequest, opts ...gax.CallOption) (*iappb.IapSettings, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:iapSettings", req.GetName())
@@ -1096,6 +1116,11 @@ func (c *identityAwareProxyAdminRESTClient) UpdateIapSettings(ctx context.Contex
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetIapSettings().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:iapSettings", req.GetIapSettings().GetName())
 
 	params := url.Values{}
@@ -1155,6 +1180,11 @@ func (c *identityAwareProxyAdminRESTClient) UpdateIapSettings(ctx context.Contex
 func (c *identityAwareProxyAdminRESTClient) ValidateIapAttributeExpression(ctx context.Context, req *iappb.ValidateIapAttributeExpressionRequest, opts ...gax.CallOption) (*iappb.ValidateIapAttributeExpressionResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:validateAttributeExpression", req.GetName())
@@ -1225,6 +1255,11 @@ func (c *identityAwareProxyAdminRESTClient) ListTunnelDestGroups(ctx context.Con
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/destGroups", req.GetParent())
@@ -1299,6 +1334,11 @@ func (c *identityAwareProxyAdminRESTClient) CreateTunnelDestGroup(ctx context.Co
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/destGroups", req.GetParent())
 
 	params := url.Values{}
@@ -1352,6 +1392,11 @@ func (c *identityAwareProxyAdminRESTClient) CreateTunnelDestGroup(ctx context.Co
 func (c *identityAwareProxyAdminRESTClient) GetTunnelDestGroup(ctx context.Context, req *iappb.GetTunnelDestGroupRequest, opts ...gax.CallOption) (*iappb.TunnelDestGroup, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1408,6 +1453,11 @@ func (c *identityAwareProxyAdminRESTClient) DeleteTunnelDestGroup(ctx context.Co
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1452,6 +1502,11 @@ func (c *identityAwareProxyAdminRESTClient) UpdateTunnelDestGroup(ctx context.Co
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetTunnelDestGroup().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetTunnelDestGroup().GetName())

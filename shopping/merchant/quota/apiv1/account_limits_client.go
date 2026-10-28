@@ -510,6 +510,11 @@ func (c *accountLimitsRESTClient) GetAccountLimit(ctx context.Context, req *quot
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -575,6 +580,11 @@ func (c *accountLimitsRESTClient) ListAccountLimits(ctx context.Context, req *qu
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/accounts/v1/%v/limits", req.GetParent())

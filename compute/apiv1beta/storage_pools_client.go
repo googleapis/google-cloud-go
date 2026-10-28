@@ -447,6 +447,11 @@ func (c *storagePoolsRESTClient) AggregatedList(ctx context.Context, req *comput
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/aggregated/storagePools", req.GetProject())
 
 		params := url.Values{}
@@ -537,6 +542,13 @@ func (c *storagePoolsRESTClient) Delete(ctx context.Context, req *computepb.Dele
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetStoragePool(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/storagePools/%v", req.GetProject(), req.GetZone(), req.GetStoragePool())
 
 	params := url.Values{}
@@ -602,6 +614,13 @@ func (c *storagePoolsRESTClient) Get(ctx context.Context, req *computepb.GetStor
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetStoragePool(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/storagePools/%v", req.GetProject(), req.GetZone(), req.GetStoragePool())
 
 	// Build HTTP headers from client and context metadata.
@@ -650,6 +669,13 @@ func (c *storagePoolsRESTClient) Get(ctx context.Context, req *computepb.GetStor
 func (c *storagePoolsRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyStoragePoolRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/storagePools/%v/getIamPolicy", req.GetProject(), req.GetZone(), req.GetResource())
@@ -714,6 +740,12 @@ func (c *storagePoolsRESTClient) Insert(ctx context.Context, req *computepb.Inse
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/storagePools", req.GetProject(), req.GetZone())
@@ -792,6 +824,12 @@ func (c *storagePoolsRESTClient) List(ctx context.Context, req *computepb.ListSt
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetZone(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/storagePools", req.GetProject(), req.GetZone())
@@ -880,6 +918,13 @@ func (c *storagePoolsRESTClient) ListDisks(ctx context.Context, req *computepb.L
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetZone(),
+			req.GetStoragePool(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/storagePools/%v/listDisks", req.GetProject(), req.GetZone(), req.GetStoragePool())
 
 		params := url.Values{}
@@ -961,6 +1006,13 @@ func (c *storagePoolsRESTClient) SetIamPolicy(ctx context.Context, req *computep
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/storagePools/%v/setIamPolicy", req.GetProject(), req.GetZone(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -1015,6 +1067,13 @@ func (c *storagePoolsRESTClient) TestIamPermissions(ctx context.Context, req *co
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/storagePools/%v/testIamPermissions", req.GetProject(), req.GetZone(), req.GetResource())
@@ -1075,6 +1134,13 @@ func (c *storagePoolsRESTClient) Update(ctx context.Context, req *computepb.Upda
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetStoragePool(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/storagePools/%v", req.GetProject(), req.GetZone(), req.GetStoragePool())
