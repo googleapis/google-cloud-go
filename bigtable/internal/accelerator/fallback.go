@@ -132,33 +132,16 @@ func (f *classicFallback) ReadRow(ctx context.Context, res adapters.Resource, re
 		return nil, err
 	}
 
-	// Extract and validate the row key. validateSingleRowReadRequest (called by
-	// the session stream's SendMsg) should have ensured exactly one key or a
-	// closed-closed single-row range with no overlap. We re-validate explicitly
-	// here as a defensive guard: the cases are mutually exclusive (RowKeys XOR
-	// RowRanges) to catch any request where both fields are set.
+	// Validate the single-row read request using the shared validator so
+	// classicFallback and Channel enforce identical shape and range rules.
+	if err := validateSingleRowReadRequest(req); err != nil {
+		return nil, err
+	}
 	var key string
-	nKeys := len(req.Rows.GetRowKeys())
-	nRanges := len(req.Rows.GetRowRanges())
-	switch {
-	case nKeys == 1 && nRanges == 0:
+	if len(req.Rows.GetRowKeys()) == 1 {
 		key = string(req.Rows.RowKeys[0])
-	case nKeys == 0 && nRanges == 1:
-		r := req.Rows.RowRanges[0]
-		start := r.GetStartKeyClosed()
-		if len(start) == 0 || string(start) != string(r.GetEndKeyClosed()) {
-			return nil, status.Errorf(codes.Unimplemented,
-				"accelerator fallback: unsupported row range shape")
-		}
-		key = string(start)
-	default:
-		// Unimplemented, not Internal: shape-based rejections must use
-		// Unimplemented so the caller's per-method native fallback breaker fires.
-		// This branch is unreachable when SendMsg called validateSingleRowReadRequest
-		// first, but is kept as a defensive guard.
-		return nil, status.Errorf(codes.Unimplemented,
-			"accelerator fallback: unsupported row set shape (keys=%d, ranges=%d)",
-			nKeys, nRanges)
+	} else {
+		key = string(req.Rows.RowRanges[0].GetStartKeyClosed())
 	}
 
 	var opts []bigtable.ReadOption
@@ -197,7 +180,7 @@ func (f *classicFallback) Close() error {
 func (f *classicFallback) parseTableID(name string) (string, error) {
 	rest, ok := strings.CutPrefix(name, f.scopePrefix)
 	if !ok {
-		return "", status.Errorf(codes.Internal,
+		return "", status.Errorf(codes.InvalidArgument,
 			"accelerator fallback: resource %q is not in scope %s", name, strings.TrimSuffix(f.scopePrefix, "/"))
 	}
 	return leafAfter(name, rest, "tables/")
@@ -209,7 +192,7 @@ func (f *classicFallback) parseTableID(name string) (string, error) {
 func (f *classicFallback) parseAVIDs(name string) (tableID, viewID string, err error) {
 	rest, ok := strings.CutPrefix(name, f.scopePrefix)
 	if !ok {
-		return "", "", status.Errorf(codes.Internal,
+		return "", "", status.Errorf(codes.InvalidArgument,
 			"accelerator fallback: resource %q is not in scope %s", name, strings.TrimSuffix(f.scopePrefix, "/"))
 	}
 	afterTables, ok := strings.CutPrefix(rest, "tables/")
@@ -230,7 +213,7 @@ func (f *classicFallback) parseAVIDs(name string) (tableID, viewID string, err e
 func (f *classicFallback) parseMVID(name string) (string, error) {
 	rest, ok := strings.CutPrefix(name, f.scopePrefix)
 	if !ok {
-		return "", status.Errorf(codes.Internal,
+		return "", status.Errorf(codes.InvalidArgument,
 			"accelerator fallback: resource %q is not in scope %s", name, strings.TrimSuffix(f.scopePrefix, "/"))
 	}
 	return leafAfter(name, rest, "materializedViews/")

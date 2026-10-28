@@ -40,6 +40,33 @@ import (
 // so errors.Is against either the sentinel or the ctx cause holds.
 var ErrNoSessionsAvailable = errors.New("bigtable: no sessions available")
 
+// noSessionsAvailableError wraps ErrNoSessionsAvailable and a context
+// cancellation/deadline cause so callers preserve both:
+//   - errors.Is(err, ErrNoSessionsAvailable) and errors.Is(err, ctx.Err())
+//   - status.Code(err) / status.FromError(err) returning codes.DeadlineExceeded
+//     or codes.Canceled instead of codes.Unknown.
+type noSessionsAvailableError struct {
+	cause error
+}
+
+func (e *noSessionsAvailableError) Error() string {
+	return fmt.Sprintf("%s: %v", ErrNoSessionsAvailable.Error(), e.cause)
+}
+
+func (e *noSessionsAvailableError) Is(target error) bool {
+	return target == ErrNoSessionsAvailable
+}
+
+func (e *noSessionsAvailableError) Unwrap() error { return e.cause }
+
+func (e *noSessionsAvailableError) GRPCStatus() *status.Status {
+	if st := status.FromContextError(e.cause); st != nil {
+		return st
+	}
+	st, _ := status.FromError(e.cause)
+	return st
+}
+
 // ErrConsecutiveFailures is returned by CheckoutSession when the pool's
 // consecutive-abnormal-close circuit breaker trips. All parked waiters
 // at trip time are woken with an error that either equals this sentinel
@@ -313,7 +340,7 @@ func (p *SessionPoolImpl) CheckoutSession(ctx context.Context) (*SessionHandle, 
 			// Remove from queue so a subsequent free-session wake
 			// doesn't burn on a caller that's already given up.
 			p.removeWaiter(w)
-			return nil, fmt.Errorf("%w: %w", ErrNoSessionsAvailable, ctx.Err())
+			return nil, &noSessionsAvailableError{cause: ctx.Err()}
 		case <-w.ready:
 			p.waitersCount.Add(-1)
 			// A poisoned wake (drainWaitersWithErr) sets w.err before
