@@ -625,13 +625,13 @@ const file_google_cloud_sql_v1_cloud_sql_workload_captures_proto_rawDesc = "" +
 	"\vworkload_id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\n" +
 	"workloadId\x12R\n" +
 	"\x0fsource_instance\x18\x02 \x01(\tB)\xe2A\x01\x03\xfaA\"\n" +
-	" sqladmin.googleapis.com/InstanceR\x0esourceInstance\x12f\n" +
+	" cloudsql.googleapis.com/InstanceR\x0esourceInstance\x12f\n" +
 	"\x16workload_capture_state\x18\x03 \x01(\x0e2*.google.cloud.sql.v1.WorkloadCapture.StateB\x04\xe2A\x01\x03R\x14workloadCaptureState\x12?\n" +
 	"\n" +
 	"start_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
 	"\bend_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12W\n" +
 	"\x0freplay_instance\x18\x06 \x01(\tB)\xe2A\x01\x03\xfaA\"\n" +
-	" sqladmin.googleapis.com/InstanceH\x00R\x0ereplayInstance\x88\x01\x01\x120\n" +
+	" cloudsql.googleapis.com/InstanceH\x00R\x0ereplayInstance\x88\x01\x01\x120\n" +
 	"\x0eretention_days\x18\a \x01(\x05B\x04\xe2A\x01\x03H\x01R\rretentionDays\x88\x01\x01\x12&\n" +
 	"\tbackup_id\x18\b \x01(\tB\x04\xe2A\x01\x03H\x02R\bbackupId\x88\x01\x01\"V\n" +
 	"\x05State\x12\x15\n" +

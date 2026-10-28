@@ -65,6 +65,11 @@
                 "CreateGoldengateDeployment"
               ]
             },
+            "CreateOdbDnsZone": {
+              "methods": [
+                "CreateOdbDnsZone"
+              ]
+            },
             "CreateOdbNetwork": {
               "methods": [
                 "CreateOdbNetwork"
@@ -118,6 +123,11 @@
             "DeleteGoldengateDeployment": {
               "methods": [
                 "DeleteGoldengateDeployment"
+              ]
+            },
+            "DeleteOdbDnsZone": {
+              "methods": [
+                "DeleteOdbDnsZone"
               ]
             },
             "DeleteOdbNetwork": {
@@ -203,6 +213,11 @@
             "GetLocation": {
               "methods": [
                 "GetLocation"
+              ]
+            },
+            "GetOdbDnsZone": {
+              "methods": [
+                "GetOdbDnsZone"
               ]
             },
             "GetOdbNetwork": {
@@ -358,6 +373,11 @@
             "ListMinorVersions": {
               "methods": [
                 "ListMinorVersions"
+              ]
+            },
+            "ListOdbDnsZones": {
+              "methods": [
+                "ListOdbDnsZones"
               ]
             },
             "ListOdbNetworks": {
@@ -500,6 +520,11 @@
                 "CreateGoldengateDeployment"
               ]
             },
+            "CreateOdbDnsZone": {
+              "methods": [
+                "CreateOdbDnsZone"
+              ]
+            },
             "CreateOdbNetwork": {
               "methods": [
                 "CreateOdbNetwork"
@@ -553,6 +578,11 @@
             "DeleteGoldengateDeployment": {
               "methods": [
                 "DeleteGoldengateDeployment"
+              ]
+            },
+            "DeleteOdbDnsZone": {
+              "methods": [
+                "DeleteOdbDnsZone"
               ]
             },
             "DeleteOdbNetwork": {
@@ -638,6 +668,11 @@
             "GetLocation": {
               "methods": [
                 "GetLocation"
+              ]
+            },
+            "GetOdbDnsZone": {
+              "methods": [
+                "GetOdbDnsZone"
               ]
             },
             "GetOdbNetwork": {
@@ -793,6 +828,11 @@
             "ListMinorVersions": {
               "methods": [
                 "ListMinorVersions"
+              ]
+            },
+            "ListOdbDnsZones": {
+              "methods": [
+                "ListOdbDnsZones"
               ]
             },
             "ListOdbNetworks": {

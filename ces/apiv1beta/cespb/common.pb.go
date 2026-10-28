@@ -96,6 +96,67 @@ func (ExecutionType) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_ces_v1beta_common_proto_rawDescGZIP(), []int{0}
 }
 
+// Thinking level configuration for the model.
+type ModelSettings_ThinkingLevel int32
+
+const (
+	// Thinking level is unspecified.
+	ModelSettings_THINKING_LEVEL_UNSPECIFIED ModelSettings_ThinkingLevel = 0
+	// Default thinking level.
+	ModelSettings_DEFAULT ModelSettings_ThinkingLevel = 1
+	// Low thinking level.
+	ModelSettings_LOW ModelSettings_ThinkingLevel = 2
+	// Medium thinking level.
+	ModelSettings_MEDIUM ModelSettings_ThinkingLevel = 3
+	// High thinking level.
+	ModelSettings_HIGH ModelSettings_ThinkingLevel = 4
+)
+
+// Enum value maps for ModelSettings_ThinkingLevel.
+var (
+	ModelSettings_ThinkingLevel_name = map[int32]string{
+		0: "THINKING_LEVEL_UNSPECIFIED",
+		1: "DEFAULT",
+		2: "LOW",
+		3: "MEDIUM",
+		4: "HIGH",
+	}
+	ModelSettings_ThinkingLevel_value = map[string]int32{
+		"THINKING_LEVEL_UNSPECIFIED": 0,
+		"DEFAULT":                    1,
+		"LOW":                        2,
+		"MEDIUM":                     3,
+		"HIGH":                       4,
+	}
+)
+
+func (x ModelSettings_ThinkingLevel) Enum() *ModelSettings_ThinkingLevel {
+	p := new(ModelSettings_ThinkingLevel)
+	*p = x
+	return p
+}
+
+func (x ModelSettings_ThinkingLevel) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ModelSettings_ThinkingLevel) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_ces_v1beta_common_proto_enumTypes[1].Descriptor()
+}
+
+func (ModelSettings_ThinkingLevel) Type() protoreflect.EnumType {
+	return &file_google_cloud_ces_v1beta_common_proto_enumTypes[1]
+}
+
+func (x ModelSettings_ThinkingLevel) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ModelSettings_ThinkingLevel.Descriptor instead.
+func (ModelSettings_ThinkingLevel) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_common_proto_rawDescGZIP(), []int{1, 0}
+}
+
 // The type of the channel profile.
 type ChannelProfile_ChannelType int32
 
@@ -165,11 +226,11 @@ func (x ChannelProfile_ChannelType) String() string {
 }
 
 func (ChannelProfile_ChannelType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_ces_v1beta_common_proto_enumTypes[1].Descriptor()
+	return file_google_cloud_ces_v1beta_common_proto_enumTypes[2].Descriptor()
 }
 
 func (ChannelProfile_ChannelType) Type() protoreflect.EnumType {
-	return &file_google_cloud_ces_v1beta_common_proto_enumTypes[1]
+	return &file_google_cloud_ces_v1beta_common_proto_enumTypes[2]
 }
 
 func (x ChannelProfile_ChannelType) Number() protoreflect.EnumNumber {
@@ -218,11 +279,11 @@ func (x ChannelProfile_PersonaProperty_Persona) String() string {
 }
 
 func (ChannelProfile_PersonaProperty_Persona) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_ces_v1beta_common_proto_enumTypes[2].Descriptor()
+	return file_google_cloud_ces_v1beta_common_proto_enumTypes[3].Descriptor()
 }
 
 func (ChannelProfile_PersonaProperty_Persona) Type() protoreflect.EnumType {
-	return &file_google_cloud_ces_v1beta_common_proto_enumTypes[2]
+	return &file_google_cloud_ces_v1beta_common_proto_enumTypes[3]
 }
 
 func (x ChannelProfile_PersonaProperty_Persona) Number() protoreflect.EnumNumber {
@@ -279,11 +340,11 @@ func (x ChannelProfile_WebWidgetConfig_Modality) String() string {
 }
 
 func (ChannelProfile_WebWidgetConfig_Modality) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_ces_v1beta_common_proto_enumTypes[3].Descriptor()
+	return file_google_cloud_ces_v1beta_common_proto_enumTypes[4].Descriptor()
 }
 
 func (ChannelProfile_WebWidgetConfig_Modality) Type() protoreflect.EnumType {
-	return &file_google_cloud_ces_v1beta_common_proto_enumTypes[3]
+	return &file_google_cloud_ces_v1beta_common_proto_enumTypes[4]
 }
 
 func (x ChannelProfile_WebWidgetConfig_Modality) Number() protoreflect.EnumNumber {
@@ -332,11 +393,11 @@ func (x ChannelProfile_WebWidgetConfig_Theme) String() string {
 }
 
 func (ChannelProfile_WebWidgetConfig_Theme) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_ces_v1beta_common_proto_enumTypes[4].Descriptor()
+	return file_google_cloud_ces_v1beta_common_proto_enumTypes[5].Descriptor()
 }
 
 func (ChannelProfile_WebWidgetConfig_Theme) Type() protoreflect.EnumType {
-	return &file_google_cloud_ces_v1beta_common_proto_enumTypes[4]
+	return &file_google_cloud_ces_v1beta_common_proto_enumTypes[5]
 }
 
 func (x ChannelProfile_WebWidgetConfig_Theme) Number() protoreflect.EnumNumber {
@@ -388,11 +449,11 @@ func (x EvaluationRunCachingSettings_EvaluationRunCachingMode) String() string {
 }
 
 func (EvaluationRunCachingSettings_EvaluationRunCachingMode) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_ces_v1beta_common_proto_enumTypes[5].Descriptor()
+	return file_google_cloud_ces_v1beta_common_proto_enumTypes[6].Descriptor()
 }
 
 func (EvaluationRunCachingSettings_EvaluationRunCachingMode) Type() protoreflect.EnumType {
-	return &file_google_cloud_ces_v1beta_common_proto_enumTypes[5]
+	return &file_google_cloud_ces_v1beta_common_proto_enumTypes[6]
 }
 
 func (x EvaluationRunCachingSettings_EvaluationRunCachingMode) Number() protoreflect.EnumNumber {
@@ -518,7 +579,9 @@ type ModelSettings struct {
 	// Temperature controls the randomness of the model's responses. Lower
 	// temperatures produce responses that are more predictable. Higher
 	// temperatures produce responses that are more creative.
-	Temperature   *float64 `protobuf:"fixed64,2,opt,name=temperature,proto3,oneof" json:"temperature,omitempty"`
+	Temperature *float64 `protobuf:"fixed64,2,opt,name=temperature,proto3,oneof" json:"temperature,omitempty"`
+	// Optional. The thinking level of the model.
+	ThinkingLevel ModelSettings_ThinkingLevel `protobuf:"varint,5,opt,name=thinking_level,json=thinkingLevel,proto3,enum=google.cloud.ces.v1beta.ModelSettings_ThinkingLevel" json:"thinking_level,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -565,6 +628,13 @@ func (x *ModelSettings) GetTemperature() float64 {
 		return *x.Temperature
 	}
 	return 0
+}
+
+func (x *ModelSettings) GetThinkingLevel() ModelSettings_ThinkingLevel {
+	if x != nil {
+		return x.ThinkingLevel
+	}
+	return ModelSettings_THINKING_LEVEL_UNSPECIFIED
 }
 
 // Action that is taken when a certain precondition is met.
@@ -1030,6 +1100,109 @@ func (x *EvaluationRunCachingSettings) GetRunCachingMode() EvaluationRunCachingS
 	return EvaluationRunCachingSettings_EVALUATION_RUN_CACHING_MODE_UNSPECIFIED
 }
 
+// Represents a UI event payload.
+type UiEvent struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The media type (MIME type) indicating the format of the UI event payload
+	// (e.g., "application/json+a2ui").
+	MimeType string `protobuf:"bytes,1,opt,name=mime_type,json=mimeType,proto3" json:"mime_type,omitempty"`
+	// The JSON payload representing the A2UI surface.
+	JsonPayload   string `protobuf:"bytes,2,opt,name=json_payload,json=jsonPayload,proto3" json:"json_payload,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UiEvent) Reset() {
+	*x = UiEvent{}
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UiEvent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UiEvent) ProtoMessage() {}
+
+func (x *UiEvent) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UiEvent.ProtoReflect.Descriptor instead.
+func (*UiEvent) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_common_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *UiEvent) GetMimeType() string {
+	if x != nil {
+		return x.MimeType
+	}
+	return ""
+}
+
+func (x *UiEvent) GetJsonPayload() string {
+	if x != nil {
+		return x.JsonPayload
+	}
+	return ""
+}
+
+// Session checkpoint containing inferred user intent for session title and UI.
+type SessionCheckpoint struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Inferred user goal or topic for the session (e.g. "Building E-Commerce
+	// Support Agent").
+	UserIntent    string `protobuf:"bytes,1,opt,name=user_intent,json=userIntent,proto3" json:"user_intent,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SessionCheckpoint) Reset() {
+	*x = SessionCheckpoint{}
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SessionCheckpoint) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SessionCheckpoint) ProtoMessage() {}
+
+func (x *SessionCheckpoint) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SessionCheckpoint.ProtoReflect.Descriptor instead.
+func (*SessionCheckpoint) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_common_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *SessionCheckpoint) GetUserIntent() string {
+	if x != nil {
+		return x.UserIntent
+	}
+	return ""
+}
+
 // Represents a response from the agent.
 type TriggerAction_Response struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -1044,7 +1217,7 @@ type TriggerAction_Response struct {
 
 func (x *TriggerAction_Response) Reset() {
 	*x = TriggerAction_Response{}
-	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[8]
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1056,7 +1229,7 @@ func (x *TriggerAction_Response) String() string {
 func (*TriggerAction_Response) ProtoMessage() {}
 
 func (x *TriggerAction_Response) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[8]
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1098,7 +1271,7 @@ type TriggerAction_RespondImmediately struct {
 
 func (x *TriggerAction_RespondImmediately) Reset() {
 	*x = TriggerAction_RespondImmediately{}
-	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[9]
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1110,7 +1283,7 @@ func (x *TriggerAction_RespondImmediately) String() string {
 func (*TriggerAction_RespondImmediately) ProtoMessage() {}
 
 func (x *TriggerAction_RespondImmediately) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[9]
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1144,7 +1317,7 @@ type TriggerAction_GenerativeAnswer struct {
 
 func (x *TriggerAction_GenerativeAnswer) Reset() {
 	*x = TriggerAction_GenerativeAnswer{}
-	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[10]
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1156,7 +1329,7 @@ func (x *TriggerAction_GenerativeAnswer) String() string {
 func (*TriggerAction_GenerativeAnswer) ProtoMessage() {}
 
 func (x *TriggerAction_GenerativeAnswer) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[10]
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1192,7 +1365,7 @@ type TriggerAction_TransferAgent struct {
 
 func (x *TriggerAction_TransferAgent) Reset() {
 	*x = TriggerAction_TransferAgent{}
-	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[11]
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1204,7 +1377,7 @@ func (x *TriggerAction_TransferAgent) String() string {
 func (*TriggerAction_TransferAgent) ProtoMessage() {}
 
 func (x *TriggerAction_TransferAgent) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[11]
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1255,7 +1428,7 @@ type TlsConfig_CaCert struct {
 
 func (x *TlsConfig_CaCert) Reset() {
 	*x = TlsConfig_CaCert{}
-	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[12]
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1267,7 +1440,7 @@ func (x *TlsConfig_CaCert) String() string {
 func (*TlsConfig_CaCert) ProtoMessage() {}
 
 func (x *TlsConfig_CaCert) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[12]
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1308,7 +1481,7 @@ type ChannelProfile_PersonaProperty struct {
 
 func (x *ChannelProfile_PersonaProperty) Reset() {
 	*x = ChannelProfile_PersonaProperty{}
-	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[13]
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1320,7 +1493,7 @@ func (x *ChannelProfile_PersonaProperty) String() string {
 func (*ChannelProfile_PersonaProperty) ProtoMessage() {}
 
 func (x *ChannelProfile_PersonaProperty) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[13]
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1360,7 +1533,7 @@ type ChannelProfile_WebWidgetConfig struct {
 
 func (x *ChannelProfile_WebWidgetConfig) Reset() {
 	*x = ChannelProfile_WebWidgetConfig{}
-	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[14]
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1372,7 +1545,7 @@ func (x *ChannelProfile_WebWidgetConfig) String() string {
 func (*ChannelProfile_WebWidgetConfig) ProtoMessage() {}
 
 func (x *ChannelProfile_WebWidgetConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[14]
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1437,7 +1610,7 @@ type ChannelProfile_WhatsAppConfig struct {
 
 func (x *ChannelProfile_WhatsAppConfig) Reset() {
 	*x = ChannelProfile_WhatsAppConfig{}
-	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[15]
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1449,7 +1622,7 @@ func (x *ChannelProfile_WhatsAppConfig) String() string {
 func (*ChannelProfile_WhatsAppConfig) ProtoMessage() {}
 
 func (x *ChannelProfile_WhatsAppConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[15]
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1524,7 +1697,7 @@ type ChannelProfile_InstagramConfig struct {
 
 func (x *ChannelProfile_InstagramConfig) Reset() {
 	*x = ChannelProfile_InstagramConfig{}
-	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[16]
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1536,7 +1709,7 @@ func (x *ChannelProfile_InstagramConfig) String() string {
 func (*ChannelProfile_InstagramConfig) ProtoMessage() {}
 
 func (x *ChannelProfile_InstagramConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[16]
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1607,7 +1780,7 @@ type ChannelProfile_WebWidgetConfig_SecuritySettings struct {
 
 func (x *ChannelProfile_WebWidgetConfig_SecuritySettings) Reset() {
 	*x = ChannelProfile_WebWidgetConfig_SecuritySettings{}
-	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[17]
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1619,7 +1792,7 @@ func (x *ChannelProfile_WebWidgetConfig_SecuritySettings) String() string {
 func (*ChannelProfile_WebWidgetConfig_SecuritySettings) ProtoMessage() {}
 
 func (x *ChannelProfile_WebWidgetConfig_SecuritySettings) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[17]
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1675,10 +1848,18 @@ const file_google_cloud_ces_v1beta_common_proto_rawDesc = "" +
 	"\bdisabled\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\bdisabled\x12D\n" +
 	"\x1bproactive_execution_enabled\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x19proactiveExecutionEnabledB\n" +
 	"\n" +
-	"\bcallback\"h\n" +
+	"\bcallback\"\xa8\x02\n" +
 	"\rModelSettings\x12\x1a\n" +
 	"\x05model\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x05model\x12+\n" +
-	"\vtemperature\x18\x02 \x01(\x01B\x04\xe2A\x01\x01H\x00R\vtemperature\x88\x01\x01B\x0e\n" +
+	"\vtemperature\x18\x02 \x01(\x01B\x04\xe2A\x01\x01H\x00R\vtemperature\x88\x01\x01\x12a\n" +
+	"\x0ethinking_level\x18\x05 \x01(\x0e24.google.cloud.ces.v1beta.ModelSettings.ThinkingLevelB\x04\xe2A\x01\x01R\rthinkingLevel\"[\n" +
+	"\rThinkingLevel\x12\x1e\n" +
+	"\x1aTHINKING_LEVEL_UNSPECIFIED\x10\x00\x12\v\n" +
+	"\aDEFAULT\x10\x01\x12\a\n" +
+	"\x03LOW\x10\x02\x12\n" +
+	"\n" +
+	"\x06MEDIUM\x10\x03\x12\b\n" +
+	"\x04HIGH\x10\x04B\x0e\n" +
 	"\f_temperature\"\x8f\x05\n" +
 	"\rTriggerAction\x12r\n" +
 	"\x13respond_immediately\x18\x01 \x01(\v29.google.cloud.ces.v1beta.TriggerAction.RespondImmediatelyB\x04\xe2A\x01\x01H\x00R\x12respondImmediately\x12c\n" +
@@ -1786,7 +1967,13 @@ const file_google_cloud_ces_v1beta_common_proto_rawDesc = "" +
 	"\x18EvaluationRunCachingMode\x12+\n" +
 	"'EVALUATION_RUN_CACHING_MODE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tFORCE_RUN\x10\x01\x12\x15\n" +
-	"\x11SKIP_IF_UNCHANGED\x10\x02*R\n" +
+	"\x11SKIP_IF_UNCHANGED\x10\x02\"I\n" +
+	"\aUiEvent\x12\x1b\n" +
+	"\tmime_type\x18\x01 \x01(\tR\bmimeType\x12!\n" +
+	"\fjson_payload\x18\x02 \x01(\tR\vjsonPayload\"4\n" +
+	"\x11SessionCheckpoint\x12\x1f\n" +
+	"\vuser_intent\x18\x01 \x01(\tR\n" +
+	"userIntent*R\n" +
 	"\rExecutionType\x12\x1e\n" +
 	"\x1aEXECUTION_TYPE_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vSYNCHRONOUS\x10\x01\x12\x10\n" +
@@ -1806,63 +1993,67 @@ func file_google_cloud_ces_v1beta_common_proto_rawDescGZIP() []byte {
 	return file_google_cloud_ces_v1beta_common_proto_rawDescData
 }
 
-var file_google_cloud_ces_v1beta_common_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
-var file_google_cloud_ces_v1beta_common_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
+var file_google_cloud_ces_v1beta_common_proto_enumTypes = make([]protoimpl.EnumInfo, 7)
+var file_google_cloud_ces_v1beta_common_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
 var file_google_cloud_ces_v1beta_common_proto_goTypes = []any{
 	(ExecutionType)(0),                                         // 0: google.cloud.ces.v1beta.ExecutionType
-	(ChannelProfile_ChannelType)(0),                            // 1: google.cloud.ces.v1beta.ChannelProfile.ChannelType
-	(ChannelProfile_PersonaProperty_Persona)(0),                // 2: google.cloud.ces.v1beta.ChannelProfile.PersonaProperty.Persona
-	(ChannelProfile_WebWidgetConfig_Modality)(0),               // 3: google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig.Modality
-	(ChannelProfile_WebWidgetConfig_Theme)(0),                  // 4: google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig.Theme
-	(EvaluationRunCachingSettings_EvaluationRunCachingMode)(0), // 5: google.cloud.ces.v1beta.EvaluationRunCachingSettings.EvaluationRunCachingMode
-	(*Callback)(nil),                                           // 6: google.cloud.ces.v1beta.Callback
-	(*ModelSettings)(nil),                                      // 7: google.cloud.ces.v1beta.ModelSettings
-	(*TriggerAction)(nil),                                      // 8: google.cloud.ces.v1beta.TriggerAction
-	(*TlsConfig)(nil),                                          // 9: google.cloud.ces.v1beta.TlsConfig
-	(*ServiceDirectoryConfig)(nil),                             // 10: google.cloud.ces.v1beta.ServiceDirectoryConfig
-	(*ChannelProfile)(nil),                                     // 11: google.cloud.ces.v1beta.ChannelProfile
-	(*Span)(nil),                                               // 12: google.cloud.ces.v1beta.Span
-	(*EvaluationRunCachingSettings)(nil),                       // 13: google.cloud.ces.v1beta.EvaluationRunCachingSettings
-	(*TriggerAction_Response)(nil),                             // 14: google.cloud.ces.v1beta.TriggerAction.Response
-	(*TriggerAction_RespondImmediately)(nil),                   // 15: google.cloud.ces.v1beta.TriggerAction.RespondImmediately
-	(*TriggerAction_GenerativeAnswer)(nil),                     // 16: google.cloud.ces.v1beta.TriggerAction.GenerativeAnswer
-	(*TriggerAction_TransferAgent)(nil),                        // 17: google.cloud.ces.v1beta.TriggerAction.TransferAgent
-	(*TlsConfig_CaCert)(nil),                                   // 18: google.cloud.ces.v1beta.TlsConfig.CaCert
-	(*ChannelProfile_PersonaProperty)(nil),                     // 19: google.cloud.ces.v1beta.ChannelProfile.PersonaProperty
-	(*ChannelProfile_WebWidgetConfig)(nil),                     // 20: google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig
-	(*ChannelProfile_WhatsAppConfig)(nil),                      // 21: google.cloud.ces.v1beta.ChannelProfile.WhatsAppConfig
-	(*ChannelProfile_InstagramConfig)(nil),                     // 22: google.cloud.ces.v1beta.ChannelProfile.InstagramConfig
-	(*ChannelProfile_WebWidgetConfig_SecuritySettings)(nil),    // 23: google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig.SecuritySettings
-	(*timestamppb.Timestamp)(nil),                              // 24: google.protobuf.Timestamp
-	(*durationpb.Duration)(nil),                                // 25: google.protobuf.Duration
-	(*structpb.Struct)(nil),                                    // 26: google.protobuf.Struct
+	(ModelSettings_ThinkingLevel)(0),                           // 1: google.cloud.ces.v1beta.ModelSettings.ThinkingLevel
+	(ChannelProfile_ChannelType)(0),                            // 2: google.cloud.ces.v1beta.ChannelProfile.ChannelType
+	(ChannelProfile_PersonaProperty_Persona)(0),                // 3: google.cloud.ces.v1beta.ChannelProfile.PersonaProperty.Persona
+	(ChannelProfile_WebWidgetConfig_Modality)(0),               // 4: google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig.Modality
+	(ChannelProfile_WebWidgetConfig_Theme)(0),                  // 5: google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig.Theme
+	(EvaluationRunCachingSettings_EvaluationRunCachingMode)(0), // 6: google.cloud.ces.v1beta.EvaluationRunCachingSettings.EvaluationRunCachingMode
+	(*Callback)(nil),                                           // 7: google.cloud.ces.v1beta.Callback
+	(*ModelSettings)(nil),                                      // 8: google.cloud.ces.v1beta.ModelSettings
+	(*TriggerAction)(nil),                                      // 9: google.cloud.ces.v1beta.TriggerAction
+	(*TlsConfig)(nil),                                          // 10: google.cloud.ces.v1beta.TlsConfig
+	(*ServiceDirectoryConfig)(nil),                             // 11: google.cloud.ces.v1beta.ServiceDirectoryConfig
+	(*ChannelProfile)(nil),                                     // 12: google.cloud.ces.v1beta.ChannelProfile
+	(*Span)(nil),                                               // 13: google.cloud.ces.v1beta.Span
+	(*EvaluationRunCachingSettings)(nil),                       // 14: google.cloud.ces.v1beta.EvaluationRunCachingSettings
+	(*UiEvent)(nil),                                            // 15: google.cloud.ces.v1beta.UiEvent
+	(*SessionCheckpoint)(nil),                                  // 16: google.cloud.ces.v1beta.SessionCheckpoint
+	(*TriggerAction_Response)(nil),                             // 17: google.cloud.ces.v1beta.TriggerAction.Response
+	(*TriggerAction_RespondImmediately)(nil),                   // 18: google.cloud.ces.v1beta.TriggerAction.RespondImmediately
+	(*TriggerAction_GenerativeAnswer)(nil),                     // 19: google.cloud.ces.v1beta.TriggerAction.GenerativeAnswer
+	(*TriggerAction_TransferAgent)(nil),                        // 20: google.cloud.ces.v1beta.TriggerAction.TransferAgent
+	(*TlsConfig_CaCert)(nil),                                   // 21: google.cloud.ces.v1beta.TlsConfig.CaCert
+	(*ChannelProfile_PersonaProperty)(nil),                     // 22: google.cloud.ces.v1beta.ChannelProfile.PersonaProperty
+	(*ChannelProfile_WebWidgetConfig)(nil),                     // 23: google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig
+	(*ChannelProfile_WhatsAppConfig)(nil),                      // 24: google.cloud.ces.v1beta.ChannelProfile.WhatsAppConfig
+	(*ChannelProfile_InstagramConfig)(nil),                     // 25: google.cloud.ces.v1beta.ChannelProfile.InstagramConfig
+	(*ChannelProfile_WebWidgetConfig_SecuritySettings)(nil),    // 26: google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig.SecuritySettings
+	(*timestamppb.Timestamp)(nil),                              // 27: google.protobuf.Timestamp
+	(*durationpb.Duration)(nil),                                // 28: google.protobuf.Duration
+	(*structpb.Struct)(nil),                                    // 29: google.protobuf.Struct
 }
 var file_google_cloud_ces_v1beta_common_proto_depIdxs = []int32{
-	15, // 0: google.cloud.ces.v1beta.TriggerAction.respond_immediately:type_name -> google.cloud.ces.v1beta.TriggerAction.RespondImmediately
-	17, // 1: google.cloud.ces.v1beta.TriggerAction.transfer_agent:type_name -> google.cloud.ces.v1beta.TriggerAction.TransferAgent
-	16, // 2: google.cloud.ces.v1beta.TriggerAction.generative_answer:type_name -> google.cloud.ces.v1beta.TriggerAction.GenerativeAnswer
-	18, // 3: google.cloud.ces.v1beta.TlsConfig.ca_certs:type_name -> google.cloud.ces.v1beta.TlsConfig.CaCert
-	1,  // 4: google.cloud.ces.v1beta.ChannelProfile.channel_type:type_name -> google.cloud.ces.v1beta.ChannelProfile.ChannelType
-	19, // 5: google.cloud.ces.v1beta.ChannelProfile.persona_property:type_name -> google.cloud.ces.v1beta.ChannelProfile.PersonaProperty
-	20, // 6: google.cloud.ces.v1beta.ChannelProfile.web_widget_config:type_name -> google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig
-	21, // 7: google.cloud.ces.v1beta.ChannelProfile.whatsapp_config:type_name -> google.cloud.ces.v1beta.ChannelProfile.WhatsAppConfig
-	22, // 8: google.cloud.ces.v1beta.ChannelProfile.instagram_config:type_name -> google.cloud.ces.v1beta.ChannelProfile.InstagramConfig
-	24, // 9: google.cloud.ces.v1beta.Span.start_time:type_name -> google.protobuf.Timestamp
-	24, // 10: google.cloud.ces.v1beta.Span.end_time:type_name -> google.protobuf.Timestamp
-	25, // 11: google.cloud.ces.v1beta.Span.duration:type_name -> google.protobuf.Duration
-	26, // 12: google.cloud.ces.v1beta.Span.attributes:type_name -> google.protobuf.Struct
-	12, // 13: google.cloud.ces.v1beta.Span.child_spans:type_name -> google.cloud.ces.v1beta.Span
-	5,  // 14: google.cloud.ces.v1beta.EvaluationRunCachingSettings.run_caching_mode:type_name -> google.cloud.ces.v1beta.EvaluationRunCachingSettings.EvaluationRunCachingMode
-	14, // 15: google.cloud.ces.v1beta.TriggerAction.RespondImmediately.responses:type_name -> google.cloud.ces.v1beta.TriggerAction.Response
-	2,  // 16: google.cloud.ces.v1beta.ChannelProfile.PersonaProperty.persona:type_name -> google.cloud.ces.v1beta.ChannelProfile.PersonaProperty.Persona
-	3,  // 17: google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig.modality:type_name -> google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig.Modality
-	4,  // 18: google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig.theme:type_name -> google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig.Theme
-	23, // 19: google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig.security_settings:type_name -> google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig.SecuritySettings
-	20, // [20:20] is the sub-list for method output_type
-	20, // [20:20] is the sub-list for method input_type
-	20, // [20:20] is the sub-list for extension type_name
-	20, // [20:20] is the sub-list for extension extendee
-	0,  // [0:20] is the sub-list for field type_name
+	1,  // 0: google.cloud.ces.v1beta.ModelSettings.thinking_level:type_name -> google.cloud.ces.v1beta.ModelSettings.ThinkingLevel
+	18, // 1: google.cloud.ces.v1beta.TriggerAction.respond_immediately:type_name -> google.cloud.ces.v1beta.TriggerAction.RespondImmediately
+	20, // 2: google.cloud.ces.v1beta.TriggerAction.transfer_agent:type_name -> google.cloud.ces.v1beta.TriggerAction.TransferAgent
+	19, // 3: google.cloud.ces.v1beta.TriggerAction.generative_answer:type_name -> google.cloud.ces.v1beta.TriggerAction.GenerativeAnswer
+	21, // 4: google.cloud.ces.v1beta.TlsConfig.ca_certs:type_name -> google.cloud.ces.v1beta.TlsConfig.CaCert
+	2,  // 5: google.cloud.ces.v1beta.ChannelProfile.channel_type:type_name -> google.cloud.ces.v1beta.ChannelProfile.ChannelType
+	22, // 6: google.cloud.ces.v1beta.ChannelProfile.persona_property:type_name -> google.cloud.ces.v1beta.ChannelProfile.PersonaProperty
+	23, // 7: google.cloud.ces.v1beta.ChannelProfile.web_widget_config:type_name -> google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig
+	24, // 8: google.cloud.ces.v1beta.ChannelProfile.whatsapp_config:type_name -> google.cloud.ces.v1beta.ChannelProfile.WhatsAppConfig
+	25, // 9: google.cloud.ces.v1beta.ChannelProfile.instagram_config:type_name -> google.cloud.ces.v1beta.ChannelProfile.InstagramConfig
+	27, // 10: google.cloud.ces.v1beta.Span.start_time:type_name -> google.protobuf.Timestamp
+	27, // 11: google.cloud.ces.v1beta.Span.end_time:type_name -> google.protobuf.Timestamp
+	28, // 12: google.cloud.ces.v1beta.Span.duration:type_name -> google.protobuf.Duration
+	29, // 13: google.cloud.ces.v1beta.Span.attributes:type_name -> google.protobuf.Struct
+	13, // 14: google.cloud.ces.v1beta.Span.child_spans:type_name -> google.cloud.ces.v1beta.Span
+	6,  // 15: google.cloud.ces.v1beta.EvaluationRunCachingSettings.run_caching_mode:type_name -> google.cloud.ces.v1beta.EvaluationRunCachingSettings.EvaluationRunCachingMode
+	17, // 16: google.cloud.ces.v1beta.TriggerAction.RespondImmediately.responses:type_name -> google.cloud.ces.v1beta.TriggerAction.Response
+	3,  // 17: google.cloud.ces.v1beta.ChannelProfile.PersonaProperty.persona:type_name -> google.cloud.ces.v1beta.ChannelProfile.PersonaProperty.Persona
+	4,  // 18: google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig.modality:type_name -> google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig.Modality
+	5,  // 19: google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig.theme:type_name -> google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig.Theme
+	26, // 20: google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig.security_settings:type_name -> google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig.SecuritySettings
+	21, // [21:21] is the sub-list for method output_type
+	21, // [21:21] is the sub-list for method input_type
+	21, // [21:21] is the sub-list for extension type_name
+	21, // [21:21] is the sub-list for extension extendee
+	0,  // [0:21] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_ces_v1beta_common_proto_init() }
@@ -1884,8 +2075,8 @@ func file_google_cloud_ces_v1beta_common_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_ces_v1beta_common_proto_rawDesc), len(file_google_cloud_ces_v1beta_common_proto_rawDesc)),
-			NumEnums:      6,
-			NumMessages:   18,
+			NumEnums:      7,
+			NumMessages:   20,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

@@ -93,7 +93,7 @@ func defaultDataChatCallOptions() *DataChatCallOptions {
 			}),
 		},
 		CreateConversation: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -105,7 +105,7 @@ func defaultDataChatCallOptions() *DataChatCallOptions {
 			}),
 		},
 		DeleteConversation: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -117,7 +117,7 @@ func defaultDataChatCallOptions() *DataChatCallOptions {
 			}),
 		},
 		UpdateConversation: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -129,7 +129,7 @@ func defaultDataChatCallOptions() *DataChatCallOptions {
 			}),
 		},
 		GetConversation: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -141,7 +141,7 @@ func defaultDataChatCallOptions() *DataChatCallOptions {
 			}),
 		},
 		ListConversations: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -153,7 +153,7 @@ func defaultDataChatCallOptions() *DataChatCallOptions {
 			}),
 		},
 		ListMessages: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -165,7 +165,7 @@ func defaultDataChatCallOptions() *DataChatCallOptions {
 			}),
 		},
 		QueryData: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -177,7 +177,7 @@ func defaultDataChatCallOptions() *DataChatCallOptions {
 			}),
 		},
 		GetLocation: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -189,7 +189,7 @@ func defaultDataChatCallOptions() *DataChatCallOptions {
 			}),
 		},
 		ListLocations: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -201,7 +201,7 @@ func defaultDataChatCallOptions() *DataChatCallOptions {
 			}),
 		},
 		CancelOperation: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -213,7 +213,7 @@ func defaultDataChatCallOptions() *DataChatCallOptions {
 			}),
 		},
 		DeleteOperation: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -225,7 +225,7 @@ func defaultDataChatCallOptions() *DataChatCallOptions {
 			}),
 		},
 		GetOperation: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -237,7 +237,7 @@ func defaultDataChatCallOptions() *DataChatCallOptions {
 			}),
 		},
 		ListOperations: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -254,7 +254,7 @@ func defaultDataChatCallOptions() *DataChatCallOptions {
 func defaultDataChatRESTCallOptions() *DataChatCallOptions {
 	return &DataChatCallOptions{
 		Chat: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -265,7 +265,7 @@ func defaultDataChatRESTCallOptions() *DataChatCallOptions {
 			}),
 		},
 		CreateConversation: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -276,7 +276,7 @@ func defaultDataChatRESTCallOptions() *DataChatCallOptions {
 			}),
 		},
 		DeleteConversation: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -287,7 +287,7 @@ func defaultDataChatRESTCallOptions() *DataChatCallOptions {
 			}),
 		},
 		UpdateConversation: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -298,7 +298,7 @@ func defaultDataChatRESTCallOptions() *DataChatCallOptions {
 			}),
 		},
 		GetConversation: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -309,7 +309,7 @@ func defaultDataChatRESTCallOptions() *DataChatCallOptions {
 			}),
 		},
 		ListConversations: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -320,7 +320,7 @@ func defaultDataChatRESTCallOptions() *DataChatCallOptions {
 			}),
 		},
 		ListMessages: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -331,7 +331,7 @@ func defaultDataChatRESTCallOptions() *DataChatCallOptions {
 			}),
 		},
 		QueryData: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -342,7 +342,7 @@ func defaultDataChatRESTCallOptions() *DataChatCallOptions {
 			}),
 		},
 		GetLocation: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -353,7 +353,7 @@ func defaultDataChatRESTCallOptions() *DataChatCallOptions {
 			}),
 		},
 		ListLocations: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -364,7 +364,7 @@ func defaultDataChatRESTCallOptions() *DataChatCallOptions {
 			}),
 		},
 		CancelOperation: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -375,7 +375,7 @@ func defaultDataChatRESTCallOptions() *DataChatCallOptions {
 			}),
 		},
 		DeleteOperation: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -386,7 +386,7 @@ func defaultDataChatRESTCallOptions() *DataChatCallOptions {
 			}),
 		},
 		GetOperation: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -397,7 +397,7 @@ func defaultDataChatRESTCallOptions() *DataChatCallOptions {
 			}),
 		},
 		ListOperations: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,

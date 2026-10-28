@@ -200,6 +200,52 @@
           "fullName": "google.cloud.memorystore.v1.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.memorystore.v1.Client.CreateAclPolicy",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1.Memorystore.CreateAclPolicy",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "CreateAclPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.CreateAclPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*memorystorepb.AclPolicy",
+        "shortName": "CreateAclPolicy"
+      },
+      "description": "CreateAclPolicy creates an ACL policy.\nThe creation is executed synchronously and the policy is available for use\nimmediately after the RPC returns.",
+      "file": "Client/CreateAclPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1_generated_Memorystore_CreateAclPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore CreateAclPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.memorystore.v1.Client.CreateInstance",
         "method": {
           "fullName": "google.cloud.memorystore.v1.Memorystore.CreateInstance",
@@ -239,6 +285,52 @@
         }
       ],
       "title": "memorystore CreateInstance Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1.Client.DeleteAclPolicy",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1.Memorystore.DeleteAclPolicy",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "DeleteAclPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.DeleteAclPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteAclPolicyOperation",
+        "shortName": "DeleteAclPolicy"
+      },
+      "description": "DeleteAclPolicy deletes a specific ACL policy. This action will delete the ACL policy and\nall the rules associated with it. An ACL policy cannot be deleted if it is\nattached to an instance.",
+      "file": "Client/DeleteAclPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1_generated_Memorystore_DeleteAclPolicy_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore DeleteAclPolicy Sample"
     },
     {
       "clientMethod": {
@@ -560,6 +652,98 @@
         }
       ],
       "title": "memorystore FinishMigration Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1.Client.GetAclPolicy",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1.Memorystore.GetAclPolicy",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "GetAclPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.GetAclPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*memorystorepb.AclPolicy",
+        "shortName": "GetAclPolicy"
+      },
+      "description": "GetAclPolicy gets the details of a specific Memorystore ACL policy.",
+      "file": "Client/GetAclPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1_generated_Memorystore_GetAclPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore GetAclPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1.Client.GetAclPolicyRevision",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1.Memorystore.GetAclPolicyRevision",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "GetAclPolicyRevision"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.GetAclPolicyRevisionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*memorystorepb.AclPolicyRevision",
+        "shortName": "GetAclPolicyRevision"
+      },
+      "description": "GetAclPolicyRevision gets details of a specific ACL policy revision.",
+      "file": "Client/GetAclPolicyRevision/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1_generated_Memorystore_GetAclPolicyRevision_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore GetAclPolicyRevision Sample"
     },
     {
       "clientMethod": {
@@ -981,6 +1165,98 @@
           "fullName": "google.cloud.memorystore.v1.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.memorystore.v1.Client.ListAclPolicies",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1.Memorystore.ListAclPolicies",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "ListAclPolicies"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.ListAclPoliciesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "AclPolicyIterator",
+        "shortName": "ListAclPolicies"
+      },
+      "description": "ListAclPolicies lists all ACL policies owned by a project in either the specified\nlocation (region) or all locations.\n\nThe location should have the following format: \n\n* `projects/{project_id}/locations/{location_id}`\n\nIf `location_id` is specified as `-` (wildcard), then all regions\navailable to the project are queried, and the results are aggregated.",
+      "file": "Client/ListAclPolicies/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1_generated_Memorystore_ListAclPolicies_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore ListAclPolicies Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1.Client.ListAclPolicyRevisions",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1.Memorystore.ListAclPolicyRevisions",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "ListAclPolicyRevisions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.ListAclPolicyRevisionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "AclPolicyRevisionIterator",
+        "shortName": "ListAclPolicyRevisions"
+      },
+      "description": "ListAclPolicyRevisions lists all ACL policy revisions in a given ACL policy.",
+      "file": "Client/ListAclPolicyRevisions/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1_generated_Memorystore_ListAclPolicyRevisions_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore ListAclPolicyRevisions Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.memorystore.v1.Client.ListAuthTokens",
         "method": {
           "fullName": "google.cloud.memorystore.v1.Memorystore.ListAuthTokens",
@@ -1388,6 +1664,52 @@
         }
       ],
       "title": "memorystore StartMigration Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1.Client.UpdateAclPolicy",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1.Memorystore.UpdateAclPolicy",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "UpdateAclPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.UpdateAclPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "UpdateAclPolicyOperation",
+        "shortName": "UpdateAclPolicy"
+      },
+      "description": "UpdateAclPolicy updates the ACL policy.\n\nThe operation will apply the updated ACL policy to all the linked\ninstances. The operation will return success if it successfully applied the\npolicy to all the instances. If the operation completed with a failure, the\nservice will continue to apply the policy via reconciliation for the failed\ninstances even after operation completion to ensure eventual consistency.\n\nCompleted longrunning.Operation will contain the new ACL policy object\nin the response field.",
+      "file": "Client/UpdateAclPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1_generated_Memorystore_UpdateAclPolicy_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore UpdateAclPolicy Sample"
     },
     {
       "clientMethod": {

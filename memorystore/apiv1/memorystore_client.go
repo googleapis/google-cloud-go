@@ -49,10 +49,17 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
+	ListAclPolicies                       []gax.CallOption
 	ListInstances                         []gax.CallOption
+	GetAclPolicy                          []gax.CallOption
 	GetInstance                           []gax.CallOption
+	CreateAclPolicy                       []gax.CallOption
 	CreateInstance                        []gax.CallOption
+	UpdateAclPolicy                       []gax.CallOption
 	UpdateInstance                        []gax.CallOption
+	DeleteAclPolicy                       []gax.CallOption
+	GetAclPolicyRevision                  []gax.CallOption
+	ListAclPolicyRevisions                []gax.CallOption
 	DeleteInstance                        []gax.CallOption
 	GetCertificateAuthority               []gax.CallOption
 	GetSharedRegionalCertificateAuthority []gax.CallOption
@@ -99,7 +106,31 @@ func defaultGRPCClientOptions() []option.ClientOption {
 
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
+		ListAclPolicies: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		ListInstances: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetAclPolicy: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -123,11 +154,44 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		CreateAclPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		CreateInstance: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		UpdateAclPolicy: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
 		UpdateInstance: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		DeleteAclPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		GetAclPolicyRevision: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListAclPolicyRevisions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
 		},
 		DeleteInstance: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
@@ -174,7 +238,29 @@ func defaultCallOptions() *CallOptions {
 
 func defaultRESTCallOptions() *CallOptions {
 	return &CallOptions{
+		ListAclPolicies: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		ListInstances: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetAclPolicy: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -196,11 +282,42 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		CreateAclPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		CreateInstance: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		UpdateAclPolicy: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
 		UpdateInstance: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		DeleteAclPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		GetAclPolicyRevision: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListAclPolicyRevisions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
 		},
 		DeleteInstance: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
@@ -249,12 +366,21 @@ type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
+	ListAclPolicies(context.Context, *memorystorepb.ListAclPoliciesRequest, ...gax.CallOption) *AclPolicyIterator
 	ListInstances(context.Context, *memorystorepb.ListInstancesRequest, ...gax.CallOption) *InstanceIterator
+	GetAclPolicy(context.Context, *memorystorepb.GetAclPolicyRequest, ...gax.CallOption) (*memorystorepb.AclPolicy, error)
 	GetInstance(context.Context, *memorystorepb.GetInstanceRequest, ...gax.CallOption) (*memorystorepb.Instance, error)
+	CreateAclPolicy(context.Context, *memorystorepb.CreateAclPolicyRequest, ...gax.CallOption) (*memorystorepb.AclPolicy, error)
 	CreateInstance(context.Context, *memorystorepb.CreateInstanceRequest, ...gax.CallOption) (*CreateInstanceOperation, error)
 	CreateInstanceOperation(name string) *CreateInstanceOperation
+	UpdateAclPolicy(context.Context, *memorystorepb.UpdateAclPolicyRequest, ...gax.CallOption) (*UpdateAclPolicyOperation, error)
+	UpdateAclPolicyOperation(name string) *UpdateAclPolicyOperation
 	UpdateInstance(context.Context, *memorystorepb.UpdateInstanceRequest, ...gax.CallOption) (*UpdateInstanceOperation, error)
 	UpdateInstanceOperation(name string) *UpdateInstanceOperation
+	DeleteAclPolicy(context.Context, *memorystorepb.DeleteAclPolicyRequest, ...gax.CallOption) (*DeleteAclPolicyOperation, error)
+	DeleteAclPolicyOperation(name string) *DeleteAclPolicyOperation
+	GetAclPolicyRevision(context.Context, *memorystorepb.GetAclPolicyRevisionRequest, ...gax.CallOption) (*memorystorepb.AclPolicyRevision, error)
+	ListAclPolicyRevisions(context.Context, *memorystorepb.ListAclPolicyRevisionsRequest, ...gax.CallOption) *AclPolicyRevisionIterator
 	DeleteInstance(context.Context, *memorystorepb.DeleteInstanceRequest, ...gax.CallOption) (*DeleteInstanceOperation, error)
 	DeleteInstanceOperation(name string) *DeleteInstanceOperation
 	GetCertificateAuthority(context.Context, *memorystorepb.GetCertificateAuthorityRequest, ...gax.CallOption) (*memorystorepb.CertificateAuthority, error)
@@ -335,14 +461,39 @@ func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
+// ListAclPolicies lists all ACL policies owned by a project in either the specified
+// location (region) or all locations.
+//
+// The location should have the following format:
+//
+//	projects/{project_id}/locations/{location_id}
+//
+// If location_id is specified as - (wildcard), then all regions
+// available to the project are queried, and the results are aggregated.
+func (c *Client) ListAclPolicies(ctx context.Context, req *memorystorepb.ListAclPoliciesRequest, opts ...gax.CallOption) *AclPolicyIterator {
+	return c.internalClient.ListAclPolicies(ctx, req, opts...)
+}
+
 // ListInstances lists Instances in a given project and location.
 func (c *Client) ListInstances(ctx context.Context, req *memorystorepb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
 	return c.internalClient.ListInstances(ctx, req, opts...)
 }
 
+// GetAclPolicy gets the details of a specific Memorystore ACL policy.
+func (c *Client) GetAclPolicy(ctx context.Context, req *memorystorepb.GetAclPolicyRequest, opts ...gax.CallOption) (*memorystorepb.AclPolicy, error) {
+	return c.internalClient.GetAclPolicy(ctx, req, opts...)
+}
+
 // GetInstance gets details of a single Instance.
 func (c *Client) GetInstance(ctx context.Context, req *memorystorepb.GetInstanceRequest, opts ...gax.CallOption) (*memorystorepb.Instance, error) {
 	return c.internalClient.GetInstance(ctx, req, opts...)
+}
+
+// CreateAclPolicy creates an ACL policy.
+// The creation is executed synchronously and the policy is available for use
+// immediately after the RPC returns.
+func (c *Client) CreateAclPolicy(ctx context.Context, req *memorystorepb.CreateAclPolicyRequest, opts ...gax.CallOption) (*memorystorepb.AclPolicy, error) {
+	return c.internalClient.CreateAclPolicy(ctx, req, opts...)
 }
 
 // CreateInstance creates a new Instance in a given project and location.
@@ -356,6 +507,26 @@ func (c *Client) CreateInstanceOperation(name string) *CreateInstanceOperation {
 	return c.internalClient.CreateInstanceOperation(name)
 }
 
+// UpdateAclPolicy updates the ACL policy.
+//
+// The operation will apply the updated ACL policy to all the linked
+// instances. The operation will return success if it successfully applied the
+// policy to all the instances. If the operation completed with a failure, the
+// service will continue to apply the policy via reconciliation for the failed
+// instances even after operation completion to ensure eventual consistency.
+//
+// Completed longrunning.Operation will contain the new ACL policy object
+// in the response field.
+func (c *Client) UpdateAclPolicy(ctx context.Context, req *memorystorepb.UpdateAclPolicyRequest, opts ...gax.CallOption) (*UpdateAclPolicyOperation, error) {
+	return c.internalClient.UpdateAclPolicy(ctx, req, opts...)
+}
+
+// UpdateAclPolicyOperation returns a new UpdateAclPolicyOperation from a given name.
+// The name must be that of a previously created UpdateAclPolicyOperation, possibly from a different process.
+func (c *Client) UpdateAclPolicyOperation(name string) *UpdateAclPolicyOperation {
+	return c.internalClient.UpdateAclPolicyOperation(name)
+}
+
 // UpdateInstance updates the parameters of a single Instance.
 func (c *Client) UpdateInstance(ctx context.Context, req *memorystorepb.UpdateInstanceRequest, opts ...gax.CallOption) (*UpdateInstanceOperation, error) {
 	return c.internalClient.UpdateInstance(ctx, req, opts...)
@@ -365,6 +536,29 @@ func (c *Client) UpdateInstance(ctx context.Context, req *memorystorepb.UpdateIn
 // The name must be that of a previously created UpdateInstanceOperation, possibly from a different process.
 func (c *Client) UpdateInstanceOperation(name string) *UpdateInstanceOperation {
 	return c.internalClient.UpdateInstanceOperation(name)
+}
+
+// DeleteAclPolicy deletes a specific ACL policy. This action will delete the ACL policy and
+// all the rules associated with it. An ACL policy cannot be deleted if it is
+// attached to an instance.
+func (c *Client) DeleteAclPolicy(ctx context.Context, req *memorystorepb.DeleteAclPolicyRequest, opts ...gax.CallOption) (*DeleteAclPolicyOperation, error) {
+	return c.internalClient.DeleteAclPolicy(ctx, req, opts...)
+}
+
+// DeleteAclPolicyOperation returns a new DeleteAclPolicyOperation from a given name.
+// The name must be that of a previously created DeleteAclPolicyOperation, possibly from a different process.
+func (c *Client) DeleteAclPolicyOperation(name string) *DeleteAclPolicyOperation {
+	return c.internalClient.DeleteAclPolicyOperation(name)
+}
+
+// GetAclPolicyRevision gets details of a specific ACL policy revision.
+func (c *Client) GetAclPolicyRevision(ctx context.Context, req *memorystorepb.GetAclPolicyRevisionRequest, opts ...gax.CallOption) (*memorystorepb.AclPolicyRevision, error) {
+	return c.internalClient.GetAclPolicyRevision(ctx, req, opts...)
+}
+
+// ListAclPolicyRevisions lists all ACL policy revisions in a given ACL policy.
+func (c *Client) ListAclPolicyRevisions(ctx context.Context, req *memorystorepb.ListAclPolicyRevisionsRequest, opts ...gax.CallOption) *AclPolicyRevisionIterator {
+	return c.internalClient.ListAclPolicyRevisions(ctx, req, opts...)
 }
 
 // DeleteInstance deletes a single Instance.
@@ -694,10 +888,17 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 			}),
 		)
 
+		client.CallOptions.ListAclPolicies = append(client.CallOptions.ListAclPolicies, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListInstances = append(client.CallOptions.ListInstances, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAclPolicy = append(client.CallOptions.GetAclPolicy, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetInstance = append(client.CallOptions.GetInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateAclPolicy = append(client.CallOptions.CreateAclPolicy, gax.WithClientMetrics(metrics))
 		client.CallOptions.CreateInstance = append(client.CallOptions.CreateInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateAclPolicy = append(client.CallOptions.UpdateAclPolicy, gax.WithClientMetrics(metrics))
 		client.CallOptions.UpdateInstance = append(client.CallOptions.UpdateInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteAclPolicy = append(client.CallOptions.DeleteAclPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAclPolicyRevision = append(client.CallOptions.GetAclPolicyRevision, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAclPolicyRevisions = append(client.CallOptions.ListAclPolicyRevisions, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteInstance = append(client.CallOptions.DeleteInstance, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetCertificateAuthority = append(client.CallOptions.GetCertificateAuthority, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetSharedRegionalCertificateAuthority = append(client.CallOptions.GetSharedRegionalCertificateAuthority, gax.WithClientMetrics(metrics))
@@ -737,10 +938,17 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 			}),
 		)
 
+		client.CallOptions.ListAclPolicies = append(client.CallOptions.ListAclPolicies, gax.WithClientTracing(tracing))
 		client.CallOptions.ListInstances = append(client.CallOptions.ListInstances, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAclPolicy = append(client.CallOptions.GetAclPolicy, gax.WithClientTracing(tracing))
 		client.CallOptions.GetInstance = append(client.CallOptions.GetInstance, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateAclPolicy = append(client.CallOptions.CreateAclPolicy, gax.WithClientTracing(tracing))
 		client.CallOptions.CreateInstance = append(client.CallOptions.CreateInstance, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateAclPolicy = append(client.CallOptions.UpdateAclPolicy, gax.WithClientTracing(tracing))
 		client.CallOptions.UpdateInstance = append(client.CallOptions.UpdateInstance, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteAclPolicy = append(client.CallOptions.DeleteAclPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAclPolicyRevision = append(client.CallOptions.GetAclPolicyRevision, gax.WithClientTracing(tracing))
+		client.CallOptions.ListAclPolicyRevisions = append(client.CallOptions.ListAclPolicyRevisions, gax.WithClientTracing(tracing))
 		client.CallOptions.DeleteInstance = append(client.CallOptions.DeleteInstance, gax.WithClientTracing(tracing))
 		client.CallOptions.GetCertificateAuthority = append(client.CallOptions.GetCertificateAuthority, gax.WithClientTracing(tracing))
 		client.CallOptions.GetSharedRegionalCertificateAuthority = append(client.CallOptions.GetSharedRegionalCertificateAuthority, gax.WithClientTracing(tracing))
@@ -781,10 +989,17 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 			}),
 		)
 
+		client.CallOptions.ListAclPolicies = append(client.CallOptions.ListAclPolicies, gax.WithClientLogging(logging))
 		client.CallOptions.ListInstances = append(client.CallOptions.ListInstances, gax.WithClientLogging(logging))
+		client.CallOptions.GetAclPolicy = append(client.CallOptions.GetAclPolicy, gax.WithClientLogging(logging))
 		client.CallOptions.GetInstance = append(client.CallOptions.GetInstance, gax.WithClientLogging(logging))
+		client.CallOptions.CreateAclPolicy = append(client.CallOptions.CreateAclPolicy, gax.WithClientLogging(logging))
 		client.CallOptions.CreateInstance = append(client.CallOptions.CreateInstance, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateAclPolicy = append(client.CallOptions.UpdateAclPolicy, gax.WithClientLogging(logging))
 		client.CallOptions.UpdateInstance = append(client.CallOptions.UpdateInstance, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteAclPolicy = append(client.CallOptions.DeleteAclPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.GetAclPolicyRevision = append(client.CallOptions.GetAclPolicyRevision, gax.WithClientLogging(logging))
+		client.CallOptions.ListAclPolicyRevisions = append(client.CallOptions.ListAclPolicyRevisions, gax.WithClientLogging(logging))
 		client.CallOptions.DeleteInstance = append(client.CallOptions.DeleteInstance, gax.WithClientLogging(logging))
 		client.CallOptions.GetCertificateAuthority = append(client.CallOptions.GetCertificateAuthority, gax.WithClientLogging(logging))
 		client.CallOptions.GetSharedRegionalCertificateAuthority = append(client.CallOptions.GetSharedRegionalCertificateAuthority, gax.WithClientLogging(logging))
@@ -918,10 +1133,17 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 			}),
 		)
 
+		callOpts.ListAclPolicies = append(callOpts.ListAclPolicies, gax.WithClientMetrics(metrics))
 		callOpts.ListInstances = append(callOpts.ListInstances, gax.WithClientMetrics(metrics))
+		callOpts.GetAclPolicy = append(callOpts.GetAclPolicy, gax.WithClientMetrics(metrics))
 		callOpts.GetInstance = append(callOpts.GetInstance, gax.WithClientMetrics(metrics))
+		callOpts.CreateAclPolicy = append(callOpts.CreateAclPolicy, gax.WithClientMetrics(metrics))
 		callOpts.CreateInstance = append(callOpts.CreateInstance, gax.WithClientMetrics(metrics))
+		callOpts.UpdateAclPolicy = append(callOpts.UpdateAclPolicy, gax.WithClientMetrics(metrics))
 		callOpts.UpdateInstance = append(callOpts.UpdateInstance, gax.WithClientMetrics(metrics))
+		callOpts.DeleteAclPolicy = append(callOpts.DeleteAclPolicy, gax.WithClientMetrics(metrics))
+		callOpts.GetAclPolicyRevision = append(callOpts.GetAclPolicyRevision, gax.WithClientMetrics(metrics))
+		callOpts.ListAclPolicyRevisions = append(callOpts.ListAclPolicyRevisions, gax.WithClientMetrics(metrics))
 		callOpts.DeleteInstance = append(callOpts.DeleteInstance, gax.WithClientMetrics(metrics))
 		callOpts.GetCertificateAuthority = append(callOpts.GetCertificateAuthority, gax.WithClientMetrics(metrics))
 		callOpts.GetSharedRegionalCertificateAuthority = append(callOpts.GetSharedRegionalCertificateAuthority, gax.WithClientMetrics(metrics))
@@ -961,10 +1183,17 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 			}),
 		)
 
+		callOpts.ListAclPolicies = append(callOpts.ListAclPolicies, gax.WithClientTracing(tracing))
 		callOpts.ListInstances = append(callOpts.ListInstances, gax.WithClientTracing(tracing))
+		callOpts.GetAclPolicy = append(callOpts.GetAclPolicy, gax.WithClientTracing(tracing))
 		callOpts.GetInstance = append(callOpts.GetInstance, gax.WithClientTracing(tracing))
+		callOpts.CreateAclPolicy = append(callOpts.CreateAclPolicy, gax.WithClientTracing(tracing))
 		callOpts.CreateInstance = append(callOpts.CreateInstance, gax.WithClientTracing(tracing))
+		callOpts.UpdateAclPolicy = append(callOpts.UpdateAclPolicy, gax.WithClientTracing(tracing))
 		callOpts.UpdateInstance = append(callOpts.UpdateInstance, gax.WithClientTracing(tracing))
+		callOpts.DeleteAclPolicy = append(callOpts.DeleteAclPolicy, gax.WithClientTracing(tracing))
+		callOpts.GetAclPolicyRevision = append(callOpts.GetAclPolicyRevision, gax.WithClientTracing(tracing))
+		callOpts.ListAclPolicyRevisions = append(callOpts.ListAclPolicyRevisions, gax.WithClientTracing(tracing))
 		callOpts.DeleteInstance = append(callOpts.DeleteInstance, gax.WithClientTracing(tracing))
 		callOpts.GetCertificateAuthority = append(callOpts.GetCertificateAuthority, gax.WithClientTracing(tracing))
 		callOpts.GetSharedRegionalCertificateAuthority = append(callOpts.GetSharedRegionalCertificateAuthority, gax.WithClientTracing(tracing))
@@ -1005,10 +1234,17 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 			}),
 		)
 
+		callOpts.ListAclPolicies = append(callOpts.ListAclPolicies, gax.WithClientLogging(logging))
 		callOpts.ListInstances = append(callOpts.ListInstances, gax.WithClientLogging(logging))
+		callOpts.GetAclPolicy = append(callOpts.GetAclPolicy, gax.WithClientLogging(logging))
 		callOpts.GetInstance = append(callOpts.GetInstance, gax.WithClientLogging(logging))
+		callOpts.CreateAclPolicy = append(callOpts.CreateAclPolicy, gax.WithClientLogging(logging))
 		callOpts.CreateInstance = append(callOpts.CreateInstance, gax.WithClientLogging(logging))
+		callOpts.UpdateAclPolicy = append(callOpts.UpdateAclPolicy, gax.WithClientLogging(logging))
 		callOpts.UpdateInstance = append(callOpts.UpdateInstance, gax.WithClientLogging(logging))
+		callOpts.DeleteAclPolicy = append(callOpts.DeleteAclPolicy, gax.WithClientLogging(logging))
+		callOpts.GetAclPolicyRevision = append(callOpts.GetAclPolicyRevision, gax.WithClientLogging(logging))
+		callOpts.ListAclPolicyRevisions = append(callOpts.ListAclPolicyRevisions, gax.WithClientLogging(logging))
 		callOpts.DeleteInstance = append(callOpts.DeleteInstance, gax.WithClientLogging(logging))
 		callOpts.GetCertificateAuthority = append(callOpts.GetCertificateAuthority, gax.WithClientLogging(logging))
 		callOpts.GetSharedRegionalCertificateAuthority = append(callOpts.GetSharedRegionalCertificateAuthority, gax.WithClientLogging(logging))
@@ -1088,6 +1324,55 @@ func (c *restClient) Close() error {
 func (c *restClient) Connection() *grpc.ClientConn {
 	return nil
 }
+func (c *gRPCClient) ListAclPolicies(ctx context.Context, req *memorystorepb.ListAclPoliciesRequest, opts ...gax.CallOption) *AclPolicyIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/ListAclPolicies")
+	}
+	opts = append((*c.CallOptions).ListAclPolicies[0:len((*c.CallOptions).ListAclPolicies):len((*c.CallOptions).ListAclPolicies)], opts...)
+	it := &AclPolicyIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*memorystorepb.AclPolicy, string, error) {
+		resp := &memorystorepb.ListAclPoliciesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListAclPolicies, req, settings.GRPC, c.logger, "ListAclPolicies")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetAclPolicies(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 func (c *gRPCClient) ListInstances(ctx context.Context, req *memorystorepb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
@@ -1137,6 +1422,27 @@ func (c *gRPCClient) ListInstances(ctx context.Context, req *memorystorepb.ListI
 	return it
 }
 
+func (c *gRPCClient) GetAclPolicy(ctx context.Context, req *memorystorepb.GetAclPolicyRequest, opts ...gax.CallOption) (*memorystorepb.AclPolicy, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/GetAclPolicy")
+	}
+	opts = append((*c.CallOptions).GetAclPolicy[0:len((*c.CallOptions).GetAclPolicy):len((*c.CallOptions).GetAclPolicy)], opts...)
+	var resp *memorystorepb.AclPolicy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetAclPolicy, req, settings.GRPC, c.logger, "GetAclPolicy")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *gRPCClient) GetInstance(ctx context.Context, req *memorystorepb.GetInstanceRequest, opts ...gax.CallOption) (*memorystorepb.Instance, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1150,6 +1456,27 @@ func (c *gRPCClient) GetInstance(ctx context.Context, req *memorystorepb.GetInst
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = executeRPC(ctx, c.client.GetInstance, req, settings.GRPC, c.logger, "GetInstance")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CreateAclPolicy(ctx context.Context, req *memorystorepb.CreateAclPolicyRequest, opts ...gax.CallOption) (*memorystorepb.AclPolicy, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/CreateAclPolicy")
+	}
+	opts = append((*c.CallOptions).CreateAclPolicy[0:len((*c.CallOptions).CreateAclPolicy):len((*c.CallOptions).CreateAclPolicy)], opts...)
+	var resp *memorystorepb.AclPolicy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateAclPolicy, req, settings.GRPC, c.logger, "CreateAclPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1185,6 +1512,33 @@ func (c *gRPCClient) CreateInstance(ctx context.Context, req *memorystorepb.Crea
 	}, nil
 }
 
+func (c *gRPCClient) UpdateAclPolicy(ctx context.Context, req *memorystorepb.UpdateAclPolicyRequest, opts ...gax.CallOption) (*UpdateAclPolicyOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "acl_policy.name", url.QueryEscape(req.GetAclPolicy().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/UpdateAclPolicy")
+	}
+	opts = append((*c.CallOptions).UpdateAclPolicy[0:len((*c.CallOptions).UpdateAclPolicy):len((*c.CallOptions).UpdateAclPolicy)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateAclPolicy, req, settings.GRPC, c.logger, "UpdateAclPolicy")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*memorystore.UpdateAclPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &UpdateAclPolicyOperation{
+		lro: lro,
+	}, nil
+}
+
 func (c *gRPCClient) UpdateInstance(ctx context.Context, req *memorystorepb.UpdateInstanceRequest, opts ...gax.CallOption) (*UpdateInstanceOperation, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "instance.name", url.QueryEscape(req.GetInstance().GetName()))}
 
@@ -1210,6 +1564,103 @@ func (c *gRPCClient) UpdateInstance(ctx context.Context, req *memorystorepb.Upda
 	return &UpdateInstanceOperation{
 		lro: lro,
 	}, nil
+}
+
+func (c *gRPCClient) DeleteAclPolicy(ctx context.Context, req *memorystorepb.DeleteAclPolicyRequest, opts ...gax.CallOption) (*DeleteAclPolicyOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/DeleteAclPolicy")
+	}
+	opts = append((*c.CallOptions).DeleteAclPolicy[0:len((*c.CallOptions).DeleteAclPolicy):len((*c.CallOptions).DeleteAclPolicy)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteAclPolicy, req, settings.GRPC, c.logger, "DeleteAclPolicy")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*memorystore.DeleteAclPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &DeleteAclPolicyOperation{
+		lro: lro,
+	}, nil
+}
+
+func (c *gRPCClient) GetAclPolicyRevision(ctx context.Context, req *memorystorepb.GetAclPolicyRevisionRequest, opts ...gax.CallOption) (*memorystorepb.AclPolicyRevision, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/GetAclPolicyRevision")
+	}
+	opts = append((*c.CallOptions).GetAclPolicyRevision[0:len((*c.CallOptions).GetAclPolicyRevision):len((*c.CallOptions).GetAclPolicyRevision)], opts...)
+	var resp *memorystorepb.AclPolicyRevision
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetAclPolicyRevision, req, settings.GRPC, c.logger, "GetAclPolicyRevision")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListAclPolicyRevisions(ctx context.Context, req *memorystorepb.ListAclPolicyRevisionsRequest, opts ...gax.CallOption) *AclPolicyRevisionIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/ListAclPolicyRevisions")
+	}
+	opts = append((*c.CallOptions).ListAclPolicyRevisions[0:len((*c.CallOptions).ListAclPolicyRevisions):len((*c.CallOptions).ListAclPolicyRevisions)], opts...)
+	it := &AclPolicyRevisionIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*memorystorepb.AclPolicyRevision, string, error) {
+		resp := &memorystorepb.ListAclPolicyRevisionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListAclPolicyRevisions, req, settings.GRPC, c.logger, "ListAclPolicyRevisions")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetAclPolicyRevisions(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 func (c *gRPCClient) DeleteInstance(ctx context.Context, req *memorystorepb.DeleteInstanceRequest, opts ...gax.CallOption) (*DeleteInstanceOperation, error) {
@@ -2005,6 +2456,97 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	return it
 }
 
+// ListAclPolicies lists all ACL policies owned by a project in either the specified
+// location (region) or all locations.
+//
+// The location should have the following format:
+//
+//	projects/{project_id}/locations/{location_id}
+//
+// If location_id is specified as - (wildcard), then all regions
+// available to the project are queried, and the results are aggregated.
+func (c *restClient) ListAclPolicies(ctx context.Context, req *memorystorepb.ListAclPoliciesRequest, opts ...gax.CallOption) *AclPolicyIterator {
+	it := &AclPolicyIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*memorystorepb.AclPolicy, string, error) {
+		resp := &memorystorepb.ListAclPoliciesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/aclPolicies", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAclPolicies")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetAclPolicies(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // ListInstances lists Instances in a given project and location.
 func (c *restClient) ListInstances(ctx context.Context, req *memorystorepb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
 	it := &InstanceIterator{}
@@ -2094,6 +2636,65 @@ func (c *restClient) ListInstances(ctx context.Context, req *memorystorepb.ListI
 	return it
 }
 
+// GetAclPolicy gets the details of a specific Memorystore ACL policy.
+func (c *restClient) GetAclPolicy(ctx context.Context, req *memorystorepb.GetAclPolicyRequest, opts ...gax.CallOption) (*memorystorepb.AclPolicy, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/GetAclPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/aclPolicies/*}")
+	}
+	opts = append((*c.CallOptions).GetAclPolicy[0:len((*c.CallOptions).GetAclPolicy):len((*c.CallOptions).GetAclPolicy)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &memorystorepb.AclPolicy{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAclPolicy")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // GetInstance gets details of a single Instance.
 func (c *restClient) GetInstance(ctx context.Context, req *memorystorepb.GetInstanceRequest, opts ...gax.CallOption) (*memorystorepb.Instance, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -2137,6 +2738,78 @@ func (c *restClient) GetInstance(ctx context.Context, req *memorystorepb.GetInst
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetInstance")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateAclPolicy creates an ACL policy.
+// The creation is executed synchronously and the policy is available for use
+// immediately after the RPC returns.
+func (c *restClient) CreateAclPolicy(ctx context.Context, req *memorystorepb.CreateAclPolicyRequest, opts ...gax.CallOption) (*memorystorepb.AclPolicy, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetAclPolicy()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/aclPolicies", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("aclPolicyId", fmt.Sprintf("%v", req.GetAclPolicyId()))
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/CreateAclPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/aclPolicies")
+	}
+	opts = append((*c.CallOptions).CreateAclPolicy[0:len((*c.CallOptions).CreateAclPolicy):len((*c.CallOptions).CreateAclPolicy)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &memorystorepb.AclPolicy{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateAclPolicy")
 		if err != nil {
 			return err
 		}
@@ -2230,6 +2903,98 @@ func (c *restClient) CreateInstance(ctx context.Context, req *memorystorepb.Crea
 	}, nil
 }
 
+// UpdateAclPolicy updates the ACL policy.
+//
+// The operation will apply the updated ACL policy to all the linked
+// instances. The operation will return success if it successfully applied the
+// policy to all the instances. If the operation completed with a failure, the
+// service will continue to apply the policy via reconciliation for the failed
+// instances even after operation completion to ensure eventual consistency.
+//
+// Completed longrunning.Operation will contain the new ACL policy object
+// in the response field.
+func (c *restClient) UpdateAclPolicy(ctx context.Context, req *memorystorepb.UpdateAclPolicyRequest, opts ...gax.CallOption) (*UpdateAclPolicyOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetAclPolicy()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAclPolicy().GetName(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetAclPolicy().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "acl_policy.name", url.QueryEscape(req.GetAclPolicy().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/UpdateAclPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{acl_policy.name=projects/*/locations/*/aclPolicies/*}")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateAclPolicy")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*memorystore.UpdateAclPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &UpdateAclPolicyOperation{
+		lro:      lro,
+		pollPath: override,
+	}, nil
+}
+
 // UpdateInstance updates the parameters of a single Instance.
 func (c *restClient) UpdateInstance(ctx context.Context, req *memorystorepb.UpdateInstanceRequest, opts ...gax.CallOption) (*UpdateInstanceOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -2311,6 +3076,222 @@ func (c *restClient) UpdateInstance(ctx context.Context, req *memorystorepb.Upda
 		lro:      lro,
 		pollPath: override,
 	}, nil
+}
+
+// DeleteAclPolicy deletes a specific ACL policy. This action will delete the ACL policy and
+// all the rules associated with it. An ACL policy cannot be deleted if it is
+// attached to an instance.
+func (c *restClient) DeleteAclPolicy(ctx context.Context, req *memorystorepb.DeleteAclPolicyRequest, opts ...gax.CallOption) (*DeleteAclPolicyOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetEtag() != "" {
+		params.Add("etag", fmt.Sprintf("%v", req.GetEtag()))
+	}
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/DeleteAclPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/aclPolicies/*}")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteAclPolicy")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*memorystore.DeleteAclPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &DeleteAclPolicyOperation{
+		lro:      lro,
+		pollPath: override,
+	}, nil
+}
+
+// GetAclPolicyRevision gets details of a specific ACL policy revision.
+func (c *restClient) GetAclPolicyRevision(ctx context.Context, req *memorystorepb.GetAclPolicyRevisionRequest, opts ...gax.CallOption) (*memorystorepb.AclPolicyRevision, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/GetAclPolicyRevision")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/aclPolicies/*/revisions/*}")
+	}
+	opts = append((*c.CallOptions).GetAclPolicyRevision[0:len((*c.CallOptions).GetAclPolicyRevision):len((*c.CallOptions).GetAclPolicyRevision)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &memorystorepb.AclPolicyRevision{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAclPolicyRevision")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListAclPolicyRevisions lists all ACL policy revisions in a given ACL policy.
+func (c *restClient) ListAclPolicyRevisions(ctx context.Context, req *memorystorepb.ListAclPolicyRevisionsRequest, opts ...gax.CallOption) *AclPolicyRevisionIterator {
+	it := &AclPolicyRevisionIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*memorystorepb.AclPolicyRevision, string, error) {
+		resp := &memorystorepb.ListAclPolicyRevisionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/revisions", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAclPolicyRevisions")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetAclPolicyRevisions(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // DeleteInstance deletes a single Instance.
@@ -4291,6 +5272,24 @@ func (c *restClient) CreateInstanceOperation(name string) *CreateInstanceOperati
 	}
 }
 
+// DeleteAclPolicyOperation returns a new DeleteAclPolicyOperation from a given name.
+// The name must be that of a previously created DeleteAclPolicyOperation, possibly from a different process.
+func (c *gRPCClient) DeleteAclPolicyOperation(name string) *DeleteAclPolicyOperation {
+	return &DeleteAclPolicyOperation{
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*memorystore.DeleteAclPolicyOperation"),
+	}
+}
+
+// DeleteAclPolicyOperation returns a new DeleteAclPolicyOperation from a given name.
+// The name must be that of a previously created DeleteAclPolicyOperation, possibly from a different process.
+func (c *restClient) DeleteAclPolicyOperation(name string) *DeleteAclPolicyOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteAclPolicyOperation{
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*memorystore.DeleteAclPolicyOperation"),
+		pollPath: override,
+	}
+}
+
 // DeleteAuthTokenOperation returns a new DeleteAuthTokenOperation from a given name.
 // The name must be that of a previously created DeleteAuthTokenOperation, possibly from a different process.
 func (c *gRPCClient) DeleteAuthTokenOperation(name string) *DeleteAuthTokenOperation {
@@ -4431,6 +5430,24 @@ func (c *restClient) StartMigrationOperation(name string) *StartMigrationOperati
 	override := fmt.Sprintf("/v1/%s", name)
 	return &StartMigrationOperation{
 		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*memorystore.StartMigrationOperation"),
+		pollPath: override,
+	}
+}
+
+// UpdateAclPolicyOperation returns a new UpdateAclPolicyOperation from a given name.
+// The name must be that of a previously created UpdateAclPolicyOperation, possibly from a different process.
+func (c *gRPCClient) UpdateAclPolicyOperation(name string) *UpdateAclPolicyOperation {
+	return &UpdateAclPolicyOperation{
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*memorystore.UpdateAclPolicyOperation"),
+	}
+}
+
+// UpdateAclPolicyOperation returns a new UpdateAclPolicyOperation from a given name.
+// The name must be that of a previously created UpdateAclPolicyOperation, possibly from a different process.
+func (c *restClient) UpdateAclPolicyOperation(name string) *UpdateAclPolicyOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateAclPolicyOperation{
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*memorystore.UpdateAclPolicyOperation"),
 		pollPath: override,
 	}
 }

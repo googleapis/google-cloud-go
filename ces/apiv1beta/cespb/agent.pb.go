@@ -48,6 +48,7 @@ type Agent struct {
 	//
 	//	*Agent_LlmAgent_
 	//	*Agent_RemoteDialogflowAgent_
+	//	*Agent_RemoteA2AAgent_
 	AgentType isAgent_AgentType `protobuf_oneof:"agent_type"`
 	// Identifier. The unique identifier of the agent.
 	// Format: `projects/{project}/locations/{location}/apps/{app}/agents/{agent}`
@@ -177,6 +178,15 @@ func (x *Agent) GetRemoteDialogflowAgent() *Agent_RemoteDialogflowAgent {
 	if x != nil {
 		if x, ok := x.AgentType.(*Agent_RemoteDialogflowAgent_); ok {
 			return x.RemoteDialogflowAgent
+		}
+	}
+	return nil
+}
+
+func (x *Agent) GetRemoteA2AAgent() *Agent_RemoteA2AAgent {
+	if x != nil {
+		if x, ok := x.AgentType.(*Agent_RemoteA2AAgent_); ok {
+			return x.RemoteA2AAgent
 		}
 	}
 	return nil
@@ -350,9 +360,17 @@ type Agent_RemoteDialogflowAgent_ struct {
 	RemoteDialogflowAgent *Agent_RemoteDialogflowAgent `protobuf:"bytes,27,opt,name=remote_dialogflow_agent,json=remoteDialogflowAgent,proto3,oneof"`
 }
 
+type Agent_RemoteA2AAgent_ struct {
+	// Optional. The remote [A2A](https://github.com/a2aproject/A2A) agent to be
+	// used for the agent execution.
+	RemoteA2AAgent *Agent_RemoteA2AAgent `protobuf:"bytes,41,opt,name=remote_a2a_agent,json=remoteA2aAgent,proto3,oneof"`
+}
+
 func (*Agent_LlmAgent_) isAgent_AgentType() {}
 
 func (*Agent_RemoteDialogflowAgent_) isAgent_AgentType() {}
+
+func (*Agent_RemoteA2AAgent_) isAgent_AgentType() {}
 
 // Default agent type. The agent uses instructions and callbacks specified in
 // the agent to perform the task using a large language model.
@@ -514,6 +532,53 @@ func (x *Agent_RemoteDialogflowAgent) GetLanguageCodeVariable() string {
 	return ""
 }
 
+// The agent which will transfer execution to a remote
+// [A2A](https://github.com/a2aproject/A2A) agent.
+type Agent_RemoteA2AAgent struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The A2A connection configuration.
+	A2AConfig     *RemoteA2AConfig `protobuf:"bytes,1,opt,name=a2a_config,json=a2aConfig,proto3" json:"a2a_config,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Agent_RemoteA2AAgent) Reset() {
+	*x = Agent_RemoteA2AAgent{}
+	mi := &file_google_cloud_ces_v1beta_agent_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Agent_RemoteA2AAgent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Agent_RemoteA2AAgent) ProtoMessage() {}
+
+func (x *Agent_RemoteA2AAgent) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_agent_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Agent_RemoteA2AAgent.ProtoReflect.Descriptor instead.
+func (*Agent_RemoteA2AAgent) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_agent_proto_rawDescGZIP(), []int{0, 2}
+}
+
+func (x *Agent_RemoteA2AAgent) GetA2AConfig() *RemoteA2AConfig {
+	if x != nil {
+		return x.A2AConfig
+	}
+	return nil
+}
+
 // A toolset with a selection of its tools.
 type Agent_AgentToolset struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -529,7 +594,7 @@ type Agent_AgentToolset struct {
 
 func (x *Agent_AgentToolset) Reset() {
 	*x = Agent_AgentToolset{}
-	mi := &file_google_cloud_ces_v1beta_agent_proto_msgTypes[3]
+	mi := &file_google_cloud_ces_v1beta_agent_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -541,7 +606,7 @@ func (x *Agent_AgentToolset) String() string {
 func (*Agent_AgentToolset) ProtoMessage() {}
 
 func (x *Agent_AgentToolset) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_agent_proto_msgTypes[3]
+	mi := &file_google_cloud_ces_v1beta_agent_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -554,7 +619,7 @@ func (x *Agent_AgentToolset) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Agent_AgentToolset.ProtoReflect.Descriptor instead.
 func (*Agent_AgentToolset) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_agent_proto_rawDescGZIP(), []int{0, 2}
+	return file_google_cloud_ces_v1beta_agent_proto_rawDescGZIP(), []int{0, 3}
 }
 
 func (x *Agent_AgentToolset) GetToolset() string {
@@ -575,10 +640,11 @@ var File_google_cloud_ces_v1beta_agent_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1beta_agent_proto_rawDesc = "" +
 	"\n" +
-	"#google/cloud/ces/v1beta/agent.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/ces/v1beta/agent_transfers.proto\x1a$google/cloud/ces/v1beta/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbd\x14\n" +
+	"#google/cloud/ces/v1beta/agent.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/ces/v1beta/agent_card.proto\x1a-google/cloud/ces/v1beta/agent_transfers.proto\x1a$google/cloud/ces/v1beta/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xff\x15\n" +
 	"\x05Agent\x12L\n" +
 	"\tllm_agent\x18\x1a \x01(\v2'.google.cloud.ces.v1beta.Agent.LlmAgentB\x04\xe2A\x01\x01H\x00R\bllmAgent\x12t\n" +
-	"\x17remote_dialogflow_agent\x18\x1b \x01(\v24.google.cloud.ces.v1beta.Agent.RemoteDialogflowAgentB\x04\xe2A\x01\x01H\x00R\x15remoteDialogflowAgent\x12\x18\n" +
+	"\x17remote_dialogflow_agent\x18\x1b \x01(\v24.google.cloud.ces.v1beta.Agent.RemoteDialogflowAgentB\x04\xe2A\x01\x01H\x00R\x15remoteDialogflowAgent\x12_\n" +
+	"\x10remote_a2a_agent\x18) \x01(\v2-.google.cloud.ces.v1beta.Agent.RemoteA2aAgentB\x04\xe2A\x01\x01H\x00R\x0eremoteA2aAgent\x12\x18\n" +
 	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
 	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12&\n" +
 	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12S\n" +
@@ -623,7 +689,10 @@ const file_google_cloud_ces_v1beta_agent_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1aH\n" +
 	"\x1aOutputVariableMappingEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1an\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a_\n" +
+	"\x0eRemoteA2aAgent\x12M\n" +
+	"\n" +
+	"a2a_config\x18\x01 \x01(\v2(.google.cloud.ces.v1beta.RemoteA2aConfigB\x04\xe2A\x01\x02R\ta2aConfig\x1an\n" +
 	"\fAgentToolset\x12=\n" +
 	"\atoolset\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\n" +
 	"\x1aces.googleapis.com/ToolsetR\atoolset\x12\x1f\n" +
@@ -647,40 +716,44 @@ func file_google_cloud_ces_v1beta_agent_proto_rawDescGZIP() []byte {
 	return file_google_cloud_ces_v1beta_agent_proto_rawDescData
 }
 
-var file_google_cloud_ces_v1beta_agent_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_google_cloud_ces_v1beta_agent_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_google_cloud_ces_v1beta_agent_proto_goTypes = []any{
 	(*Agent)(nil),                       // 0: google.cloud.ces.v1beta.Agent
 	(*Agent_LlmAgent)(nil),              // 1: google.cloud.ces.v1beta.Agent.LlmAgent
 	(*Agent_RemoteDialogflowAgent)(nil), // 2: google.cloud.ces.v1beta.Agent.RemoteDialogflowAgent
-	(*Agent_AgentToolset)(nil),          // 3: google.cloud.ces.v1beta.Agent.AgentToolset
-	nil,                                 // 4: google.cloud.ces.v1beta.Agent.RemoteDialogflowAgent.InputVariableMappingEntry
-	nil,                                 // 5: google.cloud.ces.v1beta.Agent.RemoteDialogflowAgent.OutputVariableMappingEntry
-	(*ModelSettings)(nil),               // 6: google.cloud.ces.v1beta.ModelSettings
-	(*Callback)(nil),                    // 7: google.cloud.ces.v1beta.Callback
-	(*timestamppb.Timestamp)(nil),       // 8: google.protobuf.Timestamp
-	(*TransferRule)(nil),                // 9: google.cloud.ces.v1beta.TransferRule
+	(*Agent_RemoteA2AAgent)(nil),        // 3: google.cloud.ces.v1beta.Agent.RemoteA2aAgent
+	(*Agent_AgentToolset)(nil),          // 4: google.cloud.ces.v1beta.Agent.AgentToolset
+	nil,                                 // 5: google.cloud.ces.v1beta.Agent.RemoteDialogflowAgent.InputVariableMappingEntry
+	nil,                                 // 6: google.cloud.ces.v1beta.Agent.RemoteDialogflowAgent.OutputVariableMappingEntry
+	(*ModelSettings)(nil),               // 7: google.cloud.ces.v1beta.ModelSettings
+	(*Callback)(nil),                    // 8: google.cloud.ces.v1beta.Callback
+	(*timestamppb.Timestamp)(nil),       // 9: google.protobuf.Timestamp
+	(*TransferRule)(nil),                // 10: google.cloud.ces.v1beta.TransferRule
+	(*RemoteA2AConfig)(nil),             // 11: google.cloud.ces.v1beta.RemoteA2aConfig
 }
 var file_google_cloud_ces_v1beta_agent_proto_depIdxs = []int32{
 	1,  // 0: google.cloud.ces.v1beta.Agent.llm_agent:type_name -> google.cloud.ces.v1beta.Agent.LlmAgent
 	2,  // 1: google.cloud.ces.v1beta.Agent.remote_dialogflow_agent:type_name -> google.cloud.ces.v1beta.Agent.RemoteDialogflowAgent
-	6,  // 2: google.cloud.ces.v1beta.Agent.model_settings:type_name -> google.cloud.ces.v1beta.ModelSettings
-	7,  // 3: google.cloud.ces.v1beta.Agent.before_agent_callbacks:type_name -> google.cloud.ces.v1beta.Callback
-	7,  // 4: google.cloud.ces.v1beta.Agent.after_agent_callbacks:type_name -> google.cloud.ces.v1beta.Callback
-	7,  // 5: google.cloud.ces.v1beta.Agent.before_model_callbacks:type_name -> google.cloud.ces.v1beta.Callback
-	7,  // 6: google.cloud.ces.v1beta.Agent.after_model_callbacks:type_name -> google.cloud.ces.v1beta.Callback
-	7,  // 7: google.cloud.ces.v1beta.Agent.before_tool_callbacks:type_name -> google.cloud.ces.v1beta.Callback
-	7,  // 8: google.cloud.ces.v1beta.Agent.after_tool_callbacks:type_name -> google.cloud.ces.v1beta.Callback
-	8,  // 9: google.cloud.ces.v1beta.Agent.create_time:type_name -> google.protobuf.Timestamp
-	8,  // 10: google.cloud.ces.v1beta.Agent.update_time:type_name -> google.protobuf.Timestamp
-	3,  // 11: google.cloud.ces.v1beta.Agent.toolsets:type_name -> google.cloud.ces.v1beta.Agent.AgentToolset
-	9,  // 12: google.cloud.ces.v1beta.Agent.transfer_rules:type_name -> google.cloud.ces.v1beta.TransferRule
-	4,  // 13: google.cloud.ces.v1beta.Agent.RemoteDialogflowAgent.input_variable_mapping:type_name -> google.cloud.ces.v1beta.Agent.RemoteDialogflowAgent.InputVariableMappingEntry
-	5,  // 14: google.cloud.ces.v1beta.Agent.RemoteDialogflowAgent.output_variable_mapping:type_name -> google.cloud.ces.v1beta.Agent.RemoteDialogflowAgent.OutputVariableMappingEntry
-	15, // [15:15] is the sub-list for method output_type
-	15, // [15:15] is the sub-list for method input_type
-	15, // [15:15] is the sub-list for extension type_name
-	15, // [15:15] is the sub-list for extension extendee
-	0,  // [0:15] is the sub-list for field type_name
+	3,  // 2: google.cloud.ces.v1beta.Agent.remote_a2a_agent:type_name -> google.cloud.ces.v1beta.Agent.RemoteA2aAgent
+	7,  // 3: google.cloud.ces.v1beta.Agent.model_settings:type_name -> google.cloud.ces.v1beta.ModelSettings
+	8,  // 4: google.cloud.ces.v1beta.Agent.before_agent_callbacks:type_name -> google.cloud.ces.v1beta.Callback
+	8,  // 5: google.cloud.ces.v1beta.Agent.after_agent_callbacks:type_name -> google.cloud.ces.v1beta.Callback
+	8,  // 6: google.cloud.ces.v1beta.Agent.before_model_callbacks:type_name -> google.cloud.ces.v1beta.Callback
+	8,  // 7: google.cloud.ces.v1beta.Agent.after_model_callbacks:type_name -> google.cloud.ces.v1beta.Callback
+	8,  // 8: google.cloud.ces.v1beta.Agent.before_tool_callbacks:type_name -> google.cloud.ces.v1beta.Callback
+	8,  // 9: google.cloud.ces.v1beta.Agent.after_tool_callbacks:type_name -> google.cloud.ces.v1beta.Callback
+	9,  // 10: google.cloud.ces.v1beta.Agent.create_time:type_name -> google.protobuf.Timestamp
+	9,  // 11: google.cloud.ces.v1beta.Agent.update_time:type_name -> google.protobuf.Timestamp
+	4,  // 12: google.cloud.ces.v1beta.Agent.toolsets:type_name -> google.cloud.ces.v1beta.Agent.AgentToolset
+	10, // 13: google.cloud.ces.v1beta.Agent.transfer_rules:type_name -> google.cloud.ces.v1beta.TransferRule
+	5,  // 14: google.cloud.ces.v1beta.Agent.RemoteDialogflowAgent.input_variable_mapping:type_name -> google.cloud.ces.v1beta.Agent.RemoteDialogflowAgent.InputVariableMappingEntry
+	6,  // 15: google.cloud.ces.v1beta.Agent.RemoteDialogflowAgent.output_variable_mapping:type_name -> google.cloud.ces.v1beta.Agent.RemoteDialogflowAgent.OutputVariableMappingEntry
+	11, // 16: google.cloud.ces.v1beta.Agent.RemoteA2aAgent.a2a_config:type_name -> google.cloud.ces.v1beta.RemoteA2aConfig
+	17, // [17:17] is the sub-list for method output_type
+	17, // [17:17] is the sub-list for method input_type
+	17, // [17:17] is the sub-list for extension type_name
+	17, // [17:17] is the sub-list for extension extendee
+	0,  // [0:17] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_ces_v1beta_agent_proto_init() }
@@ -688,11 +761,13 @@ func file_google_cloud_ces_v1beta_agent_proto_init() {
 	if File_google_cloud_ces_v1beta_agent_proto != nil {
 		return
 	}
+	file_google_cloud_ces_v1beta_agent_card_proto_init()
 	file_google_cloud_ces_v1beta_agent_transfers_proto_init()
 	file_google_cloud_ces_v1beta_common_proto_init()
 	file_google_cloud_ces_v1beta_agent_proto_msgTypes[0].OneofWrappers = []any{
 		(*Agent_LlmAgent_)(nil),
 		(*Agent_RemoteDialogflowAgent_)(nil),
+		(*Agent_RemoteA2AAgent_)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -700,7 +775,7 @@ func file_google_cloud_ces_v1beta_agent_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_ces_v1beta_agent_proto_rawDesc), len(file_google_cloud_ces_v1beta_agent_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   6,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

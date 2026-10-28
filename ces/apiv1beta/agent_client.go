@@ -95,6 +95,7 @@ type AgentCallOptions struct {
 	ListAppVersions          []gax.CallOption
 	GetAppVersion            []gax.CallOption
 	CreateAppVersion         []gax.CallOption
+	UpdateAppVersion         []gax.CallOption
 	DeleteAppVersion         []gax.CallOption
 	RestoreAppVersion        []gax.CallOption
 	GenerateAppResource      []gax.CallOption
@@ -711,6 +712,19 @@ func defaultAgentCallOptions() *AgentCallOptions {
 			}),
 		},
 		CreateAppVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateAppVersion: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -1351,6 +1365,18 @@ func defaultAgentRESTCallOptions() *AgentCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		UpdateAppVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
 		DeleteAppVersion: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -1476,6 +1502,7 @@ type internalAgentClient interface {
 	ListAppVersions(context.Context, *cespb.ListAppVersionsRequest, ...gax.CallOption) *AppVersionIterator
 	GetAppVersion(context.Context, *cespb.GetAppVersionRequest, ...gax.CallOption) (*cespb.AppVersion, error)
 	CreateAppVersion(context.Context, *cespb.CreateAppVersionRequest, ...gax.CallOption) (*cespb.AppVersion, error)
+	UpdateAppVersion(context.Context, *cespb.UpdateAppVersionRequest, ...gax.CallOption) (*cespb.AppVersion, error)
 	DeleteAppVersion(context.Context, *cespb.DeleteAppVersionRequest, ...gax.CallOption) error
 	RestoreAppVersion(context.Context, *cespb.RestoreAppVersionRequest, ...gax.CallOption) (*RestoreAppVersionOperation, error)
 	RestoreAppVersionOperation(name string) *RestoreAppVersionOperation
@@ -1792,6 +1819,11 @@ func (c *AgentClient) CreateAppVersion(ctx context.Context, req *cespb.CreateApp
 	return c.internalClient.CreateAppVersion(ctx, req, opts...)
 }
 
+// UpdateAppVersion updates the specified app version.
+func (c *AgentClient) UpdateAppVersion(ctx context.Context, req *cespb.UpdateAppVersionRequest, opts ...gax.CallOption) (*cespb.AppVersion, error) {
+	return c.internalClient.UpdateAppVersion(ctx, req, opts...)
+}
+
 // DeleteAppVersion deletes the specified app version.
 func (c *AgentClient) DeleteAppVersion(ctx context.Context, req *cespb.DeleteAppVersionRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteAppVersion(ctx, req, opts...)
@@ -2002,6 +2034,7 @@ func NewAgentClient(ctx context.Context, opts ...option.ClientOption) (*AgentCli
 		client.CallOptions.ListAppVersions = append(client.CallOptions.ListAppVersions, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetAppVersion = append(client.CallOptions.GetAppVersion, gax.WithClientMetrics(metrics))
 		client.CallOptions.CreateAppVersion = append(client.CallOptions.CreateAppVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateAppVersion = append(client.CallOptions.UpdateAppVersion, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteAppVersion = append(client.CallOptions.DeleteAppVersion, gax.WithClientMetrics(metrics))
 		client.CallOptions.RestoreAppVersion = append(client.CallOptions.RestoreAppVersion, gax.WithClientMetrics(metrics))
 		client.CallOptions.GenerateAppResource = append(client.CallOptions.GenerateAppResource, gax.WithClientMetrics(metrics))
@@ -2071,6 +2104,7 @@ func NewAgentClient(ctx context.Context, opts ...option.ClientOption) (*AgentCli
 		client.CallOptions.ListAppVersions = append(client.CallOptions.ListAppVersions, gax.WithClientTracing(tracing))
 		client.CallOptions.GetAppVersion = append(client.CallOptions.GetAppVersion, gax.WithClientTracing(tracing))
 		client.CallOptions.CreateAppVersion = append(client.CallOptions.CreateAppVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateAppVersion = append(client.CallOptions.UpdateAppVersion, gax.WithClientTracing(tracing))
 		client.CallOptions.DeleteAppVersion = append(client.CallOptions.DeleteAppVersion, gax.WithClientTracing(tracing))
 		client.CallOptions.RestoreAppVersion = append(client.CallOptions.RestoreAppVersion, gax.WithClientTracing(tracing))
 		client.CallOptions.GenerateAppResource = append(client.CallOptions.GenerateAppResource, gax.WithClientTracing(tracing))
@@ -2141,6 +2175,7 @@ func NewAgentClient(ctx context.Context, opts ...option.ClientOption) (*AgentCli
 		client.CallOptions.ListAppVersions = append(client.CallOptions.ListAppVersions, gax.WithClientLogging(logging))
 		client.CallOptions.GetAppVersion = append(client.CallOptions.GetAppVersion, gax.WithClientLogging(logging))
 		client.CallOptions.CreateAppVersion = append(client.CallOptions.CreateAppVersion, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateAppVersion = append(client.CallOptions.UpdateAppVersion, gax.WithClientLogging(logging))
 		client.CallOptions.DeleteAppVersion = append(client.CallOptions.DeleteAppVersion, gax.WithClientLogging(logging))
 		client.CallOptions.RestoreAppVersion = append(client.CallOptions.RestoreAppVersion, gax.WithClientLogging(logging))
 		client.CallOptions.GenerateAppResource = append(client.CallOptions.GenerateAppResource, gax.WithClientLogging(logging))
@@ -2305,6 +2340,7 @@ func NewAgentRESTClient(ctx context.Context, opts ...option.ClientOption) (*Agen
 		callOpts.ListAppVersions = append(callOpts.ListAppVersions, gax.WithClientMetrics(metrics))
 		callOpts.GetAppVersion = append(callOpts.GetAppVersion, gax.WithClientMetrics(metrics))
 		callOpts.CreateAppVersion = append(callOpts.CreateAppVersion, gax.WithClientMetrics(metrics))
+		callOpts.UpdateAppVersion = append(callOpts.UpdateAppVersion, gax.WithClientMetrics(metrics))
 		callOpts.DeleteAppVersion = append(callOpts.DeleteAppVersion, gax.WithClientMetrics(metrics))
 		callOpts.RestoreAppVersion = append(callOpts.RestoreAppVersion, gax.WithClientMetrics(metrics))
 		callOpts.GenerateAppResource = append(callOpts.GenerateAppResource, gax.WithClientMetrics(metrics))
@@ -2374,6 +2410,7 @@ func NewAgentRESTClient(ctx context.Context, opts ...option.ClientOption) (*Agen
 		callOpts.ListAppVersions = append(callOpts.ListAppVersions, gax.WithClientTracing(tracing))
 		callOpts.GetAppVersion = append(callOpts.GetAppVersion, gax.WithClientTracing(tracing))
 		callOpts.CreateAppVersion = append(callOpts.CreateAppVersion, gax.WithClientTracing(tracing))
+		callOpts.UpdateAppVersion = append(callOpts.UpdateAppVersion, gax.WithClientTracing(tracing))
 		callOpts.DeleteAppVersion = append(callOpts.DeleteAppVersion, gax.WithClientTracing(tracing))
 		callOpts.RestoreAppVersion = append(callOpts.RestoreAppVersion, gax.WithClientTracing(tracing))
 		callOpts.GenerateAppResource = append(callOpts.GenerateAppResource, gax.WithClientTracing(tracing))
@@ -2444,6 +2481,7 @@ func NewAgentRESTClient(ctx context.Context, opts ...option.ClientOption) (*Agen
 		callOpts.ListAppVersions = append(callOpts.ListAppVersions, gax.WithClientLogging(logging))
 		callOpts.GetAppVersion = append(callOpts.GetAppVersion, gax.WithClientLogging(logging))
 		callOpts.CreateAppVersion = append(callOpts.CreateAppVersion, gax.WithClientLogging(logging))
+		callOpts.UpdateAppVersion = append(callOpts.UpdateAppVersion, gax.WithClientLogging(logging))
 		callOpts.DeleteAppVersion = append(callOpts.DeleteAppVersion, gax.WithClientLogging(logging))
 		callOpts.RestoreAppVersion = append(callOpts.RestoreAppVersion, gax.WithClientLogging(logging))
 		callOpts.GenerateAppResource = append(callOpts.GenerateAppResource, gax.WithClientLogging(logging))
@@ -3719,6 +3757,27 @@ func (c *agentGRPCClient) CreateAppVersion(ctx context.Context, req *cespb.Creat
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = executeRPC(ctx, c.agentClient.CreateAppVersion, req, settings.GRPC, c.logger, "CreateAppVersion")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *agentGRPCClient) UpdateAppVersion(ctx context.Context, req *cespb.UpdateAppVersionRequest, opts ...gax.CallOption) (*cespb.AppVersion, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "app_version.name", url.QueryEscape(req.GetAppVersion().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.AgentService/UpdateAppVersion")
+	}
+	opts = append((*c.CallOptions).UpdateAppVersion[0:len((*c.CallOptions).UpdateAppVersion):len((*c.CallOptions).UpdateAppVersion)], opts...)
+	var resp *cespb.AppVersion
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.agentClient.UpdateAppVersion, req, settings.GRPC, c.logger, "UpdateAppVersion")
 		return err
 	}, opts...)
 	if err != nil {
@@ -7191,6 +7250,79 @@ func (c *agentRESTClient) CreateAppVersion(ctx context.Context, req *cespb.Creat
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateAppVersion")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateAppVersion updates the specified app version.
+func (c *agentRESTClient) UpdateAppVersion(ctx context.Context, req *cespb.UpdateAppVersionRequest, opts ...gax.CallOption) (*cespb.AppVersion, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetAppVersion()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAppVersion().GetName(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetAppVersion().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "app_version.name", url.QueryEscape(req.GetAppVersion().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.AgentService/UpdateAppVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{app_version.name=projects/*/locations/*/apps/*/versions/*}")
+	}
+	opts = append((*c.CallOptions).UpdateAppVersion[0:len((*c.CallOptions).UpdateAppVersion):len((*c.CallOptions).UpdateAppVersion)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &cespb.AppVersion{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateAppVersion")
 		if err != nil {
 			return err
 		}

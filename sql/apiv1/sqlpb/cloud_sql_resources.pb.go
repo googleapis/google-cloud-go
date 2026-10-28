@@ -9197,13 +9197,12 @@ const file_google_cloud_sql_v1_cloud_sql_resources_proto_rawDesc = "" +
 	"\x1bAUTO_DNS_STATUS_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vAUTO_DNS_OK\x10\x01\x12\x13\n" +
 	"\x0fAUTO_DNS_FAILED\x10\x02\x12\x14\n" +
-	"\x10AUTO_DNS_UNKNOWN\x10\x03B\xab\x06\xeaAK\n" +
+	"\x10AUTO_DNS_UNKNOWN\x10\x03B\xdd\x05\xeaAK\n" +
 	" cloudsql.googleapis.com/Instance\x12'projects/{project}/instances/{instance}\xeaA\x8e\x01\n" +
 	"2cloudsql.googleapis.com/CustomerManagedCertificate\x12Xprojects/{project}/instances/{instance}/customerManagedCertificates/{certificate_bundle}\xeaAx\n" +
 	"!cloudkms.googleapis.com/CryptoKey\x12Sprojects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}\xeaA\xa6\x01\n" +
 	"(cloudkms.googleapis.com/CryptoKeyVersion\x12zprojects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}/cryptoKeyVersions/{crypto_key_version}\xeaAw\n" +
-	"(compute.googleapis.com/NetworkAttachment\x12Kprojects/{project}/regions/{region}/networkAttachments/{network_attachment}\xeaAK\n" +
-	" sqladmin.googleapis.com/Instance\x12'projects/{project}/instances/{instance}\n" +
+	"(compute.googleapis.com/NetworkAttachment\x12Kprojects/{project}/regions/{region}/networkAttachments/{network_attachment}\n" +
 	"\x17com.google.cloud.sql.v1B\x16CloudSqlResourcesProtoP\x01Z)cloud.google.com/go/sql/apiv1/sqlpb;sqlpbb\x06proto3"
 
 var (
