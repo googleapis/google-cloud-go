@@ -883,6 +883,16 @@
         }
       ]
     },
+    "designcenter": {
+      "component": "designcenter",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.designcenter.v1.json",
+          "type": "json"
+        }
+      ]
+    },
     "developerconnect": {
       "component": "developerconnect",
       "extra-files": [
