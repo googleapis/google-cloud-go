@@ -491,9 +491,12 @@ func validateSingleRowReadRequest(req *v2pb.ReadRowsRequest) error {
 	if req.RowsLimit > 1 {
 		return status.Error(codes.Unimplemented, "accelerator: rows_limit > 1 not supported")
 	}
-	if req.RequestStatsView != v2pb.ReadRowsRequest_REQUEST_STATS_VIEW_UNSPECIFIED &&
-		req.RequestStatsView != v2pb.ReadRowsRequest_REQUEST_STATS_FULL {
-		return status.Errorf(codes.InvalidArgument, "accelerator: unsupported request_stats_view %v", req.RequestStatsView)
+	switch req.RequestStatsView {
+	case v2pb.ReadRowsRequest_REQUEST_STATS_VIEW_UNSPECIFIED,
+		v2pb.ReadRowsRequest_REQUEST_STATS_NONE,
+		v2pb.ReadRowsRequest_REQUEST_STATS_FULL:
+	default:
+		return status.Errorf(codes.Unimplemented, "accelerator: unsupported request_stats_view %v", req.RequestStatsView)
 	}
 	if req.Reversed {
 		return status.Error(codes.Unimplemented, "accelerator: reversed ReadRows not supported")

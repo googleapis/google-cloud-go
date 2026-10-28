@@ -978,4 +978,16 @@ func TestValidateSingleRowReadRequest_RowsLimitAndRequestStats(t *testing.T) {
 	if err := validateSingleRowReadRequest(oneLimitReq); err != nil {
 		t.Errorf("validateSingleRowReadRequest(RowsLimit=1, REQUEST_STATS_FULL) unexpected error: %v", err)
 	}
+
+	noneStatsReq := singleKeyReadRowsRequest("projects/p/instances/i/tables/t", "k")
+	noneStatsReq.RequestStatsView = v2pb.ReadRowsRequest_REQUEST_STATS_NONE
+	if err := validateSingleRowReadRequest(noneStatsReq); err != nil {
+		t.Errorf("validateSingleRowReadRequest(REQUEST_STATS_NONE) unexpected error: %v", err)
+	}
+
+	unknownStatsReq := singleKeyReadRowsRequest("projects/p/instances/i/tables/t", "k")
+	unknownStatsReq.RequestStatsView = v2pb.ReadRowsRequest_RequestStatsView(99)
+	if err := validateSingleRowReadRequest(unknownStatsReq); status.Code(err) != codes.Unimplemented {
+		t.Errorf("validateSingleRowReadRequest(RequestStatsView=99) code = %v; want Unimplemented", status.Code(err))
+	}
 }
