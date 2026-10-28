@@ -285,8 +285,8 @@ func TestDefaultBufferPoolPutForeignBuffer(t *testing.T) {
 
 func TestDefaultBufferPoolPreallocation(t *testing.T) {
 	p, _ := newTestBufferPool(t)
-	// A request for a 3-block part should trigger background allocation of
-	// enough spare blocks for the rest of the part.
+	// A request for a 3-block part returns one block and triggers background
+	// allocation of 3 spare blocks, enough for the next 3-block part.
 	if _, err := p.Get(3 * testBlockSize); err != nil {
 		t.Fatal(err)
 	}
@@ -587,6 +587,11 @@ func BenchmarkDefaultBufferPoolParallel(b *testing.B) {
 	}
 	for _, buf := range warm {
 		p.Put(buf)
+	}
+	// The first warm-up Get started a refill; let it finish so its allocation
+	// is not counted in the timed loop.
+	for p.refilling.Load() {
+		time.Sleep(time.Millisecond)
 	}
 	b.ReportAllocs()
 	b.ResetTimer()

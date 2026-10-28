@@ -92,7 +92,14 @@ type defaultBufferPool struct {
 	// tests use it to detect leaks.
 	live atomic.Int64
 
-	// lastActive is the UnixNano timestamp of the last Get/TryGet/Put.
+	// start is when the pool was created. It carries the monotonic clock
+	// reading that lastActive is measured against.
+	start time.Time
+
+	// lastActive is when the last Get, TryGet, Put or eviction happened, in
+	// nanoseconds since start. Storing an offset from start keeps idle
+	// detection on the monotonic clock, so wall-clock changes (for example
+	// NTP steps) do not make the pool evict early or late.
 	lastActive atomic.Int64
 
 	// refilling is set while a background pre-allocation goroutine is running.
@@ -129,6 +136,7 @@ func newDefaultBufferPoolWithConfig(blockSize int, cleanInterval, idleTimeout ti
 		cleanInterval: cleanInterval,
 		idleTimeout:   idleTimeout,
 		now:           now,
+		start:         now(),
 		stop:          make(chan struct{}),
 	}
 	p.touch()
@@ -230,6 +238,22 @@ func (p *defaultBufferPool) cached() int {
 func (p *defaultBufferPool) evict(n int) {
 	p.freeMu.Lock()
 	defer p.freeMu.Unlock()
+	p.evictLocked(n)
+}
+
+// evictHalf drops ceil(n/2) of the n cached blocks, so that a single cached
+// block is eventually freed. Counting and dropping happen in one critical
+// section, so concurrent Get or TryGet calls cannot make it drop more than
+// half of what remains.
+func (p *defaultBufferPool) evictHalf() {
+	p.freeMu.Lock()
+	defer p.freeMu.Unlock()
+	n := len(p.free)
+	p.evictLocked(n - n/2)
+}
+
+// evictLocked drops up to n cached blocks. The caller must hold freeMu.
+func (p *defaultBufferPool) evictLocked(n int) {
 	n = min(n, len(p.free))
 	keep := len(p.free) - n
 	clear(p.free[keep:])
@@ -257,7 +281,9 @@ func (p *defaultBufferPool) blocksFor(size int) int {
 // by it or trigger a new refill on their next call.
 func (p *defaultBufferPool) maybeRefill(maxSize, cached int) {
 	want := min(p.blocksFor(maxSize), defaultBufferPoolMaxRefillBlocks)
-	if cached >= want {
+	// closed is checked again under mu below; this check only avoids touching
+	// refilling and mu on a closed pool.
+	if cached >= want || p.closed.Load() {
 		return
 	}
 	if !p.refilling.CompareAndSwap(false, true) {
@@ -282,7 +308,7 @@ func (p *defaultBufferPool) maybeRefill(maxSize, cached int) {
 
 // touch records activity, postponing idle eviction.
 func (p *defaultBufferPool) touch() {
-	p.lastActive.Store(p.now().UnixNano())
+	p.lastActive.Store(int64(p.now().Sub(p.start)))
 }
 
 // ensureCleaner starts the cleaner goroutine if it is not running. The common
@@ -325,23 +351,24 @@ func (p *defaultBufferPool) runCleaner() {
 // It returns true, after marking the cleaner as stopped, once the cache is
 // empty; the cleaner is restarted by the next push.
 //
-// The cleaner clears cleanerRunning before re-checking the cache. A concurrent
-// push appends before reading cleanerRunning, so either this re-check sees the
-// new block and the cleaner keeps running, or the push sees the cleared flag
-// and starts a new cleaner.
+// cleanerRunning is only cleared when the cache looks empty, so a Put during
+// an ordinary tick still takes the lock-free path in ensureCleaner. The
+// cleaner then re-checks the cache. A concurrent push appends before reading
+// cleanerRunning, so either this re-check sees the new block and the cleaner
+// keeps running, or the push sees the cleared flag and starts a new cleaner.
 func (p *defaultBufferPool) evictIfIdle() (stopped bool) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 
-	now := p.now()
-	idleSince := time.Unix(0, p.lastActive.Load())
-	if now.Sub(idleSince) >= p.idleTimeout {
-		n := p.cached()
-		// Evict ceil(n/2) so that a single cached block is eventually freed.
-		p.evict(n - n/2)
+	idle := p.now().Sub(p.start) - time.Duration(p.lastActive.Load())
+	if idle >= p.idleTimeout {
+		p.evictHalf()
 		p.touch()
 	}
 
+	if p.cached() > 0 {
+		return false
+	}
 	p.cleanerRunning.Store(false)
 	if p.cached() > 0 {
 		p.cleanerRunning.Store(true)
