@@ -241,19 +241,23 @@ func (t *trackingTransport) RoundTrip(req *http.Request) (*http.Response, error)
 	}
 	features := t.features | featureAttributes(req.Context())
 	// Merge all existing headers for this key.
-	features |= mergeFeatureAttributes(req.Header.Values(featureTrackerHeaderName))
-	var (
-		resp *http.Response
-		err  error
-	)
-	if features > 0 {
+	existing := req.Header.Values(featureTrackerHeaderName)
+	features |= mergeFeatureAttributes(existing)
+	outReq := req
+	if features > 0 || len(existing) > 0 {
+		// This transport owns the feature header: it is always rewritten from the
+		// merged bitmask so that only a single, well-formed value is sent, and it
+		// is removed entirely when there is nothing to report (e.g. a value set on
+		// the context by a caller for an unrelated client must not be forwarded).
 		// Clone the request to avoid modifying the original one.
-		clonedReq := req.Clone(req.Context())
-		clonedReq.Header.Set(featureTrackerHeaderName, encodeUint32(features))
-		resp, err = baseRT.RoundTrip(clonedReq)
-	} else {
-		resp, err = baseRT.RoundTrip(req)
+		outReq = req.Clone(req.Context())
+		if features > 0 {
+			outReq.Header.Set(featureTrackerHeaderName, encodeFeatureMask(features))
+		} else {
+			outReq.Header.Del(featureTrackerHeaderName)
+		}
 	}
+	resp, err := baseRT.RoundTrip(outReq)
 	if resp != nil {
 		recordUploadIDFromHeader(req.Context(), resp.Header)
 	}

@@ -31,6 +31,7 @@ import (
 	"cloud.google.com/go/storage/experimental"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -598,13 +599,93 @@ func TestPrepareDirectPathMetadata_FeatureTracking(t *testing.T) {
 				t.Fatalf("features header missing, want %d", tc.wantFeatures)
 			}
 
-			decoded, err := decodeUint32(got[0])
+			decoded, err := decodeFeatureMask(got[0])
 			if err != nil {
 				t.Fatalf("failed to decode features: %v", err)
 			}
 
 			if decoded != tc.wantFeatures {
 				t.Errorf("got features %d, want %d", decoded, tc.wantFeatures)
+			}
+		})
+	}
+}
+
+// TestPrepareDirectPathMetadata_OwnsFeatureHeader verifies that the client
+// always rewrites the feature header in outgoing metadata from its own
+// bitmask: foreign or malformed values (e.g. set by a caller for a different
+// client) are replaced by the merged mask, or dropped when there is nothing
+// to report.
+func TestPrepareDirectPathMetadata_OwnsFeatureHeader(t *testing.T) {
+	foreign := strings.Repeat("Zm9v", 130) // ~390 bytes of non-mask payload.
+	tests := []struct {
+		desc           string
+		configFeatures uint32
+		ctxFeatures    []trackedFeature
+		incomingMD     []string
+		want           []string
+	}{
+		{
+			desc: "no features, no header: untouched",
+			want: nil,
+		},
+		{
+			desc:       "no features, zero mask header: dropped",
+			incomingMD: []string{encodeFeatureMask(0)},
+			want:       nil,
+		},
+		{
+			desc:       "no features, foreign value: dropped",
+			incomingMD: []string{foreign},
+			want:       nil,
+		},
+		{
+			desc:           "features, foreign value: replaced by mask",
+			configFeatures: uint32(1 << featurePCU),
+			incomingMD:     []string{foreign},
+			want:           []string{encodeFeatureMask(uint32(1 << featurePCU))},
+		},
+		{
+			desc:           "legacy standard-alphabet value is merged and re-encoded",
+			configFeatures: uint32(1 << featurePCU),
+			ctxFeatures:    []trackedFeature{featureMultistreamInMRD},
+			incomingMD:     []string{"AAAA+A=="}, // 0xF8 in standard base64 (bits 0 and 1 unset).
+			want:           []string{encodeFeatureMask(0xF8 | uint32(1<<featurePCU) | uint32(1<<featureMultistreamInMRD))},
+		},
+		{
+			desc:       "multiple values collapse to one",
+			incomingMD: []string{encodeFeatureMask(1), encodeFeatureMask(2), foreign},
+			want:       []string{encodeFeatureMask(3)},
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.desc, func(t *testing.T) {
+			c := &grpcStorageClient{
+				config:                  &storageConfig{},
+				configFeatureAttributes: tc.configFeatures,
+			}
+			ctx := context.Background()
+			if len(tc.ctxFeatures) > 0 {
+				ctx = addFeatureAttributes(ctx, tc.ctxFeatures...)
+			}
+			var callerMD metadata.MD
+			if len(tc.incomingMD) > 0 {
+				callerMD = metadata.MD{}
+				callerMD.Set(featureTrackerHeaderName, tc.incomingMD...)
+				ctx = metadata.NewOutgoingContext(ctx, callerMD)
+			}
+
+			newCtx, err := c.prepareDirectPathMetadata(ctx, directPathEndpointPrefix)
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+			md, _ := metadata.FromOutgoingContext(newCtx)
+			got := md.Get(featureTrackerHeaderName)
+			if diff := cmp.Diff(tc.want, got, cmpopts.EquateEmpty()); diff != "" {
+				t.Errorf("metadata %s mismatch (-want +got):\n%s", featureTrackerHeaderName, diff)
+			}
+			if diff := cmp.Diff(tc.incomingMD, callerMD.Get(featureTrackerHeaderName), cmpopts.EquateEmpty()); diff != "" {
+				t.Errorf("caller metadata %s modified (-want +got):\n%s", featureTrackerHeaderName, diff)
 			}
 		})
 	}
