@@ -17,6 +17,7 @@ package storage
 import (
 	"context"
 	"crypto/tls"
+	"crypto/x509"
 	"errors"
 	"fmt"
 	"io"
@@ -29,6 +30,7 @@ import (
 	"strings"
 	"sync"
 	"sync/atomic"
+	"syscall"
 	"time"
 
 	"cloud.google.com/go/auth"
@@ -518,113 +520,238 @@ func grpcCodeToString(code codes.Code) string {
 	}
 }
 
-// isServerChecksumError reports whether err is the service rejecting a
-// request because a CRC32C or MD5 checksum did not match, for example
-// "Object crc32c mismatch: ..." (gRPC InvalidArgument) or
-// "Provided CRC32C \"...\" doesn't match calculated CRC32C \"...\"" (HTTP 400).
-func isServerChecksumError(err error, errStr string) bool {
-	if !(strings.Contains(errStr, "crc32c") || strings.Contains(errStr, "md5")) || !strings.Contains(errStr, "match") {
-		return false
-	}
-	var apiErr *googleapi.Error
-	if errors.As(err, &apiErr) && apiErr.Code == http.StatusBadRequest {
-		return true
-	}
-	if st, ok := status.FromError(err); ok {
-		return st.Code() == codes.InvalidArgument || st.Code() == codes.DataLoss
-	}
-	return false
-}
+// Values of the error.type attribute that are not derived from a gRPC status
+// or an HTTP status code. They describe failures that happen on the client or
+// on the network before the server produced a response.
+const (
+	errorTypeOK                  = "OK"
+	errorTypeCancelled           = "CANCELLED"
+	errorTypeTimeout             = "TIMEOUT"
+	errorTypeDNSFailure          = "DNS_FAILURE"
+	errorTypeConnectionError     = "CONNECTION_ERROR"
+	errorTypeTLSFailure          = "TLS_FAILURE"
+	errorTypeAuthenticationError = "AUTHENTICATION_ERROR"
+	errorTypeChecksumMismatch    = "CHECKSUM_MISMATCH"
+	errorTypeUnknown             = "UNKNOWN"
+)
+
+// credentialError marks an error returned while obtaining an access token so
+// that it can be classified as AUTHENTICATION_ERROR regardless of the
+// underlying cause (for example a metadata server connection failure).
+// It is transparent to callers: Error() and Unwrap() expose the original error.
+type credentialError struct{ err error }
+
+func (e *credentialError) Error() string { return e.err.Error() }
+func (e *credentialError) Unwrap() error { return e.err }
 
 // computeErrorType maps the request result to the standard error.type values.
+//
+// The classification is based on error types and status codes. Server
+// responses (gRPC status or HTTP status code) always take precedence over the
+// error message, so that object or bucket names that appear in an error
+// message can never change the label. Message inspection is only used for
+// transport-level failures that gRPC reports as flattened status strings.
+//
+// TIMEOUT is used for client-side deadlines (context deadline or network
+// timeouts) while DEADLINE_EXCEEDED is used when the server or the gRPC
+// transport reports that status.
 func computeErrorType(err error, isHTTP bool, statusCode int64) string {
-	if err == nil {
+	// A bare io.EOF signals the successful end of a response body or stream.
+	if err == nil || err == io.EOF {
 		if isHTTP && statusCode >= 400 {
 			return mapHTTPStatusCode(int(statusCode))
 		}
-		return "OK"
+		return errorTypeOK
 	}
 
-	if errors.Is(err, io.EOF) {
-		return "OK"
+	var stallErr *stallTimeoutError
+	if errors.As(err, &stallErr) || errors.Is(err, errStallTimeout) || errors.Is(err, errReadStallTimeout) {
+		return errorTypeTimeout
 	}
-
-	errStr := strings.ToLower(err.Error())
-
-	if errors.Is(err, context.Canceled) || strings.Contains(errStr, "context canceled") {
-		return "CANCELLED"
+	if errors.Is(err, context.Canceled) {
+		return errorTypeCancelled
 	}
-
-	// gRPC reports a client-side deadline as a DeadlineExceeded status with
-	// this message; other DeadlineExceeded statuses come from the service.
-	if errors.Is(err, context.DeadlineExceeded) || strings.Contains(errStr, "context deadline exceeded") {
-		return "TIMEOUT"
+	var credErr *credentialError
+	if errors.As(err, &credErr) {
+		return errorTypeAuthenticationError
 	}
-
+	// A failure to establish a TCP connection is a connectivity problem even
+	// when the dial attempt hit a deadline.
+	var opErr *net.OpError
+	if errors.As(err, &opErr) && opErr.Op == "dial" {
+		return errorTypeConnectionError
+	}
+	if errors.Is(err, context.DeadlineExceeded) {
+		return errorTypeTimeout
+	}
+	if isChecksumError(err) {
+		return errorTypeChecksumMismatch
+	}
 	// The not-found sentinels are returned without an underlying status, for
 	// example by the HTTP XML reader on a 404 response.
 	if errors.Is(err, ErrObjectNotExist) || errors.Is(err, ErrBucketNotExist) {
 		return "NOT_FOUND"
 	}
 
-	if errors.Is(err, errChecksumMismatch) || isServerChecksumError(err, errStr) {
-		return "CHECKSUM_MISMATCH"
-	}
-
-	// Prefer the status returned by the service over matching the error text,
-	// which can contain resource names such as "my-key" or "geofence.json".
-	if isHTTP {
-		var apiErr *googleapi.Error
-		if errors.As(err, &apiErr) && apiErr.Code > 0 {
-			return mapHTTPStatusCode(apiErr.Code)
-		}
-		if statusCode >= 400 {
-			return mapHTTPStatusCode(int(statusCode))
-		}
-	}
-	var grpcType string
 	if !isHTTP {
 		if st, ok := status.FromError(err); ok && st.Code() != codes.OK {
-			grpcType = grpcCodeToString(st.Code())
-			// Unknown and Unavailable are also used for client-side and
-			// network failures, which the message describes more precisely.
-			if st.Code() != codes.Unknown && st.Code() != codes.Unavailable {
-				return grpcType
+			return classifyGRPCStatus(st)
+		}
+	} else {
+		var apiErr *googleapi.Error
+		if errors.As(err, &apiErr) && apiErr.Code != 0 {
+			if apiErr.Code == http.StatusBadRequest && isChecksumMessage(apiErr.Message) {
+				return errorTypeChecksumMismatch
 			}
+			return mapHTTPStatusCode(apiErr.Code)
 		}
 	}
 
-	if errType := errorTypeFromMessage(errStr); errType != "" {
-		return errType
+	if t := classifyTransportError(err); t != "" {
+		return t
 	}
-	if grpcType != "" {
-		return grpcType
+
+	if isHTTP && statusCode >= 400 {
+		return mapHTTPStatusCode(int(statusCode))
 	}
-	return "UNKNOWN"
+	return errorTypeUnknown
 }
 
-// errorTypeFromMessage classifies client-side and network errors by their
-// lowercase error text. It returns "" if the text matches no known class.
-func errorTypeFromMessage(errStr string) string {
+// classifyGRPCStatus maps a non-OK gRPC status to an error.type value. Failures
+// that happen before a response is received (DNS, TCP, TLS, per-RPC
+// credentials) are surfaced by grpc-go as UNAVAILABLE/UNKNOWN/INTERNAL/
+// UNAUTHENTICATED statuses whose message carries the underlying cause.
+func classifyGRPCStatus(st *status.Status) string {
+	code := st.Code()
+	msg := strings.ToLower(st.Message())
+	switch code {
+	case codes.Unavailable, codes.Unknown, codes.Internal, codes.Unauthenticated:
+		if strings.Contains(msg, "per-rpc creds failed") || strings.Contains(msg, "per-rpc credentials") {
+			return errorTypeAuthenticationError
+		}
+		if code != codes.Unauthenticated {
+			if t := classifyTransportMessage(msg); t != "" {
+				return t
+			}
+		}
+	case codes.InvalidArgument, codes.DataLoss:
+		if isChecksumMessage(msg) {
+			return errorTypeChecksumMismatch
+		}
+	}
+	return grpcCodeToString(code)
+}
+
+// classifyTransportError classifies network, TLS and credential errors based
+// on their types, falling back to well-known transport error messages.
+// It returns "" if the error is not recognized.
+func classifyTransportError(err error) string {
+	var authErr *auth.Error
+	if errors.As(err, &authErr) {
+		return errorTypeAuthenticationError
+	}
+	var dnsErr *net.DNSError
+	if errors.As(err, &dnsErr) {
+		return errorTypeDNSFailure
+	}
+	var (
+		certVerifyErr *tls.CertificateVerificationError
+		recordErr     tls.RecordHeaderError
+		alertErr      tls.AlertError
+		unknownAuth   x509.UnknownAuthorityError
+		hostnameErr   x509.HostnameError
+		certInvalid   x509.CertificateInvalidError
+	)
+	if errors.As(err, &certVerifyErr) || errors.As(err, &recordErr) || errors.As(err, &alertErr) ||
+		errors.As(err, &unknownAuth) || errors.As(err, &hostnameErr) || errors.As(err, &certInvalid) {
+		return errorTypeTLSFailure
+	}
+	// A failure to establish a connection is a connectivity problem even when
+	// it manifests as a dial timeout (e.g. packets dropped by a firewall).
+	var opErr *net.OpError
+	if errors.As(err, &opErr) && opErr.Op == "dial" {
+		return errorTypeConnectionError
+	}
+	var netErr net.Error
+	if errors.As(err, &netErr) && netErr.Timeout() {
+		return errorTypeTimeout
+	}
+	if errors.Is(err, io.EOF) || errors.Is(err, io.ErrUnexpectedEOF) || errors.Is(err, syscall.ECONNREFUSED) ||
+		errors.Is(err, syscall.ECONNRESET) || errors.Is(err, syscall.EPIPE) ||
+		errors.Is(err, syscall.ECONNABORTED) || errors.Is(err, syscall.EHOSTUNREACH) ||
+		errors.Is(err, syscall.ENETUNREACH) || errors.Is(err, net.ErrClosed) || opErr != nil {
+		return errorTypeConnectionError
+	}
+	return classifyTransportMessage(strings.ToLower(err.Error()))
+}
+
+// classifyTransportMessage recognizes transport-level failure messages
+// produced by the Go standard library and grpc-go. The input must be lower
+// case. It returns "" if the message is not recognized.
+func classifyTransportMessage(msg string) string {
 	switch {
-	case strings.Contains(errStr, "timeout"):
-		return "TIMEOUT"
-	case strings.Contains(errStr, "checksum") || strings.Contains(errStr, "mismatch"):
-		return "CHECKSUM_MISMATCH"
-	case strings.Contains(errStr, "auth") || strings.Contains(errStr, "credentials") || strings.Contains(errStr, "token") || strings.Contains(errStr, "key"):
-		return "AUTHENTICATION_ERROR"
-	case strings.Contains(errStr, "no such host") || strings.Contains(errStr, "no address"):
-		return "DNS_FAILURE"
-	case strings.Contains(errStr, "connection refused") || strings.Contains(errStr, "connection reset") || strings.Contains(errStr, "dial tcp") || strings.Contains(errStr, "broken pipe") || strings.Contains(errStr, "eof"):
-		return "CONNECTION_ERROR"
-	case strings.Contains(errStr, "tls") || strings.Contains(errStr, "certificate") || strings.Contains(errStr, "x509"):
-		return "TLS_FAILURE"
+	case strings.Contains(msg, "no such host"), strings.Contains(msg, "server misbehaving"),
+		strings.Contains(msg, "produced zero addresses"):
+		return errorTypeDNSFailure
+	case strings.Contains(msg, "x509:"), strings.Contains(msg, "tls:"),
+		strings.Contains(msg, "authentication handshake failed"):
+		return errorTypeTLSFailure
+	case strings.Contains(msg, "connection refused"), strings.Contains(msg, "connection reset"),
+		strings.Contains(msg, "broken pipe"), strings.Contains(msg, "unexpected eof"),
+		strings.Contains(msg, "error while dialing"), strings.Contains(msg, "no route to host"),
+		strings.Contains(msg, "network is unreachable"), strings.Contains(msg, "use of closed network connection"),
+		strings.Contains(msg, "client connection lost"), strings.Contains(msg, "server sent goaway"):
+		return errorTypeConnectionError
 	}
 	return ""
 }
 
-// mapHTTPStatusCode converts an HTTP status code to a canonical API error string.
-// If there is no direct mapping, it returns the numeric string.
+// isChecksumError reports whether err is an integrity check failure detected
+// by the client (CRC32C/MD5 validation of downloaded or uploaded data).
+func isChecksumError(err error) bool {
+	if errors.Is(err, errChecksumMismatch) {
+		return true
+	}
+	msg := err.Error()
+	return strings.Contains(msg, "storage: bad CRC on") ||
+		strings.Contains(msg, "storage: object checksum mismatch") ||
+		strings.Contains(msg, "does not match the expected CRC32C")
+}
+
+// isChecksumMessage reports whether a server error message describes a
+// checksum validation failure of uploaded data.
+func isChecksumMessage(msg string) bool {
+	m := strings.ToLower(msg)
+	return (strings.Contains(m, "crc32c") || strings.Contains(m, "md5")) && strings.Contains(m, "match")
+}
+
+// computeHTTPAttemptErrorType classifies the outcome of a single HTTP
+// round trip. Unlike response body reads, a round trip that fails with io.EOF
+// means the connection was closed before a response was received.
+func computeHTTPAttemptErrorType(err error, statusCode int64) string {
+	if err == io.EOF {
+		return errorTypeConnectionError
+	}
+	return computeErrorType(err, true, statusCode)
+}
+
+// refineCancelled labels attempts that the client aborted because of a dynamic
+// read stall timeout or write chunk transfer timeout as TIMEOUT rather than
+// CANCELLED, which would otherwise suggest that the application cancelled the
+// request.
+func refineCancelled(ctx context.Context, errorType string) string {
+	if errorType == errorTypeCancelled {
+		cause := context.Cause(ctx)
+		if errors.Is(cause, errReadStallTimeout) || errors.Is(cause, errStallTimeout) {
+			return errorTypeTimeout
+		}
+	}
+	return errorType
+}
+
+// mapHTTPStatusCode converts an HTTP status code to a canonical API error
+// string following the HTTP to gRPC status mapping. Status codes without a
+// canonical mapping are returned as numeric strings.
 func mapHTTPStatusCode(code int) string {
 	switch code {
 	case 400:
@@ -651,7 +778,7 @@ func mapHTTPStatusCode(code int) string {
 		return "INTERNAL"
 	case 501:
 		return "UNIMPLEMENTED"
-	case 503:
+	case 502, 503:
 		return "UNAVAILABLE"
 	case 504:
 		return "DEADLINE_EXCEEDED"
@@ -673,7 +800,7 @@ func (cm *clientMetrics) recordRPC(ctx context.Context, method, target string, d
 		methodName = methodName[idx+1:]
 	}
 
-	errorType := computeErrorType(err, false, statusCode)
+	errorType := refineCancelled(ctx, computeErrorType(err, false, statusCode))
 
 	attrs := []attribute.KeyValue{
 		attribute.String("rpc.system.name", "grpc"),
@@ -731,7 +858,12 @@ func (cm *clientMetrics) recordHTTP(ctx context.Context, req *http.Request, resp
 	}
 
 	urlTemplate := computeURLTemplate(req.URL.Path, req.URL.Host)
-	errorType := computeErrorType(err, true, statusCode)
+	var errorType string
+	if resp == nil {
+		errorType = refineCancelled(ctx, computeHTTPAttemptErrorType(err, statusCode))
+	} else {
+		errorType = refineCancelled(ctx, computeErrorType(err, true, statusCode))
+	}
 
 	attrs := []attribute.KeyValue{
 		attribute.String("rpc.system.name", "http"),
@@ -793,11 +925,20 @@ func computeURLTemplate(path, host string) string {
 	return prefix + "{bucket}/" + oRest
 }
 
+// stripPort returns the host name of an HTTP host ("host:port") or a gRPC
+// target ("dns:///host:port", "google-c2p:///host", "dns://authority/host"),
+// without scheme, authority or port, for use as the server.address attribute.
 func stripPort(host string) string {
+	if i := strings.Index(host, "://"); i >= 0 {
+		host = host[i+3:]
+		if j := strings.Index(host, "/"); j >= 0 {
+			host = host[j+1:]
+		}
+	}
 	if h, _, err := net.SplitHostPort(host); err == nil {
 		return h
 	}
-	return host
+	return strings.TrimSuffix(strings.TrimPrefix(host, "["), "]")
 }
 
 // metricsRoundTripper is an http.RoundTripper that wraps an underlying transport.
@@ -890,7 +1031,7 @@ func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, err
 	if resp != nil {
 		statusCode = int64(resp.StatusCode)
 	}
-	errorType := computeErrorType(err, true, statusCode)
+	errorType := refineCancelled(req.Context(), computeHTTPAttemptErrorType(err, statusCode))
 
 	if rt.metrics != nil {
 		state := metricsStateFromContext(req.Context())
@@ -1054,7 +1195,7 @@ func (cm *clientMetrics) recordGFEMetrics(ctx context.Context, headerMD, trailer
 		headerVal = headerVals[0]
 	}
 	if headerVal == "" {
-		errType := computeErrorType(err, false, int64(status.Code(err)))
+		errType := refineCancelled(ctx, computeErrorType(err, false, int64(status.Code(err))))
 		missingAttrs := metric.WithAttributes(
 			attribute.String("rpc.method", logicalMethod),
 			attribute.String("rpc.system.name", "grpc"),
@@ -1314,7 +1455,7 @@ func (cm *clientMetrics) startOperation(ctx context.Context, method string, isHT
 	record := func(err error) {
 		recordOnce.Do(func() {
 			duration := time.Since(state.startTime).Seconds()
-			errorType := computeErrorType(err, isHTTP, 0)
+			errorType := refineCancelled(ctx, computeErrorType(err, isHTTP, 0))
 
 			attrs := []attribute.KeyValue{
 				attribute.String("rpc.system.name", state.getSystemName()),
@@ -1758,6 +1899,12 @@ func (p *metricsTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 	start := time.Now()
 	tok, err := p.base.Token(ctx)
 	p.metrics.recordCredentialRefreshDuration(ctx, time.Since(start), err)
+	if err != nil {
+		var credErr *credentialError
+		if !errors.As(err, &credErr) {
+			err = &credentialError{err: err}
+		}
+	}
 	return tok, err
 }
 
