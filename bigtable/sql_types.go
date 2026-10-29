@@ -25,6 +25,7 @@ import (
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"cloud.google.com/go/civil"
 	"google.golang.org/genproto/googleapis/type/date"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -566,7 +567,113 @@ func (e *errTypeMismatch) Error() string {
 		expectedTypeName = fmt.Sprintf("MapSQLType (key: %T, value: %T)", t.KeyType, t.ValueType)
 	case StructSQLType:
 		expectedTypeName = fmt.Sprintf("StructSQLType (with %d fields)", len(t.Fields))
+	case ProtoSQLType:
+		expectedTypeName = fmt.Sprintf("ProtoSQLType (%s)", t.MessageName)
+	case EnumSQLType:
+		expectedTypeName = fmt.Sprintf("EnumSQLType (%s)", t.EnumName)
 	}
 
 	return fmt.Sprintf("parameter type mismatch: expected Go type compatible with %s, but got %T", expectedTypeName, e.value)
+}
+
+// ProtoSQLType represents a protobuf message type.
+type ProtoSQLType struct {
+	SchemaBundleID string
+	MessageName    string
+}
+
+func (s ProtoSQLType) isValidArrayElemType() bool { return true }
+
+func (s ProtoSQLType) isValidPrepareParamType() bool { return true }
+
+func (s ProtoSQLType) typeProto() (*btpb.Type, error) {
+	return &btpb.Type{
+		Kind: &btpb.Type_ProtoType{
+			ProtoType: &btpb.Type_Proto{
+				SchemaBundleId: s.SchemaBundleID,
+				MessageName:    s.MessageName,
+			},
+		},
+	}, nil
+}
+
+// valid value can be of type []byte, proto.Message, or nil.
+func (s ProtoSQLType) valueProto(value any) (*btpb.Value, error) {
+	pbType, err := s.typeProto()
+	if err != nil {
+		return nil, err
+	}
+	if value == nil {
+		return &btpb.Value{Type: pbType}, nil
+	}
+	if b, ok := value.([]byte); ok {
+		if b == nil {
+			return &btpb.Value{Type: pbType}, nil
+		}
+		return &btpb.Value{
+			Type: pbType,
+			Kind: &btpb.Value_BytesValue{
+				BytesValue: b,
+			},
+		}, nil
+	}
+	if msg, ok := value.(proto.Message); ok {
+		if msg == nil {
+			return &btpb.Value{Type: pbType}, nil
+		}
+		b, err := proto.Marshal(msg)
+		if err != nil {
+			return nil, fmt.Errorf("bigtable: failed to marshal proto message: %w", err)
+		}
+		return &btpb.Value{
+			Type: pbType,
+			Kind: &btpb.Value_BytesValue{
+				BytesValue: b,
+			},
+		}, nil
+	}
+	return nil, &errTypeMismatch{value: value, psType: s}
+}
+
+// EnumSQLType represents a protobuf enum type.
+type EnumSQLType struct {
+	SchemaBundleID string
+	EnumName       string
+}
+
+func (s EnumSQLType) isValidArrayElemType() bool { return true }
+
+func (s EnumSQLType) isValidPrepareParamType() bool { return true }
+
+func (s EnumSQLType) typeProto() (*btpb.Type, error) {
+	return &btpb.Type{
+		Kind: &btpb.Type_EnumType{
+			EnumType: &btpb.Type_Enum{
+				SchemaBundleId: s.SchemaBundleID,
+				EnumName:       s.EnumName,
+			},
+		},
+	}, nil
+}
+
+// valid value can be of type int64 (or convertible integer) or nil.
+func (s EnumSQLType) valueProto(value any) (*btpb.Value, error) {
+	pbType, err := s.typeProto()
+	if err != nil {
+		return nil, err
+	}
+	if value == nil {
+		return &btpb.Value{Type: pbType}, nil
+	}
+	reflectVal := reflect.ValueOf(value)
+	if reflectVal.CanConvert(int64ReflectType) {
+		typedVal := reflectVal.Convert(int64ReflectType).Int()
+		return &btpb.Value{
+			Type: pbType,
+			Kind: &btpb.Value_IntValue{
+				IntValue: typedVal,
+			},
+		}, nil
+	}
+	return nil, &errTypeMismatch{value: value, psType: s}
 }

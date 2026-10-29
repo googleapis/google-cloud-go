@@ -25,6 +25,7 @@ import (
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"cloud.google.com/go/civil"
+	"google.golang.org/protobuf/proto"
 )
 
 // ResultRow represents a single row in the result set returned on executing a GoogleSQL query in Cloud Bigtable
@@ -263,9 +264,13 @@ func (rr *ResultRow) GetByIndex(index int, dest any) error {
 			return fmt.Errorf("bigtable: Get destination for STRUCT column %q must be *bigtable.Struct or *any (got pointer to %s)", colInfo.Name, destElemType)
 		}
 	} else if destVal.Kind() == reflect.Struct {
-		// For non-STRUCT columns, still disallow general struct pointers (allow time/date)
+		// For non-STRUCT columns, still disallow general struct pointers (allow time/date, and proto.Message for PROTO columns)
 		destElemType := destVal.Type()
-		if destElemType != timeType && destElemType != dateType {
+		if _, isProto := sqlType.(ProtoSQLType); isProto {
+			if _, isProtoMsg := dest.(proto.Message); !isProtoMsg {
+				return fmt.Errorf("bigtable: Get destination for PROTO column %q must be proto.Message, *[]byte, or *any (got %T)", colInfo.Name, dest)
+			}
+		} else if destElemType != timeType && destElemType != dateType {
 			return fmt.Errorf("bigtable: Get destination cannot be a pointer to struct type %s for non-STRUCT column %q", destElemType, colInfo.Name)
 		}
 	}
@@ -278,6 +283,72 @@ func (rr *ResultRow) GetByIndex(index int, dest any) error {
 	goVal, err := pbValueToGoValue(rr.pbValues[index], pbType)
 	if err != nil {
 		return fmt.Errorf("error converting column %d (%q): %w", index, colInfo.Name, err)
+	}
+
+	if _, isProto := sqlType.(ProtoSQLType); isProto {
+		if goVal == nil {
+			if destVal.Kind() == reflect.Ptr || destVal.Kind() == reflect.Interface || destVal.Kind() == reflect.Slice {
+				destVal.Set(reflect.Zero(destVal.Type()))
+				return nil
+			}
+			return fmt.Errorf("bigtable: cannot assign SQL NULL to non-pointer Go type %s; use a pointer destination (e.g., *%s) or interface{} to handle NULL values", destVal.Type(), destVal.Type())
+		}
+		bytesVal, ok := goVal.([]byte)
+		if !ok {
+			return fmt.Errorf("bigtable: internal error - expected []byte for ProtoSQLType, got %T", goVal)
+		}
+		if pm, ok := dest.(proto.Message); ok {
+			if err := proto.Unmarshal(bytesVal, pm); err != nil {
+				return fmt.Errorf("bigtable: failed to unmarshal proto message for column %q: %w", colInfo.Name, err)
+			}
+			return nil
+		}
+		if destVal.Kind() == reflect.Ptr && destVal.Type().Elem().Kind() == reflect.Struct {
+			newMsg := reflect.New(destVal.Type().Elem())
+			if pm, ok := newMsg.Interface().(proto.Message); ok {
+				if err := proto.Unmarshal(bytesVal, pm); err != nil {
+					return fmt.Errorf("bigtable: failed to unmarshal proto message for column %q: %w", colInfo.Name, err)
+				}
+				destVal.Set(newMsg)
+				return nil
+			}
+		}
+	}
+
+	if _, isEnum := sqlType.(EnumSQLType); isEnum {
+		if goVal == nil {
+			if destVal.Kind() == reflect.Ptr || destVal.Kind() == reflect.Interface {
+				destVal.Set(reflect.Zero(destVal.Type()))
+				return nil
+			}
+			return fmt.Errorf("bigtable: cannot assign SQL NULL to non-pointer Go type %s; use a pointer destination (e.g., *%s) or interface{} to handle NULL values", destVal.Type(), destVal.Type())
+		}
+		intVal, ok := goVal.(int64)
+		if !ok {
+			return fmt.Errorf("bigtable: internal error - expected int64 for EnumSQLType, got %T", goVal)
+		}
+		switch destVal.Kind() {
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+			destVal.SetInt(intVal)
+			return nil
+		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+			destVal.SetUint(uint64(intVal))
+			return nil
+		case reflect.Ptr:
+			elemType := destVal.Type().Elem()
+			switch elemType.Kind() {
+			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+				newVal := reflect.New(elemType)
+				newVal.Elem().SetInt(intVal)
+				destVal.Set(newVal)
+				return nil
+			case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+				newVal := reflect.New(elemType)
+				newVal.Elem().SetUint(uint64(intVal))
+				destVal.Set(newVal)
+				return nil
+			}
+		}
 	}
 
 	// Assign the Go value to the destination pointer
@@ -371,6 +442,28 @@ func pbTypeToSQLType(pbType *btpb.Type) (SQLType, error) {
 			structFields[i] = StructSQLField{Name: f.GetFieldName(), Type: fieldSQLType}
 		}
 		return StructSQLType{Fields: structFields}, nil
+	case *btpb.Type_ProtoType:
+		pt := k.ProtoType
+		var schemaBundleID, messageName string
+		if pt != nil {
+			schemaBundleID = pt.GetSchemaBundleId()
+			messageName = pt.GetMessageName()
+		}
+		return ProtoSQLType{
+			SchemaBundleID: schemaBundleID,
+			MessageName:    messageName,
+		}, nil
+	case *btpb.Type_EnumType:
+		et := k.EnumType
+		var schemaBundleID, enumName string
+		if et != nil {
+			schemaBundleID = et.GetSchemaBundleId()
+			enumName = et.GetEnumName()
+		}
+		return EnumSQLType{
+			SchemaBundleID: schemaBundleID,
+			EnumName:       enumName,
+		}, nil
 	default:
 		return nil, fmt.Errorf("unrecognized response type kind: %T. You might need to upgrade your client", k)
 	}
@@ -443,6 +536,11 @@ func pbTypeToGoReflectTypeInternal(pbType *btpb.Type, pointerIfNullable bool) (r
 	case *btpb.Type_StructType:
 		needsPointerWrapperForNull = false
 		baseType = structType
+	case *btpb.Type_ProtoType:
+		baseType = bytesType
+		needsPointerWrapperForNull = false
+	case *btpb.Type_EnumType:
+		baseType = int64Type
 	default:
 		return nil, fmt.Errorf("unrecognized response type kind: %T. You might need to upgrade your client", k)
 	}
@@ -691,6 +789,18 @@ func pbValueToGoValue(pbVal *btpb.Value, pbType *btpb.Type) (any, error) {
 		}
 		return newStruct(structFields), nil
 
+	case *btpb.Type_ProtoType:
+		if val, ok := pbVal.Kind.(*btpb.Value_BytesValue); ok {
+			return val.BytesValue, nil
+		}
+		return nil, fmt.Errorf("type mismatch: expected BytesValue for ProtoType, got %T", pbVal.Kind)
+
+	case *btpb.Type_EnumType:
+		if val, ok := pbVal.Kind.(*btpb.Value_IntValue); ok {
+			return val.IntValue, nil
+		}
+		return nil, fmt.Errorf("type mismatch: expected IntValue for EnumType, got %T", pbVal.Kind)
+
 	default:
 		return nil, fmt.Errorf("unrecognized response type  kind: %T. You might need to upgrade your client", k)
 	}
@@ -726,6 +836,28 @@ func assignValue(dest reflect.Value, src any) error {
 	if srcVal.Type().AssignableTo(dest.Type()) {
 		dest.Set(srcVal)
 		return nil
+	}
+
+	// Unmarshal []byte into proto.Message if dest implements proto.Message
+	if b, ok := src.([]byte); ok {
+		if dest.CanAddr() && dest.Addr().CanInterface() {
+			if pm, ok := dest.Addr().Interface().(proto.Message); ok {
+				if err := proto.Unmarshal(b, pm); err != nil {
+					return fmt.Errorf("bigtable: failed to unmarshal proto message: %w", err)
+				}
+				return nil
+			}
+		}
+		if dest.Kind() == reflect.Ptr && dest.Type().Elem().Kind() == reflect.Struct {
+			newMsg := reflect.New(dest.Type().Elem())
+			if pm, ok := newMsg.Interface().(proto.Message); ok {
+				if err := proto.Unmarshal(b, pm); err != nil {
+					return fmt.Errorf("bigtable: failed to unmarshal proto message: %w", err)
+				}
+				dest.Set(newMsg)
+				return nil
+			}
+		}
 	}
 
 	// Add check to prevent assigning Struct to map

@@ -1604,6 +1604,123 @@ func TestAnySQLTypeToPbVal(t *testing.T) {
 			wantErr:    true,
 			wantErrMsg: "bigtable: unsupported ElemType: bigtable.ArraySQLType",
 		},
+		{
+			testName: "ProtoSQLType success bytes",
+			paramVal: []byte("proto_bytes"),
+			psType:   ProtoSQLType{SchemaBundleID: "b1", MessageName: "msg1"},
+			wantPbVal: &btpb.Value{
+				Type: &btpb.Type{
+					Kind: &btpb.Type_ProtoType{
+						ProtoType: &btpb.Type_Proto{
+							SchemaBundleId: "b1",
+							MessageName:    "msg1",
+						},
+					},
+				},
+				Kind: &btpb.Value_BytesValue{
+					BytesValue: []byte("proto_bytes"),
+				},
+			},
+		},
+		{
+			testName: "ProtoSQLType success proto.Message",
+			paramVal: timestamppb.New(testTime),
+			psType:   ProtoSQLType{SchemaBundleID: "b1", MessageName: "google.protobuf.Timestamp"},
+			wantPbVal: &btpb.Value{
+				Type: &btpb.Type{
+					Kind: &btpb.Type_ProtoType{
+						ProtoType: &btpb.Type_Proto{
+							SchemaBundleId: "b1",
+							MessageName:    "google.protobuf.Timestamp",
+						},
+					},
+				},
+				Kind: &btpb.Value_BytesValue{
+					BytesValue: func() []byte {
+						b, _ := proto.Marshal(timestamppb.New(testTime))
+						return b
+					}(),
+				},
+			},
+		},
+		{
+			testName: "ProtoSQLType nil success",
+			psType:   ProtoSQLType{SchemaBundleID: "b1", MessageName: "msg1"},
+			wantPbVal: &btpb.Value{
+				Type: &btpb.Type{
+					Kind: &btpb.Type_ProtoType{
+						ProtoType: &btpb.Type_Proto{
+							SchemaBundleId: "b1",
+							MessageName:    "msg1",
+						},
+					},
+				},
+			},
+		},
+		{
+			testName:   "ProtoSQLType type mismatch",
+			paramVal:   123,
+			psType:     ProtoSQLType{SchemaBundleID: "b1", MessageName: "msg1"},
+			wantErr:    true,
+			wantErrMsg: ptr(errTypeMismatch{value: 123, psType: ProtoSQLType{SchemaBundleID: "b1", MessageName: "msg1"}}).Error(),
+		},
+		{
+			testName: "EnumSQLType success int64",
+			paramVal: int64(1),
+			psType:   EnumSQLType{SchemaBundleID: "b1", EnumName: "enum1"},
+			wantPbVal: &btpb.Value{
+				Type: &btpb.Type{
+					Kind: &btpb.Type_EnumType{
+						EnumType: &btpb.Type_Enum{
+							SchemaBundleId: "b1",
+							EnumName:       "enum1",
+						},
+					},
+				},
+				Kind: &btpb.Value_IntValue{
+					IntValue: 1,
+				},
+			},
+		},
+		{
+			testName: "EnumSQLType success int32",
+			paramVal: int32(2),
+			psType:   EnumSQLType{SchemaBundleID: "b1", EnumName: "enum1"},
+			wantPbVal: &btpb.Value{
+				Type: &btpb.Type{
+					Kind: &btpb.Type_EnumType{
+						EnumType: &btpb.Type_Enum{
+							SchemaBundleId: "b1",
+							EnumName:       "enum1",
+						},
+					},
+				},
+				Kind: &btpb.Value_IntValue{
+					IntValue: 2,
+				},
+			},
+		},
+		{
+			testName: "EnumSQLType nil success",
+			psType:   EnumSQLType{SchemaBundleID: "b1", EnumName: "enum1"},
+			wantPbVal: &btpb.Value{
+				Type: &btpb.Type{
+					Kind: &btpb.Type_EnumType{
+						EnumType: &btpb.Type_Enum{
+							SchemaBundleId: "b1",
+							EnumName:       "enum1",
+						},
+					},
+				},
+			},
+		},
+		{
+			testName:   "EnumSQLType type mismatch",
+			paramVal:   "not_an_enum",
+			psType:     EnumSQLType{SchemaBundleID: "b1", EnumName: "enum1"},
+			wantErr:    true,
+			wantErrMsg: ptr(errTypeMismatch{value: "not_an_enum", psType: EnumSQLType{SchemaBundleID: "b1", EnumName: "enum1"}}).Error(),
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.testName, func(t *testing.T) {
@@ -1636,6 +1753,8 @@ func cmpOptionsBtpbValue() []cmp.Option {
 		btpb.Type_TimestampType{}, btpb.Type_Timestamp{},
 		btpb.Type_DateType{}, btpb.Type_Date{},
 		btpb.Type_ArrayType{}, btpb.Type_Array{},
+		btpb.Type_ProtoType{}, btpb.Type_Proto{},
+		btpb.Type_EnumType{}, btpb.Type_Enum{},
 		btpb.Value_BytesValue{},
 		btpb.Value_StringValue{},
 		btpb.Value_IntValue{},
@@ -2462,5 +2581,78 @@ func TestApplyBulk_MissingEntryResult(t *testing.T) {
 	}
 	if errs[2] != nil {
 		t.Errorf("errs[2] = %v, want nil", errs[2])
+	}
+}
+
+func TestInitializeMetadataAndMap_Error(t *testing.T) {
+	pqd := &preparedQueryData{
+		metadata: &btpb.ResultSetMetadata{
+			Schema: &btpb.ResultSetMetadata_ProtoSchema{
+				ProtoSchema: &btpb.ProtoSchema{
+					Columns: []*btpb.ColumnMetadata{
+						{Name: "bad", Type: &btpb.Type{Kind: nil}},
+					},
+				},
+			},
+		},
+	}
+	err := pqd.initializeMetadataAndMap()
+	if err == nil {
+		t.Fatal("expected initializeMetadataAndMap to return an error, got nil")
+	}
+	if pqd.Metadata != nil {
+		t.Fatalf("expected pqd.Metadata to remain nil on error, got %+v", pqd.Metadata)
+	}
+}
+
+func TestPrepareStatement_InvalidMetadataError(t *testing.T) {
+	var gotPrepReqCount int
+	var mockPrepQueryResps []prepareQueryResp
+	const defaultPreparedQueryTTL = 10 * time.Second
+	var testPreparedQueryTTL = defaultPreparedQueryTTL
+
+	testEnv, gotErr := NewEmulatedEnv(IntegrationTestConfig{})
+	if gotErr != nil {
+		t.Fatalf("NewEmulatedEnv failed: %v", gotErr)
+	}
+
+	conn, gotErr := grpc.Dial(testEnv.server.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(),
+		grpc.WithUnaryInterceptor(
+			newUnaryClientInterceptor(&gotPrepReqCount, &mockPrepQueryResps, &testPreparedQueryTTL)),
+	)
+	if gotErr != nil {
+		t.Fatalf("grpc.Dial failed: %v", gotErr)
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	client, gotErr := NewClientWithConfig(ctx, testEnv.config.Project, testEnv.config.Instance, disableMetricsConfig, option.WithGRPCConn(conn))
+	if gotErr != nil {
+		t.Fatalf("NewClientWithConfig failed: %v", gotErr)
+	}
+	defer client.Close()
+
+	mockPrepQueryResps = []prepareQueryResp{
+		{
+			resp: &btpb.PrepareQueryResponse{
+				PreparedQuery: []byte("query"),
+				Metadata: &btpb.ResultSetMetadata{
+					Schema: &btpb.ResultSetMetadata_ProtoSchema{
+						ProtoSchema: &btpb.ProtoSchema{
+							Columns: []*btpb.ColumnMetadata{
+								{Name: "bad", Type: &btpb.Type{Kind: nil}},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	_, err := client.PrepareStatement(ctx, "SELECT * FROM users;", nil)
+	if err == nil {
+		t.Fatal("expected PrepareStatement to fail on invalid metadata, got nil")
+	}
+	if !strings.Contains(err.Error(), "error parsing metadata type for column") {
+		t.Fatalf("unexpected error message: %v", err)
 	}
 }
