@@ -164,11 +164,19 @@ func reflectFieldSave(props *[]Property, p Property, name string, opts saveOpts,
 	if v.CanAddr() {
 		vi := v.Addr().Interface()
 		if pSaver, ok := vi.(PropertyLoadSaver); ok {
-			val, err := pSaver.Save()
+			subProps, err := pSaver.Save()
 			if err != nil {
 				return fmt.Errorf("field save error: %w", err)
 			}
-			p.Value = val
+			if opts.flatten {
+				for _, subp := range subProps {
+					subp.Name = name + "." + subp.Name
+					*props = append(*props, subp)
+				}
+				return nil
+			}
+			// []Property is not a valid Property value; save it as a nested entity.
+			p.Value = &Entity{Properties: subProps}
 		}
 	}
 
