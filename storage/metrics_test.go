@@ -24,6 +24,7 @@ import (
 	"net"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"os"
 	"testing"
 	"time"
@@ -885,41 +886,208 @@ func TestRecordTTFB_MetadataOnly(t *testing.T) {
 }
 
 func TestComputeErrorType(t *testing.T) {
+	dnsErr := &net.DNSError{Err: "no such host", Name: "storage.googleapis.com", IsTimeout: true}
+
 	tests := []struct {
+		name       string
 		err        error
 		isHTTP     bool
 		statusCode int64
 		want       string
 	}{
-		{err: errors.New("dial tcp: no such host"), want: "DNS_FAILURE"},
-		{err: errors.New("connection refused"), want: "CONNECTION_ERROR"},
-		{err: errors.New("connection reset by peer"), want: "CONNECTION_ERROR"},
-		{err: errors.New("tls: bad certificate"), want: "TLS_FAILURE"},
-		{err: errors.New("unexpected eof"), want: "CONNECTION_ERROR"},
-		{err: context.DeadlineExceeded, want: "TIMEOUT"},
-		{err: context.Canceled, want: "CANCELLED"},
-		{err: status.Error(codes.NotFound, "not found"), want: "NOT_FOUND"},
-		{err: ErrObjectNotExist, isHTTP: true, want: "NOT_FOUND"},
-		{err: ErrBucketNotExist, want: "NOT_FOUND"},
-		{err: status.Error(codes.NotFound, "No such object: bucket/my-key"), want: "NOT_FOUND"},
-		{err: &googleapi.Error{Code: 404, Message: "No such object: bucket/author.txt"}, isHTTP: true, want: "NOT_FOUND"},
-		{err: status.Error(codes.InvalidArgument, "Invalid page token."), want: "INVALID_ARGUMENT"},
-		{err: status.Error(codes.Unavailable, "connection error: connection reset by peer"), want: "CONNECTION_ERROR"},
-		{err: status.Error(codes.Unavailable, "unavailable"), want: "UNAVAILABLE"},
-		{err: status.Error(codes.InvalidArgument, "Object crc32c mismatch: server computed 1234, client provided 5678."), want: "CHECKSUM_MISMATCH"},
-		{err: &googleapi.Error{Code: 400, Message: `Provided CRC32C "AAAAAA==" doesn't match calculated CRC32C "BBBBBB==".`}, isHTTP: true, want: "CHECKSUM_MISMATCH"},
-		{err: fmt.Errorf("%w: bad CRC on read: got %d, want %d", errChecksumMismatch, 1, 2), want: "CHECKSUM_MISMATCH"},
-		{err: &googleapi.Error{Code: 412, Message: "At least one of the pre-conditions you specified did not hold."}, isHTTP: true, want: "FAILED_PRECONDITION"},
-		{err: &googleapi.Error{Code: 408}, isHTTP: true, want: "DEADLINE_EXCEEDED"},
-		{err: status.Error(codes.DeadlineExceeded, "Deadline exceeded."), want: "DEADLINE_EXCEEDED"},
-		{err: fmt.Errorf("read: %w", io.EOF), want: "OK"},
+		{name: "dns no such host", err: errors.New("dial tcp: no such host"), want: "DNS_FAILURE"},
+		{name: "connection refused", err: errors.New("connection refused"), want: "CONNECTION_ERROR"},
+		{name: "connection reset", err: errors.New("connection reset by peer"), want: "CONNECTION_ERROR"},
+		{name: "tls bad certificate", err: errors.New("tls: bad certificate"), want: "TLS_FAILURE"},
+		{name: "unexpected eof", err: errors.New("unexpected eof"), want: "CONNECTION_ERROR"},
+		{name: "context deadline exceeded", err: context.DeadlineExceeded, want: "TIMEOUT"},
+		{name: "context canceled", err: context.Canceled, want: "CANCELLED"},
+		{name: "grpc not found", err: status.Error(codes.NotFound, "not found"), want: "NOT_FOUND"},
+		{name: "ErrObjectNotExist", err: ErrObjectNotExist, isHTTP: true, want: "NOT_FOUND"},
+		{name: "ErrBucketNotExist", err: ErrBucketNotExist, want: "NOT_FOUND"},
+		{name: "grpc not found with key in object name", err: status.Error(codes.NotFound, "No such object: bucket/my-key"), want: "NOT_FOUND"},
+		{name: "http 404 with author in object name", err: &googleapi.Error{Code: 404, Message: "No such object: bucket/author.txt"}, isHTTP: true, want: "NOT_FOUND"},
+		{name: "grpc invalid page token", err: status.Error(codes.InvalidArgument, "Invalid page token."), want: "INVALID_ARGUMENT"},
+		{name: "grpc unavailable connection reset", err: status.Error(codes.Unavailable, "connection error: connection reset by peer"), want: "CONNECTION_ERROR"},
+		{name: "grpc unavailable", err: status.Error(codes.Unavailable, "unavailable"), want: "UNAVAILABLE"},
+		{name: "grpc crc32c mismatch", err: status.Error(codes.InvalidArgument, "Object crc32c mismatch: server computed 1234, client provided 5678."), want: "CHECKSUM_MISMATCH"},
+		{name: "http 400 crc32c mismatch", err: &googleapi.Error{Code: 400, Message: `Provided CRC32C "AAAAAA==" doesn't match calculated CRC32C "BBBBBB==".`}, isHTTP: true, want: "CHECKSUM_MISMATCH"},
+		{name: "client checksum mismatch sentinel", err: fmt.Errorf("%w: bad CRC on read: got %d, want %d", errChecksumMismatch, 1, 2), want: "CHECKSUM_MISMATCH"},
+		{name: "http 412 failed precondition", err: &googleapi.Error{Code: 412, Message: "At least one of the pre-conditions you specified did not hold."}, isHTTP: true, want: "FAILED_PRECONDITION"},
+		{name: "http 408 deadline exceeded", err: &googleapi.Error{Code: 408}, isHTTP: true, want: "DEADLINE_EXCEEDED"},
+		{name: "grpc server deadline exceeded", err: status.Error(codes.DeadlineExceeded, "Deadline exceeded."), want: "DEADLINE_EXCEEDED"},
+		{name: "wrapped io.EOF on grpc read", err: fmt.Errorf("read: %w", io.EOF), want: "OK"},
+
+		// HTTP status, url.Error & EOF edge cases.
+		{name: "http 502 bad gateway", err: &googleapi.Error{Code: 502}, isHTTP: true, want: "UNAVAILABLE"},
+		{name: "http body io.EOF with 200", err: io.EOF, isHTTP: true, statusCode: 200, want: "OK"},
+		{name: "http body io.EOF with 404", err: io.EOF, isHTTP: true, statusCode: 404, want: "NOT_FOUND"},
+		{name: "http round-trip io.EOF before headers", err: fmt.Errorf("Get \"https://storage.googleapis.com\": %w", io.EOF), isHTTP: true, statusCode: 0, want: "CONNECTION_ERROR"},
+		{name: "http ErrUnexpectedEOF", err: io.ErrUnexpectedEOF, isHTTP: true, want: "CONNECTION_ERROR"},
+		{name: "url.Error with author bucket and deadline", err: &url.Error{Op: "Get", URL: "https://storage.googleapis.com/b/author-bkt/o/tls-certs", Err: context.DeadlineExceeded}, isHTTP: true, want: "TIMEOUT"},
+		{name: "url.Error with author bucket and unknown error", err: &url.Error{Op: "Get", URL: "https://storage.googleapis.com/b/author-bkt/o/tls-certs", Err: errors.New("unexpected failure")}, isHTTP: true, want: "UNKNOWN"},
+
+		// Timeouts & stall watchdogs.
+		{name: "grpc client context deadline exceeded", err: status.Error(codes.DeadlineExceeded, "context deadline exceeded"), want: "TIMEOUT"},
+		{name: "write stall timeout error", err: &stallTimeoutError{timeout: time.Second, stage: "BidiWriteObject"}, want: "TIMEOUT"},
+		// wrappedCallErr.Is matches both context.Canceled and errStallTimeout when the
+		// caller cancels ctx during retry backoff after a stall; user cancel wins.
+		{name: "user cancel after write stall attempt", err: wrappedCallErr{ctxErr: context.Canceled, wrappedErr: &stallTimeoutError{timeout: time.Second, stage: "BidiWriteObject"}}, want: "CANCELLED"},
+
+		// Authentication failures.
+		{name: "credentialError wrapping dial timeout", err: &credentialError{err: errors.New("dial tcp 169.254.169.254:80: i/o timeout")}, isHTTP: true, want: "AUTHENTICATION_ERROR"},
+		{name: "grpc per-RPC creds timeout", err: status.Error(codes.Unavailable, "transport: per-RPC creds failed due to error: context deadline exceeded"), want: "AUTHENTICATION_ERROR"},
+
+		// Structured DNS, TCP, and TLS transport errors.
+		{name: "dial OpError wrapping DNSError", err: &net.OpError{Op: "dial", Net: "tcp", Err: dnsErr}, isHTTP: true, want: "DNS_FAILURE"},
+		{name: "dial OpError wrapping os.ErrDeadlineExceeded", err: &net.OpError{Op: "dial", Net: "tcp", Err: os.ErrDeadlineExceeded}, isHTTP: true, want: "CONNECTION_ERROR"},
+		{name: "net.ErrClosed", err: net.ErrClosed, isHTTP: true, want: "CONNECTION_ERROR"},
+		{name: "tls unknown authority", err: errors.New("tls: failed to verify certificate: x509: certificate signed by unknown authority"), isHTTP: true, want: "TLS_FAILURE"},
+		{name: "grpc authentication handshake failed without tls keyword", err: status.Error(codes.Unavailable, `connection error: desc = "transport: authentication handshake failed: remote error: bad MAC"`), want: "TLS_FAILURE"},
 	}
 
 	for _, tc := range tests {
-		got := computeErrorType(tc.err, tc.isHTTP, tc.statusCode)
-		if got != tc.want {
-			t.Errorf("computeErrorType(%v, %v, %v) = %v, want %v", tc.err, tc.isHTTP, tc.statusCode, got, tc.want)
+		t.Run(tc.name, func(t *testing.T) {
+			got := computeErrorType(tc.err, tc.isHTTP, tc.statusCode)
+			if got != tc.want {
+				t.Errorf("computeErrorType(%v, %v, %v) = %v, want %v", tc.err, tc.isHTTP, tc.statusCode, got, tc.want)
+			}
+		})
+	}
+
+	uerr := &url.Error{Op: "Get", URL: "https://storage.googleapis.com", Err: &credentialError{err: os.ErrDeadlineExceeded}}
+	if !uerr.Timeout() || !uerr.Temporary() {
+		t.Errorf("url.Error wrapping credentialError(os.ErrDeadlineExceeded): Timeout()=%v, Temporary()=%v; want both true", uerr.Timeout(), uerr.Temporary())
+	}
+}
+
+func TestExecuteWithReadStallTimeout_RecordsTimeoutMetric(t *testing.T) {
+	ctx := context.Background()
+	mr := sdkmetric.NewManualReader()
+	provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(mr))
+	defer provider.Shutdown(ctx)
+
+	cm, _, err := initMetrics(ctx, "project-id", &storageConfig{
+		enableOtelMetrics: true,
+		meterProvider:     provider,
+	})
+	if err != nil {
+		t.Fatalf("initMetrics: %v", err)
+	}
+
+	unblock := make(chan struct{})
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		<-unblock
+	}))
+	defer func() {
+		close(unblock)
+		server.Close()
+	}()
+
+	dm, err := newBucketDelayManager(0.99, 15, 0, time.Millisecond, time.Second)
+	if err != nil {
+		t.Fatalf("newBucketDelayManager: %v", err)
+	}
+	client := &http.Client{
+		Transport: &metricsRoundTripper{base: http.DefaultTransport, metrics: cm},
+	}
+
+	err = executeWithReadStallTimeout(ctx, dm, "my-bucket", func(reqCtx context.Context) error {
+		req, err := http.NewRequestWithContext(reqCtx, http.MethodGet, server.URL+"/storage/v1/b/my-bucket/o/my-object?alt=media", nil)
+		if err != nil {
+			return err
 		}
+		resp, err := client.Do(req)
+		if resp != nil {
+			resp.Body.Close()
+		}
+		return err
+	}, nil)
+	if !errors.Is(err, context.DeadlineExceeded) {
+		t.Fatalf("executeWithReadStallTimeout err = %v, want context.DeadlineExceeded", err)
+	}
+
+	var rm metricdata.ResourceMetrics
+	if err := mr.Collect(ctx, &rm); err != nil {
+		t.Fatalf("Collect: %v", err)
+	}
+	seen := make(map[string]bool)
+	for _, sm := range rm.ScopeMetrics {
+		for _, m := range sm.Metrics {
+			switch m.Name {
+			case "gcp.storage.client.attempts", "gcp.storage.client.errors":
+				seen[m.Name] = true
+				dps := m.Data.(metricdata.Sum[int64]).DataPoints
+				if len(dps) != 1 {
+					t.Fatalf("%s: got %d data points, want 1", m.Name, len(dps))
+				}
+				if got := getAttr(dps[0], "error.type"); got != "TIMEOUT" {
+					t.Errorf("%s error.type = %q, want TIMEOUT", m.Name, got)
+				}
+			case "http.client.request.duration":
+				seen[m.Name] = true
+				dps := m.Data.(metricdata.Histogram[float64]).DataPoints
+				if len(dps) != 1 {
+					t.Fatalf("%s: got %d data points, want 1", m.Name, len(dps))
+				}
+				if got := getHistAttr(dps[0], "error.type"); got != "TIMEOUT" {
+					t.Errorf("%s error.type = %q, want TIMEOUT", m.Name, got)
+				}
+			}
+		}
+	}
+	for _, name := range []string{"gcp.storage.client.attempts", "gcp.storage.client.errors", "http.client.request.duration"} {
+		if !seen[name] {
+			t.Errorf("metric %s not recorded", name)
+		}
+	}
+}
+
+func TestRefineCancelled(t *testing.T) {
+	readCtx, readCancel := context.WithCancelCause(context.Background())
+	readCancel(errReadStallTimeout)
+
+	writeCtx, writeCancel := context.WithCancelCause(context.Background())
+	writeCancel(errStallTimeout)
+
+	userCtx, userCancel := context.WithCancel(context.Background())
+	userCancel()
+
+	for _, tc := range []struct {
+		name      string
+		ctx       context.Context
+		errorType string
+		want      string
+	}{
+		{name: "read stall timeout cause", ctx: readCtx, errorType: "CANCELLED", want: "TIMEOUT"},
+		{name: "write stall timeout cause", ctx: writeCtx, errorType: "CANCELLED", want: "TIMEOUT"},
+		{name: "user context cancel", ctx: userCtx, errorType: "CANCELLED", want: "CANCELLED"},
+		{name: "non-cancelled error type", ctx: readCtx, errorType: "CONNECTION_ERROR", want: "CONNECTION_ERROR"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := refineCancelled(tc.ctx, tc.errorType); got != tc.want {
+				t.Errorf("refineCancelled(ctx, %q) = %q, want %q", tc.errorType, got, tc.want)
+			}
+		})
+	}
+}
+
+func TestStripPort(t *testing.T) {
+	for _, tc := range []struct {
+		in, want string
+	}{
+		{"storage.googleapis.com:443", "storage.googleapis.com"},
+		{"dns:///storage.googleapis.com:443", "storage.googleapis.com"},
+		{"google-c2p:///storage.googleapis.com", "storage.googleapis.com"},
+		{"dns://authority/storage.googleapis.com:443", "storage.googleapis.com"},
+		{"[::1]:8080", "::1"},
+		{"[::1]", "::1"},
+	} {
+		t.Run(tc.in, func(t *testing.T) {
+			if got := stripPort(tc.in); got != tc.want {
+				t.Errorf("stripPort(%q) = %q, want %q", tc.in, got, tc.want)
+			}
+		})
 	}
 }
 
@@ -1068,11 +1236,28 @@ func TestWrapAuthCredentials(t *testing.T) {
 	if wrapped2 != wrapped {
 		t.Errorf("expected original wrapped credentials on double wrap")
 	}
+
+	rootErr := &net.OpError{Op: "dial", Net: "tcp", Err: context.DeadlineExceeded}
+	errCreds := wrapAuthCredentials(&auth.Credentials{
+		TokenProvider: &mockTokenProvider{err: rootErr},
+	}, m)
+	_, err := errCreds.TokenProvider.Token(context.Background())
+	if !errors.Is(err, rootErr) {
+		t.Errorf("expected errors.Is(err, rootErr) to be true, got %v", err)
+	}
+	if got := computeErrorType(err, true, 0); got != "AUTHENTICATION_ERROR" {
+		t.Errorf("computeErrorType(err, true, 0) = %q, want AUTHENTICATION_ERROR", got)
+	}
 }
 
-type mockTokenProvider struct{}
+type mockTokenProvider struct {
+	err error
+}
 
 func (m *mockTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
+	if m.err != nil {
+		return nil, m.err
+	}
 	return &auth.Token{}, nil
 }
 
@@ -1265,7 +1450,7 @@ func TestRecordServerMetrics(t *testing.T) {
 			name:  "DirectPath ambiguous client timeout",
 			debug: true,
 			run: func(ctx context.Context, cm *clientMetrics) {
-				cm.recordServerMetrics(ctx, nil, nil, status.Error(codes.DeadlineExceeded, "deadline exceeded"), "GetObject", "storage.googleapis.com", rpcAttrs, dpPeer)
+				cm.recordServerMetrics(ctx, nil, nil, status.Error(codes.DeadlineExceeded, "context deadline exceeded"), "GetObject", "storage.googleapis.com", rpcAttrs, dpPeer)
 			},
 			wantUnreached: 0,
 		},
@@ -1281,7 +1466,15 @@ func TestRecordServerMetrics(t *testing.T) {
 			name:  "CloudPath ambiguous client timeout",
 			debug: true,
 			run: func(ctx context.Context, cm *clientMetrics) {
-				cm.recordServerMetrics(ctx, nil, nil, status.Error(codes.DeadlineExceeded, "deadline exceeded"), "GetObject", "storage.googleapis.com", rpcAttrs, cpPeer)
+				cm.recordServerMetrics(ctx, nil, nil, status.Error(codes.DeadlineExceeded, "context deadline exceeded"), "GetObject", "storage.googleapis.com", rpcAttrs, cpPeer)
+			},
+			wantUnreached: 0,
+		},
+		{
+			name:  "CloudPath service deadline exceeded",
+			debug: true,
+			run: func(ctx context.Context, cm *clientMetrics) {
+				cm.recordServerMetrics(ctx, nil, nil, status.Error(codes.DeadlineExceeded, "Deadline exceeded."), "GetObject", "storage.googleapis.com", rpcAttrs, cpPeer)
 			},
 			wantUnreached: 0,
 		},
