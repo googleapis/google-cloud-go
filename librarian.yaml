@@ -19,8 +19,8 @@ sources:
     commit: 1c6496fb0cf9fa04a35e24e8af871c58298ae37e
     sha256: c3cd1ca564a28485970bdf348cac9bcde65d45792a5c2df1c179654d3ad8b877
   googleapis:
-    commit: 968d491eddafaf61da6b8bd0a6a2710ec9e2fdbc
-    sha256: f61663b244a2907b2cce73cb16589f103d203cace88ed5a79228e27dc415bfe2
+    commit: d4dd5e80f3e941043abe09572495dde9601b9a4e
+    sha256: 476d1cc1bdbd3d23781a73a02dbd6ca4687108536a308ddad84786e794150b3a
 tools:
   go:
     - name: github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic
@@ -650,6 +650,11 @@ libraries:
     version: 1.35.1
     apis:
       - path: google/cloud/deploy/v1
+  - name: designcenter
+    version: 0.0.0
+    apis:
+      - path: google/cloud/designcenter/v1
+    copyright_year: "2026"
   - name: developerconnect
     version: 1.3.1
     apis:
@@ -1299,32 +1304,33 @@ libraries:
     version: 1.18.1
     apis:
       - path: google/shopping/css/v1
-      - path: google/shopping/merchant/promotions/v1
-      - path: google/shopping/merchant/quota/v1
+      - path: google/shopping/merchant/reports/v1
+      - path: google/shopping/merchant/lfp/v1
       - path: google/shopping/merchant/conversions/v1
       - path: google/shopping/merchant/accounts/v1
       - path: google/shopping/merchant/datasources/v1
-      - path: google/shopping/merchant/reports/v1
+      - path: google/shopping/merchant/reviews/v1
       - path: google/shopping/merchant/notifications/v1
-      - path: google/shopping/merchant/lfp/v1
+      - path: google/shopping/merchant/quota/v1
       - path: google/shopping/merchant/ordertracking/v1
       - path: google/shopping/merchant/issueresolution/v1
       - path: google/shopping/merchant/products/v1
       - path: google/shopping/merchant/inventories/v1
       - path: google/shopping/merchant/loyaltycustomers/v1
+      - path: google/shopping/merchant/promotions/v1
       - path: google/shopping/merchant/ordertracking/v1beta
-      - path: google/shopping/merchant/issueresolution/v1beta
-      - path: google/shopping/merchant/accounts/v1beta
+      - path: google/shopping/merchant/reviews/v1beta
       - path: google/shopping/merchant/quota/v1beta
       - path: google/shopping/merchant/promotions/v1beta
       - path: google/shopping/merchant/inventories/v1beta
       - path: google/shopping/merchant/reports/v1beta
       - path: google/shopping/merchant/products/v1beta
-      - path: google/shopping/merchant/reviews/v1beta
+      - path: google/shopping/merchant/accounts/v1beta
       - path: google/shopping/merchant/lfp/v1beta
       - path: google/shopping/merchant/datasources/v1beta
       - path: google/shopping/merchant/conversions/v1beta
       - path: google/shopping/merchant/notifications/v1beta
+      - path: google/shopping/merchant/issueresolution/v1beta
       - path: google/shopping/merchant/productstudio/v1alpha
       - path: google/shopping/type
         go:

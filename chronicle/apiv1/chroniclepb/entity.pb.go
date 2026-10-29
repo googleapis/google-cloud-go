@@ -25,13 +25,11 @@ import (
 	sync "sync"
 	unsafe "unsafe"
 
-	backstorypb "cloud.google.com/go/backstory/backstorypb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
-	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -41,117 +39,6 @@ const (
 	// Verify that runtime/protoimpl is sufficiently up-to-date.
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
-
-// An Entity provides additional context about an entity in a UDM event (asset,
-// user, etc.). For example, a PROCESS_LAUNCH event describes that user
-// 'abc@example.corp' launched process 'shady.exe'. The event does not include
-// information that user 'abc@example.com' is a recently terminated employee who
-// administers a server storing finance data. Information stored in one or more
-// Entities can add this additional context.
-type Entity struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// The resource name of the entity.
-	// Format:
-	// `projects/{project}/locations/{location}/instances/{instance}/entities/{entity}`
-	// `projects/{project}/locations/{location}/instances/{instance}/analytics/{analytic}/entities/{entity}`
-	// `projects/{project}/locations/{location}/instances/{instance}/watchlists/{watchlist}/entities/{entity}`
-	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Entity metadata such as timestamp, product, etc.
-	Metadata *backstorypb.EntityMetadata `protobuf:"bytes,2,opt,name=metadata,proto3" json:"metadata,omitempty"`
-	// Noun in the UDM event that this entity represents.
-	Entity *backstorypb.Noun `protobuf:"bytes,3,opt,name=entity,proto3" json:"entity,omitempty"`
-	// Important entity data that cannot be adequately represented within
-	// the formal sections of the Entity.
-	Additional *structpb.Struct `protobuf:"bytes,5,opt,name=additional,proto3" json:"additional,omitempty"`
-	// Represents the entity risk scores resource
-	RiskScore *backstorypb.EntityRisk `protobuf:"bytes,6,opt,name=risk_score,json=riskScore,proto3" json:"risk_score,omitempty"`
-	// Metric details of the entity. Used if EntityType is METRIC.
-	Metric *backstorypb.Metric `protobuf:"bytes,7,opt,name=metric,proto3" json:"metric,omitempty"`
-	// One or more relationships between the entity (a) and other entities,
-	// including the relationship type and related entity.
-	Relations     []*backstorypb.Relation `protobuf:"bytes,8,rep,name=relations,proto3" json:"relations,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *Entity) Reset() {
-	*x = Entity{}
-	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[0]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *Entity) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Entity) ProtoMessage() {}
-
-func (x *Entity) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[0]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Entity.ProtoReflect.Descriptor instead.
-func (*Entity) Descriptor() ([]byte, []int) {
-	return file_google_cloud_chronicle_v1_entity_proto_rawDescGZIP(), []int{0}
-}
-
-func (x *Entity) GetName() string {
-	if x != nil {
-		return x.Name
-	}
-	return ""
-}
-
-func (x *Entity) GetMetadata() *backstorypb.EntityMetadata {
-	if x != nil {
-		return x.Metadata
-	}
-	return nil
-}
-
-func (x *Entity) GetEntity() *backstorypb.Noun {
-	if x != nil {
-		return x.Entity
-	}
-	return nil
-}
-
-func (x *Entity) GetAdditional() *structpb.Struct {
-	if x != nil {
-		return x.Additional
-	}
-	return nil
-}
-
-func (x *Entity) GetRiskScore() *backstorypb.EntityRisk {
-	if x != nil {
-		return x.RiskScore
-	}
-	return nil
-}
-
-func (x *Entity) GetMetric() *backstorypb.Metric {
-	if x != nil {
-		return x.Metric
-	}
-	return nil
-}
-
-func (x *Entity) GetRelations() []*backstorypb.Relation {
-	if x != nil {
-		return x.Relations
-	}
-	return nil
-}
 
 // A watchlist is a list of entities that allows for bulk operations over the
 // included entities.
@@ -187,7 +74,7 @@ type Watchlist struct {
 
 func (x *Watchlist) Reset() {
 	*x = Watchlist{}
-	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[1]
+	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -199,7 +86,7 @@ func (x *Watchlist) String() string {
 func (*Watchlist) ProtoMessage() {}
 
 func (x *Watchlist) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[1]
+	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -212,7 +99,7 @@ func (x *Watchlist) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Watchlist.ProtoReflect.Descriptor instead.
 func (*Watchlist) Descriptor() ([]byte, []int) {
-	return file_google_cloud_chronicle_v1_entity_proto_rawDescGZIP(), []int{1}
+	return file_google_cloud_chronicle_v1_entity_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Watchlist) GetName() string {
@@ -289,7 +176,7 @@ type WatchlistUserPreferences struct {
 
 func (x *WatchlistUserPreferences) Reset() {
 	*x = WatchlistUserPreferences{}
-	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[2]
+	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -301,7 +188,7 @@ func (x *WatchlistUserPreferences) String() string {
 func (*WatchlistUserPreferences) ProtoMessage() {}
 
 func (x *WatchlistUserPreferences) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[2]
+	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -314,7 +201,7 @@ func (x *WatchlistUserPreferences) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WatchlistUserPreferences.ProtoReflect.Descriptor instead.
 func (*WatchlistUserPreferences) Descriptor() ([]byte, []int) {
-	return file_google_cloud_chronicle_v1_entity_proto_rawDescGZIP(), []int{2}
+	return file_google_cloud_chronicle_v1_entity_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *WatchlistUserPreferences) GetPinned() bool {
@@ -338,7 +225,7 @@ type GetWatchlistRequest struct {
 
 func (x *GetWatchlistRequest) Reset() {
 	*x = GetWatchlistRequest{}
-	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[3]
+	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -350,7 +237,7 @@ func (x *GetWatchlistRequest) String() string {
 func (*GetWatchlistRequest) ProtoMessage() {}
 
 func (x *GetWatchlistRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[3]
+	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -363,7 +250,7 @@ func (x *GetWatchlistRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetWatchlistRequest.ProtoReflect.Descriptor instead.
 func (*GetWatchlistRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_chronicle_v1_entity_proto_rawDescGZIP(), []int{3}
+	return file_google_cloud_chronicle_v1_entity_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *GetWatchlistRequest) GetName() string {
@@ -403,7 +290,7 @@ type ListWatchlistsRequest struct {
 
 func (x *ListWatchlistsRequest) Reset() {
 	*x = ListWatchlistsRequest{}
-	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[4]
+	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -415,7 +302,7 @@ func (x *ListWatchlistsRequest) String() string {
 func (*ListWatchlistsRequest) ProtoMessage() {}
 
 func (x *ListWatchlistsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[4]
+	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -428,7 +315,7 @@ func (x *ListWatchlistsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListWatchlistsRequest.ProtoReflect.Descriptor instead.
 func (*ListWatchlistsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_chronicle_v1_entity_proto_rawDescGZIP(), []int{4}
+	return file_google_cloud_chronicle_v1_entity_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *ListWatchlistsRequest) GetParent() string {
@@ -473,7 +360,7 @@ type ListWatchlistsResponse struct {
 
 func (x *ListWatchlistsResponse) Reset() {
 	*x = ListWatchlistsResponse{}
-	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[5]
+	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -485,7 +372,7 @@ func (x *ListWatchlistsResponse) String() string {
 func (*ListWatchlistsResponse) ProtoMessage() {}
 
 func (x *ListWatchlistsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[5]
+	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -498,7 +385,7 @@ func (x *ListWatchlistsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListWatchlistsResponse.ProtoReflect.Descriptor instead.
 func (*ListWatchlistsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_chronicle_v1_entity_proto_rawDescGZIP(), []int{5}
+	return file_google_cloud_chronicle_v1_entity_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *ListWatchlistsResponse) GetWatchlists() []*Watchlist {
@@ -535,7 +422,7 @@ type CreateWatchlistRequest struct {
 
 func (x *CreateWatchlistRequest) Reset() {
 	*x = CreateWatchlistRequest{}
-	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[6]
+	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -547,7 +434,7 @@ func (x *CreateWatchlistRequest) String() string {
 func (*CreateWatchlistRequest) ProtoMessage() {}
 
 func (x *CreateWatchlistRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[6]
+	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -560,7 +447,7 @@ func (x *CreateWatchlistRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateWatchlistRequest.ProtoReflect.Descriptor instead.
 func (*CreateWatchlistRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_chronicle_v1_entity_proto_rawDescGZIP(), []int{6}
+	return file_google_cloud_chronicle_v1_entity_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *CreateWatchlistRequest) GetParent() string {
@@ -601,7 +488,7 @@ type UpdateWatchlistRequest struct {
 
 func (x *UpdateWatchlistRequest) Reset() {
 	*x = UpdateWatchlistRequest{}
-	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[7]
+	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -613,7 +500,7 @@ func (x *UpdateWatchlistRequest) String() string {
 func (*UpdateWatchlistRequest) ProtoMessage() {}
 
 func (x *UpdateWatchlistRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[7]
+	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -626,7 +513,7 @@ func (x *UpdateWatchlistRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateWatchlistRequest.ProtoReflect.Descriptor instead.
 func (*UpdateWatchlistRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_chronicle_v1_entity_proto_rawDescGZIP(), []int{7}
+	return file_google_cloud_chronicle_v1_entity_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *UpdateWatchlistRequest) GetWatchlist() *Watchlist {
@@ -660,7 +547,7 @@ type DeleteWatchlistRequest struct {
 
 func (x *DeleteWatchlistRequest) Reset() {
 	*x = DeleteWatchlistRequest{}
-	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[8]
+	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -672,7 +559,7 @@ func (x *DeleteWatchlistRequest) String() string {
 func (*DeleteWatchlistRequest) ProtoMessage() {}
 
 func (x *DeleteWatchlistRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[8]
+	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -685,7 +572,7 @@ func (x *DeleteWatchlistRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteWatchlistRequest.ProtoReflect.Descriptor instead.
 func (*DeleteWatchlistRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_chronicle_v1_entity_proto_rawDescGZIP(), []int{8}
+	return file_google_cloud_chronicle_v1_entity_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *DeleteWatchlistRequest) GetName() string {
@@ -718,7 +605,7 @@ type Watchlist_EntityPopulationMechanism struct {
 
 func (x *Watchlist_EntityPopulationMechanism) Reset() {
 	*x = Watchlist_EntityPopulationMechanism{}
-	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[9]
+	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -730,7 +617,7 @@ func (x *Watchlist_EntityPopulationMechanism) String() string {
 func (*Watchlist_EntityPopulationMechanism) ProtoMessage() {}
 
 func (x *Watchlist_EntityPopulationMechanism) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[9]
+	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -743,7 +630,7 @@ func (x *Watchlist_EntityPopulationMechanism) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use Watchlist_EntityPopulationMechanism.ProtoReflect.Descriptor instead.
 func (*Watchlist_EntityPopulationMechanism) Descriptor() ([]byte, []int) {
-	return file_google_cloud_chronicle_v1_entity_proto_rawDescGZIP(), []int{1, 0}
+	return file_google_cloud_chronicle_v1_entity_proto_rawDescGZIP(), []int{0, 0}
 }
 
 func (x *Watchlist_EntityPopulationMechanism) GetMechanism() isWatchlist_EntityPopulationMechanism_Mechanism {
@@ -787,7 +674,7 @@ type Watchlist_EntityCount struct {
 
 func (x *Watchlist_EntityCount) Reset() {
 	*x = Watchlist_EntityCount{}
-	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[10]
+	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -799,7 +686,7 @@ func (x *Watchlist_EntityCount) String() string {
 func (*Watchlist_EntityCount) ProtoMessage() {}
 
 func (x *Watchlist_EntityCount) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[10]
+	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -812,7 +699,7 @@ func (x *Watchlist_EntityCount) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Watchlist_EntityCount.ProtoReflect.Descriptor instead.
 func (*Watchlist_EntityCount) Descriptor() ([]byte, []int) {
-	return file_google_cloud_chronicle_v1_entity_proto_rawDescGZIP(), []int{1, 1}
+	return file_google_cloud_chronicle_v1_entity_proto_rawDescGZIP(), []int{0, 1}
 }
 
 func (x *Watchlist_EntityCount) GetUser() int32 {
@@ -838,7 +725,7 @@ type Watchlist_EntityPopulationMechanism_Manual struct {
 
 func (x *Watchlist_EntityPopulationMechanism_Manual) Reset() {
 	*x = Watchlist_EntityPopulationMechanism_Manual{}
-	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[11]
+	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -850,7 +737,7 @@ func (x *Watchlist_EntityPopulationMechanism_Manual) String() string {
 func (*Watchlist_EntityPopulationMechanism_Manual) ProtoMessage() {}
 
 func (x *Watchlist_EntityPopulationMechanism_Manual) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[11]
+	mi := &file_google_cloud_chronicle_v1_entity_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -863,26 +750,14 @@ func (x *Watchlist_EntityPopulationMechanism_Manual) ProtoReflect() protoreflect
 
 // Deprecated: Use Watchlist_EntityPopulationMechanism_Manual.ProtoReflect.Descriptor instead.
 func (*Watchlist_EntityPopulationMechanism_Manual) Descriptor() ([]byte, []int) {
-	return file_google_cloud_chronicle_v1_entity_proto_rawDescGZIP(), []int{1, 0, 0}
+	return file_google_cloud_chronicle_v1_entity_proto_rawDescGZIP(), []int{0, 0, 0}
 }
 
 var File_google_cloud_chronicle_v1_entity_proto protoreflect.FileDescriptor
 
 const file_google_cloud_chronicle_v1_entity_proto_rawDesc = "" +
 	"\n" +
-	"&google/cloud/chronicle/v1/entity.proto\x12\x19google.cloud.chronicle.v1\x1a\x16backstory/entity.proto\x1a\x1bbackstory/entity_risk.proto\x1a\x13backstory/udm.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc2\x05\n" +
-	"\x06Entity\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12<\n" +
-	"\bmetadata\x18\x02 \x01(\v2 .google.backstory.EntityMetadataR\bmetadata\x12.\n" +
-	"\x06entity\x18\x03 \x01(\v2\x16.google.backstory.NounR\x06entity\x127\n" +
-	"\n" +
-	"additional\x18\x05 \x01(\v2\x17.google.protobuf.StructR\n" +
-	"additional\x12;\n" +
-	"\n" +
-	"risk_score\x18\x06 \x01(\v2\x1c.google.backstory.EntityRiskR\triskScore\x120\n" +
-	"\x06metric\x18\a \x01(\v2\x18.google.backstory.MetricR\x06metric\x128\n" +
-	"\trelations\x18\b \x03(\v2\x1a.google.backstory.RelationR\trelations:\xd3\x02\xeaA\xcf\x02\n" +
-	"\x1fchronicle.googleapis.com/Entity\x12Nprojects/{project}/locations/{location}/instances/{instance}/entities/{entity}\x12cprojects/{project}/locations/{location}/instances/{instance}/analytics/{analytic}/entities/{entity}\x12eprojects/{project}/locations/{location}/instances/{instance}/watchlists/{watchlist}/entities/{entity}*\bentities2\x06entity\"\x84\b\n" +
+	"&google/cloud/chronicle/v1/entity.proto\x12\x19google.cloud.chronicle.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x84\b\n" +
 	"\tWatchlist\x12\x18\n" +
 	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
 	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12&\n" +
@@ -954,62 +829,49 @@ func file_google_cloud_chronicle_v1_entity_proto_rawDescGZIP() []byte {
 	return file_google_cloud_chronicle_v1_entity_proto_rawDescData
 }
 
-var file_google_cloud_chronicle_v1_entity_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_google_cloud_chronicle_v1_entity_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_google_cloud_chronicle_v1_entity_proto_goTypes = []any{
-	(*Entity)(nil),                                     // 0: google.cloud.chronicle.v1.Entity
-	(*Watchlist)(nil),                                  // 1: google.cloud.chronicle.v1.Watchlist
-	(*WatchlistUserPreferences)(nil),                   // 2: google.cloud.chronicle.v1.WatchlistUserPreferences
-	(*GetWatchlistRequest)(nil),                        // 3: google.cloud.chronicle.v1.GetWatchlistRequest
-	(*ListWatchlistsRequest)(nil),                      // 4: google.cloud.chronicle.v1.ListWatchlistsRequest
-	(*ListWatchlistsResponse)(nil),                     // 5: google.cloud.chronicle.v1.ListWatchlistsResponse
-	(*CreateWatchlistRequest)(nil),                     // 6: google.cloud.chronicle.v1.CreateWatchlistRequest
-	(*UpdateWatchlistRequest)(nil),                     // 7: google.cloud.chronicle.v1.UpdateWatchlistRequest
-	(*DeleteWatchlistRequest)(nil),                     // 8: google.cloud.chronicle.v1.DeleteWatchlistRequest
-	(*Watchlist_EntityPopulationMechanism)(nil),        // 9: google.cloud.chronicle.v1.Watchlist.EntityPopulationMechanism
-	(*Watchlist_EntityCount)(nil),                      // 10: google.cloud.chronicle.v1.Watchlist.EntityCount
-	(*Watchlist_EntityPopulationMechanism_Manual)(nil), // 11: google.cloud.chronicle.v1.Watchlist.EntityPopulationMechanism.Manual
-	(*backstorypb.EntityMetadata)(nil),                 // 12: google.backstory.EntityMetadata
-	(*backstorypb.Noun)(nil),                           // 13: google.backstory.Noun
-	(*structpb.Struct)(nil),                            // 14: google.protobuf.Struct
-	(*backstorypb.EntityRisk)(nil),                     // 15: google.backstory.EntityRisk
-	(*backstorypb.Metric)(nil),                         // 16: google.backstory.Metric
-	(*backstorypb.Relation)(nil),                       // 17: google.backstory.Relation
-	(*timestamppb.Timestamp)(nil),                      // 18: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil),                      // 19: google.protobuf.FieldMask
-	(*emptypb.Empty)(nil),                              // 20: google.protobuf.Empty
+	(*Watchlist)(nil),                                  // 0: google.cloud.chronicle.v1.Watchlist
+	(*WatchlistUserPreferences)(nil),                   // 1: google.cloud.chronicle.v1.WatchlistUserPreferences
+	(*GetWatchlistRequest)(nil),                        // 2: google.cloud.chronicle.v1.GetWatchlistRequest
+	(*ListWatchlistsRequest)(nil),                      // 3: google.cloud.chronicle.v1.ListWatchlistsRequest
+	(*ListWatchlistsResponse)(nil),                     // 4: google.cloud.chronicle.v1.ListWatchlistsResponse
+	(*CreateWatchlistRequest)(nil),                     // 5: google.cloud.chronicle.v1.CreateWatchlistRequest
+	(*UpdateWatchlistRequest)(nil),                     // 6: google.cloud.chronicle.v1.UpdateWatchlistRequest
+	(*DeleteWatchlistRequest)(nil),                     // 7: google.cloud.chronicle.v1.DeleteWatchlistRequest
+	(*Watchlist_EntityPopulationMechanism)(nil),        // 8: google.cloud.chronicle.v1.Watchlist.EntityPopulationMechanism
+	(*Watchlist_EntityCount)(nil),                      // 9: google.cloud.chronicle.v1.Watchlist.EntityCount
+	(*Watchlist_EntityPopulationMechanism_Manual)(nil), // 10: google.cloud.chronicle.v1.Watchlist.EntityPopulationMechanism.Manual
+	(*timestamppb.Timestamp)(nil),                      // 11: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),                      // 12: google.protobuf.FieldMask
+	(*emptypb.Empty)(nil),                              // 13: google.protobuf.Empty
 }
 var file_google_cloud_chronicle_v1_entity_proto_depIdxs = []int32{
-	12, // 0: google.cloud.chronicle.v1.Entity.metadata:type_name -> google.backstory.EntityMetadata
-	13, // 1: google.cloud.chronicle.v1.Entity.entity:type_name -> google.backstory.Noun
-	14, // 2: google.cloud.chronicle.v1.Entity.additional:type_name -> google.protobuf.Struct
-	15, // 3: google.cloud.chronicle.v1.Entity.risk_score:type_name -> google.backstory.EntityRisk
-	16, // 4: google.cloud.chronicle.v1.Entity.metric:type_name -> google.backstory.Metric
-	17, // 5: google.cloud.chronicle.v1.Entity.relations:type_name -> google.backstory.Relation
-	9,  // 6: google.cloud.chronicle.v1.Watchlist.entity_population_mechanism:type_name -> google.cloud.chronicle.v1.Watchlist.EntityPopulationMechanism
-	10, // 7: google.cloud.chronicle.v1.Watchlist.entity_count:type_name -> google.cloud.chronicle.v1.Watchlist.EntityCount
-	18, // 8: google.cloud.chronicle.v1.Watchlist.create_time:type_name -> google.protobuf.Timestamp
-	18, // 9: google.cloud.chronicle.v1.Watchlist.update_time:type_name -> google.protobuf.Timestamp
-	2,  // 10: google.cloud.chronicle.v1.Watchlist.watchlist_user_preferences:type_name -> google.cloud.chronicle.v1.WatchlistUserPreferences
-	1,  // 11: google.cloud.chronicle.v1.ListWatchlistsResponse.watchlists:type_name -> google.cloud.chronicle.v1.Watchlist
-	1,  // 12: google.cloud.chronicle.v1.CreateWatchlistRequest.watchlist:type_name -> google.cloud.chronicle.v1.Watchlist
-	1,  // 13: google.cloud.chronicle.v1.UpdateWatchlistRequest.watchlist:type_name -> google.cloud.chronicle.v1.Watchlist
-	19, // 14: google.cloud.chronicle.v1.UpdateWatchlistRequest.update_mask:type_name -> google.protobuf.FieldMask
-	11, // 15: google.cloud.chronicle.v1.Watchlist.EntityPopulationMechanism.manual:type_name -> google.cloud.chronicle.v1.Watchlist.EntityPopulationMechanism.Manual
-	3,  // 16: google.cloud.chronicle.v1.EntityService.GetWatchlist:input_type -> google.cloud.chronicle.v1.GetWatchlistRequest
-	4,  // 17: google.cloud.chronicle.v1.EntityService.ListWatchlists:input_type -> google.cloud.chronicle.v1.ListWatchlistsRequest
-	6,  // 18: google.cloud.chronicle.v1.EntityService.CreateWatchlist:input_type -> google.cloud.chronicle.v1.CreateWatchlistRequest
-	7,  // 19: google.cloud.chronicle.v1.EntityService.UpdateWatchlist:input_type -> google.cloud.chronicle.v1.UpdateWatchlistRequest
-	8,  // 20: google.cloud.chronicle.v1.EntityService.DeleteWatchlist:input_type -> google.cloud.chronicle.v1.DeleteWatchlistRequest
-	1,  // 21: google.cloud.chronicle.v1.EntityService.GetWatchlist:output_type -> google.cloud.chronicle.v1.Watchlist
-	5,  // 22: google.cloud.chronicle.v1.EntityService.ListWatchlists:output_type -> google.cloud.chronicle.v1.ListWatchlistsResponse
-	1,  // 23: google.cloud.chronicle.v1.EntityService.CreateWatchlist:output_type -> google.cloud.chronicle.v1.Watchlist
-	1,  // 24: google.cloud.chronicle.v1.EntityService.UpdateWatchlist:output_type -> google.cloud.chronicle.v1.Watchlist
-	20, // 25: google.cloud.chronicle.v1.EntityService.DeleteWatchlist:output_type -> google.protobuf.Empty
-	21, // [21:26] is the sub-list for method output_type
-	16, // [16:21] is the sub-list for method input_type
-	16, // [16:16] is the sub-list for extension type_name
-	16, // [16:16] is the sub-list for extension extendee
-	0,  // [0:16] is the sub-list for field type_name
+	8,  // 0: google.cloud.chronicle.v1.Watchlist.entity_population_mechanism:type_name -> google.cloud.chronicle.v1.Watchlist.EntityPopulationMechanism
+	9,  // 1: google.cloud.chronicle.v1.Watchlist.entity_count:type_name -> google.cloud.chronicle.v1.Watchlist.EntityCount
+	11, // 2: google.cloud.chronicle.v1.Watchlist.create_time:type_name -> google.protobuf.Timestamp
+	11, // 3: google.cloud.chronicle.v1.Watchlist.update_time:type_name -> google.protobuf.Timestamp
+	1,  // 4: google.cloud.chronicle.v1.Watchlist.watchlist_user_preferences:type_name -> google.cloud.chronicle.v1.WatchlistUserPreferences
+	0,  // 5: google.cloud.chronicle.v1.ListWatchlistsResponse.watchlists:type_name -> google.cloud.chronicle.v1.Watchlist
+	0,  // 6: google.cloud.chronicle.v1.CreateWatchlistRequest.watchlist:type_name -> google.cloud.chronicle.v1.Watchlist
+	0,  // 7: google.cloud.chronicle.v1.UpdateWatchlistRequest.watchlist:type_name -> google.cloud.chronicle.v1.Watchlist
+	12, // 8: google.cloud.chronicle.v1.UpdateWatchlistRequest.update_mask:type_name -> google.protobuf.FieldMask
+	10, // 9: google.cloud.chronicle.v1.Watchlist.EntityPopulationMechanism.manual:type_name -> google.cloud.chronicle.v1.Watchlist.EntityPopulationMechanism.Manual
+	2,  // 10: google.cloud.chronicle.v1.EntityService.GetWatchlist:input_type -> google.cloud.chronicle.v1.GetWatchlistRequest
+	3,  // 11: google.cloud.chronicle.v1.EntityService.ListWatchlists:input_type -> google.cloud.chronicle.v1.ListWatchlistsRequest
+	5,  // 12: google.cloud.chronicle.v1.EntityService.CreateWatchlist:input_type -> google.cloud.chronicle.v1.CreateWatchlistRequest
+	6,  // 13: google.cloud.chronicle.v1.EntityService.UpdateWatchlist:input_type -> google.cloud.chronicle.v1.UpdateWatchlistRequest
+	7,  // 14: google.cloud.chronicle.v1.EntityService.DeleteWatchlist:input_type -> google.cloud.chronicle.v1.DeleteWatchlistRequest
+	0,  // 15: google.cloud.chronicle.v1.EntityService.GetWatchlist:output_type -> google.cloud.chronicle.v1.Watchlist
+	4,  // 16: google.cloud.chronicle.v1.EntityService.ListWatchlists:output_type -> google.cloud.chronicle.v1.ListWatchlistsResponse
+	0,  // 17: google.cloud.chronicle.v1.EntityService.CreateWatchlist:output_type -> google.cloud.chronicle.v1.Watchlist
+	0,  // 18: google.cloud.chronicle.v1.EntityService.UpdateWatchlist:output_type -> google.cloud.chronicle.v1.Watchlist
+	13, // 19: google.cloud.chronicle.v1.EntityService.DeleteWatchlist:output_type -> google.protobuf.Empty
+	15, // [15:20] is the sub-list for method output_type
+	10, // [10:15] is the sub-list for method input_type
+	10, // [10:10] is the sub-list for extension type_name
+	10, // [10:10] is the sub-list for extension extendee
+	0,  // [0:10] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_chronicle_v1_entity_proto_init() }
@@ -1017,7 +879,7 @@ func file_google_cloud_chronicle_v1_entity_proto_init() {
 	if File_google_cloud_chronicle_v1_entity_proto != nil {
 		return
 	}
-	file_google_cloud_chronicle_v1_entity_proto_msgTypes[9].OneofWrappers = []any{
+	file_google_cloud_chronicle_v1_entity_proto_msgTypes[8].OneofWrappers = []any{
 		(*Watchlist_EntityPopulationMechanism_Manual_)(nil),
 	}
 	type x struct{}
@@ -1026,7 +888,7 @@ func file_google_cloud_chronicle_v1_entity_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_chronicle_v1_entity_proto_rawDesc), len(file_google_cloud_chronicle_v1_entity_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   12,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
