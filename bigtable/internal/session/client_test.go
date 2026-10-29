@@ -471,8 +471,10 @@ func TestPoolKey_DisplayName(t *testing.T) {
 	}{
 		{"table read", poolKey{resourceName: "table:my-table", perm: permissionRead}, "my-table-READ"},
 		{"table write", poolKey{resourceName: "table:my-table", perm: permissionWrite}, "my-table-WRITE"},
+		{"table read-write", poolKey{resourceName: "table:my-table", perm: permissionReadWrite}, "my-table-READ_WRITE"},
 		{"authorized view read", poolKey{resourceName: "av:my-table:my-view", perm: permissionRead}, "my-table/my-view-READ"},
 		{"authorized view write", poolKey{resourceName: "av:my-table:my-view", perm: permissionWrite}, "my-table/my-view-WRITE"},
+		{"authorized view read-write", poolKey{resourceName: "av:my-table:my-view", perm: permissionReadWrite}, "my-table/my-view-READ_WRITE"},
 		{"authorized view — same view id, different tables must not collide",
 			poolKey{resourceName: "av:other-table:my-view", perm: permissionRead}, "other-table/my-view-READ"},
 		{"materialized view read", poolKey{resourceName: "mv:my-mat-view", perm: permissionRead}, "my-mat-view-READ"},

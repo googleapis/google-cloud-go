@@ -16,10 +16,12 @@ package bigtable
 
 import (
 	"context"
+	"errors"
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"cloud.google.com/go/bigtable/internal/session"
 	btransport "cloud.google.com/go/bigtable/internal/transport"
+	"google.golang.org/protobuf/proto"
 )
 
 // TableShim implements TableAPI by routing between a classic gRPC
@@ -28,19 +30,20 @@ import (
 // Diverter's SessionLoad ratio. TableShim owns the proto ↔
 // bigtable.Row conversion so the session package can stay proto-native.
 //
-// Methods with no session equivalent (SampleRowKeys, ApplyBulk,
-// ApplyReadModifyWrite) always delegate to classic. ReadRows delegates
-// to classic for the general multi-row case; the single-key shape
-// (see singleRowKey) is served by the session ReadRow vRPC since it is
-// semantically identical to Table.ReadRow. Conditional mutations always
-// route to classic — session vRPC does not support the CheckAndMutateRow
-// shape today.
+// Methods with no session equivalent (SampleRowKeys, ApplyBulk) always
+// delegate to classic. ReadRows delegates to classic for the general
+// multi-row case; the single-key shape (see singleRowKey) is served by
+// the session ReadRow vRPC since it is semantically identical to
+// Table.ReadRow. Apply routes non-conditional mutations to the session
+// MutateRow vRPC and conditional mutations to the session
+// CheckAndMutateRow vRPC. ApplyReadModifyWrite routes to the session
+// ReadModifyWriteRow vRPC.
 //
-// ReadRow, single-key ReadRows, and Apply pass their session call's
-// error to session.UnimplementedBreaker.ShouldFallback: a
-// codes.Unimplemented response falls back to classic, and after enough
-// consecutive Unimplementeds the breaker's sticky trip gates
-// useSession() so future calls skip session entirely.
+// ReadRow, single-key ReadRows, Apply, and ApplyReadModifyWrite pass
+// their session call's error to session.UnimplementedBreaker.ShouldFallback:
+// a codes.Unimplemented response falls back to classic, and after enough
+// consecutive Unimplementeds the breaker's sticky trip gates useSession()
+// so future calls skip session entirely.
 type TableShim struct {
 	classic  TableAPI
 	session  session.TableAPI
@@ -100,18 +103,51 @@ func (t *TableShim) readRowSession(ctx context.Context, row string, opts ...Read
 	return protoRowToRow(resp.GetRow()), nil
 }
 
-// Apply implements TableAPI. Non-conditional mutations may route
-// through the session path (subject to the diverter); conditional
-// mutations always go to classic — CheckAndMutateRow has no session
-// equivalent. Nil mutations also route to classic so the classic
-// client's nil-handling error surfaces exactly as it always has,
-// rather than panicking here on m.ops.
+// Apply implements TableAPI. Both non-conditional mutations (MutateRow)
+// and conditional mutations (CheckAndMutateRow) may route through the
+// session path (subject to the diverter). Nil mutations route to
+// classic so the classic client's nil-handling error surfaces as-is.
 func (t *TableShim) Apply(ctx context.Context, row string, m *Mutation, opts ...ApplyOption) error {
-	if m == nil || m.isConditional {
+	if m == nil {
 		return t.classic.Apply(ctx, row, m, opts...)
 	}
 	if !t.useSession() {
 		return t.classic.Apply(ctx, row, m, opts...)
+	}
+	after := func(res proto.Message) {
+		for _, o := range opts {
+			o.after(res)
+		}
+	}
+	if m.isConditional {
+		req := &btpb.SessionCheckAndMutateRowRequest{
+			Key: []byte(row),
+		}
+		if m.cond != nil {
+			req.PredicateFilter = m.cond.proto()
+		}
+		if m.mtrue != nil {
+			if m.mtrue.cond != nil {
+				return errors.New("bigtable: conditional mutations cannot be nested")
+			}
+			req.TrueMutations = m.mtrue.ops
+		}
+		if m.mfalse != nil {
+			if m.mfalse.cond != nil {
+				return errors.New("bigtable: conditional mutations cannot be nested")
+			}
+			req.FalseMutations = m.mfalse.ops
+		}
+		resp, err := t.session.CheckAndMutateRow(ctx, req)
+		if t.breaker.ShouldFallback(err) {
+			return t.classic.Apply(ctx, row, m, opts...)
+		}
+		if err == nil {
+			after(&btpb.CheckAndMutateRowResponse{
+				PredicateMatched: resp.GetPredicateMatched(),
+			})
+		}
+		return err
 	}
 	req := &btpb.SessionMutateRowRequest{
 		Key:       []byte(row),
@@ -120,6 +156,9 @@ func (t *TableShim) Apply(ctx context.Context, row string, m *Mutation, opts ...
 	_, err := t.session.MutateRow(ctx, req)
 	if t.breaker.ShouldFallback(err) {
 		return t.classic.Apply(ctx, row, m, opts...)
+	}
+	if err == nil {
+		after(&btpb.MutateRowResponse{})
 	}
 	return err
 }
@@ -232,9 +271,31 @@ func (t *TableShim) ApplyBulk(ctx context.Context, rowKeys []string, muts []*Mut
 	return t.classic.ApplyBulk(ctx, rowKeys, muts, opts...)
 }
 
-// ApplyReadModifyWrite delegates to classic.
+// ApplyReadModifyWrite implements TableAPI. Routes ReadModifyWrite
+// operations over the session ReadModifyWriteRow vRPC when the diverter
+// allows, or delegates to classic.
 func (t *TableShim) ApplyReadModifyWrite(ctx context.Context, row string, m *ReadModifyWrite) (Row, error) {
-	return t.classic.ApplyReadModifyWrite(ctx, row, m)
+	if m == nil || !t.useSession() {
+		return t.classic.ApplyReadModifyWrite(ctx, row, m)
+	}
+	resp, err := t.session.ReadModifyWriteRow(ctx, &btpb.SessionReadModifyWriteRowRequest{
+		Key:   []byte(row),
+		Rules: m.ops,
+	})
+	if t.breaker.ShouldFallback(err) {
+		return t.classic.ApplyReadModifyWrite(ctx, row, m)
+	}
+	if err != nil {
+		return nil, err
+	}
+	if resp.GetRow() == nil {
+		return nil, errors.New("unable to apply ReadModifyWrite: res.Row=nil")
+	}
+	r := make(Row)
+	for _, fam := range resp.GetRow().GetFamilies() {
+		decodeFamilyProto(r, row, fam)
+	}
+	return r, nil
 }
 
 // useSession returns true when session + diverter are configured, the
