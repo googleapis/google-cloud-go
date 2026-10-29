@@ -35,6 +35,7 @@ import (
 	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/storage/internal"
 	mexporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric"
+	"github.com/google/uuid"
 	"go.opentelemetry.io/contrib/detectors/gcp"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
@@ -138,28 +139,39 @@ func newMetricsGCMExporter(ctx context.Context, projectID string) (sdkmetric.Exp
 		// mexporter.WithCreateServiceTimeSeries(),
 		// mexporter.WithMonitoredResourceDescription("storage.googleapis.com/Client", []string{"project_id", "location", "cloud_platform", "host_id", "instance_id", "api"}),
 		mexporter.WithFilteredResourceAttributes(func(kv attribute.KeyValue) bool {
-			key := string(kv.Key)
-			// Keep our custom gcp.client.* attributes as labels
-			if strings.HasPrefix(key, "gcp.client.") {
-				return true
-			}
-			// Keep attributes that can later be mapped to the storage.googleapis.com/Client
-			// MonitoredResource schema in Monarch.
-			switch key {
-			case "cloud.platform",
-				"cloud.region",
-				"cloud.availability_zone",
-				"host.id":
-				return true
-			}
-			// Drop the rest to avoid hitting the Cloud Monitoring label limit.
-			return false
+			return keepMetricsResourceAttribute(string(kv.Key))
 		}),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("storage: creating GCM exporter: %w", err)
 	}
 	return exporter, nil
+}
+
+// keepMetricsResourceAttribute reports whether a resource attribute key should
+// be retained for mapping onto the storage.googleapis.com/Client
+// MonitoredResource schema in Monarch.
+func keepMetricsResourceAttribute(key string) bool {
+	if strings.HasPrefix(key, "gcp.client.") {
+		return true
+	}
+	switch key {
+	case "cloud.platform", "cloud.region", "host.id":
+		return true
+	}
+	return false
+}
+
+// metricsResourceAttributes returns the static attributes of every client
+// metric, including a per-client-instance UUID (gcp.client.instance_id) so
+// multiple clients on the same host do not collide on the same time series.
+func metricsResourceAttributes() []attribute.KeyValue {
+	return []attribute.KeyValue{
+		attribute.String("gcp.client.version", internal.Version),
+		attribute.String("gcp.client.service", "storage"),
+		attribute.String("gcp.client.artifact", "cloud.google.com/go/storage"),
+		attribute.String("gcp.client.instance_id", uuid.New().String()),
+	}
 }
 
 // initMetrics initializes clientMetrics with a meter provider and registered exporter.
@@ -191,11 +203,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 		// Static common attributes are defined as Resource Attributes.
 		res, err := resource.New(ctx,
 			resource.WithDetectors(gcp.NewDetector()),
-			resource.WithAttributes(
-				attribute.String("gcp.client.version", internal.Version),
-				attribute.String("gcp.client.service", "storage"),
-				attribute.String("gcp.client.artifact", "cloud.google.com/go/storage"),
-			),
+			resource.WithAttributes(metricsResourceAttributes()...),
 		)
 		if err != nil {
 			return nil, nil, fmt.Errorf("storage: creating metrics resource: %w", err)
@@ -219,7 +227,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 					sdkmetric.Stream{Aggregation: sdkmetric.AggregationExplicitBucketHistogram{Boundaries: latencyHistogramBoundaries()}},
 				),
 				sdkmetric.NewView(
-					sdkmetric.Instrument{Name: "gcp.storage.client.operation.ttfb", Kind: sdkmetric.InstrumentKindHistogram},
+					sdkmetric.Instrument{Name: "gcp.storage.client.ttfb", Kind: sdkmetric.InstrumentKindHistogram},
 					sdkmetric.Stream{Aggregation: sdkmetric.AggregationExplicitBucketHistogram{Boundaries: latencyHistogramBoundaries()}},
 				),
 				sdkmetric.NewView(
@@ -243,11 +251,15 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 					sdkmetric.Stream{Aggregation: sdkmetric.AggregationExplicitBucketHistogram{Boundaries: latencyHistogramBoundaries()}},
 				),
 				sdkmetric.NewView(
-					sdkmetric.Instrument{Name: "gcp.storage.client.gfe.duration", Kind: sdkmetric.InstrumentKindHistogram},
+					sdkmetric.Instrument{Name: "gcp.storage.client.server.duration", Kind: sdkmetric.InstrumentKindHistogram},
 					sdkmetric.Stream{Aggregation: sdkmetric.AggregationExplicitBucketHistogram{Boundaries: latencyHistogramBoundaries()}},
 				),
 				sdkmetric.NewView(
 					sdkmetric.Instrument{Name: "gcp.storage.client.auth.credential_refresh.duration", Kind: sdkmetric.InstrumentKindHistogram},
+					sdkmetric.Stream{Aggregation: sdkmetric.AggregationExplicitBucketHistogram{Boundaries: latencyHistogramBoundaries()}},
+				),
+				sdkmetric.NewView(
+					sdkmetric.Instrument{Name: "gcp.storage.client.stall.duration", Kind: sdkmetric.InstrumentKindHistogram},
 					sdkmetric.Stream{Aggregation: sdkmetric.AggregationExplicitBucketHistogram{Boundaries: latencyHistogramBoundaries()}},
 				),
 			),
@@ -287,7 +299,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 	operations, err := meter.Int64Counter(
 		"gcp.storage.client.operations",
 		metric.WithDescription("Number of GCS client operations"),
-		metric.WithUnit("1"),
+		metric.WithUnit("{operation}"),
 	)
 	if err != nil {
 		return nil, nil, err
@@ -296,7 +308,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 	attempts, err := meter.Int64Counter(
 		"gcp.storage.client.attempts",
 		metric.WithDescription("Number of GCS client attempts"),
-		metric.WithUnit("1"),
+		metric.WithUnit("{attempt}"),
 	)
 	if err != nil {
 		return nil, nil, err
@@ -321,7 +333,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 	}
 
 	ttfb, err := meter.Float64Histogram(
-		"gcp.storage.client.operation.ttfb",
+		"gcp.storage.client.ttfb",
 		metric.WithDescription("Time to first byte of GCS client operations"),
 		metric.WithUnit("s"),
 	)
@@ -332,14 +344,22 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 	errors, err := meter.Int64Counter(
 		"gcp.storage.client.errors",
 		metric.WithDescription("Number of GCS client errors"),
-		metric.WithUnit("1"),
+		metric.WithUnit("{error}"),
+	)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	gfeHeaderMissing, err := meter.Int64Counter(
+		"gcp.storage.client.server.unreached",
+		metric.WithDescription("Number of GCS attempts that received no response from a Cloud Storage server (no server-reported processing time), including attempts that failed before a response was received (see error.type)."),
+		metric.WithUnit("{request}"),
 	)
 	if err != nil {
 		return nil, nil, err
 	}
 
 	var activeRequests metric.Int64UpDownCounter
-	var gfeHeaderMissing metric.Int64Counter
 	var dnsLookupDuration metric.Float64Histogram
 	var tcpConnectDuration metric.Float64Histogram
 	var tlsHandshakeDuration metric.Float64Histogram
@@ -389,16 +409,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 		activeRequests, err = meter.Int64UpDownCounter(
 			"gcp.storage.client.request.active",
 			metric.WithDescription("Number of active GCS client requests"),
-			metric.WithUnit("1"),
-		)
-		if err != nil {
-			return nil, nil, err
-		}
-
-		gfeHeaderMissing, err = meter.Int64Counter(
-			"gcp.storage.client.gfe.header_missing",
-			metric.WithDescription("Number of GCS requests where the X-Goog-Gfe-Service-Time header was missing"),
-			metric.WithUnit("1"),
+			metric.WithUnit("{request}"),
 		)
 		if err != nil {
 			return nil, nil, err
@@ -432,8 +443,8 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 		}
 
 		gfeDuration, err = meter.Float64Histogram(
-			"gcp.storage.client.gfe.duration",
-			metric.WithDescription("GFE proxy processing time"),
+			"gcp.storage.client.server.duration",
+			metric.WithDescription("Server-reported request processing time"),
 			metric.WithUnit("s"),
 		)
 		if err != nil {
