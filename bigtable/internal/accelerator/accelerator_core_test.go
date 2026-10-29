@@ -916,3 +916,66 @@ func TestNewChannel_ForwardsOptsToLiveMetricsFactory(t *testing.T) {
 		t.Errorf("CreateExporterOptions call counts = %v; want second (live) call > 0", recordedBtOptCounts)
 	}
 }
+
+func TestChannel_AppProfileValidation(t *testing.T) {
+	tbl := &mockSessionTableAPI{
+		readRowFn: func(_ context.Context, _ *v2pb.SessionReadRowRequest) (*v2pb.SessionReadRowResponse, error) {
+			return &v2pb.SessionReadRowResponse{}, nil
+		},
+		mutateRowFn: func(_ context.Context, _ *v2pb.SessionMutateRowRequest) (*v2pb.SessionMutateRowResponse, error) {
+			return &v2pb.SessionMutateRowResponse{}, nil
+		},
+	}
+	channel := newTestChannel(t, &mockSessionClient{table: tbl}) // configured with appProfile="ap"
+
+	// 1. Mismatched AppProfileId on MutateRow -> InvalidArgument
+	err := channel.Invoke(context.Background(), v2pb.Bigtable_MutateRow_FullMethodName, &v2pb.MutateRowRequest{
+		TableName:    "projects/p/instances/i/tables/t",
+		AppProfileId: "other-profile",
+		RowKey:       []byte("k"),
+	}, &v2pb.MutateRowResponse{})
+	if status.Code(err) != codes.InvalidArgument {
+		t.Errorf("MutateRow(mismatched app_profile_id) code = %v; want InvalidArgument", status.Code(err))
+	}
+
+	// 2. Matching AppProfileId on MutateRow -> OK
+	if err := channel.Invoke(context.Background(), v2pb.Bigtable_MutateRow_FullMethodName, &v2pb.MutateRowRequest{
+		TableName:    "projects/p/instances/i/tables/t",
+		AppProfileId: "ap",
+		RowKey:       []byte("k"),
+	}, &v2pb.MutateRowResponse{}); err != nil {
+		t.Errorf("MutateRow(matching app_profile_id) unexpected error: %v", err)
+	}
+
+	// 3. Mismatched AppProfileId on ReadRows -> InvalidArgument
+	stream, err := channel.NewStream(context.Background(), nil, v2pb.Bigtable_ReadRows_FullMethodName)
+	if err != nil {
+		t.Fatalf("NewStream: %v", err)
+	}
+	readReq := singleKeyReadRowsRequest("projects/p/instances/i/tables/t", "k")
+	readReq.AppProfileId = "other-profile"
+	if err := stream.SendMsg(readReq); status.Code(err) != codes.InvalidArgument {
+		t.Errorf("ReadRows SendMsg(mismatched app_profile_id) code = %v; want InvalidArgument", status.Code(err))
+	}
+}
+
+func TestValidateSingleRowReadRequest_RowsLimitAndRequestStats(t *testing.T) {
+	negReq := singleKeyReadRowsRequest("projects/p/instances/i/tables/t", "k")
+	negReq.RowsLimit = -5
+	if err := validateSingleRowReadRequest(negReq); status.Code(err) != codes.InvalidArgument {
+		t.Errorf("validateSingleRowReadRequest(RowsLimit=-5) code = %v; want InvalidArgument", status.Code(err))
+	}
+
+	multiLimitReq := singleKeyReadRowsRequest("projects/p/instances/i/tables/t", "k")
+	multiLimitReq.RowsLimit = 10
+	if err := validateSingleRowReadRequest(multiLimitReq); status.Code(err) != codes.Unimplemented {
+		t.Errorf("validateSingleRowReadRequest(RowsLimit=10) code = %v; want Unimplemented", status.Code(err))
+	}
+
+	oneLimitReq := singleKeyReadRowsRequest("projects/p/instances/i/tables/t", "k")
+	oneLimitReq.RowsLimit = 1
+	oneLimitReq.RequestStatsView = v2pb.ReadRowsRequest_REQUEST_STATS_FULL
+	if err := validateSingleRowReadRequest(oneLimitReq); err != nil {
+		t.Errorf("validateSingleRowReadRequest(RowsLimit=1, REQUEST_STATS_FULL) unexpected error: %v", err)
+	}
+}
