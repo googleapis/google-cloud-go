@@ -281,6 +281,14 @@ func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 			}
 			if err == io.EOF {
 				*trailerMD = stream.Trailer()
+				// Validate end-of-stream state only once, after the server
+				// has signalled it is done. The chunkReader is allowed to
+				// sit in rowInProgress / cellInProgress between frames —
+				// per the ReadRowsResponse proto, a row (and even a single
+				// cell value) may span multiple response messages.
+				if err := cr.Close(); err != nil {
+					return err
+				}
 				break
 			}
 			if err != nil {
@@ -344,11 +352,6 @@ func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 			if res.RequestStats != nil && settings.fullReadStatsFunc != nil {
 				stats := makeFullReadStats(res.RequestStats)
 				settings.fullReadStatsFunc(&stats)
-			}
-
-			if err := cr.Close(); err != nil {
-				// No need to prepare for a retry, this is an unretryable error.
-				return err
 			}
 		}
 		return err
