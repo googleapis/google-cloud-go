@@ -26,46 +26,72 @@ import (
 	"golang.org/x/oauth2/google"
 )
 
-func TestEmailFromCredsJSON(t *testing.T) {
+func TestIdentityFromCredsJSON(t *testing.T) {
 	for _, tc := range []struct {
-		name string
-		in   string
-		want string
+		name      string
+		in        string
+		wantEmail string
+		wantType  string
 	}{
 		{
-			name: "service account key",
-			in:   `{"type":"service_account","client_email":"sa@proj.iam.gserviceaccount.com","private_key":"-----BEGIN..."}`,
-			want: "sa@proj.iam.gserviceaccount.com",
+			name:      "service_account_key",
+			in:        `{"type":"service_account","client_email":"sa@proj.iam.gserviceaccount.com","private_key":"-----BEGIN..."}`,
+			wantEmail: "sa@proj.iam.gserviceaccount.com",
+			wantType:  "service_account",
 		},
 		{
-			name: "impersonated",
-			in:   `{"type":"impersonated_service_account","service_account_impersonation_url":"https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/target@proj.iam.gserviceaccount.com:generateAccessToken"}`,
-			want: "target@proj.iam.gserviceaccount.com",
+			name:      "impersonated_service_account",
+			in:        `{"type":"impersonated_service_account","service_account_impersonation_url":"https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/target@proj.iam.gserviceaccount.com:generateAccessToken"}`,
+			wantEmail: "target@proj.iam.gserviceaccount.com",
+			wantType:  "impersonated_service_account",
 		},
 		{
-			name: "workload identity federation",
-			in:   `{"type":"external_account","service_account_impersonation_url":"https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/wif@proj.iam.gserviceaccount.com:generateAccessToken"}`,
-			want: "wif@proj.iam.gserviceaccount.com",
+			name:      "external_account_with_impersonation",
+			in:        `{"type":"external_account","service_account_impersonation_url":"https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/wif@proj.iam.gserviceaccount.com:generateAccessToken"}`,
+			wantEmail: "wif@proj.iam.gserviceaccount.com",
+			wantType:  "external_account",
 		},
 		{
-			name: "authorized user has no local email",
-			in:   `{"type":"authorized_user","client_id":"abc.apps.googleusercontent.com","refresh_token":"x"}`,
-			want: "",
+			name:      "external_account_without_impersonation",
+			in:        `{"type":"external_account","audience":"//iam.googleapis.com/projects/123/locations/global/workloadIdentityPools/p/providers/pr"}`,
+			wantEmail: "",
+			wantType:  "external_account",
 		},
 		{
-			name: "empty",
-			in:   "",
-			want: "",
+			name:      "authorized_user",
+			in:        `{"type":"authorized_user","client_id":"abc.apps.googleusercontent.com","refresh_token":"x"}`,
+			wantEmail: "",
+			wantType:  "authorized_user",
 		},
 		{
-			name: "garbage",
-			in:   "not json",
-			want: "",
+			name:      "external_account_authorized_user",
+			in:        `{"type":"external_account_authorized_user","audience":"//iam.googleapis.com/locations/global/workforcePools/p/providers/pr","refresh_token":"x"}`,
+			wantEmail: "",
+			wantType:  "external_account_authorized_user",
+		},
+		{
+			name:      "gdch_service_account",
+			in:        `{"type":"gdch_service_account","project":"proj","name":"sa"}`,
+			wantEmail: "",
+			wantType:  "gdch_service_account",
+		},
+		{
+			name:      "empty",
+			in:        "",
+			wantEmail: "",
+			wantType:  "",
+		},
+		{
+			name:      "garbage",
+			in:        "not json",
+			wantEmail: "",
+			wantType:  "",
 		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			if got := emailFromCredsJSON([]byte(tc.in)); got != tc.want {
-				t.Errorf("emailFromCredsJSON(%q) = %q, want %q", tc.in, got, tc.want)
+			gotEmail, gotType := identityFromCredsJSON([]byte(tc.in))
+			if gotEmail != tc.wantEmail || gotType != tc.wantType {
+				t.Errorf("identityFromCredsJSON(%q) = (%q, %q), want (%q, %q)", tc.in, gotEmail, gotType, tc.wantEmail, tc.wantType)
 			}
 		})
 	}
@@ -112,11 +138,11 @@ func TestWriteIdentity_WritesDocNextToSocket(t *testing.T) {
 	if err != nil {
 		t.Fatalf("FindDefaultCredentials: %v", err)
 	}
-	principal, err := principalFromCreds(t.Context(), creds)
+	principal, credType, err := identityFromCreds(t.Context(), creds)
 	if err != nil {
-		t.Fatalf("principalFromCreds: %v", err)
+		t.Fatalf("identityFromCreds: %v", err)
 	}
-	if err := writeIdentity(udsPath, principal, scopes); err != nil {
+	if err := writeIdentity(udsPath, principal, credType, scopes); err != nil {
 		t.Fatalf("writeIdentity: %v", err)
 	}
 
@@ -139,6 +165,9 @@ func TestWriteIdentity_WritesDocNextToSocket(t *testing.T) {
 	if doc.Principal != email {
 		t.Errorf("principal = %q, want %q", doc.Principal, email)
 	}
+	if doc.Type != "service_account" {
+		t.Errorf("type = %q, want %q", doc.Type, "service_account")
+	}
 	if len(doc.Scopes) != 1 || doc.Scopes[0] != scopes[0] {
 		t.Errorf("scopes = %v, want %v", doc.Scopes, scopes)
 	}
@@ -148,7 +177,7 @@ func TestWriteIdentity_WritesDocNextToSocket(t *testing.T) {
 	}
 }
 
-func TestPrincipalFromCreds_NoGCEFallthroughForJSONOrNilCreds(t *testing.T) {
+func TestIdentityFromCreds_NoGCEFallthroughForJSONOrNilCreds(t *testing.T) {
 	const gceEmail = "vm-default-sa@gce.iam.gserviceaccount.com"
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Metadata-Flavor", "Google")
@@ -162,43 +191,77 @@ func TestPrincipalFromCreds_NoGCEFallthroughForJSONOrNilCreds(t *testing.T) {
 	t.Setenv("GCE_METADATA_HOST", strings.TrimPrefix(ts.URL, "http://"))
 
 	for _, tc := range []struct {
-		name  string
-		creds *google.Credentials
-		want  string
+		name          string
+		creds         *google.Credentials
+		wantPrincipal string
+		wantType      string
 	}{
 		{
-			name:  "nil credentials do not query GCE metadata",
-			creds: nil,
-			want:  "",
+			name:          "nil_credentials",
+			creds:         nil,
+			wantPrincipal: "",
+			wantType:      "",
 		},
 		{
-			name: "authorized_user JSON does not fall through to GCE metadata",
+			name: "authorized_user_json",
 			creds: &google.Credentials{
 				JSON: []byte(`{"type":"authorized_user","client_id":"abc","refresh_token":"tok"}`),
 			},
-			want: "",
+			wantPrincipal: "",
+			wantType:      "authorized_user",
 		},
 		{
-			name: "direct WIF external_account JSON without impersonation does not fall through to GCE metadata",
+			name: "direct_wif_external_account_json",
 			creds: &google.Credentials{
 				JSON: []byte(`{"type":"external_account","audience":"//iam.googleapis.com/projects/123/locations/global/workloadIdentityPools/p/providers/pr"}`),
 			},
-			want: "",
+			wantPrincipal: "",
+			wantType:      "external_account",
 		},
 		{
-			name:  "GCE metadata credentials without JSON resolve via metadata server",
-			creds: &google.Credentials{},
-			want:  gceEmail,
+			name: "service_account_json",
+			creds: &google.Credentials{
+				JSON: []byte(`{"type":"service_account","client_email":"sa@proj.iam.gserviceaccount.com"}`),
+			},
+			wantPrincipal: "sa@proj.iam.gserviceaccount.com",
+			wantType:      "service_account",
+		},
+		{
+			name:          "gce_metadata_credentials",
+			creds:         &google.Credentials{},
+			wantPrincipal: gceEmail,
+			wantType:      gceMetadataCredType,
 		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			got, err := principalFromCreds(t.Context(), tc.creds)
+			gotPrincipal, gotType, err := identityFromCreds(t.Context(), tc.creds)
 			if err != nil {
-				t.Fatalf("principalFromCreds: %v", err)
+				t.Fatalf("identityFromCreds: %v", err)
 			}
-			if got != tc.want {
-				t.Errorf("principalFromCreds() = %q, want %q", got, tc.want)
+			if gotPrincipal != tc.wantPrincipal || gotType != tc.wantType {
+				t.Errorf("identityFromCreds() = (%q, %q), want (%q, %q)", gotPrincipal, gotType, tc.wantPrincipal, tc.wantType)
 			}
 		})
+	}
+}
+
+func TestIdentityFromCreds_MetadataError(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Metadata-Flavor", "Google")
+		if strings.HasSuffix(r.URL.Path, "/service-accounts/default/email") {
+			http.Error(w, "unavailable", http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer ts.Close()
+	t.Setenv("GCE_METADATA_HOST", strings.TrimPrefix(ts.URL, "http://"))
+
+	gotPrincipal, gotType, err := identityFromCreds(t.Context(), &google.Credentials{})
+	if err == nil {
+		t.Fatal("identityFromCreds() error = nil, want non-nil")
+	}
+	if gotPrincipal != "" || gotType != "" {
+		t.Errorf("identityFromCreds() = (%q, %q), want (\"\", \"\")", gotPrincipal, gotType)
 	}
 }

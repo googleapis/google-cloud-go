@@ -31,23 +31,25 @@ import (
 // principal it did, then deletes it.
 const identityFilename = "identity.json"
 
+// gceMetadataCredType identifies credentials resolved from the GCE/GKE
+// link-local metadata server, which carry no credential JSON document.
+const gceMetadataCredType = "gce_metadata"
+
 // identityDoc is the on-disk handshake payload. It holds only identifiers --
-// the resolved principal (a service-account email) and the scopes the daemon
-// dials with -- never access/refresh tokens or private-key bytes.
+// the resolved principal, credential source type, and effective scopes --
+// never access/refresh tokens or private-key bytes.
 type identityDoc struct {
 	Principal string   `json:"principal"`
+	Type      string   `json:"type"`
 	Scopes    []string `json:"scopes"`
 }
 
-// writeIdentity writes the daemon's resolved principal + scopes to
-// identity.json in the same directory as udsPath. It must be called before the
-// UDS is bound so the file is present by the time the client can connect.
-//
-// An empty principal (e.g. plain user ADC, which exposes no local email) is
-// written as-is; the client treats "no principal" as unverifiable and falls
-// back to its native path rather than risking an identity mismatch.
-func writeIdentity(udsPath, principal string, scopes []string) error {
-	doc := identityDoc{Principal: principal, Scopes: scopes}
+// writeIdentity writes the daemon's resolved principal, credential type, and
+// scopes to identity.json next to udsPath before the UDS is bound.
+// An empty principal or type is written as-is so the client treats unknown
+// identities as unverifiable and falls back to its native path.
+func writeIdentity(udsPath, principal, credType string, scopes []string) error {
+	doc := identityDoc{Principal: principal, Type: credType, Scopes: scopes}
 	b, err := json.Marshal(doc)
 	if err != nil {
 		return fmt.Errorf("marshal identity doc: %w", err)
@@ -64,42 +66,34 @@ func writeIdentity(udsPath, principal string, scopes []string) error {
 	return nil
 }
 
-// principalFromCreds returns the service-account email of already-resolved ADC
-// using only local sources: the credential JSON for keyed creds (SA key,
-// impersonated, Workload Identity Federation) and the link-local metadata
-// server for GCE/GKE creds. It takes pre-resolved credentials so the daemon
-// resolves ADC exactly once (the same creds it dials the channel with) rather
-// than calling FindDefaultCredentials a second time here.
-//
-// Returns "" with a nil error when no local principal source exists (e.g. plain
-// user ADC, which exposes no email). A non-nil error means a resolution source
-// was available but failed -- notably a metadata-server lookup that timed out or
-// errored -- which the caller surfaces as a warning rather than swallowing it.
-func principalFromCreds(ctx context.Context, creds *google.Credentials) (string, error) {
+// identityFromCreds returns the principal email and credential source type of
+// pre-resolved ADC using only local JSON or the link-local GCE metadata server.
+// It returns empty strings with a nil error when no local source exposes an
+// identifier, or a non-nil error if a metadata-server lookup fails.
+func identityFromCreds(ctx context.Context, creds *google.Credentials) (principal, credType string, err error) {
 	if creds == nil {
-		return "", nil
+		return "", "", nil
 	}
 	if len(creds.JSON) > 0 {
-		return emailFromCredsJSON(creds.JSON), nil
+		principal, credType = identityFromCredsJSON(creds.JSON)
+		return principal, credType, nil
 	}
 	if metadata.OnGCE() {
 		// Link-local metadata server; no external egress, no IAM permission.
 		email, err := metadata.EmailWithContext(ctx, "default")
 		if err != nil {
-			return "", fmt.Errorf("resolve principal from metadata server: %w", err)
+			return "", "", fmt.Errorf("resolve principal from metadata server: %w", err)
 		}
-		return strings.TrimSpace(email), nil
+		return strings.TrimSpace(email), gceMetadataCredType, nil
 	}
-	return "", nil
+	return "", "", nil
 }
 
-// emailFromCredsJSON extracts the principal email from ADC credential JSON
-// without any network call. It handles service-account keys (client_email) and
-// impersonated / external-account creds (the target email embedded in the
-// impersonation URL). Returns "" for user creds or unrecognized shapes.
-func emailFromCredsJSON(b []byte) string {
+// identityFromCredsJSON extracts the principal email and credential type from
+// ADC JSON without network calls. Returns empty strings on empty or invalid JSON.
+func identityFromCredsJSON(b []byte) (email, credType string) {
 	if len(b) == 0 {
-		return ""
+		return "", ""
 	}
 	var doc struct {
 		Type                           string `json:"type"`
@@ -107,12 +101,13 @@ func emailFromCredsJSON(b []byte) string {
 		ServiceAccountImpersonationURL string `json:"service_account_impersonation_url"`
 	}
 	if err := json.Unmarshal(b, &doc); err != nil {
-		return ""
+		return "", ""
 	}
-	if doc.ClientEmail != "" {
-		return doc.ClientEmail
+	credType = strings.TrimSpace(doc.Type)
+	if email = strings.TrimSpace(doc.ClientEmail); email != "" {
+		return email, credType
 	}
-	return emailFromImpersonationURL(doc.ServiceAccountImpersonationURL)
+	return strings.TrimSpace(emailFromImpersonationURL(doc.ServiceAccountImpersonationURL)), credType
 }
 
 // emailFromImpersonationURL pulls "<email>" out of a URL shaped like

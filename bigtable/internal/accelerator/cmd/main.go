@@ -149,7 +149,7 @@ func main() {
 	// resolution is bound by a timeout so a hung metadata server can't stall
 	// startup.
 	identityCtx, cancelIdentity := context.WithTimeout(ctx, identityResolveTimeout)
-	principal, err := principalFromCreds(identityCtx, creds)
+	principal, credType, err := identityFromCreds(identityCtx, creds)
 	if err != nil {
 		log.Printf("warning: principal resolution failed: %v", err)
 	}
@@ -157,7 +157,7 @@ func main() {
 	// Record effectiveScopes (not the raw override), so identity.json reflects
 	// the scope the daemon actually dials with rather than an empty list when no
 	// --scopes flag was passed.
-	if err := writeIdentity(*udsPath, principal, effectiveScopes); err != nil {
+	if err := writeIdentity(*udsPath, principal, credType, effectiveScopes); err != nil {
 		log.Printf("warning: failed to write identity document: %v", err)
 	}
 
