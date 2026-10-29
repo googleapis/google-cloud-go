@@ -2258,6 +2258,7 @@ func (q Query) Pipeline() *Pipeline {
 // and an aggregate stage will be added for the aggregations.
 func (aq *AggregationQuery) Pipeline() *Pipeline {
 	p := aq.query.toPipeline()
+	p.tx = aq.tx
 	if p.err != nil {
 		return p
 	}

@@ -371,6 +371,27 @@ func TestTransactionErrors(t *testing.T) {
 		}
 	})
 
+	t.Run("Read after write, with AggregationQuery.Transaction.Pipeline", func(t *testing.T) {
+		srv.reset()
+		srv.addRPC(beginReq, beginRes)
+		srv.addRPC(rollbackReq, &emptypb.Empty{})
+		err := c.RunTransaction(ctx, func(cbCtx context.Context, tx *Transaction) error {
+			if err := tx.Delete(c.Doc("C/a")); err != nil {
+				return err
+			}
+			p := c.Collection("C").NewAggregationQuery().WithCount("n").Transaction(tx).Pipeline()
+			it := p.Execute(cbCtx).Results()
+			it.Stop()
+			return it.err
+		})
+		if err != errReadAfterWrite {
+			t.Errorf("got <%v>, want <%v>", err, errReadAfterWrite)
+		}
+		if !srv.isEmpty() {
+			t.Errorf("Expected %+v requests but not received. srv.reqItems: %+v", len(srv.reqItems), srv.reqItems)
+		}
+	})
+
 	t.Run("Read after write fails even if the user ignores the read's error", func(t *testing.T) {
 		srv.reset()
 		srv.addRPC(beginReq, beginRes)
@@ -923,6 +944,55 @@ func TestTransaction_WithReadOptions_Empty_AfterTransactionReadTime(t *testing.T
 		tx.WithReadOptions()
 		return nil
 	}, ReadOnly, TransactionReadTime(tm))
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestRunTransaction_AggregationQueryPipeline(t *testing.T) {
+	ctx := context.Background()
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	const db = "projects/projectID/databases/(default)"
+	tid := []byte{1}
+
+	beginReq := &pb.BeginTransactionRequest{Database: db}
+	beginRes := &pb.BeginTransactionResponse{Transaction: tid}
+	commitReq := &pb.CommitRequest{Database: db, Transaction: tid}
+
+	wantPipeReq, err := c.Collection("C").NewAggregationQuery().WithCount("n").Transaction(&Transaction{id: tid}).Pipeline().toExecutePipelineRequest()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	srv.addRPC(beginReq, beginRes)
+	srv.addRPC(wantPipeReq, []interface{}{
+		&pb.ExecutePipelineResponse{
+			Results: []*pb.Document{
+				{
+					Fields: map[string]*pb.Value{"n": intval(3)},
+				},
+			},
+			ExecutionTime: aTimestamp,
+		},
+	})
+	srv.addRPC(commitReq, &pb.CommitResponse{CommitTime: aTimestamp})
+
+	err = c.RunTransaction(ctx, func(cbCtx context.Context, tx *Transaction) error {
+		aq := c.Collection("C").NewAggregationQuery().WithCount("n").Transaction(tx)
+		results, err := aq.Pipeline().Execute(cbCtx).Results().GetAll()
+		if err != nil {
+			return err
+		}
+		if len(results) != 1 {
+			t.Fatalf("got %d results, want 1", len(results))
+		}
+		if got := results[0].Data()["n"]; got != int64(3) {
+			t.Fatalf("got n = %v, want 3", got)
+		}
+		return nil
+	})
 	if err != nil {
 		t.Fatal(err)
 	}
