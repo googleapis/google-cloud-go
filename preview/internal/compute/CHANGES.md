@@ -8,8 +8,8 @@
 * Update Compute Engine v1 (preview) API 2026-10-01-preview to revision 20261007
 * Add AliasNetworkEndpoints service and AliasNetworkEndpoint ([1df7814](https://github.com/googleapis/google-cloud-go/commit/1df7814239803763be5d62e98795c8ba93d3b333))
 * Add HaControllerParams and HaControllerInstanceNetworkInterface ([1df7814](https://github.com/googleapis/google-cloud-go/commit/1df7814239803763be5d62e98795c8ba93d3b333))
-* Add ip_collection to AccessConfig and network_attachment and ([1df7814](https://github.com/googleapis/google-cloud-go/commit/1df7814239803763be5d62e98795c8ba93d3b333))
-* Add MEMORY_OPTIMIZED_X5 values to Commitment.Type enum and ([1df7814](https://github.com/googleapis/google-cloud-go/commit/1df7814239803763be5d62e98795c8ba93d3b333))
+* Add ip_collection to AccessConfig and network_attachment ([1df7814](https://github.com/googleapis/google-cloud-go/commit/1df7814239803763be5d62e98795c8ba93d3b333))
+* Add MEMORY_OPTIMIZED_X5 values to Commitment.Type enum ([1df7814](https://github.com/googleapis/google-cloud-go/commit/1df7814239803763be5d62e98795c8ba93d3b333))
 * Add ProtectionTier enum and protection_tier field to Scheduling ([1df7814](https://github.com/googleapis/google-cloud-go/commit/1df7814239803763be5d62e98795c8ba93d3b333))
 
 ### Bug Fixes
