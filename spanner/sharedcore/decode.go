@@ -19,7 +19,6 @@ package sharedcore
 import (
 	"encoding/base64"
 	"math"
-	"strconv"
 	"sync"
 	"time"
 	"unsafe"
@@ -70,7 +69,7 @@ func releaseArenaScratch(s *arenaScratch) {
 // Internal Use Only: DecodeRows transforms a slice of raw protobuf Value rows (produced by Go Spanner's
 // partialResultSetDecoder) into typed SpannerValue rows ready for C-arena serialization.
 func DecodeRows(rawRows [][]*proto3.Value, fields []*sppb.StructType_Field) [][]SpannerValue {
-	if len(rawRows) == 0 {
+	if len(rawRows) == 0 || len(fields) == 0 {
 		return nil
 	}
 	numCols := len(fields)
@@ -241,7 +240,7 @@ func packCellIntoArena(v *proto3.Value, t *sppb.Type, dstIdx int, cells *[]Packe
 		case *proto3.Value_NumberValue:
 			(*cells)[dstIdx] = PackedCell{Kind: int32(KindFloat64), NumBits: math.Float64bits(kv.NumberValue)}
 		case *proto3.Value_StringValue:
-			if f, ok := parseFloatSpecialOrStd(kv.StringValue); ok {
+			if f, ok := parseFloatSpecial(kv.StringValue); ok {
 				(*cells)[dstIdx] = PackedCell{Kind: int32(KindFloat64), NumBits: math.Float64bits(f)}
 			} else {
 				off := len(*arenaBytes)
@@ -256,7 +255,7 @@ func packCellIntoArena(v *proto3.Value, t *sppb.Type, dstIdx int, cells *[]Packe
 		case *proto3.Value_NumberValue:
 			(*cells)[dstIdx] = PackedCell{Kind: int32(KindFloat32), NumBits: math.Float64bits(kv.NumberValue)}
 		case *proto3.Value_StringValue:
-			if f, ok := parseFloatSpecialOrStd(kv.StringValue); ok {
+			if f, ok := parseFloatSpecial(kv.StringValue); ok {
 				(*cells)[dstIdx] = PackedCell{Kind: int32(KindFloat32), NumBits: math.Float64bits(f)}
 			} else {
 				off := len(*arenaBytes)
@@ -423,22 +422,24 @@ func decodeCellValueWithPool(v *proto3.Value, t *sppb.Type, bytePool *[]byte) Sp
 		case *proto3.Value_NumberValue:
 			return SpannerValue{Kind: KindFloat64, Float64Val: kv.NumberValue}
 		case *proto3.Value_StringValue:
-			if f, ok := parseFloatSpecialOrStd(kv.StringValue); ok {
+			if f, ok := parseFloatSpecial(kv.StringValue); ok {
 				return SpannerValue{Kind: KindFloat64, Float64Val: f}
 			}
 			return SpannerValue{Kind: KindString, StrVal: kv.StringValue}
 		}
+		return SpannerValue{Kind: KindNull}
 
 	case sppb.TypeCode_FLOAT32:
 		switch kv := v.Kind.(type) {
 		case *proto3.Value_NumberValue:
 			return SpannerValue{Kind: KindFloat32, Float64Val: kv.NumberValue}
 		case *proto3.Value_StringValue:
-			if f, ok := parseFloatSpecialOrStd(kv.StringValue); ok {
+			if f, ok := parseFloatSpecial(kv.StringValue); ok {
 				return SpannerValue{Kind: KindFloat32, Float64Val: f}
 			}
 			return SpannerValue{Kind: KindString, StrVal: kv.StringValue}
 		}
+		return SpannerValue{Kind: KindNull}
 
 	case sppb.TypeCode_BYTES, sppb.TypeCode_PROTO:
 		if sv, ok := v.Kind.(*proto3.Value_StringValue); ok {
@@ -466,6 +467,7 @@ func decodeCellValueWithPool(v *proto3.Value, t *sppb.Type, bytePool *[]byte) Sp
 			// Fallback to raw string if non-standard base64 so host codec can handle it.
 			return SpannerValue{Kind: KindString, StrVal: s}
 		}
+		return SpannerValue{Kind: KindNull}
 
 	case sppb.TypeCode_TIMESTAMP:
 		if sv, ok := v.Kind.(*proto3.Value_StringValue); ok {
@@ -474,6 +476,7 @@ func decodeCellValueWithPool(v *proto3.Value, t *sppb.Type, bytePool *[]byte) Sp
 			}
 			return SpannerValue{Kind: KindString, StrVal: sv.StringValue}
 		}
+		return SpannerValue{Kind: KindNull}
 
 	case sppb.TypeCode_ARRAY:
 		if lv, ok := v.Kind.(*proto3.Value_ListValue); ok && lv.ListValue != nil {
@@ -488,6 +491,7 @@ func decodeCellValueWithPool(v *proto3.Value, t *sppb.Type, bytePool *[]byte) Sp
 			}
 			return SpannerValue{Kind: KindArray, Children: children}
 		}
+		return SpannerValue{Kind: KindNull}
 
 	case sppb.TypeCode_STRUCT:
 		if lv, ok := v.Kind.(*proto3.Value_ListValue); ok && lv.ListValue != nil {
@@ -506,6 +510,7 @@ func decodeCellValueWithPool(v *proto3.Value, t *sppb.Type, bytePool *[]byte) Sp
 			}
 			return SpannerValue{Kind: KindStruct, Children: children}
 		}
+		return SpannerValue{Kind: KindNull}
 	}
 
 	// Default scalar fallback (STRING, INT64, NUMERIC, DATE, JSON, INTERVAL, UUID, ENUM, etc.)
@@ -521,20 +526,16 @@ func decodeCellValueWithPool(v *proto3.Value, t *sppb.Type, bytePool *[]byte) Sp
 	}
 }
 
-func parseFloatSpecialOrStd(s string) (float64, bool) {
+func parseFloatSpecial(s string) (float64, bool) {
 	switch s {
-	case "Infinity", "+Infinity", "Inf", "+Inf":
+	case "Infinity":
 		return math.Inf(1), true
-	case "-Infinity", "-Inf":
+	case "-Infinity":
 		return math.Inf(-1), true
 	case "NaN":
 		return math.NaN(), true
 	default:
-		f, err := strconv.ParseFloat(s, 64)
-		if err != nil {
-			return 0, false
-		}
-		return f, true
+		return 0, false
 	}
 }
 
@@ -543,7 +544,7 @@ func parseFloatSpecialOrStd(s string) (float64, bool) {
 // falling back to time.Parse(time.RFC3339Nano, s) for non-standard formats.
 func parseRFC3339NanoFast(s string) (int64, int32, bool) {
 	n := len(s)
-	if n >= 20 && n <= 30 && s[4] == '-' && s[7] == '-' && (s[10] == 'T' || s[10] == 't') && s[13] == ':' && s[16] == ':' && (s[n-1] == 'Z' || s[n-1] == 'z') {
+	if n >= 20 && n <= 30 && s[4] == '-' && s[7] == '-' && s[10] == 'T' && s[13] == ':' && s[16] == ':' && s[n-1] == 'Z' {
 		year, ok1 := parseDigits4(s, 0)
 		month, ok2 := parseDigits2(s, 5)
 		day, ok3 := parseDigits2(s, 8)

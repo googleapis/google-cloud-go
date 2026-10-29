@@ -20,7 +20,11 @@ limitations under the License.
 // This package is intended only for Google Cloud client libraries and is not a supported public API.
 package sharedcore
 
-import "google.golang.org/grpc/metadata"
+import (
+	"unsafe"
+
+	"google.golang.org/grpc/metadata"
+)
 
 // Internal Use Only: ValueKind identifies the native representation of a decoded Spanner cell value
 // for zero-parse transfer across the FFI boundary.
@@ -103,6 +107,9 @@ type StreamRequest struct {
 	SkipReadTimestamp       bool
 	FlushOnChunkBoundary    bool
 	MaxUncheckpointedChunks int
+	// ReuseArenaBuffers pools and reuses backing slices for StreamBatch.Cells and
+	// StreamBatch.ArenaBytes across batches; when true, callers must consume or copy
+	// Cells and ArenaBytes before the onBatch callback returns.
 	ReuseArenaBuffers       bool
 	TimeoutMs               int64
 	HasTimeout              bool
@@ -117,6 +124,17 @@ type StreamRequest struct {
 // matching the exact C ABI layout of CSpannerCell. Because it contains no Go
 // pointers, []PackedCell is allocated in a noscan span (zero GC mark overhead)
 // and can be copied across the cgo boundary with a single memcpy.
+//
+// Per-kind field semantics:
+//   - KindNull:      all fields zeroed.
+//   - KindBool:      Flags = 1 (true) or 0 (false).
+//   - KindFloat64:   NumBits = math.Float64bits(v) (matches CSpannerCell.num.f64_val).
+//   - KindFloat32:   NumBits = math.Float64bits(v) (stored as IEEE 754 float64 bits to match CSpannerCell.num.f64_val).
+//   - KindString:    Offset, Len = UTF-8 byte range in ArenaBytes.
+//   - KindBytes:     Offset, Len = decoded binary byte range in ArenaBytes.
+//   - KindTimestamp: NumBits = uint64(unixSeconds) (matches CSpannerCell.num.i64_val), Flags = uint32(nanos) (0..999,999,999).
+//   - KindArray:     Offset = start index in Cells, Len = number of contiguous child cells.
+//   - KindStruct:    Offset = start index in Cells, Len = number of contiguous child field cells.
 type PackedCell struct {
 	Kind    int32
 	Flags   uint32
@@ -125,8 +143,14 @@ type PackedCell struct {
 	Len     uint32
 }
 
+// Compile-time assertion that PackedCell is exactly 24 bytes to match CSpannerCell across FFI memcpy.
+var _ [24 - unsafe.Sizeof(PackedCell{})]byte
+var _ [unsafe.Sizeof(PackedCell{}) - 24]byte
+
 // Internal Use Only: StreamBatch represents a batch of decoded rows and associated stream metadata
 // delivered to the host language binding callback.
+// When StreamRequest.ReuseArenaBuffers is true, Cells and ArenaBytes alias pooled
+// scratch buffers and are only valid until the onBatch callback returns.
 type StreamBatch struct {
 	Rows                [][]SpannerValue
 	Cells               []PackedCell
