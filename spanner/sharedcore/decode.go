@@ -27,6 +27,11 @@ import (
 	proto3 "google.golang.org/protobuf/types/known/structpb"
 )
 
+const (
+	maxPooledCells      = 32768
+	maxPooledArenaBytes = 1024 * 1024
+)
+
 type arenaScratch struct {
 	cells []PackedCell
 	bytes []byte
@@ -47,7 +52,6 @@ func acquireArenaScratch(topCells, estBytes int) *arenaScratch {
 		s.cells = make([]PackedCell, topCells)
 	} else {
 		s.cells = s.cells[:topCells]
-		clear(s.cells)
 	}
 	if cap(s.bytes) < estBytes {
 		s.bytes = make([]byte, 0, estBytes)
@@ -61,7 +65,7 @@ func releaseArenaScratch(s *arenaScratch) {
 	if s == nil {
 		return
 	}
-	if cap(s.cells) <= 32768 && cap(s.bytes) <= 1024*1024 {
+	if cap(s.cells) <= maxPooledCells && cap(s.bytes) <= maxPooledArenaBytes {
 		arenaScratchPool.Put(s)
 	}
 }
@@ -173,6 +177,8 @@ func packRowsIntoArenaInternal(
 	estBytes := row0Bytes*numRows*5/4 + 256
 	if estBytes < 256 {
 		estBytes = 256
+	} else if estBytes > maxPooledArenaBytes {
+		estBytes = maxPooledArenaBytes
 	}
 
 	topCells := numRows * numCols

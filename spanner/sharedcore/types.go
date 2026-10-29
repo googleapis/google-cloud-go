@@ -110,14 +110,14 @@ type StreamRequest struct {
 	// ReuseArenaBuffers pools and reuses backing slices for StreamBatch.Cells and
 	// StreamBatch.ArenaBytes across batches; when true, callers must consume or copy
 	// Cells and ArenaBytes before the onBatch callback returns.
-	ReuseArenaBuffers       bool
-	TimeoutMs               int64
-	HasTimeout              bool
-	UntimedRetryBudgetMs    int64
-	InitialRetryDelayMs     int64
-	MaxRetryDelayMs         int64
-	RetryDelayMultiplier    float64
-	BatchRowSize            int
+	ReuseArenaBuffers    bool
+	TimeoutMs            int64
+	HasTimeout           bool
+	UntimedRetryBudgetMs int64
+	InitialRetryDelayMs  int64
+	MaxRetryDelayMs      int64
+	RetryDelayMultiplier float64
+	BatchRowSize         int
 }
 
 // Internal Use Only: PackedCell is a 24-byte, 8-byte-aligned, pointer-free value descriptor
@@ -130,7 +130,7 @@ type StreamRequest struct {
 //   - KindBool:      Flags = 1 (true) or 0 (false).
 //   - KindFloat64:   NumBits = math.Float64bits(v) (matches CSpannerCell.num.f64_val).
 //   - KindFloat32:   NumBits = math.Float64bits(v) (stored as IEEE 754 float64 bits to match CSpannerCell.num.f64_val).
-//   - KindString:    Offset, Len = UTF-8 byte range in ArenaBytes.
+//   - KindString:    Offset, Len = UTF-8 byte range in ArenaBytes (also emitted as a raw wire-string fallback when FLOAT64/FLOAT32/BYTES/PROTO/TIMESTAMP holds a non-canonical string).
 //   - KindBytes:     Offset, Len = decoded binary byte range in ArenaBytes.
 //   - KindTimestamp: NumBits = uint64(unixSeconds) (matches CSpannerCell.num.i64_val), Flags = uint32(nanos) (0..999,999,999).
 //   - KindArray:     Offset = start index in Cells, Len = number of contiguous child cells.
@@ -143,9 +143,20 @@ type PackedCell struct {
 	Len     uint32
 }
 
-// Compile-time assertion that PackedCell is exactly 24 bytes to match CSpannerCell across FFI memcpy.
-var _ [24 - unsafe.Sizeof(PackedCell{})]byte
-var _ [unsafe.Sizeof(PackedCell{}) - 24]byte
+// Compile-time assertions that PackedCell is exactly 24 bytes and its field offsets match CSpannerCell across FFI memcpy.
+var (
+	_ [24 - unsafe.Sizeof(PackedCell{})]byte
+	_ [unsafe.Sizeof(PackedCell{}) - 24]byte
+	_ [0 - unsafe.Offsetof(PackedCell{}.Kind)]byte
+	_ [4 - unsafe.Offsetof(PackedCell{}.Flags)]byte
+	_ [unsafe.Offsetof(PackedCell{}.Flags) - 4]byte
+	_ [8 - unsafe.Offsetof(PackedCell{}.NumBits)]byte
+	_ [unsafe.Offsetof(PackedCell{}.NumBits) - 8]byte
+	_ [16 - unsafe.Offsetof(PackedCell{}.Offset)]byte
+	_ [unsafe.Offsetof(PackedCell{}.Offset) - 16]byte
+	_ [20 - unsafe.Offsetof(PackedCell{}.Len)]byte
+	_ [unsafe.Offsetof(PackedCell{}.Len) - 20]byte
+)
 
 // Internal Use Only: StreamBatch represents a batch of decoded rows and associated stream metadata
 // delivered to the host language binding callback.

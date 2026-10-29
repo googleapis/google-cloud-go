@@ -466,3 +466,83 @@ func TestDecodeRowsAndPackRowsIntoArena_AllTypeCodes(t *testing.T) {
 		t.Fatalf("arena col 11: %+v", cells[11])
 	}
 }
+
+func TestTimestampCalendarBranches_RaggedRows_ManyCols_AndOutlierRow0Cap(t *testing.T) {
+	tsType := &sppb.Type{Code: sppb.TypeCode_TIMESTAMP}
+	// 1. Jan/Feb (month <= 2), <9 fractional digits (.123Z), 30-day month (April 30),
+	//    leap-year Feb 29 (2024 & 2000), non-leap Feb 28 (2025), and pre-0000 negative era branch.
+	validTSCases := []struct {
+		raw      string
+		wantSec  int64
+		wantNano int32
+	}{
+		{"2026-01-15T00:00:00.123Z", 1768435200, 123000000},
+		{"2024-02-29T23:59:59.5Z", 1709251199, 500000000},
+		{"2000-02-29T00:00:00Z", 951782400, 0},
+		{"2025-02-28T12:00:00Z", 1740744000, 0},
+		{"2026-04-30T06:30:00.000001Z", 1777530600, 1000},
+	}
+	for _, tc := range validTSCases {
+		dv := DecodeCellValue(proto3.NewStringValue(tc.raw), tsType)
+		if dv.Kind != KindTimestamp || dv.SecVal != tc.wantSec || dv.NanoVal != tc.wantNano {
+			t.Fatalf("DecodeCellValue(%q): expected (%d, %d), got %+v", tc.raw, tc.wantSec, tc.wantNano, dv)
+		}
+	}
+	// Invalid calendar dates (non-leap Feb 29, month 13, non-digit frac, bad dot) fall back to KindString.
+	for _, invalidTS := range []string{
+		"2025-02-29T00:00:00Z",
+		"2026-13-01T00:00:00Z",
+		"2026-04-31T00:00:00Z",
+		"2026-07-01T12:34:56.12aZ",
+		"2026-07-01T12:34:56X123Z",
+		"2026-07-01T12:34:56.Z",
+		"202X-07-01T12:34:56Z",
+		"2026-0X-01T12:34:56Z",
+	} {
+		dv := DecodeCellValue(proto3.NewStringValue(invalidTS), tsType)
+		if dv.Kind != KindString || dv.StrVal != invalidTS {
+			t.Fatalf("DecodeCellValue(%q): expected KindString fallback, got %+v", invalidTS, dv)
+		}
+	}
+
+	// 2. >32 columns (exercises heap allocation fallback beyond colTypesStack[32]) and ragged rows.
+	const numManyCols = 35
+	manyFields := make([]*sppb.StructType_Field, numManyCols)
+	fullRow := make([]*proto3.Value, numManyCols+2) // extra trailing cells (> numCols) truncated
+	for i := 0; i < numManyCols; i++ {
+		manyFields[i] = &sppb.StructType_Field{Name: "c", Type: &sppb.Type{Code: sppb.TypeCode_STRING}}
+		fullRow[i] = proto3.NewStringValue("v")
+	}
+	fullRow[numManyCols] = proto3.NewStringValue("ignored-extra-1")
+	fullRow[numManyCols+1] = proto3.NewStringValue("ignored-extra-2")
+	shortRow := []*proto3.Value{proto3.NewStringValue("only-col-0")} // < numCols padded with KindNull
+
+	raggedRows := [][]*proto3.Value{fullRow, shortRow}
+	decRagged := DecodeRows(raggedRows, manyFields)
+	if len(decRagged) != 2 || len(decRagged[0]) != numManyCols || len(decRagged[1]) != numManyCols {
+		t.Fatalf("unexpected ragged DecodeRows dimensions")
+	}
+	if decRagged[1][0].StrVal != "only-col-0" || decRagged[1][numManyCols-1].Kind != KindNull {
+		t.Fatalf("expected short row trailing column to be KindNull, got %+v", decRagged[1][numManyCols-1])
+	}
+	cellsRagged, _, rCount, cCount := PackRowsIntoArena(raggedRows, manyFields)
+	if rCount != 2 || cCount != numManyCols || len(cellsRagged) != 2*numManyCols {
+		t.Fatalf("unexpected ragged PackRowsIntoArena dimensions: r=%d c=%d len=%d", rCount, cCount, len(cellsRagged))
+	}
+	if cellsRagged[numManyCols].Kind != int32(KindString) || cellsRagged[2*numManyCols-1] != (PackedCell{}) {
+		t.Fatalf("expected short row trailing PackedCell to be zeroed, got %+v", cellsRagged[2*numManyCols-1])
+	}
+
+	// 3. Outlier Row 0 estBytes cap at maxPooledArenaBytes (1 MiB).
+	outlierFields := []*sppb.StructType_Field{{Name: "s", Type: &sppb.Type{Code: sppb.TypeCode_STRING}}}
+	outlierRows := make([][]*proto3.Value, 128)
+	outlierRows[0] = []*proto3.Value{proto3.NewStringValue(string(bytes.Repeat([]byte("x"), 16*1024)))} // 16 KB * 128 * 1.25 = 2.5 MiB uncapped
+	for i := 1; i < len(outlierRows); i++ {
+		outlierRows[i] = []*proto3.Value{proto3.NewStringValue("small")}
+	}
+	_, outlierArena, _, _, outlierScratch := packRowsIntoArenaInternal(outlierRows, outlierFields, true)
+	defer releaseArenaScratch(outlierScratch)
+	if cap(outlierArena) > maxPooledArenaBytes {
+		t.Fatalf("expected outlier Row 0 arena capacity to be capped at %d, got %d", maxPooledArenaBytes, cap(outlierArena))
+	}
+}
