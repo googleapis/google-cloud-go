@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.52.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.51.1...documentai/v1.52.0) (2026-10-29)
+
+
+### Features
+
+* Update API sources and regenerate ([#20773](https://github.com/googleapis/google-cloud-go/issues/20773)) ([f5f113a](https://github.com/googleapis/google-cloud-go/commit/f5f113a0432b80df2608417c8a496198f5a0c026))
+
 ## [1.51.1](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.51.0...documentai/v1.51.1) (2026-10-28)
 
 

@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/memorystore/v1.6.1...memorystore/v1.7.0) (2026-10-29)
+
+
+### Features
+
+* Update API sources and regenerate ([#20773](https://github.com/googleapis/google-cloud-go/issues/20773)) ([f5f113a](https://github.com/googleapis/google-cloud-go/commit/f5f113a0432b80df2608417c8a496198f5a0c026))
+
 ## [1.6.1](https://github.com/googleapis/google-cloud-go/compare/memorystore/v1.6.0...memorystore/v1.6.1) (2026-10-28)
 
 

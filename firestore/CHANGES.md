@@ -1,5 +1,12 @@
 # Changes
 
+## [1.29.2](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.29.1...firestore/v1.29.2) (2026-10-29)
+
+
+### Bug Fixes
+
+* Propagate transaction through aggregation pipeline ([#20772](https://github.com/googleapis/google-cloud-go/issues/20772)) ([1ecb8a4](https://github.com/googleapis/google-cloud-go/commit/1ecb8a47576aad192ca68d8961a142631e8cd656))
+
 ## [1.29.1](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.29.0...firestore/v1.29.1) (2026-10-28)
 
 

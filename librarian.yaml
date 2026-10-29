@@ -423,7 +423,7 @@ libraries:
     apis:
       - path: google/cloud/certificatemanager/v1
   - name: ces
-    version: 1.5.1
+    version: 1.6.0
     apis:
       - path: google/cloud/ces/v1
       - path: google/cloud/ces/v1beta
@@ -432,7 +432,7 @@ libraries:
     apis:
       - path: google/cloud/channel/v1
   - name: chat
-    version: 1.10.1
+    version: 1.11.0
     apis:
       - path: google/chat/v1
   - name: chronicle
@@ -651,7 +651,7 @@ libraries:
     apis:
       - path: google/cloud/deploy/v1
   - name: designcenter
-    version: 0.0.0
+    version: 0.1.0
     apis:
       - path: google/cloud/designcenter/v1
     copyright_year: "2026"
@@ -691,7 +691,7 @@ libraries:
           import_path: dlp/apiv2
           no_metadata: true
   - name: documentai
-    version: 1.51.1
+    version: 1.52.0
     apis:
       - path: google/cloud/documentai/v1
       - path: google/cloud/documentai/v1beta3
@@ -740,7 +740,7 @@ libraries:
     apis:
       - path: google/cloud/financialservices/v1
   - name: firestore
-    version: 1.29.1
+    version: 1.29.2
     apis:
       - path: google/firestore/v1
         go:
@@ -775,7 +775,7 @@ libraries:
       - path: google/cloud/functions/v1
       - path: google/cloud/functions/v2beta
   - name: geminidataanalytics
-    version: 1.7.1
+    version: 1.8.0
     apis:
       - path: google/cloud/geminidataanalytics/v1
       - path: google/cloud/geminidataanalytics/v1beta
@@ -961,7 +961,7 @@ libraries:
       - path: google/cloud/memcache/v1
       - path: google/cloud/memcache/v1beta2
   - name: memorystore
-    version: 1.6.1
+    version: 1.7.0
     apis:
       - path: google/cloud/memorystore/v1
       - path: google/cloud/memorystore/v1beta
@@ -976,7 +976,7 @@ libraries:
     apis:
       - path: google/cloud/migrationcenter/v1
   - name: modelarmor
-    version: 1.4.1
+    version: 1.5.0
     apis:
       - path: google/cloud/modelarmor/v1
       - path: google/cloud/modelarmor/v1beta
@@ -1039,7 +1039,7 @@ libraries:
     apis:
       - path: google/cloud/optimization/v1
   - name: oracledatabase
-    version: 1.7.1
+    version: 1.8.0
     apis:
       - path: google/cloud/oracledatabase/v1
   - name: orchestration
@@ -1184,7 +1184,7 @@ libraries:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
   - name: redis
-    version: 1.28.1
+    version: 1.29.0
     apis:
       - path: google/cloud/redis/v1
       - path: google/cloud/redis/cluster/v1
@@ -1301,7 +1301,7 @@ libraries:
     apis:
       - path: google/cloud/shell/v1
   - name: shopping
-    version: 1.18.1
+    version: 1.19.0
     apis:
       - path: google/shopping/css/v1
       - path: google/shopping/merchant/reports/v1
@@ -1381,7 +1381,7 @@ libraries:
       - path: google/cloud/speech/v1
       - path: google/cloud/speech/v1p1beta1
   - name: sql
-    version: 0.4.1
+    version: 0.5.0
     apis:
       - path: google/cloud/sql/v1
       - path: google/cloud/sql/v1beta4
@@ -1474,7 +1474,7 @@ libraries:
       - internal/version.go
     skip_release: true
   - name: video
-    version: 1.35.1
+    version: 1.36.0
     apis:
       - path: google/cloud/video/livestream/v1
       - path: google/cloud/video/transcoder/v1

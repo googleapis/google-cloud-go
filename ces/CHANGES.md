@@ -1,5 +1,12 @@
 # Changes
 
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/ces/v1.5.1...ces/v1.6.0) (2026-10-29)
+
+
+### Features
+
+* Update API sources and regenerate ([#20773](https://github.com/googleapis/google-cloud-go/issues/20773)) ([f5f113a](https://github.com/googleapis/google-cloud-go/commit/f5f113a0432b80df2608417c8a496198f5a0c026))
+
 ## [1.5.1](https://github.com/googleapis/google-cloud-go/compare/ces/v1.5.0...ces/v1.5.1) (2026-10-28)
 
 
