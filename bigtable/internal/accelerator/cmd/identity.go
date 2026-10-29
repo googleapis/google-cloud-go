@@ -75,8 +75,8 @@ func identityFromCreds(ctx context.Context, creds *google.Credentials) (principa
 		return "", "", nil
 	}
 	if len(creds.JSON) > 0 {
-		principal, credType = identityFromCredsJSON(creds.JSON)
-		return principal, credType, nil
+		p, typ := identityFromCredsJSON(creds.JSON)
+		return p, typ, nil
 	}
 	if metadata.OnGCE() {
 		// Link-local metadata server; no external egress, no IAM permission.
@@ -103,11 +103,11 @@ func identityFromCredsJSON(b []byte) (email, credType string) {
 	if err := json.Unmarshal(b, &doc); err != nil {
 		return "", ""
 	}
-	credType = strings.TrimSpace(doc.Type)
-	if email = strings.TrimSpace(doc.ClientEmail); email != "" {
-		return email, credType
+	typ := strings.TrimSpace(doc.Type)
+	if clientEmail := strings.TrimSpace(doc.ClientEmail); clientEmail != "" {
+		return clientEmail, typ
 	}
-	return strings.TrimSpace(emailFromImpersonationURL(doc.ServiceAccountImpersonationURL)), credType
+	return strings.TrimSpace(emailFromImpersonationURL(doc.ServiceAccountImpersonationURL)), typ
 }
 
 // emailFromImpersonationURL pulls "<email>" out of a URL shaped like
