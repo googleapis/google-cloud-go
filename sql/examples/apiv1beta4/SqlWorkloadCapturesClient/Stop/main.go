@@ -40,9 +40,9 @@ func main() {
 	}
 	defer c.Close()
 
-	req := &sqlpb.SqlWorkloadCapturesStopRequest{
+	req := &sqlpb.WorkloadCapturesStopRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/sql/apiv1beta4/sqlpb#SqlWorkloadCapturesStopRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/sql/apiv1beta4/sqlpb#WorkloadCapturesStopRequest.
 	}
 	resp, err := c.Stop(ctx, req)
 	if err != nil {

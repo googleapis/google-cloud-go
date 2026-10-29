@@ -322,19 +322,19 @@ var File_google_cloud_gkebackup_v1_common_proto protoreflect.FileDescriptor
 
 const file_google_cloud_gkebackup_v1_common_proto_rawDesc = "" +
 	"\n" +
-	"&google/cloud/gkebackup/v1/common.proto\x12\x19google.cloud.gkebackup.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"1\n" +
+	"&google/cloud/gkebackup/v1/common.proto\x12\x19google.cloud.gkebackup.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"2\n" +
 	"\n" +
-	"Namespaces\x12#\n" +
+	"Namespaces\x12$\n" +
 	"\n" +
-	"namespaces\x18\x01 \x03(\tB\x03\xe0A\x01R\n" +
-	"namespaces\"L\n" +
-	"\x0eNamespacedName\x12!\n" +
-	"\tnamespace\x18\x01 \x01(\tB\x03\xe0A\x01R\tnamespace\x12\x17\n" +
-	"\x04name\x18\x02 \x01(\tB\x03\xe0A\x01R\x04name\"l\n" +
-	"\x0fNamespacedNames\x12Y\n" +
-	"\x10namespaced_names\x18\x01 \x03(\v2).google.cloud.gkebackup.v1.NamespacedNameB\x03\xe0A\x01R\x0fnamespacedNames\"o\n" +
-	"\rEncryptionKey\x12^\n" +
-	"\x16gcp_kms_encryption_key\x18\x01 \x01(\tB)\xe0A\x01\xfaA#\n" +
+	"namespaces\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\n" +
+	"namespaces\"N\n" +
+	"\x0eNamespacedName\x12\"\n" +
+	"\tnamespace\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\tnamespace\x12\x18\n" +
+	"\x04name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04name\"m\n" +
+	"\x0fNamespacedNames\x12Z\n" +
+	"\x10namespaced_names\x18\x01 \x03(\v2).google.cloud.gkebackup.v1.NamespacedNameB\x04\xe2A\x01\x01R\x0fnamespacedNames\"p\n" +
+	"\rEncryptionKey\x12_\n" +
+	"\x16gcp_kms_encryption_key\x18\x01 \x01(\tB*\xe2A\x01\x01\xfaA#\n" +
 	"!cloudkms.googleapis.com/CryptoKeyR\x13gcpKmsEncryptionKey\"T\n" +
 	"\x0eVolumeTypeEnum\"B\n" +
 	"\n" +

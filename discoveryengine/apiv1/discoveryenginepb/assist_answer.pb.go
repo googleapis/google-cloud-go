@@ -1095,9 +1095,9 @@ var File_google_cloud_discoveryengine_v1_assist_answer_proto protoreflect.FileDe
 
 const file_google_cloud_discoveryengine_v1_assist_answer_proto_rawDesc = "" +
 	"\n" +
-	"3google/cloud/discoveryengine/v1/assist_answer.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xca\x06\n" +
-	"\fAssistAnswer\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12I\n" +
+	"3google/cloud/discoveryengine/v1/assist_answer.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xcb\x06\n" +
+	"\fAssistAnswer\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12I\n" +
 	"\x05state\x18\x02 \x01(\x0e23.google.cloud.discoveryengine.v1.AssistAnswer.StateR\x05state\x12M\n" +
 	"\areplies\x18\x03 \x03(\v23.google.cloud.discoveryengine.v1.AssistAnswer.ReplyR\areplies\x12w\n" +
 	"\x16assist_skipped_reasons\x18\x05 \x03(\x0e2A.google.cloud.discoveryengine.v1.AssistAnswer.AssistSkippedReasonR\x14assistSkippedReasons\x1ax\n" +
@@ -1115,7 +1115,7 @@ const file_google_cloud_discoveryengine_v1_assist_answer_proto_rawDesc = "" +
 	"!ASSIST_SKIPPED_REASON_UNSPECIFIED\x10\x00\x12$\n" +
 	" NON_ASSIST_SEEKING_QUERY_IGNORED\x10\x01\x12\x1d\n" +
 	"\x19CUSTOMER_POLICY_VIOLATION\x10\x02:\xb6\x01\xeaA\xb2\x01\n" +
-	"+discoveryengine.googleapis.com/AssistAnswer\x12\x82\x01projects/{project}/locations/{location}/collections/{collection}/engines/{engine}/sessions/{session}/assistAnswers/{assist_answer}\"\xb6\a\n" +
+	"+discoveryengine.googleapis.com/AssistAnswer\x12\x82\x01projects/{project}/locations/{location}/collections/{collection}/engines/{engine}/sessions/{session}/assistAnswers/{assist_answer}\"\xbe\a\n" +
 	"\x10AssistantContent\x12\x14\n" +
 	"\x04text\x18\x02 \x01(\tH\x00R\x04text\x12Y\n" +
 	"\vinline_data\x18\x03 \x01(\v26.google.cloud.discoveryengine.v1.AssistantContent.BlobH\x00R\n" +
@@ -1123,19 +1123,19 @@ const file_google_cloud_discoveryengine_v1_assist_answer_proto_rawDesc = "" +
 	"\x04file\x18\x04 \x01(\v26.google.cloud.discoveryengine.v1.AssistantContent.FileH\x00R\x04file\x12k\n" +
 	"\x0fexecutable_code\x18\a \x01(\v2@.google.cloud.discoveryengine.v1.AssistantContent.ExecutableCodeH\x00R\x0eexecutableCode\x12{\n" +
 	"\x15code_execution_result\x18\b \x01(\v2E.google.cloud.discoveryengine.v1.AssistantContent.CodeExecutionResultH\x00R\x13codeExecutionResult\x12\x12\n" +
-	"\x04role\x18\x01 \x01(\tR\x04role\x12\x1d\n" +
-	"\athought\x18\x06 \x01(\bB\x03\xe0A\x01R\athought\x1aA\n" +
-	"\x04Blob\x12 \n" +
-	"\tmime_type\x18\x01 \x01(\tB\x03\xe0A\x02R\bmimeType\x12\x17\n" +
-	"\x04data\x18\x02 \x01(\fB\x03\xe0A\x02R\x04data\x1aF\n" +
-	"\x04File\x12 \n" +
-	"\tmime_type\x18\x01 \x01(\tB\x03\xe0A\x02R\bmimeType\x12\x1c\n" +
-	"\afile_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x06fileId\x1a)\n" +
-	"\x0eExecutableCode\x12\x17\n" +
-	"\x04code\x18\x02 \x01(\tB\x03\xe0A\x02R\x04code\x1a\x87\x02\n" +
-	"\x13CodeExecutionResult\x12l\n" +
-	"\aoutcome\x18\x01 \x01(\x0e2M.google.cloud.discoveryengine.v1.AssistantContent.CodeExecutionResult.OutcomeB\x03\xe0A\x02R\aoutcome\x12\x1b\n" +
-	"\x06output\x18\x02 \x01(\tB\x03\xe0A\x01R\x06output\"e\n" +
+	"\x04role\x18\x01 \x01(\tR\x04role\x12\x1e\n" +
+	"\athought\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\athought\x1aC\n" +
+	"\x04Blob\x12!\n" +
+	"\tmime_type\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bmimeType\x12\x18\n" +
+	"\x04data\x18\x02 \x01(\fB\x04\xe2A\x01\x02R\x04data\x1aH\n" +
+	"\x04File\x12!\n" +
+	"\tmime_type\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bmimeType\x12\x1d\n" +
+	"\afile_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06fileId\x1a*\n" +
+	"\x0eExecutableCode\x12\x18\n" +
+	"\x04code\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04code\x1a\x89\x02\n" +
+	"\x13CodeExecutionResult\x12m\n" +
+	"\aoutcome\x18\x01 \x01(\x0e2M.google.cloud.discoveryengine.v1.AssistantContent.CodeExecutionResult.OutcomeB\x04\xe2A\x01\x02R\aoutcome\x12\x1c\n" +
+	"\x06output\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06output\"e\n" +
 	"\aOutcome\x12\x17\n" +
 	"\x13OUTCOME_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +

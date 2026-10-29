@@ -864,6 +864,11 @@ func (c *accessPoliciesRESTClient) CreateAccessPolicy(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta/%v/accessPolicies", req.GetParent())
 
 	params := url.Values{}
@@ -929,6 +934,11 @@ func (c *accessPoliciesRESTClient) GetAccessPolicy(ctx context.Context, req *iam
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -988,6 +998,11 @@ func (c *accessPoliciesRESTClient) UpdateAccessPolicy(ctx context.Context, req *
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAccessPolicy().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta/%v", req.GetAccessPolicy().GetName())
@@ -1052,6 +1067,11 @@ func (c *accessPoliciesRESTClient) UpdateAccessPolicy(ctx context.Context, req *
 func (c *accessPoliciesRESTClient) DeleteAccessPolicy(ctx context.Context, req *iampb.DeleteAccessPolicyRequest, opts ...gax.CallOption) (*DeleteAccessPolicyOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta/%v", req.GetName())
@@ -1137,6 +1157,11 @@ func (c *accessPoliciesRESTClient) ListAccessPolicies(ctx context.Context, req *
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v3beta/%v/accessPolicies", req.GetParent())
 
 		params := url.Values{}
@@ -1216,6 +1241,11 @@ func (c *accessPoliciesRESTClient) SearchAccessPolicyBindings(ctx context.Contex
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v3beta/%v:searchPolicyBindings", req.GetName())
 
 		params := url.Values{}
@@ -1279,6 +1309,11 @@ func (c *accessPoliciesRESTClient) SearchAccessPolicyBindings(ctx context.Contex
 func (c *accessPoliciesRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta/%v", req.GetName())

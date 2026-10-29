@@ -718,6 +718,11 @@ func (c *featuredContentNativeDashboardRESTClient) GetFeaturedContentNativeDashb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -783,6 +788,11 @@ func (c *featuredContentNativeDashboardRESTClient) ListFeaturedContentNativeDash
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/featuredContentNativeDashboards", req.GetParent())
@@ -859,6 +869,11 @@ func (c *featuredContentNativeDashboardRESTClient) InstallFeaturedContentNativeD
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:install", req.GetName())
 
 	params := url.Values{}
@@ -919,6 +934,11 @@ func (c *featuredContentNativeDashboardRESTClient) CancelOperation(ctx context.C
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -958,6 +978,11 @@ func (c *featuredContentNativeDashboardRESTClient) DeleteOperation(ctx context.C
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -995,6 +1020,11 @@ func (c *featuredContentNativeDashboardRESTClient) DeleteOperation(ctx context.C
 func (c *featuredContentNativeDashboardRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1062,6 +1092,11 @@ func (c *featuredContentNativeDashboardRESTClient) ListOperations(ctx context.Co
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

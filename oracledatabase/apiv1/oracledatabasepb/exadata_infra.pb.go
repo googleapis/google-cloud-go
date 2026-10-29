@@ -940,55 +940,55 @@ var File_google_cloud_oracledatabase_v1_exadata_infra_proto protoreflect.FileDes
 
 const file_google_cloud_oracledatabase_v1_exadata_infra_proto_rawDesc = "" +
 	"\n" +
-	"2google/cloud/oracledatabase/v1/exadata_infra.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a+google/cloud/oracledatabase/v1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bgoogle/type/dayofweek.proto\x1a\x17google/type/month.proto\"\xe1\x05\n" +
-	"\x1aCloudExadataInfrastructure\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12+\n" +
-	"\x0fgcp_oracle_zone\x18\b \x01(\tB\x03\xe0A\x01R\rgcpOracleZone\x12*\n" +
-	"\x0eentitlement_id\x18\x04 \x01(\tB\x03\xe0A\x03R\rentitlementId\x12i\n" +
+	"2google/cloud/oracledatabase/v1/exadata_infra.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a+google/cloud/oracledatabase/v1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bgoogle/type/dayofweek.proto\x1a\x17google/type/month.proto\"\xe8\x05\n" +
+	"\x1aCloudExadataInfrastructure\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12,\n" +
+	"\x0fgcp_oracle_zone\x18\b \x01(\tB\x04\xe2A\x01\x01R\rgcpOracleZone\x12+\n" +
+	"\x0eentitlement_id\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\rentitlementId\x12j\n" +
 	"\n" +
-	"properties\x18\x05 \x01(\v2D.google.cloud.oracledatabase.v1.CloudExadataInfrastructurePropertiesB\x03\xe0A\x01R\n" +
-	"properties\x12c\n" +
-	"\x06labels\x18\x06 \x03(\v2F.google.cloud.oracledatabase.v1.CloudExadataInfrastructure.LabelsEntryB\x03\xe0A\x01R\x06labels\x12@\n" +
-	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"properties\x18\x05 \x01(\v2D.google.cloud.oracledatabase.v1.CloudExadataInfrastructurePropertiesB\x04\xe2A\x01\x01R\n" +
+	"properties\x12d\n" +
+	"\x06labels\x18\x06 \x03(\v2F.google.cloud.oracledatabase.v1.CloudExadataInfrastructure.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12A\n" +
+	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"createTime\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\xdb\x01\xeaA\xd7\x01\n" +
-	"8oracledatabase.googleapis.com/CloudExadataInfrastructure\x12bprojects/{project}/locations/{location}/cloudExadataInfrastructures/{cloud_exadata_infrastructure}*\x1bcloudExadataInfrastructures2\x1acloudExadataInfrastructure\"\xae\x10\n" +
-	"$CloudExadataInfrastructureProperties\x12\x17\n" +
-	"\x04ocid\x18\x01 \x01(\tB\x03\xe0A\x03R\x04ocid\x12(\n" +
-	"\rcompute_count\x18\x02 \x01(\x05B\x03\xe0A\x01R\fcomputeCount\x12(\n" +
-	"\rstorage_count\x18\x03 \x01(\x05B\x03\xe0A\x01R\fstorageCount\x126\n" +
-	"\x15total_storage_size_gb\x18\x04 \x01(\x05B\x03\xe0A\x01R\x12totalStorageSizeGb\x12>\n" +
-	"\x19available_storage_size_gb\x18\x05 \x01(\x05B\x03\xe0A\x03R\x16availableStorageSizeGb\x12e\n" +
-	"\x12maintenance_window\x18\x06 \x01(\v21.google.cloud.oracledatabase.v1.MaintenanceWindowB\x03\xe0A\x01R\x11maintenanceWindow\x12e\n" +
-	"\x05state\x18\a \x01(\x0e2J.google.cloud.oracledatabase.v1.CloudExadataInfrastructureProperties.StateB\x03\xe0A\x03R\x05state\x12\x19\n" +
-	"\x05shape\x18\b \x01(\tB\x03\xe0A\x02R\x05shape\x12\x1c\n" +
-	"\aoci_url\x18\t \x01(\tB\x03\xe0A\x03R\x06ociUrl\x12 \n" +
+	"8oracledatabase.googleapis.com/CloudExadataInfrastructure\x12bprojects/{project}/locations/{location}/cloudExadataInfrastructures/{cloud_exadata_infrastructure}*\x1bcloudExadataInfrastructures2\x1acloudExadataInfrastructure\"\xcd\x10\n" +
+	"$CloudExadataInfrastructureProperties\x12\x18\n" +
+	"\x04ocid\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04ocid\x12)\n" +
+	"\rcompute_count\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\fcomputeCount\x12)\n" +
+	"\rstorage_count\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\fstorageCount\x127\n" +
+	"\x15total_storage_size_gb\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\x12totalStorageSizeGb\x12?\n" +
+	"\x19available_storage_size_gb\x18\x05 \x01(\x05B\x04\xe2A\x01\x03R\x16availableStorageSizeGb\x12f\n" +
+	"\x12maintenance_window\x18\x06 \x01(\v21.google.cloud.oracledatabase.v1.MaintenanceWindowB\x04\xe2A\x01\x01R\x11maintenanceWindow\x12f\n" +
+	"\x05state\x18\a \x01(\x0e2J.google.cloud.oracledatabase.v1.CloudExadataInfrastructureProperties.StateB\x04\xe2A\x01\x03R\x05state\x12\x1a\n" +
+	"\x05shape\x18\b \x01(\tB\x04\xe2A\x01\x02R\x05shape\x12\x1d\n" +
+	"\aoci_url\x18\t \x01(\tB\x04\xe2A\x01\x03R\x06ociUrl\x12!\n" +
 	"\tcpu_count\x18\n" +
-	" \x01(\x05B\x03\xe0A\x03R\bcpuCount\x12'\n" +
-	"\rmax_cpu_count\x18\v \x01(\x05B\x03\xe0A\x03R\vmaxCpuCount\x12)\n" +
-	"\x0ememory_size_gb\x18\f \x01(\x05B\x03\xe0A\x03R\fmemorySizeGb\x12'\n" +
-	"\rmax_memory_gb\x18\r \x01(\x05B\x03\xe0A\x03R\vmaxMemoryGb\x129\n" +
-	"\x17db_node_storage_size_gb\x18\x0e \x01(\x05B\x03\xe0A\x03R\x13dbNodeStorageSizeGb\x12@\n" +
-	"\x1bmax_db_node_storage_size_gb\x18\x0f \x01(\x05B\x03\xe0A\x03R\x16maxDbNodeStorageSizeGb\x124\n" +
-	"\x14data_storage_size_tb\x18\x10 \x01(\x01B\x03\xe0A\x03R\x11dataStorageSizeTb\x122\n" +
-	"\x13max_data_storage_tb\x18\x11 \x01(\x01B\x03\xe0A\x03R\x10maxDataStorageTb\x12;\n" +
-	"\x17activated_storage_count\x18\x12 \x01(\x05B\x03\xe0A\x03R\x15activatedStorageCount\x12=\n" +
-	"\x18additional_storage_count\x18\x13 \x01(\x05B\x03\xe0A\x03R\x16additionalStorageCount\x12/\n" +
-	"\x11db_server_version\x18\x14 \x01(\tB\x03\xe0A\x03R\x0fdbServerVersion\x129\n" +
-	"\x16storage_server_version\x18\x15 \x01(\tB\x03\xe0A\x03R\x14storageServerVersion\x12:\n" +
-	"\x17next_maintenance_run_id\x18\x16 \x01(\tB\x03\xe0A\x03R\x14nextMaintenanceRunId\x12Z\n" +
-	"\x19next_maintenance_run_time\x18\x17 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x16nextMaintenanceRunTime\x12k\n" +
-	"\"next_security_maintenance_run_time\x18\x18 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x1enextSecurityMaintenanceRunTime\x12a\n" +
-	"\x11customer_contacts\x18\x19 \x03(\v2/.google.cloud.oracledatabase.v1.CustomerContactB\x03\xe0A\x01R\x10customerContacts\x12H\n" +
-	"\x1emonthly_storage_server_version\x18\x1a \x01(\tB\x03\xe0A\x03R\x1bmonthlyStorageServerVersion\x12>\n" +
-	"\x19monthly_db_server_version\x18\x1b \x01(\tB\x03\xe0A\x03R\x16monthlyDbServerVersion\x12V\n" +
-	"\rcompute_model\x18\x1f \x01(\x0e2,.google.cloud.oracledatabase.v1.ComputeModelB\x03\xe0A\x03R\fcomputeModel\x125\n" +
-	"\x14database_server_type\x18\x1d \x01(\tB\x03\xe0A\x01R\x12databaseServerType\x123\n" +
-	"\x13storage_server_type\x18\x1e \x01(\tB\x03\xe0A\x01R\x11storageServerType\x12\\\n" +
-	"\x0fexascale_config\x18  \x01(\v2..google.cloud.oracledatabase.v1.ExascaleConfigB\x03\xe0A\x03R\x0eexascaleConfig\"\x97\x01\n" +
+	" \x01(\x05B\x04\xe2A\x01\x03R\bcpuCount\x12(\n" +
+	"\rmax_cpu_count\x18\v \x01(\x05B\x04\xe2A\x01\x03R\vmaxCpuCount\x12*\n" +
+	"\x0ememory_size_gb\x18\f \x01(\x05B\x04\xe2A\x01\x03R\fmemorySizeGb\x12(\n" +
+	"\rmax_memory_gb\x18\r \x01(\x05B\x04\xe2A\x01\x03R\vmaxMemoryGb\x12:\n" +
+	"\x17db_node_storage_size_gb\x18\x0e \x01(\x05B\x04\xe2A\x01\x03R\x13dbNodeStorageSizeGb\x12A\n" +
+	"\x1bmax_db_node_storage_size_gb\x18\x0f \x01(\x05B\x04\xe2A\x01\x03R\x16maxDbNodeStorageSizeGb\x125\n" +
+	"\x14data_storage_size_tb\x18\x10 \x01(\x01B\x04\xe2A\x01\x03R\x11dataStorageSizeTb\x123\n" +
+	"\x13max_data_storage_tb\x18\x11 \x01(\x01B\x04\xe2A\x01\x03R\x10maxDataStorageTb\x12<\n" +
+	"\x17activated_storage_count\x18\x12 \x01(\x05B\x04\xe2A\x01\x03R\x15activatedStorageCount\x12>\n" +
+	"\x18additional_storage_count\x18\x13 \x01(\x05B\x04\xe2A\x01\x03R\x16additionalStorageCount\x120\n" +
+	"\x11db_server_version\x18\x14 \x01(\tB\x04\xe2A\x01\x03R\x0fdbServerVersion\x12:\n" +
+	"\x16storage_server_version\x18\x15 \x01(\tB\x04\xe2A\x01\x03R\x14storageServerVersion\x12;\n" +
+	"\x17next_maintenance_run_id\x18\x16 \x01(\tB\x04\xe2A\x01\x03R\x14nextMaintenanceRunId\x12[\n" +
+	"\x19next_maintenance_run_time\x18\x17 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x16nextMaintenanceRunTime\x12l\n" +
+	"\"next_security_maintenance_run_time\x18\x18 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x1enextSecurityMaintenanceRunTime\x12b\n" +
+	"\x11customer_contacts\x18\x19 \x03(\v2/.google.cloud.oracledatabase.v1.CustomerContactB\x04\xe2A\x01\x01R\x10customerContacts\x12I\n" +
+	"\x1emonthly_storage_server_version\x18\x1a \x01(\tB\x04\xe2A\x01\x03R\x1bmonthlyStorageServerVersion\x12?\n" +
+	"\x19monthly_db_server_version\x18\x1b \x01(\tB\x04\xe2A\x01\x03R\x16monthlyDbServerVersion\x12W\n" +
+	"\rcompute_model\x18\x1f \x01(\x0e2,.google.cloud.oracledatabase.v1.ComputeModelB\x04\xe2A\x01\x03R\fcomputeModel\x126\n" +
+	"\x14database_server_type\x18\x1d \x01(\tB\x04\xe2A\x01\x01R\x12databaseServerType\x124\n" +
+	"\x13storage_server_type\x18\x1e \x01(\tB\x04\xe2A\x01\x01R\x11storageServerType\x12]\n" +
+	"\x0fexascale_config\x18  \x01(\v2..google.cloud.oracledatabase.v1.ExascaleConfigB\x04\xe2A\x01\x03R\x0eexascaleConfig\"\x97\x01\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\x10\n" +
 	"\fPROVISIONING\x10\x01\x12\r\n" +
@@ -999,26 +999,26 @@ const file_google_cloud_oracledatabase_v1_exadata_infra_proto_rawDesc = "" +
 	"TERMINATED\x10\x05\x12\n" +
 	"\n" +
 	"\x06FAILED\x10\x06\x12\x1b\n" +
-	"\x17MAINTENANCE_IN_PROGRESS\x10\a\"\x8a\x02\n" +
-	"\x0eExascaleConfig\x126\n" +
-	"\x15total_storage_size_gb\x18\x01 \x01(\x05B\x03\xe0A\x03R\x12totalStorageSizeGb\x12>\n" +
-	"\x19available_storage_size_gb\x18\x02 \x01(\x05B\x03\xe0A\x03R\x16availableStorageSizeGb\x12;\n" +
-	"\x18total_vm_storage_size_gb\x18\x03 \x01(\x05B\x03\xe0A\x03R\x14totalVmStorageSizeGb\x12C\n" +
-	"\x1cavailable_vm_storage_size_gb\x18\x04 \x01(\x05B\x03\xe0A\x03R\x18availableVmStorageSizeGb\"\xb2\x06\n" +
-	"\x11MaintenanceWindow\x12r\n" +
+	"\x17MAINTENANCE_IN_PROGRESS\x10\a\"\x8e\x02\n" +
+	"\x0eExascaleConfig\x127\n" +
+	"\x15total_storage_size_gb\x18\x01 \x01(\x05B\x04\xe2A\x01\x03R\x12totalStorageSizeGb\x12?\n" +
+	"\x19available_storage_size_gb\x18\x02 \x01(\x05B\x04\xe2A\x01\x03R\x16availableStorageSizeGb\x12<\n" +
+	"\x18total_vm_storage_size_gb\x18\x03 \x01(\x05B\x04\xe2A\x01\x03R\x14totalVmStorageSizeGb\x12D\n" +
+	"\x1cavailable_vm_storage_size_gb\x18\x04 \x01(\x05B\x04\xe2A\x01\x03R\x18availableVmStorageSizeGb\"\xbb\x06\n" +
+	"\x11MaintenanceWindow\x12s\n" +
 	"\n" +
-	"preference\x18\x01 \x01(\x0e2M.google.cloud.oracledatabase.v1.MaintenanceWindow.MaintenanceWindowPreferenceB\x03\xe0A\x01R\n" +
-	"preference\x12/\n" +
-	"\x06months\x18\x02 \x03(\x0e2\x12.google.type.MonthB\x03\xe0A\x01R\x06months\x12)\n" +
-	"\x0eweeks_of_month\x18\x03 \x03(\x05B\x03\xe0A\x01R\fweeksOfMonth\x12=\n" +
-	"\fdays_of_week\x18\x04 \x03(\x0e2\x16.google.type.DayOfWeekB\x03\xe0A\x01R\n" +
-	"daysOfWeek\x12%\n" +
-	"\fhours_of_day\x18\x05 \x03(\x05B\x03\xe0A\x01R\n" +
-	"hoursOfDay\x12)\n" +
-	"\x0elead_time_week\x18\x06 \x01(\x05B\x03\xe0A\x01R\fleadTimeWeek\x12h\n" +
-	"\rpatching_mode\x18\a \x01(\x0e2>.google.cloud.oracledatabase.v1.MaintenanceWindow.PatchingModeB\x03\xe0A\x01R\fpatchingMode\x12@\n" +
-	"\x1acustom_action_timeout_mins\x18\b \x01(\x05B\x03\xe0A\x01R\x17customActionTimeoutMins\x12K\n" +
-	" is_custom_action_timeout_enabled\x18\t \x01(\bB\x03\xe0A\x01R\x1cisCustomActionTimeoutEnabled\"v\n" +
+	"preference\x18\x01 \x01(\x0e2M.google.cloud.oracledatabase.v1.MaintenanceWindow.MaintenanceWindowPreferenceB\x04\xe2A\x01\x01R\n" +
+	"preference\x120\n" +
+	"\x06months\x18\x02 \x03(\x0e2\x12.google.type.MonthB\x04\xe2A\x01\x01R\x06months\x12*\n" +
+	"\x0eweeks_of_month\x18\x03 \x03(\x05B\x04\xe2A\x01\x01R\fweeksOfMonth\x12>\n" +
+	"\fdays_of_week\x18\x04 \x03(\x0e2\x16.google.type.DayOfWeekB\x04\xe2A\x01\x01R\n" +
+	"daysOfWeek\x12&\n" +
+	"\fhours_of_day\x18\x05 \x03(\x05B\x04\xe2A\x01\x01R\n" +
+	"hoursOfDay\x12*\n" +
+	"\x0elead_time_week\x18\x06 \x01(\x05B\x04\xe2A\x01\x01R\fleadTimeWeek\x12i\n" +
+	"\rpatching_mode\x18\a \x01(\x0e2>.google.cloud.oracledatabase.v1.MaintenanceWindow.PatchingModeB\x04\xe2A\x01\x01R\fpatchingMode\x12A\n" +
+	"\x1acustom_action_timeout_mins\x18\b \x01(\x05B\x04\xe2A\x01\x01R\x17customActionTimeoutMins\x12L\n" +
+	" is_custom_action_timeout_enabled\x18\t \x01(\bB\x04\xe2A\x01\x01R\x1cisCustomActionTimeoutEnabled\"v\n" +
 	"\x1bMaintenanceWindowPreference\x12-\n" +
 	")MAINTENANCE_WINDOW_PREFERENCE_UNSPECIFIED\x10\x00\x12\x15\n" +
 	"\x11CUSTOM_PREFERENCE\x10\x01\x12\x11\n" +
@@ -1026,14 +1026,14 @@ const file_google_cloud_oracledatabase_v1_exadata_infra_proto_rawDesc = "" +
 	"\fPatchingMode\x12\x1d\n" +
 	"\x19PATCHING_MODE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aROLLING\x10\x01\x12\x0f\n" +
-	"\vNON_ROLLING\x10\x02\"\xab\x02\n" +
-	"2ConfigureExascaleCloudExadataInfrastructureRequest\x12T\n" +
-	"\x04name\x18\x01 \x01(\tB@\xe0A\x02\xfaA:\n" +
-	"8oracledatabase.googleapis.com/CloudExadataInfrastructureR\x04name\x126\n" +
-	"\x15total_storage_size_gb\x18\x02 \x01(\x05B\x03\xe0A\x02R\x12totalStorageSizeGb\x12;\n" +
-	"\x18total_vm_storage_size_gb\x18\x04 \x01(\x05B\x03\xe0A\x01R\x14totalVmStorageSizeGb\x12*\n" +
+	"\vNON_ROLLING\x10\x02\"\xaf\x02\n" +
+	"2ConfigureExascaleCloudExadataInfrastructureRequest\x12U\n" +
+	"\x04name\x18\x01 \x01(\tBA\xe2A\x01\x02\xfaA:\n" +
+	"8oracledatabase.googleapis.com/CloudExadataInfrastructureR\x04name\x127\n" +
+	"\x15total_storage_size_gb\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\x12totalStorageSizeGb\x12<\n" +
+	"\x18total_vm_storage_size_gb\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\x14totalVmStorageSizeGb\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestIdB\xf9\x01\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestIdB\xf9\x01\n" +
 	"\"com.google.cloud.oracledatabase.v1B\x1fCloudExadataInfrastructureProtoP\x01ZJcloud.google.com/go/oracledatabase/apiv1/oracledatabasepb;oracledatabasepb\xaa\x02\x1eGoogle.Cloud.OracleDatabase.V1\xca\x02\x1eGoogle\\Cloud\\OracleDatabase\\V1\xea\x02!Google::Cloud::OracleDatabase::V1b\x06proto3"
 
 var (

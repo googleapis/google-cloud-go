@@ -133,13 +133,14 @@ var File_google_cloud_productregistry_v1_logical_product_variant_proto protorefl
 
 const file_google_cloud_productregistry_v1_logical_product_variant_proto_rawDesc = "" +
 	"\n" +
-	"=google/cloud/productregistry/v1/logical_product_variant.proto\x12\x1fgoogle.cloud.productregistry.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a5google/cloud/productregistry/v1/lifecycle_state.proto\"\x9a\x03\n" +
-	"\x15LogicalProductVariant\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x14\n" +
-	"\x05title\x18\x02 \x01(\tR\x05title\x12]\n" +
-	"\x0flifecycle_state\x18\x03 \x01(\x0e2/.google.cloud.productregistry.v1.LifecycleStateB\x03\xe0A\x03R\x0elifecycleState\x12\x1f\n" +
-	"\breplaced\x18\x04 \x01(\bB\x03\xe0A\x03R\breplaced\x12+\n" +
-	"\vreplacement\x18\x05 \x01(\tB\t\xe0A\x03\xfaA\x03\n" +
+	"=google/cloud/productregistry/v1/logical_product_variant.proto\x12\x1fgoogle.cloud.productregistry.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a5google/cloud/productregistry/v1/lifecycle_state.proto\"\x9e\x03\n" +
+	"\x15LogicalProductVariant\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x14\n" +
+	"\x05title\x18\x02 \x01(\tR\x05title\x12^\n" +
+	"\x0flifecycle_state\x18\x03 \x01(\x0e2/.google.cloud.productregistry.v1.LifecycleStateB\x04\xe2A\x01\x03R\x0elifecycleState\x12 \n" +
+	"\breplaced\x18\x04 \x01(\bB\x04\xe2A\x01\x03R\breplaced\x12,\n" +
+	"\vreplacement\x18\x05 \x01(\tB\n" +
+	"\xe2A\x01\x03\xfaA\x03\n" +
 	"\x01*R\vreplacement:\xa4\x01\xeaA\xa0\x01\n" +
 	"9cloudproductregistry.googleapis.com/LogicalProductVariant\x124logicalProducts/{logical_product}/variants/{variant}*\x16logicalProductVariants2\x15logicalProductVariantB\xfb\x01\n" +
 	"#com.google.cloud.productregistry.v1B\x1aLogicalProductVariantProtoP\x01ZMcloud.google.com/go/productregistry/apiv1/productregistrypb;productregistrypb\xaa\x02\x1fGoogle.Cloud.ProductRegistry.V1\xca\x02\x1fGoogle\\Cloud\\ProductRegistry\\V1\xea\x02\"Google::Cloud::ProductRegistry::V1b\x06proto3"

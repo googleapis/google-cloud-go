@@ -925,45 +925,45 @@ var File_google_cloud_eventarc_v1_trigger_proto protoreflect.FileDescriptor
 
 const file_google_cloud_eventarc_v1_trigger_proto_rawDesc = "" +
 	"\n" +
-	"&google/cloud/eventarc/v1/trigger.proto\x12\x18google.cloud.eventarc.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/eventarc/v1/network_config.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x15google/rpc/code.proto\"\xe4\t\n" +
-	"\aTrigger\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x15\n" +
-	"\x03uid\x18\x02 \x01(\tB\x03\xe0A\x03R\x03uid\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12R\n" +
-	"\revent_filters\x18\b \x03(\v2%.google.cloud.eventarc.v1.EventFilterB\x06\xe0A\x06\xe0A\x02R\feventFilters\x12R\n" +
-	"\x0fservice_account\x18\t \x01(\tB)\xe0A\x01\xfaA#\n" +
-	"!iam.googleapis.com/ServiceAccountR\x0eserviceAccount\x12L\n" +
+	"&google/cloud/eventarc/v1/trigger.proto\x12\x18google.cloud.eventarc.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/eventarc/v1/network_config.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x15google/rpc/code.proto\"\xf2\t\n" +
+	"\aTrigger\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12\x16\n" +
+	"\x03uid\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12Q\n" +
+	"\revent_filters\x18\b \x03(\v2%.google.cloud.eventarc.v1.EventFilterB\x05\xe2A\x02\x06\x02R\feventFilters\x12S\n" +
+	"\x0fservice_account\x18\t \x01(\tB*\xe2A\x01\x01\xfaA#\n" +
+	"!iam.googleapis.com/ServiceAccountR\x0eserviceAccount\x12M\n" +
 	"\vdestination\x18\n" +
-	" \x01(\v2%.google.cloud.eventarc.v1.DestinationB\x03\xe0A\x02R\vdestination\x12F\n" +
-	"\ttransport\x18\v \x01(\v2#.google.cloud.eventarc.v1.TransportB\x03\xe0A\x01R\ttransport\x12J\n" +
-	"\x06labels\x18\f \x03(\v2-.google.cloud.eventarc.v1.Trigger.LabelsEntryB\x03\xe0A\x01R\x06labels\x12\x1d\n" +
-	"\achannel\x18\r \x01(\tB\x03\xe0A\x01R\achannel\x12V\n" +
+	" \x01(\v2%.google.cloud.eventarc.v1.DestinationB\x04\xe2A\x01\x02R\vdestination\x12G\n" +
+	"\ttransport\x18\v \x01(\v2#.google.cloud.eventarc.v1.TransportB\x04\xe2A\x01\x01R\ttransport\x12K\n" +
+	"\x06labels\x18\f \x03(\v2-.google.cloud.eventarc.v1.Trigger.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12\x1e\n" +
+	"\achannel\x18\r \x01(\tB\x04\xe2A\x01\x01R\achannel\x12W\n" +
 	"\n" +
-	"conditions\x18\x0f \x03(\v21.google.cloud.eventarc.v1.Trigger.ConditionsEntryB\x03\xe0A\x03R\n" +
-	"conditions\x12:\n" +
-	"\x17event_data_content_type\x18\x10 \x01(\tB\x03\xe0A\x01R\x14eventDataContentType\x12(\n" +
-	"\rsatisfies_pzs\x18\x13 \x01(\bB\x03\xe0A\x03R\fsatisfiesPzs\x12U\n" +
-	"\fretry_policy\x18\x14 \x01(\v2-.google.cloud.eventarc.v1.Trigger.RetryPolicyB\x03\xe0A\x01R\vretryPolicy\x12\x17\n" +
-	"\x04etag\x18c \x01(\tB\x03\xe0A\x03R\x04etag\x1a5\n" +
-	"\vRetryPolicy\x12&\n" +
-	"\fmax_attempts\x18\x01 \x01(\x05B\x03\xe0A\x01R\vmaxAttempts\x1a9\n" +
+	"conditions\x18\x0f \x03(\v21.google.cloud.eventarc.v1.Trigger.ConditionsEntryB\x04\xe2A\x01\x03R\n" +
+	"conditions\x12;\n" +
+	"\x17event_data_content_type\x18\x10 \x01(\tB\x04\xe2A\x01\x01R\x14eventDataContentType\x12)\n" +
+	"\rsatisfies_pzs\x18\x13 \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzs\x12V\n" +
+	"\fretry_policy\x18\x14 \x01(\v2-.google.cloud.eventarc.v1.Trigger.RetryPolicyB\x04\xe2A\x01\x01R\vretryPolicy\x12\x18\n" +
+	"\x04etag\x18c \x01(\tB\x04\xe2A\x01\x03R\x04etag\x1a6\n" +
+	"\vRetryPolicy\x12'\n" +
+	"\fmax_attempts\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\vmaxAttempts\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1ag\n" +
 	"\x0fConditionsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12>\n" +
 	"\x05value\x18\x02 \x01(\v2(.google.cloud.eventarc.v1.StateConditionR\x05value:\x028\x01:s\xeaAp\n" +
-	"\x1feventarc.googleapis.com/Trigger\x12:projects/{project}/locations/{location}/triggers/{trigger}*\btriggers2\atrigger\"l\n" +
-	"\vEventFilter\x12!\n" +
-	"\tattribute\x18\x01 \x01(\tB\x03\xe0A\x02R\tattribute\x12\x19\n" +
-	"\x05value\x18\x02 \x01(\tB\x03\xe0A\x02R\x05value\x12\x1f\n" +
-	"\boperator\x18\x03 \x01(\tB\x03\xe0A\x01R\boperator\"P\n" +
+	"\x1feventarc.googleapis.com/Trigger\x12:projects/{project}/locations/{location}/triggers/{trigger}*\btriggers2\atrigger\"o\n" +
+	"\vEventFilter\x12\"\n" +
+	"\tattribute\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tattribute\x12\x1a\n" +
+	"\x05value\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05value\x12 \n" +
+	"\boperator\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\boperator\"P\n" +
 	"\x0eStateCondition\x12$\n" +
 	"\x04code\x18\x01 \x01(\x0e2\x10.google.rpc.CodeR\x04code\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\"\xd6\x03\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\"\xd7\x03\n" +
 	"\vDestination\x12A\n" +
 	"\tcloud_run\x18\x01 \x01(\v2\".google.cloud.eventarc.v1.CloudRunH\x00R\bcloudRun\x12Y\n" +
 	"\x0ecloud_function\x18\x02 \x01(\tB0\xfaA-\n" +
@@ -971,29 +971,29 @@ const file_google_cloud_eventarc_v1_trigger_proto_rawDesc = "" +
 	"\x03gke\x18\x03 \x01(\v2\x1d.google.cloud.eventarc.v1.GKEH\x00R\x03gke\x12D\n" +
 	"\bworkflow\x18\x04 \x01(\tB&\xfaA#\n" +
 	"!workflows.googleapis.com/WorkflowH\x00R\bworkflow\x12M\n" +
-	"\rhttp_endpoint\x18\x05 \x01(\v2&.google.cloud.eventarc.v1.HttpEndpointH\x00R\fhttpEndpoint\x12S\n" +
-	"\x0enetwork_config\x18\x06 \x01(\v2'.google.cloud.eventarc.v1.NetworkConfigB\x03\xe0A\x01R\rnetworkConfigB\f\n" +
+	"\rhttp_endpoint\x18\x05 \x01(\v2&.google.cloud.eventarc.v1.HttpEndpointH\x00R\fhttpEndpoint\x12T\n" +
+	"\x0enetwork_config\x18\x06 \x01(\v2'.google.cloud.eventarc.v1.NetworkConfigB\x04\xe2A\x01\x01R\rnetworkConfigB\f\n" +
 	"\n" +
 	"descriptor\"W\n" +
 	"\tTransport\x12:\n" +
 	"\x06pubsub\x18\x01 \x01(\v2 .google.cloud.eventarc.v1.PubsubH\x00R\x06pubsubB\x0e\n" +
-	"\fintermediary\"~\n" +
-	"\bCloudRun\x12<\n" +
-	"\aservice\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
-	"\x1arun.googleapis.com/ServiceR\aservice\x12\x17\n" +
-	"\x04path\x18\x02 \x01(\tB\x03\xe0A\x01R\x04path\x12\x1b\n" +
-	"\x06region\x18\x03 \x01(\tB\x03\xe0A\x02R\x06region\"\xa0\x01\n" +
-	"\x03GKE\x12\x1d\n" +
-	"\acluster\x18\x01 \x01(\tB\x03\xe0A\x02R\acluster\x12\x1f\n" +
-	"\blocation\x18\x02 \x01(\tB\x03\xe0A\x02R\blocation\x12!\n" +
-	"\tnamespace\x18\x03 \x01(\tB\x03\xe0A\x02R\tnamespace\x12\x1d\n" +
-	"\aservice\x18\x04 \x01(\tB\x03\xe0A\x02R\aservice\x12\x17\n" +
-	"\x04path\x18\x05 \x01(\tB\x03\xe0A\x01R\x04path\"L\n" +
-	"\x06Pubsub\x12\x19\n" +
-	"\x05topic\x18\x01 \x01(\tB\x03\xe0A\x01R\x05topic\x12'\n" +
-	"\fsubscription\x18\x02 \x01(\tB\x03\xe0A\x03R\fsubscription\"%\n" +
-	"\fHttpEndpoint\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x02R\x03uriB\xa1\x05\xeaAk\n" +
+	"\fintermediary\"\x81\x01\n" +
+	"\bCloudRun\x12=\n" +
+	"\aservice\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\n" +
+	"\x1arun.googleapis.com/ServiceR\aservice\x12\x18\n" +
+	"\x04path\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04path\x12\x1c\n" +
+	"\x06region\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x06region\"\xa5\x01\n" +
+	"\x03GKE\x12\x1e\n" +
+	"\acluster\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\acluster\x12 \n" +
+	"\blocation\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\blocation\x12\"\n" +
+	"\tnamespace\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\tnamespace\x12\x1e\n" +
+	"\aservice\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\aservice\x12\x18\n" +
+	"\x04path\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x04path\"N\n" +
+	"\x06Pubsub\x12\x1a\n" +
+	"\x05topic\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x05topic\x12(\n" +
+	"\fsubscription\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\fsubscription\"&\n" +
+	"\fHttpEndpoint\x12\x16\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03uriB\xa1\x05\xeaAk\n" +
 	"+cloudfunctions.googleapis.com/CloudFunction\x12<projects/{project}/locations/{location}/functions/{function}\xeaAY\n" +
 	"!iam.googleapis.com/ServiceAccount\x124projects/{project}/serviceAccounts/{service_account}\xeaA\x1f\n" +
 	"\x1arun.googleapis.com/Service\x12\x01*\xeaAa\n" +

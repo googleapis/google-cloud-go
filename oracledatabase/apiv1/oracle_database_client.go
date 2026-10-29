@@ -89,6 +89,10 @@ type CallOptions struct {
 	GetOdbSubnet                                []gax.CallOption
 	CreateOdbSubnet                             []gax.CallOption
 	DeleteOdbSubnet                             []gax.CallOption
+	ListOdbDnsZones                             []gax.CallOption
+	GetOdbDnsZone                               []gax.CallOption
+	CreateOdbDnsZone                            []gax.CallOption
+	DeleteOdbDnsZone                            []gax.CallOption
 	ListExadbVmClusters                         []gax.CallOption
 	GetExadbVmCluster                           []gax.CallOption
 	CreateExadbVmCluster                        []gax.CallOption
@@ -462,6 +466,38 @@ func defaultCallOptions() *CallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		DeleteOdbSubnet: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListOdbDnsZones: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetOdbDnsZone: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateOdbDnsZone: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteOdbDnsZone: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		ListExadbVmClusters: []gax.CallOption{
@@ -1116,6 +1152,36 @@ func defaultRESTCallOptions() *CallOptions {
 		DeleteOdbSubnet: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		ListOdbDnsZones: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		GetOdbDnsZone: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		CreateOdbDnsZone: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteOdbDnsZone: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ListExadbVmClusters: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -1516,6 +1582,12 @@ type internalClient interface {
 	CreateOdbSubnetOperation(name string) *CreateOdbSubnetOperation
 	DeleteOdbSubnet(context.Context, *oracledatabasepb.DeleteOdbSubnetRequest, ...gax.CallOption) (*DeleteOdbSubnetOperation, error)
 	DeleteOdbSubnetOperation(name string) *DeleteOdbSubnetOperation
+	ListOdbDnsZones(context.Context, *oracledatabasepb.ListOdbDnsZonesRequest, ...gax.CallOption) *OdbDnsZoneIterator
+	GetOdbDnsZone(context.Context, *oracledatabasepb.GetOdbDnsZoneRequest, ...gax.CallOption) (*oracledatabasepb.OdbDnsZone, error)
+	CreateOdbDnsZone(context.Context, *oracledatabasepb.CreateOdbDnsZoneRequest, ...gax.CallOption) (*CreateOdbDnsZoneOperation, error)
+	CreateOdbDnsZoneOperation(name string) *CreateOdbDnsZoneOperation
+	DeleteOdbDnsZone(context.Context, *oracledatabasepb.DeleteOdbDnsZoneRequest, ...gax.CallOption) (*DeleteOdbDnsZoneOperation, error)
+	DeleteOdbDnsZoneOperation(name string) *DeleteOdbDnsZoneOperation
 	ListExadbVmClusters(context.Context, *oracledatabasepb.ListExadbVmClustersRequest, ...gax.CallOption) *ExadbVmClusterIterator
 	GetExadbVmCluster(context.Context, *oracledatabasepb.GetExadbVmClusterRequest, ...gax.CallOption) (*oracledatabasepb.ExadbVmCluster, error)
 	CreateExadbVmCluster(context.Context, *oracledatabasepb.CreateExadbVmClusterRequest, ...gax.CallOption) (*CreateExadbVmClusterOperation, error)
@@ -1937,6 +2009,38 @@ func (c *Client) DeleteOdbSubnet(ctx context.Context, req *oracledatabasepb.Dele
 // The name must be that of a previously created DeleteOdbSubnetOperation, possibly from a different process.
 func (c *Client) DeleteOdbSubnetOperation(name string) *DeleteOdbSubnetOperation {
 	return c.internalClient.DeleteOdbSubnetOperation(name)
+}
+
+// ListOdbDnsZones lists all the ODB DNS Zones in a given ODB Network.
+func (c *Client) ListOdbDnsZones(ctx context.Context, req *oracledatabasepb.ListOdbDnsZonesRequest, opts ...gax.CallOption) *OdbDnsZoneIterator {
+	return c.internalClient.ListOdbDnsZones(ctx, req, opts...)
+}
+
+// GetOdbDnsZone gets details of a single ODB DNS Zone.
+func (c *Client) GetOdbDnsZone(ctx context.Context, req *oracledatabasepb.GetOdbDnsZoneRequest, opts ...gax.CallOption) (*oracledatabasepb.OdbDnsZone, error) {
+	return c.internalClient.GetOdbDnsZone(ctx, req, opts...)
+}
+
+// CreateOdbDnsZone creates a new ODB DNS Zone in a given ODB Network.
+func (c *Client) CreateOdbDnsZone(ctx context.Context, req *oracledatabasepb.CreateOdbDnsZoneRequest, opts ...gax.CallOption) (*CreateOdbDnsZoneOperation, error) {
+	return c.internalClient.CreateOdbDnsZone(ctx, req, opts...)
+}
+
+// CreateOdbDnsZoneOperation returns a new CreateOdbDnsZoneOperation from a given name.
+// The name must be that of a previously created CreateOdbDnsZoneOperation, possibly from a different process.
+func (c *Client) CreateOdbDnsZoneOperation(name string) *CreateOdbDnsZoneOperation {
+	return c.internalClient.CreateOdbDnsZoneOperation(name)
+}
+
+// DeleteOdbDnsZone deletes a single ODB DNS Zone.
+func (c *Client) DeleteOdbDnsZone(ctx context.Context, req *oracledatabasepb.DeleteOdbDnsZoneRequest, opts ...gax.CallOption) (*DeleteOdbDnsZoneOperation, error) {
+	return c.internalClient.DeleteOdbDnsZone(ctx, req, opts...)
+}
+
+// DeleteOdbDnsZoneOperation returns a new DeleteOdbDnsZoneOperation from a given name.
+// The name must be that of a previously created DeleteOdbDnsZoneOperation, possibly from a different process.
+func (c *Client) DeleteOdbDnsZoneOperation(name string) *DeleteOdbDnsZoneOperation {
+	return c.internalClient.DeleteOdbDnsZoneOperation(name)
 }
 
 // ListExadbVmClusters lists all the Exadb (Exascale) VM Clusters for the given project and
@@ -2405,6 +2509,10 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetOdbSubnet = append(client.CallOptions.GetOdbSubnet, gax.WithClientMetrics(metrics))
 		client.CallOptions.CreateOdbSubnet = append(client.CallOptions.CreateOdbSubnet, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteOdbSubnet = append(client.CallOptions.DeleteOdbSubnet, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOdbDnsZones = append(client.CallOptions.ListOdbDnsZones, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOdbDnsZone = append(client.CallOptions.GetOdbDnsZone, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateOdbDnsZone = append(client.CallOptions.CreateOdbDnsZone, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOdbDnsZone = append(client.CallOptions.DeleteOdbDnsZone, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListExadbVmClusters = append(client.CallOptions.ListExadbVmClusters, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetExadbVmCluster = append(client.CallOptions.GetExadbVmCluster, gax.WithClientMetrics(metrics))
 		client.CallOptions.CreateExadbVmCluster = append(client.CallOptions.CreateExadbVmCluster, gax.WithClientMetrics(metrics))
@@ -2503,6 +2611,10 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetOdbSubnet = append(client.CallOptions.GetOdbSubnet, gax.WithClientTracing(tracing))
 		client.CallOptions.CreateOdbSubnet = append(client.CallOptions.CreateOdbSubnet, gax.WithClientTracing(tracing))
 		client.CallOptions.DeleteOdbSubnet = append(client.CallOptions.DeleteOdbSubnet, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOdbDnsZones = append(client.CallOptions.ListOdbDnsZones, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOdbDnsZone = append(client.CallOptions.GetOdbDnsZone, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateOdbDnsZone = append(client.CallOptions.CreateOdbDnsZone, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOdbDnsZone = append(client.CallOptions.DeleteOdbDnsZone, gax.WithClientTracing(tracing))
 		client.CallOptions.ListExadbVmClusters = append(client.CallOptions.ListExadbVmClusters, gax.WithClientTracing(tracing))
 		client.CallOptions.GetExadbVmCluster = append(client.CallOptions.GetExadbVmCluster, gax.WithClientTracing(tracing))
 		client.CallOptions.CreateExadbVmCluster = append(client.CallOptions.CreateExadbVmCluster, gax.WithClientTracing(tracing))
@@ -2602,6 +2714,10 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetOdbSubnet = append(client.CallOptions.GetOdbSubnet, gax.WithClientLogging(logging))
 		client.CallOptions.CreateOdbSubnet = append(client.CallOptions.CreateOdbSubnet, gax.WithClientLogging(logging))
 		client.CallOptions.DeleteOdbSubnet = append(client.CallOptions.DeleteOdbSubnet, gax.WithClientLogging(logging))
+		client.CallOptions.ListOdbDnsZones = append(client.CallOptions.ListOdbDnsZones, gax.WithClientLogging(logging))
+		client.CallOptions.GetOdbDnsZone = append(client.CallOptions.GetOdbDnsZone, gax.WithClientLogging(logging))
+		client.CallOptions.CreateOdbDnsZone = append(client.CallOptions.CreateOdbDnsZone, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOdbDnsZone = append(client.CallOptions.DeleteOdbDnsZone, gax.WithClientLogging(logging))
 		client.CallOptions.ListExadbVmClusters = append(client.CallOptions.ListExadbVmClusters, gax.WithClientLogging(logging))
 		client.CallOptions.GetExadbVmCluster = append(client.CallOptions.GetExadbVmCluster, gax.WithClientLogging(logging))
 		client.CallOptions.CreateExadbVmCluster = append(client.CallOptions.CreateExadbVmCluster, gax.WithClientLogging(logging))
@@ -2794,6 +2910,10 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetOdbSubnet = append(callOpts.GetOdbSubnet, gax.WithClientMetrics(metrics))
 		callOpts.CreateOdbSubnet = append(callOpts.CreateOdbSubnet, gax.WithClientMetrics(metrics))
 		callOpts.DeleteOdbSubnet = append(callOpts.DeleteOdbSubnet, gax.WithClientMetrics(metrics))
+		callOpts.ListOdbDnsZones = append(callOpts.ListOdbDnsZones, gax.WithClientMetrics(metrics))
+		callOpts.GetOdbDnsZone = append(callOpts.GetOdbDnsZone, gax.WithClientMetrics(metrics))
+		callOpts.CreateOdbDnsZone = append(callOpts.CreateOdbDnsZone, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOdbDnsZone = append(callOpts.DeleteOdbDnsZone, gax.WithClientMetrics(metrics))
 		callOpts.ListExadbVmClusters = append(callOpts.ListExadbVmClusters, gax.WithClientMetrics(metrics))
 		callOpts.GetExadbVmCluster = append(callOpts.GetExadbVmCluster, gax.WithClientMetrics(metrics))
 		callOpts.CreateExadbVmCluster = append(callOpts.CreateExadbVmCluster, gax.WithClientMetrics(metrics))
@@ -2892,6 +3012,10 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetOdbSubnet = append(callOpts.GetOdbSubnet, gax.WithClientTracing(tracing))
 		callOpts.CreateOdbSubnet = append(callOpts.CreateOdbSubnet, gax.WithClientTracing(tracing))
 		callOpts.DeleteOdbSubnet = append(callOpts.DeleteOdbSubnet, gax.WithClientTracing(tracing))
+		callOpts.ListOdbDnsZones = append(callOpts.ListOdbDnsZones, gax.WithClientTracing(tracing))
+		callOpts.GetOdbDnsZone = append(callOpts.GetOdbDnsZone, gax.WithClientTracing(tracing))
+		callOpts.CreateOdbDnsZone = append(callOpts.CreateOdbDnsZone, gax.WithClientTracing(tracing))
+		callOpts.DeleteOdbDnsZone = append(callOpts.DeleteOdbDnsZone, gax.WithClientTracing(tracing))
 		callOpts.ListExadbVmClusters = append(callOpts.ListExadbVmClusters, gax.WithClientTracing(tracing))
 		callOpts.GetExadbVmCluster = append(callOpts.GetExadbVmCluster, gax.WithClientTracing(tracing))
 		callOpts.CreateExadbVmCluster = append(callOpts.CreateExadbVmCluster, gax.WithClientTracing(tracing))
@@ -2991,6 +3115,10 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetOdbSubnet = append(callOpts.GetOdbSubnet, gax.WithClientLogging(logging))
 		callOpts.CreateOdbSubnet = append(callOpts.CreateOdbSubnet, gax.WithClientLogging(logging))
 		callOpts.DeleteOdbSubnet = append(callOpts.DeleteOdbSubnet, gax.WithClientLogging(logging))
+		callOpts.ListOdbDnsZones = append(callOpts.ListOdbDnsZones, gax.WithClientLogging(logging))
+		callOpts.GetOdbDnsZone = append(callOpts.GetOdbDnsZone, gax.WithClientLogging(logging))
+		callOpts.CreateOdbDnsZone = append(callOpts.CreateOdbDnsZone, gax.WithClientLogging(logging))
+		callOpts.DeleteOdbDnsZone = append(callOpts.DeleteOdbDnsZone, gax.WithClientLogging(logging))
 		callOpts.ListExadbVmClusters = append(callOpts.ListExadbVmClusters, gax.WithClientLogging(logging))
 		callOpts.GetExadbVmCluster = append(callOpts.GetExadbVmCluster, gax.WithClientLogging(logging))
 		callOpts.CreateExadbVmCluster = append(callOpts.CreateExadbVmCluster, gax.WithClientLogging(logging))
@@ -4431,6 +4559,130 @@ func (c *gRPCClient) DeleteOdbSubnet(ctx context.Context, req *oracledatabasepb.
 		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
 	}
 	return &DeleteOdbSubnetOperation{
+		lro: lro,
+	}, nil
+}
+
+func (c *gRPCClient) ListOdbDnsZones(ctx context.Context, req *oracledatabasepb.ListOdbDnsZonesRequest, opts ...gax.CallOption) *OdbDnsZoneIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/ListOdbDnsZones")
+	}
+	opts = append((*c.CallOptions).ListOdbDnsZones[0:len((*c.CallOptions).ListOdbDnsZones):len((*c.CallOptions).ListOdbDnsZones)], opts...)
+	it := &OdbDnsZoneIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.OdbDnsZone, string, error) {
+		resp := &oracledatabasepb.ListOdbDnsZonesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListOdbDnsZones, req, settings.GRPC, c.logger, "ListOdbDnsZones")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOdbDnsZones(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetOdbDnsZone(ctx context.Context, req *oracledatabasepb.GetOdbDnsZoneRequest, opts ...gax.CallOption) (*oracledatabasepb.OdbDnsZone, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/GetOdbDnsZone")
+	}
+	opts = append((*c.CallOptions).GetOdbDnsZone[0:len((*c.CallOptions).GetOdbDnsZone):len((*c.CallOptions).GetOdbDnsZone)], opts...)
+	var resp *oracledatabasepb.OdbDnsZone
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetOdbDnsZone, req, settings.GRPC, c.logger, "GetOdbDnsZone")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CreateOdbDnsZone(ctx context.Context, req *oracledatabasepb.CreateOdbDnsZoneRequest, opts ...gax.CallOption) (*CreateOdbDnsZoneOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/CreateOdbDnsZone")
+	}
+	opts = append((*c.CallOptions).CreateOdbDnsZone[0:len((*c.CallOptions).CreateOdbDnsZone):len((*c.CallOptions).CreateOdbDnsZone)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateOdbDnsZone, req, settings.GRPC, c.logger, "CreateOdbDnsZone")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.CreateOdbDnsZoneOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &CreateOdbDnsZoneOperation{
+		lro: lro,
+	}, nil
+}
+
+func (c *gRPCClient) DeleteOdbDnsZone(ctx context.Context, req *oracledatabasepb.DeleteOdbDnsZoneRequest, opts ...gax.CallOption) (*DeleteOdbDnsZoneOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/DeleteOdbDnsZone")
+	}
+	opts = append((*c.CallOptions).DeleteOdbDnsZone[0:len((*c.CallOptions).DeleteOdbDnsZone):len((*c.CallOptions).DeleteOdbDnsZone)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteOdbDnsZone, req, settings.GRPC, c.logger, "DeleteOdbDnsZone")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.DeleteOdbDnsZoneOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &DeleteOdbDnsZoneOperation{
 		lro: lro,
 	}, nil
 }
@@ -5984,6 +6236,11 @@ func (c *restClient) ListCloudExadataInfrastructures(ctx context.Context, req *o
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/cloudExadataInfrastructures", req.GetParent())
 
 		params := url.Values{}
@@ -6055,6 +6312,11 @@ func (c *restClient) GetCloudExadataInfrastructure(ctx context.Context, req *ora
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -6114,6 +6376,11 @@ func (c *restClient) CreateCloudExadataInfrastructure(ctx context.Context, req *
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/cloudExadataInfrastructures", req.GetParent())
@@ -6179,6 +6446,11 @@ func (c *restClient) CreateCloudExadataInfrastructure(ctx context.Context, req *
 func (c *restClient) DeleteCloudExadataInfrastructure(ctx context.Context, req *oracledatabasepb.DeleteCloudExadataInfrastructureRequest, opts ...gax.CallOption) (*DeleteCloudExadataInfrastructureOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -6252,6 +6524,11 @@ func (c *restClient) ConfigureExascaleCloudExadataInfrastructure(ctx context.Con
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:configureExascale", req.GetName())
@@ -6328,6 +6605,11 @@ func (c *restClient) ListCloudVmClusters(ctx context.Context, req *oracledatabas
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/cloudVmClusters", req.GetParent())
 
 		params := url.Values{}
@@ -6396,6 +6678,11 @@ func (c *restClient) GetCloudVmCluster(ctx context.Context, req *oracledatabasep
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -6455,6 +6742,11 @@ func (c *restClient) CreateCloudVmCluster(ctx context.Context, req *oracledataba
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/cloudVmClusters", req.GetParent())
@@ -6520,6 +6812,11 @@ func (c *restClient) CreateCloudVmCluster(ctx context.Context, req *oracledataba
 func (c *restClient) DeleteCloudVmCluster(ctx context.Context, req *oracledatabasepb.DeleteCloudVmClusterRequest, opts ...gax.CallOption) (*DeleteCloudVmClusterOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -6602,6 +6899,11 @@ func (c *restClient) ListEntitlements(ctx context.Context, req *oracledatabasepb
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/entitlements", req.GetParent())
 
 		params := url.Values{}
@@ -6678,6 +6980,11 @@ func (c *restClient) ListDbServers(ctx context.Context, req *oracledatabasepb.Li
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/dbServers", req.GetParent())
@@ -6758,6 +7065,11 @@ func (c *restClient) ListDbNodes(ctx context.Context, req *oracledatabasepb.List
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/dbNodes", req.GetParent())
 
 		params := url.Values{}
@@ -6835,6 +7147,11 @@ func (c *restClient) ListGiVersions(ctx context.Context, req *oracledatabasepb.L
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/giVersions", req.GetParent())
@@ -6919,6 +7236,11 @@ func (c *restClient) ListMinorVersions(ctx context.Context, req *oracledatabasep
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/minorVersions", req.GetParent())
 
 		params := url.Values{}
@@ -6998,6 +7320,11 @@ func (c *restClient) ListDbSystemShapes(ctx context.Context, req *oracledatabase
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/dbSystemShapes", req.GetParent())
@@ -7081,6 +7408,11 @@ func (c *restClient) ListAutonomousDatabases(ctx context.Context, req *oracledat
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/autonomousDatabases", req.GetParent())
 
 		params := url.Values{}
@@ -7152,6 +7484,11 @@ func (c *restClient) GetAutonomousDatabase(ctx context.Context, req *oracledatab
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -7211,6 +7548,11 @@ func (c *restClient) CreateAutonomousDatabase(ctx context.Context, req *oracleda
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/autonomousDatabases", req.GetParent())
@@ -7285,6 +7627,11 @@ func (c *restClient) UpdateAutonomousDatabase(ctx context.Context, req *oracleda
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAutonomousDatabase().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetAutonomousDatabase().GetName())
 
 	params := url.Values{}
@@ -7354,6 +7701,11 @@ func (c *restClient) UpdateAutonomousDatabase(ctx context.Context, req *oracleda
 func (c *restClient) DeleteAutonomousDatabase(ctx context.Context, req *oracledatabasepb.DeleteAutonomousDatabaseRequest, opts ...gax.CallOption) (*DeleteAutonomousDatabaseOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -7426,6 +7778,11 @@ func (c *restClient) RestoreAutonomousDatabase(ctx context.Context, req *oracled
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:restore", req.GetName())
 
 	params := url.Values{}
@@ -7491,6 +7848,11 @@ func (c *restClient) GenerateAutonomousDatabaseWallet(ctx context.Context, req *
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:generateWallet", req.GetName())
@@ -7559,6 +7921,11 @@ func (c *restClient) ListAutonomousDbVersions(ctx context.Context, req *oracleda
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/autonomousDbVersions", req.GetParent())
@@ -7637,6 +8004,11 @@ func (c *restClient) ListAutonomousDatabaseCharacterSets(ctx context.Context, re
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/autonomousDatabaseCharacterSets", req.GetParent())
@@ -7720,6 +8092,11 @@ func (c *restClient) ListAutonomousDatabaseBackups(ctx context.Context, req *ora
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/autonomousDatabaseBackups", req.GetParent())
 
 		params := url.Values{}
@@ -7794,6 +8171,11 @@ func (c *restClient) StopAutonomousDatabase(ctx context.Context, req *oracledata
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:stop", req.GetName())
 
 	params := url.Values{}
@@ -7861,6 +8243,11 @@ func (c *restClient) StartAutonomousDatabase(ctx context.Context, req *oracledat
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:start", req.GetName())
 
 	params := url.Values{}
@@ -7926,6 +8313,11 @@ func (c *restClient) RestartAutonomousDatabase(ctx context.Context, req *oracled
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:restart", req.GetName())
@@ -7996,6 +8388,11 @@ func (c *restClient) SwitchoverAutonomousDatabase(ctx context.Context, req *orac
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:switchover", req.GetName())
 
 	params := url.Values{}
@@ -8062,6 +8459,11 @@ func (c *restClient) FailoverAutonomousDatabase(ctx context.Context, req *oracle
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:failover", req.GetName())
@@ -8131,6 +8533,11 @@ func (c *restClient) RefreshAutonomousDatabase(ctx context.Context, req *oracled
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:refresh", req.GetName())
 
 	params := url.Values{}
@@ -8190,6 +8597,11 @@ func (c *restClient) RefreshAutonomousDatabase(ctx context.Context, req *oracled
 func (c *restClient) GetAutonomousDatabaseRefreshableClones(ctx context.Context, req *oracledatabasepb.GetAutonomousDatabaseRefreshableClonesRequest, opts ...gax.CallOption) (*oracledatabasepb.AutonomousDatabaseRefreshableClones, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getRefreshableClones", req.GetName())
@@ -8257,6 +8669,11 @@ func (c *restClient) ListOdbNetworks(ctx context.Context, req *oracledatabasepb.
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/odbNetworks", req.GetParent())
@@ -8330,6 +8747,11 @@ func (c *restClient) GetOdbNetwork(ctx context.Context, req *oracledatabasepb.Ge
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -8389,6 +8811,11 @@ func (c *restClient) CreateOdbNetwork(ctx context.Context, req *oracledatabasepb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/odbNetworks", req.GetParent())
@@ -8454,6 +8881,11 @@ func (c *restClient) CreateOdbNetwork(ctx context.Context, req *oracledatabasepb
 func (c *restClient) DeleteOdbNetwork(ctx context.Context, req *oracledatabasepb.DeleteOdbNetworkRequest, opts ...gax.CallOption) (*DeleteOdbNetworkOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -8533,6 +8965,11 @@ func (c *restClient) ListOdbSubnets(ctx context.Context, req *oracledatabasepb.L
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/odbSubnets", req.GetParent())
 
 		params := url.Values{}
@@ -8604,6 +9041,11 @@ func (c *restClient) GetOdbSubnet(ctx context.Context, req *oracledatabasepb.Get
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -8663,6 +9105,11 @@ func (c *restClient) CreateOdbSubnet(ctx context.Context, req *oracledatabasepb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/odbSubnets", req.GetParent())
@@ -8730,6 +9177,11 @@ func (c *restClient) DeleteOdbSubnet(ctx context.Context, req *oracledatabasepb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -8788,6 +9240,300 @@ func (c *restClient) DeleteOdbSubnet(ctx context.Context, req *oracledatabasepb.
 	}, nil
 }
 
+// ListOdbDnsZones lists all the ODB DNS Zones in a given ODB Network.
+func (c *restClient) ListOdbDnsZones(ctx context.Context, req *oracledatabasepb.ListOdbDnsZonesRequest, opts ...gax.CallOption) *OdbDnsZoneIterator {
+	it := &OdbDnsZoneIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.OdbDnsZone, string, error) {
+		resp := &oracledatabasepb.ListOdbDnsZonesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/odbDnsZones", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOdbDnsZones")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetOdbDnsZones(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetOdbDnsZone gets details of a single ODB DNS Zone.
+func (c *restClient) GetOdbDnsZone(ctx context.Context, req *oracledatabasepb.GetOdbDnsZoneRequest, opts ...gax.CallOption) (*oracledatabasepb.OdbDnsZone, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/GetOdbDnsZone")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/odbNetworks/*/odbDnsZones/*}")
+	}
+	opts = append((*c.CallOptions).GetOdbDnsZone[0:len((*c.CallOptions).GetOdbDnsZone):len((*c.CallOptions).GetOdbDnsZone)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &oracledatabasepb.OdbDnsZone{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOdbDnsZone")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateOdbDnsZone creates a new ODB DNS Zone in a given ODB Network.
+func (c *restClient) CreateOdbDnsZone(ctx context.Context, req *oracledatabasepb.CreateOdbDnsZoneRequest, opts ...gax.CallOption) (*CreateOdbDnsZoneOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetOdbDnsZone()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/odbDnsZones", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("odbDnsZoneId", fmt.Sprintf("%v", req.GetOdbDnsZoneId()))
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/CreateOdbDnsZone")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/odbNetworks/*}/odbDnsZones")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateOdbDnsZone")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.CreateOdbDnsZoneOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &CreateOdbDnsZoneOperation{
+		lro:      lro,
+		pollPath: override,
+	}, nil
+}
+
+// DeleteOdbDnsZone deletes a single ODB DNS Zone.
+func (c *restClient) DeleteOdbDnsZone(ctx context.Context, req *oracledatabasepb.DeleteOdbDnsZoneRequest, opts ...gax.CallOption) (*DeleteOdbDnsZoneOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/DeleteOdbDnsZone")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/odbNetworks/*/odbDnsZones/*}")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOdbDnsZone")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.DeleteOdbDnsZoneOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &DeleteOdbDnsZoneOperation{
+		lro:      lro,
+		pollPath: override,
+	}, nil
+}
+
 // ListExadbVmClusters lists all the Exadb (Exascale) VM Clusters for the given project and
 // location.
 func (c *restClient) ListExadbVmClusters(ctx context.Context, req *oracledatabasepb.ListExadbVmClustersRequest, opts ...gax.CallOption) *ExadbVmClusterIterator {
@@ -8806,6 +9552,11 @@ func (c *restClient) ListExadbVmClusters(ctx context.Context, req *oracledatabas
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/exadbVmClusters", req.GetParent())
@@ -8879,6 +9630,11 @@ func (c *restClient) GetExadbVmCluster(ctx context.Context, req *oracledatabasep
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -8938,6 +9694,11 @@ func (c *restClient) CreateExadbVmCluster(ctx context.Context, req *oracledataba
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/exadbVmClusters", req.GetParent())
@@ -9003,6 +9764,11 @@ func (c *restClient) CreateExadbVmCluster(ctx context.Context, req *oracledataba
 func (c *restClient) DeleteExadbVmCluster(ctx context.Context, req *oracledatabasepb.DeleteExadbVmClusterRequest, opts ...gax.CallOption) (*DeleteExadbVmClusterOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -9075,6 +9841,11 @@ func (c *restClient) UpdateExadbVmCluster(ctx context.Context, req *oracledataba
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetExadbVmCluster().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetExadbVmCluster().GetName())
@@ -9154,6 +9925,11 @@ func (c *restClient) RemoveVirtualMachineExadbVmCluster(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:removeVirtualMachine", req.GetName())
 
 	params := url.Values{}
@@ -9229,6 +10005,11 @@ func (c *restClient) ListExascaleDbStorageVaults(ctx context.Context, req *oracl
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/exascaleDbStorageVaults", req.GetParent())
 
 		params := url.Values{}
@@ -9300,6 +10081,11 @@ func (c *restClient) GetExascaleDbStorageVault(ctx context.Context, req *oracled
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -9359,6 +10145,11 @@ func (c *restClient) CreateExascaleDbStorageVault(ctx context.Context, req *orac
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/exascaleDbStorageVaults", req.GetParent())
@@ -9424,6 +10215,11 @@ func (c *restClient) CreateExascaleDbStorageVault(ctx context.Context, req *orac
 func (c *restClient) DeleteExascaleDbStorageVault(ctx context.Context, req *oracledatabasepb.DeleteExascaleDbStorageVaultRequest, opts ...gax.CallOption) (*DeleteExascaleDbStorageVaultOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -9504,6 +10300,11 @@ func (c *restClient) ListDbSystemInitialStorageSizes(ctx context.Context, req *o
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/dbSystemInitialStorageSizes", req.GetParent())
 
 		params := url.Values{}
@@ -9582,6 +10383,11 @@ func (c *restClient) ListDatabases(ctx context.Context, req *oracledatabasepb.Li
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/databases", req.GetParent())
 
 		params := url.Values{}
@@ -9648,6 +10454,11 @@ func (c *restClient) ListDatabases(ctx context.Context, req *oracledatabasepb.Li
 func (c *restClient) GetDatabase(ctx context.Context, req *oracledatabasepb.GetDatabaseRequest, opts ...gax.CallOption) (*oracledatabasepb.Database, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -9718,6 +10529,11 @@ func (c *restClient) ListPluggableDatabases(ctx context.Context, req *oracledata
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/pluggableDatabases", req.GetParent())
 
 		params := url.Values{}
@@ -9786,6 +10602,11 @@ func (c *restClient) GetPluggableDatabase(ctx context.Context, req *oracledataba
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -9851,6 +10672,11 @@ func (c *restClient) ListDbSystems(ctx context.Context, req *oracledatabasepb.Li
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/dbSystems", req.GetParent())
@@ -9924,6 +10750,11 @@ func (c *restClient) GetDbSystem(ctx context.Context, req *oracledatabasepb.GetD
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -9983,6 +10814,11 @@ func (c *restClient) CreateDbSystem(ctx context.Context, req *oracledatabasepb.C
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/dbSystems", req.GetParent())
@@ -10048,6 +10884,11 @@ func (c *restClient) CreateDbSystem(ctx context.Context, req *oracledatabasepb.C
 func (c *restClient) DeleteDbSystem(ctx context.Context, req *oracledatabasepb.DeleteDbSystemRequest, opts ...gax.CallOption) (*DeleteDbSystemOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -10127,6 +10968,11 @@ func (c *restClient) ListGoldengateDeployments(ctx context.Context, req *oracled
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/goldengateDeployments", req.GetParent())
 
 		params := url.Values{}
@@ -10198,6 +11044,11 @@ func (c *restClient) GetGoldengateDeployment(ctx context.Context, req *oracledat
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -10257,6 +11108,11 @@ func (c *restClient) CreateGoldengateDeployment(ctx context.Context, req *oracle
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/goldengateDeployments", req.GetParent())
@@ -10322,6 +11178,11 @@ func (c *restClient) CreateGoldengateDeployment(ctx context.Context, req *oracle
 func (c *restClient) DeleteGoldengateDeployment(ctx context.Context, req *oracledatabasepb.DeleteGoldengateDeploymentRequest, opts ...gax.CallOption) (*DeleteGoldengateDeploymentOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -10394,6 +11255,11 @@ func (c *restClient) StopGoldengateDeployment(ctx context.Context, req *oracleda
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:stop", req.GetName())
 
 	params := url.Values{}
@@ -10459,6 +11325,11 @@ func (c *restClient) StartGoldengateDeployment(ctx context.Context, req *oracled
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:start", req.GetName())
@@ -10535,6 +11406,11 @@ func (c *restClient) ListGoldengateConnections(ctx context.Context, req *oracled
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/goldengateConnections", req.GetParent())
 
 		params := url.Values{}
@@ -10606,6 +11482,11 @@ func (c *restClient) GetGoldengateConnection(ctx context.Context, req *oracledat
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -10665,6 +11546,11 @@ func (c *restClient) CreateGoldengateConnection(ctx context.Context, req *oracle
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/goldengateConnections", req.GetParent())
@@ -10730,6 +11616,11 @@ func (c *restClient) CreateGoldengateConnection(ctx context.Context, req *oracle
 func (c *restClient) DeleteGoldengateConnection(ctx context.Context, req *oracledatabasepb.DeleteGoldengateConnectionRequest, opts ...gax.CallOption) (*DeleteGoldengateConnectionOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -10807,6 +11698,11 @@ func (c *restClient) ListGoldengateDeploymentVersions(ctx context.Context, req *
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/goldengateDeploymentVersions", req.GetParent())
@@ -10888,6 +11784,11 @@ func (c *restClient) ListGoldengateDeploymentTypes(ctx context.Context, req *ora
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/goldengateDeploymentTypes", req.GetParent())
@@ -10974,6 +11875,11 @@ func (c *restClient) ListGoldengateDeploymentEnvironments(ctx context.Context, r
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/goldengateDeploymentEnvironments", req.GetParent())
 
 		params := url.Values{}
@@ -11050,6 +11956,11 @@ func (c *restClient) ListGoldengateConnectionTypes(ctx context.Context, req *ora
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/goldengateConnectionTypes", req.GetParent())
@@ -11133,6 +12044,11 @@ func (c *restClient) ListDbVersions(ctx context.Context, req *oracledatabasepb.L
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/dbVersions", req.GetParent())
 
 		params := url.Values{}
@@ -11212,6 +12128,11 @@ func (c *restClient) ListDatabaseCharacterSets(ctx context.Context, req *oracled
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/databaseCharacterSets", req.GetParent())
@@ -11295,6 +12216,11 @@ func (c *restClient) ListGoldengateConnectionAssignments(ctx context.Context, re
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/goldengateConnectionAssignments", req.GetParent())
 
 		params := url.Values{}
@@ -11366,6 +12292,11 @@ func (c *restClient) GetGoldengateConnectionAssignment(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -11426,6 +12357,11 @@ func (c *restClient) CreateGoldengateConnectionAssignment(ctx context.Context, r
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/goldengateConnectionAssignments", req.GetParent())
@@ -11491,6 +12427,11 @@ func (c *restClient) CreateGoldengateConnectionAssignment(ctx context.Context, r
 func (c *restClient) DeleteGoldengateConnectionAssignment(ctx context.Context, req *oracledatabasepb.DeleteGoldengateConnectionAssignmentRequest, opts ...gax.CallOption) (*DeleteGoldengateConnectionAssignmentOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -11563,6 +12504,11 @@ func (c *restClient) TestGoldengateConnectionAssignment(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:test", req.GetName())
 
 	params := url.Values{}
@@ -11615,6 +12561,11 @@ func (c *restClient) TestGoldengateConnectionAssignment(ctx context.Context, req
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -11699,6 +12650,11 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -11773,6 +12729,11 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -11812,6 +12773,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -11849,6 +12815,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -11916,6 +12887,11 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())
@@ -12163,6 +13139,24 @@ func (c *restClient) CreateGoldengateDeploymentOperation(name string) *CreateGol
 	}
 }
 
+// CreateOdbDnsZoneOperation returns a new CreateOdbDnsZoneOperation from a given name.
+// The name must be that of a previously created CreateOdbDnsZoneOperation, possibly from a different process.
+func (c *gRPCClient) CreateOdbDnsZoneOperation(name string) *CreateOdbDnsZoneOperation {
+	return &CreateOdbDnsZoneOperation{
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.CreateOdbDnsZoneOperation"),
+	}
+}
+
+// CreateOdbDnsZoneOperation returns a new CreateOdbDnsZoneOperation from a given name.
+// The name must be that of a previously created CreateOdbDnsZoneOperation, possibly from a different process.
+func (c *restClient) CreateOdbDnsZoneOperation(name string) *CreateOdbDnsZoneOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateOdbDnsZoneOperation{
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.CreateOdbDnsZoneOperation"),
+		pollPath: override,
+	}
+}
+
 // CreateOdbNetworkOperation returns a new CreateOdbNetworkOperation from a given name.
 // The name must be that of a previously created CreateOdbNetworkOperation, possibly from a different process.
 func (c *gRPCClient) CreateOdbNetworkOperation(name string) *CreateOdbNetworkOperation {
@@ -12357,6 +13351,24 @@ func (c *restClient) DeleteGoldengateDeploymentOperation(name string) *DeleteGol
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteGoldengateDeploymentOperation{
 		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.DeleteGoldengateDeploymentOperation"),
+		pollPath: override,
+	}
+}
+
+// DeleteOdbDnsZoneOperation returns a new DeleteOdbDnsZoneOperation from a given name.
+// The name must be that of a previously created DeleteOdbDnsZoneOperation, possibly from a different process.
+func (c *gRPCClient) DeleteOdbDnsZoneOperation(name string) *DeleteOdbDnsZoneOperation {
+	return &DeleteOdbDnsZoneOperation{
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.DeleteOdbDnsZoneOperation"),
+	}
+}
+
+// DeleteOdbDnsZoneOperation returns a new DeleteOdbDnsZoneOperation from a given name.
+// The name must be that of a previously created DeleteOdbDnsZoneOperation, possibly from a different process.
+func (c *restClient) DeleteOdbDnsZoneOperation(name string) *DeleteOdbDnsZoneOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteOdbDnsZoneOperation{
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.DeleteOdbDnsZoneOperation"),
 		pollPath: override,
 	}
 }

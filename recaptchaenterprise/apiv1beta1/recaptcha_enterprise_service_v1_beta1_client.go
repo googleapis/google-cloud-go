@@ -454,6 +454,11 @@ func (c *recaptchaEnterpriseServiceV1Beta1RESTClient) CreateAssessment(ctx conte
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/assessments", req.GetParent())
 
 	params := url.Values{}
@@ -513,6 +518,11 @@ func (c *recaptchaEnterpriseServiceV1Beta1RESTClient) AnnotateAssessment(ctx con
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:annotate", req.GetName())

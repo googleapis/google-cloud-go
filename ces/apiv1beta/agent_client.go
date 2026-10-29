@@ -95,6 +95,7 @@ type AgentCallOptions struct {
 	ListAppVersions          []gax.CallOption
 	GetAppVersion            []gax.CallOption
 	CreateAppVersion         []gax.CallOption
+	UpdateAppVersion         []gax.CallOption
 	DeleteAppVersion         []gax.CallOption
 	RestoreAppVersion        []gax.CallOption
 	GenerateAppResource      []gax.CallOption
@@ -711,6 +712,19 @@ func defaultAgentCallOptions() *AgentCallOptions {
 			}),
 		},
 		CreateAppVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateAppVersion: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -1351,6 +1365,18 @@ func defaultAgentRESTCallOptions() *AgentCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		UpdateAppVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
 		DeleteAppVersion: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -1476,6 +1502,7 @@ type internalAgentClient interface {
 	ListAppVersions(context.Context, *cespb.ListAppVersionsRequest, ...gax.CallOption) *AppVersionIterator
 	GetAppVersion(context.Context, *cespb.GetAppVersionRequest, ...gax.CallOption) (*cespb.AppVersion, error)
 	CreateAppVersion(context.Context, *cespb.CreateAppVersionRequest, ...gax.CallOption) (*cespb.AppVersion, error)
+	UpdateAppVersion(context.Context, *cespb.UpdateAppVersionRequest, ...gax.CallOption) (*cespb.AppVersion, error)
 	DeleteAppVersion(context.Context, *cespb.DeleteAppVersionRequest, ...gax.CallOption) error
 	RestoreAppVersion(context.Context, *cespb.RestoreAppVersionRequest, ...gax.CallOption) (*RestoreAppVersionOperation, error)
 	RestoreAppVersionOperation(name string) *RestoreAppVersionOperation
@@ -1792,6 +1819,11 @@ func (c *AgentClient) CreateAppVersion(ctx context.Context, req *cespb.CreateApp
 	return c.internalClient.CreateAppVersion(ctx, req, opts...)
 }
 
+// UpdateAppVersion updates the specified app version.
+func (c *AgentClient) UpdateAppVersion(ctx context.Context, req *cespb.UpdateAppVersionRequest, opts ...gax.CallOption) (*cespb.AppVersion, error) {
+	return c.internalClient.UpdateAppVersion(ctx, req, opts...)
+}
+
 // DeleteAppVersion deletes the specified app version.
 func (c *AgentClient) DeleteAppVersion(ctx context.Context, req *cespb.DeleteAppVersionRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteAppVersion(ctx, req, opts...)
@@ -2002,6 +2034,7 @@ func NewAgentClient(ctx context.Context, opts ...option.ClientOption) (*AgentCli
 		client.CallOptions.ListAppVersions = append(client.CallOptions.ListAppVersions, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetAppVersion = append(client.CallOptions.GetAppVersion, gax.WithClientMetrics(metrics))
 		client.CallOptions.CreateAppVersion = append(client.CallOptions.CreateAppVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateAppVersion = append(client.CallOptions.UpdateAppVersion, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteAppVersion = append(client.CallOptions.DeleteAppVersion, gax.WithClientMetrics(metrics))
 		client.CallOptions.RestoreAppVersion = append(client.CallOptions.RestoreAppVersion, gax.WithClientMetrics(metrics))
 		client.CallOptions.GenerateAppResource = append(client.CallOptions.GenerateAppResource, gax.WithClientMetrics(metrics))
@@ -2071,6 +2104,7 @@ func NewAgentClient(ctx context.Context, opts ...option.ClientOption) (*AgentCli
 		client.CallOptions.ListAppVersions = append(client.CallOptions.ListAppVersions, gax.WithClientTracing(tracing))
 		client.CallOptions.GetAppVersion = append(client.CallOptions.GetAppVersion, gax.WithClientTracing(tracing))
 		client.CallOptions.CreateAppVersion = append(client.CallOptions.CreateAppVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateAppVersion = append(client.CallOptions.UpdateAppVersion, gax.WithClientTracing(tracing))
 		client.CallOptions.DeleteAppVersion = append(client.CallOptions.DeleteAppVersion, gax.WithClientTracing(tracing))
 		client.CallOptions.RestoreAppVersion = append(client.CallOptions.RestoreAppVersion, gax.WithClientTracing(tracing))
 		client.CallOptions.GenerateAppResource = append(client.CallOptions.GenerateAppResource, gax.WithClientTracing(tracing))
@@ -2141,6 +2175,7 @@ func NewAgentClient(ctx context.Context, opts ...option.ClientOption) (*AgentCli
 		client.CallOptions.ListAppVersions = append(client.CallOptions.ListAppVersions, gax.WithClientLogging(logging))
 		client.CallOptions.GetAppVersion = append(client.CallOptions.GetAppVersion, gax.WithClientLogging(logging))
 		client.CallOptions.CreateAppVersion = append(client.CallOptions.CreateAppVersion, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateAppVersion = append(client.CallOptions.UpdateAppVersion, gax.WithClientLogging(logging))
 		client.CallOptions.DeleteAppVersion = append(client.CallOptions.DeleteAppVersion, gax.WithClientLogging(logging))
 		client.CallOptions.RestoreAppVersion = append(client.CallOptions.RestoreAppVersion, gax.WithClientLogging(logging))
 		client.CallOptions.GenerateAppResource = append(client.CallOptions.GenerateAppResource, gax.WithClientLogging(logging))
@@ -2305,6 +2340,7 @@ func NewAgentRESTClient(ctx context.Context, opts ...option.ClientOption) (*Agen
 		callOpts.ListAppVersions = append(callOpts.ListAppVersions, gax.WithClientMetrics(metrics))
 		callOpts.GetAppVersion = append(callOpts.GetAppVersion, gax.WithClientMetrics(metrics))
 		callOpts.CreateAppVersion = append(callOpts.CreateAppVersion, gax.WithClientMetrics(metrics))
+		callOpts.UpdateAppVersion = append(callOpts.UpdateAppVersion, gax.WithClientMetrics(metrics))
 		callOpts.DeleteAppVersion = append(callOpts.DeleteAppVersion, gax.WithClientMetrics(metrics))
 		callOpts.RestoreAppVersion = append(callOpts.RestoreAppVersion, gax.WithClientMetrics(metrics))
 		callOpts.GenerateAppResource = append(callOpts.GenerateAppResource, gax.WithClientMetrics(metrics))
@@ -2374,6 +2410,7 @@ func NewAgentRESTClient(ctx context.Context, opts ...option.ClientOption) (*Agen
 		callOpts.ListAppVersions = append(callOpts.ListAppVersions, gax.WithClientTracing(tracing))
 		callOpts.GetAppVersion = append(callOpts.GetAppVersion, gax.WithClientTracing(tracing))
 		callOpts.CreateAppVersion = append(callOpts.CreateAppVersion, gax.WithClientTracing(tracing))
+		callOpts.UpdateAppVersion = append(callOpts.UpdateAppVersion, gax.WithClientTracing(tracing))
 		callOpts.DeleteAppVersion = append(callOpts.DeleteAppVersion, gax.WithClientTracing(tracing))
 		callOpts.RestoreAppVersion = append(callOpts.RestoreAppVersion, gax.WithClientTracing(tracing))
 		callOpts.GenerateAppResource = append(callOpts.GenerateAppResource, gax.WithClientTracing(tracing))
@@ -2444,6 +2481,7 @@ func NewAgentRESTClient(ctx context.Context, opts ...option.ClientOption) (*Agen
 		callOpts.ListAppVersions = append(callOpts.ListAppVersions, gax.WithClientLogging(logging))
 		callOpts.GetAppVersion = append(callOpts.GetAppVersion, gax.WithClientLogging(logging))
 		callOpts.CreateAppVersion = append(callOpts.CreateAppVersion, gax.WithClientLogging(logging))
+		callOpts.UpdateAppVersion = append(callOpts.UpdateAppVersion, gax.WithClientLogging(logging))
 		callOpts.DeleteAppVersion = append(callOpts.DeleteAppVersion, gax.WithClientLogging(logging))
 		callOpts.RestoreAppVersion = append(callOpts.RestoreAppVersion, gax.WithClientLogging(logging))
 		callOpts.GenerateAppResource = append(callOpts.GenerateAppResource, gax.WithClientLogging(logging))
@@ -3727,6 +3765,27 @@ func (c *agentGRPCClient) CreateAppVersion(ctx context.Context, req *cespb.Creat
 	return resp, nil
 }
 
+func (c *agentGRPCClient) UpdateAppVersion(ctx context.Context, req *cespb.UpdateAppVersionRequest, opts ...gax.CallOption) (*cespb.AppVersion, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "app_version.name", url.QueryEscape(req.GetAppVersion().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.AgentService/UpdateAppVersion")
+	}
+	opts = append((*c.CallOptions).UpdateAppVersion[0:len((*c.CallOptions).UpdateAppVersion):len((*c.CallOptions).UpdateAppVersion)], opts...)
+	var resp *cespb.AppVersion
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.agentClient.UpdateAppVersion, req, settings.GRPC, c.logger, "UpdateAppVersion")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *agentGRPCClient) DeleteAppVersion(ctx context.Context, req *cespb.DeleteAppVersionRequest, opts ...gax.CallOption) error {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -4061,6 +4120,11 @@ func (c *agentRESTClient) ListApps(ctx context.Context, req *cespb.ListAppsReque
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/apps", req.GetParent())
 
 		params := url.Values{}
@@ -4132,6 +4196,11 @@ func (c *agentRESTClient) GetApp(ctx context.Context, req *cespb.GetAppRequest, 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -4191,6 +4260,11 @@ func (c *agentRESTClient) CreateApp(ctx context.Context, req *cespb.CreateAppReq
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/apps", req.GetParent())
@@ -4264,6 +4338,11 @@ func (c *agentRESTClient) UpdateApp(ctx context.Context, req *cespb.UpdateAppReq
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetApp().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetApp().GetName())
 
 	params := url.Values{}
@@ -4323,6 +4402,11 @@ func (c *agentRESTClient) UpdateApp(ctx context.Context, req *cespb.UpdateAppReq
 func (c *agentRESTClient) DeleteApp(ctx context.Context, req *cespb.DeleteAppRequest, opts ...gax.CallOption) (*DeleteAppOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -4395,6 +4479,11 @@ func (c *agentRESTClient) ExportApp(ctx context.Context, req *cespb.ExportAppReq
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:exportApp", req.GetName())
 
 	params := url.Values{}
@@ -4462,6 +4551,11 @@ func (c *agentRESTClient) ImportApp(ctx context.Context, req *cespb.ImportAppReq
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/apps:importApp", req.GetParent())
 
 	params := url.Values{}
@@ -4523,6 +4617,11 @@ func (c *agentRESTClient) GetSecuritySettings(ctx context.Context, req *cespb.Ge
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -4582,6 +4681,11 @@ func (c *agentRESTClient) UpdateSecuritySettings(ctx context.Context, req *cespb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSecuritySettings().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetSecuritySettings().GetName())
@@ -4658,6 +4762,11 @@ func (c *agentRESTClient) ListAgents(ctx context.Context, req *cespb.ListAgentsR
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/agents", req.GetParent())
 
 		params := url.Values{}
@@ -4729,6 +4838,11 @@ func (c *agentRESTClient) GetAgent(ctx context.Context, req *cespb.GetAgentReque
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -4788,6 +4902,11 @@ func (c *agentRESTClient) CreateAgent(ctx context.Context, req *cespb.CreateAgen
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/agents", req.GetParent())
@@ -4854,6 +4973,11 @@ func (c *agentRESTClient) UpdateAgent(ctx context.Context, req *cespb.UpdateAgen
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAgent().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetAgent().GetName())
 
 	params := url.Values{}
@@ -4915,6 +5039,11 @@ func (c *agentRESTClient) DeleteAgent(ctx context.Context, req *cespb.DeleteAgen
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -4971,6 +5100,11 @@ func (c *agentRESTClient) ListExamples(ctx context.Context, req *cespb.ListExamp
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/examples", req.GetParent())
@@ -5044,6 +5178,11 @@ func (c *agentRESTClient) GetExample(ctx context.Context, req *cespb.GetExampleR
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -5103,6 +5242,11 @@ func (c *agentRESTClient) CreateExample(ctx context.Context, req *cespb.CreateEx
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/examples", req.GetParent())
@@ -5169,6 +5313,11 @@ func (c *agentRESTClient) UpdateExample(ctx context.Context, req *cespb.UpdateEx
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetExample().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetExample().GetName())
 
 	params := url.Values{}
@@ -5230,6 +5379,11 @@ func (c *agentRESTClient) DeleteExample(ctx context.Context, req *cespb.DeleteEx
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -5283,6 +5437,11 @@ func (c *agentRESTClient) ListTools(ctx context.Context, req *cespb.ListToolsReq
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/tools", req.GetParent())
@@ -5356,6 +5515,11 @@ func (c *agentRESTClient) GetTool(ctx context.Context, req *cespb.GetToolRequest
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -5421,6 +5585,11 @@ func (c *agentRESTClient) ListConversations(ctx context.Context, req *cespb.List
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/conversations", req.GetParent())
@@ -5499,6 +5668,11 @@ func (c *agentRESTClient) GetConversation(ctx context.Context, req *cespb.GetCon
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -5556,6 +5730,11 @@ func (c *agentRESTClient) DeleteConversation(ctx context.Context, req *cespb.Del
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -5602,6 +5781,11 @@ func (c *agentRESTClient) BatchDeleteConversations(ctx context.Context, req *ces
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/conversations:batchDelete", req.GetParent())
@@ -5672,6 +5856,11 @@ func (c *agentRESTClient) CreateTool(ctx context.Context, req *cespb.CreateToolR
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/tools", req.GetParent())
 
 	params := url.Values{}
@@ -5736,6 +5925,11 @@ func (c *agentRESTClient) UpdateTool(ctx context.Context, req *cespb.UpdateToolR
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetTool().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetTool().GetName())
 
 	params := url.Values{}
@@ -5797,6 +5991,11 @@ func (c *agentRESTClient) DeleteTool(ctx context.Context, req *cespb.DeleteToolR
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -5853,6 +6052,11 @@ func (c *agentRESTClient) ListGuardrails(ctx context.Context, req *cespb.ListGua
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/guardrails", req.GetParent())
@@ -5926,6 +6130,11 @@ func (c *agentRESTClient) GetGuardrail(ctx context.Context, req *cespb.GetGuardr
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -5985,6 +6194,11 @@ func (c *agentRESTClient) CreateGuardrail(ctx context.Context, req *cespb.Create
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/guardrails", req.GetParent())
@@ -6051,6 +6265,11 @@ func (c *agentRESTClient) UpdateGuardrail(ctx context.Context, req *cespb.Update
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetGuardrail().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetGuardrail().GetName())
 
 	params := url.Values{}
@@ -6112,6 +6331,11 @@ func (c *agentRESTClient) DeleteGuardrail(ctx context.Context, req *cespb.Delete
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -6168,6 +6392,11 @@ func (c *agentRESTClient) ListDeployments(ctx context.Context, req *cespb.ListDe
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/deployments", req.GetParent())
@@ -6238,6 +6467,11 @@ func (c *agentRESTClient) GetDeployment(ctx context.Context, req *cespb.GetDeplo
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -6297,6 +6531,11 @@ func (c *agentRESTClient) CreateDeployment(ctx context.Context, req *cespb.Creat
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/deployments", req.GetParent())
@@ -6363,6 +6602,11 @@ func (c *agentRESTClient) UpdateDeployment(ctx context.Context, req *cespb.Updat
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDeployment().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetDeployment().GetName())
 
 	params := url.Values{}
@@ -6424,6 +6668,11 @@ func (c *agentRESTClient) DeleteDeployment(ctx context.Context, req *cespb.Delet
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -6477,6 +6726,11 @@ func (c *agentRESTClient) ListToolsets(ctx context.Context, req *cespb.ListTools
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/toolsets", req.GetParent())
@@ -6550,6 +6804,11 @@ func (c *agentRESTClient) GetToolset(ctx context.Context, req *cespb.GetToolsetR
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -6609,6 +6868,11 @@ func (c *agentRESTClient) CreateToolset(ctx context.Context, req *cespb.CreateTo
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/toolsets", req.GetParent())
@@ -6675,6 +6939,11 @@ func (c *agentRESTClient) UpdateToolset(ctx context.Context, req *cespb.UpdateTo
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetToolset().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetToolset().GetName())
 
 	params := url.Values{}
@@ -6736,6 +7005,11 @@ func (c *agentRESTClient) DeleteToolset(ctx context.Context, req *cespb.DeleteTo
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -6792,6 +7066,11 @@ func (c *agentRESTClient) ListAppVersions(ctx context.Context, req *cespb.ListAp
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/versions", req.GetParent())
@@ -6865,6 +7144,11 @@ func (c *agentRESTClient) GetAppVersion(ctx context.Context, req *cespb.GetAppVe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -6926,6 +7210,11 @@ func (c *agentRESTClient) CreateAppVersion(ctx context.Context, req *cespb.Creat
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/versions", req.GetParent())
 
 	params := url.Values{}
@@ -6977,10 +7266,88 @@ func (c *agentRESTClient) CreateAppVersion(ctx context.Context, req *cespb.Creat
 	return resp, nil
 }
 
+// UpdateAppVersion updates the specified app version.
+func (c *agentRESTClient) UpdateAppVersion(ctx context.Context, req *cespb.UpdateAppVersionRequest, opts ...gax.CallOption) (*cespb.AppVersion, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetAppVersion()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAppVersion().GetName(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetAppVersion().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "app_version.name", url.QueryEscape(req.GetAppVersion().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.AgentService/UpdateAppVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{app_version.name=projects/*/locations/*/apps/*/versions/*}")
+	}
+	opts = append((*c.CallOptions).UpdateAppVersion[0:len((*c.CallOptions).UpdateAppVersion):len((*c.CallOptions).UpdateAppVersion)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &cespb.AppVersion{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateAppVersion")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // DeleteAppVersion deletes the specified app version.
 func (c *agentRESTClient) DeleteAppVersion(ctx context.Context, req *cespb.DeleteAppVersionRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -7031,6 +7398,11 @@ func (c *agentRESTClient) RestoreAppVersion(ctx context.Context, req *cespb.Rest
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:restore", req.GetName())
@@ -7098,6 +7470,11 @@ func (c *agentRESTClient) GenerateAppResource(ctx context.Context, req *cespb.Ge
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:generateAppResource", req.GetParent())
@@ -7174,6 +7551,11 @@ func (c *agentRESTClient) ListChangelogs(ctx context.Context, req *cespb.ListCha
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/changelogs", req.GetParent())
 
 		params := url.Values{}
@@ -7245,6 +7627,11 @@ func (c *agentRESTClient) GetChangelog(ctx context.Context, req *cespb.GetChange
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -7297,6 +7684,11 @@ func (c *agentRESTClient) GetChangelog(ctx context.Context, req *cespb.GetChange
 func (c *agentRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -7381,6 +7773,11 @@ func (c *agentRESTClient) ListLocations(ctx context.Context, req *locationpb.Lis
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -7455,6 +7852,11 @@ func (c *agentRESTClient) CancelOperation(ctx context.Context, req *longrunningp
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -7494,6 +7896,11 @@ func (c *agentRESTClient) DeleteOperation(ctx context.Context, req *longrunningp
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -7531,6 +7938,11 @@ func (c *agentRESTClient) DeleteOperation(ctx context.Context, req *longrunningp
 func (c *agentRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -7598,6 +8010,11 @@ func (c *agentRESTClient) ListOperations(ctx context.Context, req *longrunningpb
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/operations", req.GetName())

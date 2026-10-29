@@ -352,6 +352,11 @@ func (c *apiHubDiscoveryRESTClient) ListDiscoveredApiObservations(ctx context.Co
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/discoveredApiObservations", req.GetParent())
 
 		params := url.Values{}
@@ -416,6 +421,11 @@ func (c *apiHubDiscoveryRESTClient) ListDiscoveredApiObservations(ctx context.Co
 func (c *apiHubDiscoveryRESTClient) GetDiscoveredApiObservation(ctx context.Context, req *apihubpb.GetDiscoveredApiObservationRequest, opts ...gax.CallOption) (*apihubpb.DiscoveredApiObservation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -486,6 +496,11 @@ func (c *apiHubDiscoveryRESTClient) ListDiscoveredApiOperations(ctx context.Cont
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/discoveredApiOperations", req.GetParent())
 
 		params := url.Values{}
@@ -552,6 +567,11 @@ func (c *apiHubDiscoveryRESTClient) GetDiscoveredApiOperation(ctx context.Contex
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -604,6 +624,11 @@ func (c *apiHubDiscoveryRESTClient) GetDiscoveredApiOperation(ctx context.Contex
 func (c *apiHubDiscoveryRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -671,6 +696,11 @@ func (c *apiHubDiscoveryRESTClient) ListLocations(ctx context.Context, req *loca
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
@@ -747,6 +777,11 @@ func (c *apiHubDiscoveryRESTClient) CancelOperation(ctx context.Context, req *lo
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -786,6 +821,11 @@ func (c *apiHubDiscoveryRESTClient) DeleteOperation(ctx context.Context, req *lo
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -823,6 +863,11 @@ func (c *apiHubDiscoveryRESTClient) DeleteOperation(ctx context.Context, req *lo
 func (c *apiHubDiscoveryRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -890,6 +935,11 @@ func (c *apiHubDiscoveryRESTClient) ListOperations(ctx context.Context, req *lon
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

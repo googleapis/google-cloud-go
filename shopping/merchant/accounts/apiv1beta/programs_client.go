@@ -657,6 +657,11 @@ func (c *programsRESTClient) GetProgram(ctx context.Context, req *accountspb.Get
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -722,6 +727,11 @@ func (c *programsRESTClient) ListPrograms(ctx context.Context, req *accountspb.L
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/accounts/v1beta/%v/programs", req.GetParent())
@@ -796,6 +806,11 @@ func (c *programsRESTClient) EnableProgram(ctx context.Context, req *accountspb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1beta/%v:enable", req.GetName())
 
 	params := url.Values{}
@@ -855,6 +870,11 @@ func (c *programsRESTClient) DisableProgram(ctx context.Context, req *accountspb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1beta/%v:disable", req.GetName())

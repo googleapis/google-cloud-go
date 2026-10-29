@@ -637,27 +637,27 @@ var File_google_cloud_gkebackup_v1_volume_proto protoreflect.FileDescriptor
 
 const file_google_cloud_gkebackup_v1_volume_proto_rawDesc = "" +
 	"\n" +
-	"&google/cloud/gkebackup/v1/volume.proto\x12\x19google.cloud.gkebackup.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a&google/cloud/gkebackup/v1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x9d\t\n" +
-	"\fVolumeBackup\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x15\n" +
-	"\x03uid\x18\x02 \x01(\tB\x03\xe0A\x03R\x03uid\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12M\n" +
+	"&google/cloud/gkebackup/v1/volume.proto\x12\x19google.cloud.gkebackup.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a&google/cloud/gkebackup/v1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xac\t\n" +
+	"\fVolumeBackup\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x16\n" +
+	"\x03uid\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12N\n" +
 	"\n" +
-	"source_pvc\x18\x05 \x01(\v2).google.cloud.gkebackup.v1.NamespacedNameB\x03\xe0A\x03R\tsourcePvc\x125\n" +
-	"\x14volume_backup_handle\x18\x06 \x01(\tB\x03\xe0A\x03R\x12volumeBackupHandle\x12W\n" +
-	"\x06format\x18\a \x01(\x0e2:.google.cloud.gkebackup.v1.VolumeBackup.VolumeBackupFormatB\x03\xe0A\x03R\x06format\x12(\n" +
-	"\rstorage_bytes\x18\b \x01(\x03B\x03\xe0A\x03R\fstorageBytes\x12+\n" +
-	"\x0fdisk_size_bytes\x18\t \x01(\x03B\x03\xe0A\x03R\rdiskSizeBytes\x12D\n" +
+	"source_pvc\x18\x05 \x01(\v2).google.cloud.gkebackup.v1.NamespacedNameB\x04\xe2A\x01\x03R\tsourcePvc\x126\n" +
+	"\x14volume_backup_handle\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x12volumeBackupHandle\x12X\n" +
+	"\x06format\x18\a \x01(\x0e2:.google.cloud.gkebackup.v1.VolumeBackup.VolumeBackupFormatB\x04\xe2A\x01\x03R\x06format\x12)\n" +
+	"\rstorage_bytes\x18\b \x01(\x03B\x04\xe2A\x01\x03R\fstorageBytes\x12,\n" +
+	"\x0fdisk_size_bytes\x18\t \x01(\x03B\x04\xe2A\x01\x03R\rdiskSizeBytes\x12E\n" +
 	"\rcomplete_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\fcompleteTime\x12H\n" +
-	"\x05state\x18\v \x01(\x0e2-.google.cloud.gkebackup.v1.VolumeBackup.StateB\x03\xe0A\x03R\x05state\x12(\n" +
-	"\rstate_message\x18\f \x01(\tB\x03\xe0A\x03R\fstateMessage\x12\x17\n" +
-	"\x04etag\x18\r \x01(\tB\x03\xe0A\x03R\x04etag\x12(\n" +
-	"\rsatisfies_pzs\x18\x0e \x01(\bB\x03\xe0A\x03R\fsatisfiesPzs\x12(\n" +
-	"\rsatisfies_pzi\x18\x0f \x01(\bB\x03\xe0A\x03R\fsatisfiesPzi\"S\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\fcompleteTime\x12I\n" +
+	"\x05state\x18\v \x01(\x0e2-.google.cloud.gkebackup.v1.VolumeBackup.StateB\x04\xe2A\x01\x03R\x05state\x12)\n" +
+	"\rstate_message\x18\f \x01(\tB\x04\xe2A\x01\x03R\fstateMessage\x12\x18\n" +
+	"\x04etag\x18\r \x01(\tB\x04\xe2A\x01\x03R\x04etag\x12)\n" +
+	"\rsatisfies_pzs\x18\x0e \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzs\x12)\n" +
+	"\rsatisfies_pzi\x18\x0f \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzi\"S\n" +
 	"\x12VolumeBackupFormat\x12$\n" +
 	" VOLUME_BACKUP_FORMAT_UNSPECIFIED\x10\x00\x12\x17\n" +
 	"\x13GCE_PERSISTENT_DISK\x10\x01\"\x86\x01\n" +
@@ -672,25 +672,25 @@ const file_google_cloud_gkebackup_v1_volume_proto_rawDesc = "" +
 	"\bDELETING\x10\x06\x12\x0e\n" +
 	"\n" +
 	"CLEANED_UP\x10\a:\x9d\x01\xeaA\x99\x01\n" +
-	"%gkebackup.googleapis.com/VolumeBackup\x12pprojects/{project}/locations/{location}/backupPlans/{backup_plan}/backups/{backup}/volumeBackups/{volume_backup}\"\xe6\a\n" +
-	"\rVolumeRestore\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x15\n" +
-	"\x03uid\x18\x02 \x01(\tB\x03\xe0A\x03R\x03uid\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12(\n" +
-	"\rvolume_backup\x18\x05 \x01(\tB\x03\xe0A\x03R\fvolumeBackup\x12M\n" +
+	"%gkebackup.googleapis.com/VolumeBackup\x12pprojects/{project}/locations/{location}/backupPlans/{backup_plan}/backups/{backup}/volumeBackups/{volume_backup}\"\xf2\a\n" +
+	"\rVolumeRestore\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x16\n" +
+	"\x03uid\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12)\n" +
+	"\rvolume_backup\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\fvolumeBackup\x12N\n" +
 	"\n" +
-	"target_pvc\x18\x06 \x01(\v2).google.cloud.gkebackup.v1.NamespacedNameB\x03\xe0A\x03R\ttargetPvc\x12(\n" +
-	"\rvolume_handle\x18\a \x01(\tB\x03\xe0A\x03R\fvolumeHandle\x12Y\n" +
-	"\vvolume_type\x18\b \x01(\x0e23.google.cloud.gkebackup.v1.VolumeRestore.VolumeTypeB\x03\xe0A\x03R\n" +
-	"volumeType\x12D\n" +
-	"\rcomplete_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\fcompleteTime\x12I\n" +
+	"target_pvc\x18\x06 \x01(\v2).google.cloud.gkebackup.v1.NamespacedNameB\x04\xe2A\x01\x03R\ttargetPvc\x12)\n" +
+	"\rvolume_handle\x18\a \x01(\tB\x04\xe2A\x01\x03R\fvolumeHandle\x12Z\n" +
+	"\vvolume_type\x18\b \x01(\x0e23.google.cloud.gkebackup.v1.VolumeRestore.VolumeTypeB\x04\xe2A\x01\x03R\n" +
+	"volumeType\x12E\n" +
+	"\rcomplete_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\fcompleteTime\x12J\n" +
 	"\x05state\x18\n" +
-	" \x01(\x0e2..google.cloud.gkebackup.v1.VolumeRestore.StateB\x03\xe0A\x03R\x05state\x12(\n" +
-	"\rstate_message\x18\v \x01(\tB\x03\xe0A\x03R\fstateMessage\x12\x17\n" +
-	"\x04etag\x18\f \x01(\tB\x03\xe0A\x03R\x04etag\"B\n" +
+	" \x01(\x0e2..google.cloud.gkebackup.v1.VolumeRestore.StateB\x04\xe2A\x01\x03R\x05state\x12)\n" +
+	"\rstate_message\x18\v \x01(\tB\x04\xe2A\x01\x03R\fstateMessage\x12\x18\n" +
+	"\x04etag\x18\f \x01(\tB\x04\xe2A\x01\x03R\x04etag\"B\n" +
 	"\n" +
 	"VolumeType\x12\x1b\n" +
 	"\x17VOLUME_TYPE_UNSPECIFIED\x10\x00\x12\x17\n" +

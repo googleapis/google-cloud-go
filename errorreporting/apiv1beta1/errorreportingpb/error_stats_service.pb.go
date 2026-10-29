@@ -1094,21 +1094,21 @@ var File_google_devtools_clouderrorreporting_v1beta1_error_stats_service_proto p
 
 const file_google_devtools_clouderrorreporting_v1beta1_error_stats_service_proto_rawDesc = "" +
 	"\n" +
-	"Egoogle/devtools/clouderrorreporting/v1beta1/error_stats_service.proto\x12+google.devtools.clouderrorreporting.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a8google/devtools/clouderrorreporting/v1beta1/common.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfd\x05\n" +
-	"\x15ListGroupStatsRequest\x12V\n" +
-	"\fproject_name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\vprojectName\x12\x1e\n" +
-	"\bgroup_id\x18\x02 \x03(\tB\x03\xe0A\x01R\agroupId\x12m\n" +
-	"\x0eservice_filter\x18\x03 \x01(\v2A.google.devtools.clouderrorreporting.v1beta1.ServiceContextFilterB\x03\xe0A\x01R\rserviceFilter\x12_\n" +
+	"Egoogle/devtools/clouderrorreporting/v1beta1/error_stats_service.proto\x12+google.devtools.clouderrorreporting.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a8google/devtools/clouderrorreporting/v1beta1/common.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x87\x06\n" +
+	"\x15ListGroupStatsRequest\x12W\n" +
+	"\fproject_name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\vprojectName\x12\x1f\n" +
+	"\bgroup_id\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\agroupId\x12n\n" +
+	"\x0eservice_filter\x18\x03 \x01(\v2A.google.devtools.clouderrorreporting.v1beta1.ServiceContextFilterB\x04\xe2A\x01\x01R\rserviceFilter\x12`\n" +
 	"\n" +
-	"time_range\x18\x05 \x01(\v2;.google.devtools.clouderrorreporting.v1beta1.QueryTimeRangeB\x03\xe0A\x01R\ttimeRange\x12P\n" +
-	"\x14timed_count_duration\x18\x06 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x12timedCountDuration\x12c\n" +
-	"\talignment\x18\a \x01(\x0e2@.google.devtools.clouderrorreporting.v1beta1.TimedCountAlignmentB\x03\xe0A\x01R\talignment\x12F\n" +
-	"\x0ealignment_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\ralignmentTime\x12W\n" +
-	"\x05order\x18\t \x01(\x0e2<.google.devtools.clouderrorreporting.v1beta1.ErrorGroupOrderB\x03\xe0A\x01R\x05order\x12 \n" +
-	"\tpage_size\x18\v \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"time_range\x18\x05 \x01(\v2;.google.devtools.clouderrorreporting.v1beta1.QueryTimeRangeB\x04\xe2A\x01\x01R\ttimeRange\x12Q\n" +
+	"\x14timed_count_duration\x18\x06 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x12timedCountDuration\x12d\n" +
+	"\talignment\x18\a \x01(\x0e2@.google.devtools.clouderrorreporting.v1beta1.TimedCountAlignmentB\x04\xe2A\x01\x01R\talignment\x12G\n" +
+	"\x0ealignment_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\ralignmentTime\x12X\n" +
+	"\x05order\x18\t \x01(\x0e2<.google.devtools.clouderrorreporting.v1beta1.ErrorGroupOrderB\x04\xe2A\x01\x01R\x05order\x12!\n" +
+	"\tpage_size\x18\v \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\f \x01(\tB\x03\xe0A\x01R\tpageToken\"\xf0\x01\n" +
+	"page_token\x18\f \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xf0\x01\n" +
 	"\x16ListGroupStatsResponse\x12h\n" +
 	"\x11error_group_stats\x18\x01 \x03(\v2<.google.devtools.clouderrorreporting.v1beta1.ErrorGroupStatsR\x0ferrorGroupStats\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12D\n" +
@@ -1128,17 +1128,17 @@ const file_google_devtools_clouderrorreporting_v1beta1_error_stats_service_proto
 	"\x05count\x18\x01 \x01(\x03R\x05count\x129\n" +
 	"\n" +
 	"start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x125\n" +
-	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\"\xa1\x03\n" +
-	"\x11ListEventsRequest\x12V\n" +
-	"\fproject_name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\vprojectName\x12\x1e\n" +
-	"\bgroup_id\x18\x02 \x01(\tB\x03\xe0A\x02R\agroupId\x12m\n" +
-	"\x0eservice_filter\x18\x03 \x01(\v2A.google.devtools.clouderrorreporting.v1beta1.ServiceContextFilterB\x03\xe0A\x01R\rserviceFilter\x12_\n" +
+	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\"\xa7\x03\n" +
+	"\x11ListEventsRequest\x12W\n" +
+	"\fproject_name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\vprojectName\x12\x1f\n" +
+	"\bgroup_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\agroupId\x12n\n" +
+	"\x0eservice_filter\x18\x03 \x01(\v2A.google.devtools.clouderrorreporting.v1beta1.ServiceContextFilterB\x04\xe2A\x01\x01R\rserviceFilter\x12`\n" +
 	"\n" +
-	"time_range\x18\x04 \x01(\v2;.google.devtools.clouderrorreporting.v1beta1.QueryTimeRangeB\x03\xe0A\x01R\ttimeRange\x12 \n" +
-	"\tpage_size\x18\x06 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"time_range\x18\x04 \x01(\v2;.google.devtools.clouderrorreporting.v1beta1.QueryTimeRangeB\x04\xe2A\x01\x01R\ttimeRange\x12!\n" +
+	"\tpage_size\x18\x06 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\a \x01(\tB\x03\xe0A\x01R\tpageToken\"\xde\x01\n" +
+	"page_token\x18\a \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xde\x01\n" +
 	"\x12ListEventsResponse\x12Z\n" +
 	"\ferror_events\x18\x01 \x03(\v27.google.devtools.clouderrorreporting.v1beta1.ErrorEventR\verrorEvents\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12D\n" +
@@ -1151,13 +1151,13 @@ const file_google_devtools_clouderrorreporting_v1beta1_error_stats_service_proto
 	"\x0ePERIOD_6_HOURS\x10\x02\x12\x10\n" +
 	"\fPERIOD_1_DAY\x10\x03\x12\x11\n" +
 	"\rPERIOD_1_WEEK\x10\x04\x12\x12\n" +
-	"\x0ePERIOD_30_DAYS\x10\x05\"~\n" +
-	"\x14ServiceContextFilter\x12\x1d\n" +
-	"\aservice\x18\x02 \x01(\tB\x03\xe0A\x01R\aservice\x12\x1d\n" +
-	"\aversion\x18\x03 \x01(\tB\x03\xe0A\x01R\aversion\x12(\n" +
-	"\rresource_type\x18\x04 \x01(\tB\x03\xe0A\x01R\fresourceType\"m\n" +
-	"\x13DeleteEventsRequest\x12V\n" +
-	"\fproject_name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
+	"\x0ePERIOD_30_DAYS\x10\x05\"\x81\x01\n" +
+	"\x14ServiceContextFilter\x12\x1e\n" +
+	"\aservice\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\aservice\x12\x1e\n" +
+	"\aversion\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\aversion\x12)\n" +
+	"\rresource_type\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\fresourceType\"n\n" +
+	"\x13DeleteEventsRequest\x12W\n" +
+	"\fproject_name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
 	"+cloudresourcemanager.googleapis.com/ProjectR\vprojectName\"\x16\n" +
 	"\x14DeleteEventsResponse*u\n" +
 	"\x13TimedCountAlignment\x12%\n" +

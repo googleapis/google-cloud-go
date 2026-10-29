@@ -594,6 +594,11 @@ func (c *restClient) CreateChallenge(ctx context.Context, req *confidentialcompu
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v/challenges", req.GetParent())
 
 	params := url.Values{}
@@ -654,6 +659,11 @@ func (c *restClient) VerifyAttestation(ctx context.Context, req *confidentialcom
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetChallenge(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v:verifyAttestation", req.GetChallenge())
 
 	params := url.Values{}
@@ -706,6 +716,11 @@ func (c *restClient) VerifyAttestation(ctx context.Context, req *confidentialcom
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetName())
@@ -773,6 +788,11 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha1/%v/locations", req.GetName())

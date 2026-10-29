@@ -442,6 +442,11 @@ func (c *sslPoliciesRESTClient) AggregatedList(ctx context.Context, req *compute
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/aggregated/sslPolicies", req.GetProject())
 
 		params := url.Values{}
@@ -530,6 +535,12 @@ func (c *sslPoliciesRESTClient) Delete(ctx context.Context, req *computepb.Delet
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetSslPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/sslPolicies/%v", req.GetProject(), req.GetSslPolicy())
 
 	params := url.Values{}
@@ -593,6 +604,12 @@ func (c *sslPoliciesRESTClient) Get(ctx context.Context, req *computepb.GetSslPo
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetSslPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/sslPolicies/%v", req.GetProject(), req.GetSslPolicy())
 
 	// Build HTTP headers from client and context metadata.
@@ -641,6 +658,12 @@ func (c *sslPoliciesRESTClient) Get(ctx context.Context, req *computepb.GetSslPo
 func (c *sslPoliciesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicySslPolicyRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/sslPolicies/%v/getIamPolicy", req.GetProject(), req.GetResource())
@@ -704,6 +727,11 @@ func (c *sslPoliciesRESTClient) Insert(ctx context.Context, req *computepb.Inser
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/sslPolicies", req.GetProject())
@@ -783,6 +811,11 @@ func (c *sslPoliciesRESTClient) List(ctx context.Context, req *computepb.ListSsl
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/sslPolicies", req.GetProject())
 
 		params := url.Values{}
@@ -855,6 +888,11 @@ func (c *sslPoliciesRESTClient) List(ctx context.Context, req *computepb.ListSsl
 func (c *sslPoliciesRESTClient) ListAvailableFeatures(ctx context.Context, req *computepb.ListAvailableFeaturesSslPoliciesRequest, opts ...gax.CallOption) (*computepb.SslPoliciesListAvailableFeaturesResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/sslPolicies/listAvailableFeatures", req.GetProject())
@@ -932,6 +970,12 @@ func (c *sslPoliciesRESTClient) Patch(ctx context.Context, req *computepb.PatchS
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetSslPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/sslPolicies/%v", req.GetProject(), req.GetSslPolicy())
 
 	params := url.Values{}
@@ -1003,6 +1047,12 @@ func (c *sslPoliciesRESTClient) SetIamPolicy(ctx context.Context, req *computepb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/sslPolicies/%v/setIamPolicy", req.GetProject(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -1057,6 +1107,12 @@ func (c *sslPoliciesRESTClient) TestIamPermissions(ctx context.Context, req *com
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/sslPolicies/%v/testIamPermissions", req.GetProject(), req.GetResource())

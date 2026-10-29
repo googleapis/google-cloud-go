@@ -1912,6 +1912,11 @@ func (c *restClient) ListClusters(ctx context.Context, req *edgecontainerpb.List
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/clusters", req.GetParent())
 
 		params := url.Values{}
@@ -1983,6 +1988,11 @@ func (c *restClient) GetCluster(ctx context.Context, req *edgecontainerpb.GetClu
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2042,6 +2052,11 @@ func (c *restClient) CreateCluster(ctx context.Context, req *edgecontainerpb.Cre
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/clusters", req.GetParent())
@@ -2114,6 +2129,11 @@ func (c *restClient) UpdateCluster(ctx context.Context, req *edgecontainerpb.Upd
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCluster().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetCluster().GetName())
@@ -2193,6 +2213,11 @@ func (c *restClient) UpgradeCluster(ctx context.Context, req *edgecontainerpb.Up
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:upgrade", req.GetName())
 
 	params := url.Values{}
@@ -2252,6 +2277,11 @@ func (c *restClient) UpgradeCluster(ctx context.Context, req *edgecontainerpb.Up
 func (c *restClient) DeleteCluster(ctx context.Context, req *edgecontainerpb.DeleteClusterRequest, opts ...gax.CallOption) (*DeleteClusterOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2318,6 +2348,11 @@ func (c *restClient) GenerateAccessToken(ctx context.Context, req *edgecontainer
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCluster(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:generateAccessToken", req.GetCluster())
 
 	params := url.Values{}
@@ -2370,6 +2405,11 @@ func (c *restClient) GenerateAccessToken(ctx context.Context, req *edgecontainer
 func (c *restClient) GenerateOfflineCredential(ctx context.Context, req *edgecontainerpb.GenerateOfflineCredentialRequest, opts ...gax.CallOption) (*edgecontainerpb.GenerateOfflineCredentialResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCluster(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:generateOfflineCredential", req.GetCluster())
@@ -2437,6 +2477,11 @@ func (c *restClient) ListNodePools(ctx context.Context, req *edgecontainerpb.Lis
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/nodePools", req.GetParent())
@@ -2510,6 +2555,11 @@ func (c *restClient) GetNodePool(ctx context.Context, req *edgecontainerpb.GetNo
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2569,6 +2619,11 @@ func (c *restClient) CreateNodePool(ctx context.Context, req *edgecontainerpb.Cr
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/nodePools", req.GetParent())
@@ -2643,6 +2698,11 @@ func (c *restClient) UpdateNodePool(ctx context.Context, req *edgecontainerpb.Up
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetNodePool().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetNodePool().GetName())
 
 	params := url.Values{}
@@ -2712,6 +2772,11 @@ func (c *restClient) UpdateNodePool(ctx context.Context, req *edgecontainerpb.Up
 func (c *restClient) DeleteNodePool(ctx context.Context, req *edgecontainerpb.DeleteNodePoolRequest, opts ...gax.CallOption) (*DeleteNodePoolOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2791,6 +2856,11 @@ func (c *restClient) ListMachines(ctx context.Context, req *edgecontainerpb.List
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/machines", req.GetParent())
 
 		params := url.Values{}
@@ -2862,6 +2932,11 @@ func (c *restClient) GetMachine(ctx context.Context, req *edgecontainerpb.GetMac
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2927,6 +3002,11 @@ func (c *restClient) ListVpnConnections(ctx context.Context, req *edgecontainerp
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/vpnConnections", req.GetParent())
@@ -3000,6 +3080,11 @@ func (c *restClient) GetVpnConnection(ctx context.Context, req *edgecontainerpb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3059,6 +3144,11 @@ func (c *restClient) CreateVpnConnection(ctx context.Context, req *edgecontainer
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/vpnConnections", req.GetParent())
@@ -3126,6 +3216,11 @@ func (c *restClient) DeleteVpnConnection(ctx context.Context, req *edgecontainer
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3190,6 +3285,11 @@ func (c *restClient) GetServerConfig(ctx context.Context, req *edgecontainerpb.G
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/serverConfig", req.GetName())
 
 	params := url.Values{}
@@ -3242,6 +3342,11 @@ func (c *restClient) GetServerConfig(ctx context.Context, req *edgecontainerpb.G
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3309,6 +3414,11 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
@@ -3385,6 +3495,11 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -3424,6 +3539,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3461,6 +3581,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3528,6 +3653,11 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

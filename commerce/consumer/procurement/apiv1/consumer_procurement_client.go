@@ -792,6 +792,11 @@ func (c *consumerProcurementRESTClient) PlaceOrder(ctx context.Context, req *pro
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/orders:place", req.GetParent())
 
 	params := url.Values{}
@@ -852,6 +857,11 @@ func (c *consumerProcurementRESTClient) PlaceOrder(ctx context.Context, req *pro
 func (c *consumerProcurementRESTClient) GetOrder(ctx context.Context, req *procurementpb.GetOrderRequest, opts ...gax.CallOption) (*procurementpb.Order, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -921,6 +931,11 @@ func (c *consumerProcurementRESTClient) ListOrders(ctx context.Context, req *pro
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/orders", req.GetParent())
@@ -998,6 +1013,11 @@ func (c *consumerProcurementRESTClient) ModifyOrder(ctx context.Context, req *pr
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:modify", req.GetName())
 
 	params := url.Values{}
@@ -1067,6 +1087,11 @@ func (c *consumerProcurementRESTClient) CancelOrder(ctx context.Context, req *pr
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1126,6 +1151,11 @@ func (c *consumerProcurementRESTClient) CancelOrder(ctx context.Context, req *pr
 func (c *consumerProcurementRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())

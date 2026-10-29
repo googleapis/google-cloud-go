@@ -193,11 +193,11 @@ var File_google_cloud_vectorsearch_v1_embedding_config_proto protoreflect.FileDe
 
 const file_google_cloud_vectorsearch_v1_embedding_config_proto_rawDesc = "" +
 	"\n" +
-	"3google/cloud/vectorsearch/v1/embedding_config.proto\x12\x1cgoogle.cloud.vectorsearch.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xb4\x01\n" +
-	"\x15VertexEmbeddingConfig\x12\x1e\n" +
-	"\bmodel_id\x18\x01 \x01(\tB\x03\xe0A\x02R\amodelId\x12(\n" +
-	"\rtext_template\x18\x02 \x01(\tB\x03\xe0A\x01R\ftextTemplate\x12Q\n" +
-	"\ttask_type\x18\x03 \x01(\x0e2/.google.cloud.vectorsearch.v1.EmbeddingTaskTypeB\x03\xe0A\x01R\btaskType*\xeb\x01\n" +
+	"3google/cloud/vectorsearch/v1/embedding_config.proto\x12\x1cgoogle.cloud.vectorsearch.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xb7\x01\n" +
+	"\x15VertexEmbeddingConfig\x12\x1f\n" +
+	"\bmodel_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\amodelId\x12)\n" +
+	"\rtext_template\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\ftextTemplate\x12R\n" +
+	"\ttask_type\x18\x03 \x01(\x0e2/.google.cloud.vectorsearch.v1.EmbeddingTaskTypeB\x04\xe2A\x01\x01R\btaskType*\xeb\x01\n" +
 	"\x11EmbeddingTaskType\x12#\n" +
 	"\x1fEMBEDDING_TASK_TYPE_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fRETRIEVAL_QUERY\x10\x01\x12\x16\n" +

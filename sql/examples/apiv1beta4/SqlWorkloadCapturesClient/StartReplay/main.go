@@ -40,9 +40,9 @@ func main() {
 	}
 	defer c.Close()
 
-	req := &sqlpb.SqlWorkloadCapturesStartReplayRequest{
+	req := &sqlpb.WorkloadCapturesStartReplayRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/sql/apiv1beta4/sqlpb#SqlWorkloadCapturesStartReplayRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/sql/apiv1beta4/sqlpb#WorkloadCapturesStartReplayRequest.
 	}
 	resp, err := c.StartReplay(ctx, req)
 	if err != nil {

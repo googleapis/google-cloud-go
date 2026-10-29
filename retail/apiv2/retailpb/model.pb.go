@@ -746,30 +746,30 @@ var File_google_cloud_retail_v2_model_proto protoreflect.FileDescriptor
 
 const file_google_cloud_retail_v2_model_proto_rawDesc = "" +
 	"\n" +
-	"\"google/cloud/retail/v2/model.proto\x12\x16google.cloud.retail.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/cloud/retail/v2/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbe\x10\n" +
-	"\x05Model\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12W\n" +
-	"\x0etraining_state\x18\x03 \x01(\x0e2+.google.cloud.retail.v2.Model.TrainingStateB\x03\xe0A\x01R\rtrainingState\x12T\n" +
-	"\rserving_state\x18\x04 \x01(\x0e2*.google.cloud.retail.v2.Model.ServingStateB\x03\xe0A\x03R\fservingState\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x17\n" +
-	"\x04type\x18\a \x01(\tB\x03\xe0A\x02R\x04type\x12:\n" +
-	"\x16optimization_objective\x18\b \x01(\tB\x03\xe0A\x01R\x15optimizationObjective\x12j\n" +
-	"\x15periodic_tuning_state\x18\v \x01(\x0e21.google.cloud.retail.v2.Model.PeriodicTuningStateB\x03\xe0A\x01R\x13periodicTuningState\x12E\n" +
-	"\x0elast_tune_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\flastTuneTime\x12.\n" +
-	"\x10tuning_operation\x18\x0f \x01(\tB\x03\xe0A\x03R\x0ftuningOperation\x12K\n" +
+	"\"google/cloud/retail/v2/model.proto\x12\x16google.cloud.retail.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/cloud/retail/v2/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcf\x10\n" +
+	"\x05Model\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12X\n" +
+	"\x0etraining_state\x18\x03 \x01(\x0e2+.google.cloud.retail.v2.Model.TrainingStateB\x04\xe2A\x01\x01R\rtrainingState\x12U\n" +
+	"\rserving_state\x18\x04 \x01(\x0e2*.google.cloud.retail.v2.Model.ServingStateB\x04\xe2A\x01\x03R\fservingState\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x18\n" +
+	"\x04type\x18\a \x01(\tB\x04\xe2A\x01\x02R\x04type\x12;\n" +
+	"\x16optimization_objective\x18\b \x01(\tB\x04\xe2A\x01\x01R\x15optimizationObjective\x12k\n" +
+	"\x15periodic_tuning_state\x18\v \x01(\x0e21.google.cloud.retail.v2.Model.PeriodicTuningStateB\x04\xe2A\x01\x01R\x13periodicTuningState\x12F\n" +
+	"\x0elast_tune_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\flastTuneTime\x12/\n" +
+	"\x10tuning_operation\x18\x0f \x01(\tB\x04\xe2A\x01\x03R\x0ftuningOperation\x12L\n" +
 	"\n" +
-	"data_state\x18\x10 \x01(\x0e2'.google.cloud.retail.v2.Model.DataStateB\x03\xe0A\x03R\tdataState\x12f\n" +
-	"\x10filtering_option\x18\x12 \x01(\x0e26.google.cloud.retail.v2.RecommendationsFilteringOptionB\x03\xe0A\x01R\x0ffilteringOption\x12f\n" +
-	"\x14serving_config_lists\x18\x13 \x03(\v2/.google.cloud.retail.v2.Model.ServingConfigListB\x03\xe0A\x03R\x12servingConfigLists\x12j\n" +
-	"\x15model_features_config\x18\x16 \x01(\v21.google.cloud.retail.v2.Model.ModelFeaturesConfigB\x03\xe0A\x01R\x13modelFeaturesConfig\x1aF\n" +
-	"\x11ServingConfigList\x121\n" +
-	"\x12serving_config_ids\x18\x01 \x03(\tB\x03\xe0A\x01R\x10servingConfigIds\x1a\x94\x01\n" +
-	"&FrequentlyBoughtTogetherFeaturesConfig\x12j\n" +
-	"\x15context_products_type\x18\x02 \x01(\x0e21.google.cloud.retail.v2.Model.ContextProductsTypeB\x03\xe0A\x01R\x13contextProductsType\x1a\xc2\x01\n" +
+	"data_state\x18\x10 \x01(\x0e2'.google.cloud.retail.v2.Model.DataStateB\x04\xe2A\x01\x03R\tdataState\x12g\n" +
+	"\x10filtering_option\x18\x12 \x01(\x0e26.google.cloud.retail.v2.RecommendationsFilteringOptionB\x04\xe2A\x01\x01R\x0ffilteringOption\x12g\n" +
+	"\x14serving_config_lists\x18\x13 \x03(\v2/.google.cloud.retail.v2.Model.ServingConfigListB\x04\xe2A\x01\x03R\x12servingConfigLists\x12k\n" +
+	"\x15model_features_config\x18\x16 \x01(\v21.google.cloud.retail.v2.Model.ModelFeaturesConfigB\x04\xe2A\x01\x01R\x13modelFeaturesConfig\x1aG\n" +
+	"\x11ServingConfigList\x122\n" +
+	"\x12serving_config_ids\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\x10servingConfigIds\x1a\x95\x01\n" +
+	"&FrequentlyBoughtTogetherFeaturesConfig\x12k\n" +
+	"\x15context_products_type\x18\x02 \x01(\x0e21.google.cloud.retail.v2.Model.ContextProductsTypeB\x04\xe2A\x01\x01R\x13contextProductsType\x1a\xc2\x01\n" +
 	"\x13ModelFeaturesConfig\x12\x91\x01\n" +
 	"!frequently_bought_together_config\x18\x01 \x01(\v2D.google.cloud.retail.v2.Model.FrequentlyBoughtTogetherFeaturesConfigH\x00R\x1efrequentlyBoughtTogetherConfigB\x17\n" +
 	"\x15type_dedicated_config\"R\n" +

@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/sql/apiv1beta4",
-    "version": "0.3.0"
+    "version": "0.4.1"
   },
   "snippets": [
     {
@@ -3800,7 +3800,7 @@
           },
           {
             "name": "req",
-            "type": "sqlpb.SqlWorkloadCapturesStartRequest"
+            "type": "sqlpb.WorkloadCapturesStartRequest"
           },
           {
             "name": "opts",
@@ -3846,7 +3846,7 @@
           },
           {
             "name": "req",
-            "type": "sqlpb.SqlWorkloadCapturesStartReplayRequest"
+            "type": "sqlpb.WorkloadCapturesStartReplayRequest"
           },
           {
             "name": "opts",
@@ -3892,7 +3892,7 @@
           },
           {
             "name": "req",
-            "type": "sqlpb.SqlWorkloadCapturesStopRequest"
+            "type": "sqlpb.WorkloadCapturesStopRequest"
           },
           {
             "name": "opts",
@@ -3938,7 +3938,7 @@
           },
           {
             "name": "req",
-            "type": "sqlpb.SqlWorkloadCapturesStopReplayRequest"
+            "type": "sqlpb.WorkloadCapturesStopReplayRequest"
           },
           {
             "name": "opts",

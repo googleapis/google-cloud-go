@@ -8399,11 +8399,11 @@ var File_google_cloud_sql_v1_cloud_sql_resources_proto protoreflect.FileDescript
 
 const file_google_cloud_sql_v1_cloud_sql_resources_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/sql/v1/cloud_sql_resources.proto\x12\x13google.cloud.sql.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\x92\x01\n" +
+	"-google/cloud/sql/v1/cloud_sql_resources.proto\x12\x13google.cloud.sql.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\x93\x01\n" +
 	"\bAclEntry\x12\x14\n" +
 	"\x05value\x18\x01 \x01(\tR\x05value\x12C\n" +
-	"\x0fexpiration_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x0eexpirationTime\x12\x17\n" +
-	"\x04name\x18\x03 \x01(\tB\x03\xe0A\x01R\x04name\x12\x12\n" +
+	"\x0fexpiration_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x0eexpirationTime\x12\x18\n" +
+	"\x04name\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04name\x12\x12\n" +
 	"\x04kind\x18\x04 \x01(\tR\x04kind\"\xb1\x02\n" +
 	"\n" +
 	"ApiWarning\x12E\n" +
@@ -8421,21 +8421,21 @@ const file_google_cloud_sql_v1_cloud_sql_resources_proto_rawDesc = "" +
 	"\x10retained_backups\x18\x02 \x01(\v2\x1b.google.protobuf.Int32ValueR\x0fretainedBackups\":\n" +
 	"\rRetentionUnit\x12\x1e\n" +
 	"\x1aRETENTION_UNIT_UNSPECIFIED\x10\x00\x12\t\n" +
-	"\x05COUNT\x10\x01\"\xb2\t\n" +
+	"\x05COUNT\x10\x01\"\xb5\t\n" +
 	"\x13BackupConfiguration\x12\x1d\n" +
 	"\n" +
 	"start_time\x18\x01 \x01(\tR\tstartTime\x124\n" +
 	"\aenabled\x18\x02 \x01(\v2\x1a.google.protobuf.BoolValueR\aenabled\x12\x12\n" +
 	"\x04kind\x18\x03 \x01(\tR\x04kind\x12H\n" +
-	"\x12binary_log_enabled\x18\x04 \x01(\v2\x1a.google.protobuf.BoolValueR\x10binaryLogEnabled\x12l\n" +
-	"!replication_log_archiving_enabled\x18\x05 \x01(\v2\x1a.google.protobuf.BoolValueB\x05\xe0A\x01\x18\x01R\x1ereplicationLogArchivingEnabled\x12\x1a\n" +
+	"\x12binary_log_enabled\x18\x04 \x01(\v2\x1a.google.protobuf.BoolValueR\x10binaryLogEnabled\x12m\n" +
+	"!replication_log_archiving_enabled\x18\x05 \x01(\v2\x1a.google.protobuf.BoolValueB\x06\xe2A\x01\x01\x18\x01R\x1ereplicationLogArchivingEnabled\x12\x1a\n" +
 	"\blocation\x18\x06 \x01(\tR\blocation\x12^\n" +
 	"\x1epoint_in_time_recovery_enabled\x18\a \x01(\v2\x1a.google.protobuf.BoolValueR\x1apointInTimeRecoveryEnabled\x12h\n" +
 	"\x19backup_retention_settings\x18\b \x01(\v2,.google.cloud.sql.v1.BackupRetentionSettingsR\x17backupRetentionSettings\x12`\n" +
-	"\x1etransaction_log_retention_days\x18\t \x01(\v2\x1b.google.protobuf.Int32ValueR\x1btransactionLogRetentionDays\x12\x96\x01\n" +
+	"\x1etransaction_log_retention_days\x18\t \x01(\v2\x1b.google.protobuf.Int32ValueR\x1btransactionLogRetentionDays\x12\x97\x01\n" +
 	"\x1ftransactional_log_storage_state\x18\n" +
-	" \x01(\x0e2E.google.cloud.sql.v1.BackupConfiguration.TransactionalLogStorageStateB\x03\xe0A\x03H\x00R\x1ctransactionalLogStorageState\x88\x01\x01\x12^\n" +
-	"\vbackup_tier\x18\v \x01(\x0e23.google.cloud.sql.v1.BackupConfiguration.BackupTierB\x03\xe0A\x03H\x01R\n" +
+	" \x01(\x0e2E.google.cloud.sql.v1.BackupConfiguration.TransactionalLogStorageStateB\x04\xe2A\x01\x03H\x00R\x1ctransactionalLogStorageState\x88\x01\x01\x12_\n" +
+	"\vbackup_tier\x18\v \x01(\x0e23.google.cloud.sql.v1.BackupConfiguration.BackupTierB\x04\xe2A\x01\x03H\x01R\n" +
 	"backupTier\x88\x01\x01\"\xab\x01\n" +
 	"\x1cTransactionalLogStorageState\x12/\n" +
 	"+TRANSACTIONAL_LOG_STORAGE_STATE_UNSPECIFIED\x10\x00\x12\b\n" +
@@ -8464,12 +8464,12 @@ const file_google_cloud_sql_v1_cloud_sql_resources_proto_rawDesc = "" +
 	"\x05ERROR\x10\x03B\n" +
 	"\n" +
 	"\b_messageB\x0f\n" +
-	"\r_message_type\"\xd3\x02\n" +
-	"\"PreCheckMajorVersionUpgradeContext\x12d\n" +
-	"\x17target_database_version\x18\x01 \x01(\x0e2'.google.cloud.sql.v1.SqlDatabaseVersionB\x03\xe0A\x02R\x15targetDatabaseVersion\x12X\n" +
-	"\x12pre_check_response\x18\x02 \x03(\v2%.google.cloud.sql.v1.PreCheckResponseB\x03\xe0A\x03R\x10preCheckResponse\x12\x17\n" +
-	"\x04kind\x18\x03 \x01(\tB\x03\xe0A\x01R\x04kind\x12D\n" +
-	"\vmax_runtime\x18\x04 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01H\x00R\n" +
+	"\r_message_type\"\xd7\x02\n" +
+	"\"PreCheckMajorVersionUpgradeContext\x12e\n" +
+	"\x17target_database_version\x18\x01 \x01(\x0e2'.google.cloud.sql.v1.SqlDatabaseVersionB\x04\xe2A\x01\x02R\x15targetDatabaseVersion\x12Y\n" +
+	"\x12pre_check_response\x18\x02 \x03(\v2%.google.cloud.sql.v1.PreCheckResponseB\x04\xe2A\x01\x03R\x10preCheckResponse\x12\x18\n" +
+	"\x04kind\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04kind\x12E\n" +
+	"\vmax_runtime\x18\x04 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01H\x00R\n" +
 	"maxRuntime\x88\x01\x01B\x0e\n" +
 	"\f_max_runtime\"T\n" +
 	"\rBackupContext\x12\x1b\n" +
@@ -8512,7 +8512,7 @@ const file_google_cloud_sql_v1_cloud_sql_resources_proto_rawDesc = "" +
 	"\n" +
 	"client_key\x18\x04 \x01(\tR\tclientKey\x12-\n" +
 	"\x12client_certificate\x18\x05 \x01(\tR\x11clientCertificate\x12%\n" +
-	"\x0eca_certificate\x18\x06 \x01(\tR\rcaCertificate\"\xd4\x11\n" +
+	"\x0eca_certificate\x18\x06 \x01(\tR\rcaCertificate\"\xe0\x11\n" +
 	"\rExportContext\x12\x10\n" +
 	"\x03uri\x18\x01 \x01(\tR\x03uri\x12\x1c\n" +
 	"\tdatabases\x18\x02 \x03(\tR\tdatabases\x12\x12\n" +
@@ -8521,42 +8521,42 @@ const file_google_cloud_sql_v1_cloud_sql_resources_proto_rawDesc = "" +
 	"\x12csv_export_options\x18\x05 \x01(\v26.google.cloud.sql.v1.ExportContext.SqlCsvExportOptionsR\x10csvExportOptions\x12=\n" +
 	"\tfile_type\x18\x06 \x01(\x0e2 .google.cloud.sql.v1.SqlFileTypeR\bfileType\x124\n" +
 	"\aoffload\x18\b \x01(\v2\x1a.google.protobuf.BoolValueR\aoffload\x12d\n" +
-	"\x12bak_export_options\x18\t \x01(\v26.google.cloud.sql.v1.ExportContext.SqlBakExportOptionsR\x10bakExportOptions\x12i\n" +
+	"\x12bak_export_options\x18\t \x01(\v26.google.cloud.sql.v1.ExportContext.SqlBakExportOptionsR\x10bakExportOptions\x12j\n" +
 	"\x12tde_export_options\x18\n" +
-	" \x01(\v26.google.cloud.sql.v1.ExportContext.SqlTdeExportOptionsB\x03\xe0A\x01R\x10tdeExportOptions\x1a\xee\x01\n" +
+	" \x01(\v26.google.cloud.sql.v1.ExportContext.SqlTdeExportOptionsB\x04\xe2A\x01\x01R\x10tdeExportOptions\x1a\xee\x01\n" +
 	"\x13SqlCsvExportOptions\x12!\n" +
 	"\fselect_query\x18\x01 \x01(\tR\vselectQuery\x12)\n" +
 	"\x10escape_character\x18\x02 \x01(\tR\x0fescapeCharacter\x12'\n" +
 	"\x0fquote_character\x18\x03 \x01(\tR\x0equoteCharacter\x120\n" +
 	"\x14fields_terminated_by\x18\x04 \x01(\tR\x12fieldsTerminatedBy\x12.\n" +
-	"\x13lines_terminated_by\x18\x06 \x01(\tR\x11linesTerminatedBy\x1a\xc6\x05\n" +
+	"\x13lines_terminated_by\x18\x06 \x01(\tR\x11linesTerminatedBy\x1a\xcb\x05\n" +
 	"\x10SqlExportOptions\x12\x16\n" +
 	"\x06tables\x18\x01 \x03(\tR\x06tables\x12;\n" +
 	"\vschema_only\x18\x02 \x01(\v2\x1a.google.protobuf.BoolValueR\n" +
 	"schemaOnly\x12x\n" +
-	"\x14mysql_export_options\x18\x03 \x01(\v2F.google.cloud.sql.v1.ExportContext.SqlExportOptions.MysqlExportOptionsR\x12mysqlExportOptions\x12:\n" +
-	"\athreads\x18\x04 \x01(\v2\x1b.google.protobuf.Int32ValueB\x03\xe0A\x01R\athreads\x12;\n" +
-	"\bparallel\x18\x05 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\bparallel\x12\x86\x01\n" +
-	"\x17postgres_export_options\x18\x06 \x01(\v2I.google.cloud.sql.v1.ExportContext.SqlExportOptions.PostgresExportOptionsB\x03\xe0A\x01R\x15postgresExportOptions\x1aR\n" +
+	"\x14mysql_export_options\x18\x03 \x01(\v2F.google.cloud.sql.v1.ExportContext.SqlExportOptions.MysqlExportOptionsR\x12mysqlExportOptions\x12;\n" +
+	"\athreads\x18\x04 \x01(\v2\x1b.google.protobuf.Int32ValueB\x04\xe2A\x01\x01R\athreads\x12<\n" +
+	"\bparallel\x18\x05 \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\bparallel\x12\x87\x01\n" +
+	"\x17postgres_export_options\x18\x06 \x01(\v2I.google.cloud.sql.v1.ExportContext.SqlExportOptions.PostgresExportOptionsB\x04\xe2A\x01\x01R\x15postgresExportOptions\x1aR\n" +
 	"\x12MysqlExportOptions\x12<\n" +
 	"\vmaster_data\x18\x01 \x01(\v2\x1b.google.protobuf.Int32ValueR\n" +
-	"masterData\x1a\x8c\x01\n" +
-	"\x15PostgresExportOptions\x125\n" +
-	"\x05clean\x18\x01 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\x05clean\x12<\n" +
-	"\tif_exists\x18\x02 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\bifExists\x1a\xee\x03\n" +
+	"masterData\x1a\x8e\x01\n" +
+	"\x15PostgresExportOptions\x126\n" +
+	"\x05clean\x18\x01 \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\x05clean\x12=\n" +
+	"\tif_exists\x18\x02 \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\bifExists\x1a\xf0\x03\n" +
 	"\x13SqlBakExportOptions\x124\n" +
 	"\astriped\x18\x01 \x01(\v2\x1a.google.protobuf.BoolValueR\astriped\x12>\n" +
 	"\fstripe_count\x18\x02 \x01(\v2\x1b.google.protobuf.Int32ValueR\vstripeCount\x127\n" +
 	"\bbak_type\x18\x04 \x01(\x0e2\x1c.google.cloud.sql.v1.BakTypeR\abakType\x12;\n" +
 	"\tcopy_only\x18\x05 \x01(\v2\x1a.google.protobuf.BoolValueB\x02\x18\x01R\bcopyOnly\x12G\n" +
-	"\x11differential_base\x18\x06 \x01(\v2\x1a.google.protobuf.BoolValueR\x10differentialBase\x12R\n" +
-	"\x15export_log_start_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\x12exportLogStartTime\x12N\n" +
-	"\x13export_log_end_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\x10exportLogEndTime\x1a\xc4\x01\n" +
-	"\x13SqlTdeExportOptions\x12.\n" +
-	"\x10certificate_path\x18\x01 \x01(\tB\x03\xe0A\x02R\x0fcertificatePath\x12-\n" +
-	"\x10private_key_path\x18\x02 \x01(\tB\x03\xe0A\x02R\x0eprivateKeyPath\x125\n" +
-	"\x14private_key_password\x18\x03 \x01(\tB\x03\xe0A\x02R\x12privateKeyPassword\x12\x17\n" +
-	"\x04name\x18\x05 \x01(\tB\x03\xe0A\x02R\x04name\"\xd3\x10\n" +
+	"\x11differential_base\x18\x06 \x01(\v2\x1a.google.protobuf.BoolValueR\x10differentialBase\x12S\n" +
+	"\x15export_log_start_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\x12exportLogStartTime\x12O\n" +
+	"\x13export_log_end_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\x10exportLogEndTime\x1a\xc8\x01\n" +
+	"\x13SqlTdeExportOptions\x12/\n" +
+	"\x10certificate_path\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x0fcertificatePath\x12.\n" +
+	"\x10private_key_path\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0eprivateKeyPath\x126\n" +
+	"\x14private_key_password\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x12privateKeyPassword\x12\x18\n" +
+	"\x04name\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\x04name\"\xe1\x10\n" +
 	"\rImportContext\x12\x10\n" +
 	"\x03uri\x18\x01 \x01(\tR\x03uri\x12\x1a\n" +
 	"\bdatabase\x18\x02 \x01(\tR\bdatabase\x12\x12\n" +
@@ -8565,43 +8565,43 @@ const file_google_cloud_sql_v1_cloud_sql_resources_proto_rawDesc = "" +
 	"\x12csv_import_options\x18\x05 \x01(\v26.google.cloud.sql.v1.ImportContext.SqlCsvImportOptionsR\x10csvImportOptions\x12\x1f\n" +
 	"\vimport_user\x18\x06 \x01(\tR\n" +
 	"importUser\x12d\n" +
-	"\x12bak_import_options\x18\a \x01(\v26.google.cloud.sql.v1.ImportContext.SqlBakImportOptionsR\x10bakImportOptions\x12f\n" +
-	"\x12sql_import_options\x18\b \x01(\v23.google.cloud.sql.v1.ImportContext.SqlImportOptionsB\x03\xe0A\x01R\x10sqlImportOptions\x12i\n" +
-	"\x12tde_import_options\x18\t \x01(\v26.google.cloud.sql.v1.ImportContext.SqlTdeImportOptionsB\x03\xe0A\x01R\x10tdeImportOptions\x1a\xa3\x03\n" +
-	"\x10SqlImportOptions\x12:\n" +
-	"\athreads\x18\x01 \x01(\v2\x1b.google.protobuf.Int32ValueB\x03\xe0A\x01R\athreads\x12;\n" +
-	"\bparallel\x18\x02 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\bparallel\x12\x86\x01\n" +
-	"\x17postgres_import_options\x18\x03 \x01(\v2I.google.cloud.sql.v1.ImportContext.SqlImportOptions.PostgresImportOptionsB\x03\xe0A\x01R\x15postgresImportOptions\x1a\x8c\x01\n" +
-	"\x15PostgresImportOptions\x125\n" +
-	"\x05clean\x18\x01 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\x05clean\x12<\n" +
-	"\tif_exists\x18\x02 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\bifExists\x1a\xfb\x01\n" +
+	"\x12bak_import_options\x18\a \x01(\v26.google.cloud.sql.v1.ImportContext.SqlBakImportOptionsR\x10bakImportOptions\x12g\n" +
+	"\x12sql_import_options\x18\b \x01(\v23.google.cloud.sql.v1.ImportContext.SqlImportOptionsB\x04\xe2A\x01\x01R\x10sqlImportOptions\x12j\n" +
+	"\x12tde_import_options\x18\t \x01(\v26.google.cloud.sql.v1.ImportContext.SqlTdeImportOptionsB\x04\xe2A\x01\x01R\x10tdeImportOptions\x1a\xa8\x03\n" +
+	"\x10SqlImportOptions\x12;\n" +
+	"\athreads\x18\x01 \x01(\v2\x1b.google.protobuf.Int32ValueB\x04\xe2A\x01\x01R\athreads\x12<\n" +
+	"\bparallel\x18\x02 \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\bparallel\x12\x87\x01\n" +
+	"\x17postgres_import_options\x18\x03 \x01(\v2I.google.cloud.sql.v1.ImportContext.SqlImportOptions.PostgresImportOptionsB\x04\xe2A\x01\x01R\x15postgresImportOptions\x1a\x8e\x01\n" +
+	"\x15PostgresImportOptions\x126\n" +
+	"\x05clean\x18\x01 \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\x05clean\x12=\n" +
+	"\tif_exists\x18\x02 \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\bifExists\x1a\xfb\x01\n" +
 	"\x13SqlCsvImportOptions\x12\x14\n" +
 	"\x05table\x18\x01 \x01(\tR\x05table\x12\x18\n" +
 	"\acolumns\x18\x02 \x03(\tR\acolumns\x12)\n" +
 	"\x10escape_character\x18\x04 \x01(\tR\x0fescapeCharacter\x12'\n" +
 	"\x0fquote_character\x18\x05 \x01(\tR\x0equoteCharacter\x120\n" +
 	"\x14fields_terminated_by\x18\x06 \x01(\tR\x12fieldsTerminatedBy\x12.\n" +
-	"\x13lines_terminated_by\x18\b \x01(\tR\x11linesTerminatedBy\x1a\x95\x05\n" +
+	"\x13lines_terminated_by\x18\b \x01(\tR\x11linesTerminatedBy\x1a\x98\x05\n" +
 	"\x13SqlBakImportOptions\x12w\n" +
 	"\x12encryption_options\x18\x01 \x01(\v2H.google.cloud.sql.v1.ImportContext.SqlBakImportOptions.EncryptionOptionsR\x11encryptionOptions\x124\n" +
 	"\astriped\x18\x02 \x01(\v2\x1a.google.protobuf.BoolValueR\astriped\x12;\n" +
 	"\vno_recovery\x18\x04 \x01(\v2\x1a.google.protobuf.BoolValueR\n" +
 	"noRecovery\x12?\n" +
 	"\rrecovery_only\x18\x05 \x01(\v2\x1a.google.protobuf.BoolValueR\frecoveryOnly\x127\n" +
-	"\bbak_type\x18\x06 \x01(\x0e2\x1c.google.cloud.sql.v1.BakTypeR\abakType\x128\n" +
-	"\astop_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\x06stopAt\x12%\n" +
-	"\fstop_at_mark\x18\b \x01(\tB\x03\xe0A\x01R\n" +
-	"stopAtMark\x1a\xb6\x01\n" +
+	"\bbak_type\x18\x06 \x01(\x0e2\x1c.google.cloud.sql.v1.BakTypeR\abakType\x129\n" +
+	"\astop_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\x06stopAt\x12&\n" +
+	"\fstop_at_mark\x18\b \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"stopAtMark\x1a\xb7\x01\n" +
 	"\x11EncryptionOptions\x12\x1b\n" +
 	"\tcert_path\x18\x01 \x01(\tR\bcertPath\x12\x19\n" +
 	"\bpvk_path\x18\x02 \x01(\tR\apvkPath\x12!\n" +
-	"\fpvk_password\x18\x03 \x01(\tR\vpvkPassword\x12F\n" +
-	"\x0ekeep_encrypted\x18\x05 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\rkeepEncrypted\x1a\xc4\x01\n" +
-	"\x13SqlTdeImportOptions\x12.\n" +
-	"\x10certificate_path\x18\x01 \x01(\tB\x03\xe0A\x02R\x0fcertificatePath\x12-\n" +
-	"\x10private_key_path\x18\x02 \x01(\tB\x03\xe0A\x02R\x0eprivateKeyPath\x125\n" +
-	"\x14private_key_password\x18\x03 \x01(\tB\x03\xe0A\x02R\x12privateKeyPassword\x12\x17\n" +
-	"\x04name\x18\x05 \x01(\tB\x03\xe0A\x02R\x04name\"\xa2\v\n" +
+	"\fpvk_password\x18\x03 \x01(\tR\vpvkPassword\x12G\n" +
+	"\x0ekeep_encrypted\x18\x05 \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\rkeepEncrypted\x1a\xc8\x01\n" +
+	"\x13SqlTdeImportOptions\x12/\n" +
+	"\x10certificate_path\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x0fcertificatePath\x12.\n" +
+	"\x10private_key_path\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0eprivateKeyPath\x126\n" +
+	"\x14private_key_password\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x12privateKeyPassword\x12\x18\n" +
+	"\x04name\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\x04name\"\xa5\v\n" +
 	"\x0fIpConfiguration\x12=\n" +
 	"\fipv4_enabled\x18\x01 \x01(\v2\x1a.google.protobuf.BoolValueR\vipv4Enabled\x12'\n" +
 	"\x0fprivate_network\x18\x02 \x01(\tR\x0eprivateNetwork\x12;\n" +
@@ -8614,10 +8614,10 @@ const file_google_cloud_sql_v1_cloud_sql_resources_proto_rawDesc = "" +
 	"\n" +
 	"psc_config\x18\t \x01(\v2\x1e.google.cloud.sql.v1.PscConfigH\x00R\tpscConfig\x88\x01\x01\x12V\n" +
 	"\x0eserver_ca_mode\x18\n" +
-	" \x01(\x0e2+.google.cloud.sql.v1.IpConfiguration.CaModeH\x01R\fserverCaMode\x88\x01\x01\x12L\n" +
-	" custom_subject_alternative_names\x18\v \x03(\tB\x03\xe0A\x01R\x1dcustomSubjectAlternativeNames\x12.\n" +
-	"\x0eserver_ca_pool\x18\f \x01(\tB\x03\xe0A\x01H\x02R\fserverCaPool\x88\x01\x01\x12\x95\x01\n" +
-	" server_certificate_rotation_mode\x18\x10 \x01(\x0e2B.google.cloud.sql.v1.IpConfiguration.ServerCertificateRotationModeB\x03\xe0A\x01H\x03R\x1dserverCertificateRotationMode\x88\x01\x01\"\x85\x01\n" +
+	" \x01(\x0e2+.google.cloud.sql.v1.IpConfiguration.CaModeH\x01R\fserverCaMode\x88\x01\x01\x12M\n" +
+	" custom_subject_alternative_names\x18\v \x03(\tB\x04\xe2A\x01\x01R\x1dcustomSubjectAlternativeNames\x12/\n" +
+	"\x0eserver_ca_pool\x18\f \x01(\tB\x04\xe2A\x01\x01H\x02R\fserverCaPool\x88\x01\x01\x12\x96\x01\n" +
+	" server_certificate_rotation_mode\x18\x10 \x01(\x0e2B.google.cloud.sql.v1.IpConfiguration.ServerCertificateRotationModeB\x04\xe2A\x01\x01H\x03R\x1dserverCertificateRotationMode\x88\x01\x01\"\x85\x01\n" +
 	"\aSslMode\x12\x18\n" +
 	"\x14SSL_MODE_UNSPECIFIED\x10\x00\x12#\n" +
 	"\x1fALLOW_UNENCRYPTED_AND_ENCRYPTED\x10\x01\x12\x12\n" +
@@ -8635,33 +8635,33 @@ const file_google_cloud_sql_v1_cloud_sql_resources_proto_rawDesc = "" +
 	"\v_psc_configB\x11\n" +
 	"\x0f_server_ca_modeB\x11\n" +
 	"\x0f_server_ca_poolB#\n" +
-	"!_server_certificate_rotation_mode\"\x91\x05\n" +
+	"!_server_certificate_rotation_mode\"\x97\x05\n" +
 	"\tPscConfig\x12$\n" +
 	"\vpsc_enabled\x18\x01 \x01(\bH\x00R\n" +
-	"pscEnabled\x88\x01\x01\x12?\n" +
-	"\x19allowed_consumer_projects\x18\x02 \x03(\tB\x03\xe0A\x01R\x17allowedConsumerProjects\x12c\n" +
-	"\x14psc_auto_connections\x18\x03 \x03(\v2,.google.cloud.sql.v1.PscAutoConnectionConfigB\x03\xe0A\x01R\x12pscAutoConnections\x12f\n" +
-	"\x16network_attachment_uri\x18\x04 \x01(\tB0\xe0A\x01\xfaA*\n" +
-	"(compute.googleapis.com/NetworkAttachmentR\x14networkAttachmentUri\x129\n" +
-	"\x14psc_auto_dns_enabled\x18\x05 \x01(\bB\x03\xe0A\x01H\x01R\x11pscAutoDnsEnabled\x88\x01\x01\x12L\n" +
-	"\x1epsc_write_endpoint_dns_enabled\x18\x06 \x01(\bB\x03\xe0A\x01H\x02R\x1apscWriteEndpointDnsEnabled\x88\x01\x01\x12T\n" +
-	"\"psc_auto_connection_policy_enabled\x18\a \x01(\bB\x03\xe0A\x01H\x03R\x1epscAutoConnectionPolicyEnabled\x88\x01\x01B\x0e\n" +
+	"pscEnabled\x88\x01\x01\x12@\n" +
+	"\x19allowed_consumer_projects\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x17allowedConsumerProjects\x12d\n" +
+	"\x14psc_auto_connections\x18\x03 \x03(\v2,.google.cloud.sql.v1.PscAutoConnectionConfigB\x04\xe2A\x01\x01R\x12pscAutoConnections\x12g\n" +
+	"\x16network_attachment_uri\x18\x04 \x01(\tB1\xe2A\x01\x01\xfaA*\n" +
+	"(compute.googleapis.com/NetworkAttachmentR\x14networkAttachmentUri\x12:\n" +
+	"\x14psc_auto_dns_enabled\x18\x05 \x01(\bB\x04\xe2A\x01\x01H\x01R\x11pscAutoDnsEnabled\x88\x01\x01\x12M\n" +
+	"\x1epsc_write_endpoint_dns_enabled\x18\x06 \x01(\bB\x04\xe2A\x01\x01H\x02R\x1apscWriteEndpointDnsEnabled\x88\x01\x01\x12U\n" +
+	"\"psc_auto_connection_policy_enabled\x18\a \x01(\bB\x04\xe2A\x01\x01H\x03R\x1epscAutoConnectionPolicyEnabled\x88\x01\x01B\x0e\n" +
 	"\f_psc_enabledB\x17\n" +
 	"\x15_psc_auto_dns_enabledB!\n" +
 	"\x1f_psc_write_endpoint_dns_enabledB%\n" +
-	"#_psc_auto_connection_policy_enabled\"\xf9\x06\n" +
-	"\x17PscAutoConnectionConfig\x12.\n" +
-	"\x10consumer_project\x18\x01 \x01(\tB\x03\xe0A\x01R\x0fconsumerProject\x12.\n" +
-	"\x10consumer_network\x18\x02 \x01(\tB\x03\xe0A\x01R\x0fconsumerNetwork\x12,\n" +
+	"#_psc_auto_connection_policy_enabled\"\xff\x06\n" +
+	"\x17PscAutoConnectionConfig\x12/\n" +
+	"\x10consumer_project\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0fconsumerProject\x12/\n" +
+	"\x10consumer_network\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x0fconsumerNetwork\x12,\n" +
 	"\n" +
 	"ip_address\x18\x03 \x01(\tB\b\xe2\x8c\xcf\xd7\b\x02\b\x04H\x00R\tipAddress\x88\x01\x01\x12\x1b\n" +
 	"\x06status\x18\x04 \x01(\tH\x01R\x06status\x88\x01\x01\x12;\n" +
-	"\x17consumer_network_status\x18\x05 \x01(\tH\x02R\x15consumerNetworkStatus\x88\x01\x01\x12w\n" +
-	"\x19service_connection_policy\x18\x06 \x01(\tB6\xe0A\x03\xfaA0\n" +
-	".compute.googleapis.com/ServiceConnectionPolicyH\x03R\x17serviceConnectionPolicy\x88\x01\x01\x12b\n" +
-	")service_connection_policy_creation_result\x18\a \x01(\tB\x03\xe0A\x03H\x04R%serviceConnectionPolicyCreationResult\x88\x01\x01\x12e\n" +
-	"\x18instance_auto_dns_status\x18\b \x01(\x0e2\".google.cloud.sql.v1.AutoDnsStatusB\x03\xe0A\x03H\x05R\x15instanceAutoDnsStatus\x88\x01\x01\x12p\n" +
-	"\x1ewrite_endpoint_auto_dns_status\x18\t \x01(\x0e2\".google.cloud.sql.v1.AutoDnsStatusB\x03\xe0A\x03H\x06R\x1awriteEndpointAutoDnsStatus\x88\x01\x01B\r\n" +
+	"\x17consumer_network_status\x18\x05 \x01(\tH\x02R\x15consumerNetworkStatus\x88\x01\x01\x12x\n" +
+	"\x19service_connection_policy\x18\x06 \x01(\tB7\xe2A\x01\x03\xfaA0\n" +
+	".compute.googleapis.com/ServiceConnectionPolicyH\x03R\x17serviceConnectionPolicy\x88\x01\x01\x12c\n" +
+	")service_connection_policy_creation_result\x18\a \x01(\tB\x04\xe2A\x01\x03H\x04R%serviceConnectionPolicyCreationResult\x88\x01\x01\x12f\n" +
+	"\x18instance_auto_dns_status\x18\b \x01(\x0e2\".google.cloud.sql.v1.AutoDnsStatusB\x04\xe2A\x01\x03H\x05R\x15instanceAutoDnsStatus\x88\x01\x01\x12q\n" +
+	"\x1ewrite_endpoint_auto_dns_status\x18\t \x01(\x0e2\".google.cloud.sql.v1.AutoDnsStatusB\x04\xe2A\x01\x03H\x06R\x1awriteEndpointAutoDnsStatus\x88\x01\x01B\r\n" +
 	"\v_ip_addressB\t\n" +
 	"\a_statusB\x1a\n" +
 	"\x18_consumer_network_statusB\x1c\n" +
@@ -8683,14 +8683,14 @@ const file_google_cloud_sql_v1_cloud_sql_resources_proto_rawDesc = "" +
 	"\n" +
 	"start_date\x18\x01 \x01(\tR\tstartDate\x12\x19\n" +
 	"\bend_date\x18\x02 \x01(\tR\aendDate\x12\x12\n" +
-	"\x04time\x18\x03 \x01(\tR\x04time\"\xb9\x03\n" +
+	"\x04time\x18\x03 \x01(\tR\x04time\"\xba\x03\n" +
 	"\x0eInsightsConfig\x124\n" +
 	"\x16query_insights_enabled\x18\x01 \x01(\bR\x14queryInsightsEnabled\x122\n" +
 	"\x15record_client_address\x18\x02 \x01(\bR\x13recordClientAddress\x126\n" +
 	"\x17record_application_tags\x18\x03 \x01(\bR\x15recordApplicationTags\x12K\n" +
 	"\x13query_string_length\x18\x04 \x01(\v2\x1b.google.protobuf.Int32ValueR\x11queryStringLength\x12P\n" +
-	"\x16query_plans_per_minute\x18\x05 \x01(\v2\x1b.google.protobuf.Int32ValueR\x13queryPlansPerMinute\x12f\n" +
-	"\x1fenhanced_query_insights_enabled\x18\b \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\x1cenhancedQueryInsightsEnabled\"\xa1\x04\n" +
+	"\x16query_plans_per_minute\x18\x05 \x01(\v2\x1b.google.protobuf.Int32ValueR\x13queryPlansPerMinute\x12g\n" +
+	"\x1fenhanced_query_insights_enabled\x18\b \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\x1cenhancedQueryInsightsEnabled\"\xa1\x04\n" +
 	"\x19MySqlReplicaConfiguration\x12$\n" +
 	"\x0edump_file_path\x18\x01 \x01(\tR\fdumpFilePath\x12\x1a\n" +
 	"\busername\x18\x02 \x01(\tR\busername\x12\x1a\n" +
@@ -8705,14 +8705,14 @@ const file_google_cloud_sql_v1_cloud_sql_resources_proto_rawDesc = "" +
 	"ssl_cipher\x18\t \x01(\tR\tsslCipher\x12V\n" +
 	"\x19verify_server_certificate\x18\n" +
 	" \x01(\v2\x1a.google.protobuf.BoolValueR\x17verifyServerCertificate\x12\x12\n" +
-	"\x04kind\x18\v \x01(\tR\x04kind\"\xc8\x02\n" +
+	"\x04kind\x18\v \x01(\tR\x04kind\"\xca\x02\n" +
 	"\x1bDiskEncryptionConfiguration\x12H\n" +
 	"\fkms_key_name\x18\x01 \x01(\tB&\xfaA#\n" +
 	"!cloudkms.googleapis.com/CryptoKeyR\n" +
 	"kmsKeyName\x12\x12\n" +
-	"\x04kind\x18\x02 \x01(\tR\x04kind\x125\n" +
-	"\x11confidential_mode\x18\x03 \x01(\bB\x03\xe0A\x01H\x00R\x10confidentialMode\x88\x01\x01\x12V\n" +
-	"#cmek_source_log_encryption_enforced\x18\x04 \x01(\bB\x03\xe0A\x01H\x01R\x1fcmekSourceLogEncryptionEnforced\x88\x01\x01B\x14\n" +
+	"\x04kind\x18\x02 \x01(\tR\x04kind\x126\n" +
+	"\x11confidential_mode\x18\x03 \x01(\bB\x04\xe2A\x01\x01H\x00R\x10confidentialMode\x88\x01\x01\x12W\n" +
+	"#cmek_source_log_encryption_enforced\x18\x04 \x01(\bB\x04\xe2A\x01\x01H\x01R\x1fcmekSourceLogEncryptionEnforced\x88\x01\x01B\x14\n" +
 	"\x12_confidential_modeB&\n" +
 	"$_cmek_source_log_encryption_enforced\"\x8a\x01\n" +
 	"\x14DiskEncryptionStatus\x12^\n" +
@@ -8726,7 +8726,7 @@ const file_google_cloud_sql_v1_cloud_sql_resources_proto_rawDesc = "" +
 	"\x0etime_to_retire\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\ftimeToRetire\"\x84\x01\n" +
 	"\x13SqlSubOperationType\x12T\n" +
 	"\x10maintenance_type\x18\x01 \x01(\x0e2'.google.cloud.sql.v1.SqlMaintenanceTypeH\x00R\x0fmaintenanceTypeB\x17\n" +
-	"\x15sub_operation_details\"\xd1\x17\n" +
+	"\x15sub_operation_details\"\xd2\x17\n" +
 	"\tOperation\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12\x1f\n" +
 	"\vtarget_link\x18\x02 \x01(\tR\n" +
@@ -8755,8 +8755,8 @@ const file_google_cloud_sql_v1_cloud_sql_resources_proto_rawDesc = "" +
 	"\ttarget_id\x18\r \x01(\tR\btargetId\x12\x1b\n" +
 	"\tself_link\x18\x0e \x01(\tR\bselfLink\x12%\n" +
 	"\x0etarget_project\x18\x0f \x01(\tR\rtargetProject\x12i\n" +
-	"\x1aacquire_ssrs_lease_context\x18\x14 \x01(\v2,.google.cloud.sql.v1.AcquireSsrsLeaseContextR\x17acquireSsrsLeaseContext\x12[\n" +
-	"\x12sub_operation_type\x180 \x01(\v2(.google.cloud.sql.v1.SqlSubOperationTypeB\x03\xe0A\x01R\x10subOperationType\"\xcd\t\n" +
+	"\x1aacquire_ssrs_lease_context\x18\x14 \x01(\v2,.google.cloud.sql.v1.AcquireSsrsLeaseContextR\x17acquireSsrsLeaseContext\x12\\\n" +
+	"\x12sub_operation_type\x180 \x01(\v2(.google.cloud.sql.v1.SqlSubOperationTypeB\x04\xe2A\x01\x01R\x10subOperationType\"\xcd\t\n" +
 	"\x10SqlOperationType\x12\"\n" +
 	"\x1eSQL_OPERATION_TYPE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
@@ -8856,7 +8856,7 @@ const file_google_cloud_sql_v1_cloud_sql_resources_proto_rawDesc = "" +
 	"\x0eretention_days\x18\x03 \x01(\x05H\x01R\rretentionDays\x88\x01\x01B\n" +
 	"\n" +
 	"\b_enabledB\x11\n" +
-	"\x0f_retention_days\"\x8c#\n" +
+	"\x0f_retention_days\"\x9a#\n" +
 	"\bSettings\x12F\n" +
 	"\x10settings_version\x18\x01 \x01(\v2\x1b.google.protobuf.Int64ValueR\x0fsettingsVersion\x12B\n" +
 	"\x1bauthorized_gae_applications\x18\x02 \x03(\tB\x02\x18\x01R\x19authorizedGaeApplications\x12\x12\n" +
@@ -8885,27 +8885,27 @@ const file_google_cloud_sql_v1_cloud_sql_resources_proto_rawDesc = "" +
 	"\x18deny_maintenance_periods\x18\x18 \x03(\v2*.google.cloud.sql.v1.DenyMaintenancePeriodR\x16denyMaintenancePeriods\x12L\n" +
 	"\x0finsights_config\x18\x19 \x01(\v2#.google.cloud.sql.v1.InsightsConfigR\x0einsightsConfig\x12k\n" +
 	"\x1apassword_validation_policy\x18\x1b \x01(\v2-.google.cloud.sql.v1.PasswordValidationPolicyR\x18passwordValidationPolicy\x12`\n" +
-	"\x17sql_server_audit_config\x18\x1d \x01(\v2).google.cloud.sql.v1.SqlServerAuditConfigR\x14sqlServerAuditConfig\x12D\n" +
-	"\aedition\x18& \x01(\x0e2%.google.cloud.sql.v1.Settings.EditionB\x03\xe0A\x01R\aedition\x12g\n" +
+	"\x17sql_server_audit_config\x18\x1d \x01(\v2).google.cloud.sql.v1.SqlServerAuditConfigR\x14sqlServerAuditConfig\x12E\n" +
+	"\aedition\x18& \x01(\x0e2%.google.cloud.sql.v1.Settings.EditionB\x04\xe2A\x01\x01R\aedition\x12g\n" +
 	"\x15connector_enforcement\x18  \x01(\x0e22.google.cloud.sql.v1.Settings.ConnectorEnforcementR\x14connectorEnforcement\x12Z\n" +
 	"\x1bdeletion_protection_enabled\x18! \x01(\v2\x1a.google.protobuf.BoolValueR\x19deletionProtectionEnabled\x12\x1b\n" +
 	"\ttime_zone\x18\" \x01(\tR\btimeZone\x12h\n" +
 	"\x19advanced_machine_features\x18# \x01(\v2,.google.cloud.sql.v1.AdvancedMachineFeaturesR\x17advancedMachineFeatures\x12P\n" +
-	"\x11data_cache_config\x18% \x01(\v2$.google.cloud.sql.v1.DataCacheConfigR\x0fdataCacheConfig\x12_\n" +
-	"\x1breplication_lag_max_seconds\x18' \x01(\v2\x1b.google.protobuf.Int32ValueB\x03\xe0A\x01R\x18replicationLagMaxSeconds\x12`\n" +
-	"\x1cenable_google_ml_integration\x18( \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\x19enableGoogleMlIntegration\x12_\n" +
-	"\x1benable_dataplex_integration\x18) \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\x19enableDataplexIntegration\x12X\n" +
-	"\x18retain_backups_on_delete\x18* \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\x15retainBackupsOnDelete\x12E\n" +
-	"\x1adata_disk_provisioned_iops\x18+ \x01(\x03B\x03\xe0A\x01H\x00R\x17dataDiskProvisionedIops\x88\x01\x01\x12Q\n" +
-	" data_disk_provisioned_throughput\x18, \x01(\x03B\x03\xe0A\x01H\x01R\x1ddataDiskProvisionedThroughput\x88\x01\x01\x12i\n" +
-	"\x16connection_pool_config\x18- \x01(\v2).google.cloud.sql.v1.ConnectionPoolConfigB\x03\xe0A\x01H\x02R\x14connectionPoolConfig\x88\x01\x01\x12`\n" +
-	"\x13final_backup_config\x18/ \x01(\v2&.google.cloud.sql.v1.FinalBackupConfigB\x03\xe0A\x01H\x03R\x11finalBackupConfig\x88\x01\x01\x12t\n" +
-	"\x1bread_pool_auto_scale_config\x180 \x01(\v2,.google.cloud.sql.v1.ReadPoolAutoScaleConfigB\x03\xe0A\x01H\x04R\x17readPoolAutoScaleConfig\x88\x01\x01\x12Y\n" +
-	"\x18accelerated_replica_mode\x181 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\x16acceleratedReplicaMode\x12:\n" +
-	"\x14auto_upgrade_enabled\x182 \x01(\bB\x03\xe0A\x01H\x05R\x12autoUpgradeEnabled\x88\x01\x01\x12W\n" +
-	"\x0eentraid_config\x184 \x01(\v2+.google.cloud.sql.v1.SqlServerEntraIdConfigB\x03\xe0A\x01R\rentraidConfig\x12X\n" +
-	"\x0fdata_api_access\x185 \x01(\x0e2+.google.cloud.sql.v1.Settings.DataApiAccessH\x06R\rdataApiAccess\x88\x01\x01\x12p\n" +
-	"\x1aperformance_capture_config\x186 \x01(\v2-.google.cloud.sql.v1.PerformanceCaptureConfigB\x03\xe0A\x01R\x18performanceCaptureConfig\x1a=\n" +
+	"\x11data_cache_config\x18% \x01(\v2$.google.cloud.sql.v1.DataCacheConfigR\x0fdataCacheConfig\x12`\n" +
+	"\x1breplication_lag_max_seconds\x18' \x01(\v2\x1b.google.protobuf.Int32ValueB\x04\xe2A\x01\x01R\x18replicationLagMaxSeconds\x12a\n" +
+	"\x1cenable_google_ml_integration\x18( \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\x19enableGoogleMlIntegration\x12`\n" +
+	"\x1benable_dataplex_integration\x18) \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\x19enableDataplexIntegration\x12Y\n" +
+	"\x18retain_backups_on_delete\x18* \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\x15retainBackupsOnDelete\x12F\n" +
+	"\x1adata_disk_provisioned_iops\x18+ \x01(\x03B\x04\xe2A\x01\x01H\x00R\x17dataDiskProvisionedIops\x88\x01\x01\x12R\n" +
+	" data_disk_provisioned_throughput\x18, \x01(\x03B\x04\xe2A\x01\x01H\x01R\x1ddataDiskProvisionedThroughput\x88\x01\x01\x12j\n" +
+	"\x16connection_pool_config\x18- \x01(\v2).google.cloud.sql.v1.ConnectionPoolConfigB\x04\xe2A\x01\x01H\x02R\x14connectionPoolConfig\x88\x01\x01\x12a\n" +
+	"\x13final_backup_config\x18/ \x01(\v2&.google.cloud.sql.v1.FinalBackupConfigB\x04\xe2A\x01\x01H\x03R\x11finalBackupConfig\x88\x01\x01\x12u\n" +
+	"\x1bread_pool_auto_scale_config\x180 \x01(\v2,.google.cloud.sql.v1.ReadPoolAutoScaleConfigB\x04\xe2A\x01\x01H\x04R\x17readPoolAutoScaleConfig\x88\x01\x01\x12Z\n" +
+	"\x18accelerated_replica_mode\x181 \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\x16acceleratedReplicaMode\x12;\n" +
+	"\x14auto_upgrade_enabled\x182 \x01(\bB\x04\xe2A\x01\x01H\x05R\x12autoUpgradeEnabled\x88\x01\x01\x12X\n" +
+	"\x0eentraid_config\x184 \x01(\v2+.google.cloud.sql.v1.SqlServerEntraIdConfigB\x04\xe2A\x01\x01R\rentraidConfig\x12X\n" +
+	"\x0fdata_api_access\x185 \x01(\x0e2+.google.cloud.sql.v1.Settings.DataApiAccessH\x06R\rdataApiAccess\x88\x01\x01\x12q\n" +
+	"\x1aperformance_capture_config\x186 \x01(\v2-.google.cloud.sql.v1.PerformanceCaptureConfigB\x04\xe2A\x01\x01R\x18performanceCaptureConfig\x1a=\n" +
 	"\x0fUserLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"f\n" +
@@ -8935,24 +8935,24 @@ const file_google_cloud_sql_v1_cloud_sql_resources_proto_rawDesc = "" +
 	"\x14_final_backup_configB\x1e\n" +
 	"\x1c_read_pool_auto_scale_configB\x17\n" +
 	"\x15_auto_upgrade_enabledB\x12\n" +
-	"\x10_data_api_access\"\x81\r\n" +
-	"\x18PerformanceCaptureConfig\x12\"\n" +
-	"\aenabled\x18\x01 \x01(\bB\x03\xe0A\x01H\x00R\aenabled\x88\x01\x01\x12B\n" +
-	"\x18probing_interval_seconds\x18\x02 \x01(\x05B\x03\xe0A\x01H\x01R\x16probingIntervalSeconds\x88\x01\x01\x121\n" +
-	"\x0fprobe_threshold\x18\x03 \x01(\x05B\x03\xe0A\x01H\x02R\x0eprobeThreshold\x88\x01\x01\x12D\n" +
-	"\x19running_threads_threshold\x18\x04 \x01(\x05B\x03\xe0A\x01H\x03R\x17runningThreadsThreshold\x88\x01\x01\x12O\n" +
-	"\x1fseconds_behind_source_threshold\x18\x05 \x01(\x05B\x03\xe0A\x01H\x04R\x1csecondsBehindSourceThreshold\x88\x01\x01\x12N\n" +
-	"\x1etransaction_duration_threshold\x18\b \x01(\x05B\x03\xe0A\x01H\x05R\x1ctransactionDurationThreshold\x88\x01\x01\x12S\n" +
-	"!cpu_utilization_threshold_percent\x18\t \x01(\x05B\x03\xe0A\x01H\x06R\x1ecpuUtilizationThresholdPercent\x88\x01\x01\x12M\n" +
+	"\x10_data_api_access\"\x90\r\n" +
+	"\x18PerformanceCaptureConfig\x12#\n" +
+	"\aenabled\x18\x01 \x01(\bB\x04\xe2A\x01\x01H\x00R\aenabled\x88\x01\x01\x12C\n" +
+	"\x18probing_interval_seconds\x18\x02 \x01(\x05B\x04\xe2A\x01\x01H\x01R\x16probingIntervalSeconds\x88\x01\x01\x122\n" +
+	"\x0fprobe_threshold\x18\x03 \x01(\x05B\x04\xe2A\x01\x01H\x02R\x0eprobeThreshold\x88\x01\x01\x12E\n" +
+	"\x19running_threads_threshold\x18\x04 \x01(\x05B\x04\xe2A\x01\x01H\x03R\x17runningThreadsThreshold\x88\x01\x01\x12P\n" +
+	"\x1fseconds_behind_source_threshold\x18\x05 \x01(\x05B\x04\xe2A\x01\x01H\x04R\x1csecondsBehindSourceThreshold\x88\x01\x01\x12O\n" +
+	"\x1etransaction_duration_threshold\x18\b \x01(\x05B\x04\xe2A\x01\x01H\x05R\x1ctransactionDurationThreshold\x88\x01\x01\x12T\n" +
+	"!cpu_utilization_threshold_percent\x18\t \x01(\x05B\x04\xe2A\x01\x01H\x06R\x1ecpuUtilizationThresholdPercent\x88\x01\x01\x12N\n" +
 	"\x1ememory_usage_threshold_percent\x18\n" +
-	" \x01(\x05B\x03\xe0A\x01H\aR\x1bmemoryUsageThresholdPercent\x88\x01\x01\x12Z\n" +
-	"%transaction_lock_wait_threshold_count\x18\v \x01(\x05B\x03\xe0A\x01H\bR!transactionLockWaitThresholdCount\x88\x01\x01\x12M\n" +
-	"\x1esemaphore_wait_threshold_count\x18\f \x01(\x05B\x03\xe0A\x01H\tR\x1bsemaphoreWaitThresholdCount\x88\x01\x01\x12V\n" +
-	"#history_list_length_threshold_count\x18\r \x01(\x05B\x03\xe0A\x01H\n" +
-	"R\x1fhistoryListLengthThresholdCount\x88\x01\x01\x12U\n" +
-	"\"transaction_kill_threshold_seconds\x18\x0e \x01(\x05B\x03\xe0A\x01H\vR\x1ftransactionKillThresholdSeconds\x88\x01\x01\x12S\n" +
-	"$transaction_kill_excluded_user_hosts\x18\x10 \x03(\tB\x03\xe0A\x01R transactionKillExcludedUserHosts\x12\x7f\n" +
-	"\x15transaction_kill_type\x18\x11 \x01(\x0e2A.google.cloud.sql.v1.PerformanceCaptureConfig.TransactionKillTypeB\x03\xe0A\x01H\fR\x13transactionKillType\x88\x01\x01\"n\n" +
+	" \x01(\x05B\x04\xe2A\x01\x01H\aR\x1bmemoryUsageThresholdPercent\x88\x01\x01\x12[\n" +
+	"%transaction_lock_wait_threshold_count\x18\v \x01(\x05B\x04\xe2A\x01\x01H\bR!transactionLockWaitThresholdCount\x88\x01\x01\x12N\n" +
+	"\x1esemaphore_wait_threshold_count\x18\f \x01(\x05B\x04\xe2A\x01\x01H\tR\x1bsemaphoreWaitThresholdCount\x88\x01\x01\x12W\n" +
+	"#history_list_length_threshold_count\x18\r \x01(\x05B\x04\xe2A\x01\x01H\n" +
+	"R\x1fhistoryListLengthThresholdCount\x88\x01\x01\x12V\n" +
+	"\"transaction_kill_threshold_seconds\x18\x0e \x01(\x05B\x04\xe2A\x01\x01H\vR\x1ftransactionKillThresholdSeconds\x88\x01\x01\x12T\n" +
+	"$transaction_kill_excluded_user_hosts\x18\x10 \x03(\tB\x04\xe2A\x01\x01R transactionKillExcludedUserHosts\x12\x80\x01\n" +
+	"\x15transaction_kill_type\x18\x11 \x01(\x0e2A.google.cloud.sql.v1.PerformanceCaptureConfig.TransactionKillTypeB\x04\xe2A\x01\x01H\fR\x13transactionKillType\x88\x01\x01\"n\n" +
 	"\x13TransactionKillType\x12%\n" +
 	"!TRANSACTION_KILL_TYPE_UNSPECIFIED\x10\x00\x12\x1a\n" +
 	"\x16READ_ONLY_TRANSACTIONS\x10\x01\x12\x14\n" +
@@ -8970,21 +8970,21 @@ const file_google_cloud_sql_v1_cloud_sql_resources_proto_rawDesc = "" +
 	"\x1f_semaphore_wait_threshold_countB&\n" +
 	"$_history_list_length_threshold_countB%\n" +
 	"#_transaction_kill_threshold_secondsB\x18\n" +
-	"\x16_transaction_kill_type\"I\n" +
-	"\x13ConnectionPoolFlags\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x19\n" +
-	"\x05value\x18\x02 \x01(\tB\x03\xe0A\x02R\x05value\"\xfb\x01\n" +
+	"\x16_transaction_kill_type\"K\n" +
+	"\x13ConnectionPoolFlags\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12\x1a\n" +
+	"\x05value\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05value\"\xfd\x01\n" +
 	"\x14ConnectionPoolConfig\x12A\n" +
-	"\x1aconnection_pooling_enabled\x18\x01 \x01(\bH\x00R\x18connectionPoolingEnabled\x88\x01\x01\x12C\n" +
-	"\x05flags\x18\b \x03(\v2(.google.cloud.sql.v1.ConnectionPoolFlagsB\x03\xe0A\x01R\x05flags\x12+\n" +
-	"\fpooler_count\x18\t \x01(\x05B\x03\xe0A\x03H\x01R\vpoolerCount\x88\x01\x01B\x1d\n" +
+	"\x1aconnection_pooling_enabled\x18\x01 \x01(\bH\x00R\x18connectionPoolingEnabled\x88\x01\x01\x12D\n" +
+	"\x05flags\x18\b \x03(\v2(.google.cloud.sql.v1.ConnectionPoolFlagsB\x04\xe2A\x01\x01R\x05flags\x12,\n" +
+	"\fpooler_count\x18\t \x01(\x05B\x04\xe2A\x01\x03H\x01R\vpoolerCount\x88\x01\x01B\x1d\n" +
 	"\x1b_connection_pooling_enabledB\x0f\n" +
-	"\r_pooler_count\"\x9b\x05\n" +
+	"\r_pooler_count\"\x9c\x05\n" +
 	"\x17ReadPoolAutoScaleConfig\x12\x1d\n" +
 	"\aenabled\x18\x01 \x01(\bH\x00R\aenabled\x88\x01\x01\x12)\n" +
 	"\x0emin_node_count\x18\x02 \x01(\x05H\x01R\fminNodeCount\x88\x01\x01\x12)\n" +
-	"\x0emax_node_count\x18\x03 \x01(\x05H\x02R\fmaxNodeCount\x88\x01\x01\x12e\n" +
-	"\x0etarget_metrics\x18\x04 \x03(\v29.google.cloud.sql.v1.ReadPoolAutoScaleConfig.TargetMetricB\x03\xe0A\x01R\rtargetMetrics\x12-\n" +
+	"\x0emax_node_count\x18\x03 \x01(\x05H\x02R\fmaxNodeCount\x88\x01\x01\x12f\n" +
+	"\x0etarget_metrics\x18\x04 \x03(\v29.google.cloud.sql.v1.ReadPoolAutoScaleConfig.TargetMetricB\x04\xe2A\x01\x01R\rtargetMetrics\x12-\n" +
 	"\x10disable_scale_in\x18\x05 \x01(\bH\x03R\x0edisableScaleIn\x88\x01\x01\x12>\n" +
 	"\x19scale_in_cooldown_seconds\x18\x06 \x01(\x05H\x04R\x16scaleInCooldownSeconds\x88\x01\x01\x12@\n" +
 	"\x1ascale_out_cooldown_seconds\x18\a \x01(\x05H\x05R\x17scaleOutCooldownSeconds\x88\x01\x01\x1ao\n" +
@@ -9016,15 +9016,15 @@ const file_google_cloud_sql_v1_cloud_sql_resources_proto_rawDesc = "" +
 	"\tself_link\x18\t \x01(\tR\bselfLink\"t\n" +
 	"\rSslCertDetail\x129\n" +
 	"\tcert_info\x18\x01 \x01(\v2\x1c.google.cloud.sql.v1.SslCertR\bcertInfo\x12(\n" +
-	"\x10cert_private_key\x18\x02 \x01(\tR\x0ecertPrivateKey\"\xf7\x03\n" +
+	"\x10cert_private_key\x18\x02 \x01(\tR\x0ecertPrivateKey\"\xfb\x03\n" +
 	"\x18SqlActiveDirectoryConfig\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12\x16\n" +
-	"\x06domain\x18\x02 \x01(\tR\x06domain\x12Z\n" +
-	"\x04mode\x18\x03 \x01(\x0e2A.google.cloud.sql.v1.SqlActiveDirectoryConfig.ActiveDirectoryModeB\x03\xe0A\x01R\x04mode\x12,\n" +
-	"\vdns_servers\x18\x04 \x03(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x02R\n" +
-	"dnsServers\x12D\n" +
-	"\x1cadmin_credential_secret_name\x18\x05 \x01(\tB\x03\xe0A\x01R\x19adminCredentialSecretName\x124\n" +
-	"\x13organizational_unit\x18\x06 \x01(\tB\x03\xe0A\x01R\x12organizationalUnit\"\xa8\x01\n" +
+	"\x06domain\x18\x02 \x01(\tR\x06domain\x12[\n" +
+	"\x04mode\x18\x03 \x01(\x0e2A.google.cloud.sql.v1.SqlActiveDirectoryConfig.ActiveDirectoryModeB\x04\xe2A\x01\x01R\x04mode\x12-\n" +
+	"\vdns_servers\x18\x04 \x03(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x02R\n" +
+	"dnsServers\x12E\n" +
+	"\x1cadmin_credential_secret_name\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x19adminCredentialSecretName\x125\n" +
+	"\x13organizational_unit\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x12organizationalUnit\"\xa8\x01\n" +
 	"\x13ActiveDirectoryMode\x12%\n" +
 	"!ACTIVE_DIRECTORY_MODE_UNSPECIFIED\x10\x00\x12\x1c\n" +
 	"\x18MANAGED_ACTIVE_DIRECTORY\x10\x01\x12%\n" +
@@ -9034,11 +9034,11 @@ const file_google_cloud_sql_v1_cloud_sql_resources_proto_rawDesc = "" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12\x16\n" +
 	"\x06bucket\x18\x02 \x01(\tR\x06bucket\x12H\n" +
 	"\x12retention_interval\x18\x03 \x01(\v2\x19.google.protobuf.DurationR\x11retentionInterval\x12B\n" +
-	"\x0fupload_interval\x18\x04 \x01(\v2\x19.google.protobuf.DurationR\x0euploadInterval\"\x7f\n" +
-	"\x16SqlServerEntraIdConfig\x12\x17\n" +
-	"\x04kind\x18\x01 \x01(\tB\x03\xe0A\x03R\x04kind\x12 \n" +
-	"\ttenant_id\x18\x02 \x01(\tB\x03\xe0A\x01R\btenantId\x12*\n" +
-	"\x0eapplication_id\x18\x03 \x01(\tB\x03\xe0A\x01R\rapplicationId\"\x96\x02\n" +
+	"\x0fupload_interval\x18\x04 \x01(\v2\x19.google.protobuf.DurationR\x0euploadInterval\"\x82\x01\n" +
+	"\x16SqlServerEntraIdConfig\x12\x18\n" +
+	"\x04kind\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04kind\x12!\n" +
+	"\ttenant_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\btenantId\x12+\n" +
+	"\x0eapplication_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\rapplicationId\"\x96\x02\n" +
 	"\x17AcquireSsrsLeaseContext\x12$\n" +
 	"\vsetup_login\x18\x01 \x01(\tH\x00R\n" +
 	"setupLogin\x88\x01\x01\x12(\n" +
@@ -9048,12 +9048,12 @@ const file_google_cloud_sql_v1_cloud_sql_resources_proto_rawDesc = "" +
 	"\f_setup_loginB\x10\n" +
 	"\x0e_service_loginB\x12\n" +
 	"\x10_report_databaseB\v\n" +
-	"\t_duration\"\xce\x04\n" +
-	"\x0eDnsNameMapping\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12`\n" +
-	"\x0fconnection_type\x18\x02 \x01(\x0e22.google.cloud.sql.v1.DnsNameMapping.ConnectionTypeB\x03\xe0A\x03R\x0econnectionType\x12N\n" +
-	"\tdns_scope\x18\x03 \x01(\x0e2,.google.cloud.sql.v1.DnsNameMapping.DnsScopeB\x03\xe0A\x03R\bdnsScope\x12]\n" +
-	"\x0erecord_manager\x18\x04 \x01(\x0e21.google.cloud.sql.v1.DnsNameMapping.RecordManagerB\x03\xe0A\x03R\rrecordManager\"w\n" +
+	"\t_duration\"\xd2\x04\n" +
+	"\x0eDnsNameMapping\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12a\n" +
+	"\x0fconnection_type\x18\x02 \x01(\x0e22.google.cloud.sql.v1.DnsNameMapping.ConnectionTypeB\x04\xe2A\x01\x03R\x0econnectionType\x12O\n" +
+	"\tdns_scope\x18\x03 \x01(\x0e2,.google.cloud.sql.v1.DnsNameMapping.DnsScopeB\x04\xe2A\x01\x03R\bdnsScope\x12^\n" +
+	"\x0erecord_manager\x18\x04 \x01(\x0e21.google.cloud.sql.v1.DnsNameMapping.RecordManagerB\x04\xe2A\x01\x03R\rrecordManager\"w\n" +
 	"\x0eConnectionType\x12\x1f\n" +
 	"\x1bCONNECTION_TYPE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
@@ -9067,16 +9067,16 @@ const file_google_cloud_sql_v1_cloud_sql_resources_proto_rawDesc = "" +
 	"\rRecordManager\x12\x1e\n" +
 	"\x1aRECORD_MANAGER_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bCUSTOMER\x10\x01\x12\x18\n" +
-	"\x14CLOUD_SQL_AUTOMATION\x10\x02\"\x97\x01\n" +
-	"\x1bStartWorkloadCaptureContext\x121\n" +
-	"\x12enable_live_replay\x18\x01 \x01(\bB\x03\xe0A\x01R\x10enableLiveReplay\x121\n" +
-	"\x0freplay_instance\x18\x02 \x01(\tB\x03\xe0A\x01H\x00R\x0ereplayInstance\x88\x01\x01B\x12\n" +
-	"\x10_replay_instance\"M\n" +
-	"\x1aStopWorkloadCaptureContext\x12/\n" +
-	"\x11abort_live_replay\x18\x01 \x01(\bB\x03\xe0A\x01R\x0fabortLiveReplay\"p\n" +
-	"\x1aStartWorkloadReplayContext\x12,\n" +
-	"\x0freplay_instance\x18\x01 \x01(\tB\x03\xe0A\x02R\x0ereplayInstance\x12$\n" +
-	"\vworkload_id\x18\x02 \x01(\tB\x03\xe0A\x03R\n" +
+	"\x14CLOUD_SQL_AUTOMATION\x10\x02\"\x99\x01\n" +
+	"\x1bStartWorkloadCaptureContext\x122\n" +
+	"\x12enable_live_replay\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x10enableLiveReplay\x122\n" +
+	"\x0freplay_instance\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x00R\x0ereplayInstance\x88\x01\x01B\x12\n" +
+	"\x10_replay_instance\"N\n" +
+	"\x1aStopWorkloadCaptureContext\x120\n" +
+	"\x11abort_live_replay\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x0fabortLiveReplay\"r\n" +
+	"\x1aStartWorkloadReplayContext\x12-\n" +
+	"\x0freplay_instance\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x0ereplayInstance\x12%\n" +
+	"\vworkload_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\n" +
 	"workloadId\"\x1b\n" +
 	"\x19StopWorkloadReplayContext*P\n" +
 	"\vSqlFileType\x12\x1d\n" +
@@ -9197,13 +9197,12 @@ const file_google_cloud_sql_v1_cloud_sql_resources_proto_rawDesc = "" +
 	"\x1bAUTO_DNS_STATUS_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vAUTO_DNS_OK\x10\x01\x12\x13\n" +
 	"\x0fAUTO_DNS_FAILED\x10\x02\x12\x14\n" +
-	"\x10AUTO_DNS_UNKNOWN\x10\x03B\xab\x06\xeaAK\n" +
+	"\x10AUTO_DNS_UNKNOWN\x10\x03B\xdd\x05\xeaAK\n" +
 	" cloudsql.googleapis.com/Instance\x12'projects/{project}/instances/{instance}\xeaA\x8e\x01\n" +
 	"2cloudsql.googleapis.com/CustomerManagedCertificate\x12Xprojects/{project}/instances/{instance}/customerManagedCertificates/{certificate_bundle}\xeaAx\n" +
 	"!cloudkms.googleapis.com/CryptoKey\x12Sprojects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}\xeaA\xa6\x01\n" +
 	"(cloudkms.googleapis.com/CryptoKeyVersion\x12zprojects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}/cryptoKeyVersions/{crypto_key_version}\xeaAw\n" +
-	"(compute.googleapis.com/NetworkAttachment\x12Kprojects/{project}/regions/{region}/networkAttachments/{network_attachment}\xeaAK\n" +
-	" sqladmin.googleapis.com/Instance\x12'projects/{project}/instances/{instance}\n" +
+	"(compute.googleapis.com/NetworkAttachment\x12Kprojects/{project}/regions/{region}/networkAttachments/{network_attachment}\n" +
 	"\x17com.google.cloud.sql.v1B\x16CloudSqlResourcesProtoP\x01Z)cloud.google.com/go/sql/apiv1/sqlpb;sqlpbb\x06proto3"
 
 var (

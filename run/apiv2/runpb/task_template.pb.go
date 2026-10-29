@@ -204,23 +204,23 @@ var File_google_cloud_run_v2_task_template_proto protoreflect.FileDescriptor
 
 const file_google_cloud_run_v2_task_template_proto_rawDesc = "" +
 	"\n" +
-	"'google/cloud/run/v2/task_template.proto\x12\x13google.cloud.run.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a!google/cloud/run/v2/k8s.min.proto\x1a)google/cloud/run/v2/vendor_settings.proto\x1a\x1egoogle/protobuf/duration.proto\"\xd4\x05\n" +
+	"'google/cloud/run/v2/task_template.proto\x12\x13google.cloud.run.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a!google/cloud/run/v2/k8s.min.proto\x1a)google/cloud/run/v2/vendor_settings.proto\x1a\x1egoogle/protobuf/duration.proto\"\xdb\x05\n" +
 	"\fTaskTemplate\x12>\n" +
 	"\n" +
 	"containers\x18\x01 \x03(\v2\x1e.google.cloud.run.v2.ContainerR\n" +
-	"containers\x12:\n" +
-	"\avolumes\x18\x02 \x03(\v2\x1b.google.cloud.run.v2.VolumeB\x03\xe0A\x01R\avolumes\x12!\n" +
+	"containers\x12;\n" +
+	"\avolumes\x18\x02 \x03(\v2\x1b.google.cloud.run.v2.VolumeB\x04\xe2A\x01\x01R\avolumes\x12!\n" +
 	"\vmax_retries\x18\x03 \x01(\x05H\x00R\n" +
-	"maxRetries\x128\n" +
-	"\atimeout\x18\x04 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\atimeout\x12,\n" +
-	"\x0fservice_account\x18\x05 \x01(\tB\x03\xe0A\x01R\x0eserviceAccount\x12c\n" +
-	"\x15execution_environment\x18\x06 \x01(\x0e2).google.cloud.run.v2.ExecutionEnvironmentB\x03\xe0A\x01R\x14executionEnvironment\x12M\n" +
+	"maxRetries\x129\n" +
+	"\atimeout\x18\x04 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\atimeout\x12-\n" +
+	"\x0fservice_account\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x0eserviceAccount\x12d\n" +
+	"\x15execution_environment\x18\x06 \x01(\x0e2).google.cloud.run.v2.ExecutionEnvironmentB\x04\xe2A\x01\x01R\x14executionEnvironment\x12M\n" +
 	"\x0eencryption_key\x18\a \x01(\tB&\xfaA#\n" +
-	"!cloudkms.googleapis.com/CryptoKeyR\rencryptionKey\x12B\n" +
+	"!cloudkms.googleapis.com/CryptoKeyR\rencryptionKey\x12C\n" +
 	"\n" +
-	"vpc_access\x18\b \x01(\v2\x1e.google.cloud.run.v2.VpcAccessB\x03\xe0A\x01R\tvpcAccess\x12K\n" +
-	"\rnode_selector\x18\v \x01(\v2!.google.cloud.run.v2.NodeSelectorB\x03\xe0A\x01R\fnodeSelector\x12K\n" +
-	"\x1dgpu_zonal_redundancy_disabled\x18\f \x01(\bB\x03\xe0A\x01H\x01R\x1agpuZonalRedundancyDisabled\x88\x01\x01B\t\n" +
+	"vpc_access\x18\b \x01(\v2\x1e.google.cloud.run.v2.VpcAccessB\x04\xe2A\x01\x01R\tvpcAccess\x12L\n" +
+	"\rnode_selector\x18\v \x01(\v2!.google.cloud.run.v2.NodeSelectorB\x04\xe2A\x01\x01R\fnodeSelector\x12L\n" +
+	"\x1dgpu_zonal_redundancy_disabled\x18\f \x01(\bB\x04\xe2A\x01\x01H\x01R\x1agpuZonalRedundancyDisabled\x88\x01\x01B\t\n" +
 	"\aretriesB \n" +
 	"\x1e_gpu_zonal_redundancy_disabledBY\n" +
 	"\x17com.google.cloud.run.v2B\x11TaskTemplateProtoP\x01Z)cloud.google.com/go/run/apiv2/runpb;runpbb\x06proto3"

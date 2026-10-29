@@ -361,6 +361,12 @@ func (c *recoverableSnapshotsRESTClient) Delete(ctx context.Context, req *comput
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRecoverableSnapshot(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/recoverableSnapshots/%v", req.GetProject(), req.GetRecoverableSnapshot())
 
 	params := url.Values{}
@@ -424,6 +430,12 @@ func (c *recoverableSnapshotsRESTClient) Get(ctx context.Context, req *computepb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRecoverableSnapshot(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/recoverableSnapshots/%v", req.GetProject(), req.GetRecoverableSnapshot())
 
 	// Build HTTP headers from client and context metadata.
@@ -472,6 +484,12 @@ func (c *recoverableSnapshotsRESTClient) Get(ctx context.Context, req *computepb
 func (c *recoverableSnapshotsRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyRecoverableSnapshotRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/recoverableSnapshots/%v/getIamPolicy", req.GetProject(), req.GetResource())
@@ -541,6 +559,11 @@ func (c *recoverableSnapshotsRESTClient) List(ctx context.Context, req *computep
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/recoverableSnapshots", req.GetProject())
@@ -614,6 +637,12 @@ func (c *recoverableSnapshotsRESTClient) List(ctx context.Context, req *computep
 func (c *recoverableSnapshotsRESTClient) Recover(ctx context.Context, req *computepb.RecoverRecoverableSnapshotRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRecoverableSnapshot(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/recoverableSnapshots/%v/recover", req.GetProject(), req.GetRecoverableSnapshot())
@@ -690,6 +719,12 @@ func (c *recoverableSnapshotsRESTClient) SetIamPolicy(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/recoverableSnapshots/%v/setIamPolicy", req.GetProject(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -744,6 +779,12 @@ func (c *recoverableSnapshotsRESTClient) TestIamPermissions(ctx context.Context,
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/recoverableSnapshots/%v/testIamPermissions", req.GetProject(), req.GetResource())

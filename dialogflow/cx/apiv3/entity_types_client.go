@@ -1124,6 +1124,11 @@ func (c *entityTypesRESTClient) GetEntityType(ctx context.Context, req *cxpb.Get
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
 
 	params := url.Values{}
@@ -1190,6 +1195,11 @@ func (c *entityTypesRESTClient) CreateEntityType(ctx context.Context, req *cxpb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v/entityTypes", req.GetParent())
@@ -1260,6 +1270,11 @@ func (c *entityTypesRESTClient) UpdateEntityType(ctx context.Context, req *cxpb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetEntityType().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetEntityType().GetName())
 
 	params := url.Values{}
@@ -1328,6 +1343,11 @@ func (c *entityTypesRESTClient) DeleteEntityType(ctx context.Context, req *cxpb.
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
 
 	params := url.Values{}
@@ -1381,6 +1401,11 @@ func (c *entityTypesRESTClient) ListEntityTypes(ctx context.Context, req *cxpb.L
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v3/%v/entityTypes", req.GetParent())
@@ -1457,6 +1482,11 @@ func (c *entityTypesRESTClient) ExportEntityTypes(ctx context.Context, req *cxpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v/entityTypes:export", req.GetParent())
 
 	params := url.Values{}
@@ -1524,6 +1554,11 @@ func (c *entityTypesRESTClient) ImportEntityTypes(ctx context.Context, req *cxpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v/entityTypes:import", req.GetParent())
 
 	params := url.Values{}
@@ -1583,6 +1618,11 @@ func (c *entityTypesRESTClient) ImportEntityTypes(ctx context.Context, req *cxpb
 func (c *entityTypesRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
@@ -1667,6 +1707,11 @@ func (c *entityTypesRESTClient) ListLocations(ctx context.Context, req *location
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v3/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -1735,6 +1780,11 @@ func (c *entityTypesRESTClient) CancelOperation(ctx context.Context, req *longru
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1772,6 +1822,11 @@ func (c *entityTypesRESTClient) CancelOperation(ctx context.Context, req *longru
 func (c *entityTypesRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
@@ -1839,6 +1894,11 @@ func (c *entityTypesRESTClient) ListOperations(ctx context.Context, req *longrun
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v3/%v/operations", req.GetName())

@@ -492,23 +492,23 @@ const file_google_cloud_bigquery_storage_v1_table_proto_rawDesc = "" +
 	"\n" +
 	",google/cloud/bigquery/storage/v1/table.proto\x12 google.cloud.bigquery.storage.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/protobuf/wrappers.proto\"Y\n" +
 	"\vTableSchema\x12J\n" +
-	"\x06fields\x18\x01 \x03(\v22.google.cloud.bigquery.storage.v1.TableFieldSchemaR\x06fields\"\xc4\b\n" +
-	"\x10TableFieldSchema\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12P\n" +
-	"\x04type\x18\x02 \x01(\x0e27.google.cloud.bigquery.storage.v1.TableFieldSchema.TypeB\x03\xe0A\x02R\x04type\x12P\n" +
-	"\x04mode\x18\x03 \x01(\x0e27.google.cloud.bigquery.storage.v1.TableFieldSchema.ModeB\x03\xe0A\x01R\x04mode\x12O\n" +
-	"\x06fields\x18\x04 \x03(\v22.google.cloud.bigquery.storage.v1.TableFieldSchemaB\x03\xe0A\x01R\x06fields\x12%\n" +
-	"\vdescription\x18\x06 \x01(\tB\x03\xe0A\x01R\vdescription\x12\"\n" +
+	"\x06fields\x18\x01 \x03(\v22.google.cloud.bigquery.storage.v1.TableFieldSchemaR\x06fields\"\xd0\b\n" +
+	"\x10TableFieldSchema\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12Q\n" +
+	"\x04type\x18\x02 \x01(\x0e27.google.cloud.bigquery.storage.v1.TableFieldSchema.TypeB\x04\xe2A\x01\x02R\x04type\x12Q\n" +
+	"\x04mode\x18\x03 \x01(\x0e27.google.cloud.bigquery.storage.v1.TableFieldSchema.ModeB\x04\xe2A\x01\x01R\x04mode\x12P\n" +
+	"\x06fields\x18\x04 \x03(\v22.google.cloud.bigquery.storage.v1.TableFieldSchemaB\x04\xe2A\x01\x01R\x06fields\x12&\n" +
+	"\vdescription\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12#\n" +
 	"\n" +
-	"max_length\x18\a \x01(\x03B\x03\xe0A\x01R\tmaxLength\x12!\n" +
-	"\tprecision\x18\b \x01(\x03B\x03\xe0A\x01R\tprecision\x12\x19\n" +
-	"\x05scale\x18\t \x01(\x03B\x03\xe0A\x01R\x05scale\x12=\n" +
+	"max_length\x18\a \x01(\x03B\x04\xe2A\x01\x01R\tmaxLength\x12\"\n" +
+	"\tprecision\x18\b \x01(\x03B\x04\xe2A\x01\x01R\tprecision\x12\x1a\n" +
+	"\x05scale\x18\t \x01(\x03B\x04\xe2A\x01\x01R\x05scale\x12>\n" +
 	"\x18default_value_expression\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\x16defaultValueExpression\x12Q\n" +
-	"\x13timestamp_precision\x18\x1b \x01(\v2\x1b.google.protobuf.Int64ValueB\x03\xe0A\x01R\x12timestampPrecision\x12v\n" +
-	"\x12range_element_type\x18\v \x01(\v2C.google.cloud.bigquery.storage.v1.TableFieldSchema.FieldElementTypeB\x03\xe0A\x01R\x10rangeElementType\x1ad\n" +
-	"\x10FieldElementType\x12P\n" +
-	"\x04type\x18\x01 \x01(\x0e27.google.cloud.bigquery.storage.v1.TableFieldSchema.TypeB\x03\xe0A\x02R\x04type\"\xe0\x01\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\x16defaultValueExpression\x12R\n" +
+	"\x13timestamp_precision\x18\x1b \x01(\v2\x1b.google.protobuf.Int64ValueB\x04\xe2A\x01\x01R\x12timestampPrecision\x12w\n" +
+	"\x12range_element_type\x18\v \x01(\v2C.google.cloud.bigquery.storage.v1.TableFieldSchema.FieldElementTypeB\x04\xe2A\x01\x01R\x10rangeElementType\x1ae\n" +
+	"\x10FieldElementType\x12Q\n" +
+	"\x04type\x18\x01 \x01(\x0e27.google.cloud.bigquery.storage.v1.TableFieldSchema.TypeB\x04\xe2A\x01\x02R\x04type\"\xe0\x01\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +

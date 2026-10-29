@@ -439,6 +439,13 @@ func (c *instanceGroupsRESTClient) AddInstances(ctx context.Context, req *comput
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstanceGroup(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instanceGroups/%v/addInstances", req.GetProject(), req.GetZone(), req.GetInstanceGroup())
 
 	params := url.Values{}
@@ -517,6 +524,11 @@ func (c *instanceGroupsRESTClient) AggregatedList(ctx context.Context, req *comp
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/instanceGroups", req.GetProject())
@@ -605,6 +617,13 @@ func (c *instanceGroupsRESTClient) Delete(ctx context.Context, req *computepb.De
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstanceGroup(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instanceGroups/%v", req.GetProject(), req.GetZone(), req.GetInstanceGroup())
 
 	params := url.Values{}
@@ -674,6 +693,13 @@ func (c *instanceGroupsRESTClient) Get(ctx context.Context, req *computepb.GetIn
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstanceGroup(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instanceGroups/%v", req.GetProject(), req.GetZone(), req.GetInstanceGroup())
 
 	// Build HTTP headers from client and context metadata.
@@ -729,6 +755,12 @@ func (c *instanceGroupsRESTClient) Insert(ctx context.Context, req *computepb.In
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instanceGroups", req.GetProject(), req.GetZone())
@@ -811,6 +843,12 @@ func (c *instanceGroupsRESTClient) List(ctx context.Context, req *computepb.List
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetZone(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instanceGroups", req.GetProject(), req.GetZone())
@@ -905,6 +943,13 @@ func (c *instanceGroupsRESTClient) ListInstances(ctx context.Context, req *compu
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetZone(),
+			req.GetInstanceGroup(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instanceGroups/%v/listInstances", req.GetProject(), req.GetZone(), req.GetInstanceGroup())
 
 		params := url.Values{}
@@ -988,6 +1033,13 @@ func (c *instanceGroupsRESTClient) RemoveInstances(ctx context.Context, req *com
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstanceGroup(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instanceGroups/%v/removeInstances", req.GetProject(), req.GetZone(), req.GetInstanceGroup())
 
 	params := url.Values{}
@@ -1059,6 +1111,13 @@ func (c *instanceGroupsRESTClient) SetNamedPorts(ctx context.Context, req *compu
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetInstanceGroup(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instanceGroups/%v/setNamedPorts", req.GetProject(), req.GetZone(), req.GetInstanceGroup())
 
 	params := url.Values{}
@@ -1128,6 +1187,13 @@ func (c *instanceGroupsRESTClient) TestIamPermissions(ctx context.Context, req *
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instanceGroups/%v/testIamPermissions", req.GetProject(), req.GetZone(), req.GetResource())

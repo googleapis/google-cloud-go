@@ -91,9 +91,9 @@ var File_google_cloud_discoveryengine_v1_assistant_proto protoreflect.FileDescri
 
 const file_google_cloud_discoveryengine_v1_assistant_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/discoveryengine/v1/assistant.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xbf\x01\n" +
-	"\tAssistant\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name:\x98\x01\xeaA\x94\x01\n" +
+	"/google/cloud/discoveryengine/v1/assistant.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xc0\x01\n" +
+	"\tAssistant\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name:\x98\x01\xeaA\x94\x01\n" +
 	"(discoveryengine.googleapis.com/Assistant\x12hprojects/{project}/locations/{location}/collections/{collection}/engines/{engine}/assistants/{assistant}B\x81\x02\n" +
 	"#com.google.cloud.discoveryengine.v1B\x0eAssistantProtoP\x01ZMcloud.google.com/go/discoveryengine/apiv1/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02\x1fGoogle.Cloud.DiscoveryEngine.V1\xca\x02\x1fGoogle\\Cloud\\DiscoveryEngine\\V1\xea\x02\"Google::Cloud::DiscoveryEngine::V1b\x06proto3"
 

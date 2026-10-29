@@ -2022,19 +2022,19 @@ var File_google_bigtable_admin_v2_instance_proto protoreflect.FileDescriptor
 
 const file_google_bigtable_admin_v2_instance_proto_rawDesc = "" +
 	"\n" +
-	"'google/bigtable/admin/v2/instance.proto\x12\x18google.bigtable.admin.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a%google/bigtable/admin/v2/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x89\b\n" +
+	"'google/bigtable/admin/v2/instance.proto\x12\x18google.bigtable.admin.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a%google/bigtable/admin/v2/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8c\b\n" +
 	"\bInstance\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12C\n" +
-	"\x05state\x18\x03 \x01(\x0e2(.google.bigtable.admin.v2.Instance.StateB\x03\xe0A\x03R\x05state\x12;\n" +
-	"\x04type\x18\x04 \x01(\x0e2'.google.bigtable.admin.v2.Instance.TypeR\x04type\x12I\n" +
-	"\aedition\x18\x0e \x01(\x0e2*.google.bigtable.admin.v2.Instance.EditionB\x03\xe0A\x01R\aedition\x12F\n" +
-	"\x06labels\x18\x05 \x03(\v2..google.bigtable.admin.v2.Instance.LabelsEntryR\x06labels\x12@\n" +
-	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12-\n" +
-	"\rsatisfies_pzs\x18\b \x01(\bB\x03\xe0A\x03H\x00R\fsatisfiesPzs\x88\x01\x01\x12-\n" +
-	"\rsatisfies_pzi\x18\v \x01(\bB\x03\xe0A\x03H\x01R\fsatisfiesPzi\x88\x01\x01\x12K\n" +
-	"\x04tags\x18\f \x03(\v2,.google.bigtable.admin.v2.Instance.TagsEntryB\t\xe0A\x04\xe0A\x05\xe0A\x01R\x04tags\x1a9\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12D\n" +
+	"\x05state\x18\x03 \x01(\x0e2(.google.bigtable.admin.v2.Instance.StateB\x04\xe2A\x01\x03R\x05state\x12;\n" +
+	"\x04type\x18\x04 \x01(\x0e2'.google.bigtable.admin.v2.Instance.TypeR\x04type\x12J\n" +
+	"\aedition\x18\x0e \x01(\x0e2*.google.bigtable.admin.v2.Instance.EditionB\x04\xe2A\x01\x01R\aedition\x12F\n" +
+	"\x06labels\x18\x05 \x03(\v2..google.bigtable.admin.v2.Instance.LabelsEntryR\x06labels\x12A\n" +
+	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12.\n" +
+	"\rsatisfies_pzs\x18\b \x01(\bB\x04\xe2A\x01\x03H\x00R\fsatisfiesPzs\x88\x01\x01\x12.\n" +
+	"\rsatisfies_pzi\x18\v \x01(\bB\x04\xe2A\x01\x03H\x01R\fsatisfiesPzi\x88\x01\x01\x12H\n" +
+	"\x04tags\x18\f \x03(\v2,.google.bigtable.admin.v2.Instance.TagsEntryB\x06\xe2A\x03\x04\x05\x01R\x04tags\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a7\n" +
@@ -2060,25 +2060,25 @@ const file_google_bigtable_admin_v2_instance_proto_rawDesc = "" +
 	"\x0e_satisfies_pzi\"\x94\x01\n" +
 	"\x12AutoscalingTargets\x126\n" +
 	"\x17cpu_utilization_percent\x18\x02 \x01(\x05R\x15cpuUtilizationPercent\x12F\n" +
-	" storage_utilization_gib_per_node\x18\x03 \x01(\x05R\x1cstorageUtilizationGibPerNode\"m\n" +
-	"\x11AutoscalingLimits\x12+\n" +
-	"\x0fmin_serve_nodes\x18\x01 \x01(\x05B\x03\xe0A\x02R\rminServeNodes\x12+\n" +
-	"\x0fmax_serve_nodes\x18\x02 \x01(\x05B\x03\xe0A\x02R\rmaxServeNodes\"\xe6\n" +
+	" storage_utilization_gib_per_node\x18\x03 \x01(\x05R\x1cstorageUtilizationGibPerNode\"o\n" +
+	"\x11AutoscalingLimits\x12,\n" +
+	"\x0fmin_serve_nodes\x18\x01 \x01(\x05B\x04\xe2A\x01\x02R\rminServeNodes\x12,\n" +
+	"\x0fmax_serve_nodes\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\rmaxServeNodes\"\xed\n" +
 	"\n" +
 	"\aCluster\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12E\n" +
-	"\blocation\x18\x02 \x01(\tB)\xe0A\x05\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\blocation\x12B\n" +
-	"\x05state\x18\x03 \x01(\x0e2'.google.bigtable.admin.v2.Cluster.StateB\x03\xe0A\x03R\x05state\x12\x1f\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12F\n" +
+	"\blocation\x18\x02 \x01(\tB*\xe2A\x01\x05\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\blocation\x12C\n" +
+	"\x05state\x18\x03 \x01(\x0e2'.google.bigtable.admin.v2.Cluster.StateB\x04\xe2A\x01\x03R\x05state\x12\x1f\n" +
 	"\vserve_nodes\x18\x04 \x01(\x05R\n" +
-	"serveNodes\x12h\n" +
-	"\x13node_scaling_factor\x18\t \x01(\x0e23.google.bigtable.admin.v2.Cluster.NodeScalingFactorB\x03\xe0A\x05R\x11nodeScalingFactor\x12X\n" +
-	"\x0ecluster_config\x18\a \x01(\v2/.google.bigtable.admin.v2.Cluster.ClusterConfigH\x00R\rclusterConfig\x12\\\n" +
-	"\x14default_storage_type\x18\x05 \x01(\x0e2%.google.bigtable.admin.v2.StorageTypeB\x03\xe0A\x05R\x12defaultStorageType\x12d\n" +
-	"\x11encryption_config\x18\x06 \x01(\v22.google.bigtable.admin.v2.Cluster.EncryptionConfigB\x03\xe0A\x05R\x10encryptionConfig\x1a\xdf\x01\n" +
-	"\x18ClusterAutoscalingConfig\x12_\n" +
-	"\x12autoscaling_limits\x18\x01 \x01(\v2+.google.bigtable.admin.v2.AutoscalingLimitsB\x03\xe0A\x02R\x11autoscalingLimits\x12b\n" +
-	"\x13autoscaling_targets\x18\x02 \x01(\v2,.google.bigtable.admin.v2.AutoscalingTargetsB\x03\xe0A\x02R\x12autoscalingTargets\x1a\x89\x01\n" +
+	"serveNodes\x12i\n" +
+	"\x13node_scaling_factor\x18\t \x01(\x0e23.google.bigtable.admin.v2.Cluster.NodeScalingFactorB\x04\xe2A\x01\x05R\x11nodeScalingFactor\x12X\n" +
+	"\x0ecluster_config\x18\a \x01(\v2/.google.bigtable.admin.v2.Cluster.ClusterConfigH\x00R\rclusterConfig\x12]\n" +
+	"\x14default_storage_type\x18\x05 \x01(\x0e2%.google.bigtable.admin.v2.StorageTypeB\x04\xe2A\x01\x05R\x12defaultStorageType\x12e\n" +
+	"\x11encryption_config\x18\x06 \x01(\v22.google.bigtable.admin.v2.Cluster.EncryptionConfigB\x04\xe2A\x01\x05R\x10encryptionConfig\x1a\xe1\x01\n" +
+	"\x18ClusterAutoscalingConfig\x12`\n" +
+	"\x12autoscaling_limits\x18\x01 \x01(\v2+.google.bigtable.admin.v2.AutoscalingLimitsB\x04\xe2A\x01\x02R\x11autoscalingLimits\x12c\n" +
+	"\x13autoscaling_targets\x18\x02 \x01(\v2,.google.bigtable.admin.v2.AutoscalingTargetsB\x04\xe2A\x01\x02R\x12autoscalingTargets\x1a\x89\x01\n" +
 	"\rClusterConfig\x12x\n" +
 	"\x1acluster_autoscaling_config\x18\x01 \x01(\v2:.google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfigR\x18clusterAutoscalingConfig\x1a\\\n" +
 	"\x10EncryptionConfig\x12H\n" +
@@ -2096,21 +2096,21 @@ const file_google_bigtable_admin_v2_instance_proto_rawDesc = "" +
 	"\x16NODE_SCALING_FACTOR_1X\x10\x01\x12\x1a\n" +
 	"\x16NODE_SCALING_FACTOR_2X\x10\x02:x\xeaAu\n" +
 	"$bigtableadmin.googleapis.com/Cluster\x12:projects/{project}/instances/{instance}/clusters/{cluster}*\bclusters2\aclusterB\b\n" +
-	"\x06config\"\x86\x04\n" +
-	"\vMemoryLayer\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12W\n" +
-	"\rmemory_config\x18\x02 \x01(\v22.google.bigtable.admin.v2.MemoryLayer.MemoryConfigR\fmemoryConfig\x12\x17\n" +
-	"\x04etag\x18\x03 \x01(\tB\x03\xe0A\x01R\x04etag\x12F\n" +
-	"\x05state\x18\x04 \x01(\x0e2+.google.bigtable.admin.v2.MemoryLayer.StateB\x03\xe0A\x03R\x05state\x1a=\n" +
-	"\fMemoryConfig\x12-\n" +
-	"\x10storage_size_gib\x18\x02 \x01(\x05B\x03\xe0A\x03R\x0estorageSizeGib\"Q\n" +
+	"\x06config\"\x8a\x04\n" +
+	"\vMemoryLayer\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12W\n" +
+	"\rmemory_config\x18\x02 \x01(\v22.google.bigtable.admin.v2.MemoryLayer.MemoryConfigR\fmemoryConfig\x12\x18\n" +
+	"\x04etag\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12G\n" +
+	"\x05state\x18\x04 \x01(\x0e2+.google.bigtable.admin.v2.MemoryLayer.StateB\x04\xe2A\x01\x03R\x05state\x1a>\n" +
+	"\fMemoryConfig\x12.\n" +
+	"\x10storage_size_gib\x18\x02 \x01(\x05B\x04\xe2A\x01\x03R\x0estorageSizeGib\"Q\n" +
 	"\x05State\x12\x13\n" +
 	"\x0fSTATE_NOT_KNOWN\x10\x00\x12\t\n" +
 	"\x05READY\x10\x01\x12\f\n" +
 	"\bENABLING\x10\x02\x12\f\n" +
 	"\bRESIZING\x10\x03\x12\f\n" +
 	"\bDISABLED\x10\x04:\x91\x01\xeaA\x8d\x01\n" +
-	"(bigtableadmin.googleapis.com/MemoryLayer\x12Fprojects/{project}/instances/{instance}/clusters/{cluster}/memoryLayer*\fmemoryLayers2\vmemoryLayer\"\xd0\r\n" +
+	"(bigtableadmin.googleapis.com/MemoryLayer\x12Fprojects/{project}/instances/{instance}/clusters/{cluster}/memoryLayer*\fmemoryLayers2\vmemoryLayer\"\xd1\r\n" +
 	"\n" +
 	"AppProfile\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x12\n" +
@@ -2132,10 +2132,10 @@ const file_google_bigtable_admin_v2_instance_proto_rawDesc = "" +
 	"\x14SingleClusterRouting\x12\x1d\n" +
 	"\n" +
 	"cluster_id\x18\x01 \x01(\tR\tclusterId\x12<\n" +
-	"\x1aallow_transactional_writes\x18\x02 \x01(\bR\x18allowTransactionalWrites\x1a\xdd\x01\n" +
+	"\x1aallow_transactional_writes\x18\x02 \x01(\bR\x18allowTransactionalWrites\x1a\xde\x01\n" +
 	"\x11StandardIsolation\x12I\n" +
-	"\bpriority\x18\x01 \x01(\x0e2-.google.bigtable.admin.v2.AppProfile.PriorityR\bpriority\x12m\n" +
-	"\rmemory_config\x18\x02 \x01(\v2C.google.bigtable.admin.v2.AppProfile.StandardIsolation.MemoryConfigB\x03\xe0A\x01R\fmemoryConfig\x1a\x0e\n" +
+	"\bpriority\x18\x01 \x01(\x0e2-.google.bigtable.admin.v2.AppProfile.PriorityR\bpriority\x12n\n" +
+	"\rmemory_config\x18\x02 \x01(\v2C.google.bigtable.admin.v2.AppProfile.StandardIsolation.MemoryConfigB\x04\xe2A\x01\x01R\fmemoryConfig\x1a\x0e\n" +
 	"\fMemoryConfig\x1a\x92\x02\n" +
 	"\x1aDataBoostIsolationReadOnly\x12\x8c\x01\n" +
 	"\x15compute_billing_owner\x18\x01 \x01(\x0e2S.google.bigtable.admin.v2.AppProfile.DataBoostIsolationReadOnly.ComputeBillingOwnerH\x00R\x13computeBillingOwner\x88\x01\x01\"K\n" +
@@ -2151,30 +2151,30 @@ const file_google_bigtable_admin_v2_instance_proto_rawDesc = "" +
 	"'bigtableadmin.googleapis.com/AppProfile\x12Aprojects/{project}/instances/{instance}/appProfiles/{app_profile}*\vappProfiles2\n" +
 	"appProfileB\x10\n" +
 	"\x0erouting_policyB\v\n" +
-	"\tisolation\"\xed\x03\n" +
+	"\tisolation\"\xf0\x03\n" +
 	"\tHotTablet\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12F\n" +
 	"\n" +
 	"table_name\x18\x02 \x01(\tB'\xfaA$\n" +
-	"\"bigtableadmin.googleapis.com/TableR\ttableName\x12>\n" +
+	"\"bigtableadmin.googleapis.com/TableR\ttableName\x12?\n" +
 	"\n" +
-	"start_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
+	"start_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1b\n" +
 	"\tstart_key\x18\x05 \x01(\tR\bstartKey\x12\x17\n" +
-	"\aend_key\x18\x06 \x01(\tR\x06endKey\x128\n" +
-	"\x16node_cpu_usage_percent\x18\a \x01(\x02B\x03\xe0A\x03R\x13nodeCpuUsagePercent:\x97\x01\xeaA\x93\x01\n" +
+	"\aend_key\x18\x06 \x01(\tR\x06endKey\x129\n" +
+	"\x16node_cpu_usage_percent\x18\a \x01(\x02B\x04\xe2A\x01\x03R\x13nodeCpuUsagePercent:\x97\x01\xeaA\x93\x01\n" +
 	"&bigtableadmin.googleapis.com/HotTablet\x12Rprojects/{project}/instances/{instance}/clusters/{cluster}/hotTablets/{hot_tablet}*\n" +
-	"hotTablets2\thotTablet\"\xa1\x02\n" +
-	"\vLogicalView\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x19\n" +
-	"\x05query\x18\x02 \x01(\tB\x03\xe0A\x02R\x05query\x12\x17\n" +
-	"\x04etag\x18\x03 \x01(\tB\x03\xe0A\x01R\x04etag\x124\n" +
-	"\x13deletion_protection\x18\x06 \x01(\bB\x03\xe0A\x01R\x12deletionProtection:\x8e\x01\xeaA\x8a\x01\n" +
-	"(bigtableadmin.googleapis.com/LogicalView\x12Cprojects/{project}/instances/{instance}/logicalViews/{logical_view}*\flogicalViews2\vlogicalView\"\xbd\x02\n" +
-	"\x10MaterializedView\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1c\n" +
-	"\x05query\x18\x02 \x01(\tB\x06\xe0A\x02\xe0A\x05R\x05query\x12\x17\n" +
-	"\x04etag\x18\x03 \x01(\tB\x03\xe0A\x01R\x04etag\x12/\n" +
+	"hotTablets2\thotTablet\"\xa5\x02\n" +
+	"\vLogicalView\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x1a\n" +
+	"\x05query\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05query\x12\x18\n" +
+	"\x04etag\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04etag\x125\n" +
+	"\x13deletion_protection\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\x12deletionProtection:\x8e\x01\xeaA\x8a\x01\n" +
+	"(bigtableadmin.googleapis.com/LogicalView\x12Cprojects/{project}/instances/{instance}/logicalViews/{logical_view}*\flogicalViews2\vlogicalView\"\xbe\x02\n" +
+	"\x10MaterializedView\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x1b\n" +
+	"\x05query\x18\x02 \x01(\tB\x05\xe2A\x02\x02\x05R\x05query\x12\x18\n" +
+	"\x04etag\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12/\n" +
 	"\x13deletion_protection\x18\x06 \x01(\bR\x12deletionProtection:\xa7\x01\xeaA\xa3\x01\n" +
 	"-bigtableadmin.googleapis.com/MaterializedView\x12Mprojects/{project}/instances/{instance}/materializedViews/{materialized_view}*\x11materializedViews2\x10materializedViewB\xcb\x02\xeaAx\n" +
 	"!cloudkms.googleapis.com/CryptoKey\x12Sprojects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}\n" +

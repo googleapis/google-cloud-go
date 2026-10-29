@@ -1994,13 +1994,13 @@ const file_google_cloud_dialogflow_cx_v3_agent_proto_rawDesc = "" +
 	"\n" +
 	")google/cloud/dialogflow/cx/v3/agent.proto\x12\x1dgoogle.cloud.dialogflow.cx.v3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a5google/cloud/dialogflow/cx/v3/advanced_settings.proto\x1a0google/cloud/dialogflow/cx/v3/audio_config.proto\x1a(google/cloud/dialogflow/cx/v3/flow.proto\x1a7google/cloud/dialogflow/cx/v3/generative_settings.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\"P\n" +
 	"\x14SpeechToTextSettings\x128\n" +
-	"\x18enable_speech_adaptation\x18\x01 \x01(\bR\x16enableSpeechAdaptation\"\x8d\x16\n" +
+	"\x18enable_speech_adaptation\x18\x01 \x01(\bR\x16enableSpeechAdaptation\"\x96\x16\n" +
 	"\x05Agent\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12:\n" +
-	"\x15default_language_code\x18\x03 \x01(\tB\x06\xe0A\x02\xe0A\x05R\x13defaultLanguageCode\x128\n" +
-	"\x18supported_language_codes\x18\x04 \x03(\tR\x16supportedLanguageCodes\x12 \n" +
-	"\ttime_zone\x18\x05 \x01(\tB\x03\xe0A\x02R\btimeZone\x12 \n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x129\n" +
+	"\x15default_language_code\x18\x03 \x01(\tB\x05\xe2A\x02\x02\x05R\x13defaultLanguageCode\x128\n" +
+	"\x18supported_language_codes\x18\x04 \x03(\tR\x16supportedLanguageCodes\x12!\n" +
+	"\ttime_zone\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\btimeZone\x12 \n" +
 	"\vdescription\x18\x06 \x01(\tR\vdescription\x12\x1d\n" +
 	"\n" +
 	"avatar_uri\x18\a \x01(\tR\tavatarUri\x12j\n" +
@@ -2013,18 +2013,18 @@ const file_google_cloud_dialogflow_cx_v3_agent_proto_rawDesc = "" +
 	"\x11security_settings\x18\x11 \x01(\tB/\xfaA,\n" +
 	"*dialogflow.googleapis.com/SecuritySettingsR\x10securitySettings\x12@\n" +
 	"\x1aenable_stackdriver_logging\x18\x12 \x01(\bB\x02\x18\x01R\x18enableStackdriverLogging\x126\n" +
-	"\x17enable_spell_correction\x18\x14 \x01(\bR\x15enableSpellCorrection\x12H\n" +
-	"\x1eenable_multi_language_training\x18( \x01(\bB\x03\xe0A\x01R\x1benableMultiLanguageTraining\x12\x16\n" +
+	"\x17enable_spell_correction\x18\x14 \x01(\bR\x15enableSpellCorrection\x12I\n" +
+	"\x1eenable_multi_language_training\x18( \x01(\bB\x04\xe2A\x01\x01R\x1benableMultiLanguageTraining\x12\x16\n" +
 	"\x06locked\x18\x1b \x01(\bR\x06locked\x12\\\n" +
 	"\x11advanced_settings\x18\x16 \x01(\v2/.google.cloud.dialogflow.cx.v3.AdvancedSettingsR\x10advancedSettings\x12u\n" +
 	"\x18git_integration_settings\x18\x1e \x01(\v2;.google.cloud.dialogflow.cx.v3.Agent.GitIntegrationSettingsR\x16gitIntegrationSettings\x12j\n" +
 	"\x17text_to_speech_settings\x18\x1f \x01(\v23.google.cloud.dialogflow.cx.v3.TextToSpeechSettingsR\x14textToSpeechSettings\x12x\n" +
-	"\x18gen_app_builder_settings\x18! \x01(\v2:.google.cloud.dialogflow.cx.v3.Agent.GenAppBuilderSettingsH\x01R\x15genAppBuilderSettings\x88\x01\x01\x12z\n" +
-	"\x18answer_feedback_settings\x18& \x01(\v2;.google.cloud.dialogflow.cx.v3.Agent.AnswerFeedbackSettingsB\x03\xe0A\x01R\x16answerFeedbackSettings\x12|\n" +
-	"\x18personalization_settings\x18* \x01(\v2<.google.cloud.dialogflow.cx.v3.Agent.PersonalizationSettingsB\x03\xe0A\x01R\x17personalizationSettings\x12\x83\x01\n" +
-	"\x1bclient_certificate_settings\x18+ \x01(\v2>.google.cloud.dialogflow.cx.v3.Agent.ClientCertificateSettingsB\x03\xe0A\x01R\x19clientCertificateSettings\x120\n" +
-	"\rsatisfies_pzs\x18- \x01(\bB\x06\xe0A\x01\xe0A\x03H\x02R\fsatisfiesPzs\x88\x01\x01\x120\n" +
-	"\rsatisfies_pzi\x18. \x01(\bB\x06\xe0A\x01\xe0A\x03H\x03R\fsatisfiesPzi\x88\x01\x01\x1a\xe4\x02\n" +
+	"\x18gen_app_builder_settings\x18! \x01(\v2:.google.cloud.dialogflow.cx.v3.Agent.GenAppBuilderSettingsH\x01R\x15genAppBuilderSettings\x88\x01\x01\x12{\n" +
+	"\x18answer_feedback_settings\x18& \x01(\v2;.google.cloud.dialogflow.cx.v3.Agent.AnswerFeedbackSettingsB\x04\xe2A\x01\x01R\x16answerFeedbackSettings\x12}\n" +
+	"\x18personalization_settings\x18* \x01(\v2<.google.cloud.dialogflow.cx.v3.Agent.PersonalizationSettingsB\x04\xe2A\x01\x01R\x17personalizationSettings\x12\x84\x01\n" +
+	"\x1bclient_certificate_settings\x18+ \x01(\v2>.google.cloud.dialogflow.cx.v3.Agent.ClientCertificateSettingsB\x04\xe2A\x01\x01R\x19clientCertificateSettings\x12/\n" +
+	"\rsatisfies_pzs\x18- \x01(\bB\x05\xe2A\x02\x01\x03H\x02R\fsatisfiesPzs\x88\x01\x01\x12/\n" +
+	"\rsatisfies_pzi\x18. \x01(\bB\x05\xe2A\x02\x01\x03H\x03R\fsatisfiesPzi\x88\x01\x01\x1a\xe4\x02\n" +
 	"\x16GitIntegrationSettings\x12u\n" +
 	"\x0fgithub_settings\x18\x01 \x01(\v2J.google.cloud.dialogflow.cx.v3.Agent.GitIntegrationSettings.GithubSettingsH\x00R\x0egithubSettings\x1a\xc2\x01\n" +
 	"\x0eGithubSettings\x12!\n" +
@@ -2033,58 +2033,58 @@ const file_google_cloud_dialogflow_cx_v3_agent_proto_rawDesc = "" +
 	"\x0ftracking_branch\x18\x03 \x01(\tR\x0etrackingBranch\x12!\n" +
 	"\faccess_token\x18\x04 \x01(\tR\vaccessToken\x12\x1a\n" +
 	"\bbranches\x18\x05 \x03(\tR\bbranchesB\x0e\n" +
-	"\fgit_settings\x1a4\n" +
-	"\x15GenAppBuilderSettings\x12\x1b\n" +
-	"\x06engine\x18\x01 \x01(\tB\x03\xe0A\x02R\x06engine\x1aS\n" +
-	"\x16AnswerFeedbackSettings\x129\n" +
-	"\x16enable_answer_feedback\x18\x01 \x01(\bB\x03\xe0A\x01R\x14enableAnswerFeedback\x1ar\n" +
-	"\x17PersonalizationSettings\x12W\n" +
-	"\x19default_end_user_metadata\x18\x01 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x16defaultEndUserMetadata\x1a\xf2\x01\n" +
-	"\x19ClientCertificateSettings\x12,\n" +
-	"\x0fssl_certificate\x18\x01 \x01(\tB\x03\xe0A\x02R\x0esslCertificate\x12S\n" +
-	"\vprivate_key\x18\x02 \x01(\tB2\xe0A\x02\xfaA,\n" +
+	"\fgit_settings\x1a5\n" +
+	"\x15GenAppBuilderSettings\x12\x1c\n" +
+	"\x06engine\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06engine\x1aT\n" +
+	"\x16AnswerFeedbackSettings\x12:\n" +
+	"\x16enable_answer_feedback\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x14enableAnswerFeedback\x1as\n" +
+	"\x17PersonalizationSettings\x12X\n" +
+	"\x19default_end_user_metadata\x18\x01 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\x16defaultEndUserMetadata\x1a\xf5\x01\n" +
+	"\x19ClientCertificateSettings\x12-\n" +
+	"\x0fssl_certificate\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x0esslCertificate\x12T\n" +
+	"\vprivate_key\x18\x02 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
 	"*secretmanager.googleapis.com/SecretVersionR\n" +
-	"privateKey\x12R\n" +
+	"privateKey\x12S\n" +
 	"\n" +
-	"passphrase\x18\x03 \x01(\tB2\xe0A\x01\xfaA,\n" +
+	"passphrase\x18\x03 \x01(\tB3\xe2A\x01\x01\xfaA,\n" +
 	"*secretmanager.googleapis.com/SecretVersionR\n" +
 	"passphrase:\\\xeaAY\n" +
 	"\x1fdialogflow.googleapis.com/Agent\x126projects/{project}/locations/{location}/agents/{agent}B\x18\n" +
 	"\x16session_entry_resourceB\x1b\n" +
 	"\x19_gen_app_builder_settingsB\x10\n" +
 	"\x0e_satisfies_pzsB\x10\n" +
-	"\x0e_satisfies_pzi\"\x90\x01\n" +
-	"\x11ListAgentsRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1fdialogflow.googleapis.com/AgentR\x06parent\x12\x1b\n" +
+	"\x0e_satisfies_pzi\"\x91\x01\n" +
+	"\x11ListAgentsRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1fdialogflow.googleapis.com/AgentR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"z\n" +
 	"\x12ListAgentsResponse\x12<\n" +
 	"\x06agents\x18\x01 \x03(\v2$.google.cloud.dialogflow.cx.v3.AgentR\x06agents\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"N\n" +
-	"\x0fGetAgentRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fdialogflow.googleapis.com/AgentR\x04name\"\x96\x01\n" +
-	"\x12CreateAgentRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1fdialogflow.googleapis.com/AgentR\x06parent\x12?\n" +
-	"\x05agent\x18\x02 \x01(\v2$.google.cloud.dialogflow.cx.v3.AgentB\x03\xe0A\x02R\x05agent\"\x92\x01\n" +
-	"\x12UpdateAgentRequest\x12?\n" +
-	"\x05agent\x18\x01 \x01(\v2$.google.cloud.dialogflow.cx.v3.AgentB\x03\xe0A\x02R\x05agent\x12;\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"O\n" +
+	"\x0fGetAgentRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fdialogflow.googleapis.com/AgentR\x04name\"\x98\x01\n" +
+	"\x12CreateAgentRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1fdialogflow.googleapis.com/AgentR\x06parent\x12@\n" +
+	"\x05agent\x18\x02 \x01(\v2$.google.cloud.dialogflow.cx.v3.AgentB\x04\xe2A\x01\x02R\x05agent\"\x93\x01\n" +
+	"\x12UpdateAgentRequest\x12@\n" +
+	"\x05agent\x18\x01 \x01(\v2$.google.cloud.dialogflow.cx.v3.AgentB\x04\xe2A\x01\x02R\x05agent\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"Q\n" +
-	"\x12DeleteAgentRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fdialogflow.googleapis.com/AgentR\x04name\"\x8f\x05\n" +
-	"\x12ExportAgentRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fdialogflow.googleapis.com/AgentR\x04name\x12 \n" +
-	"\tagent_uri\x18\x02 \x01(\tB\x03\xe0A\x01R\bagentUri\x12b\n" +
-	"\vdata_format\x18\x03 \x01(\x0e2<.google.cloud.dialogflow.cx.v3.ExportAgentRequest.DataFormatB\x03\xe0A\x01R\n" +
-	"dataFormat\x12O\n" +
-	"\venvironment\x18\x05 \x01(\tB-\xe0A\x01\xfaA'\n" +
-	"%dialogflow.googleapis.com/EnvironmentR\venvironment\x12n\n" +
-	"\x0fgit_destination\x18\x06 \x01(\v2@.google.cloud.dialogflow.cx.v3.ExportAgentRequest.GitDestinationB\x03\xe0A\x01R\x0egitDestination\x12L\n" +
-	" include_bigquery_export_settings\x18\a \x01(\bB\x03\xe0A\x01R\x1dincludeBigqueryExportSettings\x1a`\n" +
+	"updateMask\"R\n" +
+	"\x12DeleteAgentRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fdialogflow.googleapis.com/AgentR\x04name\"\x95\x05\n" +
+	"\x12ExportAgentRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fdialogflow.googleapis.com/AgentR\x04name\x12!\n" +
+	"\tagent_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\bagentUri\x12c\n" +
+	"\vdata_format\x18\x03 \x01(\x0e2<.google.cloud.dialogflow.cx.v3.ExportAgentRequest.DataFormatB\x04\xe2A\x01\x01R\n" +
+	"dataFormat\x12P\n" +
+	"\venvironment\x18\x05 \x01(\tB.\xe2A\x01\x01\xfaA'\n" +
+	"%dialogflow.googleapis.com/EnvironmentR\venvironment\x12o\n" +
+	"\x0fgit_destination\x18\x06 \x01(\v2@.google.cloud.dialogflow.cx.v3.ExportAgentRequest.GitDestinationB\x04\xe2A\x01\x01R\x0egitDestination\x12M\n" +
+	" include_bigquery_export_settings\x18\a \x01(\bB\x04\xe2A\x01\x01R\x1dincludeBigqueryExportSettings\x1a`\n" +
 	"\x0eGitDestination\x12'\n" +
 	"\x0ftracking_branch\x18\x01 \x01(\tR\x0etrackingBranch\x12%\n" +
 	"\x0ecommit_message\x18\x02 \x01(\tR\rcommitMessage\"E\n" +
@@ -2098,9 +2098,9 @@ const file_google_cloud_dialogflow_cx_v3_agent_proto_rawDesc = "" +
 	"\ragent_content\x18\x02 \x01(\fH\x00R\fagentContent\x12\x1f\n" +
 	"\n" +
 	"commit_sha\x18\x03 \x01(\tH\x00R\tcommitShaB\a\n" +
-	"\x05agent\"\xe8\x03\n" +
-	"\x13RestoreAgentRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
+	"\x05agent\"\xe9\x03\n" +
+	"\x13RestoreAgentRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
 	"\x1fdialogflow.googleapis.com/AgentR\x04name\x12\x1d\n" +
 	"\tagent_uri\x18\x02 \x01(\tH\x00R\bagentUri\x12%\n" +
 	"\ragent_content\x18\x03 \x01(\fH\x00R\fagentContent\x12]\n" +
@@ -2113,26 +2113,26 @@ const file_google_cloud_dialogflow_cx_v3_agent_proto_rawDesc = "" +
 	"\x1aRESTORE_OPTION_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04KEEP\x10\x01\x12\f\n" +
 	"\bFALLBACK\x10\x02B\a\n" +
-	"\x05agent\"x\n" +
-	"\x14ValidateAgentRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
+	"\x05agent\"y\n" +
+	"\x14ValidateAgentRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
 	"\x1fdialogflow.googleapis.com/AgentR\x04name\x12#\n" +
-	"\rlanguage_code\x18\x02 \x01(\tR\flanguageCode\"\x93\x01\n" +
-	"\x1fGetAgentValidationResultRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
+	"\rlanguage_code\x18\x02 \x01(\tR\flanguageCode\"\x94\x01\n" +
+	"\x1fGetAgentValidationResultRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
 	"/dialogflow.googleapis.com/AgentValidationResultR\x04name\x12#\n" +
 	"\rlanguage_code\x18\x02 \x01(\tR\flanguageCode\"\x97\x02\n" +
 	"\x15AgentValidationResult\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12k\n" +
 	"\x17flow_validation_results\x18\x02 \x03(\v23.google.cloud.dialogflow.cx.v3.FlowValidationResultR\x15flowValidationResults:}\xeaAz\n" +
-	"/dialogflow.googleapis.com/AgentValidationResult\x12Gprojects/{project}/locations/{location}/agents/{agent}/validationResult\"\x97\x01\n" +
-	"\x1cGetGenerativeSettingsRequest\x12M\n" +
-	"\x04name\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
-	"1dialogflow.googleapis.com/AgentGenerativeSettingsR\x04name\x12(\n" +
-	"\rlanguage_code\x18\x02 \x01(\tB\x03\xe0A\x02R\flanguageCode\"\xcc\x01\n" +
-	"\x1fUpdateGenerativeSettingsRequest\x12g\n" +
-	"\x13generative_settings\x18\x01 \x01(\v21.google.cloud.dialogflow.cx.v3.GenerativeSettingsB\x03\xe0A\x02R\x12generativeSettings\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
+	"/dialogflow.googleapis.com/AgentValidationResult\x12Gprojects/{project}/locations/{location}/agents/{agent}/validationResult\"\x99\x01\n" +
+	"\x1cGetGenerativeSettingsRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1dialogflow.googleapis.com/AgentGenerativeSettingsR\x04name\x12)\n" +
+	"\rlanguage_code\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\flanguageCode\"\xce\x01\n" +
+	"\x1fUpdateGenerativeSettingsRequest\x12h\n" +
+	"\x13generative_settings\x18\x01 \x01(\v21.google.cloud.dialogflow.cx.v3.GenerativeSettingsB\x04\xe2A\x01\x02R\x12generativeSettings\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
 	"updateMask2\xa2\x12\n" +
 	"\x06Agents\x12\xae\x01\n" +
 	"\n" +

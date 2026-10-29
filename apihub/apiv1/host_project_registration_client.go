@@ -361,6 +361,11 @@ func (c *hostProjectRegistrationRESTClient) CreateHostProjectRegistration(ctx co
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/hostProjectRegistrations", req.GetParent())
 
 	params := url.Values{}
@@ -414,6 +419,11 @@ func (c *hostProjectRegistrationRESTClient) CreateHostProjectRegistration(ctx co
 func (c *hostProjectRegistrationRESTClient) GetHostProjectRegistration(ctx context.Context, req *apihubpb.GetHostProjectRegistrationRequest, opts ...gax.CallOption) (*apihubpb.HostProjectRegistration, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -481,6 +491,11 @@ func (c *hostProjectRegistrationRESTClient) ListHostProjectRegistrations(ctx con
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/hostProjectRegistrations", req.GetParent())
@@ -554,6 +569,11 @@ func (c *hostProjectRegistrationRESTClient) GetLocation(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -619,6 +639,11 @@ func (c *hostProjectRegistrationRESTClient) ListLocations(ctx context.Context, r
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
@@ -695,6 +720,11 @@ func (c *hostProjectRegistrationRESTClient) CancelOperation(ctx context.Context,
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -734,6 +764,11 @@ func (c *hostProjectRegistrationRESTClient) DeleteOperation(ctx context.Context,
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -771,6 +806,11 @@ func (c *hostProjectRegistrationRESTClient) DeleteOperation(ctx context.Context,
 func (c *hostProjectRegistrationRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -838,6 +878,11 @@ func (c *hostProjectRegistrationRESTClient) ListOperations(ctx context.Context, 
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

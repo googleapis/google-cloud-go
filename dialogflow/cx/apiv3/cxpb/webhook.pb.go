@@ -2343,43 +2343,43 @@ var File_google_cloud_dialogflow_cx_v3_webhook_proto protoreflect.FileDescriptor
 
 const file_google_cloud_dialogflow_cx_v3_webhook_proto_rawDesc = "" +
 	"\n" +
-	"+google/cloud/dialogflow/cx/v3/webhook.proto\x12\x1dgoogle.cloud.dialogflow.cx.v3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/dialogflow/cx/v3/response_message.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xc3\x18\n" +
+	"+google/cloud/dialogflow/cx/v3/webhook.proto\x12\x1dgoogle.cloud.dialogflow.cx.v3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/dialogflow/cx/v3/response_message.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xd7\x18\n" +
 	"\aWebhook\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12j\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12j\n" +
 	"\x13generic_web_service\x18\x04 \x01(\v28.google.cloud.dialogflow.cx.v3.Webhook.GenericWebServiceH\x00R\x11genericWebService\x12l\n" +
 	"\x11service_directory\x18\a \x01(\v2=.google.cloud.dialogflow.cx.v3.Webhook.ServiceDirectoryConfigH\x00R\x10serviceDirectory\x123\n" +
 	"\atimeout\x18\x06 \x01(\v2\x19.google.protobuf.DurationR\atimeout\x12\x1a\n" +
-	"\bdisabled\x18\x05 \x01(\bR\bdisabled\x1a\x82\x13\n" +
-	"\x11GenericWebService\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x02R\x03uri\x12\x1e\n" +
+	"\bdisabled\x18\x05 \x01(\bR\bdisabled\x1a\x94\x13\n" +
+	"\x11GenericWebService\x12\x16\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03uri\x12\x1e\n" +
 	"\busername\x18\x02 \x01(\tB\x02\x18\x01R\busername\x12\x1e\n" +
-	"\bpassword\x18\x03 \x01(\tB\x02\x18\x01R\bpassword\x12\x82\x01\n" +
-	"$secret_version_for_username_password\x18\x13 \x01(\tB2\xe0A\x01\xfaA,\n" +
+	"\bpassword\x18\x03 \x01(\tB\x02\x18\x01R\bpassword\x12\x83\x01\n" +
+	"$secret_version_for_username_password\x18\x13 \x01(\tB3\xe2A\x01\x01\xfaA,\n" +
 	"*secretmanager.googleapis.com/SecretVersionR secretVersionForUsernamePassword\x12u\n" +
-	"\x0frequest_headers\x18\x04 \x03(\v2L.google.cloud.dialogflow.cx.v3.Webhook.GenericWebService.RequestHeadersEntryR\x0erequestHeaders\x12\xb0\x01\n" +
-	"#secret_versions_for_request_headers\x18\x14 \x03(\v2].google.cloud.dialogflow.cx.v3.Webhook.GenericWebService.SecretVersionsForRequestHeadersEntryB\x03\xe0A\x01R\x1fsecretVersionsForRequestHeaders\x12-\n" +
-	"\x10allowed_ca_certs\x18\x05 \x03(\fB\x03\xe0A\x01R\x0eallowedCaCerts\x12l\n" +
-	"\foauth_config\x18\v \x01(\v2D.google.cloud.dialogflow.cx.v3.Webhook.GenericWebService.OAuthConfigB\x03\xe0A\x01R\voauthConfig\x12|\n" +
-	"\x12service_agent_auth\x18\f \x01(\x0e2I.google.cloud.dialogflow.cx.v3.Webhook.GenericWebService.ServiceAgentAuthB\x03\xe0A\x01R\x10serviceAgentAuth\x12\x95\x01\n" +
-	"\x1bservice_account_auth_config\x18\x12 \x01(\v2Q.google.cloud.dialogflow.cx.v3.Webhook.GenericWebService.ServiceAccountAuthConfigB\x03\xe0A\x01R\x18serviceAccountAuthConfig\x12l\n" +
-	"\fwebhook_type\x18\x06 \x01(\x0e2D.google.cloud.dialogflow.cx.v3.Webhook.GenericWebService.WebhookTypeB\x03\xe0A\x01R\vwebhookType\x12i\n" +
-	"\vhttp_method\x18\a \x01(\x0e2C.google.cloud.dialogflow.cx.v3.Webhook.GenericWebService.HttpMethodB\x03\xe0A\x01R\n" +
-	"httpMethod\x12&\n" +
-	"\frequest_body\x18\b \x01(\tB\x03\xe0A\x01R\vrequestBody\x12\x80\x01\n" +
-	"\x11parameter_mapping\x18\t \x03(\v2N.google.cloud.dialogflow.cx.v3.Webhook.GenericWebService.ParameterMappingEntryB\x03\xe0A\x01R\x10parameterMapping\x1au\n" +
-	"\x18SecretVersionHeaderValue\x12Y\n" +
-	"\x0esecret_version\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionR\rsecretVersion\x1a\x9e\x02\n" +
-	"\vOAuthConfig\x12 \n" +
-	"\tclient_id\x18\x01 \x01(\tB\x03\xe0A\x02R\bclientId\x12(\n" +
-	"\rclient_secret\x18\x02 \x01(\tB\x03\xe0A\x01R\fclientSecret\x12z\n" +
-	" secret_version_for_client_secret\x18\x05 \x01(\tB2\xe0A\x01\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionR\x1csecretVersionForClientSecret\x12*\n" +
-	"\x0etoken_endpoint\x18\x03 \x01(\tB\x03\xe0A\x02R\rtokenEndpoint\x12\x1b\n" +
-	"\x06scopes\x18\x04 \x03(\tB\x03\xe0A\x01R\x06scopes\x1aH\n" +
-	"\x18ServiceAccountAuthConfig\x12,\n" +
-	"\x0fservice_account\x18\x01 \x01(\tB\x03\xe0A\x02R\x0eserviceAccount\x1aA\n" +
+	"\x0frequest_headers\x18\x04 \x03(\v2L.google.cloud.dialogflow.cx.v3.Webhook.GenericWebService.RequestHeadersEntryR\x0erequestHeaders\x12\xb1\x01\n" +
+	"#secret_versions_for_request_headers\x18\x14 \x03(\v2].google.cloud.dialogflow.cx.v3.Webhook.GenericWebService.SecretVersionsForRequestHeadersEntryB\x04\xe2A\x01\x01R\x1fsecretVersionsForRequestHeaders\x12.\n" +
+	"\x10allowed_ca_certs\x18\x05 \x03(\fB\x04\xe2A\x01\x01R\x0eallowedCaCerts\x12m\n" +
+	"\foauth_config\x18\v \x01(\v2D.google.cloud.dialogflow.cx.v3.Webhook.GenericWebService.OAuthConfigB\x04\xe2A\x01\x01R\voauthConfig\x12}\n" +
+	"\x12service_agent_auth\x18\f \x01(\x0e2I.google.cloud.dialogflow.cx.v3.Webhook.GenericWebService.ServiceAgentAuthB\x04\xe2A\x01\x01R\x10serviceAgentAuth\x12\x96\x01\n" +
+	"\x1bservice_account_auth_config\x18\x12 \x01(\v2Q.google.cloud.dialogflow.cx.v3.Webhook.GenericWebService.ServiceAccountAuthConfigB\x04\xe2A\x01\x01R\x18serviceAccountAuthConfig\x12m\n" +
+	"\fwebhook_type\x18\x06 \x01(\x0e2D.google.cloud.dialogflow.cx.v3.Webhook.GenericWebService.WebhookTypeB\x04\xe2A\x01\x01R\vwebhookType\x12j\n" +
+	"\vhttp_method\x18\a \x01(\x0e2C.google.cloud.dialogflow.cx.v3.Webhook.GenericWebService.HttpMethodB\x04\xe2A\x01\x01R\n" +
+	"httpMethod\x12'\n" +
+	"\frequest_body\x18\b \x01(\tB\x04\xe2A\x01\x01R\vrequestBody\x12\x81\x01\n" +
+	"\x11parameter_mapping\x18\t \x03(\v2N.google.cloud.dialogflow.cx.v3.Webhook.GenericWebService.ParameterMappingEntryB\x04\xe2A\x01\x01R\x10parameterMapping\x1av\n" +
+	"\x18SecretVersionHeaderValue\x12Z\n" +
+	"\x0esecret_version\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionR\rsecretVersion\x1a\xa3\x02\n" +
+	"\vOAuthConfig\x12!\n" +
+	"\tclient_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bclientId\x12)\n" +
+	"\rclient_secret\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\fclientSecret\x12{\n" +
+	" secret_version_for_client_secret\x18\x05 \x01(\tB3\xe2A\x01\x01\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionR\x1csecretVersionForClientSecret\x12+\n" +
+	"\x0etoken_endpoint\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\rtokenEndpoint\x12\x1c\n" +
+	"\x06scopes\x18\x04 \x03(\tB\x04\xe2A\x01\x01R\x06scopes\x1aI\n" +
+	"\x18ServiceAccountAuthConfig\x12-\n" +
+	"\x0fservice_account\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x0eserviceAccount\x1aA\n" +
 	"\x13RequestHeadersEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a\xa5\x01\n" +
@@ -2408,33 +2408,33 @@ const file_google_cloud_dialogflow_cx_v3_webhook_proto_rawDesc = "" +
 	"\n" +
 	"\x06DELETE\x10\x05\x12\t\n" +
 	"\x05PATCH\x10\x06\x12\v\n" +
-	"\aOPTIONS\x10\a\x1a\xcd\x01\n" +
-	"\x16ServiceDirectoryConfig\x12I\n" +
-	"\aservice\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
+	"\aOPTIONS\x10\a\x1a\xce\x01\n" +
+	"\x16ServiceDirectoryConfig\x12J\n" +
+	"\aservice\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
 	"'servicedirectory.googleapis.com/ServiceR\aservice\x12h\n" +
 	"\x13generic_web_service\x18\x02 \x01(\v28.google.cloud.dialogflow.cx.v3.Webhook.GenericWebServiceR\x11genericWebService:q\xeaAn\n" +
 	"!dialogflow.googleapis.com/Webhook\x12Iprojects/{project}/locations/{location}/agents/{agent}/webhooks/{webhook}B\t\n" +
-	"\awebhook\"\x94\x01\n" +
-	"\x13ListWebhooksRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!dialogflow.googleapis.com/WebhookR\x06parent\x12\x1b\n" +
+	"\awebhook\"\x95\x01\n" +
+	"\x13ListWebhooksRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!dialogflow.googleapis.com/WebhookR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x82\x01\n" +
 	"\x14ListWebhooksResponse\x12B\n" +
 	"\bwebhooks\x18\x01 \x03(\v2&.google.cloud.dialogflow.cx.v3.WebhookR\bwebhooks\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"R\n" +
-	"\x11GetWebhookRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!dialogflow.googleapis.com/WebhookR\x04name\"\xa0\x01\n" +
-	"\x14CreateWebhookRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!dialogflow.googleapis.com/WebhookR\x06parent\x12E\n" +
-	"\awebhook\x18\x02 \x01(\v2&.google.cloud.dialogflow.cx.v3.WebhookB\x03\xe0A\x02R\awebhook\"\x9a\x01\n" +
-	"\x14UpdateWebhookRequest\x12E\n" +
-	"\awebhook\x18\x01 \x01(\v2&.google.cloud.dialogflow.cx.v3.WebhookB\x03\xe0A\x02R\awebhook\x12;\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"S\n" +
+	"\x11GetWebhookRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!dialogflow.googleapis.com/WebhookR\x04name\"\xa2\x01\n" +
+	"\x14CreateWebhookRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!dialogflow.googleapis.com/WebhookR\x06parent\x12F\n" +
+	"\awebhook\x18\x02 \x01(\v2&.google.cloud.dialogflow.cx.v3.WebhookB\x04\xe2A\x01\x02R\awebhook\"\x9b\x01\n" +
+	"\x14UpdateWebhookRequest\x12F\n" +
+	"\awebhook\x18\x01 \x01(\v2&.google.cloud.dialogflow.cx.v3.WebhookB\x04\xe2A\x01\x02R\awebhook\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"k\n" +
-	"\x14DeleteWebhookRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"updateMask\"l\n" +
+	"\x14DeleteWebhookRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!dialogflow.googleapis.com/WebhookR\x04name\x12\x14\n" +
 	"\x05force\x18\x02 \x01(\bR\x05force\"\x8e\r\n" +
 	"\x0eWebhookRequest\x129\n" +

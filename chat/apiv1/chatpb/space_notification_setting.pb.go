@@ -343,9 +343,9 @@ var File_google_chat_v1_space_notification_setting_proto protoreflect.FileDescri
 
 const file_google_chat_v1_space_notification_setting_proto_rawDesc = "" +
 	"\n" +
-	"/google/chat/v1/space_notification_setting.proto\x12\x0egoogle.chat.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\"\xee\x04\n" +
-	"\x18SpaceNotificationSetting\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12t\n" +
+	"/google/chat/v1/space_notification_setting.proto\x12\x0egoogle.chat.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\"\xef\x04\n" +
+	"\x18SpaceNotificationSetting\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12t\n" +
 	"\x14notification_setting\x18\x02 \x01(\x0e2<.google.chat.v1.SpaceNotificationSetting.NotificationSettingH\x00R\x13notificationSetting\x88\x01\x01\x12\\\n" +
 	"\fmute_setting\x18\x03 \x01(\x0e24.google.chat.v1.SpaceNotificationSetting.MuteSettingH\x01R\vmuteSetting\x88\x01\x01\"r\n" +
 	"\x13NotificationSetting\x12$\n" +
@@ -360,13 +360,13 @@ const file_google_chat_v1_space_notification_setting_proto_rawDesc = "" +
 	"\x05MUTED\x10\x02:\x81\x01\xeaA~\n" +
 	",chat.googleapis.com/SpaceNotificationSetting\x124users/{user}/spaces/{space}/spaceNotificationSetting2\x18spaceNotificationSettingB\x17\n" +
 	"\x15_notification_settingB\x0f\n" +
-	"\r_mute_setting\"n\n" +
-	"\"GetSpaceNotificationSettingRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",chat.googleapis.com/SpaceNotificationSettingR\x04name\"\xd6\x01\n" +
-	"%UpdateSpaceNotificationSettingRequest\x12k\n" +
-	"\x1aspace_notification_setting\x18\x01 \x01(\v2(.google.chat.v1.SpaceNotificationSettingB\x03\xe0A\x02R\x18spaceNotificationSetting\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
+	"\r_mute_setting\"o\n" +
+	"\"GetSpaceNotificationSettingRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",chat.googleapis.com/SpaceNotificationSettingR\x04name\"\xd8\x01\n" +
+	"%UpdateSpaceNotificationSettingRequest\x12l\n" +
+	"\x1aspace_notification_setting\x18\x01 \x01(\v2(.google.chat.v1.SpaceNotificationSettingB\x04\xe2A\x01\x02R\x18spaceNotificationSetting\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
 	"updateMaskB\xb6\x01\n" +
 	"\x12com.google.chat.v1B\x1dSpaceNotificationSettingProtoP\x01Z,cloud.google.com/go/chat/apiv1/chatpb;chatpb\xa2\x02\vDYNAPIProto\xaa\x02\x13Google.Apps.Chat.V1\xca\x02\x13Google\\Apps\\Chat\\V1\xea\x02\x16Google::Apps::Chat::V1b\x06proto3"
 

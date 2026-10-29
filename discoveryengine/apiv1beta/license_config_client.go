@@ -832,6 +832,11 @@ func (c *licenseConfigRESTClient) CreateLicenseConfig(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/licenseConfigs", req.GetParent())
 
 	params := url.Values{}
@@ -897,6 +902,11 @@ func (c *licenseConfigRESTClient) UpdateLicenseConfig(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetLicenseConfig().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetLicenseConfig().GetName())
 
 	params := url.Values{}
@@ -956,6 +966,11 @@ func (c *licenseConfigRESTClient) UpdateLicenseConfig(ctx context.Context, req *
 func (c *licenseConfigRESTClient) GetLicenseConfig(ctx context.Context, req *discoveryenginepb.GetLicenseConfigRequest, opts ...gax.CallOption) (*discoveryenginepb.LicenseConfig, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -1025,6 +1040,11 @@ func (c *licenseConfigRESTClient) ListLicenseConfigs(ctx context.Context, req *d
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/licenseConfigs", req.GetParent())
@@ -1103,6 +1123,11 @@ func (c *licenseConfigRESTClient) DistributeLicenseConfig(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetBillingAccountLicenseConfig(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:distributeLicenseConfig", req.GetBillingAccountLicenseConfig())
 
 	params := url.Values{}
@@ -1165,6 +1190,11 @@ func (c *licenseConfigRESTClient) RetractLicenseConfig(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetBillingAccountLicenseConfig(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:retractLicenseConfig", req.GetBillingAccountLicenseConfig())
 
 	params := url.Values{}
@@ -1225,6 +1255,11 @@ func (c *licenseConfigRESTClient) CancelOperation(ctx context.Context, req *long
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1262,6 +1297,11 @@ func (c *licenseConfigRESTClient) CancelOperation(ctx context.Context, req *long
 func (c *licenseConfigRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -1329,6 +1369,11 @@ func (c *licenseConfigRESTClient) ListOperations(ctx context.Context, req *longr
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/operations", req.GetName())

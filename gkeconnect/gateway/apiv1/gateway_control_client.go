@@ -242,6 +242,11 @@ func (c *gatewayControlRESTClient) GenerateCredentials(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:generateCredentials", req.GetName())
 
 	params := url.Values{}

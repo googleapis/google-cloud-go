@@ -959,6 +959,11 @@ func (c *schemaRESTClient) GetSchema(ctx context.Context, req *discoveryenginepb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1024,6 +1029,11 @@ func (c *schemaRESTClient) ListSchemas(ctx context.Context, req *discoveryengine
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/schemas", req.GetParent())
@@ -1098,6 +1108,11 @@ func (c *schemaRESTClient) CreateSchema(ctx context.Context, req *discoveryengin
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/schemas", req.GetParent())
 
 	params := url.Values{}
@@ -1167,6 +1182,11 @@ func (c *schemaRESTClient) UpdateSchema(ctx context.Context, req *discoveryengin
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSchema().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetSchema().GetName())
 
 	params := url.Values{}
@@ -1229,6 +1249,11 @@ func (c *schemaRESTClient) UpdateSchema(ctx context.Context, req *discoveryengin
 func (c *schemaRESTClient) DeleteSchema(ctx context.Context, req *discoveryenginepb.DeleteSchemaRequest, opts ...gax.CallOption) (*DeleteSchemaOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1298,6 +1323,11 @@ func (c *schemaRESTClient) CancelOperation(ctx context.Context, req *longrunning
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1335,6 +1365,11 @@ func (c *schemaRESTClient) CancelOperation(ctx context.Context, req *longrunning
 func (c *schemaRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1402,6 +1437,11 @@ func (c *schemaRESTClient) ListOperations(ctx context.Context, req *longrunningp
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

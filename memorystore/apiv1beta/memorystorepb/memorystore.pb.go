@@ -4197,6 +4197,13 @@ type ZoneDistributionConfig struct {
 	// Optional. Defines zone where all resources will be allocated with
 	// SINGLE_ZONE mode. Ignored for MULTI_ZONE mode.
 	Zone string `protobuf:"bytes,2,opt,name=zone,proto3" json:"zone,omitempty"`
+	// Optional. Specify the zones of a multi-zone instance where Memorystore
+	// instance allocates resources. This flag isn't applicable for single-zone
+	// instances.
+	Zones []string `protobuf:"bytes,3,rep,name=zones,proto3" json:"zones,omitempty"`
+	// Output only. The exact list of zones where the instance currently has
+	// active VMs.
+	ActiveZones []string `protobuf:"bytes,4,rep,name=active_zones,json=activeZones,proto3" json:"active_zones,omitempty"`
 	// Optional. Current zone distribution mode. Defaults to MULTI_ZONE.
 	Mode          ZoneDistributionConfig_ZoneDistributionMode `protobuf:"varint,1,opt,name=mode,proto3,enum=google.cloud.memorystore.v1beta.ZoneDistributionConfig_ZoneDistributionMode" json:"mode,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -4238,6 +4245,20 @@ func (x *ZoneDistributionConfig) GetZone() string {
 		return x.Zone
 	}
 	return ""
+}
+
+func (x *ZoneDistributionConfig) GetZones() []string {
+	if x != nil {
+		return x.Zones
+	}
+	return nil
+}
+
+func (x *ZoneDistributionConfig) GetActiveZones() []string {
+	if x != nil {
+		return x.ActiveZones
+	}
+	return nil
 }
 
 func (x *ZoneDistributionConfig) GetMode() ZoneDistributionConfig_ZoneDistributionMode {
@@ -7864,90 +7885,90 @@ var File_google_cloud_memorystore_v1beta_memorystore_proto protoreflect.FileDesc
 
 const file_google_cloud_memorystore_v1beta_memorystore_proto_rawDesc = "" +
 	"\n" +
-	"1google/cloud/memorystore/v1beta/memorystore.proto\x12\x1fgoogle.cloud.memorystore.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bgoogle/type/dayofweek.proto\x1a\x1bgoogle/type/timeofday.proto\"\xbe3\n" +
-	"\bInstance\x12b\n" +
+	"1google/cloud/memorystore/v1beta/memorystore.proto\x12\x1fgoogle.cloud.memorystore.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bgoogle/type/dayofweek.proto\x1a\x1bgoogle/type/timeofday.proto\"\xd83\n" +
+	"\bInstance\x12a\n" +
 	"\n" +
-	"gcs_source\x18\x17 \x01(\v29.google.cloud.memorystore.v1beta.Instance.GcsBackupSourceB\x06\xe0A\x01\xe0A\x05H\x00R\tgcsSource\x12{\n" +
-	"\x15managed_backup_source\x18\x18 \x01(\v2=.google.cloud.memorystore.v1beta.Instance.ManagedBackupSourceB\x06\xe0A\x01\xe0A\x05H\x00R\x13managedBackupSource\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12R\n" +
-	"\x06labels\x18\x04 \x03(\v25.google.cloud.memorystore.v1beta.Instance.LabelsEntryB\x03\xe0A\x01R\x06labels\x12J\n" +
-	"\x05state\x18\x05 \x01(\x0e2/.google.cloud.memorystore.v1beta.Instance.StateB\x03\xe0A\x03R\x05state\x12W\n" +
+	"gcs_source\x18\x17 \x01(\v29.google.cloud.memorystore.v1beta.Instance.GcsBackupSourceB\x05\xe2A\x02\x01\x05H\x00R\tgcsSource\x12z\n" +
+	"\x15managed_backup_source\x18\x18 \x01(\v2=.google.cloud.memorystore.v1beta.Instance.ManagedBackupSourceB\x05\xe2A\x02\x01\x05H\x00R\x13managedBackupSource\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12S\n" +
+	"\x06labels\x18\x04 \x03(\v25.google.cloud.memorystore.v1beta.Instance.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12K\n" +
+	"\x05state\x18\x05 \x01(\x0e2/.google.cloud.memorystore.v1beta.Instance.StateB\x04\xe2A\x01\x03R\x05state\x12X\n" +
 	"\n" +
-	"state_info\x18\x06 \x01(\v23.google.cloud.memorystore.v1beta.Instance.StateInfoB\x03\xe0A\x03R\tstateInfo\x12\x1d\n" +
-	"\x03uid\x18\a \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12-\n" +
-	"\rreplica_count\x18\b \x01(\x05B\x03\xe0A\x01H\x01R\freplicaCount\x88\x01\x01\x12r\n" +
-	"\x12authorization_mode\x18\t \x01(\x0e2;.google.cloud.memorystore.v1beta.Instance.AuthorizationModeB\x06\xe0A\x01\xe0A\x05R\x11authorizationMode\x12\x7f\n" +
+	"state_info\x18\x06 \x01(\v23.google.cloud.memorystore.v1beta.Instance.StateInfoB\x04\xe2A\x01\x03R\tstateInfo\x12\x1e\n" +
+	"\x03uid\x18\a \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12.\n" +
+	"\rreplica_count\x18\b \x01(\x05B\x04\xe2A\x01\x01H\x01R\freplicaCount\x88\x01\x01\x12q\n" +
+	"\x12authorization_mode\x18\t \x01(\x0e2;.google.cloud.memorystore.v1beta.Instance.AuthorizationModeB\x05\xe2A\x02\x01\x05R\x11authorizationMode\x12~\n" +
 	"\x17transit_encryption_mode\x18\n" +
-	" \x01(\x0e2?.google.cloud.memorystore.v1beta.Instance.TransitEncryptionModeB\x06\xe0A\x01\xe0A\x05R\x15transitEncryptionMode\x12$\n" +
-	"\vshard_count\x18\v \x01(\x05B\x03\xe0A\x01R\n" +
-	"shardCount\x12j\n" +
-	"\x13discovery_endpoints\x18\f \x03(\v22.google.cloud.memorystore.v1beta.DiscoveryEndpointB\x05\xe0A\x03\x18\x01R\x12discoveryEndpoints\x12T\n" +
-	"\tnode_type\x18\r \x01(\x0e22.google.cloud.memorystore.v1beta.Instance.NodeTypeB\x03\xe0A\x01R\bnodeType\x12f\n" +
-	"\x12persistence_config\x18\x0e \x01(\v22.google.cloud.memorystore.v1beta.PersistenceConfigB\x03\xe0A\x01R\x11persistenceConfig\x12*\n" +
-	"\x0eengine_version\x18\x0f \x01(\tB\x03\xe0A\x01R\rengineVersion\x12h\n" +
-	"\x0eengine_configs\x18\x10 \x03(\v2<.google.cloud.memorystore.v1beta.Instance.EngineConfigsEntryB\x03\xe0A\x01R\rengineConfigs\x12Q\n" +
-	"\vnode_config\x18\x11 \x01(\v2+.google.cloud.memorystore.v1beta.NodeConfigB\x03\xe0A\x03R\n" +
-	"nodeConfig\x12y\n" +
-	"\x18zone_distribution_config\x18\x12 \x01(\v27.google.cloud.memorystore.v1beta.ZoneDistributionConfigB\x06\xe0A\x01\xe0A\x05R\x16zoneDistributionConfig\x12H\n" +
-	"\x1bdeletion_protection_enabled\x18\x13 \x01(\bB\x03\xe0A\x01H\x02R\x19deletionProtectionEnabled\x88\x01\x01\x12n\n" +
-	"\x14psc_auto_connections\x18\x14 \x03(\v22.google.cloud.memorystore.v1beta.PscAutoConnectionB\b\xe0A\x01\xe0A\x05\x18\x01R\x12pscAutoConnections\x12o\n" +
-	"\x16psc_attachment_details\x18\x15 \x03(\v24.google.cloud.memorystore.v1beta.PscAttachmentDetailB\x03\xe0A\x03R\x14pscAttachmentDetails\x12]\n" +
-	"\tendpoints\x18\x19 \x03(\v2:.google.cloud.memorystore.v1beta.Instance.InstanceEndpointB\x03\xe0A\x01R\tendpoints\x12J\n" +
-	"\x04mode\x18\x1a \x01(\x0e2..google.cloud.memorystore.v1beta.Instance.ModeB\x06\xe0A\x01\xe0A\x05R\x04mode\x12I\n" +
-	"\x1asimulate_maintenance_event\x18\x1b \x01(\bB\x06\xe0A\x01\xe0A\x04H\x03R\x18simulateMaintenanceEvent\x88\x01\x01\x12@\n" +
-	"\x14ondemand_maintenance\x18\x1c \x01(\bB\b\xe0A\x01\xe0A\x04\x18\x01H\x04R\x13ondemandMaintenance\x88\x01\x01\x120\n" +
-	"\rsatisfies_pzs\x18\x1d \x01(\bB\x06\xe0A\x03\xe0A\x01H\x05R\fsatisfiesPzs\x88\x01\x01\x120\n" +
-	"\rsatisfies_pzi\x18\x1e \x01(\bB\x06\xe0A\x03\xe0A\x01H\x06R\fsatisfiesPzi\x88\x01\x01\x12f\n" +
-	"\x12maintenance_policy\x18\x1f \x01(\v22.google.cloud.memorystore.v1beta.MaintenancePolicyB\x03\xe0A\x01R\x11maintenancePolicy\x12l\n" +
-	"\x14maintenance_schedule\x18  \x01(\v24.google.cloud.memorystore.v1beta.MaintenanceScheduleB\x03\xe0A\x03R\x13maintenanceSchedule\x12\x8f\x01\n" +
-	"!cross_instance_replication_config\x18! \x01(\v2?.google.cloud.memorystore.v1beta.CrossInstanceReplicationConfigB\x03\xe0A\x01R\x1ecrossInstanceReplicationConfig\x12b\n" +
-	")async_instance_endpoints_deletion_enabled\x18, \x01(\bB\x03\xe0A\x01H\aR%asyncInstanceEndpointsDeletionEnabled\x88\x01\x01\x12G\n" +
-	"\akms_key\x18- \x01(\tB)\xe0A\x01\xfaA#\n" +
-	"!cloudkms.googleapis.com/CryptoKeyH\bR\x06kmsKey\x88\x01\x01\x12]\n" +
-	"\x0fencryption_info\x18. \x01(\v2/.google.cloud.memorystore.v1beta.EncryptionInfoB\x03\xe0A\x03R\x0eencryptionInfo\x12e\n" +
-	"\x11backup_collection\x18/ \x01(\tB3\xe0A\x03\xfaA-\n" +
-	"+memorystore.googleapis.com/BackupCollectionH\tR\x10backupCollection\x88\x01\x01\x12s\n" +
-	"\x17automated_backup_config\x180 \x01(\v26.google.cloud.memorystore.v1beta.AutomatedBackupConfigB\x03\xe0A\x01R\x15automatedBackupConfig\x129\n" +
-	"\x13maintenance_version\x181 \x01(\tB\x03\xe0A\x01H\n" +
-	"R\x12maintenanceVersion\x88\x01\x01\x12L\n" +
-	"\x1deffective_maintenance_version\x182 \x01(\tB\x03\xe0A\x03H\vR\x1beffectiveMaintenanceVersion\x88\x01\x01\x12I\n" +
-	"\x1eavailable_maintenance_versions\x183 \x03(\tB\x03\xe0A\x03R\x1cavailableMaintenanceVersions\x12I\n" +
-	"\x1callow_fewer_zones_deployment\x186 \x01(\bB\b\xe0A\x01\xe0A\x05\x18\x01R\x19allowFewerZonesDeployment\x12i\n" +
-	"\x0eserver_ca_mode\x188 \x01(\x0e26.google.cloud.memorystore.v1beta.Instance.ServerCaModeB\x06\xe0A\x01\xe0A\x05H\fR\fserverCaMode\x88\x01\x01\x12U\n" +
-	"\x0eserver_ca_pool\x189 \x01(\tB*\xe0A\x01\xe0A\x05\xfaA!\n" +
-	"\x1fprivateca.googleapis.com/CaPoolH\rR\fserverCaPool\x88\x01\x01\x12G\n" +
-	"\x19rotate_server_certificate\x18: \x01(\bB\x06\xe0A\x01\xe0A\x04H\x0eR\x17rotateServerCertificate\x88\x01\x01\x12`\n" +
-	"\x10migration_config\x18; \x01(\v20.google.cloud.memorystore.v1beta.MigrationConfigB\x03\xe0A\x03R\x0fmigrationConfig\x12P\n" +
+	" \x01(\x0e2?.google.cloud.memorystore.v1beta.Instance.TransitEncryptionModeB\x05\xe2A\x02\x01\x05R\x15transitEncryptionMode\x12%\n" +
+	"\vshard_count\x18\v \x01(\x05B\x04\xe2A\x01\x01R\n" +
+	"shardCount\x12k\n" +
+	"\x13discovery_endpoints\x18\f \x03(\v22.google.cloud.memorystore.v1beta.DiscoveryEndpointB\x06\xe2A\x01\x03\x18\x01R\x12discoveryEndpoints\x12U\n" +
+	"\tnode_type\x18\r \x01(\x0e22.google.cloud.memorystore.v1beta.Instance.NodeTypeB\x04\xe2A\x01\x01R\bnodeType\x12g\n" +
+	"\x12persistence_config\x18\x0e \x01(\v22.google.cloud.memorystore.v1beta.PersistenceConfigB\x04\xe2A\x01\x01R\x11persistenceConfig\x12+\n" +
+	"\x0eengine_version\x18\x0f \x01(\tB\x04\xe2A\x01\x01R\rengineVersion\x12i\n" +
+	"\x0eengine_configs\x18\x10 \x03(\v2<.google.cloud.memorystore.v1beta.Instance.EngineConfigsEntryB\x04\xe2A\x01\x01R\rengineConfigs\x12R\n" +
+	"\vnode_config\x18\x11 \x01(\v2+.google.cloud.memorystore.v1beta.NodeConfigB\x04\xe2A\x01\x03R\n" +
+	"nodeConfig\x12x\n" +
+	"\x18zone_distribution_config\x18\x12 \x01(\v27.google.cloud.memorystore.v1beta.ZoneDistributionConfigB\x05\xe2A\x02\x01\x05R\x16zoneDistributionConfig\x12I\n" +
+	"\x1bdeletion_protection_enabled\x18\x13 \x01(\bB\x04\xe2A\x01\x01H\x02R\x19deletionProtectionEnabled\x88\x01\x01\x12m\n" +
+	"\x14psc_auto_connections\x18\x14 \x03(\v22.google.cloud.memorystore.v1beta.PscAutoConnectionB\a\xe2A\x02\x01\x05\x18\x01R\x12pscAutoConnections\x12p\n" +
+	"\x16psc_attachment_details\x18\x15 \x03(\v24.google.cloud.memorystore.v1beta.PscAttachmentDetailB\x04\xe2A\x01\x03R\x14pscAttachmentDetails\x12^\n" +
+	"\tendpoints\x18\x19 \x03(\v2:.google.cloud.memorystore.v1beta.Instance.InstanceEndpointB\x04\xe2A\x01\x01R\tendpoints\x12I\n" +
+	"\x04mode\x18\x1a \x01(\x0e2..google.cloud.memorystore.v1beta.Instance.ModeB\x05\xe2A\x02\x01\x05R\x04mode\x12H\n" +
+	"\x1asimulate_maintenance_event\x18\x1b \x01(\bB\x05\xe2A\x02\x01\x04H\x03R\x18simulateMaintenanceEvent\x88\x01\x01\x12?\n" +
+	"\x14ondemand_maintenance\x18\x1c \x01(\bB\a\xe2A\x02\x01\x04\x18\x01H\x04R\x13ondemandMaintenance\x88\x01\x01\x12/\n" +
+	"\rsatisfies_pzs\x18\x1d \x01(\bB\x05\xe2A\x02\x03\x01H\x05R\fsatisfiesPzs\x88\x01\x01\x12/\n" +
+	"\rsatisfies_pzi\x18\x1e \x01(\bB\x05\xe2A\x02\x03\x01H\x06R\fsatisfiesPzi\x88\x01\x01\x12g\n" +
+	"\x12maintenance_policy\x18\x1f \x01(\v22.google.cloud.memorystore.v1beta.MaintenancePolicyB\x04\xe2A\x01\x01R\x11maintenancePolicy\x12m\n" +
+	"\x14maintenance_schedule\x18  \x01(\v24.google.cloud.memorystore.v1beta.MaintenanceScheduleB\x04\xe2A\x01\x03R\x13maintenanceSchedule\x12\x90\x01\n" +
+	"!cross_instance_replication_config\x18! \x01(\v2?.google.cloud.memorystore.v1beta.CrossInstanceReplicationConfigB\x04\xe2A\x01\x01R\x1ecrossInstanceReplicationConfig\x12c\n" +
+	")async_instance_endpoints_deletion_enabled\x18, \x01(\bB\x04\xe2A\x01\x01H\aR%asyncInstanceEndpointsDeletionEnabled\x88\x01\x01\x12H\n" +
+	"\akms_key\x18- \x01(\tB*\xe2A\x01\x01\xfaA#\n" +
+	"!cloudkms.googleapis.com/CryptoKeyH\bR\x06kmsKey\x88\x01\x01\x12^\n" +
+	"\x0fencryption_info\x18. \x01(\v2/.google.cloud.memorystore.v1beta.EncryptionInfoB\x04\xe2A\x01\x03R\x0eencryptionInfo\x12f\n" +
+	"\x11backup_collection\x18/ \x01(\tB4\xe2A\x01\x03\xfaA-\n" +
+	"+memorystore.googleapis.com/BackupCollectionH\tR\x10backupCollection\x88\x01\x01\x12t\n" +
+	"\x17automated_backup_config\x180 \x01(\v26.google.cloud.memorystore.v1beta.AutomatedBackupConfigB\x04\xe2A\x01\x01R\x15automatedBackupConfig\x12:\n" +
+	"\x13maintenance_version\x181 \x01(\tB\x04\xe2A\x01\x01H\n" +
+	"R\x12maintenanceVersion\x88\x01\x01\x12M\n" +
+	"\x1deffective_maintenance_version\x182 \x01(\tB\x04\xe2A\x01\x03H\vR\x1beffectiveMaintenanceVersion\x88\x01\x01\x12J\n" +
+	"\x1eavailable_maintenance_versions\x183 \x03(\tB\x04\xe2A\x01\x03R\x1cavailableMaintenanceVersions\x12H\n" +
+	"\x1callow_fewer_zones_deployment\x186 \x01(\bB\a\xe2A\x02\x01\x05\x18\x01R\x19allowFewerZonesDeployment\x12h\n" +
+	"\x0eserver_ca_mode\x188 \x01(\x0e26.google.cloud.memorystore.v1beta.Instance.ServerCaModeB\x05\xe2A\x02\x01\x05H\fR\fserverCaMode\x88\x01\x01\x12T\n" +
+	"\x0eserver_ca_pool\x189 \x01(\tB)\xe2A\x02\x01\x05\xfaA!\n" +
+	"\x1fprivateca.googleapis.com/CaPoolH\rR\fserverCaPool\x88\x01\x01\x12F\n" +
+	"\x19rotate_server_certificate\x18: \x01(\bB\x05\xe2A\x02\x01\x04H\x0eR\x17rotateServerCertificate\x88\x01\x01\x12a\n" +
+	"\x10migration_config\x18; \x01(\v20.google.cloud.memorystore.v1beta.MigrationConfigB\x04\xe2A\x01\x03R\x0fmigrationConfig\x12Q\n" +
 	"\n" +
-	"acl_policy\x18< \x01(\tB,\xe0A\x01\xfaA&\n" +
-	"$memorystore.googleapis.com/AclPolicyH\x0fR\taclPolicy\x88\x01\x01\x12[\n" +
-	"\x0facl_policy_info\x18> \x01(\v2..google.cloud.memorystore.v1beta.AclPolicyInfoB\x03\xe0A\x03R\raclPolicyInfo\x1a\x83\x04\n" +
-	"\tStateInfo\x12f\n" +
-	"\vupdate_info\x18\x01 \x01(\v2>.google.cloud.memorystore.v1beta.Instance.StateInfo.UpdateInfoB\x03\xe0A\x03H\x00R\n" +
-	"updateInfo\x1a\x85\x03\n" +
+	"acl_policy\x18< \x01(\tB-\xe2A\x01\x01\xfaA&\n" +
+	"$memorystore.googleapis.com/AclPolicyH\x0fR\taclPolicy\x88\x01\x01\x12\\\n" +
+	"\x0facl_policy_info\x18> \x01(\v2..google.cloud.memorystore.v1beta.AclPolicyInfoB\x04\xe2A\x01\x03R\raclPolicyInfo\x1a\x88\x04\n" +
+	"\tStateInfo\x12g\n" +
+	"\vupdate_info\x18\x01 \x01(\v2>.google.cloud.memorystore.v1beta.Instance.StateInfo.UpdateInfoB\x04\xe2A\x01\x03H\x00R\n" +
+	"updateInfo\x1a\x89\x03\n" +
 	"\n" +
-	"UpdateInfo\x126\n" +
-	"\x12target_shard_count\x18\x01 \x01(\x05B\x03\xe0A\x03H\x00R\x10targetShardCount\x88\x01\x01\x12:\n" +
-	"\x14target_replica_count\x18\x02 \x01(\x05B\x03\xe0A\x03H\x01R\x12targetReplicaCount\x88\x01\x01\x12<\n" +
-	"\x15target_engine_version\x18\x03 \x01(\tB\x03\xe0A\x03H\x02R\x13targetEngineVersion\x88\x01\x01\x12f\n" +
-	"\x10target_node_type\x18\x04 \x01(\x0e22.google.cloud.memorystore.v1beta.Instance.NodeTypeB\x03\xe0A\x03H\x03R\x0etargetNodeType\x88\x01\x01B\x15\n" +
+	"UpdateInfo\x127\n" +
+	"\x12target_shard_count\x18\x01 \x01(\x05B\x04\xe2A\x01\x03H\x00R\x10targetShardCount\x88\x01\x01\x12;\n" +
+	"\x14target_replica_count\x18\x02 \x01(\x05B\x04\xe2A\x01\x03H\x01R\x12targetReplicaCount\x88\x01\x01\x12=\n" +
+	"\x15target_engine_version\x18\x03 \x01(\tB\x04\xe2A\x01\x03H\x02R\x13targetEngineVersion\x88\x01\x01\x12g\n" +
+	"\x10target_node_type\x18\x04 \x01(\x0e22.google.cloud.memorystore.v1beta.Instance.NodeTypeB\x04\xe2A\x01\x03H\x03R\x0etargetNodeType\x88\x01\x01B\x15\n" +
 	"\x13_target_shard_countB\x17\n" +
 	"\x15_target_replica_countB\x18\n" +
 	"\x16_target_engine_versionB\x13\n" +
 	"\x11_target_node_typeB\x06\n" +
-	"\x04info\x1a*\n" +
-	"\x0fGcsBackupSource\x12\x17\n" +
-	"\x04uris\x18\x01 \x03(\tB\x03\xe0A\x01R\x04uris\x1a2\n" +
-	"\x13ManagedBackupSource\x12\x1b\n" +
-	"\x06backup\x18\x01 \x01(\tB\x03\xe0A\x01R\x06backup\x1au\n" +
-	"\x10InstanceEndpoint\x12a\n" +
-	"\vconnections\x18\x01 \x03(\v2:.google.cloud.memorystore.v1beta.Instance.ConnectionDetailB\x03\xe0A\x01R\vconnections\x1a\xe4\x01\n" +
-	"\x10ConnectionDetail\x12i\n" +
-	"\x13psc_auto_connection\x18\x01 \x01(\v22.google.cloud.memorystore.v1beta.PscAutoConnectionB\x03\xe0A\x05H\x00R\x11pscAutoConnection\x12W\n" +
+	"\x04info\x1a+\n" +
+	"\x0fGcsBackupSource\x12\x18\n" +
+	"\x04uris\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\x04uris\x1a3\n" +
+	"\x13ManagedBackupSource\x12\x1c\n" +
+	"\x06backup\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x06backup\x1av\n" +
+	"\x10InstanceEndpoint\x12b\n" +
+	"\vconnections\x18\x01 \x03(\v2:.google.cloud.memorystore.v1beta.Instance.ConnectionDetailB\x04\xe2A\x01\x01R\vconnections\x1a\xe5\x01\n" +
+	"\x10ConnectionDetail\x12j\n" +
+	"\x13psc_auto_connection\x18\x01 \x01(\v22.google.cloud.memorystore.v1beta.PscAutoConnectionB\x04\xe2A\x01\x05H\x00R\x11pscAutoConnection\x12W\n" +
 	"\x0epsc_connection\x18\x02 \x01(\v2..google.cloud.memorystore.v1beta.PscConnectionH\x00R\rpscConnectionB\f\n" +
 	"\n" +
 	"connection\x1a9\n" +
@@ -8019,49 +8040,49 @@ const file_google_cloud_memorystore_v1beta_memorystore_proto_rawDesc = "" +
 	"\x0f_server_ca_modeB\x11\n" +
 	"\x0f_server_ca_poolB\x1c\n" +
 	"\x1a_rotate_server_certificateB\r\n" +
-	"\v_acl_policy\"\xb1\x03\n" +
-	"\rAclPolicyInfo\x12Z\n" +
-	"\x12applied_acl_policy\x18\x01 \x01(\tB,\xe0A\x03\xfaA&\n" +
-	"$memorystore.googleapis.com/AclPolicyR\x10appliedAclPolicy\x12s\n" +
-	"\x1bapplied_acl_policy_revision\x18\x02 \x01(\tB4\xe0A\x03\xfaA.\n" +
-	",memorystore.googleapis.com/AclPolicyRevisionR\x18appliedAclPolicyRevision\x12O\n" +
-	"\"applied_acl_policy_revision_number\x18\x03 \x01(\x03B\x03\xe0A\x03R\x1eappliedAclPolicyRevisionNumber\x12~\n" +
-	"\x1cacl_policy_revision_statuses\x18\x04 \x03(\v28.google.cloud.memorystore.v1beta.AclPolicyRevisionStatusB\x03\xe0A\x03R\x19aclPolicyRevisionStatuses\"\xcd\x01\n" +
-	"\x15StartMigrationRequest\x12i\n" +
-	"\x13self_managed_source\x18\x02 \x01(\v22.google.cloud.memorystore.v1beta.SelfManagedSourceB\x03\xe0A\x02H\x00R\x11selfManagedSource\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
+	"\v_acl_policy\"\xb5\x03\n" +
+	"\rAclPolicyInfo\x12[\n" +
+	"\x12applied_acl_policy\x18\x01 \x01(\tB-\xe2A\x01\x03\xfaA&\n" +
+	"$memorystore.googleapis.com/AclPolicyR\x10appliedAclPolicy\x12t\n" +
+	"\x1bapplied_acl_policy_revision\x18\x02 \x01(\tB5\xe2A\x01\x03\xfaA.\n" +
+	",memorystore.googleapis.com/AclPolicyRevisionR\x18appliedAclPolicyRevision\x12P\n" +
+	"\"applied_acl_policy_revision_number\x18\x03 \x01(\x03B\x04\xe2A\x01\x03R\x1eappliedAclPolicyRevisionNumber\x12\x7f\n" +
+	"\x1cacl_policy_revision_statuses\x18\x04 \x03(\v28.google.cloud.memorystore.v1beta.AclPolicyRevisionStatusB\x04\xe2A\x01\x03R\x19aclPolicyRevisionStatuses\"\xcf\x01\n" +
+	"\x15StartMigrationRequest\x12j\n" +
+	"\x13self_managed_source\x18\x02 \x01(\v22.google.cloud.memorystore.v1beta.SelfManagedSourceB\x04\xe2A\x01\x02H\x00R\x11selfManagedSource\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
 	"#memorystore.googleapis.com/InstanceR\x04nameB\b\n" +
-	"\x06source\"t\n" +
-	"\x16FinishMigrationRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#memorystore.googleapis.com/InstanceR\x04name\x12\x19\n" +
-	"\x05force\x18\x02 \x01(\bB\x03\xe0A\x01R\x05force\"\xb9\x01\n" +
-	"\x11SelfManagedSource\x12*\n" +
+	"\x06source\"v\n" +
+	"\x16FinishMigrationRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#memorystore.googleapis.com/InstanceR\x04name\x12\x1a\n" +
+	"\x05force\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x05force\"\xbc\x01\n" +
+	"\x11SelfManagedSource\x12+\n" +
 	"\n" +
-	"ip_address\x18\x01 \x01(\tB\v\xe0A\x02\xe2\x8c\xcf\xd7\b\x02\b\x02R\tipAddress\x12\x17\n" +
-	"\x04port\x18\x02 \x01(\x05B\x03\xe0A\x02R\x04port\x12_\n" +
-	"\x12network_attachment\x18\x03 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(compute.googleapis.com/NetworkAttachmentR\x11networkAttachment\"\x82\x03\n" +
-	"\x0fMigrationConfig\x12i\n" +
-	"\x13self_managed_source\x18\x02 \x01(\v22.google.cloud.memorystore.v1beta.SelfManagedSourceB\x03\xe0A\x03H\x00R\x11selfManagedSource\x12Q\n" +
-	"\x05state\x18\x01 \x01(\x0e26.google.cloud.memorystore.v1beta.MigrationConfig.StateB\x03\xe0A\x03R\x05state\x129\n" +
-	"\x16force_finish_migration\x18\x04 \x01(\bB\x03\xe0A\x03R\x14forceFinishMigration\"l\n" +
+	"ip_address\x18\x01 \x01(\tB\f\xe2A\x01\x02\xe2\x8c\xcf\xd7\b\x02\b\x02R\tipAddress\x12\x18\n" +
+	"\x04port\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\x04port\x12`\n" +
+	"\x12network_attachment\x18\x03 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(compute.googleapis.com/NetworkAttachmentR\x11networkAttachment\"\x85\x03\n" +
+	"\x0fMigrationConfig\x12j\n" +
+	"\x13self_managed_source\x18\x02 \x01(\v22.google.cloud.memorystore.v1beta.SelfManagedSourceB\x04\xe2A\x01\x03H\x00R\x11selfManagedSource\x12R\n" +
+	"\x05state\x18\x01 \x01(\x0e26.google.cloud.memorystore.v1beta.MigrationConfig.StateB\x04\xe2A\x01\x03R\x05state\x12:\n" +
+	"\x16force_finish_migration\x18\x04 \x01(\bB\x04\xe2A\x01\x03R\x14forceFinishMigration\"l\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vROLLED_BACK\x10\x01\x12\x10\n" +
 	"\fROLLING_BACK\x10\x05\x12\x1b\n" +
 	"\x17REPLICATION_ESTABLISHED\x10\x06\x12\f\n" +
 	"\bMIGRATED\x10\x04B\b\n" +
-	"\x06source\"\xbb\x05\n" +
-	"\tAclPolicy\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12C\n" +
-	"\x05rules\x18\x02 \x03(\v2(.google.cloud.memorystore.v1beta.AclRuleB\x03\xe0A\x02R\x05rules\x12K\n" +
-	"\x05state\x18\x03 \x01(\x0e20.google.cloud.memorystore.v1beta.AclPolicy.StateB\x03\xe0A\x03R\x05state\x12\x1c\n" +
-	"\x04etag\x18\x05 \x01(\tB\x03\xe0A\x03H\x00R\x04etag\x88\x01\x01\x12\x88\x01\n" +
-	"\x1finstance_acl_policy_attachments\x18\x06 \x03(\v2<.google.cloud.memorystore.v1beta.InstanceAclPolicyAttachmentB\x03\xe0A\x03R\x1cinstanceAclPolicyAttachments\x12@\n" +
-	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x06source\"\xc2\x05\n" +
+	"\tAclPolicy\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12D\n" +
+	"\x05rules\x18\x02 \x03(\v2(.google.cloud.memorystore.v1beta.AclRuleB\x04\xe2A\x01\x02R\x05rules\x12L\n" +
+	"\x05state\x18\x03 \x01(\x0e20.google.cloud.memorystore.v1beta.AclPolicy.StateB\x04\xe2A\x01\x03R\x05state\x12\x1d\n" +
+	"\x04etag\x18\x05 \x01(\tB\x04\xe2A\x01\x03H\x00R\x04etag\x88\x01\x01\x12\x89\x01\n" +
+	"\x1finstance_acl_policy_attachments\x18\x06 \x03(\v2<.google.cloud.memorystore.v1beta.InstanceAclPolicyAttachmentB\x04\xe2A\x01\x03R\x1cinstanceAclPolicyAttachments\x12A\n" +
+	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\"F\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\n" +
@@ -8070,85 +8091,85 @@ const file_google_cloud_memorystore_v1beta_memorystore_proto_rawDesc = "" +
 	"\bUPDATING\x10\x02\x12\f\n" +
 	"\bDELETING\x10\x03:\x84\x01\xeaA\x80\x01\n" +
 	"$memorystore.googleapis.com/AclPolicy\x12@projects/{project}/locations/{location}/aclPolicies/{acl_policy}*\vaclPolicies2\taclPolicyB\a\n" +
-	"\x05_etag\"\xf8\x03\n" +
-	"\x11AclPolicyRevision\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12,\n" +
-	"\x0frevision_number\x18\x02 \x01(\x03B\x03\xe0A\x03R\x0erevisionNumber\x12K\n" +
-	"\bsnapshot\x18\x03 \x01(\v2*.google.cloud.memorystore.v1beta.AclPolicyB\x03\xe0A\x03R\bsnapshot\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12Z\n" +
-	"\x12attached_instances\x18\x05 \x03(\tB+\xe0A\x03\xfaA%\n" +
+	"\x05_etag\"\xfd\x03\n" +
+	"\x11AclPolicyRevision\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12-\n" +
+	"\x0frevision_number\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\x0erevisionNumber\x12L\n" +
+	"\bsnapshot\x18\x03 \x01(\v2*.google.cloud.memorystore.v1beta.AclPolicyB\x04\xe2A\x01\x03R\bsnapshot\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12[\n" +
+	"\x12attached_instances\x18\x05 \x03(\tB,\xe2A\x01\x03\xfaA%\n" +
 	"#memorystore.googleapis.com/InstanceR\x11attachedInstances:\xb0\x01\xeaA\xac\x01\n" +
-	",memorystore.googleapis.com/AclPolicyRevision\x12Uprojects/{project}/locations/{location}/aclPolicies/{acl_policy}/revisions/{revision}*\x12aclPolicyRevisions2\x11aclPolicyRevision\"\x8d\x03\n" +
-	"\x17AclPolicyRevisionStatus\x12d\n" +
-	"\x13acl_policy_revision\x18\x01 \x01(\tB4\xe0A\x03\xfaA.\n" +
-	",memorystore.googleapis.com/AclPolicyRevisionR\x11aclPolicyRevision\x12@\n" +
-	"\x1aacl_policy_revision_number\x18\x02 \x01(\x03B\x03\xe0A\x03R\x17aclPolicyRevisionNumber\x12Y\n" +
-	"\x05state\x18\x03 \x01(\x0e2>.google.cloud.memorystore.v1beta.AclPolicyRevisionStatus.StateB\x03\xe0A\x03R\x05state\x12(\n" +
-	"\rerror_message\x18\x04 \x01(\tB\x03\xe0A\x03R\ferrorMessage\"E\n" +
+	",memorystore.googleapis.com/AclPolicyRevision\x12Uprojects/{project}/locations/{location}/aclPolicies/{acl_policy}/revisions/{revision}*\x12aclPolicyRevisions2\x11aclPolicyRevision\"\x91\x03\n" +
+	"\x17AclPolicyRevisionStatus\x12e\n" +
+	"\x13acl_policy_revision\x18\x01 \x01(\tB5\xe2A\x01\x03\xfaA.\n" +
+	",memorystore.googleapis.com/AclPolicyRevisionR\x11aclPolicyRevision\x12A\n" +
+	"\x1aacl_policy_revision_number\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\x17aclPolicyRevisionNumber\x12Z\n" +
+	"\x05state\x18\x03 \x01(\x0e2>.google.cloud.memorystore.v1beta.AclPolicyRevisionStatus.StateB\x04\xe2A\x01\x03R\x05state\x12)\n" +
+	"\rerror_message\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\ferrorMessage\"E\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bAPPLYING\x10\x01\x12\v\n" +
 	"\aAPPLIED\x10\x02\x12\n" +
 	"\n" +
-	"\x06FAILED\x10\x03\"\xe6\x01\n" +
-	"\x1bInstanceAclPolicyAttachment\x12G\n" +
-	"\binstance\x18\x01 \x01(\tB+\xe0A\x03\xfaA%\n" +
-	"#memorystore.googleapis.com/InstanceR\binstance\x12~\n" +
-	"\x1cacl_policy_revision_statuses\x18\x02 \x03(\v28.google.cloud.memorystore.v1beta.AclPolicyRevisionStatusB\x03\xe0A\x03R\x19aclPolicyRevisionStatuses\"C\n" +
-	"\aAclRule\x12\x1f\n" +
-	"\busername\x18\x01 \x01(\tB\x03\xe0A\x02R\busername\x12\x17\n" +
-	"\x04rule\x18\x02 \x01(\tB\x03\xe0A\x02R\x04rule\"\xa7\x04\n" +
-	"\x15AutomatedBackupConfig\x12\x8e\x01\n" +
-	"\x18fixed_frequency_schedule\x18\x02 \x01(\v2M.google.cloud.memorystore.v1beta.AutomatedBackupConfig.FixedFrequencyScheduleB\x03\xe0A\x01H\x00R\x16fixedFrequencySchedule\x12\x83\x01\n" +
-	"\x15automated_backup_mode\x18\x01 \x01(\x0e2J.google.cloud.memorystore.v1beta.AutomatedBackupConfig.AutomatedBackupModeB\x03\xe0A\x01R\x13automatedBackupMode\x12<\n" +
-	"\tretention\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\tretention\x1aT\n" +
-	"\x16FixedFrequencySchedule\x12:\n" +
+	"\x06FAILED\x10\x03\"\xe8\x01\n" +
+	"\x1bInstanceAclPolicyAttachment\x12H\n" +
+	"\binstance\x18\x01 \x01(\tB,\xe2A\x01\x03\xfaA%\n" +
+	"#memorystore.googleapis.com/InstanceR\binstance\x12\x7f\n" +
+	"\x1cacl_policy_revision_statuses\x18\x02 \x03(\v28.google.cloud.memorystore.v1beta.AclPolicyRevisionStatusB\x04\xe2A\x01\x03R\x19aclPolicyRevisionStatuses\"E\n" +
+	"\aAclRule\x12 \n" +
+	"\busername\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\busername\x12\x18\n" +
+	"\x04rule\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04rule\"\xab\x04\n" +
+	"\x15AutomatedBackupConfig\x12\x8f\x01\n" +
+	"\x18fixed_frequency_schedule\x18\x02 \x01(\v2M.google.cloud.memorystore.v1beta.AutomatedBackupConfig.FixedFrequencyScheduleB\x04\xe2A\x01\x01H\x00R\x16fixedFrequencySchedule\x12\x84\x01\n" +
+	"\x15automated_backup_mode\x18\x01 \x01(\x0e2J.google.cloud.memorystore.v1beta.AutomatedBackupConfig.AutomatedBackupModeB\x04\xe2A\x01\x01R\x13automatedBackupMode\x12=\n" +
+	"\tretention\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\tretention\x1aU\n" +
+	"\x16FixedFrequencySchedule\x12;\n" +
 	"\n" +
-	"start_time\x18\x02 \x01(\v2\x16.google.type.TimeOfDayB\x03\xe0A\x02R\tstartTime\"W\n" +
+	"start_time\x18\x02 \x01(\v2\x16.google.type.TimeOfDayB\x04\xe2A\x01\x02R\tstartTime\"W\n" +
 	"\x13AutomatedBackupMode\x12%\n" +
 	"!AUTOMATED_BACKUP_MODE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDISABLED\x10\x01\x12\v\n" +
 	"\aENABLED\x10\x02B\n" +
 	"\n" +
-	"\bschedule\"\xab\x05\n" +
-	"\x10BackupCollection\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12.\n" +
-	"\finstance_uid\x18\x03 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\vinstanceUid\x12G\n" +
-	"\binstance\x18\x04 \x01(\tB+\xe0A\x03\xfaA%\n" +
-	"#memorystore.googleapis.com/InstanceR\binstance\x12B\n" +
-	"\akms_key\x18\x05 \x01(\tB)\xe0A\x03\xfaA#\n" +
-	"!cloudkms.googleapis.com/CryptoKeyR\x06kmsKey\x12\x1d\n" +
-	"\x03uid\x18\x06 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12@\n" +
-	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\x17total_backup_size_bytes\x18\b \x01(\x03B\x03\xe0A\x03R\x14totalBackupSizeBytes\x121\n" +
+	"\bschedule\"\xb4\x05\n" +
+	"\x10BackupCollection\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12/\n" +
+	"\finstance_uid\x18\x03 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\vinstanceUid\x12H\n" +
+	"\binstance\x18\x04 \x01(\tB,\xe2A\x01\x03\xfaA%\n" +
+	"#memorystore.googleapis.com/InstanceR\binstance\x12C\n" +
+	"\akms_key\x18\x05 \x01(\tB*\xe2A\x01\x03\xfaA#\n" +
+	"!cloudkms.googleapis.com/CryptoKeyR\x06kmsKey\x12\x1e\n" +
+	"\x03uid\x18\x06 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12A\n" +
+	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\x17total_backup_size_bytes\x18\b \x01(\x03B\x04\xe2A\x01\x03R\x14totalBackupSizeBytes\x122\n" +
 	"\x12total_backup_count\x18\n" +
-	" \x01(\x03B\x03\xe0A\x03R\x10totalBackupCount\x12I\n" +
-	"\x10last_backup_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0elastBackupTime:\xa5\x01\xeaA\xa1\x01\n" +
-	"+memorystore.googleapis.com/BackupCollection\x12Mprojects/{project}/locations/{location}/backupCollections/{backup_collection}*\x11backupCollections2\x10backupCollection\"\xd1\t\n" +
-	"\x06Backup\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12G\n" +
-	"\binstance\x18\x03 \x01(\tB+\xe0A\x03\xfaA%\n" +
-	"#memorystore.googleapis.com/InstanceR\binstance\x12.\n" +
-	"\finstance_uid\x18\x04 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\vinstanceUid\x12-\n" +
-	"\x10total_size_bytes\x18\x05 \x01(\x03B\x03\xe0A\x03R\x0etotalSizeBytes\x12@\n" +
-	"\vexpire_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"expireTime\x12*\n" +
-	"\x0eengine_version\x18\a \x01(\tB\x03\xe0A\x03R\rengineVersion\x12S\n" +
-	"\fbackup_files\x18\b \x03(\v2+.google.cloud.memorystore.v1beta.BackupFileB\x03\xe0A\x03R\vbackupFiles\x12T\n" +
-	"\tnode_type\x18\t \x01(\x0e22.google.cloud.memorystore.v1beta.Instance.NodeTypeB\x03\xe0A\x03R\bnodeType\x12(\n" +
+	" \x01(\x03B\x04\xe2A\x01\x03R\x10totalBackupCount\x12J\n" +
+	"\x10last_backup_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x0elastBackupTime:\xa5\x01\xeaA\xa1\x01\n" +
+	"+memorystore.googleapis.com/BackupCollection\x12Mprojects/{project}/locations/{location}/backupCollections/{backup_collection}*\x11backupCollections2\x10backupCollection\"\xe0\t\n" +
+	"\x06Backup\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12H\n" +
+	"\binstance\x18\x03 \x01(\tB,\xe2A\x01\x03\xfaA%\n" +
+	"#memorystore.googleapis.com/InstanceR\binstance\x12/\n" +
+	"\finstance_uid\x18\x04 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\vinstanceUid\x12.\n" +
+	"\x10total_size_bytes\x18\x05 \x01(\x03B\x04\xe2A\x01\x03R\x0etotalSizeBytes\x12A\n" +
+	"\vexpire_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"expireTime\x12+\n" +
+	"\x0eengine_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\rengineVersion\x12T\n" +
+	"\fbackup_files\x18\b \x03(\v2+.google.cloud.memorystore.v1beta.BackupFileB\x04\xe2A\x01\x03R\vbackupFiles\x12U\n" +
+	"\tnode_type\x18\t \x01(\x0e22.google.cloud.memorystore.v1beta.Instance.NodeTypeB\x04\xe2A\x01\x03R\bnodeType\x12)\n" +
 	"\rreplica_count\x18\n" +
-	" \x01(\x05B\x03\xe0A\x03R\freplicaCount\x12$\n" +
-	"\vshard_count\x18\v \x01(\x05B\x03\xe0A\x03R\n" +
-	"shardCount\x12X\n" +
-	"\vbackup_type\x18\f \x01(\x0e22.google.cloud.memorystore.v1beta.Backup.BackupTypeB\x03\xe0A\x03R\n" +
-	"backupType\x12H\n" +
-	"\x05state\x18\r \x01(\x0e2-.google.cloud.memorystore.v1beta.Backup.StateB\x03\xe0A\x03R\x05state\x12]\n" +
-	"\x0fencryption_info\x18\x0e \x01(\v2/.google.cloud.memorystore.v1beta.EncryptionInfoB\x03\xe0A\x03R\x0eencryptionInfo\x12\x1d\n" +
-	"\x03uid\x18\x0f \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\"G\n" +
+	" \x01(\x05B\x04\xe2A\x01\x03R\freplicaCount\x12%\n" +
+	"\vshard_count\x18\v \x01(\x05B\x04\xe2A\x01\x03R\n" +
+	"shardCount\x12Y\n" +
+	"\vbackup_type\x18\f \x01(\x0e22.google.cloud.memorystore.v1beta.Backup.BackupTypeB\x04\xe2A\x01\x03R\n" +
+	"backupType\x12I\n" +
+	"\x05state\x18\r \x01(\x0e2-.google.cloud.memorystore.v1beta.Backup.StateB\x04\xe2A\x01\x03R\x05state\x12^\n" +
+	"\x0fencryption_info\x18\x0e \x01(\v2/.google.cloud.memorystore.v1beta.EncryptionInfoB\x04\xe2A\x01\x03R\x0eencryptionInfo\x12\x1e\n" +
+	"\x03uid\x18\x0f \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\"G\n" +
 	"\n" +
 	"BackupType\x12\x1b\n" +
 	"\x17BACKUP_TYPE_UNSPECIFIED\x10\x00\x12\r\n" +
@@ -8161,39 +8182,39 @@ const file_google_cloud_memorystore_v1beta_memorystore_proto_rawDesc = "" +
 	"\x06ACTIVE\x10\x02\x12\f\n" +
 	"\bDELETING\x10\x03\x12\r\n" +
 	"\tSUSPENDED\x10\x04:\x98\x01\xeaA\x94\x01\n" +
-	"!memorystore.googleapis.com/Backup\x12^projects/{project}/locations/{location}/backupCollections/{backup_collection}/backups/{backup}*\abackups2\x06backup\"\x94\x01\n" +
+	"!memorystore.googleapis.com/Backup\x12^projects/{project}/locations/{location}/backupCollections/{backup_collection}/backups/{backup}*\abackups2\x06backup\"\x97\x01\n" +
 	"\n" +
-	"BackupFile\x12 \n" +
-	"\tfile_name\x18\x01 \x01(\tB\x03\xe0A\x03R\bfileName\x12\"\n" +
+	"BackupFile\x12!\n" +
+	"\tfile_name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\bfileName\x12#\n" +
 	"\n" +
-	"size_bytes\x18\x02 \x01(\x03B\x03\xe0A\x03R\tsizeBytes\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\"\xb7\b\n" +
-	"\x1eCrossInstanceReplicationConfig\x12v\n" +
-	"\rinstance_role\x18\x01 \x01(\x0e2L.google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.InstanceRoleB\x03\xe0A\x02R\finstanceRole\x12~\n" +
-	"\x10primary_instance\x18\x02 \x01(\v2N.google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.RemoteInstanceB\x03\xe0A\x01R\x0fprimaryInstance\x12\x84\x01\n" +
-	"\x13secondary_instances\x18\x03 \x03(\v2N.google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.RemoteInstanceB\x03\xe0A\x01R\x12secondaryInstances\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12o\n" +
+	"size_bytes\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\tsizeBytes\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\"\xc0\b\n" +
+	"\x1eCrossInstanceReplicationConfig\x12w\n" +
+	"\rinstance_role\x18\x01 \x01(\x0e2L.google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.InstanceRoleB\x04\xe2A\x01\x02R\finstanceRole\x12\x7f\n" +
+	"\x10primary_instance\x18\x02 \x01(\v2N.google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.RemoteInstanceB\x04\xe2A\x01\x01R\x0fprimaryInstance\x12\x85\x01\n" +
+	"\x13secondary_instances\x18\x03 \x03(\v2N.google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.RemoteInstanceB\x04\xe2A\x01\x01R\x12secondaryInstances\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12p\n" +
 	"\n" +
-	"membership\x18\x05 \x01(\v2J.google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.MembershipB\x03\xe0A\x03R\n" +
-	"membership\x1ax\n" +
-	"\x0eRemoteInstance\x12G\n" +
-	"\binstance\x18\x01 \x01(\tB+\xe0A\x01\xfaA%\n" +
-	"#memorystore.googleapis.com/InstanceR\binstance\x12\x1d\n" +
-	"\x03uid\x18\x02 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x1a\x93\x02\n" +
+	"membership\x18\x05 \x01(\v2J.google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.MembershipB\x04\xe2A\x01\x03R\n" +
+	"membership\x1az\n" +
+	"\x0eRemoteInstance\x12H\n" +
+	"\binstance\x18\x01 \x01(\tB,\xe2A\x01\x01\xfaA%\n" +
+	"#memorystore.googleapis.com/InstanceR\binstance\x12\x1e\n" +
+	"\x03uid\x18\x02 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x1a\x95\x02\n" +
 	"\n" +
-	"Membership\x12~\n" +
-	"\x10primary_instance\x18\x01 \x01(\v2N.google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.RemoteInstanceB\x03\xe0A\x03R\x0fprimaryInstance\x12\x84\x01\n" +
-	"\x13secondary_instances\x18\x02 \x03(\v2N.google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.RemoteInstanceB\x03\xe0A\x03R\x12secondaryInstances\"S\n" +
+	"Membership\x12\x7f\n" +
+	"\x10primary_instance\x18\x01 \x01(\v2N.google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.RemoteInstanceB\x04\xe2A\x01\x03R\x0fprimaryInstance\x12\x85\x01\n" +
+	"\x13secondary_instances\x18\x02 \x03(\v2N.google.cloud.memorystore.v1beta.CrossInstanceReplicationConfig.RemoteInstanceB\x04\xe2A\x01\x03R\x12secondaryInstances\"S\n" +
 	"\fInstanceRole\x12\x1d\n" +
 	"\x19INSTANCE_ROLE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04NONE\x10\x01\x12\v\n" +
 	"\aPRIMARY\x10\x02\x12\r\n" +
-	"\tSECONDARY\x10\x03\"\xfe\x02\n" +
-	"\rTokenAuthUser\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12O\n" +
-	"\x05state\x18\x02 \x01(\x0e24.google.cloud.memorystore.v1beta.TokenAuthUser.StateB\x03\xe0A\x03R\x05state\"T\n" +
+	"\tSECONDARY\x10\x03\"\x80\x03\n" +
+	"\rTokenAuthUser\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12P\n" +
+	"\x05state\x18\x02 \x01(\x0e24.google.cloud.memorystore.v1beta.TokenAuthUser.StateB\x04\xe2A\x01\x03R\x05state\"T\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
@@ -8201,13 +8222,13 @@ const file_google_cloud_memorystore_v1beta_memorystore_proto_rawDesc = "" +
 	"\bCREATING\x10\x02\x12\f\n" +
 	"\bUPDATING\x10\x03\x12\f\n" +
 	"\bDELETING\x10\x04:\xac\x01\xeaA\xa8\x01\n" +
-	"(memorystore.googleapis.com/TokenAuthUser\x12]projects/{project}/locations/{location}/instances/{instance}/tokenAuthUsers/{token_auth_user}*\x0etokenAuthUsers2\rtokenAuthUser\"\xd1\x03\n" +
-	"\tAuthToken\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x19\n" +
-	"\x05token\x18\x02 \x01(\tB\x03\xe0A\x03R\x05token\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12K\n" +
-	"\x05state\x18\x04 \x01(\x0e20.google.cloud.memorystore.v1beta.AuthToken.StateB\x03\xe0A\x03R\x05state\"F\n" +
+	"(memorystore.googleapis.com/TokenAuthUser\x12]projects/{project}/locations/{location}/instances/{instance}/tokenAuthUsers/{token_auth_user}*\x0etokenAuthUsers2\rtokenAuthUser\"\xd5\x03\n" +
+	"\tAuthToken\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x1a\n" +
+	"\x05token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x05token\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12L\n" +
+	"\x05state\x18\x04 \x01(\x0e20.google.cloud.memorystore.v1beta.AuthToken.StateB\x04\xe2A\x01\x03R\x05state\"F\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
@@ -8215,79 +8236,79 @@ const file_google_cloud_memorystore_v1beta_memorystore_proto_rawDesc = "" +
 	"\bCREATING\x10\x02\x12\f\n" +
 	"\bDELETING\x10\x03:\xb8\x01\xeaA\xb4\x01\n" +
 	"$memorystore.googleapis.com/AuthToken\x12uprojects/{project}/locations/{location}/instances/{instance}/tokenAuthUsers/{token_auth_user}/authTokens/{auth_token}*\n" +
-	"authTokens2\tauthToken\"\x92\x02\n" +
-	"\x11MaintenancePolicy\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12y\n" +
-	"\x19weekly_maintenance_window\x18\x03 \x03(\v28.google.cloud.memorystore.v1beta.WeeklyMaintenanceWindowB\x03\xe0A\x01R\x17weeklyMaintenanceWindow\"\x84\x01\n" +
-	"\x17WeeklyMaintenanceWindow\x12-\n" +
-	"\x03day\x18\x01 \x01(\x0e2\x16.google.type.DayOfWeekB\x03\xe0A\x01R\x03day\x12:\n" +
+	"authTokens2\tauthToken\"\x95\x02\n" +
+	"\x11MaintenancePolicy\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12z\n" +
+	"\x19weekly_maintenance_window\x18\x03 \x03(\v28.google.cloud.memorystore.v1beta.WeeklyMaintenanceWindowB\x04\xe2A\x01\x01R\x17weeklyMaintenanceWindow\"\x86\x01\n" +
+	"\x17WeeklyMaintenanceWindow\x12.\n" +
+	"\x03day\x18\x01 \x01(\x0e2\x16.google.type.DayOfWeekB\x04\xe2A\x01\x01R\x03day\x12;\n" +
 	"\n" +
-	"start_time\x18\x02 \x01(\v2\x16.google.type.TimeOfDayB\x03\xe0A\x01R\tstartTime\"\x91\x01\n" +
-	"\x13MaintenanceSchedule\x12>\n" +
+	"start_time\x18\x02 \x01(\v2\x16.google.type.TimeOfDayB\x04\xe2A\x01\x01R\tstartTime\"\x93\x01\n" +
+	"\x13MaintenanceSchedule\x12?\n" +
 	"\n" +
-	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\"\xd5\x01\n" +
-	"\x13PscAttachmentDetail\x12_\n" +
-	"\x12service_attachment\x18\x01 \x01(\tB0\xe0A\x03\xfaA*\n" +
-	"(compute.googleapis.com/ServiceAttachmentR\x11serviceAttachment\x12]\n" +
-	"\x0fconnection_type\x18\x04 \x01(\x0e2/.google.cloud.memorystore.v1beta.ConnectionTypeB\x03\xe0A\x03R\x0econnectionType\"\x81\x05\n" +
-	"\x11PscAutoConnection\x12\x19\n" +
-	"\x04port\x18\t \x01(\x05B\x03\xe0A\x01H\x00R\x04port\x12/\n" +
-	"\x11psc_connection_id\x18\x01 \x01(\tB\x03\xe0A\x03R\x0fpscConnectionId\x12*\n" +
+	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\"\xd7\x01\n" +
+	"\x13PscAttachmentDetail\x12`\n" +
+	"\x12service_attachment\x18\x01 \x01(\tB1\xe2A\x01\x03\xfaA*\n" +
+	"(compute.googleapis.com/ServiceAttachmentR\x11serviceAttachment\x12^\n" +
+	"\x0fconnection_type\x18\x04 \x01(\x0e2/.google.cloud.memorystore.v1beta.ConnectionTypeB\x04\xe2A\x01\x03R\x0econnectionType\"\x8a\x05\n" +
+	"\x11PscAutoConnection\x12\x1a\n" +
+	"\x04port\x18\t \x01(\x05B\x04\xe2A\x01\x01H\x00R\x04port\x120\n" +
+	"\x11psc_connection_id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x0fpscConnectionId\x12+\n" +
 	"\n" +
-	"ip_address\x18\x02 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x02R\tipAddress\x12V\n" +
-	"\x0fforwarding_rule\x18\x03 \x01(\tB-\xe0A\x03\xfaA'\n" +
-	"%compute.googleapis.com/ForwardingRuleR\x0eforwardingRule\x12\"\n" +
+	"ip_address\x18\x02 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x02R\tipAddress\x12W\n" +
+	"\x0fforwarding_rule\x18\x03 \x01(\tB.\xe2A\x01\x03\xfaA'\n" +
+	"%compute.googleapis.com/ForwardingRuleR\x0eforwardingRule\x12#\n" +
 	"\n" +
-	"project_id\x18\x04 \x01(\tB\x03\xe0A\x02R\tprojectId\x12@\n" +
-	"\anetwork\x18\x05 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12_\n" +
-	"\x12service_attachment\x18\x06 \x01(\tB0\xe0A\x03\xfaA*\n" +
-	"(compute.googleapis.com/ServiceAttachmentR\x11serviceAttachment\x12m\n" +
-	"\x15psc_connection_status\x18\a \x01(\x0e24.google.cloud.memorystore.v1beta.PscConnectionStatusB\x03\xe0A\x03R\x13pscConnectionStatus\x12]\n" +
-	"\x0fconnection_type\x18\b \x01(\x0e2/.google.cloud.memorystore.v1beta.ConnectionTypeB\x03\xe0A\x03R\x0econnectionTypeB\a\n" +
-	"\x05ports\"\xfd\x04\n" +
-	"\rPscConnection\x12\x19\n" +
-	"\x04port\x18\t \x01(\x05B\x03\xe0A\x01H\x00R\x04port\x12/\n" +
-	"\x11psc_connection_id\x18\x01 \x01(\tB\x03\xe0A\x02R\x0fpscConnectionId\x12*\n" +
+	"project_id\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12A\n" +
+	"\anetwork\x18\x05 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12`\n" +
+	"\x12service_attachment\x18\x06 \x01(\tB1\xe2A\x01\x03\xfaA*\n" +
+	"(compute.googleapis.com/ServiceAttachmentR\x11serviceAttachment\x12n\n" +
+	"\x15psc_connection_status\x18\a \x01(\x0e24.google.cloud.memorystore.v1beta.PscConnectionStatusB\x04\xe2A\x01\x03R\x13pscConnectionStatus\x12^\n" +
+	"\x0fconnection_type\x18\b \x01(\x0e2/.google.cloud.memorystore.v1beta.ConnectionTypeB\x04\xe2A\x01\x03R\x0econnectionTypeB\a\n" +
+	"\x05ports\"\x86\x05\n" +
+	"\rPscConnection\x12\x1a\n" +
+	"\x04port\x18\t \x01(\x05B\x04\xe2A\x01\x01H\x00R\x04port\x120\n" +
+	"\x11psc_connection_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x0fpscConnectionId\x12+\n" +
 	"\n" +
-	"ip_address\x18\x02 \x01(\tB\v\xe0A\x02\xe2\x8c\xcf\xd7\b\x02\b\x02R\tipAddress\x12V\n" +
-	"\x0fforwarding_rule\x18\x03 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%compute.googleapis.com/ForwardingRuleR\x0eforwardingRule\x12\"\n" +
+	"ip_address\x18\x02 \x01(\tB\f\xe2A\x01\x02\xe2\x8c\xcf\xd7\b\x02\b\x02R\tipAddress\x12W\n" +
+	"\x0fforwarding_rule\x18\x03 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%compute.googleapis.com/ForwardingRuleR\x0eforwardingRule\x12#\n" +
 	"\n" +
-	"project_id\x18\x04 \x01(\tB\x03\xe0A\x03R\tprojectId\x12@\n" +
-	"\anetwork\x18\x05 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12_\n" +
-	"\x12service_attachment\x18\x06 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(compute.googleapis.com/ServiceAttachmentR\x11serviceAttachment\x12m\n" +
-	"\x15psc_connection_status\x18\a \x01(\x0e24.google.cloud.memorystore.v1beta.PscConnectionStatusB\x03\xe0A\x03R\x13pscConnectionStatus\x12]\n" +
-	"\x0fconnection_type\x18\b \x01(\x0e2/.google.cloud.memorystore.v1beta.ConnectionTypeB\x03\xe0A\x03R\x0econnectionTypeB\a\n" +
-	"\x05ports\"\x8d\x01\n" +
-	"\x11DiscoveryEndpoint\x12\x1d\n" +
-	"\aaddress\x18\x01 \x01(\tB\x03\xe0A\x03R\aaddress\x12\x17\n" +
-	"\x04port\x18\x02 \x01(\x05B\x03\xe0A\x03R\x04port\x12@\n" +
-	"\anetwork\x18\x04 \x01(\tB&\xe0A\x03\xfaA \n" +
-	"\x1ecompute.googleapis.com/NetworkR\anetwork\"\xbe\a\n" +
-	"\x11PersistenceConfig\x12[\n" +
-	"\x04mode\x18\x01 \x01(\x0e2B.google.cloud.memorystore.v1beta.PersistenceConfig.PersistenceModeB\x03\xe0A\x01R\x04mode\x12`\n" +
+	"project_id\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\tprojectId\x12A\n" +
+	"\anetwork\x18\x05 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12`\n" +
+	"\x12service_attachment\x18\x06 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(compute.googleapis.com/ServiceAttachmentR\x11serviceAttachment\x12n\n" +
+	"\x15psc_connection_status\x18\a \x01(\x0e24.google.cloud.memorystore.v1beta.PscConnectionStatusB\x04\xe2A\x01\x03R\x13pscConnectionStatus\x12^\n" +
+	"\x0fconnection_type\x18\b \x01(\x0e2/.google.cloud.memorystore.v1beta.ConnectionTypeB\x04\xe2A\x01\x03R\x0econnectionTypeB\a\n" +
+	"\x05ports\"\x90\x01\n" +
+	"\x11DiscoveryEndpoint\x12\x1e\n" +
+	"\aaddress\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\aaddress\x12\x18\n" +
+	"\x04port\x18\x02 \x01(\x05B\x04\xe2A\x01\x03R\x04port\x12A\n" +
+	"\anetwork\x18\x04 \x01(\tB'\xe2A\x01\x03\xfaA \n" +
+	"\x1ecompute.googleapis.com/NetworkR\anetwork\"\xc4\a\n" +
+	"\x11PersistenceConfig\x12\\\n" +
+	"\x04mode\x18\x01 \x01(\x0e2B.google.cloud.memorystore.v1beta.PersistenceConfig.PersistenceModeB\x04\xe2A\x01\x01R\x04mode\x12a\n" +
 	"\n" +
-	"rdb_config\x18\x02 \x01(\v2<.google.cloud.memorystore.v1beta.PersistenceConfig.RDBConfigB\x03\xe0A\x01R\trdbConfig\x12`\n" +
+	"rdb_config\x18\x02 \x01(\v2<.google.cloud.memorystore.v1beta.PersistenceConfig.RDBConfigB\x04\xe2A\x01\x01R\trdbConfig\x12a\n" +
 	"\n" +
-	"aof_config\x18\x03 \x01(\v2<.google.cloud.memorystore.v1beta.PersistenceConfig.AOFConfigB\x03\xe0A\x01R\taofConfig\x1a\xdf\x02\n" +
-	"\tRDBConfig\x12\x80\x01\n" +
-	"\x13rdb_snapshot_period\x18\x01 \x01(\x0e2K.google.cloud.memorystore.v1beta.PersistenceConfig.RDBConfig.SnapshotPeriodB\x03\xe0A\x01R\x11rdbSnapshotPeriod\x12V\n" +
-	"\x17rdb_snapshot_start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\x14rdbSnapshotStartTime\"w\n" +
+	"aof_config\x18\x03 \x01(\v2<.google.cloud.memorystore.v1beta.PersistenceConfig.AOFConfigB\x04\xe2A\x01\x01R\taofConfig\x1a\xe1\x02\n" +
+	"\tRDBConfig\x12\x81\x01\n" +
+	"\x13rdb_snapshot_period\x18\x01 \x01(\x0e2K.google.cloud.memorystore.v1beta.PersistenceConfig.RDBConfig.SnapshotPeriodB\x04\xe2A\x01\x01R\x11rdbSnapshotPeriod\x12W\n" +
+	"\x17rdb_snapshot_start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\x14rdbSnapshotStartTime\"w\n" +
 	"\x0eSnapshotPeriod\x12\x1f\n" +
 	"\x1bSNAPSHOT_PERIOD_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bONE_HOUR\x10\x01\x12\r\n" +
 	"\tSIX_HOURS\x10\x02\x12\x10\n" +
 	"\fTWELVE_HOURS\x10\x03\x12\x15\n" +
-	"\x11TWENTY_FOUR_HOURS\x10\x04\x1a\xd0\x01\n" +
-	"\tAOFConfig\x12p\n" +
-	"\fappend_fsync\x18\x01 \x01(\x0e2H.google.cloud.memorystore.v1beta.PersistenceConfig.AOFConfig.AppendFsyncB\x03\xe0A\x01R\vappendFsync\"Q\n" +
+	"\x11TWENTY_FOUR_HOURS\x10\x04\x1a\xd1\x01\n" +
+	"\tAOFConfig\x12q\n" +
+	"\fappend_fsync\x18\x01 \x01(\x0e2H.google.cloud.memorystore.v1beta.PersistenceConfig.AOFConfig.AppendFsyncB\x04\xe2A\x01\x01R\vappendFsync\"Q\n" +
 	"\vAppendFsync\x12\x1c\n" +
 	"\x18APPEND_FSYNC_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05NEVER\x10\x01\x12\r\n" +
@@ -8298,232 +8319,234 @@ const file_google_cloud_memorystore_v1beta_memorystore_proto_rawDesc = "" +
 	"\x1cPERSISTENCE_MODE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDISABLED\x10\x01\x12\a\n" +
 	"\x03RDB\x10\x02\x12\a\n" +
-	"\x03AOF\x10\x03\"*\n" +
+	"\x03AOF\x10\x03\"+\n" +
 	"\n" +
-	"NodeConfig\x12\x1c\n" +
-	"\asize_gb\x18\x01 \x01(\x01B\x03\xe0A\x03R\x06sizeGb\"\xf9\x01\n" +
-	"\x16ZoneDistributionConfig\x12\x17\n" +
-	"\x04zone\x18\x02 \x01(\tB\x03\xe0A\x01R\x04zone\x12e\n" +
-	"\x04mode\x18\x01 \x01(\x0e2L.google.cloud.memorystore.v1beta.ZoneDistributionConfig.ZoneDistributionModeB\x03\xe0A\x01R\x04mode\"_\n" +
+	"NodeConfig\x12\x1d\n" +
+	"\asize_gb\x18\x01 \x01(\x01B\x04\xe2A\x01\x03R\x06sizeGb\"\xc0\x02\n" +
+	"\x16ZoneDistributionConfig\x12\x18\n" +
+	"\x04zone\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04zone\x12\x1a\n" +
+	"\x05zones\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x05zones\x12'\n" +
+	"\factive_zones\x18\x04 \x03(\tB\x04\xe2A\x01\x03R\vactiveZones\x12f\n" +
+	"\x04mode\x18\x01 \x01(\x0e2L.google.cloud.memorystore.v1beta.ZoneDistributionConfig.ZoneDistributionModeB\x04\xe2A\x01\x01R\x04mode\"_\n" +
 	"\x14ZoneDistributionMode\x12&\n" +
 	"\"ZONE_DISTRIBUTION_MODE_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +
 	"MULTI_ZONE\x10\x01\x12\x0f\n" +
-	"\vSINGLE_ZONE\x10\x02\"\xf6\x02\n" +
-	"\x1cRescheduleMaintenanceRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#memorystore.googleapis.com/InstanceR\x04name\x12z\n" +
-	"\x0freschedule_type\x18\x02 \x01(\x0e2L.google.cloud.memorystore.v1beta.RescheduleMaintenanceRequest.RescheduleTypeB\x03\xe0A\x02R\x0erescheduleType\x12D\n" +
-	"\rschedule_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\fscheduleTime\"S\n" +
+	"\vSINGLE_ZONE\x10\x02\"\xf9\x02\n" +
+	"\x1cRescheduleMaintenanceRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#memorystore.googleapis.com/InstanceR\x04name\x12{\n" +
+	"\x0freschedule_type\x18\x02 \x01(\x0e2L.google.cloud.memorystore.v1beta.RescheduleMaintenanceRequest.RescheduleTypeB\x04\xe2A\x01\x02R\x0erescheduleType\x12E\n" +
+	"\rschedule_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\fscheduleTime\"S\n" +
 	"\x0eRescheduleType\x12\x1f\n" +
 	"\x1bRESCHEDULE_TYPE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tIMMEDIATE\x10\x01\x12\x11\n" +
-	"\rSPECIFIC_TIME\x10\x03\"\xa4\x01\n" +
-	"\x16ListAclPoliciesRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$memorystore.googleapis.com/AclPolicyR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\rSPECIFIC_TIME\x10\x03\"\xa7\x01\n" +
+	"\x16ListAclPoliciesRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$memorystore.googleapis.com/AclPolicyR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xb7\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xb8\x01\n" +
 	"\x17ListAclPoliciesResponse\x12M\n" +
 	"\facl_policies\x18\x01 \x03(\v2*.google.cloud.memorystore.v1beta.AclPolicyR\vaclPolicies\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"\xb3\x01\n" +
-	"\x1dListAclPolicyRevisionsRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,memorystore.googleapis.com/AclPolicyRevisionR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x06R\vunreachable\"\xb6\x01\n" +
+	"\x1dListAclPolicyRevisionsRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,memorystore.googleapis.com/AclPolicyRevisionR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xd5\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xd6\x01\n" +
 	"\x1eListAclPolicyRevisionsResponse\x12d\n" +
 	"\x14acl_policy_revisions\x18\x01 \x03(\v22.google.cloud.memorystore.v1beta.AclPolicyRevisionR\x12aclPolicyRevisions\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"\xde\x01\n" +
-	"\x14ListInstancesRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\x12#memorystore.googleapis.com/InstanceR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x06R\vunreachable\"\xe3\x01\n" +
+	"\x14ListInstancesRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\x12#memorystore.googleapis.com/InstanceR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xaa\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xaa\x01\n" +
 	"\x15ListInstancesResponse\x12G\n" +
 	"\tinstances\x18\x01 \x03(\v2).google.cloud.memorystore.v1beta.InstanceR\tinstances\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"W\n" +
-	"\x13GetAclPolicyRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$memorystore.googleapis.com/AclPolicyR\x04name\"g\n" +
-	"\x1bGetAclPolicyRevisionRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",memorystore.googleapis.com/AclPolicyRevisionR\x04name\"U\n" +
-	"\x12GetInstanceRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#memorystore.googleapis.com/InstanceR\x04name\"\x83\x02\n" +
-	"\x16CreateAclPolicyRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$memorystore.googleapis.com/AclPolicyR\x06parent\x12'\n" +
-	"\racl_policy_id\x18\x02 \x01(\tB\x03\xe0A\x02R\vaclPolicyId\x12N\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"X\n" +
+	"\x13GetAclPolicyRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$memorystore.googleapis.com/AclPolicyR\x04name\"h\n" +
+	"\x1bGetAclPolicyRevisionRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",memorystore.googleapis.com/AclPolicyRevisionR\x04name\"V\n" +
+	"\x12GetInstanceRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#memorystore.googleapis.com/InstanceR\x04name\"\x87\x02\n" +
+	"\x16CreateAclPolicyRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$memorystore.googleapis.com/AclPolicyR\x06parent\x12(\n" +
+	"\racl_policy_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vaclPolicyId\x12O\n" +
 	"\n" +
-	"acl_policy\x18\x03 \x01(\v2*.google.cloud.memorystore.v1beta.AclPolicyB\x03\xe0A\x02R\taclPolicy\x12*\n" +
+	"acl_policy\x18\x03 \x01(\v2*.google.cloud.memorystore.v1beta.AclPolicyB\x04\xe2A\x01\x02R\taclPolicy\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xfa\x01\n" +
-	"\x15CreateInstanceRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\x12#memorystore.googleapis.com/InstanceR\x06parent\x12$\n" +
-	"\vinstance_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"instanceId\x12J\n" +
-	"\binstance\x18\x03 \x01(\v2).google.cloud.memorystore.v1beta.InstanceB\x03\xe0A\x02R\binstance\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xfe\x01\n" +
+	"\x15CreateInstanceRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\x12#memorystore.googleapis.com/InstanceR\x06parent\x12%\n" +
+	"\vinstance_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"instanceId\x12K\n" +
+	"\binstance\x18\x03 \x01(\v2).google.cloud.memorystore.v1beta.InstanceB\x04\xe2A\x01\x02R\binstance\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xd6\x01\n" +
-	"\x16UpdateAclPolicyRequest\x12N\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xd9\x01\n" +
+	"\x16UpdateAclPolicyRequest\x12O\n" +
 	"\n" +
-	"acl_policy\x18\x01 \x01(\v2*.google.cloud.memorystore.v1beta.AclPolicyB\x03\xe0A\x02R\taclPolicy\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12*\n" +
+	"acl_policy\x18\x01 \x01(\v2*.google.cloud.memorystore.v1beta.AclPolicyB\x04\xe2A\x01\x02R\taclPolicy\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xd1\x01\n" +
-	"\x15UpdateInstanceRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12J\n" +
-	"\binstance\x18\x02 \x01(\v2).google.cloud.memorystore.v1beta.InstanceB\x03\xe0A\x02R\binstance\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xd4\x01\n" +
+	"\x15UpdateInstanceRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12K\n" +
+	"\binstance\x18\x02 \x01(\v2).google.cloud.memorystore.v1beta.InstanceB\x04\xe2A\x01\x02R\binstance\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x9f\x01\n" +
-	"\x16DeleteAclPolicyRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$memorystore.googleapis.com/AclPolicyR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xa2\x01\n" +
+	"\x16DeleteAclPolicyRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$memorystore.googleapis.com/AclPolicyR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12\x17\n" +
-	"\x04etag\x18\x03 \x01(\tB\x03\xe0A\x01R\x04etag\"\x84\x01\n" +
-	"\x15DeleteInstanceRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#memorystore.googleapis.com/InstanceR\x04name\x12*\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12\x18\n" +
+	"\x04etag\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"\x86\x01\n" +
+	"\x15DeleteInstanceRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#memorystore.googleapis.com/InstanceR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xb1\x01\n" +
-	"\x1cListBackupCollectionsRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+memorystore.googleapis.com/BackupCollectionR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xb4\x01\n" +
+	"\x1cListBackupCollectionsRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+memorystore.googleapis.com/BackupCollectionR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xcb\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xcb\x01\n" +
 	"\x1dListBackupCollectionsResponse\x12`\n" +
 	"\x12backup_collections\x18\x01 \x03(\v21.google.cloud.memorystore.v1beta.BackupCollectionR\x11backupCollections\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"e\n" +
-	"\x1aGetBackupCollectionRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+memorystore.googleapis.com/BackupCollectionR\x04name\"\x9d\x01\n" +
-	"\x12ListBackupsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!memorystore.googleapis.com/BackupR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"f\n" +
+	"\x1aGetBackupCollectionRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+memorystore.googleapis.com/BackupCollectionR\x04name\"\xa0\x01\n" +
+	"\x12ListBackupsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!memorystore.googleapis.com/BackupR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xa2\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xa2\x01\n" +
 	"\x13ListBackupsResponse\x12A\n" +
 	"\abackups\x18\x01 \x03(\v2'.google.cloud.memorystore.v1beta.BackupR\abackups\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"Q\n" +
-	"\x10GetBackupRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!memorystore.googleapis.com/BackupR\x04name\"\x80\x01\n" +
-	"\x13DeleteBackupRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!memorystore.googleapis.com/BackupR\x04name\x12*\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"R\n" +
+	"\x10GetBackupRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!memorystore.googleapis.com/BackupR\x04name\"\x82\x01\n" +
+	"\x13DeleteBackupRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!memorystore.googleapis.com/BackupR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x84\x01\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x85\x01\n" +
 	"\x13ExportBackupRequest\x12\x1f\n" +
 	"\n" +
-	"gcs_bucket\x18\x02 \x01(\tH\x00R\tgcsBucket\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"gcs_bucket\x18\x02 \x01(\tH\x00R\tgcsBucket\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!memorystore.googleapis.com/BackupR\x04nameB\r\n" +
-	"\vdestination\"\xbf\x01\n" +
-	"\x15BackupInstanceRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#memorystore.googleapis.com/InstanceR\x04name\x120\n" +
-	"\x03ttl\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x03ttl\x12%\n" +
-	"\tbackup_id\x18\x03 \x01(\tB\x03\xe0A\x01H\x00R\bbackupId\x88\x01\x01B\f\n" +
+	"\vdestination\"\xc2\x01\n" +
+	"\x15BackupInstanceRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#memorystore.googleapis.com/InstanceR\x04name\x121\n" +
+	"\x03ttl\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x03ttl\x12&\n" +
+	"\tbackup_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01H\x00R\bbackupId\x88\x01\x01B\f\n" +
 	"\n" +
-	"_backup_id\"a\n" +
-	"\x1eGetCertificateAuthorityRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#memorystore.googleapis.com/InstanceR\x04name\"\xe8\x01\n" +
-	"\x19ListTokenAuthUsersRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(memorystore.googleapis.com/TokenAuthUserR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"_backup_id\"b\n" +
+	"\x1eGetCertificateAuthorityRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#memorystore.googleapis.com/InstanceR\x04name\"\xed\x01\n" +
+	"\x19ListTokenAuthUsersRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(memorystore.googleapis.com/TokenAuthUserR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xc5\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xc6\x01\n" +
 	"\x1aListTokenAuthUsersResponse\x12X\n" +
 	"\x10token_auth_users\x18\x01 \x03(\v2..google.cloud.memorystore.v1beta.TokenAuthUserR\x0etokenAuthUsers\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"_\n" +
-	"\x17GetTokenAuthUserRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(memorystore.googleapis.com/TokenAuthUserR\x04name\"\xe0\x01\n" +
-	"\x15ListAuthTokensRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$memorystore.googleapis.com/AuthTokenR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x06R\vunreachable\"`\n" +
+	"\x17GetTokenAuthUserRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(memorystore.googleapis.com/TokenAuthUserR\x04name\"\xe5\x01\n" +
+	"\x15ListAuthTokensRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$memorystore.googleapis.com/AuthTokenR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xb4\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xb5\x01\n" +
 	"\x16ListAuthTokensResponse\x12K\n" +
 	"\vauth_tokens\x18\x01 \x03(\v2*.google.cloud.memorystore.v1beta.AuthTokenR\n" +
 	"authTokens\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"W\n" +
-	"\x13GetAuthTokenRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$memorystore.googleapis.com/AuthTokenR\x04name\"\x8f\x01\n" +
-	"\x17AddTokenAuthUserRequest\x12G\n" +
-	"\binstance\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#memorystore.googleapis.com/InstanceR\binstance\x12+\n" +
-	"\x0ftoken_auth_user\x18\x02 \x01(\tB\x03\xe0A\x02R\rtokenAuthUser\"\xa9\x01\n" +
-	"\x1aDeleteTokenAuthUserRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(memorystore.googleapis.com/TokenAuthUserR\x04name\x12*\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x06R\vunreachable\"X\n" +
+	"\x13GetAuthTokenRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$memorystore.googleapis.com/AuthTokenR\x04name\"\x91\x01\n" +
+	"\x17AddTokenAuthUserRequest\x12H\n" +
+	"\binstance\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#memorystore.googleapis.com/InstanceR\binstance\x12,\n" +
+	"\x0ftoken_auth_user\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\rtokenAuthUser\"\xac\x01\n" +
+	"\x1aDeleteTokenAuthUserRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(memorystore.googleapis.com/TokenAuthUserR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12\x19\n" +
-	"\x05force\x18\x03 \x01(\bB\x03\xe0A\x01R\x05force\"\xbf\x01\n" +
-	"\x13AddAuthTokenRequest\x12X\n" +
-	"\x0ftoken_auth_user\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(memorystore.googleapis.com/TokenAuthUserR\rtokenAuthUser\x12N\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12\x1a\n" +
+	"\x05force\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x05force\"\xc1\x01\n" +
+	"\x13AddAuthTokenRequest\x12Y\n" +
+	"\x0ftoken_auth_user\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(memorystore.googleapis.com/TokenAuthUserR\rtokenAuthUser\x12O\n" +
 	"\n" +
-	"auth_token\x18\x02 \x01(\v2*.google.cloud.memorystore.v1beta.AuthTokenB\x03\xe0A\x02R\tauthToken\"Z\n" +
-	"\x16DeleteAuthTokenRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$memorystore.googleapis.com/AuthTokenR\x04name\"\xbf\x04\n" +
+	"auth_token\x18\x02 \x01(\v2*.google.cloud.memorystore.v1beta.AuthTokenB\x04\xe2A\x01\x02R\tauthToken\"[\n" +
+	"\x16DeleteAuthTokenRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$memorystore.googleapis.com/AuthTokenR\x04name\"\xc0\x04\n" +
 	"\x14CertificateAuthority\x12\x7f\n" +
-	"\x11managed_server_ca\x18\x02 \x01(\v2Q.google.cloud.memorystore.v1beta.CertificateAuthority.ManagedCertificateAuthorityH\x00R\x0fmanagedServerCa\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x1a\xc6\x01\n" +
+	"\x11managed_server_ca\x18\x02 \x01(\v2Q.google.cloud.memorystore.v1beta.CertificateAuthority.ManagedCertificateAuthorityH\x00R\x0fmanagedServerCa\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x1a\xc6\x01\n" +
 	"\x1bManagedCertificateAuthority\x12v\n" +
 	"\bca_certs\x18\x01 \x03(\v2[.google.cloud.memorystore.v1beta.CertificateAuthority.ManagedCertificateAuthority.CertChainR\acaCerts\x1a/\n" +
 	"\tCertChain\x12\"\n" +
 	"\fcertificates\x18\x01 \x03(\tR\fcertificates:\xb6\x01\xeaA\xb2\x01\n" +
 	"/memorystore.googleapis.com/CertificateAuthority\x12Qprojects/{project}/locations/{location}/instances/{instance}/certificateAuthority*\x16certificateAuthorities2\x14certificateAuthorityB\v\n" +
-	"\tserver_ca\"\xb6\x05\n" +
+	"\tserver_ca\"\xb7\x05\n" +
 	"\"SharedRegionalCertificateAuthority\x12\x95\x01\n" +
-	"\x11managed_server_ca\x18\x02 \x01(\v2g.google.cloud.memorystore.v1beta.SharedRegionalCertificateAuthority.RegionalManagedCertificateAuthorityH\x00R\x0fmanagedServerCa\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x1a\xf5\x01\n" +
+	"\x11managed_server_ca\x18\x02 \x01(\v2g.google.cloud.memorystore.v1beta.SharedRegionalCertificateAuthority.RegionalManagedCertificateAuthorityH\x00R\x0fmanagedServerCa\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x1a\xf5\x01\n" +
 	"#RegionalManagedCertificateAuthority\x12\x94\x01\n" +
 	"\bca_certs\x18\x01 \x03(\v2y.google.cloud.memorystore.v1beta.SharedRegionalCertificateAuthority.RegionalManagedCertificateAuthority.RegionalCertChainR\acaCerts\x1a7\n" +
 	"\x11RegionalCertChain\x12\"\n" +
 	"\fcertificates\x18\x01 \x03(\tR\fcertificates:\xd9\x01\xeaA\xd5\x01\n" +
 	"=memorystore.googleapis.com/SharedRegionalCertificateAuthority\x12Jprojects/{project}/locations/{location}/sharedRegionalCertificateAuthority*$sharedRegionalCertificateAuthorities2\"sharedRegionalCertificateAuthorityB\v\n" +
-	"\tserver_ca\"\x89\x01\n" +
-	",GetSharedRegionalCertificateAuthorityRequest\x12Y\n" +
-	"\x04name\x18\x01 \x01(\tBE\xe0A\x02\xfaA?\n" +
-	"=memorystore.googleapis.com/SharedRegionalCertificateAuthorityR\x04name\"\xd5\x02\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion\"\xc2\x05\n" +
-	"\x0eEncryptionInfo\x12b\n" +
-	"\x0fencryption_type\x18\x01 \x01(\x0e24.google.cloud.memorystore.v1beta.EncryptionInfo.TypeB\x03\xe0A\x03R\x0eencryptionType\x12Z\n" +
-	"\x10kms_key_versions\x18\x02 \x03(\tB0\xe0A\x03\xfaA*\n" +
-	"(cloudkms.googleapis.com/CryptoKeyVersionR\x0ekmsKeyVersions\x12s\n" +
-	"\x15kms_key_primary_state\x18\x03 \x01(\x0e2;.google.cloud.memorystore.v1beta.EncryptionInfo.KmsKeyStateB\x03\xe0A\x03R\x12kmsKeyPrimaryState\x12I\n" +
-	"\x10last_update_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0elastUpdateTime\"\\\n" +
+	"\tserver_ca\"\x8a\x01\n" +
+	",GetSharedRegionalCertificateAuthorityRequest\x12Z\n" +
+	"\x04name\x18\x01 \x01(\tBF\xe2A\x01\x02\xfaA?\n" +
+	"=memorystore.googleapis.com/SharedRegionalCertificateAuthorityR\x04name\"\xdc\x02\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"apiVersion\"\xc6\x05\n" +
+	"\x0eEncryptionInfo\x12c\n" +
+	"\x0fencryption_type\x18\x01 \x01(\x0e24.google.cloud.memorystore.v1beta.EncryptionInfo.TypeB\x04\xe2A\x01\x03R\x0eencryptionType\x12[\n" +
+	"\x10kms_key_versions\x18\x02 \x03(\tB1\xe2A\x01\x03\xfaA*\n" +
+	"(cloudkms.googleapis.com/CryptoKeyVersionR\x0ekmsKeyVersions\x12t\n" +
+	"\x15kms_key_primary_state\x18\x03 \x01(\x0e2;.google.cloud.memorystore.v1beta.EncryptionInfo.KmsKeyStateB\x04\xe2A\x01\x03R\x12kmsKeyPrimaryState\x12J\n" +
+	"\x10last_update_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x0elastUpdateTime\"\\\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x1d\n" +
 	"\x19GOOGLE_DEFAULT_ENCRYPTION\x10\x01\x12\x1f\n" +

@@ -826,6 +826,11 @@ func (c *restClient) OptimizeTours(ctx context.Context, req *routeoptimizationpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:optimizeTours", req.GetParent())
 
 	params := url.Values{}
@@ -905,6 +910,11 @@ func (c *restClient) BatchOptimizeTours(ctx context.Context, req *routeoptimizat
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:batchOptimizeTours", req.GetParent())
@@ -991,6 +1001,11 @@ func (c *restClient) OptimizeToursLongRunning(ctx context.Context, req *routeopt
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:optimizeToursLongRunning", req.GetParent())
@@ -1086,6 +1101,11 @@ func (c *restClient) OptimizeToursUri(ctx context.Context, req *routeoptimizatio
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:OptimizeToursUri", req.GetParent())
 
 	params := url.Values{}
@@ -1145,6 +1165,11 @@ func (c *restClient) OptimizeToursUri(ctx context.Context, req *routeoptimizatio
 func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())

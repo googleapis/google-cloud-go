@@ -1311,6 +1311,11 @@ func (c *retrieverRESTClient) GetCorpus(ctx context.Context, req *generativelang
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -1372,6 +1377,11 @@ func (c *retrieverRESTClient) UpdateCorpus(ctx context.Context, req *generativel
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCorpus().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetCorpus().GetName())
 
 	params := url.Values{}
@@ -1431,6 +1441,11 @@ func (c *retrieverRESTClient) UpdateCorpus(ctx context.Context, req *generativel
 func (c *retrieverRESTClient) DeleteCorpus(ctx context.Context, req *generativelanguagepb.DeleteCorpusRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -1559,6 +1574,11 @@ func (c *retrieverRESTClient) QueryCorpus(ctx context.Context, req *generativela
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:query", req.GetName())
 
 	params := url.Values{}
@@ -1620,6 +1640,11 @@ func (c *retrieverRESTClient) CreateDocument(ctx context.Context, req *generativ
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/documents", req.GetParent())
 
 	params := url.Values{}
@@ -1672,6 +1697,11 @@ func (c *retrieverRESTClient) CreateDocument(ctx context.Context, req *generativ
 func (c *retrieverRESTClient) GetDocument(ctx context.Context, req *generativelanguagepb.GetDocumentRequest, opts ...gax.CallOption) (*generativelanguagepb.Document, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -1735,6 +1765,11 @@ func (c *retrieverRESTClient) UpdateDocument(ctx context.Context, req *generativ
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDocument().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetDocument().GetName())
 
 	params := url.Values{}
@@ -1796,6 +1831,11 @@ func (c *retrieverRESTClient) DeleteDocument(ctx context.Context, req *generativ
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -1849,6 +1889,11 @@ func (c *retrieverRESTClient) ListDocuments(ctx context.Context, req *generative
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/documents", req.GetParent())
@@ -1922,6 +1967,11 @@ func (c *retrieverRESTClient) QueryDocument(ctx context.Context, req *generative
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:query", req.GetName())
 
 	params := url.Values{}
@@ -1981,6 +2031,11 @@ func (c *retrieverRESTClient) CreateChunk(ctx context.Context, req *generativela
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/chunks", req.GetParent())
@@ -2043,6 +2098,11 @@ func (c *retrieverRESTClient) BatchCreateChunks(ctx context.Context, req *genera
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/chunks:batchCreate", req.GetParent())
 
 	params := url.Values{}
@@ -2095,6 +2155,11 @@ func (c *retrieverRESTClient) BatchCreateChunks(ctx context.Context, req *genera
 func (c *retrieverRESTClient) GetChunk(ctx context.Context, req *generativelanguagepb.GetChunkRequest, opts ...gax.CallOption) (*generativelanguagepb.Chunk, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -2156,6 +2221,11 @@ func (c *retrieverRESTClient) UpdateChunk(ctx context.Context, req *generativela
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetChunk().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetChunk().GetName())
@@ -2225,6 +2295,11 @@ func (c *retrieverRESTClient) BatchUpdateChunks(ctx context.Context, req *genera
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/chunks:batchUpdate", req.GetParent())
 
 	params := url.Values{}
@@ -2279,6 +2354,11 @@ func (c *retrieverRESTClient) DeleteChunk(ctx context.Context, req *generativela
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -2322,6 +2402,11 @@ func (c *retrieverRESTClient) BatchDeleteChunks(ctx context.Context, req *genera
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/chunks:batchDelete", req.GetParent())
@@ -2374,6 +2459,11 @@ func (c *retrieverRESTClient) ListChunks(ctx context.Context, req *generativelan
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/chunks", req.GetParent())
@@ -2441,6 +2531,11 @@ func (c *retrieverRESTClient) GetOperation(ctx context.Context, req *longrunning
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -2506,6 +2601,11 @@ func (c *retrieverRESTClient) ListOperations(ctx context.Context, req *longrunni
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/operations", req.GetName())

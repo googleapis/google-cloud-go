@@ -468,21 +468,21 @@ const file_google_cloud_retail_v2beta_purge_config_proto_rawDesc = "" +
 	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"updateTime\x12#\n" +
 	"\rsuccess_count\x18\x03 \x01(\x03R\fsuccessCount\x12#\n" +
-	"\rfailure_count\x18\x04 \x01(\x03R\ffailureCount\"\x87\x01\n" +
-	"\x14PurgeProductsRequest\x12<\n" +
-	"\x06parent\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cretail.googleapis.com/BranchR\x06parent\x12\x1b\n" +
-	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x02R\x06filter\x12\x14\n" +
+	"\rfailure_count\x18\x04 \x01(\x03R\ffailureCount\"\x89\x01\n" +
+	"\x14PurgeProductsRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cretail.googleapis.com/BranchR\x06parent\x12\x1c\n" +
+	"\x06filter\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06filter\x12\x14\n" +
 	"\x05force\x18\x03 \x01(\bR\x05force\"\x7f\n" +
 	"\x15PurgeProductsResponse\x12\x1f\n" +
 	"\vpurge_count\x18\x01 \x01(\x03R\n" +
 	"purgeCount\x12E\n" +
 	"\fpurge_sample\x18\x02 \x03(\tB\"\xfaA\x1f\n" +
-	"\x1dretail.googleapis.com/ProductR\vpurgeSample\"\x8a\x01\n" +
-	"\x16PurgeUserEventsRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dretail.googleapis.com/CatalogR\x06parent\x12\x1b\n" +
-	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x02R\x06filter\x12\x14\n" +
+	"\x1dretail.googleapis.com/ProductR\vpurgeSample\"\x8c\x01\n" +
+	"\x16PurgeUserEventsRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dretail.googleapis.com/CatalogR\x06parent\x12\x1c\n" +
+	"\x06filter\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06filter\x12\x14\n" +
 	"\x05force\x18\x03 \x01(\bR\x05force\"I\n" +
 	"\x17PurgeUserEventsResponse\x12.\n" +
 	"\x13purged_events_count\x18\x01 \x01(\x03R\x11purgedEventsCountB\xcf\x01\n" +

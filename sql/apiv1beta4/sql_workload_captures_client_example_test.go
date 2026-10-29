@@ -95,9 +95,9 @@ func ExampleSqlWorkloadCapturesClient_Start() {
 	}
 	defer c.Close()
 
-	req := &sqlpb.SqlWorkloadCapturesStartRequest{
+	req := &sqlpb.WorkloadCapturesStartRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/sql/apiv1beta4/sqlpb#SqlWorkloadCapturesStartRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/sql/apiv1beta4/sqlpb#WorkloadCapturesStartRequest.
 	}
 	resp, err := c.Start(ctx, req)
 	if err != nil {
@@ -120,9 +120,9 @@ func ExampleSqlWorkloadCapturesClient_StartReplay() {
 	}
 	defer c.Close()
 
-	req := &sqlpb.SqlWorkloadCapturesStartReplayRequest{
+	req := &sqlpb.WorkloadCapturesStartReplayRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/sql/apiv1beta4/sqlpb#SqlWorkloadCapturesStartReplayRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/sql/apiv1beta4/sqlpb#WorkloadCapturesStartReplayRequest.
 	}
 	resp, err := c.StartReplay(ctx, req)
 	if err != nil {
@@ -145,9 +145,9 @@ func ExampleSqlWorkloadCapturesClient_Stop() {
 	}
 	defer c.Close()
 
-	req := &sqlpb.SqlWorkloadCapturesStopRequest{
+	req := &sqlpb.WorkloadCapturesStopRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/sql/apiv1beta4/sqlpb#SqlWorkloadCapturesStopRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/sql/apiv1beta4/sqlpb#WorkloadCapturesStopRequest.
 	}
 	resp, err := c.Stop(ctx, req)
 	if err != nil {
@@ -170,9 +170,9 @@ func ExampleSqlWorkloadCapturesClient_StopReplay() {
 	}
 	defer c.Close()
 
-	req := &sqlpb.SqlWorkloadCapturesStopReplayRequest{
+	req := &sqlpb.WorkloadCapturesStopReplayRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/sql/apiv1beta4/sqlpb#SqlWorkloadCapturesStopReplayRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/sql/apiv1beta4/sqlpb#WorkloadCapturesStopReplayRequest.
 	}
 	resp, err := c.StopReplay(ctx, req)
 	if err != nil {

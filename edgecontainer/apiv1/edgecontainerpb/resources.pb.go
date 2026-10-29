@@ -3352,88 +3352,88 @@ var File_google_cloud_edgecontainer_v1_resources_proto protoreflect.FileDescript
 
 const file_google_cloud_edgecontainer_v1_resources_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/edgecontainer/v1/resources.proto\x12\x1dgoogle.cloud.edgecontainer.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\x8c'\n" +
-	"\aCluster\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$edgecontainer.googleapis.com/ClusterR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"-google/cloud/edgecontainer/v1/resources.proto\x12\x1dgoogle.cloud.edgecontainer.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xba'\n" +
+	"\aCluster\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$edgecontainer.googleapis.com/ClusterR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12J\n" +
-	"\x06labels\x18\x04 \x03(\v22.google.cloud.edgecontainer.v1.Cluster.LabelsEntryR\x06labels\x12?\n" +
-	"\x05fleet\x18\v \x01(\v2$.google.cloud.edgecontainer.v1.FleetB\x03\xe0A\x02R\x05fleet\x12U\n" +
+	"\x06labels\x18\x04 \x03(\v22.google.cloud.edgecontainer.v1.Cluster.LabelsEntryR\x06labels\x12@\n" +
+	"\x05fleet\x18\v \x01(\v2$.google.cloud.edgecontainer.v1.FleetB\x04\xe2A\x01\x02R\x05fleet\x12V\n" +
 	"\n" +
-	"networking\x18\a \x01(\v20.google.cloud.edgecontainer.v1.ClusterNetworkingB\x03\xe0A\x02R\n" +
-	"networking\x12Z\n" +
-	"\rauthorization\x18\t \x01(\v2,.google.cloud.edgecontainer.v1.AuthorizationB\x06\xe0A\x02\xe0A\x05R\rauthorization\x12=\n" +
-	"\x19default_max_pods_per_node\x18\b \x01(\x05B\x03\xe0A\x01R\x15defaultMaxPodsPerNode\x12\x1f\n" +
-	"\bendpoint\x18\x06 \x01(\tB\x03\xe0A\x03R\bendpoint\x12\x17\n" +
-	"\x04port\x18\x13 \x01(\x05B\x03\xe0A\x03R\x04port\x129\n" +
+	"networking\x18\a \x01(\v20.google.cloud.edgecontainer.v1.ClusterNetworkingB\x04\xe2A\x01\x02R\n" +
+	"networking\x12Y\n" +
+	"\rauthorization\x18\t \x01(\v2,.google.cloud.edgecontainer.v1.AuthorizationB\x05\xe2A\x02\x02\x05R\rauthorization\x12>\n" +
+	"\x19default_max_pods_per_node\x18\b \x01(\x05B\x04\xe2A\x01\x01R\x15defaultMaxPodsPerNode\x12 \n" +
+	"\bendpoint\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\bendpoint\x12\x18\n" +
+	"\x04port\x18\x13 \x01(\x05B\x04\xe2A\x01\x03R\x04port\x12:\n" +
 	"\x16cluster_ca_certificate\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R\x14clusterCaCertificate\x12d\n" +
-	"\x12maintenance_policy\x18\f \x01(\v20.google.cloud.edgecontainer.v1.MaintenancePolicyB\x03\xe0A\x01R\x11maintenancePolicy\x127\n" +
-	"\x15control_plane_version\x18\r \x01(\tB\x03\xe0A\x03R\x13controlPlaneVersion\x12&\n" +
-	"\fnode_version\x18\x0e \x01(\tB\x03\xe0A\x03R\vnodeVersion\x12]\n" +
-	"\rcontrol_plane\x18\x0f \x01(\v23.google.cloud.edgecontainer.v1.Cluster.ControlPlaneB\x03\xe0A\x01R\fcontrolPlane\x12p\n" +
-	"\x14system_addons_config\x18\x10 \x01(\v29.google.cloud.edgecontainer.v1.Cluster.SystemAddonsConfigB\x03\xe0A\x01R\x12systemAddonsConfig\x12\\\n" +
-	")external_load_balancer_ipv4_address_pools\x18\x11 \x03(\tB\x03\xe0A\x01R$externalLoadBalancerIpv4AddressPools\x12|\n" +
-	"\x18control_plane_encryption\x18\x12 \x01(\v2=.google.cloud.edgecontainer.v1.Cluster.ControlPlaneEncryptionB\x03\xe0A\x01R\x16controlPlaneEncryption\x12J\n" +
-	"\x06status\x18\x14 \x01(\x0e2-.google.cloud.edgecontainer.v1.Cluster.StatusB\x03\xe0A\x03R\x06status\x12k\n" +
-	"\x12maintenance_events\x18\x15 \x03(\v27.google.cloud.edgecontainer.v1.Cluster.MaintenanceEventB\x03\xe0A\x03R\x11maintenanceEvents\x12*\n" +
-	"\x0etarget_version\x18\x16 \x01(\tB\x03\xe0A\x01R\rtargetVersion\x12c\n" +
-	"\x0frelease_channel\x18\x17 \x01(\x0e25.google.cloud.edgecontainer.v1.Cluster.ReleaseChannelB\x03\xe0A\x01R\x0ereleaseChannel\x12r\n" +
-	"\x14survivability_config\x18\x18 \x01(\v2:.google.cloud.edgecontainer.v1.Cluster.SurvivabilityConfigB\x03\xe0A\x01R\x13survivabilityConfig\x12\\\n" +
-	")external_load_balancer_ipv6_address_pools\x18\x19 \x03(\tB\x03\xe0A\x01R$externalLoadBalancerIpv6AddressPools\x12f\n" +
-	"\x10connection_state\x18\x1b \x01(\v26.google.cloud.edgecontainer.v1.Cluster.ConnectionStateB\x03\xe0A\x03R\x0fconnectionState\x1a\xf7\x04\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R\x14clusterCaCertificate\x12e\n" +
+	"\x12maintenance_policy\x18\f \x01(\v20.google.cloud.edgecontainer.v1.MaintenancePolicyB\x04\xe2A\x01\x01R\x11maintenancePolicy\x128\n" +
+	"\x15control_plane_version\x18\r \x01(\tB\x04\xe2A\x01\x03R\x13controlPlaneVersion\x12'\n" +
+	"\fnode_version\x18\x0e \x01(\tB\x04\xe2A\x01\x03R\vnodeVersion\x12^\n" +
+	"\rcontrol_plane\x18\x0f \x01(\v23.google.cloud.edgecontainer.v1.Cluster.ControlPlaneB\x04\xe2A\x01\x01R\fcontrolPlane\x12q\n" +
+	"\x14system_addons_config\x18\x10 \x01(\v29.google.cloud.edgecontainer.v1.Cluster.SystemAddonsConfigB\x04\xe2A\x01\x01R\x12systemAddonsConfig\x12]\n" +
+	")external_load_balancer_ipv4_address_pools\x18\x11 \x03(\tB\x04\xe2A\x01\x01R$externalLoadBalancerIpv4AddressPools\x12}\n" +
+	"\x18control_plane_encryption\x18\x12 \x01(\v2=.google.cloud.edgecontainer.v1.Cluster.ControlPlaneEncryptionB\x04\xe2A\x01\x01R\x16controlPlaneEncryption\x12K\n" +
+	"\x06status\x18\x14 \x01(\x0e2-.google.cloud.edgecontainer.v1.Cluster.StatusB\x04\xe2A\x01\x03R\x06status\x12l\n" +
+	"\x12maintenance_events\x18\x15 \x03(\v27.google.cloud.edgecontainer.v1.Cluster.MaintenanceEventB\x04\xe2A\x01\x03R\x11maintenanceEvents\x12+\n" +
+	"\x0etarget_version\x18\x16 \x01(\tB\x04\xe2A\x01\x01R\rtargetVersion\x12d\n" +
+	"\x0frelease_channel\x18\x17 \x01(\x0e25.google.cloud.edgecontainer.v1.Cluster.ReleaseChannelB\x04\xe2A\x01\x01R\x0ereleaseChannel\x12s\n" +
+	"\x14survivability_config\x18\x18 \x01(\v2:.google.cloud.edgecontainer.v1.Cluster.SurvivabilityConfigB\x04\xe2A\x01\x01R\x13survivabilityConfig\x12]\n" +
+	")external_load_balancer_ipv6_address_pools\x18\x19 \x03(\tB\x04\xe2A\x01\x01R$externalLoadBalancerIpv6AddressPools\x12g\n" +
+	"\x10connection_state\x18\x1b \x01(\v26.google.cloud.edgecontainer.v1.Cluster.ConnectionStateB\x04\xe2A\x01\x03R\x0fconnectionState\x1a\xf8\x04\n" +
 	"\fControlPlane\x12T\n" +
 	"\x06remote\x18\x01 \x01(\v2:.google.cloud.edgecontainer.v1.Cluster.ControlPlane.RemoteH\x00R\x06remote\x12Q\n" +
 	"\x05local\x18\x02 \x01(\v29.google.cloud.edgecontainer.v1.Cluster.ControlPlane.LocalH\x00R\x05local\x1a\b\n" +
-	"\x06Remote\x1a\xc8\x02\n" +
+	"\x06Remote\x1a\xc9\x02\n" +
 	"\x05Local\x12#\n" +
 	"\rnode_location\x18\x01 \x01(\tR\fnodeLocation\x12\x1d\n" +
 	"\n" +
 	"node_count\x18\x02 \x01(\x05R\tnodeCount\x12%\n" +
 	"\x0emachine_filter\x18\x03 \x01(\tR\rmachineFilter\x12\x84\x01\n" +
-	"\x18shared_deployment_policy\x18\x04 \x01(\x0e2J.google.cloud.edgecontainer.v1.Cluster.ControlPlane.SharedDeploymentPolicyR\x16sharedDeploymentPolicy\x12M\n" +
-	"!control_plane_node_storage_schema\x18\x05 \x01(\tB\x03\xe0A\x01R\x1dcontrolPlaneNodeStorageSchema\"_\n" +
+	"\x18shared_deployment_policy\x18\x04 \x01(\x0e2J.google.cloud.edgecontainer.v1.Cluster.ControlPlane.SharedDeploymentPolicyR\x16sharedDeploymentPolicy\x12N\n" +
+	"!control_plane_node_storage_schema\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x1dcontrolPlaneNodeStorageSchema\"_\n" +
 	"\x16SharedDeploymentPolicy\x12(\n" +
 	"$SHARED_DEPLOYMENT_POLICY_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aALLOWED\x10\x01\x12\x0e\n" +
 	"\n" +
 	"DISALLOWED\x10\x02B\b\n" +
-	"\x06config\x1a\xf7\x02\n" +
-	"\x12SystemAddonsConfig\x12`\n" +
-	"\aingress\x18\x01 \x01(\v2A.google.cloud.edgecontainer.v1.Cluster.SystemAddonsConfig.IngressB\x03\xe0A\x01R\aingress\x12z\n" +
-	"\x11vm_service_config\x18\x04 \x01(\v2I.google.cloud.edgecontainer.v1.Cluster.SystemAddonsConfig.VMServiceConfigB\x03\xe0A\x01R\x0fvmServiceConfig\x1aJ\n" +
-	"\aIngress\x12\x1f\n" +
-	"\bdisabled\x18\x01 \x01(\bB\x03\xe0A\x01R\bdisabled\x12\x1e\n" +
-	"\bipv4_vip\x18\x02 \x01(\tB\x03\xe0A\x01R\aipv4Vip\x1a7\n" +
-	"\x0fVMServiceConfig\x12$\n" +
-	"\vvmm_enabled\x18\x01 \x01(\bB\x03\xe0A\x01R\n" +
-	"vmmEnabled\x1a\xaa\x03\n" +
-	"\x16ControlPlaneEncryption\x12B\n" +
-	"\akms_key\x18\x01 \x01(\tB)\xe0A\x01\xfaA#\n" +
-	"!cloudkms.googleapis.com/CryptoKeyR\x06kmsKey\x12e\n" +
-	"\x16kms_key_active_version\x18\x02 \x01(\tB0\xe0A\x03\xfaA*\n" +
-	"(cloudkms.googleapis.com/CryptoKeyVersionR\x13kmsKeyActiveVersion\x12S\n" +
-	"\rkms_key_state\x18\x03 \x01(\x0e2*.google.cloud.edgecontainer.v1.KmsKeyStateB\x03\xe0A\x03R\vkmsKeyState\x126\n" +
+	"\x06config\x1a\xfc\x02\n" +
+	"\x12SystemAddonsConfig\x12a\n" +
+	"\aingress\x18\x01 \x01(\v2A.google.cloud.edgecontainer.v1.Cluster.SystemAddonsConfig.IngressB\x04\xe2A\x01\x01R\aingress\x12{\n" +
+	"\x11vm_service_config\x18\x04 \x01(\v2I.google.cloud.edgecontainer.v1.Cluster.SystemAddonsConfig.VMServiceConfigB\x04\xe2A\x01\x01R\x0fvmServiceConfig\x1aL\n" +
+	"\aIngress\x12 \n" +
+	"\bdisabled\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\bdisabled\x12\x1f\n" +
+	"\bipv4_vip\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\aipv4Vip\x1a8\n" +
+	"\x0fVMServiceConfig\x12%\n" +
+	"\vvmm_enabled\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\n" +
+	"vmmEnabled\x1a\xaf\x03\n" +
+	"\x16ControlPlaneEncryption\x12C\n" +
+	"\akms_key\x18\x01 \x01(\tB*\xe2A\x01\x01\xfaA#\n" +
+	"!cloudkms.googleapis.com/CryptoKeyR\x06kmsKey\x12f\n" +
+	"\x16kms_key_active_version\x18\x02 \x01(\tB1\xe2A\x01\x03\xfaA*\n" +
+	"(cloudkms.googleapis.com/CryptoKeyVersionR\x13kmsKeyActiveVersion\x12T\n" +
+	"\rkms_key_state\x18\x03 \x01(\x0e2*.google.cloud.edgecontainer.v1.KmsKeyStateB\x04\xe2A\x01\x03R\vkmsKeyState\x127\n" +
 	"\n" +
-	"kms_status\x18\x04 \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\tkmsStatus\x12X\n" +
-	"\x0eresource_state\x18\x05 \x01(\x0e2,.google.cloud.edgecontainer.v1.ResourceStateB\x03\xe0A\x03R\rresourceState\x1a\xe6\x06\n" +
-	"\x10MaintenanceEvent\x12\x17\n" +
-	"\x04uuid\x18\x01 \x01(\tB\x03\xe0A\x03R\x04uuid\x12*\n" +
-	"\x0etarget_version\x18\x02 \x01(\tB\x03\xe0A\x03R\rtargetVersion\x12!\n" +
-	"\toperation\x18\x03 \x01(\tB\x03\xe0A\x03R\toperation\x12U\n" +
-	"\x04type\x18\x04 \x01(\x0e2<.google.cloud.edgecontainer.v1.Cluster.MaintenanceEvent.TypeB\x03\xe0A\x03R\x04type\x12a\n" +
-	"\bschedule\x18\x05 \x01(\x0e2@.google.cloud.edgecontainer.v1.Cluster.MaintenanceEvent.ScheduleB\x03\xe0A\x03R\bschedule\x12X\n" +
-	"\x05state\x18\x06 \x01(\x0e2=.google.cloud.edgecontainer.v1.Cluster.MaintenanceEvent.StateB\x03\xe0A\x03R\x05state\x12@\n" +
-	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12>\n" +
+	"kms_status\x18\x04 \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\tkmsStatus\x12Y\n" +
+	"\x0eresource_state\x18\x05 \x01(\x0e2,.google.cloud.edgecontainer.v1.ResourceStateB\x04\xe2A\x01\x03R\rresourceState\x1a\xf0\x06\n" +
+	"\x10MaintenanceEvent\x12\x18\n" +
+	"\x04uuid\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04uuid\x12+\n" +
+	"\x0etarget_version\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rtargetVersion\x12\"\n" +
+	"\toperation\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\toperation\x12V\n" +
+	"\x04type\x18\x04 \x01(\x0e2<.google.cloud.edgecontainer.v1.Cluster.MaintenanceEvent.TypeB\x04\xe2A\x01\x03R\x04type\x12b\n" +
+	"\bschedule\x18\x05 \x01(\x0e2@.google.cloud.edgecontainer.v1.Cluster.MaintenanceEvent.ScheduleB\x04\xe2A\x01\x03R\bschedule\x12Y\n" +
+	"\x05state\x18\x06 \x01(\x0e2=.google.cloud.edgecontainer.v1.Cluster.MaintenanceEvent.StateB\x04\xe2A\x01\x03R\x05state\x12A\n" +
+	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12?\n" +
 	"\n" +
-	"start_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12@\n" +
+	"start_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12A\n" +
 	"\vupdate_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\"S\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x1a\n" +
@@ -3447,12 +3447,12 @@ const file_google_cloud_edgecontainer_v1_resources_proto_rawDesc = "" +
 	"\vRECONCILING\x10\x01\x12\r\n" +
 	"\tSUCCEEDED\x10\x02\x12\n" +
 	"\n" +
-	"\x06FAILED\x10\x03\x1ac\n" +
-	"\x13SurvivabilityConfig\x12L\n" +
-	"\x12offline_reboot_ttl\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x10offlineRebootTtl\x1a\x88\x02\n" +
-	"\x0fConnectionState\x12W\n" +
-	"\x05state\x18\x01 \x01(\x0e2<.google.cloud.edgecontainer.v1.Cluster.ConnectionState.StateB\x03\xe0A\x03R\x05state\x12@\n" +
-	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x06FAILED\x10\x03\x1ad\n" +
+	"\x13SurvivabilityConfig\x12M\n" +
+	"\x12offline_reboot_ttl\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x10offlineRebootTtl\x1a\x8a\x02\n" +
+	"\x0fConnectionState\x12X\n" +
+	"\x05state\x18\x01 \x01(\x0e2<.google.cloud.edgecontainer.v1.Cluster.ConnectionState.StateB\x04\xe2A\x01\x03R\x05state\x12A\n" +
+	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\"Z\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\x10\n" +
@@ -3473,98 +3473,98 @@ const file_google_cloud_edgecontainer_v1_resources_proto_rawDesc = "" +
 	"\x1bRELEASE_CHANNEL_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04NONE\x10\x01\x12\v\n" +
 	"\aREGULAR\x10\x02:e\xeaAb\n" +
-	"$edgecontainer.googleapis.com/Cluster\x12:projects/{project}/locations/{location}/clusters/{cluster}\"\x91\x01\n" +
-	"\x11ClusterNetworking\x12<\n" +
-	"\x18cluster_ipv4_cidr_blocks\x18\x01 \x03(\tB\x03\xe0A\x02R\x15clusterIpv4CidrBlocks\x12>\n" +
-	"\x19services_ipv4_cidr_blocks\x18\x02 \x03(\tB\x03\xe0A\x02R\x16servicesIpv4CidrBlocks\"K\n" +
-	"\x05Fleet\x12\x1d\n" +
-	"\aproject\x18\x01 \x01(\tB\x03\xe0A\x02R\aproject\x12#\n" +
+	"$edgecontainer.googleapis.com/Cluster\x12:projects/{project}/locations/{location}/clusters/{cluster}\"\x93\x01\n" +
+	"\x11ClusterNetworking\x12=\n" +
+	"\x18cluster_ipv4_cidr_blocks\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\x15clusterIpv4CidrBlocks\x12?\n" +
+	"\x19services_ipv4_cidr_blocks\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\x16servicesIpv4CidrBlocks\"M\n" +
+	"\x05Fleet\x12\x1e\n" +
+	"\aproject\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\aproject\x12$\n" +
 	"\n" +
-	"membership\x18\x02 \x01(\tB\x03\xe0A\x03R\n" +
-	"membership\".\n" +
-	"\vClusterUser\x12\x1f\n" +
-	"\busername\x18\x01 \x01(\tB\x03\xe0A\x02R\busername\"a\n" +
-	"\rAuthorization\x12P\n" +
-	"\vadmin_users\x18\x01 \x01(\v2*.google.cloud.edgecontainer.v1.ClusterUserB\x03\xe0A\x02R\n" +
-	"adminUsers\"\xc5\v\n" +
-	"\bNodePool\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%edgecontainer.googleapis.com/NodePoolR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"membership\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"membership\"/\n" +
+	"\vClusterUser\x12 \n" +
+	"\busername\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\busername\"b\n" +
+	"\rAuthorization\x12Q\n" +
+	"\vadmin_users\x18\x01 \x01(\v2*.google.cloud.edgecontainer.v1.ClusterUserB\x04\xe2A\x01\x02R\n" +
+	"adminUsers\"\xd3\v\n" +
+	"\bNodePool\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%edgecontainer.googleapis.com/NodePoolR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12K\n" +
 	"\x06labels\x18\x04 \x03(\v23.google.cloud.edgecontainer.v1.NodePool.LabelsEntryR\x06labels\x12#\n" +
-	"\rnode_location\x18\b \x01(\tR\fnodeLocation\x12\"\n" +
+	"\rnode_location\x18\b \x01(\tR\fnodeLocation\x12#\n" +
 	"\n" +
-	"node_count\x18\x06 \x01(\x05B\x03\xe0A\x02R\tnodeCount\x12%\n" +
-	"\x0emachine_filter\x18\a \x01(\tR\rmachineFilter\x12t\n" +
-	"\x15local_disk_encryption\x18\t \x01(\v2;.google.cloud.edgecontainer.v1.NodePool.LocalDiskEncryptionB\x03\xe0A\x01R\x13localDiskEncryption\x12&\n" +
+	"node_count\x18\x06 \x01(\x05B\x04\xe2A\x01\x02R\tnodeCount\x12%\n" +
+	"\x0emachine_filter\x18\a \x01(\tR\rmachineFilter\x12u\n" +
+	"\x15local_disk_encryption\x18\t \x01(\v2;.google.cloud.edgecontainer.v1.NodePool.LocalDiskEncryptionB\x04\xe2A\x01\x01R\x13localDiskEncryption\x12'\n" +
 	"\fnode_version\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R\vnodeVersion\x12X\n" +
-	"\vnode_config\x18\v \x01(\v22.google.cloud.edgecontainer.v1.NodePool.NodeConfigB\x03\xe0A\x01R\n" +
-	"nodeConfig\x1a\xa7\x03\n" +
-	"\x13LocalDiskEncryption\x12B\n" +
-	"\akms_key\x18\x01 \x01(\tB)\xe0A\x01\xfaA#\n" +
-	"!cloudkms.googleapis.com/CryptoKeyR\x06kmsKey\x12e\n" +
-	"\x16kms_key_active_version\x18\x02 \x01(\tB0\xe0A\x03\xfaA*\n" +
-	"(cloudkms.googleapis.com/CryptoKeyVersionR\x13kmsKeyActiveVersion\x12S\n" +
-	"\rkms_key_state\x18\x03 \x01(\x0e2*.google.cloud.edgecontainer.v1.KmsKeyStateB\x03\xe0A\x03R\vkmsKeyState\x126\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R\vnodeVersion\x12Y\n" +
+	"\vnode_config\x18\v \x01(\v22.google.cloud.edgecontainer.v1.NodePool.NodeConfigB\x04\xe2A\x01\x01R\n" +
+	"nodeConfig\x1a\xac\x03\n" +
+	"\x13LocalDiskEncryption\x12C\n" +
+	"\akms_key\x18\x01 \x01(\tB*\xe2A\x01\x01\xfaA#\n" +
+	"!cloudkms.googleapis.com/CryptoKeyR\x06kmsKey\x12f\n" +
+	"\x16kms_key_active_version\x18\x02 \x01(\tB1\xe2A\x01\x03\xfaA*\n" +
+	"(cloudkms.googleapis.com/CryptoKeyVersionR\x13kmsKeyActiveVersion\x12T\n" +
+	"\rkms_key_state\x18\x03 \x01(\x0e2*.google.cloud.edgecontainer.v1.KmsKeyStateB\x04\xe2A\x01\x03R\vkmsKeyState\x127\n" +
 	"\n" +
-	"kms_status\x18\x04 \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\tkmsStatus\x12X\n" +
-	"\x0eresource_state\x18\x05 \x01(\x0e2,.google.cloud.edgecontainer.v1.ResourceStateB\x03\xe0A\x03R\rresourceState\x1a\xd9\x01\n" +
+	"kms_status\x18\x04 \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\tkmsStatus\x12Y\n" +
+	"\x0eresource_state\x18\x05 \x01(\x0e2,.google.cloud.edgecontainer.v1.ResourceStateB\x04\xe2A\x01\x03R\rresourceState\x1a\xdb\x01\n" +
 	"\n" +
-	"NodeConfig\x12[\n" +
-	"\x06labels\x18\x01 \x03(\v2>.google.cloud.edgecontainer.v1.NodePool.NodeConfig.LabelsEntryB\x03\xe0A\x01R\x06labels\x123\n" +
-	"\x13node_storage_schema\x18\x02 \x01(\tB\x03\xe0A\x01R\x11nodeStorageSchema\x1a9\n" +
+	"NodeConfig\x12\\\n" +
+	"\x06labels\x18\x01 \x03(\v2>.google.cloud.edgecontainer.v1.NodePool.NodeConfig.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x124\n" +
+	"\x13node_storage_schema\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x11nodeStorageSchema\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:|\xeaAy\n" +
-	"%edgecontainer.googleapis.com/NodePool\x12Pprojects/{project}/locations/{location}/clusters/{cluster}/nodePools/{node_pool}\"\xb2\x04\n" +
-	"\aMachine\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$edgecontainer.googleapis.com/MachineR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"%edgecontainer.googleapis.com/NodePool\x12Pprojects/{project}/locations/{location}/clusters/{cluster}/nodePools/{node_pool}\"\xb7\x04\n" +
+	"\aMachine\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$edgecontainer.googleapis.com/MachineR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12J\n" +
 	"\x06labels\x18\x04 \x03(\v22.google.cloud.edgecontainer.v1.Machine.LabelsEntryR\x06labels\x12\x1f\n" +
 	"\vhosted_node\x18\x05 \x01(\tR\n" +
 	"hostedNode\x12\x12\n" +
-	"\x04zone\x18\x06 \x01(\tR\x04zone\x12\x1d\n" +
-	"\aversion\x18\a \x01(\tB\x03\xe0A\x03R\aversion\x12\x1f\n" +
-	"\bdisabled\x18\b \x01(\bB\x03\xe0A\x03R\bdisabled\x1a9\n" +
+	"\x04zone\x18\x06 \x01(\tR\x04zone\x12\x1e\n" +
+	"\aversion\x18\a \x01(\tB\x04\xe2A\x01\x03R\aversion\x12 \n" +
+	"\bdisabled\x18\b \x01(\bB\x04\xe2A\x01\x03R\bdisabled\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:e\xeaAb\n" +
-	"$edgecontainer.googleapis.com/Machine\x12:projects/{project}/locations/{location}/machines/{machine}\"\xdc\f\n" +
-	"\rVpnConnection\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*edgecontainer.googleapis.com/VpnConnectionR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"$edgecontainer.googleapis.com/Machine\x12:projects/{project}/locations/{location}/machines/{machine}\"\xe3\f\n" +
+	"\rVpnConnection\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*edgecontainer.googleapis.com/VpnConnectionR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12P\n" +
 	"\x06labels\x18\x04 \x03(\v28.google.cloud.edgecontainer.v1.VpnConnection.LabelsEntryR\x06labels\x12$\n" +
 	"\x0enat_gateway_ip\x18\x05 \x01(\tR\fnatGatewayIp\x12i\n" +
 	"\x10bgp_routing_mode\x18\x06 \x01(\x0e2;.google.cloud.edgecontainer.v1.VpnConnection.BgpRoutingModeB\x02\x18\x01R\x0ebgpRoutingMode\x12C\n" +
 	"\acluster\x18\a \x01(\tB)\xfaA&\n" +
 	"$edgecontainer.googleapis.com/ClusterR\acluster\x12\x10\n" +
-	"\x03vpc\x18\b \x01(\tR\x03vpc\x12]\n" +
-	"\vvpc_project\x18\v \x01(\v27.google.cloud.edgecontainer.v1.VpnConnection.VpcProjectB\x03\xe0A\x01R\n" +
+	"\x03vpc\x18\b \x01(\tR\x03vpc\x12^\n" +
+	"\vvpc_project\x18\v \x01(\v27.google.cloud.edgecontainer.v1.VpnConnection.VpcProjectB\x04\xe2A\x01\x01R\n" +
 	"vpcProject\x128\n" +
-	"\x18enable_high_availability\x18\t \x01(\bR\x16enableHighAvailability\x12\x1b\n" +
-	"\x06router\x18\f \x01(\tB\x03\xe0A\x01R\x06router\x12S\n" +
+	"\x18enable_high_availability\x18\t \x01(\bR\x16enableHighAvailability\x12\x1c\n" +
+	"\x06router\x18\f \x01(\tB\x04\xe2A\x01\x01R\x06router\x12T\n" +
 	"\adetails\x18\n" +
-	" \x01(\v24.google.cloud.edgecontainer.v1.VpnConnection.DetailsB\x03\xe0A\x03R\adetails\x1a[\n" +
+	" \x01(\v24.google.cloud.edgecontainer.v1.VpnConnection.DetailsB\x04\xe2A\x01\x03R\adetails\x1a\\\n" +
 	"\n" +
 	"VpcProject\x12\x1d\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tR\tprojectId\x12.\n" +
-	"\x0fservice_account\x18\x02 \x01(\tB\x05\xe0A\x01\x18\x01R\x0eserviceAccount\x1a\xd9\x03\n" +
+	"project_id\x18\x01 \x01(\tR\tprojectId\x12/\n" +
+	"\x0fservice_account\x18\x02 \x01(\tB\x06\xe2A\x01\x01\x18\x01R\x0eserviceAccount\x1a\xd9\x03\n" +
 	"\aDetails\x12P\n" +
 	"\x05state\x18\x01 \x01(\x0e2:.google.cloud.edgecontainer.v1.VpnConnection.Details.StateR\x05state\x12\x14\n" +
 	"\x05error\x18\x02 \x01(\tR\x05error\x12c\n" +
@@ -3614,36 +3614,36 @@ const file_google_cloud_edgecontainer_v1_resources_proto_rawDesc = "" +
 	"\x05Quota\x12\x16\n" +
 	"\x06metric\x18\x01 \x01(\tR\x06metric\x12\x14\n" +
 	"\x05limit\x18\x02 \x01(\x01R\x05limit\x12\x14\n" +
-	"\x05usage\x18\x03 \x01(\x01R\x05usage\"\xd4\x01\n" +
+	"\x05usage\x18\x03 \x01(\x01R\x05usage\"\xd5\x01\n" +
 	"\x11MaintenancePolicy\x12H\n" +
-	"\x06window\x18\x01 \x01(\v20.google.cloud.edgecontainer.v1.MaintenanceWindowR\x06window\x12u\n" +
-	"\x16maintenance_exclusions\x18\x02 \x03(\v29.google.cloud.edgecontainer.v1.MaintenanceExclusionWindowB\x03\xe0A\x01R\x15maintenanceExclusions\"r\n" +
+	"\x06window\x18\x01 \x01(\v20.google.cloud.edgecontainer.v1.MaintenanceWindowR\x06window\x12v\n" +
+	"\x16maintenance_exclusions\x18\x02 \x03(\v29.google.cloud.edgecontainer.v1.MaintenanceExclusionWindowB\x04\xe2A\x01\x01R\x15maintenanceExclusions\"r\n" +
 	"\x11MaintenanceWindow\x12]\n" +
 	"\x10recurring_window\x18\x01 \x01(\v22.google.cloud.edgecontainer.v1.RecurringTimeWindowR\x0frecurringWindow\"x\n" +
 	"\x13RecurringTimeWindow\x12A\n" +
 	"\x06window\x18\x01 \x01(\v2).google.cloud.edgecontainer.v1.TimeWindowR\x06window\x12\x1e\n" +
 	"\n" +
 	"recurrence\x18\x02 \x01(\tR\n" +
-	"recurrence\"y\n" +
-	"\x1aMaintenanceExclusionWindow\x12F\n" +
-	"\x06window\x18\x01 \x01(\v2).google.cloud.edgecontainer.v1.TimeWindowB\x03\xe0A\x01R\x06window\x12\x13\n" +
-	"\x02id\x18\x02 \x01(\tB\x03\xe0A\x01R\x02id\"~\n" +
+	"recurrence\"{\n" +
+	"\x1aMaintenanceExclusionWindow\x12G\n" +
+	"\x06window\x18\x01 \x01(\v2).google.cloud.edgecontainer.v1.TimeWindowB\x04\xe2A\x01\x01R\x06window\x12\x14\n" +
+	"\x02id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x02id\"~\n" +
 	"\n" +
 	"TimeWindow\x129\n" +
 	"\n" +
 	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x125\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\"\xcc\x02\n" +
-	"\fServerConfig\x12Z\n" +
-	"\bchannels\x18\x01 \x03(\v29.google.cloud.edgecontainer.v1.ServerConfig.ChannelsEntryB\x03\xe0A\x03R\bchannels\x12G\n" +
-	"\bversions\x18\x02 \x03(\v2&.google.cloud.edgecontainer.v1.VersionB\x03\xe0A\x03R\bversions\x12,\n" +
-	"\x0fdefault_version\x18\x03 \x01(\tB\x03\xe0A\x03R\x0edefaultVersion\x1ai\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\"\xcf\x02\n" +
+	"\fServerConfig\x12[\n" +
+	"\bchannels\x18\x01 \x03(\v29.google.cloud.edgecontainer.v1.ServerConfig.ChannelsEntryB\x04\xe2A\x01\x03R\bchannels\x12H\n" +
+	"\bversions\x18\x02 \x03(\v2&.google.cloud.edgecontainer.v1.VersionB\x04\xe2A\x01\x03R\bversions\x12-\n" +
+	"\x0fdefault_version\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x0edefaultVersion\x1ai\n" +
 	"\rChannelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12B\n" +
-	"\x05value\x18\x02 \x01(\v2,.google.cloud.edgecontainer.v1.ChannelConfigR\x05value:\x028\x01\"=\n" +
-	"\rChannelConfig\x12,\n" +
-	"\x0fdefault_version\x18\x01 \x01(\tB\x03\xe0A\x03R\x0edefaultVersion\"\"\n" +
-	"\aVersion\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name*p\n" +
+	"\x05value\x18\x02 \x01(\v2,.google.cloud.edgecontainer.v1.ChannelConfigR\x05value:\x028\x01\">\n" +
+	"\rChannelConfig\x12-\n" +
+	"\x0fdefault_version\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x0edefaultVersion\"#\n" +
+	"\aVersion\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name*p\n" +
 	"\vKmsKeyState\x12\x1d\n" +
 	"\x19KMS_KEY_STATE_UNSPECIFIED\x10\x00\x12\x1f\n" +
 	"\x1bKMS_KEY_STATE_KEY_AVAILABLE\x10\x01\x12!\n" +

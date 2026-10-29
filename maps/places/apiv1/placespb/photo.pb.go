@@ -134,9 +134,9 @@ var File_google_maps_places_v1_photo_proto protoreflect.FileDescriptor
 
 const file_google_maps_places_v1_photo_proto_rawDesc = "" +
 	"\n" +
-	"!google/maps/places/v1/photo.proto\x12\x15google.maps.places.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a'google/maps/places/v1/attribution.proto\"\xd5\x02\n" +
-	"\x05Photo\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x19\n" +
+	"!google/maps/places/v1/photo.proto\x12\x15google.maps.places.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a'google/maps/places/v1/attribution.proto\"\xd6\x02\n" +
+	"\x05Photo\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x19\n" +
 	"\bwidth_px\x18\x02 \x01(\x05R\awidthPx\x12\x1b\n" +
 	"\theight_px\x18\x03 \x01(\x05R\bheightPx\x12Y\n" +
 	"\x13author_attributions\x18\x04 \x03(\v2(.google.maps.places.v1.AuthorAttributionR\x12authorAttributions\x12(\n" +

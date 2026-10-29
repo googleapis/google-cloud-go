@@ -583,9 +583,9 @@ var File_google_cloud_netapp_v1_snapshot_proto protoreflect.FileDescriptor
 
 const file_google_cloud_netapp_v1_snapshot_proto_rawDesc = "" +
 	"\n" +
-	"%google/cloud/netapp/v1/snapshot.proto\x12\x16google.cloud.netapp.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc5\x01\n" +
-	"\x14ListSnapshotsRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \x12\x1enetapp.googleapis.com/SnapshotR\x06parent\x12\x1b\n" +
+	"%google/cloud/netapp/v1/snapshot.proto\x12\x16google.cloud.netapp.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc6\x01\n" +
+	"\x14ListSnapshotsRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \x12\x1enetapp.googleapis.com/SnapshotR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x19\n" +
@@ -594,30 +594,30 @@ const file_google_cloud_netapp_v1_snapshot_proto_rawDesc = "" +
 	"\x15ListSnapshotsResponse\x12>\n" +
 	"\tsnapshots\x18\x01 \x03(\v2 .google.cloud.netapp.v1.SnapshotR\tsnapshots\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"P\n" +
-	"\x12GetSnapshotRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1enetapp.googleapis.com/SnapshotR\x04name\"\xc0\x01\n" +
-	"\x15CreateSnapshotRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \x12\x1enetapp.googleapis.com/SnapshotR\x06parent\x12A\n" +
-	"\bsnapshot\x18\x02 \x01(\v2 .google.cloud.netapp.v1.SnapshotB\x03\xe0A\x02R\bsnapshot\x12$\n" +
-	"\vsnapshot_id\x18\x03 \x01(\tB\x03\xe0A\x02R\n" +
-	"snapshotId\"S\n" +
-	"\x15DeleteSnapshotRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1enetapp.googleapis.com/SnapshotR\x04name\"\x9c\x01\n" +
-	"\x15UpdateSnapshotRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12A\n" +
-	"\bsnapshot\x18\x02 \x01(\v2 .google.cloud.netapp.v1.SnapshotB\x03\xe0A\x02R\bsnapshot\"\x92\x05\n" +
-	"\bSnapshot\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12A\n" +
-	"\x05state\x18\x02 \x01(\x0e2&.google.cloud.netapp.v1.Snapshot.StateB\x03\xe0A\x03R\x05state\x12(\n" +
-	"\rstate_details\x18\x03 \x01(\tB\x03\xe0A\x03R\fstateDetails\x12 \n" +
-	"\vdescription\x18\x04 \x01(\tR\vdescription\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"Q\n" +
+	"\x12GetSnapshotRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1enetapp.googleapis.com/SnapshotR\x04name\"\xc3\x01\n" +
+	"\x15CreateSnapshotRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \x12\x1enetapp.googleapis.com/SnapshotR\x06parent\x12B\n" +
+	"\bsnapshot\x18\x02 \x01(\v2 .google.cloud.netapp.v1.SnapshotB\x04\xe2A\x01\x02R\bsnapshot\x12%\n" +
+	"\vsnapshot_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"snapshotId\"T\n" +
+	"\x15DeleteSnapshotRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1enetapp.googleapis.com/SnapshotR\x04name\"\x9e\x01\n" +
+	"\x15UpdateSnapshotRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12B\n" +
+	"\bsnapshot\x18\x02 \x01(\v2 .google.cloud.netapp.v1.SnapshotB\x04\xe2A\x01\x02R\bsnapshot\"\x97\x05\n" +
+	"\bSnapshot\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12B\n" +
+	"\x05state\x18\x02 \x01(\x0e2&.google.cloud.netapp.v1.Snapshot.StateB\x04\xe2A\x01\x03R\x05state\x12)\n" +
+	"\rstate_details\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\fstateDetails\x12 \n" +
+	"\vdescription\x18\x04 \x01(\tR\vdescription\x12#\n" +
 	"\n" +
-	"used_bytes\x18\x05 \x01(\x01B\x03\xe0A\x03R\tusedBytes\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"used_bytes\x18\x05 \x01(\x01B\x04\xe2A\x01\x03R\tusedBytes\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"createTime\x12D\n" +
 	"\x06labels\x18\a \x03(\v2,.google.cloud.netapp.v1.Snapshot.LabelsEntryR\x06labels\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +

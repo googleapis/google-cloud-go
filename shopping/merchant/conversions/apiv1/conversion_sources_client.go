@@ -747,6 +747,11 @@ func (c *conversionSourcesRESTClient) CreateConversionSource(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/conversions/v1/%v/conversionSources", req.GetParent())
 
 	params := url.Values{}
@@ -807,6 +812,11 @@ func (c *conversionSourcesRESTClient) UpdateConversionSource(ctx context.Context
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetConversionSource().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/conversions/v1/%v", req.GetConversionSource().GetName())
@@ -873,6 +883,11 @@ func (c *conversionSourcesRESTClient) DeleteConversionSource(ctx context.Context
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/conversions/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -917,6 +932,11 @@ func (c *conversionSourcesRESTClient) UndeleteConversionSource(ctx context.Conte
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/conversions/v1/%v:undelete", req.GetName())
@@ -971,6 +991,11 @@ func (c *conversionSourcesRESTClient) UndeleteConversionSource(ctx context.Conte
 func (c *conversionSourcesRESTClient) GetConversionSource(ctx context.Context, req *conversionspb.GetConversionSourceRequest, opts ...gax.CallOption) (*conversionspb.ConversionSource, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/conversions/v1/%v", req.GetName())
@@ -1038,6 +1063,11 @@ func (c *conversionSourcesRESTClient) ListConversionSources(ctx context.Context,
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/conversions/v1/%v/conversionSources", req.GetParent())

@@ -1051,31 +1051,31 @@ var File_google_cloud_oracledatabase_v1_pluggable_database_proto protoreflect.Fi
 
 const file_google_cloud_oracledatabase_v1_pluggable_database_proto_rawDesc = "" +
 	"\n" +
-	"7google/cloud/oracledatabase/v1/pluggable_database.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x9e\x03\n" +
-	"\x11PluggableDatabase\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12`\n" +
+	"7google/cloud/oracledatabase/v1/pluggable_database.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa2\x03\n" +
+	"\x11PluggableDatabase\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12a\n" +
 	"\n" +
-	"properties\x18\x02 \x01(\v2;.google.cloud.oracledatabase.v1.PluggableDatabasePropertiesB\x03\xe0A\x01R\n" +
-	"properties\x12\x1c\n" +
-	"\aoci_url\x18\x03 \x01(\tB\x03\xe0A\x03R\x06ociUrl\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"properties\x18\x02 \x01(\v2;.google.cloud.oracledatabase.v1.PluggableDatabasePropertiesB\x04\xe2A\x01\x01R\n" +
+	"properties\x12\x1d\n" +
+	"\aoci_url\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06ociUrl\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"createTime:\xad\x01\xeaA\xa9\x01\n" +
-	"/oracledatabase.googleapis.com/PluggableDatabase\x12Oprojects/{project}/locations/{location}/pluggableDatabases/{pluggable_database}*\x12pluggableDatabases2\x11pluggableDatabase\"\x89\x10\n" +
-	"\x1bPluggableDatabaseProperties\x12*\n" +
-	"\x0ecompartment_id\x18\x01 \x01(\tB\x03\xe0A\x02R\rcompartmentId\x12v\n" +
-	"\x12connection_strings\x18\x02 \x01(\v2B.google.cloud.oracledatabase.v1.PluggableDatabaseConnectionStringsB\x03\xe0A\x01R\x11connectionStrings\x12;\n" +
-	"\x17container_database_ocid\x18\x03 \x01(\tB\x03\xe0A\x02R\x15containerDatabaseOcid\x12t\n" +
-	"\fdefined_tags\x18\x04 \x03(\v2L.google.cloud.oracledatabase.v1.PluggableDatabaseProperties.DefinedTagsEntryB\x03\xe0A\x01R\vdefinedTags\x12w\n" +
-	"\rfreeform_tags\x18\x05 \x03(\v2M.google.cloud.oracledatabase.v1.PluggableDatabaseProperties.FreeformTagsEntryB\x03\xe0A\x01R\ffreeformTags\x12\x17\n" +
-	"\x04ocid\x18\x06 \x01(\tB\x03\xe0A\x03R\x04ocid\x12(\n" +
-	"\ris_restricted\x18\a \x01(\bB\x03\xe0A\x01R\fisRestricted\x120\n" +
-	"\x11lifecycle_details\x18\b \x01(\tB\x03\xe0A\x03R\x10lifecycleDetails\x12\x89\x01\n" +
-	"\x0flifecycle_state\x18\t \x01(\x0e2[.google.cloud.oracledatabase.v1.PluggableDatabaseProperties.PluggableDatabaseLifecycleStateB\x03\xe0A\x03R\x0elifecycleState\x12\x1e\n" +
+	"/oracledatabase.googleapis.com/PluggableDatabase\x12Oprojects/{project}/locations/{location}/pluggableDatabases/{pluggable_database}*\x12pluggableDatabases2\x11pluggableDatabase\"\x96\x10\n" +
+	"\x1bPluggableDatabaseProperties\x12+\n" +
+	"\x0ecompartment_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\rcompartmentId\x12w\n" +
+	"\x12connection_strings\x18\x02 \x01(\v2B.google.cloud.oracledatabase.v1.PluggableDatabaseConnectionStringsB\x04\xe2A\x01\x01R\x11connectionStrings\x12<\n" +
+	"\x17container_database_ocid\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x15containerDatabaseOcid\x12u\n" +
+	"\fdefined_tags\x18\x04 \x03(\v2L.google.cloud.oracledatabase.v1.PluggableDatabaseProperties.DefinedTagsEntryB\x04\xe2A\x01\x01R\vdefinedTags\x12x\n" +
+	"\rfreeform_tags\x18\x05 \x03(\v2M.google.cloud.oracledatabase.v1.PluggableDatabaseProperties.FreeformTagsEntryB\x04\xe2A\x01\x01R\ffreeformTags\x12\x18\n" +
+	"\x04ocid\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x04ocid\x12)\n" +
+	"\ris_restricted\x18\a \x01(\bB\x04\xe2A\x01\x01R\fisRestricted\x121\n" +
+	"\x11lifecycle_details\x18\b \x01(\tB\x04\xe2A\x01\x03R\x10lifecycleDetails\x12\x8a\x01\n" +
+	"\x0flifecycle_state\x18\t \x01(\x0e2[.google.cloud.oracledatabase.v1.PluggableDatabaseProperties.PluggableDatabaseLifecycleStateB\x04\xe2A\x01\x03R\x0elifecycleState\x12\x1f\n" +
 	"\bpdb_name\x18\n" +
-	" \x01(\tB\x03\xe0A\x02R\apdbName\x12{\n" +
-	"\x16pdb_node_level_details\x18\v \x03(\v2A.google.cloud.oracledatabase.v1.PluggableDatabaseNodeLevelDetailsB\x03\xe0A\x01R\x13pdbNodeLevelDetails\x12{\n" +
-	"\x1adatabase_management_config\x18\r \x01(\v28.google.cloud.oracledatabase.v1.DatabaseManagementConfigB\x03\xe0A\x03R\x18databaseManagementConfig\x12\x94\x01\n" +
-	"\x19operations_insights_state\x18\x0e \x01(\x0e2S.google.cloud.oracledatabase.v1.PluggableDatabaseProperties.OperationsInsightsStateB\x03\xe0A\x03R\x17operationsInsightsState\x1a\xb5\x01\n" +
+	" \x01(\tB\x04\xe2A\x01\x02R\apdbName\x12|\n" +
+	"\x16pdb_node_level_details\x18\v \x03(\v2A.google.cloud.oracledatabase.v1.PluggableDatabaseNodeLevelDetailsB\x04\xe2A\x01\x01R\x13pdbNodeLevelDetails\x12|\n" +
+	"\x1adatabase_management_config\x18\r \x01(\v28.google.cloud.oracledatabase.v1.DatabaseManagementConfigB\x04\xe2A\x01\x03R\x18databaseManagementConfig\x12\x95\x01\n" +
+	"\x19operations_insights_state\x18\x0e \x01(\x0e2S.google.cloud.oracledatabase.v1.PluggableDatabaseProperties.OperationsInsightsStateB\x04\xe2A\x01\x03R\x17operationsInsightsState\x1a\xb5\x01\n" +
 	"\x0fDefinedTagValue\x12i\n" +
 	"\x04tags\x18\x01 \x03(\v2U.google.cloud.oracledatabase.v1.PluggableDatabaseProperties.DefinedTagValue.TagsEntryR\x04tags\x1a7\n" +
 	"\tTagsEntry\x12\x10\n" +
@@ -1114,29 +1114,29 @@ const file_google_cloud_oracledatabase_v1_pluggable_database_proto_rawDesc = "" 
 	"\tDISABLING\x10\x03\x12\x0f\n" +
 	"\vNOT_ENABLED\x10\x04\x12\x13\n" +
 	"\x0fFAILED_ENABLING\x10\x05\x12\x14\n" +
-	"\x10FAILED_DISABLING\x10\x06\"\xd8\x02\n" +
-	"\"PluggableDatabaseConnectionStrings\x12\x97\x01\n" +
-	"\x16all_connection_strings\x18\x01 \x03(\v2\\.google.cloud.oracledatabase.v1.PluggableDatabaseConnectionStrings.AllConnectionStringsEntryB\x03\xe0A\x01R\x14allConnectionStrings\x12$\n" +
-	"\vpdb_default\x18\x02 \x01(\tB\x03\xe0A\x01R\n" +
-	"pdbDefault\x12)\n" +
-	"\x0epdb_ip_default\x18\x03 \x01(\tB\x03\xe0A\x01R\fpdbIpDefault\x1aG\n" +
+	"\x10FAILED_DISABLING\x10\x06\"\xdb\x02\n" +
+	"\"PluggableDatabaseConnectionStrings\x12\x98\x01\n" +
+	"\x16all_connection_strings\x18\x01 \x03(\v2\\.google.cloud.oracledatabase.v1.PluggableDatabaseConnectionStrings.AllConnectionStringsEntryB\x04\xe2A\x01\x01R\x14allConnectionStrings\x12%\n" +
+	"\vpdb_default\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"pdbDefault\x12*\n" +
+	"\x0epdb_ip_default\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\fpdbIpDefault\x1aG\n" +
 	"\x19AllConnectionStringsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x82\x03\n" +
-	"!PluggableDatabaseNodeLevelDetails\x12 \n" +
-	"\tnode_name\x18\x01 \x01(\tB\x03\xe0A\x02R\bnodeName\x12}\n" +
-	"\topen_mode\x18\x02 \x01(\x0e2[.google.cloud.oracledatabase.v1.PluggableDatabaseNodeLevelDetails.PluggableDatabaseOpenModeB\x03\xe0A\x02R\bopenMode\x127\n" +
-	"\x15pluggable_database_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x13pluggableDatabaseId\"\x82\x01\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x85\x03\n" +
+	"!PluggableDatabaseNodeLevelDetails\x12!\n" +
+	"\tnode_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bnodeName\x12~\n" +
+	"\topen_mode\x18\x02 \x01(\x0e2[.google.cloud.oracledatabase.v1.PluggableDatabaseNodeLevelDetails.PluggableDatabaseOpenModeB\x04\xe2A\x01\x02R\bopenMode\x128\n" +
+	"\x15pluggable_database_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x13pluggableDatabaseId\"\x82\x01\n" +
 	"\x19PluggableDatabaseOpenMode\x12,\n" +
 	"(PLUGGABLE_DATABASE_OPEN_MODE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tREAD_ONLY\x10\x01\x12\x0e\n" +
 	"\n" +
 	"READ_WRITE\x10\x02\x12\v\n" +
 	"\aMOUNTED\x10\x03\x12\v\n" +
-	"\aMIGRATE\x10\x04\"\x93\x04\n" +
-	"\x18DatabaseManagementConfig\x12x\n" +
-	"\x10management_state\x18\x01 \x01(\x0e2H.google.cloud.oracledatabase.v1.DatabaseManagementConfig.ManagementStateB\x03\xe0A\x03R\x0fmanagementState\x12u\n" +
-	"\x0fmanagement_type\x18\x02 \x01(\x0e2G.google.cloud.oracledatabase.v1.DatabaseManagementConfig.ManagementTypeB\x03\xe0A\x03R\x0emanagementType\"\xb9\x01\n" +
+	"\aMIGRATE\x10\x04\"\x95\x04\n" +
+	"\x18DatabaseManagementConfig\x12y\n" +
+	"\x10management_state\x18\x01 \x01(\x0e2H.google.cloud.oracledatabase.v1.DatabaseManagementConfig.ManagementStateB\x04\xe2A\x01\x03R\x0fmanagementState\x12v\n" +
+	"\x0fmanagement_type\x18\x02 \x01(\x0e2G.google.cloud.oracledatabase.v1.DatabaseManagementConfig.ManagementTypeB\x04\xe2A\x01\x03R\x0emanagementType\"\xb9\x01\n" +
 	"\x0fManagementState\x12 \n" +
 	"\x1cMANAGEMENT_STATE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bENABLING\x10\x01\x12\v\n" +
@@ -1150,16 +1150,16 @@ const file_google_cloud_oracledatabase_v1_pluggable_database_proto_rawDesc = "" 
 	"\x0eManagementType\x12\x1f\n" +
 	"\x1bMANAGEMENT_TYPE_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05BASIC\x10\x01\x12\f\n" +
-	"\bADVANCED\x10\x02\"j\n" +
-	"\x1bGetPluggableDatabaseRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/oracledatabase.googleapis.com/PluggableDatabaseR\x04name\"\xd3\x01\n" +
-	"\x1dListPluggableDatabasesRequest\x12O\n" +
-	"\x06parent\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\x12/oracledatabase.googleapis.com/PluggableDatabaseR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\bADVANCED\x10\x02\"k\n" +
+	"\x1bGetPluggableDatabaseRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/oracledatabase.googleapis.com/PluggableDatabaseR\x04name\"\xd7\x01\n" +
+	"\x1dListPluggableDatabasesRequest\x12P\n" +
+	"\x06parent\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\x12/oracledatabase.googleapis.com/PluggableDatabaseR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\xac\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xac\x01\n" +
 	"\x1eListPluggableDatabasesResponse\x12b\n" +
 	"\x13pluggable_databases\x18\x01 \x03(\v21.google.cloud.oracledatabase.v1.PluggableDatabaseR\x12pluggableDatabases\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageTokenB\xf0\x01\n" +

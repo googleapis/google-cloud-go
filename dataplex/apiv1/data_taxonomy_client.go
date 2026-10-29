@@ -1608,6 +1608,11 @@ func (c *dataTaxonomyRESTClient) CreateDataTaxonomy(ctx context.Context, req *da
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/dataTaxonomies", req.GetParent())
 
 	params := url.Values{}
@@ -1682,6 +1687,11 @@ func (c *dataTaxonomyRESTClient) UpdateDataTaxonomy(ctx context.Context, req *da
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDataTaxonomy().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDataTaxonomy().GetName())
 
 	params := url.Values{}
@@ -1754,6 +1764,11 @@ func (c *dataTaxonomyRESTClient) UpdateDataTaxonomy(ctx context.Context, req *da
 func (c *dataTaxonomyRESTClient) DeleteDataTaxonomy(ctx context.Context, req *dataplexpb.DeleteDataTaxonomyRequest, opts ...gax.CallOption) (*DeleteDataTaxonomyOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1835,6 +1850,11 @@ func (c *dataTaxonomyRESTClient) ListDataTaxonomies(ctx context.Context, req *da
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/dataTaxonomies", req.GetParent())
 
 		params := url.Values{}
@@ -1908,6 +1928,11 @@ func (c *dataTaxonomyRESTClient) GetDataTaxonomy(ctx context.Context, req *datap
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1969,6 +1994,11 @@ func (c *dataTaxonomyRESTClient) CreateDataAttributeBinding(ctx context.Context,
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/dataAttributeBindings", req.GetParent())
@@ -2045,6 +2075,11 @@ func (c *dataTaxonomyRESTClient) UpdateDataAttributeBinding(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDataAttributeBinding().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDataAttributeBinding().GetName())
 
 	params := url.Values{}
@@ -2118,6 +2153,11 @@ func (c *dataTaxonomyRESTClient) UpdateDataAttributeBinding(ctx context.Context,
 func (c *dataTaxonomyRESTClient) DeleteDataAttributeBinding(ctx context.Context, req *dataplexpb.DeleteDataAttributeBindingRequest, opts ...gax.CallOption) (*DeleteDataAttributeBindingOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2197,6 +2237,11 @@ func (c *dataTaxonomyRESTClient) ListDataAttributeBindings(ctx context.Context, 
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/dataAttributeBindings", req.GetParent())
 
 		params := url.Values{}
@@ -2270,6 +2315,11 @@ func (c *dataTaxonomyRESTClient) GetDataAttributeBinding(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2331,6 +2381,11 @@ func (c *dataTaxonomyRESTClient) CreateDataAttribute(ctx context.Context, req *d
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/attributes", req.GetParent())
@@ -2407,6 +2462,11 @@ func (c *dataTaxonomyRESTClient) UpdateDataAttribute(ctx context.Context, req *d
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDataAttribute().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDataAttribute().GetName())
 
 	params := url.Values{}
@@ -2478,6 +2538,11 @@ func (c *dataTaxonomyRESTClient) UpdateDataAttribute(ctx context.Context, req *d
 func (c *dataTaxonomyRESTClient) DeleteDataAttribute(ctx context.Context, req *dataplexpb.DeleteDataAttributeRequest, opts ...gax.CallOption) (*DeleteDataAttributeOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2559,6 +2624,11 @@ func (c *dataTaxonomyRESTClient) ListDataAttributes(ctx context.Context, req *da
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/attributes", req.GetParent())
 
 		params := url.Values{}
@@ -2632,6 +2702,11 @@ func (c *dataTaxonomyRESTClient) GetDataAttribute(ctx context.Context, req *data
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2684,6 +2759,11 @@ func (c *dataTaxonomyRESTClient) GetDataAttribute(ctx context.Context, req *data
 func (c *dataTaxonomyRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2768,6 +2848,11 @@ func (c *dataTaxonomyRESTClient) ListLocations(ctx context.Context, req *locatio
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -2837,6 +2922,11 @@ func (c *dataTaxonomyRESTClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -2902,6 +2992,11 @@ func (c *dataTaxonomyRESTClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
@@ -2970,6 +3065,11 @@ func (c *dataTaxonomyRESTClient) TestIamPermissions(ctx context.Context, req *ia
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -3030,6 +3130,11 @@ func (c *dataTaxonomyRESTClient) CancelOperation(ctx context.Context, req *longr
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -3069,6 +3174,11 @@ func (c *dataTaxonomyRESTClient) DeleteOperation(ctx context.Context, req *longr
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3106,6 +3216,11 @@ func (c *dataTaxonomyRESTClient) DeleteOperation(ctx context.Context, req *longr
 func (c *dataTaxonomyRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3173,6 +3288,11 @@ func (c *dataTaxonomyRESTClient) ListOperations(ctx context.Context, req *longru
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

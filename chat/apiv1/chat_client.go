@@ -96,6 +96,7 @@ type CallOptions struct {
 	PositionSection                []gax.CallOption
 	ListSectionItems               []gax.CallOption
 	MoveSectionItem                []gax.CallOption
+	ReplaceMessageCards            []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -706,6 +707,18 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		ReplaceMessageCards: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
@@ -1253,6 +1266,17 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		ReplaceMessageCards: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 	}
 }
 
@@ -1313,6 +1337,7 @@ type internalClient interface {
 	PositionSection(context.Context, *chatpb.PositionSectionRequest, ...gax.CallOption) (*chatpb.PositionSectionResponse, error)
 	ListSectionItems(context.Context, *chatpb.ListSectionItemsRequest, ...gax.CallOption) *SectionItemIterator
 	MoveSectionItem(context.Context, *chatpb.MoveSectionItemRequest, ...gax.CallOption) (*chatpb.MoveSectionItemResponse, error)
+	ReplaceMessageCards(context.Context, *chatpb.ReplaceMessageCardsRequest, ...gax.CallOption) (*chatpb.ReplaceMessageCardsResponse, error)
 }
 
 // Client is a client for interacting with Google Chat API.
@@ -2785,6 +2810,24 @@ func (c *Client) MoveSectionItem(ctx context.Context, req *chatpb.MoveSectionIte
 	return c.internalClient.MoveSectionItem(ctx, req, opts...)
 }
 
+// ReplaceMessageCards replaces the cards included in a message.
+//
+// A Chat app can only replace cards on a human-created message if the message
+// already contains cards, and the cards were created by the app.
+//
+// If the app replaces the cards with an empty list, the cards are removed.
+// After removing the cards, the app cannot add cards back to the message.
+//
+// Requires app
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+// with the authorization
+// scope (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+//
+//	https://www.googleapis.com/auth/chat.bot
+func (c *Client) ReplaceMessageCards(ctx context.Context, req *chatpb.ReplaceMessageCardsRequest, opts ...gax.CallOption) (*chatpb.ReplaceMessageCardsResponse, error) {
+	return c.internalClient.ReplaceMessageCards(ctx, req, opts...)
+}
+
 // gRPCClient is a client for interacting with Google Chat API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -2906,6 +2949,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.PositionSection = append(client.CallOptions.PositionSection, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListSectionItems = append(client.CallOptions.ListSectionItems, gax.WithClientMetrics(metrics))
 		client.CallOptions.MoveSectionItem = append(client.CallOptions.MoveSectionItem, gax.WithClientMetrics(metrics))
+		client.CallOptions.ReplaceMessageCards = append(client.CallOptions.ReplaceMessageCards, gax.WithClientMetrics(metrics))
 	}
 	if gax.IsFeatureEnabled("TRACING") {
 		tracing := gax.NewClientTracing(
@@ -2970,6 +3014,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.PositionSection = append(client.CallOptions.PositionSection, gax.WithClientTracing(tracing))
 		client.CallOptions.ListSectionItems = append(client.CallOptions.ListSectionItems, gax.WithClientTracing(tracing))
 		client.CallOptions.MoveSectionItem = append(client.CallOptions.MoveSectionItem, gax.WithClientTracing(tracing))
+		client.CallOptions.ReplaceMessageCards = append(client.CallOptions.ReplaceMessageCards, gax.WithClientTracing(tracing))
 	}
 	if gax.IsFeatureEnabled("LOGGING") {
 		logging := gax.NewClientLogging(
@@ -3035,6 +3080,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.PositionSection = append(client.CallOptions.PositionSection, gax.WithClientLogging(logging))
 		client.CallOptions.ListSectionItems = append(client.CallOptions.ListSectionItems, gax.WithClientLogging(logging))
 		client.CallOptions.MoveSectionItem = append(client.CallOptions.MoveSectionItem, gax.WithClientLogging(logging))
+		client.CallOptions.ReplaceMessageCards = append(client.CallOptions.ReplaceMessageCards, gax.WithClientLogging(logging))
 	}
 
 	client.internalClient = c
@@ -3178,6 +3224,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.PositionSection = append(callOpts.PositionSection, gax.WithClientMetrics(metrics))
 		callOpts.ListSectionItems = append(callOpts.ListSectionItems, gax.WithClientMetrics(metrics))
 		callOpts.MoveSectionItem = append(callOpts.MoveSectionItem, gax.WithClientMetrics(metrics))
+		callOpts.ReplaceMessageCards = append(callOpts.ReplaceMessageCards, gax.WithClientMetrics(metrics))
 	}
 	if gax.IsFeatureEnabled("TRACING") {
 		tracing := gax.NewClientTracing(
@@ -3242,6 +3289,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.PositionSection = append(callOpts.PositionSection, gax.WithClientTracing(tracing))
 		callOpts.ListSectionItems = append(callOpts.ListSectionItems, gax.WithClientTracing(tracing))
 		callOpts.MoveSectionItem = append(callOpts.MoveSectionItem, gax.WithClientTracing(tracing))
+		callOpts.ReplaceMessageCards = append(callOpts.ReplaceMessageCards, gax.WithClientTracing(tracing))
 	}
 	if gax.IsFeatureEnabled("LOGGING") {
 		logging := gax.NewClientLogging(
@@ -3307,6 +3355,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.PositionSection = append(callOpts.PositionSection, gax.WithClientLogging(logging))
 		callOpts.ListSectionItems = append(callOpts.ListSectionItems, gax.WithClientLogging(logging))
 		callOpts.MoveSectionItem = append(callOpts.MoveSectionItem, gax.WithClientLogging(logging))
+		callOpts.ReplaceMessageCards = append(callOpts.ReplaceMessageCards, gax.WithClientLogging(logging))
 	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
@@ -4729,6 +4778,27 @@ func (c *gRPCClient) MoveSectionItem(ctx context.Context, req *chatpb.MoveSectio
 	return resp, nil
 }
 
+func (c *gRPCClient) ReplaceMessageCards(ctx context.Context, req *chatpb.ReplaceMessageCardsRequest, opts ...gax.CallOption) (*chatpb.ReplaceMessageCardsResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/ReplaceMessageCards")
+	}
+	opts = append((*c.CallOptions).ReplaceMessageCards[0:len((*c.CallOptions).ReplaceMessageCards):len((*c.CallOptions).ReplaceMessageCards)], opts...)
+	var resp *chatpb.ReplaceMessageCardsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.ReplaceMessageCards, req, settings.GRPC, c.logger, "ReplaceMessageCards")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 // CreateMessage creates a message in a Google Chat space. For an example, see Send a
 // message (at https://developers.google.com/workspace/chat/create-messages).
 //
@@ -4782,6 +4852,11 @@ func (c *restClient) CreateMessage(ctx context.Context, req *chatpb.CreateMessag
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/messages", req.GetParent())
@@ -4895,6 +4970,11 @@ func (c *restClient) ListMessages(ctx context.Context, req *chatpb.ListMessagesR
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/messages", req.GetParent())
@@ -5028,6 +5108,11 @@ func (c *restClient) ListMemberships(ctx context.Context, req *chatpb.ListMember
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/members", req.GetParent())
 
 		params := url.Values{}
@@ -5135,6 +5220,11 @@ func (c *restClient) GetMembership(ctx context.Context, req *chatpb.GetMembershi
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -5221,6 +5311,11 @@ func (c *restClient) GetMembership(ctx context.Context, req *chatpb.GetMembershi
 func (c *restClient) GetMessage(ctx context.Context, req *chatpb.GetMessageRequest, opts ...gax.CallOption) (*chatpb.Message, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -5313,6 +5408,11 @@ func (c *restClient) UpdateMessage(ctx context.Context, req *chatpb.UpdateMessag
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetMessage().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetMessage().GetName())
 
 	params := url.Values{}
@@ -5398,6 +5498,11 @@ func (c *restClient) UpdateMessage(ctx context.Context, req *chatpb.UpdateMessag
 func (c *restClient) DeleteMessage(ctx context.Context, req *chatpb.DeleteMessageRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -5492,6 +5597,11 @@ func (c *restClient) SearchMessages(ctx context.Context, req *chatpb.SearchMessa
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/messages:search", req.GetParent())
 
 		params := url.Values{}
@@ -5561,6 +5671,11 @@ func (c *restClient) SearchMessages(ctx context.Context, req *chatpb.SearchMessa
 func (c *restClient) GetAttachment(ctx context.Context, req *chatpb.GetAttachmentRequest, opts ...gax.CallOption) (*chatpb.Attachment, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -5638,6 +5753,11 @@ func (c *restClient) UploadAttachment(ctx context.Context, req *chatpb.UploadAtt
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/attachments:upload", req.GetParent())
@@ -5948,6 +6068,11 @@ func (c *restClient) SearchSpaces(ctx context.Context, req *chatpb.SearchSpacesR
 func (c *restClient) GetSpace(ctx context.Context, req *chatpb.GetSpaceRequest, opts ...gax.CallOption) (*chatpb.Space, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -6277,6 +6402,11 @@ func (c *restClient) UpdateSpace(ctx context.Context, req *chatpb.UpdateSpaceReq
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSpace().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetSpace().GetName())
 
 	params := url.Values{}
@@ -6372,6 +6502,11 @@ func (c *restClient) DeleteSpace(ctx context.Context, req *chatpb.DeleteSpaceReq
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -6431,6 +6566,11 @@ func (c *restClient) CompleteImportSpace(ctx context.Context, req *chatpb.Comple
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:completeImport", req.GetName())
@@ -6735,6 +6875,11 @@ func (c *restClient) CreateMembership(ctx context.Context, req *chatpb.CreateMem
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/members", req.GetParent())
 
 	params := url.Values{}
@@ -6825,6 +6970,11 @@ func (c *restClient) UpdateMembership(ctx context.Context, req *chatpb.UpdateMem
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetMembership().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetMembership().GetName())
@@ -6932,6 +7082,11 @@ func (c *restClient) DeleteMembership(ctx context.Context, req *chatpb.DeleteMem
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -7009,6 +7164,11 @@ func (c *restClient) CreateReaction(ctx context.Context, req *chatpb.CreateReact
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/reactions", req.GetParent())
@@ -7093,6 +7253,11 @@ func (c *restClient) ListReactions(ctx context.Context, req *chatpb.ListReaction
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/reactions", req.GetParent())
 
 		params := url.Values{}
@@ -7174,6 +7339,11 @@ func (c *restClient) DeleteReaction(ctx context.Context, req *chatpb.DeleteReact
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -7239,6 +7409,11 @@ func (c *restClient) ListMessagePins(ctx context.Context, req *chatpb.ListMessag
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/messagePins", req.GetParent())
@@ -7322,6 +7497,11 @@ func (c *restClient) CreateMessagePin(ctx context.Context, req *chatpb.CreateMes
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/messagePins", req.GetParent())
 
 	params := url.Values{}
@@ -7383,6 +7563,11 @@ func (c *restClient) CreateMessagePin(ctx context.Context, req *chatpb.CreateMes
 func (c *restClient) DeleteMessagePin(ctx context.Context, req *chatpb.DeleteMessagePinRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -7510,6 +7695,11 @@ func (c *restClient) CreateCustomEmoji(ctx context.Context, req *chatpb.CreateCu
 func (c *restClient) GetCustomEmoji(ctx context.Context, req *chatpb.GetCustomEmojiRequest, opts ...gax.CallOption) (*chatpb.CustomEmoji, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -7681,6 +7871,11 @@ func (c *restClient) DeleteCustomEmoji(ctx context.Context, req *chatpb.DeleteCu
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -7730,6 +7925,11 @@ func (c *restClient) DeleteCustomEmoji(ctx context.Context, req *chatpb.DeleteCu
 func (c *restClient) GetSpaceReadState(ctx context.Context, req *chatpb.GetSpaceReadStateRequest, opts ...gax.CallOption) (*chatpb.SpaceReadState, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -7800,6 +8000,11 @@ func (c *restClient) UpdateSpaceReadState(ctx context.Context, req *chatpb.Updat
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSpaceReadState().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetSpaceReadState().GetName())
@@ -7875,6 +8080,11 @@ func (c *restClient) GetThreadReadState(ctx context.Context, req *chatpb.GetThre
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -7940,6 +8150,11 @@ func (c *restClient) GetThreadReadState(ctx context.Context, req *chatpb.GetThre
 func (c *restClient) GetAvailability(ctx context.Context, req *chatpb.GetAvailabilityRequest, opts ...gax.CallOption) (*chatpb.Availability, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -8016,6 +8231,11 @@ func (c *restClient) MarkAsActive(ctx context.Context, req *chatpb.MarkAsActiveR
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:markAsActive", req.GetName())
 
 	params := url.Values{}
@@ -8086,6 +8306,11 @@ func (c *restClient) MarkAsAway(ctx context.Context, req *chatpb.MarkAsAwayReque
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:markAsAway", req.GetName())
@@ -8161,6 +8386,11 @@ func (c *restClient) MarkAsDoNotDisturb(ctx context.Context, req *chatpb.MarkAsD
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:markAsDoNotDisturb", req.GetName())
 
 	params := url.Values{}
@@ -8230,6 +8460,11 @@ func (c *restClient) UpdateAvailability(ctx context.Context, req *chatpb.UpdateA
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAvailability().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetAvailability().GetName())
@@ -8348,6 +8583,11 @@ func (c *restClient) UpdateAvailability(ctx context.Context, req *chatpb.UpdateA
 func (c *restClient) GetSpaceEvent(ctx context.Context, req *chatpb.GetSpaceEventRequest, opts ...gax.CallOption) (*chatpb.SpaceEvent, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -8471,6 +8711,11 @@ func (c *restClient) ListSpaceEvents(ctx context.Context, req *chatpb.ListSpaceE
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/spaceEvents", req.GetParent())
 
 		params := url.Values{}
@@ -8546,6 +8791,11 @@ func (c *restClient) GetSpaceNotificationSetting(ctx context.Context, req *chatp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -8614,6 +8864,11 @@ func (c *restClient) UpdateSpaceNotificationSetting(ctx context.Context, req *ch
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSpaceNotificationSetting().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetSpaceNotificationSetting().GetName())
@@ -8695,6 +8950,11 @@ func (c *restClient) CreateSection(ctx context.Context, req *chatpb.CreateSectio
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/sections", req.GetParent())
 
 	params := url.Values{}
@@ -8762,6 +9022,11 @@ func (c *restClient) DeleteSection(ctx context.Context, req *chatpb.DeleteSectio
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -8815,6 +9080,11 @@ func (c *restClient) UpdateSection(ctx context.Context, req *chatpb.UpdateSectio
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSection().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetSection().GetName())
@@ -8903,6 +9173,11 @@ func (c *restClient) ListSections(ctx context.Context, req *chatpb.ListSectionsR
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/sections", req.GetParent())
 
 		params := url.Values{}
@@ -8982,6 +9257,11 @@ func (c *restClient) PositionSection(ctx context.Context, req *chatpb.PositionSe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:position", req.GetName())
 
 	params := url.Values{}
@@ -9059,6 +9339,11 @@ func (c *restClient) ListSectionItems(ctx context.Context, req *chatpb.ListSecti
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/items", req.GetParent())
@@ -9145,6 +9430,11 @@ func (c *restClient) MoveSectionItem(ctx context.Context, req *chatpb.MoveSectio
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:move", req.GetName())
 
 	params := url.Values{}
@@ -9177,6 +9467,84 @@ func (c *restClient) MoveSectionItem(ctx context.Context, req *chatpb.MoveSectio
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "MoveSectionItem")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ReplaceMessageCards replaces the cards included in a message.
+//
+// A Chat app can only replace cards on a human-created message if the message
+// already contains cards, and the cards were created by the app.
+//
+// If the app replaces the cards with an empty list, the cards are removed.
+// After removing the cards, the app cannot add cards back to the message.
+//
+// Requires app
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+// with the authorization
+// scope (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+//
+//	https://www.googleapis.com/auth/chat.bot
+func (c *restClient) ReplaceMessageCards(ctx context.Context, req *chatpb.ReplaceMessageCardsRequest, opts ...gax.CallOption) (*chatpb.ReplaceMessageCardsResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:replaceCards", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/ReplaceMessageCards")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=spaces/*/messages/*}:replaceCards")
+	}
+	opts = append((*c.CallOptions).ReplaceMessageCards[0:len((*c.CallOptions).ReplaceMessageCards):len((*c.CallOptions).ReplaceMessageCards)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &chatpb.ReplaceMessageCardsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ReplaceMessageCards")
 		if err != nil {
 			return err
 		}

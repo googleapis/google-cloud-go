@@ -553,6 +553,11 @@ func (c *imageRESTClient) GenerateProductImageBackground(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/productstudio/v1alpha/%v/generatedImages:generateProductImageBackground", req.GetName())
 
 	params := url.Values{}
@@ -614,6 +619,11 @@ func (c *imageRESTClient) RemoveProductImageBackground(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/productstudio/v1alpha/%v/generatedImages:removeProductImageBackground", req.GetName())
 
 	params := url.Values{}
@@ -673,6 +683,11 @@ func (c *imageRESTClient) UpscaleProductImage(ctx context.Context, req *products
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/productstudio/v1alpha/%v/generatedImages:upscaleProductImage", req.GetName())

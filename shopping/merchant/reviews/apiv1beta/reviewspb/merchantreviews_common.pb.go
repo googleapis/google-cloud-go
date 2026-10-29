@@ -583,31 +583,32 @@ var File_google_shopping_merchant_reviews_v1beta_merchantreviews_common_proto pr
 
 const file_google_shopping_merchant_reviews_v1beta_merchantreviews_common_proto_rawDesc = "" +
 	"\n" +
-	"Dgoogle/shopping/merchant/reviews/v1beta/merchantreviews_common.proto\x12'google.shopping.merchant.reviews.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/shopping/type/types.proto\"\xff\t\n" +
-	"\x18MerchantReviewAttributes\x12)\n" +
-	"\vmerchant_id\x18\x01 \x01(\tB\x03\xe0A\x02H\x00R\n" +
-	"merchantId\x88\x01\x01\x12<\n" +
-	"\x15merchant_display_name\x18\x02 \x01(\tB\x03\xe0A\x01H\x01R\x13merchantDisplayName\x88\x01\x01\x12-\n" +
-	"\rmerchant_link\x18\x03 \x01(\tB\x03\xe0A\x01H\x02R\fmerchantLink\x88\x01\x01\x12:\n" +
-	"\x14merchant_rating_link\x18\x04 \x01(\tB\x03\xe0A\x01H\x03R\x12merchantRatingLink\x88\x01\x01\x12'\n" +
+	"Dgoogle/shopping/merchant/reviews/v1beta/merchantreviews_common.proto\x12'google.shopping.merchant.reviews.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/shopping/type/types.proto\"\x8f\n" +
 	"\n" +
-	"min_rating\x18\x05 \x01(\x03B\x03\xe0A\x01H\x04R\tminRating\x88\x01\x01\x12'\n" +
+	"\x18MerchantReviewAttributes\x12*\n" +
+	"\vmerchant_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02H\x00R\n" +
+	"merchantId\x88\x01\x01\x12=\n" +
+	"\x15merchant_display_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x01R\x13merchantDisplayName\x88\x01\x01\x12.\n" +
+	"\rmerchant_link\x18\x03 \x01(\tB\x04\xe2A\x01\x01H\x02R\fmerchantLink\x88\x01\x01\x12;\n" +
+	"\x14merchant_rating_link\x18\x04 \x01(\tB\x04\xe2A\x01\x01H\x03R\x12merchantRatingLink\x88\x01\x01\x12(\n" +
 	"\n" +
-	"max_rating\x18\x06 \x01(\x03B\x03\xe0A\x01H\x05R\tmaxRating\x88\x01\x01\x12 \n" +
-	"\x06rating\x18\a \x01(\x01B\x03\xe0A\x01H\x06R\x06rating\x88\x01\x01\x12\x1e\n" +
-	"\x05title\x18\b \x01(\tB\x03\xe0A\x01H\aR\x05title\x88\x01\x01\x12\"\n" +
-	"\acontent\x18\t \x01(\tB\x03\xe0A\x02H\bR\acontent\x88\x01\x01\x12)\n" +
+	"min_rating\x18\x05 \x01(\x03B\x04\xe2A\x01\x01H\x04R\tminRating\x88\x01\x01\x12(\n" +
+	"\n" +
+	"max_rating\x18\x06 \x01(\x03B\x04\xe2A\x01\x01H\x05R\tmaxRating\x88\x01\x01\x12!\n" +
+	"\x06rating\x18\a \x01(\x01B\x04\xe2A\x01\x01H\x06R\x06rating\x88\x01\x01\x12\x1f\n" +
+	"\x05title\x18\b \x01(\tB\x04\xe2A\x01\x01H\aR\x05title\x88\x01\x01\x12#\n" +
+	"\acontent\x18\t \x01(\tB\x04\xe2A\x01\x02H\bR\acontent\x88\x01\x01\x12*\n" +
 	"\vreviewer_id\x18\n" +
-	" \x01(\tB\x03\xe0A\x01H\tR\n" +
-	"reviewerId\x88\x01\x01\x125\n" +
-	"\x11reviewer_username\x18\v \x01(\tB\x03\xe0A\x01H\n" +
-	"R\x10reviewerUsername\x88\x01\x01\x12+\n" +
-	"\fis_anonymous\x18\f \x01(\bB\x03\xe0A\x01H\vR\visAnonymous\x88\x01\x01\x12\x89\x01\n" +
-	"\x11collection_method\x18\r \x01(\x0e2R.google.shopping.merchant.reviews.v1beta.MerchantReviewAttributes.CollectionMethodB\x03\xe0A\x01H\fR\x10collectionMethod\x88\x01\x01\x12E\n" +
-	"\vreview_time\x18\x0e \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02H\rR\n" +
-	"reviewTime\x88\x01\x01\x121\n" +
-	"\x0freview_language\x18\x0f \x01(\tB\x03\xe0A\x01H\x0eR\x0ereviewLanguage\x88\x01\x01\x12/\n" +
-	"\x0ereview_country\x18\x10 \x01(\tB\x03\xe0A\x01H\x0fR\rreviewCountry\x88\x01\x01\"y\n" +
+	" \x01(\tB\x04\xe2A\x01\x01H\tR\n" +
+	"reviewerId\x88\x01\x01\x126\n" +
+	"\x11reviewer_username\x18\v \x01(\tB\x04\xe2A\x01\x01H\n" +
+	"R\x10reviewerUsername\x88\x01\x01\x12,\n" +
+	"\fis_anonymous\x18\f \x01(\bB\x04\xe2A\x01\x01H\vR\visAnonymous\x88\x01\x01\x12\x8a\x01\n" +
+	"\x11collection_method\x18\r \x01(\x0e2R.google.shopping.merchant.reviews.v1beta.MerchantReviewAttributes.CollectionMethodB\x04\xe2A\x01\x01H\fR\x10collectionMethod\x88\x01\x01\x12F\n" +
+	"\vreview_time\x18\x0e \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02H\rR\n" +
+	"reviewTime\x88\x01\x01\x122\n" +
+	"\x0freview_language\x18\x0f \x01(\tB\x04\xe2A\x01\x01H\x0eR\x0ereviewLanguage\x88\x01\x01\x120\n" +
+	"\x0ereview_country\x18\x10 \x01(\tB\x04\xe2A\x01\x01H\x0fR\rreviewCountry\x88\x01\x01\"y\n" +
 	"\x10CollectionMethod\x12!\n" +
 	"\x1dCOLLECTION_METHOD_UNSPECIFIED\x10\x00\x12\x18\n" +
 	"\x14MERCHANT_UNSOLICITED\x10\x01\x12\x11\n" +
@@ -629,26 +630,26 @@ const file_google_shopping_merchant_reviews_v1beta_merchantreviews_common_proto_
 	"\x12_collection_methodB\x0e\n" +
 	"\f_review_timeB\x12\n" +
 	"\x10_review_languageB\x11\n" +
-	"\x0f_review_country\"\x8c\t\n" +
-	"\x14MerchantReviewStatus\x12\x95\x01\n" +
-	"\x14destination_statuses\x18\x03 \x03(\v2].google.shopping.merchant.reviews.v1beta.MerchantReviewStatus.MerchantReviewDestinationStatusB\x03\xe0A\x03R\x13destinationStatuses\x12\x8b\x01\n" +
-	"\x11item_level_issues\x18\x04 \x03(\v2Z.google.shopping.merchant.reviews.v1beta.MerchantReviewStatus.MerchantReviewItemLevelIssueB\x03\xe0A\x03R\x0fitemLevelIssues\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12I\n" +
-	"\x10last_update_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0elastUpdateTime\x1a\x90\x01\n" +
-	"\x1fMerchantReviewDestinationStatus\x12m\n" +
-	"\x11reporting_context\x18\x01 \x01(\x0e2;.google.shopping.type.ReportingContext.ReportingContextEnumB\x03\xe0A\x03R\x10reportingContext\x1a\xad\x04\n" +
-	"\x1cMerchantReviewItemLevelIssue\x12\x17\n" +
-	"\x04code\x18\x01 \x01(\tB\x03\xe0A\x03R\x04code\x12\x84\x01\n" +
-	"\bseverity\x18\x02 \x01(\x0e2c.google.shopping.merchant.reviews.v1beta.MerchantReviewStatus.MerchantReviewItemLevelIssue.SeverityB\x03\xe0A\x03R\bseverity\x12#\n" +
+	"\x0f_review_country\"\x99\t\n" +
+	"\x14MerchantReviewStatus\x12\x96\x01\n" +
+	"\x14destination_statuses\x18\x03 \x03(\v2].google.shopping.merchant.reviews.v1beta.MerchantReviewStatus.MerchantReviewDestinationStatusB\x04\xe2A\x01\x03R\x13destinationStatuses\x12\x8c\x01\n" +
+	"\x11item_level_issues\x18\x04 \x03(\v2Z.google.shopping.merchant.reviews.v1beta.MerchantReviewStatus.MerchantReviewItemLevelIssueB\x04\xe2A\x01\x03R\x0fitemLevelIssues\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12J\n" +
+	"\x10last_update_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x0elastUpdateTime\x1a\x91\x01\n" +
+	"\x1fMerchantReviewDestinationStatus\x12n\n" +
+	"\x11reporting_context\x18\x01 \x01(\x0e2;.google.shopping.type.ReportingContext.ReportingContextEnumB\x04\xe2A\x01\x03R\x10reportingContext\x1a\xb5\x04\n" +
+	"\x1cMerchantReviewItemLevelIssue\x12\x18\n" +
+	"\x04code\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04code\x12\x85\x01\n" +
+	"\bseverity\x18\x02 \x01(\x0e2c.google.shopping.merchant.reviews.v1beta.MerchantReviewStatus.MerchantReviewItemLevelIssue.SeverityB\x04\xe2A\x01\x03R\bseverity\x12$\n" +
 	"\n" +
-	"resolution\x18\x03 \x01(\tB\x03\xe0A\x03R\n" +
-	"resolution\x12!\n" +
-	"\tattribute\x18\x04 \x01(\tB\x03\xe0A\x03R\tattribute\x12m\n" +
-	"\x11reporting_context\x18\x05 \x01(\x0e2;.google.shopping.type.ReportingContext.ReportingContextEnumB\x03\xe0A\x03R\x10reportingContext\x12%\n" +
-	"\vdescription\x18\x06 \x01(\tB\x03\xe0A\x03R\vdescription\x12\x1b\n" +
-	"\x06detail\x18\a \x01(\tB\x03\xe0A\x03R\x06detail\x12)\n" +
-	"\rdocumentation\x18\b \x01(\tB\x03\xe0A\x03R\rdocumentation\"G\n" +
+	"resolution\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"resolution\x12\"\n" +
+	"\tattribute\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\tattribute\x12n\n" +
+	"\x11reporting_context\x18\x05 \x01(\x0e2;.google.shopping.type.ReportingContext.ReportingContextEnumB\x04\xe2A\x01\x03R\x10reportingContext\x12&\n" +
+	"\vdescription\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\vdescription\x12\x1c\n" +
+	"\x06detail\x18\a \x01(\tB\x04\xe2A\x01\x03R\x06detail\x12*\n" +
+	"\rdocumentation\x18\b \x01(\tB\x04\xe2A\x01\x03R\rdocumentation\"G\n" +
 	"\bSeverity\x12\x18\n" +
 	"\x14SEVERITY_UNSPECIFIED\x10\x00\x12\x10\n" +
 	"\fNOT_IMPACTED\x10\x01\x12\x0f\n" +

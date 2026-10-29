@@ -896,53 +896,53 @@ var File_google_cloud_datalabeling_v1beta1_human_annotation_config_proto protore
 
 const file_google_cloud_datalabeling_v1beta1_human_annotation_config_proto_rawDesc = "" +
 	"\n" +
-	"?google/cloud/datalabeling/v1beta1/human_annotation_config.proto\x12!google.cloud.datalabeling.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/protobuf/duration.proto\"\xfa\x03\n" +
-	"\x15HumanAnnotationConfig\x12%\n" +
-	"\vinstruction\x18\x01 \x01(\tB\x03\xe0A\x02R\vinstruction\x12H\n" +
-	"\x1eannotated_dataset_display_name\x18\x02 \x01(\tB\x03\xe0A\x02R\x1bannotatedDatasetDisplayName\x12G\n" +
-	"\x1dannotated_dataset_description\x18\x03 \x01(\tB\x03\xe0A\x01R\x1bannotatedDatasetDescription\x12$\n" +
-	"\vlabel_group\x18\x04 \x01(\tB\x03\xe0A\x01R\n" +
-	"labelGroup\x12(\n" +
-	"\rlanguage_code\x18\x05 \x01(\tB\x03\xe0A\x01R\flanguageCode\x12(\n" +
-	"\rreplica_count\x18\x06 \x01(\x05B\x03\xe0A\x01R\freplicaCount\x12K\n" +
-	"\x11question_duration\x18\a \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x10questionDuration\x122\n" +
-	"\x12contributor_emails\x18\t \x03(\tB\x03\xe0A\x01R\x11contributorEmails\x12,\n" +
+	"?google/cloud/datalabeling/v1beta1/human_annotation_config.proto\x12!google.cloud.datalabeling.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/protobuf/duration.proto\"\x82\x04\n" +
+	"\x15HumanAnnotationConfig\x12&\n" +
+	"\vinstruction\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vinstruction\x12I\n" +
+	"\x1eannotated_dataset_display_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x1bannotatedDatasetDisplayName\x12H\n" +
+	"\x1dannotated_dataset_description\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x1bannotatedDatasetDescription\x12%\n" +
+	"\vlabel_group\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"labelGroup\x12)\n" +
+	"\rlanguage_code\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\x12)\n" +
+	"\rreplica_count\x18\x06 \x01(\x05B\x04\xe2A\x01\x01R\freplicaCount\x12L\n" +
+	"\x11question_duration\x18\a \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x10questionDuration\x123\n" +
+	"\x12contributor_emails\x18\t \x03(\tB\x04\xe2A\x01\x01R\x11contributorEmails\x12,\n" +
 	"\x12user_email_address\x18\n" +
-	" \x01(\tR\x10userEmailAddress\"\xf8\x01\n" +
-	"\x19ImageClassificationConfig\x123\n" +
-	"\x13annotation_spec_set\x18\x01 \x01(\tB\x03\xe0A\x02R\x11annotationSpecSet\x12/\n" +
-	"\x11allow_multi_label\x18\x02 \x01(\bB\x03\xe0A\x01R\x0fallowMultiLabel\x12u\n" +
-	"\x17answer_aggregation_type\x18\x03 \x01(\x0e28.google.cloud.datalabeling.v1beta1.StringAggregationTypeB\x03\xe0A\x01R\x15answerAggregationType\"\x7f\n" +
-	"\x12BoundingPolyConfig\x123\n" +
-	"\x13annotation_spec_set\x18\x01 \x01(\tB\x03\xe0A\x02R\x11annotationSpecSet\x124\n" +
-	"\x13instruction_message\x18\x02 \x01(\tB\x03\xe0A\x01R\x12instructionMessage\"{\n" +
-	"\x0ePolylineConfig\x123\n" +
-	"\x13annotation_spec_set\x18\x01 \x01(\tB\x03\xe0A\x02R\x11annotationSpecSet\x124\n" +
-	"\x13instruction_message\x18\x02 \x01(\tB\x03\xe0A\x01R\x12instructionMessage\"z\n" +
-	"\x12SegmentationConfig\x123\n" +
-	"\x13annotation_spec_set\x18\x01 \x01(\tB\x03\xe0A\x02R\x11annotationSpecSet\x12/\n" +
-	"\x13instruction_message\x18\x02 \x01(\tR\x12instructionMessage\"\xee\x02\n" +
-	"\x19VideoClassificationConfig\x12\x98\x01\n" +
-	"\x1bannotation_spec_set_configs\x18\x01 \x03(\v2T.google.cloud.datalabeling.v1beta1.VideoClassificationConfig.AnnotationSpecSetConfigB\x03\xe0A\x02R\x18annotationSpecSetConfigs\x125\n" +
-	"\x14apply_shot_detection\x18\x02 \x01(\bB\x03\xe0A\x01R\x12applyShotDetection\x1a\x7f\n" +
-	"\x17AnnotationSpecSetConfig\x123\n" +
-	"\x13annotation_spec_set\x18\x01 \x01(\tB\x03\xe0A\x02R\x11annotationSpecSet\x12/\n" +
-	"\x11allow_multi_label\x18\x02 \x01(\bB\x03\xe0A\x01R\x0fallowMultiLabel\"\x85\x01\n" +
-	"\x15ObjectDetectionConfig\x123\n" +
-	"\x13annotation_spec_set\x18\x01 \x01(\tB\x03\xe0A\x02R\x11annotationSpecSet\x127\n" +
-	"\x15extraction_frame_rate\x18\x03 \x01(\x01B\x03\xe0A\x02R\x13extractionFrameRate\"K\n" +
-	"\x14ObjectTrackingConfig\x123\n" +
-	"\x13annotation_spec_set\x18\x01 \x01(\tB\x03\xe0A\x02R\x11annotationSpecSet\"D\n" +
-	"\vEventConfig\x125\n" +
-	"\x14annotation_spec_sets\x18\x01 \x03(\tB\x03\xe0A\x02R\x12annotationSpecSets\"\xe4\x01\n" +
-	"\x18TextClassificationConfig\x12/\n" +
-	"\x11allow_multi_label\x18\x01 \x01(\bB\x03\xe0A\x01R\x0fallowMultiLabel\x123\n" +
-	"\x13annotation_spec_set\x18\x02 \x01(\tB\x03\xe0A\x02R\x11annotationSpecSet\x12b\n" +
-	"\x10sentiment_config\x18\x03 \x01(\v22.google.cloud.datalabeling.v1beta1.SentimentConfigB\x03\xe0A\x01R\x0fsentimentConfig\"Z\n" +
+	" \x01(\tR\x10userEmailAddress\"\xfb\x01\n" +
+	"\x19ImageClassificationConfig\x124\n" +
+	"\x13annotation_spec_set\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x11annotationSpecSet\x120\n" +
+	"\x11allow_multi_label\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x0fallowMultiLabel\x12v\n" +
+	"\x17answer_aggregation_type\x18\x03 \x01(\x0e28.google.cloud.datalabeling.v1beta1.StringAggregationTypeB\x04\xe2A\x01\x01R\x15answerAggregationType\"\x81\x01\n" +
+	"\x12BoundingPolyConfig\x124\n" +
+	"\x13annotation_spec_set\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x11annotationSpecSet\x125\n" +
+	"\x13instruction_message\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x12instructionMessage\"}\n" +
+	"\x0ePolylineConfig\x124\n" +
+	"\x13annotation_spec_set\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x11annotationSpecSet\x125\n" +
+	"\x13instruction_message\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x12instructionMessage\"{\n" +
+	"\x12SegmentationConfig\x124\n" +
+	"\x13annotation_spec_set\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x11annotationSpecSet\x12/\n" +
+	"\x13instruction_message\x18\x02 \x01(\tR\x12instructionMessage\"\xf3\x02\n" +
+	"\x19VideoClassificationConfig\x12\x99\x01\n" +
+	"\x1bannotation_spec_set_configs\x18\x01 \x03(\v2T.google.cloud.datalabeling.v1beta1.VideoClassificationConfig.AnnotationSpecSetConfigB\x04\xe2A\x01\x02R\x18annotationSpecSetConfigs\x126\n" +
+	"\x14apply_shot_detection\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x12applyShotDetection\x1a\x81\x01\n" +
+	"\x17AnnotationSpecSetConfig\x124\n" +
+	"\x13annotation_spec_set\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x11annotationSpecSet\x120\n" +
+	"\x11allow_multi_label\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x0fallowMultiLabel\"\x87\x01\n" +
+	"\x15ObjectDetectionConfig\x124\n" +
+	"\x13annotation_spec_set\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x11annotationSpecSet\x128\n" +
+	"\x15extraction_frame_rate\x18\x03 \x01(\x01B\x04\xe2A\x01\x02R\x13extractionFrameRate\"L\n" +
+	"\x14ObjectTrackingConfig\x124\n" +
+	"\x13annotation_spec_set\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x11annotationSpecSet\"E\n" +
+	"\vEventConfig\x126\n" +
+	"\x14annotation_spec_sets\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\x12annotationSpecSets\"\xe7\x01\n" +
+	"\x18TextClassificationConfig\x120\n" +
+	"\x11allow_multi_label\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x0fallowMultiLabel\x124\n" +
+	"\x13annotation_spec_set\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x11annotationSpecSet\x12c\n" +
+	"\x10sentiment_config\x18\x03 \x01(\v22.google.cloud.datalabeling.v1beta1.SentimentConfigB\x04\xe2A\x01\x01R\x0fsentimentConfig\"Z\n" +
 	"\x0fSentimentConfig\x12G\n" +
-	" enable_label_sentiment_selection\x18\x01 \x01(\bR\x1denableLabelSentimentSelection\"Q\n" +
-	"\x1aTextEntityExtractionConfig\x123\n" +
-	"\x13annotation_spec_set\x18\x01 \x01(\tB\x03\xe0A\x02R\x11annotationSpecSet*{\n" +
+	" enable_label_sentiment_selection\x18\x01 \x01(\bR\x1denableLabelSentimentSelection\"R\n" +
+	"\x1aTextEntityExtractionConfig\x124\n" +
+	"\x13annotation_spec_set\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x11annotationSpecSet*{\n" +
 	"\x15StringAggregationType\x12'\n" +
 	"#STRING_AGGREGATION_TYPE_UNSPECIFIED\x10\x00\x12\x11\n" +
 	"\rMAJORITY_VOTE\x10\x01\x12\x12\n" +

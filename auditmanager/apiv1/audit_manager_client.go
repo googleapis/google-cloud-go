@@ -1422,6 +1422,11 @@ func (c *restClient) CreateAuditSchedule(ctx context.Context, req *auditmanagerp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/auditSchedules", req.GetParent())
 
 	params := url.Values{}
@@ -1487,6 +1492,11 @@ func (c *restClient) UpdateAuditSchedule(ctx context.Context, req *auditmanagerp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAuditSchedule().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetAuditSchedule().GetName())
 
 	params := url.Values{}
@@ -1549,6 +1559,11 @@ func (c *restClient) UpdateAuditSchedule(ctx context.Context, req *auditmanagerp
 func (c *restClient) GetAuditSchedule(ctx context.Context, req *auditmanagerpb.GetAuditScheduleRequest, opts ...gax.CallOption) (*auditmanagerpb.AuditSchedule, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1616,6 +1631,11 @@ func (c *restClient) ListAuditSchedules(ctx context.Context, req *auditmanagerpb
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/auditSchedules", req.GetParent())
@@ -1693,6 +1713,11 @@ func (c *restClient) EnrollResource(ctx context.Context, req *auditmanagerpb.Enr
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetScope(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:enrollResource", req.GetScope())
 
 	params := url.Values{}
@@ -1761,6 +1786,11 @@ func (c *restClient) GenerateAuditScopeReport(ctx context.Context, req *auditman
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetScope(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/auditScopeReports:generate", req.GetScope())
 
 	params := url.Values{}
@@ -1821,6 +1851,11 @@ func (c *restClient) GenerateAuditReport(ctx context.Context, req *auditmanagerp
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetScope(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/auditReports:generate", req.GetScope())
@@ -1898,6 +1933,11 @@ func (c *restClient) ListAuditReports(ctx context.Context, req *auditmanagerpb.L
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/auditReports", req.GetParent())
 
 		params := url.Values{}
@@ -1963,6 +2003,11 @@ func (c *restClient) GetAuditReport(ctx context.Context, req *auditmanagerpb.Get
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2015,6 +2060,11 @@ func (c *restClient) GetAuditReport(ctx context.Context, req *auditmanagerpb.Get
 func (c *restClient) GetResourceEnrollmentStatus(ctx context.Context, req *auditmanagerpb.GetResourceEnrollmentStatusRequest, opts ...gax.CallOption) (*auditmanagerpb.ResourceEnrollmentStatus, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2083,6 +2133,11 @@ func (c *restClient) ListResourceEnrollmentStatuses(ctx context.Context, req *au
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/resourceEnrollmentStatuses", req.GetParent())
@@ -2164,6 +2219,11 @@ func (c *restClient) ListControls(ctx context.Context, req *auditmanagerpb.ListC
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/controls", req.GetParent())
 
 		params := url.Values{}
@@ -2227,6 +2287,11 @@ func (c *restClient) ListControls(ctx context.Context, req *auditmanagerpb.ListC
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2311,6 +2376,11 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -2385,6 +2455,11 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -2424,6 +2499,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2461,6 +2541,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2528,6 +2613,11 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

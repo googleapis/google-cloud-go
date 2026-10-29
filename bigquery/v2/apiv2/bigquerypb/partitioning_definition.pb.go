@@ -145,11 +145,11 @@ var File_google_cloud_bigquery_v2_partitioning_definition_proto protoreflect.Fil
 
 const file_google_cloud_bigquery_v2_partitioning_definition_proto_rawDesc = "" +
 	"\n" +
-	"6google/cloud/bigquery/v2/partitioning_definition.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\"y\n" +
-	"\x16PartitioningDefinition\x12_\n" +
-	"\x12partitioned_column\x18\x01 \x03(\v2+.google.cloud.bigquery.v2.PartitionedColumnB\x03\xe0A\x01R\x11partitionedColumn\"=\n" +
-	"\x11PartitionedColumn\x12\x1e\n" +
-	"\x05field\x18\x01 \x01(\tB\x03\xe0A\x02H\x00R\x05field\x88\x01\x01B\b\n" +
+	"6google/cloud/bigquery/v2/partitioning_definition.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\"z\n" +
+	"\x16PartitioningDefinition\x12`\n" +
+	"\x12partitioned_column\x18\x01 \x03(\v2+.google.cloud.bigquery.v2.PartitionedColumnB\x04\xe2A\x01\x01R\x11partitionedColumn\">\n" +
+	"\x11PartitionedColumn\x12\x1f\n" +
+	"\x05field\x18\x01 \x01(\tB\x04\xe2A\x01\x02H\x00R\x05field\x88\x01\x01B\b\n" +
 	"\x06_fieldBz\n" +
 	"\x1ccom.google.cloud.bigquery.v2B\x1bPartitioningDefinitionProtoP\x01Z;cloud.google.com/go/bigquery/v2/apiv2/bigquerypb;bigquerypbb\x06proto3"
 

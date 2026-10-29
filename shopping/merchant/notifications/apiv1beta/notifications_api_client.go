@@ -695,6 +695,11 @@ func (c *notificationsApiRESTClient) GetNotificationSubscription(ctx context.Con
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/notifications/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -773,6 +778,11 @@ func (c *notificationsApiRESTClient) CreateNotificationSubscription(ctx context.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/notifications/v1beta/%v/notificationsubscriptions", req.GetParent())
 
 	params := url.Values{}
@@ -832,6 +842,11 @@ func (c *notificationsApiRESTClient) UpdateNotificationSubscription(ctx context.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetNotificationSubscription().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/notifications/v1beta/%v", req.GetNotificationSubscription().GetName())
@@ -895,6 +910,11 @@ func (c *notificationsApiRESTClient) DeleteNotificationSubscription(ctx context.
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/notifications/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -945,6 +965,11 @@ func (c *notificationsApiRESTClient) ListNotificationSubscriptions(ctx context.C
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/notifications/v1beta/%v/notificationsubscriptions", req.GetParent())

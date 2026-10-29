@@ -2862,10 +2862,10 @@ var File_google_ai_generativelanguage_v1beta_content_proto protoreflect.FileDesc
 
 const file_google_ai_generativelanguage_v1beta_content_proto_rawDesc = "" +
 	"\n" +
-	"1google/ai/generativelanguage/v1beta/content.proto\x12#google.ai.generativelanguage.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1agoogle/type/interval.proto\x1a\x18google/type/latlng.proto\"c\n" +
+	"1google/ai/generativelanguage/v1beta/content.proto\x12#google.ai.generativelanguage.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1agoogle/type/interval.proto\x1a\x18google/type/latlng.proto\"d\n" +
 	"\aContent\x12?\n" +
-	"\x05parts\x18\x01 \x03(\v2).google.ai.generativelanguage.v1beta.PartR\x05parts\x12\x17\n" +
-	"\x04role\x18\x02 \x01(\tB\x03\xe0A\x01R\x04role\"\xcd\x06\n" +
+	"\x05parts\x18\x01 \x03(\v2).google.ai.generativelanguage.v1beta.PartR\x05parts\x12\x18\n" +
+	"\x04role\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04role\"\xd0\x06\n" +
 	"\x04Part\x12\x14\n" +
 	"\x04text\x18\x02 \x01(\tH\x00R\x04text\x12L\n" +
 	"\vinline_data\x18\x03 \x01(\v2).google.ai.generativelanguage.v1beta.BlobH\x00R\n" +
@@ -2875,10 +2875,10 @@ const file_google_ai_generativelanguage_v1beta_content_proto_rawDesc = "" +
 	"\tfile_data\x18\x06 \x01(\v2-.google.ai.generativelanguage.v1beta.FileDataH\x00R\bfileData\x12^\n" +
 	"\x0fexecutable_code\x18\t \x01(\v23.google.ai.generativelanguage.v1beta.ExecutableCodeH\x00R\x0eexecutableCode\x12n\n" +
 	"\x15code_execution_result\x18\n" +
-	" \x01(\v28.google.ai.generativelanguage.v1beta.CodeExecutionResultH\x00R\x13codeExecutionResult\x12`\n" +
-	"\x0evideo_metadata\x18\x0e \x01(\v22.google.ai.generativelanguage.v1beta.VideoMetadataB\x03\xe0A\x01H\x01R\rvideoMetadata\x12\x1d\n" +
-	"\athought\x18\v \x01(\bB\x03\xe0A\x01R\athought\x120\n" +
-	"\x11thought_signature\x18\r \x01(\fB\x03\xe0A\x01R\x10thoughtSignature\x12<\n" +
+	" \x01(\v28.google.ai.generativelanguage.v1beta.CodeExecutionResultH\x00R\x13codeExecutionResult\x12a\n" +
+	"\x0evideo_metadata\x18\x0e \x01(\v22.google.ai.generativelanguage.v1beta.VideoMetadataB\x04\xe2A\x01\x01H\x01R\rvideoMetadata\x12\x1e\n" +
+	"\athought\x18\v \x01(\bB\x04\xe2A\x01\x01R\athought\x121\n" +
+	"\x11thought_signature\x18\r \x01(\fB\x04\xe2A\x01\x01R\x10thoughtSignature\x12<\n" +
 	"\rpart_metadata\x18\b \x01(\v2\x17.google.protobuf.StructR\fpartMetadataB\x06\n" +
 	"\x04dataB\n" +
 	"\n" +
@@ -2892,65 +2892,65 @@ const file_google_ai_generativelanguage_v1beta_content_proto_rawDesc = "" +
 	"\x04data\x18\x02 \x01(\fR\x04data\"G\n" +
 	"\x14FunctionResponseBlob\x12\x1b\n" +
 	"\tmime_type\x18\x01 \x01(\tR\bmimeType\x12\x12\n" +
-	"\x04data\x18\x02 \x01(\fR\x04data\"L\n" +
-	"\bFileData\x12 \n" +
-	"\tmime_type\x18\x01 \x01(\tB\x03\xe0A\x01R\bmimeType\x12\x1e\n" +
-	"\bfile_uri\x18\x02 \x01(\tB\x03\xe0A\x02R\afileUri\"\xa8\x01\n" +
-	"\rVideoMetadata\x12A\n" +
-	"\fstart_offset\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\vstartOffset\x12=\n" +
+	"\x04data\x18\x02 \x01(\fR\x04data\"N\n" +
+	"\bFileData\x12!\n" +
+	"\tmime_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\bmimeType\x12\x1f\n" +
+	"\bfile_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\afileUri\"\xab\x01\n" +
+	"\rVideoMetadata\x12B\n" +
+	"\fstart_offset\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\vstartOffset\x12>\n" +
 	"\n" +
-	"end_offset\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\tendOffset\x12\x15\n" +
-	"\x03fps\x18\x03 \x01(\x01B\x03\xe0A\x01R\x03fps\"\xba\x01\n" +
-	"\x0eExecutableCode\x12]\n" +
-	"\blanguage\x18\x01 \x01(\x0e2<.google.ai.generativelanguage.v1beta.ExecutableCode.LanguageB\x03\xe0A\x02R\blanguage\x12\x17\n" +
-	"\x04code\x18\x02 \x01(\tB\x03\xe0A\x02R\x04code\"0\n" +
+	"end_offset\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\tendOffset\x12\x16\n" +
+	"\x03fps\x18\x03 \x01(\x01B\x04\xe2A\x01\x01R\x03fps\"\xbc\x01\n" +
+	"\x0eExecutableCode\x12^\n" +
+	"\blanguage\x18\x01 \x01(\x0e2<.google.ai.generativelanguage.v1beta.ExecutableCode.LanguageB\x04\xe2A\x01\x02R\blanguage\x12\x18\n" +
+	"\x04code\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04code\"0\n" +
 	"\bLanguage\x12\x18\n" +
 	"\x14LANGUAGE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
-	"\x06PYTHON\x10\x01\"\xfa\x01\n" +
-	"\x13CodeExecutionResult\x12_\n" +
-	"\aoutcome\x18\x01 \x01(\x0e2@.google.ai.generativelanguage.v1beta.CodeExecutionResult.OutcomeB\x03\xe0A\x02R\aoutcome\x12\x1b\n" +
-	"\x06output\x18\x02 \x01(\tB\x03\xe0A\x01R\x06output\"e\n" +
+	"\x06PYTHON\x10\x01\"\xfc\x01\n" +
+	"\x13CodeExecutionResult\x12`\n" +
+	"\aoutcome\x18\x01 \x01(\x0e2@.google.ai.generativelanguage.v1beta.CodeExecutionResult.OutcomeB\x04\xe2A\x01\x02R\aoutcome\x12\x1c\n" +
+	"\x06output\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06output\"e\n" +
 	"\aOutcome\x12\x17\n" +
 	"\x13OUTCOME_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +
 	"OUTCOME_OK\x10\x01\x12\x12\n" +
 	"\x0eOUTCOME_FAILED\x10\x02\x12\x1d\n" +
-	"\x19OUTCOME_DEADLINE_EXCEEDED\x10\x03\"\xf9\b\n" +
-	"\x04Tool\x12r\n" +
-	"\x15function_declarations\x18\x01 \x03(\v28.google.ai.generativelanguage.v1beta.FunctionDeclarationB\x03\xe0A\x01R\x14functionDeclarations\x12w\n" +
-	"\x17google_search_retrieval\x18\x02 \x01(\v2:.google.ai.generativelanguage.v1beta.GoogleSearchRetrievalB\x03\xe0A\x01R\x15googleSearchRetrieval\x12^\n" +
-	"\x0ecode_execution\x18\x03 \x01(\v22.google.ai.generativelanguage.v1beta.CodeExecutionB\x03\xe0A\x01R\rcodeExecution\x12`\n" +
-	"\rgoogle_search\x18\x04 \x01(\v26.google.ai.generativelanguage.v1beta.Tool.GoogleSearchB\x03\xe0A\x01R\fgoogleSearch\x12]\n" +
-	"\fcomputer_use\x18\x06 \x01(\v25.google.ai.generativelanguage.v1beta.Tool.ComputerUseB\x03\xe0A\x01R\vcomputerUse\x12U\n" +
-	"\vurl_context\x18\b \x01(\v2/.google.ai.generativelanguage.v1beta.UrlContextB\x03\xe0A\x01R\n" +
-	"urlContext\x12U\n" +
-	"\vfile_search\x18\t \x01(\v2/.google.ai.generativelanguage.v1beta.FileSearchB\x03\xe0A\x01R\n" +
-	"fileSearch\x12U\n" +
-	"\vgoogle_maps\x18\v \x01(\v2/.google.ai.generativelanguage.v1beta.GoogleMapsB\x03\xe0A\x01R\n" +
-	"googleMaps\x1aV\n" +
-	"\fGoogleSearch\x12F\n" +
-	"\x11time_range_filter\x18\x02 \x01(\v2\x15.google.type.IntervalB\x03\xe0A\x01R\x0ftimeRangeFilter\x1a\x85\x02\n" +
-	"\vComputerUse\x12h\n" +
-	"\venvironment\x18\x03 \x01(\x0e2A.google.ai.generativelanguage.v1beta.Tool.ComputerUse.EnvironmentB\x03\xe0A\x02R\venvironment\x12G\n" +
-	"\x1dexcluded_predefined_functions\x18\x05 \x03(\tB\x03\xe0A\x01R\x1bexcludedPredefinedFunctions\"C\n" +
+	"\x19OUTCOME_DEADLINE_EXCEEDED\x10\x03\"\x84\t\n" +
+	"\x04Tool\x12s\n" +
+	"\x15function_declarations\x18\x01 \x03(\v28.google.ai.generativelanguage.v1beta.FunctionDeclarationB\x04\xe2A\x01\x01R\x14functionDeclarations\x12x\n" +
+	"\x17google_search_retrieval\x18\x02 \x01(\v2:.google.ai.generativelanguage.v1beta.GoogleSearchRetrievalB\x04\xe2A\x01\x01R\x15googleSearchRetrieval\x12_\n" +
+	"\x0ecode_execution\x18\x03 \x01(\v22.google.ai.generativelanguage.v1beta.CodeExecutionB\x04\xe2A\x01\x01R\rcodeExecution\x12a\n" +
+	"\rgoogle_search\x18\x04 \x01(\v26.google.ai.generativelanguage.v1beta.Tool.GoogleSearchB\x04\xe2A\x01\x01R\fgoogleSearch\x12^\n" +
+	"\fcomputer_use\x18\x06 \x01(\v25.google.ai.generativelanguage.v1beta.Tool.ComputerUseB\x04\xe2A\x01\x01R\vcomputerUse\x12V\n" +
+	"\vurl_context\x18\b \x01(\v2/.google.ai.generativelanguage.v1beta.UrlContextB\x04\xe2A\x01\x01R\n" +
+	"urlContext\x12V\n" +
+	"\vfile_search\x18\t \x01(\v2/.google.ai.generativelanguage.v1beta.FileSearchB\x04\xe2A\x01\x01R\n" +
+	"fileSearch\x12V\n" +
+	"\vgoogle_maps\x18\v \x01(\v2/.google.ai.generativelanguage.v1beta.GoogleMapsB\x04\xe2A\x01\x01R\n" +
+	"googleMaps\x1aW\n" +
+	"\fGoogleSearch\x12G\n" +
+	"\x11time_range_filter\x18\x02 \x01(\v2\x15.google.type.IntervalB\x04\xe2A\x01\x01R\x0ftimeRangeFilter\x1a\x87\x02\n" +
+	"\vComputerUse\x12i\n" +
+	"\venvironment\x18\x03 \x01(\x0e2A.google.ai.generativelanguage.v1beta.Tool.ComputerUse.EnvironmentB\x04\xe2A\x01\x02R\venvironment\x12H\n" +
+	"\x1dexcluded_predefined_functions\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\x1bexcludedPredefinedFunctions\"C\n" +
 	"\vEnvironment\x12\x1b\n" +
 	"\x17ENVIRONMENT_UNSPECIFIED\x10\x00\x12\x17\n" +
-	"\x13ENVIRONMENT_BROWSER\x10\x01\"6\n" +
+	"\x13ENVIRONMENT_BROWSER\x10\x01\"7\n" +
 	"\n" +
-	"GoogleMaps\x12(\n" +
-	"\renable_widget\x18\x01 \x01(\bB\x03\xe0A\x01R\fenableWidget\"\f\n" +
+	"GoogleMaps\x12)\n" +
+	"\renable_widget\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\fenableWidget\"\f\n" +
 	"\n" +
-	"UrlContext\"\xa0\x03\n" +
+	"UrlContext\"\xa5\x03\n" +
 	"\n" +
-	"FileSearch\x12w\n" +
-	"\x13retrieval_resources\x18\x01 \x03(\v2A.google.ai.generativelanguage.v1beta.FileSearch.RetrievalResourceB\x03\xe0A\x02R\x12retrievalResources\x12o\n" +
-	"\x10retrieval_config\x18\x02 \x01(\v2?.google.ai.generativelanguage.v1beta.FileSearch.RetrievalConfigB\x03\xe0A\x01R\x0fretrievalConfig\x1a>\n" +
-	"\x11RetrievalResource\x12)\n" +
-	"\x0erag_store_name\x18\x01 \x01(\tB\x03\xe0A\x02R\fragStoreName\x1ah\n" +
-	"\x0fRetrievalConfig\x12\x1d\n" +
-	"\x05top_k\x18\x01 \x01(\x05B\x03\xe0A\x01H\x00R\x04topK\x88\x01\x01\x12,\n" +
-	"\x0fmetadata_filter\x18\x03 \x01(\tB\x03\xe0A\x01R\x0emetadataFilterB\b\n" +
+	"FileSearch\x12x\n" +
+	"\x13retrieval_resources\x18\x01 \x03(\v2A.google.ai.generativelanguage.v1beta.FileSearch.RetrievalResourceB\x04\xe2A\x01\x02R\x12retrievalResources\x12p\n" +
+	"\x10retrieval_config\x18\x02 \x01(\v2?.google.ai.generativelanguage.v1beta.FileSearch.RetrievalConfigB\x04\xe2A\x01\x01R\x0fretrievalConfig\x1a?\n" +
+	"\x11RetrievalResource\x12*\n" +
+	"\x0erag_store_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\fragStoreName\x1aj\n" +
+	"\x0fRetrievalConfig\x12\x1e\n" +
+	"\x05top_k\x18\x01 \x01(\x05B\x04\xe2A\x01\x01H\x00R\x04topK\x88\x01\x01\x12-\n" +
+	"\x0fmetadata_filter\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x0emetadataFilterB\b\n" +
 	"\x06_top_k\"\x8e\x01\n" +
 	"\x15GoogleSearchRetrieval\x12u\n" +
 	"\x18dynamic_retrieval_config\x18\x01 \x01(\v2;.google.ai.generativelanguage.v1beta.DynamicRetrievalConfigR\x16dynamicRetrievalConfig\"\xe6\x01\n" +
@@ -2961,33 +2961,33 @@ const file_google_ai_generativelanguage_v1beta_content_proto_rawDesc = "" +
 	"\x10MODE_UNSPECIFIED\x10\x00\x12\x10\n" +
 	"\fMODE_DYNAMIC\x10\x01B\x14\n" +
 	"\x12_dynamic_threshold\"\x0f\n" +
-	"\rCodeExecution\"\xeb\x01\n" +
+	"\rCodeExecution\"\xed\x01\n" +
 	"\n" +
-	"ToolConfig\x12w\n" +
-	"\x17function_calling_config\x18\x01 \x01(\v2:.google.ai.generativelanguage.v1beta.FunctionCallingConfigB\x03\xe0A\x01R\x15functionCallingConfig\x12d\n" +
-	"\x10retrieval_config\x18\x02 \x01(\v24.google.ai.generativelanguage.v1beta.RetrievalConfigB\x03\xe0A\x01R\x0fretrievalConfig\"n\n" +
-	"\x0fRetrievalConfig\x121\n" +
-	"\alat_lng\x18\x01 \x01(\v2\x13.google.type.LatLngB\x03\xe0A\x01R\x06latLng\x12(\n" +
-	"\rlanguage_code\x18\x02 \x01(\tB\x03\xe0A\x01R\flanguageCode\"\xf6\x01\n" +
-	"\x15FunctionCallingConfig\x12X\n" +
-	"\x04mode\x18\x01 \x01(\x0e2?.google.ai.generativelanguage.v1beta.FunctionCallingConfig.ModeB\x03\xe0A\x01R\x04mode\x129\n" +
-	"\x16allowed_function_names\x18\x02 \x03(\tB\x03\xe0A\x01R\x14allowedFunctionNames\"H\n" +
+	"ToolConfig\x12x\n" +
+	"\x17function_calling_config\x18\x01 \x01(\v2:.google.ai.generativelanguage.v1beta.FunctionCallingConfigB\x04\xe2A\x01\x01R\x15functionCallingConfig\x12e\n" +
+	"\x10retrieval_config\x18\x02 \x01(\v24.google.ai.generativelanguage.v1beta.RetrievalConfigB\x04\xe2A\x01\x01R\x0fretrievalConfig\"p\n" +
+	"\x0fRetrievalConfig\x122\n" +
+	"\alat_lng\x18\x01 \x01(\v2\x13.google.type.LatLngB\x04\xe2A\x01\x01R\x06latLng\x12)\n" +
+	"\rlanguage_code\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\"\xf8\x01\n" +
+	"\x15FunctionCallingConfig\x12Y\n" +
+	"\x04mode\x18\x01 \x01(\x0e2?.google.ai.generativelanguage.v1beta.FunctionCallingConfig.ModeB\x04\xe2A\x01\x01R\x04mode\x12:\n" +
+	"\x16allowed_function_names\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x14allowedFunctionNames\"H\n" +
 	"\x04Mode\x12\x14\n" +
 	"\x10MODE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04AUTO\x10\x01\x12\a\n" +
 	"\x03ANY\x10\x02\x12\b\n" +
 	"\x04NONE\x10\x03\x12\r\n" +
-	"\tVALIDATED\x10\x04\"\x9c\x05\n" +
-	"\x13FunctionDeclaration\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x02R\vdescription\x12U\n" +
+	"\tVALIDATED\x10\x04\"\xa3\x05\n" +
+	"\x13FunctionDeclaration\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdescription\x12V\n" +
 	"\n" +
-	"parameters\x18\x03 \x01(\v2+.google.ai.generativelanguage.v1beta.SchemaB\x03\xe0A\x01H\x00R\n" +
-	"parameters\x88\x01\x01\x12V\n" +
-	"\x16parameters_json_schema\x18\x06 \x01(\v2\x16.google.protobuf.ValueB\x03\xe0A\x01H\x01R\x14parametersJsonSchema\x88\x01\x01\x12Q\n" +
-	"\bresponse\x18\x04 \x01(\v2+.google.ai.generativelanguage.v1beta.SchemaB\x03\xe0A\x01H\x02R\bresponse\x88\x01\x01\x12R\n" +
-	"\x14response_json_schema\x18\a \x01(\v2\x16.google.protobuf.ValueB\x03\xe0A\x01H\x03R\x12responseJsonSchema\x88\x01\x01\x12b\n" +
-	"\bbehavior\x18\x05 \x01(\x0e2A.google.ai.generativelanguage.v1beta.FunctionDeclaration.BehaviorB\x03\xe0A\x01R\bbehavior\";\n" +
+	"parameters\x18\x03 \x01(\v2+.google.ai.generativelanguage.v1beta.SchemaB\x04\xe2A\x01\x01H\x00R\n" +
+	"parameters\x88\x01\x01\x12W\n" +
+	"\x16parameters_json_schema\x18\x06 \x01(\v2\x16.google.protobuf.ValueB\x04\xe2A\x01\x01H\x01R\x14parametersJsonSchema\x88\x01\x01\x12R\n" +
+	"\bresponse\x18\x04 \x01(\v2+.google.ai.generativelanguage.v1beta.SchemaB\x04\xe2A\x01\x01H\x02R\bresponse\x88\x01\x01\x12S\n" +
+	"\x14response_json_schema\x18\a \x01(\v2\x16.google.protobuf.ValueB\x04\xe2A\x01\x01H\x03R\x12responseJsonSchema\x88\x01\x01\x12c\n" +
+	"\bbehavior\x18\x05 \x01(\x0e2A.google.ai.generativelanguage.v1beta.FunctionDeclaration.BehaviorB\x04\xe2A\x01\x01R\bbehavior\";\n" +
 	"\bBehavior\x12\x0f\n" +
 	"\vUNSPECIFIED\x10\x00\x12\f\n" +
 	"\bBLOCKING\x10\x01\x12\x10\n" +
@@ -2995,20 +2995,20 @@ const file_google_ai_generativelanguage_v1beta_content_proto_rawDesc = "" +
 	"\v_parametersB\x19\n" +
 	"\x17_parameters_json_schemaB\v\n" +
 	"\t_responseB\x17\n" +
-	"\x15_response_json_schema\"|\n" +
-	"\fFunctionCall\x12\x13\n" +
-	"\x02id\x18\x03 \x01(\tB\x03\xe0A\x01R\x02id\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x125\n" +
-	"\x04args\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01H\x00R\x04args\x88\x01\x01B\a\n" +
-	"\x05_args\"\xc9\x03\n" +
-	"\x10FunctionResponse\x12\x13\n" +
-	"\x02id\x18\x03 \x01(\tB\x03\xe0A\x01R\x02id\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x128\n" +
-	"\bresponse\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x02R\bresponse\x12T\n" +
-	"\x05parts\x18\b \x03(\v29.google.ai.generativelanguage.v1beta.FunctionResponsePartB\x03\xe0A\x01R\x05parts\x12(\n" +
-	"\rwill_continue\x18\x04 \x01(\bB\x03\xe0A\x01R\fwillContinue\x12j\n" +
+	"\x15_response_json_schema\"\x7f\n" +
+	"\fFunctionCall\x12\x14\n" +
+	"\x02id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x02id\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x126\n" +
+	"\x04args\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01H\x00R\x04args\x88\x01\x01B\a\n" +
+	"\x05_args\"\xcf\x03\n" +
+	"\x10FunctionResponse\x12\x14\n" +
+	"\x02id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x02id\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x129\n" +
+	"\bresponse\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x02R\bresponse\x12U\n" +
+	"\x05parts\x18\b \x03(\v29.google.ai.generativelanguage.v1beta.FunctionResponsePartB\x04\xe2A\x01\x01R\x05parts\x12)\n" +
+	"\rwill_continue\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fwillContinue\x12k\n" +
 	"\n" +
-	"scheduling\x18\x05 \x01(\x0e2@.google.ai.generativelanguage.v1beta.FunctionResponse.SchedulingB\x03\xe0A\x01H\x00R\n" +
+	"scheduling\x18\x05 \x01(\x0e2@.google.ai.generativelanguage.v1beta.FunctionResponse.SchedulingB\x04\xe2A\x01\x01H\x00R\n" +
 	"scheduling\x88\x01\x01\"R\n" +
 	"\n" +
 	"Scheduling\x12\x1a\n" +
@@ -3017,35 +3017,35 @@ const file_google_ai_generativelanguage_v1beta_content_proto_rawDesc = "" +
 	"\x06SILENT\x10\x01\x12\r\n" +
 	"\tWHEN_IDLE\x10\x02\x12\r\n" +
 	"\tINTERRUPT\x10\x03B\r\n" +
-	"\v_scheduling\"\xf7\b\n" +
-	"\x06Schema\x12B\n" +
-	"\x04type\x18\x01 \x01(\x0e2).google.ai.generativelanguage.v1beta.TypeB\x03\xe0A\x02R\x04type\x12\x1b\n" +
-	"\x06format\x18\x02 \x01(\tB\x03\xe0A\x01R\x06format\x12\x19\n" +
-	"\x05title\x18\x18 \x01(\tB\x03\xe0A\x01R\x05title\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12\x1f\n" +
-	"\bnullable\x18\x04 \x01(\bB\x03\xe0A\x01R\bnullable\x12\x17\n" +
-	"\x04enum\x18\x05 \x03(\tB\x03\xe0A\x01R\x04enum\x12K\n" +
-	"\x05items\x18\x06 \x01(\v2+.google.ai.generativelanguage.v1beta.SchemaB\x03\xe0A\x01H\x00R\x05items\x88\x01\x01\x12 \n" +
-	"\tmax_items\x18\x15 \x01(\x03B\x03\xe0A\x01R\bmaxItems\x12 \n" +
-	"\tmin_items\x18\x16 \x01(\x03B\x03\xe0A\x01R\bminItems\x12`\n" +
+	"\v_scheduling\"\x8d\t\n" +
+	"\x06Schema\x12C\n" +
+	"\x04type\x18\x01 \x01(\x0e2).google.ai.generativelanguage.v1beta.TypeB\x04\xe2A\x01\x02R\x04type\x12\x1c\n" +
+	"\x06format\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06format\x12\x1a\n" +
+	"\x05title\x18\x18 \x01(\tB\x04\xe2A\x01\x01R\x05title\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12 \n" +
+	"\bnullable\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\bnullable\x12\x18\n" +
+	"\x04enum\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\x04enum\x12L\n" +
+	"\x05items\x18\x06 \x01(\v2+.google.ai.generativelanguage.v1beta.SchemaB\x04\xe2A\x01\x01H\x00R\x05items\x88\x01\x01\x12!\n" +
+	"\tmax_items\x18\x15 \x01(\x03B\x04\xe2A\x01\x01R\bmaxItems\x12!\n" +
+	"\tmin_items\x18\x16 \x01(\x03B\x04\xe2A\x01\x01R\bminItems\x12a\n" +
 	"\n" +
-	"properties\x18\a \x03(\v2;.google.ai.generativelanguage.v1beta.Schema.PropertiesEntryB\x03\xe0A\x01R\n" +
-	"properties\x12\x1f\n" +
-	"\brequired\x18\b \x03(\tB\x03\xe0A\x01R\brequired\x12*\n" +
-	"\x0emin_properties\x18\t \x01(\x03B\x03\xe0A\x01R\rminProperties\x12*\n" +
+	"properties\x18\a \x03(\v2;.google.ai.generativelanguage.v1beta.Schema.PropertiesEntryB\x04\xe2A\x01\x01R\n" +
+	"properties\x12 \n" +
+	"\brequired\x18\b \x03(\tB\x04\xe2A\x01\x01R\brequired\x12+\n" +
+	"\x0emin_properties\x18\t \x01(\x03B\x04\xe2A\x01\x01R\rminProperties\x12+\n" +
 	"\x0emax_properties\x18\n" +
-	" \x01(\x03B\x03\xe0A\x01R\rmaxProperties\x12\"\n" +
-	"\aminimum\x18\v \x01(\x01B\x03\xe0A\x01H\x01R\aminimum\x88\x01\x01\x12\"\n" +
-	"\amaximum\x18\f \x01(\x01B\x03\xe0A\x01H\x02R\amaximum\x88\x01\x01\x12\"\n" +
+	" \x01(\x03B\x04\xe2A\x01\x01R\rmaxProperties\x12#\n" +
+	"\aminimum\x18\v \x01(\x01B\x04\xe2A\x01\x01H\x01R\aminimum\x88\x01\x01\x12#\n" +
+	"\amaximum\x18\f \x01(\x01B\x04\xe2A\x01\x01H\x02R\amaximum\x88\x01\x01\x12#\n" +
 	"\n" +
-	"min_length\x18\r \x01(\x03B\x03\xe0A\x01R\tminLength\x12\"\n" +
+	"min_length\x18\r \x01(\x03B\x04\xe2A\x01\x01R\tminLength\x12#\n" +
 	"\n" +
-	"max_length\x18\x0e \x01(\x03B\x03\xe0A\x01R\tmaxLength\x12\x1d\n" +
-	"\apattern\x18\x0f \x01(\tB\x03\xe0A\x01R\apattern\x125\n" +
-	"\aexample\x18\x10 \x01(\v2\x16.google.protobuf.ValueB\x03\xe0A\x01R\aexample\x12G\n" +
-	"\x06any_of\x18\x12 \x03(\v2+.google.ai.generativelanguage.v1beta.SchemaB\x03\xe0A\x01R\x05anyOf\x120\n" +
-	"\x11property_ordering\x18\x17 \x03(\tB\x03\xe0A\x01R\x10propertyOrdering\x125\n" +
-	"\adefault\x18\x19 \x01(\v2\x16.google.protobuf.ValueB\x03\xe0A\x01R\adefault\x1aj\n" +
+	"max_length\x18\x0e \x01(\x03B\x04\xe2A\x01\x01R\tmaxLength\x12\x1e\n" +
+	"\apattern\x18\x0f \x01(\tB\x04\xe2A\x01\x01R\apattern\x126\n" +
+	"\aexample\x18\x10 \x01(\v2\x16.google.protobuf.ValueB\x04\xe2A\x01\x01R\aexample\x12H\n" +
+	"\x06any_of\x18\x12 \x03(\v2+.google.ai.generativelanguage.v1beta.SchemaB\x04\xe2A\x01\x01R\x05anyOf\x121\n" +
+	"\x11property_ordering\x18\x17 \x03(\tB\x04\xe2A\x01\x01R\x10propertyOrdering\x126\n" +
+	"\adefault\x18\x19 \x01(\v2\x16.google.protobuf.ValueB\x04\xe2A\x01\x01R\adefault\x1aj\n" +
 	"\x0fPropertiesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12A\n" +
 	"\x05value\x18\x02 \x01(\v2+.google.ai.generativelanguage.v1beta.SchemaR\x05value:\x028\x01B\b\n" +

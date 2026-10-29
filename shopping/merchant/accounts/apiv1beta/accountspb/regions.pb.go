@@ -659,47 +659,47 @@ var File_google_shopping_merchant_accounts_v1beta_regions_proto protoreflect.Fil
 
 const file_google_shopping_merchant_accounts_v1beta_regions_proto_rawDesc = "" +
 	"\n" +
-	"6google/shopping/merchant/accounts/v1beta/regions.proto\x12(google.shopping.merchant.accounts.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1egoogle/protobuf/wrappers.proto\"Q\n" +
-	"\x10GetRegionRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!merchantapi.googleapis.com/RegionR\x04name\"\xca\x01\n" +
-	"\x13CreateRegionRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"merchantapi.googleapis.com/AccountR\x06parent\x12 \n" +
-	"\tregion_id\x18\x02 \x01(\tB\x03\xe0A\x02R\bregionId\x12M\n" +
-	"\x06region\x18\x03 \x01(\v20.google.shopping.merchant.accounts.v1beta.RegionB\x03\xe0A\x02R\x06region\"\xa6\x01\n" +
-	"\x13UpdateRegionRequest\x12M\n" +
-	"\x06region\x18\x01 \x01(\v20.google.shopping.merchant.accounts.v1beta.RegionB\x03\xe0A\x02R\x06region\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"T\n" +
-	"\x13DeleteRegionRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!merchantapi.googleapis.com/RegionR\x04name\"\x9e\x01\n" +
-	"\x12ListRegionsRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"merchantapi.googleapis.com/AccountR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"6google/shopping/merchant/accounts/v1beta/regions.proto\x12(google.shopping.merchant.accounts.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1egoogle/protobuf/wrappers.proto\"R\n" +
+	"\x10GetRegionRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!merchantapi.googleapis.com/RegionR\x04name\"\xcd\x01\n" +
+	"\x13CreateRegionRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"merchantapi.googleapis.com/AccountR\x06parent\x12!\n" +
+	"\tregion_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\bregionId\x12N\n" +
+	"\x06region\x18\x03 \x01(\v20.google.shopping.merchant.accounts.v1beta.RegionB\x04\xe2A\x01\x02R\x06region\"\xa8\x01\n" +
+	"\x13UpdateRegionRequest\x12N\n" +
+	"\x06region\x18\x01 \x01(\v20.google.shopping.merchant.accounts.v1beta.RegionB\x04\xe2A\x01\x02R\x06region\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"U\n" +
+	"\x13DeleteRegionRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!merchantapi.googleapis.com/RegionR\x04name\"\xa1\x01\n" +
+	"\x12ListRegionsRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"merchantapi.googleapis.com/AccountR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x89\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x89\x01\n" +
 	"\x13ListRegionsResponse\x12J\n" +
 	"\aregions\x18\x01 \x03(\v20.google.shopping.merchant.accounts.v1beta.RegionR\aregions\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x8b\a\n" +
-	"\x06Region\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12+\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01H\x00R\vdisplayName\x88\x01\x01\x12n\n" +
-	"\x10postal_code_area\x18\x03 \x01(\v2?.google.shopping.merchant.accounts.v1beta.Region.PostalCodeAreaB\x03\xe0A\x01R\x0epostalCodeArea\x12j\n" +
-	"\x0egeotarget_area\x18\x04 \x01(\v2>.google.shopping.merchant.accounts.v1beta.Region.GeoTargetAreaB\x03\xe0A\x01R\rgeotargetArea\x12_\n" +
-	"\x1bregional_inventory_eligible\x18\x05 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x03R\x19regionalInventoryEligible\x12L\n" +
-	"\x11shipping_eligible\x18\x06 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x03R\x10shippingEligible\x1a\xf4\x01\n" +
-	"\x0ePostalCodeArea\x12$\n" +
-	"\vregion_code\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"regionCode\x12w\n" +
-	"\fpostal_codes\x18\x02 \x03(\v2O.google.shopping.merchant.accounts.v1beta.Region.PostalCodeArea.PostalCodeRangeB\x03\xe0A\x02R\vpostalCodes\x1aC\n" +
-	"\x0fPostalCodeRange\x12\x19\n" +
-	"\x05begin\x18\x01 \x01(\tB\x03\xe0A\x02R\x05begin\x12\x15\n" +
-	"\x03end\x18\x02 \x01(\tB\x03\xe0A\x01R\x03end\x1aJ\n" +
-	"\rGeoTargetArea\x129\n" +
-	"\x16geotarget_criteria_ids\x18\x01 \x03(\x03B\x03\xe0A\x02R\x14geotargetCriteriaIds:\\\xeaAY\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x96\a\n" +
+	"\x06Region\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12,\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x00R\vdisplayName\x88\x01\x01\x12o\n" +
+	"\x10postal_code_area\x18\x03 \x01(\v2?.google.shopping.merchant.accounts.v1beta.Region.PostalCodeAreaB\x04\xe2A\x01\x01R\x0epostalCodeArea\x12k\n" +
+	"\x0egeotarget_area\x18\x04 \x01(\v2>.google.shopping.merchant.accounts.v1beta.Region.GeoTargetAreaB\x04\xe2A\x01\x01R\rgeotargetArea\x12`\n" +
+	"\x1bregional_inventory_eligible\x18\x05 \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x03R\x19regionalInventoryEligible\x12M\n" +
+	"\x11shipping_eligible\x18\x06 \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x03R\x10shippingEligible\x1a\xf8\x01\n" +
+	"\x0ePostalCodeArea\x12%\n" +
+	"\vregion_code\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"regionCode\x12x\n" +
+	"\fpostal_codes\x18\x02 \x03(\v2O.google.shopping.merchant.accounts.v1beta.Region.PostalCodeArea.PostalCodeRangeB\x04\xe2A\x01\x02R\vpostalCodes\x1aE\n" +
+	"\x0fPostalCodeRange\x12\x1a\n" +
+	"\x05begin\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05begin\x12\x16\n" +
+	"\x03end\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x03end\x1aK\n" +
+	"\rGeoTargetArea\x12:\n" +
+	"\x16geotarget_criteria_ids\x18\x01 \x03(\x03B\x04\xe2A\x01\x02R\x14geotargetCriteriaIds:\\\xeaAY\n" +
 	"!merchantapi.googleapis.com/Region\x12#accounts/{account}/regions/{region}*\aregions2\x06regionB\x0f\n" +
 	"\r_display_name2\xb9\b\n" +
 	"\x0eRegionsService\x12\xb6\x01\n" +

@@ -1,5 +1,19 @@
 # Changes
 
+## [1.56.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.56.0...container/v1.56.1) (2026-10-28)
+
+
+### Bug Fixes
+
+* Adds additional validation for REST RPC requests ([#20753](https://github.com/googleapis/google-cloud-go/issues/20753)) ([7827181](https://github.com/googleapis/google-cloud-go/commit/7827181e7cb653fb69645c538b162b2c7490b0bb))
+
+## [1.56.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.55.0...container/v1.56.0) (2026-10-22)
+
+
+### Features
+
+* Update API sources and regenerate ([#20728](https://github.com/googleapis/google-cloud-go/issues/20728)) ([ab1da9d](https://github.com/googleapis/google-cloud-go/commit/ab1da9d200416594ae18fa7a2944961f1c92c928))
+
 ## [1.55.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.54.0...container/v1.55.0) (2026-09-23)
 
 

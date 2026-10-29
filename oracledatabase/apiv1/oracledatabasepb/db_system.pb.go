@@ -1244,55 +1244,55 @@ var File_google_cloud_oracledatabase_v1_db_system_proto protoreflect.FileDescrip
 
 const file_google_cloud_oracledatabase_v1_db_system_proto_rawDesc = "" +
 	"\n" +
-	".google/cloud/oracledatabase/v1/db_system.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/oracledatabase/v1/database.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1agoogle/type/datetime.proto\"\x8f\x06\n" +
-	"\bDbSystem\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12W\n" +
+	".google/cloud/oracledatabase/v1/db_system.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/oracledatabase/v1/database.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1agoogle/type/datetime.proto\"\x99\x06\n" +
+	"\bDbSystem\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12X\n" +
 	"\n" +
-	"properties\x18\x02 \x01(\v22.google.cloud.oracledatabase.v1.DbSystemPropertiesB\x03\xe0A\x01R\n" +
-	"properties\x12+\n" +
-	"\x0fgcp_oracle_zone\x18\x03 \x01(\tB\x03\xe0A\x01R\rgcpOracleZone\x12Q\n" +
-	"\x06labels\x18\x04 \x03(\v24.google.cloud.oracledatabase.v1.DbSystem.LabelsEntryB\x03\xe0A\x01R\x06labels\x12Q\n" +
-	"\vodb_network\x18\x05 \x01(\tB0\xe0A\x01\xfaA*\n" +
+	"properties\x18\x02 \x01(\v22.google.cloud.oracledatabase.v1.DbSystemPropertiesB\x04\xe2A\x01\x01R\n" +
+	"properties\x12,\n" +
+	"\x0fgcp_oracle_zone\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\rgcpOracleZone\x12R\n" +
+	"\x06labels\x18\x04 \x03(\v24.google.cloud.oracledatabase.v1.DbSystem.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12R\n" +
+	"\vodb_network\x18\x05 \x01(\tB1\xe2A\x01\x01\xfaA*\n" +
 	"(oracledatabase.googleapis.com/OdbNetworkR\n" +
-	"odbNetwork\x12N\n" +
+	"odbNetwork\x12O\n" +
 	"\n" +
-	"odb_subnet\x18\x06 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'oracledatabase.googleapis.com/OdbSubnetR\todbSubnet\x12*\n" +
-	"\x0eentitlement_id\x18\a \x01(\tB\x03\xe0A\x03R\rentitlementId\x12&\n" +
-	"\fdisplay_name\x18\b \x01(\tB\x03\xe0A\x02R\vdisplayName\x12@\n" +
-	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12\x1c\n" +
+	"odb_subnet\x18\x06 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'oracledatabase.googleapis.com/OdbSubnetR\todbSubnet\x12+\n" +
+	"\x0eentitlement_id\x18\a \x01(\tB\x04\xe2A\x01\x03R\rentitlementId\x12'\n" +
+	"\fdisplay_name\x18\b \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12A\n" +
+	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12\x1d\n" +
 	"\aoci_url\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R\x06ociUrl\x1a9\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R\x06ociUrl\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x7f\xeaA|\n" +
-	"&oracledatabase.googleapis.com/DbSystem\x12=projects/{project}/locations/{location}/dbSystems/{db_system}*\tdbSystems2\bdbSystem\"\x8f\x0f\n" +
-	"\x12DbSystemProperties\x12\x19\n" +
-	"\x05shape\x18\x01 \x01(\tB\x03\xe0A\x02R\x05shape\x12(\n" +
-	"\rcompute_count\x18\x02 \x01(\x05B\x03\xe0A\x02R\fcomputeCount\x12C\n" +
-	"\x1cinitial_data_storage_size_gb\x18\x03 \x01(\x05B\x03\xe0A\x02R\x18initialDataStorageSizeGb\x12z\n" +
-	"\x10database_edition\x18\x04 \x01(\x0e2J.google.cloud.oracledatabase.v1.DbSystemProperties.DbSystemDatabaseEditionB\x03\xe0A\x02R\x0fdatabaseEdition\x12i\n" +
-	"\rlicense_model\x18\x05 \x01(\x0e2?.google.cloud.oracledatabase.v1.DbSystemProperties.LicenseModelB\x03\xe0A\x02R\flicenseModel\x12+\n" +
-	"\x0fssh_public_keys\x18\x06 \x03(\tB\x03\xe0A\x02R\rsshPublicKeys\x12,\n" +
-	"\x0fhostname_prefix\x18\a \x01(\tB\x03\xe0A\x01R\x0ehostnamePrefix\x12\x1f\n" +
-	"\bhostname\x18\b \x01(\tB\x03\xe0A\x03R\bhostname\x12\"\n" +
+	"&oracledatabase.googleapis.com/DbSystem\x12=projects/{project}/locations/{location}/dbSystems/{db_system}*\tdbSystems2\bdbSystem\"\xa4\x0f\n" +
+	"\x12DbSystemProperties\x12\x1a\n" +
+	"\x05shape\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05shape\x12)\n" +
+	"\rcompute_count\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\fcomputeCount\x12D\n" +
+	"\x1cinitial_data_storage_size_gb\x18\x03 \x01(\x05B\x04\xe2A\x01\x02R\x18initialDataStorageSizeGb\x12{\n" +
+	"\x10database_edition\x18\x04 \x01(\x0e2J.google.cloud.oracledatabase.v1.DbSystemProperties.DbSystemDatabaseEditionB\x04\xe2A\x01\x02R\x0fdatabaseEdition\x12j\n" +
+	"\rlicense_model\x18\x05 \x01(\x0e2?.google.cloud.oracledatabase.v1.DbSystemProperties.LicenseModelB\x04\xe2A\x01\x02R\flicenseModel\x12,\n" +
+	"\x0fssh_public_keys\x18\x06 \x03(\tB\x04\xe2A\x01\x02R\rsshPublicKeys\x12-\n" +
+	"\x0fhostname_prefix\x18\a \x01(\tB\x04\xe2A\x01\x01R\x0ehostnamePrefix\x12 \n" +
+	"\bhostname\x18\b \x01(\tB\x04\xe2A\x01\x03R\bhostname\x12#\n" +
 	"\n" +
-	"private_ip\x18\t \x01(\tB\x03\xe0A\x01R\tprivateIp\x12z\n" +
+	"private_ip\x18\t \x01(\tB\x04\xe2A\x01\x01R\tprivateIp\x12{\n" +
 	"\x17data_collection_options\x18\n" +
-	" \x01(\v2=.google.cloud.oracledatabase.v1.DataCollectionOptionsDbSystemB\x03\xe0A\x01R\x15dataCollectionOptions\x127\n" +
-	"\ttime_zone\x18\v \x01(\v2\x15.google.type.TimeZoneB\x03\xe0A\x01R\btimeZone\x12w\n" +
-	"\x0flifecycle_state\x18\f \x01(\x0e2I.google.cloud.oracledatabase.v1.DbSystemProperties.DbSystemLifecycleStateB\x03\xe0A\x03R\x0elifecycleState\x12D\n" +
-	"\adb_home\x18\r \x01(\v2&.google.cloud.oracledatabase.v1.DbHomeB\x03\xe0A\x01R\x06dbHome\x12\x17\n" +
-	"\x04ocid\x18\x0e \x01(\tB\x03\xe0A\x03R\x04ocid\x12)\n" +
-	"\x0ememory_size_gb\x18\x0f \x01(\x05B\x03\xe0A\x01R\fmemorySizeGb\x12i\n" +
-	"\rcompute_model\x18\x10 \x01(\x0e2?.google.cloud.oracledatabase.v1.DbSystemProperties.ComputeModelB\x03\xe0A\x01R\fcomputeModel\x124\n" +
-	"\x14data_storage_size_gb\x18\x11 \x01(\x05B\x03\xe0A\x01R\x11dataStorageSizeGb\x124\n" +
-	"\x14reco_storage_size_gb\x18\x12 \x01(\x05B\x03\xe0A\x01R\x11recoStorageSizeGb\x12\x1b\n" +
-	"\x06domain\x18\x13 \x01(\tB\x03\xe0A\x01R\x06domain\x12\"\n" +
+	" \x01(\v2=.google.cloud.oracledatabase.v1.DataCollectionOptionsDbSystemB\x04\xe2A\x01\x01R\x15dataCollectionOptions\x128\n" +
+	"\ttime_zone\x18\v \x01(\v2\x15.google.type.TimeZoneB\x04\xe2A\x01\x01R\btimeZone\x12x\n" +
+	"\x0flifecycle_state\x18\f \x01(\x0e2I.google.cloud.oracledatabase.v1.DbSystemProperties.DbSystemLifecycleStateB\x04\xe2A\x01\x03R\x0elifecycleState\x12E\n" +
+	"\adb_home\x18\r \x01(\v2&.google.cloud.oracledatabase.v1.DbHomeB\x04\xe2A\x01\x01R\x06dbHome\x12\x18\n" +
+	"\x04ocid\x18\x0e \x01(\tB\x04\xe2A\x01\x03R\x04ocid\x12*\n" +
+	"\x0ememory_size_gb\x18\x0f \x01(\x05B\x04\xe2A\x01\x01R\fmemorySizeGb\x12j\n" +
+	"\rcompute_model\x18\x10 \x01(\x0e2?.google.cloud.oracledatabase.v1.DbSystemProperties.ComputeModelB\x04\xe2A\x01\x01R\fcomputeModel\x125\n" +
+	"\x14data_storage_size_gb\x18\x11 \x01(\x05B\x04\xe2A\x01\x01R\x11dataStorageSizeGb\x125\n" +
+	"\x14reco_storage_size_gb\x18\x12 \x01(\x05B\x04\xe2A\x01\x01R\x11recoStorageSizeGb\x12\x1c\n" +
+	"\x06domain\x18\x13 \x01(\tB\x04\xe2A\x01\x01R\x06domain\x12#\n" +
 	"\n" +
-	"node_count\x18\x14 \x01(\x05B\x03\xe0A\x01R\tnodeCount\x12`\n" +
-	"\x11db_system_options\x18\x15 \x01(\v2/.google.cloud.oracledatabase.v1.DbSystemOptionsB\x03\xe0A\x01R\x0fdbSystemOptions\"\x9c\x01\n" +
+	"node_count\x18\x14 \x01(\x05B\x04\xe2A\x01\x01R\tnodeCount\x12a\n" +
+	"\x11db_system_options\x18\x15 \x01(\v2/.google.cloud.oracledatabase.v1.DbSystemOptionsB\x04\xe2A\x01\x01R\x0fdbSystemOptions\"\x9c\x01\n" +
 	"\x17DbSystemDatabaseEdition\x12*\n" +
 	"&DB_SYSTEM_DATABASE_EDITION_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10STANDARD_EDITION\x10\x01\x12\x16\n" +
@@ -1320,44 +1320,44 @@ const file_google_cloud_oracledatabase_v1_db_system_proto_rawDesc = "" +
 	"\fComputeModel\x12\x1d\n" +
 	"\x19COMPUTE_MODEL_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04ECPU\x10\x01\x12\f\n" +
-	"\x04OCPU\x10\x02\x1a\x02\b\x01\"\xa5\x01\n" +
-	"\x1dDataCollectionOptionsDbSystem\x12F\n" +
-	"\x1dis_diagnostics_events_enabled\x18\x01 \x01(\bB\x03\xe0A\x01R\x1aisDiagnosticsEventsEnabled\x12<\n" +
-	"\x18is_incident_logs_enabled\x18\x02 \x01(\bB\x03\xe0A\x01R\x15isIncidentLogsEnabled\"\xd3\x01\n" +
-	"\x0fDbSystemOptions\x12u\n" +
-	"\x12storage_management\x18\x01 \x01(\x0e2A.google.cloud.oracledatabase.v1.DbSystemOptions.StorageManagementB\x03\xe0A\x01R\x11storageManagement\"I\n" +
+	"\x04OCPU\x10\x02\x1a\x02\b\x01\"\xa7\x01\n" +
+	"\x1dDataCollectionOptionsDbSystem\x12G\n" +
+	"\x1dis_diagnostics_events_enabled\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x1aisDiagnosticsEventsEnabled\x12=\n" +
+	"\x18is_incident_logs_enabled\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x15isIncidentLogsEnabled\"\xd4\x01\n" +
+	"\x0fDbSystemOptions\x12v\n" +
+	"\x12storage_management\x18\x01 \x01(\x0e2A.google.cloud.oracledatabase.v1.DbSystemOptions.StorageManagementB\x04\xe2A\x01\x01R\x11storageManagement\"I\n" +
 	"\x11StorageManagement\x12\"\n" +
 	"\x1eSTORAGE_MANAGEMENT_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03ASM\x10\x01\x12\a\n" +
-	"\x03LVM\x10\x02\"\xe3\x01\n" +
-	"\x06DbHome\x12&\n" +
-	"\fdisplay_name\x18\x01 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12\"\n" +
+	"\x03LVM\x10\x02\"\xe7\x01\n" +
+	"\x06DbHome\x12'\n" +
+	"\fdisplay_name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12#\n" +
 	"\n" +
-	"db_version\x18\x02 \x01(\tB\x03\xe0A\x02R\tdbVersion\x12I\n" +
-	"\bdatabase\x18\x03 \x01(\v2(.google.cloud.oracledatabase.v1.DatabaseB\x03\xe0A\x02R\bdatabase\x12B\n" +
-	"\x1bis_unified_auditing_enabled\x18\x04 \x01(\bB\x03\xe0A\x01R\x18isUnifiedAuditingEnabled\"\xfe\x01\n" +
-	"\x15CreateDbSystemRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&oracledatabase.googleapis.com/DbSystemR\x06parent\x12%\n" +
-	"\fdb_system_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"dbSystemId\x12J\n" +
-	"\tdb_system\x18\x03 \x01(\v2(.google.cloud.oracledatabase.v1.DbSystemB\x03\xe0A\x02R\bdbSystem\x12*\n" +
+	"db_version\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tdbVersion\x12J\n" +
+	"\bdatabase\x18\x03 \x01(\v2(.google.cloud.oracledatabase.v1.DatabaseB\x04\xe2A\x01\x02R\bdatabase\x12C\n" +
+	"\x1bis_unified_auditing_enabled\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x18isUnifiedAuditingEnabled\"\x82\x02\n" +
+	"\x15CreateDbSystemRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\x12&oracledatabase.googleapis.com/DbSystemR\x06parent\x12&\n" +
+	"\fdb_system_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"dbSystemId\x12K\n" +
+	"\tdb_system\x18\x03 \x01(\v2(.google.cloud.oracledatabase.v1.DbSystemB\x04\xe2A\x01\x02R\bdbSystem\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x87\x01\n" +
-	"\x15DeleteDbSystemRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&oracledatabase.googleapis.com/DbSystemR\x04name\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x89\x01\n" +
+	"\x15DeleteDbSystemRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&oracledatabase.googleapis.com/DbSystemR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"X\n" +
-	"\x12GetDbSystemRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&oracledatabase.googleapis.com/DbSystemR\x04name\"\xe1\x01\n" +
-	"\x14ListDbSystemsRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&oracledatabase.googleapis.com/DbSystemR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"Y\n" +
+	"\x12GetDbSystemRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&oracledatabase.googleapis.com/DbSystemR\x04name\"\xe6\x01\n" +
+	"\x14ListDbSystemsRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\x12&oracledatabase.googleapis.com/DbSystemR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xaa\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xaa\x01\n" +
 	"\x15ListDbSystemsResponse\x12G\n" +
 	"\n" +
 	"db_systems\x18\x01 \x03(\v2(.google.cloud.oracledatabase.v1.DbSystemR\tdbSystems\x12&\n" +

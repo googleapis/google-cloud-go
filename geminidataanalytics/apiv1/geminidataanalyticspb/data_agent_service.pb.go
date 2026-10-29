@@ -1163,93 +1163,93 @@ var File_google_cloud_geminidataanalytics_v1_data_agent_service_proto protorefle
 
 const file_google_cloud_geminidataanalytics_v1_data_agent_service_proto_rawDesc = "" +
 	"\n" +
-	"<google/cloud/geminidataanalytics/v1/data_agent_service.proto\x12#google.cloud.geminidataanalytics.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/geminidataanalytics/v1/data_agent.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x90\x03\n" +
-	"\x15ListDataAgentsRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,geminidataanalytics.googleapis.com/DataAgentR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"<google/cloud/geminidataanalytics/v1/data_agent_service.proto\x12#google.cloud.geminidataanalytics.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/geminidataanalytics/v1/data_agent.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x97\x03\n" +
+	"\x15ListDataAgentsRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,geminidataanalytics.googleapis.com/DataAgentR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\x12&\n" +
-	"\fshow_deleted\x18\x06 \x01(\bB\x03\xe0A\x01R\vshowDeleted\x12~\n" +
-	"\x0ecreator_filter\x18\b \x01(\x0e2R.google.cloud.geminidataanalytics.v1.ListAccessibleDataAgentsRequest.CreatorFilterB\x03\xe0A\x01R\rcreatorFilter\"\xb8\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\x12'\n" +
+	"\fshow_deleted\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\vshowDeleted\x12\x7f\n" +
+	"\x0ecreator_filter\x18\b \x01(\x0e2R.google.cloud.geminidataanalytics.v1.ListAccessibleDataAgentsRequest.CreatorFilterB\x04\xe2A\x01\x01R\rcreatorFilter\"\xb9\x01\n" +
 	"\x16ListDataAgentsResponse\x12O\n" +
 	"\vdata_agents\x18\x01 \x03(\v2..google.cloud.geminidataanalytics.v1.DataAgentR\n" +
 	"dataAgents\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"\xfd\x03\n" +
-	"\x1fListAccessibleDataAgentsRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,geminidataanalytics.googleapis.com/DataAgentR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x06R\vunreachable\"\x84\x04\n" +
+	"\x1fListAccessibleDataAgentsRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,geminidataanalytics.googleapis.com/DataAgentR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\x12&\n" +
-	"\fshow_deleted\x18\x06 \x01(\bB\x03\xe0A\x01R\vshowDeleted\x12~\n" +
-	"\x0ecreator_filter\x18\a \x01(\x0e2R.google.cloud.geminidataanalytics.v1.ListAccessibleDataAgentsRequest.CreatorFilterB\x03\xe0A\x01R\rcreatorFilter\"a\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\x12'\n" +
+	"\fshow_deleted\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\vshowDeleted\x12\x7f\n" +
+	"\x0ecreator_filter\x18\a \x01(\x0e2R.google.cloud.geminidataanalytics.v1.ListAccessibleDataAgentsRequest.CreatorFilterB\x04\xe2A\x01\x01R\rcreatorFilter\"a\n" +
 	"\rCreatorFilter\x12\x1e\n" +
 	"\x1aCREATOR_FILTER_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04NONE\x10\x01\x12\x10\n" +
 	"\fCREATOR_ONLY\x10\x02\x12\x14\n" +
-	"\x10NOT_CREATOR_ONLY\x10\x03\"\xc2\x01\n" +
+	"\x10NOT_CREATOR_ONLY\x10\x03\"\xc3\x01\n" +
 	" ListAccessibleDataAgentsResponse\x12O\n" +
 	"\vdata_agents\x18\x01 \x03(\v2..google.cloud.geminidataanalytics.v1.DataAgentR\n" +
 	"dataAgents\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"_\n" +
-	"\x13GetDataAgentRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",geminidataanalytics.googleapis.com/DataAgentR\x04name\"\x8f\x02\n" +
-	"\x16CreateDataAgentRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,geminidataanalytics.googleapis.com/DataAgentR\x06parent\x12'\n" +
-	"\rdata_agent_id\x18\x02 \x01(\tB\x03\xe0A\x01R\vdataAgentId\x12R\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x06R\vunreachable\"`\n" +
+	"\x13GetDataAgentRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",geminidataanalytics.googleapis.com/DataAgentR\x04name\"\x93\x02\n" +
+	"\x16CreateDataAgentRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,geminidataanalytics.googleapis.com/DataAgentR\x06parent\x12(\n" +
+	"\rdata_agent_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdataAgentId\x12S\n" +
 	"\n" +
-	"data_agent\x18\x03 \x01(\v2..google.cloud.geminidataanalytics.v1.DataAgentB\x03\xe0A\x02R\tdataAgent\x12*\n" +
+	"data_agent\x18\x03 \x01(\v2..google.cloud.geminidataanalytics.v1.DataAgentB\x04\xe2A\x01\x02R\tdataAgent\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xda\x01\n" +
-	"\x16UpdateDataAgentRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12R\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xdd\x01\n" +
+	"\x16UpdateDataAgentRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12S\n" +
 	"\n" +
-	"data_agent\x18\x02 \x01(\v2..google.cloud.geminidataanalytics.v1.DataAgentB\x03\xe0A\x02R\tdataAgent\x12*\n" +
+	"data_agent\x18\x02 \x01(\v2..google.cloud.geminidataanalytics.v1.DataAgentB\x04\xe2A\x01\x02R\tdataAgent\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x8e\x01\n" +
-	"\x16DeleteDataAgentRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",geminidataanalytics.googleapis.com/DataAgentR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x90\x01\n" +
+	"\x16DeleteDataAgentRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",geminidataanalytics.googleapis.com/DataAgentR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xd5\x02\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion\"\xaf\x02\n" +
-	"\x1fSetAgentOpsObservabilityRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x120\n" +
-	"\x11telemetry_enabled\x18\x02 \x01(\bB\x03\xe0A\x01R\x10telemetryEnabled\x12-\n" +
-	"\x10data_source_type\x18\x03 \x01(\tB\x03\xe0A\x02R\x0edataSourceType\x12&\n" +
-	"\fbqaa_enabled\x18\x04 \x01(\bB\x03\xe0A\x01R\vbqaaEnabled\x12@\n" +
-	"\vupdate_mask\x18\x05 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xdc\x02\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"apiVersion\"\xb4\x02\n" +
+	"\x1fSetAgentOpsObservabilityRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x121\n" +
+	"\x11telemetry_enabled\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x10telemetryEnabled\x12.\n" +
+	"\x10data_source_type\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x0edataSourceType\x12'\n" +
+	"\fbqaa_enabled\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\vbqaaEnabled\x12A\n" +
+	"\vupdate_mask\x18\x05 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
 	"updateMask\"\"\n" +
 	" SetAgentOpsObservabilityResponse\"\"\n" +
-	" SetAgentOpsObservabilityMetadata\"\x98\x01\n" +
-	"$RetrieveAgentOpsObservabilityRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12-\n" +
-	"\x10data_source_type\x18\x02 \x01(\tB\x03\xe0A\x02R\x0edataSourceType\"\xde\x02\n" +
-	"%RetrieveAgentOpsObservabilityResponse\x120\n" +
-	"\x11telemetry_enabled\x18\x01 \x01(\bB\x03\xe0A\x03R\x10telemetryEnabled\x12.\n" +
-	"\x10bigquery_enabled\x18\x03 \x01(\bB\x03\xe0A\x03R\x0fbigqueryEnabled\x123\n" +
-	"\x13cloud_trace_enabled\x18\x04 \x01(\bB\x03\xe0A\x03R\x11cloudTraceEnabled\x12=\n" +
-	"\x18cloud_monitoring_enabled\x18\x05 \x01(\bB\x03\xe0A\x03R\x16cloudMonitoringEnabled\x127\n" +
-	"\x15cloud_logging_enabled\x18\x06 \x01(\bB\x03\xe0A\x03R\x13cloudLoggingEnabled\x12&\n" +
-	"\fbqaa_enabled\x18\a \x01(\bB\x03\xe0A\x03R\vbqaaEnabled2\x97\x18\n" +
+	" SetAgentOpsObservabilityMetadata\"\x9a\x01\n" +
+	"$RetrieveAgentOpsObservabilityRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12.\n" +
+	"\x10data_source_type\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0edataSourceType\"\xe4\x02\n" +
+	"%RetrieveAgentOpsObservabilityResponse\x121\n" +
+	"\x11telemetry_enabled\x18\x01 \x01(\bB\x04\xe2A\x01\x03R\x10telemetryEnabled\x12/\n" +
+	"\x10bigquery_enabled\x18\x03 \x01(\bB\x04\xe2A\x01\x03R\x0fbigqueryEnabled\x124\n" +
+	"\x13cloud_trace_enabled\x18\x04 \x01(\bB\x04\xe2A\x01\x03R\x11cloudTraceEnabled\x12>\n" +
+	"\x18cloud_monitoring_enabled\x18\x05 \x01(\bB\x04\xe2A\x01\x03R\x16cloudMonitoringEnabled\x128\n" +
+	"\x15cloud_logging_enabled\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x13cloudLoggingEnabled\x12'\n" +
+	"\fbqaa_enabled\x18\a \x01(\bB\x04\xe2A\x01\x03R\vbqaaEnabled2\x97\x18\n" +
 	"\x10DataAgentService\x12\xca\x01\n" +
 	"\x0eListDataAgents\x12:.google.cloud.geminidataanalytics.v1.ListDataAgentsRequest\x1a;.google.cloud.geminidataanalytics.v1.ListDataAgentsResponse\"?\xdaA\x06parent\x82\xd3\xe4\x93\x020\x12./v1/{parent=projects/*/locations/*}/dataAgents\x12\xf7\x01\n" +
 	"\x18ListAccessibleDataAgents\x12D.google.cloud.geminidataanalytics.v1.ListAccessibleDataAgentsRequest\x1aE.google.cloud.geminidataanalytics.v1.ListAccessibleDataAgentsResponse\"N\xdaA\x06parent\x82\xd3\xe4\x93\x02?\x12=/v1/{parent=projects/*/locations/*}/dataAgents:listAccessible\x12\xb7\x01\n" +

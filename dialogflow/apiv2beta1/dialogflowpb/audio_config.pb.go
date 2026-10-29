@@ -1761,10 +1761,10 @@ var File_google_cloud_dialogflow_v2beta1_audio_config_proto protoreflect.FileDes
 
 const file_google_cloud_dialogflow_v2beta1_audio_config_proto_rawDesc = "" +
 	"\n" +
-	"2google/cloud/dialogflow/v2beta1/audio_config.proto\x12\x1fgoogle.cloud.dialogflow.v2beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\"I\n" +
-	"\rSpeechContext\x12\x1d\n" +
-	"\aphrases\x18\x01 \x03(\tB\x03\xe0A\x01R\aphrases\x12\x19\n" +
-	"\x05boost\x18\x02 \x01(\x02B\x03\xe0A\x01R\x05boost\"\xbc\x01\n" +
+	"2google/cloud/dialogflow/v2beta1/audio_config.proto\x12\x1fgoogle.cloud.dialogflow.v2beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\"K\n" +
+	"\rSpeechContext\x12\x1e\n" +
+	"\aphrases\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\aphrases\x12\x1a\n" +
+	"\x05boost\x18\x02 \x01(\x02B\x04\xe2A\x01\x01R\x05boost\"\xbc\x01\n" +
 	"\x0eSpeechWordInfo\x12\x12\n" +
 	"\x04word\x18\x03 \x01(\tR\x04word\x12<\n" +
 	"\fstart_offset\x18\x01 \x01(\v2\x19.google.protobuf.DurationR\vstartOffset\x128\n" +
@@ -1775,19 +1775,19 @@ const file_google_cloud_dialogflow_v2beta1_audio_config_proto_rawDesc = "" +
 	"confidence\"\x9d\x01\n" +
 	"\rBargeInConfig\x12J\n" +
 	"\x14no_barge_in_duration\x18\x01 \x01(\v2\x19.google.protobuf.DurationR\x11noBargeInDuration\x12@\n" +
-	"\x0etotal_duration\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\rtotalDuration\"\xda\t\n" +
-	"\x10InputAudioConfig\x12Z\n" +
-	"\x0eaudio_encoding\x18\x01 \x01(\x0e2..google.cloud.dialogflow.v2beta1.AudioEncodingB\x03\xe0A\x02R\raudioEncoding\x12/\n" +
-	"\x11sample_rate_hertz\x18\x02 \x01(\x05B\x03\xe0A\x02R\x0fsampleRateHertz\x12(\n" +
-	"\rlanguage_code\x18\x03 \x01(\tB\x03\xe0A\x02R\flanguageCode\x12(\n" +
+	"\x0etotal_duration\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\rtotalDuration\"\xe0\t\n" +
+	"\x10InputAudioConfig\x12[\n" +
+	"\x0eaudio_encoding\x18\x01 \x01(\x0e2..google.cloud.dialogflow.v2beta1.AudioEncodingB\x04\xe2A\x01\x02R\raudioEncoding\x120\n" +
+	"\x11sample_rate_hertz\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\x0fsampleRateHertz\x12)\n" +
+	"\rlanguage_code\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\flanguageCode\x12(\n" +
 	"\x10enable_word_info\x18\r \x01(\bR\x0eenableWordInfo\x12%\n" +
 	"\fphrase_hints\x18\x04 \x03(\tB\x02\x18\x01R\vphraseHints\x12W\n" +
 	"\x0fspeech_contexts\x18\v \x03(\v2..google.cloud.dialogflow.v2beta1.SpeechContextR\x0espeechContexts\x12\x14\n" +
 	"\x05model\x18\a \x01(\tR\x05model\x12X\n" +
 	"\rmodel_variant\x18\n" +
 	" \x01(\x0e23.google.cloud.dialogflow.v2beta1.SpeechModelVariantR\fmodelVariant\x12)\n" +
-	"\x10single_utterance\x18\b \x01(\bR\x0fsingleUtterance\x12D\n" +
-	"\x1cenable_voice_activity_events\x18\x1b \x01(\bB\x03\xe0A\x01R\x19enableVoiceActivityEvents\x12J\n" +
+	"\x10single_utterance\x18\b \x01(\bR\x0fsingleUtterance\x12E\n" +
+	"\x1cenable_voice_activity_events\x18\x1b \x01(\bB\x04\xe2A\x01\x01R\x19enableVoiceActivityEvents\x12J\n" +
 	"\"disable_no_speech_recognized_event\x18\x0e \x01(\bR\x1edisableNoSpeechRecognizedEvent\x12V\n" +
 	"\x0fbarge_in_config\x18\x0f \x01(\v2..google.cloud.dialogflow.v2beta1.BargeInConfigR\rbargeInConfig\x12@\n" +
 	"\x1cenable_automatic_punctuation\x18\x11 \x01(\bR\x1aenableAutomaticPunctuation\x12T\n" +
@@ -1795,20 +1795,20 @@ const file_google_cloud_dialogflow_v2beta1_audio_config_proto_rawDesc = "" +
 	"\vphrase_sets\x18\x14 \x03(\tB$\xfaA!\n" +
 	"\x1fspeech.googleapis.com/PhraseSetR\n" +
 	"phraseSets\x12H\n" +
-	"!opt_out_conformer_model_migration\x18\x1a \x01(\bR\x1doptOutConformerModelMigration\x12t\n" +
-	"\x11gemini_asr_config\x18\x1e \x01(\v2C.google.cloud.dialogflow.v2beta1.SpeechToTextConfig.GeminiAsrConfigB\x03\xe0A\x01R\x0fgeminiAsrConfig\x12.\n" +
-	"\x0euse_gemini_asr\x18\x1f \x01(\bB\x03\xe0A\x01H\x00R\fuseGeminiAsr\x88\x01\x01B\x11\n" +
-	"\x0f_use_gemini_asr\"\x87\x01\n" +
-	"\x14VoiceSelectionParams\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x01R\x04name\x12V\n" +
-	"\vssml_gender\x18\x02 \x01(\x0e20.google.cloud.dialogflow.v2beta1.SsmlVoiceGenderB\x03\xe0A\x01R\n" +
-	"ssmlGender\"\xf1\x02\n" +
-	"\x16SynthesizeSpeechConfig\x12(\n" +
-	"\rspeaking_rate\x18\x01 \x01(\x01B\x03\xe0A\x01R\fspeakingRate\x12\x19\n" +
-	"\x05pitch\x18\x02 \x01(\x01B\x03\xe0A\x01R\x05pitch\x12)\n" +
-	"\x0evolume_gain_db\x18\x03 \x01(\x01B\x03\xe0A\x01R\fvolumeGainDb\x121\n" +
-	"\x12effects_profile_id\x18\x05 \x03(\tB\x03\xe0A\x01R\x10effectsProfileId\x12P\n" +
-	"\x05voice\x18\x04 \x01(\v25.google.cloud.dialogflow.v2beta1.VoiceSelectionParamsB\x03\xe0A\x01R\x05voice\x12b\n" +
+	"!opt_out_conformer_model_migration\x18\x1a \x01(\bR\x1doptOutConformerModelMigration\x12u\n" +
+	"\x11gemini_asr_config\x18\x1e \x01(\v2C.google.cloud.dialogflow.v2beta1.SpeechToTextConfig.GeminiAsrConfigB\x04\xe2A\x01\x01R\x0fgeminiAsrConfig\x12/\n" +
+	"\x0euse_gemini_asr\x18\x1f \x01(\bB\x04\xe2A\x01\x01H\x00R\fuseGeminiAsr\x88\x01\x01B\x11\n" +
+	"\x0f_use_gemini_asr\"\x89\x01\n" +
+	"\x14VoiceSelectionParams\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04name\x12W\n" +
+	"\vssml_gender\x18\x02 \x01(\x0e20.google.cloud.dialogflow.v2beta1.SsmlVoiceGenderB\x04\xe2A\x01\x01R\n" +
+	"ssmlGender\"\xf6\x02\n" +
+	"\x16SynthesizeSpeechConfig\x12)\n" +
+	"\rspeaking_rate\x18\x01 \x01(\x01B\x04\xe2A\x01\x01R\fspeakingRate\x12\x1a\n" +
+	"\x05pitch\x18\x02 \x01(\x01B\x04\xe2A\x01\x01R\x05pitch\x12*\n" +
+	"\x0evolume_gain_db\x18\x03 \x01(\x01B\x04\xe2A\x01\x01R\fvolumeGainDb\x122\n" +
+	"\x12effects_profile_id\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\x10effectsProfileId\x12Q\n" +
+	"\x05voice\x18\x04 \x01(\v25.google.cloud.dialogflow.v2beta1.VoiceSelectionParamsB\x04\xe2A\x01\x01R\x05voice\x12b\n" +
 	"\x0epronunciations\x18\x06 \x03(\v2:.google.cloud.dialogflow.v2beta1.CustomPronunciationParamsR\x0epronunciations\"\xc4\x02\n" +
 	"\x19CustomPronunciationParams\x12\x16\n" +
 	"\x06phrase\x18\x01 \x01(\tR\x06phrase\x12x\n" +
@@ -1817,14 +1817,14 @@ const file_google_cloud_dialogflow_v2beta1_audio_config_proto_rawDesc = "" +
 	"\x10PhoneticEncoding\x12!\n" +
 	"\x1dPHONETIC_ENCODING_UNSPECIFIED\x10\x00\x12\x19\n" +
 	"\x15PHONETIC_ENCODING_IPA\x10\x01\x12\x1d\n" +
-	"\x19PHONETIC_ENCODING_X_SAMPA\x10\x02\"\x94\x02\n" +
-	"\x11OutputAudioConfig\x12`\n" +
-	"\x0eaudio_encoding\x18\x01 \x01(\x0e24.google.cloud.dialogflow.v2beta1.OutputAudioEncodingB\x03\xe0A\x02R\raudioEncoding\x12*\n" +
+	"\x19PHONETIC_ENCODING_X_SAMPA\x10\x02\"\x95\x02\n" +
+	"\x11OutputAudioConfig\x12a\n" +
+	"\x0eaudio_encoding\x18\x01 \x01(\x0e24.google.cloud.dialogflow.v2beta1.OutputAudioEncodingB\x04\xe2A\x01\x02R\raudioEncoding\x12*\n" +
 	"\x11sample_rate_hertz\x18\x02 \x01(\x05R\x0fsampleRateHertz\x12q\n" +
 	"\x18synthesize_speech_config\x18\x03 \x01(\v27.google.cloud.dialogflow.v2beta1.SynthesizeSpeechConfigR\x16synthesizeSpeechConfig\"f\n" +
 	"\x13TelephonyDtmfEvents\x12O\n" +
 	"\vdtmf_events\x18\x01 \x03(\x0e2..google.cloud.dialogflow.v2beta1.TelephonyDtmfR\n" +
-	"dtmfEvents\"\xac\n" +
+	"dtmfEvents\"\xb3\n" +
 	"\n" +
 	"\x12SpeechToTextConfig\x12e\n" +
 	"\x14speech_model_variant\x18\x01 \x01(\x0e23.google.cloud.dialogflow.v2beta1.SpeechModelVariantR\x12speechModelVariant\x12\x14\n" +
@@ -1836,15 +1836,15 @@ const file_google_cloud_dialogflow_v2beta1_audio_config_proto_rawDesc = "" +
 	"\x11sample_rate_hertz\x18\a \x01(\x05R\x0fsampleRateHertz\x12#\n" +
 	"\rlanguage_code\x18\b \x01(\tR\flanguageCode\x12(\n" +
 	"\x10enable_word_info\x18\t \x01(\bR\x0eenableWordInfo\x12A\n" +
-	"\x1duse_timeout_based_endpointing\x18\v \x01(\bR\x1auseTimeoutBasedEndpointing\x12t\n" +
-	"\x11gemini_asr_config\x18\x0f \x01(\v2C.google.cloud.dialogflow.v2beta1.SpeechToTextConfig.GeminiAsrConfigB\x03\xe0A\x01R\x0fgeminiAsrConfig\x12)\n" +
-	"\x0euse_gemini_asr\x18\x10 \x01(\bB\x03\xe0A\x01R\fuseGeminiAsr\x1a\x9b\x05\n" +
-	"\x0fGeminiAsrConfig\x12\x1e\n" +
-	"\bmodel_id\x18\x01 \x01(\tB\x03\xe0A\x01R\amodelId\x123\n" +
-	"\x13silence_duration_ms\x18\x02 \x01(\x05B\x03\xe0A\x01R\x11silenceDurationMs\x12/\n" +
-	"\x11prefix_padding_ms\x18\x03 \x01(\x05B\x03\xe0A\x01R\x0fprefixPaddingMs\x12\x98\x01\n" +
-	"\x1bstart_of_speech_sensitivity\x18\x04 \x01(\x0e2T.google.cloud.dialogflow.v2beta1.SpeechToTextConfig.GeminiAsrConfig.StartSensitivityB\x03\xe0A\x01R\x18startOfSpeechSensitivity\x12\x92\x01\n" +
-	"\x19end_of_speech_sensitivity\x18\x05 \x01(\x0e2R.google.cloud.dialogflow.v2beta1.SpeechToTextConfig.GeminiAsrConfig.EndSensitivityB\x03\xe0A\x01R\x16endOfSpeechSensitivity\"l\n" +
+	"\x1duse_timeout_based_endpointing\x18\v \x01(\bR\x1auseTimeoutBasedEndpointing\x12u\n" +
+	"\x11gemini_asr_config\x18\x0f \x01(\v2C.google.cloud.dialogflow.v2beta1.SpeechToTextConfig.GeminiAsrConfigB\x04\xe2A\x01\x01R\x0fgeminiAsrConfig\x12*\n" +
+	"\x0euse_gemini_asr\x18\x10 \x01(\bB\x04\xe2A\x01\x01R\fuseGeminiAsr\x1a\xa0\x05\n" +
+	"\x0fGeminiAsrConfig\x12\x1f\n" +
+	"\bmodel_id\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\amodelId\x124\n" +
+	"\x13silence_duration_ms\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x11silenceDurationMs\x120\n" +
+	"\x11prefix_padding_ms\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\x0fprefixPaddingMs\x12\x99\x01\n" +
+	"\x1bstart_of_speech_sensitivity\x18\x04 \x01(\x0e2T.google.cloud.dialogflow.v2beta1.SpeechToTextConfig.GeminiAsrConfig.StartSensitivityB\x04\xe2A\x01\x01R\x18startOfSpeechSensitivity\x12\x93\x01\n" +
+	"\x19end_of_speech_sensitivity\x18\x05 \x01(\x0e2R.google.cloud.dialogflow.v2beta1.SpeechToTextConfig.GeminiAsrConfig.EndSensitivityB\x04\xe2A\x01\x01R\x16endOfSpeechSensitivity\"l\n" +
 	"\x10StartSensitivity\x12!\n" +
 	"\x1dSTART_SENSITIVITY_UNSPECIFIED\x10\x00\x12\x1a\n" +
 	"\x16START_SENSITIVITY_HIGH\x10\x01\x12\x19\n" +

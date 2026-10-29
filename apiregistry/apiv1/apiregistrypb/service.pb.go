@@ -438,37 +438,37 @@ var File_google_cloud_apiregistry_v1_service_proto protoreflect.FileDescriptor
 
 const file_google_cloud_apiregistry_v1_service_proto_rawDesc = "" +
 	"\n" +
-	")google/cloud/apiregistry/v1/service.proto\x12\x1bgoogle.cloud.apiregistry.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a+google/cloud/apiregistry/v1/resources.proto\"\\\n" +
-	"\x13GetMcpServerRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")cloudapiregistry.googleapis.com/McpServerR\x04name\"\xdd\x01\n" +
-	"\x15ListMcpServersRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	")google/cloud/apiregistry/v1/service.proto\x12\x1bgoogle.cloud.apiregistry.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a+google/cloud/apiregistry/v1/resources.proto\"]\n" +
+	"\x13GetMcpServerRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")cloudapiregistry.googleapis.com/McpServerR\x04name\"\xe2\x01\n" +
+	"\x15ListMcpServersRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xb0\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xb1\x01\n" +
 	"\x16ListMcpServersResponse\x12G\n" +
 	"\vmcp_servers\x18\x01 \x03(\v2&.google.cloud.apiregistry.v1.McpServerR\n" +
 	"mcpServers\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"X\n" +
-	"\x11GetMcpToolRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'cloudapiregistry.googleapis.com/McpToolR\x04name\"\xe1\x01\n" +
-	"\x13ListMcpToolsRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\x12'cloudapiregistry.googleapis.com/McpToolR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x06R\vunreachable\"Y\n" +
+	"\x11GetMcpToolRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'cloudapiregistry.googleapis.com/McpToolR\x04name\"\xe6\x01\n" +
+	"\x13ListMcpToolsRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\x12'cloudapiregistry.googleapis.com/McpToolR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xa8\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xa9\x01\n" +
 	"\x14ListMcpToolsResponse\x12A\n" +
 	"\tmcp_tools\x18\x01 \x03(\v2$.google.cloud.apiregistry.v1.McpToolR\bmcpTools\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable2\xbf\x06\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x06R\vunreachable2\xbf\x06\n" +
 	"\x10CloudApiRegistry\x12\xa7\x01\n" +
 	"\fGetMcpServer\x120.google.cloud.apiregistry.v1.GetMcpServerRequest\x1a&.google.cloud.apiregistry.v1.McpServer\"=\xdaA\x04name\x82\xd3\xe4\x93\x020\x12./v1/{name=projects/*/locations/*/mcpServers/*}\x12\xba\x01\n" +
 	"\x0eListMcpServers\x122.google.cloud.apiregistry.v1.ListMcpServersRequest\x1a3.google.cloud.apiregistry.v1.ListMcpServersResponse\"?\xdaA\x06parent\x82\xd3\xe4\x93\x020\x12./v1/{parent=projects/*/locations/*}/mcpServers\x12\xac\x01\n" +

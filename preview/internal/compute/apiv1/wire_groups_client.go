@@ -329,6 +329,13 @@ func (c *wireGroupsRESTClient) Delete(ctx context.Context, req *computepb.Delete
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetCrossSiteNetwork(),
+		req.GetWireGroup(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/crossSiteNetworks/%v/wireGroups/%v", req.GetProject(), req.GetCrossSiteNetwork(), req.GetWireGroup())
 
 	params := url.Values{}
@@ -392,6 +399,13 @@ func (c *wireGroupsRESTClient) Get(ctx context.Context, req *computepb.GetWireGr
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetCrossSiteNetwork(),
+		req.GetWireGroup(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/crossSiteNetworks/%v/wireGroups/%v", req.GetProject(), req.GetCrossSiteNetwork(), req.GetWireGroup())
 
 	// Build HTTP headers from client and context metadata.
@@ -447,6 +461,12 @@ func (c *wireGroupsRESTClient) Insert(ctx context.Context, req *computepb.Insert
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetCrossSiteNetwork(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/crossSiteNetworks/%v/wireGroups", req.GetProject(), req.GetCrossSiteNetwork())
@@ -528,6 +548,12 @@ func (c *wireGroupsRESTClient) List(ctx context.Context, req *computepb.ListWire
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetCrossSiteNetwork(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/crossSiteNetworks/%v/wireGroups", req.GetProject(), req.GetCrossSiteNetwork())
 
 		params := url.Values{}
@@ -606,6 +632,13 @@ func (c *wireGroupsRESTClient) Patch(ctx context.Context, req *computepb.PatchWi
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetCrossSiteNetwork(),
+		req.GetWireGroup(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/crossSiteNetworks/%v/wireGroups/%v", req.GetProject(), req.GetCrossSiteNetwork(), req.GetWireGroup())

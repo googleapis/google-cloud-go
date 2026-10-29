@@ -178,9 +178,9 @@ var File_google_cloud_eventarc_v1_logging_config_proto protoreflect.FileDescript
 
 const file_google_cloud_eventarc_v1_logging_config_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/eventarc/v1/logging_config.proto\x12\x18google.cloud.eventarc.v1\x1a\x1fgoogle/api/field_behavior.proto\"\x85\x02\n" +
-	"\rLoggingConfig\x12[\n" +
-	"\flog_severity\x18\x01 \x01(\x0e23.google.cloud.eventarc.v1.LoggingConfig.LogSeverityB\x03\xe0A\x01R\vlogSeverity\"\x96\x01\n" +
+	"-google/cloud/eventarc/v1/logging_config.proto\x12\x18google.cloud.eventarc.v1\x1a\x1fgoogle/api/field_behavior.proto\"\x86\x02\n" +
+	"\rLoggingConfig\x12\\\n" +
+	"\flog_severity\x18\x01 \x01(\x0e23.google.cloud.eventarc.v1.LoggingConfig.LogSeverityB\x04\xe2A\x01\x01R\vlogSeverity\"\x96\x01\n" +
 	"\vLogSeverity\x12\x1c\n" +
 	"\x18LOG_SEVERITY_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04NONE\x10\x01\x12\t\n" +

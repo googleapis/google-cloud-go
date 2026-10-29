@@ -917,6 +917,11 @@ func (c *dataPolicyRESTClient) CreateDataPolicy(ctx context.Context, req *datapo
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/dataPolicies", req.GetParent())
 
 	params := url.Values{}
@@ -977,6 +982,11 @@ func (c *dataPolicyRESTClient) UpdateDataPolicy(ctx context.Context, req *datapo
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDataPolicy().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDataPolicy().GetName())
@@ -1046,6 +1056,11 @@ func (c *dataPolicyRESTClient) RenameDataPolicy(ctx context.Context, req *datapo
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:rename", req.GetName())
 
 	params := url.Values{}
@@ -1100,6 +1115,11 @@ func (c *dataPolicyRESTClient) DeleteDataPolicy(ctx context.Context, req *datapo
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1137,6 +1157,11 @@ func (c *dataPolicyRESTClient) DeleteDataPolicy(ctx context.Context, req *datapo
 func (c *dataPolicyRESTClient) GetDataPolicy(ctx context.Context, req *datapoliciespb.GetDataPolicyRequest, opts ...gax.CallOption) (*datapoliciespb.DataPolicy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1204,6 +1229,11 @@ func (c *dataPolicyRESTClient) ListDataPolicies(ctx context.Context, req *datapo
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/dataPolicies", req.GetParent())
@@ -1280,6 +1310,11 @@ func (c *dataPolicyRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetI
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -1340,6 +1375,11 @@ func (c *dataPolicyRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetI
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -1398,6 +1438,11 @@ func (c *dataPolicyRESTClient) TestIamPermissions(ctx context.Context, req *iamp
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())

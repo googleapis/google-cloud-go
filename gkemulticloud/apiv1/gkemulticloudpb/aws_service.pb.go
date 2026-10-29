@@ -1554,104 +1554,104 @@ var File_google_cloud_gkemulticloud_v1_aws_service_proto protoreflect.FileDescri
 
 const file_google_cloud_gkemulticloud_v1_aws_service_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/gkemulticloud/v1/aws_service.proto\x12\x1dgoogle.cloud.gkemulticloud.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a1google/cloud/gkemulticloud/v1/aws_resources.proto\x1a4google/cloud/gkemulticloud/v1/common_resources.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x87\x02\n" +
-	"\x17CreateAwsClusterRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\x12'gkemulticloud.googleapis.com/AwsClusterR\x06parent\x12O\n" +
-	"\vaws_cluster\x18\x02 \x01(\v2).google.cloud.gkemulticloud.v1.AwsClusterB\x03\xe0A\x02R\n" +
-	"awsCluster\x12)\n" +
-	"\x0eaws_cluster_id\x18\x03 \x01(\tB\x03\xe0A\x02R\fawsClusterId\x12#\n" +
-	"\rvalidate_only\x18\x04 \x01(\bR\fvalidateOnly:\x02\x18\x01\"\xd5\x01\n" +
-	"\x17UpdateAwsClusterRequest\x12O\n" +
-	"\vaws_cluster\x18\x01 \x01(\v2).google.cloud.gkemulticloud.v1.AwsClusterB\x03\xe0A\x02R\n" +
+	"/google/cloud/gkemulticloud/v1/aws_service.proto\x12\x1dgoogle.cloud.gkemulticloud.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a1google/cloud/gkemulticloud/v1/aws_resources.proto\x1a4google/cloud/gkemulticloud/v1/common_resources.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8a\x02\n" +
+	"\x17CreateAwsClusterRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\x12'gkemulticloud.googleapis.com/AwsClusterR\x06parent\x12P\n" +
+	"\vaws_cluster\x18\x02 \x01(\v2).google.cloud.gkemulticloud.v1.AwsClusterB\x04\xe2A\x01\x02R\n" +
+	"awsCluster\x12*\n" +
+	"\x0eaws_cluster_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\fawsClusterId\x12#\n" +
+	"\rvalidate_only\x18\x04 \x01(\bR\fvalidateOnly:\x02\x18\x01\"\xd7\x01\n" +
+	"\x17UpdateAwsClusterRequest\x12P\n" +
+	"\vaws_cluster\x18\x01 \x01(\v2).google.cloud.gkemulticloud.v1.AwsClusterB\x04\xe2A\x01\x02R\n" +
 	"awsCluster\x12#\n" +
-	"\rvalidate_only\x18\x02 \x01(\bR\fvalidateOnly\x12@\n" +
-	"\vupdate_mask\x18\x04 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask:\x02\x18\x01\"_\n" +
-	"\x14GetAwsClusterRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'gkemulticloud.googleapis.com/AwsClusterR\x04name:\x02\x18\x01\"\xa1\x01\n" +
-	"\x16ListAwsClustersRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\x12'gkemulticloud.googleapis.com/AwsClusterR\x06parent\x12\x1b\n" +
+	"\rvalidate_only\x18\x02 \x01(\bR\fvalidateOnly\x12A\n" +
+	"\vupdate_mask\x18\x04 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask:\x02\x18\x01\"`\n" +
+	"\x14GetAwsClusterRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'gkemulticloud.googleapis.com/AwsClusterR\x04name:\x02\x18\x01\"\xa2\x01\n" +
+	"\x16ListAwsClustersRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\x12'gkemulticloud.googleapis.com/AwsClusterR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken:\x02\x18\x01\"\x93\x01\n" +
 	"\x17ListAwsClustersResponse\x12L\n" +
 	"\faws_clusters\x18\x01 \x03(\v2).google.cloud.gkemulticloud.v1.AwsClusterR\vawsClusters\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken:\x02\x18\x01\"\xea\x01\n" +
-	"\x17DeleteAwsClusterRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken:\x02\x18\x01\"\xec\x01\n" +
+	"\x17DeleteAwsClusterRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
 	"'gkemulticloud.googleapis.com/AwsClusterR\x04name\x12#\n" +
 	"\rvalidate_only\x18\x02 \x01(\bR\fvalidateOnly\x12#\n" +
-	"\rallow_missing\x18\x03 \x01(\bR\fallowMissing\x12(\n" +
-	"\rignore_errors\x18\x05 \x01(\bB\x03\xe0A\x01R\fignoreErrors\x12\x12\n" +
-	"\x04etag\x18\x04 \x01(\tR\x04etag:\x02\x18\x01\"\x90\x02\n" +
-	"\x18CreateAwsNodePoolRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(gkemulticloud.googleapis.com/AwsNodePoolR\x06parent\x12S\n" +
-	"\raws_node_pool\x18\x02 \x01(\v2*.google.cloud.gkemulticloud.v1.AwsNodePoolB\x03\xe0A\x02R\vawsNodePool\x12,\n" +
-	"\x10aws_node_pool_id\x18\x03 \x01(\tB\x03\xe0A\x02R\rawsNodePoolId\x12#\n" +
-	"\rvalidate_only\x18\x04 \x01(\bR\fvalidateOnly:\x02\x18\x01\"\xda\x01\n" +
-	"\x18UpdateAwsNodePoolRequest\x12S\n" +
-	"\raws_node_pool\x18\x01 \x01(\v2*.google.cloud.gkemulticloud.v1.AwsNodePoolB\x03\xe0A\x02R\vawsNodePool\x12#\n" +
-	"\rvalidate_only\x18\x02 \x01(\bR\fvalidateOnly\x12@\n" +
-	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask:\x02\x18\x01\"\x92\x01\n" +
-	" RollbackAwsNodePoolUpdateRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(gkemulticloud.googleapis.com/AwsNodePoolR\x04name\x12$\n" +
-	"\vrespect_pdb\x18\x02 \x01(\bB\x03\xe0A\x01R\n" +
-	"respectPdb:\x02\x18\x01\"a\n" +
-	"\x15GetAwsNodePoolRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(gkemulticloud.googleapis.com/AwsNodePoolR\x04name:\x02\x18\x01\"\xa3\x01\n" +
-	"\x17ListAwsNodePoolsRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(gkemulticloud.googleapis.com/AwsNodePoolR\x06parent\x12\x1b\n" +
+	"\rallow_missing\x18\x03 \x01(\bR\fallowMissing\x12)\n" +
+	"\rignore_errors\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\fignoreErrors\x12\x12\n" +
+	"\x04etag\x18\x04 \x01(\tR\x04etag:\x02\x18\x01\"\x93\x02\n" +
+	"\x18CreateAwsNodePoolRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(gkemulticloud.googleapis.com/AwsNodePoolR\x06parent\x12T\n" +
+	"\raws_node_pool\x18\x02 \x01(\v2*.google.cloud.gkemulticloud.v1.AwsNodePoolB\x04\xe2A\x01\x02R\vawsNodePool\x12-\n" +
+	"\x10aws_node_pool_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\rawsNodePoolId\x12#\n" +
+	"\rvalidate_only\x18\x04 \x01(\bR\fvalidateOnly:\x02\x18\x01\"\xdc\x01\n" +
+	"\x18UpdateAwsNodePoolRequest\x12T\n" +
+	"\raws_node_pool\x18\x01 \x01(\v2*.google.cloud.gkemulticloud.v1.AwsNodePoolB\x04\xe2A\x01\x02R\vawsNodePool\x12#\n" +
+	"\rvalidate_only\x18\x02 \x01(\bR\fvalidateOnly\x12A\n" +
+	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask:\x02\x18\x01\"\x94\x01\n" +
+	" RollbackAwsNodePoolUpdateRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(gkemulticloud.googleapis.com/AwsNodePoolR\x04name\x12%\n" +
+	"\vrespect_pdb\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\n" +
+	"respectPdb:\x02\x18\x01\"b\n" +
+	"\x15GetAwsNodePoolRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(gkemulticloud.googleapis.com/AwsNodePoolR\x04name:\x02\x18\x01\"\xa4\x01\n" +
+	"\x17ListAwsNodePoolsRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(gkemulticloud.googleapis.com/AwsNodePoolR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken:\x02\x18\x01\"\x98\x01\n" +
 	"\x18ListAwsNodePoolsResponse\x12P\n" +
 	"\x0eaws_node_pools\x18\x01 \x03(\v2*.google.cloud.gkemulticloud.v1.AwsNodePoolR\fawsNodePools\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken:\x02\x18\x01\"\xec\x01\n" +
-	"\x18DeleteAwsNodePoolRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken:\x02\x18\x01\"\xee\x01\n" +
+	"\x18DeleteAwsNodePoolRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
 	"(gkemulticloud.googleapis.com/AwsNodePoolR\x04name\x12#\n" +
 	"\rvalidate_only\x18\x02 \x01(\bR\fvalidateOnly\x12#\n" +
-	"\rallow_missing\x18\x03 \x01(\bR\fallowMissing\x12(\n" +
-	"\rignore_errors\x18\x05 \x01(\bB\x03\xe0A\x01R\fignoreErrors\x12\x12\n" +
-	"\x04etag\x18\x04 \x01(\tR\x04etag:\x02\x18\x01\"q\n" +
-	"\x19GetAwsOpenIdConfigRequest\x12P\n" +
-	"\vaws_cluster\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
+	"\rallow_missing\x18\x03 \x01(\bR\fallowMissing\x12)\n" +
+	"\rignore_errors\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\fignoreErrors\x12\x12\n" +
+	"\x04etag\x18\x04 \x01(\tR\x04etag:\x02\x18\x01\"r\n" +
+	"\x19GetAwsOpenIdConfigRequest\x12Q\n" +
+	"\vaws_cluster\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
 	"'gkemulticloud.googleapis.com/AwsClusterR\n" +
-	"awsCluster:\x02\x18\x01\"p\n" +
-	"\x18GetAwsJsonWebKeysRequest\x12P\n" +
-	"\vaws_cluster\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
+	"awsCluster:\x02\x18\x01\"q\n" +
+	"\x18GetAwsJsonWebKeysRequest\x12Q\n" +
+	"\vaws_cluster\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
 	"'gkemulticloud.googleapis.com/AwsClusterR\n" +
-	"awsCluster:\x02\x18\x01\"i\n" +
-	"\x19GetAwsServerConfigRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",gkemulticloud.googleapis.com/AwsServerConfigR\x04name:\x02\x18\x01\"u\n" +
-	"\x1dGenerateAwsAccessTokenRequest\x12P\n" +
-	"\vaws_cluster\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
+	"awsCluster:\x02\x18\x01\"j\n" +
+	"\x19GetAwsServerConfigRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",gkemulticloud.googleapis.com/AwsServerConfigR\x04name:\x02\x18\x01\"v\n" +
+	"\x1dGenerateAwsAccessTokenRequest\x12Q\n" +
+	"\vaws_cluster\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
 	"'gkemulticloud.googleapis.com/AwsClusterR\n" +
-	"awsCluster:\x02\x18\x01\"\x96\x01\n" +
-	"\x1eGenerateAwsAccessTokenResponse\x12&\n" +
-	"\faccess_token\x18\x01 \x01(\tB\x03\xe0A\x03R\vaccessToken\x12H\n" +
-	"\x0fexpiration_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0eexpirationTime:\x02\x18\x01\"\xd4\x03\n" +
-	"#GenerateAwsClusterAgentTokenRequest\x12P\n" +
-	"\vaws_cluster\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
+	"awsCluster:\x02\x18\x01\"\x98\x01\n" +
+	"\x1eGenerateAwsAccessTokenResponse\x12'\n" +
+	"\faccess_token\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\vaccessToken\x12I\n" +
+	"\x0fexpiration_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x0eexpirationTime:\x02\x18\x01\"\xde\x03\n" +
+	"#GenerateAwsClusterAgentTokenRequest\x12Q\n" +
+	"\vaws_cluster\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
 	"'gkemulticloud.googleapis.com/AwsClusterR\n" +
-	"awsCluster\x12(\n" +
-	"\rsubject_token\x18\x02 \x01(\tB\x03\xe0A\x02R\fsubjectToken\x121\n" +
-	"\x12subject_token_type\x18\x03 \x01(\tB\x03\xe0A\x02R\x10subjectTokenType\x12\x1d\n" +
-	"\aversion\x18\x04 \x01(\tB\x03\xe0A\x02R\aversion\x12%\n" +
-	"\fnode_pool_id\x18\x05 \x01(\tB\x03\xe0A\x01R\n" +
-	"nodePoolId\x12\"\n" +
+	"awsCluster\x12)\n" +
+	"\rsubject_token\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\fsubjectToken\x122\n" +
+	"\x12subject_token_type\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x10subjectTokenType\x12\x1e\n" +
+	"\aversion\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\aversion\x12&\n" +
+	"\fnode_pool_id\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"nodePoolId\x12#\n" +
 	"\n" +
-	"grant_type\x18\x06 \x01(\tB\x03\xe0A\x01R\tgrantType\x12\x1f\n" +
-	"\baudience\x18\a \x01(\tB\x03\xe0A\x01R\baudience\x12\x19\n" +
-	"\x05scope\x18\b \x01(\tB\x03\xe0A\x01R\x05scope\x125\n" +
-	"\x14requested_token_type\x18\t \x01(\tB\x03\xe0A\x01R\x12requestedTokenType\x12\x1d\n" +
+	"grant_type\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\tgrantType\x12 \n" +
+	"\baudience\x18\a \x01(\tB\x04\xe2A\x01\x01R\baudience\x12\x1a\n" +
+	"\x05scope\x18\b \x01(\tB\x04\xe2A\x01\x01R\x05scope\x126\n" +
+	"\x14requested_token_type\x18\t \x01(\tB\x04\xe2A\x01\x01R\x12requestedTokenType\x12\x1e\n" +
 	"\aoptions\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\aoptions:\x02\x18\x01\"\x8e\x01\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\aoptions:\x02\x18\x01\"\x8e\x01\n" +
 	"$GenerateAwsClusterAgentTokenResponse\x12\"\n" +
 	"\faccess_token\x18\x01 \x01(\tR\faccess_token\x12\x1e\n" +
 	"\n" +

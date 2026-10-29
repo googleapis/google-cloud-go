@@ -87,6 +87,7 @@ const (
 	ChatService_PositionSection_FullMethodName                = "/google.chat.v1.ChatService/PositionSection"
 	ChatService_ListSectionItems_FullMethodName               = "/google.chat.v1.ChatService/ListSectionItems"
 	ChatService_MoveSectionItem_FullMethodName                = "/google.chat.v1.ChatService/MoveSectionItem"
+	ChatService_ReplaceMessageCards_FullMethodName            = "/google.chat.v1.ChatService/ReplaceMessageCards"
 )
 
 // ChatServiceClient is the client API for ChatService service.
@@ -1232,6 +1233,20 @@ type ChatServiceClient interface {
 	//
 	//   - `https://www.googleapis.com/auth/chat.users.sections`
 	MoveSectionItem(ctx context.Context, in *MoveSectionItemRequest, opts ...grpc.CallOption) (*MoveSectionItemResponse, error)
+	// Replaces the cards included in a message.
+	//
+	// A Chat app can only replace cards on a human-created message if the message
+	// already contains cards, and the cards were created by the app.
+	//
+	// If the app replaces the cards with an empty list, the cards are removed.
+	// After removing the cards, the app cannot add cards back to the message.
+	//
+	// Requires [app
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+	// with the [authorization
+	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//   - `https://www.googleapis.com/auth/chat.bot`
+	ReplaceMessageCards(ctx context.Context, in *ReplaceMessageCardsRequest, opts ...grpc.CallOption) (*ReplaceMessageCardsResponse, error)
 }
 
 type chatServiceClient struct {
@@ -1704,6 +1719,15 @@ func (c *chatServiceClient) ListSectionItems(ctx context.Context, in *ListSectio
 func (c *chatServiceClient) MoveSectionItem(ctx context.Context, in *MoveSectionItemRequest, opts ...grpc.CallOption) (*MoveSectionItemResponse, error) {
 	out := new(MoveSectionItemResponse)
 	err := c.cc.Invoke(ctx, ChatService_MoveSectionItem_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatServiceClient) ReplaceMessageCards(ctx context.Context, in *ReplaceMessageCardsRequest, opts ...grpc.CallOption) (*ReplaceMessageCardsResponse, error) {
+	out := new(ReplaceMessageCardsResponse)
+	err := c.cc.Invoke(ctx, ChatService_ReplaceMessageCards_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -2853,6 +2877,20 @@ type ChatServiceServer interface {
 	//
 	//   - `https://www.googleapis.com/auth/chat.users.sections`
 	MoveSectionItem(context.Context, *MoveSectionItemRequest) (*MoveSectionItemResponse, error)
+	// Replaces the cards included in a message.
+	//
+	// A Chat app can only replace cards on a human-created message if the message
+	// already contains cards, and the cards were created by the app.
+	//
+	// If the app replaces the cards with an empty list, the cards are removed.
+	// After removing the cards, the app cannot add cards back to the message.
+	//
+	// Requires [app
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+	// with the [authorization
+	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//   - `https://www.googleapis.com/auth/chat.bot`
+	ReplaceMessageCards(context.Context, *ReplaceMessageCardsRequest) (*ReplaceMessageCardsResponse, error)
 }
 
 // UnimplementedChatServiceServer should be embedded to have forward compatible implementations.
@@ -3014,6 +3052,9 @@ func (UnimplementedChatServiceServer) ListSectionItems(context.Context, *ListSec
 }
 func (UnimplementedChatServiceServer) MoveSectionItem(context.Context, *MoveSectionItemRequest) (*MoveSectionItemResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MoveSectionItem not implemented")
+}
+func (UnimplementedChatServiceServer) ReplaceMessageCards(context.Context, *ReplaceMessageCardsRequest) (*ReplaceMessageCardsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReplaceMessageCards not implemented")
 }
 
 // UnsafeChatServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -3963,6 +4004,24 @@ func _ChatService_MoveSectionItem_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ChatService_ReplaceMessageCards_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReplaceMessageCardsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).ReplaceMessageCards(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ChatService_ReplaceMessageCards_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).ReplaceMessageCards(ctx, req.(*ReplaceMessageCardsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ChatService_ServiceDesc is the grpc.ServiceDesc for ChatService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -4177,6 +4236,10 @@ var ChatService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "MoveSectionItem",
 			Handler:    _ChatService_MoveSectionItem_Handler,
+		},
+		{
+			MethodName: "ReplaceMessageCards",
+			Handler:    _ChatService_ReplaceMessageCards_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

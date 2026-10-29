@@ -581,10 +581,10 @@ const file_google_ai_generativelanguage_v1beta_safety_proto_rawDesc = "" +
 	"\b_message\"\xa9\x01\n" +
 	"\x0eSafetyFeedback\x12I\n" +
 	"\x06rating\x18\x01 \x01(\v21.google.ai.generativelanguage.v1beta.SafetyRatingR\x06rating\x12L\n" +
-	"\asetting\x18\x02 \x01(\v22.google.ai.generativelanguage.v1beta.SafetySettingR\asetting\"\xca\x02\n" +
-	"\fSafetyRating\x12R\n" +
-	"\bcategory\x18\x03 \x01(\x0e21.google.ai.generativelanguage.v1beta.HarmCategoryB\x03\xe0A\x02R\bcategory\x12h\n" +
-	"\vprobability\x18\x04 \x01(\x0e2A.google.ai.generativelanguage.v1beta.SafetyRating.HarmProbabilityB\x03\xe0A\x02R\vprobability\x12\x18\n" +
+	"\asetting\x18\x02 \x01(\v22.google.ai.generativelanguage.v1beta.SafetySettingR\asetting\"\xcc\x02\n" +
+	"\fSafetyRating\x12S\n" +
+	"\bcategory\x18\x03 \x01(\x0e21.google.ai.generativelanguage.v1beta.HarmCategoryB\x04\xe2A\x01\x02R\bcategory\x12i\n" +
+	"\vprobability\x18\x04 \x01(\x0e2A.google.ai.generativelanguage.v1beta.SafetyRating.HarmProbabilityB\x04\xe2A\x01\x02R\vprobability\x12\x18\n" +
 	"\ablocked\x18\x05 \x01(\bR\ablocked\"b\n" +
 	"\x0fHarmProbability\x12 \n" +
 	"\x1cHARM_PROBABILITY_UNSPECIFIED\x10\x00\x12\x0e\n" +
@@ -593,10 +593,10 @@ const file_google_ai_generativelanguage_v1beta_safety_proto_rawDesc = "" +
 	"\x03LOW\x10\x02\x12\n" +
 	"\n" +
 	"\x06MEDIUM\x10\x03\x12\b\n" +
-	"\x04HIGH\x10\x04\"\xed\x02\n" +
-	"\rSafetySetting\x12R\n" +
-	"\bcategory\x18\x03 \x01(\x0e21.google.ai.generativelanguage.v1beta.HarmCategoryB\x03\xe0A\x02R\bcategory\x12h\n" +
-	"\tthreshold\x18\x04 \x01(\x0e2E.google.ai.generativelanguage.v1beta.SafetySetting.HarmBlockThresholdB\x03\xe0A\x02R\tthreshold\"\x9d\x01\n" +
+	"\x04HIGH\x10\x04\"\xef\x02\n" +
+	"\rSafetySetting\x12S\n" +
+	"\bcategory\x18\x03 \x01(\x0e21.google.ai.generativelanguage.v1beta.HarmCategoryB\x04\xe2A\x01\x02R\bcategory\x12i\n" +
+	"\tthreshold\x18\x04 \x01(\x0e2E.google.ai.generativelanguage.v1beta.SafetySetting.HarmBlockThresholdB\x04\xe2A\x01\x02R\tthreshold\"\x9d\x01\n" +
 	"\x12HarmBlockThreshold\x12$\n" +
 	" HARM_BLOCK_THRESHOLD_UNSPECIFIED\x10\x00\x12\x17\n" +
 	"\x13BLOCK_LOW_AND_ABOVE\x10\x01\x12\x1a\n" +

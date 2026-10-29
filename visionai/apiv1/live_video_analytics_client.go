@@ -1795,6 +1795,11 @@ func (c *liveVideoAnalyticsRESTClient) ListPublicOperators(ctx context.Context, 
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:listPublicOperators", req.GetParent())
 
 		params := url.Values{}
@@ -1872,6 +1877,11 @@ func (c *liveVideoAnalyticsRESTClient) ResolveOperatorInfo(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:resolveOperatorInfo", req.GetParent())
 
 	params := url.Values{}
@@ -1937,6 +1947,11 @@ func (c *liveVideoAnalyticsRESTClient) ListOperators(ctx context.Context, req *v
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operators", req.GetParent())
@@ -2010,6 +2025,11 @@ func (c *liveVideoAnalyticsRESTClient) GetOperator(ctx context.Context, req *vis
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2069,6 +2089,11 @@ func (c *liveVideoAnalyticsRESTClient) CreateOperator(ctx context.Context, req *
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/operators", req.GetParent())
@@ -2143,6 +2168,11 @@ func (c *liveVideoAnalyticsRESTClient) UpdateOperator(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetOperator().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetOperator().GetName())
 
 	params := url.Values{}
@@ -2212,6 +2242,11 @@ func (c *liveVideoAnalyticsRESTClient) UpdateOperator(ctx context.Context, req *
 func (c *liveVideoAnalyticsRESTClient) DeleteOperator(ctx context.Context, req *visionaipb.DeleteOperatorRequest, opts ...gax.CallOption) (*DeleteOperatorOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2291,6 +2326,11 @@ func (c *liveVideoAnalyticsRESTClient) ListAnalyses(ctx context.Context, req *vi
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/analyses", req.GetParent())
 
 		params := url.Values{}
@@ -2362,6 +2402,11 @@ func (c *liveVideoAnalyticsRESTClient) GetAnalysis(ctx context.Context, req *vis
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2421,6 +2466,11 @@ func (c *liveVideoAnalyticsRESTClient) CreateAnalysis(ctx context.Context, req *
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/analyses", req.GetParent())
@@ -2495,6 +2545,11 @@ func (c *liveVideoAnalyticsRESTClient) UpdateAnalysis(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAnalysis().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetAnalysis().GetName())
 
 	params := url.Values{}
@@ -2564,6 +2619,11 @@ func (c *liveVideoAnalyticsRESTClient) UpdateAnalysis(ctx context.Context, req *
 func (c *liveVideoAnalyticsRESTClient) DeleteAnalysis(ctx context.Context, req *visionaipb.DeleteAnalysisRequest, opts ...gax.CallOption) (*DeleteAnalysisOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2643,6 +2703,11 @@ func (c *liveVideoAnalyticsRESTClient) ListProcesses(ctx context.Context, req *v
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/processes", req.GetParent())
 
 		params := url.Values{}
@@ -2714,6 +2779,11 @@ func (c *liveVideoAnalyticsRESTClient) GetProcess(ctx context.Context, req *visi
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2773,6 +2843,11 @@ func (c *liveVideoAnalyticsRESTClient) CreateProcess(ctx context.Context, req *v
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/processes", req.GetParent())
@@ -2847,6 +2922,11 @@ func (c *liveVideoAnalyticsRESTClient) UpdateProcess(ctx context.Context, req *v
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProcess().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetProcess().GetName())
 
 	params := url.Values{}
@@ -2916,6 +2996,11 @@ func (c *liveVideoAnalyticsRESTClient) UpdateProcess(ctx context.Context, req *v
 func (c *liveVideoAnalyticsRESTClient) DeleteProcess(ctx context.Context, req *visionaipb.DeleteProcessRequest, opts ...gax.CallOption) (*DeleteProcessOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2989,6 +3074,11 @@ func (c *liveVideoAnalyticsRESTClient) BatchRunProcess(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/processes:batchRun", req.GetParent())
 
 	params := url.Values{}
@@ -3048,6 +3138,11 @@ func (c *liveVideoAnalyticsRESTClient) BatchRunProcess(ctx context.Context, req 
 func (c *liveVideoAnalyticsRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3115,6 +3210,11 @@ func (c *liveVideoAnalyticsRESTClient) ListLocations(ctx context.Context, req *l
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
@@ -3191,6 +3291,11 @@ func (c *liveVideoAnalyticsRESTClient) CancelOperation(ctx context.Context, req 
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -3230,6 +3335,11 @@ func (c *liveVideoAnalyticsRESTClient) DeleteOperation(ctx context.Context, req 
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3267,6 +3377,11 @@ func (c *liveVideoAnalyticsRESTClient) DeleteOperation(ctx context.Context, req 
 func (c *liveVideoAnalyticsRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3334,6 +3449,11 @@ func (c *liveVideoAnalyticsRESTClient) ListOperations(ctx context.Context, req *
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())
