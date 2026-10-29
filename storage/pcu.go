@@ -579,7 +579,7 @@ func (s *pcuState) composeParts() error {
 
 	// Perform client-side CRC32C validation if a user-provided checksum was specified.
 	if s.w.SendCRC32C && s.w.CRC32C != 0 && attrs.CRC32C != s.w.CRC32C {
-		return fmt.Errorf("storage: object was uploaded, but its CRC32C (%d) does not match the expected CRC32C (%d)", attrs.CRC32C, s.w.CRC32C)
+		return fmt.Errorf("storage: object was uploaded, but its CRC32C (%d) does not match the expected CRC32C (%d): %w", attrs.CRC32C, s.w.CRC32C, errChecksumMismatch)
 	}
 
 	s.w.obj = attrs
