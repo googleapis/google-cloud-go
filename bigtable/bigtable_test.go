@@ -1751,13 +1751,14 @@ func TestExecuteQuery(t *testing.T) {
 	preparedQuery1 := "first mock prepared query"
 	preparedQuery2 := "second mock prepared query"
 	for _, tc := range []struct {
-		desc                  string
-		testTTL               time.Duration
-		mockPrepQueryResps    []prepareQueryResp
-		mockRecvMsgResps      []recvMsgResp
-		wantExecReqPrepQuerys [][]byte
-		wantResultRowValues   [][]*btpb.Value
-		wantExecErr           error
+		desc                    string
+		testTTL                 time.Duration
+		mockPrepQueryResps      []prepareQueryResp
+		mockRecvMsgResps        []recvMsgResp
+		wantExecReqPrepQuerys   [][]byte
+		wantExecReqResumeTokens [][]byte
+		wantResultRowValues     [][]*btpb.Value
+		wantExecErr             error
 	}{
 		{
 			/*
@@ -1904,6 +1905,10 @@ func TestExecuteQuery(t *testing.T) {
 				[]byte(preparedQuery1),
 				[]byte(preparedQuery1),
 			},
+			wantExecReqResumeTokens: [][]byte{
+				nil,
+				[]byte("resume-token"),
+			},
 			wantResultRowValues: [][]*btpb.Value{newProtoRowValuesWithKey(colFamAddress)},
 		},
 		{
@@ -2025,6 +2030,48 @@ func TestExecuteQuery(t *testing.T) {
 				[]byte(preparedQuery1),
 			},
 		},
+		{
+			/*
+				1. PrepareQuery
+				2. ExecuteQuery (initial request with no resume token)
+				3. RecvMsg - gets full batch 1 with reset true
+				4. RecvMsg - gets resume token 1 ("token-1") -> row 1 yielded
+				5. RecvMsg - gets full batch 2 (buffered in valuesBuffer, no resume token yet)
+				6. RecvMsg - gets first half of partial batch 3 (buffered in ongoingResultBatch, no checksum)
+				7. RecvMsg - receives Unavailable error
+				8. ExecuteQuery retry (request with ResumeToken "token-1")
+				   ongoingResultBatch and valuesBuffer must be reset to avoid duplicate row 2 and corrupt checksum
+				9. RecvMsg - gets full batch 2 re-sent with reset false
+				10. RecvMsg - gets resume token 2 ("token-2") -> row 2 yielded
+				11. RecvMsg - gets EOF
+			*/
+			desc: "retry with resume token resets ongoingResultBatch and valuesBuffer",
+			mockPrepQueryResps: []prepareQueryResp{
+				newPrepareQueryResp(preparedQuery1, colFamAddress, colFamInfo),
+			},
+			mockRecvMsgResps: []recvMsgResp{
+				newExecQueryRespFullBatch(true, nil /* sleep */, []string{colFamAddress, colFamInfo}),
+				newExecQueryRespResumeTokenWithToken([]byte("token-1")),
+				newExecQueryRespFullBatch(false, nil /* sleep */, []string{colFamAddressNew, colFamInfo}),
+				newExecQueryRespPartialBatchFirstHalf(false, nil /* sleep */, []string{colFamAddress}),
+				{err: status.Error(codes.Unavailable, "mock unavailable error")},
+				newExecQueryRespFullBatch(false, nil /* sleep */, []string{colFamAddressNew, colFamInfo}),
+				newExecQueryRespResumeTokenWithToken([]byte("token-2")),
+				{err: io.EOF},
+			},
+			wantExecReqPrepQuerys: [][]byte{
+				[]byte(preparedQuery1),
+				[]byte(preparedQuery1),
+			},
+			wantExecReqResumeTokens: [][]byte{
+				nil,
+				[]byte("token-1"),
+			},
+			wantResultRowValues: [][]*btpb.Value{
+				newProtoRowValuesWithKey(colFamAddress, colFamInfo),
+				newProtoRowValuesWithKey(colFamAddressNew, colFamInfo),
+			},
+		},
 	} {
 		mockPrepQueryResps = tc.mockPrepQueryResps
 		mockRecvMsgResps = tc.mockRecvMsgResps
@@ -2057,14 +2104,18 @@ func TestExecuteQuery(t *testing.T) {
 				vals := rr.pbValues
 
 				// Compare row values
-				if gotRowCount > len(tc.wantResultRowValues) ||
+				if gotRowCount >= len(tc.wantResultRowValues) ||
 					!cmp.Equal(vals, tc.wantResultRowValues[gotRowCount], cmpOptionsBtpbValue()...) {
 					t.Errorf("#%d ResultRow.values: got: %+v, want: %+v, diff: %+v", gotRowCount, vals, tc.wantResultRowValues[gotRowCount],
 						cmp.Diff(vals, tc.wantResultRowValues[gotRowCount], cmpOptionsBtpbValue()...))
 					return false
 				}
+				gotRowCount++
 				return true
 			})
+			if gotRowCount != len(tc.wantResultRowValues) {
+				t.Fatalf("ResultRow count: got: %v, want: %v", gotRowCount, len(tc.wantResultRowValues))
+			}
 
 			if tc.wantExecErr != nil && err != nil && err.Error() != tc.wantExecErr.Error() {
 				t.Fatalf("Execute: err: got: %v, want: %v", err, tc.wantExecErr)
@@ -2088,6 +2139,18 @@ func TestExecuteQuery(t *testing.T) {
 					t.Fatalf("%v: PreparedQuery in ExecuteQuery request: got: %v, want: %v",
 						i,
 						string(gotSendMsgReqs[i].PreparedQuery), string(wantPrepQueryInExecReq))
+				}
+			}
+
+			if len(tc.wantExecReqResumeTokens) != 0 {
+				if len(tc.wantExecReqResumeTokens) != len(gotSendMsgReqs) {
+					t.Fatalf("ExecuteQuery request count for resume tokens: got: %v, want: %v", len(gotSendMsgReqs), len(tc.wantExecReqResumeTokens))
+				}
+				for i, wantResumeToken := range tc.wantExecReqResumeTokens {
+					if !bytes.Equal(gotSendMsgReqs[i].ResumeToken, wantResumeToken) {
+						t.Fatalf("%v: ResumeToken in ExecuteQuery request: got: %q, want: %q",
+							i, gotSendMsgReqs[i].ResumeToken, wantResumeToken)
+					}
 				}
 			}
 		})
@@ -2271,14 +2334,18 @@ func newRecvMsgResp(reset bool, protoRows, checksumProtoRows *btpb.ProtoRows, bl
 	}
 }
 
-func newExecQueryRespResumeToken() recvMsgResp {
+func newExecQueryRespResumeTokenWithToken(token []byte) recvMsgResp {
 	return recvMsgResp{
 		results: &btpb.ExecuteQueryResponse_Results{
 			Results: &btpb.PartialResultSet{
-				ResumeToken: []byte("resume-token"),
+				ResumeToken: token,
 			},
 		},
 	}
+}
+
+func newExecQueryRespResumeToken() recvMsgResp {
+	return newExecQueryRespResumeTokenWithToken([]byte("resume-token"))
 }
 
 func newExecQueryRespFullBatch(reset bool, blockTime *time.Duration, colFams []string) recvMsgResp {
