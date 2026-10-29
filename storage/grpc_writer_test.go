@@ -2057,8 +2057,11 @@ func TestGRPCWriter_ChunkTransferTimeout_Telemetry(t *testing.T) {
 				if dp.Sum != timeout.Seconds() {
 					t.Errorf("expected sum %v, got %v", timeout.Seconds(), dp.Sum)
 				}
-				if getHistAttr(dp, "rpc.method") != "StartResumableWrite" {
-					t.Errorf("expected rpc.method StartResumableWrite, got %v", getHistAttr(dp, "rpc.method"))
+				if getHistAttr(dp, "rpc.method") != "google.storage.v2.Storage/StartResumableWrite" {
+					t.Errorf("expected rpc.method google.storage.v2.Storage/StartResumableWrite, got %v", getHistAttr(dp, "rpc.method"))
+				}
+				if getHistAttr(dp, "gcp.storage.operation") != "WriteObject" {
+					t.Errorf("expected gcp.storage.operation WriteObject, got %v", getHistAttr(dp, "gcp.storage.operation"))
 				}
 				if getHistAttr(dp, "rpc.system.name") != "grpc" {
 					t.Errorf("expected rpc.system.name grpc, got %v", getHistAttr(dp, "rpc.system.name"))

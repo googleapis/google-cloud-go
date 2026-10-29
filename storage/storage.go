@@ -158,6 +158,7 @@ func (c Client) credsJSON() ([]byte, bool) {
 // package. You may also use options defined in this package, such as [WithJSONReads].
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	var creds *auth.Credentials
+	var metricsTP *metricsTokenProvider
 
 	// In general, it is recommended to use raw.NewService instead of htransport.NewClient
 	// since raw.NewService configures the correct default endpoints when initializing the
@@ -184,6 +185,9 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 			// mutates caller-owned credentials passed via WithAuthCredentials.
 			clone := *c
 			creds = &clone
+			if cfg := newStorageConfig(opts...); isOtelMetricsEnabled(&cfg) || isOtelDebugMetricsEnabled(&cfg) {
+				creds, metricsTP = deferredMetricsCredentials(creds)
+			}
 			opts = append(opts, option.WithAuthCredentials(creds))
 		}
 	} else {
@@ -242,6 +246,9 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 			storageClient: tc,
 			metrics:       httpClient.metrics,
 			isHTTP:        true,
+		}
+		if metricsTP != nil {
+			metricsTP.metrics.CompareAndSwap(nil, httpClient.metrics)
 		}
 	}
 

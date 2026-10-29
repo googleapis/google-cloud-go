@@ -57,8 +57,44 @@ import (
 )
 
 const (
-	customMetricPrefix = "custom.googleapis.com/"
+	customMetricPrefix   = "custom.googleapis.com/"
+	storageOperationAttr = "gcp.storage.operation"
+	networkPathAttr      = "network.path"
+	networkPathDirect    = "directpath"
+	networkPathCloud     = "cloudpath"
+	networkPathUnknown   = "unknown"
 )
+
+func isDirectPathAddr(addr string) bool {
+	if h, _, err := net.SplitHostPort(addr); err == nil {
+		addr = h
+	}
+	ip, err := netip.ParseAddr(strings.TrimSuffix(strings.TrimPrefix(addr, "["), "]"))
+	if err != nil {
+		return false
+	}
+	ip = ip.Unmap()
+	return directPathIPv4Range.Contains(ip) || directPathIPv6Range.Contains(ip)
+}
+
+func networkPathOfPeer(p *peer.Peer) string {
+	if p == nil || p.Addr == nil {
+		return networkPathUnknown
+	}
+	if isDirectPathAddr(p.Addr.String()) {
+		return networkPathDirect
+	}
+	return networkPathCloud
+}
+
+// streamPeer returns the peer of s's connection, or nil if unavailable.
+func streamPeer(s grpc.ClientStream) *peer.Peer {
+	if s == nil {
+		return nil
+	}
+	p, _ := peer.FromContext(s.Context())
+	return p
+}
 
 // clientMetrics contains the OpenTelemetry metric instruments to record client-side metrics.
 type clientMetrics struct {
@@ -1181,6 +1217,7 @@ func (cm *clientMetrics) recordServerMetrics(ctx context.Context, headerMD, trai
 func metricsInterceptors(cm *clientMetrics) (grpc.UnaryClientInterceptor, grpc.StreamClientInterceptor) {
 	unary := func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 		logicalMethod := getLogicalMethod(method)
+		metricsStateFromContext(ctx).resetNetworkPath()
 
 		target := ""
 		if cc != nil {
@@ -1207,6 +1244,7 @@ func metricsInterceptors(cm *clientMetrics) (grpc.UnaryClientInterceptor, grpc.S
 
 		startTime := time.Now()
 		err := invoker(ctx, method, req, reply, cc, opts...)
+		metricsStateFromContext(ctx).setNetworkPath(networkPathOfPeer(&p))
 
 		cm.recordServerMetrics(ctx, headerMD, trailerMD, err, logicalMethod, target, rpcAttrs, &p)
 
@@ -1217,6 +1255,7 @@ func metricsInterceptors(cm *clientMetrics) (grpc.UnaryClientInterceptor, grpc.S
 
 	stream := func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
 		logicalMethod := getLogicalMethod(method)
+		metricsStateFromContext(ctx).resetNetworkPath()
 
 		target := ""
 		if cc != nil {
@@ -1278,6 +1317,9 @@ type wrappedClientStream struct {
 
 func (w *wrappedClientStream) RecvMsg(m interface{}) error {
 	err := w.ClientStream.RecvMsg(m)
+	if p := streamPeer(w.ClientStream); p != nil {
+		metricsStateFromContext(w.ctx).setNetworkPath(networkPathOfPeer(p))
+	}
 	if err == nil {
 		w.recordTTFB(m)
 	}
@@ -1356,12 +1398,13 @@ func injectAPIMethod(ctx context.Context, attrs []attribute.KeyValue) []attribut
 }
 
 type metricsState struct {
-	target    atomic.Pointer[string]
-	method    string
-	startTime time.Time
-	metrics   *clientMetrics
-	isHTTP    bool
-	record    func(error)
+	target      atomic.Pointer[string]
+	networkPath atomic.Int32
+	method      string
+	startTime   time.Time
+	metrics     *clientMetrics
+	isHTTP      bool
+	record      func(error)
 }
 
 func (s *metricsState) setTarget(t string) {
@@ -1369,6 +1412,42 @@ func (s *metricsState) setTarget(t string) {
 		return
 	}
 	s.target.Store(&t)
+}
+
+func (s *metricsState) setNetworkPath(path string) {
+	if s == nil {
+		return
+	}
+	switch path {
+	case networkPathDirect:
+		s.networkPath.Store(1)
+	case networkPathCloud:
+		s.networkPath.Store(2)
+	}
+}
+
+func (s *metricsState) resetNetworkPath() {
+	if s == nil {
+		return
+	}
+	s.networkPath.Store(0)
+}
+
+func (s *metricsState) getNetworkPath() string {
+	if s == nil {
+		return networkPathUnknown
+	}
+	if s.isHTTP {
+		return networkPathCloud
+	}
+	switch s.networkPath.Load() {
+	case 1:
+		return networkPathDirect
+	case 2:
+		return networkPathCloud
+	default:
+		return networkPathUnknown
+	}
 }
 
 func (s *metricsState) getSystemName() string {
@@ -1785,6 +1864,10 @@ func (h *grpcMetricsStatsHandler) HandleRPC(ctx context.Context, s stats.RPCStat
 	)
 
 	switch st := s.(type) {
+	case *stats.OutHeader:
+		if st.RemoteAddr != nil {
+			metricsStateFromContext(ctx).setNetworkPath(networkPathOfPeer(&peer.Peer{Addr: st.RemoteAddr}))
+		}
 	case *stats.InPayload:
 		if h.metrics.networkBytesReceived != nil {
 			h.metrics.networkBytesReceived.Add(ctx, int64(st.WireLength), attrs)
@@ -1818,19 +1901,58 @@ func (h *grpcMetricsStatsHandler) HandleConn(ctx context.Context, s stats.ConnSt
 	}
 }
 
-// grpcNetworkMetricsDialOptions returns dial options that instrument TCP and TLS handshake metrics.
+func isLoopbackAddr(addr string) bool {
+	if h, _, err := net.SplitHostPort(addr); err == nil {
+		addr = h
+	}
+	ip, err := netip.ParseAddr(strings.TrimSuffix(strings.TrimPrefix(addr, "["), "]"))
+	return err == nil && ip.IsLoopback()
+}
+
+// grpcNetworkMetricsDialOptions returns dial options that instrument DNS, TCP and TLS handshake metrics.
 func grpcNetworkMetricsDialOptions(host string, metrics *clientMetrics) []option.ClientOption {
-	if metrics == nil || (metrics.tcpConnectDuration == nil && metrics.tlsHandshakeDuration == nil && metrics.networkBytesSent == nil && metrics.networkBytesReceived == nil) {
+	dialOpts := grpcNetworkMetricsRawDialOptions(host, metrics)
+	if len(dialOpts) == 0 {
 		return nil
 	}
+	opts := make([]option.ClientOption, 0, len(dialOpts))
+	for _, do := range dialOpts {
+		opts = append(opts, option.WithGRPCDialOption(do))
+	}
+	return opts
+}
+
+func grpcNetworkMetricsRawDialOptions(host string, metrics *clientMetrics) []grpc.DialOption {
+	if metrics == nil || (metrics.dnsLookupDuration == nil && metrics.tcpConnectDuration == nil && metrics.tlsHandshakeDuration == nil && metrics.networkBytesSent == nil && metrics.networkBytesReceived == nil) {
+		return nil
+	}
+	cleanHost := stripPort(host)
 	var dialTimes sync.Map
+	var lastDNSLookup atomic.Pointer[time.Time]
 
 	dialer := func(ctx context.Context, addr string) (net.Conn, error) {
+		// On CloudPath (non-DirectPath IP), measure DNS lookup duration for the
+		// configured host with a 60s cooldown so connection bursts do not
+		// re-resolve on every socket dial. Skip non-localhost external DNS
+		// lookups when dialing a local loopback test server.
+		if metrics.dnsLookupDuration != nil && !isDirectPathAddr(addr) && cleanHost != "" && net.ParseIP(cleanHost) == nil && (!isLoopbackAddr(addr) || cleanHost == "localhost") {
+			now := time.Now()
+			prev := lastDNSLookup.Load()
+			if (prev == nil || now.Sub(*prev) >= time.Minute) && lastDNSLookup.CompareAndSwap(prev, &now) {
+				dnsStart := time.Now()
+				_, _ = net.DefaultResolver.LookupHost(ctx, cleanHost)
+				metrics.dnsLookupDuration.Record(ctx, time.Since(dnsStart).Seconds(), metric.WithAttributes(
+					attribute.String("rpc.system.name", "grpc"),
+					attribute.String("server.address", cleanHost),
+				))
+			}
+		}
+
 		var netAttrs metric.MeasurementOption
 		if metrics.tcpConnectDuration != nil {
 			netAttrs = metric.WithAttributes(
 				attribute.String("rpc.system.name", "grpc"),
-				attribute.String("server.address", host),
+				attribute.String("server.address", cleanHost),
 			)
 		}
 
@@ -1843,7 +1965,7 @@ func grpcNetworkMetricsDialOptions(host string, metrics *clientMetrics) []option
 				metrics.tcpConnectDuration.Record(ctx, tcpDuration, netAttrs)
 			}
 			if conn != nil && metrics.tlsHandshakeDuration != nil {
-				dialTimes.Store(conn.LocalAddr().String(), dialInfo{doneTime: time.Now(), host: host})
+				dialTimes.Store(conn.LocalAddr().String(), dialInfo{doneTime: time.Now(), host: cleanHost})
 			}
 		}
 
@@ -1853,25 +1975,52 @@ func grpcNetworkMetricsDialOptions(host string, metrics *clientMetrics) []option
 	sh := &grpcMetricsStatsHandler{
 		metrics:   metrics,
 		dialTimes: &dialTimes,
-		host:      host,
+		host:      cleanHost,
 	}
 
-	return []option.ClientOption{
-		option.WithGRPCDialOption(grpc.WithContextDialer(dialer)),
-		option.WithGRPCDialOption(grpc.WithStatsHandler(sh)),
+	return []grpc.DialOption{
+		grpc.WithContextDialer(dialer),
+		grpc.WithStatsHandler(sh),
 	}
 }
 
 type metricsTokenProvider struct {
-	base    auth.TokenProvider
-	metrics *clientMetrics
+	base auth.TokenProvider
+	// metrics may be attached after the provider has been installed in a
+	// transport (see NewClient), hence the atomic pointer.
+	metrics atomic.Pointer[clientMetrics]
+}
+
+func newMetricsTokenProvider(base auth.TokenProvider, m *clientMetrics) *metricsTokenProvider {
+	p := &metricsTokenProvider{base: base}
+	if m != nil {
+		p.metrics.Store(m)
+	}
+	return p
 }
 
 func (p *metricsTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 	start := time.Now()
 	tok, err := p.base.Token(ctx)
-	p.metrics.recordCredentialRefreshDuration(ctx, time.Since(start), err)
+	p.metrics.Load().recordCredentialRefreshDuration(ctx, time.Since(start), err)
 	return tok, err
+}
+
+// deferredMetricsCredentials returns a copy of c whose token provider records
+// credential refresh metrics once metrics are attached to the returned
+// provider. It is used by NewClient, which must build the http.Client (and
+// therefore install the credentials) before the metrics pipeline exists.
+func deferredMetricsCredentials(c *auth.Credentials) (*auth.Credentials, *metricsTokenProvider) {
+	if c == nil || c.TokenProvider == nil {
+		return c, nil
+	}
+	if mtp, ok := c.TokenProvider.(*metricsTokenProvider); ok {
+		return c, mtp
+	}
+	mtp := newMetricsTokenProvider(c.TokenProvider, nil)
+	clone := *c
+	clone.TokenProvider = mtp
+	return &clone, mtp
 }
 
 // wrapAuthCredentials wraps an auth.Credentials object to track credential refresh durations.
@@ -1884,38 +2033,77 @@ func wrapAuthCredentials(c *auth.Credentials, m *clientMetrics) *auth.Credential
 		return c
 	}
 	if mtp, ok := c.TokenProvider.(*metricsTokenProvider); ok {
-		if m == nil || mtp.metrics == m {
+		if m == nil || mtp.metrics.Load() == m {
+			return c
+		}
+		if mtp.metrics.CompareAndSwap(nil, m) {
 			return c
 		}
 		clone := *c
-		clone.TokenProvider = &metricsTokenProvider{base: mtp.base, metrics: m}
+		clone.TokenProvider = newMetricsTokenProvider(mtp.base, m)
 		return &clone
 	}
 	clone := *c
-	clone.TokenProvider = &metricsTokenProvider{base: c.TokenProvider, metrics: m}
+	clone.TokenProvider = newMetricsTokenProvider(c.TokenProvider, m)
 	return &clone
 }
+
+// credentialCacheHitThreshold is the duration below which a call to
+// TokenProvider.Token is considered to have been served from the token cache.
+const credentialCacheHitThreshold = time.Millisecond
 
 func (cm *clientMetrics) recordCredentialRefreshDuration(ctx context.Context, duration time.Duration, err error) {
 	if cm == nil || cm.credentialRefreshDuration == nil {
 		return
 	}
+	if err == nil && duration < credentialCacheHitThreshold {
+		return
+	}
 	errorType := "OK"
 	if err != nil {
-		errorType = "CLIENT_AUTHENTICATION_ERROR"
+		errorType = "AUTHENTICATION_ERROR"
+		if errors.Is(err, context.Canceled) {
+			errorType = "CANCELLED"
+		} else if errors.Is(err, context.DeadlineExceeded) {
+			errorType = "TIMEOUT"
+		}
 	}
 	attrs := []attribute.KeyValue{attribute.String("error.type", errorType)}
 	cm.credentialRefreshDuration.Record(ctx, duration.Seconds(), metric.WithAttributes(attrs...))
+}
+
+func fullGRPCMethodName(method string) string {
+	method = strings.TrimPrefix(method, "/")
+	if strings.Contains(method, "/") {
+		return method
+	}
+	return "google.storage.v2.Storage/" + method
 }
 
 func (cm *clientMetrics) recordStallDuration(ctx context.Context, duration time.Duration, method string, systemName string, target string) {
 	if cm == nil || cm.stallDuration == nil {
 		return
 	}
+	state := metricsStateFromContext(ctx)
+	operation := method
+	if state != nil && state.method != "" {
+		operation = state.method
+	} else if method == rpcStartResumableWrite || method == rpcQueryWriteStatus || method == rpcBidiWriteObject {
+		operation = "WriteObject"
+	} else if method == "BidiReadObject" {
+		operation = "ReadObject"
+	}
+	rpcMethod := fullGRPCMethodName(method)
+	networkPath := networkPathCloud
+	if systemName == "grpc" {
+		networkPath = state.getNetworkPath()
+	}
 	attrs := []attribute.KeyValue{
 		attribute.String("rpc.system.name", systemName),
-		attribute.String("rpc.method", method),
+		attribute.String(storageOperationAttr, operation),
+		attribute.String("rpc.method", rpcMethod),
 		attribute.String("server.address", target),
+		attribute.String(networkPathAttr, networkPath),
 	}
 	cm.stallDuration.Record(ctx, duration.Seconds(), metric.WithAttributes(attrs...))
 }
