@@ -28,7 +28,6 @@ import (
 	"io"
 	"math/big"
 	"net"
-	"os"
 	"path/filepath"
 	"testing"
 	"time"
@@ -827,9 +826,7 @@ func TestNewChannel_ForwardsOptsToLiveMetricsFactory(t *testing.T) {
 	t.Setenv("GCE_METADATA_HOST", "127.0.0.1:1")
 	t.Setenv("GOOGLE_API_CERTIFICATE_CONFIG", "")
 	t.Setenv("CLOUDSDK_CONTEXT_AWARE_USE_CLIENT_CERTIFICATE", "false")
-	if err := os.Unsetenv("BIGTABLE_EMULATOR_HOST"); err != nil {
-		t.Fatalf("Unsetenv: %v", err)
-	}
+	t.Setenv("BIGTABLE_EMULATOR_HOST", "")
 
 	priv, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	if err != nil {
