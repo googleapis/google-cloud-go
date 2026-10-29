@@ -932,3 +932,38 @@ func TestPickerFromLoadBalancing_NilFallback(t *testing.T) {
 		t.Errorf("K = %d, want %d", li.RandomSubsetSize, defaultAfeRandomSubsetSize)
 	}
 }
+
+func TestCheckoutSession_ContextErrorPreservesGRPCStatusCode(t *testing.T) {
+	p := newTestPool(t, 1, 5)
+	// No active sessions injected, so CheckoutSession parks on the waiter queue.
+
+	t.Run("DeadlineExceeded", func(t *testing.T) {
+		ctx, cancel := context.WithTimeout(context.Background(), 15*time.Millisecond)
+		defer cancel()
+		_, err := p.CheckoutSession(ctx)
+		if !errors.Is(err, ErrNoSessionsAvailable) {
+			t.Errorf("errors.Is(err, ErrNoSessionsAvailable) = false; err = %v", err)
+		}
+		if !errors.Is(err, context.DeadlineExceeded) {
+			t.Errorf("errors.Is(err, context.DeadlineExceeded) = false; err = %v", err)
+		}
+		if got := status.Code(err); got != codes.DeadlineExceeded {
+			t.Errorf("status.Code(err) = %v; want DeadlineExceeded", got)
+		}
+	})
+
+	t.Run("Canceled", func(t *testing.T) {
+		ctx, cancel := context.WithCancel(context.Background())
+		cancel()
+		_, err := p.CheckoutSession(ctx)
+		if !errors.Is(err, ErrNoSessionsAvailable) {
+			t.Errorf("errors.Is(err, ErrNoSessionsAvailable) = false; err = %v", err)
+		}
+		if !errors.Is(err, context.Canceled) {
+			t.Errorf("errors.Is(err, context.Canceled) = false; err = %v", err)
+		}
+		if got := status.Code(err); got != codes.Canceled {
+			t.Errorf("status.Code(err) = %v; want Canceled", got)
+		}
+	})
+}
