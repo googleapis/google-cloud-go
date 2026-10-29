@@ -194,7 +194,7 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 
 	var clientMetrics *clientMetrics
 	var metricsCleanup func()
-	metricsEnabled := isOtelMetricsEnabled(&config)
+	metricsEnabled := isOtelMetricsEnabled(&config) || isOtelDebugMetricsEnabled(&config)
 	tracingEnabled := isOTelTracingDevEnabled()
 	if metricsEnabled || tracingEnabled {
 		authCreds, project := resolveGRPCAuthCredentials(ctx, s)
@@ -1450,7 +1450,7 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 			decoder = nil
 			return executeWithReadStallTimeout(ctx, c.readStallMgr, params.bucket, openStream, func(stallTimeout time.Duration) {
 				target := stripPort(metricsStateFromContext(ctx).getTarget())
-				c.metrics.recordStallDuration(ctx, stallTimeout, "ReadObject", "grpc", target)
+				c.metrics.recordStallDuration(ctx, stallTimeout, "BidiReadObject", "grpc", target)
 				if decoder != nil && decoder.databufs != nil {
 					decoder.databufs.Free()
 					decoder = nil
