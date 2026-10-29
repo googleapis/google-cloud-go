@@ -908,6 +908,8 @@ libraries:
     apis:
       - path: google/longrunning
         go:
+          enabled_generator_features:
+            - F_export_set_google_client_info
           client_package: longrunning
           import_path: longrunning/autogen
   - name: lustre
