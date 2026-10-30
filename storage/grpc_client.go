@@ -29,6 +29,7 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/iam/apiv1/iampb"
+	"cloud.google.com/go/storage/experimental"
 	gapic "cloud.google.com/go/storage/internal/apiv2"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/googleapis/gax-go/v2"
@@ -131,6 +132,11 @@ type grpcStorageClient struct {
 	dpDiag         string
 	metrics        *clientMetrics
 	metricsCleanup func()
+
+	// bufferPool allocates memory for parallel uploads. It is the pool set
+	// through experimental.WithBufferPool or, if none was set, the SDK's
+	// defaultBufferPool, which is closed when the client is closed.
+	bufferPool experimental.BufferPool
 
 	// configFeatureAttributes tracks client-level features that are enabled for this
 	// client instance.
@@ -240,12 +246,20 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 		}
 	}
 
+	// Use the application's pool if one was set; otherwise the SDK's default.
+	// Creating the default pool starts no goroutines, so it needs no cleanup
+	// if client construction fails below.
+	bufferPool := config.bufferPool
+	if bufferPool == nil {
+		bufferPool = newDefaultBufferPool()
+	}
 	c := &grpcStorageClient{
 		settings:       s,
 		config:         &config,
 		metrics:        clientMetrics,
 		metricsCleanup: metricsCleanup,
 		readStallMgr:   bd,
+		bufferPool:     bufferPool,
 	}
 	// Add routing interceptors to inject headers.
 	ui, si := c.routingInterceptors()
@@ -382,6 +396,11 @@ func (c *grpcStorageClient) Close() error {
 	}
 	if c.metricsCleanup != nil {
 		c.metricsCleanup()
+	}
+	// Only the SDK's own pool is closed; a pool provided through
+	// experimental.WithBufferPool is owned by the application.
+	if pool, ok := c.bufferPool.(*defaultBufferPool); ok {
+		pool.close()
 	}
 	return c.raw.Close()
 }
