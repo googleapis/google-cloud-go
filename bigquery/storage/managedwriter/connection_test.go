@@ -19,6 +19,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"sync"
 	"testing"
 	"time"
 
@@ -28,6 +29,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/descriptorpb"
 )
 
 func TestConnection_OpenWithRetry(t *testing.T) {
@@ -438,5 +440,103 @@ func TestConnection_Receiver(t *testing.T) {
 			t.Errorf("%s: got final error %v, wanted final error %v", tc.description, gotFinalErr, tc.wantFinalErr)
 		}
 		cancel()
+	}
+}
+
+// failingStreamClient is an AppendRows stream that accepts sends until the test breaks it,
+// then fails every Recv and Send the way a reset gRPC stream does.
+type failingStreamClient struct {
+	storagepb.BigQueryWrite_AppendRowsClient
+	ctx    context.Context
+	broken <-chan struct{}
+}
+
+func (f *failingStreamClient) Send(*storagepb.AppendRowsRequest) error {
+	select {
+	case <-f.broken:
+		return io.EOF
+	default:
+		return nil
+	}
+}
+
+func (f *failingStreamClient) Recv() (*storagepb.AppendRowsResponse, error) {
+	<-f.broken
+	return nil, status.Error(codes.Unavailable, "stream reset")
+}
+
+func (f *failingStreamClient) CloseSend() error         { return nil }
+func (f *failingStreamClient) Context() context.Context { return f.ctx }
+
+// When a stream fails with many appends queued on it, every one of them failed for the same
+// reason. The receive processor should back off once for the connection, not once per queued
+// append: it handles the queue one append at a time, so a pause per append delays the last
+// acknowledgement by the sum of all the pauses, even though the new connection is healthy.
+func TestConnection_RecvErrorBacksOffOncePerConnection(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	const appends = 20
+	const pause = 100 * time.Millisecond
+
+	broken := make(chan struct{})
+	var mu sync.Mutex
+	opens := 0
+	pool := &connectionPool{
+		ctx: ctx,
+		open: func(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+			mu.Lock()
+			opens++
+			first := opens == 1
+			mu.Unlock()
+			if first {
+				return &failingStreamClient{ctx: ctx, broken: broken}, nil
+			}
+			return &testAppendRowsClient{
+				sendF:  func(*storagepb.AppendRowsRequest) error { return nil },
+				recvF:  func() (*storagepb.AppendRowsResponse, error) { return &storagepb.AppendRowsResponse{}, nil },
+				closeF: func() error { return nil },
+			}, nil
+		},
+		baseFlowController: newFlowController(0, 0),
+	}
+	if err := pool.activateRouter(newSimpleRouter("")); err != nil {
+		t.Fatalf("activateRouter: %v", err)
+	}
+	ms := &ManagedStream{
+		id:             "writer",
+		ctx:            ctx,
+		streamSettings: defaultStreamSettings(),
+		retry:          &statelessRetryer{minBackoff: pause, maxAttempts: defaultRetryAttempts},
+	}
+	ms.streamSettings.streamID = "projects/p/datasets/d/tables/t/streams/_default"
+	ms.curTemplate = newVersionedTemplate().revise(reviseProtoSchema(&descriptorpb.DescriptorProto{}))
+	if err := pool.addWriter(ms); err != nil {
+		t.Fatalf("addWriter: %v", err)
+	}
+
+	results := make([]*AppendResult, 0, appends)
+	for i := 0; i < appends; i++ {
+		res, err := ms.AppendRows(ctx, [][]byte{[]byte("row")})
+		if err != nil {
+			t.Fatalf("AppendRows %d: %v", i, err)
+		}
+		results = append(results, res)
+	}
+	start := time.Now()
+	close(broken)
+
+	waitCtx, waitCancel := context.WithTimeout(ctx, 10*time.Second)
+	defer waitCancel()
+	for i, res := range results {
+		if _, err := res.GetResult(waitCtx); err != nil {
+			t.Fatalf("GetResult %d: %v", i, err)
+		}
+		if attempts, _ := res.TotalAttempts(waitCtx); attempts != 2 {
+			t.Errorf("append %d: got %d attempts, want 2 (the original send and one retry)", i, attempts)
+		}
+	}
+	// One pause per append would take appends*pause; allow a few pauses of slack.
+	if elapsed, limit := time.Since(start), 5*pause; elapsed > limit {
+		t.Errorf("all %d appends acknowledged after %v, want under %v: the retries paused once per queued append", appends, elapsed, limit)
 	}
 }
