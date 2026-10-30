@@ -304,12 +304,6 @@ func newPreparedQueryData(ps *PreparedStatement) *preparedQueryData {
 }
 
 func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool) error {
-	// buffer data constructed from the fields in PartialRows`
-	var ongoingResultBatch bytes.Buffer
-
-	// data buffered since the last non-empty `ResumeToken`
-	valuesBuffer := []*btpb.Value{}
-
 	var resumeToken []byte
 
 	receivedResumeToken := false
@@ -328,6 +322,12 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool) e
 	err := gaxInvokeWithRecorder(ctx, "ExecuteQuery", func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
 		ctx, cancel := context.WithCancel(ctx) // for aborting the stream
 		defer cancel()
+
+		// buffer data constructed from the fields in PartialRows
+		var ongoingResultBatch bytes.Buffer
+
+		// data buffered since the last non-empty ResumeToken
+		valuesBuffer := []*btpb.Value{}
 
 		if isQueryExpiredViolation(prevError) {
 			// Query could have other expiry conditions apart from time based expiry.
@@ -362,6 +362,7 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool) e
 			AppProfileId:  bs.ps.c.appProfile,
 			PreparedQuery: candFinalizedStmt.preparedQuery,
 			Params:        bs.params,
+			ResumeToken:   resumeToken,
 		}
 		stream, err := bs.ps.c.client.ExecuteQuery(ctx, req)
 		if err != nil {
@@ -380,8 +381,6 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool) e
 				return handleExecuteStreamEnd(stream, trailerMD, valuesBuffer, err, &prevError)
 			}
 			if err != nil {
-				// Setup for next call
-				req.ResumeToken = resumeToken
 				return handleExecuteStreamEnd(stream, trailerMD, valuesBuffer, err, &prevError)
 			}
 
