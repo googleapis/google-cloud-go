@@ -540,3 +540,23 @@ func TestConnection_RecvErrorBacksOffOncePerConnection(t *testing.T) {
 		t.Errorf("all %d appends acknowledged after %v, want under %v: the retries paused once per queued append", appends, elapsed, limit)
 	}
 }
+
+// A receive processor still draining a stream the connection has since replaced must not
+// force its healthy successor to reconnect: only a failure on the current stream marks the
+// connection for reconnect.
+func TestConnection_MarkStreamFailedIgnoresAReplacedStream(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	co := newConnection(&connectionPool{ctx: ctx}, simplexConnectionMode, nil)
+	var oldArc, newArc storagepb.BigQueryWrite_AppendRowsClient = &testAppendRowsClient{}, &testAppendRowsClient{}
+	co.arc = &newArc
+
+	co.markStreamFailed(oldArc)
+	if co.reconnect {
+		t.Fatal("a failure on a replaced stream marked the current stream for reconnect")
+	}
+	co.markStreamFailed(newArc)
+	if !co.reconnect {
+		t.Fatal("a failure on the current stream did not mark it for reconnect")
+	}
+}
