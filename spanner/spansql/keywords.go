@@ -311,6 +311,7 @@ var funcNames = []string{
 
 	// Utility functions.
 	"GENERATE_UUID",
+	"NEW_UUID",
 }
 
 var aggregateFuncNames = []string{
