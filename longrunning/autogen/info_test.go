@@ -15,37 +15,56 @@
 package longrunning
 
 import (
-	"context"
-	"net/http"
-	"net/http/httptest"
+	"slices"
 	"testing"
-	"time"
 
-	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"google.golang.org/api/option"
 )
 
-func TestSourceAPIHandling_REST(t *testing.T) {
-	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
-	defer cancel()
-
+func TestSetSourceAPIVersion(t *testing.T) {
 	wantVersion := "1.2.3"
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		gotVersion := r.Header.Get("x-goog-api-version")
-		if gotVersion != wantVersion {
-			t.Fatalf("server didn't get expected api version header, got %q want %q", gotVersion, wantVersion)
-		}
-		w.WriteHeader(http.StatusNoContent)
-	}))
 
-	c, err := NewOperationsRESTClient(ctx,
-		option.WithoutAuthentication(),
-		option.WithEndpoint(ts.URL),
-	)
+	var client *OperationsClient
+	var err error
+	client, err = NewOperationsClient(t.Context(), option.WithoutAuthentication())
+	if err != nil {
+		t.Fatalf("NewOperationsClient: %v", err)
+	}
+	verifyVersionKVPresent(t, client, false, wantVersion)
+	client.SetSourceAPIVersion(wantVersion)
+	verifyVersionKVPresent(t, client, true, wantVersion)
+
+	client, err = NewOperationsRESTClient(t.Context(), option.WithoutAuthentication())
 	if err != nil {
 		t.Fatalf("NewOperationsRESTClient: %v", err)
 	}
-	c.SetSourceAPIVersion(wantVersion)
-	c.GetOperation(ctx, new(longrunningpb.GetOperationRequest{}))
+	verifyVersionKVPresent(t, client, false, wantVersion)
+	client.SetSourceAPIVersion(wantVersion)
+	verifyVersionKVPresent(t, client, true, wantVersion)
+}
 
+func verifyVersionKVPresent(t *testing.T, c *OperationsClient, wantPresent bool, versionID string) {
+	t.Helper()
+	ic := c.internalClient
+	var headers []string
+	if grpcClient, ok := ic.(*operationsGRPCClient); ok {
+		headers = grpcClient.xGoogHeaders
+	}
+	if restClient, ok := ic.(*operationsRESTClient); ok {
+		headers = restClient.xGoogHeaders
+	}
+
+	gotPresent := false
+	idx := slices.Index(headers, "x-goog-api-version")
+	// ensure the key is present
+	if idx >= 0 && idx%2 == 0 && idx < len(headers)-1 {
+		// ensure the next value is the desired version string
+		if headers[idx+1] == versionID {
+			gotPresent = true
+		}
+	}
+
+	if gotPresent != wantPresent {
+		t.Errorf("api version header/key present mismatched, got present %t want present %t", gotPresent, wantPresent)
+	}
 }
