@@ -1,5 +1,25 @@
 # Changes
 
+## [1.59.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.58.0...bigtable/v1.59.0) (2026-10-30)
+
+
+### Features
+
+* **bigtable:** Add classic-path fallback to accelerator daemon ([#20598](https://github.com/googleapis/google-cloud-go/issues/20598)) ([9b5aebf](https://github.com/googleapis/google-cloud-go/commit/9b5aebf41b5f3d24c9176af4a410583de1efbc89))
+* Update API sources and regenerate ([#20607](https://github.com/googleapis/google-cloud-go/issues/20607)) ([395fc59](https://github.com/googleapis/google-cloud-go/commit/395fc59e067ed2576a1c8c961edf3f749633520c))
+* Update API sources and regenerate ([#20646](https://github.com/googleapis/google-cloud-go/issues/20646)) ([4ad5d50](https://github.com/googleapis/google-cloud-go/commit/4ad5d50aaf4392d19fd391ee71eec1c5029ecd1d))
+* Update API sources and regenerate ([#20728](https://github.com/googleapis/google-cloud-go/issues/20728)) ([ab1da9d](https://github.com/googleapis/google-cloud-go/commit/ab1da9d200416594ae18fa7a2944961f1c92c928))
+
+
+### Bug Fixes
+
+* Adds additional validation for REST RPC requests ([#20753](https://github.com/googleapis/google-cloud-go/issues/20753)) ([7827181](https://github.com/googleapis/google-cloud-go/commit/7827181e7cb653fb69645c538b162b2c7490b0bb))
+* **bigtable:** Hold session budget slot until OpenSession handshake c… ([#20688](https://github.com/googleapis/google-cloud-go/issues/20688)) ([a9a05e0](https://github.com/googleapis/google-cloud-go/commit/a9a05e0dc5b806d7aceddb2a54a9848d778eb074))
+* **bigtable:** Initialize query metadata on prepare and refresh ([#20803](https://github.com/googleapis/google-cloud-go/issues/20803)) ([f5a4667](https://github.com/googleapis/google-cloud-go/commit/f5a4667e5751807127f628254d5abddd6ae5cbb3))
+* **bigtable:** Only surface partial cluster failure in UpdateInstanceAndSyncClusters when relevant ([#20629](https://github.com/googleapis/google-cloud-go/issues/20629)) ([7660eab](https://github.com/googleapis/google-cloud-go/commit/7660eabfab30f7a9c8216694568da14fd5d6f64a))
+* **bigtable:** Prevent principalFromCreds GCE fallthrough on non-email JSON ([#20787](https://github.com/googleapis/google-cloud-go/issues/20787)) ([2769188](https://github.com/googleapis/google-cloud-go/commit/27691888bf916082f498776659cbe092df30a983))
+* **bigtable:** Raise the accelerator's gRPC message size limits to match the classic client ([#20723](https://github.com/googleapis/google-cloud-go/issues/20723)) ([a279d2a](https://github.com/googleapis/google-cloud-go/commit/a279d2a0101b61aa498c87c4187cefafd0a1dbd6))
+
 ## [1.58.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.57.0...bigtable/v1.58.0) (2026-09-25)
 
 
