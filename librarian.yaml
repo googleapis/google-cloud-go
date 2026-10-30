@@ -436,7 +436,7 @@ libraries:
     apis:
       - path: google/chat/v1
   - name: chronicle
-    version: 1.6.1
+    version: 1.7.0
     apis:
       - path: google/cloud/chronicle/v1
   - name: cloudbuild
