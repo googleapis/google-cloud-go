@@ -2055,6 +2055,10 @@ func TestExecuteQuery(t *testing.T) {
 			// Execute query
 			err = bs.Execute(ctx, func(rr ResultRow) bool {
 				vals := rr.pbValues
+				if rr.Metadata == nil || len(rr.Metadata.Columns) != len(vals) {
+					t.Errorf("#%d ResultRow.Metadata: got %+v, want %d columns", gotRowCount, rr.Metadata, len(vals))
+					return false
+				}
 
 				// Compare row values
 				if gotRowCount > len(tc.wantResultRowValues) ||
@@ -2462,5 +2466,78 @@ func TestApplyBulk_MissingEntryResult(t *testing.T) {
 	}
 	if errs[2] != nil {
 		t.Errorf("errs[2] = %v, want nil", errs[2])
+	}
+}
+
+func TestInitializeMetadataAndMap_Error(t *testing.T) {
+	pqd := &preparedQueryData{
+		metadata: &btpb.ResultSetMetadata{
+			Schema: &btpb.ResultSetMetadata_ProtoSchema{
+				ProtoSchema: &btpb.ProtoSchema{
+					Columns: []*btpb.ColumnMetadata{
+						{Name: "bad", Type: &btpb.Type{Kind: nil}},
+					},
+				},
+			},
+		},
+	}
+	err := pqd.initializeMetadataAndMap()
+	if err == nil {
+		t.Fatal("expected initializeMetadataAndMap to return an error, got nil")
+	}
+	if pqd.Metadata != nil {
+		t.Fatalf("expected pqd.Metadata to remain nil on error, got %+v", pqd.Metadata)
+	}
+}
+
+func TestPrepareStatement_InvalidMetadataError(t *testing.T) {
+	var gotPrepReqCount int
+	var mockPrepQueryResps []prepareQueryResp
+	const defaultPreparedQueryTTL = 10 * time.Second
+	var testPreparedQueryTTL = defaultPreparedQueryTTL
+
+	testEnv, gotErr := NewEmulatedEnv(IntegrationTestConfig{})
+	if gotErr != nil {
+		t.Fatalf("NewEmulatedEnv failed: %v", gotErr)
+	}
+
+	conn, gotErr := grpc.Dial(testEnv.server.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(),
+		grpc.WithUnaryInterceptor(
+			newUnaryClientInterceptor(&gotPrepReqCount, &mockPrepQueryResps, &testPreparedQueryTTL)),
+	)
+	if gotErr != nil {
+		t.Fatalf("grpc.Dial failed: %v", gotErr)
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	client, gotErr := NewClientWithConfig(ctx, testEnv.config.Project, testEnv.config.Instance, disableMetricsConfig, option.WithGRPCConn(conn))
+	if gotErr != nil {
+		t.Fatalf("NewClientWithConfig failed: %v", gotErr)
+	}
+	defer client.Close()
+
+	mockPrepQueryResps = []prepareQueryResp{
+		{
+			resp: &btpb.PrepareQueryResponse{
+				PreparedQuery: []byte("query"),
+				Metadata: &btpb.ResultSetMetadata{
+					Schema: &btpb.ResultSetMetadata_ProtoSchema{
+						ProtoSchema: &btpb.ProtoSchema{
+							Columns: []*btpb.ColumnMetadata{
+								{Name: "bad", Type: &btpb.Type{Kind: nil}},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	_, err := client.PrepareStatement(ctx, "SELECT * FROM users;", nil)
+	if err == nil {
+		t.Fatal("expected PrepareStatement to fail on invalid metadata, got nil")
+	}
+	if !strings.Contains(err.Error(), "error parsing metadata type for column") {
+		t.Fatalf("unexpected error message: %v", err)
 	}
 }

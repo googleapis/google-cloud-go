@@ -151,17 +151,22 @@ func (c *Client) prepareStatement(ctx context.Context, query string, paramTypes 
 		return nil, err
 	}
 
+	pqd := &preparedQueryData{
+		metadata:      res.Metadata,
+		preparedQuery: res.PreparedQuery,
+		validUntil:    res.ValidUntil,
+	}
+	if err := pqd.initializeMetadataAndMap(); err != nil {
+		return nil, err
+	}
+
 	return &PreparedStatement{
-		c: c,
-		data: &preparedQueryData{
-			metadata:      res.Metadata,
-			preparedQuery: res.PreparedQuery,
-			validUntil:    res.ValidUntil,
-		},
+		c:          c,
+		data:       pqd,
 		query:      query,
 		paramTypes: paramTypes,
 		opts:       opts,
-	}, err
+	}, nil
 }
 
 // Bind binds a set of parameters to a prepared statement.
@@ -255,12 +260,8 @@ func (ps *PreparedStatement) refresh(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	ps.data = &preparedQueryData{
-		metadata:      newPs.data.metadata,
-		preparedQuery: newPs.data.preparedQuery,
-		validUntil:    newPs.data.validUntil,
-	}
-	return err
+	ps.data = newPs.data
+	return nil
 }
 
 // BoundStatement is a statement that has been bound to a set of parameters.
@@ -441,7 +442,6 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool) e
 				if !receivedResumeToken {
 					// first ResumeToken received
 					finalizedStmt = candFinalizedStmt
-					finalizedStmt.initializeMetadataAndMap()
 					receivedResumeToken = true
 				}
 
