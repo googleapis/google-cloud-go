@@ -365,6 +365,17 @@ func (ms *ManagedStream) processRetry(pw *pendingWrite, appendResp *storagepb.Ap
 			return
 		}
 		time.Sleep(pause)
+		// A closed writer never accepts the re-enqueue, and its terminal error
+		// (io.EOF on Close) satisfies the retry predicate without advancing the
+		// attempt count. Finalize here, or this loop never ends and blocks the
+		// connection's receive processor along with every append queued behind it.
+		ms.mu.Lock()
+		closedErr := ms.err
+		ms.mu.Unlock()
+		if closedErr != nil {
+			pw.markDone(appendResp, closedErr)
+			return
+		}
 		err = ms.appendWithRetry(pw)
 		if err != nil {
 			// Re-enqueue failed, send it through the loop again.
