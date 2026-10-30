@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.75.0-preview.1](https://github.com/googleapis/google-cloud-go/compare/compute/v1.72.0-preview.1...compute/v1.75.0-preview.1) (2026-10-29)
+
+
+### Features
+
+* Update Compute Engine v1 (preview) API 2026-10-01-preview to revision 20261007
+* Add AliasNetworkEndpoints service and AliasNetworkEndpoint ([1df7814](https://github.com/googleapis/google-cloud-go/commit/1df7814239803763be5d62e98795c8ba93d3b333))
+* Add HaControllerParams and HaControllerInstanceNetworkInterface ([1df7814](https://github.com/googleapis/google-cloud-go/commit/1df7814239803763be5d62e98795c8ba93d3b333))
+* Add ip_collection to AccessConfig and network_attachment ([1df7814](https://github.com/googleapis/google-cloud-go/commit/1df7814239803763be5d62e98795c8ba93d3b333))
+* Add MEMORY_OPTIMIZED_X5 values to Commitment.Type enum ([1df7814](https://github.com/googleapis/google-cloud-go/commit/1df7814239803763be5d62e98795c8ba93d3b333))
+* Add ProtectionTier enum and protection_tier field to Scheduling ([1df7814](https://github.com/googleapis/google-cloud-go/commit/1df7814239803763be5d62e98795c8ba93d3b333))
+
+### Bug Fixes
+
+* Adds additional validation for REST RPC requests ([#20753](https://github.com/googleapis/google-cloud-go/issues/20753)) ([7827181](https://github.com/googleapis/google-cloud-go/commit/7827181e7cb653fb69645c538b162b2c7490b0bb))
+
+
+### Documentation
+
+* See release notes https://docs.cloud.google.com/compute/docs/release-notes ([1df7814](https://github.com/googleapis/google-cloud-go/commit/1df7814239803763be5d62e98795c8ba93d3b333))
+
 ## [1.72.0-preview.1](https://github.com/googleapis/google-cloud-go/compare/compute/v1.66.0-preview.1...compute/v1.72.0-preview.1) (2026-09-30)
 
 
@@ -12,4 +33,3 @@
 * Update API sources and regenerate ([#20607](https://github.com/googleapis/google-cloud-go/issues/20607)) ([395fc59](https://github.com/googleapis/google-cloud-go/commit/395fc59e067ed2576a1c8c961edf3f749633520c))
 * Update API sources and regenerate. ([e6f37a3](https://github.com/googleapis/google-cloud-go/commit/e6f37a362b6e37b0bc74e77b8d7f151dc7443fb8))
 * Update sources and regenerate ([#20399](https://github.com/googleapis/google-cloud-go/issues/20399)) ([a6b5cdb](https://github.com/googleapis/google-cloud-go/commit/a6b5cdb4eec5e66fb6bb4a00f9ec89c088826e26))
-
