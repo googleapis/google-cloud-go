@@ -1604,123 +1604,6 @@ func TestAnySQLTypeToPbVal(t *testing.T) {
 			wantErr:    true,
 			wantErrMsg: "bigtable: unsupported ElemType: bigtable.ArraySQLType",
 		},
-		{
-			testName: "ProtoSQLType success bytes",
-			paramVal: []byte("proto_bytes"),
-			psType:   ProtoSQLType{SchemaBundleID: "b1", MessageName: "msg1"},
-			wantPbVal: &btpb.Value{
-				Type: &btpb.Type{
-					Kind: &btpb.Type_ProtoType{
-						ProtoType: &btpb.Type_Proto{
-							SchemaBundleId: "b1",
-							MessageName:    "msg1",
-						},
-					},
-				},
-				Kind: &btpb.Value_BytesValue{
-					BytesValue: []byte("proto_bytes"),
-				},
-			},
-		},
-		{
-			testName: "ProtoSQLType success proto.Message",
-			paramVal: timestamppb.New(testTime),
-			psType:   ProtoSQLType{SchemaBundleID: "b1", MessageName: "google.protobuf.Timestamp"},
-			wantPbVal: &btpb.Value{
-				Type: &btpb.Type{
-					Kind: &btpb.Type_ProtoType{
-						ProtoType: &btpb.Type_Proto{
-							SchemaBundleId: "b1",
-							MessageName:    "google.protobuf.Timestamp",
-						},
-					},
-				},
-				Kind: &btpb.Value_BytesValue{
-					BytesValue: func() []byte {
-						b, _ := proto.Marshal(timestamppb.New(testTime))
-						return b
-					}(),
-				},
-			},
-		},
-		{
-			testName: "ProtoSQLType nil success",
-			psType:   ProtoSQLType{SchemaBundleID: "b1", MessageName: "msg1"},
-			wantPbVal: &btpb.Value{
-				Type: &btpb.Type{
-					Kind: &btpb.Type_ProtoType{
-						ProtoType: &btpb.Type_Proto{
-							SchemaBundleId: "b1",
-							MessageName:    "msg1",
-						},
-					},
-				},
-			},
-		},
-		{
-			testName:   "ProtoSQLType type mismatch",
-			paramVal:   123,
-			psType:     ProtoSQLType{SchemaBundleID: "b1", MessageName: "msg1"},
-			wantErr:    true,
-			wantErrMsg: ptr(errTypeMismatch{value: 123, psType: ProtoSQLType{SchemaBundleID: "b1", MessageName: "msg1"}}).Error(),
-		},
-		{
-			testName: "EnumSQLType success int64",
-			paramVal: int64(1),
-			psType:   EnumSQLType{SchemaBundleID: "b1", EnumName: "enum1"},
-			wantPbVal: &btpb.Value{
-				Type: &btpb.Type{
-					Kind: &btpb.Type_EnumType{
-						EnumType: &btpb.Type_Enum{
-							SchemaBundleId: "b1",
-							EnumName:       "enum1",
-						},
-					},
-				},
-				Kind: &btpb.Value_IntValue{
-					IntValue: 1,
-				},
-			},
-		},
-		{
-			testName: "EnumSQLType success int32",
-			paramVal: int32(2),
-			psType:   EnumSQLType{SchemaBundleID: "b1", EnumName: "enum1"},
-			wantPbVal: &btpb.Value{
-				Type: &btpb.Type{
-					Kind: &btpb.Type_EnumType{
-						EnumType: &btpb.Type_Enum{
-							SchemaBundleId: "b1",
-							EnumName:       "enum1",
-						},
-					},
-				},
-				Kind: &btpb.Value_IntValue{
-					IntValue: 2,
-				},
-			},
-		},
-		{
-			testName: "EnumSQLType nil success",
-			psType:   EnumSQLType{SchemaBundleID: "b1", EnumName: "enum1"},
-			wantPbVal: &btpb.Value{
-				Type: &btpb.Type{
-					Kind: &btpb.Type_EnumType{
-						EnumType: &btpb.Type_Enum{
-							SchemaBundleId: "b1",
-							EnumName:       "enum1",
-						},
-					},
-				},
-			},
-		},
-		{
-			testName:   "EnumSQLType type mismatch",
-			paramVal:   "not_an_enum",
-			psType:     EnumSQLType{SchemaBundleID: "b1", EnumName: "enum1"},
-			wantErr:    true,
-			wantErrMsg: ptr(errTypeMismatch{value: "not_an_enum", psType: EnumSQLType{SchemaBundleID: "b1", EnumName: "enum1"}}).Error(),
-		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.testName, func(t *testing.T) {
@@ -1753,8 +1636,6 @@ func cmpOptionsBtpbValue() []cmp.Option {
 		btpb.Type_TimestampType{}, btpb.Type_Timestamp{},
 		btpb.Type_DateType{}, btpb.Type_Date{},
 		btpb.Type_ArrayType{}, btpb.Type_Array{},
-		btpb.Type_ProtoType{}, btpb.Type_Proto{},
-		btpb.Type_EnumType{}, btpb.Type_Enum{},
 		btpb.Value_BytesValue{},
 		btpb.Value_StringValue{},
 		btpb.Value_IntValue{},
@@ -2174,6 +2055,10 @@ func TestExecuteQuery(t *testing.T) {
 			// Execute query
 			err = bs.Execute(ctx, func(rr ResultRow) bool {
 				vals := rr.pbValues
+				if rr.Metadata == nil || len(rr.Metadata.Columns) != len(vals) {
+					t.Errorf("#%d ResultRow.Metadata: got %+v, want %d columns", gotRowCount, rr.Metadata, len(vals))
+					return false
+				}
 
 				// Compare row values
 				if gotRowCount > len(tc.wantResultRowValues) ||

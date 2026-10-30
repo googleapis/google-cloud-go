@@ -29,7 +29,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/genproto/googleapis/type/date"
-	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -88,8 +87,6 @@ var (
 	typeArrayString    = &btpb.Type{Kind: &btpb.Type_ArrayType{ArrayType: &btpb.Type_Array{ElementType: typeString}}}
 	typeMapStringBytes = &btpb.Type{Kind: &btpb.Type_MapType{MapType: &btpb.Type_Map{KeyType: typeString, ValueType: typeBytes}}}
 	typeMapStringInt64 = &btpb.Type{Kind: &btpb.Type_MapType{MapType: &btpb.Type_Map{KeyType: typeString, ValueType: typeInt64}}}
-	typeProto          = &btpb.Type{Kind: &btpb.Type_ProtoType{ProtoType: &btpb.Type_Proto{SchemaBundleId: "bundle1", MessageName: "google.protobuf.Timestamp"}}}
-	typeEnum           = &btpb.Type{Kind: &btpb.Type_EnumType{EnumType: &btpb.Type_Enum{SchemaBundleId: "bundle1", EnumName: "my.test.Status"}}}
 	typeStructSimple   = &btpb.Type{Kind: &btpb.Type_StructType{StructType: &btpb.Type_Struct{Fields: []*btpb.Type_Struct_Field{
 		{FieldName: "name", Type: typeString}, {FieldName: "count", Type: typeInt64},
 	}}}}
@@ -110,12 +107,11 @@ var (
 
 var cmpSQLOpts = []cmp.Option{
 	cmpopts.EquateApproxTime(time.Millisecond), // For time.Time comparison
-	cmpopts.IgnoreUnexported(timestamppb.Timestamp{}),
 	cmp.AllowUnexported(
 		BytesSQLType{}, StringSQLType{}, Int64SQLType{}, Float32SQLType{}, Float64SQLType{},
 		BoolSQLType{}, TimestampSQLType{}, DateSQLType{}, ArraySQLType{}, MapSQLType{},
 		StructSQLType{}, StructSQLField{}, ColumnMetadata{}, ResultRowMetadata{},
-		Struct{}, ProtoSQLType{}, EnumSQLType{},
+		Struct{},
 	),
 }
 
@@ -142,20 +138,6 @@ func TestNewResultRowMetadata(t *testing.T) {
 					}}},
 				},
 				colNameToIndex: &map[string][]int{"a": {0}, "m": {1}, "s": {2}},
-			},
-		},
-		{
-			name: "proto and enum types",
-			pbMeta: createMetadata(
-				colMeta("p", typeProto),
-				colMeta("e", typeEnum),
-			),
-			wantMd: &ResultRowMetadata{
-				Columns: []ColumnMetadata{
-					{Name: "p", SQLType: ProtoSQLType{SchemaBundleID: "bundle1", MessageName: "google.protobuf.Timestamp"}},
-					{Name: "e", SQLType: EnumSQLType{SchemaBundleID: "bundle1", EnumName: "my.test.Status"}},
-				},
-				colNameToIndex: &map[string][]int{"p": {0}, "e": {1}},
 			},
 		},
 		{
@@ -300,17 +282,7 @@ func TestResultRow_GetByIndex(t *testing.T) {
 		colMeta("st", typeStructSimple),              // 11
 		colMeta("null_i", typeInt64),                 // 12
 		colMeta("history_map", typeMapHistoryStruct), // 13
-		colMeta("proto", typeProto),                  // 14
-		colMeta("proto_null", typeProto),             // 15
-		colMeta("enum", typeEnum),                    // 16
-		colMeta("enum_null", typeEnum),               // 17
 	)
-
-	sampleProto := timestamppb.New(now)
-	sampleProtoBytes, err := proto.Marshal(sampleProto)
-	if err != nil {
-		t.Fatalf("proto.Marshal failed: %v", err)
-	}
 
 	pbValues := []*btpb.Value{
 		pbString(testString), // 0
@@ -327,10 +299,6 @@ func TestResultRow_GetByIndex(t *testing.T) {
 		pbArray(pbString("obj1"), pbInt64(100)),                                                 // 11 Struct
 		pbNull(),                                                                                // 12 Int64 NULL
 		pbHistoryMapValue,                                                                       // 13
-		pbBytes(sampleProtoBytes),                                                               // 14
-		pbNull(),                                                                                // 15
-		pbInt64(42),                                                                             // 16
-		pbNull(),                                                                                // 17
 	}
 
 	rrMeta, _ := newResultRowMetadata(pbMeta)
@@ -339,7 +307,6 @@ func TestResultRow_GetByIndex(t *testing.T) {
 		t.Fatalf("newResultRow failed: %v", err)
 	}
 
-	type testStatusEnum int32
 	type CustomStruct struct{ Field string } // For invalid struct pointer test
 
 	for _, tt := range []struct {
@@ -374,26 +341,6 @@ func TestResultRow_GetByIndex(t *testing.T) {
 			wantHistoryMap, // Expected Go map value with base64 keys
 			false,
 		},
-
-		// Proto gets
-		{"proto to bytes", 14, func() any { var v []byte; return &v }, sampleProtoBytes, false},
-		{"proto to any", 14, func() any { var v any; return &v }, sampleProtoBytes, false},
-		{"proto to proto.Message pointer", 14, func() any { var v *timestamppb.Timestamp; return &v }, sampleProto, false},
-		{"proto null to bytes", 15, func() any { var v []byte; return &v }, ([]byte)(nil), false},
-		{"proto null to any", 15, func() any { var v any; return &v }, (any)(nil), false},
-		{"proto null to proto.Message pointer", 15, func() any { var v *timestamppb.Timestamp; return &v }, (*timestamppb.Timestamp)(nil), false},
-		{"proto null to non-nillable", 15, func() any { var v int64; return &v }, nil, true},
-
-		// Enum gets
-		{"enum to int64", 16, func() any { var v int64; return &v }, int64(42), false},
-		{"enum to int32", 16, func() any { var v int32; return &v }, int32(42), false},
-		{"enum to int", 16, func() any { var v int; return &v }, int(42), false},
-		{"enum to custom enum", 16, func() any { var v testStatusEnum; return &v }, testStatusEnum(42), false},
-		{"enum to custom enum pointer", 16, func() any { var v *testStatusEnum; return &v }, ptr(testStatusEnum(42)), false},
-		{"enum to any", 16, func() any { var v any; return &v }, int64(42), false},
-		{"enum null to int64 pointer", 17, func() any { var v *int64; return &v }, (*int64)(nil), false},
-		{"enum null to any", 17, func() any { var v any; return &v }, (any)(nil), false},
-		{"enum null to int64 non-pointer", 17, func() any { var v int64; return &v }, nil, true},
 
 		// Error Cases
 		{"int64 to int", 1, func() any { var v int; return &v }, nil, true}, // Conversion T->T
