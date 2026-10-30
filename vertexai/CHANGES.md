@@ -1,5 +1,18 @@
 # Changes
 
+## [0.20.0](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.19.0...vertexai/v0.20.0) (2026-10-30)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
+
+### Bug Fixes
+
+* Adds additional validation for REST RPC requests ([#20753](https://github.com/googleapis/google-cloud-go/issues/20753)) ([7827181](https://github.com/googleapis/google-cloud-go/commit/7827181e7cb653fb69645c538b162b2c7490b0bb))
+
 ## [0.19.0](https://github.com/googleapis/google-cloud-go/releases/tag/vertexai%2Fv0.19.0) (2026-04-09)
 
 ## [0.18.0](https://github.com/googleapis/google-cloud-go/releases/tag/vertexai%2Fv0.18.0) (2026-04-02)
