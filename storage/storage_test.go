@@ -2136,6 +2136,42 @@ func TestObjectAttrsToRawObject(t *testing.T) {
 	}
 }
 
+func TestObjectAttrsToRawObjectCustomTime(t *testing.T) {
+	t.Parallel()
+	for _, test := range []struct {
+		desc string
+		in   time.Time
+		want string
+	}{
+		{
+			desc: "whole seconds",
+			in:   time.Date(2020, 8, 25, 12, 12, 12, 0, time.UTC),
+			want: "2020-08-25T12:12:12Z",
+		},
+		{
+			desc: "milliseconds",
+			in:   time.Date(2020, 8, 25, 12, 12, 12, 5*int(time.Millisecond), time.UTC),
+			want: "2020-08-25T12:12:12.005Z",
+		},
+		{
+			desc: "non-UTC location",
+			in:   time.Date(2020, 8, 25, 12, 12, 12, 250*int(time.Millisecond), time.FixedZone("", 2*60*60)),
+			want: "2020-08-25T12:12:12.25+02:00",
+		},
+	} {
+		t.Run(test.desc, func(t *testing.T) {
+			attrs := &ObjectAttrs{Name: "obj", CustomTime: test.in}
+			if got := attrs.toRawObject("bucket").CustomTime; got != test.want {
+				t.Errorf("CustomTime = %q, want %q", got, test.want)
+			}
+			// The value read back from the HTTP API must equal what was set.
+			if got := convertTime(test.want); !got.Equal(test.in) {
+				t.Errorf("convertTime(%q) = %v, want %v", test.want, got, test.in)
+			}
+		})
+	}
+}
+
 func TestProtoObjectToObjectAttrs(t *testing.T) {
 	t.Parallel()
 	now := time.Now()
