@@ -134,6 +134,26 @@ func TestGRPCWriterStallEmulated(t *testing.T) {
 			wantStreams:  2,
 		},
 		{
+			// A 1s delay on chunk 2 is well below the 2.5s watchdog so no
+			// stall retry fires, but well above the warm-up threshold from
+			// chunk 1. With 1-chunk pipelining, chunk 3 is already in flight
+			// while chunk 2 is stalling, so rotation happens before chunk 4.
+			name:         "SubWatchdogSlowChunk_RotatesStream",
+			instructions: []string{"stall-for-1s-after-3072K"},
+			budget:       5 * time.Second,
+			configure:    func(w *Writer) { w.ChunkTransferTimeout = 2500 * time.Millisecond },
+			size:         8 * 1024 * 1024,
+			write: func(w *Writer) error {
+				for off := 0; off < 8*1024*1024; off += stallEmuChunkSize {
+					if _, err := w.Write(data[off : off+stallEmuChunkSize]); err != nil {
+						return err
+					}
+				}
+				return nil
+			},
+			wantStreams: 2,
+		},
+		{
 			// The 1 MiB tail is sent by Close as the final request.
 			name:         "StallInFinalRequest_Recovers",
 			instructions: []string{stallAfter(4608)},
