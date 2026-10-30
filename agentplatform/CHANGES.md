@@ -13,6 +13,13 @@
 
 * update README to reflect Gemini Enterprise Agent Platform ([541569e](https://github.com/googleapis/google-cloud-go/commit/541569e80c1154b8742f147fa9667b6794be84eb))
 
+## [0.23.0](https://github.com/googleapis/google-cloud-go/compare/agentplatform/v0.22.1...agentplatform/v0.23.0) (2026-10-30)
+
+
+### Features
+
+* Add client.memory_banks.update method. ([#20778](https://github.com/googleapis/google-cloud-go/issues/20778)) ([4fb1674](https://github.com/googleapis/google-cloud-go/commit/4fb167459cd5db411b87233b27e4b1f255fe55da))
+
 ## [0.22.1](https://github.com/googleapis/google-cloud-go/compare/agentplatform/v0.22.0...agentplatform/v0.22.1) (2026-10-28)
 
 
