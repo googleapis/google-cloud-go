@@ -228,9 +228,20 @@ func (c *grpcStorageClient) NewRangeReaderReadObject(ctx context.Context, params
 	}
 
 	metadata := obj.GetMetadata()
+	var remain int64
+	if cr := msg.GetContentRange(); cr != nil {
+		startOffset = cr.GetStart()
+		remain = cr.GetEnd() - startOffset
+	} else {
+		// Without a content range, derive the expected byte count from the
+		// request rather than assuming the whole object is returned.
+		remain = rangeReaderRemain(size, startOffset, params.length)
+	}
+
 	r = &Reader{
 		Attrs: ReaderObjectAttrs{
 			Size:            size,
+			StartOffset:     startOffset,
 			ContentType:     obj.GetContentType(),
 			ContentEncoding: obj.GetContentEncoding(),
 			CacheControl:    obj.GetCacheControl(),
@@ -244,7 +255,7 @@ func (c *grpcStorageClient) NewRangeReaderReadObject(ctx context.Context, params
 			stream: res.stream,
 			reopen: reopen,
 			cancel: cancel,
-			size:   size,
+			size:   remain,
 			// Preserve the decoder to read out object data when Read/WriteTo is called.
 			currMsg:         res.decoder,
 			wantChunkCRC:    chunkCRC,
@@ -256,18 +267,9 @@ func (c *grpcStorageClient) NewRangeReaderReadObject(ctx context.Context, params
 			disableCRCCheck: params.disableCRCCheck,
 		},
 		checkCRC: checkCRC,
+		remain:   remain,
 		bucket:   params.bucket,
 		object:   params.object,
-	}
-
-	cr := msg.GetContentRange()
-	if cr != nil {
-		r.Attrs.StartOffset = cr.GetStart()
-		r.remain = cr.GetEnd() - cr.GetStart()
-	} else {
-		// Without a content range, derive the expected byte count from the
-		// request rather than assuming the whole object is returned.
-		r.remain = rangeReaderRemain(size, startOffset, params.length)
 	}
 
 	// For a zero-length request, explicitly close the stream and set remaining
@@ -286,7 +288,7 @@ type readStreamResponseReadObject struct {
 }
 
 type gRPCReadObjectReader struct {
-	seen, size      int64
+	seen, size      int64 // bytes read so far and total bytes expected for this read
 	zeroRange       bool
 	stream          storagepb.Storage_ReadObjectClient
 	reopen          func(seen int64) (*readStreamResponseReadObject, context.CancelFunc, error)

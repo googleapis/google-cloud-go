@@ -1550,7 +1550,7 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 			stream: res.stream,
 			reopen: reopen,
 			cancel: cancel,
-			size:   size,
+			size:   remain,
 			// Preserve the decoder to read out object data when Read/WriteTo is called.
 			currMsg:         res.decoder,
 			wantChunkCRC:    chunkCRC,
@@ -1722,7 +1722,7 @@ type bidiReadStreamResponse struct {
 
 // gRPCReader is used by storage.Reader if the option WithGRPCBidiReads is passed.
 type gRPCReader struct {
-	seen, size      int64
+	seen, size      int64 // bytes read so far and total bytes expected for this read
 	zeroRange       bool
 	finalized       bool // if we are reading from a finalized object; in this case, remain and size may be inaccurate
 	negativeOffset  bool
