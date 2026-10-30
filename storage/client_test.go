@@ -25,7 +25,6 @@ import (
 	"math/rand"
 	"net"
 	"net/http"
-	"net/url"
 	"os"
 	"runtime"
 	"slices"
@@ -4722,9 +4721,9 @@ func createRetryTest(t *testing.T, client storageClient, instructions map[string
 	// Need the HTTP hostname to set up a retry test, as well as knowledge of
 	// underlying transport to specify instructions.
 	host := os.Getenv("STORAGE_EMULATOR_HOST")
-	endpoint, err := url.Parse(host)
+	endpoint, err := emulatorHostURL(host)
 	if err != nil {
-		t.Fatalf("parsing endpoint: %v", err)
+		t.Fatalf("parsing emulator host %q: %v", host, err)
 	}
 	var transport string
 	if _, ok := client.(*httpStorageClient); ok {
@@ -4744,9 +4743,9 @@ func createRetryTest(t *testing.T, client storageClient, instructions map[string
 // Gets the number of unused instructions matching the method.
 func numInstructionsLeft(emulatorTestID, method string) (int, error) {
 	host := os.Getenv("STORAGE_EMULATOR_HOST")
-	endpoint, err := url.Parse(host)
+	endpoint, err := emulatorHostURL(host)
 	if err != nil {
-		return 0, fmt.Errorf("parsing endpoint: %v", err)
+		return 0, fmt.Errorf("parsing emulator host %q: %v", host, err)
 	}
 
 	endpoint.Path = strings.Join([]string{"retry_test", emulatorTestID}, "/")
@@ -4755,12 +4754,8 @@ func numInstructionsLeft(emulatorTestID, method string) (int, error) {
 	if err != nil || resp.StatusCode != 200 {
 		return 0, fmt.Errorf("getting retry test: err: %v, resp: %+v", err, resp)
 	}
-	defer func() {
-		closeErr := resp.Body.Close()
-		if err == nil {
-			err = closeErr
-		}
-	}()
+	defer resp.Body.Close()
+
 	testRes := struct {
 		Instructions map[string][]string
 		Completed    bool
