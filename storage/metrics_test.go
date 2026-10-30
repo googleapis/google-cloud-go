@@ -28,6 +28,7 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
+	"github.com/google/uuid"
 
 	"go.opentelemetry.io/otel/attribute"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
@@ -339,14 +340,14 @@ func TestHTTPMetricsRecording(t *testing.T) {
 				}
 			}
 
-			if m.Name == "gcp.storage.client.gfe.duration" {
+			if m.Name == "gcp.storage.client.server.duration" {
 				hist, ok := m.Data.(metricdata.Histogram[float64])
 				if ok && len(hist.DataPoints) > 0 {
 					if hist.DataPoints[0].Sum != 0.15 {
-						t.Errorf("expected gfe.duration 0.15s, got %v", hist.DataPoints[0].Sum)
+						t.Errorf("expected server.duration 0.15s, got %v", hist.DataPoints[0].Sum)
 					}
 				} else {
-					t.Errorf("expected gfe.duration datapoints")
+					t.Errorf("expected server.duration datapoints")
 				}
 			}
 		}
@@ -497,20 +498,20 @@ func TestGRPCMetricsRecording(t *testing.T) {
 				}
 			}
 
-			if m.Name == "gcp.storage.client.gfe.duration" {
+			if m.Name == "gcp.storage.client.server.duration" {
 				hist, ok := m.Data.(metricdata.Histogram[float64])
 				if ok && len(hist.DataPoints) > 0 {
-					foundGfeDuration := false
+					foundServerDuration := false
 					for _, dp := range hist.DataPoints {
 						if dp.Sum == 0.12 {
-							foundGfeDuration = true
+							foundServerDuration = true
 						}
 					}
-					if !foundGfeDuration {
-						t.Errorf("expected gfe.duration 0.12s from stream")
+					if !foundServerDuration {
+						t.Errorf("expected server.duration 0.12s from stream")
 					}
 				} else {
-					t.Errorf("expected gfe.duration datapoints")
+					t.Errorf("expected server.duration datapoints")
 				}
 			}
 		}
@@ -1116,3 +1117,43 @@ func TestRecordStallDuration_BidiWriteObject(t *testing.T) {
 		t.Errorf("metric not found")
 	}
 }
+
+func TestMetricsResourceAndStandardTier(t *testing.T) {
+	attrs := metricsResourceAttributes()
+	attrMap := make(map[string]string, len(attrs))
+	for _, kv := range attrs {
+		attrMap[string(kv.Key)] = kv.Value.AsString()
+	}
+	if _, err := uuid.Parse(attrMap["gcp.client.instance_id"]); err != nil {
+		t.Errorf("expected valid UUID for gcp.client.instance_id, got %q: %v", attrMap["gcp.client.instance_id"], err)
+	}
+	if !keepMetricsResourceAttribute("gcp.client.instance_id") || !keepMetricsResourceAttribute("cloud.region") {
+		t.Errorf("expected gcp.client.instance_id and cloud.region to be kept")
+	}
+	if keepMetricsResourceAttribute("cloud.availability_zone") {
+		t.Errorf("expected cloud.availability_zone to be filtered out")
+	}
+
+	ctx := context.Background()
+	mr := sdkmetric.NewManualReader()
+	provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(mr))
+	defer provider.Shutdown(ctx)
+
+	// Enable standard metrics only (enableOtelDebugMetrics = false).
+	cfg := storageConfig{
+		enableOtelMetrics:      true,
+		enableOtelDebugMetrics: false,
+		meterProvider:          provider,
+	}
+	cm, _, err := initMetrics(ctx, "project-id", &cfg)
+	if err != nil {
+		t.Fatalf("initMetrics: %v", err)
+	}
+	if cm.gfeHeaderMissing == nil {
+		t.Fatalf("expected server.unreached instrument to be initialized under standard metrics")
+	}
+	if cm.gfeDuration != nil {
+		t.Errorf("expected server.duration to remain disabled when debug metrics are off")
+	}
+}
+
