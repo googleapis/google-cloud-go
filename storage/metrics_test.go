@@ -17,12 +17,16 @@ package storage
 import (
 	"bytes"
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"errors"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"syscall"
 	"testing"
 	"time"
 
@@ -901,14 +905,64 @@ func TestComputeErrorType(t *testing.T) {
 		{err: fmt.Errorf("%w: bad CRC on read: got %d, want %d", errChecksumMismatch, 1, 2), want: "CHECKSUM_MISMATCH"},
 		{err: &googleapi.Error{Code: 412, Message: "At least one of the pre-conditions you specified did not hold."}, isHTTP: true, want: "FAILED_PRECONDITION"},
 		{err: &googleapi.Error{Code: 408}, isHTTP: true, want: "DEADLINE_EXCEEDED"},
+		{err: &googleapi.Error{Code: 502}, isHTTP: true, want: "UNAVAILABLE"},
 		{err: status.Error(codes.DeadlineExceeded, "Deadline exceeded."), want: "DEADLINE_EXCEEDED"},
-		{err: fmt.Errorf("read: %w", io.EOF), want: "OK"},
+		{err: io.EOF, want: "OK"},
+		{err: fmt.Errorf("read: %w", io.EOF), want: "CONNECTION_ERROR"},
+		{err: io.ErrUnexpectedEOF, isHTTP: true, want: "CONNECTION_ERROR"},
+		{err: &credentialError{err: errors.New("dial tcp 169.254.169.254:80: i/o timeout")}, isHTTP: true, want: "AUTHENTICATION_ERROR"},
+		{err: status.Error(codes.Unavailable, "transport: per-RPC creds failed due to error: context deadline exceeded"), want: "AUTHENTICATION_ERROR"},
+		{err: &net.DNSError{Err: "no such host", Name: "storage.googleapis.com"}, isHTTP: true, want: "DNS_FAILURE"},
+		{err: &net.OpError{Op: "dial", Net: "tcp", Err: context.DeadlineExceeded}, isHTTP: true, want: "CONNECTION_ERROR"},
+		{err: syscall.ECONNRESET, isHTTP: true, want: "CONNECTION_ERROR"},
+		{err: x509.UnknownAuthorityError{}, isHTTP: true, want: "TLS_FAILURE"},
+		{err: &tls.CertificateVerificationError{Err: errors.New("bad cert")}, isHTTP: true, want: "TLS_FAILURE"},
+		{err: &stallTimeoutError{timeout: time.Second, stage: "BidiWriteObject"}, want: "TIMEOUT"},
 	}
 
 	for _, tc := range tests {
 		got := computeErrorType(tc.err, tc.isHTTP, tc.statusCode)
 		if got != tc.want {
 			t.Errorf("computeErrorType(%v, %v, %v) = %v, want %v", tc.err, tc.isHTTP, tc.statusCode, got, tc.want)
+		}
+	}
+
+	if got := computeHTTPAttemptErrorType(io.EOF, 0); got != "CONNECTION_ERROR" {
+		t.Errorf("computeHTTPAttemptErrorType(io.EOF, 0) = %q, want CONNECTION_ERROR", got)
+	}
+}
+
+func TestRefineCancelledAndStripPort(t *testing.T) {
+	readCtx, readCancel := context.WithCancelCause(context.Background())
+	readCancel(errReadStallTimeout)
+	if got := refineCancelled(readCtx, errorTypeCancelled); got != errorTypeTimeout {
+		t.Errorf("refineCancelled(readCtx, CANCELLED) = %q, want TIMEOUT", got)
+	}
+
+	writeCtx, writeCancel := context.WithCancelCause(context.Background())
+	writeCancel(errStallTimeout)
+	if got := refineCancelled(writeCtx, errorTypeCancelled); got != errorTypeTimeout {
+		t.Errorf("refineCancelled(writeCtx, CANCELLED) = %q, want TIMEOUT", got)
+	}
+
+	userCtx, userCancel := context.WithCancel(context.Background())
+	userCancel()
+	if got := refineCancelled(userCtx, errorTypeCancelled); got != errorTypeCancelled {
+		t.Errorf("refineCancelled(userCtx, CANCELLED) = %q, want CANCELLED", got)
+	}
+
+	for _, tc := range []struct {
+		in, want string
+	}{
+		{"storage.googleapis.com:443", "storage.googleapis.com"},
+		{"dns:///storage.googleapis.com:443", "storage.googleapis.com"},
+		{"google-c2p:///storage.googleapis.com", "storage.googleapis.com"},
+		{"dns://authority/storage.googleapis.com:443", "storage.googleapis.com"},
+		{"[::1]:8080", "::1"},
+		{"[::1]", "::1"},
+	} {
+		if got := stripPort(tc.in); got != tc.want {
+			t.Errorf("stripPort(%q) = %q, want %q", tc.in, got, tc.want)
 		}
 	}
 }
@@ -1058,11 +1112,28 @@ func TestWrapAuthCredentials(t *testing.T) {
 	if wrapped2 != wrapped {
 		t.Errorf("expected original wrapped credentials on double wrap")
 	}
+
+	rootErr := &net.OpError{Op: "dial", Net: "tcp", Err: context.DeadlineExceeded}
+	errCreds := wrapAuthCredentials(&auth.Credentials{
+		TokenProvider: &mockTokenProvider{err: rootErr},
+	}, m)
+	_, err := errCreds.TokenProvider.Token(context.Background())
+	if !errors.Is(err, rootErr) {
+		t.Errorf("expected errors.Is(err, rootErr) to be true, got %v", err)
+	}
+	if got := computeErrorType(err, true, 0); got != "AUTHENTICATION_ERROR" {
+		t.Errorf("computeErrorType(err, true, 0) = %q, want AUTHENTICATION_ERROR", got)
+	}
 }
 
-type mockTokenProvider struct{}
+type mockTokenProvider struct {
+	err error
+}
 
 func (m *mockTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
+	if m.err != nil {
+		return nil, m.err
+	}
 	return &auth.Token{}, nil
 }
 
