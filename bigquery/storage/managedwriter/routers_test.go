@@ -220,6 +220,121 @@ func TestSharedRouter_Multiplex(t *testing.T) {
 
 }
 
+func TestSharedRouter_MultiplexDetachReleasesWriters(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	pool := &connectionPool{
+		id:     newUUID(poolIDPrefix),
+		ctx:    ctx,
+		cancel: cancel,
+		open: func(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+			return &testAppendRowsClient{}, nil
+		},
+		baseFlowController: newFlowController(2, 10),
+	}
+	defer pool.Close()
+
+	router := newSharedRouter(true, 1)
+	if err := pool.activateRouter(router); err != nil {
+		t.Fatalf("activateRouter: %v", err)
+	}
+	newWriter := func() *ManagedStream {
+		return &ManagedStream{
+			id:             newUUID(writerIDPrefix),
+			streamSettings: &streamSettings{streamID: "projects/foo/datasets/bar/tables/baz/streams/_default"},
+			ctx:            ctx,
+			cancel:         cancel,
+		}
+	}
+	retainedWriters := func() int {
+		router.multiMu.RLock()
+		defer router.multiMu.RUnlock()
+		count := 0
+		for _, writers := range router.invertedMultiMap {
+			count += len(writers)
+		}
+		return count
+	}
+
+	writers := []*ManagedStream{newWriter(), newWriter(), newWriter()}
+	for _, writer := range writers {
+		if err := router.writerAttach(writer); err != nil {
+			t.Fatalf("writerAttach: %v", err)
+		}
+	}
+	if got := retainedWriters(); got != len(writers) {
+		t.Fatalf("after attaching writers, invertedMultiMap references %d writers, want %d", got, len(writers))
+	}
+
+	if err := router.writerDetach(writers[1]); err != nil {
+		t.Fatalf("writerDetach: %v", err)
+	}
+	if got := retainedWriters(); got != 2 {
+		t.Errorf("after detaching 1 of 3 writers, invertedMultiMap references %d writers, want 2", got)
+	}
+	for _, writer := range []*ManagedStream{writers[0], writers[2]} {
+		if err := router.writerDetach(writer); err != nil {
+			t.Fatalf("writerDetach: %v", err)
+		}
+	}
+	if got := retainedWriters(); got != 0 {
+		t.Errorf("after detaching all writers, invertedMultiMap references %d writers, want 0", got)
+	}
+
+	// Writers created and closed one after another must not accumulate either.
+	for range 10 {
+		writer := newWriter()
+		if err := router.writerAttach(writer); err != nil {
+			t.Fatalf("writerAttach: %v", err)
+		}
+		if err := router.writerDetach(writer); err != nil {
+			t.Fatalf("writerDetach: %v", err)
+		}
+	}
+	if got := retainedWriters(); got != 0 {
+		t.Errorf("after attaching and detaching 10 writers, invertedMultiMap references %d writers, want 0", got)
+	}
+}
+
+func TestSharedRouter_MultiplexPoolDetachReleasesWriters(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	pool := &connectionPool{
+		id:     newUUID(poolIDPrefix),
+		ctx:    ctx,
+		cancel: cancel,
+		open: func(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+			return &testAppendRowsClient{}, nil
+		},
+		baseFlowController: newFlowController(2, 10),
+	}
+
+	router := newSharedRouter(true, 1)
+	if err := pool.activateRouter(router); err != nil {
+		t.Fatalf("activateRouter: %v", err)
+	}
+	writer := &ManagedStream{
+		id:             newUUID(writerIDPrefix),
+		streamSettings: &streamSettings{streamID: "projects/foo/datasets/bar/tables/baz/streams/_default"},
+		ctx:            ctx,
+		cancel:         cancel,
+	}
+	if err := router.writerAttach(writer); err != nil {
+		t.Fatalf("writerAttach: %v", err)
+	}
+
+	if err := pool.Close(); err != nil {
+		t.Fatalf("pool.Close: %v", err)
+	}
+
+	router.multiMu.RLock()
+	defer router.multiMu.RUnlock()
+	if got := len(router.multiMap); got != 0 {
+		t.Errorf("after pool detach, multiMap contains %d writers, want 0", got)
+	}
+	if got := len(router.invertedMultiMap); got != 0 {
+		t.Errorf("after pool detach, invertedMultiMap contains %d connections, want 0", got)
+	}
+}
+
 func BenchmarkRoutingParallel(b *testing.B) {
 
 	for _, bm := range []struct {
