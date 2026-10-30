@@ -3,12 +3,12 @@ module cloud.google.com/go/internal/examples/mock
 go 1.26.0
 
 require (
-	cloud.google.com/go/translate v1.17.0
+	cloud.google.com/go/translate v1.20.1
 	github.com/googleapis/gax-go/v2 v2.27.0
 )
 
 require (
-	cloud.google.com/go/longrunning v1.2.0 // indirect
+	cloud.google.com/go/longrunning v1.3.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/go-logr/logr v1.4.4 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
