@@ -17,16 +17,32 @@ package accelerator
 import (
 	"bytes"
 	"context"
+	"crypto/ecdsa"
+	"crypto/elliptic"
+	"crypto/rand"
+	"crypto/tls"
+	"crypto/x509"
+	"crypto/x509/pkix"
+	"encoding/pem"
 	"errors"
 	"io"
+	"math/big"
+	"net"
+	"path/filepath"
 	"testing"
+	"time"
 
 	v2pb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
+	metrics "cloud.google.com/go/bigtable/internal/metrics"
 	"cloud.google.com/go/bigtable/internal/session"
 	btransport "cloud.google.com/go/bigtable/internal/transport"
 	"go.opentelemetry.io/otel/metric"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/status"
 )
 
@@ -801,5 +817,99 @@ func TestComposeUserAgent(t *testing.T) {
 				t.Errorf("ComposeUserAgent(%q) = %q; want %q", tc.prefix, got, tc.want)
 			}
 		})
+	}
+}
+
+func TestNewChannel_ForwardsOptsToLiveMetricsFactory(t *testing.T) {
+	t.Setenv("GOOGLE_APPLICATION_CREDENTIALS", filepath.Join(t.TempDir(), "missing-adc.json"))
+	t.Setenv("HOME", t.TempDir())
+	t.Setenv("GCE_METADATA_HOST", "127.0.0.1:1")
+	t.Setenv("GOOGLE_API_CERTIFICATE_CONFIG", "")
+	t.Setenv("CLOUDSDK_CONTEXT_AWARE_USE_CLIENT_CERTIFICATE", "false")
+	t.Setenv("BIGTABLE_EMULATOR_HOST", "")
+
+	priv, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	if err != nil {
+		t.Fatalf("ecdsa.GenerateKey: %v", err)
+	}
+	tmpl := &x509.Certificate{
+		SerialNumber: big.NewInt(1),
+		Subject:      pkix.Name{CommonName: "127.0.0.1"},
+		NotBefore:    time.Now().Add(-time.Hour),
+		NotAfter:     time.Now().Add(time.Hour),
+		KeyUsage:     x509.KeyUsageDigitalSignature,
+		ExtKeyUsage:  []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
+		IPAddresses:  []net.IP{net.ParseIP("127.0.0.1")},
+		DNSNames:     []string{"localhost"},
+	}
+	derBytes, err := x509.CreateCertificate(rand.Reader, tmpl, tmpl, &priv.PublicKey, priv)
+	if err != nil {
+		t.Fatalf("x509.CreateCertificate: %v", err)
+	}
+	keyDER, err := x509.MarshalECPrivateKey(priv)
+	if err != nil {
+		t.Fatalf("x509.MarshalECPrivateKey: %v", err)
+	}
+	certPEM := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: derBytes})
+	keyPEM := pem.EncodeToMemory(&pem.Block{Type: "EC PRIVATE KEY", Bytes: keyDER})
+	tlsCert, err := tls.X509KeyPair(certPEM, keyPEM)
+	if err != nil {
+		t.Fatalf("tls.X509KeyPair: %v", err)
+	}
+	certPool := x509.NewCertPool()
+	certPool.AppendCertsFromPEM(certPEM)
+	srvTLS := credentials.NewTLS(&tls.Config{Certificates: []tls.Certificate{tlsCert}})
+	clientTLS := credentials.NewClientTLSFromCert(certPool, "localhost")
+
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatalf("net.Listen: %v", err)
+	}
+	grpcSrv := grpc.NewServer(grpc.Creds(srvTLS))
+	v2pb.RegisterBigtableServer(grpcSrv, &v2pb.UnimplementedBigtableServer{})
+	go func() { _ = grpcSrv.Serve(lis) }()
+	defer grpcSrv.Stop()
+
+	creds := &google.Credentials{
+		ProjectID: "test-proj",
+		TokenSource: oauth2.StaticTokenSource(&oauth2.Token{
+			AccessToken: "fake-token",
+			Expiry:      time.Now().Add(time.Hour),
+		}),
+	}
+	opts := []option.ClientOption{
+		option.WithCredentials(creds),
+		option.WithEndpoint(lis.Addr().String()),
+		option.WithQuotaProject("custom-quota-proj"),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(clientTLS)),
+	}
+
+	origCreateExporterOpts := metrics.CreateExporterOptions
+	var recordedBtOptCounts []int
+	metrics.CreateExporterOptions = func(btOpts ...option.ClientOption) []option.ClientOption {
+		recordedBtOptCounts = append(recordedBtOptCounts, len(btOpts))
+		return origCreateExporterOpts(btOpts...)
+	}
+	defer func() { metrics.CreateExporterOptions = origCreateExporterOpts }()
+
+	ch, err := NewChannel(context.Background(), "test-proj", "test-inst", "default", "python-bigtable/3.0.0", opts...)
+	if err != nil {
+		t.Fatalf("NewChannel: %v", err)
+	}
+	defer ch.Close()
+
+	hasFactory, ok := ch.sc.(interface{ MetricsFactory() *metrics.Factory })
+	if !ok {
+		t.Fatalf("ch.sc (%T) does not expose MetricsFactory()", ch.sc)
+	}
+	liveFactory := hasFactory.MetricsFactory()
+	if liveFactory == nil {
+		t.Fatal("liveFactory is nil")
+	}
+	if !liveFactory.Enabled {
+		t.Errorf("liveFactory.Enabled = false; want true when credentials are passed via opts")
+	}
+	if len(recordedBtOptCounts) < 2 || recordedBtOptCounts[1] == 0 {
+		t.Errorf("CreateExporterOptions call counts = %v; want second (live) call > 0", recordedBtOptCounts)
 	}
 }
