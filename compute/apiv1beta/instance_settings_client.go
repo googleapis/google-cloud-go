@@ -271,6 +271,12 @@ func (c *instanceSettingsRESTClient) Get(ctx context.Context, req *computepb.Get
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instanceSettings", req.GetProject(), req.GetZone())
 
 	// Build HTTP headers from client and context metadata.
@@ -325,6 +331,12 @@ func (c *instanceSettingsRESTClient) Patch(ctx context.Context, req *computepb.P
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetZone(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instanceSettings", req.GetProject(), req.GetZone())

@@ -471,34 +471,34 @@ var File_google_cloud_backupdr_v1beta_bindingmatchingresource_proto protoreflect
 
 const file_google_cloud_backupdr_v1beta_bindingmatchingresource_proto_rawDesc = "" +
 	"\n" +
-	":google/cloud/backupdr/v1beta/bindingmatchingresource.proto\x12\x1cgoogle.cloud.backupdr.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"p\n" +
-	"!GetBindingMatchingResourceRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/backupdr.googleapis.com/BindingMatchingResourceR\x04name\"\xf9\x01\n" +
-	"#ListBindingMatchingResourcesRequest\x12O\n" +
-	"\x06parent\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\x12/backupdr.googleapis.com/BindingMatchingResourceR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	":google/cloud/backupdr/v1beta/bindingmatchingresource.proto\x12\x1cgoogle.cloud.backupdr.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"q\n" +
+	"!GetBindingMatchingResourceRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/backupdr.googleapis.com/BindingMatchingResourceR\x04name\"\xfe\x01\n" +
+	"#ListBindingMatchingResourcesRequest\x12P\n" +
+	"\x06parent\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\x12/backupdr.googleapis.com/BindingMatchingResourceR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xb4\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xb4\x01\n" +
 	"$ListBindingMatchingResourcesResponse\x12d\n" +
 	"\x12matching_resources\x18\x01 \x03(\v25.google.cloud.backupdr.v1beta.BindingMatchingResourceR\x11matchingResources\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x99\x04\n" +
-	"\x17BindingMatchingResource\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\"\n" +
-	"\bresource\x18\x02 \x01(\tB\x06\xe0A\x05\xe0A\x02R\bresource\x12Q\n" +
-	"\x14last_evaluation_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x12lastEvaluationTime\x12p\n" +
-	"\x17auto_protection_details\x18\x04 \x01(\v23.google.cloud.backupdr.v1beta.AutoProtectionDetailsB\x03\xe0A\x03R\x15autoProtectionDetails:\xfb\x01\xeaA\xf7\x01\n" +
-	"/backupdr.googleapis.com/BindingMatchingResource\x12\x90\x01projects/{project}/locations/{location}/autoProtectionPolicies/{auto_protection_policy}/bindings/{binding}/matchingResources/{matching_resource}*\x18bindingMatchingResources2\x17bindingMatchingResource\"\xc9\x03\n" +
-	"\x15AutoProtectionDetails\x12T\n" +
-	"\x05state\x18\x01 \x01(\x0e29.google.cloud.backupdr.v1beta.AutoProtectionDetails.StateB\x03\xe0A\x03R\x05state\x12m\n" +
-	"\x17backup_plan_association\x18\x02 \x01(\tB5\xe0A\x03\xfaA/\n" +
-	"-backupdr.googleapis.com/BackupPlanAssociationR\x15backupPlanAssociation\x12K\n" +
-	"\vdata_source\x18\x03 \x01(\tB*\xe0A\x03\xfaA$\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x9b\x04\n" +
+	"\x17BindingMatchingResource\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12!\n" +
+	"\bresource\x18\x02 \x01(\tB\x05\xe2A\x02\x05\x02R\bresource\x12R\n" +
+	"\x14last_evaluation_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x12lastEvaluationTime\x12q\n" +
+	"\x17auto_protection_details\x18\x04 \x01(\v23.google.cloud.backupdr.v1beta.AutoProtectionDetailsB\x04\xe2A\x01\x03R\x15autoProtectionDetails:\xfb\x01\xeaA\xf7\x01\n" +
+	"/backupdr.googleapis.com/BindingMatchingResource\x12\x90\x01projects/{project}/locations/{location}/autoProtectionPolicies/{auto_protection_policy}/bindings/{binding}/matchingResources/{matching_resource}*\x18bindingMatchingResources2\x17bindingMatchingResource\"\xcd\x03\n" +
+	"\x15AutoProtectionDetails\x12U\n" +
+	"\x05state\x18\x01 \x01(\x0e29.google.cloud.backupdr.v1beta.AutoProtectionDetails.StateB\x04\xe2A\x01\x03R\x05state\x12n\n" +
+	"\x17backup_plan_association\x18\x02 \x01(\tB6\xe2A\x01\x03\xfaA/\n" +
+	"-backupdr.googleapis.com/BackupPlanAssociationR\x15backupPlanAssociation\x12L\n" +
+	"\vdata_source\x18\x03 \x01(\tB+\xe2A\x01\x03\xfaA$\n" +
 	"\"backupdr.googleapis.com/DataSourceR\n" +
-	"dataSource\x12-\n" +
-	"\x05error\x18\x04 \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x05error\"o\n" +
+	"dataSource\x12.\n" +
+	"\x05error\x18\x04 \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\x05error\"o\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tPROTECTED\x10\x01\x12\x15\n" +

@@ -3332,7 +3332,7 @@ var File_google_cloud_backupdr_v1beta_backupvault_gce_proto protoreflect.FileDes
 
 const file_google_cloud_backupdr_v1beta_backupvault_gce_proto_rawDesc = "" +
 	"\n" +
-	"2google/cloud/backupdr/v1beta/backupvault_gce.proto\x12\x1cgoogle.cloud.backupdr.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\"\xfd\t\n" +
+	"2google/cloud/backupdr/v1beta/backupvault_gce.proto\x12\x1cgoogle.cloud.backupdr.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\"\xfe\t\n" +
 	"\x1fComputeInstanceBackupProperties\x12%\n" +
 	"\vdescription\x18\x01 \x01(\tH\x00R\vdescription\x88\x01\x01\x12;\n" +
 	"\x04tags\x18\x02 \x01(\v2\".google.cloud.backupdr.v1beta.TagsH\x01R\x04tags\x88\x01\x01\x12&\n" +
@@ -3350,8 +3350,8 @@ const file_google_cloud_backupdr_v1beta_backupvault_gce_proto_rawDesc = "" +
 	"\x10min_cpu_platform\x18\v \x01(\tH\x06R\x0eminCpuPlatform\x88\x01\x01\x12w\n" +
 	"\x1akey_revocation_action_type\x18\f \x01(\x0e25.google.cloud.backupdr.v1beta.KeyRevocationActionTypeH\aR\x17keyRevocationActionType\x88\x01\x01\x12,\n" +
 	"\x0fsource_instance\x18\r \x01(\tH\bR\x0esourceInstance\x88\x01\x01\x12a\n" +
-	"\x06labels\x18\x0e \x03(\v2I.google.cloud.backupdr.v1beta.ComputeInstanceBackupProperties.LabelsEntryR\x06labels\x12$\n" +
-	"\vguest_flush\x18\x0f \x01(\bB\x03\xe0A\x01R\n" +
+	"\x06labels\x18\x0e \x03(\v2I.google.cloud.backupdr.v1beta.ComputeInstanceBackupProperties.LabelsEntryR\x06labels\x12%\n" +
+	"\vguest_flush\x18\x0f \x01(\bB\x04\xe2A\x01\x01R\n" +
 	"guestFlush\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -3364,37 +3364,37 @@ const file_google_cloud_backupdr_v1beta_backupvault_gce_proto_rawDesc = "" +
 	"\v_schedulingB\x13\n" +
 	"\x11_min_cpu_platformB\x1d\n" +
 	"\x1b_key_revocation_action_typeB\x12\n" +
-	"\x10_source_instance\"\x97\x16\n" +
-	" ComputeInstanceRestoreProperties\x12\x1c\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02H\x00R\x04name\x88\x01\x01\x12{\n" +
-	"\x19advanced_machine_features\x18\x02 \x01(\v25.google.cloud.backupdr.v1beta.AdvancedMachineFeaturesB\x03\xe0A\x01H\x01R\x17advancedMachineFeatures\x88\x01\x01\x12.\n" +
-	"\x0ecan_ip_forward\x18\x03 \x01(\bB\x03\xe0A\x01H\x02R\fcanIpForward\x88\x01\x01\x12\x84\x01\n" +
-	"\x1cconfidential_instance_config\x18\x04 \x01(\v28.google.cloud.backupdr.v1beta.ConfidentialInstanceConfigB\x03\xe0A\x01H\x03R\x1aconfidentialInstanceConfig\x88\x01\x01\x129\n" +
-	"\x13deletion_protection\x18\x05 \x01(\bB\x03\xe0A\x01H\x04R\x12deletionProtection\x88\x01\x01\x12*\n" +
-	"\vdescription\x18\x06 \x01(\tB\x03\xe0A\x01H\x05R\vdescription\x88\x01\x01\x12E\n" +
-	"\x05disks\x18\a \x03(\v2*.google.cloud.backupdr.v1beta.AttachedDiskB\x03\xe0A\x01R\x05disks\x12\\\n" +
-	"\x0edisplay_device\x18\b \x01(\v2+.google.cloud.backupdr.v1beta.DisplayDeviceB\x03\xe0A\x01H\x06R\rdisplayDevice\x88\x01\x01\x12c\n" +
-	"\x12guest_accelerators\x18\t \x03(\v2/.google.cloud.backupdr.v1beta.AcceleratorConfigB\x03\xe0A\x01R\x11guestAccelerators\x12$\n" +
+	"\x10_source_instance\"\xb0\x16\n" +
+	" ComputeInstanceRestoreProperties\x12\x1d\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02H\x00R\x04name\x88\x01\x01\x12|\n" +
+	"\x19advanced_machine_features\x18\x02 \x01(\v25.google.cloud.backupdr.v1beta.AdvancedMachineFeaturesB\x04\xe2A\x01\x01H\x01R\x17advancedMachineFeatures\x88\x01\x01\x12/\n" +
+	"\x0ecan_ip_forward\x18\x03 \x01(\bB\x04\xe2A\x01\x01H\x02R\fcanIpForward\x88\x01\x01\x12\x85\x01\n" +
+	"\x1cconfidential_instance_config\x18\x04 \x01(\v28.google.cloud.backupdr.v1beta.ConfidentialInstanceConfigB\x04\xe2A\x01\x01H\x03R\x1aconfidentialInstanceConfig\x88\x01\x01\x12:\n" +
+	"\x13deletion_protection\x18\x05 \x01(\bB\x04\xe2A\x01\x01H\x04R\x12deletionProtection\x88\x01\x01\x12+\n" +
+	"\vdescription\x18\x06 \x01(\tB\x04\xe2A\x01\x01H\x05R\vdescription\x88\x01\x01\x12F\n" +
+	"\x05disks\x18\a \x03(\v2*.google.cloud.backupdr.v1beta.AttachedDiskB\x04\xe2A\x01\x01R\x05disks\x12]\n" +
+	"\x0edisplay_device\x18\b \x01(\v2+.google.cloud.backupdr.v1beta.DisplayDeviceB\x04\xe2A\x01\x01H\x06R\rdisplayDevice\x88\x01\x01\x12d\n" +
+	"\x12guest_accelerators\x18\t \x03(\v2/.google.cloud.backupdr.v1beta.AcceleratorConfigB\x04\xe2A\x01\x01R\x11guestAccelerators\x12%\n" +
 	"\bhostname\x18\n" +
-	" \x01(\tB\x03\xe0A\x01H\aR\bhostname\x88\x01\x01\x12u\n" +
-	"\x17instance_encryption_key\x18\v \x01(\v23.google.cloud.backupdr.v1beta.CustomerEncryptionKeyB\x03\xe0A\x01H\bR\x15instanceEncryptionKey\x88\x01\x01\x12|\n" +
-	"\x1akey_revocation_action_type\x18\f \x01(\x0e25.google.cloud.backupdr.v1beta.KeyRevocationActionTypeB\x03\xe0A\x01H\tR\x17keyRevocationActionType\x88\x01\x01\x12g\n" +
-	"\x06labels\x18\r \x03(\v2J.google.cloud.backupdr.v1beta.ComputeInstanceRestoreProperties.LabelsEntryB\x03\xe0A\x01R\x06labels\x12+\n" +
-	"\fmachine_type\x18\x0e \x01(\tB\x03\xe0A\x01H\n" +
-	"R\vmachineType\x88\x01\x01\x12L\n" +
-	"\bmetadata\x18\x0f \x01(\v2&.google.cloud.backupdr.v1beta.MetadataB\x03\xe0A\x01H\vR\bmetadata\x88\x01\x01\x122\n" +
-	"\x10min_cpu_platform\x18\x10 \x01(\tB\x03\xe0A\x01H\fR\x0eminCpuPlatform\x88\x01\x01\x12b\n" +
-	"\x12network_interfaces\x18\x11 \x03(\v2..google.cloud.backupdr.v1beta.NetworkInterfaceB\x03\xe0A\x01R\x11networkInterfaces\x12~\n" +
-	"\x1anetwork_performance_config\x18\x12 \x01(\v26.google.cloud.backupdr.v1beta.NetworkPerformanceConfigB\x03\xe0A\x01H\rR\x18networkPerformanceConfig\x88\x01\x01\x12N\n" +
-	"\x06params\x18\x13 \x01(\v2,.google.cloud.backupdr.v1beta.InstanceParamsB\x03\xe0A\x04H\x0eR\x06params\x88\x01\x01\x12\xa5\x01\n" +
-	"\x1aprivate_ipv6_google_access\x18\x14 \x01(\x0e2^.google.cloud.backupdr.v1beta.ComputeInstanceRestoreProperties.InstancePrivateIpv6GoogleAccessB\x03\xe0A\x01H\x0fR\x17privateIpv6GoogleAccess\x88\x01\x01\x12l\n" +
-	"\x13allocation_affinity\x18\x15 \x01(\v20.google.cloud.backupdr.v1beta.AllocationAffinityB\x03\xe0A\x01H\x10R\x13reservationAffinity\x88\x01\x01\x120\n" +
-	"\x11resource_policies\x18\x16 \x03(\tB\x03\xe0A\x01R\x10resourcePolicies\x12R\n" +
+	" \x01(\tB\x04\xe2A\x01\x01H\aR\bhostname\x88\x01\x01\x12v\n" +
+	"\x17instance_encryption_key\x18\v \x01(\v23.google.cloud.backupdr.v1beta.CustomerEncryptionKeyB\x04\xe2A\x01\x01H\bR\x15instanceEncryptionKey\x88\x01\x01\x12}\n" +
+	"\x1akey_revocation_action_type\x18\f \x01(\x0e25.google.cloud.backupdr.v1beta.KeyRevocationActionTypeB\x04\xe2A\x01\x01H\tR\x17keyRevocationActionType\x88\x01\x01\x12h\n" +
+	"\x06labels\x18\r \x03(\v2J.google.cloud.backupdr.v1beta.ComputeInstanceRestoreProperties.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12,\n" +
+	"\fmachine_type\x18\x0e \x01(\tB\x04\xe2A\x01\x01H\n" +
+	"R\vmachineType\x88\x01\x01\x12M\n" +
+	"\bmetadata\x18\x0f \x01(\v2&.google.cloud.backupdr.v1beta.MetadataB\x04\xe2A\x01\x01H\vR\bmetadata\x88\x01\x01\x123\n" +
+	"\x10min_cpu_platform\x18\x10 \x01(\tB\x04\xe2A\x01\x01H\fR\x0eminCpuPlatform\x88\x01\x01\x12c\n" +
+	"\x12network_interfaces\x18\x11 \x03(\v2..google.cloud.backupdr.v1beta.NetworkInterfaceB\x04\xe2A\x01\x01R\x11networkInterfaces\x12\x7f\n" +
+	"\x1anetwork_performance_config\x18\x12 \x01(\v26.google.cloud.backupdr.v1beta.NetworkPerformanceConfigB\x04\xe2A\x01\x01H\rR\x18networkPerformanceConfig\x88\x01\x01\x12O\n" +
+	"\x06params\x18\x13 \x01(\v2,.google.cloud.backupdr.v1beta.InstanceParamsB\x04\xe2A\x01\x04H\x0eR\x06params\x88\x01\x01\x12\xa6\x01\n" +
+	"\x1aprivate_ipv6_google_access\x18\x14 \x01(\x0e2^.google.cloud.backupdr.v1beta.ComputeInstanceRestoreProperties.InstancePrivateIpv6GoogleAccessB\x04\xe2A\x01\x01H\x0fR\x17privateIpv6GoogleAccess\x88\x01\x01\x12m\n" +
+	"\x13allocation_affinity\x18\x15 \x01(\v20.google.cloud.backupdr.v1beta.AllocationAffinityB\x04\xe2A\x01\x01H\x10R\x13reservationAffinity\x88\x01\x01\x121\n" +
+	"\x11resource_policies\x18\x16 \x03(\tB\x04\xe2A\x01\x01R\x10resourcePolicies\x12S\n" +
 	"\n" +
-	"scheduling\x18\x17 \x01(\v2(.google.cloud.backupdr.v1beta.SchedulingB\x03\xe0A\x01H\x11R\n" +
-	"scheduling\x88\x01\x01\x12\\\n" +
-	"\x10service_accounts\x18\x18 \x03(\v2,.google.cloud.backupdr.v1beta.ServiceAccountB\x03\xe0A\x01R\x0fserviceAccounts\x12@\n" +
-	"\x04tags\x18\x1a \x01(\v2\".google.cloud.backupdr.v1beta.TagsB\x03\xe0A\x01H\x12R\x04tags\x88\x01\x01\x1a9\n" +
+	"scheduling\x18\x17 \x01(\v2(.google.cloud.backupdr.v1beta.SchedulingB\x04\xe2A\x01\x01H\x11R\n" +
+	"scheduling\x88\x01\x01\x12]\n" +
+	"\x10service_accounts\x18\x18 \x03(\v2,.google.cloud.backupdr.v1beta.ServiceAccountB\x04\xe2A\x01\x01R\x0fserviceAccounts\x12A\n" +
+	"\x04tags\x18\x1a \x01(\v2\".google.cloud.backupdr.v1beta.TagsB\x04\xe2A\x01\x01H\x12R\x04tags\x88\x01\x01\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xc7\x01\n" +
@@ -3421,43 +3421,43 @@ const file_google_cloud_backupdr_v1beta_backupvault_gce_proto_rawDesc = "" +
 	"\x1b_private_ipv6_google_accessB\x16\n" +
 	"\x14_allocation_affinityB\r\n" +
 	"\v_schedulingB\a\n" +
-	"\x05_tags\"\xc3\x01\n" +
-	" ComputeInstanceTargetEnvironment\x12\x1d\n" +
-	"\aproject\x18\x01 \x01(\tB\x03\xe0A\x02R\aproject\x12\x17\n" +
-	"\x04zone\x18\x02 \x01(\tB\x03\xe0A\x02R\x04zone\x12G\n" +
-	"\x1buse_project_service_account\x18\x03 \x01(\bB\x03\xe0A\x01H\x00R\x18useProjectServiceAccount\x88\x01\x01B\x1e\n" +
+	"\x05_tags\"\xc6\x01\n" +
+	" ComputeInstanceTargetEnvironment\x12\x1e\n" +
+	"\aproject\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\aproject\x12\x18\n" +
+	"\x04zone\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04zone\x12H\n" +
+	"\x1buse_project_service_account\x18\x03 \x01(\bB\x04\xe2A\x01\x01H\x00R\x18useProjectServiceAccount\x88\x01\x01B\x1e\n" +
 	"\x1c_use_project_service_account\"\xd5\x01\n" +
 	"#ComputeInstanceDataSourceProperties\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12!\n" +
 	"\fmachine_type\x18\x03 \x01(\tR\vmachineType\x12(\n" +
 	"\x10total_disk_count\x18\x04 \x01(\x03R\x0etotalDiskCount\x12+\n" +
-	"\x12total_disk_size_gb\x18\x05 \x01(\x03R\x0ftotalDiskSizeGb\"\xf9\x02\n" +
-	"\x17AdvancedMachineFeatures\x12J\n" +
-	"\x1cenable_nested_virtualization\x18\x01 \x01(\bB\x03\xe0A\x01H\x00R\x1aenableNestedVirtualization\x88\x01\x01\x122\n" +
-	"\x10threads_per_core\x18\x02 \x01(\x05B\x03\xe0A\x01H\x01R\x0ethreadsPerCore\x88\x01\x01\x126\n" +
-	"\x12visible_core_count\x18\x03 \x01(\x05B\x03\xe0A\x01H\x02R\x10visibleCoreCount\x88\x01\x01\x12>\n" +
-	"\x16enable_uefi_networking\x18\x04 \x01(\bB\x03\xe0A\x01H\x03R\x14enableUefiNetworking\x88\x01\x01B\x1f\n" +
+	"\x12total_disk_size_gb\x18\x05 \x01(\x03R\x0ftotalDiskSizeGb\"\xfd\x02\n" +
+	"\x17AdvancedMachineFeatures\x12K\n" +
+	"\x1cenable_nested_virtualization\x18\x01 \x01(\bB\x04\xe2A\x01\x01H\x00R\x1aenableNestedVirtualization\x88\x01\x01\x123\n" +
+	"\x10threads_per_core\x18\x02 \x01(\x05B\x04\xe2A\x01\x01H\x01R\x0ethreadsPerCore\x88\x01\x01\x127\n" +
+	"\x12visible_core_count\x18\x03 \x01(\x05B\x04\xe2A\x01\x01H\x02R\x10visibleCoreCount\x88\x01\x01\x12?\n" +
+	"\x16enable_uefi_networking\x18\x04 \x01(\bB\x04\xe2A\x01\x01H\x03R\x14enableUefiNetworking\x88\x01\x01B\x1f\n" +
 	"\x1d_enable_nested_virtualizationB\x13\n" +
 	"\x11_threads_per_coreB\x15\n" +
 	"\x13_visible_core_countB\x19\n" +
-	"\x17_enable_uefi_networking\"\x86\x01\n" +
-	"\x1aConfidentialInstanceConfig\x12H\n" +
-	"\x1benable_confidential_compute\x18\x01 \x01(\bB\x03\xe0A\x01H\x00R\x19enableConfidentialCompute\x88\x01\x01B\x1e\n" +
-	"\x1c_enable_confidential_compute\"S\n" +
-	"\rDisplayDevice\x12/\n" +
-	"\x0eenable_display\x18\x01 \x01(\bB\x03\xe0A\x01H\x00R\renableDisplay\x88\x01\x01B\x11\n" +
-	"\x0f_enable_display\"\xf8\x01\n" +
-	"\x18NetworkPerformanceConfig\x12\x84\x01\n" +
-	"\x1btotal_egress_bandwidth_tier\x18\x01 \x01(\x0e2;.google.cloud.backupdr.v1beta.NetworkPerformanceConfig.TierB\x03\xe0A\x01H\x00R\x18totalEgressBandwidthTier\x88\x01\x01\"5\n" +
+	"\x17_enable_uefi_networking\"\x87\x01\n" +
+	"\x1aConfidentialInstanceConfig\x12I\n" +
+	"\x1benable_confidential_compute\x18\x01 \x01(\bB\x04\xe2A\x01\x01H\x00R\x19enableConfidentialCompute\x88\x01\x01B\x1e\n" +
+	"\x1c_enable_confidential_compute\"T\n" +
+	"\rDisplayDevice\x120\n" +
+	"\x0eenable_display\x18\x01 \x01(\bB\x04\xe2A\x01\x01H\x00R\renableDisplay\x88\x01\x01B\x11\n" +
+	"\x0f_enable_display\"\xf9\x01\n" +
+	"\x18NetworkPerformanceConfig\x12\x85\x01\n" +
+	"\x1btotal_egress_bandwidth_tier\x18\x01 \x01(\x0e2;.google.cloud.backupdr.v1beta.NetworkPerformanceConfig.TierB\x04\xe2A\x01\x01H\x00R\x18totalEgressBandwidthTier\x88\x01\x01\"5\n" +
 	"\x04Tier\x12\x14\n" +
 	"\x10TIER_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aDEFAULT\x10\x01\x12\n" +
 	"\n" +
 	"\x06TIER_1\x10\x02B\x1e\n" +
-	"\x1c_total_egress_bandwidth_tier\"\xd8\x01\n" +
-	"\x0eInstanceParams\x12~\n" +
-	"\x15resource_manager_tags\x18\x01 \x03(\v2E.google.cloud.backupdr.v1beta.InstanceParams.ResourceManagerTagsEntryB\x03\xe0A\x01R\x13resourceManagerTags\x1aF\n" +
+	"\x1c_total_egress_bandwidth_tier\"\xd9\x01\n" +
+	"\x0eInstanceParams\x12\x7f\n" +
+	"\x15resource_manager_tags\x18\x01 \x03(\v2E.google.cloud.backupdr.v1beta.InstanceParams.ResourceManagerTagsEntryB\x04\xe2A\x01\x01R\x13resourceManagerTags\x1aF\n" +
 	"\x18ResourceManagerTagsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xbf\x03\n" +
@@ -3480,60 +3480,60 @@ const file_google_cloud_backupdr_v1beta_backupvault_gce_proto_rawDesc = "" +
 	"\vTDX_CAPABLE\x10\f\x12\b\n" +
 	"\x04IDPF\x10\r\x12\x1a\n" +
 	"\x16SEV_LIVE_MIGRATABLE_V2\x10\x0eB\a\n" +
-	"\x05_type\"\xcc\x02\n" +
-	"\x12AllocationAffinity\x12x\n" +
-	"\x17consume_allocation_type\x18\x01 \x01(\x0e25.google.cloud.backupdr.v1beta.AllocationAffinity.TypeB\x03\xe0A\x01H\x00R\x16consumeReservationType\x88\x01\x01\x12\x1a\n" +
-	"\x03key\x18\x02 \x01(\tB\x03\xe0A\x01H\x01R\x03key\x88\x01\x01\x12\x1b\n" +
-	"\x06values\x18\x03 \x03(\tB\x03\xe0A\x01R\x06values\"_\n" +
+	"\x05_type\"\xcf\x02\n" +
+	"\x12AllocationAffinity\x12y\n" +
+	"\x17consume_allocation_type\x18\x01 \x01(\x0e25.google.cloud.backupdr.v1beta.AllocationAffinity.TypeB\x04\xe2A\x01\x01H\x00R\x16consumeReservationType\x88\x01\x01\x12\x1b\n" +
+	"\x03key\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x01R\x03key\x88\x01\x01\x12\x1c\n" +
+	"\x06values\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x06values\"_\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eNO_RESERVATION\x10\x01\x12\x13\n" +
 	"\x0fANY_RESERVATION\x10\x02\x12\x18\n" +
 	"\x14SPECIFIC_RESERVATION\x10\x03B\x1a\n" +
 	"\x18_consume_allocation_typeB\x06\n" +
-	"\x04_key\"\xaa\x01\n" +
-	"\x11AcceleratorConfig\x123\n" +
-	"\x10accelerator_type\x18\x01 \x01(\tB\x03\xe0A\x01H\x00R\x0facceleratorType\x88\x01\x01\x125\n" +
-	"\x11accelerator_count\x18\x02 \x01(\x05B\x03\xe0A\x01H\x01R\x10acceleratorCount\x88\x01\x01B\x13\n" +
+	"\x04_key\"\xac\x01\n" +
+	"\x11AcceleratorConfig\x124\n" +
+	"\x10accelerator_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01H\x00R\x0facceleratorType\x88\x01\x01\x126\n" +
+	"\x11accelerator_count\x18\x02 \x01(\x05B\x04\xe2A\x01\x01H\x01R\x10acceleratorCount\x88\x01\x01B\x13\n" +
 	"\x11_accelerator_typeB\x14\n" +
-	"\x12_accelerator_count\"\xf7\x01\n" +
-	"\x15CustomerEncryptionKey\x12\x1e\n" +
-	"\araw_key\x18\x01 \x01(\tB\x03\xe0A\x01H\x00R\x06rawKey\x121\n" +
-	"\x11rsa_encrypted_key\x18\x02 \x01(\tB\x03\xe0A\x01H\x00R\x0frsaEncryptedKey\x12'\n" +
-	"\fkms_key_name\x18\x03 \x01(\tB\x03\xe0A\x01H\x00R\n" +
-	"kmsKeyName\x12?\n" +
-	"\x17kms_key_service_account\x18\x04 \x01(\tB\x03\xe0A\x01H\x01R\x14kmsKeyServiceAccount\x88\x01\x01B\x05\n" +
+	"\x12_accelerator_count\"\xfb\x01\n" +
+	"\x15CustomerEncryptionKey\x12\x1f\n" +
+	"\araw_key\x18\x01 \x01(\tB\x04\xe2A\x01\x01H\x00R\x06rawKey\x122\n" +
+	"\x11rsa_encrypted_key\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x00R\x0frsaEncryptedKey\x12(\n" +
+	"\fkms_key_name\x18\x03 \x01(\tB\x04\xe2A\x01\x01H\x00R\n" +
+	"kmsKeyName\x12@\n" +
+	"\x17kms_key_service_account\x18\x04 \x01(\tB\x04\xe2A\x01\x01H\x01R\x14kmsKeyServiceAccount\x88\x01\x01B\x05\n" +
 	"\x03keyB\x1a\n" +
-	"\x18_kms_key_service_account\"U\n" +
-	"\x05Entry\x12\x1a\n" +
-	"\x03key\x18\x01 \x01(\tB\x03\xe0A\x01H\x00R\x03key\x88\x01\x01\x12\x1e\n" +
-	"\x05value\x18\x02 \x01(\tB\x03\xe0A\x01H\x01R\x05value\x88\x01\x01B\x06\n" +
+	"\x18_kms_key_service_account\"W\n" +
+	"\x05Entry\x12\x1b\n" +
+	"\x03key\x18\x01 \x01(\tB\x04\xe2A\x01\x01H\x00R\x03key\x88\x01\x01\x12\x1f\n" +
+	"\x05value\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x01R\x05value\x88\x01\x01B\x06\n" +
 	"\x04_keyB\b\n" +
-	"\x06_value\"J\n" +
-	"\bMetadata\x12>\n" +
-	"\x05items\x18\x01 \x03(\v2#.google.cloud.backupdr.v1beta.EntryB\x03\xe0A\x01R\x05items\"\xe4\n" +
+	"\x06_value\"K\n" +
+	"\bMetadata\x12?\n" +
+	"\x05items\x18\x01 \x03(\v2#.google.cloud.backupdr.v1beta.EntryB\x04\xe2A\x01\x01R\x05items\"\xf1\n" +
 	"\n" +
-	"\x10NetworkInterface\x12\"\n" +
-	"\anetwork\x18\x01 \x01(\tB\x03\xe0A\x01H\x00R\anetwork\x88\x01\x01\x12(\n" +
+	"\x10NetworkInterface\x12#\n" +
+	"\anetwork\x18\x01 \x01(\tB\x04\xe2A\x01\x01H\x00R\anetwork\x88\x01\x01\x12)\n" +
 	"\n" +
-	"subnetwork\x18\x02 \x01(\tB\x03\xe0A\x01H\x01R\n" +
-	"subnetwork\x88\x01\x01\x12/\n" +
+	"subnetwork\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x01R\n" +
+	"subnetwork\x88\x01\x01\x120\n" +
 	"\n" +
-	"ip_address\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x02H\x02R\tnetworkIP\x88\x01\x01\x123\n" +
-	"\fipv6_address\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x03H\x03R\vipv6Address\x88\x01\x01\x12G\n" +
-	"\x1binternal_ipv6_prefix_length\x18\x05 \x01(\x05B\x03\xe0A\x01H\x04R\x18internalIpv6PrefixLength\x88\x01\x01\x12\x1c\n" +
-	"\x04name\x18\x06 \x01(\tB\x03\xe0A\x03H\x05R\x04name\x88\x01\x01\x12V\n" +
-	"\x0eaccess_configs\x18\a \x03(\v2*.google.cloud.backupdr.v1beta.AccessConfigB\x03\xe0A\x01R\raccessConfigs\x12_\n" +
-	"\x13ipv6_access_configs\x18\b \x03(\v2*.google.cloud.backupdr.v1beta.AccessConfigB\x03\xe0A\x01R\x11ipv6AccessConfigs\x12W\n" +
-	"\x0falias_ip_ranges\x18\t \x03(\v2*.google.cloud.backupdr.v1beta.AliasIpRangeB\x03\xe0A\x01R\raliasIpRanges\x12\\\n" +
+	"ip_address\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x02H\x02R\tnetworkIP\x88\x01\x01\x124\n" +
+	"\fipv6_address\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x03H\x03R\vipv6Address\x88\x01\x01\x12H\n" +
+	"\x1binternal_ipv6_prefix_length\x18\x05 \x01(\x05B\x04\xe2A\x01\x01H\x04R\x18internalIpv6PrefixLength\x88\x01\x01\x12\x1d\n" +
+	"\x04name\x18\x06 \x01(\tB\x04\xe2A\x01\x03H\x05R\x04name\x88\x01\x01\x12W\n" +
+	"\x0eaccess_configs\x18\a \x03(\v2*.google.cloud.backupdr.v1beta.AccessConfigB\x04\xe2A\x01\x01R\raccessConfigs\x12`\n" +
+	"\x13ipv6_access_configs\x18\b \x03(\v2*.google.cloud.backupdr.v1beta.AccessConfigB\x04\xe2A\x01\x01R\x11ipv6AccessConfigs\x12X\n" +
+	"\x0falias_ip_ranges\x18\t \x03(\v2*.google.cloud.backupdr.v1beta.AliasIpRangeB\x04\xe2A\x01\x01R\raliasIpRanges\x12\\\n" +
 	"\n" +
 	"stack_type\x18\n" +
-	" \x01(\x0e28.google.cloud.backupdr.v1beta.NetworkInterface.StackTypeH\x06R\tstackType\x88\x01\x01\x12q\n" +
-	"\x10ipv6_access_type\x18\v \x01(\x0e2=.google.cloud.backupdr.v1beta.NetworkInterface.Ipv6AccessTypeB\x03\xe0A\x01H\aR\x0eipv6AccessType\x88\x01\x01\x12)\n" +
-	"\vqueue_count\x18\f \x01(\x05B\x03\xe0A\x01H\bR\n" +
-	"queueCount\x88\x01\x01\x12[\n" +
-	"\bnic_type\x18\r \x01(\x0e26.google.cloud.backupdr.v1beta.NetworkInterface.NicTypeB\x03\xe0A\x01H\tR\anicType\x88\x01\x01\x127\n" +
-	"\x12network_attachment\x18\x0e \x01(\tB\x03\xe0A\x01H\n" +
+	" \x01(\x0e28.google.cloud.backupdr.v1beta.NetworkInterface.StackTypeH\x06R\tstackType\x88\x01\x01\x12r\n" +
+	"\x10ipv6_access_type\x18\v \x01(\x0e2=.google.cloud.backupdr.v1beta.NetworkInterface.Ipv6AccessTypeB\x04\xe2A\x01\x01H\aR\x0eipv6AccessType\x88\x01\x01\x12*\n" +
+	"\vqueue_count\x18\f \x01(\x05B\x04\xe2A\x01\x01H\bR\n" +
+	"queueCount\x88\x01\x01\x12\\\n" +
+	"\bnic_type\x18\r \x01(\x0e26.google.cloud.backupdr.v1beta.NetworkInterface.NicTypeB\x04\xe2A\x01\x01H\tR\anicType\x88\x01\x01\x128\n" +
+	"\x12network_attachment\x18\x0e \x01(\tB\x04\xe2A\x01\x01H\n" +
 	"R\x11networkAttachment\x88\x01\x01\"E\n" +
 	"\tStackType\x12\x1a\n" +
 	"\x16STACK_TYPE_UNSPECIFIED\x10\x00\x12\r\n" +
@@ -3559,16 +3559,16 @@ const file_google_cloud_backupdr_v1beta_backupvault_gce_proto_rawDesc = "" +
 	"\x11_ipv6_access_typeB\x0e\n" +
 	"\f_queue_countB\v\n" +
 	"\t_nic_typeB\x15\n" +
-	"\x13_network_attachment\"\x9e\x06\n" +
-	"\fAccessConfig\x12S\n" +
-	"\x04type\x18\x01 \x01(\x0e25.google.cloud.backupdr.v1beta.AccessConfig.AccessTypeB\x03\xe0A\x01H\x00R\x04type\x88\x01\x01\x12\x1c\n" +
-	"\x04name\x18\x02 \x01(\tB\x03\xe0A\x01H\x01R\x04name\x88\x01\x01\x12$\n" +
-	"\vexternal_ip\x18\x03 \x01(\tB\x03\xe0A\x01H\x02R\x05natIP\x88\x01\x01\x12-\n" +
-	"\rexternal_ipv6\x18\x04 \x01(\tB\x03\xe0A\x01H\x03R\fexternalIpv6\x88\x01\x01\x12G\n" +
-	"\x1bexternal_ipv6_prefix_length\x18\x05 \x01(\x05B\x03\xe0A\x01H\x04R\x18externalIpv6PrefixLength\x88\x01\x01\x12.\n" +
-	"\x0eset_public_ptr\x18\x06 \x01(\bB\x03\xe0A\x01H\x05R\fsetPublicPtr\x88\x01\x01\x12=\n" +
-	"\x16public_ptr_domain_name\x18\a \x01(\tB\x03\xe0A\x01H\x06R\x13publicPtrDomainName\x88\x01\x01\x12c\n" +
-	"\fnetwork_tier\x18\b \x01(\x0e26.google.cloud.backupdr.v1beta.AccessConfig.NetworkTierB\x03\xe0A\x01H\aR\vnetworkTier\x88\x01\x01\"N\n" +
+	"\x13_network_attachment\"\xa6\x06\n" +
+	"\fAccessConfig\x12T\n" +
+	"\x04type\x18\x01 \x01(\x0e25.google.cloud.backupdr.v1beta.AccessConfig.AccessTypeB\x04\xe2A\x01\x01H\x00R\x04type\x88\x01\x01\x12\x1d\n" +
+	"\x04name\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x01R\x04name\x88\x01\x01\x12%\n" +
+	"\vexternal_ip\x18\x03 \x01(\tB\x04\xe2A\x01\x01H\x02R\x05natIP\x88\x01\x01\x12.\n" +
+	"\rexternal_ipv6\x18\x04 \x01(\tB\x04\xe2A\x01\x01H\x03R\fexternalIpv6\x88\x01\x01\x12H\n" +
+	"\x1bexternal_ipv6_prefix_length\x18\x05 \x01(\x05B\x04\xe2A\x01\x01H\x04R\x18externalIpv6PrefixLength\x88\x01\x01\x12/\n" +
+	"\x0eset_public_ptr\x18\x06 \x01(\bB\x04\xe2A\x01\x01H\x05R\fsetPublicPtr\x88\x01\x01\x12>\n" +
+	"\x16public_ptr_domain_name\x18\a \x01(\tB\x04\xe2A\x01\x01H\x06R\x13publicPtrDomainName\x88\x01\x01\x12d\n" +
+	"\fnetwork_tier\x18\b \x01(\x0e26.google.cloud.backupdr.v1beta.AccessConfig.NetworkTierB\x04\xe2A\x01\x01H\aR\vnetworkTier\x88\x01\x01\"N\n" +
 	"\n" +
 	"AccessType\x12\x1b\n" +
 	"\x17ACCESS_TYPE_UNSPECIFIED\x10\x00\x12\x12\n" +
@@ -3585,27 +3585,27 @@ const file_google_cloud_backupdr_v1beta_backupvault_gce_proto_rawDesc = "" +
 	"\x1c_external_ipv6_prefix_lengthB\x11\n" +
 	"\x0f_set_public_ptrB\x19\n" +
 	"\x17_public_ptr_domain_nameB\x0f\n" +
-	"\r_network_tier\"\xa6\x01\n" +
-	"\fAliasIpRange\x12,\n" +
-	"\rip_cidr_range\x18\x01 \x01(\tB\x03\xe0A\x01H\x00R\vipCidrRange\x88\x01\x01\x12<\n" +
-	"\x15subnetwork_range_name\x18\x02 \x01(\tB\x03\xe0A\x01H\x01R\x13subnetworkRangeName\x88\x01\x01B\x10\n" +
+	"\r_network_tier\"\xa8\x01\n" +
+	"\fAliasIpRange\x12-\n" +
+	"\rip_cidr_range\x18\x01 \x01(\tB\x04\xe2A\x01\x01H\x00R\vipCidrRange\x88\x01\x01\x12=\n" +
+	"\x15subnetwork_range_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x01R\x13subnetworkRangeName\x88\x01\x01B\x10\n" +
 	"\x0e_ip_cidr_rangeB\x18\n" +
-	"\x16_subnetwork_range_name\"\xa2\v\n" +
+	"\x16_subnetwork_range_name\"\xad\v\n" +
 	"\n" +
-	"Scheduling\x12t\n" +
-	"\x13on_host_maintenance\x18\x01 \x01(\x0e2:.google.cloud.backupdr.v1beta.Scheduling.OnHostMaintenanceB\x03\xe0A\x01H\x00R\x11onHostMaintenance\x88\x01\x01\x125\n" +
-	"\x11automatic_restart\x18\x02 \x01(\bB\x03\xe0A\x01H\x01R\x10automaticRestart\x88\x01\x01\x12*\n" +
-	"\vpreemptible\x18\x03 \x01(\bB\x03\xe0A\x01H\x02R\vpreemptible\x88\x01\x01\x12c\n" +
-	"\x0fnode_affinities\x18\x04 \x03(\v25.google.cloud.backupdr.v1beta.Scheduling.NodeAffinityB\x03\xe0A\x01R\x0enodeAffinities\x12,\n" +
-	"\rmin_node_cpus\x18\x05 \x01(\x05B\x03\xe0A\x01H\x03R\vminNodeCpus\x88\x01\x01\x12s\n" +
-	"\x12provisioning_model\x18\x06 \x01(\x0e2:.google.cloud.backupdr.v1beta.Scheduling.ProvisioningModelB\x03\xe0A\x01H\x04R\x11provisioningModel\x88\x01\x01\x12\x8c\x01\n" +
-	"\x1binstance_termination_action\x18\a \x01(\x0e2B.google.cloud.backupdr.v1beta.Scheduling.InstanceTerminationActionB\x03\xe0A\x01H\x05R\x19instanceTerminationAction\x88\x01\x01\x12w\n" +
+	"Scheduling\x12u\n" +
+	"\x13on_host_maintenance\x18\x01 \x01(\x0e2:.google.cloud.backupdr.v1beta.Scheduling.OnHostMaintenanceB\x04\xe2A\x01\x01H\x00R\x11onHostMaintenance\x88\x01\x01\x126\n" +
+	"\x11automatic_restart\x18\x02 \x01(\bB\x04\xe2A\x01\x01H\x01R\x10automaticRestart\x88\x01\x01\x12+\n" +
+	"\vpreemptible\x18\x03 \x01(\bB\x04\xe2A\x01\x01H\x02R\vpreemptible\x88\x01\x01\x12d\n" +
+	"\x0fnode_affinities\x18\x04 \x03(\v25.google.cloud.backupdr.v1beta.Scheduling.NodeAffinityB\x04\xe2A\x01\x01R\x0enodeAffinities\x12-\n" +
+	"\rmin_node_cpus\x18\x05 \x01(\x05B\x04\xe2A\x01\x01H\x03R\vminNodeCpus\x88\x01\x01\x12t\n" +
+	"\x12provisioning_model\x18\x06 \x01(\x0e2:.google.cloud.backupdr.v1beta.Scheduling.ProvisioningModelB\x04\xe2A\x01\x01H\x04R\x11provisioningModel\x88\x01\x01\x12\x8d\x01\n" +
+	"\x1binstance_termination_action\x18\a \x01(\x0e2B.google.cloud.backupdr.v1beta.Scheduling.InstanceTerminationActionB\x04\xe2A\x01\x01H\x05R\x19instanceTerminationAction\x88\x01\x01\x12x\n" +
 	"\x1alocal_ssd_recovery_timeout\x18\n" +
-	" \x01(\v20.google.cloud.backupdr.v1beta.SchedulingDurationB\x03\xe0A\x01H\x06R\x17localSsdRecoveryTimeout\x88\x01\x01\x1a\xfc\x01\n" +
-	"\fNodeAffinity\x12\x1a\n" +
-	"\x03key\x18\x01 \x01(\tB\x03\xe0A\x01H\x00R\x03key\x88\x01\x01\x12d\n" +
-	"\boperator\x18\x02 \x01(\x0e2>.google.cloud.backupdr.v1beta.Scheduling.NodeAffinity.OperatorB\x03\xe0A\x01H\x01R\boperator\x88\x01\x01\x12\x1b\n" +
-	"\x06values\x18\x03 \x03(\tB\x03\xe0A\x01R\x06values\"8\n" +
+	" \x01(\v20.google.cloud.backupdr.v1beta.SchedulingDurationB\x04\xe2A\x01\x01H\x06R\x17localSsdRecoveryTimeout\x88\x01\x01\x1a\xff\x01\n" +
+	"\fNodeAffinity\x12\x1b\n" +
+	"\x03key\x18\x01 \x01(\tB\x04\xe2A\x01\x01H\x00R\x03key\x88\x01\x01\x12e\n" +
+	"\boperator\x18\x02 \x01(\x0e2>.google.cloud.backupdr.v1beta.Scheduling.NodeAffinity.OperatorB\x04\xe2A\x01\x01H\x01R\boperator\x88\x01\x01\x12\x1c\n" +
+	"\x06values\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x06values\"8\n" +
 	"\bOperator\x12\x18\n" +
 	"\x14OPERATOR_UNSPECIFIED\x10\x00\x12\x06\n" +
 	"\x02IN\x10\x01\x12\n" +
@@ -3632,46 +3632,46 @@ const file_google_cloud_backupdr_v1beta_backupvault_gce_proto_rawDesc = "" +
 	"\x0e_min_node_cpusB\x15\n" +
 	"\x13_provisioning_modelB\x1e\n" +
 	"\x1c_instance_termination_actionB\x1d\n" +
-	"\x1b_local_ssd_recovery_timeout\"n\n" +
-	"\x12SchedulingDuration\x12\"\n" +
-	"\aseconds\x18\x01 \x01(\x03B\x03\xe0A\x01H\x00R\aseconds\x88\x01\x01\x12\x1e\n" +
-	"\x05nanos\x18\x02 \x01(\x05B\x03\xe0A\x01H\x01R\x05nanos\x88\x01\x01B\n" +
+	"\x1b_local_ssd_recovery_timeout\"p\n" +
+	"\x12SchedulingDuration\x12#\n" +
+	"\aseconds\x18\x01 \x01(\x03B\x04\xe2A\x01\x01H\x00R\aseconds\x88\x01\x01\x12\x1f\n" +
+	"\x05nanos\x18\x02 \x01(\x05B\x04\xe2A\x01\x01H\x01R\x05nanos\x88\x01\x01B\n" +
 	"\n" +
 	"\b_secondsB\b\n" +
-	"\x06_nanos\"W\n" +
-	"\x0eServiceAccount\x12\x1e\n" +
-	"\x05email\x18\x01 \x01(\tB\x03\xe0A\x01H\x00R\x05email\x88\x01\x01\x12\x1b\n" +
-	"\x06scopes\x18\x02 \x03(\tB\x03\xe0A\x01R\x06scopesB\b\n" +
-	"\x06_email\"!\n" +
-	"\x04Tags\x12\x19\n" +
-	"\x05items\x18\x01 \x03(\tB\x03\xe0A\x01R\x05items\"\x8b\x0e\n" +
-	"\fAttachedDisk\x12r\n" +
-	"\x11initialize_params\x18\x01 \x01(\v2;.google.cloud.backupdr.v1beta.AttachedDisk.InitializeParamsB\x03\xe0A\x01H\x00R\x10initializeParams\x88\x01\x01\x12)\n" +
-	"\vdevice_name\x18\x04 \x01(\tB\x03\xe0A\x01H\x01R\n" +
-	"deviceName\x88\x01\x01\x12\x1c\n" +
-	"\x04kind\x18\x05 \x01(\tB\x03\xe0A\x01H\x02R\x04kind\x88\x01\x01\x12n\n" +
-	"\x14disk_type_deprecated\x18\x06 \x01(\x0e23.google.cloud.backupdr.v1beta.AttachedDisk.DiskTypeB\x02\x18\x01H\x03R\x12diskTypeDeprecated\x88\x01\x01\x12Q\n" +
-	"\x04mode\x18\a \x01(\x0e23.google.cloud.backupdr.v1beta.AttachedDisk.DiskModeB\x03\xe0A\x01H\x04R\x04mode\x88\x01\x01\x12 \n" +
-	"\x06source\x18\b \x01(\tB\x03\xe0A\x01H\x05R\x06source\x88\x01\x01\x12\x1e\n" +
-	"\x05index\x18\t \x01(\x03B\x03\xe0A\x01H\x06R\x05index\x88\x01\x01\x12\x1c\n" +
+	"\x06_nanos\"Y\n" +
+	"\x0eServiceAccount\x12\x1f\n" +
+	"\x05email\x18\x01 \x01(\tB\x04\xe2A\x01\x01H\x00R\x05email\x88\x01\x01\x12\x1c\n" +
+	"\x06scopes\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x06scopesB\b\n" +
+	"\x06_email\"\"\n" +
+	"\x04Tags\x12\x1a\n" +
+	"\x05items\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\x05items\"\x99\x0e\n" +
+	"\fAttachedDisk\x12s\n" +
+	"\x11initialize_params\x18\x01 \x01(\v2;.google.cloud.backupdr.v1beta.AttachedDisk.InitializeParamsB\x04\xe2A\x01\x01H\x00R\x10initializeParams\x88\x01\x01\x12*\n" +
+	"\vdevice_name\x18\x04 \x01(\tB\x04\xe2A\x01\x01H\x01R\n" +
+	"deviceName\x88\x01\x01\x12\x1d\n" +
+	"\x04kind\x18\x05 \x01(\tB\x04\xe2A\x01\x01H\x02R\x04kind\x88\x01\x01\x12n\n" +
+	"\x14disk_type_deprecated\x18\x06 \x01(\x0e23.google.cloud.backupdr.v1beta.AttachedDisk.DiskTypeB\x02\x18\x01H\x03R\x12diskTypeDeprecated\x88\x01\x01\x12R\n" +
+	"\x04mode\x18\a \x01(\x0e23.google.cloud.backupdr.v1beta.AttachedDisk.DiskModeB\x04\xe2A\x01\x01H\x04R\x04mode\x88\x01\x01\x12!\n" +
+	"\x06source\x18\b \x01(\tB\x04\xe2A\x01\x01H\x05R\x06source\x88\x01\x01\x12\x1f\n" +
+	"\x05index\x18\t \x01(\x03B\x04\xe2A\x01\x01H\x06R\x05index\x88\x01\x01\x12\x1d\n" +
 	"\x04boot\x18\n" +
-	" \x01(\bB\x03\xe0A\x01H\aR\x04boot\x88\x01\x01\x12)\n" +
-	"\vauto_delete\x18\v \x01(\bB\x03\xe0A\x01H\bR\n" +
-	"autoDelete\x88\x01\x01\x12\x1d\n" +
-	"\alicense\x18\f \x03(\tB\x03\xe0A\x01R\alicense\x12i\n" +
-	"\x0edisk_interface\x18\r \x01(\x0e28.google.cloud.backupdr.v1beta.AttachedDisk.DiskInterfaceB\x03\xe0A\x01H\tR\rdiskInterface\x88\x01\x01\x12[\n" +
-	"\x10guest_os_feature\x18\x0e \x03(\v2,.google.cloud.backupdr.v1beta.GuestOsFeatureB\x03\xe0A\x01R\x0eguestOsFeature\x12m\n" +
-	"\x13disk_encryption_key\x18\x0f \x01(\v23.google.cloud.backupdr.v1beta.CustomerEncryptionKeyB\x03\xe0A\x01H\n" +
-	"R\x11diskEncryptionKey\x88\x01\x01\x12*\n" +
-	"\fdisk_size_gb\x18\x10 \x01(\x03B\x03\xe0A\x01H\vR\n" +
-	"diskSizeGb\x88\x01\x01\x12g\n" +
-	"\vsaved_state\x18\x11 \x01(\x0e29.google.cloud.backupdr.v1beta.AttachedDisk.DiskSavedStateB\x06\xe0A\x01\xe0A\x03H\fR\n" +
-	"savedState\x88\x01\x01\x12(\n" +
-	"\tdisk_type\x18\x12 \x01(\tB\x06\xe0A\x01\xe0A\x03H\rR\bdiskType\x88\x01\x01\x12Q\n" +
-	"\x04type\x18\x13 \x01(\x0e23.google.cloud.backupdr.v1beta.AttachedDisk.DiskTypeB\x03\xe0A\x01H\x0eR\x04type\x88\x01\x01\x1aq\n" +
-	"\x10InitializeParams\x12%\n" +
-	"\tdisk_name\x18\x01 \x01(\tB\x03\xe0A\x01H\x00R\bdiskName\x88\x01\x01\x12(\n" +
-	"\rreplica_zones\x18\x02 \x03(\tB\x03\xe0A\x01R\freplicaZonesB\f\n" +
+	" \x01(\bB\x04\xe2A\x01\x01H\aR\x04boot\x88\x01\x01\x12*\n" +
+	"\vauto_delete\x18\v \x01(\bB\x04\xe2A\x01\x01H\bR\n" +
+	"autoDelete\x88\x01\x01\x12\x1e\n" +
+	"\alicense\x18\f \x03(\tB\x04\xe2A\x01\x01R\alicense\x12j\n" +
+	"\x0edisk_interface\x18\r \x01(\x0e28.google.cloud.backupdr.v1beta.AttachedDisk.DiskInterfaceB\x04\xe2A\x01\x01H\tR\rdiskInterface\x88\x01\x01\x12\\\n" +
+	"\x10guest_os_feature\x18\x0e \x03(\v2,.google.cloud.backupdr.v1beta.GuestOsFeatureB\x04\xe2A\x01\x01R\x0eguestOsFeature\x12n\n" +
+	"\x13disk_encryption_key\x18\x0f \x01(\v23.google.cloud.backupdr.v1beta.CustomerEncryptionKeyB\x04\xe2A\x01\x01H\n" +
+	"R\x11diskEncryptionKey\x88\x01\x01\x12+\n" +
+	"\fdisk_size_gb\x18\x10 \x01(\x03B\x04\xe2A\x01\x01H\vR\n" +
+	"diskSizeGb\x88\x01\x01\x12f\n" +
+	"\vsaved_state\x18\x11 \x01(\x0e29.google.cloud.backupdr.v1beta.AttachedDisk.DiskSavedStateB\x05\xe2A\x02\x01\x03H\fR\n" +
+	"savedState\x88\x01\x01\x12'\n" +
+	"\tdisk_type\x18\x12 \x01(\tB\x05\xe2A\x02\x01\x03H\rR\bdiskType\x88\x01\x01\x12R\n" +
+	"\x04type\x18\x13 \x01(\x0e23.google.cloud.backupdr.v1beta.AttachedDisk.DiskTypeB\x04\xe2A\x01\x01H\x0eR\x04type\x88\x01\x01\x1as\n" +
+	"\x10InitializeParams\x12&\n" +
+	"\tdisk_name\x18\x01 \x01(\tB\x04\xe2A\x01\x01H\x00R\bdiskName\x88\x01\x01\x12)\n" +
+	"\rreplica_zones\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\freplicaZonesB\f\n" +
 	"\n" +
 	"_disk_name\"B\n" +
 	"\bDiskType\x12\x19\n" +

@@ -764,7 +764,7 @@ func TestHTTPReaderDisableChecksum(t *testing.T) {
 		if err == nil {
 			t.Fatal("expected CRC error, got nil")
 		}
-		if !strings.Contains(err.Error(), "storage: bad CRC on read") {
+		if !strings.Contains(err.Error(), "storage: checksum mismatch: bad CRC on read") {
 			t.Fatalf("expected bad CRC error, got: %v", err)
 		}
 
@@ -858,4 +858,102 @@ func TestMRDRunCallbackNilGuard(t *testing.T) {
 	// Calling runCallback with a nil callback should safely return without panicking.
 	m.runCallback(0, 100, nil, nil)
 	m.callbackWg.Wait()
+}
+
+type roundTripFunc func(*http.Request) (*http.Response, error)
+
+func (f roundTripFunc) RoundTrip(req *http.Request) (*http.Response, error) {
+	return f(req)
+}
+
+func TestRangeReaderCompressedReopen(t *testing.T) {
+	internalErr := http2Error("INTERNAL_ERROR")
+	type step struct {
+		status        int
+		contentLength int64
+		contentRange  string
+		body          string
+		err           error
+	}
+	tests := []struct {
+		name           string
+		readCompressed bool
+		steps          []step
+		wantData       string
+		wantRanges     []string
+	}{
+		{
+			name:           "ReadCompressed 206 partial content reopen",
+			readCompressed: true,
+			steps: []step{
+				{status: http.StatusPartialContent, contentLength: 6, contentRange: "bytes 2-7/10", body: readData[2:4], err: internalErr},
+				{status: http.StatusPartialContent, contentRange: "bytes 4-7/10", body: readData[4:8], err: io.EOF},
+			},
+			wantData:   readData[2:8],
+			wantRanges: []string{"bytes=2-7", "bytes=4-7"},
+		},
+		{
+			name:           "Decompressive transcoding 200 full-object reopen discards seen bytes",
+			readCompressed: false,
+			steps: []step{
+				{status: http.StatusOK, contentLength: -1, body: readData[:4], err: internalErr},
+				{status: http.StatusOK, contentLength: -1, body: readData, err: io.EOF},
+			},
+			wantData:   readData,
+			wantRanges: []string{"bytes=2-7", "bytes=6-7"},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := t.Context()
+			var callIdx int
+			var gotRanges []string
+			rt := roundTripFunc(func(req *http.Request) (*http.Response, error) {
+				gotRanges = append(gotRanges, req.Header.Get("Range"))
+				if callIdx >= len(tc.steps) {
+					return nil, fmt.Errorf("unexpected HTTP request #%d (Range=%q)", callIdx+1, req.Header.Get("Range"))
+				}
+				s := tc.steps[callIdx]
+				callIdx++
+				h := make(http.Header)
+				h.Set("X-Goog-Stored-Content-Encoding", "gzip")
+				if tc.readCompressed {
+					h.Set("Content-Encoding", "gzip")
+				}
+				if s.contentRange != "" {
+					h.Set("Content-Range", s.contentRange)
+				}
+				return &http.Response{
+					StatusCode:    s.status,
+					ContentLength: s.contentLength,
+					Header:        h,
+					Body:          &fakeReadCloser{data: []byte(s.body), counts: []int{len(s.body)}, err: s.err},
+				}, nil
+			})
+
+			client, err := NewClient(ctx, option.WithHTTPClient(&http.Client{Transport: rt}), option.WithoutAuthentication(), WithXMLReads())
+			if err != nil {
+				t.Fatalf("NewClient() err = %v, want nil", err)
+			}
+			defer client.Close()
+
+			r, err := client.Bucket("b").Object("o").ReadCompressed(tc.readCompressed).NewRangeReader(ctx, 2, 6)
+			if err != nil {
+				t.Fatalf("NewRangeReader(2, 6) err = %v, want nil", err)
+			}
+			defer r.Close()
+
+			gotBytes, err := io.ReadAll(r)
+			if err != nil {
+				t.Fatalf("io.ReadAll(r) err = %v, want nil", err)
+			}
+			if got := string(gotBytes); got != tc.wantData {
+				t.Errorf("io.ReadAll(r) = %q, want %q", got, tc.wantData)
+			}
+			if diff := cmp.Diff(tc.wantRanges, gotRanges); diff != "" {
+				t.Errorf("Range headers mismatch (-want +got):\n%s", diff)
+			}
+		})
+	}
 }

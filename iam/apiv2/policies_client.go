@@ -834,6 +834,11 @@ func (c *policiesRESTClient) ListPolicies(ctx context.Context, req *iampb.ListPo
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetParent())
 
 		params := url.Values{}
@@ -899,6 +904,11 @@ func (c *policiesRESTClient) GetPolicy(ctx context.Context, req *iampb.GetPolicy
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -958,6 +968,11 @@ func (c *policiesRESTClient) CreatePolicy(ctx context.Context, req *iampb.Create
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetParent())
@@ -1043,6 +1058,11 @@ func (c *policiesRESTClient) UpdatePolicy(ctx context.Context, req *iampb.Update
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetPolicy().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetPolicy().GetName())
 
 	params := url.Values{}
@@ -1102,6 +1122,11 @@ func (c *policiesRESTClient) UpdatePolicy(ctx context.Context, req *iampb.Update
 func (c *policiesRESTClient) DeletePolicy(ctx context.Context, req *iampb.DeletePolicyRequest, opts ...gax.CallOption) (*DeletePolicyOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -1166,6 +1191,11 @@ func (c *policiesRESTClient) DeletePolicy(ctx context.Context, req *iampb.Delete
 func (c *policiesRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())

@@ -535,6 +535,11 @@ func (c *termsOfServiceRESTClient) GetTermsOfService(ctx context.Context, req *a
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -641,6 +646,11 @@ func (c *termsOfServiceRESTClient) RetrieveLatestTermsOfService(ctx context.Cont
 func (c *termsOfServiceRESTClient) AcceptTermsOfService(ctx context.Context, req *accountspb.AcceptTermsOfServiceRequest, opts ...gax.CallOption) (*accountspb.AcceptTermsOfServiceResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v:accept", req.GetName())

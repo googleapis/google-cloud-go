@@ -2395,77 +2395,77 @@ var File_google_cloud_oracledatabase_v1_goldengate_deployment_proto protoreflect
 
 const file_google_cloud_oracledatabase_v1_goldengate_deployment_proto_rawDesc = "" +
 	"\n" +
-	":google/cloud/oracledatabase/v1/goldengate_deployment.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bgoogle/type/dayofweek.proto\"\xf1\x06\n" +
-	"\x14GoldengateDeployment\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12c\n" +
+	":google/cloud/oracledatabase/v1/goldengate_deployment.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bgoogle/type/dayofweek.proto\"\xfb\x06\n" +
+	"\x14GoldengateDeployment\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12d\n" +
 	"\n" +
-	"properties\x18\x02 \x01(\v2>.google.cloud.oracledatabase.v1.GoldengateDeploymentPropertiesB\x03\xe0A\x02R\n" +
-	"properties\x12+\n" +
-	"\x0fgcp_oracle_zone\x18\x03 \x01(\tB\x03\xe0A\x01R\rgcpOracleZone\x12]\n" +
-	"\x06labels\x18\x04 \x03(\v2@.google.cloud.oracledatabase.v1.GoldengateDeployment.LabelsEntryB\x03\xe0A\x01R\x06labels\x12Q\n" +
-	"\vodb_network\x18\x05 \x01(\tB0\xe0A\x01\xfaA*\n" +
+	"properties\x18\x02 \x01(\v2>.google.cloud.oracledatabase.v1.GoldengateDeploymentPropertiesB\x04\xe2A\x01\x02R\n" +
+	"properties\x12,\n" +
+	"\x0fgcp_oracle_zone\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\rgcpOracleZone\x12^\n" +
+	"\x06labels\x18\x04 \x03(\v2@.google.cloud.oracledatabase.v1.GoldengateDeployment.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12R\n" +
+	"\vodb_network\x18\x05 \x01(\tB1\xe2A\x01\x01\xfaA*\n" +
 	"(oracledatabase.googleapis.com/OdbNetworkR\n" +
-	"odbNetwork\x12N\n" +
+	"odbNetwork\x12O\n" +
 	"\n" +
-	"odb_subnet\x18\x06 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'oracledatabase.googleapis.com/OdbSubnetR\todbSubnet\x12*\n" +
-	"\x0eentitlement_id\x18\a \x01(\tB\x03\xe0A\x03R\rentitlementId\x12&\n" +
-	"\fdisplay_name\x18\b \x01(\tB\x03\xe0A\x02R\vdisplayName\x12@\n" +
-	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12\x1c\n" +
+	"odb_subnet\x18\x06 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'oracledatabase.googleapis.com/OdbSubnetR\todbSubnet\x12+\n" +
+	"\x0eentitlement_id\x18\a \x01(\tB\x04\xe2A\x01\x03R\rentitlementId\x12'\n" +
+	"\fdisplay_name\x18\b \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12A\n" +
+	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12\x1d\n" +
 	"\aoci_url\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R\x06ociUrl\x1a9\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R\x06ociUrl\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\xbc\x01\xeaA\xb8\x01\n" +
-	"2oracledatabase.googleapis.com/GoldengateDeployment\x12Uprojects/{project}/locations/{location}/goldengateDeployments/{goldengate_deployment}*\x15goldengateDeployments2\x14goldengateDeployment\"\xf9 \n" +
-	"\x1eGoldengateDeploymentProperties\x12\x17\n" +
-	"\x04ocid\x18\x01 \x01(\tB\x03\xe0A\x03R\x04ocid\x12\x8f\x01\n" +
-	"\x0flifecycle_state\x18\x02 \x01(\x0e2a.google.cloud.oracledatabase.v1.GoldengateDeploymentProperties.GoldengateDeploymentLifecycleStateB\x03\xe0A\x03R\x0elifecycleState\x12u\n" +
-	"\rlicense_model\x18\x03 \x01(\x0e2K.google.cloud.oracledatabase.v1.GoldengateDeploymentProperties.LicenseModelB\x03\xe0A\x01R\flicenseModel\x12.\n" +
-	"\x10environment_type\x18\x04 \x01(\tB\x03\xe0A\x01R\x0fenvironmentType\x12)\n" +
-	"\x0ecpu_core_count\x18\x05 \x01(\x05B\x03\xe0A\x01R\fcpuCoreCount\x12:\n" +
-	"\x17is_auto_scaling_enabled\x18\x06 \x01(\bB\x03\xe0A\x01R\x14isAutoScalingEnabled\x12%\n" +
-	"\vdescription\x18\a \x01(\tB\x03\xe0A\x01R\vdescription\x12,\n" +
-	"\x0fdeployment_type\x18\b \x01(\tB\x03\xe0A\x02R\x0edeploymentType\x12W\n" +
-	"\bogg_data\x18\t \x01(\v27.google.cloud.oracledatabase.v1.GoldengateOggDeploymentB\x03\xe0A\x02R\aoggData\x12o\n" +
+	"2oracledatabase.googleapis.com/GoldengateDeployment\x12Uprojects/{project}/locations/{location}/goldengateDeployments/{goldengate_deployment}*\x15goldengateDeployments2\x14goldengateDeployment\"\xa3!\n" +
+	"\x1eGoldengateDeploymentProperties\x12\x18\n" +
+	"\x04ocid\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04ocid\x12\x90\x01\n" +
+	"\x0flifecycle_state\x18\x02 \x01(\x0e2a.google.cloud.oracledatabase.v1.GoldengateDeploymentProperties.GoldengateDeploymentLifecycleStateB\x04\xe2A\x01\x03R\x0elifecycleState\x12v\n" +
+	"\rlicense_model\x18\x03 \x01(\x0e2K.google.cloud.oracledatabase.v1.GoldengateDeploymentProperties.LicenseModelB\x04\xe2A\x01\x01R\flicenseModel\x12/\n" +
+	"\x10environment_type\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x0fenvironmentType\x12*\n" +
+	"\x0ecpu_core_count\x18\x05 \x01(\x05B\x04\xe2A\x01\x01R\fcpuCoreCount\x12;\n" +
+	"\x17is_auto_scaling_enabled\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\x14isAutoScalingEnabled\x12&\n" +
+	"\vdescription\x18\a \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12-\n" +
+	"\x0fdeployment_type\x18\b \x01(\tB\x04\xe2A\x01\x02R\x0edeploymentType\x12X\n" +
+	"\bogg_data\x18\t \x01(\v27.google.cloud.oracledatabase.v1.GoldengateOggDeploymentB\x04\xe2A\x01\x02R\aoggData\x12p\n" +
 	"\x12maintenance_window\x18\n" +
-	" \x01(\v2;.google.cloud.oracledatabase.v1.GoldengateMaintenanceWindowB\x03\xe0A\x01R\x11maintenanceWindow\x12o\n" +
-	"\x12maintenance_config\x18\v \x01(\v2;.google.cloud.oracledatabase.v1.GoldengateMaintenanceConfigB\x03\xe0A\x01R\x11maintenanceConfig\x12\x17\n" +
-	"\x04fqdn\x18\f \x01(\tB\x03\xe0A\x03R\x04fqdn\x12\x99\x01\n" +
-	"\x13lifecycle_sub_state\x18\r \x01(\x0e2d.google.cloud.oracledatabase.v1.GoldengateDeploymentProperties.GoldengateDeploymentLifecycleSubStateB\x03\xe0A\x03R\x11lifecycleSubState\x12|\n" +
-	"\bcategory\x18\x0e \x01(\x0e2[.google.cloud.oracledatabase.v1.GoldengateDeploymentProperties.GoldengateDeploymentCategoryB\x03\xe0A\x03R\bcategory\x125\n" +
-	"\x14deployment_backup_id\x18\x0f \x01(\tB\x03\xe0A\x03R\x12deploymentBackupId\x12@\n" +
-	"\vupdate_time\x18\x10 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x120\n" +
-	"\x11lifecycle_details\x18\x11 \x01(\tB\x03\xe0A\x03R\x10lifecycleDetails\x12\x1d\n" +
-	"\ahealthy\x18\x12 \x01(\bB\x03\xe0A\x03R\ahealthy\x12:\n" +
-	"\x17load_balancer_subnet_id\x18\x13 \x01(\tB\x03\xe0A\x03R\x14loadBalancerSubnetId\x12-\n" +
-	"\x10load_balancer_id\x18\x14 \x01(\tB\x03\xe0A\x03R\x0eloadBalancerId\x12\x1c\n" +
-	"\ansg_ids\x18\x15 \x03(\tB\x03\xe0A\x03R\x06nsgIds\x12 \n" +
-	"\tis_public\x18\x16 \x01(\bB\x03\xe0A\x03R\bisPublic\x127\n" +
-	"\x11public_ip_address\x18\x17 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x04R\x0fpublicIpAddress\x129\n" +
-	"\x12private_ip_address\x18\x18 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x04R\x10privateIpAddress\x12*\n" +
-	"\x0edeployment_url\x18\x19 \x01(\tB\x03\xe0A\x03R\rdeploymentUrl\x12/\n" +
-	"\x11is_latest_version\x18\x1a \x01(\bB\x03\xe0A\x03R\x0fisLatestVersion\x12S\n" +
-	"\x15upgrade_required_time\x18\x1b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x13upgradeRequiredTime\x12?\n" +
-	"\x19storage_utilization_bytes\x18\x1c \x01(\x03B\x03\xe0A\x03R\x17storageUtilizationBytes\x12U\n" +
-	"%is_storage_utilization_limit_exceeded\x18\x1d \x01(\bB\x03\xe0A\x03R!isStorageUtilizationLimitExceeded\x12{\n" +
-	"\x1adeployment_diagnostic_data\x18\x1e \x01(\v28.google.cloud.oracledatabase.v1.DeploymentDiagnosticDataB\x03\xe0A\x03R\x18deploymentDiagnosticData\x12f\n" +
-	"\x0fbackup_schedule\x18\x1f \x01(\v28.google.cloud.oracledatabase.v1.GoldengateBackupScheduleB\x03\xe0A\x03R\x0ebackupSchedule\x12S\n" +
-	"\x15next_maintenance_time\x18  \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x13nextMaintenanceTime\x12\x9e\x01\n" +
-	"\x1cnext_maintenance_action_type\x18! \x01(\x0e2X.google.cloud.oracledatabase.v1.GoldengateDeploymentProperties.NextMaintenanceActionTypeB\x03\xe0A\x03R\x19nextMaintenanceActionType\x12E\n" +
-	"\x1cnext_maintenance_description\x18\" \x01(\tB\x03\xe0A\x03R\x1anextMaintenanceDescription\x12_\n" +
-	"\x1cogg_version_support_end_time\x18# \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x18oggVersionSupportEndTime\x12O\n" +
-	"\vingress_ips\x18$ \x03(\v2).google.cloud.oracledatabase.v1.IngressIpB\x03\xe0A\x03R\n" +
-	"ingressIps\x12\x89\x01\n" +
-	"\x0fdeployment_role\x18% \x01(\x0e2[.google.cloud.oracledatabase.v1.GoldengateDeploymentProperties.GoldengateDeploymentRoleTypeB\x03\xe0A\x03R\x0edeploymentRole\x12Z\n" +
-	"\x19last_backup_schedule_time\x18& \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x16lastBackupScheduleTime\x12Z\n" +
-	"\x19next_backup_schedule_time\x18' \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x16nextBackupScheduleTime\x12I\n" +
-	"\x10role_change_time\x18( \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0eroleChangeTime\x12S\n" +
-	"\x05locks\x18) \x03(\v28.google.cloud.oracledatabase.v1.GoldengateDeploymentLockB\x03\xe0A\x03R\x05locks\x12X\n" +
+	" \x01(\v2;.google.cloud.oracledatabase.v1.GoldengateMaintenanceWindowB\x04\xe2A\x01\x01R\x11maintenanceWindow\x12p\n" +
+	"\x12maintenance_config\x18\v \x01(\v2;.google.cloud.oracledatabase.v1.GoldengateMaintenanceConfigB\x04\xe2A\x01\x01R\x11maintenanceConfig\x12\x18\n" +
+	"\x04fqdn\x18\f \x01(\tB\x04\xe2A\x01\x03R\x04fqdn\x12\x9a\x01\n" +
+	"\x13lifecycle_sub_state\x18\r \x01(\x0e2d.google.cloud.oracledatabase.v1.GoldengateDeploymentProperties.GoldengateDeploymentLifecycleSubStateB\x04\xe2A\x01\x03R\x11lifecycleSubState\x12}\n" +
+	"\bcategory\x18\x0e \x01(\x0e2[.google.cloud.oracledatabase.v1.GoldengateDeploymentProperties.GoldengateDeploymentCategoryB\x04\xe2A\x01\x03R\bcategory\x126\n" +
+	"\x14deployment_backup_id\x18\x0f \x01(\tB\x04\xe2A\x01\x03R\x12deploymentBackupId\x12A\n" +
+	"\vupdate_time\x18\x10 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x121\n" +
+	"\x11lifecycle_details\x18\x11 \x01(\tB\x04\xe2A\x01\x03R\x10lifecycleDetails\x12\x1e\n" +
+	"\ahealthy\x18\x12 \x01(\bB\x04\xe2A\x01\x03R\ahealthy\x12;\n" +
+	"\x17load_balancer_subnet_id\x18\x13 \x01(\tB\x04\xe2A\x01\x03R\x14loadBalancerSubnetId\x12.\n" +
+	"\x10load_balancer_id\x18\x14 \x01(\tB\x04\xe2A\x01\x03R\x0eloadBalancerId\x12\x1d\n" +
+	"\ansg_ids\x18\x15 \x03(\tB\x04\xe2A\x01\x03R\x06nsgIds\x12!\n" +
+	"\tis_public\x18\x16 \x01(\bB\x04\xe2A\x01\x03R\bisPublic\x128\n" +
+	"\x11public_ip_address\x18\x17 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x04R\x0fpublicIpAddress\x12:\n" +
+	"\x12private_ip_address\x18\x18 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x04R\x10privateIpAddress\x12+\n" +
+	"\x0edeployment_url\x18\x19 \x01(\tB\x04\xe2A\x01\x03R\rdeploymentUrl\x120\n" +
+	"\x11is_latest_version\x18\x1a \x01(\bB\x04\xe2A\x01\x03R\x0fisLatestVersion\x12T\n" +
+	"\x15upgrade_required_time\x18\x1b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x13upgradeRequiredTime\x12@\n" +
+	"\x19storage_utilization_bytes\x18\x1c \x01(\x03B\x04\xe2A\x01\x03R\x17storageUtilizationBytes\x12V\n" +
+	"%is_storage_utilization_limit_exceeded\x18\x1d \x01(\bB\x04\xe2A\x01\x03R!isStorageUtilizationLimitExceeded\x12|\n" +
+	"\x1adeployment_diagnostic_data\x18\x1e \x01(\v28.google.cloud.oracledatabase.v1.DeploymentDiagnosticDataB\x04\xe2A\x01\x03R\x18deploymentDiagnosticData\x12g\n" +
+	"\x0fbackup_schedule\x18\x1f \x01(\v28.google.cloud.oracledatabase.v1.GoldengateBackupScheduleB\x04\xe2A\x01\x03R\x0ebackupSchedule\x12T\n" +
+	"\x15next_maintenance_time\x18  \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x13nextMaintenanceTime\x12\x9f\x01\n" +
+	"\x1cnext_maintenance_action_type\x18! \x01(\x0e2X.google.cloud.oracledatabase.v1.GoldengateDeploymentProperties.NextMaintenanceActionTypeB\x04\xe2A\x01\x03R\x19nextMaintenanceActionType\x12F\n" +
+	"\x1cnext_maintenance_description\x18\" \x01(\tB\x04\xe2A\x01\x03R\x1anextMaintenanceDescription\x12`\n" +
+	"\x1cogg_version_support_end_time\x18# \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x18oggVersionSupportEndTime\x12P\n" +
+	"\vingress_ips\x18$ \x03(\v2).google.cloud.oracledatabase.v1.IngressIpB\x04\xe2A\x01\x03R\n" +
+	"ingressIps\x12\x8a\x01\n" +
+	"\x0fdeployment_role\x18% \x01(\x0e2[.google.cloud.oracledatabase.v1.GoldengateDeploymentProperties.GoldengateDeploymentRoleTypeB\x04\xe2A\x01\x03R\x0edeploymentRole\x12[\n" +
+	"\x19last_backup_schedule_time\x18& \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x16lastBackupScheduleTime\x12[\n" +
+	"\x19next_backup_schedule_time\x18' \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x16nextBackupScheduleTime\x12J\n" +
+	"\x10role_change_time\x18( \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x0eroleChangeTime\x12T\n" +
+	"\x05locks\x18) \x03(\v28.google.cloud.oracledatabase.v1.GoldengateDeploymentLockB\x04\xe2A\x01\x03R\x05locks\x12Y\n" +
 	"\n" +
-	"placements\x18* \x03(\v23.google.cloud.oracledatabase.v1.GoldengatePlacementB\x03\xe0A\x03R\n" +
+	"placements\x18* \x03(\v23.google.cloud.oracledatabase.v1.GoldengatePlacementB\x04\xe2A\x01\x03R\n" +
 	"placements\"\x99\x02\n" +
 	"\"GoldengateDeploymentLifecycleState\x125\n" +
 	"1GOLDENGATE_DEPLOYMENT_LIFECYCLE_STATE_UNSPECIFIED\x10\x00\x12\f\n" +
@@ -2513,117 +2513,117 @@ const file_google_cloud_oracledatabase_v1_goldengate_deployment_proto_rawDesc = 
 	"\x1cGoldengateDeploymentRoleType\x12/\n" +
 	"+GOLDENGATE_DEPLOYMENT_ROLE_TYPE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aPRIMARY\x10\x01\x12\v\n" +
-	"\aSTANDBY\x10\x02\"\xa1\x06\n" +
-	"\x17GoldengateOggDeployment\x12,\n" +
-	"\x0eadmin_password\x18\x03 \x01(\tB\x03\xe0A\x01H\x00R\radminPassword\x12z\n" +
+	"\aSTANDBY\x10\x02\"\xa9\x06\n" +
+	"\x17GoldengateOggDeployment\x12-\n" +
+	"\x0eadmin_password\x18\x03 \x01(\tB\x04\xe2A\x01\x01H\x00R\radminPassword\x12y\n" +
 	"\x1dadmin_password_secret_version\x18\n" +
-	" \x01(\tB5\xe0A\x01\xe0A\x04\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionH\x00R\x1aadminPasswordSecretVersion\x12#\n" +
+	" \x01(\tB4\xe2A\x02\x01\x04\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionH\x00R\x1aadminPasswordSecretVersion\x12$\n" +
 	"\n" +
-	"deployment\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"deployment\x12*\n" +
-	"\x0eadmin_username\x18\x02 \x01(\tB\x03\xe0A\x02R\radminUsername\x12$\n" +
-	"\vogg_version\x18\x04 \x01(\tB\x03\xe0A\x01R\n" +
-	"oggVersion\x12%\n" +
-	"\vcertificate\x18\x05 \x01(\tB\x03\xe0A\x03R\vcertificate\x12w\n" +
-	"\x10credential_store\x18\x06 \x01(\x0e2G.google.cloud.oracledatabase.v1.GoldengateOggDeployment.CredentialStoreB\x03\xe0A\x03R\x0fcredentialStore\x121\n" +
-	"\x12identity_domain_id\x18\a \x01(\tB\x03\xe0A\x03R\x10identityDomainId\x121\n" +
-	"\x12password_secret_id\x18\b \x01(\tB\x03\xe0A\x03R\x10passwordSecretId\x12r\n" +
-	"\x13group_roles_mapping\x18\t \x01(\v2=.google.cloud.oracledatabase.v1.GoldengateGroupToRolesMappingB\x03\xe0A\x03R\x11groupRolesMapping\"L\n" +
+	"deployment\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"deployment\x12+\n" +
+	"\x0eadmin_username\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\radminUsername\x12%\n" +
+	"\vogg_version\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"oggVersion\x12&\n" +
+	"\vcertificate\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\vcertificate\x12x\n" +
+	"\x10credential_store\x18\x06 \x01(\x0e2G.google.cloud.oracledatabase.v1.GoldengateOggDeployment.CredentialStoreB\x04\xe2A\x01\x03R\x0fcredentialStore\x122\n" +
+	"\x12identity_domain_id\x18\a \x01(\tB\x04\xe2A\x01\x03R\x10identityDomainId\x122\n" +
+	"\x12password_secret_id\x18\b \x01(\tB\x04\xe2A\x01\x03R\x10passwordSecretId\x12s\n" +
+	"\x13group_roles_mapping\x18\t \x01(\v2=.google.cloud.oracledatabase.v1.GoldengateGroupToRolesMappingB\x04\xe2A\x01\x03R\x11groupRolesMapping\"L\n" +
 	"\x0fCredentialStore\x12 \n" +
 	"\x1cCREDENTIAL_STORE_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +
 	"GOLDENGATE\x10\x01\x12\a\n" +
 	"\x03IAM\x10\x02B\x1d\n" +
-	"\x1bdeployment_password_options\"p\n" +
-	"\x1bGoldengateMaintenanceWindow\x12-\n" +
-	"\x03day\x18\x01 \x01(\x0e2\x16.google.type.DayOfWeekB\x03\xe0A\x02R\x03day\x12\"\n" +
+	"\x1bdeployment_password_options\"r\n" +
+	"\x1bGoldengateMaintenanceWindow\x12.\n" +
+	"\x03day\x18\x01 \x01(\x0e2\x16.google.type.DayOfWeekB\x04\xe2A\x01\x02R\x03day\x12#\n" +
 	"\n" +
-	"start_hour\x18\x02 \x01(\x05B\x03\xe0A\x02R\tstartHour\"\xbb\x03\n" +
-	"\x1bGoldengateMaintenanceConfig\x12X\n" +
-	"'is_interim_release_auto_upgrade_enabled\x18\x01 \x01(\bB\x03\xe0A\x01R\"isInterimReleaseAutoUpgradeEnabled\x12Q\n" +
-	"#interim_release_upgrade_period_days\x18\x02 \x01(\x05B\x03\xe0A\x01R\x1finterimReleaseUpgradePeriodDays\x12O\n" +
-	"\"bundle_release_upgrade_period_days\x18\x03 \x01(\x05B\x03\xe0A\x01R\x1ebundleReleaseUpgradePeriodDays\x12M\n" +
-	"!major_release_upgrade_period_days\x18\x04 \x01(\x05B\x03\xe0A\x01R\x1dmajorReleaseUpgradePeriodDays\x12O\n" +
-	"\"security_patch_upgrade_period_days\x18\x05 \x01(\x05B\x03\xe0A\x01R\x1esecurityPatchUpgradePeriodDays\"\xf8\x03\n" +
-	"\x18DeploymentDiagnosticData\x12!\n" +
-	"\tnamespace\x18\x01 \x01(\tB\x03\xe0A\x03R\tnamespace\x12\x1b\n" +
-	"\x06bucket\x18\x02 \x01(\tB\x03\xe0A\x03R\x06bucket\x12\x1b\n" +
-	"\x06object\x18\x03 \x01(\tB\x03\xe0A\x03R\x06object\x12x\n" +
-	"\x10diagnostic_state\x18\x04 \x01(\x0e2H.google.cloud.oracledatabase.v1.DeploymentDiagnosticData.DiagnosticStateB\x03\xe0A\x03R\x0fdiagnosticState\x12S\n" +
-	"\x15diagnostic_start_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x13diagnosticStartTime\x12O\n" +
-	"\x13diagnostic_end_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x11diagnosticEndTime\"_\n" +
+	"start_hour\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\tstartHour\"\xc0\x03\n" +
+	"\x1bGoldengateMaintenanceConfig\x12Y\n" +
+	"'is_interim_release_auto_upgrade_enabled\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\"isInterimReleaseAutoUpgradeEnabled\x12R\n" +
+	"#interim_release_upgrade_period_days\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x1finterimReleaseUpgradePeriodDays\x12P\n" +
+	"\"bundle_release_upgrade_period_days\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\x1ebundleReleaseUpgradePeriodDays\x12N\n" +
+	"!major_release_upgrade_period_days\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\x1dmajorReleaseUpgradePeriodDays\x12P\n" +
+	"\"security_patch_upgrade_period_days\x18\x05 \x01(\x05B\x04\xe2A\x01\x01R\x1esecurityPatchUpgradePeriodDays\"\xfe\x03\n" +
+	"\x18DeploymentDiagnosticData\x12\"\n" +
+	"\tnamespace\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\tnamespace\x12\x1c\n" +
+	"\x06bucket\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x06bucket\x12\x1c\n" +
+	"\x06object\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06object\x12y\n" +
+	"\x10diagnostic_state\x18\x04 \x01(\x0e2H.google.cloud.oracledatabase.v1.DeploymentDiagnosticData.DiagnosticStateB\x04\xe2A\x01\x03R\x0fdiagnosticState\x12T\n" +
+	"\x15diagnostic_start_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x13diagnosticStartTime\x12P\n" +
+	"\x13diagnostic_end_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x11diagnosticEndTime\"_\n" +
 	"\x0fDiagnosticState\x12 \n" +
 	"\x1cDIAGNOSTIC_STATE_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vIN_PROGRESS\x10\x01\x12\r\n" +
 	"\tSUCCEEDED\x10\x02\x12\n" +
 	"\n" +
-	"\x06FAILED\x10\x03\"\x88\x04\n" +
-	"\x18GoldengateBackupSchedule\x12\x1b\n" +
-	"\x06bucket\x18\x01 \x01(\tB\x03\xe0A\x03R\x06bucket\x12*\n" +
-	"\x0ecompartment_id\x18\x02 \x01(\tB\x03\xe0A\x03R\rcompartmentId\x12\x94\x01\n" +
-	"\x1afrequency_backup_scheduled\x18\x03 \x01(\x0e2Q.google.cloud.oracledatabase.v1.GoldengateBackupSchedule.FrequencyBackupScheduledB\x03\xe0A\x03R\x18frequencyBackupScheduled\x12(\n" +
-	"\rmetadata_only\x18\x04 \x01(\bB\x03\xe0A\x03R\fmetadataOnly\x12!\n" +
-	"\tnamespace\x18\x05 \x01(\tB\x03\xe0A\x03R\tnamespace\x12S\n" +
-	"\x15backup_scheduled_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x13backupScheduledTime\"j\n" +
+	"\x06FAILED\x10\x03\"\x8e\x04\n" +
+	"\x18GoldengateBackupSchedule\x12\x1c\n" +
+	"\x06bucket\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x06bucket\x12+\n" +
+	"\x0ecompartment_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rcompartmentId\x12\x95\x01\n" +
+	"\x1afrequency_backup_scheduled\x18\x03 \x01(\x0e2Q.google.cloud.oracledatabase.v1.GoldengateBackupSchedule.FrequencyBackupScheduledB\x04\xe2A\x01\x03R\x18frequencyBackupScheduled\x12)\n" +
+	"\rmetadata_only\x18\x04 \x01(\bB\x04\xe2A\x01\x03R\fmetadataOnly\x12\"\n" +
+	"\tnamespace\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\tnamespace\x12T\n" +
+	"\x15backup_scheduled_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x13backupScheduledTime\"j\n" +
 	"\x18FrequencyBackupScheduled\x12*\n" +
 	"&FREQUENCY_BACKUP_SCHEDULED_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05DAILY\x10\x01\x12\n" +
 	"\n" +
 	"\x06WEEKLY\x10\x02\x12\v\n" +
-	"\aMONTHLY\x10\x03\"F\n" +
-	"\tIngressIp\x129\n" +
-	"\x12ingress_ip_address\x18\x01 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x04R\x10ingressIpAddress\"\xf5\x02\n" +
-	"\x18GoldengateDeploymentLock\x12Z\n" +
-	"\x04type\x18\x01 \x01(\x0e2A.google.cloud.oracledatabase.v1.GoldengateDeploymentLock.LockTypeB\x03\xe0A\x03R\x04type\x12*\n" +
-	"\x0ecompartment_id\x18\x02 \x01(\tB\x03\xe0A\x03R\rcompartmentId\x123\n" +
-	"\x13related_resource_id\x18\x03 \x01(\tB\x03\xe0A\x03R\x11relatedResourceId\x12\x1d\n" +
-	"\amessage\x18\x04 \x01(\tB\x03\xe0A\x03R\amessage\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\aMONTHLY\x10\x03\"G\n" +
+	"\tIngressIp\x12:\n" +
+	"\x12ingress_ip_address\x18\x01 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x04R\x10ingressIpAddress\"\xfa\x02\n" +
+	"\x18GoldengateDeploymentLock\x12[\n" +
+	"\x04type\x18\x01 \x01(\x0e2A.google.cloud.oracledatabase.v1.GoldengateDeploymentLock.LockTypeB\x04\xe2A\x01\x03R\x04type\x12+\n" +
+	"\x0ecompartment_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rcompartmentId\x124\n" +
+	"\x13related_resource_id\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x11relatedResourceId\x12\x1e\n" +
+	"\amessage\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\amessage\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"createTime\";\n" +
 	"\bLockType\x12\x19\n" +
 	"\x15LOCK_TYPE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04FULL\x10\x01\x12\n" +
 	"\n" +
-	"\x06DELETE\x10\x02\"s\n" +
-	"\x13GoldengatePlacement\x124\n" +
-	"\x13availability_domain\x18\x01 \x01(\tB\x03\xe0A\x03R\x12availabilityDomain\x12&\n" +
-	"\ffault_domain\x18\x02 \x01(\tB\x03\xe0A\x03R\vfaultDomain\"\xe5\x01\n" +
-	"\x1dGoldengateGroupToRolesMapping\x12/\n" +
-	"\x11security_group_id\x18\x01 \x01(\tB\x03\xe0A\x03R\x0fsecurityGroupId\x129\n" +
-	"\x16administrator_group_id\x18\x02 \x01(\tB\x03\xe0A\x03R\x14administratorGroupId\x12/\n" +
-	"\x11operator_group_id\x18\x03 \x01(\tB\x03\xe0A\x03R\x0foperatorGroupId\x12'\n" +
-	"\ruser_group_id\x18\x04 \x01(\tB\x03\xe0A\x03R\vuserGroupId\"\xd2\x02\n" +
-	"!CreateGoldengateDeploymentRequest\x12R\n" +
-	"\x06parent\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\x122oracledatabase.googleapis.com/GoldengateDeploymentR\x06parent\x12=\n" +
-	"\x18goldengate_deployment_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x16goldengateDeploymentId\x12n\n" +
-	"\x15goldengate_deployment\x18\x03 \x01(\v24.google.cloud.oracledatabase.v1.GoldengateDeploymentB\x03\xe0A\x02R\x14goldengateDeployment\x12*\n" +
+	"\x06DELETE\x10\x02\"u\n" +
+	"\x13GoldengatePlacement\x125\n" +
+	"\x13availability_domain\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x12availabilityDomain\x12'\n" +
+	"\ffault_domain\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vfaultDomain\"\xe9\x01\n" +
+	"\x1dGoldengateGroupToRolesMapping\x120\n" +
+	"\x11security_group_id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x0fsecurityGroupId\x12:\n" +
+	"\x16administrator_group_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x14administratorGroupId\x120\n" +
+	"\x11operator_group_id\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x0foperatorGroupId\x12(\n" +
+	"\ruser_group_id\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\vuserGroupId\"\xd6\x02\n" +
+	"!CreateGoldengateDeploymentRequest\x12S\n" +
+	"\x06parent\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\x122oracledatabase.googleapis.com/GoldengateDeploymentR\x06parent\x12>\n" +
+	"\x18goldengate_deployment_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x16goldengateDeploymentId\x12o\n" +
+	"\x15goldengate_deployment\x18\x03 \x01(\v24.google.cloud.oracledatabase.v1.GoldengateDeploymentB\x04\xe2A\x01\x02R\x14goldengateDeployment\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x9f\x01\n" +
-	"!DeleteGoldengateDeploymentRequest\x12N\n" +
-	"\x04name\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\n" +
-	"2oracledatabase.googleapis.com/GoldengateDeploymentR\x04name\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xa1\x01\n" +
+	"!DeleteGoldengateDeploymentRequest\x12O\n" +
+	"\x04name\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\n" +
+	"2oracledatabase.googleapis.com/GoldengateDeploymentR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"p\n" +
-	"\x1eGetGoldengateDeploymentRequest\x12N\n" +
-	"\x04name\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\n" +
-	"2oracledatabase.googleapis.com/GoldengateDeploymentR\x04name\"\xf9\x01\n" +
-	" ListGoldengateDeploymentsRequest\x12R\n" +
-	"\x06parent\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\x122oracledatabase.googleapis.com/GoldengateDeploymentR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"q\n" +
+	"\x1eGetGoldengateDeploymentRequest\x12O\n" +
+	"\x04name\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\n" +
+	"2oracledatabase.googleapis.com/GoldengateDeploymentR\x04name\"\xfe\x01\n" +
+	" ListGoldengateDeploymentsRequest\x12S\n" +
+	"\x06parent\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\x122oracledatabase.googleapis.com/GoldengateDeploymentR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xdf\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xe0\x01\n" +
 	"!ListGoldengateDeploymentsResponse\x12k\n" +
 	"\x16goldengate_deployments\x18\x01 \x03(\v24.google.cloud.oracledatabase.v1.GoldengateDeploymentR\x15goldengateDeployments\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x01R\vunreachable\"q\n" +
-	"\x1fStopGoldengateDeploymentRequest\x12N\n" +
-	"\x04name\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\n" +
-	"2oracledatabase.googleapis.com/GoldengateDeploymentR\x04name\"r\n" +
-	" StartGoldengateDeploymentRequest\x12N\n" +
-	"\x04name\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\vunreachable\"r\n" +
+	"\x1fStopGoldengateDeploymentRequest\x12O\n" +
+	"\x04name\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\n" +
+	"2oracledatabase.googleapis.com/GoldengateDeploymentR\x04name\"s\n" +
+	" StartGoldengateDeploymentRequest\x12O\n" +
+	"\x04name\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\n" +
 	"2oracledatabase.googleapis.com/GoldengateDeploymentR\x04nameB\xf3\x01\n" +
 	"\"com.google.cloud.oracledatabase.v1B\x19GoldengateDeploymentProtoP\x01ZJcloud.google.com/go/oracledatabase/apiv1/oracledatabasepb;oracledatabasepb\xaa\x02\x1eGoogle.Cloud.OracleDatabase.V1\xca\x02\x1eGoogle\\Cloud\\OracleDatabase\\V1\xea\x02!Google::Cloud::OracleDatabase::V1b\x06proto3"
 

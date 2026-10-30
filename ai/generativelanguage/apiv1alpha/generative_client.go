@@ -759,6 +759,11 @@ func (c *generativeRESTClient) GenerateContent(ctx context.Context, req *generat
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetModel(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:generateContent", req.GetModel())
 
 	params := url.Values{}
@@ -818,6 +823,11 @@ func (c *generativeRESTClient) GenerateAnswer(ctx context.Context, req *generati
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetModel(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:generateAnswer", req.GetModel())
@@ -880,6 +890,11 @@ func (c *generativeRESTClient) StreamGenerateContent(ctx context.Context, req *g
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetModel(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:streamGenerateContent", req.GetModel())
@@ -990,6 +1005,11 @@ func (c *generativeRESTClient) EmbedContent(ctx context.Context, req *generative
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetModel(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:embedContent", req.GetModel())
 
 	params := url.Values{}
@@ -1050,6 +1070,11 @@ func (c *generativeRESTClient) BatchEmbedContents(ctx context.Context, req *gene
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetModel(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:batchEmbedContents", req.GetModel())
@@ -1114,6 +1139,11 @@ func (c *generativeRESTClient) CountTokens(ctx context.Context, req *generativel
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetModel(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:countTokens", req.GetModel())
 
 	params := url.Values{}
@@ -1174,6 +1204,11 @@ func (c *generativeRESTClient) BidiGenerateContent(ctx context.Context, opts ...
 func (c *generativeRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -1241,6 +1276,11 @@ func (c *generativeRESTClient) ListOperations(ctx context.Context, req *longrunn
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/operations", req.GetName())

@@ -1804,40 +1804,40 @@ var File_google_cloud_bigquery_v2_routine_proto protoreflect.FileDescriptor
 
 const file_google_cloud_bigquery_v2_routine_proto_rawDesc = "" +
 	"\n" +
-	"&google/cloud/bigquery/v2/routine.proto\x12\x18google.cloud.bigquery.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a$google/cloud/bigquery/v2/error.proto\x1a0google/cloud/bigquery/v2/routine_reference.proto\x1a+google/cloud/bigquery/v2/standard_sql.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xd1\x17\n" +
-	"\aRoutine\x12\x17\n" +
-	"\x04etag\x18\x01 \x01(\tB\x03\xe0A\x03R\x04etag\x12\\\n" +
-	"\x11routine_reference\x18\x02 \x01(\v2*.google.cloud.bigquery.v2.RoutineReferenceB\x03\xe0A\x02R\x10routineReference\x12U\n" +
-	"\froutine_type\x18\x03 \x01(\x0e2-.google.cloud.bigquery.v2.Routine.RoutineTypeB\x03\xe0A\x02R\vroutineType\x12(\n" +
-	"\rcreation_time\x18\x04 \x01(\x03B\x03\xe0A\x03R\fcreationTime\x121\n" +
-	"\x12last_modified_time\x18\x05 \x01(\x03B\x03\xe0A\x03R\x10lastModifiedTime\x12K\n" +
-	"\blanguage\x18\x06 \x01(\x0e2*.google.cloud.bigquery.v2.Routine.LanguageB\x03\xe0A\x01R\blanguage\x12H\n" +
+	"&google/cloud/bigquery/v2/routine.proto\x12\x18google.cloud.bigquery.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a$google/cloud/bigquery/v2/error.proto\x1a0google/cloud/bigquery/v2/routine_reference.proto\x1a+google/cloud/bigquery/v2/standard_sql.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xe6\x17\n" +
+	"\aRoutine\x12\x18\n" +
+	"\x04etag\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04etag\x12]\n" +
+	"\x11routine_reference\x18\x02 \x01(\v2*.google.cloud.bigquery.v2.RoutineReferenceB\x04\xe2A\x01\x02R\x10routineReference\x12V\n" +
+	"\froutine_type\x18\x03 \x01(\x0e2-.google.cloud.bigquery.v2.Routine.RoutineTypeB\x04\xe2A\x01\x02R\vroutineType\x12)\n" +
+	"\rcreation_time\x18\x04 \x01(\x03B\x04\xe2A\x01\x03R\fcreationTime\x122\n" +
+	"\x12last_modified_time\x18\x05 \x01(\x03B\x04\xe2A\x01\x03R\x10lastModifiedTime\x12L\n" +
+	"\blanguage\x18\x06 \x01(\x0e2*.google.cloud.bigquery.v2.Routine.LanguageB\x04\xe2A\x01\x01R\blanguage\x12H\n" +
 	"\targuments\x18\a \x03(\v2*.google.cloud.bigquery.v2.Routine.ArgumentR\targuments\x12N\n" +
 	"\vreturn_type\x18\n" +
 	" \x01(\v2-.google.cloud.bigquery.v2.StandardSqlDataTypeR\n" +
-	"returnType\x12_\n" +
-	"\x11return_table_type\x18\r \x01(\v2..google.cloud.bigquery.v2.StandardSqlTableTypeB\x03\xe0A\x01R\x0freturnTableType\x12-\n" +
+	"returnType\x12`\n" +
+	"\x11return_table_type\x18\r \x01(\v2..google.cloud.bigquery.v2.StandardSqlTableTypeB\x04\xe2A\x01\x01R\x0freturnTableType\x12-\n" +
 	"\x12imported_libraries\x18\b \x03(\tR\x11importedLibraries\x12'\n" +
-	"\x0fdefinition_body\x18\t \x01(\tR\x0edefinitionBody\x12%\n" +
-	"\vdescription\x18\v \x01(\tB\x03\xe0A\x01R\vdescription\x12d\n" +
-	"\x11determinism_level\x18\f \x01(\x0e22.google.cloud.bigquery.v2.Routine.DeterminismLevelB\x03\xe0A\x01R\x10determinismLevel\x12X\n" +
-	"\rsecurity_mode\x18\x12 \x01(\x0e2..google.cloud.bigquery.v2.Routine.SecurityModeB\x03\xe0A\x01R\fsecurityMode\x12@\n" +
-	"\vstrict_mode\x18\x0e \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\n" +
-	"strictMode\x12t\n" +
-	"\x17remote_function_options\x18\x0f \x01(\v27.google.cloud.bigquery.v2.Routine.RemoteFunctionOptionsB\x03\xe0A\x01R\x15remoteFunctionOptions\x12P\n" +
-	"\rspark_options\x18\x10 \x01(\v2&.google.cloud.bigquery.v2.SparkOptionsB\x03\xe0A\x01R\fsparkOptions\x12k\n" +
-	"\x14data_governance_type\x18\x11 \x01(\x0e24.google.cloud.bigquery.v2.Routine.DataGovernanceTypeB\x03\xe0A\x01R\x12dataGovernanceType\x12S\n" +
-	"\x0epython_options\x18\x14 \x01(\v2'.google.cloud.bigquery.v2.PythonOptionsB\x03\xe0A\x01R\rpythonOptions\x12o\n" +
-	"\x18external_runtime_options\x18\x15 \x01(\v20.google.cloud.bigquery.v2.ExternalRuntimeOptionsB\x03\xe0A\x01R\x16externalRuntimeOptions\x12T\n" +
-	"\fbuild_status\x18\x16 \x01(\v2,.google.cloud.bigquery.v2.RoutineBuildStatusB\x03\xe0A\x03R\vbuildStatus\x1a\xd6\x04\n" +
-	"\bArgument\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x01R\x04name\x12a\n" +
-	"\rargument_kind\x18\x02 \x01(\x0e27.google.cloud.bigquery.v2.Routine.Argument.ArgumentKindB\x03\xe0A\x01R\fargumentKind\x12C\n" +
+	"\x0fdefinition_body\x18\t \x01(\tR\x0edefinitionBody\x12&\n" +
+	"\vdescription\x18\v \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12e\n" +
+	"\x11determinism_level\x18\f \x01(\x0e22.google.cloud.bigquery.v2.Routine.DeterminismLevelB\x04\xe2A\x01\x01R\x10determinismLevel\x12Y\n" +
+	"\rsecurity_mode\x18\x12 \x01(\x0e2..google.cloud.bigquery.v2.Routine.SecurityModeB\x04\xe2A\x01\x01R\fsecurityMode\x12A\n" +
+	"\vstrict_mode\x18\x0e \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\n" +
+	"strictMode\x12u\n" +
+	"\x17remote_function_options\x18\x0f \x01(\v27.google.cloud.bigquery.v2.Routine.RemoteFunctionOptionsB\x04\xe2A\x01\x01R\x15remoteFunctionOptions\x12Q\n" +
+	"\rspark_options\x18\x10 \x01(\v2&.google.cloud.bigquery.v2.SparkOptionsB\x04\xe2A\x01\x01R\fsparkOptions\x12l\n" +
+	"\x14data_governance_type\x18\x11 \x01(\x0e24.google.cloud.bigquery.v2.Routine.DataGovernanceTypeB\x04\xe2A\x01\x01R\x12dataGovernanceType\x12T\n" +
+	"\x0epython_options\x18\x14 \x01(\v2'.google.cloud.bigquery.v2.PythonOptionsB\x04\xe2A\x01\x01R\rpythonOptions\x12p\n" +
+	"\x18external_runtime_options\x18\x15 \x01(\v20.google.cloud.bigquery.v2.ExternalRuntimeOptionsB\x04\xe2A\x01\x01R\x16externalRuntimeOptions\x12U\n" +
+	"\fbuild_status\x18\x16 \x01(\v2,.google.cloud.bigquery.v2.RoutineBuildStatusB\x04\xe2A\x01\x03R\vbuildStatus\x1a\xda\x04\n" +
+	"\bArgument\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04name\x12b\n" +
+	"\rargument_kind\x18\x02 \x01(\x0e27.google.cloud.bigquery.v2.Routine.Argument.ArgumentKindB\x04\xe2A\x01\x01R\fargumentKind\x12C\n" +
 	"\x04mode\x18\x03 \x01(\x0e2/.google.cloud.bigquery.v2.Routine.Argument.ModeR\x04mode\x12J\n" +
-	"\tdata_type\x18\x04 \x01(\v2-.google.cloud.bigquery.v2.StandardSqlDataTypeR\bdataType\x12R\n" +
+	"\tdata_type\x18\x04 \x01(\v2-.google.cloud.bigquery.v2.StandardSqlDataTypeR\bdataType\x12S\n" +
 	"\n" +
-	"table_type\x18\a \x01(\v2..google.cloud.bigquery.v2.StandardSqlTableTypeB\x03\xe0A\x01R\ttableType\x12B\n" +
-	"\fis_aggregate\x18\x06 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\visAggregate\"k\n" +
+	"table_type\x18\a \x01(\v2..google.cloud.bigquery.v2.StandardSqlTableTypeB\x04\xe2A\x01\x01R\ttableType\x12C\n" +
+	"\fis_aggregate\x18\x06 \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\visAggregate\"k\n" +
 	"\fArgumentKind\x12\x1d\n" +
 	"\x19ARGUMENT_KIND_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +
@@ -1885,18 +1885,18 @@ const file_google_cloud_bigquery_v2_routine_proto_rawDesc = "" +
 	"\aINVOKER\x10\x02\"L\n" +
 	"\x12DataGovernanceType\x12$\n" +
 	" DATA_GOVERNANCE_TYPE_UNSPECIFIED\x10\x00\x12\x10\n" +
-	"\fDATA_MASKING\x10\x01\"V\n" +
-	"\rPythonOptions\x12$\n" +
-	"\ventry_point\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"entryPoint\x12\x1f\n" +
-	"\bpackages\x18\x02 \x03(\tB\x03\xe0A\x01R\bpackages\"\xce\x02\n" +
-	"\x16ExternalRuntimeOptions\x12.\n" +
-	"\x10container_memory\x18\x01 \x01(\tB\x03\xe0A\x01R\x0fcontainerMemory\x12(\n" +
-	"\rcontainer_cpu\x18\x02 \x01(\x01B\x03\xe0A\x01R\fcontainerCpu\x122\n" +
-	"\x12runtime_connection\x18\x03 \x01(\tB\x03\xe0A\x01R\x11runtimeConnection\x12/\n" +
-	"\x11max_batching_rows\x18\x04 \x01(\x03B\x03\xe0A\x01R\x0fmaxBatchingRows\x12,\n" +
-	"\x0fruntime_version\x18\x05 \x01(\tB\x03\xe0A\x01R\x0eruntimeVersion\x12G\n" +
-	"\x1dcontainer_request_concurrency\x18\x06 \x01(\x03B\x03\xe0A\x01R\x1bcontainerRequestConcurrency\"\xd7\x03\n" +
+	"\fDATA_MASKING\x10\x01\"X\n" +
+	"\rPythonOptions\x12%\n" +
+	"\ventry_point\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"entryPoint\x12 \n" +
+	"\bpackages\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\bpackages\"\xd4\x02\n" +
+	"\x16ExternalRuntimeOptions\x12/\n" +
+	"\x10container_memory\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0fcontainerMemory\x12)\n" +
+	"\rcontainer_cpu\x18\x02 \x01(\x01B\x04\xe2A\x01\x01R\fcontainerCpu\x123\n" +
+	"\x12runtime_connection\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x11runtimeConnection\x120\n" +
+	"\x11max_batching_rows\x18\x04 \x01(\x03B\x04\xe2A\x01\x01R\x0fmaxBatchingRows\x12-\n" +
+	"\x0fruntime_version\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x0eruntimeVersion\x12H\n" +
+	"\x1dcontainer_request_concurrency\x18\x06 \x01(\x03B\x04\xe2A\x01\x01R\x1bcontainerRequestConcurrency\"\xd7\x03\n" +
 	"\fSparkOptions\x12\x1e\n" +
 	"\n" +
 	"connection\x18\x01 \x01(\tR\n" +
@@ -1917,54 +1917,54 @@ const file_google_cloud_bigquery_v2_routine_proto_rawDesc = "" +
 	" \x01(\tR\tmainClass\x1a=\n" +
 	"\x0fPropertiesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xe6\x03\n" +
-	"\x12RoutineBuildStatus\x12]\n" +
-	"\vbuild_state\x18\x01 \x01(\x0e27.google.cloud.bigquery.v2.RoutineBuildStatus.BuildStateB\x03\xe0A\x03R\n" +
-	"buildState\x12L\n" +
-	"\ferror_result\x18\x02 \x01(\v2$.google.cloud.bigquery.v2.ErrorProtoB\x03\xe0A\x03R\verrorResult\x12V\n" +
-	"\x17build_state_update_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x14buildStateUpdateTime\x12E\n" +
-	"\x0ebuild_duration\x18\x04 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x03R\rbuildDuration\x12-\n" +
-	"\x10image_size_bytes\x18\x05 \x01(\x03B\x03\xe0A\x03R\x0eimageSizeBytes\"U\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xeb\x03\n" +
+	"\x12RoutineBuildStatus\x12^\n" +
+	"\vbuild_state\x18\x01 \x01(\x0e27.google.cloud.bigquery.v2.RoutineBuildStatus.BuildStateB\x04\xe2A\x01\x03R\n" +
+	"buildState\x12M\n" +
+	"\ferror_result\x18\x02 \x01(\v2$.google.cloud.bigquery.v2.ErrorProtoB\x04\xe2A\x01\x03R\verrorResult\x12W\n" +
+	"\x17build_state_update_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x14buildStateUpdateTime\x12F\n" +
+	"\x0ebuild_duration\x18\x04 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x03R\rbuildDuration\x12.\n" +
+	"\x10image_size_bytes\x18\x05 \x01(\x03B\x04\xe2A\x01\x03R\x0eimageSizeBytes\"U\n" +
 	"\n" +
 	"BuildState\x12\x1b\n" +
 	"\x17BUILD_STATE_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vIN_PROGRESS\x10\x01\x12\r\n" +
 	"\tSUCCEEDED\x10\x02\x12\n" +
 	"\n" +
-	"\x06FAILED\x10\x03\"\x7f\n" +
-	"\x11GetRoutineRequest\x12\"\n" +
+	"\x06FAILED\x10\x03\"\x82\x01\n" +
+	"\x11GetRoutineRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12#\n" +
 	"\n" +
-	"dataset_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tdatasetId\x12\"\n" +
+	"dataset_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tdatasetId\x12#\n" +
 	"\n" +
-	"routine_id\x18\x03 \x01(\tB\x03\xe0A\x02R\troutineId\"\xa0\x01\n" +
-	"\x14InsertRoutineRequest\x12\"\n" +
+	"routine_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\troutineId\"\xa3\x01\n" +
+	"\x14InsertRoutineRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12#\n" +
 	"\n" +
-	"dataset_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tdatasetId\x12@\n" +
-	"\aroutine\x18\x03 \x01(\v2!.google.cloud.bigquery.v2.RoutineB\x03\xe0A\x02R\aroutine\"\xc4\x01\n" +
-	"\x14UpdateRoutineRequest\x12\"\n" +
+	"dataset_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tdatasetId\x12A\n" +
+	"\aroutine\x18\x03 \x01(\v2!.google.cloud.bigquery.v2.RoutineB\x04\xe2A\x01\x02R\aroutine\"\xc8\x01\n" +
+	"\x14UpdateRoutineRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12#\n" +
 	"\n" +
-	"dataset_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tdatasetId\x12\"\n" +
+	"dataset_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tdatasetId\x12#\n" +
 	"\n" +
-	"routine_id\x18\x03 \x01(\tB\x03\xe0A\x02R\troutineId\x12@\n" +
-	"\aroutine\x18\x04 \x01(\v2!.google.cloud.bigquery.v2.RoutineB\x03\xe0A\x02R\aroutine\"\x82\x01\n" +
-	"\x14DeleteRoutineRequest\x12\"\n" +
+	"routine_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\troutineId\x12A\n" +
+	"\aroutine\x18\x04 \x01(\v2!.google.cloud.bigquery.v2.RoutineB\x04\xe2A\x01\x02R\aroutine\"\x85\x01\n" +
+	"\x14DeleteRoutineRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12#\n" +
 	"\n" +
-	"dataset_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tdatasetId\x12\"\n" +
+	"dataset_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tdatasetId\x12#\n" +
 	"\n" +
-	"routine_id\x18\x03 \x01(\tB\x03\xe0A\x02R\troutineId\"\xd3\x01\n" +
-	"\x13ListRoutinesRequest\x12\"\n" +
+	"routine_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\troutineId\"\xd5\x01\n" +
+	"\x13ListRoutinesRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12#\n" +
 	"\n" +
-	"dataset_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tdatasetId\x12=\n" +
+	"dataset_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tdatasetId\x12=\n" +
 	"\vmax_results\x18\x03 \x01(\v2\x1c.google.protobuf.UInt32ValueR\n" +
 	"maxResults\x12\x1d\n" +
 	"\n" +

@@ -497,6 +497,11 @@ func (c *errorGroupRESTClient) GetGroup(ctx context.Context, req *errorreporting
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetGroupName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetGroupName())
 
 	params := url.Values{}
@@ -557,6 +562,11 @@ func (c *errorGroupRESTClient) UpdateGroup(ctx context.Context, req *errorreport
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetGroup().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetGroup().GetName())

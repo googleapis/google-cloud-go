@@ -1180,12 +1180,12 @@ var File_google_cloud_discoveryengine_v1beta_user_event_proto protoreflect.FileD
 
 const file_google_cloud_discoveryengine_v1beta_user_event_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/discoveryengine/v1beta/user_event.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/discoveryengine/v1beta/common.proto\x1a2google/cloud/discoveryengine/v1beta/feedback.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xca\f\n" +
-	"\tUserEvent\x12\"\n" +
+	"4google/cloud/discoveryengine/v1beta/user_event.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/discoveryengine/v1beta/common.proto\x1a2google/cloud/discoveryengine/v1beta/feedback.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd1\f\n" +
+	"\tUserEvent\x12#\n" +
 	"\n" +
-	"event_type\x18\x01 \x01(\tB\x03\xe0A\x02R\teventType\x12,\n" +
-	"\x0fconversion_type\x18\x15 \x01(\tB\x03\xe0A\x01R\x0econversionType\x12)\n" +
-	"\x0euser_pseudo_id\x18\x02 \x01(\tB\x03\xe0A\x02R\fuserPseudoId\x12B\n" +
+	"event_type\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\teventType\x12-\n" +
+	"\x0fconversion_type\x18\x15 \x01(\tB\x04\xe2A\x01\x01R\x0econversionType\x12*\n" +
+	"\x0euser_pseudo_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\fuserPseudoId\x12B\n" +
 	"\x06engine\x18\x13 \x01(\tB*\xfaA'\n" +
 	"%discoveryengine.googleapis.com/EngineR\x06engine\x12L\n" +
 	"\n" +
@@ -1198,8 +1198,8 @@ const file_google_cloud_discoveryengine_v1beta_user_event_proto_rawDesc = "" +
 	"\n" +
 	"session_id\x18\x06 \x01(\tR\tsessionId\x12J\n" +
 	"\tpage_info\x18\a \x01(\v2-.google.cloud.discoveryengine.v1beta.PageInfoR\bpageInfo\x12+\n" +
-	"\x11attribution_token\x18\b \x01(\tR\x10attributionToken\x12\x1b\n" +
-	"\x06filter\x18\t \x01(\tB\x03\xe0A\x01R\x06filter\x12O\n" +
+	"\x11attribution_token\x18\b \x01(\tR\x10attributionToken\x12\x1c\n" +
+	"\x06filter\x18\t \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12O\n" +
 	"\tdocuments\x18\n" +
 	" \x03(\v21.google.cloud.discoveryengine.v1beta.DocumentInfoR\tdocuments\x12D\n" +
 	"\x05panel\x18\v \x01(\v2..google.cloud.discoveryengine.v1beta.PanelInfoR\x05panel\x12P\n" +
@@ -1213,10 +1213,10 @@ const file_google_cloud_discoveryengine_v1beta_user_event_proto_rawDesc = "" +
 	"attributes\x18\x11 \x03(\v2>.google.cloud.discoveryengine.v1beta.UserEvent.AttributesEntryR\n" +
 	"attributes\x12M\n" +
 	"\n" +
-	"media_info\x18\x12 \x01(\v2..google.cloud.discoveryengine.v1beta.MediaInfoR\tmediaInfo\x12K\n" +
-	"\x06panels\x18\x16 \x03(\v2..google.cloud.discoveryengine.v1beta.PanelInfoB\x03\xe0A\x01R\x06panels\x12N\n" +
-	"\bfeedback\x18\x17 \x01(\v2-.google.cloud.discoveryengine.v1beta.FeedbackB\x03\xe0A\x01R\bfeedback\x12\x1b\n" +
-	"\x06entity\x18\x19 \x01(\tB\x03\xe0A\x01R\x06entity\x1as\n" +
+	"media_info\x18\x12 \x01(\v2..google.cloud.discoveryengine.v1beta.MediaInfoR\tmediaInfo\x12L\n" +
+	"\x06panels\x18\x16 \x03(\v2..google.cloud.discoveryengine.v1beta.PanelInfoB\x04\xe2A\x01\x01R\x06panels\x12O\n" +
+	"\bfeedback\x18\x17 \x01(\v2-.google.cloud.discoveryengine.v1beta.FeedbackB\x04\xe2A\x01\x01R\bfeedback\x12\x1c\n" +
+	"\x06entity\x18\x19 \x01(\tB\x04\xe2A\x01\x01R\x06entity\x1as\n" +
 	"\x0fAttributesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12J\n" +
 	"\x05value\x18\x02 \x01(\v24.google.cloud.discoveryengine.v1beta.CustomAttributeR\x05value:\x028\x01\"\x85\x01\n" +
@@ -1234,10 +1234,10 @@ const file_google_cloud_discoveryengine_v1beta_user_event_proto_rawDesc = "" +
 	"\a_offset\"n\n" +
 	"\x0eCompletionInfo\x12/\n" +
 	"\x13selected_suggestion\x18\x01 \x01(\tR\x12selectedSuggestion\x12+\n" +
-	"\x11selected_position\x18\x02 \x01(\x05R\x10selectedPosition\"\x83\x02\n" +
-	"\x0fTransactionInfo\x12\x1e\n" +
-	"\x05value\x18\x01 \x01(\x02B\x03\xe0A\x02H\x00R\x05value\x88\x01\x01\x12\x1f\n" +
-	"\bcurrency\x18\x02 \x01(\tB\x03\xe0A\x02R\bcurrency\x12%\n" +
+	"\x11selected_position\x18\x02 \x01(\x05R\x10selectedPosition\"\x85\x02\n" +
+	"\x0fTransactionInfo\x12\x1f\n" +
+	"\x05value\x18\x01 \x01(\x02B\x04\xe2A\x01\x02H\x00R\x05value\x88\x01\x01\x12 \n" +
+	"\bcurrency\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\bcurrency\x12%\n" +
 	"\x0etransaction_id\x18\x03 \x01(\tR\rtransactionId\x12\x15\n" +
 	"\x03tax\x18\x04 \x01(\x02H\x01R\x03tax\x88\x01\x01\x12\x17\n" +
 	"\x04cost\x18\x05 \x01(\x02H\x02R\x04cost\x88\x01\x01\x12*\n" +
@@ -1245,25 +1245,25 @@ const file_google_cloud_discoveryengine_v1beta_user_event_proto_rawDesc = "" +
 	"\x06_valueB\x06\n" +
 	"\x04_taxB\a\n" +
 	"\x05_costB\x11\n" +
-	"\x0f_discount_value\"\xc9\x02\n" +
+	"\x0f_discount_value\"\xcb\x02\n" +
 	"\fDocumentInfo\x12\x10\n" +
 	"\x02id\x18\x01 \x01(\tH\x00R\x02id\x12B\n" +
 	"\x04name\x18\x02 \x01(\tB,\xfaA)\n" +
 	"'discoveryengine.googleapis.com/DocumentH\x00R\x04name\x12\x12\n" +
 	"\x03uri\x18\x06 \x01(\tH\x00R\x03uri\x12\x1f\n" +
 	"\bquantity\x18\x03 \x01(\x05H\x01R\bquantity\x88\x01\x01\x12#\n" +
-	"\rpromotion_ids\x18\x04 \x03(\tR\fpromotionIds\x12\x1b\n" +
-	"\x06joined\x18\x05 \x01(\bB\x03\xe0A\x03R\x06joined\x123\n" +
-	"\x10conversion_value\x18\a \x01(\x02B\x03\xe0A\x01H\x02R\x0fconversionValue\x88\x01\x01B\x15\n" +
+	"\rpromotion_ids\x18\x04 \x03(\tR\fpromotionIds\x12\x1c\n" +
+	"\x06joined\x18\x05 \x01(\bB\x04\xe2A\x01\x03R\x06joined\x124\n" +
+	"\x10conversion_value\x18\a \x01(\x02B\x04\xe2A\x01\x01H\x02R\x0fconversionValue\x88\x01\x01B\x15\n" +
 	"\x13document_descriptorB\v\n" +
 	"\t_quantityB\x13\n" +
-	"\x11_conversion_value\"\x9c\x02\n" +
-	"\tPanelInfo\x12\x1e\n" +
-	"\bpanel_id\x18\x02 \x01(\tB\x03\xe0A\x02R\apanelId\x12!\n" +
+	"\x11_conversion_value\"\x9e\x02\n" +
+	"\tPanelInfo\x12\x1f\n" +
+	"\bpanel_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\apanelId\x12!\n" +
 	"\fdisplay_name\x18\x03 \x01(\tR\vdisplayName\x12*\n" +
 	"\x0epanel_position\x18\x04 \x01(\x05H\x00R\rpanelPosition\x88\x01\x01\x12&\n" +
-	"\ftotal_panels\x18\x05 \x01(\x05H\x01R\vtotalPanels\x88\x01\x01\x12T\n" +
-	"\tdocuments\x18\x06 \x03(\v21.google.cloud.discoveryengine.v1beta.DocumentInfoB\x03\xe0A\x01R\tdocumentsB\x11\n" +
+	"\ftotal_panels\x18\x05 \x01(\x05H\x01R\vtotalPanels\x88\x01\x01\x12U\n" +
+	"\tdocuments\x18\x06 \x03(\v21.google.cloud.discoveryengine.v1beta.DocumentInfoB\x04\xe2A\x01\x01R\tdocumentsB\x11\n" +
 	"\x0f_panel_positionB\x0f\n" +
 	"\r_total_panels\"\xbd\x01\n" +
 	"\tMediaInfo\x12Q\n" +

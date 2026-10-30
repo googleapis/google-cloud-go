@@ -596,44 +596,44 @@ var File_google_cloud_sql_v1_cloud_sql_workload_captures_proto protoreflect.File
 
 const file_google_cloud_sql_v1_cloud_sql_workload_captures_proto_rawDesc = "" +
 	"\n" +
-	"5google/cloud/sql/v1/cloud_sql_workload_captures.proto\x12\x13google.cloud.sql.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/sql/v1/cloud_sql_resources.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xda\x01\n" +
-	"\x1cWorkloadCapturesStartRequest\x12\x1d\n" +
-	"\aproject\x18\x01 \x01(\tB\x03\xe0A\x02R\aproject\x12\x1f\n" +
-	"\binstance\x18\x02 \x01(\tB\x03\xe0A\x02R\binstance\x12z\n" +
-	"\x1estart_workload_capture_context\x18d \x01(\v20.google.cloud.sql.v1.StartWorkloadCaptureContextB\x03\xe0A\x01R\x1bstartWorkloadCaptureContext\"\xd6\x01\n" +
-	"\x1bWorkloadCapturesStopRequest\x12\x1d\n" +
-	"\aproject\x18\x01 \x01(\tB\x03\xe0A\x02R\aproject\x12\x1f\n" +
-	"\binstance\x18\x02 \x01(\tB\x03\xe0A\x02R\binstance\x12w\n" +
-	"\x1dstop_workload_capture_context\x18d \x01(\v2/.google.cloud.sql.v1.StopWorkloadCaptureContextB\x03\xe0A\x01R\x1astopWorkloadCaptureContext\"\x83\x02\n" +
-	"\"WorkloadCapturesStartReplayRequest\x12\x1d\n" +
-	"\aproject\x18\x01 \x01(\tB\x03\xe0A\x02R\aproject\x12\x1f\n" +
-	"\binstance\x18\x02 \x01(\tB\x03\xe0A\x02R\binstance\x12w\n" +
-	"\x1dstart_workload_replay_context\x18d \x01(\v2/.google.cloud.sql.v1.StartWorkloadReplayContextB\x03\xe0A\x02R\x1astartWorkloadReplayContext\x12$\n" +
-	"\vworkload_id\x18\x04 \x01(\tB\x03\xe0A\x02R\n" +
-	"workloadId\"\xd9\x01\n" +
-	"!WorkloadCapturesStopReplayRequest\x12\x1d\n" +
-	"\aproject\x18\x01 \x01(\tB\x03\xe0A\x02R\aproject\x12\x1f\n" +
-	"\binstance\x18\x02 \x01(\tB\x03\xe0A\x02R\binstance\x12t\n" +
-	"\x1cstop_workload_replay_context\x18d \x01(\v2..google.cloud.sql.v1.StopWorkloadReplayContextB\x03\xe0A\x01R\x19stopWorkloadReplayContext\"`\n" +
-	"\x1eSqlWorkloadCapturesListRequest\x12\x1d\n" +
-	"\aproject\x18\x01 \x01(\tB\x03\xe0A\x02R\aproject\x12\x1f\n" +
-	"\binstance\x18\x02 \x01(\tB\x03\xe0A\x02R\binstance\"\x85\x01\n" +
+	"5google/cloud/sql/v1/cloud_sql_workload_captures.proto\x12\x13google.cloud.sql.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/sql/v1/cloud_sql_resources.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdd\x01\n" +
+	"\x1cWorkloadCapturesStartRequest\x12\x1e\n" +
+	"\aproject\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\aproject\x12 \n" +
+	"\binstance\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\binstance\x12{\n" +
+	"\x1estart_workload_capture_context\x18d \x01(\v20.google.cloud.sql.v1.StartWorkloadCaptureContextB\x04\xe2A\x01\x01R\x1bstartWorkloadCaptureContext\"\xd9\x01\n" +
+	"\x1bWorkloadCapturesStopRequest\x12\x1e\n" +
+	"\aproject\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\aproject\x12 \n" +
+	"\binstance\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\binstance\x12x\n" +
+	"\x1dstop_workload_capture_context\x18d \x01(\v2/.google.cloud.sql.v1.StopWorkloadCaptureContextB\x04\xe2A\x01\x01R\x1astopWorkloadCaptureContext\"\x87\x02\n" +
+	"\"WorkloadCapturesStartReplayRequest\x12\x1e\n" +
+	"\aproject\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\aproject\x12 \n" +
+	"\binstance\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\binstance\x12x\n" +
+	"\x1dstart_workload_replay_context\x18d \x01(\v2/.google.cloud.sql.v1.StartWorkloadReplayContextB\x04\xe2A\x01\x02R\x1astartWorkloadReplayContext\x12%\n" +
+	"\vworkload_id\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"workloadId\"\xdc\x01\n" +
+	"!WorkloadCapturesStopReplayRequest\x12\x1e\n" +
+	"\aproject\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\aproject\x12 \n" +
+	"\binstance\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\binstance\x12u\n" +
+	"\x1cstop_workload_replay_context\x18d \x01(\v2..google.cloud.sql.v1.StopWorkloadReplayContextB\x04\xe2A\x01\x01R\x19stopWorkloadReplayContext\"b\n" +
+	"\x1eSqlWorkloadCapturesListRequest\x12\x1e\n" +
+	"\aproject\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\aproject\x12 \n" +
+	"\binstance\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\binstance\"\x85\x01\n" +
 	"\x1cWorkloadCapturesListResponse\x12Q\n" +
 	"\x11workload_captures\x18\x01 \x03(\v2$.google.cloud.sql.v1.WorkloadCaptureR\x10workloadCaptures\x12\x12\n" +
-	"\x04kind\x18\x02 \x01(\tR\x04kind\"\xaa\x05\n" +
-	"\x0fWorkloadCapture\x12$\n" +
-	"\vworkload_id\x18\x01 \x01(\tB\x03\xe0A\x03R\n" +
-	"workloadId\x12Q\n" +
-	"\x0fsource_instance\x18\x02 \x01(\tB(\xe0A\x03\xfaA\"\n" +
-	" sqladmin.googleapis.com/InstanceR\x0esourceInstance\x12e\n" +
-	"\x16workload_capture_state\x18\x03 \x01(\x0e2*.google.cloud.sql.v1.WorkloadCapture.StateB\x03\xe0A\x03R\x14workloadCaptureState\x12>\n" +
+	"\x04kind\x18\x02 \x01(\tR\x04kind\"\xb2\x05\n" +
+	"\x0fWorkloadCapture\x12%\n" +
+	"\vworkload_id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"workloadId\x12R\n" +
+	"\x0fsource_instance\x18\x02 \x01(\tB)\xe2A\x01\x03\xfaA\"\n" +
+	" cloudsql.googleapis.com/InstanceR\x0esourceInstance\x12f\n" +
+	"\x16workload_capture_state\x18\x03 \x01(\x0e2*.google.cloud.sql.v1.WorkloadCapture.StateB\x04\xe2A\x01\x03R\x14workloadCaptureState\x12?\n" +
 	"\n" +
-	"start_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12V\n" +
-	"\x0freplay_instance\x18\x06 \x01(\tB(\xe0A\x03\xfaA\"\n" +
-	" sqladmin.googleapis.com/InstanceH\x00R\x0ereplayInstance\x88\x01\x01\x12/\n" +
-	"\x0eretention_days\x18\a \x01(\x05B\x03\xe0A\x03H\x01R\rretentionDays\x88\x01\x01\x12%\n" +
-	"\tbackup_id\x18\b \x01(\tB\x03\xe0A\x03H\x02R\bbackupId\x88\x01\x01\"V\n" +
+	"start_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12W\n" +
+	"\x0freplay_instance\x18\x06 \x01(\tB)\xe2A\x01\x03\xfaA\"\n" +
+	" cloudsql.googleapis.com/InstanceH\x00R\x0ereplayInstance\x88\x01\x01\x120\n" +
+	"\x0eretention_days\x18\a \x01(\x05B\x04\xe2A\x01\x03H\x01R\rretentionDays\x88\x01\x01\x12&\n" +
+	"\tbackup_id\x18\b \x01(\tB\x04\xe2A\x01\x03H\x02R\bbackupId\x88\x01\x01\"V\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aRUNNING\x10\x01\x12\r\n" +

@@ -1838,6 +1838,11 @@ func (c *mirroringRESTClient) ListMirroringEndpointGroups(ctx context.Context, r
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/mirroringEndpointGroups", req.GetParent())
 
 		params := url.Values{}
@@ -1910,6 +1915,11 @@ func (c *mirroringRESTClient) GetMirroringEndpointGroup(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1970,6 +1980,11 @@ func (c *mirroringRESTClient) CreateMirroringEndpointGroup(ctx context.Context, 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/mirroringEndpointGroups", req.GetParent())
@@ -2045,6 +2060,11 @@ func (c *mirroringRESTClient) UpdateMirroringEndpointGroup(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetMirroringEndpointGroup().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetMirroringEndpointGroup().GetName())
 
 	params := url.Values{}
@@ -2115,6 +2135,11 @@ func (c *mirroringRESTClient) UpdateMirroringEndpointGroup(ctx context.Context, 
 func (c *mirroringRESTClient) DeleteMirroringEndpointGroup(ctx context.Context, req *networksecuritypb.DeleteMirroringEndpointGroupRequest, opts ...gax.CallOption) (*DeleteMirroringEndpointGroupOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2195,6 +2220,11 @@ func (c *mirroringRESTClient) ListMirroringEndpointGroupAssociations(ctx context
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/mirroringEndpointGroupAssociations", req.GetParent())
 
 		params := url.Values{}
@@ -2267,6 +2297,11 @@ func (c *mirroringRESTClient) GetMirroringEndpointGroupAssociation(ctx context.C
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2327,6 +2362,11 @@ func (c *mirroringRESTClient) CreateMirroringEndpointGroupAssociation(ctx contex
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/mirroringEndpointGroupAssociations", req.GetParent())
@@ -2404,6 +2444,11 @@ func (c *mirroringRESTClient) UpdateMirroringEndpointGroupAssociation(ctx contex
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetMirroringEndpointGroupAssociation().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetMirroringEndpointGroupAssociation().GetName())
 
 	params := url.Values{}
@@ -2474,6 +2519,11 @@ func (c *mirroringRESTClient) UpdateMirroringEndpointGroupAssociation(ctx contex
 func (c *mirroringRESTClient) DeleteMirroringEndpointGroupAssociation(ctx context.Context, req *networksecuritypb.DeleteMirroringEndpointGroupAssociationRequest, opts ...gax.CallOption) (*DeleteMirroringEndpointGroupAssociationOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2554,6 +2604,11 @@ func (c *mirroringRESTClient) ListMirroringDeploymentGroups(ctx context.Context,
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/mirroringDeploymentGroups", req.GetParent())
 
 		params := url.Values{}
@@ -2626,6 +2681,11 @@ func (c *mirroringRESTClient) GetMirroringDeploymentGroup(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2686,6 +2746,11 @@ func (c *mirroringRESTClient) CreateMirroringDeploymentGroup(ctx context.Context
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/mirroringDeploymentGroups", req.GetParent())
@@ -2761,6 +2826,11 @@ func (c *mirroringRESTClient) UpdateMirroringDeploymentGroup(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetMirroringDeploymentGroup().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetMirroringDeploymentGroup().GetName())
 
 	params := url.Values{}
@@ -2831,6 +2901,11 @@ func (c *mirroringRESTClient) UpdateMirroringDeploymentGroup(ctx context.Context
 func (c *mirroringRESTClient) DeleteMirroringDeploymentGroup(ctx context.Context, req *networksecuritypb.DeleteMirroringDeploymentGroupRequest, opts ...gax.CallOption) (*DeleteMirroringDeploymentGroupOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2911,6 +2986,11 @@ func (c *mirroringRESTClient) ListMirroringDeployments(ctx context.Context, req 
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/mirroringDeployments", req.GetParent())
 
 		params := url.Values{}
@@ -2983,6 +3063,11 @@ func (c *mirroringRESTClient) GetMirroringDeployment(ctx context.Context, req *n
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3043,6 +3128,11 @@ func (c *mirroringRESTClient) CreateMirroringDeployment(ctx context.Context, req
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/mirroringDeployments", req.GetParent())
@@ -3118,6 +3208,11 @@ func (c *mirroringRESTClient) UpdateMirroringDeployment(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetMirroringDeployment().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetMirroringDeployment().GetName())
 
 	params := url.Values{}
@@ -3190,6 +3285,11 @@ func (c *mirroringRESTClient) DeleteMirroringDeployment(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3252,6 +3352,11 @@ func (c *mirroringRESTClient) DeleteMirroringDeployment(ctx context.Context, req
 func (c *mirroringRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3336,6 +3441,11 @@ func (c *mirroringRESTClient) ListLocations(ctx context.Context, req *locationpb
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -3405,6 +3515,11 @@ func (c *mirroringRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIa
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -3470,6 +3585,11 @@ func (c *mirroringRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIa
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
@@ -3538,6 +3658,11 @@ func (c *mirroringRESTClient) TestIamPermissions(ctx context.Context, req *iampb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -3598,6 +3723,11 @@ func (c *mirroringRESTClient) CancelOperation(ctx context.Context, req *longrunn
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -3637,6 +3767,11 @@ func (c *mirroringRESTClient) DeleteOperation(ctx context.Context, req *longrunn
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3674,6 +3809,11 @@ func (c *mirroringRESTClient) DeleteOperation(ctx context.Context, req *longrunn
 func (c *mirroringRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3741,6 +3881,11 @@ func (c *mirroringRESTClient) ListOperations(ctx context.Context, req *longrunni
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

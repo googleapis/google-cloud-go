@@ -332,9 +332,9 @@ var File_google_monitoring_dashboard_v1_scorecard_proto protoreflect.FileDescrip
 
 const file_google_monitoring_dashboard_v1_scorecard_proto_rawDesc = "" +
 	"\n" +
-	".google/monitoring/dashboard/v1/scorecard.proto\x12\x1egoogle.monitoring.dashboard.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a,google/monitoring/dashboard/v1/metrics.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\"\xc8\x05\n" +
-	"\tScorecard\x12`\n" +
-	"\x11time_series_query\x18\x01 \x01(\v2/.google.monitoring.dashboard.v1.TimeSeriesQueryB\x03\xe0A\x02R\x0ftimeSeriesQuery\x12T\n" +
+	".google/monitoring/dashboard/v1/scorecard.proto\x12\x1egoogle.monitoring.dashboard.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a,google/monitoring/dashboard/v1/metrics.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\"\xca\x05\n" +
+	"\tScorecard\x12a\n" +
+	"\x11time_series_query\x18\x01 \x01(\v2/.google.monitoring.dashboard.v1.TimeSeriesQueryB\x04\xe2A\x01\x02R\x0ftimeSeriesQuery\x12T\n" +
 	"\n" +
 	"gauge_view\x18\x04 \x01(\v23.google.monitoring.dashboard.v1.Scorecard.GaugeViewH\x00R\tgaugeView\x12d\n" +
 	"\x10spark_chart_view\x18\x05 \x01(\v28.google.monitoring.dashboard.v1.Scorecard.SparkChartViewH\x00R\x0esparkChartView\x127\n" +
@@ -347,9 +347,9 @@ const file_google_monitoring_dashboard_v1_scorecard_proto_rawDesc = "" +
 	"\vlower_bound\x18\x01 \x01(\x01R\n" +
 	"lowerBound\x12\x1f\n" +
 	"\vupper_bound\x18\x02 \x01(\x01R\n" +
-	"upperBound\x1a\xbc\x01\n" +
-	"\x0eSparkChartView\x12]\n" +
-	"\x10spark_chart_type\x18\x01 \x01(\x0e2..google.monitoring.dashboard.v1.SparkChartTypeB\x03\xe0A\x02R\x0esparkChartType\x12K\n" +
+	"upperBound\x1a\xbd\x01\n" +
+	"\x0eSparkChartView\x12^\n" +
+	"\x10spark_chart_type\x18\x01 \x01(\x0e2..google.monitoring.dashboard.v1.SparkChartTypeB\x04\xe2A\x01\x02R\x0esparkChartType\x12K\n" +
 	"\x14min_alignment_period\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\x12minAlignmentPeriodB\v\n" +
 	"\tdata_viewB\xf7\x01\n" +
 	"\"com.google.monitoring.dashboard.v1B\x0eScorecardProtoP\x01ZFcloud.google.com/go/monitoring/dashboard/apiv1/dashboardpb;dashboardpb\xaa\x02$Google.Cloud.Monitoring.Dashboard.V1\xca\x02$Google\\Cloud\\Monitoring\\Dashboard\\V1\xea\x02(Google::Cloud::Monitoring::Dashboard::V1b\x06proto3"

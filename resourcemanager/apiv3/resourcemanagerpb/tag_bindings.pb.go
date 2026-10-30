@@ -681,36 +681,37 @@ var File_google_cloud_resourcemanager_v3_tag_bindings_proto protoreflect.FileDes
 
 const file_google_cloud_resourcemanager_v3_tag_bindings_proto_rawDesc = "" +
 	"\n" +
-	"2google/cloud/resourcemanager/v3/tag_bindings.proto\x12\x1fgoogle.cloud.resourcemanager.v3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\"\xe5\x01\n" +
+	"2google/cloud/resourcemanager/v3/tag_bindings.proto\x12\x1fgoogle.cloud.resourcemanager.v3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\"\xe6\x01\n" +
 	"\n" +
-	"TagBinding\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x16\n" +
+	"TagBinding\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x16\n" +
 	"\x06parent\x18\x02 \x01(\tR\x06parent\x12\x1b\n" +
 	"\ttag_value\x18\x03 \x01(\tR\btagValue\x129\n" +
 	"\x19tag_value_namespaced_name\x18\x04 \x01(\tR\x16tagValueNamespacedName:N\xeaAK\n" +
 	".cloudresourcemanager.googleapis.com/TagBinding\x12\x19tagBindings/{tag_binding}\"\x1a\n" +
-	"\x18CreateTagBindingMetadata\"\x96\x01\n" +
-	"\x17CreateTagBindingRequest\x12Q\n" +
-	"\vtag_binding\x18\x01 \x01(\v2+.google.cloud.resourcemanager.v3.TagBindingB\x03\xe0A\x02R\n" +
-	"tagBinding\x12(\n" +
-	"\rvalidate_only\x18\x02 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\x1a\n" +
-	"\x18DeleteTagBindingMetadata\"e\n" +
-	"\x17DeleteTagBindingRequest\x12J\n" +
-	"\x04name\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".cloudresourcemanager.googleapis.com/TagBindingR\x04name\"\x81\x01\n" +
-	"\x16ListTagBindingsRequest\x12!\n" +
-	"\x06parent\x18\x01 \x01(\tB\t\xe0A\x02\xfaA\x03\x12\x01*R\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x18CreateTagBindingMetadata\"\x98\x01\n" +
+	"\x17CreateTagBindingRequest\x12R\n" +
+	"\vtag_binding\x18\x01 \x01(\v2+.google.cloud.resourcemanager.v3.TagBindingB\x04\xe2A\x01\x02R\n" +
+	"tagBinding\x12)\n" +
+	"\rvalidate_only\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\x1a\n" +
+	"\x18DeleteTagBindingMetadata\"f\n" +
+	"\x17DeleteTagBindingRequest\x12K\n" +
+	"\x04name\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".cloudresourcemanager.googleapis.com/TagBindingR\x04name\"\x84\x01\n" +
+	"\x16ListTagBindingsRequest\x12\"\n" +
+	"\x06parent\x18\x01 \x01(\tB\n" +
+	"\xe2A\x01\x02\xfaA\x03\x12\x01*R\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x91\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x91\x01\n" +
 	"\x17ListTagBindingsResponse\x12N\n" +
 	"\ftag_bindings\x18\x01 \x03(\v2+.google.cloud.resourcemanager.v3.TagBindingR\vtagBindings\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"}\n" +
-	"\x18ListEffectiveTagsRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x80\x01\n" +
+	"\x18ListEffectiveTagsRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x99\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x99\x01\n" +
 	"\x19ListEffectiveTagsResponse\x12T\n" +
 	"\x0eeffective_tags\x18\x01 \x03(\v2-.google.cloud.resourcemanager.v3.EffectiveTagR\reffectiveTags\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xd5\x02\n" +

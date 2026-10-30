@@ -712,42 +712,42 @@ var File_google_cloud_productregistry_v1_cloud_product_registry_read_service_pro
 
 const file_google_cloud_productregistry_v1_cloud_product_registry_read_service_proto_rawDesc = "" +
 	"\n" +
-	"Igoogle/cloud/productregistry/v1/cloud_product_registry_read_service.proto\x12\x1fgoogle.cloud.productregistry.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a5google/cloud/productregistry/v1/logical_product.proto\x1a=google/cloud/productregistry/v1/logical_product_variant.proto\x1a3google/cloud/productregistry/v1/product_suite.proto\"f\n" +
-	"\x16GetProductSuiteRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0cloudproductregistry.googleapis.com/ProductSuiteR\x04name\"j\n" +
-	"\x18GetLogicalProductRequest\x12N\n" +
-	"\x04name\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\n" +
-	"2cloudproductregistry.googleapis.com/LogicalProductR\x04name\"x\n" +
-	"\x1fGetLogicalProductVariantRequest\x12U\n" +
-	"\x04name\x18\x01 \x01(\tBA\xe0A\x02\xfaA;\n" +
-	"9cloudproductregistry.googleapis.com/LogicalProductVariantR\x04name\"`\n" +
-	"\x18ListProductSuitesRequest\x12 \n" +
-	"\tpage_size\x18\x01 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"Igoogle/cloud/productregistry/v1/cloud_product_registry_read_service.proto\x12\x1fgoogle.cloud.productregistry.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a5google/cloud/productregistry/v1/logical_product.proto\x1a=google/cloud/productregistry/v1/logical_product_variant.proto\x1a3google/cloud/productregistry/v1/product_suite.proto\"g\n" +
+	"\x16GetProductSuiteRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0cloudproductregistry.googleapis.com/ProductSuiteR\x04name\"k\n" +
+	"\x18GetLogicalProductRequest\x12O\n" +
+	"\x04name\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\n" +
+	"2cloudproductregistry.googleapis.com/LogicalProductR\x04name\"y\n" +
+	"\x1fGetLogicalProductVariantRequest\x12V\n" +
+	"\x04name\x18\x01 \x01(\tBB\xe2A\x01\x02\xfaA;\n" +
+	"9cloudproductregistry.googleapis.com/LogicalProductVariantR\x04name\"b\n" +
+	"\x18ListProductSuitesRequest\x12!\n" +
+	"\tpage_size\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x99\x01\n" +
+	"page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x99\x01\n" +
 	"\x19ListProductSuitesResponse\x12T\n" +
 	"\x0eproduct_suites\x18\x01 \x03(\v2-.google.cloud.productregistry.v1.ProductSuiteR\rproductSuites\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x7f\n" +
-	"\x1aListLogicalProductsRequest\x12\x1b\n" +
-	"\x06filter\x18\x01 \x01(\tB\x03\xe0A\x01R\x06filter\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x82\x01\n" +
+	"\x1aListLogicalProductsRequest\x12\x1c\n" +
+	"\x06filter\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xa1\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xa1\x01\n" +
 	"\x1bListLogicalProductsResponse\x12Z\n" +
 	"\x10logical_products\x18\x01 \x03(\v2/.google.cloud.productregistry.v1.LogicalProductR\x0flogicalProducts\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xc4\x01\n" +
-	"!ListLogicalProductVariantsRequest\x12Y\n" +
-	"\x06parent\x18\x01 \x01(\tBA\xe0A\x02\xfaA;\x129cloudproductregistry.googleapis.com/LogicalProductVariantR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xc7\x01\n" +
+	"!ListLogicalProductVariantsRequest\x12Z\n" +
+	"\x06parent\x18\x01 \x01(\tBB\xe2A\x01\x02\xfaA;\x129cloudproductregistry.googleapis.com/LogicalProductVariantR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xbe\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xbe\x01\n" +
 	"\"ListLogicalProductVariantsResponse\x12p\n" +
 	"\x18logical_product_variants\x18\x01 \x03(\v26.google.cloud.productregistry.v1.LogicalProductVariantR\x16logicalProductVariants\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"9\n" +
-	"\x13LookupEntityRequest\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\":\n" +
+	"\x13LookupEntityRequest\x12#\n" +
 	"\n" +
-	"lookup_uri\x18\x01 \x01(\tB\x03\xe0A\x02R\tlookupUri\"\xc4\x02\n" +
+	"lookup_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tlookupUri\"\xc4\x02\n" +
 	"\x14LookupEntityResponse\x12Z\n" +
 	"\x0flogical_product\x18\x01 \x01(\v2/.google.cloud.productregistry.v1.LogicalProductH\x00R\x0elogicalProduct\x12p\n" +
 	"\x17logical_product_variant\x18\x02 \x01(\v26.google.cloud.productregistry.v1.LogicalProductVariantH\x00R\x15logicalProductVariant\x12T\n" +

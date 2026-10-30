@@ -2974,6 +2974,11 @@ func (c *catalogRESTClient) CreateEntryType(ctx context.Context, req *dataplexpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/entryTypes", req.GetParent())
 
 	params := url.Values{}
@@ -3046,6 +3051,11 @@ func (c *catalogRESTClient) UpdateEntryType(ctx context.Context, req *dataplexpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetEntryType().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetEntryType().GetName())
 
 	params := url.Values{}
@@ -3115,6 +3125,11 @@ func (c *catalogRESTClient) UpdateEntryType(ctx context.Context, req *dataplexpb
 func (c *catalogRESTClient) DeleteEntryType(ctx context.Context, req *dataplexpb.DeleteEntryTypeRequest, opts ...gax.CallOption) (*DeleteEntryTypeOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3194,6 +3209,11 @@ func (c *catalogRESTClient) ListEntryTypes(ctx context.Context, req *dataplexpb.
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/entryTypes", req.GetParent())
 
 		params := url.Values{}
@@ -3265,6 +3285,11 @@ func (c *catalogRESTClient) GetEntryType(ctx context.Context, req *dataplexpb.Ge
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3324,6 +3349,11 @@ func (c *catalogRESTClient) CreateAspectType(ctx context.Context, req *dataplexp
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/aspectTypes", req.GetParent())
@@ -3398,6 +3428,11 @@ func (c *catalogRESTClient) UpdateAspectType(ctx context.Context, req *dataplexp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAspectType().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetAspectType().GetName())
 
 	params := url.Values{}
@@ -3467,6 +3502,11 @@ func (c *catalogRESTClient) UpdateAspectType(ctx context.Context, req *dataplexp
 func (c *catalogRESTClient) DeleteAspectType(ctx context.Context, req *dataplexpb.DeleteAspectTypeRequest, opts ...gax.CallOption) (*DeleteAspectTypeOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3546,6 +3586,11 @@ func (c *catalogRESTClient) ListAspectTypes(ctx context.Context, req *dataplexpb
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/aspectTypes", req.GetParent())
 
 		params := url.Values{}
@@ -3617,6 +3662,11 @@ func (c *catalogRESTClient) GetAspectType(ctx context.Context, req *dataplexpb.G
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3676,6 +3726,11 @@ func (c *catalogRESTClient) CreateEntryGroup(ctx context.Context, req *dataplexp
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/entryGroups", req.GetParent())
@@ -3750,6 +3805,11 @@ func (c *catalogRESTClient) UpdateEntryGroup(ctx context.Context, req *dataplexp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetEntryGroup().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetEntryGroup().GetName())
 
 	params := url.Values{}
@@ -3819,6 +3879,11 @@ func (c *catalogRESTClient) UpdateEntryGroup(ctx context.Context, req *dataplexp
 func (c *catalogRESTClient) DeleteEntryGroup(ctx context.Context, req *dataplexpb.DeleteEntryGroupRequest, opts ...gax.CallOption) (*DeleteEntryGroupOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3898,6 +3963,11 @@ func (c *catalogRESTClient) ListEntryGroups(ctx context.Context, req *dataplexpb
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/entryGroups", req.GetParent())
 
 		params := url.Values{}
@@ -3969,6 +4039,11 @@ func (c *catalogRESTClient) GetEntryGroup(ctx context.Context, req *dataplexpb.G
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4028,6 +4103,11 @@ func (c *catalogRESTClient) CreateEntry(ctx context.Context, req *dataplexpb.Cre
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/entries", req.GetParent())
@@ -4090,6 +4170,11 @@ func (c *catalogRESTClient) UpdateEntry(ctx context.Context, req *dataplexpb.Upd
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetEntry().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetEntry().GetName())
@@ -4164,6 +4249,11 @@ func (c *catalogRESTClient) DeleteEntry(ctx context.Context, req *dataplexpb.Del
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4229,6 +4319,11 @@ func (c *catalogRESTClient) ListEntries(ctx context.Context, req *dataplexpb.Lis
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/entries", req.GetParent())
@@ -4299,6 +4394,11 @@ func (c *catalogRESTClient) GetEntry(ctx context.Context, req *dataplexpb.GetEnt
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4364,6 +4464,11 @@ func (c *catalogRESTClient) GetEntry(ctx context.Context, req *dataplexpb.GetEnt
 func (c *catalogRESTClient) LookupEntry(ctx context.Context, req *dataplexpb.LookupEntryRequest, opts ...gax.CallOption) (*dataplexpb.Entry, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:lookupEntry", req.GetName())
@@ -4440,6 +4545,11 @@ func (c *catalogRESTClient) ModifyEntry(ctx context.Context, req *dataplexpb.Mod
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:modifyEntry", req.GetName())
 
 	params := url.Values{}
@@ -4505,6 +4615,11 @@ func (c *catalogRESTClient) SearchEntries(ctx context.Context, req *dataplexpb.S
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:searchEntries", req.GetName())
@@ -4590,6 +4705,11 @@ func (c *catalogRESTClient) CreateMetadataJob(ctx context.Context, req *dataplex
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/metadataJobs", req.GetParent())
 
 	params := url.Values{}
@@ -4657,6 +4777,11 @@ func (c *catalogRESTClient) GetMetadataJob(ctx context.Context, req *dataplexpb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4722,6 +4847,11 @@ func (c *catalogRESTClient) ListMetadataJobs(ctx context.Context, req *dataplexp
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/metadataJobs", req.GetParent())
@@ -4806,6 +4936,11 @@ func (c *catalogRESTClient) CancelMetadataJob(ctx context.Context, req *dataplex
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -4850,6 +4985,11 @@ func (c *catalogRESTClient) CreateEntryLink(ctx context.Context, req *dataplexpb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/entryLinks", req.GetParent())
@@ -4914,6 +5054,11 @@ func (c *catalogRESTClient) UpdateEntryLink(ctx context.Context, req *dataplexpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetEntryLink().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetEntryLink().GetName())
 
 	params := url.Values{}
@@ -4974,6 +5119,11 @@ func (c *catalogRESTClient) UpdateEntryLink(ctx context.Context, req *dataplexpb
 func (c *catalogRESTClient) DeleteEntryLink(ctx context.Context, req *dataplexpb.DeleteEntryLinkRequest, opts ...gax.CallOption) (*dataplexpb.EntryLink, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -5041,6 +5191,11 @@ func (c *catalogRESTClient) LookupEntryLinks(ctx context.Context, req *dataplexp
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:lookupEntryLinks", req.GetName())
@@ -5123,6 +5278,11 @@ func (c *catalogRESTClient) LookupContext(ctx context.Context, req *dataplexpb.L
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:lookupContext", req.GetName())
 
 	params := url.Values{}
@@ -5175,6 +5335,11 @@ func (c *catalogRESTClient) LookupContext(ctx context.Context, req *dataplexpb.L
 func (c *catalogRESTClient) GetEntryLink(ctx context.Context, req *dataplexpb.GetEntryLinkRequest, opts ...gax.CallOption) (*dataplexpb.EntryLink, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -5236,6 +5401,11 @@ func (c *catalogRESTClient) CreateMetadataFeed(ctx context.Context, req *dataple
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/metadataFeeds", req.GetParent())
@@ -5305,6 +5475,11 @@ func (c *catalogRESTClient) GetMetadataFeed(ctx context.Context, req *dataplexpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -5370,6 +5545,11 @@ func (c *catalogRESTClient) ListMetadataFeeds(ctx context.Context, req *dataplex
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/metadataFeeds", req.GetParent())
@@ -5443,6 +5623,11 @@ func (c *catalogRESTClient) DeleteMetadataFeed(ctx context.Context, req *dataple
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -5509,6 +5694,11 @@ func (c *catalogRESTClient) UpdateMetadataFeed(ctx context.Context, req *dataple
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetMetadataFeed().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetMetadataFeed().GetName())
@@ -5580,6 +5770,11 @@ func (c *catalogRESTClient) UpdateMetadataFeed(ctx context.Context, req *dataple
 func (c *catalogRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -5664,6 +5859,11 @@ func (c *catalogRESTClient) ListLocations(ctx context.Context, req *locationpb.L
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -5733,6 +5933,11 @@ func (c *catalogRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamP
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -5798,6 +6003,11 @@ func (c *catalogRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamP
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
@@ -5866,6 +6076,11 @@ func (c *catalogRESTClient) TestIamPermissions(ctx context.Context, req *iampb.T
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -5926,6 +6141,11 @@ func (c *catalogRESTClient) CancelOperation(ctx context.Context, req *longrunnin
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -5965,6 +6185,11 @@ func (c *catalogRESTClient) DeleteOperation(ctx context.Context, req *longrunnin
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -6002,6 +6227,11 @@ func (c *catalogRESTClient) DeleteOperation(ctx context.Context, req *longrunnin
 func (c *catalogRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -6069,6 +6299,11 @@ func (c *catalogRESTClient) ListOperations(ctx context.Context, req *longrunning
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

@@ -1075,6 +1075,11 @@ func (c *restClient) ListInsights(ctx context.Context, req *recommenderpb.ListIn
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/insights", req.GetParent())
 
 		params := url.Values{}
@@ -1144,6 +1149,11 @@ func (c *restClient) GetInsight(ctx context.Context, req *recommenderpb.GetInsig
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1207,6 +1217,11 @@ func (c *restClient) MarkInsightAccepted(ctx context.Context, req *recommenderpb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:markAccepted", req.GetName())
@@ -1275,6 +1290,11 @@ func (c *restClient) ListRecommendations(ctx context.Context, req *recommenderpb
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/recommendations", req.GetParent())
@@ -1346,6 +1366,11 @@ func (c *restClient) GetRecommendation(ctx context.Context, req *recommenderpb.G
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1412,6 +1437,11 @@ func (c *restClient) MarkRecommendationDismissed(ctx context.Context, req *recom
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:markDismissed", req.GetName())
@@ -1481,6 +1511,11 @@ func (c *restClient) MarkRecommendationClaimed(ctx context.Context, req *recomme
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:markClaimed", req.GetName())
@@ -1553,6 +1588,11 @@ func (c *restClient) MarkRecommendationSucceeded(ctx context.Context, req *recom
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:markSucceeded", req.GetName())
 
 	params := url.Values{}
@@ -1623,6 +1663,11 @@ func (c *restClient) MarkRecommendationFailed(ctx context.Context, req *recommen
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:markFailed", req.GetName())
 
 	params := url.Values{}
@@ -1676,6 +1721,11 @@ func (c *restClient) MarkRecommendationFailed(ctx context.Context, req *recommen
 func (c *restClient) GetRecommenderConfig(ctx context.Context, req *recommenderpb.GetRecommenderConfigRequest, opts ...gax.CallOption) (*recommenderpb.RecommenderConfig, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1738,6 +1788,11 @@ func (c *restClient) UpdateRecommenderConfig(ctx context.Context, req *recommend
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetRecommenderConfig().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetRecommenderConfig().GetName())
@@ -1805,6 +1860,11 @@ func (c *restClient) GetInsightTypeConfig(ctx context.Context, req *recommenderp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1865,6 +1925,11 @@ func (c *restClient) UpdateInsightTypeConfig(ctx context.Context, req *recommend
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetInsightTypeConfig().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetInsightTypeConfig().GetName())

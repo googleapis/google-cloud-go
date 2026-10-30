@@ -714,20 +714,20 @@ var File_google_maps_navconnect_v1_navconnect_service_proto protoreflect.FileDes
 
 const file_google_maps_navconnect_v1_navconnect_service_proto_rawDesc = "" +
 	"\n" +
-	"2google/maps/navconnect/v1/navconnect_service.proto\x12\x19google.maps.navconnect.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x18google/type/latlng.proto\"\xda\x05\n" +
-	"\x04Trip\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x12B\n" +
-	"\x06config\x18\a \x01(\v2%.google.maps.navconnect.v1.TripConfigB\x03\xe0A\x05R\x06config\x12,\n" +
-	"\x0eandroid_app_id\x18\b \x01(\tB\x06\xe0A\x04\xe0A\x05R\fandroidAppId\x12$\n" +
+	"2google/maps/navconnect/v1/navconnect_service.proto\x12\x19google.maps.navconnect.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x18google/type/latlng.proto\"\xdd\x05\n" +
+	"\x04Trip\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\bR\x04name\x12C\n" +
+	"\x06config\x18\a \x01(\v2%.google.maps.navconnect.v1.TripConfigB\x04\xe2A\x01\x05R\x06config\x12+\n" +
+	"\x0eandroid_app_id\x18\b \x01(\tB\x05\xe2A\x02\x04\x05R\fandroidAppId\x12#\n" +
 	"\n" +
-	"ios_app_id\x18\t \x01(\tB\x06\xe0A\x04\xe0A\x05R\biosAppId\x12H\n" +
+	"ios_app_id\x18\t \x01(\tB\x05\xe2A\x02\x04\x05R\biosAppId\x12I\n" +
 	"\n" +
-	"auth_token\x18\x02 \x01(\v2$.google.maps.navconnect.v1.AuthTokenB\x03\xe0A\x03R\tauthToken\x12@\n" +
-	"\x05state\x18\x03 \x01(\x0e2%.google.maps.navconnect.v1.Trip.StateB\x03\xe0A\x03R\x05state\x12K\n" +
-	"\texecution\x18\x04 \x01(\v2(.google.maps.navconnect.v1.TripExecutionB\x03\xe0A\x03R\texecution\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"auth_token\x18\x02 \x01(\v2$.google.maps.navconnect.v1.AuthTokenB\x04\xe2A\x01\x03R\tauthToken\x12A\n" +
+	"\x05state\x18\x03 \x01(\x0e2%.google.maps.navconnect.v1.Trip.StateB\x04\xe2A\x01\x03R\x05state\x12L\n" +
+	"\texecution\x18\x04 \x01(\v2(.google.maps.navconnect.v1.TripExecutionB\x04\xe2A\x01\x03R\texecution\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\"n\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\a\n" +
@@ -738,42 +738,42 @@ const file_google_maps_navconnect_v1_navconnect_service_proto_rawDesc = "" +
 	"\n" +
 	"\x06FAILED\x10\x05\x12\x10\n" +
 	"\fCLIENT_ERROR\x10\x06:Q\xeaAN\n" +
-	"\x1enavconnect.googleapis.com/Trip\x12\x1fprojects/{project}/trips/{trip}*\x05trips2\x04trip\"\xcb\x01\n" +
+	"\x1enavconnect.googleapis.com/Trip\x12\x1fprojects/{project}/trips/{trip}*\x05trips2\x04trip\"\xce\x01\n" +
 	"\n" +
-	"TripConfig\x12F\n" +
-	"\x1denable_high_frequency_updates\x18\x01 \x01(\bB\x03\xe0A\x01R\x1aenableHighFrequencyUpdates\x12(\n" +
-	"\renable_pubsub\x18\x02 \x01(\bB\x03\xe0A\x01R\fenablePubsub\x12K\n" +
-	"\x11pubsub_field_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\x0fpubsubFieldMask\"h\n" +
-	"\tAuthToken\x12\x19\n" +
-	"\x05token\x18\x01 \x01(\tB\x03\xe0A\x03R\x05token\x12@\n" +
-	"\vexpire_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"expireTime\"\x91\x05\n" +
-	"\rTripExecution\x12@\n" +
-	"\x06origin\x18\x01 \x01(\v2#.google.maps.navconnect.v1.LocationB\x03\xe0A\x03R\x06origin\x12F\n" +
-	"\vdestination\x18\x02 \x01(\v2\x1f.google.maps.navconnect.v1.StopB\x03\xe0A\x03R\vdestination\x12D\n" +
-	"\blocation\x18\x03 \x01(\v2#.google.maps.navconnect.v1.LocationB\x03\xe0A\x03R\blocation\x12K\n" +
-	"\x11traveled_duration\x18\x04 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x03R\x10traveledDuration\x12M\n" +
-	"\x12remaining_duration\x18\x05 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x03R\x11remainingDuration\x12B\n" +
-	"\x18traveled_distance_meters\x18\x06 \x01(\x05B\x03\xe0A\x03H\x00R\x16traveledDistanceMeters\x88\x01\x01\x12D\n" +
-	"\x19remaining_distance_meters\x18\a \x01(\x05B\x03\xe0A\x03H\x01R\x17remainingDistanceMeters\x88\x01\x01\x127\n" +
-	"\x13stop_added_in_route\x18\b \x01(\bB\x03\xe0A\x03H\x02R\x10stopAddedInRoute\x88\x01\x01B\x1b\n" +
+	"TripConfig\x12G\n" +
+	"\x1denable_high_frequency_updates\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x1aenableHighFrequencyUpdates\x12)\n" +
+	"\renable_pubsub\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\fenablePubsub\x12L\n" +
+	"\x11pubsub_field_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\x0fpubsubFieldMask\"j\n" +
+	"\tAuthToken\x12\x1a\n" +
+	"\x05token\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x05token\x12A\n" +
+	"\vexpire_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"expireTime\"\x99\x05\n" +
+	"\rTripExecution\x12A\n" +
+	"\x06origin\x18\x01 \x01(\v2#.google.maps.navconnect.v1.LocationB\x04\xe2A\x01\x03R\x06origin\x12G\n" +
+	"\vdestination\x18\x02 \x01(\v2\x1f.google.maps.navconnect.v1.StopB\x04\xe2A\x01\x03R\vdestination\x12E\n" +
+	"\blocation\x18\x03 \x01(\v2#.google.maps.navconnect.v1.LocationB\x04\xe2A\x01\x03R\blocation\x12L\n" +
+	"\x11traveled_duration\x18\x04 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x03R\x10traveledDuration\x12N\n" +
+	"\x12remaining_duration\x18\x05 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x03R\x11remainingDuration\x12C\n" +
+	"\x18traveled_distance_meters\x18\x06 \x01(\x05B\x04\xe2A\x01\x03H\x00R\x16traveledDistanceMeters\x88\x01\x01\x12E\n" +
+	"\x19remaining_distance_meters\x18\a \x01(\x05B\x04\xe2A\x01\x03H\x01R\x17remainingDistanceMeters\x88\x01\x01\x128\n" +
+	"\x13stop_added_in_route\x18\b \x01(\bB\x04\xe2A\x01\x03H\x02R\x10stopAddedInRoute\x88\x01\x01B\x1b\n" +
 	"\x19_traveled_distance_metersB\x1c\n" +
 	"\x1a_remaining_distance_metersB\x16\n" +
-	"\x14_stop_added_in_route\"6\n" +
-	"\x04Stop\x12.\n" +
-	"\x05point\x18\x01 \x01(\v2\x13.google.type.LatLngB\x03\xe0A\x02R\x05point\"\xbe\x01\n" +
-	"\bLocation\x12.\n" +
-	"\x05point\x18\x01 \x01(\v2\x13.google.type.LatLngB\x03\xe0A\x03R\x05point\x12@\n" +
-	"\vsource_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"sourceTime\x12@\n" +
-	"\vserver_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"serverTime\"\x90\x01\n" +
-	"\x11CreateTripRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12$\n" +
-	"\atrip_id\x18\x02 \x01(\tB\v\xe0A\x02\xe2\x8c\xcf\xd7\b\x02\b\x01R\x06tripId\x128\n" +
-	"\x04trip\x18\x03 \x01(\v2\x1f.google.maps.navconnect.v1.TripB\x03\xe0A\x02R\x04trip\"L\n" +
-	"\x0eGetTripRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
+	"\x14_stop_added_in_route\"7\n" +
+	"\x04Stop\x12/\n" +
+	"\x05point\x18\x01 \x01(\v2\x13.google.type.LatLngB\x04\xe2A\x01\x02R\x05point\"\xc1\x01\n" +
+	"\bLocation\x12/\n" +
+	"\x05point\x18\x01 \x01(\v2\x13.google.type.LatLngB\x04\xe2A\x01\x03R\x05point\x12A\n" +
+	"\vsource_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"sourceTime\x12A\n" +
+	"\vserver_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"serverTime\"\x93\x01\n" +
+	"\x11CreateTripRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12%\n" +
+	"\atrip_id\x18\x02 \x01(\tB\f\xe2A\x01\x02\xe2\x8c\xcf\xd7\b\x02\b\x01R\x06tripId\x129\n" +
+	"\x04trip\x18\x03 \x01(\v2\x1f.google.maps.navconnect.v1.TripB\x04\xe2A\x01\x02R\x04trip\"M\n" +
+	"\x0eGetTripRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
 	"\x1enavconnect.googleapis.com/TripR\x04name2\x90\x03\n" +
 	"\x11NavConnectService\x12\x9e\x01\n" +
 	"\n" +

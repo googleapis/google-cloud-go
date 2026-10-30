@@ -1,5 +1,34 @@
 # Changes
 
+## [1.29.2](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.29.1...firestore/v1.29.2) (2026-10-29)
+
+
+### Bug Fixes
+
+* Propagate transaction through aggregation pipeline ([#20772](https://github.com/googleapis/google-cloud-go/issues/20772)) ([1ecb8a4](https://github.com/googleapis/google-cloud-go/commit/1ecb8a47576aad192ca68d8961a142631e8cd656))
+
+## [1.29.1](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.29.0...firestore/v1.29.1) (2026-10-28)
+
+
+### Bug Fixes
+
+* Adds additional validation for REST RPC requests ([#20753](https://github.com/googleapis/google-cloud-go/issues/20753)) ([7827181](https://github.com/googleapis/google-cloud-go/commit/7827181e7cb653fb69645c538b162b2c7490b0bb))
+* **firestore:** Set x-goog-is-transaction header for atomic transaction pipelines. ([#20744](https://github.com/googleapis/google-cloud-go/issues/20744)) ([932ca4a](https://github.com/googleapis/google-cloud-go/commit/932ca4a554702e43b5823e0760943eb954d7eb57))
+
+## [1.29.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.28.0...firestore/v1.29.0) (2026-10-22)
+
+
+### Features
+
+* Update API sources and regenerate ([#20728](https://github.com/googleapis/google-cloud-go/issues/20728)) ([ab1da9d](https://github.com/googleapis/google-cloud-go/commit/ab1da9d200416594ae18fa7a2944961f1c92c928))
+
+## [1.28.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.27.0...firestore/v1.28.0) (2026-10-21)
+
+
+### Features
+
+* **firestore:** Add x-goog-is-transaction routing header ([#20701](https://github.com/googleapis/google-cloud-go/issues/20701)) ([d80b4e8](https://github.com/googleapis/google-cloud-go/commit/d80b4e88367bf3ad8ec9dbd49b3cb135b05ebf47))
+
 ## [1.27.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.26.0...firestore/v1.27.0) (2026-10-20)
 
 

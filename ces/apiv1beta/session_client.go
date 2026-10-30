@@ -48,15 +48,18 @@ var newSessionClientHook clientHook
 
 // SessionCallOptions contains the retry settings for each method of SessionClient.
 type SessionCallOptions struct {
-	RunSession       []gax.CallOption
-	StreamRunSession []gax.CallOption
-	BidiRunSession   []gax.CallOption
-	GetLocation      []gax.CallOption
-	ListLocations    []gax.CallOption
-	CancelOperation  []gax.CallOption
-	DeleteOperation  []gax.CallOption
-	GetOperation     []gax.CallOption
-	ListOperations   []gax.CallOption
+	RunSession                    []gax.CallOption
+	StreamRunSession              []gax.CallOption
+	BidiRunSession                []gax.CallOption
+	StreamChatAiAssistant         []gax.CallOption
+	CancelAssistantTurn           []gax.CallOption
+	GenerateOnboardingSuggestions []gax.CallOption
+	GetLocation                   []gax.CallOption
+	ListLocations                 []gax.CallOption
+	CancelOperation               []gax.CallOption
+	DeleteOperation               []gax.CallOption
+	GetOperation                  []gax.CallOption
+	ListOperations                []gax.CallOption
 }
 
 func defaultSessionGRPCClientOptions() []option.ClientOption {
@@ -107,6 +110,41 @@ func defaultSessionCallOptions() *SessionCallOptions {
 				})
 			}),
 		},
+		StreamChatAiAssistant: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CancelAssistantTurn: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GenerateOnboardingSuggestions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -136,6 +174,33 @@ func defaultSessionRESTCallOptions() *SessionCallOptions {
 		BidiRunSession: []gax.CallOption{
 			gax.WithTimeout(3600000 * time.Millisecond),
 		},
+		StreamChatAiAssistant: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+		},
+		CancelAssistantTurn: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GenerateOnboardingSuggestions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -153,6 +218,9 @@ type internalSessionClient interface {
 	RunSession(context.Context, *cespb.RunSessionRequest, ...gax.CallOption) (*cespb.RunSessionResponse, error)
 	StreamRunSession(context.Context, *cespb.RunSessionRequest, ...gax.CallOption) (cespb.SessionService_StreamRunSessionClient, error)
 	BidiRunSession(context.Context, ...gax.CallOption) (cespb.SessionService_BidiRunSessionClient, error)
+	StreamChatAiAssistant(context.Context, *cespb.StreamChatAiAssistantRequest, ...gax.CallOption) (cespb.SessionService_StreamChatAiAssistantClient, error)
+	CancelAssistantTurn(context.Context, *cespb.CancelAssistantTurnRequest, ...gax.CallOption) (*cespb.CancelAssistantTurnResponse, error)
+	GenerateOnboardingSuggestions(context.Context, *cespb.GenerateOnboardingSuggestionsRequest, ...gax.CallOption) (*cespb.GenerateOnboardingSuggestionsResponse, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -285,6 +353,29 @@ func (c *SessionClient) BidiRunSession(ctx context.Context, opts ...gax.CallOpti
 	return c.internalClient.BidiRunSession(ctx, opts...)
 }
 
+// StreamChatAiAssistant runs Arc, the AI assistant, for the specified assistant session in a
+// streaming fashion.
+func (c *SessionClient) StreamChatAiAssistant(ctx context.Context, req *cespb.StreamChatAiAssistantRequest, opts ...gax.CallOption) (cespb.SessionService_StreamChatAiAssistantClient, error) {
+	return c.internalClient.StreamChatAiAssistant(ctx, req, opts...)
+}
+
+// CancelAssistantTurn cancels the assistant session’s in-flight turn, if any: the explicit user
+// stop for a turn running detached from any stream. A cancel landing on a
+// task that does not host the turn preempts it through the session turn
+// epoch instead, ending it within one lease renewal.
+func (c *SessionClient) CancelAssistantTurn(ctx context.Context, req *cespb.CancelAssistantTurnRequest, opts ...gax.CallOption) (*cespb.CancelAssistantTurnResponse, error) {
+	return c.internalClient.CancelAssistantTurn(ctx, req, opts...)
+}
+
+// GenerateOnboardingSuggestions generates personalized onboarding suggestions for the Arc
+// zero state: classifies the requesting user (new / exploring / returning)
+// from their assistant-session history in the app and returns suggestion
+// chips (resume a session, continue work, or start something new) to render
+// before any message is sent.
+func (c *SessionClient) GenerateOnboardingSuggestions(ctx context.Context, req *cespb.GenerateOnboardingSuggestionsRequest, opts ...gax.CallOption) (*cespb.GenerateOnboardingSuggestionsResponse, error) {
+	return c.internalClient.GenerateOnboardingSuggestions(ctx, req, opts...)
+}
+
 // GetLocation gets information about a location.
 func (c *SessionClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
@@ -407,6 +498,9 @@ func NewSessionClient(ctx context.Context, opts ...option.ClientOption) (*Sessio
 		client.CallOptions.RunSession = append(client.CallOptions.RunSession, gax.WithClientMetrics(metrics))
 		client.CallOptions.StreamRunSession = append(client.CallOptions.StreamRunSession, gax.WithClientMetrics(metrics))
 		client.CallOptions.BidiRunSession = append(client.CallOptions.BidiRunSession, gax.WithClientMetrics(metrics))
+		client.CallOptions.StreamChatAiAssistant = append(client.CallOptions.StreamChatAiAssistant, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelAssistantTurn = append(client.CallOptions.CancelAssistantTurn, gax.WithClientMetrics(metrics))
+		client.CallOptions.GenerateOnboardingSuggestions = append(client.CallOptions.GenerateOnboardingSuggestions, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
 		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
@@ -428,6 +522,9 @@ func NewSessionClient(ctx context.Context, opts ...option.ClientOption) (*Sessio
 		client.CallOptions.RunSession = append(client.CallOptions.RunSession, gax.WithClientTracing(tracing))
 		client.CallOptions.StreamRunSession = append(client.CallOptions.StreamRunSession, gax.WithClientTracing(tracing))
 		client.CallOptions.BidiRunSession = append(client.CallOptions.BidiRunSession, gax.WithClientTracing(tracing))
+		client.CallOptions.StreamChatAiAssistant = append(client.CallOptions.StreamChatAiAssistant, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelAssistantTurn = append(client.CallOptions.CancelAssistantTurn, gax.WithClientTracing(tracing))
+		client.CallOptions.GenerateOnboardingSuggestions = append(client.CallOptions.GenerateOnboardingSuggestions, gax.WithClientTracing(tracing))
 		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
 		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
 		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
@@ -450,6 +547,9 @@ func NewSessionClient(ctx context.Context, opts ...option.ClientOption) (*Sessio
 		client.CallOptions.RunSession = append(client.CallOptions.RunSession, gax.WithClientLogging(logging))
 		client.CallOptions.StreamRunSession = append(client.CallOptions.StreamRunSession, gax.WithClientLogging(logging))
 		client.CallOptions.BidiRunSession = append(client.CallOptions.BidiRunSession, gax.WithClientLogging(logging))
+		client.CallOptions.StreamChatAiAssistant = append(client.CallOptions.StreamChatAiAssistant, gax.WithClientLogging(logging))
+		client.CallOptions.CancelAssistantTurn = append(client.CallOptions.CancelAssistantTurn, gax.WithClientLogging(logging))
+		client.CallOptions.GenerateOnboardingSuggestions = append(client.CallOptions.GenerateOnboardingSuggestions, gax.WithClientLogging(logging))
 		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
 		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
 		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
@@ -549,6 +649,9 @@ func NewSessionRESTClient(ctx context.Context, opts ...option.ClientOption) (*Se
 		callOpts.RunSession = append(callOpts.RunSession, gax.WithClientMetrics(metrics))
 		callOpts.StreamRunSession = append(callOpts.StreamRunSession, gax.WithClientMetrics(metrics))
 		callOpts.BidiRunSession = append(callOpts.BidiRunSession, gax.WithClientMetrics(metrics))
+		callOpts.StreamChatAiAssistant = append(callOpts.StreamChatAiAssistant, gax.WithClientMetrics(metrics))
+		callOpts.CancelAssistantTurn = append(callOpts.CancelAssistantTurn, gax.WithClientMetrics(metrics))
+		callOpts.GenerateOnboardingSuggestions = append(callOpts.GenerateOnboardingSuggestions, gax.WithClientMetrics(metrics))
 		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
 		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
 		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
@@ -570,6 +673,9 @@ func NewSessionRESTClient(ctx context.Context, opts ...option.ClientOption) (*Se
 		callOpts.RunSession = append(callOpts.RunSession, gax.WithClientTracing(tracing))
 		callOpts.StreamRunSession = append(callOpts.StreamRunSession, gax.WithClientTracing(tracing))
 		callOpts.BidiRunSession = append(callOpts.BidiRunSession, gax.WithClientTracing(tracing))
+		callOpts.StreamChatAiAssistant = append(callOpts.StreamChatAiAssistant, gax.WithClientTracing(tracing))
+		callOpts.CancelAssistantTurn = append(callOpts.CancelAssistantTurn, gax.WithClientTracing(tracing))
+		callOpts.GenerateOnboardingSuggestions = append(callOpts.GenerateOnboardingSuggestions, gax.WithClientTracing(tracing))
 		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
 		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
 		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
@@ -592,6 +698,9 @@ func NewSessionRESTClient(ctx context.Context, opts ...option.ClientOption) (*Se
 		callOpts.RunSession = append(callOpts.RunSession, gax.WithClientLogging(logging))
 		callOpts.StreamRunSession = append(callOpts.StreamRunSession, gax.WithClientLogging(logging))
 		callOpts.BidiRunSession = append(callOpts.BidiRunSession, gax.WithClientLogging(logging))
+		callOpts.StreamChatAiAssistant = append(callOpts.StreamChatAiAssistant, gax.WithClientLogging(logging))
+		callOpts.CancelAssistantTurn = append(callOpts.CancelAssistantTurn, gax.WithClientLogging(logging))
+		callOpts.GenerateOnboardingSuggestions = append(callOpts.GenerateOnboardingSuggestions, gax.WithClientLogging(logging))
 		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
 		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
 		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
@@ -696,6 +805,71 @@ func (c *sessionGRPCClient) BidiRunSession(ctx context.Context, opts ...gax.Call
 		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "BidiRunSession")
 		resp, err = c.sessionClient.BidiRunSession(ctx, settings.GRPC...)
 		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "BidiRunSession")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *sessionGRPCClient) StreamChatAiAssistant(ctx context.Context, req *cespb.StreamChatAiAssistantRequest, opts ...gax.CallOption) (cespb.SessionService_StreamChatAiAssistantClient, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.SessionService/StreamChatAiAssistant")
+	}
+	opts = append((*c.CallOptions).StreamChatAiAssistant[0:len((*c.CallOptions).StreamChatAiAssistant):len((*c.CallOptions).StreamChatAiAssistant)], opts...)
+	var resp cespb.SessionService_StreamChatAiAssistantClient
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "StreamChatAiAssistant")
+		resp, err = c.sessionClient.StreamChatAiAssistant(ctx, req, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "StreamChatAiAssistant")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *sessionGRPCClient) CancelAssistantTurn(ctx context.Context, req *cespb.CancelAssistantTurnRequest, opts ...gax.CallOption) (*cespb.CancelAssistantTurnResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.SessionService/CancelAssistantTurn")
+	}
+	opts = append((*c.CallOptions).CancelAssistantTurn[0:len((*c.CallOptions).CancelAssistantTurn):len((*c.CallOptions).CancelAssistantTurn)], opts...)
+	var resp *cespb.CancelAssistantTurnResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.sessionClient.CancelAssistantTurn, req, settings.GRPC, c.logger, "CancelAssistantTurn")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *sessionGRPCClient) GenerateOnboardingSuggestions(ctx context.Context, req *cespb.GenerateOnboardingSuggestionsRequest, opts ...gax.CallOption) (*cespb.GenerateOnboardingSuggestionsResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.SessionService/GenerateOnboardingSuggestions")
+	}
+	opts = append((*c.CallOptions).GenerateOnboardingSuggestions[0:len((*c.CallOptions).GenerateOnboardingSuggestions):len((*c.CallOptions).GenerateOnboardingSuggestions)], opts...)
+	var resp *cespb.GenerateOnboardingSuggestionsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.sessionClient.GenerateOnboardingSuggestions, req, settings.GRPC, c.logger, "GenerateOnboardingSuggestions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -890,6 +1064,11 @@ func (c *sessionRESTClient) RunSession(ctx context.Context, req *cespb.RunSessio
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetConfig().GetSession(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:runSession", req.GetConfig().GetSession())
 
 	params := url.Values{}
@@ -956,6 +1135,11 @@ func (c *sessionRESTClient) StreamRunSession(ctx context.Context, req *cespb.Run
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetConfig().GetSession(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:streamRunSession", req.GetConfig().GetSession())
@@ -1123,10 +1307,264 @@ func (c *sessionRESTClient) BidiRunSession(ctx context.Context, opts ...gax.Call
 	return nil, errors.New("BidiRunSession not yet supported for REST clients")
 }
 
+// StreamChatAiAssistant runs Arc, the AI assistant, for the specified assistant session in a
+// streaming fashion.
+func (c *sessionRESTClient) StreamChatAiAssistant(ctx context.Context, req *cespb.StreamChatAiAssistantRequest, opts ...gax.CallOption) (cespb.SessionService_StreamChatAiAssistantClient, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v:streamChatAiAssistant", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.SessionService/StreamChatAiAssistant")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/apps/*/assistantSessions/*}:streamChatAiAssistant")
+	}
+	var streamClient *streamChatAiAssistantRESTStreamClient
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := executeStreamingHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "StreamChatAiAssistant")
+		if err != nil {
+			return err
+		}
+
+		streamClient = &streamChatAiAssistantRESTStreamClient{
+			ctx:    ctx,
+			md:     metadata.MD(httpRsp.Header),
+			stream: gax.NewProtoJSONStreamReader(httpRsp.Body, (&cespb.StreamChatAiAssistantResponse{}).ProtoReflect().Type()),
+		}
+		return nil
+	}, opts...)
+
+	return streamClient, e
+}
+
+// streamChatAiAssistantRESTStreamClient is the stream client used to consume the server stream created by
+// the REST implementation of StreamChatAiAssistant.
+type streamChatAiAssistantRESTStreamClient struct {
+	ctx    context.Context
+	md     metadata.MD
+	stream *gax.ProtoJSONStream
+}
+
+func (c *streamChatAiAssistantRESTStreamClient) Recv() (*cespb.StreamChatAiAssistantResponse, error) {
+	if err := c.ctx.Err(); err != nil {
+		defer c.stream.Close()
+		return nil, err
+	}
+	msg, err := c.stream.Recv()
+	if err != nil {
+		defer c.stream.Close()
+		return nil, err
+	}
+	res := msg.(*cespb.StreamChatAiAssistantResponse)
+	return res, nil
+}
+
+func (c *streamChatAiAssistantRESTStreamClient) Header() (metadata.MD, error) {
+	return c.md, nil
+}
+
+func (c *streamChatAiAssistantRESTStreamClient) Trailer() metadata.MD {
+	return c.md
+}
+
+func (c *streamChatAiAssistantRESTStreamClient) CloseSend() error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented for a server-stream")
+}
+
+func (c *streamChatAiAssistantRESTStreamClient) Context() context.Context {
+	return c.ctx
+}
+
+func (c *streamChatAiAssistantRESTStreamClient) SendMsg(m interface{}) error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented for a server-stream")
+}
+
+func (c *streamChatAiAssistantRESTStreamClient) RecvMsg(m interface{}) error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented, use Recv")
+}
+
+// CancelAssistantTurn cancels the assistant session’s in-flight turn, if any: the explicit user
+// stop for a turn running detached from any stream. A cancel landing on a
+// task that does not host the turn preempts it through the session turn
+// epoch instead, ending it within one lease renewal.
+func (c *sessionRESTClient) CancelAssistantTurn(ctx context.Context, req *cespb.CancelAssistantTurnRequest, opts ...gax.CallOption) (*cespb.CancelAssistantTurnResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v:cancelAssistantTurn", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.SessionService/CancelAssistantTurn")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/apps/*/assistantSessions/*}:cancelAssistantTurn")
+	}
+	opts = append((*c.CallOptions).CancelAssistantTurn[0:len((*c.CallOptions).CancelAssistantTurn):len((*c.CallOptions).CancelAssistantTurn)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &cespb.CancelAssistantTurnResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelAssistantTurn")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GenerateOnboardingSuggestions generates personalized onboarding suggestions for the Arc
+// zero state: classifies the requesting user (new / exploring / returning)
+// from their assistant-session history in the app and returns suggestion
+// chips (resume a session, continue work, or start something new) to render
+// before any message is sent.
+func (c *sessionRESTClient) GenerateOnboardingSuggestions(ctx context.Context, req *cespb.GenerateOnboardingSuggestionsRequest, opts ...gax.CallOption) (*cespb.GenerateOnboardingSuggestionsResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v:generateOnboardingSuggestions", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.SessionService/GenerateOnboardingSuggestions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/apps/*}:generateOnboardingSuggestions")
+	}
+	opts = append((*c.CallOptions).GenerateOnboardingSuggestions[0:len((*c.CallOptions).GenerateOnboardingSuggestions):len((*c.CallOptions).GenerateOnboardingSuggestions)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &cespb.GenerateOnboardingSuggestionsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GenerateOnboardingSuggestions")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // GetLocation gets information about a location.
 func (c *sessionRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -1211,6 +1649,11 @@ func (c *sessionRESTClient) ListLocations(ctx context.Context, req *locationpb.L
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -1285,6 +1728,11 @@ func (c *sessionRESTClient) CancelOperation(ctx context.Context, req *longrunnin
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1324,6 +1772,11 @@ func (c *sessionRESTClient) DeleteOperation(ctx context.Context, req *longrunnin
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -1361,6 +1814,11 @@ func (c *sessionRESTClient) DeleteOperation(ctx context.Context, req *longrunnin
 func (c *sessionRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -1428,6 +1886,11 @@ func (c *sessionRESTClient) ListOperations(ctx context.Context, req *longrunning
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/operations", req.GetName())

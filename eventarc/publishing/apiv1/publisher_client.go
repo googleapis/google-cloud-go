@@ -572,6 +572,11 @@ func (c *publisherRESTClient) PublishChannelConnectionEvents(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetChannelConnection(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:publishEvents", req.GetChannelConnection())
 
 	params := url.Values{}
@@ -632,6 +637,11 @@ func (c *publisherRESTClient) PublishEvents(ctx context.Context, req *publishing
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetChannel(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:publishEvents", req.GetChannel())
 
 	params := url.Values{}
@@ -690,6 +700,11 @@ func (c *publisherRESTClient) Publish(ctx context.Context, req *publishingpb.Pub
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetMessageBus(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:publish", req.GetMessageBus())

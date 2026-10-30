@@ -712,38 +712,38 @@ var File_google_cloud_osconfig_agentendpoint_v1beta_agentendpoint_proto protoref
 
 const file_google_cloud_osconfig_agentendpoint_v1beta_agentendpoint_proto_rawDesc = "" +
 	"\n" +
-	">google/cloud/osconfig/agentendpoint/v1beta/agentendpoint.proto\x12*google.cloud.osconfig.agentendpoint.v1beta\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a?google/cloud/osconfig/agentendpoint/v1beta/guest_policies.proto\x1a6google/cloud/osconfig/agentendpoint/v1beta/tasks.proto\"{\n" +
-	"\x1eReceiveTaskNotificationRequest\x12/\n" +
-	"\x11instance_id_token\x18\x01 \x01(\tB\x03\xe0A\x02R\x0finstanceIdToken\x12(\n" +
-	"\ragent_version\x18\x02 \x01(\tB\x03\xe0A\x02R\fagentVersion\"!\n" +
-	"\x1fReceiveTaskNotificationResponse\"G\n" +
-	"\x14StartNextTaskRequest\x12/\n" +
-	"\x11instance_id_token\x18\x01 \x01(\tB\x03\xe0A\x02R\x0finstanceIdToken\"]\n" +
+	">google/cloud/osconfig/agentendpoint/v1beta/agentendpoint.proto\x12*google.cloud.osconfig.agentendpoint.v1beta\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a?google/cloud/osconfig/agentendpoint/v1beta/guest_policies.proto\x1a6google/cloud/osconfig/agentendpoint/v1beta/tasks.proto\"}\n" +
+	"\x1eReceiveTaskNotificationRequest\x120\n" +
+	"\x11instance_id_token\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x0finstanceIdToken\x12)\n" +
+	"\ragent_version\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\fagentVersion\"!\n" +
+	"\x1fReceiveTaskNotificationResponse\"H\n" +
+	"\x14StartNextTaskRequest\x120\n" +
+	"\x11instance_id_token\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x0finstanceIdToken\"]\n" +
 	"\x15StartNextTaskResponse\x12D\n" +
-	"\x04task\x18\x01 \x01(\v20.google.cloud.osconfig.agentendpoint.v1beta.TaskR\x04task\"\xd1\x03\n" +
-	"\x19ReportTaskProgressRequest\x12/\n" +
-	"\x11instance_id_token\x18\x01 \x01(\tB\x03\xe0A\x02R\x0finstanceIdToken\x12\x1c\n" +
-	"\atask_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x06taskId\x12V\n" +
-	"\ttask_type\x18\x03 \x01(\x0e24.google.cloud.osconfig.agentendpoint.v1beta.TaskTypeB\x03\xe0A\x02R\btaskType\x12\x85\x01\n" +
+	"\x04task\x18\x01 \x01(\v20.google.cloud.osconfig.agentendpoint.v1beta.TaskR\x04task\"\xd4\x03\n" +
+	"\x19ReportTaskProgressRequest\x120\n" +
+	"\x11instance_id_token\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x0finstanceIdToken\x12\x1d\n" +
+	"\atask_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06taskId\x12W\n" +
+	"\ttask_type\x18\x03 \x01(\x0e24.google.cloud.osconfig.agentendpoint.v1beta.TaskTypeB\x04\xe2A\x01\x02R\btaskType\x12\x85\x01\n" +
 	"\x1bapply_patches_task_progress\x18\x04 \x01(\v2D.google.cloud.osconfig.agentendpoint.v1beta.ApplyPatchesTaskProgressH\x00R\x18applyPatchesTaskProgress\x12y\n" +
 	"\x17exec_step_task_progress\x18\x05 \x01(\v2@.google.cloud.osconfig.agentendpoint.v1beta.ExecStepTaskProgressH\x00R\x14execStepTaskProgressB\n" +
 	"\n" +
 	"\bprogress\"~\n" +
 	"\x1aReportTaskProgressResponse\x12`\n" +
-	"\x0etask_directive\x18\x01 \x01(\x0e29.google.cloud.osconfig.agentendpoint.v1beta.TaskDirectiveR\rtaskDirective\"\xe7\x03\n" +
-	"\x19ReportTaskCompleteRequest\x12/\n" +
-	"\x11instance_id_token\x18\x01 \x01(\tB\x03\xe0A\x02R\x0finstanceIdToken\x12\x1c\n" +
-	"\atask_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x06taskId\x12V\n" +
-	"\ttask_type\x18\x03 \x01(\x0e24.google.cloud.osconfig.agentendpoint.v1beta.TaskTypeB\x03\xe0A\x02R\btaskType\x12#\n" +
+	"\x0etask_directive\x18\x01 \x01(\x0e29.google.cloud.osconfig.agentendpoint.v1beta.TaskDirectiveR\rtaskDirective\"\xea\x03\n" +
+	"\x19ReportTaskCompleteRequest\x120\n" +
+	"\x11instance_id_token\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x0finstanceIdToken\x12\x1d\n" +
+	"\atask_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06taskId\x12W\n" +
+	"\ttask_type\x18\x03 \x01(\x0e24.google.cloud.osconfig.agentendpoint.v1beta.TaskTypeB\x04\xe2A\x01\x02R\btaskType\x12#\n" +
 	"\rerror_message\x18\x04 \x01(\tR\ferrorMessage\x12\x7f\n" +
 	"\x19apply_patches_task_output\x18\x05 \x01(\v2B.google.cloud.osconfig.agentendpoint.v1beta.ApplyPatchesTaskOutputH\x00R\x16applyPatchesTaskOutput\x12s\n" +
 	"\x15exec_step_task_output\x18\x06 \x01(\v2>.google.cloud.osconfig.agentendpoint.v1beta.ExecStepTaskOutputH\x00R\x12execStepTaskOutputB\b\n" +
 	"\x06output\"\x1c\n" +
-	"\x1aReportTaskCompleteResponse\"\xbb\x02\n" +
-	"\x14RegisterAgentRequest\x12/\n" +
-	"\x11instance_id_token\x18\x01 \x01(\tB\x03\xe0A\x02R\x0finstanceIdToken\x12(\n" +
-	"\ragent_version\x18\x02 \x01(\tB\x03\xe0A\x02R\fagentVersion\x12:\n" +
-	"\x16supported_capabilities\x18\x03 \x03(\tB\x03\xe0A\x02R\x15supportedCapabilities\x12 \n" +
+	"\x1aReportTaskCompleteResponse\"\xbe\x02\n" +
+	"\x14RegisterAgentRequest\x120\n" +
+	"\x11instance_id_token\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x0finstanceIdToken\x12)\n" +
+	"\ragent_version\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\fagentVersion\x12;\n" +
+	"\x16supported_capabilities\x18\x03 \x03(\tB\x04\xe2A\x01\x02R\x15supportedCapabilities\x12 \n" +
 	"\fos_long_name\x18\x04 \x01(\tR\n" +
 	"osLongName\x12\"\n" +
 	"\ros_short_name\x18\x05 \x01(\tR\vosShortName\x12\x1d\n" +

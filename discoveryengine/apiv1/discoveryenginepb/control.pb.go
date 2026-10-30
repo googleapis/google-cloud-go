@@ -1065,12 +1065,12 @@ var File_google_cloud_discoveryengine_v1_control_proto protoreflect.FileDescript
 
 const file_google_cloud_discoveryengine_v1_control_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/discoveryengine/v1/control.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/discoveryengine/v1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xab\x03\n" +
+	"-google/cloud/discoveryengine/v1/control.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/discoveryengine/v1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xac\x03\n" +
 	"\tCondition\x12U\n" +
 	"\vquery_terms\x18\x02 \x03(\v24.google.cloud.discoveryengine.v1.Condition.QueryTermR\n" +
 	"queryTerms\x12`\n" +
-	"\x11active_time_range\x18\x03 \x03(\v24.google.cloud.discoveryengine.v1.Condition.TimeRangeR\x0factiveTimeRange\x12$\n" +
-	"\vquery_regex\x18\x04 \x01(\tB\x03\xe0A\x01R\n" +
+	"\x11active_time_range\x18\x03 \x03(\v24.google.cloud.discoveryengine.v1.Condition.TimeRangeR\x0factiveTimeRange\x12%\n" +
+	"\vquery_regex\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\n" +
 	"queryRegex\x1a@\n" +
 	"\tQueryTerm\x12\x14\n" +
 	"\x05value\x18\x01 \x01(\tR\x05value\x12\x1d\n" +
@@ -1079,40 +1079,40 @@ const file_google_cloud_discoveryengine_v1_control_proto_rawDesc = "" +
 	"\tTimeRange\x129\n" +
 	"\n" +
 	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x125\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\"\xba\x15\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\"\xcb\x15\n" +
 	"\aControl\x12Y\n" +
 	"\fboost_action\x18\x06 \x01(\v24.google.cloud.discoveryengine.v1.Control.BoostActionH\x00R\vboostAction\x12\\\n" +
 	"\rfilter_action\x18\a \x01(\v25.google.cloud.discoveryengine.v1.Control.FilterActionH\x00R\ffilterAction\x12b\n" +
 	"\x0fredirect_action\x18\t \x01(\v27.google.cloud.discoveryengine.v1.Control.RedirectActionH\x00R\x0eredirectAction\x12b\n" +
 	"\x0fsynonyms_action\x18\n" +
 	" \x01(\v27.google.cloud.discoveryengine.v1.Control.SynonymsActionH\x00R\x0esynonymsAction\x12_\n" +
-	"\x0epromote_action\x18\x0f \x01(\v26.google.cloud.discoveryengine.v1.Control.PromoteActionH\x00R\rpromoteAction\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12F\n" +
-	"\x1dassociated_serving_config_ids\x18\x03 \x03(\tB\x03\xe0A\x03R\x1aassociatedServingConfigIds\x12Z\n" +
-	"\rsolution_type\x18\x04 \x01(\x0e2-.google.cloud.discoveryengine.v1.SolutionTypeB\x06\xe0A\x02\xe0A\x05R\fsolutionType\x12K\n" +
+	"\x0epromote_action\x18\x0f \x01(\v26.google.cloud.discoveryengine.v1.Control.PromoteActionH\x00R\rpromoteAction\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12G\n" +
+	"\x1dassociated_serving_config_ids\x18\x03 \x03(\tB\x04\xe2A\x01\x03R\x1aassociatedServingConfigIds\x12Y\n" +
+	"\rsolution_type\x18\x04 \x01(\x0e2-.google.cloud.discoveryengine.v1.SolutionTypeB\x05\xe2A\x02\x02\x05R\fsolutionType\x12K\n" +
 	"\tuse_cases\x18\b \x03(\x0e2..google.cloud.discoveryengine.v1.SearchUseCaseR\buseCases\x12J\n" +
 	"\n" +
 	"conditions\x18\x05 \x03(\v2*.google.cloud.discoveryengine.v1.ConditionR\n" +
-	"conditions\x1a\xb6\b\n" +
-	"\vBoostAction\x12&\n" +
-	"\vfixed_boost\x18\x04 \x01(\x02B\x03\xe0A\x01H\x00R\n" +
-	"fixedBoost\x12\x8c\x01\n" +
-	"\x18interpolation_boost_spec\x18\x05 \x01(\v2K.google.cloud.discoveryengine.v1.Control.BoostAction.InterpolationBoostSpecB\x03\xe0A\x01H\x00R\x16interpolationBoostSpec\x12\x18\n" +
-	"\x05boost\x18\x01 \x01(\x02B\x02\x18\x01R\x05boost\x12\x1b\n" +
-	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x02R\x06filter\x12O\n" +
+	"conditions\x1a\xc0\b\n" +
+	"\vBoostAction\x12'\n" +
+	"\vfixed_boost\x18\x04 \x01(\x02B\x04\xe2A\x01\x01H\x00R\n" +
+	"fixedBoost\x12\x8d\x01\n" +
+	"\x18interpolation_boost_spec\x18\x05 \x01(\v2K.google.cloud.discoveryengine.v1.Control.BoostAction.InterpolationBoostSpecB\x04\xe2A\x01\x01H\x00R\x16interpolationBoostSpec\x12\x18\n" +
+	"\x05boost\x18\x01 \x01(\x02B\x02\x18\x01R\x05boost\x12\x1c\n" +
+	"\x06filter\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06filter\x12P\n" +
 	"\n" +
-	"data_store\x18\x03 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(discoveryengine.googleapis.com/DataStoreR\tdataStore\x1a\xd9\x05\n" +
-	"\x16InterpolationBoostSpec\x12\"\n" +
+	"data_store\x18\x03 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(discoveryengine.googleapis.com/DataStoreR\tdataStore\x1a\xdf\x05\n" +
+	"\x16InterpolationBoostSpec\x12#\n" +
 	"\n" +
-	"field_name\x18\x01 \x01(\tB\x03\xe0A\x01R\tfieldName\x12\x85\x01\n" +
-	"\x0eattribute_type\x18\x02 \x01(\x0e2Y.google.cloud.discoveryengine.v1.Control.BoostAction.InterpolationBoostSpec.AttributeTypeB\x03\xe0A\x01R\rattributeType\x12\x91\x01\n" +
-	"\x12interpolation_type\x18\x03 \x01(\x0e2].google.cloud.discoveryengine.v1.Control.BoostAction.InterpolationBoostSpec.InterpolationTypeB\x03\xe0A\x01R\x11interpolationType\x12\x84\x01\n" +
-	"\x0econtrol_points\x18\x04 \x03(\v2X.google.cloud.discoveryengine.v1.Control.BoostAction.InterpolationBoostSpec.ControlPointB\x03\xe0A\x01R\rcontrolPoints\x1ad\n" +
-	"\fControlPoint\x12,\n" +
-	"\x0fattribute_value\x18\x01 \x01(\tB\x03\xe0A\x01R\x0eattributeValue\x12&\n" +
-	"\fboost_amount\x18\x02 \x01(\x02B\x03\xe0A\x01R\vboostAmount\"M\n" +
+	"field_name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\tfieldName\x12\x86\x01\n" +
+	"\x0eattribute_type\x18\x02 \x01(\x0e2Y.google.cloud.discoveryengine.v1.Control.BoostAction.InterpolationBoostSpec.AttributeTypeB\x04\xe2A\x01\x01R\rattributeType\x12\x92\x01\n" +
+	"\x12interpolation_type\x18\x03 \x01(\x0e2].google.cloud.discoveryengine.v1.Control.BoostAction.InterpolationBoostSpec.InterpolationTypeB\x04\xe2A\x01\x01R\x11interpolationType\x12\x85\x01\n" +
+	"\x0econtrol_points\x18\x04 \x03(\v2X.google.cloud.discoveryengine.v1.Control.BoostAction.InterpolationBoostSpec.ControlPointB\x04\xe2A\x01\x01R\rcontrolPoints\x1af\n" +
+	"\fControlPoint\x12-\n" +
+	"\x0fattribute_value\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0eattributeValue\x12'\n" +
+	"\fboost_amount\x18\x02 \x01(\x02B\x04\xe2A\x01\x01R\vboostAmount\"M\n" +
 	"\rAttributeType\x12\x1e\n" +
 	"\x1aATTRIBUTE_TYPE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tNUMERICAL\x10\x01\x12\r\n" +
@@ -1122,21 +1122,21 @@ const file_google_cloud_discoveryengine_v1_control_proto_rawDesc = "" +
 	"\n" +
 	"\x06LINEAR\x10\x01B\f\n" +
 	"\n" +
-	"boost_spec\x1a|\n" +
-	"\fFilterAction\x12\x1b\n" +
-	"\x06filter\x18\x01 \x01(\tB\x03\xe0A\x02R\x06filter\x12O\n" +
+	"boost_spec\x1a~\n" +
+	"\fFilterAction\x12\x1c\n" +
+	"\x06filter\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06filter\x12P\n" +
 	"\n" +
-	"data_store\x18\x02 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(discoveryengine.googleapis.com/DataStoreR\tdataStore\x1a8\n" +
-	"\x0eRedirectAction\x12&\n" +
-	"\fredirect_uri\x18\x01 \x01(\tB\x03\xe0A\x02R\vredirectUri\x1a,\n" +
+	"data_store\x18\x02 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(discoveryengine.googleapis.com/DataStoreR\tdataStore\x1a9\n" +
+	"\x0eRedirectAction\x12'\n" +
+	"\fredirect_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vredirectUri\x1a,\n" +
 	"\x0eSynonymsAction\x12\x1a\n" +
-	"\bsynonyms\x18\x01 \x03(\tR\bsynonyms\x1a\xcf\x01\n" +
-	"\rPromoteAction\x12O\n" +
+	"\bsynonyms\x18\x01 \x03(\tR\bsynonyms\x1a\xd1\x01\n" +
+	"\rPromoteAction\x12P\n" +
 	"\n" +
-	"data_store\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(discoveryengine.googleapis.com/DataStoreR\tdataStore\x12m\n" +
-	"\x15search_link_promotion\x18\x02 \x01(\v24.google.cloud.discoveryengine.v1.SearchLinkPromotionB\x03\xe0A\x02R\x13searchLinkPromotion:\xd3\x02\xeaA\xcf\x02\n" +
+	"data_store\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(discoveryengine.googleapis.com/DataStoreR\tdataStore\x12n\n" +
+	"\x15search_link_promotion\x18\x02 \x01(\v24.google.cloud.discoveryengine.v1.SearchLinkPromotionB\x04\xe2A\x01\x02R\x13searchLinkPromotion:\xd3\x02\xeaA\xcf\x02\n" +
 	"&discoveryengine.googleapis.com/Control\x12Rprojects/{project}/locations/{location}/dataStores/{data_store}/controls/{control}\x12kprojects/{project}/locations/{location}/collections/{collection}/dataStores/{data_store}/controls/{control}\x12dprojects/{project}/locations/{location}/collections/{collection}/engines/{engine}/controls/{control}B\b\n" +
 	"\x06actionB\xff\x01\n" +
 	"#com.google.cloud.discoveryengine.v1B\fControlProtoP\x01ZMcloud.google.com/go/discoveryengine/apiv1/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02\x1fGoogle.Cloud.DiscoveryEngine.V1\xca\x02\x1fGoogle\\Cloud\\DiscoveryEngine\\V1\xea\x02\"Google::Cloud::DiscoveryEngine::V1b\x06proto3"

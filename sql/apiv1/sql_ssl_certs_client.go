@@ -532,6 +532,13 @@ func (c *sqlSslCertsRESTClient) Delete(ctx context.Context, req *sqlpb.SqlSslCer
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+		req.GetSha1Fingerprint(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/sslCerts/%v", req.GetProject(), req.GetInstance(), req.GetSha1Fingerprint())
 
 	params := url.Values{}
@@ -586,6 +593,13 @@ func (c *sqlSslCertsRESTClient) Delete(ctx context.Context, req *sqlpb.SqlSslCer
 func (c *sqlSslCertsRESTClient) Get(ctx context.Context, req *sqlpb.SqlSslCertsGetRequest, opts ...gax.CallOption) (*sqlpb.SslCert, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+		req.GetSha1Fingerprint(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/sslCerts/%v", req.GetProject(), req.GetInstance(), req.GetSha1Fingerprint())
@@ -651,6 +665,12 @@ func (c *sqlSslCertsRESTClient) Insert(ctx context.Context, req *sqlpb.SqlSslCer
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/sslCerts", req.GetProject(), req.GetInstance())
 
 	params := url.Values{}
@@ -703,6 +723,12 @@ func (c *sqlSslCertsRESTClient) Insert(ctx context.Context, req *sqlpb.SqlSslCer
 func (c *sqlSslCertsRESTClient) List(ctx context.Context, req *sqlpb.SqlSslCertsListRequest, opts ...gax.CallOption) (*sqlpb.SslCertsListResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/instances/%v/sslCerts", req.GetProject(), req.GetInstance())

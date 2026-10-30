@@ -799,30 +799,30 @@ var File_google_monitoring_dashboard_v1_metrics_proto protoreflect.FileDescripto
 
 const file_google_monitoring_dashboard_v1_metrics_proto_rawDesc = "" +
 	"\n" +
-	",google/monitoring/dashboard/v1/metrics.proto\x12\x1egoogle.monitoring.dashboard.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a+google/monitoring/dashboard/v1/common.proto\"\xb7\x03\n" +
+	",google/monitoring/dashboard/v1/metrics.proto\x12\x1egoogle.monitoring.dashboard.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a+google/monitoring/dashboard/v1/common.proto\"\xb8\x03\n" +
 	"\x0fTimeSeriesQuery\x12`\n" +
 	"\x12time_series_filter\x18\x01 \x01(\v20.google.monitoring.dashboard.v1.TimeSeriesFilterH\x00R\x10timeSeriesFilter\x12p\n" +
 	"\x18time_series_filter_ratio\x18\x02 \x01(\v25.google.monitoring.dashboard.v1.TimeSeriesFilterRatioH\x00R\x15timeSeriesFilterRatio\x12=\n" +
 	"\x1atime_series_query_language\x18\x03 \x01(\tH\x00R\x17timeSeriesQueryLanguage\x12+\n" +
 	"\x10prometheus_query\x18\x06 \x01(\tH\x00R\x0fprometheusQuery\x12#\n" +
-	"\runit_override\x18\x05 \x01(\tR\funitOverride\x125\n" +
-	"\x14output_full_duration\x18\a \x01(\bB\x03\xe0A\x01R\x12outputFullDurationB\b\n" +
-	"\x06source\"\xe9\x03\n" +
-	"\x10TimeSeriesFilter\x12\x1b\n" +
-	"\x06filter\x18\x01 \x01(\tB\x03\xe0A\x02R\x06filter\x12M\n" +
+	"\runit_override\x18\x05 \x01(\tR\funitOverride\x126\n" +
+	"\x14output_full_duration\x18\a \x01(\bB\x04\xe2A\x01\x01R\x12outputFullDurationB\b\n" +
+	"\x06source\"\xea\x03\n" +
+	"\x10TimeSeriesFilter\x12\x1c\n" +
+	"\x06filter\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06filter\x12M\n" +
 	"\vaggregation\x18\x02 \x01(\v2+.google.monitoring.dashboard.v1.AggregationR\vaggregation\x12`\n" +
 	"\x15secondary_aggregation\x18\x03 \x01(\v2+.google.monitoring.dashboard.v1.AggregationR\x14secondaryAggregation\x12m\n" +
 	"\x17pick_time_series_filter\x18\x04 \x01(\v24.google.monitoring.dashboard.v1.PickTimeSeriesFilterH\x00R\x14pickTimeSeriesFilter\x12\x86\x01\n" +
 	"\x1estatistical_time_series_filter\x18\x05 \x01(\v2;.google.monitoring.dashboard.v1.StatisticalTimeSeriesFilterB\x02\x18\x01H\x00R\x1bstatisticalTimeSeriesFilterB\x0f\n" +
-	"\routput_filter\"\xbd\x05\n" +
+	"\routput_filter\"\xbe\x05\n" +
 	"\x15TimeSeriesFilterRatio\x12]\n" +
 	"\tnumerator\x18\x01 \x01(\v2?.google.monitoring.dashboard.v1.TimeSeriesFilterRatio.RatioPartR\tnumerator\x12a\n" +
 	"\vdenominator\x18\x02 \x01(\v2?.google.monitoring.dashboard.v1.TimeSeriesFilterRatio.RatioPartR\vdenominator\x12`\n" +
 	"\x15secondary_aggregation\x18\x03 \x01(\v2+.google.monitoring.dashboard.v1.AggregationR\x14secondaryAggregation\x12m\n" +
 	"\x17pick_time_series_filter\x18\x04 \x01(\v24.google.monitoring.dashboard.v1.PickTimeSeriesFilterH\x00R\x14pickTimeSeriesFilter\x12\x86\x01\n" +
-	"\x1estatistical_time_series_filter\x18\x05 \x01(\v2;.google.monitoring.dashboard.v1.StatisticalTimeSeriesFilterB\x02\x18\x01H\x00R\x1bstatisticalTimeSeriesFilter\x1aw\n" +
-	"\tRatioPart\x12\x1b\n" +
-	"\x06filter\x18\x01 \x01(\tB\x03\xe0A\x02R\x06filter\x12M\n" +
+	"\x1estatistical_time_series_filter\x18\x05 \x01(\v2;.google.monitoring.dashboard.v1.StatisticalTimeSeriesFilterB\x02\x18\x01H\x00R\x1bstatisticalTimeSeriesFilter\x1ax\n" +
+	"\tRatioPart\x12\x1c\n" +
+	"\x06filter\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06filter\x12M\n" +
 	"\vaggregation\x18\x02 \x01(\v2+.google.monitoring.dashboard.v1.AggregationR\vaggregationB\x0f\n" +
 	"\routput_filter\"\xd6\x03\n" +
 	"\tThreshold\x12\x14\n" +

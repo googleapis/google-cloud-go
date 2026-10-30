@@ -357,12 +357,12 @@ var File_google_cloud_commerceproducer_v1beta_service_proto protoreflect.FileDes
 
 const file_google_cloud_commerceproducer_v1beta_service_proto_rawDesc = "" +
 	"\n" +
-	"2google/cloud/commerceproducer/v1beta/service.proto\x12$google.cloud.commerceproducer.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a8google/cloud/commerceproducer/v1beta/private_offer.proto\"\xd0\b\n" +
-	"\aService\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x19\n" +
-	"\x05title\x18\x02 \x01(\tB\x03\xe0A\x03R\x05title\x12y\n" +
-	"\x14document_requirement\x18\x03 \x01(\v2A.google.cloud.commerceproducer.v1beta.Service.DocumentRequirementB\x03\xe0A\x03R\x13documentRequirement\x12a\n" +
-	"\fproduct_type\x18\x04 \x01(\x0e29.google.cloud.commerceproducer.v1beta.Service.ProductTypeB\x03\xe0A\x03R\vproductType\x1a\xb7\x04\n" +
+	"2google/cloud/commerceproducer/v1beta/service.proto\x12$google.cloud.commerceproducer.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a8google/cloud/commerceproducer/v1beta/private_offer.proto\"\xd4\b\n" +
+	"\aService\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x1a\n" +
+	"\x05title\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x05title\x12z\n" +
+	"\x14document_requirement\x18\x03 \x01(\v2A.google.cloud.commerceproducer.v1beta.Service.DocumentRequirementB\x04\xe2A\x01\x03R\x13documentRequirement\x12b\n" +
+	"\fproduct_type\x18\x04 \x01(\x0e29.google.cloud.commerceproducer.v1beta.Service.ProductTypeB\x04\xe2A\x01\x03R\vproductType\x1a\xb7\x04\n" +
 	"\x13DocumentRequirement\x12\x97\x01\n" +
 	"\x1adocument_type_requirements\x18\x01 \x03(\v2Y.google.cloud.commerceproducer.v1beta.Service.DocumentRequirement.DocumentTypeRequirementR\x18documentTypeRequirements\x1a\x85\x03\n" +
 	"\x17DocumentTypeRequirement\x12l\n" +

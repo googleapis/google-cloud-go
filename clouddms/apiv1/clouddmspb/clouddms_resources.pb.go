@@ -4075,80 +4075,80 @@ var File_google_cloud_clouddms_v1_clouddms_resources_proto protoreflect.FileDesc
 
 const file_google_cloud_clouddms_v1_clouddms_resources_proto_rawDesc = "" +
 	"\n" +
-	"1google/cloud/clouddms/v1/clouddms_resources.proto\x12\x18google.cloud.clouddms.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x17google/rpc/status.proto\"\xa1\x02\n" +
-	"\tSslConfig\x12D\n" +
-	"\x04type\x18\x01 \x01(\x0e2+.google.cloud.clouddms.v1.SslConfig.SslTypeB\x03\xe0A\x03R\x04type\x12\"\n" +
+	"1google/cloud/clouddms/v1/clouddms_resources.proto\x12\x18google.cloud.clouddms.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x17google/rpc/status.proto\"\xa3\x02\n" +
+	"\tSslConfig\x12E\n" +
+	"\x04type\x18\x01 \x01(\x0e2+.google.cloud.clouddms.v1.SslConfig.SslTypeB\x04\xe2A\x01\x03R\x04type\x12#\n" +
 	"\n" +
-	"client_key\x18\x02 \x01(\tB\x03\xe0A\x04R\tclientKey\x122\n" +
-	"\x12client_certificate\x18\x03 \x01(\tB\x03\xe0A\x04R\x11clientCertificate\x12-\n" +
-	"\x0eca_certificate\x18\x04 \x01(\tB\x06\xe0A\x04\xe0A\x02R\rcaCertificate\"G\n" +
+	"client_key\x18\x02 \x01(\tB\x04\xe2A\x01\x04R\tclientKey\x123\n" +
+	"\x12client_certificate\x18\x03 \x01(\tB\x04\xe2A\x01\x04R\x11clientCertificate\x12,\n" +
+	"\x0eca_certificate\x18\x04 \x01(\tB\x05\xe2A\x02\x04\x02R\rcaCertificate\"G\n" +
 	"\aSslType\x12\x18\n" +
 	"\x14SSL_TYPE_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vSERVER_ONLY\x10\x01\x12\x11\n" +
-	"\rSERVER_CLIENT\x10\x02\"\x90\x02\n" +
-	"\x16MySqlConnectionProfile\x12\x17\n" +
-	"\x04host\x18\x01 \x01(\tB\x03\xe0A\x02R\x04host\x12\x17\n" +
-	"\x04port\x18\x02 \x01(\x05B\x03\xe0A\x02R\x04port\x12\x1f\n" +
-	"\busername\x18\x03 \x01(\tB\x03\xe0A\x02R\busername\x12\"\n" +
-	"\bpassword\x18\x04 \x01(\tB\x06\xe0A\x04\xe0A\x02R\bpassword\x12&\n" +
-	"\fpassword_set\x18\x05 \x01(\bB\x03\xe0A\x03R\vpasswordSet\x125\n" +
+	"\rSERVER_CLIENT\x10\x02\"\x93\x02\n" +
+	"\x16MySqlConnectionProfile\x12\x18\n" +
+	"\x04host\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04host\x12\x18\n" +
+	"\x04port\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\x04port\x12 \n" +
+	"\busername\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\busername\x12!\n" +
+	"\bpassword\x18\x04 \x01(\tB\x05\xe2A\x02\x04\x02R\bpassword\x12'\n" +
+	"\fpassword_set\x18\x05 \x01(\bB\x04\xe2A\x01\x03R\vpasswordSet\x125\n" +
 	"\x03ssl\x18\x06 \x01(\v2#.google.cloud.clouddms.v1.SslConfigR\x03ssl\x12 \n" +
 	"\fcloud_sql_id\x18\a \x01(\tR\n" +
-	"cloudSqlId\"\x85\x05\n" +
-	"\x1bPostgreSqlConnectionProfile\x12\x17\n" +
-	"\x04host\x18\x01 \x01(\tB\x03\xe0A\x02R\x04host\x12\x17\n" +
-	"\x04port\x18\x02 \x01(\x05B\x03\xe0A\x02R\x04port\x12\x1f\n" +
-	"\busername\x18\x03 \x01(\tB\x03\xe0A\x02R\busername\x12\"\n" +
-	"\bpassword\x18\x04 \x01(\tB\x06\xe0A\x04\xe0A\x02R\bpassword\x12&\n" +
-	"\fpassword_set\x18\x05 \x01(\bB\x03\xe0A\x03R\vpasswordSet\x125\n" +
+	"cloudSqlId\"\x89\x05\n" +
+	"\x1bPostgreSqlConnectionProfile\x12\x18\n" +
+	"\x04host\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04host\x12\x18\n" +
+	"\x04port\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\x04port\x12 \n" +
+	"\busername\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\busername\x12!\n" +
+	"\bpassword\x18\x04 \x01(\tB\x05\xe2A\x02\x04\x02R\bpassword\x12'\n" +
+	"\fpassword_set\x18\x05 \x01(\bB\x04\xe2A\x01\x03R\vpasswordSet\x125\n" +
 	"\x03ssl\x18\x06 \x01(\v2#.google.cloud.clouddms.v1.SslConfigR\x03ssl\x12 \n" +
 	"\fcloud_sql_id\x18\a \x01(\tR\n" +
-	"cloudSqlId\x12e\n" +
-	"\x14network_architecture\x18\b \x01(\x0e2-.google.cloud.clouddms.v1.NetworkArchitectureB\x03\xe0A\x03R\x13networkArchitecture\x12f\n" +
+	"cloudSqlId\x12f\n" +
+	"\x14network_architecture\x18\b \x01(\x0e2-.google.cloud.clouddms.v1.NetworkArchitectureB\x04\xe2A\x01\x03R\x13networkArchitecture\x12f\n" +
 	"\x16static_ip_connectivity\x18d \x01(\v2..google.cloud.clouddms.v1.StaticIpConnectivityH\x00R\x14staticIpConnectivity\x12\x8e\x01\n" +
 	"$private_service_connect_connectivity\x18e \x01(\v2;.google.cloud.clouddms.v1.PrivateServiceConnectConnectivityH\x00R!privateServiceConnectConnectivityB\x0e\n" +
-	"\fconnectivity\"\x85\x05\n" +
-	"\x17OracleConnectionProfile\x12\x17\n" +
-	"\x04host\x18\x01 \x01(\tB\x03\xe0A\x02R\x04host\x12\x17\n" +
-	"\x04port\x18\x02 \x01(\x05B\x03\xe0A\x02R\x04port\x12\x1f\n" +
-	"\busername\x18\x03 \x01(\tB\x03\xe0A\x02R\busername\x12\"\n" +
-	"\bpassword\x18\x04 \x01(\tB\x06\xe0A\x04\xe0A\x02R\bpassword\x12&\n" +
-	"\fpassword_set\x18\x05 \x01(\bB\x03\xe0A\x03R\vpasswordSet\x12.\n" +
-	"\x10database_service\x18\x06 \x01(\tB\x03\xe0A\x02R\x0fdatabaseService\x125\n" +
+	"\fconnectivity\"\x89\x05\n" +
+	"\x17OracleConnectionProfile\x12\x18\n" +
+	"\x04host\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04host\x12\x18\n" +
+	"\x04port\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\x04port\x12 \n" +
+	"\busername\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\busername\x12!\n" +
+	"\bpassword\x18\x04 \x01(\tB\x05\xe2A\x02\x04\x02R\bpassword\x12'\n" +
+	"\fpassword_set\x18\x05 \x01(\bB\x04\xe2A\x01\x03R\vpasswordSet\x12/\n" +
+	"\x10database_service\x18\x06 \x01(\tB\x04\xe2A\x01\x02R\x0fdatabaseService\x125\n" +
 	"\x03ssl\x18\a \x01(\v2#.google.cloud.clouddms.v1.SslConfigR\x03ssl\x12|\n" +
 	"\x1estatic_service_ip_connectivity\x18d \x01(\v25.google.cloud.clouddms.v1.StaticServiceIpConnectivityH\x00R\x1bstaticServiceIpConnectivity\x12r\n" +
 	"\x18forward_ssh_connectivity\x18e \x01(\v26.google.cloud.clouddms.v1.ForwardSshTunnelConnectivityH\x00R\x16forwardSshConnectivity\x12b\n" +
 	"\x14private_connectivity\x18f \x01(\v2-.google.cloud.clouddms.v1.PrivateConnectivityH\x00R\x13privateConnectivityB\x0e\n" +
-	"\fconnectivity\"\x8c\x02\n" +
-	"\x19CloudSqlConnectionProfile\x12%\n" +
-	"\fcloud_sql_id\x18\x01 \x01(\tB\x03\xe0A\x03R\n" +
-	"cloudSqlId\x12K\n" +
-	"\bsettings\x18\x02 \x01(\v2*.google.cloud.clouddms.v1.CloudSqlSettingsB\x03\xe0A\x05R\bsettings\x12\"\n" +
+	"\fconnectivity\"\x91\x02\n" +
+	"\x19CloudSqlConnectionProfile\x12&\n" +
+	"\fcloud_sql_id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"cloudSqlId\x12L\n" +
+	"\bsettings\x18\x02 \x01(\v2*.google.cloud.clouddms.v1.CloudSqlSettingsB\x04\xe2A\x01\x05R\bsettings\x12#\n" +
 	"\n" +
-	"private_ip\x18\x03 \x01(\tB\x03\xe0A\x03R\tprivateIp\x12 \n" +
-	"\tpublic_ip\x18\x04 \x01(\tB\x03\xe0A\x03R\bpublicIp\x125\n" +
-	"\x14additional_public_ip\x18\x05 \x01(\tB\x03\xe0A\x03R\x12additionalPublicIp\"\x8a\x01\n" +
-	"\x18AlloyDbConnectionProfile\x12\"\n" +
+	"private_ip\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\tprivateIp\x12!\n" +
+	"\tpublic_ip\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\bpublicIp\x126\n" +
+	"\x14additional_public_ip\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x12additionalPublicIp\"\x8c\x01\n" +
+	"\x18AlloyDbConnectionProfile\x12#\n" +
 	"\n" +
-	"cluster_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tclusterId\x12J\n" +
-	"\bsettings\x18\x02 \x01(\v2).google.cloud.clouddms.v1.AlloyDbSettingsB\x03\xe0A\x05R\bsettings\"\xba\x01\n" +
+	"cluster_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tclusterId\x12K\n" +
+	"\bsettings\x18\x02 \x01(\v2).google.cloud.clouddms.v1.AlloyDbSettingsB\x04\xe2A\x01\x05R\bsettings\"\xbb\x01\n" +
 	"\vSqlAclEntry\x12\x14\n" +
 	"\x05value\x18\x01 \x01(\tR\x05value\x12=\n" +
 	"\vexpire_time\x18\n" +
 	" \x01(\v2\x1a.google.protobuf.TimestampH\x00R\n" +
-	"expireTime\x122\n" +
-	"\x03ttl\x18\v \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x04H\x00R\x03ttl\x12\x14\n" +
+	"expireTime\x123\n" +
+	"\x03ttl\x18\v \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x04H\x00R\x03ttl\x12\x14\n" +
 	"\x05label\x18\x03 \x01(\tR\x05labelB\f\n" +
 	"\n" +
-	"expiration\"\xbb\x02\n" +
+	"expiration\"\xbc\x02\n" +
 	"\vSqlIpConfig\x12;\n" +
 	"\venable_ipv4\x18\x01 \x01(\v2\x1a.google.protobuf.BoolValueR\n" +
 	"enableIpv4\x12'\n" +
-	"\x0fprivate_network\x18\x02 \x01(\tR\x0eprivateNetwork\x121\n" +
-	"\x12allocated_ip_range\x18\x05 \x01(\tB\x03\xe0A\x01R\x10allocatedIpRange\x12;\n" +
+	"\x0fprivate_network\x18\x02 \x01(\tR\x0eprivateNetwork\x122\n" +
+	"\x12allocated_ip_range\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x10allocatedIpRange\x12;\n" +
 	"\vrequire_ssl\x18\x03 \x01(\v2\x1a.google.protobuf.BoolValueR\n" +
 	"requireSsl\x12V\n" +
-	"\x13authorized_networks\x18\x04 \x03(\v2%.google.cloud.clouddms.v1.SqlAclEntryR\x12authorizedNetworks\"\xbc\x0f\n" +
+	"\x13authorized_networks\x18\x04 \x03(\v2%.google.cloud.clouddms.v1.SqlAclEntryR\x12authorizedNetworks\"\xc1\x0f\n" +
 	"\x10CloudSqlSettings\x12h\n" +
 	"\x10database_version\x18\x01 \x01(\x0e2=.google.cloud.clouddms.v1.CloudSqlSettings.SqlDatabaseVersionR\x0fdatabaseVersion\x12[\n" +
 	"\vuser_labels\x18\x02 \x03(\v2:.google.cloud.clouddms.v1.CloudSqlSettings.UserLabelsEntryR\n" +
@@ -4162,15 +4162,15 @@ const file_google_cloud_clouddms_v1_clouddms_resources_proto_rawDesc = "" +
 	"\x0edata_disk_type\x18\t \x01(\x0e2:.google.cloud.clouddms.v1.CloudSqlSettings.SqlDataDiskTypeR\fdataDiskType\x12F\n" +
 	"\x11data_disk_size_gb\x18\n" +
 	" \x01(\v2\x1b.google.protobuf.Int64ValueR\x0edataDiskSizeGb\x12\x12\n" +
-	"\x04zone\x18\v \x01(\tR\x04zone\x12*\n" +
-	"\x0esecondary_zone\x18\x12 \x01(\tB\x03\xe0A\x01R\rsecondaryZone\x12\x1b\n" +
-	"\tsource_id\x18\f \x01(\tR\bsourceId\x12(\n" +
-	"\rroot_password\x18\r \x01(\tB\x03\xe0A\x04R\frootPassword\x12/\n" +
-	"\x11root_password_set\x18\x0e \x01(\bB\x03\xe0A\x03R\x0frootPasswordSet\x12\x1c\n" +
+	"\x04zone\x18\v \x01(\tR\x04zone\x12+\n" +
+	"\x0esecondary_zone\x18\x12 \x01(\tB\x04\xe2A\x01\x01R\rsecondaryZone\x12\x1b\n" +
+	"\tsource_id\x18\f \x01(\tR\bsourceId\x12)\n" +
+	"\rroot_password\x18\r \x01(\tB\x04\xe2A\x01\x04R\frootPassword\x120\n" +
+	"\x11root_password_set\x18\x0e \x01(\bB\x04\xe2A\x01\x03R\x0frootPasswordSet\x12\x1c\n" +
 	"\tcollation\x18\x0f \x01(\tR\tcollation\x12\"\n" +
-	"\rcmek_key_name\x18\x10 \x01(\tR\vcmekKeyName\x12p\n" +
-	"\x11availability_type\x18\x11 \x01(\x0e2>.google.cloud.clouddms.v1.CloudSqlSettings.SqlAvailabilityTypeB\x03\xe0A\x01R\x10availabilityType\x12Q\n" +
-	"\aedition\x18\x13 \x01(\x0e22.google.cloud.clouddms.v1.CloudSqlSettings.EditionB\x03\xe0A\x01R\aedition\x1a=\n" +
+	"\rcmek_key_name\x18\x10 \x01(\tR\vcmekKeyName\x12q\n" +
+	"\x11availability_type\x18\x11 \x01(\x0e2>.google.cloud.clouddms.v1.CloudSqlSettings.SqlAvailabilityTypeB\x04\xe2A\x01\x01R\x10availabilityType\x12R\n" +
+	"\aedition\x18\x13 \x01(\x0e22.google.cloud.clouddms.v1.CloudSqlSettings.EditionB\x04\xe2A\x01\x01R\aedition\x1a=\n" +
 	"\x0fUserLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a@\n" +
@@ -4208,26 +4208,26 @@ const file_google_cloud_clouddms_v1_clouddms_resources_proto_rawDesc = "" +
 	"\x13EDITION_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +
 	"ENTERPRISE\x10\x02\x12\x13\n" +
-	"\x0fENTERPRISE_PLUS\x10\x03\"\x8b\n" +
+	"\x0fENTERPRISE_PLUS\x10\x03\"\x8f\n" +
 	"\n" +
-	"\x0fAlloyDbSettings\x12a\n" +
-	"\finitial_user\x18\x01 \x01(\v26.google.cloud.clouddms.v1.AlloyDbSettings.UserPasswordB\x06\xe0A\x02\xe0A\x04R\vinitialUser\x12$\n" +
-	"\vvpc_network\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
+	"\x0fAlloyDbSettings\x12`\n" +
+	"\finitial_user\x18\x01 \x01(\v26.google.cloud.clouddms.v1.AlloyDbSettings.UserPasswordB\x05\xe2A\x02\x02\x04R\vinitialUser\x12%\n" +
+	"\vvpc_network\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
 	"vpcNetwork\x12M\n" +
 	"\x06labels\x18\x03 \x03(\v25.google.cloud.clouddms.v1.AlloyDbSettings.LabelsEntryR\x06labels\x12}\n" +
-	"\x19primary_instance_settings\x18\x04 \x01(\v2A.google.cloud.clouddms.v1.AlloyDbSettings.PrimaryInstanceSettingsR\x17primaryInstanceSettings\x12l\n" +
-	"\x11encryption_config\x18\x05 \x01(\v2:.google.cloud.clouddms.v1.AlloyDbSettings.EncryptionConfigB\x03\xe0A\x01R\x10encryptionConfig\x1af\n" +
+	"\x19primary_instance_settings\x18\x04 \x01(\v2A.google.cloud.clouddms.v1.AlloyDbSettings.PrimaryInstanceSettingsR\x17primaryInstanceSettings\x12m\n" +
+	"\x11encryption_config\x18\x05 \x01(\v2:.google.cloud.clouddms.v1.AlloyDbSettings.EncryptionConfigB\x04\xe2A\x01\x01R\x10encryptionConfig\x1ag\n" +
 	"\fUserPassword\x12\x12\n" +
 	"\x04user\x18\x01 \x01(\tR\x04user\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword\x12&\n" +
-	"\fpassword_set\x18\x03 \x01(\bB\x03\xe0A\x03R\vpasswordSet\x1a\xd9\x04\n" +
-	"\x17PrimaryInstanceSettings\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\x12v\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\x12'\n" +
+	"\fpassword_set\x18\x03 \x01(\bB\x04\xe2A\x01\x03R\vpasswordSet\x1a\xdb\x04\n" +
+	"\x17PrimaryInstanceSettings\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x02id\x12v\n" +
 	"\x0emachine_config\x18\x02 \x01(\v2O.google.cloud.clouddms.v1.AlloyDbSettings.PrimaryInstanceSettings.MachineConfigR\rmachineConfig\x12{\n" +
 	"\x0edatabase_flags\x18\x06 \x03(\v2T.google.cloud.clouddms.v1.AlloyDbSettings.PrimaryInstanceSettings.DatabaseFlagsEntryR\rdatabaseFlags\x12e\n" +
-	"\x06labels\x18\a \x03(\v2M.google.cloud.clouddms.v1.AlloyDbSettings.PrimaryInstanceSettings.LabelsEntryR\x06labels\x12\"\n" +
+	"\x06labels\x18\a \x03(\v2M.google.cloud.clouddms.v1.AlloyDbSettings.PrimaryInstanceSettings.LabelsEntryR\x06labels\x12#\n" +
 	"\n" +
-	"private_ip\x18\b \x01(\tB\x03\xe0A\x03R\tprivateIp\x1a,\n" +
+	"private_ip\x18\b \x01(\tB\x04\xe2A\x01\x03R\tprivateIp\x1a,\n" +
 	"\rMachineConfig\x12\x1b\n" +
 	"\tcpu_count\x18\x01 \x01(\x05R\bcpuCount\x1a@\n" +
 	"\x12DatabaseFlagsEntry\x12\x10\n" +
@@ -4242,59 +4242,59 @@ const file_google_cloud_clouddms_v1_clouddms_resources_proto_rawDesc = "" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x16\n" +
-	"\x14StaticIpConnectivity\"W\n" +
-	"!PrivateServiceConnectConnectivity\x122\n" +
-	"\x12service_attachment\x18\x01 \x01(\tB\x03\xe0A\x02R\x11serviceAttachment\"r\n" +
-	"\x16ReverseSshConnectivity\x12\x18\n" +
-	"\x05vm_ip\x18\x01 \x01(\tB\x03\xe0A\x02R\x04vmIp\x12\x1c\n" +
-	"\avm_port\x18\x02 \x01(\x05B\x03\xe0A\x02R\x06vmPort\x12\x0e\n" +
+	"\x14StaticIpConnectivity\"X\n" +
+	"!PrivateServiceConnectConnectivity\x123\n" +
+	"\x12service_attachment\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x11serviceAttachment\"t\n" +
+	"\x16ReverseSshConnectivity\x12\x19\n" +
+	"\x05vm_ip\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04vmIp\x12\x1d\n" +
+	"\avm_port\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\x06vmPort\x12\x0e\n" +
 	"\x02vm\x18\x03 \x01(\tR\x02vm\x12\x10\n" +
 	"\x03vpc\x18\x04 \x01(\tR\x03vpc\"*\n" +
 	"\x16VpcPeeringConnectivity\x12\x10\n" +
-	"\x03vpc\x18\x01 \x01(\tR\x03vpc\"\xd8\x01\n" +
-	"\x1cForwardSshTunnelConnectivity\x12\x1f\n" +
-	"\bhostname\x18\x01 \x01(\tB\x03\xe0A\x02R\bhostname\x12\x1f\n" +
-	"\busername\x18\x02 \x01(\tB\x03\xe0A\x02R\busername\x12\x12\n" +
-	"\x04port\x18\x03 \x01(\x05R\x04port\x12!\n" +
-	"\bpassword\x18d \x01(\tB\x03\xe0A\x04H\x00R\bpassword\x12&\n" +
-	"\vprivate_key\x18e \x01(\tB\x03\xe0A\x04H\x00R\n" +
+	"\x03vpc\x18\x01 \x01(\tR\x03vpc\"\xdc\x01\n" +
+	"\x1cForwardSshTunnelConnectivity\x12 \n" +
+	"\bhostname\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bhostname\x12 \n" +
+	"\busername\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\busername\x12\x12\n" +
+	"\x04port\x18\x03 \x01(\x05R\x04port\x12\"\n" +
+	"\bpassword\x18d \x01(\tB\x04\xe2A\x01\x04H\x00R\bpassword\x12'\n" +
+	"\vprivate_key\x18e \x01(\tB\x04\xe2A\x01\x04H\x00R\n" +
 	"privateKeyB\x17\n" +
 	"\x15authentication_method\"\x1d\n" +
-	"\x1bStaticServiceIpConnectivity\"I\n" +
-	"\x13PrivateConnectivity\x122\n" +
-	"\x12private_connection\x18\x01 \x01(\tB\x03\xe0A\x02R\x11privateConnection\"\x98\x01\n" +
+	"\x1bStaticServiceIpConnectivity\"J\n" +
+	"\x13PrivateConnectivity\x123\n" +
+	"\x12private_connection\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x11privateConnection\"\x98\x01\n" +
 	"\fDatabaseType\x12F\n" +
 	"\bprovider\x18\x01 \x01(\x0e2*.google.cloud.clouddms.v1.DatabaseProviderR\bprovider\x12@\n" +
-	"\x06engine\x18\x02 \x01(\x0e2(.google.cloud.clouddms.v1.DatabaseEngineR\x06engine\"\xc2\x14\n" +
+	"\x06engine\x18\x02 \x01(\x0e2(.google.cloud.clouddms.v1.DatabaseEngineR\x06engine\"\xcc\x14\n" +
 	"\fMigrationJob\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12J\n" +
 	"\x06labels\x18\x04 \x03(\v22.google.cloud.clouddms.v1.MigrationJob.LabelsEntryR\x06labels\x12!\n" +
 	"\fdisplay_name\x18\x05 \x01(\tR\vdisplayName\x12B\n" +
-	"\x05state\x18\x06 \x01(\x0e2,.google.cloud.clouddms.v1.MigrationJob.StateR\x05state\x12G\n" +
-	"\x05phase\x18\a \x01(\x0e2,.google.cloud.clouddms.v1.MigrationJob.PhaseB\x03\xe0A\x03R\x05phase\x12D\n" +
-	"\x04type\x18\b \x01(\x0e2+.google.cloud.clouddms.v1.MigrationJob.TypeB\x03\xe0A\x02R\x04type\x12\x1b\n" +
+	"\x05state\x18\x06 \x01(\x0e2,.google.cloud.clouddms.v1.MigrationJob.StateR\x05state\x12H\n" +
+	"\x05phase\x18\a \x01(\x0e2,.google.cloud.clouddms.v1.MigrationJob.PhaseB\x04\xe2A\x01\x03R\x05phase\x12E\n" +
+	"\x04type\x18\b \x01(\x0e2+.google.cloud.clouddms.v1.MigrationJob.TypeB\x04\xe2A\x01\x02R\x04type\x12\x1b\n" +
 	"\tdump_path\x18\t \x01(\tR\bdumpPath\x12O\n" +
 	"\n" +
-	"dump_flags\x18\x11 \x01(\v20.google.cloud.clouddms.v1.MigrationJob.DumpFlagsR\tdumpFlags\x12\x1b\n" +
+	"dump_flags\x18\x11 \x01(\v20.google.cloud.clouddms.v1.MigrationJob.DumpFlagsR\tdumpFlags\x12\x1c\n" +
 	"\x06source\x18\n" +
-	" \x01(\tB\x03\xe0A\x02R\x06source\x12%\n" +
-	"\vdestination\x18\v \x01(\tB\x03\xe0A\x02R\vdestination\x12l\n" +
+	" \x01(\tB\x04\xe2A\x01\x02R\x06source\x12&\n" +
+	"\vdestination\x18\v \x01(\tB\x04\xe2A\x01\x02R\vdestination\x12l\n" +
 	"\x18reverse_ssh_connectivity\x18e \x01(\v20.google.cloud.clouddms.v1.ReverseSshConnectivityH\x00R\x16reverseSshConnectivity\x12l\n" +
 	"\x18vpc_peering_connectivity\x18f \x01(\v20.google.cloud.clouddms.v1.VpcPeeringConnectivityH\x00R\x16vpcPeeringConnectivity\x12f\n" +
-	"\x16static_ip_connectivity\x18g \x01(\v2..google.cloud.clouddms.v1.StaticIpConnectivityH\x00R\x14staticIpConnectivity\x12:\n" +
-	"\bduration\x18\f \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x03R\bduration\x12-\n" +
-	"\x05error\x18\r \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x05error\x12O\n" +
+	"\x16static_ip_connectivity\x18g \x01(\v2..google.cloud.clouddms.v1.StaticIpConnectivityH\x00R\x14staticIpConnectivity\x12;\n" +
+	"\bduration\x18\f \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x03R\bduration\x12.\n" +
+	"\x05error\x18\r \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\x05error\x12O\n" +
 	"\x0fsource_database\x18\x0e \x01(\v2&.google.cloud.clouddms.v1.DatabaseTypeR\x0esourceDatabase\x12Y\n" +
-	"\x14destination_database\x18\x0f \x01(\v2&.google.cloud.clouddms.v1.DatabaseTypeR\x13destinationDatabase\x12:\n" +
-	"\bend_time\x18\x10 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12d\n" +
+	"\x14destination_database\x18\x0f \x01(\v2&.google.cloud.clouddms.v1.DatabaseTypeR\x13destinationDatabase\x12;\n" +
+	"\bend_time\x18\x10 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12d\n" +
 	"\x14conversion_workspace\x18\x12 \x01(\v21.google.cloud.clouddms.v1.ConversionWorkspaceInfoR\x13conversionWorkspace\x12\x16\n" +
 	"\x06filter\x18\x14 \x01(\tR\x06filter\x12\"\n" +
-	"\rcmek_key_name\x18\x15 \x01(\tR\vcmekKeyName\x12l\n" +
-	"\x12performance_config\x18\x16 \x01(\v28.google.cloud.clouddms.v1.MigrationJob.PerformanceConfigB\x03\xe0A\x01R\x11performanceConfig\x1a4\n" +
+	"\rcmek_key_name\x18\x15 \x01(\tR\vcmekKeyName\x12m\n" +
+	"\x12performance_config\x18\x16 \x01(\v28.google.cloud.clouddms.v1.MigrationJob.PerformanceConfigB\x04\xe2A\x01\x01R\x11performanceConfig\x1a4\n" +
 	"\bDumpFlag\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value\x1a[\n" +
@@ -4347,12 +4347,12 @@ const file_google_cloud_clouddms_v1_clouddms_resources_proto_rawDesc = "" +
 	"\fconnectivity\"J\n" +
 	"\x17ConversionWorkspaceInfo\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1b\n" +
-	"\tcommit_id\x18\x02 \x01(\tR\bcommitId\"\xc4\t\n" +
+	"\tcommit_id\x18\x02 \x01(\tR\bcommitId\"\xc7\t\n" +
 	"\x11ConnectionProfile\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12O\n" +
 	"\x06labels\x18\x04 \x03(\v27.google.cloud.clouddms.v1.ConnectionProfile.LabelsEntryR\x06labels\x12G\n" +
 	"\x05state\x18\x05 \x01(\x0e21.google.cloud.clouddms.v1.ConnectionProfile.StateR\x05state\x12!\n" +
@@ -4363,8 +4363,8 @@ const file_google_cloud_clouddms_v1_clouddms_resources_proto_rawDesc = "" +
 	"postgresql\x12K\n" +
 	"\x06oracle\x18h \x01(\v21.google.cloud.clouddms.v1.OracleConnectionProfileH\x00R\x06oracle\x12Q\n" +
 	"\bcloudsql\x18f \x01(\v23.google.cloud.clouddms.v1.CloudSqlConnectionProfileH\x00R\bcloudsql\x12N\n" +
-	"\aalloydb\x18i \x01(\v22.google.cloud.clouddms.v1.AlloyDbConnectionProfileH\x00R\aalloydb\x12-\n" +
-	"\x05error\x18\a \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x05error\x12F\n" +
+	"\aalloydb\x18i \x01(\v22.google.cloud.clouddms.v1.AlloyDbConnectionProfileH\x00R\aalloydb\x12.\n" +
+	"\x05error\x18\a \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\x05error\x12F\n" +
 	"\bprovider\x18\b \x01(\x0e2*.google.cloud.clouddms.v1.DatabaseProviderR\bprovider\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -4380,12 +4380,12 @@ const file_google_cloud_clouddms_v1_clouddms_resources_proto_rawDesc = "" +
 	"\n" +
 	"\x06FAILED\x10\a:\x85\x01\xeaA\x81\x01\n" +
 	".datamigration.googleapis.com/ConnectionProfile\x12Oprojects/{project}/locations/{location}/connectionProfiles/{connection_profile}B\x14\n" +
-	"\x12connection_profile\"\x82\t\n" +
-	"\x1dMigrationJobVerificationError\x12e\n" +
+	"\x12connection_profile\"\x85\t\n" +
+	"\x1dMigrationJobVerificationError\x12f\n" +
 	"\n" +
-	"error_code\x18\x01 \x01(\x0e2A.google.cloud.clouddms.v1.MigrationJobVerificationError.ErrorCodeB\x03\xe0A\x03R\terrorCode\x12(\n" +
-	"\rerror_message\x18\x02 \x01(\tB\x03\xe0A\x03R\ferrorMessage\x125\n" +
-	"\x14error_detail_message\x18\x03 \x01(\tB\x03\xe0A\x03R\x12errorDetailMessage\"\x98\a\n" +
+	"error_code\x18\x01 \x01(\x0e2A.google.cloud.clouddms.v1.MigrationJobVerificationError.ErrorCodeB\x04\xe2A\x01\x03R\terrorCode\x12)\n" +
+	"\rerror_message\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\ferrorMessage\x126\n" +
+	"\x14error_detail_message\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x12errorDetailMessage\"\x98\a\n" +
 	"\tErrorCode\x12\x1a\n" +
 	"\x16ERROR_CODE_UNSPECIFIED\x10\x00\x12\x16\n" +
 	"\x12CONNECTION_FAILURE\x10\x01\x12\x1a\n" +
@@ -4415,17 +4415,17 @@ const file_google_cloud_clouddms_v1_clouddms_resources_proto_rawDesc = "" +
 	"\vERROR_RDBMS\x10\x1b\x12!\n" +
 	"\x1dSOURCE_SIZE_EXCEEDS_THRESHOLD\x10\x1c\x12\"\n" +
 	"\x1eEXISTING_CONFLICTING_DATABASES\x10\x1d\x12*\n" +
-	"&PARALLEL_IMPORT_INSUFFICIENT_PRIVILEGE\x10\x1e\"\xc3\x06\n" +
+	"&PARALLEL_IMPORT_INSUFFICIENT_PRIVILEGE\x10\x1e\"\xc7\x06\n" +
 	"\x11PrivateConnection\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12O\n" +
 	"\x06labels\x18\x04 \x03(\v27.google.cloud.clouddms.v1.PrivateConnection.LabelsEntryR\x06labels\x12!\n" +
-	"\fdisplay_name\x18\x05 \x01(\tR\vdisplayName\x12L\n" +
-	"\x05state\x18\x06 \x01(\x0e21.google.cloud.clouddms.v1.PrivateConnection.StateB\x03\xe0A\x03R\x05state\x12-\n" +
-	"\x05error\x18\a \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x05error\x12Z\n" +
+	"\fdisplay_name\x18\x05 \x01(\tR\vdisplayName\x12M\n" +
+	"\x05state\x18\x06 \x01(\x0e21.google.cloud.clouddms.v1.PrivateConnection.StateB\x04\xe2A\x01\x03R\x05state\x12.\n" +
+	"\x05error\x18\a \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\x05error\x12Z\n" +
 	"\x12vpc_peering_config\x18d \x01(\v2*.google.cloud.clouddms.v1.VpcPeeringConfigH\x00R\x10vpcPeeringConfig\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -4440,11 +4440,11 @@ const file_google_cloud_clouddms_v1_clouddms_resources_proto_rawDesc = "" +
 	"\x10FAILED_TO_DELETE\x10\x05\x12\v\n" +
 	"\aDELETED\x10\x06:\x85\x01\xeaA\x81\x01\n" +
 	".datamigration.googleapis.com/PrivateConnection\x12Oprojects/{project}/locations/{location}/privateConnections/{private_connection}B\x0e\n" +
-	"\fconnectivity\"s\n" +
-	"\x10VpcPeeringConfig\x12B\n" +
-	"\bvpc_name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fcompute.googleapis.com/NetworksR\avpcName\x12\x1b\n" +
-	"\x06subnet\x18\x02 \x01(\tB\x03\xe0A\x02R\x06subnet*\x93\x01\n" +
+	"\fconnectivity\"u\n" +
+	"\x10VpcPeeringConfig\x12C\n" +
+	"\bvpc_name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fcompute.googleapis.com/NetworksR\avpcName\x12\x1c\n" +
+	"\x06subnet\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06subnet*\x93\x01\n" +
 	"\x13NetworkArchitecture\x12$\n" +
 	" NETWORK_ARCHITECTURE_UNSPECIFIED\x10\x00\x12*\n" +
 	"&NETWORK_ARCHITECTURE_OLD_CSQL_PRODUCER\x10\x01\x12*\n" +

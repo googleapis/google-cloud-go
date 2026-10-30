@@ -686,6 +686,11 @@ func (c *generativeQuestionRESTClient) UpdateGenerativeQuestionsFeatureConfig(ct
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetGenerativeQuestionsFeatureConfig().GetCatalog(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v/generativeQuestionFeature", req.GetGenerativeQuestionsFeatureConfig().GetCatalog())
 
 	params := url.Values{}
@@ -748,6 +753,11 @@ func (c *generativeQuestionRESTClient) GetGenerativeQuestionsFeatureConfig(ctx c
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCatalog(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v/generativeQuestionFeature", req.GetCatalog())
 
 	params := url.Values{}
@@ -800,6 +810,11 @@ func (c *generativeQuestionRESTClient) GetGenerativeQuestionsFeatureConfig(ctx c
 func (c *generativeQuestionRESTClient) ListGenerativeQuestionConfigs(ctx context.Context, req *retailpb.ListGenerativeQuestionConfigsRequest, opts ...gax.CallOption) (*retailpb.ListGenerativeQuestionConfigsResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v/generativeQuestions", req.GetParent())
@@ -861,6 +876,11 @@ func (c *generativeQuestionRESTClient) UpdateGenerativeQuestionConfig(ctx contex
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetGenerativeQuestionConfig().GetCatalog(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v/generativeQuestion", req.GetGenerativeQuestionConfig().GetCatalog())
@@ -930,6 +950,11 @@ func (c *generativeQuestionRESTClient) BatchUpdateGenerativeQuestionConfigs(ctx 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v/generativeQuestion:batchUpdate", req.GetParent())
 
 	params := url.Values{}
@@ -982,6 +1007,11 @@ func (c *generativeQuestionRESTClient) BatchUpdateGenerativeQuestionConfigs(ctx 
 func (c *generativeQuestionRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetName())
@@ -1049,6 +1079,11 @@ func (c *generativeQuestionRESTClient) ListOperations(ctx context.Context, req *
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2alpha/%v/operations", req.GetName())

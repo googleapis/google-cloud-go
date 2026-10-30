@@ -722,30 +722,30 @@ var File_google_cloud_discoveryengine_v1_cmek_config_service_proto protoreflect.
 
 const file_google_cloud_discoveryengine_v1_cmek_config_service_proto_rawDesc = "" +
 	"\n" +
-	"9google/cloud/discoveryengine/v1/cmek_config_service.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x84\x01\n" +
-	"\x17UpdateCmekConfigRequest\x12H\n" +
-	"\x06config\x18\x01 \x01(\v2+.google.cloud.discoveryengine.v1.CmekConfigB\x03\xe0A\x02R\x06config\x12\x1f\n" +
+	"9google/cloud/discoveryengine/v1/cmek_config_service.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x85\x01\n" +
+	"\x17UpdateCmekConfigRequest\x12I\n" +
+	"\x06config\x18\x01 \x01(\v2+.google.cloud.discoveryengine.v1.CmekConfigB\x04\xe2A\x01\x02R\x06config\x12\x1f\n" +
 	"\vset_default\x18\x02 \x01(\bR\n" +
-	"setDefault\"]\n" +
-	"\x14GetCmekConfigRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")discoveryengine.googleapis.com/CmekConfigR\x04name\"V\n" +
-	"\x0fSingleRegionKey\x12C\n" +
-	"\akms_key\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"cloudkms.googleapis.com/CryptoKeysR\x06kmsKey\"\xb0\b\n" +
+	"setDefault\"^\n" +
+	"\x14GetCmekConfigRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")discoveryengine.googleapis.com/CmekConfigR\x04name\"W\n" +
+	"\x0fSingleRegionKey\x12D\n" +
+	"\akms_key\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"cloudkms.googleapis.com/CryptoKeysR\x06kmsKey\"\xb6\b\n" +
 	"\n" +
-	"CmekConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12@\n" +
+	"CmekConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12@\n" +
 	"\akms_key\x18\x02 \x01(\tB'\xfaA$\n" +
 	"\"cloudkms.googleapis.com/CryptoKeysR\x06kmsKey\x12V\n" +
 	"\x0fkms_key_version\x18\x06 \x01(\tB.\xfaA+\n" +
-	")cloudkms.googleapis.com/CryptoKeyVersionsR\rkmsKeyVersion\x12L\n" +
-	"\x05state\x18\x03 \x01(\x0e21.google.cloud.discoveryengine.v1.CmekConfig.StateB\x03\xe0A\x03R\x05state\x12\"\n" +
+	")cloudkms.googleapis.com/CryptoKeyVersionsR\rkmsKeyVersion\x12M\n" +
+	"\x05state\x18\x03 \x01(\x0e21.google.cloud.discoveryengine.v1.CmekConfig.StateB\x04\xe2A\x01\x03R\x05state\x12#\n" +
 	"\n" +
-	"is_default\x18\x04 \x01(\bB\x03\xe0A\x03R\tisDefault\x12H\n" +
-	"\x1elast_rotation_timestamp_micros\x18\x05 \x01(\x03B\x03\xe0A\x03R\x1blastRotationTimestampMicros\x12c\n" +
-	"\x12single_region_keys\x18\a \x03(\v20.google.cloud.discoveryengine.v1.SingleRegionKeyB\x03\xe0A\x01R\x10singleRegionKeys\x12k\n" +
-	"\x10notebooklm_state\x18\b \x01(\x0e2;.google.cloud.discoveryengine.v1.CmekConfig.NotebookLMStateB\x03\xe0A\x03R\x0fnotebooklmState\"\x98\x01\n" +
+	"is_default\x18\x04 \x01(\bB\x04\xe2A\x01\x03R\tisDefault\x12I\n" +
+	"\x1elast_rotation_timestamp_micros\x18\x05 \x01(\x03B\x04\xe2A\x01\x03R\x1blastRotationTimestampMicros\x12d\n" +
+	"\x12single_region_keys\x18\a \x03(\v20.google.cloud.discoveryengine.v1.SingleRegionKeyB\x04\xe2A\x01\x01R\x10singleRegionKeys\x12l\n" +
+	"\x10notebooklm_state\x18\b \x01(\x0e2;.google.cloud.discoveryengine.v1.CmekConfig.NotebookLMStateB\x04\xe2A\x01\x03R\x0fnotebooklmState\"\x98\x01\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bCREATING\x10\x01\x12\n" +
@@ -768,14 +768,14 @@ const file_google_cloud_discoveryengine_v1_cmek_config_service_proto_rawDesc = "
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12;\n" +
 	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"updateTime\"a\n" +
-	"\x16ListCmekConfigsRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
+	"updateTime\"b\n" +
+	"\x16ListCmekConfigsRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
 	"'discoveryengine.googleapis.com/LocationR\x06parent\"i\n" +
 	"\x17ListCmekConfigsResponse\x12N\n" +
-	"\fcmek_configs\x18\x01 \x03(\v2+.google.cloud.discoveryengine.v1.CmekConfigR\vcmekConfigs\"`\n" +
-	"\x17DeleteCmekConfigRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
+	"\fcmek_configs\x18\x01 \x03(\v2+.google.cloud.discoveryengine.v1.CmekConfigR\vcmekConfigs\"a\n" +
+	"\x17DeleteCmekConfigRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
 	")discoveryengine.googleapis.com/CmekConfigR\x04name\"\x94\x01\n" +
 	"\x18DeleteCmekConfigMetadata\x12;\n" +
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +

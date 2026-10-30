@@ -4823,46 +4823,46 @@ var File_google_cloud_workstations_v1_workstations_proto protoreflect.FileDescri
 
 const file_google_cloud_workstations_v1_workstations_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/workstations/v1/workstations.proto\x12\x1cgoogle.cloud.workstations.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\x86\x10\n" +
-	"\x12WorkstationCluster\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12\x1d\n" +
-	"\x03uid\x18\x03 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12%\n" +
-	"\vreconciling\x18\x04 \x01(\bB\x03\xe0A\x03R\vreconciling\x12h\n" +
-	"\vannotations\x18\x05 \x03(\v2A.google.cloud.workstations.v1.WorkstationCluster.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12Y\n" +
-	"\x06labels\x18\x0f \x03(\v2<.google.cloud.workstations.v1.WorkstationCluster.LabelsEntryB\x03\xe0A\x01R\x06labels\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12@\n" +
-	"\vdelete_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"deleteTime\x12\x17\n" +
-	"\x04etag\x18\t \x01(\tB\x03\xe0A\x01R\x04etag\x12\x1d\n" +
+	"/google/cloud/workstations/v1/workstations.proto\x12\x1cgoogle.cloud.workstations.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\x9d\x10\n" +
+	"\x12WorkstationCluster\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12\x1e\n" +
+	"\x03uid\x18\x03 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12&\n" +
+	"\vreconciling\x18\x04 \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12i\n" +
+	"\vannotations\x18\x05 \x03(\v2A.google.cloud.workstations.v1.WorkstationCluster.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12Z\n" +
+	"\x06labels\x18\x0f \x03(\v2<.google.cloud.workstations.v1.WorkstationCluster.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12A\n" +
+	"\vdelete_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"deleteTime\x12\x18\n" +
+	"\x04etag\x18\t \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12\x1e\n" +
 	"\anetwork\x18\n" +
-	" \x01(\tB\x03\xe0A\x05R\anetwork\x12#\n" +
+	" \x01(\tB\x04\xe2A\x01\x05R\anetwork\x12$\n" +
 	"\n" +
-	"subnetwork\x18\v \x01(\tB\x03\xe0A\x05R\n" +
-	"subnetwork\x12-\n" +
-	"\x10control_plane_ip\x18\x10 \x01(\tB\x03\xe0A\x03R\x0econtrolPlaneIp\x12\x80\x01\n" +
-	"\x16private_cluster_config\x18\f \x01(\v2E.google.cloud.workstations.v1.WorkstationCluster.PrivateClusterConfigB\x03\xe0A\x01R\x14privateClusterConfig\x12g\n" +
-	"\rdomain_config\x18\x11 \x01(\v2=.google.cloud.workstations.v1.WorkstationCluster.DomainConfigB\x03\xe0A\x01R\fdomainConfig\x12\x1f\n" +
-	"\bdegraded\x18\r \x01(\bB\x03\xe0A\x03R\bdegraded\x127\n" +
+	"subnetwork\x18\v \x01(\tB\x04\xe2A\x01\x05R\n" +
+	"subnetwork\x12.\n" +
+	"\x10control_plane_ip\x18\x10 \x01(\tB\x04\xe2A\x01\x03R\x0econtrolPlaneIp\x12\x81\x01\n" +
+	"\x16private_cluster_config\x18\f \x01(\v2E.google.cloud.workstations.v1.WorkstationCluster.PrivateClusterConfigB\x04\xe2A\x01\x01R\x14privateClusterConfig\x12h\n" +
+	"\rdomain_config\x18\x11 \x01(\v2=.google.cloud.workstations.v1.WorkstationCluster.DomainConfigB\x04\xe2A\x01\x01R\fdomainConfig\x12 \n" +
+	"\bdegraded\x18\r \x01(\bB\x04\xe2A\x01\x03R\bdegraded\x128\n" +
 	"\n" +
-	"conditions\x18\x0e \x03(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\n" +
-	"conditions\x12Y\n" +
-	"\x04tags\x18\x14 \x03(\v2:.google.cloud.workstations.v1.WorkstationCluster.TagsEntryB\t\xe0A\x04\xe0A\x05\xe0A\x01R\x04tags\x12j\n" +
-	"\x0egateway_config\x18\x15 \x01(\v2>.google.cloud.workstations.v1.WorkstationCluster.GatewayConfigB\x03\xe0A\x01R\rgatewayConfig\x12G\n" +
-	"\x1dworkstation_authorization_url\x18\x16 \x01(\tB\x03\xe0A\x01R\x1bworkstationAuthorizationUrl\x129\n" +
-	"\x16workstation_launch_url\x18\x17 \x01(\tB\x03\xe0A\x01R\x14workstationLaunchUrl\x1a\xee\x01\n" +
-	"\x14PrivateClusterConfig\x12;\n" +
-	"\x17enable_private_endpoint\x18\x01 \x01(\bB\x03\xe0A\x05R\x15enablePrivateEndpoint\x12.\n" +
-	"\x10cluster_hostname\x18\x02 \x01(\tB\x03\xe0A\x03R\x0fclusterHostname\x129\n" +
-	"\x16service_attachment_uri\x18\x03 \x01(\tB\x03\xe0A\x03R\x14serviceAttachmentUri\x12.\n" +
-	"\x10allowed_projects\x18\x04 \x03(\tB\x03\xe0A\x01R\x0fallowedProjects\x1a+\n" +
-	"\fDomainConfig\x12\x1b\n" +
-	"\x06domain\x18\x01 \x01(\tB\x03\xe0A\x05R\x06domain\x1a9\n" +
-	"\rGatewayConfig\x12(\n" +
-	"\rhttp2_enabled\x18\x01 \x01(\bB\x03\xe0A\x01R\fhttp2Enabled\x1a>\n" +
+	"conditions\x18\x0e \x03(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\n" +
+	"conditions\x12V\n" +
+	"\x04tags\x18\x14 \x03(\v2:.google.cloud.workstations.v1.WorkstationCluster.TagsEntryB\x06\xe2A\x03\x04\x05\x01R\x04tags\x12k\n" +
+	"\x0egateway_config\x18\x15 \x01(\v2>.google.cloud.workstations.v1.WorkstationCluster.GatewayConfigB\x04\xe2A\x01\x01R\rgatewayConfig\x12H\n" +
+	"\x1dworkstation_authorization_url\x18\x16 \x01(\tB\x04\xe2A\x01\x01R\x1bworkstationAuthorizationUrl\x12:\n" +
+	"\x16workstation_launch_url\x18\x17 \x01(\tB\x04\xe2A\x01\x01R\x14workstationLaunchUrl\x1a\xf2\x01\n" +
+	"\x14PrivateClusterConfig\x12<\n" +
+	"\x17enable_private_endpoint\x18\x01 \x01(\bB\x04\xe2A\x01\x05R\x15enablePrivateEndpoint\x12/\n" +
+	"\x10cluster_hostname\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x0fclusterHostname\x12:\n" +
+	"\x16service_attachment_uri\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x14serviceAttachmentUri\x12/\n" +
+	"\x10allowed_projects\x18\x04 \x03(\tB\x04\xe2A\x01\x01R\x0fallowedProjects\x1a,\n" +
+	"\fDomainConfig\x12\x1c\n" +
+	"\x06domain\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x06domain\x1a:\n" +
+	"\rGatewayConfig\x12)\n" +
+	"\rhttp2_enabled\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\fhttp2Enabled\x1a>\n" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a9\n" +
@@ -4872,190 +4872,190 @@ const file_google_cloud_workstations_v1_workstations_proto_rawDesc = "" +
 	"\tTagsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\xb3\x01\xeaA\xaf\x01\n" +
-	".workstations.googleapis.com/WorkstationCluster\x12Qprojects/{project}/locations/{location}/workstationClusters/{workstation_cluster}*\x13workstationClusters2\x12workstationClusterR\x01\x01\"\xdd4\n" +
-	"\x11WorkstationConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12\x1d\n" +
-	"\x03uid\x18\x03 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12%\n" +
-	"\vreconciling\x18\x04 \x01(\bB\x03\xe0A\x03R\vreconciling\x12g\n" +
-	"\vannotations\x18\x05 \x03(\v2@.google.cloud.workstations.v1.WorkstationConfig.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12X\n" +
-	"\x06labels\x18\x12 \x03(\v2;.google.cloud.workstations.v1.WorkstationConfig.LabelsEntryB\x03\xe0A\x01R\x06labels\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12@\n" +
-	"\vdelete_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"deleteTime\x12\x17\n" +
-	"\x04etag\x18\t \x01(\tB\x03\xe0A\x01R\x04etag\x12A\n" +
+	".workstations.googleapis.com/WorkstationCluster\x12Qprojects/{project}/locations/{location}/workstationClusters/{workstation_cluster}*\x13workstationClusters2\x12workstationClusterR\x01\x01\"\xb15\n" +
+	"\x11WorkstationConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12\x1e\n" +
+	"\x03uid\x18\x03 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12&\n" +
+	"\vreconciling\x18\x04 \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12h\n" +
+	"\vannotations\x18\x05 \x03(\v2@.google.cloud.workstations.v1.WorkstationConfig.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12Y\n" +
+	"\x06labels\x18\x12 \x03(\v2;.google.cloud.workstations.v1.WorkstationConfig.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12A\n" +
+	"\vdelete_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"deleteTime\x12\x18\n" +
+	"\x04etag\x18\t \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12B\n" +
 	"\fidle_timeout\x18\n" +
-	" \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\vidleTimeout\x12G\n" +
-	"\x0frunning_timeout\x18\v \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x0erunningTimeout\x12;\n" +
-	"\x17max_usable_workstations\x18\x1c \x01(\x05B\x03\xe0A\x01R\x15maxUsableWorkstations\x12M\n" +
-	"\x04host\x18\f \x01(\v24.google.cloud.workstations.v1.WorkstationConfig.HostB\x03\xe0A\x01R\x04host\x12\x7f\n" +
-	"\x16persistent_directories\x18\r \x03(\v2C.google.cloud.workstations.v1.WorkstationConfig.PersistentDirectoryB\x03\xe0A\x01R\x15persistentDirectories\x12|\n" +
-	"\x15ephemeral_directories\x18\x16 \x03(\v2B.google.cloud.workstations.v1.WorkstationConfig.EphemeralDirectoryB\x03\xe0A\x01R\x14ephemeralDirectories\x12\\\n" +
-	"\tcontainer\x18\x0e \x01(\v29.google.cloud.workstations.v1.WorkstationConfig.ContainerB\x03\xe0A\x01R\tcontainer\x12q\n" +
-	"\x0eencryption_key\x18\x11 \x01(\v2E.google.cloud.workstations.v1.WorkstationConfig.CustomerEncryptionKeyB\x03\xe0A\x05R\rencryptionKey\x12n\n" +
-	"\x10readiness_checks\x18\x13 \x03(\v2>.google.cloud.workstations.v1.WorkstationConfig.ReadinessCheckB\x03\xe0A\x01R\x0freadinessChecks\x12+\n" +
-	"\rreplica_zones\x18\x17 \x03(\tB\x06\xe0A\x01\xe0A\x05R\freplicaZones\x12\x1f\n" +
-	"\bdegraded\x18\x0f \x01(\bB\x03\xe0A\x03R\bdegraded\x127\n" +
+	" \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\vidleTimeout\x12H\n" +
+	"\x0frunning_timeout\x18\v \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x0erunningTimeout\x12<\n" +
+	"\x17max_usable_workstations\x18\x1c \x01(\x05B\x04\xe2A\x01\x01R\x15maxUsableWorkstations\x12N\n" +
+	"\x04host\x18\f \x01(\v24.google.cloud.workstations.v1.WorkstationConfig.HostB\x04\xe2A\x01\x01R\x04host\x12\x80\x01\n" +
+	"\x16persistent_directories\x18\r \x03(\v2C.google.cloud.workstations.v1.WorkstationConfig.PersistentDirectoryB\x04\xe2A\x01\x01R\x15persistentDirectories\x12}\n" +
+	"\x15ephemeral_directories\x18\x16 \x03(\v2B.google.cloud.workstations.v1.WorkstationConfig.EphemeralDirectoryB\x04\xe2A\x01\x01R\x14ephemeralDirectories\x12]\n" +
+	"\tcontainer\x18\x0e \x01(\v29.google.cloud.workstations.v1.WorkstationConfig.ContainerB\x04\xe2A\x01\x01R\tcontainer\x12r\n" +
+	"\x0eencryption_key\x18\x11 \x01(\v2E.google.cloud.workstations.v1.WorkstationConfig.CustomerEncryptionKeyB\x04\xe2A\x01\x05R\rencryptionKey\x12o\n" +
+	"\x10readiness_checks\x18\x13 \x03(\v2>.google.cloud.workstations.v1.WorkstationConfig.ReadinessCheckB\x04\xe2A\x01\x01R\x0freadinessChecks\x12*\n" +
+	"\rreplica_zones\x18\x17 \x03(\tB\x05\xe2A\x02\x01\x05R\freplicaZones\x12 \n" +
+	"\bdegraded\x18\x0f \x01(\bB\x04\xe2A\x01\x03R\bdegraded\x128\n" +
 	"\n" +
-	"conditions\x18\x10 \x03(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\n" +
-	"conditions\x121\n" +
-	"\x12enable_audit_agent\x18\x14 \x01(\bB\x03\xe0A\x01R\x10enableAuditAgent\x12;\n" +
-	"\x17disable_tcp_connections\x18\x18 \x01(\bB\x03\xe0A\x01R\x15disableTcpConnections\x12c\n" +
-	"\rallowed_ports\x18\x19 \x03(\v29.google.cloud.workstations.v1.WorkstationConfig.PortRangeB\x03\xe0A\x01R\fallowedPorts\x12V\n" +
-	"&grant_workstation_admin_role_on_create\x18\x1d \x01(\bB\x03\xe0A\x01R!grantWorkstationAdminRoleOnCreate\x1a\x83\x12\n" +
+	"conditions\x18\x10 \x03(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\n" +
+	"conditions\x122\n" +
+	"\x12enable_audit_agent\x18\x14 \x01(\bB\x04\xe2A\x01\x01R\x10enableAuditAgent\x12<\n" +
+	"\x17disable_tcp_connections\x18\x18 \x01(\bB\x04\xe2A\x01\x01R\x15disableTcpConnections\x12d\n" +
+	"\rallowed_ports\x18\x19 \x03(\v29.google.cloud.workstations.v1.WorkstationConfig.PortRangeB\x04\xe2A\x01\x01R\fallowedPorts\x12W\n" +
+	"&grant_workstation_admin_role_on_create\x18\x1d \x01(\bB\x04\xe2A\x01\x01R!grantWorkstationAdminRoleOnCreate\x1a\xa0\x12\n" +
 	"\x04Host\x12e\n" +
-	"\fgce_instance\x18\x01 \x01(\v2@.google.cloud.workstations.v1.WorkstationConfig.Host.GceInstanceH\x00R\vgceInstance\x1a\x89\x11\n" +
-	"\vGceInstance\x12&\n" +
-	"\fmachine_type\x18\x01 \x01(\tB\x03\xe0A\x01R\vmachineType\x12,\n" +
-	"\x0fservice_account\x18\x02 \x01(\tB\x03\xe0A\x01R\x0eserviceAccount\x129\n" +
-	"\x16service_account_scopes\x18\x03 \x03(\tB\x03\xe0A\x01R\x14serviceAccountScopes\x12\x17\n" +
-	"\x04tags\x18\x04 \x03(\tB\x03\xe0A\x01R\x04tags\x12 \n" +
-	"\tpool_size\x18\x05 \x01(\x05B\x03\xe0A\x01R\bpoolSize\x12.\n" +
-	"\x10pooled_instances\x18\f \x01(\x05B\x03\xe0A\x03R\x0fpooledInstances\x12B\n" +
-	"\x1bdisable_public_ip_addresses\x18\x06 \x01(\bB\x03\xe0A\x01R\x18disablePublicIpAddresses\x12E\n" +
-	"\x1cenable_nested_virtualization\x18\a \x01(\bB\x03\xe0A\x01R\x1aenableNestedVirtualization\x12\x99\x01\n" +
-	"\x18shielded_instance_config\x18\b \x01(\v2Z.google.cloud.workstations.v1.WorkstationConfig.Host.GceInstance.GceShieldedInstanceConfigB\x03\xe0A\x01R\x16shieldedInstanceConfig\x12\xa5\x01\n" +
+	"\fgce_instance\x18\x01 \x01(\v2@.google.cloud.workstations.v1.WorkstationConfig.Host.GceInstanceH\x00R\vgceInstance\x1a\xa6\x11\n" +
+	"\vGceInstance\x12'\n" +
+	"\fmachine_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\vmachineType\x12-\n" +
+	"\x0fservice_account\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x0eserviceAccount\x12:\n" +
+	"\x16service_account_scopes\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x14serviceAccountScopes\x12\x18\n" +
+	"\x04tags\x18\x04 \x03(\tB\x04\xe2A\x01\x01R\x04tags\x12!\n" +
+	"\tpool_size\x18\x05 \x01(\x05B\x04\xe2A\x01\x01R\bpoolSize\x12/\n" +
+	"\x10pooled_instances\x18\f \x01(\x05B\x04\xe2A\x01\x03R\x0fpooledInstances\x12C\n" +
+	"\x1bdisable_public_ip_addresses\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\x18disablePublicIpAddresses\x12F\n" +
+	"\x1cenable_nested_virtualization\x18\a \x01(\bB\x04\xe2A\x01\x01R\x1aenableNestedVirtualization\x12\x9a\x01\n" +
+	"\x18shielded_instance_config\x18\b \x01(\v2Z.google.cloud.workstations.v1.WorkstationConfig.Host.GceInstance.GceShieldedInstanceConfigB\x04\xe2A\x01\x01R\x16shieldedInstanceConfig\x12\xa6\x01\n" +
 	"\x1cconfidential_instance_config\x18\n" +
-	" \x01(\v2^.google.cloud.workstations.v1.WorkstationConfig.Host.GceInstance.GceConfidentialInstanceConfigB\x03\xe0A\x01R\x1aconfidentialInstanceConfig\x12.\n" +
-	"\x11boot_disk_size_gb\x18\t \x01(\x05B\x03\xe0A\x01R\x0ebootDiskSizeGb\x12u\n" +
-	"\faccelerators\x18\v \x03(\v2L.google.cloud.workstations.v1.WorkstationConfig.Host.GceInstance.AcceleratorB\x03\xe0A\x01R\faccelerators\x12v\n" +
-	"\rboost_configs\x18\x19 \x03(\v2L.google.cloud.workstations.v1.WorkstationConfig.Host.GceInstance.BoostConfigB\x03\xe0A\x01R\fboostConfigs\x12$\n" +
-	"\vdisable_ssh\x18\r \x01(\bB\x03\xe0A\x01R\n" +
-	"disableSsh\x12j\n" +
-	"\avm_tags\x18\x0e \x03(\v2L.google.cloud.workstations.v1.WorkstationConfig.Host.GceInstance.VmTagsEntryB\x03\xe0A\x01R\x06vmTags\x121\n" +
-	"\x12startup_script_uri\x18\x1a \x01(\tB\x03\xe0A\x01R\x10startupScriptUri\x12\x88\x01\n" +
-	"\x11instance_metadata\x18\x1b \x03(\v2V.google.cloud.workstations.v1.WorkstationConfig.Host.GceInstance.InstanceMetadataEntryB\x03\xe0A\x01R\x10instanceMetadata\x1a\xb9\x01\n" +
-	"\x19GceShieldedInstanceConfig\x121\n" +
-	"\x12enable_secure_boot\x18\x01 \x01(\bB\x03\xe0A\x01R\x10enableSecureBoot\x12$\n" +
-	"\venable_vtpm\x18\x02 \x01(\bB\x03\xe0A\x01R\n" +
-	"enableVtpm\x12C\n" +
-	"\x1benable_integrity_monitoring\x18\x03 \x01(\bB\x03\xe0A\x01R\x19enableIntegrityMonitoring\x1ad\n" +
-	"\x1dGceConfidentialInstanceConfig\x12C\n" +
-	"\x1benable_confidential_compute\x18\x01 \x01(\bB\x03\xe0A\x01R\x19enableConfidentialCompute\x1aA\n" +
-	"\vAccelerator\x12\x17\n" +
-	"\x04type\x18\x01 \x01(\tB\x03\xe0A\x01R\x04type\x12\x19\n" +
-	"\x05count\x18\x02 \x01(\x05B\x03\xe0A\x01R\x05count\x1a\xda\x02\n" +
-	"\vBoostConfig\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\x12&\n" +
-	"\fmachine_type\x18\x02 \x01(\tB\x03\xe0A\x01R\vmachineType\x12u\n" +
-	"\faccelerators\x18\x03 \x03(\v2L.google.cloud.workstations.v1.WorkstationConfig.Host.GceInstance.AcceleratorB\x03\xe0A\x01R\faccelerators\x12.\n" +
-	"\x11boot_disk_size_gb\x18\x04 \x01(\x05B\x03\xe0A\x01R\x0ebootDiskSizeGb\x12E\n" +
-	"\x1cenable_nested_virtualization\x18\a \x01(\bB\x03\xe0A\x01R\x1aenableNestedVirtualization\x12 \n" +
-	"\tpool_size\x18\x05 \x01(\x05B\x03\xe0A\x01R\bpoolSize\x1a9\n" +
+	" \x01(\v2^.google.cloud.workstations.v1.WorkstationConfig.Host.GceInstance.GceConfidentialInstanceConfigB\x04\xe2A\x01\x01R\x1aconfidentialInstanceConfig\x12/\n" +
+	"\x11boot_disk_size_gb\x18\t \x01(\x05B\x04\xe2A\x01\x01R\x0ebootDiskSizeGb\x12v\n" +
+	"\faccelerators\x18\v \x03(\v2L.google.cloud.workstations.v1.WorkstationConfig.Host.GceInstance.AcceleratorB\x04\xe2A\x01\x01R\faccelerators\x12w\n" +
+	"\rboost_configs\x18\x19 \x03(\v2L.google.cloud.workstations.v1.WorkstationConfig.Host.GceInstance.BoostConfigB\x04\xe2A\x01\x01R\fboostConfigs\x12%\n" +
+	"\vdisable_ssh\x18\r \x01(\bB\x04\xe2A\x01\x01R\n" +
+	"disableSsh\x12k\n" +
+	"\avm_tags\x18\x0e \x03(\v2L.google.cloud.workstations.v1.WorkstationConfig.Host.GceInstance.VmTagsEntryB\x04\xe2A\x01\x01R\x06vmTags\x122\n" +
+	"\x12startup_script_uri\x18\x1a \x01(\tB\x04\xe2A\x01\x01R\x10startupScriptUri\x12\x89\x01\n" +
+	"\x11instance_metadata\x18\x1b \x03(\v2V.google.cloud.workstations.v1.WorkstationConfig.Host.GceInstance.InstanceMetadataEntryB\x04\xe2A\x01\x01R\x10instanceMetadata\x1a\xbc\x01\n" +
+	"\x19GceShieldedInstanceConfig\x122\n" +
+	"\x12enable_secure_boot\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x10enableSecureBoot\x12%\n" +
+	"\venable_vtpm\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\n" +
+	"enableVtpm\x12D\n" +
+	"\x1benable_integrity_monitoring\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x19enableIntegrityMonitoring\x1ae\n" +
+	"\x1dGceConfidentialInstanceConfig\x12D\n" +
+	"\x1benable_confidential_compute\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x19enableConfidentialCompute\x1aC\n" +
+	"\vAccelerator\x12\x18\n" +
+	"\x04type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04type\x12\x1a\n" +
+	"\x05count\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x05count\x1a\xe0\x02\n" +
+	"\vBoostConfig\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x02id\x12'\n" +
+	"\fmachine_type\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vmachineType\x12v\n" +
+	"\faccelerators\x18\x03 \x03(\v2L.google.cloud.workstations.v1.WorkstationConfig.Host.GceInstance.AcceleratorB\x04\xe2A\x01\x01R\faccelerators\x12/\n" +
+	"\x11boot_disk_size_gb\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\x0ebootDiskSizeGb\x12F\n" +
+	"\x1cenable_nested_virtualization\x18\a \x01(\bB\x04\xe2A\x01\x01R\x1aenableNestedVirtualization\x12!\n" +
+	"\tpool_size\x18\x05 \x01(\x05B\x04\xe2A\x01\x01R\bpoolSize\x1a9\n" +
 	"\vVmTagsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1aC\n" +
 	"\x15InstanceMetadataEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\b\n" +
-	"\x06config\x1a\x93\n" +
+	"\x06config\x1a\xa0\n" +
 	"\n" +
 	"\x13PersistentDirectory\x12v\n" +
 	"\x06gce_pd\x18\x02 \x01(\v2].google.cloud.workstations.v1.WorkstationConfig.PersistentDirectory.GceRegionalPersistentDiskH\x00R\x05gcePd\x12\x81\x01\n" +
-	"\x06gce_hd\x18\x03 \x01(\v2h.google.cloud.workstations.v1.WorkstationConfig.PersistentDirectory.GceHyperdiskBalancedHighAvailabilityH\x00R\x05gceHd\x12\"\n" +
+	"\x06gce_hd\x18\x03 \x01(\v2h.google.cloud.workstations.v1.WorkstationConfig.PersistentDirectory.GceHyperdiskBalancedHighAvailabilityH\x00R\x05gceHd\x12#\n" +
 	"\n" +
-	"mount_path\x18\x01 \x01(\tB\x03\xe0A\x01R\tmountPath\x1a\xf8\x03\n" +
-	"\x19GceRegionalPersistentDisk\x12\x1c\n" +
-	"\asize_gb\x18\x01 \x01(\x05B\x03\xe0A\x01R\x06sizeGb\x12#\n" +
-	"\vmax_size_gb\x18\a \x01(\x05B\x03\xe0A\x01R\tmaxSizeGb\x12\x1c\n" +
-	"\afs_type\x18\x02 \x01(\tB\x03\xe0A\x01R\x06fsType\x12 \n" +
-	"\tdisk_type\x18\x03 \x01(\tB\x03\xe0A\x01R\bdiskType\x12,\n" +
-	"\x0fsource_snapshot\x18\x05 \x01(\tB\x03\xe0A\x01R\x0esourceSnapshot\x12\x97\x01\n" +
-	"\x0ereclaim_policy\x18\x04 \x01(\x0e2k.google.cloud.workstations.v1.WorkstationConfig.PersistentDirectory.GceRegionalPersistentDisk.ReclaimPolicyB\x03\xe0A\x01R\rreclaimPolicy\x12G\n" +
-	"\x0farchive_timeout\x18\x06 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x0earchiveTimeout\"G\n" +
+	"mount_path\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\tmountPath\x1a\xff\x03\n" +
+	"\x19GceRegionalPersistentDisk\x12\x1d\n" +
+	"\asize_gb\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\x06sizeGb\x12$\n" +
+	"\vmax_size_gb\x18\a \x01(\x05B\x04\xe2A\x01\x01R\tmaxSizeGb\x12\x1d\n" +
+	"\afs_type\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06fsType\x12!\n" +
+	"\tdisk_type\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\bdiskType\x12-\n" +
+	"\x0fsource_snapshot\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x0esourceSnapshot\x12\x98\x01\n" +
+	"\x0ereclaim_policy\x18\x04 \x01(\x0e2k.google.cloud.workstations.v1.WorkstationConfig.PersistentDirectory.GceRegionalPersistentDisk.ReclaimPolicyB\x04\xe2A\x01\x01R\rreclaimPolicy\x12H\n" +
+	"\x0farchive_timeout\x18\x06 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x0earchiveTimeout\"G\n" +
 	"\rReclaimPolicy\x12\x1e\n" +
 	"\x1aRECLAIM_POLICY_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06DELETE\x10\x01\x12\n" +
 	"\n" +
-	"\x06RETAIN\x10\x02\x1a\xce\x03\n" +
-	"$GceHyperdiskBalancedHighAvailability\x12\x1c\n" +
-	"\asize_gb\x18\x01 \x01(\x05B\x03\xe0A\x01R\x06sizeGb\x12#\n" +
-	"\vmax_size_gb\x18\x05 \x01(\x05B\x03\xe0A\x01R\tmaxSizeGb\x12,\n" +
-	"\x0fsource_snapshot\x18\x02 \x01(\tB\x03\xe0A\x01R\x0esourceSnapshot\x12\xa2\x01\n" +
-	"\x0ereclaim_policy\x18\x03 \x01(\x0e2v.google.cloud.workstations.v1.WorkstationConfig.PersistentDirectory.GceHyperdiskBalancedHighAvailability.ReclaimPolicyB\x03\xe0A\x01R\rreclaimPolicy\x12G\n" +
-	"\x0farchive_timeout\x18\x04 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x0earchiveTimeout\"G\n" +
+	"\x06RETAIN\x10\x02\x1a\xd3\x03\n" +
+	"$GceHyperdiskBalancedHighAvailability\x12\x1d\n" +
+	"\asize_gb\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\x06sizeGb\x12$\n" +
+	"\vmax_size_gb\x18\x05 \x01(\x05B\x04\xe2A\x01\x01R\tmaxSizeGb\x12-\n" +
+	"\x0fsource_snapshot\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x0esourceSnapshot\x12\xa3\x01\n" +
+	"\x0ereclaim_policy\x18\x03 \x01(\x0e2v.google.cloud.workstations.v1.WorkstationConfig.PersistentDirectory.GceHyperdiskBalancedHighAvailability.ReclaimPolicyB\x04\xe2A\x01\x01R\rreclaimPolicy\x12H\n" +
+	"\x0farchive_timeout\x18\x04 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x0earchiveTimeout\"G\n" +
 	"\rReclaimPolicy\x12\x1e\n" +
 	"\x1aRECLAIM_POLICY_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06DELETE\x10\x01\x12\n" +
 	"\n" +
 	"\x06RETAIN\x10\x02B\x10\n" +
-	"\x0edirectory_type\x1a\xe9\x02\n" +
+	"\x0edirectory_type\x1a\xee\x02\n" +
 	"\x12EphemeralDirectory\x12m\n" +
-	"\x06gce_pd\x18\x03 \x01(\v2T.google.cloud.workstations.v1.WorkstationConfig.EphemeralDirectory.GcePersistentDiskH\x00R\x05gcePd\x12\"\n" +
+	"\x06gce_pd\x18\x03 \x01(\v2T.google.cloud.workstations.v1.WorkstationConfig.EphemeralDirectory.GcePersistentDiskH\x00R\x05gcePd\x12#\n" +
 	"\n" +
-	"mount_path\x18\x01 \x01(\tB\x03\xe0A\x02R\tmountPath\x1a\xad\x01\n" +
-	"\x11GcePersistentDisk\x12 \n" +
-	"\tdisk_type\x18\x01 \x01(\tB\x03\xe0A\x01R\bdiskType\x12,\n" +
-	"\x0fsource_snapshot\x18\x02 \x01(\tB\x03\xe0A\x01R\x0esourceSnapshot\x12&\n" +
-	"\fsource_image\x18\x03 \x01(\tB\x03\xe0A\x01R\vsourceImage\x12 \n" +
-	"\tread_only\x18\x04 \x01(\bB\x03\xe0A\x01R\breadOnlyB\x10\n" +
-	"\x0edirectory_type\x1a\xbc\x02\n" +
-	"\tContainer\x12\x19\n" +
-	"\x05image\x18\x01 \x01(\tB\x03\xe0A\x01R\x05image\x12\x1d\n" +
-	"\acommand\x18\x02 \x03(\tB\x03\xe0A\x01R\acommand\x12\x17\n" +
-	"\x04args\x18\x03 \x03(\tB\x03\xe0A\x01R\x04args\x12Y\n" +
-	"\x03env\x18\x04 \x03(\v2B.google.cloud.workstations.v1.WorkstationConfig.Container.EnvEntryB\x03\xe0A\x01R\x03env\x12$\n" +
-	"\vworking_dir\x18\x05 \x01(\tB\x03\xe0A\x01R\n" +
-	"workingDir\x12#\n" +
-	"\vrun_as_user\x18\x06 \x01(\x05B\x03\xe0A\x01R\trunAsUser\x1a6\n" +
+	"mount_path\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tmountPath\x1a\xb1\x01\n" +
+	"\x11GcePersistentDisk\x12!\n" +
+	"\tdisk_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\bdiskType\x12-\n" +
+	"\x0fsource_snapshot\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x0esourceSnapshot\x12'\n" +
+	"\fsource_image\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vsourceImage\x12!\n" +
+	"\tread_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\breadOnlyB\x10\n" +
+	"\x0edirectory_type\x1a\xc2\x02\n" +
+	"\tContainer\x12\x1a\n" +
+	"\x05image\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x05image\x12\x1e\n" +
+	"\acommand\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\acommand\x12\x18\n" +
+	"\x04args\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x04args\x12Z\n" +
+	"\x03env\x18\x04 \x03(\v2B.google.cloud.workstations.v1.WorkstationConfig.Container.EnvEntryB\x04\xe2A\x01\x01R\x03env\x12%\n" +
+	"\vworking_dir\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"workingDir\x12$\n" +
+	"\vrun_as_user\x18\x06 \x01(\x05B\x04\xe2A\x01\x01R\trunAsUser\x1a6\n" +
 	"\bEnvEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1aq\n" +
-	"\x15CustomerEncryptionKey\x12\x1c\n" +
-	"\akms_key\x18\x01 \x01(\tB\x03\xe0A\x05R\x06kmsKey\x12:\n" +
-	"\x17kms_key_service_account\x18\x02 \x01(\tB\x03\xe0A\x05R\x14kmsKeyServiceAccount\x1aB\n" +
-	"\x0eReadinessCheck\x12\x17\n" +
-	"\x04path\x18\x01 \x01(\tB\x03\xe0A\x01R\x04path\x12\x17\n" +
-	"\x04port\x18\x02 \x01(\x05B\x03\xe0A\x01R\x04port\x1a?\n" +
-	"\tPortRange\x12\x19\n" +
-	"\x05first\x18\x01 \x01(\x05B\x03\xe0A\x02R\x05first\x12\x17\n" +
-	"\x04last\x18\x02 \x01(\x05B\x03\xe0A\x02R\x04last\x1a>\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1as\n" +
+	"\x15CustomerEncryptionKey\x12\x1d\n" +
+	"\akms_key\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x06kmsKey\x12;\n" +
+	"\x17kms_key_service_account\x18\x02 \x01(\tB\x04\xe2A\x01\x05R\x14kmsKeyServiceAccount\x1aD\n" +
+	"\x0eReadinessCheck\x12\x18\n" +
+	"\x04path\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04path\x12\x18\n" +
+	"\x04port\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x04port\x1aA\n" +
+	"\tPortRange\x12\x1a\n" +
+	"\x05first\x18\x01 \x01(\x05B\x04\xe2A\x01\x02R\x05first\x12\x18\n" +
+	"\x04last\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\x04last\x1a>\n" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\xd8\x01\xeaA\xd4\x01\n" +
-	"-workstations.googleapis.com/WorkstationConfig\x12yprojects/{project}/locations/{location}/workstationClusters/{workstation_cluster}/workstationConfigs/{workstation_config}*\x12workstationConfigs2\x11workstationConfigR\x01\x01\"\xb4\x0f\n" +
-	"\vWorkstation\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12\x1d\n" +
-	"\x03uid\x18\x03 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12%\n" +
-	"\vreconciling\x18\x04 \x01(\bB\x03\xe0A\x03R\vreconciling\x12a\n" +
-	"\vannotations\x18\x05 \x03(\v2:.google.cloud.workstations.v1.Workstation.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12R\n" +
-	"\x06labels\x18\r \x03(\v25.google.cloud.workstations.v1.Workstation.LabelsEntryB\x03\xe0A\x01R\x06labels\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12>\n" +
+	"-workstations.googleapis.com/WorkstationConfig\x12yprojects/{project}/locations/{location}/workstationClusters/{workstation_cluster}/workstationConfigs/{workstation_config}*\x12workstationConfigs2\x11workstationConfigR\x01\x01\"\xc3\x0f\n" +
+	"\vWorkstation\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12\x1e\n" +
+	"\x03uid\x18\x03 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12&\n" +
+	"\vreconciling\x18\x04 \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12b\n" +
+	"\vannotations\x18\x05 \x03(\v2:.google.cloud.workstations.v1.Workstation.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12S\n" +
+	"\x06labels\x18\r \x03(\v25.google.cloud.workstations.v1.Workstation.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12?\n" +
 	"\n" +
-	"start_time\x18\x0e \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12@\n" +
-	"\vdelete_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"deleteTime\x12\x17\n" +
-	"\x04etag\x18\t \x01(\tB\x03\xe0A\x01R\x04etag\x12\x84\x01\n" +
-	"\x16persistent_directories\x18\x19 \x03(\v2H.google.cloud.workstations.v1.Workstation.WorkstationPersistentDirectoryB\x03\xe0A\x01R\x15persistentDirectories\x12J\n" +
+	"start_time\x18\x0e \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12A\n" +
+	"\vdelete_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"deleteTime\x12\x18\n" +
+	"\x04etag\x18\t \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12\x85\x01\n" +
+	"\x16persistent_directories\x18\x19 \x03(\v2H.google.cloud.workstations.v1.Workstation.WorkstationPersistentDirectoryB\x04\xe2A\x01\x01R\x15persistentDirectories\x12K\n" +
 	"\x05state\x18\n" +
-	" \x01(\x0e2/.google.cloud.workstations.v1.Workstation.StateB\x03\xe0A\x03R\x05state\x12\x17\n" +
-	"\x04host\x18\v \x01(\tB\x03\xe0A\x03R\x04host\x12I\n" +
-	"\x03env\x18\f \x03(\v22.google.cloud.workstations.v1.Workstation.EnvEntryB\x03\xe0A\x01R\x03env\x12\x1c\n" +
-	"\akms_key\x18\x0f \x01(\tB\x03\xe0A\x03R\x06kmsKey\x122\n" +
-	"\x12source_workstation\x18\x11 \x01(\tB\x03\xe0A\x01R\x11sourceWorkstation\x12`\n" +
-	"\fruntime_host\x18\x15 \x01(\v25.google.cloud.workstations.v1.Workstation.RuntimeHostB\x06\xe0A\x01\xe0A\x03R\vruntimeHost\x1ab\n" +
-	"\x1eWorkstationPersistentDirectory\x12\"\n" +
+	" \x01(\x0e2/.google.cloud.workstations.v1.Workstation.StateB\x04\xe2A\x01\x03R\x05state\x12\x18\n" +
+	"\x04host\x18\v \x01(\tB\x04\xe2A\x01\x03R\x04host\x12J\n" +
+	"\x03env\x18\f \x03(\v22.google.cloud.workstations.v1.Workstation.EnvEntryB\x04\xe2A\x01\x01R\x03env\x12\x1d\n" +
+	"\akms_key\x18\x0f \x01(\tB\x04\xe2A\x01\x03R\x06kmsKey\x123\n" +
+	"\x12source_workstation\x18\x11 \x01(\tB\x04\xe2A\x01\x01R\x11sourceWorkstation\x12_\n" +
+	"\fruntime_host\x18\x15 \x01(\v25.google.cloud.workstations.v1.Workstation.RuntimeHostB\x05\xe2A\x02\x01\x03R\vruntimeHost\x1ad\n" +
+	"\x1eWorkstationPersistentDirectory\x12#\n" +
 	"\n" +
-	"mount_path\x18\x02 \x01(\tB\x03\xe0A\x01R\tmountPath\x12\x1c\n" +
-	"\asize_gb\x18\x03 \x01(\x05B\x03\xe0A\x01R\x06sizeGb\x1a\xf2\x01\n" +
+	"mount_path\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\tmountPath\x12\x1d\n" +
+	"\asize_gb\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\x06sizeGb\x1a\xef\x01\n" +
 	"\vRuntimeHost\x12s\n" +
-	"\x11gce_instance_host\x18\x01 \x01(\v2E.google.cloud.workstations.v1.Workstation.RuntimeHost.GceInstanceHostH\x00R\x0fgceInstanceHost\x1aa\n" +
-	"\x0fGceInstanceHost\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x01\xe0A\x03R\x04name\x12\x16\n" +
-	"\x02id\x18\x02 \x01(\tB\x06\xe0A\x01\xe0A\x03R\x02id\x12\x1a\n" +
-	"\x04zone\x18\x03 \x01(\tB\x06\xe0A\x01\xe0A\x03R\x04zoneB\v\n" +
+	"\x11gce_instance_host\x18\x01 \x01(\v2E.google.cloud.workstations.v1.Workstation.RuntimeHost.GceInstanceHostH\x00R\x0fgceInstanceHost\x1a^\n" +
+	"\x0fGceInstanceHost\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x01\x03R\x04name\x12\x15\n" +
+	"\x02id\x18\x02 \x01(\tB\x05\xe2A\x02\x01\x03R\x02id\x12\x19\n" +
+	"\x04zone\x18\x03 \x01(\tB\x05\xe2A\x02\x01\x03R\x04zoneB\v\n" +
 	"\thost_type\x1a>\n" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -5072,153 +5072,153 @@ const file_google_cloud_workstations_v1_workstations_proto_rawDesc = "" +
 	"\rSTATE_RUNNING\x10\x02\x12\x12\n" +
 	"\x0eSTATE_STOPPING\x10\x03\x12\x11\n" +
 	"\rSTATE_STOPPED\x10\x04:\xe2\x01\xeaA\xde\x01\n" +
-	"'workstations.googleapis.com/Workstation\x12\x94\x01projects/{project}/locations/{location}/workstationClusters/{workstation_cluster}/workstationConfigs/{workstation_config}/workstations/{workstation}*\fworkstations2\vworkstationR\x01\x01\"j\n" +
-	"\x1cGetWorkstationClusterRequest\x12J\n" +
-	"\x04name\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".workstations.googleapis.com/WorkstationClusterR\x04name\"\xd3\x01\n" +
-	"\x1eListWorkstationClustersRequest\x12N\n" +
-	"\x06parent\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\x12.workstations.googleapis.com/WorkstationClusterR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"'workstations.googleapis.com/Workstation\x12\x94\x01projects/{project}/locations/{location}/workstationClusters/{workstation_cluster}/workstationConfigs/{workstation_config}/workstations/{workstation}*\fworkstations2\vworkstationR\x01\x01\"k\n" +
+	"\x1cGetWorkstationClusterRequest\x12K\n" +
+	"\x04name\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".workstations.googleapis.com/WorkstationClusterR\x04name\"\xd7\x01\n" +
+	"\x1eListWorkstationClustersRequest\x12O\n" +
+	"\x06parent\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\x12.workstations.googleapis.com/WorkstationClusterR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\xd0\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xd0\x01\n" +
 	"\x1fListWorkstationClustersResponse\x12c\n" +
 	"\x14workstation_clusters\x18\x01 \x03(\v20.google.cloud.workstations.v1.WorkstationClusterR\x13workstationClusters\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xbe\x02\n" +
-	"\x1fCreateWorkstationClusterRequest\x12N\n" +
-	"\x06parent\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\x12.workstations.googleapis.com/WorkstationClusterR\x06parent\x129\n" +
-	"\x16workstation_cluster_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x14workstationClusterId\x12f\n" +
-	"\x13workstation_cluster\x18\x03 \x01(\v20.google.cloud.workstations.v1.WorkstationClusterB\x03\xe0A\x02R\x12workstationCluster\x12(\n" +
-	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\x9f\x02\n" +
-	"\x1fUpdateWorkstationClusterRequest\x12f\n" +
-	"\x13workstation_cluster\x18\x01 \x01(\v20.google.cloud.workstations.v1.WorkstationClusterB\x03\xe0A\x02R\x12workstationCluster\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12(\n" +
-	"\rallow_missing\x18\x04 \x01(\bB\x03\xe0A\x01R\fallowMissing\"\xcb\x01\n" +
-	"\x1fDeleteWorkstationClusterRequest\x12J\n" +
-	"\x04name\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".workstations.googleapis.com/WorkstationClusterR\x04name\x12(\n" +
-	"\rvalidate_only\x18\x02 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12\x17\n" +
-	"\x04etag\x18\x03 \x01(\tB\x03\xe0A\x01R\x04etag\x12\x19\n" +
-	"\x05force\x18\x04 \x01(\bB\x03\xe0A\x01R\x05force\"h\n" +
-	"\x1bGetWorkstationConfigRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-workstations.googleapis.com/WorkstationConfigR\x04name\"\xd2\x01\n" +
-	"\x1dListWorkstationConfigsRequest\x12N\n" +
-	"\x06parent\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".workstations.googleapis.com/WorkstationClusterR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xc2\x02\n" +
+	"\x1fCreateWorkstationClusterRequest\x12O\n" +
+	"\x06parent\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\x12.workstations.googleapis.com/WorkstationClusterR\x06parent\x12:\n" +
+	"\x16workstation_cluster_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x14workstationClusterId\x12g\n" +
+	"\x13workstation_cluster\x18\x03 \x01(\v20.google.cloud.workstations.v1.WorkstationClusterB\x04\xe2A\x01\x02R\x12workstationCluster\x12)\n" +
+	"\rvalidate_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xa3\x02\n" +
+	"\x1fUpdateWorkstationClusterRequest\x12g\n" +
+	"\x13workstation_cluster\x18\x01 \x01(\v20.google.cloud.workstations.v1.WorkstationClusterB\x04\xe2A\x01\x02R\x12workstationCluster\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12)\n" +
+	"\rallow_missing\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fallowMissing\"\xcf\x01\n" +
+	"\x1fDeleteWorkstationClusterRequest\x12K\n" +
+	"\x04name\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".workstations.googleapis.com/WorkstationClusterR\x04name\x12)\n" +
+	"\rvalidate_only\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12\x18\n" +
+	"\x04etag\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12\x1a\n" +
+	"\x05force\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x05force\"i\n" +
+	"\x1bGetWorkstationConfigRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-workstations.googleapis.com/WorkstationConfigR\x04name\"\xd6\x01\n" +
+	"\x1dListWorkstationConfigsRequest\x12O\n" +
+	"\x06parent\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".workstations.googleapis.com/WorkstationClusterR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\xcc\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xcc\x01\n" +
 	"\x1eListWorkstationConfigsResponse\x12`\n" +
 	"\x13workstation_configs\x18\x01 \x03(\v2/.google.cloud.workstations.v1.WorkstationConfigR\x12workstationConfigs\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xbb\x01\n" +
-	"#ListUsableWorkstationConfigsRequest\x12N\n" +
-	"\x06parent\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".workstations.googleapis.com/WorkstationClusterR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xbe\x01\n" +
+	"#ListUsableWorkstationConfigsRequest\x12O\n" +
+	"\x06parent\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".workstations.googleapis.com/WorkstationClusterR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xd2\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xd2\x01\n" +
 	"$ListUsableWorkstationConfigsResponse\x12`\n" +
 	"\x13workstation_configs\x18\x01 \x03(\v2/.google.cloud.workstations.v1.WorkstationConfigR\x12workstationConfigs\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xb8\x02\n" +
-	"\x1eCreateWorkstationConfigRequest\x12N\n" +
-	"\x06parent\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".workstations.googleapis.com/WorkstationClusterR\x06parent\x127\n" +
-	"\x15workstation_config_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x13workstationConfigId\x12c\n" +
-	"\x12workstation_config\x18\x03 \x01(\v2/.google.cloud.workstations.v1.WorkstationConfigB\x03\xe0A\x02R\x11workstationConfig\x12(\n" +
-	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\x9b\x02\n" +
-	"\x1eUpdateWorkstationConfigRequest\x12c\n" +
-	"\x12workstation_config\x18\x01 \x01(\v2/.google.cloud.workstations.v1.WorkstationConfigB\x03\xe0A\x02R\x11workstationConfig\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12(\n" +
-	"\rallow_missing\x18\x04 \x01(\bB\x03\xe0A\x01R\fallowMissing\"\xc9\x01\n" +
-	"\x1eDeleteWorkstationConfigRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-workstations.googleapis.com/WorkstationConfigR\x04name\x12(\n" +
-	"\rvalidate_only\x18\x02 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12\x17\n" +
-	"\x04etag\x18\x03 \x01(\tB\x03\xe0A\x01R\x04etag\x12\x19\n" +
-	"\x05force\x18\x04 \x01(\bB\x03\xe0A\x01R\x05force\"\\\n" +
-	"\x15GetWorkstationRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'workstations.googleapis.com/WorkstationR\x04name\"\xcb\x01\n" +
-	"\x17ListWorkstationsRequest\x12M\n" +
-	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-workstations.googleapis.com/WorkstationConfigR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xbc\x02\n" +
+	"\x1eCreateWorkstationConfigRequest\x12O\n" +
+	"\x06parent\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".workstations.googleapis.com/WorkstationClusterR\x06parent\x128\n" +
+	"\x15workstation_config_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x13workstationConfigId\x12d\n" +
+	"\x12workstation_config\x18\x03 \x01(\v2/.google.cloud.workstations.v1.WorkstationConfigB\x04\xe2A\x01\x02R\x11workstationConfig\x12)\n" +
+	"\rvalidate_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\x9f\x02\n" +
+	"\x1eUpdateWorkstationConfigRequest\x12d\n" +
+	"\x12workstation_config\x18\x01 \x01(\v2/.google.cloud.workstations.v1.WorkstationConfigB\x04\xe2A\x01\x02R\x11workstationConfig\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12)\n" +
+	"\rallow_missing\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fallowMissing\"\xcd\x01\n" +
+	"\x1eDeleteWorkstationConfigRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-workstations.googleapis.com/WorkstationConfigR\x04name\x12)\n" +
+	"\rvalidate_only\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12\x18\n" +
+	"\x04etag\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12\x1a\n" +
+	"\x05force\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x05force\"]\n" +
+	"\x15GetWorkstationRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'workstations.googleapis.com/WorkstationR\x04name\"\xcf\x01\n" +
+	"\x17ListWorkstationsRequest\x12N\n" +
+	"\x06parent\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-workstations.googleapis.com/WorkstationConfigR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\xbd\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xbf\x01\n" +
 	"\x18ListWorkstationsResponse\x12M\n" +
-	"\fworkstations\x18\x01 \x03(\v2).google.cloud.workstations.v1.WorkstationR\fworkstations\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x01R\vunreachable\"\xb4\x01\n" +
-	"\x1dListUsableWorkstationsRequest\x12M\n" +
-	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-workstations.googleapis.com/WorkstationConfigR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\fworkstations\x18\x01 \x03(\v2).google.cloud.workstations.v1.WorkstationR\fworkstations\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\vunreachable\"\xb7\x01\n" +
+	"\x1dListUsableWorkstationsRequest\x12N\n" +
+	"\x06parent\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-workstations.googleapis.com/WorkstationConfigR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xb9\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xb9\x01\n" +
 	"\x1eListUsableWorkstationsResponse\x12M\n" +
 	"\fworkstations\x18\x01 \x03(\v2).google.cloud.workstations.v1.WorkstationR\fworkstations\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\x91\x02\n" +
-	"\x18CreateWorkstationRequest\x12M\n" +
-	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-workstations.googleapis.com/WorkstationConfigR\x06parent\x12*\n" +
-	"\x0eworkstation_id\x18\x02 \x01(\tB\x03\xe0A\x02R\rworkstationId\x12P\n" +
-	"\vworkstation\x18\x03 \x01(\v2).google.cloud.workstations.v1.WorkstationB\x03\xe0A\x02R\vworkstation\x12(\n" +
-	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\x82\x02\n" +
-	"\x18UpdateWorkstationRequest\x12P\n" +
-	"\vworkstation\x18\x01 \x01(\v2).google.cloud.workstations.v1.WorkstationB\x03\xe0A\x02R\vworkstation\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12(\n" +
-	"\rallow_missing\x18\x04 \x01(\bB\x03\xe0A\x01R\fallowMissing\"\xa2\x01\n" +
-	"\x18DeleteWorkstationRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'workstations.googleapis.com/WorkstationR\x04name\x12(\n" +
-	"\rvalidate_only\x18\x02 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12\x17\n" +
-	"\x04etag\x18\x03 \x01(\tB\x03\xe0A\x01R\x04etag\"\xc9\x01\n" +
-	"\x17StartWorkstationRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'workstations.googleapis.com/WorkstationR\x04name\x12(\n" +
-	"\rvalidate_only\x18\x02 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12\x17\n" +
-	"\x04etag\x18\x03 \x01(\tB\x03\xe0A\x01R\x04etag\x12&\n" +
-	"\fboost_config\x18\x04 \x01(\tB\x03\xe0A\x01R\vboostConfig\"\xa0\x01\n" +
-	"\x16StopWorkstationRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'workstations.googleapis.com/WorkstationR\x04name\x12(\n" +
-	"\rvalidate_only\x18\x02 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12\x17\n" +
-	"\x04etag\x18\x03 \x01(\tB\x03\xe0A\x01R\x04etag\"\x84\x02\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\x95\x02\n" +
+	"\x18CreateWorkstationRequest\x12N\n" +
+	"\x06parent\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-workstations.googleapis.com/WorkstationConfigR\x06parent\x12+\n" +
+	"\x0eworkstation_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\rworkstationId\x12Q\n" +
+	"\vworkstation\x18\x03 \x01(\v2).google.cloud.workstations.v1.WorkstationB\x04\xe2A\x01\x02R\vworkstation\x12)\n" +
+	"\rvalidate_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\x86\x02\n" +
+	"\x18UpdateWorkstationRequest\x12Q\n" +
+	"\vworkstation\x18\x01 \x01(\v2).google.cloud.workstations.v1.WorkstationB\x04\xe2A\x01\x02R\vworkstation\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12)\n" +
+	"\rallow_missing\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fallowMissing\"\xa5\x01\n" +
+	"\x18DeleteWorkstationRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'workstations.googleapis.com/WorkstationR\x04name\x12)\n" +
+	"\rvalidate_only\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12\x18\n" +
+	"\x04etag\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"\xcd\x01\n" +
+	"\x17StartWorkstationRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'workstations.googleapis.com/WorkstationR\x04name\x12)\n" +
+	"\rvalidate_only\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12\x18\n" +
+	"\x04etag\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12'\n" +
+	"\fboost_config\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vboostConfig\"\xa3\x01\n" +
+	"\x16StopWorkstationRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'workstations.googleapis.com/WorkstationR\x04name\x12)\n" +
+	"\rvalidate_only\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12\x18\n" +
+	"\x04etag\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"\x86\x02\n" +
 	"\x1aGenerateAccessTokenRequest\x12=\n" +
 	"\vexpire_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\n" +
 	"expireTime\x12-\n" +
-	"\x03ttl\x18\x03 \x01(\v2\x19.google.protobuf.DurationH\x00R\x03ttl\x12Q\n" +
-	"\vworkstation\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'workstations.googleapis.com/WorkstationR\vworkstation\x12\x17\n" +
-	"\x04port\x18\x04 \x01(\x05B\x03\xe0A\x01R\x04portB\f\n" +
+	"\x03ttl\x18\x03 \x01(\v2\x19.google.protobuf.DurationH\x00R\x03ttl\x12R\n" +
+	"\vworkstation\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'workstations.googleapis.com/WorkstationR\vworkstation\x12\x18\n" +
+	"\x04port\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\x04portB\f\n" +
 	"\n" +
 	"expiration\"}\n" +
 	"\x1bGenerateAccessTokenResponse\x12!\n" +
 	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12;\n" +
 	"\vexpire_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"expireTime\"\xd5\x02\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
+	"expireTime\"\xdc\x02\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
 	"apiVersion2\x9b*\n" +
 	"\fWorkstations\x12\xcd\x01\n" +
 	"\x15GetWorkstationCluster\x12:.google.cloud.workstations.v1.GetWorkstationClusterRequest\x1a0.google.cloud.workstations.v1.WorkstationCluster\"F\xdaA\x04name\x82\xd3\xe4\x93\x029\x127/v1/{name=projects/*/locations/*/workstationClusters/*}\x12\xe0\x01\n" +

@@ -349,34 +349,34 @@ var File_google_ads_datamanager_v1_cart_data_proto protoreflect.FileDescriptor
 
 const file_google_ads_datamanager_v1_cart_data_proto_rawDesc = "" +
 	"\n" +
-	")google/ads/datamanager/v1/cart_data.proto\x12\x19google.ads.datamanager.v1\x1a.google/ads/datamanager/v1/item_parameter.proto\x1a\x1fgoogle/api/field_behavior.proto\"\xc5\x02\n" +
-	"\bCartData\x12$\n" +
-	"\vmerchant_id\x18\x01 \x01(\tB\x03\xe0A\x01R\n" +
-	"merchantId\x123\n" +
-	"\x13merchant_feed_label\x18\x02 \x01(\tB\x03\xe0A\x01R\x11merchantFeedLabel\x12B\n" +
-	"\x1bmerchant_feed_language_code\x18\x03 \x01(\tB\x03\xe0A\x01R\x18merchantFeedLanguageCode\x126\n" +
-	"\x14transaction_discount\x18\x04 \x01(\x01B\x03\xe0A\x01R\x13transactionDiscount\x12:\n" +
-	"\x05items\x18\x05 \x03(\v2\x1f.google.ads.datamanager.v1.ItemB\x03\xe0A\x01R\x05items\x12&\n" +
-	"\fcoupon_codes\x18\x06 \x03(\tB\x03\xe0A\x01R\vcouponCodes\"\xd3\x04\n" +
-	"\x04Item\x123\n" +
-	"\x13merchant_product_id\x18\x01 \x01(\tB\x03\xe0A\x01R\x11merchantProductId\x12\x1f\n" +
-	"\bquantity\x18\x02 \x01(\x03B\x03\xe0A\x01R\bquantity\x12\"\n" +
+	")google/ads/datamanager/v1/cart_data.proto\x12\x19google.ads.datamanager.v1\x1a.google/ads/datamanager/v1/item_parameter.proto\x1a\x1fgoogle/api/field_behavior.proto\"\xcb\x02\n" +
+	"\bCartData\x12%\n" +
+	"\vmerchant_id\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"merchantId\x124\n" +
+	"\x13merchant_feed_label\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x11merchantFeedLabel\x12C\n" +
+	"\x1bmerchant_feed_language_code\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x18merchantFeedLanguageCode\x127\n" +
+	"\x14transaction_discount\x18\x04 \x01(\x01B\x04\xe2A\x01\x01R\x13transactionDiscount\x12;\n" +
+	"\x05items\x18\x05 \x03(\v2\x1f.google.ads.datamanager.v1.ItemB\x04\xe2A\x01\x01R\x05items\x12'\n" +
+	"\fcoupon_codes\x18\x06 \x03(\tB\x04\xe2A\x01\x01R\vcouponCodes\"\xdd\x04\n" +
+	"\x04Item\x124\n" +
+	"\x13merchant_product_id\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x11merchantProductId\x12 \n" +
+	"\bquantity\x18\x02 \x01(\x03B\x04\xe2A\x01\x01R\bquantity\x12#\n" +
 	"\n" +
-	"unit_price\x18\x03 \x01(\x01B\x03\xe0A\x01R\tunitPrice\x12\x1c\n" +
-	"\aitem_id\x18\x04 \x01(\tB\x03\xe0A\x01R\x06itemId\x12k\n" +
-	"\x1aadditional_item_parameters\x18\x05 \x03(\v2(.google.ads.datamanager.v1.ItemParameterB\x03\xe0A\x01R\x18additionalItemParameters\x12$\n" +
-	"\vmerchant_id\x18\x06 \x01(\tB\x03\xe0A\x01R\n" +
-	"merchantId\x123\n" +
-	"\x13merchant_feed_label\x18\a \x01(\tB\x03\xe0A\x01R\x11merchantFeedLabel\x12B\n" +
-	"\x1bmerchant_feed_language_code\x18\b \x01(\tB\x03\xe0A\x01R\x18merchantFeedLanguageCode\x123\n" +
-	"\x10conversion_value\x18\t \x01(\x01B\x03\xe0A\x01H\x00R\x0fconversionValue\x88\x01\x01\x12]\n" +
+	"unit_price\x18\x03 \x01(\x01B\x04\xe2A\x01\x01R\tunitPrice\x12\x1d\n" +
+	"\aitem_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06itemId\x12l\n" +
+	"\x1aadditional_item_parameters\x18\x05 \x03(\v2(.google.ads.datamanager.v1.ItemParameterB\x04\xe2A\x01\x01R\x18additionalItemParameters\x12%\n" +
+	"\vmerchant_id\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"merchantId\x124\n" +
+	"\x13merchant_feed_label\x18\a \x01(\tB\x04\xe2A\x01\x01R\x11merchantFeedLabel\x12C\n" +
+	"\x1bmerchant_feed_language_code\x18\b \x01(\tB\x04\xe2A\x01\x01R\x18merchantFeedLanguageCode\x124\n" +
+	"\x10conversion_value\x18\t \x01(\x01B\x04\xe2A\x01\x01H\x00R\x0fconversionValue\x88\x01\x01\x12^\n" +
 	"\x10custom_variables\x18\n" +
-	" \x03(\v2-.google.ads.datamanager.v1.ItemCustomVariableB\x03\xe0A\x01R\x0fcustomVariablesB\x13\n" +
-	"\x11_conversion_value\"\x8c\x01\n" +
-	"\x12ItemCustomVariable\x12\x1f\n" +
-	"\bvariable\x18\x01 \x01(\tB\x03\xe0A\x01R\bvariable\x12\x19\n" +
-	"\x05value\x18\x02 \x01(\tB\x03\xe0A\x01R\x05value\x12:\n" +
-	"\x16destination_references\x18\x03 \x03(\tB\x03\xe0A\x01R\x15destinationReferencesB\xca\x01\n" +
+	" \x03(\v2-.google.ads.datamanager.v1.ItemCustomVariableB\x04\xe2A\x01\x01R\x0fcustomVariablesB\x13\n" +
+	"\x11_conversion_value\"\x8f\x01\n" +
+	"\x12ItemCustomVariable\x12 \n" +
+	"\bvariable\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\bvariable\x12\x1a\n" +
+	"\x05value\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x05value\x12;\n" +
+	"\x16destination_references\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x15destinationReferencesB\xca\x01\n" +
 	"\x1dcom.google.ads.datamanager.v1B\rCartDataProtoP\x01ZAcloud.google.com/go/datamanager/apiv1/datamanagerpb;datamanagerpb\xaa\x02\x19Google.Ads.DataManager.V1\xca\x02\x19Google\\Ads\\DataManager\\V1\xea\x02\x1cGoogle::Ads::DataManager::V1b\x06proto3"
 
 var (

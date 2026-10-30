@@ -118,12 +118,12 @@ var File_google_cloud_backupdr_v1_backupvault_ba_proto protoreflect.FileDescript
 
 const file_google_cloud_backupdr_v1_backupvault_ba_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/backupdr/v1/backupvault_ba.proto\x12\x18google.cloud.backupdr.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb7\x03\n" +
-	"\x1fBackupApplianceBackupProperties\x12-\n" +
-	"\rgeneration_id\x18\x01 \x01(\x05B\x03\xe0A\x03H\x00R\fgenerationId\x88\x01\x01\x12I\n" +
-	"\rfinalize_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03H\x01R\ffinalizeTime\x88\x01\x01\x12_\n" +
-	"\x19recovery_range_start_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01H\x02R\x16recoveryRangeStartTime\x88\x01\x01\x12[\n" +
-	"\x17recovery_range_end_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01H\x03R\x14recoveryRangeEndTime\x88\x01\x01B\x10\n" +
+	"-google/cloud/backupdr/v1/backupvault_ba.proto\x12\x18google.cloud.backupdr.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbb\x03\n" +
+	"\x1fBackupApplianceBackupProperties\x12.\n" +
+	"\rgeneration_id\x18\x01 \x01(\x05B\x04\xe2A\x01\x03H\x00R\fgenerationId\x88\x01\x01\x12J\n" +
+	"\rfinalize_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03H\x01R\ffinalizeTime\x88\x01\x01\x12`\n" +
+	"\x19recovery_range_start_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01H\x02R\x16recoveryRangeStartTime\x88\x01\x01\x12\\\n" +
+	"\x17recovery_range_end_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01H\x03R\x14recoveryRangeEndTime\x88\x01\x01B\x10\n" +
 	"\x0e_generation_idB\x10\n" +
 	"\x0e_finalize_timeB\x1c\n" +
 	"\x1a_recovery_range_start_timeB\x1a\n" +

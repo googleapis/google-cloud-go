@@ -383,6 +383,11 @@ func (c *regionHealthAggregationPoliciesRESTClient) AggregatedList(ctx context.C
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/aggregated/healthAggregationPolicies", req.GetProject())
 
 		params := url.Values{}
@@ -469,6 +474,13 @@ func (c *regionHealthAggregationPoliciesRESTClient) Delete(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetHealthAggregationPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/healthAggregationPolicies/%v", req.GetProject(), req.GetRegion(), req.GetHealthAggregationPolicy())
 
 	params := url.Values{}
@@ -533,6 +545,13 @@ func (c *regionHealthAggregationPoliciesRESTClient) Get(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetHealthAggregationPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/healthAggregationPolicies/%v", req.GetProject(), req.GetRegion(), req.GetHealthAggregationPolicy())
 
 	// Build HTTP headers from client and context metadata.
@@ -588,6 +607,12 @@ func (c *regionHealthAggregationPoliciesRESTClient) Insert(ctx context.Context, 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/healthAggregationPolicies", req.GetProject(), req.GetRegion())
@@ -665,6 +690,12 @@ func (c *regionHealthAggregationPoliciesRESTClient) List(ctx context.Context, re
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/healthAggregationPolicies", req.GetProject(), req.GetRegion())
@@ -750,6 +781,13 @@ func (c *regionHealthAggregationPoliciesRESTClient) Patch(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetHealthAggregationPolicy(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/healthAggregationPolicies/%v", req.GetProject(), req.GetRegion(), req.GetHealthAggregationPolicy())
 
 	params := url.Values{}
@@ -819,6 +857,13 @@ func (c *regionHealthAggregationPoliciesRESTClient) TestIamPermissions(ctx conte
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/healthAggregationPolicies/%v/testIamPermissions", req.GetProject(), req.GetRegion(), req.GetResource())

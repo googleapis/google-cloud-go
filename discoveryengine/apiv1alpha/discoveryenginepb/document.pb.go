@@ -655,23 +655,23 @@ var File_google_cloud_discoveryengine_v1alpha_document_proto protoreflect.FileDe
 
 const file_google_cloud_discoveryengine_v1alpha_document_proto_rawDesc = "" +
 	"\n" +
-	"3google/cloud/discoveryengine/v1alpha/document.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a1google/cloud/discoveryengine/v1alpha/common.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xf1\n" +
+	"3google/cloud/discoveryengine/v1alpha/document.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a1google/cloud/discoveryengine/v1alpha/common.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xf6\n" +
 	"\n" +
 	"\bDocument\x12:\n" +
 	"\vstruct_data\x18\x04 \x01(\v2\x17.google.protobuf.StructH\x00R\n" +
 	"structData\x12\x1d\n" +
-	"\tjson_data\x18\x05 \x01(\tH\x00R\bjsonData\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12\x13\n" +
-	"\x02id\x18\x02 \x01(\tB\x03\xe0A\x05R\x02id\x12\x1b\n" +
+	"\tjson_data\x18\x05 \x01(\tH\x00R\bjsonData\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12\x14\n" +
+	"\x02id\x18\x02 \x01(\tB\x04\xe2A\x01\x05R\x02id\x12\x1b\n" +
 	"\tschema_id\x18\x03 \x01(\tR\bschemaId\x12P\n" +
 	"\acontent\x18\n" +
 	" \x01(\v26.google.cloud.discoveryengine.v1alpha.Document.ContentR\acontent\x12,\n" +
-	"\x12parent_document_id\x18\a \x01(\tR\x10parentDocumentId\x12L\n" +
-	"\x13derived_struct_data\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x03R\x11derivedStructData\x12Q\n" +
-	"\bacl_info\x18\v \x01(\v26.google.cloud.discoveryengine.v1alpha.Document.AclInfoR\aaclInfo\x12>\n" +
+	"\x12parent_document_id\x18\a \x01(\tR\x10parentDocumentId\x12M\n" +
+	"\x13derived_struct_data\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x03R\x11derivedStructData\x12Q\n" +
+	"\bacl_info\x18\v \x01(\v26.google.cloud.discoveryengine.v1alpha.Document.AclInfoR\aaclInfo\x12?\n" +
 	"\n" +
-	"index_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tindexTime\x12b\n" +
-	"\findex_status\x18\x0f \x01(\v2:.google.cloud.discoveryengine.v1alpha.Document.IndexStatusB\x03\xe0A\x03R\vindexStatus\x1ad\n" +
+	"index_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tindexTime\x12c\n" +
+	"\findex_status\x18\x0f \x01(\v2:.google.cloud.discoveryengine.v1alpha.Document.IndexStatusB\x04\xe2A\x01\x03R\vindexStatus\x1ad\n" +
 	"\aContent\x12\x1d\n" +
 	"\traw_bytes\x18\x02 \x01(\fH\x00R\brawBytes\x12\x12\n" +
 	"\x03uri\x18\x03 \x01(\tH\x00R\x03uri\x12\x1b\n" +
@@ -689,10 +689,10 @@ const file_google_cloud_discoveryengine_v1alpha_document_proto_rawDesc = "" +
 	"index_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\tindexTime\x127\n" +
 	"\rerror_samples\x18\x02 \x03(\v2\x12.google.rpc.StatusR\ferrorSamples:\x96\x02\xeaA\x92\x02\n" +
 	"'discoveryengine.googleapis.com/Document\x12fprojects/{project}/locations/{location}/dataStores/{data_store}/branches/{branch}/documents/{document}\x12\x7fprojects/{project}/locations/{location}/collections/{collection}/dataStores/{data_store}/branches/{branch}/documents/{document}B\x06\n" +
-	"\x04data\"\x98\x01\n" +
+	"\x04data\"\x99\x01\n" +
 	"\x11ProcessedDocument\x12\x1d\n" +
-	"\tjson_data\x18\x02 \x01(\tH\x00R\bjsonData\x12K\n" +
-	"\bdocument\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
+	"\tjson_data\x18\x02 \x01(\tH\x00R\bjsonData\x12L\n" +
+	"\bdocument\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
 	"'discoveryengine.googleapis.com/DocumentR\bdocumentB\x17\n" +
 	"\x15processed_data_formatB\x99\x02\n" +
 	"(com.google.cloud.discoveryengine.v1alphaB\rDocumentProtoP\x01ZRcloud.google.com/go/discoveryengine/apiv1alpha/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02$Google.Cloud.DiscoveryEngine.V1Alpha\xca\x02$Google\\Cloud\\DiscoveryEngine\\V1alpha\xea\x02'Google::Cloud::DiscoveryEngine::V1alphab\x06proto3"

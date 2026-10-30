@@ -599,30 +599,30 @@ var File_google_shopping_merchant_accounts_v1beta_checkoutsettings_proto protore
 
 const file_google_shopping_merchant_accounts_v1beta_checkoutsettings_proto_rawDesc = "" +
 	"\n" +
-	"?google/shopping/merchant/accounts/v1beta/checkoutsettings.proto\x12(google.shopping.merchant.accounts.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a google/shopping/type/types.proto\"e\n" +
-	"\x1aGetCheckoutSettingsRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+merchantapi.googleapis.com/CheckoutSettingsR\x04name\"\xda\x01\n" +
-	"\x1dCreateCheckoutSettingsRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+merchantapi.googleapis.com/CheckoutSettingsR\x06parent\x12l\n" +
-	"\x11checkout_settings\x18\x02 \x01(\v2:.google.shopping.merchant.accounts.v1beta.CheckoutSettingsB\x03\xe0A\x02R\x10checkoutSettings\"\xcf\x01\n" +
-	"\x1dUpdateCheckoutSettingsRequest\x12l\n" +
-	"\x11checkout_settings\x18\x01 \x01(\v2:.google.shopping.merchant.accounts.v1beta.CheckoutSettingsB\x03\xe0A\x02R\x10checkoutSettings\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"h\n" +
-	"\x1dDeleteCheckoutSettingsRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+merchantapi.googleapis.com/CheckoutSettingsR\x04name\"\xf4\n" +
+	"?google/shopping/merchant/accounts/v1beta/checkoutsettings.proto\x12(google.shopping.merchant.accounts.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a google/shopping/type/types.proto\"f\n" +
+	"\x1aGetCheckoutSettingsRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+merchantapi.googleapis.com/CheckoutSettingsR\x04name\"\xdc\x01\n" +
+	"\x1dCreateCheckoutSettingsRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+merchantapi.googleapis.com/CheckoutSettingsR\x06parent\x12m\n" +
+	"\x11checkout_settings\x18\x02 \x01(\v2:.google.shopping.merchant.accounts.v1beta.CheckoutSettingsB\x04\xe2A\x01\x02R\x10checkoutSettings\"\xd1\x01\n" +
+	"\x1dUpdateCheckoutSettingsRequest\x12m\n" +
+	"\x11checkout_settings\x18\x01 \x01(\v2:.google.shopping.merchant.accounts.v1beta.CheckoutSettingsB\x04\xe2A\x01\x02R\x10checkoutSettings\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"i\n" +
+	"\x1dDeleteCheckoutSettingsRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+merchantapi.googleapis.com/CheckoutSettingsR\x04name\"\xfb\n" +
 	"\n" +
-	"\x10CheckoutSettings\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12]\n" +
-	"\furi_settings\x18\x02 \x01(\v25.google.shopping.merchant.accounts.v1beta.UriSettingsH\x00R\vuriSettings\x88\x01\x01\x12k\n" +
-	"\x15eligible_destinations\x18\b \x03(\x0e21.google.shopping.type.Destination.DestinationEnumB\x03\xe0A\x01R\x14eligibleDestinations\x12\x87\x01\n" +
-	"\x10enrollment_state\x18\x03 \x01(\x0e2R.google.shopping.merchant.accounts.v1beta.CheckoutSettings.CheckoutEnrollmentStateB\x03\xe0A\x03H\x01R\x0fenrollmentState\x88\x01\x01\x12{\n" +
-	"\freview_state\x18\x04 \x01(\x0e2N.google.shopping.merchant.accounts.v1beta.CheckoutSettings.CheckoutReviewStateB\x03\xe0A\x03H\x02R\vreviewState\x88\x01\x01\x12p\n" +
-	"\x16effective_uri_settings\x18\x05 \x01(\v25.google.shopping.merchant.accounts.v1beta.UriSettingsB\x03\xe0A\x03R\x14effectiveUriSettings\x12\x9a\x01\n" +
-	"\x1aeffective_enrollment_state\x18\x06 \x01(\x0e2R.google.shopping.merchant.accounts.v1beta.CheckoutSettings.CheckoutEnrollmentStateB\x03\xe0A\x03H\x03R\x18effectiveEnrollmentState\x88\x01\x01\x12\x8e\x01\n" +
-	"\x16effective_review_state\x18\a \x01(\x0e2N.google.shopping.merchant.accounts.v1beta.CheckoutSettings.CheckoutReviewStateB\x03\xe0A\x03H\x04R\x14effectiveReviewState\x88\x01\x01\"o\n" +
+	"\x10CheckoutSettings\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12]\n" +
+	"\furi_settings\x18\x02 \x01(\v25.google.shopping.merchant.accounts.v1beta.UriSettingsH\x00R\vuriSettings\x88\x01\x01\x12l\n" +
+	"\x15eligible_destinations\x18\b \x03(\x0e21.google.shopping.type.Destination.DestinationEnumB\x04\xe2A\x01\x01R\x14eligibleDestinations\x12\x88\x01\n" +
+	"\x10enrollment_state\x18\x03 \x01(\x0e2R.google.shopping.merchant.accounts.v1beta.CheckoutSettings.CheckoutEnrollmentStateB\x04\xe2A\x01\x03H\x01R\x0fenrollmentState\x88\x01\x01\x12|\n" +
+	"\freview_state\x18\x04 \x01(\x0e2N.google.shopping.merchant.accounts.v1beta.CheckoutSettings.CheckoutReviewStateB\x04\xe2A\x01\x03H\x02R\vreviewState\x88\x01\x01\x12q\n" +
+	"\x16effective_uri_settings\x18\x05 \x01(\v25.google.shopping.merchant.accounts.v1beta.UriSettingsB\x04\xe2A\x01\x03R\x14effectiveUriSettings\x12\x9b\x01\n" +
+	"\x1aeffective_enrollment_state\x18\x06 \x01(\x0e2R.google.shopping.merchant.accounts.v1beta.CheckoutSettings.CheckoutEnrollmentStateB\x04\xe2A\x01\x03H\x03R\x18effectiveEnrollmentState\x88\x01\x01\x12\x8f\x01\n" +
+	"\x16effective_review_state\x18\a \x01(\x0e2N.google.shopping.merchant.accounts.v1beta.CheckoutSettings.CheckoutReviewStateB\x04\xe2A\x01\x03H\x04R\x14effectiveReviewState\x88\x01\x01\"o\n" +
 	"\x17CheckoutEnrollmentState\x12)\n" +
 	"%CHECKOUT_ENROLLMENT_STATE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bINACTIVE\x10\x01\x12\f\n" +

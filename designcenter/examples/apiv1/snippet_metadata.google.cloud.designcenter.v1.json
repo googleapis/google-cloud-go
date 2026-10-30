@@ -1,0 +1,4101 @@
+{
+  "clientLibrary": {
+    "apis": [
+      {
+        "id": "google.cloud.designcenter.v1",
+        "version": "v1"
+      }
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/designcenter/apiv1",
+    "version": "0.1.0"
+  },
+  "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/CancelOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_CancelOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter CancelOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.CommitApplicationTemplate",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.CommitApplicationTemplate",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "CommitApplicationTemplate"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.CommitApplicationTemplateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*designcenterpb.ApplicationTemplateRevision",
+        "shortName": "CommitApplicationTemplate"
+      },
+      "description": "CommitApplicationTemplate commits an application template to create a new revision.",
+      "file": "Client/CommitApplicationTemplate/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_CommitApplicationTemplate_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter CommitApplicationTemplate Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.CreateApplication",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.CreateApplication",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "CreateApplication"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.CreateApplicationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*designcenterpb.Application",
+        "shortName": "CreateApplication"
+      },
+      "description": "CreateApplication creates an application.",
+      "file": "Client/CreateApplication/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_CreateApplication_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter CreateApplication Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.CreateApplicationTemplate",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.CreateApplicationTemplate",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "CreateApplicationTemplate"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.CreateApplicationTemplateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*designcenterpb.ApplicationTemplate",
+        "shortName": "CreateApplicationTemplate"
+      },
+      "description": "CreateApplicationTemplate creates an application template.",
+      "file": "Client/CreateApplicationTemplate/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_CreateApplicationTemplate_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter CreateApplicationTemplate Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.CreateCatalog",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.CreateCatalog",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "CreateCatalog"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.CreateCatalogRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*designcenterpb.Catalog",
+        "shortName": "CreateCatalog"
+      },
+      "description": "CreateCatalog creates a catalog.",
+      "file": "Client/CreateCatalog/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_CreateCatalog_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter CreateCatalog Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.CreateCatalogTemplate",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.CreateCatalogTemplate",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "CreateCatalogTemplate"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.CreateCatalogTemplateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*designcenterpb.CatalogTemplate",
+        "shortName": "CreateCatalogTemplate"
+      },
+      "description": "CreateCatalogTemplate adds a template to a catalog.",
+      "file": "Client/CreateCatalogTemplate/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_CreateCatalogTemplate_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter CreateCatalogTemplate Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.CreateCatalogTemplateRevision",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.CreateCatalogTemplateRevision",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "CreateCatalogTemplateRevision"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.CreateCatalogTemplateRevisionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateCatalogTemplateRevisionOperation",
+        "shortName": "CreateCatalogTemplateRevision"
+      },
+      "description": "CreateCatalogTemplateRevision creates a template revision.",
+      "file": "Client/CreateCatalogTemplateRevision/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_CreateCatalogTemplateRevision_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter CreateCatalogTemplateRevision Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.CreateComponent",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.CreateComponent",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "CreateComponent"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.CreateComponentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*designcenterpb.Component",
+        "shortName": "CreateComponent"
+      },
+      "description": "CreateComponent creates a component.",
+      "file": "Client/CreateComponent/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_CreateComponent_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter CreateComponent Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.CreateConnection",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.CreateConnection",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "CreateConnection"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.CreateConnectionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*designcenterpb.Connection",
+        "shortName": "CreateConnection"
+      },
+      "description": "CreateConnection creates a connection.",
+      "file": "Client/CreateConnection/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_CreateConnection_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter CreateConnection Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.CreatePolicy",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.CreatePolicy",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "CreatePolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.CreatePolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*designcenterpb.Policy",
+        "shortName": "CreatePolicy"
+      },
+      "description": "CreatePolicy creates a policy for an application template.",
+      "file": "Client/CreatePolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_CreatePolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter CreatePolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.CreateShare",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.CreateShare",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "CreateShare"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.CreateShareRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateShareOperation",
+        "shortName": "CreateShare"
+      },
+      "description": "CreateShare shares a catalog from one space to another space.",
+      "file": "Client/CreateShare/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_CreateShare_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter CreateShare Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.CreateSpace",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.CreateSpace",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "CreateSpace"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.CreateSpaceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*designcenterpb.Space",
+        "shortName": "CreateSpace"
+      },
+      "description": "CreateSpace creates a space.",
+      "file": "Client/CreateSpace/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_CreateSpace_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter CreateSpace Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.DeleteApplication",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.DeleteApplication",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "DeleteApplication"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.DeleteApplicationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteApplicationOperation",
+        "shortName": "DeleteApplication"
+      },
+      "description": "DeleteApplication deletes an application.",
+      "file": "Client/DeleteApplication/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_DeleteApplication_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter DeleteApplication Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.DeleteApplicationTemplate",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.DeleteApplicationTemplate",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "DeleteApplicationTemplate"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.DeleteApplicationTemplateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteApplicationTemplate"
+      },
+      "description": "DeleteApplicationTemplate deletes an application template.",
+      "file": "Client/DeleteApplicationTemplate/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_DeleteApplicationTemplate_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter DeleteApplicationTemplate Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.DeleteApplicationTemplateRevision",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.DeleteApplicationTemplateRevision",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "DeleteApplicationTemplateRevision"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.DeleteApplicationTemplateRevisionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteApplicationTemplateRevision"
+      },
+      "description": "DeleteApplicationTemplateRevision deletes an application template revision.",
+      "file": "Client/DeleteApplicationTemplateRevision/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_DeleteApplicationTemplateRevision_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter DeleteApplicationTemplateRevision Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.DeleteCatalog",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.DeleteCatalog",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "DeleteCatalog"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.DeleteCatalogRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteCatalogOperation",
+        "shortName": "DeleteCatalog"
+      },
+      "description": "DeleteCatalog deletes a catalog.",
+      "file": "Client/DeleteCatalog/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_DeleteCatalog_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter DeleteCatalog Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.DeleteCatalogTemplate",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.DeleteCatalogTemplate",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "DeleteCatalogTemplate"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.DeleteCatalogTemplateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteCatalogTemplateOperation",
+        "shortName": "DeleteCatalogTemplate"
+      },
+      "description": "DeleteCatalogTemplate deletes a catalog template.",
+      "file": "Client/DeleteCatalogTemplate/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_DeleteCatalogTemplate_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter DeleteCatalogTemplate Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.DeleteCatalogTemplateRevision",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.DeleteCatalogTemplateRevision",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "DeleteCatalogTemplateRevision"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.DeleteCatalogTemplateRevisionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteCatalogTemplateRevisionOperation",
+        "shortName": "DeleteCatalogTemplateRevision"
+      },
+      "description": "DeleteCatalogTemplateRevision deletes a template revision.",
+      "file": "Client/DeleteCatalogTemplateRevision/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_DeleteCatalogTemplateRevision_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter DeleteCatalogTemplateRevision Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.DeleteComponent",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.DeleteComponent",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "DeleteComponent"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.DeleteComponentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteComponent"
+      },
+      "description": "DeleteComponent deletes a component.",
+      "file": "Client/DeleteComponent/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_DeleteComponent_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter DeleteComponent Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.DeleteConnection",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.DeleteConnection",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "DeleteConnection"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.DeleteConnectionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteConnection"
+      },
+      "description": "DeleteConnection deletes a connection.",
+      "file": "Client/DeleteConnection/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_DeleteConnection_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter DeleteConnection Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/DeleteOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_DeleteOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter DeleteOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.DeletePolicy",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.DeletePolicy",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "DeletePolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.DeletePolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeletePolicy"
+      },
+      "description": "DeletePolicy deletes a policy.",
+      "file": "Client/DeletePolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_DeletePolicy_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter DeletePolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.DeleteShare",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.DeleteShare",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "DeleteShare"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.DeleteShareRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteShareOperation",
+        "shortName": "DeleteShare"
+      },
+      "description": "DeleteShare deletes a catalog share.",
+      "file": "Client/DeleteShare/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_DeleteShare_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter DeleteShare Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.DeleteSpace",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.DeleteSpace",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "DeleteSpace"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.DeleteSpaceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteSpace"
+      },
+      "description": "DeleteSpace deletes a space.",
+      "file": "Client/DeleteSpace/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_DeleteSpace_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter DeleteSpace Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.DeployApplication",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.DeployApplication",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "DeployApplication"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.DeployApplicationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeployApplicationOperation",
+        "shortName": "DeployApplication"
+      },
+      "description": "DeployApplication deploys an application.",
+      "file": "Client/DeployApplication/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_DeployApplication_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter DeployApplication Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.ExportApplicationIaC",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.ExportApplicationIaC",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "ExportApplicationIaC"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.ExportApplicationIaCRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ExportApplicationIaCOperation",
+        "shortName": "ExportApplicationIaC"
+      },
+      "description": "ExportApplicationIaC exports Terraform files for an application asynchronously.",
+      "file": "Client/ExportApplicationIaC/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_ExportApplicationIaC_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter ExportApplicationIaC Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.ExportApplicationTemplateIaC",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.ExportApplicationTemplateIaC",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "ExportApplicationTemplateIaC"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.ExportApplicationTemplateIaCRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ExportApplicationTemplateIaCOperation",
+        "shortName": "ExportApplicationTemplateIaC"
+      },
+      "description": "ExportApplicationTemplateIaC exports Terraform files for an application template. The generated\nmodules can have remote sources or local sources downloaded from remote.\nThis is an ASYNCHRONOUS operation that returns a Long Running Operation.",
+      "file": "Client/ExportApplicationTemplateIaC/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_ExportApplicationTemplateIaC_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter ExportApplicationTemplateIaC Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.ExportApplicationTemplateRevisionIaC",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.ExportApplicationTemplateRevisionIaC",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "ExportApplicationTemplateRevisionIaC"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.ExportApplicationTemplateRevisionIaCRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ExportApplicationTemplateRevisionIaCOperation",
+        "shortName": "ExportApplicationTemplateRevisionIaC"
+      },
+      "description": "ExportApplicationTemplateRevisionIaC exports Terraform files for an application template revision. The generated\nmodules can have remote sources or local sources downloaded from remote.\nThis is an ASYNCHRONOUS operation that returns a Long Running Operation.",
+      "file": "Client/ExportApplicationTemplateRevisionIaC/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_ExportApplicationTemplateRevisionIaC_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter ExportApplicationTemplateRevisionIaC Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.FetchApplicationAssessmentReport",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.FetchApplicationAssessmentReport",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "FetchApplicationAssessmentReport"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.FetchApplicationAssessmentReportRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*designcenterpb.FetchApplicationAssessmentReportResponse",
+        "shortName": "FetchApplicationAssessmentReport"
+      },
+      "description": "FetchApplicationAssessmentReport fetches the assessment report of a deployed application if present.",
+      "file": "Client/FetchApplicationAssessmentReport/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_FetchApplicationAssessmentReport_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter FetchApplicationAssessmentReport Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.FetchFrameworks",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.FetchFrameworks",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "FetchFrameworks"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.FetchFrameworksRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "FrameworkIterator",
+        "shortName": "FetchFrameworks"
+      },
+      "description": "FetchFrameworks fetches all frameworks for assessment report.",
+      "file": "Client/FetchFrameworks/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_FetchFrameworks_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter FetchFrameworks Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.GenerateApplicationAssessmentReport",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.GenerateApplicationAssessmentReport",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "GenerateApplicationAssessmentReport"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.GenerateApplicationAssessmentReportRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "GenerateApplicationAssessmentReportOperation",
+        "shortName": "GenerateApplicationAssessmentReport"
+      },
+      "description": "GenerateApplicationAssessmentReport generate Assessment Reports of an application.",
+      "file": "Client/GenerateApplicationAssessmentReport/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_GenerateApplicationAssessmentReport_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter GenerateApplicationAssessmentReport Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.GenerateApplicationIaC",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.GenerateApplicationIaC",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "GenerateApplicationIaC"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.GenerateApplicationIaCRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*designcenterpb.GenerateApplicationIaCResponse",
+        "shortName": "GenerateApplicationIaC"
+      },
+      "description": "GenerateApplicationIaC generates Terraform files for an application.",
+      "file": "Client/GenerateApplicationIaC/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_GenerateApplicationIaC_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter GenerateApplicationIaC Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.GenerateApplicationTemplateAssessmentReport",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.GenerateApplicationTemplateAssessmentReport",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "GenerateApplicationTemplateAssessmentReport"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.GenerateApplicationTemplateAssessmentReportRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "GenerateApplicationTemplateAssessmentReportOperation",
+        "shortName": "GenerateApplicationTemplateAssessmentReport"
+      },
+      "description": "GenerateApplicationTemplateAssessmentReport generate Assessment Reports of an application template.",
+      "file": "Client/GenerateApplicationTemplateAssessmentReport/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_GenerateApplicationTemplateAssessmentReport_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter GenerateApplicationTemplateAssessmentReport Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.GenerateApplicationTemplateIaC",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.GenerateApplicationTemplateIaC",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "GenerateApplicationTemplateIaC"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.GenerateApplicationTemplateIaCRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*designcenterpb.GenerateApplicationTemplateIaCResponse",
+        "shortName": "GenerateApplicationTemplateIaC"
+      },
+      "description": "GenerateApplicationTemplateIaC generates Terraform files for an application template.\nThis is a SYNCHRONOUS operation and returns the generated IaC\ndirectly in the response. It\ndoes NOT download external module sources; it only uses remote sources.",
+      "file": "Client/GenerateApplicationTemplateIaC/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_GenerateApplicationTemplateIaC_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter GenerateApplicationTemplateIaC Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.GenerateApplicationTemplateRevisionIaC",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.GenerateApplicationTemplateRevisionIaC",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "GenerateApplicationTemplateRevisionIaC"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.GenerateApplicationTemplateRevisionIaCRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*designcenterpb.GenerateApplicationTemplateRevisionIaCResponse",
+        "shortName": "GenerateApplicationTemplateRevisionIaC"
+      },
+      "description": "GenerateApplicationTemplateRevisionIaC generates Terraform files for an application template revision.\nThis is a SYNCHRONOUS operation and returns the generated IaC\ndirectly in the response. It\ndoes NOT download external module sources; it only uses remote sources.",
+      "file": "Client/GenerateApplicationTemplateRevisionIaC/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_GenerateApplicationTemplateRevisionIaC_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter GenerateApplicationTemplateRevisionIaC Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.GenerateAssessmentReport",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.GenerateAssessmentReport",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "GenerateAssessmentReport"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.GenerateAssessmentReportRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "GenerateAssessmentReportOperation",
+        "shortName": "GenerateAssessmentReport"
+      },
+      "description": "GenerateAssessmentReport deprecated: Use GenerateTerraformPlanAssessmentReport instead.\n\nGenerate a best practice report for a given Terraform plan.\n\n\nDeprecated: GenerateAssessmentReport may be removed in a future version.",
+      "file": "Client/GenerateAssessmentReport/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_GenerateAssessmentReport_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter GenerateAssessmentReport Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.GenerateTerraformPlanAssessmentReport",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.GenerateTerraformPlanAssessmentReport",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "GenerateTerraformPlanAssessmentReport"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.GenerateTerraformPlanAssessmentReportRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "GenerateTerraformPlanAssessmentReportOperation",
+        "shortName": "GenerateTerraformPlanAssessmentReport"
+      },
+      "description": "GenerateTerraformPlanAssessmentReport generate a Terraform plan assessment report for a given Terraform plan.",
+      "file": "Client/GenerateTerraformPlanAssessmentReport/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_GenerateTerraformPlanAssessmentReport_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter GenerateTerraformPlanAssessmentReport Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.GetApplication",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.GetApplication",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "GetApplication"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.GetApplicationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*designcenterpb.Application",
+        "shortName": "GetApplication"
+      },
+      "description": "GetApplication gets details about an application.",
+      "file": "Client/GetApplication/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_GetApplication_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter GetApplication Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.GetApplicationTemplate",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.GetApplicationTemplate",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "GetApplicationTemplate"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.GetApplicationTemplateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*designcenterpb.ApplicationTemplate",
+        "shortName": "GetApplicationTemplate"
+      },
+      "description": "GetApplicationTemplate gets details about an application template.",
+      "file": "Client/GetApplicationTemplate/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_GetApplicationTemplate_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter GetApplicationTemplate Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.GetApplicationTemplateRevision",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.GetApplicationTemplateRevision",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "GetApplicationTemplateRevision"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.GetApplicationTemplateRevisionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*designcenterpb.ApplicationTemplateRevision",
+        "shortName": "GetApplicationTemplateRevision"
+      },
+      "description": "GetApplicationTemplateRevision gets details about an application template revision.",
+      "file": "Client/GetApplicationTemplateRevision/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_GetApplicationTemplateRevision_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter GetApplicationTemplateRevision Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.GetApplicationTemplateSystemRevision",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.GetApplicationTemplateSystemRevision",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "GetApplicationTemplateSystemRevision"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.GetApplicationTemplateSystemRevisionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*designcenterpb.ApplicationTemplateSystemRevision",
+        "shortName": "GetApplicationTemplateSystemRevision"
+      },
+      "description": "GetApplicationTemplateSystemRevision gets the given application template system revision.",
+      "file": "Client/GetApplicationTemplateSystemRevision/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_GetApplicationTemplateSystemRevision_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter GetApplicationTemplateSystemRevision Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.GetCatalog",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.GetCatalog",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "GetCatalog"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.GetCatalogRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*designcenterpb.Catalog",
+        "shortName": "GetCatalog"
+      },
+      "description": "GetCatalog gets details about a catalog.",
+      "file": "Client/GetCatalog/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_GetCatalog_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter GetCatalog Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.GetCatalogTemplate",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.GetCatalogTemplate",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "GetCatalogTemplate"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.GetCatalogTemplateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*designcenterpb.CatalogTemplate",
+        "shortName": "GetCatalogTemplate"
+      },
+      "description": "GetCatalogTemplate gets a catalog template.",
+      "file": "Client/GetCatalogTemplate/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_GetCatalogTemplate_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter GetCatalogTemplate Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.GetCatalogTemplateRevision",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.GetCatalogTemplateRevision",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "GetCatalogTemplateRevision"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.GetCatalogTemplateRevisionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*designcenterpb.CatalogTemplateRevision",
+        "shortName": "GetCatalogTemplateRevision"
+      },
+      "description": "GetCatalogTemplateRevision gets details about a template revision.",
+      "file": "Client/GetCatalogTemplateRevision/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_GetCatalogTemplateRevision_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter GetCatalogTemplateRevision Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.GetComponent",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.GetComponent",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "GetComponent"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.GetComponentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*designcenterpb.Component",
+        "shortName": "GetComponent"
+      },
+      "description": "GetComponent gets details about a Component.",
+      "file": "Client/GetComponent/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_GetComponent_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter GetComponent Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.GetConnection",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.GetConnection",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "GetConnection"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.GetConnectionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*designcenterpb.Connection",
+        "shortName": "GetConnection"
+      },
+      "description": "GetConnection gets details about a connection.",
+      "file": "Client/GetConnection/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_GetConnection_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter GetConnection Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.GetIamPolicy",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "GetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.GetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "GetIamPolicy"
+      },
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "Client/GetIamPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_GetIamPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter GetIamPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "shortName": "GetLocation"
+      },
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_GetLocation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter GetLocation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_GetOperation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter GetOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.GetPolicy",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.GetPolicy",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "GetPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.GetPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*designcenterpb.Policy",
+        "shortName": "GetPolicy"
+      },
+      "description": "GetPolicy policy related APIs.\nGet a policy for an application template.",
+      "file": "Client/GetPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_GetPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter GetPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.GetShare",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.GetShare",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "GetShare"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.GetShareRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*designcenterpb.Share",
+        "shortName": "GetShare"
+      },
+      "description": "GetShare get catalog share object for the space.",
+      "file": "Client/GetShare/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_GetShare_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter GetShare Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.GetSharedTemplate",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.GetSharedTemplate",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "GetSharedTemplate"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.GetSharedTemplateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*designcenterpb.SharedTemplate",
+        "shortName": "GetSharedTemplate"
+      },
+      "description": "GetSharedTemplate gets details about a shared template.",
+      "file": "Client/GetSharedTemplate/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_GetSharedTemplate_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter GetSharedTemplate Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.GetSharedTemplateRevision",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.GetSharedTemplateRevision",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "GetSharedTemplateRevision"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.GetSharedTemplateRevisionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*designcenterpb.SharedTemplateRevision",
+        "shortName": "GetSharedTemplateRevision"
+      },
+      "description": "GetSharedTemplateRevision gets details about a shared template revision.",
+      "file": "Client/GetSharedTemplateRevision/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_GetSharedTemplateRevision_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter GetSharedTemplateRevision Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.GetSpace",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.GetSpace",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "GetSpace"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.GetSpaceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*designcenterpb.Space",
+        "shortName": "GetSpace"
+      },
+      "description": "GetSpace gets details about a space.",
+      "file": "Client/GetSpace/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_GetSpace_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter GetSpace Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.ImportApplicationIaC",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.ImportApplicationIaC",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "ImportApplicationIaC"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.ImportApplicationIaCRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*designcenterpb.ImportApplicationIaCResponse",
+        "shortName": "ImportApplicationIaC"
+      },
+      "description": "ImportApplicationIaC imports IaC for an application resource.",
+      "file": "Client/ImportApplicationIaC/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_ImportApplicationIaC_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter ImportApplicationIaC Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.ImportApplicationTemplate",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.ImportApplicationTemplate",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "ImportApplicationTemplate"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.ImportApplicationTemplateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*designcenterpb.ApplicationTemplate",
+        "shortName": "ImportApplicationTemplate"
+      },
+      "description": "ImportApplicationTemplate imports to an existing application template from a given shared template.",
+      "file": "Client/ImportApplicationTemplate/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_ImportApplicationTemplate_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter ImportApplicationTemplate Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.ImportApplicationTemplateIaC",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.ImportApplicationTemplateIaC",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "ImportApplicationTemplateIaC"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.ImportApplicationTemplateIaCRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*designcenterpb.ImportApplicationTemplateIaCResponse",
+        "shortName": "ImportApplicationTemplateIaC"
+      },
+      "description": "ImportApplicationTemplateIaC imports IaC for an application template.",
+      "file": "Client/ImportApplicationTemplateIaC/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_ImportApplicationTemplateIaC_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter ImportApplicationTemplateIaC Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.IngestApplicationTemplateIaC",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.IngestApplicationTemplateIaC",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "IngestApplicationTemplateIaC"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.IngestApplicationTemplateIaCRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "IngestApplicationTemplateIaCOperation",
+        "shortName": "IngestApplicationTemplateIaC"
+      },
+      "description": "IngestApplicationTemplateIaC ingests IaC for an application template asynchronously.",
+      "file": "Client/IngestApplicationTemplateIaC/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_IngestApplicationTemplateIaC_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter IngestApplicationTemplateIaC Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.ListApplicationTemplateRevisions",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.ListApplicationTemplateRevisions",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "ListApplicationTemplateRevisions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.ListApplicationTemplateRevisionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ApplicationTemplateRevisionIterator",
+        "shortName": "ListApplicationTemplateRevisions"
+      },
+      "description": "ListApplicationTemplateRevisions lists application template revisions in a given application template.",
+      "file": "Client/ListApplicationTemplateRevisions/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_ListApplicationTemplateRevisions_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter ListApplicationTemplateRevisions Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.ListApplicationTemplateSystemRevisions",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.ListApplicationTemplateSystemRevisions",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "ListApplicationTemplateSystemRevisions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.ListApplicationTemplateSystemRevisionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ApplicationTemplateSystemRevisionIterator",
+        "shortName": "ListApplicationTemplateSystemRevisions"
+      },
+      "description": "ListApplicationTemplateSystemRevisions lists application template system revisions in a given application\ntemplate.",
+      "file": "Client/ListApplicationTemplateSystemRevisions/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_ListApplicationTemplateSystemRevisions_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter ListApplicationTemplateSystemRevisions Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.ListApplicationTemplates",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.ListApplicationTemplates",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "ListApplicationTemplates"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.ListApplicationTemplatesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ApplicationTemplateIterator",
+        "shortName": "ListApplicationTemplates"
+      },
+      "description": "ListApplicationTemplates lists application templates in a given space.",
+      "file": "Client/ListApplicationTemplates/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_ListApplicationTemplates_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter ListApplicationTemplates Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.ListApplications",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.ListApplications",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "ListApplications"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.ListApplicationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ApplicationIterator",
+        "shortName": "ListApplications"
+      },
+      "description": "ListApplications lists applications in a given space.",
+      "file": "Client/ListApplications/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_ListApplications_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter ListApplications Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.ListCatalogTemplateRevisions",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.ListCatalogTemplateRevisions",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "ListCatalogTemplateRevisions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.ListCatalogTemplateRevisionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CatalogTemplateRevisionIterator",
+        "shortName": "ListCatalogTemplateRevisions"
+      },
+      "description": "ListCatalogTemplateRevisions lists template revisions.",
+      "file": "Client/ListCatalogTemplateRevisions/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_ListCatalogTemplateRevisions_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter ListCatalogTemplateRevisions Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.ListCatalogTemplates",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.ListCatalogTemplates",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "ListCatalogTemplates"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.ListCatalogTemplatesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CatalogTemplateIterator",
+        "shortName": "ListCatalogTemplates"
+      },
+      "description": "ListCatalogTemplates lists catalog templates.",
+      "file": "Client/ListCatalogTemplates/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_ListCatalogTemplates_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter ListCatalogTemplates Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.ListCatalogs",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.ListCatalogs",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "ListCatalogs"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.ListCatalogsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CatalogIterator",
+        "shortName": "ListCatalogs"
+      },
+      "description": "ListCatalogs lists catalogs in a given space.",
+      "file": "Client/ListCatalogs/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_ListCatalogs_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter ListCatalogs Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.ListComponents",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.ListComponents",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "ListComponents"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.ListComponentsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ComponentIterator",
+        "shortName": "ListComponents"
+      },
+      "description": "ListComponents lists components in an application template.",
+      "file": "Client/ListComponents/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_ListComponents_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter ListComponents Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.ListConnections",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.ListConnections",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "ListConnections"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.ListConnectionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ConnectionIterator",
+        "shortName": "ListConnections"
+      },
+      "description": "ListConnections lists connections in an application template.",
+      "file": "Client/ListConnections/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_ListConnections_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter ListConnections Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "shortName": "ListLocations"
+      },
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_ListLocations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter ListLocations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_ListOperations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.ListPolicies",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.ListPolicies",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "ListPolicies"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.ListPoliciesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "PolicyIterator",
+        "shortName": "ListPolicies"
+      },
+      "description": "ListPolicies lists policies for an application template.",
+      "file": "Client/ListPolicies/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_ListPolicies_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter ListPolicies Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.ListSharedTemplateRevisions",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.ListSharedTemplateRevisions",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "ListSharedTemplateRevisions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.ListSharedTemplateRevisionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "SharedTemplateRevisionIterator",
+        "shortName": "ListSharedTemplateRevisions"
+      },
+      "description": "ListSharedTemplateRevisions lists shared template revisions in a given space.",
+      "file": "Client/ListSharedTemplateRevisions/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_ListSharedTemplateRevisions_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter ListSharedTemplateRevisions Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.ListSharedTemplates",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.ListSharedTemplates",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "ListSharedTemplates"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.ListSharedTemplatesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "SharedTemplateIterator",
+        "shortName": "ListSharedTemplates"
+      },
+      "description": "ListSharedTemplates lists shared templates in a given space.",
+      "file": "Client/ListSharedTemplates/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_ListSharedTemplates_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter ListSharedTemplates Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.ListShares",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.ListShares",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "ListShares"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.ListSharesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ShareIterator",
+        "shortName": "ListShares"
+      },
+      "description": "ListShares lists catalog share objects for the space.",
+      "file": "Client/ListShares/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_ListShares_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter ListShares Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.ListSpaces",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.ListSpaces",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "ListSpaces"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.ListSpacesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "SpaceIterator",
+        "shortName": "ListSpaces"
+      },
+      "description": "ListSpaces lists spaces in a given project and location.",
+      "file": "Client/ListSpaces/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_ListSpaces_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter ListSpaces Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.PreviewApplication",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.PreviewApplication",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "PreviewApplication"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.PreviewApplicationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "PreviewApplicationOperation",
+        "shortName": "PreviewApplication"
+      },
+      "description": "PreviewApplication previews deployment of an application.",
+      "file": "Client/PreviewApplication/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_PreviewApplication_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter PreviewApplication Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.RecommendIAMRoles",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.RecommendIAMRoles",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "RecommendIAMRoles"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.RecommendIAMRolesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "RecommendIAMRolesOperation",
+        "shortName": "RecommendIAMRoles"
+      },
+      "description": "RecommendIAMRoles gets recommended IAM roles for an application.\n\nEvaluates the infrastructure resources defined by an application (including\nits template configuration and parameters) to determine the set of IAM\nroles and Google Cloud APIs that you must configure before you deploy\nacross target projects.\n\nThe operation is asynchronous and returns a `google.longrunning.Operation`.\nUpon completion, the operation result contains a\n`RecommendIAMRolesResponse` with project-level IAM role and API\nrecommendations.",
+      "file": "Client/RecommendIAMRoles/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_RecommendIAMRoles_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter RecommendIAMRoles Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.RegisterAppHubApplicationResources",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.RegisterAppHubApplicationResources",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "RegisterAppHubApplicationResources"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.RegisterAppHubApplicationResourcesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "RegisterAppHubApplicationResourcesOperation",
+        "shortName": "RegisterAppHubApplicationResources"
+      },
+      "description": "RegisterAppHubApplicationResources register deployed resources from terraform state file with App Hub\nwithout needing a space.",
+      "file": "Client/RegisterAppHubApplicationResources/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_RegisterAppHubApplicationResources_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter RegisterAppHubApplicationResources Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.SetIamPolicy",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "SetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.SetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "SetIamPolicy"
+      },
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "Client/SetIamPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_SetIamPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter SetIamPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.SnapshotApplicationTemplate",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.SnapshotApplicationTemplate",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "SnapshotApplicationTemplate"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.SnapshotApplicationTemplateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "SnapshotApplicationTemplateOperation",
+        "shortName": "SnapshotApplicationTemplate"
+      },
+      "description": "SnapshotApplicationTemplate snapshots an application template to create a new revision asynchronously.",
+      "file": "Client/SnapshotApplicationTemplate/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_SnapshotApplicationTemplate_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter SnapshotApplicationTemplate Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.SyncShare",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.SyncShare",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "SyncShare"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.SyncShareRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "SyncShareOperation",
+        "shortName": "SyncShare"
+      },
+      "description": "SyncShare synchronizes a share and updates the destination workspace to reflect.\nreflect the most recent changes to the catalog.",
+      "file": "Client/SyncShare/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_SyncShare_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter SyncShare Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.TestIamPermissions",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "TestIamPermissions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.TestIamPermissionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "shortName": "TestIamPermissions"
+      },
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "Client/TestIamPermissions/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_TestIamPermissions_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter TestIamPermissions Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.UpdateApplication",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.UpdateApplication",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "UpdateApplication"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.UpdateApplicationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*designcenterpb.Application",
+        "shortName": "UpdateApplication"
+      },
+      "description": "UpdateApplication updates an application.",
+      "file": "Client/UpdateApplication/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_UpdateApplication_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter UpdateApplication Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.UpdateApplicationTemplate",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.UpdateApplicationTemplate",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "UpdateApplicationTemplate"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.UpdateApplicationTemplateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*designcenterpb.ApplicationTemplate",
+        "shortName": "UpdateApplicationTemplate"
+      },
+      "description": "UpdateApplicationTemplate updates an application template.",
+      "file": "Client/UpdateApplicationTemplate/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_UpdateApplicationTemplate_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter UpdateApplicationTemplate Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.UpdateCatalog",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.UpdateCatalog",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "UpdateCatalog"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.UpdateCatalogRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*designcenterpb.Catalog",
+        "shortName": "UpdateCatalog"
+      },
+      "description": "UpdateCatalog updates a catalog.",
+      "file": "Client/UpdateCatalog/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_UpdateCatalog_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter UpdateCatalog Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.UpdateCatalogTemplate",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.UpdateCatalogTemplate",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "UpdateCatalogTemplate"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.UpdateCatalogTemplateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*designcenterpb.CatalogTemplate",
+        "shortName": "UpdateCatalogTemplate"
+      },
+      "description": "UpdateCatalogTemplate updates a catalog template resource.",
+      "file": "Client/UpdateCatalogTemplate/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_UpdateCatalogTemplate_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter UpdateCatalogTemplate Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.UpdateComponent",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.UpdateComponent",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "UpdateComponent"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.UpdateComponentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*designcenterpb.Component",
+        "shortName": "UpdateComponent"
+      },
+      "description": "UpdateComponent updates a component.",
+      "file": "Client/UpdateComponent/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_UpdateComponent_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter UpdateComponent Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.UpdateConnection",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.UpdateConnection",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "UpdateConnection"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.UpdateConnectionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*designcenterpb.Connection",
+        "shortName": "UpdateConnection"
+      },
+      "description": "UpdateConnection updates a connection.",
+      "file": "Client/UpdateConnection/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_UpdateConnection_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter UpdateConnection Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.UpdatePolicy",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.UpdatePolicy",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "UpdatePolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.UpdatePolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*designcenterpb.Policy",
+        "shortName": "UpdatePolicy"
+      },
+      "description": "UpdatePolicy updates a policy.",
+      "file": "Client/UpdatePolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_UpdatePolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter UpdatePolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.designcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.designcenter.v1.Client.UpdateSpace",
+        "method": {
+          "fullName": "google.cloud.designcenter.v1.DesignCenter.UpdateSpace",
+          "service": {
+            "fullName": "google.cloud.designcenter.v1.DesignCenter",
+            "shortName": "DesignCenter"
+          },
+          "shortName": "UpdateSpace"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "designcenterpb.UpdateSpaceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*designcenterpb.Space",
+        "shortName": "UpdateSpace"
+      },
+      "description": "UpdateSpace updates a space.",
+      "file": "Client/UpdateSpace/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "designcenter_v1_generated_DesignCenter_UpdateSpace_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "designcenter UpdateSpace Sample"
+    }
+  ]
+}

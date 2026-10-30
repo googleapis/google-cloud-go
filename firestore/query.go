@@ -1793,6 +1793,7 @@ func (a *AggregationQuery) GetResponse(ctx context.Context) (aro *AggregationRes
 		req.ConsistencySelector = &pb.RunAggregationQueryRequest_Transaction{
 			Transaction: a.tx.id,
 		}
+		ctx = withTransactionHeader(ctx)
 	}
 
 	ctx = withResourceHeader(ctx, a.query.c.path())
@@ -2257,6 +2258,7 @@ func (q Query) Pipeline() *Pipeline {
 // and an aggregate stage will be added for the aggregations.
 func (aq *AggregationQuery) Pipeline() *Pipeline {
 	p := aq.query.toPipeline()
+	p.tx = aq.tx
 	if p.err != nil {
 		return p
 	}

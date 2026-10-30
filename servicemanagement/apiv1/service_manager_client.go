@@ -1421,6 +1421,11 @@ func (c *serviceManagerRESTClient) GetService(ctx context.Context, req *servicem
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetServiceName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/services/%v", req.GetServiceName())
 
 	params := url.Values{}
@@ -1557,6 +1562,11 @@ func (c *serviceManagerRESTClient) DeleteService(ctx context.Context, req *servi
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetServiceName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/services/%v", req.GetServiceName())
 
 	params := url.Values{}
@@ -1621,6 +1631,11 @@ func (c *serviceManagerRESTClient) DeleteService(ctx context.Context, req *servi
 func (c *serviceManagerRESTClient) UndeleteService(ctx context.Context, req *servicemanagementpb.UndeleteServiceRequest, opts ...gax.CallOption) (*UndeleteServiceOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetServiceName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/services/%v:undelete", req.GetServiceName())
@@ -1698,6 +1713,11 @@ func (c *serviceManagerRESTClient) ListServiceConfigs(ctx context.Context, req *
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetServiceName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/services/%v/configs", req.GetServiceName())
 
 		params := url.Values{}
@@ -1761,6 +1781,12 @@ func (c *serviceManagerRESTClient) ListServiceConfigs(ctx context.Context, req *
 func (c *serviceManagerRESTClient) GetServiceConfig(ctx context.Context, req *servicemanagementpb.GetServiceConfigRequest, opts ...gax.CallOption) (*serviceconfigpb.Service, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetServiceName(),
+		req.GetConfigId(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/services/%v/configs/%v", req.GetServiceName(), req.GetConfigId())
@@ -1834,6 +1860,11 @@ func (c *serviceManagerRESTClient) CreateServiceConfig(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetServiceName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/services/%v/configs", req.GetServiceName())
 
 	params := url.Values{}
@@ -1905,6 +1936,11 @@ func (c *serviceManagerRESTClient) SubmitConfigSource(ctx context.Context, req *
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetServiceName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/services/%v/configs:submit", req.GetServiceName())
@@ -1982,6 +2018,11 @@ func (c *serviceManagerRESTClient) ListServiceRollouts(ctx context.Context, req 
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetServiceName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/services/%v/rollouts", req.GetServiceName())
 
 		params := url.Values{}
@@ -2047,6 +2088,12 @@ func (c *serviceManagerRESTClient) ListServiceRollouts(ctx context.Context, req 
 func (c *serviceManagerRESTClient) GetServiceRollout(ctx context.Context, req *servicemanagementpb.GetServiceRolloutRequest, opts ...gax.CallOption) (*servicemanagementpb.Rollout, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetServiceName(),
+		req.GetRolloutId(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/services/%v/rollouts/%v", req.GetServiceName(), req.GetRolloutId())
@@ -2121,6 +2168,11 @@ func (c *serviceManagerRESTClient) CreateServiceRollout(ctx context.Context, req
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetServiceName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/services/%v/rollouts", req.GetServiceName())
@@ -2258,6 +2310,11 @@ func (c *serviceManagerRESTClient) GetIamPolicy(ctx context.Context, req *iampb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -2320,6 +2377,11 @@ func (c *serviceManagerRESTClient) SetIamPolicy(ctx context.Context, req *iampb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
@@ -2386,6 +2448,11 @@ func (c *serviceManagerRESTClient) TestIamPermissions(ctx context.Context, req *
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())

@@ -1148,6 +1148,11 @@ func (c *topicAdminRESTClient) CreateTopic(ctx context.Context, req *pubsubpb.To
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1207,6 +1212,11 @@ func (c *topicAdminRESTClient) UpdateTopic(ctx context.Context, req *pubsubpb.Up
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetTopic().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetTopic().GetName())
@@ -1270,6 +1280,11 @@ func (c *topicAdminRESTClient) Publish(ctx context.Context, req *pubsubpb.Publis
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetTopic(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:publish", req.GetTopic())
 
 	params := url.Values{}
@@ -1322,6 +1337,11 @@ func (c *topicAdminRESTClient) Publish(ctx context.Context, req *pubsubpb.Publis
 func (c *topicAdminRESTClient) GetTopic(ctx context.Context, req *pubsubpb.GetTopicRequest, opts ...gax.CallOption) (*pubsubpb.Topic, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetTopic(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetTopic())
@@ -1389,6 +1409,11 @@ func (c *topicAdminRESTClient) ListTopics(ctx context.Context, req *pubsubpb.Lis
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/topics", req.GetProject())
@@ -1467,6 +1492,11 @@ func (c *topicAdminRESTClient) ListTopicSubscriptions(ctx context.Context, req *
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetTopic(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/subscriptions", req.GetTopic())
@@ -1551,6 +1581,11 @@ func (c *topicAdminRESTClient) ListTopicSnapshots(ctx context.Context, req *pubs
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetTopic(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/snapshots", req.GetTopic())
 
 		params := url.Values{}
@@ -1620,6 +1655,11 @@ func (c *topicAdminRESTClient) DeleteTopic(ctx context.Context, req *pubsubpb.De
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetTopic(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetTopic())
 
 	params := url.Values{}
@@ -1660,6 +1700,11 @@ func (c *topicAdminRESTClient) DeleteTopic(ctx context.Context, req *pubsubpb.De
 func (c *topicAdminRESTClient) DetachSubscription(ctx context.Context, req *pubsubpb.DetachSubscriptionRequest, opts ...gax.CallOption) (*pubsubpb.DetachSubscriptionResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSubscription(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:detach", req.GetSubscription())
@@ -1715,6 +1760,11 @@ func (c *topicAdminRESTClient) DetachSubscription(ctx context.Context, req *pubs
 func (c *topicAdminRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
@@ -1784,6 +1834,11 @@ func (c *topicAdminRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetI
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -1848,6 +1903,11 @@ func (c *topicAdminRESTClient) TestIamPermissions(ctx context.Context, req *iamp
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())

@@ -341,26 +341,26 @@ var File_google_cloud_apphub_v1_properties_proto protoreflect.FileDescriptor
 
 const file_google_cloud_apphub_v1_properties_proto_rawDesc = "" +
 	"\n" +
-	"'google/cloud/apphub/v1/properties.proto\x12\x16google.cloud.apphub.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1cgoogle/protobuf/struct.proto\"\x9d\x01\n" +
-	"\x0eFunctionalType\x12D\n" +
-	"\x04type\x18\x01 \x01(\x0e2+.google.cloud.apphub.v1.FunctionalType.TypeB\x03\xe0A\x03R\x04type\"E\n" +
+	"'google/cloud/apphub/v1/properties.proto\x12\x16google.cloud.apphub.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1cgoogle/protobuf/struct.proto\"\x9e\x01\n" +
+	"\x0eFunctionalType\x12E\n" +
+	"\x04type\x18\x01 \x01(\x0e2+.google.cloud.apphub.v1.FunctionalType.TypeB\x04\xe2A\x01\x03R\x04type\"E\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05AGENT\x10\x01\x12\x0e\n" +
 	"\n" +
 	"MCP_SERVER\x10\x02\x12\f\n" +
-	"\bENDPOINT\x10\x03\"\x93\x01\n" +
-	"\x10RegistrationType\x12F\n" +
-	"\x04type\x18\x01 \x01(\x0e2-.google.cloud.apphub.v1.RegistrationType.TypeB\x03\xe0A\x03R\x04type\"7\n" +
+	"\bENDPOINT\x10\x03\"\x94\x01\n" +
+	"\x10RegistrationType\x12G\n" +
+	"\x04type\x18\x01 \x01(\x0e2-.google.cloud.apphub.v1.RegistrationType.TypeB\x04\xe2A\x01\x03R\x04type\"7\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tEXCLUSIVE\x10\x01\x12\n" +
 	"\n" +
-	"\x06SHARED\x10\x02\"Y\n" +
-	"\x10ExtendedMetadata\x12E\n" +
-	"\x0fmetadata_struct\x18\x01 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x03R\x0emetadataStruct\"-\n" +
-	"\bIdentity\x12!\n" +
-	"\tprincipal\x18\x01 \x01(\tB\x03\xe0A\x03R\tprincipalB\xb1\x01\n" +
+	"\x06SHARED\x10\x02\"Z\n" +
+	"\x10ExtendedMetadata\x12F\n" +
+	"\x0fmetadata_struct\x18\x01 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x03R\x0emetadataStruct\".\n" +
+	"\bIdentity\x12\"\n" +
+	"\tprincipal\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\tprincipalB\xb1\x01\n" +
 	"\x1acom.google.cloud.apphub.v1B\x0fPropertiesProtoP\x01Z2cloud.google.com/go/apphub/apiv1/apphubpb;apphubpb\xaa\x02\x16Google.Cloud.AppHub.V1\xca\x02\x16Google\\Cloud\\AppHub\\V1\xea\x02\x19Google::Cloud::AppHub::V1b\x06proto3"
 
 var (

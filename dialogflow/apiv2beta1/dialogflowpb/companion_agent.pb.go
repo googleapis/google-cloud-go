@@ -946,62 +946,62 @@ var File_google_cloud_dialogflow_v2beta1_companion_agent_proto protoreflect.File
 
 const file_google_cloud_dialogflow_v2beta1_companion_agent_proto_rawDesc = "" +
 	"\n" +
-	"5google/cloud/dialogflow/v2beta1/companion_agent.proto\x12\x1fgoogle.cloud.dialogflow.v2beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a.google/cloud/dialogflow/v2beta1/ces_tool.proto\x1a-google/cloud/dialogflow/v2beta1/toolset.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf9\x01\n" +
-	"\x1bCreateCompanionAgentRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(dialogflow.googleapis.com/CompanionAgentR\x06parent\x12]\n" +
-	"\x0fcompanion_agent\x18\x02 \x01(\v2/.google.cloud.dialogflow.v2beta1.CompanionAgentB\x03\xe0A\x02R\x0ecompanionAgent\x121\n" +
-	"\x12companion_agent_id\x18\x03 \x01(\tB\x03\xe0A\x01R\x10companionAgentId\"`\n" +
-	"\x18GetCompanionAgentRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(dialogflow.googleapis.com/CompanionAgentR\x04name\"\xac\x01\n" +
-	"\x1aListCompanionAgentsRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(dialogflow.googleapis.com/CompanionAgentR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"5google/cloud/dialogflow/v2beta1/companion_agent.proto\x12\x1fgoogle.cloud.dialogflow.v2beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a.google/cloud/dialogflow/v2beta1/ces_tool.proto\x1a-google/cloud/dialogflow/v2beta1/toolset.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfc\x01\n" +
+	"\x1bCreateCompanionAgentRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(dialogflow.googleapis.com/CompanionAgentR\x06parent\x12^\n" +
+	"\x0fcompanion_agent\x18\x02 \x01(\v2/.google.cloud.dialogflow.v2beta1.CompanionAgentB\x04\xe2A\x01\x02R\x0ecompanionAgent\x122\n" +
+	"\x12companion_agent_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x10companionAgentId\"a\n" +
+	"\x18GetCompanionAgentRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(dialogflow.googleapis.com/CompanionAgentR\x04name\"\xaf\x01\n" +
+	"\x1aListCompanionAgentsRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(dialogflow.googleapis.com/CompanionAgentR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xa1\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xa1\x01\n" +
 	"\x1bListCompanionAgentsResponse\x12Z\n" +
 	"\x10companion_agents\x18\x01 \x03(\v2/.google.cloud.dialogflow.v2beta1.CompanionAgentR\x0fcompanionAgents\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xbe\x01\n" +
-	"\x1bUpdateCompanionAgentRequest\x12]\n" +
-	"\x0fcompanion_agent\x18\x01 \x01(\v2/.google.cloud.dialogflow.v2beta1.CompanionAgentB\x03\xe0A\x02R\x0ecompanionAgent\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"c\n" +
-	"\x1bDeleteCompanionAgentRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(dialogflow.googleapis.com/CompanionAgentR\x04name\"\xc0\x03\n" +
-	"\x13GuidanceInstruction\x12&\n" +
-	"\fdisplay_name\x18\x01 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12,\n" +
-	"\x0fdisplay_details\x18\x02 \x01(\tB\x03\xe0A\x01R\x0edisplayDetails\x12!\n" +
-	"\tcondition\x18\x03 \x01(\tB\x03\xe0A\x01R\tcondition\x12Z\n" +
-	"\aactions\x18\x04 \x03(\v2;.google.cloud.dialogflow.v2beta1.GuidanceInstruction.ActionB\x03\xe0A\x01R\aactions\x12f\n" +
-	"\rtrigger_event\x18\x06 \x01(\x0e2<.google.cloud.dialogflow.v2beta1.CompanionAgent.TriggerEventB\x03\xe0A\x01R\ftriggerEvent\x12;\n" +
-	"\x17disable_suggested_reply\x18\a \x01(\bB\x03\xe0A\x01R\x15disableSuggestedReply\x1a/\n" +
-	"\x06Action\x12%\n" +
-	"\vdescription\x18\x01 \x01(\tB\x03\xe0A\x02R\vdescription\"\x81\f\n" +
-	"\x0eCompanionAgent\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12V\n" +
-	"\rtoolset_tools\x18\x04 \x03(\v2,.google.cloud.dialogflow.v2beta1.ToolsetToolB\x03\xe0A\x01R\ftoolsetTools\x12W\n" +
-	"\x0eces_tool_specs\x18\x05 \x03(\v2,.google.cloud.dialogflow.v2beta1.CesToolSpecB\x03\xe0A\x01R\fcesToolSpecs\x12&\n" +
-	"\fdisplay_name\x18\b \x01(\tB\x03\xe0A\x01R\vdisplayName\x12%\n" +
-	"\vdescription\x18\t \x01(\tB\x03\xe0A\x01R\vdescription\x12e\n" +
-	"\rskill_configs\x18\a \x03(\v2;.google.cloud.dialogflow.v2beta1.CompanionAgent.SkillConfigB\x03\xe0A\x01R\fskillConfigs\x1a\x9b\x03\n" +
-	"\vSkillConfig\x12~\n" +
-	"\x15guidance_skill_config\x18\x02 \x01(\v2C.google.cloud.dialogflow.v2beta1.CompanionAgent.GuidanceSkillConfigB\x03\xe0A\x01H\x00R\x13guidanceSkillConfig\x12\x88\x01\n" +
-	"\x16skill_triggering_event\x18\x01 \x01(\x0e2M.google.cloud.dialogflow.v2beta1.CompanionAgent.SkillConfig.SkillTriggerEventB\x03\xe0A\x01R\x14skillTriggeringEvent\"w\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xc0\x01\n" +
+	"\x1bUpdateCompanionAgentRequest\x12^\n" +
+	"\x0fcompanion_agent\x18\x01 \x01(\v2/.google.cloud.dialogflow.v2beta1.CompanionAgentB\x04\xe2A\x01\x02R\x0ecompanionAgent\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"d\n" +
+	"\x1bDeleteCompanionAgentRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(dialogflow.googleapis.com/CompanionAgentR\x04name\"\xc7\x03\n" +
+	"\x13GuidanceInstruction\x12'\n" +
+	"\fdisplay_name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12-\n" +
+	"\x0fdisplay_details\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x0edisplayDetails\x12\"\n" +
+	"\tcondition\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tcondition\x12[\n" +
+	"\aactions\x18\x04 \x03(\v2;.google.cloud.dialogflow.v2beta1.GuidanceInstruction.ActionB\x04\xe2A\x01\x01R\aactions\x12g\n" +
+	"\rtrigger_event\x18\x06 \x01(\x0e2<.google.cloud.dialogflow.v2beta1.CompanionAgent.TriggerEventB\x04\xe2A\x01\x01R\ftriggerEvent\x12<\n" +
+	"\x17disable_suggested_reply\x18\a \x01(\bB\x04\xe2A\x01\x01R\x15disableSuggestedReply\x1a0\n" +
+	"\x06Action\x12&\n" +
+	"\vdescription\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vdescription\"\x8e\f\n" +
+	"\x0eCompanionAgent\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12W\n" +
+	"\rtoolset_tools\x18\x04 \x03(\v2,.google.cloud.dialogflow.v2beta1.ToolsetToolB\x04\xe2A\x01\x01R\ftoolsetTools\x12X\n" +
+	"\x0eces_tool_specs\x18\x05 \x03(\v2,.google.cloud.dialogflow.v2beta1.CesToolSpecB\x04\xe2A\x01\x01R\fcesToolSpecs\x12'\n" +
+	"\fdisplay_name\x18\b \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12&\n" +
+	"\vdescription\x18\t \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12f\n" +
+	"\rskill_configs\x18\a \x03(\v2;.google.cloud.dialogflow.v2beta1.CompanionAgent.SkillConfigB\x04\xe2A\x01\x01R\fskillConfigs\x1a\x9d\x03\n" +
+	"\vSkillConfig\x12\x7f\n" +
+	"\x15guidance_skill_config\x18\x02 \x01(\v2C.google.cloud.dialogflow.v2beta1.CompanionAgent.GuidanceSkillConfigB\x04\xe2A\x01\x01H\x00R\x13guidanceSkillConfig\x12\x89\x01\n" +
+	"\x16skill_triggering_event\x18\x01 \x01(\x0e2M.google.cloud.dialogflow.v2beta1.CompanionAgent.SkillConfig.SkillTriggerEventB\x04\xe2A\x01\x01R\x14skillTriggeringEvent\"w\n" +
 	"\x11SkillTriggerEvent\x12#\n" +
 	"\x1fSKILL_TRIGGER_EVENT_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10END_OF_UTTERANCE\x10\x01\x12\x14\n" +
 	"\x10CUSTOMER_MESSAGE\x10\x02\x12\x11\n" +
 	"\rAGENT_MESSAGE\x10\x03B\b\n" +
-	"\x06config\x1a\xae\x02\n" +
-	"\x13GuidanceSkillConfig\x12n\n" +
-	"\x15guidance_instructions\x18\x02 \x03(\v24.google.cloud.dialogflow.v2beta1.GuidanceInstructionB\x03\xe0A\x01R\x14guidanceInstructions\x126\n" +
-	"\x14overarching_guidance\x18\x03 \x01(\tB\x03\xe0A\x01R\x13overarchingGuidance\x12o\n" +
-	"\x10knowledge_source\x18\x05 \x01(\v2?.google.cloud.dialogflow.v2beta1.CompanionAgent.KnowledgeSourceB\x03\xe0A\x01R\x0fknowledgeSource\x1a\x11\n" +
+	"\x06config\x1a\xb1\x02\n" +
+	"\x13GuidanceSkillConfig\x12o\n" +
+	"\x15guidance_instructions\x18\x02 \x03(\v24.google.cloud.dialogflow.v2beta1.GuidanceInstructionB\x04\xe2A\x01\x01R\x14guidanceInstructions\x127\n" +
+	"\x14overarching_guidance\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x13overarchingGuidance\x12p\n" +
+	"\x10knowledge_source\x18\x05 \x01(\v2?.google.cloud.dialogflow.v2beta1.CompanionAgent.KnowledgeSourceB\x04\xe2A\x01\x01R\x0fknowledgeSource\x1a\x11\n" +
 	"\x0fKnowledgeSource\"l\n" +
 	"\fTriggerEvent\x12\x1d\n" +
 	"\x19TRIGGER_EVENT_UNSPECIFIED\x10\x00\x12\x14\n" +

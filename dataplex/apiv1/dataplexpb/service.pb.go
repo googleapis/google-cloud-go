@@ -2311,160 +2311,160 @@ var File_google_cloud_dataplex_v1_service_proto protoreflect.FileDescriptor
 
 const file_google_cloud_dataplex_v1_service_proto_rawDesc = "" +
 	"\n" +
-	"&google/cloud/dataplex/v1/service.proto\x12\x18google.cloud.dataplex.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/dataplex/v1/resources.proto\x1a$google/cloud/dataplex/v1/tasks.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd7\x01\n" +
-	"\x11CreateLakeRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12\x1c\n" +
-	"\alake_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x06lakeId\x127\n" +
-	"\x04lake\x18\x03 \x01(\v2\x1e.google.cloud.dataplex.v1.LakeB\x03\xe0A\x02R\x04lake\x12(\n" +
-	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xb8\x01\n" +
-	"\x11UpdateLakeRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x127\n" +
-	"\x04lake\x18\x02 \x01(\v2\x1e.google.cloud.dataplex.v1.LakeB\x03\xe0A\x02R\x04lake\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"M\n" +
-	"\x11DeleteLakeRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cdataplex.googleapis.com/LakeR\x04name\"\xd8\x01\n" +
-	"\x10ListLakesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"&google/cloud/dataplex/v1/service.proto\x12\x18google.cloud.dataplex.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/dataplex/v1/resources.proto\x1a$google/cloud/dataplex/v1/tasks.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdb\x01\n" +
+	"\x11CreateLakeRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12\x1d\n" +
+	"\alake_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06lakeId\x128\n" +
+	"\x04lake\x18\x03 \x01(\v2\x1e.google.cloud.dataplex.v1.LakeB\x04\xe2A\x01\x02R\x04lake\x12)\n" +
+	"\rvalidate_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xbb\x01\n" +
+	"\x11UpdateLakeRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x128\n" +
+	"\x04lake\x18\x02 \x01(\v2\x1e.google.cloud.dataplex.v1.LakeB\x04\xe2A\x01\x02R\x04lake\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"N\n" +
+	"\x11DeleteLakeRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cdataplex.googleapis.com/LakeR\x04name\"\xdd\x01\n" +
+	"\x10ListLakesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xa6\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xa6\x01\n" +
 	"\x11ListLakesResponse\x124\n" +
 	"\x05lakes\x18\x01 \x03(\v2\x1e.google.cloud.dataplex.v1.LakeR\x05lakes\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x123\n" +
-	"\x15unreachable_locations\x18\x03 \x03(\tR\x14unreachableLocations\"\x9c\x01\n" +
-	"\x16ListLakeActionsRequest\x12<\n" +
-	"\x06parent\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cdataplex.googleapis.com/LakeR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x15unreachable_locations\x18\x03 \x03(\tR\x14unreachableLocations\"\x9f\x01\n" +
+	"\x16ListLakeActionsRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cdataplex.googleapis.com/LakeR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"y\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"y\n" +
 	"\x13ListActionsResponse\x12:\n" +
 	"\aactions\x18\x01 \x03(\v2 .google.cloud.dataplex.v1.ActionR\aactions\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"J\n" +
-	"\x0eGetLakeRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cdataplex.googleapis.com/LakeR\x04name\"\xd2\x01\n" +
-	"\x11CreateZoneRequest\x12<\n" +
-	"\x06parent\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cdataplex.googleapis.com/LakeR\x06parent\x12\x1c\n" +
-	"\azone_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x06zoneId\x127\n" +
-	"\x04zone\x18\x03 \x01(\v2\x1e.google.cloud.dataplex.v1.ZoneB\x03\xe0A\x02R\x04zone\x12(\n" +
-	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xb8\x01\n" +
-	"\x11UpdateZoneRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x127\n" +
-	"\x04zone\x18\x02 \x01(\v2\x1e.google.cloud.dataplex.v1.ZoneB\x03\xe0A\x02R\x04zone\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"M\n" +
-	"\x11DeleteZoneRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cdataplex.googleapis.com/ZoneR\x04name\"\xd3\x01\n" +
-	"\x10ListZonesRequest\x12<\n" +
-	"\x06parent\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cdataplex.googleapis.com/LakeR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"K\n" +
+	"\x0eGetLakeRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cdataplex.googleapis.com/LakeR\x04name\"\xd6\x01\n" +
+	"\x11CreateZoneRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cdataplex.googleapis.com/LakeR\x06parent\x12\x1d\n" +
+	"\azone_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06zoneId\x128\n" +
+	"\x04zone\x18\x03 \x01(\v2\x1e.google.cloud.dataplex.v1.ZoneB\x04\xe2A\x01\x02R\x04zone\x12)\n" +
+	"\rvalidate_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xbb\x01\n" +
+	"\x11UpdateZoneRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x128\n" +
+	"\x04zone\x18\x02 \x01(\v2\x1e.google.cloud.dataplex.v1.ZoneB\x04\xe2A\x01\x02R\x04zone\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"N\n" +
+	"\x11DeleteZoneRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cdataplex.googleapis.com/ZoneR\x04name\"\xd8\x01\n" +
+	"\x10ListZonesRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cdataplex.googleapis.com/LakeR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"q\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"q\n" +
 	"\x11ListZonesResponse\x124\n" +
 	"\x05zones\x18\x01 \x03(\v2\x1e.google.cloud.dataplex.v1.ZoneR\x05zones\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x9c\x01\n" +
-	"\x16ListZoneActionsRequest\x12<\n" +
-	"\x06parent\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cdataplex.googleapis.com/ZoneR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x9f\x01\n" +
+	"\x16ListZoneActionsRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cdataplex.googleapis.com/ZoneR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"J\n" +
-	"\x0eGetZoneRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cdataplex.googleapis.com/ZoneR\x04name\"\xd8\x01\n" +
-	"\x12CreateAssetRequest\x12<\n" +
-	"\x06parent\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cdataplex.googleapis.com/ZoneR\x06parent\x12\x1e\n" +
-	"\basset_id\x18\x02 \x01(\tB\x03\xe0A\x02R\aassetId\x12:\n" +
-	"\x05asset\x18\x03 \x01(\v2\x1f.google.cloud.dataplex.v1.AssetB\x03\xe0A\x02R\x05asset\x12(\n" +
-	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xbc\x01\n" +
-	"\x12UpdateAssetRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12:\n" +
-	"\x05asset\x18\x02 \x01(\v2\x1f.google.cloud.dataplex.v1.AssetB\x03\xe0A\x02R\x05asset\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"O\n" +
-	"\x12DeleteAssetRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1ddataplex.googleapis.com/AssetR\x04name\"\xd4\x01\n" +
-	"\x11ListAssetsRequest\x12<\n" +
-	"\x06parent\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cdataplex.googleapis.com/ZoneR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"K\n" +
+	"\x0eGetZoneRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cdataplex.googleapis.com/ZoneR\x04name\"\xdc\x01\n" +
+	"\x12CreateAssetRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cdataplex.googleapis.com/ZoneR\x06parent\x12\x1f\n" +
+	"\basset_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\aassetId\x12;\n" +
+	"\x05asset\x18\x03 \x01(\v2\x1f.google.cloud.dataplex.v1.AssetB\x04\xe2A\x01\x02R\x05asset\x12)\n" +
+	"\rvalidate_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xbf\x01\n" +
+	"\x12UpdateAssetRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12;\n" +
+	"\x05asset\x18\x02 \x01(\v2\x1f.google.cloud.dataplex.v1.AssetB\x04\xe2A\x01\x02R\x05asset\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"P\n" +
+	"\x12DeleteAssetRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1ddataplex.googleapis.com/AssetR\x04name\"\xd9\x01\n" +
+	"\x11ListAssetsRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cdataplex.googleapis.com/ZoneR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"u\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"u\n" +
 	"\x12ListAssetsResponse\x127\n" +
 	"\x06assets\x18\x01 \x03(\v2\x1f.google.cloud.dataplex.v1.AssetR\x06assets\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x9e\x01\n" +
-	"\x17ListAssetActionsRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1ddataplex.googleapis.com/AssetR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa1\x01\n" +
+	"\x17ListAssetActionsRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1ddataplex.googleapis.com/AssetR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"L\n" +
-	"\x0fGetAssetRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1ddataplex.googleapis.com/AssetR\x04name\"\xd5\x02\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion\"\xd2\x01\n" +
-	"\x11CreateTaskRequest\x12<\n" +
-	"\x06parent\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cdataplex.googleapis.com/LakeR\x06parent\x12\x1c\n" +
-	"\atask_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x06taskId\x127\n" +
-	"\x04task\x18\x03 \x01(\v2\x1e.google.cloud.dataplex.v1.TaskB\x03\xe0A\x02R\x04task\x12(\n" +
-	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xb8\x01\n" +
-	"\x11UpdateTaskRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x127\n" +
-	"\x04task\x18\x02 \x01(\v2\x1e.google.cloud.dataplex.v1.TaskB\x03\xe0A\x02R\x04task\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"M\n" +
-	"\x11DeleteTaskRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cdataplex.googleapis.com/TaskR\x04name\"\xd3\x01\n" +
-	"\x10ListTasksRequest\x12<\n" +
-	"\x06parent\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cdataplex.googleapis.com/LakeR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"M\n" +
+	"\x0fGetAssetRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1ddataplex.googleapis.com/AssetR\x04name\"\xdc\x02\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"apiVersion\"\xd6\x01\n" +
+	"\x11CreateTaskRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cdataplex.googleapis.com/LakeR\x06parent\x12\x1d\n" +
+	"\atask_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06taskId\x128\n" +
+	"\x04task\x18\x03 \x01(\v2\x1e.google.cloud.dataplex.v1.TaskB\x04\xe2A\x01\x02R\x04task\x12)\n" +
+	"\rvalidate_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xbb\x01\n" +
+	"\x11UpdateTaskRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x128\n" +
+	"\x04task\x18\x02 \x01(\v2\x1e.google.cloud.dataplex.v1.TaskB\x04\xe2A\x01\x02R\x04task\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"N\n" +
+	"\x11DeleteTaskRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cdataplex.googleapis.com/TaskR\x04name\"\xd8\x01\n" +
+	"\x10ListTasksRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cdataplex.googleapis.com/LakeR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xa6\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xa6\x01\n" +
 	"\x11ListTasksResponse\x124\n" +
 	"\x05tasks\x18\x01 \x03(\v2\x1e.google.cloud.dataplex.v1.TaskR\x05tasks\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x123\n" +
-	"\x15unreachable_locations\x18\x03 \x03(\tR\x14unreachableLocations\"J\n" +
-	"\x0eGetTaskRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cdataplex.googleapis.com/TaskR\x04name\"H\n" +
-	"\rGetJobRequest\x127\n" +
-	"\x04name\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\n" +
-	"\x1bdataplex.googleapis.com/JobR\x04name\"\xde\x02\n" +
-	"\x0eRunTaskRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cdataplex.googleapis.com/TaskR\x04name\x12Q\n" +
-	"\x06labels\x18\x03 \x03(\v24.google.cloud.dataplex.v1.RunTaskRequest.LabelsEntryB\x03\xe0A\x01R\x06labels\x12K\n" +
-	"\x04args\x18\x04 \x03(\v22.google.cloud.dataplex.v1.RunTaskRequest.ArgsEntryB\x03\xe0A\x01R\x04args\x1a9\n" +
+	"\x15unreachable_locations\x18\x03 \x03(\tR\x14unreachableLocations\"K\n" +
+	"\x0eGetTaskRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cdataplex.googleapis.com/TaskR\x04name\"I\n" +
+	"\rGetJobRequest\x128\n" +
+	"\x04name\x18\x01 \x01(\tB$\xe2A\x01\x02\xfaA\x1d\n" +
+	"\x1bdataplex.googleapis.com/JobR\x04name\"\xe1\x02\n" +
+	"\x0eRunTaskRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cdataplex.googleapis.com/TaskR\x04name\x12R\n" +
+	"\x06labels\x18\x03 \x03(\v24.google.cloud.dataplex.v1.RunTaskRequest.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12L\n" +
+	"\x04args\x18\x04 \x03(\v22.google.cloud.dataplex.v1.RunTaskRequest.ArgsEntryB\x04\xe2A\x01\x01R\x04args\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a7\n" +
@@ -2472,18 +2472,18 @@ const file_google_cloud_dataplex_v1_service_proto_rawDesc = "" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"B\n" +
 	"\x0fRunTaskResponse\x12/\n" +
-	"\x03job\x18\x01 \x01(\v2\x1d.google.cloud.dataplex.v1.JobR\x03job\"\x95\x01\n" +
-	"\x0fListJobsRequest\x12<\n" +
-	"\x06parent\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cdataplex.googleapis.com/TaskR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x03job\x18\x01 \x01(\v2\x1d.google.cloud.dataplex.v1.JobR\x03job\"\x98\x01\n" +
+	"\x0fListJobsRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cdataplex.googleapis.com/TaskR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"m\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"m\n" +
 	"\x10ListJobsResponse\x121\n" +
 	"\x04jobs\x18\x01 \x03(\v2\x1d.google.cloud.dataplex.v1.JobR\x04jobs\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"K\n" +
-	"\x10CancelJobRequest\x127\n" +
-	"\x04name\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"L\n" +
+	"\x10CancelJobRequest\x128\n" +
+	"\x04name\x18\x01 \x01(\tB$\xe2A\x01\x02\xfaA\x1d\n" +
 	"\x1bdataplex.googleapis.com/JobR\x04name2\xab)\n" +
 	"\x0fDataplexService\x12\xc3\x01\n" +
 	"\n" +

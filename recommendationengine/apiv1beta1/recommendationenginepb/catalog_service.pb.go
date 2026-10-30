@@ -392,32 +392,32 @@ var File_google_cloud_recommendationengine_v1beta1_catalog_service_proto protore
 
 const file_google_cloud_recommendationengine_v1beta1_catalog_service_proto_rawDesc = "" +
 	"\n" +
-	"?google/cloud/recommendationengine/v1beta1/catalog_service.proto\x12)google.cloud.recommendationengine.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a7google/cloud/recommendationengine/v1beta1/catalog.proto\x1a6google/cloud/recommendationengine/v1beta1/import.proto\x1aNgoogle/cloud/recommendationengine/v1beta1/recommendationengine_resources.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xc7\x01\n" +
-	"\x18CreateCatalogItemRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+recommendationengine.googleapis.com/CatalogR\x06parent\x12^\n" +
-	"\fcatalog_item\x18\x02 \x01(\v26.google.cloud.recommendationengine.v1beta1.CatalogItemB\x03\xe0A\x02R\vcatalogItem\"h\n" +
-	"\x15GetCatalogItemRequest\x12O\n" +
-	"\x04name\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\n" +
-	"3recommendationengine.googleapis.com/CatalogItemPathR\x04name\"\xc9\x01\n" +
-	"\x17ListCatalogItemsRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+recommendationengine.googleapis.com/CatalogR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"?google/cloud/recommendationengine/v1beta1/catalog_service.proto\x12)google.cloud.recommendationengine.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a7google/cloud/recommendationengine/v1beta1/catalog.proto\x1a6google/cloud/recommendationengine/v1beta1/import.proto\x1aNgoogle/cloud/recommendationengine/v1beta1/recommendationengine_resources.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xc9\x01\n" +
+	"\x18CreateCatalogItemRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+recommendationengine.googleapis.com/CatalogR\x06parent\x12_\n" +
+	"\fcatalog_item\x18\x02 \x01(\v26.google.cloud.recommendationengine.v1beta1.CatalogItemB\x04\xe2A\x01\x02R\vcatalogItem\"i\n" +
+	"\x15GetCatalogItemRequest\x12P\n" +
+	"\x04name\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\n" +
+	"3recommendationengine.googleapis.com/CatalogItemPathR\x04name\"\xcd\x01\n" +
+	"\x17ListCatalogItemsRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+recommendationengine.googleapis.com/CatalogR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\x9f\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x9f\x01\n" +
 	"\x18ListCatalogItemsResponse\x12[\n" +
 	"\rcatalog_items\x18\x01 \x03(\v26.google.cloud.recommendationengine.v1beta1.CatalogItemR\fcatalogItems\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x88\x02\n" +
-	"\x18UpdateCatalogItemRequest\x12O\n" +
-	"\x04name\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\n" +
-	"3recommendationengine.googleapis.com/CatalogItemPathR\x04name\x12^\n" +
-	"\fcatalog_item\x18\x02 \x01(\v26.google.cloud.recommendationengine.v1beta1.CatalogItemB\x03\xe0A\x02R\vcatalogItem\x12;\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x8a\x02\n" +
+	"\x18UpdateCatalogItemRequest\x12P\n" +
+	"\x04name\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\n" +
+	"3recommendationengine.googleapis.com/CatalogItemPathR\x04name\x12_\n" +
+	"\fcatalog_item\x18\x02 \x01(\v26.google.cloud.recommendationengine.v1beta1.CatalogItemB\x04\xe2A\x01\x02R\vcatalogItem\x12;\n" +
 	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"k\n" +
-	"\x18DeleteCatalogItemRequest\x12O\n" +
-	"\x04name\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\n" +
+	"updateMask\"l\n" +
+	"\x18DeleteCatalogItemRequest\x12P\n" +
+	"\x04name\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\n" +
 	"3recommendationengine.googleapis.com/CatalogItemPathR\x04name2\x96\r\n" +
 	"\x0eCatalogService\x12\xfe\x01\n" +
 	"\x11CreateCatalogItem\x12C.google.cloud.recommendationengine.v1beta1.CreateCatalogItemRequest\x1a6.google.cloud.recommendationengine.v1beta1.CatalogItem\"l\xdaA\x13parent,catalog_item\x82\xd3\xe4\x93\x02P:\fcatalog_item\"@/v1beta1/{parent=projects/*/locations/*/catalogs/*}/catalogItems\x12\xdc\x01\n" +

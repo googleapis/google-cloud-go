@@ -1334,6 +1334,11 @@ func (c *feedsRESTClient) FetchServiceAccountForCustomer(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/feedServiceAccounts:fetchServiceAccountForCustomer", req.GetParent())
 
 	params := url.Values{}
@@ -1395,6 +1400,11 @@ func (c *feedsRESTClient) CreateFeed(ctx context.Context, req *chroniclepb.Creat
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/feeds", req.GetParent())
 
 	params := url.Values{}
@@ -1447,6 +1457,11 @@ func (c *feedsRESTClient) CreateFeed(ctx context.Context, req *chroniclepb.Creat
 func (c *feedsRESTClient) GetFeed(ctx context.Context, req *chroniclepb.GetFeedRequest, opts ...gax.CallOption) (*chroniclepb.Feed, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1503,6 +1518,11 @@ func (c *feedsRESTClient) DeleteFeed(ctx context.Context, req *chroniclepb.Delet
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1549,6 +1569,11 @@ func (c *feedsRESTClient) EnableFeed(ctx context.Context, req *chroniclepb.Enabl
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:enable", req.GetName())
@@ -1609,6 +1634,11 @@ func (c *feedsRESTClient) DisableFeed(ctx context.Context, req *chroniclepb.Disa
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:disable", req.GetName())
@@ -1676,6 +1706,11 @@ func (c *feedsRESTClient) ListFeeds(ctx context.Context, req *chroniclepb.ListFe
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/feeds", req.GetParent())
@@ -1756,6 +1791,11 @@ func (c *feedsRESTClient) ListFeedPacks(ctx context.Context, req *chroniclepb.Li
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/feedPacks", req.GetParent())
 
 		params := url.Values{}
@@ -1821,6 +1861,11 @@ func (c *feedsRESTClient) GetFeedPack(ctx context.Context, req *chroniclepb.GetF
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1880,6 +1925,11 @@ func (c *feedsRESTClient) UpdateFeed(ctx context.Context, req *chroniclepb.Updat
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetFeed().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetFeed().GetName())
@@ -1954,6 +2004,11 @@ func (c *feedsRESTClient) ListFeedSourceTypeSchemas(ctx context.Context, req *ch
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/feedSourceTypeSchemas", req.GetParent())
@@ -2035,6 +2090,11 @@ func (c *feedsRESTClient) ListLogTypeSchemas(ctx context.Context, req *chronicle
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/logTypeSchemas", req.GetParent())
 
 		params := url.Values{}
@@ -2108,6 +2168,11 @@ func (c *feedsRESTClient) ImportPushLogs(ctx context.Context, req *chroniclepb.I
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:importPushLogs", req.GetParent())
 
 	params := url.Values{}
@@ -2172,6 +2237,11 @@ func (c *feedsRESTClient) GenerateSecret(ctx context.Context, req *chroniclepb.G
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:generateSecret", req.GetName())
 
 	params := url.Values{}
@@ -2232,6 +2302,11 @@ func (c *feedsRESTClient) CancelOperation(ctx context.Context, req *longrunningp
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -2271,6 +2346,11 @@ func (c *feedsRESTClient) DeleteOperation(ctx context.Context, req *longrunningp
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2308,6 +2388,11 @@ func (c *feedsRESTClient) DeleteOperation(ctx context.Context, req *longrunningp
 func (c *feedsRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2375,6 +2460,11 @@ func (c *feedsRESTClient) ListOperations(ctx context.Context, req *longrunningpb
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

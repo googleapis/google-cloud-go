@@ -981,20 +981,20 @@ var File_google_cloud_backupdr_v1beta_autoprotectionpolicy_proto protoreflect.Fi
 
 const file_google_cloud_backupdr_v1beta_autoprotectionpolicy_proto_rawDesc = "" +
 	"\n" +
-	"7google/cloud/backupdr/v1beta/autoprotectionpolicy.proto\x12\x1cgoogle.cloud.backupdr.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd7\a\n" +
-	"\x14AutoProtectionPolicy\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12c\n" +
-	"\x13backup_plan_details\x18\x03 \x03(\v2..google.cloud.backupdr.v1beta.BackupPlanDetailB\x03\xe0A\x02R\x11backupPlanDetails\x12G\n" +
-	"\bcriteria\x18\x04 \x01(\v2&.google.cloud.backupdr.v1beta.CriteriaB\x03\xe0A\x02R\bcriteria\x12S\n" +
-	"\x05state\x18\x05 \x01(\x0e28.google.cloud.backupdr.v1beta.AutoProtectionPolicy.StateB\x03\xe0A\x03R\x05state\x12\x12\n" +
-	"\x04etag\x18\x06 \x01(\tR\x04etag\x12Z\n" +
-	"\x0fbinding_summary\x18\a \x01(\v2,.google.cloud.backupdr.v1beta.BindingSummaryB\x03\xe0A\x03R\x0ebindingSummary\x12v\n" +
-	"\x19policy_evaluation_summary\x18\b \x01(\v25.google.cloud.backupdr.v1beta.PolicyEvaluationSummaryB\x03\xe0A\x03R\x17policyEvaluationSummary\x12@\n" +
-	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
+	"7google/cloud/backupdr/v1beta/autoprotectionpolicy.proto\x12\x1cgoogle.cloud.backupdr.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe0\a\n" +
+	"\x14AutoProtectionPolicy\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12d\n" +
+	"\x13backup_plan_details\x18\x03 \x03(\v2..google.cloud.backupdr.v1beta.BackupPlanDetailB\x04\xe2A\x01\x02R\x11backupPlanDetails\x12H\n" +
+	"\bcriteria\x18\x04 \x01(\v2&.google.cloud.backupdr.v1beta.CriteriaB\x04\xe2A\x01\x02R\bcriteria\x12T\n" +
+	"\x05state\x18\x05 \x01(\x0e28.google.cloud.backupdr.v1beta.AutoProtectionPolicy.StateB\x04\xe2A\x01\x03R\x05state\x12\x12\n" +
+	"\x04etag\x18\x06 \x01(\tR\x04etag\x12[\n" +
+	"\x0fbinding_summary\x18\a \x01(\v2,.google.cloud.backupdr.v1beta.BindingSummaryB\x04\xe2A\x01\x03R\x0ebindingSummary\x12w\n" +
+	"\x19policy_evaluation_summary\x18\b \x01(\v25.google.cloud.backupdr.v1beta.PolicyEvaluationSummaryB\x04\xe2A\x01\x03R\x17policyEvaluationSummary\x12A\n" +
+	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
 	"\vupdate_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\"T\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
@@ -1003,50 +1003,50 @@ const file_google_cloud_backupdr_v1beta_autoprotectionpolicy_proto_rawDesc = "" 
 	"\x06ACTIVE\x10\x02\x12\f\n" +
 	"\bUPDATING\x10\x03\x12\f\n" +
 	"\bDELETING\x10\x04:\xb9\x01\xeaA\xb5\x01\n" +
-	",backupdr.googleapis.com/AutoProtectionPolicy\x12Wprojects/{project}/locations/{location}/autoProtectionPolicies/{auto_protection_policy}*\x16autoProtectionPolicies2\x14autoProtectionPolicy\"\x89\x01\n" +
-	"\x10BackupPlanDetail\x12(\n" +
-	"\rresource_type\x18\x01 \x01(\tB\x03\xe0A\x02R\fresourceType\x12K\n" +
-	"\vbackup_plan\x18\x02 \x01(\tB*\xe0A\x02\xfaA$\n" +
+	",backupdr.googleapis.com/AutoProtectionPolicy\x12Wprojects/{project}/locations/{location}/autoProtectionPolicies/{auto_protection_policy}*\x16autoProtectionPolicies2\x14autoProtectionPolicy\"\x8b\x01\n" +
+	"\x10BackupPlanDetail\x12)\n" +
+	"\rresource_type\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\fresourceType\x12L\n" +
+	"\vbackup_plan\x18\x02 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
 	"\"backupdr.googleapis.com/BackupPlanR\n" +
-	"backupPlan\"q\n" +
-	"\bCriteria\x12e\n" +
-	"\x13matching_conditions\x18\x01 \x03(\v2/.google.cloud.backupdr.v1beta.MatchingConditionB\x03\xe0A\x02R\x12matchingConditions\"|\n" +
-	"\x11MatchingCondition\x12Z\n" +
-	"\x0flabel_condition\x18\x01 \x01(\v2*.google.cloud.backupdr.v1beta.KeyValuePairB\x03\xe0A\x01H\x00R\x0elabelConditionB\v\n" +
-	"\tcondition\"\xce\x01\n" +
-	"\x17PolicyEvaluationSummary\x12;\n" +
-	"\x17matching_resource_count\x18\x01 \x01(\x03B\x03\xe0A\x03R\x15matchingResourceCount\x12=\n" +
-	"\x18protected_resource_count\x18\x02 \x01(\x03B\x03\xe0A\x03R\x16protectedResourceCount\x127\n" +
-	"\x15failed_resource_count\x18\x03 \x01(\x03B\x03\xe0A\x03R\x13failedResourceCount\":\n" +
-	"\x0eBindingSummary\x12(\n" +
-	"\rproject_count\x18\x01 \x01(\x03B\x03\xe0A\x03R\fprojectCount\"B\n" +
-	"\fKeyValuePair\x12\x15\n" +
-	"\x03key\x18\x01 \x01(\tB\x03\xe0A\x02R\x03key\x12\x1b\n" +
-	"\x06values\x18\x02 \x03(\tB\x03\xe0A\x02R\x06values\"\x95\x02\n" +
-	"!CreateAutoProtectionPolicyRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12>\n" +
-	"\x19auto_protection_policy_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x16autoProtectionPolicyId\x12m\n" +
-	"\x16auto_protection_policy\x18\x03 \x01(\v22.google.cloud.backupdr.v1beta.AutoProtectionPolicyB\x03\xe0A\x02R\x14autoProtectionPolicy\"j\n" +
-	"\x1eGetAutoProtectionPolicyRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",backupdr.googleapis.com/AutoProtectionPolicyR\x04name\"\xd4\x01\n" +
-	"!UpdateAutoProtectionPolicyRequest\x12m\n" +
-	"\x16auto_protection_policy\x18\x01 \x01(\v22.google.cloud.backupdr.v1beta.AutoProtectionPolicyB\x03\xe0A\x02R\x14autoProtectionPolicy\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\x81\x01\n" +
-	"!DeleteAutoProtectionPolicyRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
+	"backupPlan\"r\n" +
+	"\bCriteria\x12f\n" +
+	"\x13matching_conditions\x18\x01 \x03(\v2/.google.cloud.backupdr.v1beta.MatchingConditionB\x04\xe2A\x01\x02R\x12matchingConditions\"}\n" +
+	"\x11MatchingCondition\x12[\n" +
+	"\x0flabel_condition\x18\x01 \x01(\v2*.google.cloud.backupdr.v1beta.KeyValuePairB\x04\xe2A\x01\x01H\x00R\x0elabelConditionB\v\n" +
+	"\tcondition\"\xd1\x01\n" +
+	"\x17PolicyEvaluationSummary\x12<\n" +
+	"\x17matching_resource_count\x18\x01 \x01(\x03B\x04\xe2A\x01\x03R\x15matchingResourceCount\x12>\n" +
+	"\x18protected_resource_count\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\x16protectedResourceCount\x128\n" +
+	"\x15failed_resource_count\x18\x03 \x01(\x03B\x04\xe2A\x01\x03R\x13failedResourceCount\";\n" +
+	"\x0eBindingSummary\x12)\n" +
+	"\rproject_count\x18\x01 \x01(\x03B\x04\xe2A\x01\x03R\fprojectCount\"D\n" +
+	"\fKeyValuePair\x12\x16\n" +
+	"\x03key\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03key\x12\x1c\n" +
+	"\x06values\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\x06values\"\x98\x02\n" +
+	"!CreateAutoProtectionPolicyRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12?\n" +
+	"\x19auto_protection_policy_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x16autoProtectionPolicyId\x12n\n" +
+	"\x16auto_protection_policy\x18\x03 \x01(\v22.google.cloud.backupdr.v1beta.AutoProtectionPolicyB\x04\xe2A\x01\x02R\x14autoProtectionPolicy\"k\n" +
+	"\x1eGetAutoProtectionPolicyRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",backupdr.googleapis.com/AutoProtectionPolicyR\x04name\"\xd6\x01\n" +
+	"!UpdateAutoProtectionPolicyRequest\x12n\n" +
+	"\x16auto_protection_policy\x18\x01 \x01(\v22.google.cloud.backupdr.v1beta.AutoProtectionPolicyB\x04\xe2A\x01\x02R\x14autoProtectionPolicy\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\x82\x01\n" +
+	"!DeleteAutoProtectionPolicyRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
 	",backupdr.googleapis.com/AutoProtectionPolicyR\x04name\x12\x12\n" +
-	"\x04etag\x18\x02 \x01(\tR\x04etag\"\xe9\x01\n" +
-	"!ListAutoProtectionPoliciesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x04etag\x18\x02 \x01(\tR\x04etag\"\xee\x01\n" +
+	"!ListAutoProtectionPoliciesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xdc\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xdc\x01\n" +
 	"\"ListAutoProtectionPoliciesResponse\x12l\n" +
 	"\x18auto_protection_policies\x18\x01 \x03(\v22.google.cloud.backupdr.v1beta.AutoProtectionPolicyR\x16autoProtectionPolicies\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +

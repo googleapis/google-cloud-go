@@ -158,12 +158,12 @@ var File_google_cloud_retail_v2beta_project_service_proto protoreflect.FileDescr
 
 const file_google_cloud_retail_v2beta_project_service_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/retail/v2beta/project_service.proto\x12\x1agoogle.cloud.retail.v2beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/retail/v2beta/project.proto\x1a google/protobuf/field_mask.proto\"V\n" +
-	"\x15GetAlertConfigRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!retail.googleapis.com/AlertConfigR\x04name\"\xa8\x01\n" +
-	"\x18UpdateAlertConfigRequest\x12O\n" +
-	"\falert_config\x18\x01 \x01(\v2'.google.cloud.retail.v2beta.AlertConfigB\x03\xe0A\x02R\valertConfig\x12;\n" +
+	"0google/cloud/retail/v2beta/project_service.proto\x12\x1agoogle.cloud.retail.v2beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/retail/v2beta/project.proto\x1a google/protobuf/field_mask.proto\"W\n" +
+	"\x15GetAlertConfigRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!retail.googleapis.com/AlertConfigR\x04name\"\xa9\x01\n" +
+	"\x18UpdateAlertConfigRequest\x12P\n" +
+	"\falert_config\x18\x01 \x01(\v2'.google.cloud.retail.v2beta.AlertConfigB\x04\xe2A\x01\x02R\valertConfig\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"updateMask2\xda\x03\n" +
 	"\x0eProjectService\x12\xa2\x01\n" +

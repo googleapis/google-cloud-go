@@ -1,0 +1,1300 @@
+{
+  "clientLibrary": {
+    "apis": [
+      {
+        "id": "google.cloud.observability.v1",
+        "version": "v1"
+      }
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/observability/apiv1",
+    "version": "0.1.1"
+  },
+  "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.observability.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.observability.v1.Client.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/CancelOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "observability_v1_generated_Observability_CancelOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "observability CancelOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.observability.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.observability.v1.Client.CreateBucket",
+        "method": {
+          "fullName": "google.cloud.observability.v1.Observability.CreateBucket",
+          "service": {
+            "fullName": "google.cloud.observability.v1.Observability",
+            "shortName": "Observability"
+          },
+          "shortName": "CreateBucket"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "observabilitypb.CreateBucketRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateBucketOperation",
+        "shortName": "CreateBucket"
+      },
+      "description": "CreateBucket create a new bucket.",
+      "file": "Client/CreateBucket/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "observability_v1_generated_Observability_CreateBucket_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "observability CreateBucket Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.observability.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.observability.v1.Client.CreateLink",
+        "method": {
+          "fullName": "google.cloud.observability.v1.Observability.CreateLink",
+          "service": {
+            "fullName": "google.cloud.observability.v1.Observability",
+            "shortName": "Observability"
+          },
+          "shortName": "CreateLink"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "observabilitypb.CreateLinkRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateLinkOperation",
+        "shortName": "CreateLink"
+      },
+      "description": "CreateLink create a new link.",
+      "file": "Client/CreateLink/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "observability_v1_generated_Observability_CreateLink_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "observability CreateLink Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.observability.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.observability.v1.Client.CreateTraceScope",
+        "method": {
+          "fullName": "google.cloud.observability.v1.Observability.CreateTraceScope",
+          "service": {
+            "fullName": "google.cloud.observability.v1.Observability",
+            "shortName": "Observability"
+          },
+          "shortName": "CreateTraceScope"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "observabilitypb.CreateTraceScopeRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*observabilitypb.TraceScope",
+        "shortName": "CreateTraceScope"
+      },
+      "description": "CreateTraceScope create a new TraceScope.",
+      "file": "Client/CreateTraceScope/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "observability_v1_generated_Observability_CreateTraceScope_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "observability CreateTraceScope Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.observability.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.observability.v1.Client.DeleteLink",
+        "method": {
+          "fullName": "google.cloud.observability.v1.Observability.DeleteLink",
+          "service": {
+            "fullName": "google.cloud.observability.v1.Observability",
+            "shortName": "Observability"
+          },
+          "shortName": "DeleteLink"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "observabilitypb.DeleteLinkRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteLinkOperation",
+        "shortName": "DeleteLink"
+      },
+      "description": "DeleteLink delete a link.",
+      "file": "Client/DeleteLink/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "observability_v1_generated_Observability_DeleteLink_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "observability DeleteLink Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.observability.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.observability.v1.Client.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/DeleteOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "observability_v1_generated_Observability_DeleteOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "observability DeleteOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.observability.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.observability.v1.Client.DeleteTraceScope",
+        "method": {
+          "fullName": "google.cloud.observability.v1.Observability.DeleteTraceScope",
+          "service": {
+            "fullName": "google.cloud.observability.v1.Observability",
+            "shortName": "Observability"
+          },
+          "shortName": "DeleteTraceScope"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "observabilitypb.DeleteTraceScopeRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteTraceScope"
+      },
+      "description": "DeleteTraceScope delete a TraceScope.",
+      "file": "Client/DeleteTraceScope/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "observability_v1_generated_Observability_DeleteTraceScope_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "observability DeleteTraceScope Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.observability.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.observability.v1.Client.GetBucket",
+        "method": {
+          "fullName": "google.cloud.observability.v1.Observability.GetBucket",
+          "service": {
+            "fullName": "google.cloud.observability.v1.Observability",
+            "shortName": "Observability"
+          },
+          "shortName": "GetBucket"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "observabilitypb.GetBucketRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*observabilitypb.Bucket",
+        "shortName": "GetBucket"
+      },
+      "description": "GetBucket get bucket resource.",
+      "file": "Client/GetBucket/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "observability_v1_generated_Observability_GetBucket_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "observability GetBucket Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.observability.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.observability.v1.Client.GetDataset",
+        "method": {
+          "fullName": "google.cloud.observability.v1.Observability.GetDataset",
+          "service": {
+            "fullName": "google.cloud.observability.v1.Observability",
+            "shortName": "Observability"
+          },
+          "shortName": "GetDataset"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "observabilitypb.GetDatasetRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*observabilitypb.Dataset",
+        "shortName": "GetDataset"
+      },
+      "description": "GetDataset get a dataset.",
+      "file": "Client/GetDataset/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "observability_v1_generated_Observability_GetDataset_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "observability GetDataset Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.observability.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.observability.v1.Client.GetLink",
+        "method": {
+          "fullName": "google.cloud.observability.v1.Observability.GetLink",
+          "service": {
+            "fullName": "google.cloud.observability.v1.Observability",
+            "shortName": "Observability"
+          },
+          "shortName": "GetLink"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "observabilitypb.GetLinkRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*observabilitypb.Link",
+        "shortName": "GetLink"
+      },
+      "description": "GetLink get a link.",
+      "file": "Client/GetLink/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "observability_v1_generated_Observability_GetLink_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "observability GetLink Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.observability.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.observability.v1.Client.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "shortName": "GetLocation"
+      },
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "observability_v1_generated_Observability_GetLocation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "observability GetLocation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.observability.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.observability.v1.Client.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "observability_v1_generated_Observability_GetOperation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "observability GetOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.observability.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.observability.v1.Client.GetScope",
+        "method": {
+          "fullName": "google.cloud.observability.v1.Observability.GetScope",
+          "service": {
+            "fullName": "google.cloud.observability.v1.Observability",
+            "shortName": "Observability"
+          },
+          "shortName": "GetScope"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "observabilitypb.GetScopeRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*observabilitypb.Scope",
+        "shortName": "GetScope"
+      },
+      "description": "GetScope gets details of a single Scope.",
+      "file": "Client/GetScope/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "observability_v1_generated_Observability_GetScope_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "observability GetScope Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.observability.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.observability.v1.Client.GetSettings",
+        "method": {
+          "fullName": "google.cloud.observability.v1.Observability.GetSettings",
+          "service": {
+            "fullName": "google.cloud.observability.v1.Observability",
+            "shortName": "Observability"
+          },
+          "shortName": "GetSettings"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "observabilitypb.GetSettingsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*observabilitypb.Settings",
+        "shortName": "GetSettings"
+      },
+      "description": "GetSettings get Settings",
+      "file": "Client/GetSettings/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "observability_v1_generated_Observability_GetSettings_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "observability GetSettings Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.observability.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.observability.v1.Client.GetTraceScope",
+        "method": {
+          "fullName": "google.cloud.observability.v1.Observability.GetTraceScope",
+          "service": {
+            "fullName": "google.cloud.observability.v1.Observability",
+            "shortName": "Observability"
+          },
+          "shortName": "GetTraceScope"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "observabilitypb.GetTraceScopeRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*observabilitypb.TraceScope",
+        "shortName": "GetTraceScope"
+      },
+      "description": "GetTraceScope get TraceScope resource.",
+      "file": "Client/GetTraceScope/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "observability_v1_generated_Observability_GetTraceScope_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "observability GetTraceScope Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.observability.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.observability.v1.Client.GetView",
+        "method": {
+          "fullName": "google.cloud.observability.v1.Observability.GetView",
+          "service": {
+            "fullName": "google.cloud.observability.v1.Observability",
+            "shortName": "Observability"
+          },
+          "shortName": "GetView"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "observabilitypb.GetViewRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*observabilitypb.View",
+        "shortName": "GetView"
+      },
+      "description": "GetView get a view.",
+      "file": "Client/GetView/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "observability_v1_generated_Observability_GetView_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "observability GetView Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.observability.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.observability.v1.Client.ListBuckets",
+        "method": {
+          "fullName": "google.cloud.observability.v1.Observability.ListBuckets",
+          "service": {
+            "fullName": "google.cloud.observability.v1.Observability",
+            "shortName": "Observability"
+          },
+          "shortName": "ListBuckets"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "observabilitypb.ListBucketsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "BucketIterator",
+        "shortName": "ListBuckets"
+      },
+      "description": "ListBuckets list buckets of a project in a particular location.",
+      "file": "Client/ListBuckets/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "observability_v1_generated_Observability_ListBuckets_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "observability ListBuckets Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.observability.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.observability.v1.Client.ListDatasets",
+        "method": {
+          "fullName": "google.cloud.observability.v1.Observability.ListDatasets",
+          "service": {
+            "fullName": "google.cloud.observability.v1.Observability",
+            "shortName": "Observability"
+          },
+          "shortName": "ListDatasets"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "observabilitypb.ListDatasetsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DatasetIterator",
+        "shortName": "ListDatasets"
+      },
+      "description": "ListDatasets list datasets of a bucket.",
+      "file": "Client/ListDatasets/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "observability_v1_generated_Observability_ListDatasets_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "observability ListDatasets Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.observability.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.observability.v1.Client.ListLinks",
+        "method": {
+          "fullName": "google.cloud.observability.v1.Observability.ListLinks",
+          "service": {
+            "fullName": "google.cloud.observability.v1.Observability",
+            "shortName": "Observability"
+          },
+          "shortName": "ListLinks"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "observabilitypb.ListLinksRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "LinkIterator",
+        "shortName": "ListLinks"
+      },
+      "description": "ListLinks list links of a dataset.",
+      "file": "Client/ListLinks/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "observability_v1_generated_Observability_ListLinks_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "observability ListLinks Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.observability.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.observability.v1.Client.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "shortName": "ListLocations"
+      },
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "observability_v1_generated_Observability_ListLocations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "observability ListLocations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.observability.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.observability.v1.Client.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "observability_v1_generated_Observability_ListOperations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "observability ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.observability.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.observability.v1.Client.ListTraceScopes",
+        "method": {
+          "fullName": "google.cloud.observability.v1.Observability.ListTraceScopes",
+          "service": {
+            "fullName": "google.cloud.observability.v1.Observability",
+            "shortName": "Observability"
+          },
+          "shortName": "ListTraceScopes"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "observabilitypb.ListTraceScopesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "TraceScopeIterator",
+        "shortName": "ListTraceScopes"
+      },
+      "description": "ListTraceScopes list TraceScopes of a project in a particular location.",
+      "file": "Client/ListTraceScopes/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "observability_v1_generated_Observability_ListTraceScopes_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "observability ListTraceScopes Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.observability.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.observability.v1.Client.ListViews",
+        "method": {
+          "fullName": "google.cloud.observability.v1.Observability.ListViews",
+          "service": {
+            "fullName": "google.cloud.observability.v1.Observability",
+            "shortName": "Observability"
+          },
+          "shortName": "ListViews"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "observabilitypb.ListViewsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ViewIterator",
+        "shortName": "ListViews"
+      },
+      "description": "ListViews list views of a dataset.",
+      "file": "Client/ListViews/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "observability_v1_generated_Observability_ListViews_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "observability ListViews Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.observability.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.observability.v1.Client.UpdateBucket",
+        "method": {
+          "fullName": "google.cloud.observability.v1.Observability.UpdateBucket",
+          "service": {
+            "fullName": "google.cloud.observability.v1.Observability",
+            "shortName": "Observability"
+          },
+          "shortName": "UpdateBucket"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "observabilitypb.UpdateBucketRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "UpdateBucketOperation",
+        "shortName": "UpdateBucket"
+      },
+      "description": "UpdateBucket update a bucket.",
+      "file": "Client/UpdateBucket/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "observability_v1_generated_Observability_UpdateBucket_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "observability UpdateBucket Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.observability.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.observability.v1.Client.UpdateLink",
+        "method": {
+          "fullName": "google.cloud.observability.v1.Observability.UpdateLink",
+          "service": {
+            "fullName": "google.cloud.observability.v1.Observability",
+            "shortName": "Observability"
+          },
+          "shortName": "UpdateLink"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "observabilitypb.UpdateLinkRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "UpdateLinkOperation",
+        "shortName": "UpdateLink"
+      },
+      "description": "UpdateLink update a link.",
+      "file": "Client/UpdateLink/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "observability_v1_generated_Observability_UpdateLink_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "observability UpdateLink Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.observability.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.observability.v1.Client.UpdateScope",
+        "method": {
+          "fullName": "google.cloud.observability.v1.Observability.UpdateScope",
+          "service": {
+            "fullName": "google.cloud.observability.v1.Observability",
+            "shortName": "Observability"
+          },
+          "shortName": "UpdateScope"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "observabilitypb.UpdateScopeRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*observabilitypb.Scope",
+        "shortName": "UpdateScope"
+      },
+      "description": "UpdateScope updates the parameters of a single Scope.",
+      "file": "Client/UpdateScope/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "observability_v1_generated_Observability_UpdateScope_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "observability UpdateScope Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.observability.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.observability.v1.Client.UpdateSettings",
+        "method": {
+          "fullName": "google.cloud.observability.v1.Observability.UpdateSettings",
+          "service": {
+            "fullName": "google.cloud.observability.v1.Observability",
+            "shortName": "Observability"
+          },
+          "shortName": "UpdateSettings"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "observabilitypb.UpdateSettingsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "UpdateSettingsOperation",
+        "shortName": "UpdateSettings"
+      },
+      "description": "UpdateSettings update Settings",
+      "file": "Client/UpdateSettings/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "observability_v1_generated_Observability_UpdateSettings_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "observability UpdateSettings Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.observability.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.observability.v1.Client.UpdateTraceScope",
+        "method": {
+          "fullName": "google.cloud.observability.v1.Observability.UpdateTraceScope",
+          "service": {
+            "fullName": "google.cloud.observability.v1.Observability",
+            "shortName": "Observability"
+          },
+          "shortName": "UpdateTraceScope"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "observabilitypb.UpdateTraceScopeRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*observabilitypb.TraceScope",
+        "shortName": "UpdateTraceScope"
+      },
+      "description": "UpdateTraceScope update a TraceScope.",
+      "file": "Client/UpdateTraceScope/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "observability_v1_generated_Observability_UpdateTraceScope_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "observability UpdateTraceScope Sample"
+    }
+  ]
+}

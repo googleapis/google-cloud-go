@@ -1974,79 +1974,79 @@ var File_google_cloud_dataproc_v1_shared_proto protoreflect.FileDescriptor
 
 const file_google_cloud_dataproc_v1_shared_proto_rawDesc = "" +
 	"\n" +
-	"%google/cloud/dataproc/v1/shared.proto\x12\x18google.cloud.dataproc.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd2\x03\n" +
-	"\rRuntimeConfig\x12\x1d\n" +
-	"\aversion\x18\x01 \x01(\tB\x03\xe0A\x01R\aversion\x12,\n" +
-	"\x0fcontainer_image\x18\x02 \x01(\tB\x03\xe0A\x01R\x0econtainerImage\x12\\\n" +
+	"%google/cloud/dataproc/v1/shared.proto\x12\x18google.cloud.dataproc.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd8\x03\n" +
+	"\rRuntimeConfig\x12\x1e\n" +
+	"\aversion\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\aversion\x12-\n" +
+	"\x0fcontainer_image\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x0econtainerImage\x12]\n" +
 	"\n" +
-	"properties\x18\x03 \x03(\v27.google.cloud.dataproc.v1.RuntimeConfig.PropertiesEntryB\x03\xe0A\x01R\n" +
-	"properties\x12\\\n" +
-	"\x11repository_config\x18\x05 \x01(\v2*.google.cloud.dataproc.v1.RepositoryConfigB\x03\xe0A\x01R\x10repositoryConfig\x12\\\n" +
-	"\x11autotuning_config\x18\x06 \x01(\v2*.google.cloud.dataproc.v1.AutotuningConfigB\x03\xe0A\x01R\x10autotuningConfig\x12\x1b\n" +
-	"\x06cohort\x18\a \x01(\tB\x03\xe0A\x01R\x06cohort\x1a=\n" +
+	"properties\x18\x03 \x03(\v27.google.cloud.dataproc.v1.RuntimeConfig.PropertiesEntryB\x04\xe2A\x01\x01R\n" +
+	"properties\x12]\n" +
+	"\x11repository_config\x18\x05 \x01(\v2*.google.cloud.dataproc.v1.RepositoryConfigB\x04\xe2A\x01\x01R\x10repositoryConfig\x12]\n" +
+	"\x11autotuning_config\x18\x06 \x01(\v2*.google.cloud.dataproc.v1.AutotuningConfigB\x04\xe2A\x01\x01R\x10autotuningConfig\x12\x1c\n" +
+	"\x06cohort\x18\a \x01(\tB\x04\xe2A\x01\x01R\x06cohort\x1a=\n" +
 	"\x0fPropertiesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xcf\x01\n" +
-	"\x11EnvironmentConfig\x12Y\n" +
-	"\x10execution_config\x18\x01 \x01(\v2).google.cloud.dataproc.v1.ExecutionConfigB\x03\xe0A\x01R\x0fexecutionConfig\x12_\n" +
-	"\x12peripherals_config\x18\x02 \x01(\v2+.google.cloud.dataproc.v1.PeripheralsConfigB\x03\xe0A\x01R\x11peripheralsConfig\"\xd4\x05\n" +
-	"\x0fExecutionConfig\x12,\n" +
-	"\x0fservice_account\x18\x02 \x01(\tB\x03\xe0A\x01R\x0eserviceAccount\x12&\n" +
-	"\vnetwork_uri\x18\x04 \x01(\tB\x03\xe0A\x01H\x00R\n" +
-	"networkUri\x12,\n" +
-	"\x0esubnetwork_uri\x18\x05 \x01(\tB\x03\xe0A\x01H\x00R\rsubnetworkUri\x12&\n" +
-	"\fnetwork_tags\x18\x06 \x03(\tB\x03\xe0A\x01R\vnetworkTags\x12B\n" +
-	"\akms_key\x18\a \x01(\tB)\xe0A\x01\xfaA#\n" +
-	"!cloudkms.googleapis.com/CryptoKeyR\x06kmsKey\x129\n" +
-	"\bidle_ttl\x18\b \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\aidleTtl\x120\n" +
-	"\x03ttl\x18\t \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x03ttl\x12*\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xd1\x01\n" +
+	"\x11EnvironmentConfig\x12Z\n" +
+	"\x10execution_config\x18\x01 \x01(\v2).google.cloud.dataproc.v1.ExecutionConfigB\x04\xe2A\x01\x01R\x0fexecutionConfig\x12`\n" +
+	"\x12peripherals_config\x18\x02 \x01(\v2+.google.cloud.dataproc.v1.PeripheralsConfigB\x04\xe2A\x01\x01R\x11peripheralsConfig\"\xde\x05\n" +
+	"\x0fExecutionConfig\x12-\n" +
+	"\x0fservice_account\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x0eserviceAccount\x12'\n" +
+	"\vnetwork_uri\x18\x04 \x01(\tB\x04\xe2A\x01\x01H\x00R\n" +
+	"networkUri\x12-\n" +
+	"\x0esubnetwork_uri\x18\x05 \x01(\tB\x04\xe2A\x01\x01H\x00R\rsubnetworkUri\x12'\n" +
+	"\fnetwork_tags\x18\x06 \x03(\tB\x04\xe2A\x01\x01R\vnetworkTags\x12C\n" +
+	"\akms_key\x18\a \x01(\tB*\xe2A\x01\x01\xfaA#\n" +
+	"!cloudkms.googleapis.com/CryptoKeyR\x06kmsKey\x12:\n" +
+	"\bidle_ttl\x18\b \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\aidleTtl\x121\n" +
+	"\x03ttl\x18\t \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x03ttl\x12+\n" +
 	"\x0estaging_bucket\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\rstagingBucket\x12h\n" +
-	"\x15authentication_config\x18\v \x01(\v2..google.cloud.dataproc.v1.AuthenticationConfigB\x03\xe0A\x01R\x14authenticationConfig\x12{\n" +
-	"\x15resource_manager_tags\x18\f \x03(\v2B.google.cloud.dataproc.v1.ExecutionConfig.ResourceManagerTagsEntryB\x03\xe0A\x01R\x13resourceManagerTags\x1aF\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\rstagingBucket\x12i\n" +
+	"\x15authentication_config\x18\v \x01(\v2..google.cloud.dataproc.v1.AuthenticationConfigB\x04\xe2A\x01\x01R\x14authenticationConfig\x12|\n" +
+	"\x15resource_manager_tags\x18\f \x03(\v2B.google.cloud.dataproc.v1.ExecutionConfig.ResourceManagerTagsEntryB\x04\xe2A\x01\x01R\x13resourceManagerTags\x1aF\n" +
 	"\x18ResourceManagerTagsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\t\n" +
-	"\anetwork\"J\n" +
-	"\x18SparkHistoryServerConfig\x12.\n" +
-	"\x10dataproc_cluster\x18\x01 \x01(\tB\x03\xe0A\x01R\x0fdataprocCluster\"\xe2\x01\n" +
-	"\x11PeripheralsConfig\x12U\n" +
-	"\x11metastore_service\x18\x01 \x01(\tB(\xe0A\x01\xfaA\"\n" +
-	" metastore.googleapis.com/ServiceR\x10metastoreService\x12v\n" +
-	"\x1bspark_history_server_config\x18\x02 \x01(\v22.google.cloud.dataproc.v1.SparkHistoryServerConfigB\x03\xe0A\x01R\x18sparkHistoryServerConfig\"\xae\x03\n" +
-	"\vRuntimeInfo\x12W\n" +
-	"\tendpoints\x18\x01 \x03(\v24.google.cloud.dataproc.v1.RuntimeInfo.EndpointsEntryB\x03\xe0A\x03R\tendpoints\x12\"\n" +
+	"\anetwork\"K\n" +
+	"\x18SparkHistoryServerConfig\x12/\n" +
+	"\x10dataproc_cluster\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0fdataprocCluster\"\xe4\x01\n" +
+	"\x11PeripheralsConfig\x12V\n" +
+	"\x11metastore_service\x18\x01 \x01(\tB)\xe2A\x01\x01\xfaA\"\n" +
+	" metastore.googleapis.com/ServiceR\x10metastoreService\x12w\n" +
+	"\x1bspark_history_server_config\x18\x02 \x01(\v22.google.cloud.dataproc.v1.SparkHistoryServerConfigB\x04\xe2A\x01\x01R\x18sparkHistoryServerConfig\"\xb3\x03\n" +
+	"\vRuntimeInfo\x12X\n" +
+	"\tendpoints\x18\x01 \x03(\v24.google.cloud.dataproc.v1.RuntimeInfo.EndpointsEntryB\x04\xe2A\x01\x03R\tendpoints\x12#\n" +
 	"\n" +
-	"output_uri\x18\x02 \x01(\tB\x03\xe0A\x03R\toutputUri\x127\n" +
-	"\x15diagnostic_output_uri\x18\x03 \x01(\tB\x03\xe0A\x03R\x13diagnosticOutputUri\x12X\n" +
-	"\x11approximate_usage\x18\x06 \x01(\v2&.google.cloud.dataproc.v1.UsageMetricsB\x03\xe0A\x03R\x10approximateUsage\x12Q\n" +
-	"\rcurrent_usage\x18\a \x01(\v2'.google.cloud.dataproc.v1.UsageSnapshotB\x03\xe0A\x03R\fcurrentUsage\x1a<\n" +
+	"output_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\toutputUri\x128\n" +
+	"\x15diagnostic_output_uri\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x13diagnosticOutputUri\x12Y\n" +
+	"\x11approximate_usage\x18\x06 \x01(\v2&.google.cloud.dataproc.v1.UsageMetricsB\x04\xe2A\x01\x03R\x10approximateUsage\x12R\n" +
+	"\rcurrent_usage\x18\a \x01(\v2'.google.cloud.dataproc.v1.UsageSnapshotB\x04\xe2A\x01\x03R\fcurrentUsage\x1a<\n" +
 	"\x0eEndpointsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xb4\x02\n" +
-	"\fUsageMetrics\x12/\n" +
-	"\x11milli_dcu_seconds\x18\x01 \x01(\x03B\x03\xe0A\x01R\x0fmilliDcuSeconds\x12@\n" +
-	"\x1ashuffle_storage_gb_seconds\x18\x02 \x01(\x03B\x03\xe0A\x01R\x17shuffleStorageGbSeconds\x12?\n" +
-	"\x19milli_accelerator_seconds\x18\x03 \x01(\x03B\x03\xe0A\x01R\x17milliAcceleratorSeconds\x12.\n" +
-	"\x10accelerator_type\x18\x04 \x01(\tB\x03\xe0A\x01R\x0facceleratorType\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\n" +
-	"updateTime\"\xff\x02\n" +
-	"\rUsageSnapshot\x12 \n" +
-	"\tmilli_dcu\x18\x01 \x01(\x03B\x03\xe0A\x01R\bmilliDcu\x121\n" +
-	"\x12shuffle_storage_gb\x18\x02 \x01(\x03B\x03\xe0A\x01R\x10shuffleStorageGb\x12/\n" +
-	"\x11milli_dcu_premium\x18\x04 \x01(\x03B\x03\xe0A\x01R\x0fmilliDcuPremium\x12@\n" +
-	"\x1ashuffle_storage_gb_premium\x18\x05 \x01(\x03B\x03\xe0A\x01R\x17shuffleStorageGbPremium\x120\n" +
-	"\x11milli_accelerator\x18\x06 \x01(\x03B\x03\xe0A\x01R\x10milliAccelerator\x12.\n" +
-	"\x10accelerator_type\x18\a \x01(\tB\x03\xe0A\x01R\x0facceleratorType\x12D\n" +
-	"\rsnapshot_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\fsnapshotTime\"\xc6\x01\n" +
-	"\x10GkeClusterConfig\x12V\n" +
-	"\x12gke_cluster_target\x18\x02 \x01(\tB(\xe0A\x01\xfaA\"\n" +
-	" container.googleapis.com/ClusterR\x10gkeClusterTarget\x12Z\n" +
-	"\x10node_pool_target\x18\x03 \x03(\v2+.google.cloud.dataproc.v1.GkeNodePoolTargetB\x03\xe0A\x01R\x0enodePoolTarget\"\xb3\x02\n" +
-	"\x17KubernetesClusterConfig\x126\n" +
-	"\x14kubernetes_namespace\x18\x01 \x01(\tB\x03\xe0A\x01R\x13kubernetesNamespace\x12_\n" +
-	"\x12gke_cluster_config\x18\x02 \x01(\v2*.google.cloud.dataproc.v1.GkeClusterConfigB\x03\xe0A\x02H\x00R\x10gkeClusterConfig\x12u\n" +
-	"\x1akubernetes_software_config\x18\x03 \x01(\v22.google.cloud.dataproc.v1.KubernetesSoftwareConfigB\x03\xe0A\x01R\x18kubernetesSoftwareConfigB\b\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xb9\x02\n" +
+	"\fUsageMetrics\x120\n" +
+	"\x11milli_dcu_seconds\x18\x01 \x01(\x03B\x04\xe2A\x01\x01R\x0fmilliDcuSeconds\x12A\n" +
+	"\x1ashuffle_storage_gb_seconds\x18\x02 \x01(\x03B\x04\xe2A\x01\x01R\x17shuffleStorageGbSeconds\x12@\n" +
+	"\x19milli_accelerator_seconds\x18\x03 \x01(\x03B\x04\xe2A\x01\x01R\x17milliAcceleratorSeconds\x12/\n" +
+	"\x10accelerator_type\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x0facceleratorType\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\n" +
+	"updateTime\"\x86\x03\n" +
+	"\rUsageSnapshot\x12!\n" +
+	"\tmilli_dcu\x18\x01 \x01(\x03B\x04\xe2A\x01\x01R\bmilliDcu\x122\n" +
+	"\x12shuffle_storage_gb\x18\x02 \x01(\x03B\x04\xe2A\x01\x01R\x10shuffleStorageGb\x120\n" +
+	"\x11milli_dcu_premium\x18\x04 \x01(\x03B\x04\xe2A\x01\x01R\x0fmilliDcuPremium\x12A\n" +
+	"\x1ashuffle_storage_gb_premium\x18\x05 \x01(\x03B\x04\xe2A\x01\x01R\x17shuffleStorageGbPremium\x121\n" +
+	"\x11milli_accelerator\x18\x06 \x01(\x03B\x04\xe2A\x01\x01R\x10milliAccelerator\x12/\n" +
+	"\x10accelerator_type\x18\a \x01(\tB\x04\xe2A\x01\x01R\x0facceleratorType\x12E\n" +
+	"\rsnapshot_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\fsnapshotTime\"\xc8\x01\n" +
+	"\x10GkeClusterConfig\x12W\n" +
+	"\x12gke_cluster_target\x18\x02 \x01(\tB)\xe2A\x01\x01\xfaA\"\n" +
+	" container.googleapis.com/ClusterR\x10gkeClusterTarget\x12[\n" +
+	"\x10node_pool_target\x18\x03 \x03(\v2+.google.cloud.dataproc.v1.GkeNodePoolTargetB\x04\xe2A\x01\x01R\x0enodePoolTarget\"\xb6\x02\n" +
+	"\x17KubernetesClusterConfig\x127\n" +
+	"\x14kubernetes_namespace\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x13kubernetesNamespace\x12`\n" +
+	"\x12gke_cluster_config\x18\x02 \x01(\v2*.google.cloud.dataproc.v1.GkeClusterConfigB\x04\xe2A\x01\x02H\x00R\x10gkeClusterConfig\x12v\n" +
+	"\x1akubernetes_software_config\x18\x03 \x01(\v22.google.cloud.dataproc.v1.KubernetesSoftwareConfigB\x04\xe2A\x01\x01R\x18kubernetesSoftwareConfigB\b\n" +
 	"\x06config\"\xf9\x02\n" +
 	"\x18KubernetesSoftwareConfig\x12u\n" +
 	"\x11component_version\x18\x01 \x03(\v2H.google.cloud.dataproc.v1.KubernetesSoftwareConfig.ComponentVersionEntryR\x10componentVersion\x12b\n" +
@@ -2058,47 +2058,47 @@ const file_google_cloud_dataproc_v1_shared_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a=\n" +
 	"\x0fPropertiesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xbf\x02\n" +
-	"\x11GkeNodePoolTarget\x12 \n" +
-	"\tnode_pool\x18\x01 \x01(\tB\x03\xe0A\x02R\bnodePool\x12K\n" +
-	"\x05roles\x18\x02 \x03(\x0e20.google.cloud.dataproc.v1.GkeNodePoolTarget.RoleB\x03\xe0A\x02R\x05roles\x12Z\n" +
-	"\x10node_pool_config\x18\x03 \x01(\v2+.google.cloud.dataproc.v1.GkeNodePoolConfigB\x03\xe0A\x04R\x0enodePoolConfig\"_\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xc2\x02\n" +
+	"\x11GkeNodePoolTarget\x12!\n" +
+	"\tnode_pool\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bnodePool\x12L\n" +
+	"\x05roles\x18\x02 \x03(\x0e20.google.cloud.dataproc.v1.GkeNodePoolTarget.RoleB\x04\xe2A\x01\x02R\x05roles\x12[\n" +
+	"\x10node_pool_config\x18\x03 \x01(\v2+.google.cloud.dataproc.v1.GkeNodePoolConfigB\x04\xe2A\x01\x04R\x0enodePoolConfig\"_\n" +
 	"\x04Role\x12\x14\n" +
 	"\x10ROLE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aDEFAULT\x10\x01\x12\x0e\n" +
 	"\n" +
 	"CONTROLLER\x10\x02\x12\x10\n" +
 	"\fSPARK_DRIVER\x10\x03\x12\x12\n" +
-	"\x0eSPARK_EXECUTOR\x10\x04\"\xb1\a\n" +
-	"\x11GkeNodePoolConfig\x12V\n" +
-	"\x06config\x18\x02 \x01(\v29.google.cloud.dataproc.v1.GkeNodePoolConfig.GkeNodeConfigB\x03\xe0A\x01R\x06config\x12!\n" +
-	"\tlocations\x18\r \x03(\tB\x03\xe0A\x01R\tlocations\x12o\n" +
-	"\vautoscaling\x18\x04 \x01(\v2H.google.cloud.dataproc.v1.GkeNodePoolConfig.GkeNodePoolAutoscalingConfigB\x03\xe0A\x01R\vautoscaling\x1a\x9c\x03\n" +
-	"\rGkeNodeConfig\x12&\n" +
-	"\fmachine_type\x18\x01 \x01(\tB\x03\xe0A\x01R\vmachineType\x12+\n" +
-	"\x0flocal_ssd_count\x18\a \x01(\x05B\x03\xe0A\x01R\rlocalSsdCount\x12%\n" +
+	"\x0eSPARK_EXECUTOR\x10\x04\"\xbb\a\n" +
+	"\x11GkeNodePoolConfig\x12W\n" +
+	"\x06config\x18\x02 \x01(\v29.google.cloud.dataproc.v1.GkeNodePoolConfig.GkeNodeConfigB\x04\xe2A\x01\x01R\x06config\x12\"\n" +
+	"\tlocations\x18\r \x03(\tB\x04\xe2A\x01\x01R\tlocations\x12p\n" +
+	"\vautoscaling\x18\x04 \x01(\v2H.google.cloud.dataproc.v1.GkeNodePoolConfig.GkeNodePoolAutoscalingConfigB\x04\xe2A\x01\x01R\vautoscaling\x1a\xa3\x03\n" +
+	"\rGkeNodeConfig\x12'\n" +
+	"\fmachine_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\vmachineType\x12,\n" +
+	"\x0flocal_ssd_count\x18\a \x01(\x05B\x04\xe2A\x01\x01R\rlocalSsdCount\x12&\n" +
 	"\vpreemptible\x18\n" +
-	" \x01(\bB\x03\xe0A\x01R\vpreemptible\x12q\n" +
-	"\faccelerators\x18\v \x03(\v2H.google.cloud.dataproc.v1.GkeNodePoolConfig.GkeNodePoolAcceleratorConfigB\x03\xe0A\x01R\faccelerators\x12-\n" +
-	"\x10min_cpu_platform\x18\r \x01(\tB\x03\xe0A\x01R\x0eminCpuPlatform\x12T\n" +
-	"\x11boot_disk_kms_key\x18\x17 \x01(\tB)\xe0A\x01\xfaA#\n" +
-	"!cloudkms.googleapis.com/CryptoKeyR\x0ebootDiskKmsKey\x12\x17\n" +
-	"\x04spot\x18  \x01(\bB\x03\xe0A\x01R\x04spot\x1a\xa4\x01\n" +
+	" \x01(\bB\x04\xe2A\x01\x01R\vpreemptible\x12r\n" +
+	"\faccelerators\x18\v \x03(\v2H.google.cloud.dataproc.v1.GkeNodePoolConfig.GkeNodePoolAcceleratorConfigB\x04\xe2A\x01\x01R\faccelerators\x12.\n" +
+	"\x10min_cpu_platform\x18\r \x01(\tB\x04\xe2A\x01\x01R\x0eminCpuPlatform\x12U\n" +
+	"\x11boot_disk_kms_key\x18\x17 \x01(\tB*\xe2A\x01\x01\xfaA#\n" +
+	"!cloudkms.googleapis.com/CryptoKeyR\x0ebootDiskKmsKey\x12\x18\n" +
+	"\x04spot\x18  \x01(\bB\x04\xe2A\x01\x01R\x04spot\x1a\xa4\x01\n" +
 	"\x1cGkeNodePoolAcceleratorConfig\x12+\n" +
 	"\x11accelerator_count\x18\x01 \x01(\x03R\x10acceleratorCount\x12)\n" +
 	"\x10accelerator_type\x18\x02 \x01(\tR\x0facceleratorType\x12,\n" +
 	"\x12gpu_partition_size\x18\x03 \x01(\tR\x10gpuPartitionSize\x1aj\n" +
 	"\x1cGkeNodePoolAutoscalingConfig\x12$\n" +
 	"\x0emin_node_count\x18\x02 \x01(\x05R\fminNodeCount\x12$\n" +
-	"\x0emax_node_count\x18\x03 \x01(\x05R\fmaxNodeCount\"\x94\x02\n" +
-	"\x14AuthenticationConfig\x12\x91\x01\n" +
-	"!user_workload_authentication_type\x18\x01 \x01(\x0e2A.google.cloud.dataproc.v1.AuthenticationConfig.AuthenticationTypeB\x03\xe0A\x01R\x1euserWorkloadAuthenticationType\"h\n" +
+	"\x0emax_node_count\x18\x03 \x01(\x05R\fmaxNodeCount\"\x95\x02\n" +
+	"\x14AuthenticationConfig\x12\x92\x01\n" +
+	"!user_workload_authentication_type\x18\x01 \x01(\x0e2A.google.cloud.dataproc.v1.AuthenticationConfig.AuthenticationTypeB\x04\xe2A\x01\x01R\x1euserWorkloadAuthenticationType\"h\n" +
 	"\x12AuthenticationType\x12#\n" +
 	"\x1fAUTHENTICATION_TYPE_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fSERVICE_ACCOUNT\x10\x01\x12\x18\n" +
-	"\x14END_USER_CREDENTIALS\x10\x02\"\xd6\x01\n" +
-	"\x10AutotuningConfig\x12V\n" +
-	"\tscenarios\x18\x02 \x03(\x0e23.google.cloud.dataproc.v1.AutotuningConfig.ScenarioB\x03\xe0A\x01R\tscenarios\"j\n" +
+	"\x14END_USER_CREDENTIALS\x10\x02\"\xd7\x01\n" +
+	"\x10AutotuningConfig\x12W\n" +
+	"\tscenarios\x18\x02 \x03(\x0e23.google.cloud.dataproc.v1.AutotuningConfig.ScenarioB\x04\xe2A\x01\x01R\tscenarios\"j\n" +
 	"\bScenario\x12\x18\n" +
 	"\x14SCENARIO_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aSCALING\x10\x02\x12\x17\n" +
@@ -2106,11 +2106,11 @@ const file_google_cloud_dataproc_v1_shared_proto_rawDesc = "" +
 	"\n" +
 	"\x06MEMORY\x10\x04\x12\b\n" +
 	"\x04NONE\x10\x05\x12\b\n" +
-	"\x04AUTO\x10\x06\"}\n" +
-	"\x10RepositoryConfig\x12i\n" +
-	"\x16pypi_repository_config\x18\x01 \x01(\v2..google.cloud.dataproc.v1.PyPiRepositoryConfigB\x03\xe0A\x01R\x14pypiRepositoryConfig\"D\n" +
-	"\x14PyPiRepositoryConfig\x12,\n" +
-	"\x0fpypi_repository\x18\x01 \x01(\tB\x03\xe0A\x01R\x0epypiRepository*\x91\x02\n" +
+	"\x04AUTO\x10\x06\"~\n" +
+	"\x10RepositoryConfig\x12j\n" +
+	"\x16pypi_repository_config\x18\x01 \x01(\v2..google.cloud.dataproc.v1.PyPiRepositoryConfigB\x04\xe2A\x01\x01R\x14pypiRepositoryConfig\"E\n" +
+	"\x14PyPiRepositoryConfig\x12-\n" +
+	"\x0fpypi_repository\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0epypiRepository*\x91\x02\n" +
 	"\tComponent\x12\x19\n" +
 	"\x15COMPONENT_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bANACONDA\x10\x05\x12\t\n" +
