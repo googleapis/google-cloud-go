@@ -17,9 +17,11 @@ package main
 import (
 	"context"
 	"fmt"
+	"hash/crc32"
 	"log"
 	"net"
 	"os"
+	"time"
 
 	"testing"
 
@@ -32,6 +34,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/test/bufconn"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (
@@ -423,5 +427,119 @@ func TestReadWriteRow(t *testing.T) {
 
 	if string(resp.Row.Key) != rowKey {
 		t.Errorf("testproxy test: ReadModifyWriteRow() returned wrong results; got: %v", resp.Row.Key)
+	}
+}
+
+type mockBigtableSQLServer struct {
+	btpb.UnimplementedBigtableServer
+}
+
+func (m *mockBigtableSQLServer) PrepareQuery(ctx context.Context, req *btpb.PrepareQueryRequest) (*btpb.PrepareQueryResponse, error) {
+	return &btpb.PrepareQueryResponse{
+		PreparedQuery: []byte("prepared-query-bytes"),
+		ValidUntil:    timestamppb.New(time.Now().Add(time.Hour)),
+		Metadata: &btpb.ResultSetMetadata{
+			Schema: &btpb.ResultSetMetadata_ProtoSchema{
+				ProtoSchema: &btpb.ProtoSchema{
+					Columns: []*btpb.ColumnMetadata{
+						{
+							Name: "strCol",
+							Type: &btpb.Type{Kind: &btpb.Type_StringType{StringType: &btpb.Type_String{}}},
+						},
+						{
+							Name: "intCol",
+							Type: &btpb.Type{Kind: &btpb.Type_Int64Type{Int64Type: &btpb.Type_Int64{}}},
+						},
+					},
+				},
+			},
+		},
+	}, nil
+}
+
+func (m *mockBigtableSQLServer) ExecuteQuery(req *btpb.ExecuteQueryRequest, stream btpb.Bigtable_ExecuteQueryServer) error {
+	rows := &btpb.ProtoRows{
+		Values: []*btpb.Value{
+			{Kind: &btpb.Value_StringValue{StringValue: req.GetParams()["strParam"].GetStringValue()}},
+			{Kind: &btpb.Value_IntValue{IntValue: 42}},
+		},
+	}
+	batchData, err := proto.Marshal(rows)
+	if err != nil {
+		return err
+	}
+	checksum := crc32.Checksum(batchData, crc32.MakeTable(crc32.Castagnoli))
+	return stream.Send(&btpb.ExecuteQueryResponse{
+		Response: &btpb.ExecuteQueryResponse_Results{
+			Results: &btpb.PartialResultSet{
+				PartialRows: &btpb.PartialResultSet_ProtoRowsBatch{
+					ProtoRowsBatch: &btpb.ProtoRowsBatch{
+						BatchData: batchData,
+					},
+				},
+				BatchChecksum: &checksum,
+				ResumeToken:   []byte("token-1"),
+				Reset_:        true,
+			},
+		},
+	})
+}
+
+func TestExecuteQuery(t *testing.T) {
+	ctx := context.Background()
+
+	l, err := net.Listen("tcp", "localhost:0")
+	if err != nil {
+		t.Fatalf("testproxy test: failed to listen: %v", err)
+	}
+	gs := grpc.NewServer()
+	btpb.RegisterBigtableServer(gs, &mockBigtableSQLServer{})
+	go func() {
+		_ = gs.Serve(l)
+	}()
+	defer gs.Stop()
+
+	cid := "testExecuteQueryClient"
+	_, err = client.CreateClient(ctx, &pb.CreateClientRequest{
+		ClientId:   cid,
+		ProjectId:  "client",
+		DataTarget: l.Addr().String(),
+		InstanceId: "instance",
+	})
+	if err != nil {
+		t.Fatalf("testproxy test: CreateClient() failed: %v", err)
+	}
+	defer client.RemoveClient(ctx, &pb.RemoveClientRequest{ClientId: cid})
+
+	resp, err := client.ExecuteQuery(ctx, &pb.ExecuteQueryRequest{
+		ClientId: cid,
+		Request: &btpb.ExecuteQueryRequest{
+			InstanceName: "projects/client/instances/instance",
+			Query:        "SELECT @strParam AS strCol, 42 AS intCol",
+			Params: map[string]*btpb.Value{
+				"strParam": {
+					Type: &btpb.Type{Kind: &btpb.Type_StringType{StringType: &btpb.Type_String{}}},
+					Kind: &btpb.Value_StringValue{StringValue: "hello"},
+				},
+			},
+		},
+	})
+	if err != nil {
+		t.Fatalf("testproxy test: ExecuteQuery() returned error: %v", err)
+	}
+	if resp.Status.Code != int32(codes.OK) {
+		t.Fatalf("testproxy test: ExecuteQuery() didn't return OK; got %v (%s)", resp.Status.Code, resp.Status.Message)
+	}
+	if len(resp.GetMetadata().GetColumns()) != 2 {
+		t.Fatalf("testproxy test: ExecuteQuery() returned %d columns, want 2", len(resp.GetMetadata().GetColumns()))
+	}
+	if len(resp.GetRows()) != 1 {
+		t.Fatalf("testproxy test: ExecuteQuery() returned %d rows, want 1", len(resp.GetRows()))
+	}
+	if got := resp.GetRows()[0].GetValues()[0].GetStringValue(); got != "hello" {
+		t.Errorf("testproxy test: ExecuteQuery() col 0 = %q, want %q", got, "hello")
+	}
+	if got := resp.GetRows()[0].GetValues()[1].GetIntValue(); got != 42 {
+		t.Errorf("testproxy test: ExecuteQuery() col 1 = %d, want 42", got)
 	}
 }
