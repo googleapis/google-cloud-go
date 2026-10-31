@@ -1390,6 +1390,7 @@ func (s *bidiReadStreamSession) receiveLoop() {
 				databufs: databufs,
 			}
 			err = decoder.readFullObjectResponse()
+			traceBidiReadResponse(s.stream, decoder, err) // Payload size for tracing.
 			if err == nil && !s.params.disableMRDReadChecksum {
 				decoder.verifyChecksums()
 			}
