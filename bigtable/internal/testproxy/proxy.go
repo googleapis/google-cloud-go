@@ -16,25 +16,30 @@ package main
 
 import (
 	"context"
+	"encoding/base64"
 	"errors"
 	"flag"
 	"fmt"
 	"log"
 	"net"
+	"reflect"
 	"strings"
 	"sync"
 	"time"
 
 	"cloud.google.com/go/bigtable"
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
+	"cloud.google.com/go/civil"
 	pb "github.com/googleapis/cloud-bigtable-clients-test/testproxypb"
 	"google.golang.org/api/option"
 	statpb "google.golang.org/genproto/googleapis/rpc/status"
+	"google.golang.org/genproto/googleapis/type/date"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
 	stat "google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/durationpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (
@@ -916,6 +921,498 @@ func (s *goTestProxyServer) ReadModifyWriteRow(ctx context.Context, req *pb.Read
 	}
 
 	res.Row = rp
+	return res, nil
+}
+
+// sqlTypeFromProto converts a Bigtable protobuf Type into a bigtable.SQLType.
+func sqlTypeFromProto(pbType *btpb.Type) (bigtable.SQLType, error) {
+	if pbType == nil || pbType.Kind == nil {
+		return nil, errors.New("parameter type is nil or has nil kind")
+	}
+	switch k := pbType.Kind.(type) {
+	case *btpb.Type_BytesType:
+		return bigtable.BytesSQLType{}, nil
+	case *btpb.Type_StringType:
+		return bigtable.StringSQLType{}, nil
+	case *btpb.Type_Int64Type:
+		return bigtable.Int64SQLType{}, nil
+	case *btpb.Type_Float32Type:
+		return bigtable.Float32SQLType{}, nil
+	case *btpb.Type_Float64Type:
+		return bigtable.Float64SQLType{}, nil
+	case *btpb.Type_BoolType:
+		return bigtable.BoolSQLType{}, nil
+	case *btpb.Type_TimestampType:
+		return bigtable.TimestampSQLType{}, nil
+	case *btpb.Type_DateType:
+		return bigtable.DateSQLType{}, nil
+	case *btpb.Type_ArrayType:
+		if k.ArrayType == nil {
+			return nil, errors.New("array type is nil")
+		}
+		elemType, err := sqlTypeFromProto(k.ArrayType.GetElementType())
+		if err != nil {
+			return nil, err
+		}
+		return bigtable.ArraySQLType{ElemType: elemType}, nil
+	case *btpb.Type_MapType:
+		if k.MapType == nil {
+			return nil, errors.New("map type is nil")
+		}
+		keyType, err := sqlTypeFromProto(k.MapType.GetKeyType())
+		if err != nil {
+			return nil, err
+		}
+		valType, err := sqlTypeFromProto(k.MapType.GetValueType())
+		if err != nil {
+			return nil, err
+		}
+		return bigtable.MapSQLType{KeyType: keyType, ValueType: valType}, nil
+	case *btpb.Type_StructType:
+		if k.StructType == nil {
+			return nil, errors.New("struct type is nil")
+		}
+		fields := make([]bigtable.StructSQLField, len(k.StructType.GetFields()))
+		for i, f := range k.StructType.GetFields() {
+			ft, err := sqlTypeFromProto(f.GetType())
+			if err != nil {
+				return nil, err
+			}
+			fields[i] = bigtable.StructSQLField{
+				Name: f.GetFieldName(),
+				Type: ft,
+			}
+		}
+		return bigtable.StructSQLType{Fields: fields}, nil
+	default:
+		return nil, fmt.Errorf("unsupported protobuf Type kind: %T", k)
+	}
+}
+
+// goValueFromProto converts a Bigtable protobuf Value and Type into a Go value suitable for PreparedStatement.Bind.
+func goValueFromProto(pbVal *btpb.Value, pbType *btpb.Type) (any, error) {
+	if pbType == nil || pbType.Kind == nil {
+		return nil, errors.New("type is nil or has nil kind")
+	}
+	if pbVal == nil || pbVal.Kind == nil {
+		return nil, nil
+	}
+	switch k := pbType.Kind.(type) {
+	case *btpb.Type_BytesType:
+		return pbVal.GetBytesValue(), nil
+	case *btpb.Type_StringType:
+		return pbVal.GetStringValue(), nil
+	case *btpb.Type_Int64Type:
+		return pbVal.GetIntValue(), nil
+	case *btpb.Type_Float32Type:
+		return float32(pbVal.GetFloatValue()), nil
+	case *btpb.Type_Float64Type:
+		return pbVal.GetFloatValue(), nil
+	case *btpb.Type_BoolType:
+		return pbVal.GetBoolValue(), nil
+	case *btpb.Type_TimestampType:
+		ts := pbVal.GetTimestampValue()
+		if ts == nil {
+			return nil, nil
+		}
+		return ts.AsTime(), nil
+	case *btpb.Type_DateType:
+		d := pbVal.GetDateValue()
+		if d == nil {
+			return nil, nil
+		}
+		return civil.Date{
+			Year:  int(d.GetYear()),
+			Month: time.Month(d.GetMonth()),
+			Day:   int(d.GetDay()),
+		}, nil
+	case *btpb.Type_ArrayType:
+		arrVal := pbVal.GetArrayValue()
+		if arrVal == nil {
+			return nil, nil
+		}
+		elemType := k.ArrayType.GetElementType()
+		elems := make([]any, len(arrVal.GetValues()))
+		for i, elemPb := range arrVal.GetValues() {
+			v, err := goValueFromProto(elemPb, elemType)
+			if err != nil {
+				return nil, err
+			}
+			elems[i] = v
+		}
+		return elems, nil
+	default:
+		return nil, fmt.Errorf("unsupported parameter protobuf Type kind: %T", k)
+	}
+}
+
+// protoTypeFromSQLType converts a bigtable.SQLType back into a Bigtable protobuf Type.
+func protoTypeFromSQLType(st bigtable.SQLType) (*btpb.Type, error) {
+	if st == nil {
+		return nil, errors.New("SQLType is nil")
+	}
+	switch t := st.(type) {
+	case bigtable.BytesSQLType:
+		return &btpb.Type{Kind: &btpb.Type_BytesType{BytesType: &btpb.Type_Bytes{}}}, nil
+	case bigtable.StringSQLType:
+		return &btpb.Type{Kind: &btpb.Type_StringType{StringType: &btpb.Type_String{}}}, nil
+	case bigtable.Int64SQLType:
+		return &btpb.Type{Kind: &btpb.Type_Int64Type{Int64Type: &btpb.Type_Int64{}}}, nil
+	case bigtable.Float32SQLType:
+		return &btpb.Type{Kind: &btpb.Type_Float32Type{Float32Type: &btpb.Type_Float32{}}}, nil
+	case bigtable.Float64SQLType:
+		return &btpb.Type{Kind: &btpb.Type_Float64Type{Float64Type: &btpb.Type_Float64{}}}, nil
+	case bigtable.BoolSQLType:
+		return &btpb.Type{Kind: &btpb.Type_BoolType{BoolType: &btpb.Type_Bool{}}}, nil
+	case bigtable.TimestampSQLType:
+		return &btpb.Type{Kind: &btpb.Type_TimestampType{TimestampType: &btpb.Type_Timestamp{}}}, nil
+	case bigtable.DateSQLType:
+		return &btpb.Type{Kind: &btpb.Type_DateType{DateType: &btpb.Type_Date{}}}, nil
+	case bigtable.ArraySQLType:
+		elemType, err := protoTypeFromSQLType(t.ElemType)
+		if err != nil {
+			return nil, err
+		}
+		return &btpb.Type{
+			Kind: &btpb.Type_ArrayType{
+				ArrayType: &btpb.Type_Array{ElementType: elemType},
+			},
+		}, nil
+	case bigtable.MapSQLType:
+		keyType, err := protoTypeFromSQLType(t.KeyType)
+		if err != nil {
+			return nil, err
+		}
+		valType, err := protoTypeFromSQLType(t.ValueType)
+		if err != nil {
+			return nil, err
+		}
+		return &btpb.Type{
+			Kind: &btpb.Type_MapType{
+				MapType: &btpb.Type_Map{KeyType: keyType, ValueType: valType},
+			},
+		}, nil
+	case bigtable.StructSQLType:
+		fields := make([]*btpb.Type_Struct_Field, len(t.Fields))
+		for i, f := range t.Fields {
+			ft, err := protoTypeFromSQLType(f.Type)
+			if err != nil {
+				return nil, err
+			}
+			fields[i] = &btpb.Type_Struct_Field{
+				FieldName: f.Name,
+				Type:      ft,
+			}
+		}
+		return &btpb.Type{
+			Kind: &btpb.Type_StructType{
+				StructType: &btpb.Type_Struct{Fields: fields},
+			},
+		}, nil
+	default:
+		return nil, fmt.Errorf("unsupported SQLType: %T", st)
+	}
+}
+
+// metadataToTestProxyProto converts bigtable.ResultRowMetadata to testproxypb.ResultSetMetadata.
+func metadataToTestProxyProto(md *bigtable.ResultRowMetadata) (*pb.ResultSetMetadata, error) {
+	if md == nil {
+		return nil, nil
+	}
+	cols := make([]*btpb.ColumnMetadata, len(md.Columns))
+	for i, c := range md.Columns {
+		pt, err := protoTypeFromSQLType(c.SQLType)
+		if err != nil {
+			return nil, err
+		}
+		cols[i] = &btpb.ColumnMetadata{
+			Name: c.Name,
+			Type: pt,
+		}
+	}
+	return &pb.ResultSetMetadata{Columns: cols}, nil
+}
+
+// protoValueFromGoValue converts a Go value decoded by ResultRow.GetByIndex back into a Bigtable protobuf Value.
+func protoValueFromGoValue(goVal any, st bigtable.SQLType) (*btpb.Value, error) {
+	if goVal == nil {
+		return &btpb.Value{}, nil
+	}
+	rv := reflect.ValueOf(goVal)
+	if (rv.Kind() == reflect.Ptr || rv.Kind() == reflect.Slice || rv.Kind() == reflect.Map) && rv.IsNil() {
+		return &btpb.Value{}, nil
+	}
+	for rv.Kind() == reflect.Ptr {
+		if rv.IsNil() {
+			return &btpb.Value{}, nil
+		}
+		rv = rv.Elem()
+		goVal = rv.Interface()
+	}
+
+	switch t := st.(type) {
+	case bigtable.BytesSQLType:
+		b, ok := goVal.([]byte)
+		if !ok {
+			return nil, fmt.Errorf("expected []byte for BytesSQLType, got %T", goVal)
+		}
+		return &btpb.Value{Kind: &btpb.Value_BytesValue{BytesValue: b}}, nil
+	case bigtable.StringSQLType:
+		s, ok := goVal.(string)
+		if !ok {
+			return nil, fmt.Errorf("expected string for StringSQLType, got %T", goVal)
+		}
+		return &btpb.Value{Kind: &btpb.Value_StringValue{StringValue: s}}, nil
+	case bigtable.Int64SQLType:
+		v, ok := goVal.(int64)
+		if !ok {
+			return nil, fmt.Errorf("expected int64 for Int64SQLType, got %T", goVal)
+		}
+		return &btpb.Value{Kind: &btpb.Value_IntValue{IntValue: v}}, nil
+	case bigtable.Float32SQLType:
+		v, ok := goVal.(float32)
+		if !ok {
+			return nil, fmt.Errorf("expected float32 for Float32SQLType, got %T", goVal)
+		}
+		return &btpb.Value{Kind: &btpb.Value_FloatValue{FloatValue: float64(v)}}, nil
+	case bigtable.Float64SQLType:
+		v, ok := goVal.(float64)
+		if !ok {
+			return nil, fmt.Errorf("expected float64 for Float64SQLType, got %T", goVal)
+		}
+		return &btpb.Value{Kind: &btpb.Value_FloatValue{FloatValue: v}}, nil
+	case bigtable.BoolSQLType:
+		v, ok := goVal.(bool)
+		if !ok {
+			return nil, fmt.Errorf("expected bool for BoolSQLType, got %T", goVal)
+		}
+		return &btpb.Value{Kind: &btpb.Value_BoolValue{BoolValue: v}}, nil
+	case bigtable.TimestampSQLType:
+		tm, ok := goVal.(time.Time)
+		if !ok {
+			return nil, fmt.Errorf("expected time.Time for TimestampSQLType, got %T", goVal)
+		}
+		return &btpb.Value{Kind: &btpb.Value_TimestampValue{TimestampValue: timestamppb.New(tm)}}, nil
+	case bigtable.DateSQLType:
+		d, ok := goVal.(civil.Date)
+		if !ok {
+			return nil, fmt.Errorf("expected civil.Date for DateSQLType, got %T", goVal)
+		}
+		return &btpb.Value{
+			Kind: &btpb.Value_DateValue{
+				DateValue: &date.Date{
+					Year:  int32(d.Year),
+					Month: int32(d.Month),
+					Day:   int32(d.Day),
+				},
+			},
+		}, nil
+	case bigtable.ArraySQLType:
+		if rv.Kind() != reflect.Slice {
+			return nil, fmt.Errorf("expected slice for ArraySQLType, got %T", goVal)
+		}
+		vals := make([]*btpb.Value, rv.Len())
+		for i := 0; i < rv.Len(); i++ {
+			ev, err := protoValueFromGoValue(rv.Index(i).Interface(), t.ElemType)
+			if err != nil {
+				return nil, err
+			}
+			vals[i] = ev
+		}
+		return &btpb.Value{
+			Kind: &btpb.Value_ArrayValue{
+				ArrayValue: &btpb.ArrayValue{Values: vals},
+			},
+		}, nil
+	case bigtable.MapSQLType:
+		if rv.Kind() != reflect.Map {
+			return nil, fmt.Errorf("expected map for MapSQLType, got %T", goVal)
+		}
+		_, isBytesKey := t.KeyType.(bigtable.BytesSQLType)
+		entries := make([]*btpb.Value, 0, rv.Len())
+		iter := rv.MapRange()
+		for iter.Next() {
+			var keyGoVal any = iter.Key().Interface()
+			if keyGoVal != nil && isBytesKey {
+				// ResultRow base64-encodes []byte map keys into strings.
+				sKey, ok := keyGoVal.(string)
+				if !ok {
+					return nil, fmt.Errorf("expected base64 string map key for BytesSQLType, got %T", keyGoVal)
+				}
+				decoded, err := base64.StdEncoding.DecodeString(sKey)
+				if err != nil {
+					return nil, fmt.Errorf("failed to decode base64 map key: %w", err)
+				}
+				keyGoVal = decoded
+			}
+			kPb, err := protoValueFromGoValue(keyGoVal, t.KeyType)
+			if err != nil {
+				return nil, err
+			}
+			vPb, err := protoValueFromGoValue(iter.Value().Interface(), t.ValueType)
+			if err != nil {
+				return nil, err
+			}
+			entries = append(entries, &btpb.Value{
+				Kind: &btpb.Value_ArrayValue{
+					ArrayValue: &btpb.ArrayValue{Values: []*btpb.Value{kPb, vPb}},
+				},
+			})
+		}
+		return &btpb.Value{
+			Kind: &btpb.Value_ArrayValue{
+				ArrayValue: &btpb.ArrayValue{Values: entries},
+			},
+		}, nil
+	case bigtable.StructSQLType:
+		sVal, ok := goVal.(bigtable.Struct)
+		if !ok {
+			return nil, fmt.Errorf("expected bigtable.Struct for StructSQLType, got %T", goVal)
+		}
+		vals := make([]*btpb.Value, len(t.Fields))
+		for i, f := range t.Fields {
+			var fieldGoVal any
+			if err := sVal.GetByIndex(i, &fieldGoVal); err != nil {
+				return nil, err
+			}
+			fv, err := protoValueFromGoValue(fieldGoVal, f.Type)
+			if err != nil {
+				return nil, err
+			}
+			vals[i] = fv
+		}
+		return &btpb.Value{
+			Kind: &btpb.Value_ArrayValue{
+				ArrayValue: &btpb.ArrayValue{Values: vals},
+			},
+		}, nil
+	default:
+		return nil, fmt.Errorf("unsupported SQLType: %T", st)
+	}
+}
+
+// ExecuteQuery responds to the ExecuteQuery RPC. This method prepares, binds,
+// and executes a SQL query using the Bigtable client under test.
+func (s *goTestProxyServer) ExecuteQuery(ctx context.Context, req *pb.ExecuteQueryRequest) (*pb.ExecuteQueryResult, error) {
+	s.clientsLock.RLock()
+	btc, err := s.client(req.ClientId)
+	s.clientsLock.RUnlock()
+
+	if err != nil {
+		return nil, err
+	}
+
+	rrq := req.GetRequest()
+	if rrq == nil {
+		log.Printf("missing inner request to ExecuteQuery: %v\n", req)
+		return nil, stat.Error(codes.InvalidArgument, "request to ExecuteQuery() is missing inner request")
+	}
+
+	res := &pb.ExecuteQueryResult{
+		Status: &statpb.Status{
+			Code: int32(codes.OK),
+		},
+		Metadata: &pb.ResultSetMetadata{},
+		Rows:     []*pb.SqlRow{},
+	}
+
+	ctx, cancel := btc.timeout(ctx)
+	defer cancel()
+
+	var paramTypes map[string]bigtable.SQLType
+	var paramValues map[string]any
+	if len(rrq.GetParams()) > 0 {
+		paramTypes = make(map[string]bigtable.SQLType, len(rrq.GetParams()))
+		paramValues = make(map[string]any, len(rrq.GetParams()))
+		for name, pbVal := range rrq.GetParams() {
+			st, err := sqlTypeFromProto(pbVal.GetType())
+			if err != nil {
+				res.Status = statusFromError(err)
+				return res, nil
+			}
+			gv, err := goValueFromProto(pbVal, pbVal.GetType())
+			if err != nil {
+				res.Status = statusFromError(err)
+				return res, nil
+			}
+			paramTypes[name] = st
+			paramValues[name] = gv
+		}
+	}
+
+	ps, err := btc.c.PrepareStatement(ctx, rrq.GetQuery(), paramTypes)
+	if err != nil {
+		res.Status = statusFromError(err)
+		return res, nil
+	}
+
+	bs, err := ps.Bind(paramValues)
+	if err != nil {
+		res.Status = statusFromError(err)
+		return res, nil
+	}
+
+	var rowErr error
+	var rows []*pb.SqlRow
+	var mdProto *pb.ResultSetMetadata
+
+	err = bs.Execute(ctx, func(rr bigtable.ResultRow) bool {
+		if mdProto == nil && rr.Metadata != nil {
+			mdProto, rowErr = metadataToTestProxyProto(rr.Metadata)
+			if rowErr != nil {
+				return false
+			}
+		}
+		if rr.Metadata == nil {
+			rowErr = errors.New("ResultRow.Metadata is nil")
+			return false
+		}
+		if len(rr.Metadata.Columns) == 0 {
+			rowErr = errors.New("ResultRow.Metadata has no columns")
+			return false
+		}
+		colVals := make([]*btpb.Value, len(rr.Metadata.Columns))
+		for i, col := range rr.Metadata.Columns {
+			var goVal any
+			if err := rr.GetByIndex(i, &goVal); err != nil {
+				rowErr = err
+				return false
+			}
+			pbVal, err := protoValueFromGoValue(goVal, col.SQLType)
+			if err != nil {
+				rowErr = err
+				return false
+			}
+			colVals[i] = pbVal
+		}
+		rows = append(rows, &pb.SqlRow{Values: colVals})
+		return true
+	})
+
+	if err != nil {
+		res.Status = statusFromError(err)
+		return res, nil
+	}
+	if rowErr != nil {
+		res.Status = statusFromError(rowErr)
+		return res, nil
+	}
+
+	if mdProto == nil {
+		if mp, ok := any(ps).(interface {
+			Metadata() (*bigtable.ResultRowMetadata, error)
+		}); ok {
+			if psMD, err := mp.Metadata(); err == nil && psMD != nil {
+				if converted, err := metadataToTestProxyProto(psMD); err == nil {
+					mdProto = converted
+				}
+			}
+		}
+	}
+	if mdProto != nil {
+		res.Metadata = mdProto
+	}
+	res.Rows = rows
 	return res, nil
 }
 
