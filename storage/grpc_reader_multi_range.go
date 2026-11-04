@@ -191,6 +191,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 	}
 	session, finalSpec, err := manager.createNewSession(initialStreamID, readSpec, true)
 	if err != nil {
+		cancel()
 		manager.setPermanentError(err)
 		return nil, err
 	}
@@ -799,6 +800,7 @@ func (m *multiRangeDownloaderManager) createNewSession(id int, readSpec *storage
 		// Process the successful first result
 		m.processSessionResult(firstResult)
 		if pErr := m.getPermanentError(); pErr != nil {
+			newSession.Shutdown()
 			return nil, nil, pErr
 		}
 	}
@@ -806,29 +808,58 @@ func (m *multiRangeDownloaderManager) createNewSession(id int, readSpec *storage
 }
 
 func (m *multiRangeDownloaderManager) openAndInitializeSession(ctx context.Context, id int, spec *storagepb.BidiReadObjectSpec, waitForResult bool) (*bidiReadStreamSession, mrdSessionResult) {
-	session, err := newBidiReadStreamSession(ctx, id, m.sessionResps, m.client, m.settings, m.params, spec)
-	if err != nil {
-		return nil, mrdSessionResult{err: err}
-	}
 	if !waitForResult {
+		session, err := newBidiReadStreamSession(ctx, id, m.sessionResps, m.client, m.settings, m.params, spec)
+		if err != nil {
+			return nil, mrdSessionResult{err: err}
+		}
 		return session, mrdSessionResult{}
 	}
-	for {
-		select {
-		case result := <-m.sessionResps:
-			if result.session != session {
-				// Stale session result, free it if it has data.
-				if result.decoder != nil {
-					result.decoder.databufs.Free()
-				}
-				continue
-			}
-			return session, result
-		case <-ctx.Done():
-			session.Shutdown()
-			return nil, mrdSessionResult{err: ctx.Err()}
+
+	var (
+		session *bidiReadStreamSession
+		result  mrdSessionResult
+	)
+	err := executeWithReadStallTimeout(ctx, m.client.readStallMgr, m.params.bucket, func(ctx context.Context) error {
+		var err error
+		session, err = newBidiReadStreamSession(ctx, id, m.sessionResps, m.client, m.settings, m.params, spec)
+		if err != nil {
+			return err
 		}
+		for {
+			select {
+			case res := <-m.sessionResps:
+				if res.session != session {
+					// Stale session result, free it if it has data.
+					if res.decoder != nil {
+						res.decoder.databufs.Free()
+					}
+					continue
+				}
+				result = res
+				return res.err
+			case <-ctx.Done():
+				session.Shutdown()
+				session = nil
+				return ctx.Err()
+			}
+		}
+	}, func(stallTimeout time.Duration) {
+		target := stripPort(metricsStateFromContext(ctx).getTarget())
+		m.client.metrics.recordStallDuration(ctx, stallTimeout, "ReadObject", "grpc", target)
+		if result.decoder != nil {
+			result.decoder.databufs.Free()
+		}
+		if session != nil {
+			session.Shutdown()
+			session = nil
+		}
+		result = mrdSessionResult{}
+	})
+	if err != nil {
+		result.err = err
 	}
+	return session, result
 }
 
 func (m *multiRangeDownloaderManager) handleAddCmd(ctx context.Context, cmd *mrdAddCmd) {
