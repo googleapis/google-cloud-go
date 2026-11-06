@@ -131,6 +131,17 @@ type Config struct {
 	// off. The debug surface is otherwise unchanged; flipping the
 	// flag on or off requires rebuilding the client.
 	EnableDebug bool
+
+	// DisableSessionAwareChannelPool reverts to the classic RPC-load-
+	// driven DynamicScaleMonitor for channel-pool sizing. Default
+	// (false) is the recommended production behavior: session-count-
+	// driven sizing keeps per-channel session load under the server-
+	// specified soft cap (ChannelPoolConfiguration.PerServerSessionCount).
+	//
+	// Escape hatch — flip on if a deployment sees pathological churn
+	// under the session-aware policy and needs the classic behavior
+	// while root-cause is investigated.
+	DisableSessionAwareChannelPool bool
 }
 
 // managedSessionPool bundles a pool with its config-listener unregister
@@ -311,6 +322,15 @@ type sessionClient struct {
 	// managed.Pool == nil, so Close falls back to sc.channelPool.Close().
 	managedChannelPool btransport.ManagedChannelPool
 
+	// scaleMonitor sizes the shared channel pool from live session count
+	// instead of RPC load. Populated when Config.DisableSessionAwareChannelPool
+	// is false (default). Nil on the test-only newSessionClientFromParts
+	// path and when the opt-out flag falls back to DynamicScaleMonitor.
+	// Close() stops it before managed.Close so no scale tick races
+	// against pool teardown.
+	scaleMonitor      *btransport.SessionAwareScaleMonitor
+	scaleMonitorUnreg func()
+
 	// enableDebug mirrors Config.EnableDebug. When false, pools this
 	// client mints short-circuit every allocating debug recorder and
 	// SessionDebug() returns nil so /debug/ renders a "not enabled"
@@ -490,6 +510,10 @@ func NewClient(
 	})
 	sc.backgroundCancel = cancel
 	sc.managedChannelPool = managed
+	// SessionAwareScaleMonitor is only meaningful once sc.configManager
+	// exists — newSessionClientFromParts constructs it inline. Register
+	// after that call so the config listener has something to hook.
+	sc.registerScaleMonitor(pool)
 	return sc, nil
 }
 
@@ -638,8 +662,21 @@ func (sc *sessionClient) Close() error {
 	managed := sc.managedChannelPool
 	factory := sc.metricsFactory
 	cancel := sc.backgroundCancel
+	sam := sc.scaleMonitor
+	samUnreg := sc.scaleMonitorUnreg
+	sc.scaleMonitor = nil
+	sc.scaleMonitorUnreg = nil
 	sc.sessionPoolsMu.Unlock()
 
+	// Stop the scale monitor BEFORE mgr.Close and managed.Close so a
+	// mid-tick reconcile cannot call addConnections/removeConnections
+	// into a channel pool that is about to be torn down.
+	if samUnreg != nil {
+		samUnreg()
+	}
+	if sam != nil {
+		sam.Stop()
+	}
 	if mgr != nil {
 		mgr.Close()
 	}
@@ -985,4 +1022,45 @@ func (sc *sessionClient) ChannelPool() *btransport.BigtableChannelPool {
 	}
 	bp, _ := sc.channelPool.(*btransport.BigtableChannelPool)
 	return bp
+}
+
+// registerScaleMonitor wires SessionAwareScaleMonitor to the shared
+// channel pool, hooking its OnConfig into ClientConfigurationManager
+// so the sizer reacts to server-driven min/max/perServerSessionCount
+// updates, and stops/detaches any default DynamicScaleMonitor on
+// sc.managedChannelPool so the two policies never fight over the same
+// pool. When Config.DisableSessionAwareChannelPool is set, leaves (or
+// starts) DynamicScaleMonitor as the fallback. Skipped when pool or
+// configManager is nil (test-fake path).
+//
+// The session-aware monitor reads its session-count signal directly
+// from BigtableChannelPool.TotalStreamCount — sessions are bidi streams
+// (one streamingLoad increment on the picked connEntry when they open),
+// so the pool already tracks the number without any cross-package
+// plumbing.
+func (sc *sessionClient) registerScaleMonitor(pool *btransport.BigtableChannelPool) {
+	if pool == nil {
+		return
+	}
+	if sc.cfg.DisableSessionAwareChannelPool {
+		if sc.managedChannelPool.Dsm == nil {
+			dsm := btransport.NewDynamicScaleMonitor(btopt.DefaultDynamicChannelPoolConfig(), pool)
+			dsm.Start(sc.cfg.BackgroundCtx)
+			sc.managedChannelPool.Dsm = dsm
+			if sc.managedChannelPool.Pool == nil {
+				sc.managedChannelPool.Pool = pool
+			}
+		}
+		return
+	}
+	if sc.configManager == nil {
+		return
+	}
+	if sc.managedChannelPool.Dsm != nil {
+		sc.managedChannelPool.Dsm.Stop()
+		sc.managedChannelPool.Dsm = nil
+	}
+	sc.scaleMonitor = btransport.NewSessionAwareScaleMonitor(pool)
+	sc.scaleMonitorUnreg = sc.configManager.AddChannelPoolConfigListener(sc.scaleMonitor.OnConfig)
+	sc.scaleMonitor.Start(sc.cfg.BackgroundCtx)
 }
