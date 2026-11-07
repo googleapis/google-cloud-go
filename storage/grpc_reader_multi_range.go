@@ -571,6 +571,11 @@ func (m *multiRangeDownloaderManager) eventLoop() {
 
 		// Only try to send if we have queued requests
 		if m.unsentRequests.Len() > 0 {
+			for _, stream := range m.streams {
+				if stream.session == nil && !stream.reconnecting {
+					m.ensureSession(m.ctx, stream)
+				}
+			}
 			nextRangeReq = m.unsentRequests.Front()
 			if nextRangeReq != nil {
 				nextReq, targetStream = m.getReqAndTargetStream(nextRangeReq)
@@ -872,8 +877,8 @@ func (m *multiRangeDownloaderManager) shouldAddStream() bool {
 		return true
 	}
 
-	// Beyond minConnections, we only add if all existing active streams are at capacity.
-	return m.atCapacityCount >= len(m.streams)
+	// Beyond minConnections, we only add if there are queued requests and all existing active streams are at capacity.
+	return m.unsentRequests.Len() > 0 && m.atCapacityCount >= len(m.streams)
 }
 
 func (m *multiRangeDownloaderManager) convertToPositiveOffset(mrdStream *mrdStream, req *rangeRequest) error {
@@ -1149,9 +1154,18 @@ func (m *multiRangeDownloaderManager) handleStreamEnd(result mrdSessionResult, s
 		stream.session = nil
 	}
 	err := result.err
+	hasWork := len(stream.pendingRanges) > 0 || m.unsentRequests.Len() > 0
 	if result.redirect != nil {
 		m.readSpec.RoutingToken = result.redirect.RoutingToken
 		m.readSpec.ReadHandle = result.redirect.ReadHandle
+	}
+	if !hasWork {
+		if len(m.streams) > m.params.minConnections {
+			delete(m.streams, stream.id)
+		}
+		return
+	}
+	if result.redirect != nil {
 		m.ensureSession(m.ctx, stream)
 	} else if m.settings.retry != nil && m.settings.retry.runShouldRetry(err, nil) {
 		m.ensureSession(m.ctx, stream)
