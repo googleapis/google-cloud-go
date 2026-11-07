@@ -319,7 +319,6 @@ func (c *addStreamCmd) apply(ctx context.Context, m *multiRangeDownloaderManager
 type reconnectStreamCmd struct {
 	id      int
 	session *bidiReadStreamSession
-	spec    *storagepb.BidiReadObjectSpec
 	err     error
 }
 
@@ -806,13 +805,14 @@ func (m *multiRangeDownloaderManager) createNewSession(id int, readSpec *storage
 }
 
 func (m *multiRangeDownloaderManager) openAndInitializeSession(ctx context.Context, id int, spec *storagepb.BidiReadObjectSpec, waitForResult bool) (*bidiReadStreamSession, mrdSessionResult) {
-	session, err := newBidiReadStreamSession(ctx, id, m.sessionResps, m.client, m.settings, m.params, spec)
+	session, err := newBidiReadStreamSession(ctx, m.ctx, id, m.sessionResps, m.client, m.settings, m.params, spec)
 	if err != nil {
 		return nil, mrdSessionResult{err: err}
 	}
 	if !waitForResult {
 		return session, mrdSessionResult{}
 	}
+	session.markReady()
 	for {
 		select {
 		case result := <-m.sessionResps:
@@ -925,26 +925,15 @@ func (m *multiRangeDownloaderManager) handleWaitCmd(ctx context.Context, cmd *mr
 }
 
 func (m *multiRangeDownloaderManager) handleAddStreamCmd(ctx context.Context, cmd *addStreamCmd) {
-	// Check for any error in stream before adding this stream.
-	var streamErr error
-	if cmd.stream != nil && cmd.stream.session != nil {
-		streamErr = cmd.stream.session.getError()
-	}
-
-	if cmd.stream == nil ||
-		cmd.stream.session == nil ||
-		streamErr != nil {
+	if cmd.stream == nil || cmd.stream.session == nil {
 		m.streamCreating = false
 		if len(m.streams) == 0 {
-			err := streamErr
-			if err == nil {
-				err = errors.New("no streams available: stream creation failed or has error")
-			}
-			m.failManager(err)
+			m.failManager(errors.New("no streams available: stream creation failed or has error"))
 		}
 		return
 	}
 	m.streams[cmd.id] = cmd.stream
+	cmd.stream.session.markReady()
 	if cmd.spec != nil {
 		m.readSpec = cmd.spec
 	}
@@ -961,18 +950,13 @@ func (m *multiRangeDownloaderManager) handleReconnectStreamCmd(ctx context.Conte
 		return
 	}
 	stream.reconnecting = false
-	var streamErr error
-	if cmd.session != nil {
-		streamErr = cmd.session.getError()
-	}
-	if cmd.err != nil ||
-		cmd.session == nil ||
-		streamErr != nil {
+	if cmd.err != nil || cmd.session == nil {
+		if cmd.session != nil {
+			cmd.session.Shutdown()
+		}
 		finalErr := cmd.err
-		if finalErr == nil && cmd.session == nil {
+		if finalErr == nil {
 			finalErr = errors.New("session nil for reconnected stream")
-		} else if finalErr == nil {
-			finalErr = streamErr
 		}
 		m.failStream(stream, finalErr)
 		if len(m.streams) == 0 && !m.streamCreating {
@@ -983,9 +967,7 @@ func (m *multiRangeDownloaderManager) handleReconnectStreamCmd(ctx context.Conte
 	}
 
 	stream.session = cmd.session
-	if cmd.spec != nil {
-		m.readSpec = cmd.spec
-	}
+	stream.session.markReady()
 
 	var rangesToResend []*storagepb.ReadRange
 	for _, req := range stream.pendingRanges {
@@ -1122,18 +1104,19 @@ func (m *multiRangeDownloaderManager) ensureSession(ctx context.Context, stream 
 	// Clone the spec within the event loop.
 	clonedSpec := proto.Clone(m.readSpec).(*storagepb.BidiReadObjectSpec)
 	go func(id int, readSpec *storagepb.BidiReadObjectSpec) {
-		session, finalSpec, err := m.createNewSession(id, readSpec, false)
+		session, err := newBidiReadStreamSession(ctx, m.ctx, id, m.sessionResps, m.client, m.settings, m.params, readSpec)
 		select {
 		case <-ctx.Done():
+			if session != nil {
+				session.Shutdown()
+			}
 			return
 		case m.addStreams <- &reconnectStreamCmd{
 			id:      id,
 			session: session,
-			spec:    finalSpec,
 			err:     err,
 		}:
 		}
-
 	}(stream.id, clonedSpec)
 }
 
@@ -1250,9 +1233,11 @@ type bidiReadStreamSession struct {
 	params   *newMultiRangeDownloaderParams
 	readSpec *storagepb.BidiReadObjectSpec
 
-	reqC  chan *storagepb.BidiReadObjectRequest
-	respC chan<- mrdSessionResult
-	wg    sync.WaitGroup
+	reqC      chan *storagepb.BidiReadObjectRequest
+	respC     chan<- mrdSessionResult
+	readyC    chan struct{}
+	readyOnce sync.Once
+	wg        sync.WaitGroup
 
 	// To make manualShutdown and streamErr fields thread-safe
 	// as it can be accessed by both event loop and receive loop.
@@ -1262,13 +1247,13 @@ type bidiReadStreamSession struct {
 	manualShutdown bool
 }
 
-func newBidiReadStreamSession(ctx context.Context, id int, respC chan<- mrdSessionResult, client *grpcStorageClient, settings *settings, params *newMultiRangeDownloaderParams, readSpec *storagepb.BidiReadObjectSpec) (*bidiReadStreamSession, error) {
+func newBidiReadStreamSession(ctx, managerCtx context.Context, id int, respC chan<- mrdSessionResult, client *grpcStorageClient, settings *settings, params *newMultiRangeDownloaderParams, readSpec *storagepb.BidiReadObjectSpec) (*bidiReadStreamSession, error) {
 	sCtx, cancel := context.WithCancel(ctx)
 
 	s := &bidiReadStreamSession{
 		id:         id,
 		ctx:        sCtx,
-		managerCtx: ctx,
+		managerCtx: managerCtx,
 		cancel:     cancel,
 		client:     client,
 		settings:   settings,
@@ -1276,6 +1261,7 @@ func newBidiReadStreamSession(ctx context.Context, id int, respC chan<- mrdSessi
 		readSpec:   readSpec,
 		reqC:       make(chan *storagepb.BidiReadObjectRequest, mrdSendChannelSize),
 		respC:      respC,
+		readyC:     make(chan struct{}),
 	}
 
 	initialReq := &storagepb.BidiReadObjectRequest{
@@ -1307,6 +1293,13 @@ func newBidiReadStreamSession(ctx context.Context, id int, respC chan<- mrdSessi
 
 	return s, nil
 }
+func (s *bidiReadStreamSession) markReady() {
+	s.readyOnce.Do(func() {
+		if s.readyC != nil {
+			close(s.readyC)
+		}
+	})
+}
 func (s *bidiReadStreamSession) SendRequest(req *storagepb.BidiReadObjectRequest) {
 	select {
 	case s.reqC <- req:
@@ -1321,6 +1314,8 @@ func (s *bidiReadStreamSession) Shutdown() {
 	}
 	s.manualShutdown = true
 	s.mu.Unlock()
+
+	s.markReady()
 
 	// Close reqC to tell sendLoop to exit cleanly and invoke CloseSend()
 	close(s.reqC)
@@ -1379,6 +1374,19 @@ func (s *bidiReadStreamSession) sendLoop() {
 func (s *bidiReadStreamSession) receiveLoop() {
 	defer s.wg.Done()
 	defer s.cancel()
+	if s.readyC != nil {
+		select {
+		case <-s.readyC:
+		case <-s.managerCtx.Done():
+			return
+		}
+	}
+	s.mu.RLock()
+	isManual := s.manualShutdown
+	s.mu.RUnlock()
+	if isManual {
+		return
+	}
 	for {
 		// Receive message without a copy.
 		databufs := mem.BufferSlice{}
@@ -1424,6 +1432,13 @@ func (s *bidiReadStreamSession) receiveLoop() {
 			case s.respC <- result:
 			case <-s.managerCtx.Done():
 			}
+			return
+		}
+		s.mu.RLock()
+		isManual := s.manualShutdown
+		s.mu.RUnlock()
+		if isManual {
+			databufs.Free()
 			return
 		}
 		if s.managerCtx.Err() != nil {
