@@ -132,6 +132,23 @@ func TestTransports_RedirectCredentials(t *testing.T) {
 	}
 }
 
+func TestAPIKeyTransport_DoesNotModifyRequest(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
+	defer srv.Close()
+	req, err := http.NewRequest("GET", srv.URL+"/?a=b", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	resp, err := (&apiKeyTransport{Key: "secret-key", Transport: http.DefaultTransport}).RoundTrip(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	resp.Body.Close()
+	if got := req.URL.RawQuery; got != "a=b" {
+		t.Errorf("RoundTrip changed the caller's URL query to %q", got)
+	}
+}
+
 func TestRedirectedOffOrigin(t *testing.T) {
 	tests := []struct {
 		chain []string

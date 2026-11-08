@@ -160,6 +160,8 @@ func (t *apiKeyTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 		return t.Transport.RoundTrip(req)
 	}
 	newReq := *req
+	u := *req.URL
+	newReq.URL = &u
 	args := newReq.URL.Query()
 	args.Set("key", t.Key)
 	newReq.URL.RawQuery = args.Encode()
