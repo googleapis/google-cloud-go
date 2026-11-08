@@ -149,6 +149,7 @@ func modDirs(dir string) (submodulesDirs []string, err error) {
 			if err != nil {
 				return err
 			}
+			rel = filepath.ToSlash(rel)
 			if strings.Contains(rel, "internal") && !*includeInternal {
 				return nil
 			}
