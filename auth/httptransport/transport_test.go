@@ -17,6 +17,9 @@ package httptransport
 import (
 	"net/http"
 	"net/http/httptest"
+	"net/url"
+	"slices"
+	"strings"
 	"testing"
 
 	"cloud.google.com/go/auth"
@@ -69,87 +72,97 @@ func TestAuthTransport_GetClientUniverseDomain(t *testing.T) {
 	}
 }
 
-// TestAuthTransport_CrossHostRedirectDoesNotLeakToken verifies that the
-// authTransport does not forward bearer tokens to a different host when
-// following a redirect. An attacker-controlled redirect (e.g. via an open
-// redirect on the target API) must not receive the caller's credentials.
-func TestAuthTransport_CrossHostRedirectDoesNotLeakToken(t *testing.T) {
-	const token = "super-secret-token"
-
-	// victim receives requests and records whether the auth header was present.
-	var victimSawToken bool
-	victim := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Header.Get("Authorization") != "" {
-			victimSawToken = true
+func TestTransports_RedirectCredentials(t *testing.T) {
+	const token = "secret-token"
+	const apiKey = "secret-key"
+	var got []bool // whether each hop carried a credential
+	h := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		got = append(got, r.Header.Get("Authorization") != "" || r.URL.Query().Get("key") != "")
+		if next := r.URL.Query().Get("next"); next != "" {
+			http.Redirect(w, r, next, http.StatusFound)
 		}
-		w.WriteHeader(http.StatusOK)
-	}))
-	defer victim.Close()
-
-	// redirector redirects all requests to the victim (different host).
-	redirector := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, victim.URL+"/", http.StatusFound)
-	}))
-	defer redirector.Close()
-
-	creds := auth.NewCredentials(&auth.CredentialsOptions{
-		TokenProvider: staticTP(token),
 	})
-	client := &http.Client{
-		Transport: &authTransport{
-			creds: creds,
+	s1 := httptest.NewServer(h)
+	defer s1.Close()
+	s2 := httptest.NewServer(h)
+	defer s2.Close()
+	origin := s1.URL
+	otherPort := s2.URL
+	otherHost := strings.Replace(s2.URL, "127.0.0.1", "localhost", 1)
+	chain := func(urls ...string) string {
+		u := urls[len(urls)-1] + "/"
+		for i := len(urls) - 2; i >= 0; i-- {
+			u = urls[i] + "/?next=" + url.QueryEscape(u)
+		}
+		return u
+	}
+
+	transports := map[string]http.RoundTripper{
+		"authTransport": &authTransport{
+			creds: auth.NewCredentials(&auth.CredentialsOptions{TokenProvider: staticTP(token)}),
 			base:  http.DefaultTransport,
 		},
+		"apiKeyTransport": &apiKeyTransport{Key: apiKey, Transport: http.DefaultTransport},
 	}
-
-	resp, err := client.Get(redirector.URL + "/resource")
-	if err != nil {
-		t.Fatalf("GET: %v", err)
+	tests := []struct {
+		name string
+		urls []string
+		want []bool
+	}{
+		{"same host", []string{origin, origin}, []bool{true, true}},
+		{"same hostname, other port", []string{origin, otherPort}, []bool{true, false}},
+		{"other host", []string{origin, otherHost}, []bool{true, false}},
+		{"other host redirects to itself", []string{origin, otherHost, otherHost}, []bool{true, false, false}},
+		{"back to original host", []string{origin, otherHost, origin}, []bool{true, false, false}},
 	}
-	resp.Body.Close()
-
-	if victimSawToken {
-		t.Error("bearer token was leaked to cross-host redirect destination")
+	for name, tr := range transports {
+		for _, tt := range tests {
+			t.Run(name+"/"+tt.name, func(t *testing.T) {
+				got = nil
+				resp, err := (&http.Client{Transport: tr}).Get(chain(tt.urls...))
+				if err != nil {
+					t.Fatal(err)
+				}
+				resp.Body.Close()
+				if !slices.Equal(got, tt.want) {
+					t.Errorf("credential sent per hop = %v, want %v", got, tt.want)
+				}
+			})
+		}
 	}
 }
 
-// TestAuthTransport_SameHostRedirectIsAuthorized verifies that same-host
-// redirects continue to carry the bearer token.
-func TestAuthTransport_SameHostRedirectIsAuthorized(t *testing.T) {
-	const token = "super-secret-token"
-
-	var finalSawToken bool
-	mux := http.NewServeMux()
-	srv := httptest.NewServer(mux)
-	defer srv.Close()
-
-	mux.HandleFunc("/final", func(w http.ResponseWriter, r *http.Request) {
-		if r.Header.Get("Authorization") == "Bearer "+token {
-			finalSawToken = true
+func TestRedirectedOffOrigin(t *testing.T) {
+	tests := []struct {
+		chain []string
+		want  bool
+	}{
+		{[]string{"https://a.com/x"}, false},
+		{[]string{"https://a.com/x", "https://a.com/y"}, false},
+		{[]string{"https://A.com/x", "https://a.com:443/y"}, false},
+		{[]string{"https://a.com/x", "http://a.com/y"}, true},
+		{[]string{"https://a.com/x", "https://a.com:8443/y"}, true},
+		{[]string{"https://a.com/x", "https://sub.a.com/y"}, true},
+		{[]string{"https://a.com/x", "https://b.com/y", "https://b.com/z"}, true},
+		{[]string{"https://a.com/x", "https://b.com/y", "https://a.com/z"}, true},
+	}
+	for _, tt := range tests {
+		var req *http.Request
+		for _, u := range tt.chain {
+			next := httptest.NewRequest("GET", u, nil)
+			if req != nil {
+				next.Response = &http.Response{Request: req}
+			}
+			req = next
 		}
-		w.WriteHeader(http.StatusOK)
-	})
-	mux.HandleFunc("/redirect", func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, srv.URL+"/final", http.StatusFound)
-	})
-
-	creds := auth.NewCredentials(&auth.CredentialsOptions{
-		TokenProvider: staticTP(token),
-	})
-	client := &http.Client{
-		Transport: &authTransport{
-			creds: creds,
-			base:  http.DefaultTransport,
-		},
+		if got := redirectedOffOrigin(req); got != tt.want {
+			t.Errorf("redirectedOffOrigin(%v) = %v, want %v", tt.chain, got, tt.want)
+		}
 	}
 
-	resp, err := client.Get(srv.URL + "/redirect")
-	if err != nil {
-		t.Fatalf("GET: %v", err)
-	}
-	resp.Body.Close()
-
-	if !finalSawToken {
-		t.Error("bearer token was not forwarded to same-host redirect destination")
+	req := httptest.NewRequest("GET", "https://a.com/y", nil)
+	req.Response = &http.Response{}
+	if !redirectedOffOrigin(req) {
+		t.Error("redirectedOffOrigin = false for a redirect with no previous request, want true")
 	}
 }
