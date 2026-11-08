@@ -103,6 +103,15 @@ var (
 										Fields: []*btpb.Type_Struct_Field{
 											{FieldName: "timestamp", Type: typeTimestamp}, {FieldName: "value", Type: typeBytes},
 										}}}}}}}}}}
+	typeAggregateInt64 = &btpb.Type{Kind: &btpb.Type_AggregateType{AggregateType: &btpb.Type_Aggregate{
+		InputType:  typeInt64,
+		StateType:  typeInt64,
+		Aggregator: &btpb.Type_Aggregate_Sum_{Sum: &btpb.Type_Aggregate_Sum{}},
+	}}}
+	typeMapBytesAggregateInt64 = &btpb.Type{Kind: &btpb.Type_MapType{MapType: &btpb.Type_Map{
+		KeyType:   typeBytes,
+		ValueType: typeAggregateInt64,
+	}}}
 )
 
 var cmpSQLOpts = []cmp.Option{
@@ -110,7 +119,7 @@ var cmpSQLOpts = []cmp.Option{
 	cmp.AllowUnexported(
 		BytesSQLType{}, StringSQLType{}, Int64SQLType{}, Float32SQLType{}, Float64SQLType{},
 		BoolSQLType{}, TimestampSQLType{}, DateSQLType{}, ArraySQLType{}, MapSQLType{},
-		StructSQLType{}, StructSQLField{}, ColumnMetadata{}, ResultRowMetadata{},
+		StructSQLType{}, StructSQLField{}, AggregateSQLType{}, ColumnMetadata{}, ResultRowMetadata{},
 		Struct{},
 	),
 }
@@ -128,6 +137,7 @@ func TestNewResultRowMetadata(t *testing.T) {
 				colMeta("a", typeArrayString),
 				colMeta("m", typeMapStringBytes),
 				colMeta("s", typeStructSimple),
+				colMeta("agg", typeAggregateInt64),
 			),
 			wantMd: &ResultRowMetadata{
 				Columns: []ColumnMetadata{
@@ -136,8 +146,9 @@ func TestNewResultRowMetadata(t *testing.T) {
 					{Name: "s", SQLType: StructSQLType{Fields: []StructSQLField{
 						{Name: "name", Type: StringSQLType{}}, {Name: "count", Type: Int64SQLType{}},
 					}}},
+					{Name: "agg", SQLType: AggregateSQLType{InputType: Int64SQLType{}, StateType: Int64SQLType{}}},
 				},
-				colNameToIndex: &map[string][]int{"a": {0}, "m": {1}, "s": {2}},
+				colNameToIndex: &map[string][]int{"a": {0}, "m": {1}, "s": {2}, "agg": {3}},
 			},
 		},
 		{
@@ -167,6 +178,13 @@ func TestNewResultRowMetadata(t *testing.T) {
 			name: "array with nil element type",
 			pbMeta: createMetadata(
 				colMeta("badArr", &btpb.Type{Kind: &btpb.Type_ArrayType{ArrayType: &btpb.Type_Array{ElementType: nil}}}),
+			),
+			wantErr: true,
+		},
+		{
+			name: "aggregate with nil state type",
+			pbMeta: createMetadata(
+				colMeta("badAgg", &btpb.Type{Kind: &btpb.Type_AggregateType{AggregateType: &btpb.Type_Aggregate{StateType: nil}}}),
 			),
 			wantErr: true,
 		},
@@ -267,21 +285,27 @@ func TestResultRow_GetByIndex(t *testing.T) {
 			),
 		),
 	)
+	aggMapKeyBytes := []byte("counter")
+	aggMapKeyBase64 := base64.StdEncoding.EncodeToString(aggMapKeyBytes)
+	wantAggMap := map[string]int64{aggMapKeyBase64: 99}
+
 	pbMeta := createMetadata(
-		colMeta("s", typeString),                     // 0
-		colMeta("i", typeInt64),                      // 1
-		colMeta("f32", typeFloat32),                  // 2
-		colMeta("f64", typeFloat64),                  // 3
-		colMeta("b", typeBool),                       // 4
-		colMeta("by", typeBytes),                     // 5
-		colMeta("ts", typeTimestamp),                 // 6
-		colMeta("dt", typeDate),                      // 7
-		colMeta("arr", typeArrayString),              // 8
-		colMeta("arrNoNil", typeArrayString),         // 9
-		colMeta("m", typeMapStringInt64),             // 10
-		colMeta("st", typeStructSimple),              // 11
-		colMeta("null_i", typeInt64),                 // 12
-		colMeta("history_map", typeMapHistoryStruct), // 13
+		colMeta("s", typeString),                       // 0
+		colMeta("i", typeInt64),                        // 1
+		colMeta("f32", typeFloat32),                    // 2
+		colMeta("f64", typeFloat64),                    // 3
+		colMeta("b", typeBool),                         // 4
+		colMeta("by", typeBytes),                       // 5
+		colMeta("ts", typeTimestamp),                   // 6
+		colMeta("dt", typeDate),                        // 7
+		colMeta("arr", typeArrayString),                // 8
+		colMeta("arrNoNil", typeArrayString),           // 9
+		colMeta("m", typeMapStringInt64),               // 10
+		colMeta("st", typeStructSimple),                // 11
+		colMeta("null_i", typeInt64),                   // 12
+		colMeta("history_map", typeMapHistoryStruct),   // 13
+		colMeta("agg", typeAggregateInt64),             // 14
+		colMeta("map_agg", typeMapBytesAggregateInt64), // 15
 	)
 
 	pbValues := []*btpb.Value{
@@ -299,6 +323,8 @@ func TestResultRow_GetByIndex(t *testing.T) {
 		pbArray(pbString("obj1"), pbInt64(100)),                                                 // 11 Struct
 		pbNull(),                                                                                // 12 Int64 NULL
 		pbHistoryMapValue,                                                                       // 13
+		pbInt64(42),                                                                             // 14 Aggregate Int64
+		pbArray(pbMapEntry(pbBytes(aggMapKeyBytes), pbInt64(99))),                               // 15 Map<Bytes, Aggregate<Int64>>
 	}
 
 	rrMeta, _ := newResultRowMetadata(pbMeta)
@@ -341,6 +367,8 @@ func TestResultRow_GetByIndex(t *testing.T) {
 			wantHistoryMap, // Expected Go map value with base64 keys
 			false,
 		},
+		{"aggregate int64", 14, func() any { var v int64; return &v }, int64(42), false},
+		{"map of aggregate int64", 15, func() any { var v map[string]int64; return &v }, wantAggMap, false},
 
 		// Error Cases
 		{"int64 to int", 1, func() any { var v int; return &v }, nil, true}, // Conversion T->T
