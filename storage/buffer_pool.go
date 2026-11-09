@@ -69,8 +69,8 @@ func newDefaultBufferPool() *defaultBufferPool {
 	}
 }
 
-// Get returns a buffer of min(maxSize, blockSize) bytes, reusing a cached
-// block or allocating one.
+// Get returns a full blockSize buffer, reusing a cached block or allocating
+// one. maxSize must be positive but does not change the buffer's size.
 func (p *defaultBufferPool) Get(maxSize int) ([]byte, error) {
 	if maxSize <= 0 {
 		return nil, errInvalidBufferSize
@@ -79,7 +79,7 @@ func (p *defaultBufferPool) Get(maxSize int) ([]byte, error) {
 	if b == nil {
 		b = make([]byte, p.blockSize)
 	}
-	return b[:min(maxSize, p.blockSize)], nil
+	return b, nil
 }
 
 // TryGet behaves exactly like Get. The default pool has no memory limit, so it
@@ -108,8 +108,7 @@ func (p *defaultBufferPool) Put(buf []byte) {
 	if p.closed {
 		return
 	}
-	// Cache the block at full length; Get re-slices it to the caller's size.
-	p.free = append(p.free, buf[:p.blockSize])
+	p.free = append(p.free, buf)
 	if !p.cleanerRunning {
 		p.cleanerRunning = true
 		p.minFree = len(p.free)
@@ -186,11 +185,11 @@ func (p *defaultBufferPool) close() {
 	}
 	p.closed = true
 	close(p.stop)
-	p.mu.Unlock()
-	p.wg.Wait()
-
-	p.mu.Lock()
 	p.shrinkLocked(0)
+	// A cleaner already waiting for mu still runs shrinkUnused once; with
+	// minFree 0 it evicts nothing from the empty cache and exits.
+	p.minFree = 0
 	p.cleanerRunning = false
 	p.mu.Unlock()
+	p.wg.Wait()
 }

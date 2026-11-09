@@ -73,28 +73,21 @@ func (p *defaultBufferPool) isClosed() bool {
 
 func TestDefaultBufferPoolGetSizes(t *testing.T) {
 	p := newTestBufferPool(t)
-	for _, tc := range []struct {
-		maxSize int
-		wantLen int
-	}{
-		{1, 1},
-		{testBlockSize / 2, testBlockSize / 2},
-		{testBlockSize, testBlockSize},
-		{3 * testBlockSize, testBlockSize},
-	} {
-		b, err := p.Get(tc.maxSize)
+	// Every buffer is a full block, whatever maxSize is.
+	for _, maxSize := range []int{1, testBlockSize / 2, testBlockSize, 3 * testBlockSize} {
+		b, err := p.Get(maxSize)
 		if err != nil {
-			t.Fatalf("Get(%d): %v", tc.maxSize, err)
+			t.Fatalf("Get(%d): %v", maxSize, err)
 		}
-		if len(b) != tc.wantLen || cap(b) != testBlockSize {
-			t.Errorf("Get(%d): len=%d cap=%d, want len=%d cap=%d", tc.maxSize, len(b), cap(b), tc.wantLen, testBlockSize)
+		if len(b) != testBlockSize || cap(b) != testBlockSize {
+			t.Errorf("Get(%d): len=%d cap=%d, want %d", maxSize, len(b), cap(b), testBlockSize)
 		}
-		b2, ok, err := p.TryGet(tc.maxSize)
+		b2, ok, err := p.TryGet(maxSize)
 		if !ok || err != nil {
-			t.Fatalf("TryGet(%d) = %v, %v; want true, nil", tc.maxSize, ok, err)
+			t.Fatalf("TryGet(%d) = %v, %v; want true, nil", maxSize, ok, err)
 		}
-		if len(b2) != tc.wantLen || cap(b2) != testBlockSize {
-			t.Errorf("TryGet(%d): len=%d cap=%d, want len=%d cap=%d", tc.maxSize, len(b2), cap(b2), tc.wantLen, testBlockSize)
+		if len(b2) != testBlockSize || cap(b2) != testBlockSize {
+			t.Errorf("TryGet(%d): len=%d cap=%d, want %d", maxSize, len(b2), cap(b2), testBlockSize)
 		}
 		// Nothing is allocated ahead of time.
 		if got := p.cached(); got != 0 {
@@ -160,14 +153,13 @@ func TestDefaultBufferPoolPutCloseRace(t *testing.T) {
 func TestDefaultBufferPoolReuse(t *testing.T) {
 	p := newTestBufferPool(t)
 	b1, _ := p.Get(testBlockSize)
-	b2, _ := p.Get(testBlockSize / 2)
+	b2, _ := p.Get(testBlockSize)
 	p.Put(b1)
-	// Put accepts the exact (possibly short) slice returned by Get.
 	p.Put(b2)
 
 	got, _ := p.Get(testBlockSize)
-	if &got[0] != &b2[0] || len(got) != testBlockSize {
-		t.Errorf("Get did not return the most recently Put block at full length (len=%d)", len(got))
+	if &got[0] != &b2[0] {
+		t.Error("Get did not return the most recently Put block")
 	}
 	got, _ = p.Get(testBlockSize)
 	if &got[0] != &b1[0] {
@@ -335,6 +327,18 @@ func TestDefaultBufferPoolClose(t *testing.T) {
 	}
 	if _, err := p.Get(4 * testBlockSize); err != nil {
 		t.Errorf("Get after close: %v", err)
+	}
+}
+
+// A cleaner that was already waiting for the lock when close ran still calls
+// shrinkUnused once on the emptied cache. That must not panic, and it must
+// report the pool as drained so the cleaner exits.
+func TestDefaultBufferPoolCleanerRunAfterClose(t *testing.T) {
+	p := newTestBufferPool(t)
+	cacheBlocks(t, p, 5)
+	p.close()
+	if !p.shrinkUnused() {
+		t.Error("shrinkUnused after close did not report the pool as drained")
 	}
 }
 
