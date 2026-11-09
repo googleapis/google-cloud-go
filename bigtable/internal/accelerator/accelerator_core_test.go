@@ -66,6 +66,8 @@ type mockSessionClient struct {
 	newAVCalled int
 	lastMVView  string
 	newMVCalled int
+
+	loadListener func(float64)
 }
 
 func (m *mockSessionClient) OpenTable(name string) session.TableAPI {
@@ -92,7 +94,10 @@ func (m *mockSessionClient) SessionDebug() btransport.SessionDebugProvider { ret
 func (m *mockSessionClient) ChannelDebug() btransport.ChannelDebugProvider { return nil }
 func (m *mockSessionClient) ConfigDebug() btransport.ConfigDebugProvider   { return nil }
 
-func (m *mockSessionClient) AddSessionLoadListener(func(float64)) func() { return func() {} }
+func (m *mockSessionClient) AddSessionLoadListener(fn func(float64)) func() {
+	m.loadListener = fn
+	return func() {}
+}
 
 func (m *mockSessionClient) Close() error { return nil }
 
@@ -801,5 +806,64 @@ func TestComposeUserAgent(t *testing.T) {
 				t.Errorf("ComposeUserAgent(%q) = %q; want %q", tc.prefix, got, tc.want)
 			}
 		})
+	}
+}
+
+func TestChannel_SessionLoad_DivertsMutateRowAndReadRows(t *testing.T) {
+	sessionMutates := 0
+	sessionReads := 0
+	tbl := &mockSessionTableAPI{
+		mutateRowFn: func(_ context.Context, _ *v2pb.SessionMutateRowRequest) (*v2pb.SessionMutateRowResponse, error) {
+			sessionMutates++
+			return &v2pb.SessionMutateRowResponse{}, nil
+		},
+		readRowFn: func(_ context.Context, _ *v2pb.SessionReadRowRequest) (*v2pb.SessionReadRowResponse, error) {
+			sessionReads++
+			return &v2pb.SessionReadRowResponse{}, nil
+		},
+	}
+	sc := &mockSessionClient{table: tbl}
+	channel := newTestChannel(t, sc)
+	if sc.loadListener == nil {
+		t.Fatal("expected NewChannel to register a session load listener")
+	}
+
+	// Set session_load = 0: both MutateRow and ReadRows return errSessionLoadDiverted
+	// without opening a table handle or invoking session RPCs.
+	sc.loadListener(0.0)
+
+	err := channel.Invoke(context.Background(),
+		v2pb.Bigtable_MutateRow_FullMethodName,
+		&v2pb.MutateRowRequest{TableName: "projects/p/instances/i/tables/t", RowKey: []byte("k")},
+		&v2pb.MutateRowResponse{})
+	if !errors.Is(err, errSessionLoadDiverted) {
+		t.Fatalf("MutateRow at load=0 err = %v; want %v", err, errSessionLoadDiverted)
+	}
+
+	stream, err := channel.NewStream(context.Background(), nil, v2pb.Bigtable_ReadRows_FullMethodName)
+	if err != nil {
+		t.Fatalf("NewStream: %v", err)
+	}
+	if err := stream.SendMsg(singleKeyReadRowsRequest("projects/p/instances/i/tables/t", "k")); err != nil {
+		t.Fatalf("SendMsg: %v", err)
+	}
+	if err := stream.RecvMsg(&v2pb.ReadRowsResponse{}); !errors.Is(err, errSessionLoadDiverted) {
+		t.Fatalf("ReadRows at load=0 err = %v; want %v", err, errSessionLoadDiverted)
+	}
+	if sc.newTableCalled != 0 || sessionMutates != 0 || sessionReads != 0 {
+		t.Fatalf("unexpected session activity at load=0: tables=%d mutates=%d reads=%d",
+			sc.newTableCalled, sessionMutates, sessionReads)
+	}
+
+	// Raise session_load = 1.0: calls now route through session.
+	sc.loadListener(1.0)
+	if err := channel.Invoke(context.Background(),
+		v2pb.Bigtable_MutateRow_FullMethodName,
+		&v2pb.MutateRowRequest{TableName: "projects/p/instances/i/tables/t", RowKey: []byte("k")},
+		&v2pb.MutateRowResponse{}); err != nil {
+		t.Fatalf("MutateRow at load=1 err = %v; want nil", err)
+	}
+	if sessionMutates != 1 {
+		t.Errorf("sessionMutates = %d; want 1", sessionMutates)
 	}
 }

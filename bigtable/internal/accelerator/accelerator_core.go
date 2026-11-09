@@ -138,10 +138,16 @@ var newSessionClient = func(
 // sessionTables caches per-resource session.TableAPI handles keyed by the
 // fully-qualified V2 resource name, so repeated RPCs to the same resource share
 // one warm handle and idle resources' pools are reclaimed by its TTL sweeper.
+// errSessionLoadDiverted is returned when the server-driven SessionLoad ratio
+// diverts an individual RPC away from the session path. Callers fall back to
+// the classic path for this request without tripping a sticky breaker.
+var errSessionLoadDiverted = status.Error(codes.Unimplemented, "accelerator: request diverted by session load")
+
 type Channel struct {
 	sc            session.Client
 	scopePrefix   string
 	sessionTables *session.TableCache
+	diverter      *btransport.Diverter
 }
 
 // NewChannel constructs an Channel scoped to
@@ -179,11 +185,20 @@ func NewChannel(
 	if err != nil {
 		return nil, err
 	}
+	diverter := btransport.NewDiverter(1.0)
+	sc.AddSessionLoadListener(diverter.SetSessionLoad)
 	return &Channel{
 		sc:            sc,
 		scopePrefix:   scopePrefixFor(project, instance),
 		sessionTables: session.NewTableCache(session.DefaultTableCacheTTL, session.DefaultTableCacheSweepInterval, nil /* time.Now */),
+		diverter:      diverter,
 	}, nil
+}
+
+// useSession reports whether the next RPC should use the session path
+// according to the server-driven SessionLoad ratio.
+func (c *Channel) useSession() bool {
+	return c.diverter == nil || c.diverter.UseSession()
 }
 
 // openHandle resolves an extracted resource to a per-resource, cached
@@ -268,6 +283,9 @@ func (c *Channel) mutateRowImpl(ctx context.Context, args, reply interface{}) er
 	sessionReq, err := reqAdapter.Adapt(reqV2)
 	if err != nil {
 		return err
+	}
+	if !c.useSession() {
+		return errSessionLoadDiverted
 	}
 
 	// Resolve a cached handle for the resource, routed to a table or authorized
@@ -403,6 +421,9 @@ func (s *readRowsClientStream) RecvMsg(m any) error {
 	sessionReq, err := reqAdapter.Adapt(s.req)
 	if err != nil {
 		return s.terminate(err)
+	}
+	if !s.c.useSession() {
+		return s.terminate(errSessionLoadDiverted)
 	}
 
 	// Routed to a table, authorized view, or materialized view by the

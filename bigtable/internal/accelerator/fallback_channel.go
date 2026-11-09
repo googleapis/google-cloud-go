@@ -96,7 +96,9 @@ func (fc *FallbackChannel) Invoke(ctx context.Context, method string, args, repl
 		if status.Code(err) != codes.Unimplemented {
 			return err
 		}
-		fc.tripped.Store(true)
+		if !errors.Is(err, errSessionLoadDiverted) {
+			fc.tripped.Store(true)
+		}
 	}
 
 	resource, err := adapters.DefaultMutateRowRequestAdapter.ExtractResource(req)
@@ -242,9 +244,12 @@ func (s *fallbackReadRowsStream) RecvMsg(m any) error {
 			s.terminalErr = io.EOF
 			return nil
 		case status.Code(err) == codes.Unimplemented:
-			// Backend-originated Unimplemented: instance lacks session serving.
-			// Trip the sticky breaker and fall through to classic below.
-			s.fc.tripped.Store(true)
+			// Backend-originated Unimplemented trips the sticky breaker; a
+			// per-request session-load diversion falls through to classic for
+			// this call only without tripping the breaker.
+			if !errors.Is(err, errSessionLoadDiverted) {
+				s.fc.tripped.Store(true)
+			}
 			s.inner = nil
 		default:
 			return s.terminate(err)
