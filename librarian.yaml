@@ -197,7 +197,7 @@ libraries:
     apis:
       - path: google/cloud/auditmanager/v1
   - name: auth
-    version: 0.24.3
+    version: 0.24.4
     keep:
       - README.md
       - internal/version.go
@@ -423,7 +423,7 @@ libraries:
     apis:
       - path: google/cloud/certificatemanager/v1
   - name: ces
-    version: 1.6.0
+    version: 1.7.0
     apis:
       - path: google/cloud/ces/v1
       - path: google/cloud/ces/v1beta
@@ -603,13 +603,13 @@ libraries:
     apis:
       - path: google/cloud/datalabeling/v1beta1
   - name: datamanager
-    version: 1.8.1
+    version: 1.9.0
     apis:
       - path: google/ads/datamanager/v1
         go:
           import_path: datamanager/apiv1
   - name: dataplex
-    version: 1.38.1
+    version: 1.39.0
     apis:
       - path: google/cloud/dataplex/v1
   - name: dataproc
@@ -678,7 +678,7 @@ libraries:
       - path: google/cloud/dialogflow/cx/v3beta1
       - path: google/cloud/dialogflow/v2beta1
   - name: discoveryengine
-    version: 1.37.0
+    version: 1.38.0
     apis:
       - path: google/cloud/discoveryengine/v1
       - path: google/cloud/discoveryengine/v1beta
@@ -775,7 +775,7 @@ libraries:
       - path: google/cloud/functions/v1
       - path: google/cloud/functions/v2beta
   - name: geminidataanalytics
-    version: 1.8.0
+    version: 1.9.0
     apis:
       - path: google/cloud/geminidataanalytics/v1
       - path: google/cloud/geminidataanalytics/v1beta
@@ -810,7 +810,7 @@ libraries:
     apis:
       - path: google/cloud/gsuiteaddons/v1
   - name: hypercomputecluster
-    version: 1.3.1
+    version: 1.4.0
     apis:
       - path: google/cloud/hypercomputecluster/v1
       - path: google/cloud/hypercomputecluster/v1beta
@@ -862,7 +862,7 @@ libraries:
     apis:
       - path: google/cloud/iot/v1
   - name: kms
-    version: 1.36.1
+    version: 1.37.0
     apis:
       - path: google/cloud/kms/v1
         go:
@@ -963,7 +963,7 @@ libraries:
       - path: google/cloud/memcache/v1
       - path: google/cloud/memcache/v1beta2
   - name: memorystore
-    version: 1.8.0
+    version: 1.9.0
     apis:
       - path: google/cloud/memorystore/v1
       - path: google/cloud/memorystore/v1beta
@@ -1012,7 +1012,7 @@ libraries:
       - path: google/cloud/networkconnectivity/v1beta
       - path: google/cloud/networkconnectivity/v1alpha1
   - name: networkmanagement
-    version: 1.33.0
+    version: 1.34.0
     apis:
       - path: google/cloud/networkmanagement/v1
   - name: networksecurity
@@ -1218,7 +1218,7 @@ libraries:
     output: .
     skip_release: true
   - name: run
-    version: 1.24.1
+    version: 1.25.0
     apis:
       - path: google/cloud/run/v2
     keep:
@@ -1371,7 +1371,7 @@ libraries:
       - path: google/cloud/speech/v1
       - path: google/cloud/speech/v1p1beta1
   - name: sql
-    version: 0.6.0
+    version: 0.7.0
     apis:
       - path: google/cloud/sql/v1
       - path: google/cloud/sql/v1beta4
@@ -1453,7 +1453,7 @@ libraries:
         go:
           proto_package: google.cloud.translation.v3
   - name: vectorsearch
-    version: 1.6.1
+    version: 1.7.0
     apis:
       - path: google/cloud/vectorsearch/v1
       - path: google/cloud/vectorsearch/v1beta

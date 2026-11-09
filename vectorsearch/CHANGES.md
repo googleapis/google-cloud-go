@@ -1,5 +1,12 @@
 # Changes
 
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/vectorsearch/v1.6.1...vectorsearch/v1.7.0) (2026-11-09)
+
+
+### Features
+
+* Update API sources and regenerate ([#20873](https://github.com/googleapis/google-cloud-go/issues/20873)) ([3ded070](https://github.com/googleapis/google-cloud-go/commit/3ded070fa438a4c80823888872f0bef348412825))
+
 ## [1.6.1](https://github.com/googleapis/google-cloud-go/compare/vectorsearch/v1.6.0...vectorsearch/v1.6.1) (2026-10-28)
 
 
