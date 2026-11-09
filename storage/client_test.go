@@ -2750,9 +2750,12 @@ func TestMRDAddDuringAndAfterFailureEmulated(t *testing.T) {
 		// minConnections=1), which fails the manager and cancels its context.
 		add(10000)
 		// Phase 1: keep adding until the manager has failed, so Adds race shutdown.
+		// Pace the loop so it does not queue tens of thousands of ranges before
+		// the emulator reports the out-of-range read.
 		deadline := time.Now().Add(10 * time.Second)
 		for reader.Error() == nil && time.Now().Before(deadline) {
 			add(10)
+			time.Sleep(time.Millisecond)
 		}
 		if reader.Error() == nil {
 			t.Fatal("downloader did not enter permanent error state within 10s")

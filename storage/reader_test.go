@@ -1003,6 +1003,12 @@ func TestMRDCleanupDrainsAddEnqueuedUnderLock(t *testing.T) {
 		m.cleanup()
 		close(cleanupDone)
 	}()
+	// Wait until cleanup is blocked in addMu.Lock(). A pending writer makes
+	// RWMutex refuse new readers, so TryRLock failing proves it got there.
+	for m.addMu.TryRLock() {
+		m.addMu.RUnlock()
+		runtime.Gosched()
+	}
 	// The late enqueue. Without addMu, cleanup would already have drained cmds.
 	called := make(chan struct{})
 	m.cmds <- &mrdAddCmd{callback: func(int64, int64, error) { close(called) }}
