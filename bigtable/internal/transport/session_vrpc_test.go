@@ -1034,3 +1034,54 @@ func TestInvoke_ForceCloseWhileSending_BoundedReturn(t *testing.T) {
 		t.Fatal("Invoke did not return within 3s after ForceClose + unblocked Send")
 	}
 }
+
+// TestInvoke_ResetsHeartbeatDeadlineBeforeClaimSlot is a regression test
+// for the false-positive MissedHeartbeat race on a session that has been
+// idle for longer than heartbeatIntervalNano: while activeVRPC() == nil,
+// heartbeatLoop leaves nextHeartbeatDeadlineNano in the past. Invoke must
+// refresh nextHeartbeatDeadlineNano BEFORE claimSlot publishes activeRPC,
+// so heartbeatLoop can never observe activeVRPC() != nil alongside the
+// expired idle deadline.
+func TestInvoke_ResetsHeartbeatDeadlineBeforeClaimSlot(t *testing.T) {
+	s, stream := makeActive(t, SessionHooks{})
+	s.heartbeatIntervalNano.Store(int64(20 * time.Millisecond))
+	// Simulate a session that sat idle past its prior heartbeat deadline.
+	s.nextHeartbeatDeadlineNano.Store(time.Now().Add(-50 * time.Millisecond).UnixNano())
+
+	hbCtx, hbCancel := context.WithCancel(context.Background())
+	defer hbCancel()
+	hbDone := make(chan struct{})
+	go func() {
+		defer close(hbDone)
+		s.heartbeatLoop(hbCtx)
+	}()
+
+	stream.sendFn = func(req *spb.SessionRequest) error {
+		if vrpc := req.GetVirtualRpc(); vrpc != nil {
+			if rem := time.Until(time.Unix(0, s.nextHeartbeatDeadlineNano.Load())); rem <= 0 {
+				t.Errorf("inside Send (with activeVRPC claimed), nextHeartbeatDeadlineNano is expired (remaining=%v)", rem)
+			}
+			// Wake heartbeatLoop while activeVRPC is claimed to verify it
+			// sees the refreshed deadline rather than the stale idle one.
+			s.wakeHeartbeatLoop()
+			go s.handleVRPCResponse(&spb.VirtualRpcResponse{
+				RpcId:   vrpc.RpcId,
+				Payload: []byte("ok"),
+			})
+		}
+		return nil
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	for i := 0; i < 50; i++ {
+		// Wait until the previous vRPC slot is completely clear before
+		// seeding an expired idle deadline for the next iteration.
+		s.nextHeartbeatDeadlineNano.Store(time.Now().Add(-50 * time.Millisecond).UnixNano())
+		if _, err := s.Invoke(ctx, newRoundTripDesc(), "req"); err != nil {
+			t.Fatalf("iter %d: Invoke failed (false-positive MissedHeartbeat?): %v", i, err)
+		}
+	}
+	hbCancel()
+	<-hbDone
+}
