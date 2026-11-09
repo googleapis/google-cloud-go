@@ -21,6 +21,7 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"hash/crc32"
 	"io"
 	"reflect"
 	"slices"
@@ -48,7 +49,9 @@ import (
 	"google.golang.org/protobuf/types/known/wrapperspb"
 
 	"cloud.google.com/go/bigtable/bttest"
+	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // bigtableReadRowsServerWrapper wraps a generic grpc.ServerStream to implement the
@@ -770,6 +773,30 @@ func TestToOtelMetricAttrs(t *testing.T) {
 			}
 		})
 	}
+
+	t.Run("Empty table and unset location fall back to sentinels", func(t *testing.T) {
+		sqlTracer := factory.CreateTracer(context.Background(), "", true)
+		sqlTracer.SetMethod("ExecuteQuery")
+		sqlTracer.SetCurrOpStatus(codes.OK)
+
+		gotAttrSet, gotErr := sqlTracer.ToOtelMetricAttrs(metrics.MetricNameOperationLatencies)
+		if gotErr != nil {
+			t.Fatalf("ToOtelMetricAttrs unexpected error: %v", gotErr)
+		}
+		wantAttrs := []attribute.KeyValue{
+			attribute.String(metrics.MetricLabelKeyTable, "<unspecified>"),
+			attribute.String(metrics.MetricLabelKeyMethod, "ExecuteQuery"),
+			attribute.Bool(metrics.MetricLabelKeyStreamingOperation, true),
+			attribute.String(metrics.MetricLabelKeyStatus, metrics.CanonicalString(codes.OK)),
+			attribute.String(metrics.MetricLabelKeyCluster, "unspecified"),
+			attribute.String(metrics.MetricLabelKeyZone, "global"),
+		}
+		if diff := testutil.Diff(gotAttrSet.ToSlice(), wantAttrs,
+			cmpopts.IgnoreUnexported(attribute.KeyValue{}, attribute.Value{}),
+			cmpopts.SortSlices(lessKeyValue)); diff != "" {
+			t.Errorf("got=-, want=+ \n%v", diff)
+		}
+	})
 }
 
 func TestCreateExporterOptionsFiltering(t *testing.T) {
@@ -1252,5 +1279,409 @@ func TestClientBlockingLatency(t *testing.T) {
 
 	if !foundMetric {
 		t.Fatalf("Failed to find metric %s for client UID %s", metrics.MetricNameClientBlockingLatencies, clientUID)
+	}
+}
+
+type bigtableExecuteQueryServerWrapper struct {
+	grpc.ServerStream
+}
+
+func (x *bigtableExecuteQueryServerWrapper) Send(m *btpb.ExecuteQueryResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func TestExecuteQueryMetrics(t *testing.T) {
+	ctx := context.Background()
+	project := "test-project"
+	instance := "test-instance"
+	appProfile := "test-app-profile-sql"
+	clientUID := "test-uid-execute-query"
+	const (
+		streamDelay        = 150 * time.Millisecond
+		appProcessingDelay = 100 * time.Millisecond
+	)
+
+	origSamplePeriod := metrics.DefaultSamplePeriod
+	metrics.DefaultSamplePeriod = 100 * time.Millisecond
+	defer func() { metrics.DefaultSamplePeriod = origSamplePeriod }()
+
+	origGenerateClientUID := metrics.GenerateClientUID
+	metrics.GenerateClientUID = func() (string, error) { return clientUID, nil }
+	defer func() { metrics.GenerateClientUID = origGenerateClientUID }()
+
+	mer := &MockErrorHandler{buffer: new(bytes.Buffer)}
+	setMockErrorHandler(t, mer)
+
+	monitoringServer, err := metricstest.NewServer()
+	if err != nil {
+		t.Fatalf("metricstest.NewServer: %v", err)
+	}
+	go monitoringServer.Serve()
+	defer monitoringServer.Shutdown()
+
+	origCreateExporterOptions := metrics.CreateExporterOptions
+	metrics.CreateExporterOptions = func(opts ...option.ClientOption) []option.ClientOption {
+		return []option.ClientOption{
+			option.WithEndpoint(monitoringServer.Endpoint),
+			option.WithoutAuthentication(),
+			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+		}
+	}
+	defer func() { metrics.CreateExporterOptions = origCreateExporterOptions }()
+
+	protoRowsBytes, err := proto.Marshal(&btpb.ProtoRows{
+		Values: []*btpb.Value{
+			{Kind: &btpb.Value_StringValue{StringValue: "val-1"}},
+		},
+	})
+	if err != nil {
+		t.Fatalf("proto.Marshal(ProtoRows): %v", err)
+	}
+	checksum := crc32.Checksum(protoRowsBytes, crc32cTable)
+
+	var execAttempt atomic.Int32
+	var attempt2Cookie string
+
+	unaryInterceptor := func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
+		if info.FullMethod == "/google.bigtable.v2.Bigtable/PrepareQuery" {
+			_ = grpc.SetHeader(ctx, metadata.MD{
+				metrics.LocationMDKey:     []string{string(testHeaders)},
+				metrics.ServerTimingMDKey: []string{"gfet4t7; dur=5"},
+			})
+			return &btpb.PrepareQueryResponse{
+				PreparedQuery: []byte("prepared-plan"),
+				ValidUntil:    timestamppb.New(time.Now().Add(time.Hour)),
+				Metadata: &btpb.ResultSetMetadata{
+					Schema: &btpb.ResultSetMetadata_ProtoSchema{
+						ProtoSchema: &btpb.ProtoSchema{
+							Columns: []*btpb.ColumnMetadata{
+								{
+									Name: "col1",
+									Type: &btpb.Type{Kind: &btpb.Type_StringType{StringType: &btpb.Type_String{}}},
+								},
+							},
+						},
+					},
+				},
+			}, nil
+		}
+		return handler(ctx, req)
+	}
+
+	streamInterceptor := func(srv any, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+		if info.FullMethod != "/google.bigtable.v2.Bigtable/ExecuteQuery" {
+			return handler(srv, ss)
+		}
+		var req btpb.ExecuteQueryRequest
+		if err := ss.RecvMsg(&req); err != nil {
+			return err
+		}
+		attempt := execAttempt.Add(1)
+		if attempt == 1 {
+			ss.SetTrailer(metadata.Pairs("x-goog-cbt-cookie-sql", "route-1"))
+			return status.Error(codes.Unavailable, "transient execute error")
+		}
+		if md, ok := metadata.FromIncomingContext(ss.Context()); ok {
+			if vals := md.Get("x-goog-cbt-cookie-sql"); len(vals) > 0 {
+				attempt2Cookie = vals[0]
+			}
+		}
+
+		wrapped := &bigtableExecuteQueryServerWrapper{ss}
+		if err := wrapped.SendHeader(metadata.MD{
+			metrics.LocationMDKey:     []string{string(testHeaders)},
+			metrics.ServerTimingMDKey: []string{"gfet4t7; dur=12"},
+		}); err != nil {
+			return err
+		}
+		half := len(protoRowsBytes) / 2
+		if err := wrapped.Send(&btpb.ExecuteQueryResponse{
+			Response: &btpb.ExecuteQueryResponse_Results{
+				Results: &btpb.PartialResultSet{
+					PartialRows: &btpb.PartialResultSet_ProtoRowsBatch{
+						ProtoRowsBatch: &btpb.ProtoRowsBatch{BatchData: protoRowsBytes[:half]},
+					},
+					Reset_: true,
+				},
+			},
+		}); err != nil {
+			return err
+		}
+
+		time.Sleep(streamDelay)
+
+		return wrapped.Send(&btpb.ExecuteQueryResponse{
+			Response: &btpb.ExecuteQueryResponse_Results{
+				Results: &btpb.PartialResultSet{
+					PartialRows: &btpb.PartialResultSet_ProtoRowsBatch{
+						ProtoRowsBatch: &btpb.ProtoRowsBatch{BatchData: protoRowsBytes[half:]},
+					},
+					BatchChecksum: &checksum,
+					ResumeToken:   []byte("tok-1"),
+				},
+			},
+		})
+	}
+
+	rawGrpcServer, err := bttest.NewServer("localhost:0",
+		grpc.UnaryInterceptor(unaryInterceptor),
+		grpc.StreamInterceptor(streamInterceptor),
+	)
+	if err != nil {
+		t.Fatalf("bttest.NewServer: %v", err)
+	}
+	defer rawGrpcServer.Close()
+
+	conn, err := grpc.Dial(rawGrpcServer.Addr,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithBlock(),
+		grpc.WithStatsHandler(metrics.SharedStatsHandler),
+	)
+	if err != nil {
+		t.Fatalf("grpc.Dial: %v", err)
+	}
+	defer conn.Close()
+
+	client, err := NewClientWithConfig(ctx, project, instance, ClientConfig{AppProfile: appProfile}, option.WithGRPCConn(conn))
+	if err != nil {
+		t.Fatalf("NewClientWithConfig: %v", err)
+	}
+	defer client.Close()
+
+	monitoringServer.CreateServiceTimeSeriesRequests()
+
+	ps, err := client.PrepareStatement(ctx, "SELECT 'val-1' AS col1", nil)
+	if err != nil {
+		t.Fatalf("PrepareStatement: %v", err)
+	}
+	bs, err := ps.Bind(nil)
+	if err != nil {
+		t.Fatalf("Bind: %v", err)
+	}
+	var gotVal string
+	if err := bs.Execute(ctx, func(rr ResultRow) bool {
+		time.Sleep(appProcessingDelay)
+		if err := rr.GetByIndex(0, &gotVal); err != nil {
+			t.Errorf("rr.GetByIndex(0): %v", err)
+		}
+		return true
+	}); err != nil {
+		t.Fatalf("Execute: %v", err)
+	}
+	if gotVal != "val-1" {
+		t.Fatalf("gotVal = %q, want %q", gotVal, "val-1")
+	}
+	if attempt2Cookie != "route-1" {
+		t.Errorf("attempt 2 incoming x-goog-cbt-cookie-sql = %q, want %q", attempt2Cookie, "route-1")
+	}
+
+	time.Sleep(metrics.DefaultSamplePeriod * 5)
+
+	requests := monitoringServer.CreateServiceTimeSeriesRequests()
+	if len(requests) == 0 {
+		t.Fatal("No CreateTimeSeriesRequests received from mock monitoring server")
+	}
+
+	var (
+		sawPrepareOpLatency  bool
+		firstRespMean        = -1.0
+		execOpMean           = -1.0
+		execAppMean          = -1.0
+		sawExecServerLatency bool
+	)
+
+	for _, req := range requests {
+		for _, ts := range req.TimeSeries {
+			metricLabels := ts.GetMetric().GetLabels()
+			if metricLabels[metrics.MetricLabelKeyClientUID] != clientUID {
+				continue
+			}
+			method := metricLabels[metrics.MetricLabelKeyMethod]
+			if method == "Bigtable.PrepareQuery" || method == "Bigtable.ExecuteQuery" {
+				gotTable := ts.GetResource().GetLabels()[metrics.MetricLabelKeyTable]
+				if gotTable != "<unspecified>" {
+					t.Errorf("method %s resource label %q = %q, want %q", method, metrics.MetricLabelKeyTable, gotTable, "<unspecified>")
+				}
+			}
+
+			metricType := ts.GetMetric().GetType()
+			points := ts.GetPoints()
+			if len(points) == 0 {
+				continue
+			}
+			dist := points[0].GetValue().GetDistributionValue()
+
+			if method == "Bigtable.PrepareQuery" && strings.HasSuffix(metricType, metrics.MetricNameOperationLatencies) {
+				sawPrepareOpLatency = true
+			}
+			if method != "Bigtable.ExecuteQuery" {
+				continue
+			}
+			switch {
+			case strings.HasSuffix(metricType, metrics.MetricNameFirstRespLatencies) && dist != nil && dist.GetCount() == 1:
+				firstRespMean = dist.GetMean()
+			case strings.HasSuffix(metricType, metrics.MetricNameOperationLatencies) && dist != nil && dist.GetCount() == 1:
+				execOpMean = dist.GetMean()
+			case strings.HasSuffix(metricType, metrics.MetricNameAppBlockingLatencies) && dist != nil && dist.GetCount() == 1:
+				execAppMean = dist.GetMean()
+			case strings.HasSuffix(metricType, metrics.MetricNameServerLatencies) && dist != nil:
+				if status := metricLabels[metrics.MetricLabelKeyStatus]; status != "OK" {
+					t.Errorf("ExecuteQuery server_latencies recorded for unexpected status %q (attempt without server-timing should be skipped)", status)
+				} else if dist.GetCount() != 1 {
+					t.Errorf("ExecuteQuery server_latencies sample count = %d, want 1", dist.GetCount())
+				} else {
+					sawExecServerLatency = true
+				}
+			}
+		}
+	}
+
+	if !sawPrepareOpLatency {
+		t.Error("expected operation_latencies for Bigtable.PrepareQuery")
+	}
+	if firstRespMean <= 0 || firstRespMean >= float64(streamDelay/time.Millisecond) {
+		t.Errorf("ExecuteQuery first_response_latencies mean = %v, want in (0, %v)", firstRespMean, float64(streamDelay/time.Millisecond))
+	}
+	if execOpMean <= firstRespMean {
+		t.Errorf("ExecuteQuery operation_latencies mean (%v) should exceed first_response_latencies mean (%v)", execOpMean, firstRespMean)
+	}
+	if execAppMean < float64(appProcessingDelay/time.Millisecond)-30 {
+		t.Errorf("ExecuteQuery application_latencies mean = %v, want >= %v", execAppMean, float64(appProcessingDelay/time.Millisecond)-30)
+	}
+	if !sawExecServerLatency {
+		t.Error("expected server_latencies for Bigtable.ExecuteQuery with status OK and count 1")
+	}
+}
+
+func TestPreHeaderAttemptFailureWithoutIngestMetadata(t *testing.T) {
+	ctx := context.Background()
+	clientUID := "test-uid-preheader"
+
+	origSamplePeriod := metrics.DefaultSamplePeriod
+	metrics.DefaultSamplePeriod = 50 * time.Millisecond
+	defer func() { metrics.DefaultSamplePeriod = origSamplePeriod }()
+
+	origGenerateClientUID := metrics.GenerateClientUID
+	metrics.GenerateClientUID = func() (string, error) { return clientUID, nil }
+	defer func() { metrics.GenerateClientUID = origGenerateClientUID }()
+
+	mer := &MockErrorHandler{buffer: new(bytes.Buffer)}
+	setMockErrorHandler(t, mer)
+
+	monitoringServer, err := metricstest.NewServer()
+	if err != nil {
+		t.Fatalf("metricstest.NewServer: %v", err)
+	}
+	go monitoringServer.Serve()
+	defer monitoringServer.Shutdown()
+
+	origCreateExporterOptions := metrics.CreateExporterOptions
+	metrics.CreateExporterOptions = func(opts ...option.ClientOption) []option.ClientOption {
+		return []option.ClientOption{
+			option.WithEndpoint(monitoringServer.Endpoint),
+			option.WithoutAuthentication(),
+			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+		}
+	}
+	defer func() { metrics.CreateExporterOptions = origCreateExporterOptions }()
+
+	factory, err := metrics.NewFactory(ctx, "test-project", "test-instance", "default", "", DefaultMetricsProvider{})
+	if err != nil {
+		t.Fatalf("metrics.NewFactory: %v", err)
+	}
+	defer factory.Shutdown()
+
+	monitoringServer.CreateServiceTimeSeriesRequests()
+
+	mt := factory.CreateTracer(ctx, "", true)
+	mt.SetMethod("ExecuteQuery")
+	mt.RecordAttemptStart()
+	// Simulate stats.End firing without stats.InHeader or stats.InTrailer.
+	mt.RecordAttemptCompletion(status.Error(codes.DeadlineExceeded, "deadline exceeded"))
+	mt.SetCurrOpStatus(codes.DeadlineExceeded)
+	mt.RecordOperationCompletion()
+
+	time.Sleep(metrics.DefaultSamplePeriod * 5)
+
+	requests := monitoringServer.CreateServiceTimeSeriesRequests()
+	var (
+		connErrCount       int64 = -1
+		sawServerLatencies bool
+		sawFirstRespLat    bool
+	)
+	for _, req := range requests {
+		for _, ts := range req.TimeSeries {
+			if ts.GetMetric().GetLabels()[metrics.MetricLabelKeyClientUID] != clientUID {
+				continue
+			}
+			resLabels := ts.GetResource().GetLabels()
+			if resLabels[metrics.MetricLabelKeyTable] != "<unspecified>" ||
+				resLabels[metrics.MetricLabelKeyCluster] != "<unspecified>" ||
+				resLabels[metrics.MetricLabelKeyZone] != "global" {
+				t.Errorf("unexpected resource labels on pre-header failure: %v", resLabels)
+			}
+			metricType := ts.GetMetric().GetType()
+			switch {
+			case strings.HasSuffix(metricType, metrics.MetricNameServerLatencies):
+				sawServerLatencies = true
+			case strings.HasSuffix(metricType, metrics.MetricNameFirstRespLatencies):
+				sawFirstRespLat = true
+			case strings.HasSuffix(metricType, metrics.MetricNameConnErrCount):
+				if pts := ts.GetPoints(); len(pts) > 0 {
+					connErrCount = pts[0].GetValue().GetInt64Value()
+				}
+			}
+		}
+	}
+
+	if sawServerLatencies {
+		t.Error("server_latencies should not be recorded when attempt fails before headers/trailers")
+	}
+	if sawFirstRespLat {
+		t.Error("first_response_latencies should not be recorded when stream fails before receiving any message")
+	}
+	if connErrCount != 1 {
+		t.Errorf("connectivity_error_count = %d, want 1", connErrCount)
+	}
+}
+
+func TestGaxInvokeWithRecorder_PerAttemptMetadataIsolation(t *testing.T) {
+	factory := &metrics.Factory{Enabled: false}
+	mt := factory.CreateTracer(context.Background(), "", false)
+	ctx := metrics.NewContext(context.Background(), mt)
+
+	var attempt int
+	var attempt3Cookie []string
+
+	err := gaxInvokeWithRecorder(ctx, "ExecuteQuery", func(attemptCtx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
+		attempt++
+		if headerMD.Len() != 0 || trailerMD.Len() != 0 {
+			t.Fatalf("attempt %d received non-empty metadata containers: header=%v trailer=%v", attempt, *headerMD, *trailerMD)
+		}
+		switch attempt {
+		case 1:
+			*trailerMD = metadata.Pairs("x-goog-cbt-cookie-route", "stale")
+			return status.Error(codes.Unavailable, "attempt 1 transient failure")
+		case 2:
+			// Update cookie via response headers, then fail before trailers are populated.
+			*headerMD = metadata.Pairs("x-goog-cbt-cookie-route", "fresh")
+			return status.Error(codes.Unavailable, "attempt 2 transient failure")
+		default:
+			if md, ok := metadata.FromOutgoingContext(attemptCtx); ok {
+				attempt3Cookie = md.Get("x-goog-cbt-cookie-route")
+			}
+			return nil
+		}
+	}, gax.WithRetry(func() gax.Retryer {
+		return gax.OnCodes([]codes.Code{codes.Unavailable}, gax.Backoff{Initial: time.Millisecond, Max: time.Millisecond})
+	}))
+	if err != nil {
+		t.Fatalf("gaxInvokeWithRecorder unexpected error: %v", err)
+	}
+	if attempt != 3 {
+		t.Fatalf("attempts = %d, want 3", attempt)
+	}
+	if len(attempt3Cookie) != 1 || attempt3Cookie[0] != "fresh" {
+		t.Fatalf("attempt 3 outgoing cookie = %v, want [\"fresh\"] (stale trailerMD from attempt 1 must not overwrite attempt 2 headerMD)", attempt3Cookie)
 	}
 }
