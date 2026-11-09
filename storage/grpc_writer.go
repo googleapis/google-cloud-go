@@ -501,14 +501,20 @@ func (w *gRPCWriter) sendBufferToTarget(cs gRPCWriterCommandHandleChans, buf []b
 	return baseOffset + int64(sent), true
 }
 
-func (w *gRPCWriter) isActive() bool {
+// hasPendingData reports whether w.buf holds sent bytes not yet confirmed by
+// GCS or at least a full writeQuantum ready to be sent.
+func (w *gRPCWriter) hasPendingData() bool {
 	hasUnackedData := w.bufUnsentIdx > 0 && w.bufUnsentIdx > w.bufFlushedIdx
 	unsentBytes := len(w.buf) - w.bufUnsentIdx
 	if unsentBytes < 0 {
 		unsentBytes = 0
 	}
 	hasReadyData := unsentBytes >= w.writeQuantum
-	return w.currentCommand != nil || hasUnackedData || hasReadyData || len(w.writesChan) > 0
+	return hasUnackedData || hasReadyData
+}
+
+func (w *gRPCWriter) isActive() bool {
+	return w.currentCommand != nil || w.hasPendingData() || len(w.writesChan) > 0
 }
 
 func (w *gRPCWriter) handleCompletion(c gRPCBidiWriteCompletion) {
@@ -534,15 +540,14 @@ func (w *gRPCWriter) handleCompletion(c gRPCBidiWriteCompletion) {
 		w.buf = w.buf[:0]
 	}
 
-	w.setSize(c.flushOffset)
-	w.progress(c.flushOffset)
-
 	// Only a completion strictly past prevConfirmed counts as progress: a
 	// reconnect that reports the same persisted size must not reset the retry
-	// budget. The stopwatch restarts only if more data is waiting to be sent.
+	// budget. The stopwatch restarts only if data from the current buffer or
+	// command is still in flight; unread commands in writesChan arm the
+	// stopwatch themselves if and when they send.
 	progressed := c.flushOffset > prevConfirmed || c.resource != nil
 	if progressed {
-		w.budget.recordProgress(w.isActive())
+		w.budget.recordProgress(w.currentCommand != nil || w.hasPendingData())
 	}
 
 	// Restart the stall timer on forward progress. If nothing remains
@@ -550,6 +555,11 @@ func (w *gRPCWriter) handleCompletion(c gRPCBidiWriteCompletion) {
 	if progressed && w.watchdog != nil {
 		w.watchdog.reset()
 	}
+
+	// Notify external observers last so callers waking from ProgressFunc
+	// observe the updated retry budget and watchdog state.
+	w.setSize(c.flushOffset)
+	w.progress(c.flushOffset)
 }
 
 // Gather write commands before starting the actual write. Returns nil if the
@@ -707,8 +717,10 @@ Loop:
 					return err
 				}
 				w.currentCommand = nil
-				// Stop the stopwatch if we are completely idle and waiting for the user's next Write() call.
-				if !w.isActive() {
+				// Stop the stopwatch if no sent data remains unacknowledged and no
+				// full quantum is ready to send. Any command already queued in
+				// writesChan will arm the stopwatch itself if and when it sends.
+				if !w.hasPendingData() {
 					w.budget.stop()
 				}
 			}
