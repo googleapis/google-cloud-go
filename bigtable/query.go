@@ -393,8 +393,8 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool) e
 
 			resp := eqResp.GetResponse()
 			results, ok := resp.(*btpb.ExecuteQueryResponse_Results)
-			if !ok {
-				prevError = errors.New("bigtable: unexpected response type")
+			if !ok || results == nil || results.Results == nil {
+				prevError = status.Error(codes.Internal, "bigtable: unexpected response type")
 				return prevError
 			}
 
@@ -418,22 +418,22 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool) e
 				// Validate checksum
 				currBatchChecksum := crc32.Checksum(ongoingResultBatch.Bytes(), crc32cTable)
 				if *partialResultSet.BatchChecksum != currBatchChecksum {
-					prevError = errors.New("bigtable: batch_checksum mismatch")
+					prevError = status.Error(codes.Internal, "bigtable: batch_checksum mismatch")
 					return prevError
 				}
 
 				// Parse the batch
 				protoRows = new(btpb.ProtoRows)
 				if err := proto.Unmarshal(ongoingResultBatch.Bytes(), protoRows); err != nil {
-					prevError = err
-					return err
+					prevError = status.Errorf(codes.Internal, "bigtable: %v", err)
+					return prevError
 				}
 				valuesBuffer = append(valuesBuffer, protoRows.GetValues()...)
 
 				// Prepare to receive next batch of results
 				ongoingResultBatch.Reset()
 			}
-			if partialResultSet.GetResumeToken() != nil {
+			if len(partialResultSet.GetResumeToken()) > 0 {
 				// Values can be yielded to the caller
 
 				// If `resume_token` is non-empty and any data has been received since the
@@ -441,7 +441,7 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool) e
 				// never cross a `resume_token` boundary. It is an error otherwise
 				if ongoingResultBatch.Len() != 0 &&
 					partialResultSet.BatchChecksum == nil {
-					prevError = errors.New("bigtable: received resume_token with buffered data and no batch_checksum")
+					prevError = status.Error(codes.Internal, "bigtable: received resume_token with buffered data and no batch_checksum")
 					return prevError
 				}
 
@@ -455,11 +455,15 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool) e
 				resumeToken = partialResultSet.GetResumeToken()
 
 				if finalizedStmt.metadata == nil || finalizedStmt.metadata.GetProtoSchema() == nil || finalizedStmt.Metadata == nil {
-					prevError = errors.New("bigtable: metadata missing")
+					prevError = status.Error(codes.Internal, "bigtable: metadata missing")
 					return prevError
 				}
 				cols := finalizedStmt.metadata.GetProtoSchema().GetColumns()
 				numCols := len(cols)
+				if numCols == 0 {
+					prevError = status.Error(codes.Internal, "bigtable: columns cannot be empty")
+					return prevError
+				}
 
 				// Parse rows
 				for len(valuesBuffer) != 0 {
@@ -467,7 +471,7 @@ func (bs *BoundStatement) execute(ctx context.Context, f func(ResultRow) bool) e
 
 					// Pop first 'numCols' values to create a row
 					if len(valuesBuffer) < numCols {
-						prevError = fmt.Errorf("bigtable: metadata and data mismatch: %d columns in metadata but received %d values", numCols, len(valuesBuffer))
+						prevError = status.Errorf(codes.Internal, "bigtable: metadata and data mismatch: %d columns in metadata but received %d values", numCols, len(valuesBuffer))
 						return prevError
 					}
 
@@ -517,7 +521,7 @@ func handleExecuteStreamEnd(
 		return err
 	}
 	if len(valuesBuffer) != 0 || ongoingResultBatch.Len() != 0 {
-		err = errors.New("bigtable: server stream ended without sending a resume token")
+		err = status.Error(codes.Internal, "bigtable: server stream ended without sending a resume token")
 		*prevError = err
 		return err
 	}

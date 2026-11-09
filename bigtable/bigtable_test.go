@@ -1833,7 +1833,60 @@ func TestExecuteQuery(t *testing.T) {
 			wantExecReqPrepQuerys: [][]byte{
 				[]byte(preparedQuery1),
 			},
-			wantExecErr: errors.New("bigtable: server stream ended without sending a resume token"),
+			wantExecErr: status.Error(codes.Internal, "bigtable: server stream ended without sending a resume token"),
+		},
+		{
+			desc: "unexpected response type returns Internal",
+			mockPrepQueryResps: []prepareQueryResp{
+				newPrepareQueryResp(preparedQuery1, colFamAddress),
+			},
+			mockRecvMsgResps: []recvMsgResp{
+				{results: nil},
+			},
+			wantExecReqPrepQuerys: [][]byte{
+				[]byte(preparedQuery1),
+			},
+			wantExecErr: status.Error(codes.Internal, "bigtable: unexpected response type"),
+		},
+		{
+			desc: "checksum mismatch returns Internal",
+			mockPrepQueryResps: []prepareQueryResp{
+				newPrepareQueryResp(preparedQuery1, colFamAddress),
+			},
+			mockRecvMsgResps: []recvMsgResp{
+				{
+					results: &btpb.ExecuteQueryResponse_Results{
+						Results: &btpb.PartialResultSet{
+							PartialRows: &btpb.PartialResultSet_ProtoRowsBatch{
+								ProtoRowsBatch: &btpb.ProtoRowsBatch{
+									BatchData: []byte("corrupted"),
+								},
+							},
+							BatchChecksum: ptr(uint32(12345)),
+							ResumeToken:   []byte("token"),
+							Reset_:        true,
+						},
+					},
+				},
+			},
+			wantExecReqPrepQuerys: [][]byte{
+				[]byte(preparedQuery1),
+			},
+			wantExecErr: status.Error(codes.Internal, "bigtable: batch_checksum mismatch"),
+		},
+		{
+			desc: "metadata and data mismatch returns Internal",
+			mockPrepQueryResps: []prepareQueryResp{
+				newPrepareQueryResp(preparedQuery1, colFamAddress, colFamInfo),
+			},
+			mockRecvMsgResps: []recvMsgResp{
+				newExecQueryRespFullBatch(true, nil /* sleep */, []string{colFamAddress}),
+				newExecQueryRespResumeToken(),
+			},
+			wantExecReqPrepQuerys: [][]byte{
+				[]byte(preparedQuery1),
+			},
+			wantExecErr: status.Error(codes.Internal, "bigtable: metadata and data mismatch: 3 columns in metadata but received 2 values"),
 		},
 		{
 			/*
@@ -2044,7 +2097,7 @@ func TestExecuteQuery(t *testing.T) {
 			wantExecReqPrepQuerys: [][]byte{
 				[]byte(preparedQuery1),
 			},
-			wantExecErr: errors.New("bigtable: server stream ended without sending a resume token"),
+			wantExecErr: status.Error(codes.Internal, "bigtable: server stream ended without sending a resume token"),
 		},
 		{
 			desc: "retry discards uncommitted partial batch and valuesBuffer even when reset is false",
@@ -2115,8 +2168,8 @@ func TestExecuteQuery(t *testing.T) {
 				return true
 			})
 
-			if tc.wantExecErr != nil && err != nil && err.Error() != tc.wantExecErr.Error() {
-				t.Fatalf("Execute: err: got: %v, want: %v", err, tc.wantExecErr)
+			if tc.wantExecErr != nil && err != nil && (err.Error() != tc.wantExecErr.Error() || status.Code(err) != status.Code(tc.wantExecErr)) {
+				t.Fatalf("Execute: err: got: %v (code %v), want: %v (code %v)", err, status.Code(err), tc.wantExecErr, status.Code(tc.wantExecErr))
 			} else if (err != nil && tc.wantExecErr == nil) || (err == nil && tc.wantExecErr != nil) {
 				t.Fatalf("Execute: err got: %v, want: %v", err, tc.wantExecErr)
 			}
@@ -2539,6 +2592,9 @@ func TestInitializeMetadataAndMap_Error(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected initializeMetadataAndMap to return an error, got nil")
 	}
+	if status.Code(err) != codes.Internal {
+		t.Fatalf("status.Code(err) = %v, want %v (err: %v)", status.Code(err), codes.Internal, err)
+	}
 	if pqd.Metadata != nil {
 		t.Fatalf("expected pqd.Metadata to remain nil on error, got %+v", pqd.Metadata)
 	}
@@ -2554,14 +2610,16 @@ func TestPrepareStatement_InvalidMetadataError(t *testing.T) {
 	if gotErr != nil {
 		t.Fatalf("NewEmulatedEnv failed: %v", gotErr)
 	}
+	defer testEnv.Close()
 
-	conn, gotErr := grpc.Dial(testEnv.server.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(),
+	conn, gotErr := grpc.NewClient(testEnv.server.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithUnaryInterceptor(
 			newUnaryClientInterceptor(&gotPrepReqCount, &mockPrepQueryResps, &testPreparedQueryTTL)),
 	)
 	if gotErr != nil {
-		t.Fatalf("grpc.Dial failed: %v", gotErr)
+		t.Fatalf("grpc.NewClient failed: %v", gotErr)
 	}
+	defer conn.Close()
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	client, gotErr := NewClientWithConfig(ctx, testEnv.config.Project, testEnv.config.Instance, disableMetricsConfig, option.WithGRPCConn(conn))
@@ -2590,6 +2648,9 @@ func TestPrepareStatement_InvalidMetadataError(t *testing.T) {
 	_, err := client.PrepareStatement(ctx, "SELECT * FROM users;", nil)
 	if err == nil {
 		t.Fatal("expected PrepareStatement to fail on invalid metadata, got nil")
+	}
+	if status.Code(err) != codes.Internal {
+		t.Fatalf("status.Code(err) = %v, want %v (err: %v)", status.Code(err), codes.Internal, err)
 	}
 	if !strings.Contains(err.Error(), "error parsing metadata type for column") {
 		t.Fatalf("unexpected error message: %v", err)

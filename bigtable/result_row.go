@@ -25,6 +25,8 @@ import (
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"cloud.google.com/go/civil"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // ResultRow represents a single row in the result set returned on executing a GoogleSQL query in Cloud Bigtable
@@ -64,20 +66,23 @@ func newResultRow(pbValues []*btpb.Value, pbMetadata *btpb.ResultSetMetadata, rr
 // The order of columns matches the order of values returned by [ResultRow.Scan].
 func newResultRowMetadata(metadata *btpb.ResultSetMetadata) (*ResultRowMetadata, error) {
 	if metadata == nil {
-		return nil, errors.New("bigtable: metadata not found")
+		return nil, status.Error(codes.Internal, "bigtable: metadata not found")
 	}
 	protoSchema := metadata.GetProtoSchema()
 	if protoSchema == nil {
-		return nil, fmt.Errorf("bigtable: unknown schema in metadata %T", metadata.Schema)
+		return nil, status.Errorf(codes.Internal, "bigtable: unknown schema in metadata %T", metadata.Schema)
 	}
 	cols := protoSchema.GetColumns()
+	if len(cols) == 0 {
+		return nil, status.Error(codes.Internal, "bigtable: columns cannot be empty")
+	}
 	md := make([]ColumnMetadata, len(cols))
 	colNameToIndex := make(map[string][]int)
 	for i, colMeta := range cols {
 		pbType := colMeta.GetType()
 		sqlType, err := pbTypeToSQLType(pbType)
 		if err != nil {
-			return nil, fmt.Errorf("error parsing metadata type for column %q (index %d): %w", colMeta.GetName(), i, err)
+			return nil, status.Errorf(codes.Internal, "error parsing metadata type for column %q (index %d): %v", colMeta.GetName(), i, err)
 		}
 		md[i] = ColumnMetadata{
 			Name:    colMeta.GetName(),
@@ -253,7 +258,7 @@ func (rr *ResultRow) GetByIndex(index int, dest any) error {
 	colInfo := rr.Metadata.Columns[index]
 	sqlType := colInfo.SQLType
 	if sqlType == nil {
-		return fmt.Errorf("bigtable: internal error - nil SQLType for column index %d", index)
+		return status.Errorf(codes.Internal, "bigtable: internal error - nil SQLType for column index %d", index)
 	}
 
 	if _, isSQLStruct := sqlType.(StructSQLType); isSQLStruct {
@@ -271,13 +276,13 @@ func (rr *ResultRow) GetByIndex(index int, dest any) error {
 	}
 	pbType, err := sqlType.typeProto()
 	if err != nil {
-		return fmt.Errorf("bigtable: internal error - failed to get protobuf type for column index %d: %w", index, err)
+		return status.Errorf(codes.Internal, "bigtable: internal error - failed to get protobuf type for column index %d: %v", index, err)
 	}
 
 	// Convert protobuf value to Go value
 	goVal, err := pbValueToGoValue(rr.pbValues[index], pbType)
 	if err != nil {
-		return fmt.Errorf("error converting column %d (%q): %w", index, colInfo.Name, err)
+		return status.Errorf(codes.Internal, "error converting column %d (%q): %v", index, colInfo.Name, err)
 	}
 
 	// Assign the Go value to the destination pointer
