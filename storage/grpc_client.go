@@ -246,9 +246,6 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 		}
 	}
 
-	// Use the application's pool if one was set; otherwise the SDK's default.
-	// Creating the default pool starts no goroutines, so it needs no cleanup
-	// if client construction fails below.
 	bufferPool := config.bufferPool
 	if bufferPool == nil {
 		bufferPool = newDefaultBufferPool()
@@ -397,10 +394,7 @@ func (c *grpcStorageClient) Close() error {
 	if c.metricsCleanup != nil {
 		c.metricsCleanup()
 	}
-	// Only the SDK's own pool is closed; a pool provided through
-	// experimental.WithBufferPool is owned by the application. Writers still
-	// in flight may keep using a closed default pool: Get allocates a new
-	// block and Put drops it, which is safe.
+	// Only close the SDK-owned defaultBufferPool; custom pools are managed by the caller.
 	if pool, ok := c.bufferPool.(*defaultBufferPool); ok {
 		pool.close()
 	}

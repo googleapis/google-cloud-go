@@ -22,8 +22,7 @@ import (
 
 const (
 	// poolBlockSize is the size of every block vended by the default buffer
-	// pool. GCS parallel upload parts are multiples of 32 MiB, so each
-	// minimum-sized part is backed by a single block.
+	// pool. It matches the default and minimum parallel upload part size.
 	poolBlockSize = 32 << 20
 
 	// poolCleanInterval is how often the cleaner runs. Each run evicts half of
@@ -37,9 +36,8 @@ var errInvalidBufferSize = errors.New("storage: buffer pool maxSize must be posi
 // application does not provide one through experimental.WithBufferPool.
 //
 // It vends uniform 32 MiB blocks shared across all writers of a client. The
-// pool has no memory limit; memory in use is bounded by the writers'
-// PartSize and Concurrency settings. Get and TryGet always succeed, reusing a
-// cached block or allocating one. A cleaner shrinks the cache toward the
+// pool has no memory limit. Get and TryGet always succeed, reusing a cached
+// block or allocating one. A cleaner shrinks the cache toward the
 // blocks actually in use, halving the unused ones every cleanInterval.
 //
 // All methods are safe for concurrent use.
@@ -49,9 +47,7 @@ type defaultBufferPool struct {
 
 	// mu guards the fields below.
 	mu sync.Mutex
-	// free is a LIFO stack of cached blocks. Get and Put only touch the top,
-	// so the bottom minFree blocks are the ones left unused for a whole
-	// cleaner interval.
+	// free is a LIFO stack of cached blocks; Get and Put only touch the top.
 	free [][]byte
 	// minFree is the smallest len(free) since the last cleaner run. The
 	// bottom minFree blocks were not used during that interval.
