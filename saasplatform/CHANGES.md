@@ -1,5 +1,19 @@
 # Changes
 
+## [0.13.0](https://github.com/googleapis/google-cloud-go/compare/saasplatform/v0.12.1...saasplatform/v0.13.0) (2026-11-05)
+
+
+### Features
+
+* **google/cloud/saasplatform/saasservicemgmt/v1:** Add saasplatform ([#20854](https://github.com/googleapis/google-cloud-go/issues/20854)) ([45fbb54](https://github.com/googleapis/google-cloud-go/commit/45fbb54ec511b81419bc1d6c0b14d512e215f9db))
+
+## [0.12.1](https://github.com/googleapis/google-cloud-go/compare/saasplatform/v0.12.0...saasplatform/v0.12.1) (2026-10-28)
+
+
+### Bug Fixes
+
+* Adds additional validation for REST RPC requests ([#20753](https://github.com/googleapis/google-cloud-go/issues/20753)) ([7827181](https://github.com/googleapis/google-cloud-go/commit/7827181e7cb653fb69645c538b162b2c7490b0bb))
+
 ## [0.12.0](https://github.com/googleapis/google-cloud-go/compare/saasplatform/v0.11.0...saasplatform/v0.12.0) (2026-10-22)
 
 

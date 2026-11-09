@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go v0.123.0
 	cloud.google.com/go/compute/metadata v0.10.0
 	cloud.google.com/go/iam v1.14.0
-	cloud.google.com/go/longrunning v1.3.0
+	cloud.google.com/go/longrunning v1.5.0
 	cloud.google.com/go/monitoring v1.30.0
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric v0.57.0
 	github.com/envoyproxy/go-control-plane/envoy v1.37.0
@@ -41,7 +41,7 @@ require (
 	github.com/cncf/xds/go v0.0.0-20260202195803-dba9d589def2 // indirect
 	github.com/envoyproxy/protoc-gen-validate v1.3.3 // indirect
 	github.com/felixge/httpsnoop v1.1.0 // indirect
-	github.com/go-jose/go-jose/v4 v4.1.4 // indirect
+	github.com/go-jose/go-jose/v4 v4.1.6 // indirect
 	github.com/go-logr/logr v1.4.4 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/google/s2a-go v0.1.11 // indirect

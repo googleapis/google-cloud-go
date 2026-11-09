@@ -4,7 +4,7 @@ go 1.26.0
 
 require (
 	cloud.google.com/go/iam v1.14.0
-	cloud.google.com/go/longrunning v1.3.0
+	cloud.google.com/go/longrunning v1.5.0
 	cloud.google.com/go/orgpolicy v1.20.0
 	github.com/googleapis/gax-go/v2 v2.27.0
 	go.opentelemetry.io/otel/trace v1.47.0

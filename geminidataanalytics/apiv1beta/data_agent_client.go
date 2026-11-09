@@ -89,7 +89,7 @@ func defaultDataAgentGRPCClientOptions() []option.ClientOption {
 func defaultDataAgentCallOptions() *DataAgentCallOptions {
 	return &DataAgentCallOptions{
 		ListDataAgents: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -101,7 +101,7 @@ func defaultDataAgentCallOptions() *DataAgentCallOptions {
 			}),
 		},
 		ListAccessibleDataAgents: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -113,7 +113,7 @@ func defaultDataAgentCallOptions() *DataAgentCallOptions {
 			}),
 		},
 		GetDataAgent: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -125,7 +125,7 @@ func defaultDataAgentCallOptions() *DataAgentCallOptions {
 			}),
 		},
 		CreateDataAgent: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -137,7 +137,7 @@ func defaultDataAgentCallOptions() *DataAgentCallOptions {
 			}),
 		},
 		CreateDataAgentSync: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -149,7 +149,7 @@ func defaultDataAgentCallOptions() *DataAgentCallOptions {
 			}),
 		},
 		UpdateDataAgent: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -161,7 +161,7 @@ func defaultDataAgentCallOptions() *DataAgentCallOptions {
 			}),
 		},
 		UpdateDataAgentSync: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -173,7 +173,7 @@ func defaultDataAgentCallOptions() *DataAgentCallOptions {
 			}),
 		},
 		DeleteDataAgent: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -185,7 +185,7 @@ func defaultDataAgentCallOptions() *DataAgentCallOptions {
 			}),
 		},
 		DeleteDataAgentSync: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -197,7 +197,7 @@ func defaultDataAgentCallOptions() *DataAgentCallOptions {
 			}),
 		},
 		GetIamPolicy: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -209,7 +209,7 @@ func defaultDataAgentCallOptions() *DataAgentCallOptions {
 			}),
 		},
 		SetIamPolicy: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -221,7 +221,7 @@ func defaultDataAgentCallOptions() *DataAgentCallOptions {
 			}),
 		},
 		SetAgentOpsObservability: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -233,7 +233,7 @@ func defaultDataAgentCallOptions() *DataAgentCallOptions {
 			}),
 		},
 		RetrieveAgentOpsObservability: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -245,7 +245,7 @@ func defaultDataAgentCallOptions() *DataAgentCallOptions {
 			}),
 		},
 		GetLocation: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -257,7 +257,7 @@ func defaultDataAgentCallOptions() *DataAgentCallOptions {
 			}),
 		},
 		ListLocations: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -269,7 +269,7 @@ func defaultDataAgentCallOptions() *DataAgentCallOptions {
 			}),
 		},
 		CancelOperation: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -281,7 +281,7 @@ func defaultDataAgentCallOptions() *DataAgentCallOptions {
 			}),
 		},
 		DeleteOperation: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -293,7 +293,7 @@ func defaultDataAgentCallOptions() *DataAgentCallOptions {
 			}),
 		},
 		GetOperation: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -305,7 +305,7 @@ func defaultDataAgentCallOptions() *DataAgentCallOptions {
 			}),
 		},
 		ListOperations: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -322,7 +322,7 @@ func defaultDataAgentCallOptions() *DataAgentCallOptions {
 func defaultDataAgentRESTCallOptions() *DataAgentCallOptions {
 	return &DataAgentCallOptions{
 		ListDataAgents: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -333,7 +333,7 @@ func defaultDataAgentRESTCallOptions() *DataAgentCallOptions {
 			}),
 		},
 		ListAccessibleDataAgents: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -344,7 +344,7 @@ func defaultDataAgentRESTCallOptions() *DataAgentCallOptions {
 			}),
 		},
 		GetDataAgent: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -355,7 +355,7 @@ func defaultDataAgentRESTCallOptions() *DataAgentCallOptions {
 			}),
 		},
 		CreateDataAgent: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -366,7 +366,7 @@ func defaultDataAgentRESTCallOptions() *DataAgentCallOptions {
 			}),
 		},
 		CreateDataAgentSync: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -377,7 +377,7 @@ func defaultDataAgentRESTCallOptions() *DataAgentCallOptions {
 			}),
 		},
 		UpdateDataAgent: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -388,7 +388,7 @@ func defaultDataAgentRESTCallOptions() *DataAgentCallOptions {
 			}),
 		},
 		UpdateDataAgentSync: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -399,7 +399,7 @@ func defaultDataAgentRESTCallOptions() *DataAgentCallOptions {
 			}),
 		},
 		DeleteDataAgent: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -410,7 +410,7 @@ func defaultDataAgentRESTCallOptions() *DataAgentCallOptions {
 			}),
 		},
 		DeleteDataAgentSync: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -421,7 +421,7 @@ func defaultDataAgentRESTCallOptions() *DataAgentCallOptions {
 			}),
 		},
 		GetIamPolicy: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -432,7 +432,7 @@ func defaultDataAgentRESTCallOptions() *DataAgentCallOptions {
 			}),
 		},
 		SetIamPolicy: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -443,7 +443,7 @@ func defaultDataAgentRESTCallOptions() *DataAgentCallOptions {
 			}),
 		},
 		SetAgentOpsObservability: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -454,7 +454,7 @@ func defaultDataAgentRESTCallOptions() *DataAgentCallOptions {
 			}),
 		},
 		RetrieveAgentOpsObservability: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -465,7 +465,7 @@ func defaultDataAgentRESTCallOptions() *DataAgentCallOptions {
 			}),
 		},
 		GetLocation: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -476,7 +476,7 @@ func defaultDataAgentRESTCallOptions() *DataAgentCallOptions {
 			}),
 		},
 		ListLocations: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -487,7 +487,7 @@ func defaultDataAgentRESTCallOptions() *DataAgentCallOptions {
 			}),
 		},
 		CancelOperation: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -498,7 +498,7 @@ func defaultDataAgentRESTCallOptions() *DataAgentCallOptions {
 			}),
 		},
 		DeleteOperation: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -509,7 +509,7 @@ func defaultDataAgentRESTCallOptions() *DataAgentCallOptions {
 			}),
 		},
 		GetOperation: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -520,7 +520,7 @@ func defaultDataAgentRESTCallOptions() *DataAgentCallOptions {
 			}),
 		},
 		ListOperations: []gax.CallOption{
-			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -678,8 +678,7 @@ func (c *DataAgentClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPol
 }
 
 // SetAgentOpsObservability enables/Disables required GCP services and configures AgentOps
-// observability settings calling the Admin Settings executable node to
-// update the AgentOps Observability feature.
+// observability settings.
 func (c *DataAgentClient) SetAgentOpsObservability(ctx context.Context, req *geminidataanalyticspb.SetAgentOpsObservabilityRequest, opts ...gax.CallOption) (*SetAgentOpsObservabilityOperation, error) {
 	return c.internalClient.SetAgentOpsObservability(ctx, req, opts...)
 }
@@ -2471,8 +2470,7 @@ func (c *dataAgentRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIa
 }
 
 // SetAgentOpsObservability enables/Disables required GCP services and configures AgentOps
-// observability settings calling the Admin Settings executable node to
-// update the AgentOps Observability feature.
+// observability settings.
 func (c *dataAgentRESTClient) SetAgentOpsObservability(ctx context.Context, req *geminidataanalyticspb.SetAgentOpsObservabilityRequest, opts ...gax.CallOption) (*SetAgentOpsObservabilityOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

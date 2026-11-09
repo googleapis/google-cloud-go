@@ -96,6 +96,7 @@ type CallOptions struct {
 	PositionSection                []gax.CallOption
 	ListSectionItems               []gax.CallOption
 	MoveSectionItem                []gax.CallOption
+	ReplaceMessageCards            []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -706,6 +707,18 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		ReplaceMessageCards: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
@@ -1253,6 +1266,17 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		ReplaceMessageCards: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 	}
 }
 
@@ -1313,6 +1337,7 @@ type internalClient interface {
 	PositionSection(context.Context, *chatpb.PositionSectionRequest, ...gax.CallOption) (*chatpb.PositionSectionResponse, error)
 	ListSectionItems(context.Context, *chatpb.ListSectionItemsRequest, ...gax.CallOption) *SectionItemIterator
 	MoveSectionItem(context.Context, *chatpb.MoveSectionItemRequest, ...gax.CallOption) (*chatpb.MoveSectionItemResponse, error)
+	ReplaceMessageCards(context.Context, *chatpb.ReplaceMessageCardsRequest, ...gax.CallOption) (*chatpb.ReplaceMessageCardsResponse, error)
 }
 
 // Client is a client for interacting with Google Chat API.
@@ -2785,6 +2810,24 @@ func (c *Client) MoveSectionItem(ctx context.Context, req *chatpb.MoveSectionIte
 	return c.internalClient.MoveSectionItem(ctx, req, opts...)
 }
 
+// ReplaceMessageCards replaces the cards included in a message.
+//
+// A Chat app can only replace cards on a human-created message if the message
+// already contains cards, and the cards were created by the app.
+//
+// If the app replaces the cards with an empty list, the cards are removed.
+// After removing the cards, the app cannot add cards back to the message.
+//
+// Requires app
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+// with the authorization
+// scope (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+//
+//	https://www.googleapis.com/auth/chat.bot
+func (c *Client) ReplaceMessageCards(ctx context.Context, req *chatpb.ReplaceMessageCardsRequest, opts ...gax.CallOption) (*chatpb.ReplaceMessageCardsResponse, error) {
+	return c.internalClient.ReplaceMessageCards(ctx, req, opts...)
+}
+
 // gRPCClient is a client for interacting with Google Chat API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -2906,6 +2949,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.PositionSection = append(client.CallOptions.PositionSection, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListSectionItems = append(client.CallOptions.ListSectionItems, gax.WithClientMetrics(metrics))
 		client.CallOptions.MoveSectionItem = append(client.CallOptions.MoveSectionItem, gax.WithClientMetrics(metrics))
+		client.CallOptions.ReplaceMessageCards = append(client.CallOptions.ReplaceMessageCards, gax.WithClientMetrics(metrics))
 	}
 	if gax.IsFeatureEnabled("TRACING") {
 		tracing := gax.NewClientTracing(
@@ -2970,6 +3014,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.PositionSection = append(client.CallOptions.PositionSection, gax.WithClientTracing(tracing))
 		client.CallOptions.ListSectionItems = append(client.CallOptions.ListSectionItems, gax.WithClientTracing(tracing))
 		client.CallOptions.MoveSectionItem = append(client.CallOptions.MoveSectionItem, gax.WithClientTracing(tracing))
+		client.CallOptions.ReplaceMessageCards = append(client.CallOptions.ReplaceMessageCards, gax.WithClientTracing(tracing))
 	}
 	if gax.IsFeatureEnabled("LOGGING") {
 		logging := gax.NewClientLogging(
@@ -3035,6 +3080,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.PositionSection = append(client.CallOptions.PositionSection, gax.WithClientLogging(logging))
 		client.CallOptions.ListSectionItems = append(client.CallOptions.ListSectionItems, gax.WithClientLogging(logging))
 		client.CallOptions.MoveSectionItem = append(client.CallOptions.MoveSectionItem, gax.WithClientLogging(logging))
+		client.CallOptions.ReplaceMessageCards = append(client.CallOptions.ReplaceMessageCards, gax.WithClientLogging(logging))
 	}
 
 	client.internalClient = c
@@ -3178,6 +3224,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.PositionSection = append(callOpts.PositionSection, gax.WithClientMetrics(metrics))
 		callOpts.ListSectionItems = append(callOpts.ListSectionItems, gax.WithClientMetrics(metrics))
 		callOpts.MoveSectionItem = append(callOpts.MoveSectionItem, gax.WithClientMetrics(metrics))
+		callOpts.ReplaceMessageCards = append(callOpts.ReplaceMessageCards, gax.WithClientMetrics(metrics))
 	}
 	if gax.IsFeatureEnabled("TRACING") {
 		tracing := gax.NewClientTracing(
@@ -3242,6 +3289,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.PositionSection = append(callOpts.PositionSection, gax.WithClientTracing(tracing))
 		callOpts.ListSectionItems = append(callOpts.ListSectionItems, gax.WithClientTracing(tracing))
 		callOpts.MoveSectionItem = append(callOpts.MoveSectionItem, gax.WithClientTracing(tracing))
+		callOpts.ReplaceMessageCards = append(callOpts.ReplaceMessageCards, gax.WithClientTracing(tracing))
 	}
 	if gax.IsFeatureEnabled("LOGGING") {
 		logging := gax.NewClientLogging(
@@ -3307,6 +3355,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.PositionSection = append(callOpts.PositionSection, gax.WithClientLogging(logging))
 		callOpts.ListSectionItems = append(callOpts.ListSectionItems, gax.WithClientLogging(logging))
 		callOpts.MoveSectionItem = append(callOpts.MoveSectionItem, gax.WithClientLogging(logging))
+		callOpts.ReplaceMessageCards = append(callOpts.ReplaceMessageCards, gax.WithClientLogging(logging))
 	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
@@ -4721,6 +4770,27 @@ func (c *gRPCClient) MoveSectionItem(ctx context.Context, req *chatpb.MoveSectio
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = executeRPC(ctx, c.client.MoveSectionItem, req, settings.GRPC, c.logger, "MoveSectionItem")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ReplaceMessageCards(ctx context.Context, req *chatpb.ReplaceMessageCardsRequest, opts ...gax.CallOption) (*chatpb.ReplaceMessageCardsResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/ReplaceMessageCards")
+	}
+	opts = append((*c.CallOptions).ReplaceMessageCards[0:len((*c.CallOptions).ReplaceMessageCards):len((*c.CallOptions).ReplaceMessageCards)], opts...)
+	var resp *chatpb.ReplaceMessageCardsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.ReplaceMessageCards, req, settings.GRPC, c.logger, "ReplaceMessageCards")
 		return err
 	}, opts...)
 	if err != nil {
@@ -9397,6 +9467,84 @@ func (c *restClient) MoveSectionItem(ctx context.Context, req *chatpb.MoveSectio
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "MoveSectionItem")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ReplaceMessageCards replaces the cards included in a message.
+//
+// A Chat app can only replace cards on a human-created message if the message
+// already contains cards, and the cards were created by the app.
+//
+// If the app replaces the cards with an empty list, the cards are removed.
+// After removing the cards, the app cannot add cards back to the message.
+//
+// Requires app
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+// with the authorization
+// scope (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+//
+//	https://www.googleapis.com/auth/chat.bot
+func (c *restClient) ReplaceMessageCards(ctx context.Context, req *chatpb.ReplaceMessageCardsRequest, opts ...gax.CallOption) (*chatpb.ReplaceMessageCardsResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:replaceCards", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/ReplaceMessageCards")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=spaces/*/messages/*}:replaceCards")
+	}
+	opts = append((*c.CallOptions).ReplaceMessageCards[0:len((*c.CallOptions).ReplaceMessageCards):len((*c.CallOptions).ReplaceMessageCards)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &chatpb.ReplaceMessageCardsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ReplaceMessageCards")
 		if err != nil {
 			return err
 		}

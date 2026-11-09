@@ -378,6 +378,7 @@ func pbTypeToSQLType(pbType *btpb.Type) (SQLType, error) {
 
 // reflection types
 var (
+	anyType     = reflect.TypeOf((*any)(nil)).Elem()
 	bytesType   = reflect.TypeOf([]byte(nil))
 	stringType  = reflect.TypeOf("")
 	int64Type   = reflect.TypeOf(int64(0))
@@ -588,12 +589,22 @@ func pbValueToGoValue(pbVal *btpb.Value, pbType *btpb.Type) (any, error) {
 		if keyPbType == nil || valPbType == nil {
 			return nil, errors.New("map key or value type is nil")
 		}
-		// Determine Go map key type (use string for BYTES keys)
+		// Determine Go map key type (use string for BYTES keys, or any if any key is NULL)
 		keyGoType, _ := pbTypeToGoReflectTypeInternal(keyPbType, false) // Key type T (Bytes, String, Int64)
 		isBytesKey := keyGoType == bytesType
 		mapKeyGoType := keyGoType
 		if isBytesKey {
 			mapKeyGoType = stringType
+		}
+		if mapArrProto.ArrayValue != nil {
+			for _, pbEntry := range mapArrProto.ArrayValue.Values {
+				if kvPairProto, ok := pbEntry.GetKind().(*btpb.Value_ArrayValue); ok && kvPairProto.ArrayValue != nil && len(kvPairProto.ArrayValue.Values) == 2 {
+					if kvPairProto.ArrayValue.Values[0] == nil || kvPairProto.ArrayValue.Values[0].GetKind() == nil {
+						mapKeyGoType = anyType
+						break
+					}
+				}
+			}
 		}
 
 		valGoType, _ := pbTypeToGoReflectTypeInternal(valPbType, true)   // Value type *V (or V if map/slice/...)
@@ -623,8 +634,10 @@ func pbValueToGoValue(pbVal *btpb.Value, pbType *btpb.Type) (any, error) {
 				return nil, fmt.Errorf("error converting map value at entry index %d: %w", i, errV)
 			}
 
-			var finalMapKey reflect.Value // This will hold string or int64
+			var finalMapKey reflect.Value // This will hold string, int64, or nil interface{}
 			switch keyVal := goKey.(type) {
+			case nil:
+				finalMapKey = reflect.Zero(mapKeyGoType)
 			case []byte:
 				if !isBytesKey {
 					return nil, fmt.Errorf("internal error: got bytes key for non-bytes map type")
@@ -929,6 +942,32 @@ func assignValue(dest reflect.Value, src any) error {
 				destValue := reflect.New(destValType).Elem()
 				if err := assignValue(destValue, srcValue.Interface()); err != nil {
 					return fmt.Errorf("error assigning map value type %s to interface{}: %w", srcValue.Type(), err)
+				}
+				dest.SetMapIndex(destKey, destValue)
+			}
+			return nil
+		}
+
+		// Case: Assigning maps where source or destination uses interface{} (any) keys
+		if (destKeyType.Kind() == reflect.Interface && destKeyType.NumMethod() == 0) ||
+			(srcKeyType.Kind() == reflect.Interface && srcKeyType.NumMethod() == 0) {
+			if dest.IsNil() {
+				dest.Set(reflect.MakeMap(destType))
+			}
+			mapIter := srcVal.MapRange()
+			for mapIter.Next() {
+				srcKey := mapIter.Key()
+				srcValue := mapIter.Value()
+				if srcKey.Kind() == reflect.Interface && srcKey.IsNil() && destKeyType.Kind() != reflect.Interface {
+					return fmt.Errorf("cannot assign nil map key from source type %s to non-interface destination map key type %s", srcType, destKeyType)
+				}
+				destKey := reflect.New(destKeyType).Elem()
+				if err := assignValue(destKey, srcKey.Interface()); err != nil {
+					return fmt.Errorf("error assigning map key type %s to %s: %w", srcKeyType, destKeyType, err)
+				}
+				destValue := reflect.New(destValType).Elem()
+				if err := assignValue(destValue, srcValue.Interface()); err != nil {
+					return fmt.Errorf("error assigning map value type %s to %s: %w", srcValType, destValType, err)
 				}
 				dest.SetMapIndex(destKey, destValue)
 			}

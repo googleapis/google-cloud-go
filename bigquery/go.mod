@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go v0.123.0
 	cloud.google.com/go/datacatalog v1.33.0
 	cloud.google.com/go/iam v1.14.0
-	cloud.google.com/go/longrunning v1.3.0
+	cloud.google.com/go/longrunning v1.5.0
 	cloud.google.com/go/storage v1.62.3
 	github.com/apache/arrow/go/v15 v15.0.2
 	github.com/google/go-cmp v0.7.0
@@ -40,7 +40,7 @@ require (
 	github.com/envoyproxy/go-control-plane/envoy v1.37.0 // indirect
 	github.com/envoyproxy/protoc-gen-validate v1.3.3 // indirect
 	github.com/felixge/httpsnoop v1.1.0 // indirect
-	github.com/go-jose/go-jose/v4 v4.1.4 // indirect
+	github.com/go-jose/go-jose/v4 v4.1.6 // indirect
 	github.com/go-logr/logr v1.4.4 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect

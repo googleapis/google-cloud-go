@@ -5,7 +5,7 @@ go 1.26.0
 retract v0.1.0 // Contains incorrectly generated go proto code.
 
 require (
-	cloud.google.com/go/longrunning v1.3.0
+	cloud.google.com/go/longrunning v1.5.0
 	github.com/googleapis/gax-go/v2 v2.27.0
 	go.opentelemetry.io/otel/trace v1.47.0
 	google.golang.org/api v0.304.0

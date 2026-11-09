@@ -95,7 +95,7 @@ func (f *classicFallback) tableAPI(res adapters.Resource) (bigtable.TableAPI, er
 
 // buildTableHandle constructs a bigtable.TableAPI for res. It validates that
 // the resource belongs to f.project/f.instance before extracting the leaf IDs,
-// so cross-project/cross-instance routing is caught as an internal error.
+// so cross-project/cross-instance routing is rejected with InvalidArgument.
 func (f *classicFallback) buildTableHandle(res adapters.Resource) (bigtable.TableAPI, error) {
 	switch res.Kind {
 	case adapters.ResourceTable:
@@ -197,7 +197,7 @@ func (f *classicFallback) Close() error {
 func (f *classicFallback) parseTableID(name string) (string, error) {
 	rest, ok := strings.CutPrefix(name, f.scopePrefix)
 	if !ok {
-		return "", status.Errorf(codes.Internal,
+		return "", status.Errorf(codes.InvalidArgument,
 			"accelerator fallback: resource %q is not in scope %s", name, strings.TrimSuffix(f.scopePrefix, "/"))
 	}
 	return leafAfter(name, rest, "tables/")
@@ -209,7 +209,7 @@ func (f *classicFallback) parseTableID(name string) (string, error) {
 func (f *classicFallback) parseAVIDs(name string) (tableID, viewID string, err error) {
 	rest, ok := strings.CutPrefix(name, f.scopePrefix)
 	if !ok {
-		return "", "", status.Errorf(codes.Internal,
+		return "", "", status.Errorf(codes.InvalidArgument,
 			"accelerator fallback: resource %q is not in scope %s", name, strings.TrimSuffix(f.scopePrefix, "/"))
 	}
 	afterTables, ok := strings.CutPrefix(rest, "tables/")
@@ -230,7 +230,7 @@ func (f *classicFallback) parseAVIDs(name string) (tableID, viewID string, err e
 func (f *classicFallback) parseMVID(name string) (string, error) {
 	rest, ok := strings.CutPrefix(name, f.scopePrefix)
 	if !ok {
-		return "", status.Errorf(codes.Internal,
+		return "", status.Errorf(codes.InvalidArgument,
 			"accelerator fallback: resource %q is not in scope %s", name, strings.TrimSuffix(f.scopePrefix, "/"))
 	}
 	return leafAfter(name, rest, "materializedViews/")

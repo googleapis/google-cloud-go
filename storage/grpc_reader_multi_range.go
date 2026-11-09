@@ -1390,6 +1390,7 @@ func (s *bidiReadStreamSession) receiveLoop() {
 				databufs: databufs,
 			}
 			err = decoder.readFullObjectResponse()
+			recordBidiReadPayload(s.stream, decoder, err)
 			if err == nil && !s.params.disableMRDReadChecksum {
 				decoder.verifyChecksums()
 			}

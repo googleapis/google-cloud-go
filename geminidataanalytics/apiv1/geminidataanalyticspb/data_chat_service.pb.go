@@ -44,8 +44,8 @@ const (
 type ChatRequest_ThinkingMode int32
 
 const (
-	// Unspecified thinking mode, agent will use THINKING mode by default except
-	// for BigQuery user defaulting to FAST mode by default.
+	// The default value. For BigQuery and Looker data sources, the agent uses
+	// FAST. For all other data sources, the agent uses THINKING.
 	ChatRequest_THINKING_MODE_UNSPECIFIED ChatRequest_ThinkingMode = 0
 	// Fast mode, answers quickly.
 	ChatRequest_FAST ChatRequest_ThinkingMode = 1

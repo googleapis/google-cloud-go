@@ -507,9 +507,6 @@ func (s StructSQLType) typeProto() (*btpb.Type, error) {
 	pbFields := make([]*btpb.Type_Struct_Field, len(s.Fields))
 
 	for i, field := range s.Fields {
-		if field.Name == "" {
-			return nil, fmt.Errorf("bigtable: StructSQLType field at index %d must have a name", i)
-		}
 		if field.Type == nil {
 			return nil, fmt.Errorf("bigtable: StructSQLType field %q must have a non-nil type", field.Name)
 		}

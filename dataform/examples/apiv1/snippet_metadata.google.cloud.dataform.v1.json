@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/dataform/apiv1",
-    "version": "1.8.0"
+    "version": "1.9.0"
   },
   "snippets": [
     {
@@ -285,6 +285,52 @@
         }
       ],
       "title": "dataform CreateCompilationResult Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.dataform.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.dataform.v1.Client.CreateCompilationResultLongRunning",
+        "method": {
+          "fullName": "google.cloud.dataform.v1.Dataform.CreateCompilationResultLongRunning",
+          "service": {
+            "fullName": "google.cloud.dataform.v1.Dataform",
+            "shortName": "Dataform"
+          },
+          "shortName": "CreateCompilationResultLongRunning"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "dataformpb.CreateCompilationResultRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateCompilationResultLongRunningOperation",
+        "shortName": "CreateCompilationResultLongRunning"
+      },
+      "description": "CreateCompilationResultLongRunning creates a new CompilationResult in a given project and location\nasynchronously.",
+      "file": "Client/CreateCompilationResultLongRunning/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dataform_v1_generated_Dataform_CreateCompilationResultLongRunning_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dataform CreateCompilationResultLongRunning Sample"
     },
     {
       "clientMethod": {

@@ -4,7 +4,7 @@ go 1.26.0
 
 require (
 	cloud.google.com/go v0.123.0
-	cloud.google.com/go/longrunning v1.3.0
+	cloud.google.com/go/longrunning v1.5.0
 	cloud.google.com/go/pubsub v1.51.0
 	github.com/IBM/sarama v1.50.3
 	github.com/google/go-cmp v0.7.0

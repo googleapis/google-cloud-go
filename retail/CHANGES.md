@@ -1,5 +1,12 @@
 # Changes
 
+## [1.37.1](https://github.com/googleapis/google-cloud-go/compare/retail/v1.37.0...retail/v1.37.1) (2026-10-28)
+
+
+### Bug Fixes
+
+* Adds additional validation for REST RPC requests ([#20753](https://github.com/googleapis/google-cloud-go/issues/20753)) ([7827181](https://github.com/googleapis/google-cloud-go/commit/7827181e7cb653fb69645c538b162b2c7490b0bb))
+
 ## [1.37.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.36.0...retail/v1.37.0) (2026-10-22)
 
 

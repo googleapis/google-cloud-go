@@ -109,6 +109,8 @@ type internalSqlSslCertsClient interface {
 
 // SqlSslCertsClient is a client for interacting with Cloud SQL Admin API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service to manage SSL certs for Cloud SQL instances.
 type SqlSslCertsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalSqlSslCertsClient
@@ -186,6 +188,8 @@ type sqlSslCertsGRPCClient struct {
 
 // NewSqlSslCertsClient creates a new sql ssl certs service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
+//
+// Service to manage SSL certs for Cloud SQL instances.
 func NewSqlSslCertsClient(ctx context.Context, opts ...option.ClientOption) (*SqlSslCertsClient, error) {
 	clientOpts := defaultSqlSslCertsGRPCClientOptions()
 	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
@@ -318,6 +322,8 @@ type sqlSslCertsRESTClient struct {
 }
 
 // NewSqlSslCertsRESTClient creates a new sql ssl certs service rest client.
+//
+// Service to manage SSL certs for Cloud SQL instances.
 func NewSqlSslCertsRESTClient(ctx context.Context, opts ...option.ClientOption) (*SqlSslCertsClient, error) {
 	clientOpts := append(defaultSqlSslCertsRESTClientOptions(), opts...)
 	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {

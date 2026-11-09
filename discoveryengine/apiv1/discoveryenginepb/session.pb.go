@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -113,9 +113,14 @@ type Session struct {
 	EndTime *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=end_time,json=endTime,proto3" json:"end_time,omitempty"`
 	// Optional. Whether the session is pinned, pinned session will be displayed
 	// on the top of the session list.
-	IsPinned      bool `protobuf:"varint,8,opt,name=is_pinned,json=isPinned,proto3" json:"is_pinned,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	IsPinned bool `protobuf:"varint,8,opt,name=is_pinned,json=isPinned,proto3" json:"is_pinned,omitempty"`
+	// Output only. Full resource name of an in-progress AsyncAssist operation for
+	// this session, e.g.
+	// `projects/*/locations/*/collections/*/engines/*/sessions/*/operations/*`.
+	// Set when the operation starts and cleared when it finishes.
+	PendingAsyncAssistOperationId string `protobuf:"bytes,22,opt,name=pending_async_assist_operation_id,json=pendingAsyncAssistOperationId,proto3" json:"pending_async_assist_operation_id,omitempty"`
+	unknownFields                 protoimpl.UnknownFields
+	sizeCache                     protoimpl.SizeCache
 }
 
 func (x *Session) Reset() {
@@ -209,6 +214,13 @@ func (x *Session) GetIsPinned() bool {
 		return x.IsPinned
 	}
 	return false
+}
+
+func (x *Session) GetPendingAsyncAssistOperationId() string {
+	if x != nil {
+		return x.PendingAsyncAssistOperationId
+	}
+	return ""
 }
 
 // Defines a user inputed query.
@@ -320,7 +332,9 @@ type Session_Turn struct {
 	// LLM model and version used, model parameters (temperature, grounding
 	// parameters, etc.). The prefix "google." is reserved for Google-developed
 	// functionality.
-	QueryConfig   map[string]string `protobuf:"bytes,16,rep,name=query_config,json=queryConfig,proto3" json:"query_config,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	QueryConfig map[string]string `protobuf:"bytes,16,rep,name=query_config,json=queryConfig,proto3" json:"query_config,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Optional. Indicates whether this turn is a live turn.
+	Live          bool `protobuf:"varint,20,opt,name=live,proto3" json:"live,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -390,12 +404,18 @@ func (x *Session_Turn) GetQueryConfig() map[string]string {
 	return nil
 }
 
+func (x *Session_Turn) GetLive() bool {
+	if x != nil {
+		return x.Live
+	}
+	return false
+}
+
 var File_google_cloud_discoveryengine_v1_session_proto protoreflect.FileDescriptor
 
 const file_google_cloud_discoveryengine_v1_session_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/discoveryengine/v1/session.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/discoveryengine/v1/answer.proto\x1a3google/cloud/discoveryengine/v1/assist_answer.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd7\n" +
-	"\n" +
+	"-google/cloud/discoveryengine/v1/session.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/discoveryengine/v1/answer.proto\x1a3google/cloud/discoveryengine/v1/assist_answer.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd6\f\n" +
 	"\aSession\x12\x18\n" +
 	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12'\n" +
 	"\fdisplay_name\x18\a \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12D\n" +
@@ -406,21 +426,23 @@ const file_google_cloud_discoveryengine_v1_session_proto_rawDesc = "" +
 	"\n" +
 	"start_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
 	"\bend_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12!\n" +
-	"\tis_pinned\x18\b \x01(\bB\x04\xe2A\x01\x01R\bisPinned\x1a\xfe\x03\n" +
+	"\tis_pinned\x18\b \x01(\bB\x04\xe2A\x01\x01R\bisPinned\x12N\n" +
+	"!pending_async_assist_operation_id\x18\x16 \x01(\tB\x04\xe2A\x01\x03R\x1dpendingAsyncAssistOperationId\x1a\x98\x04\n" +
 	"\x04Turn\x12B\n" +
 	"\x05query\x18\x01 \x01(\v2&.google.cloud.discoveryengine.v1.QueryB\x04\xe2A\x01\x01R\x05query\x12F\n" +
 	"\x06answer\x18\x02 \x01(\tB.\xe2A\x01\x01\xfaA'\n" +
 	"%discoveryengine.googleapis.com/AnswerR\x06answer\x12V\n" +
 	"\x0fdetailed_answer\x18\a \x01(\v2'.google.cloud.discoveryengine.v1.AnswerB\x04\xe2A\x01\x03R\x0edetailedAnswer\x12i\n" +
 	"\x16detailed_assist_answer\x18\b \x01(\v2-.google.cloud.discoveryengine.v1.AssistAnswerB\x04\xe2A\x01\x03R\x14detailedAssistAnswer\x12g\n" +
-	"\fquery_config\x18\x10 \x03(\v2>.google.cloud.discoveryengine.v1.Session.Turn.QueryConfigEntryB\x04\xe2A\x01\x01R\vqueryConfig\x1a>\n" +
+	"\fquery_config\x18\x10 \x03(\v2>.google.cloud.discoveryengine.v1.Session.Turn.QueryConfigEntryB\x04\xe2A\x01\x01R\vqueryConfig\x12\x18\n" +
+	"\x04live\x18\x14 \x01(\bB\x04\xe2A\x01\x01R\x04live\x1a>\n" +
 	"\x10QueryConfigEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"/\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\x0f\n" +
-	"\vIN_PROGRESS\x10\x01:\xe6\x02\xeaA\xe2\x02\n" +
-	"&discoveryengine.googleapis.com/Session\x12Rprojects/{project}/locations/{location}/dataStores/{data_store}/sessions/{session}\x12kprojects/{project}/locations/{location}/collections/{collection}/dataStores/{data_store}/sessions/{session}\x12dprojects/{project}/locations/{location}/collections/{collection}/engines/{engine}/sessions/{session}*\bsessions2\asession\"I\n" +
+	"\vIN_PROGRESS\x10\x01:\xfb\x03\xeaA\xf7\x03\n" +
+	"&discoveryengine.googleapis.com/Session\x12Rprojects/{project}/locations/{location}/dataStores/{data_store}/sessions/{session}\x12kprojects/{project}/locations/{location}/collections/{collection}/dataStores/{data_store}/sessions/{session}\x12dprojects/{project}/locations/{location}/collections/{collection}/engines/{engine}/sessions/{session}\x12\x92\x01projects/{project}/locations/{location}/collections/{collection}/engines/{engine}/collaborativeProjects/{collaborative_project}/sessions/{session}*\bsessions2\asession\"I\n" +
 	"\x05Query\x12\x14\n" +
 	"\x04text\x18\x02 \x01(\tH\x00R\x04text\x12\x1f\n" +
 	"\bquery_id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\aqueryIdB\t\n" +

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -64,6 +64,9 @@ const (
 	// The KMS key is soft deleted. Some cleanup policy will eventually be
 	// applied.
 	CmekConfig_DELETED CmekConfig_State = 8
+	// The KMS key is expired, meaning the key has been disabled for 30+ days.
+	// The customer can call DeleteCmekConfig to change the state to DELETED.
+	CmekConfig_EXPIRED CmekConfig_State = 9
 )
 
 // Enum value maps for CmekConfig_State.
@@ -78,6 +81,7 @@ var (
 		5: "UNUSABLE",
 		6: "ACTIVE_ROTATING",
 		8: "DELETED",
+		9: "EXPIRED",
 	}
 	CmekConfig_State_value = map[string]int32{
 		"STATE_UNSPECIFIED": 0,
@@ -89,6 +93,7 @@ var (
 		"UNUSABLE":          5,
 		"ACTIVE_ROTATING":   6,
 		"DELETED":           8,
+		"EXPIRED":           9,
 	}
 )
 
@@ -344,7 +349,8 @@ type CmekConfig struct {
 	// KMS key resource name which will be used to encrypt resources
 	// `projects/{project}/locations/{location}/keyRings/{keyRing}/cryptoKeys/{keyId}`.
 	KmsKey string `protobuf:"bytes,2,opt,name=kms_key,json=kmsKey,proto3" json:"kms_key,omitempty"`
-	// KMS key version resource name which will be used to encrypt resources
+	// Output only. KMS key version resource name which will be used to encrypt
+	// resources
 	// `<kms_key>/cryptoKeyVersions/{keyVersion}`.
 	KmsKeyVersion string `protobuf:"bytes,6,opt,name=kms_key_version,json=kmsKeyVersion,proto3" json:"kms_key_version,omitempty"`
 	// Output only. The states of the CmekConfig.
@@ -732,20 +738,20 @@ const file_google_cloud_discoveryengine_v1_cmek_config_service_proto_rawDesc = "
 	")discoveryengine.googleapis.com/CmekConfigR\x04name\"W\n" +
 	"\x0fSingleRegionKey\x12D\n" +
 	"\akms_key\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
-	"\"cloudkms.googleapis.com/CryptoKeysR\x06kmsKey\"\xb6\b\n" +
+	"\"cloudkms.googleapis.com/CryptoKeysR\x06kmsKey\"\xc7\b\n" +
 	"\n" +
 	"CmekConfig\x12\x18\n" +
 	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12@\n" +
 	"\akms_key\x18\x02 \x01(\tB'\xfaA$\n" +
-	"\"cloudkms.googleapis.com/CryptoKeysR\x06kmsKey\x12V\n" +
-	"\x0fkms_key_version\x18\x06 \x01(\tB.\xfaA+\n" +
+	"\"cloudkms.googleapis.com/CryptoKeysR\x06kmsKey\x12Z\n" +
+	"\x0fkms_key_version\x18\x06 \x01(\tB2\xe2A\x01\x03\xfaA+\n" +
 	")cloudkms.googleapis.com/CryptoKeyVersionsR\rkmsKeyVersion\x12M\n" +
 	"\x05state\x18\x03 \x01(\x0e21.google.cloud.discoveryengine.v1.CmekConfig.StateB\x04\xe2A\x01\x03R\x05state\x12#\n" +
 	"\n" +
 	"is_default\x18\x04 \x01(\bB\x04\xe2A\x01\x03R\tisDefault\x12I\n" +
 	"\x1elast_rotation_timestamp_micros\x18\x05 \x01(\x03B\x04\xe2A\x01\x03R\x1blastRotationTimestampMicros\x12d\n" +
 	"\x12single_region_keys\x18\a \x03(\v20.google.cloud.discoveryengine.v1.SingleRegionKeyB\x04\xe2A\x01\x01R\x10singleRegionKeys\x12l\n" +
-	"\x10notebooklm_state\x18\b \x01(\x0e2;.google.cloud.discoveryengine.v1.CmekConfig.NotebookLMStateB\x04\xe2A\x01\x03R\x0fnotebooklmState\"\x98\x01\n" +
+	"\x10notebooklm_state\x18\b \x01(\x0e2;.google.cloud.discoveryengine.v1.CmekConfig.NotebookLMStateB\x04\xe2A\x01\x03R\x0fnotebooklmState\"\xa5\x01\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bCREATING\x10\x01\x12\n" +
@@ -756,7 +762,8 @@ const file_google_cloud_discoveryengine_v1_cmek_config_service_proto_rawDesc = "
 	"\rDELETE_FAILED\x10\a\x12\f\n" +
 	"\bUNUSABLE\x10\x05\x12\x13\n" +
 	"\x0fACTIVE_ROTATING\x10\x06\x12\v\n" +
-	"\aDELETED\x10\b\"\x83\x01\n" +
+	"\aDELETED\x10\b\x12\v\n" +
+	"\aEXPIRED\x10\t\"\x83\x01\n" +
 	"\x0fNotebookLMState\x12!\n" +
 	"\x1dNOTEBOOK_LM_STATE_UNSPECIFIED\x10\x00\x12\x19\n" +
 	"\x15NOTEBOOK_LM_NOT_READY\x10\x01\x12\x15\n" +
@@ -781,14 +788,14 @@ const file_google_cloud_discoveryengine_v1_cmek_config_service_proto_rawDesc = "
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12;\n" +
 	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"updateTime2\x81\t\n" +
+	"updateTime2\xff\t\n" +
 	"\x11CmekConfigService\x12\xe5\x02\n" +
 	"\x10UpdateCmekConfig\x128.google.cloud.discoveryengine.v1.UpdateCmekConfigRequest\x1a\x1d.google.longrunning.Operation\"\xf7\x01\xcaAf\n" +
 	"*google.cloud.discoveryengine.v1.CmekConfig\x128google.cloud.discoveryengine.v1.UpdateCmekConfigMetadata\xdaA\x06config\x82\xd3\xe4\x93\x02\x7f:\x06configZ@:\x06config26/v1/{config.name=projects/*/locations/*/cmekConfigs/*}23/v1/{config.name=projects/*/locations/*/cmekConfig}\x12\xe3\x01\n" +
 	"\rGetCmekConfig\x125.google.cloud.discoveryengine.v1.GetCmekConfigRequest\x1a+.google.cloud.discoveryengine.v1.CmekConfig\"n\xdaA\x04name\x82\xd3\xe4\x93\x02aZ1\x12//v1/{name=projects/*/locations/*/cmekConfigs/*}\x12,/v1/{name=projects/*/locations/*/cmekConfig}\x12\xc6\x01\n" +
 	"\x0fListCmekConfigs\x127.google.cloud.discoveryengine.v1.ListCmekConfigsRequest\x1a8.google.cloud.discoveryengine.v1.ListCmekConfigsResponse\"@\xdaA\x06parent\x82\xd3\xe4\x93\x021\x12//v1/{parent=projects/*/locations/*}/cmekConfigs\x12\x80\x02\n" +
 	"\x10DeleteCmekConfig\x128.google.cloud.discoveryengine.v1.DeleteCmekConfigRequest\x1a\x1d.google.longrunning.Operation\"\x92\x01\xcaAQ\n" +
-	"\x15google.protobuf.Empty\x128google.cloud.discoveryengine.v1.DeleteCmekConfigMetadata\xdaA\x04name\x82\xd3\xe4\x93\x021*//v1/{name=projects/*/locations/*/cmekConfigs/*}\x1aR\xcaA\x1ediscoveryengine.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\x89\x02\n" +
+	"\x15google.protobuf.Empty\x128google.cloud.discoveryengine.v1.DeleteCmekConfigMetadata\xdaA\x04name\x82\xd3\xe4\x93\x021*//v1/{name=projects/*/locations/*/cmekConfigs/*}\x1a\xcf\x01\xcaA\x1ediscoveryengine.googleapis.com\xd2A\xaa\x01https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/discoveryengine.readwrite,https://www.googleapis.com/auth/discoveryengine.serving.readwriteB\x89\x02\n" +
 	"#com.google.cloud.discoveryengine.v1B\x16CmekConfigServiceProtoP\x01ZMcloud.google.com/go/discoveryengine/apiv1/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02\x1fGoogle.Cloud.DiscoveryEngine.V1\xca\x02\x1fGoogle\\Cloud\\DiscoveryEngine\\V1\xea\x02\"Google::Cloud::DiscoveryEngine::V1b\x06proto3"
 
 var (

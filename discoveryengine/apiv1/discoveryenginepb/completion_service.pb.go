@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (
@@ -37,6 +38,182 @@ const (
 	// Verify that runtime/protoimpl is sufficiently up-to-date.
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
+
+// Suggestion type to return.
+type AdvancedCompleteQueryRequest_SuggestionType int32
+
+const (
+	// Default value.
+	AdvancedCompleteQueryRequest_SUGGESTION_TYPE_UNSPECIFIED AdvancedCompleteQueryRequest_SuggestionType = 0
+	// Returns query suggestions.
+	AdvancedCompleteQueryRequest_QUERY AdvancedCompleteQueryRequest_SuggestionType = 1
+	// Returns people suggestions.
+	AdvancedCompleteQueryRequest_PEOPLE AdvancedCompleteQueryRequest_SuggestionType = 2
+	// Returns content suggestions.
+	AdvancedCompleteQueryRequest_CONTENT AdvancedCompleteQueryRequest_SuggestionType = 3
+	// Returns recent search suggestions.
+	AdvancedCompleteQueryRequest_RECENT_SEARCH AdvancedCompleteQueryRequest_SuggestionType = 4
+	// Returns Google Workspace suggestions.
+	AdvancedCompleteQueryRequest_GOOGLE_WORKSPACE AdvancedCompleteQueryRequest_SuggestionType = 5
+)
+
+// Enum value maps for AdvancedCompleteQueryRequest_SuggestionType.
+var (
+	AdvancedCompleteQueryRequest_SuggestionType_name = map[int32]string{
+		0: "SUGGESTION_TYPE_UNSPECIFIED",
+		1: "QUERY",
+		2: "PEOPLE",
+		3: "CONTENT",
+		4: "RECENT_SEARCH",
+		5: "GOOGLE_WORKSPACE",
+	}
+	AdvancedCompleteQueryRequest_SuggestionType_value = map[string]int32{
+		"SUGGESTION_TYPE_UNSPECIFIED": 0,
+		"QUERY":                       1,
+		"PEOPLE":                      2,
+		"CONTENT":                     3,
+		"RECENT_SEARCH":               4,
+		"GOOGLE_WORKSPACE":            5,
+	}
+)
+
+func (x AdvancedCompleteQueryRequest_SuggestionType) Enum() *AdvancedCompleteQueryRequest_SuggestionType {
+	p := new(AdvancedCompleteQueryRequest_SuggestionType)
+	*p = x
+	return p
+}
+
+func (x AdvancedCompleteQueryRequest_SuggestionType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (AdvancedCompleteQueryRequest_SuggestionType) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_discoveryengine_v1_completion_service_proto_enumTypes[0].Descriptor()
+}
+
+func (AdvancedCompleteQueryRequest_SuggestionType) Type() protoreflect.EnumType {
+	return &file_google_cloud_discoveryengine_v1_completion_service_proto_enumTypes[0]
+}
+
+func (x AdvancedCompleteQueryRequest_SuggestionType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use AdvancedCompleteQueryRequest_SuggestionType.Descriptor instead.
+func (AdvancedCompleteQueryRequest_SuggestionType) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_completion_service_proto_rawDescGZIP(), []int{2, 0}
+}
+
+// Classifies the person by identity source and entity kind; GOOGLE_GROUP
+// takes precedence for groups regardless of their identity source.
+type AdvancedCompleteQueryResponse_PersonSuggestion_PersonType int32
+
+const (
+	// Default value.
+	AdvancedCompleteQueryResponse_PersonSuggestion_PERSON_TYPE_UNSPECIFIED AdvancedCompleteQueryResponse_PersonSuggestion_PersonType = 0
+	// The suggestion is from a GOOGLE_IDENTITY source.
+	AdvancedCompleteQueryResponse_PersonSuggestion_CLOUD_IDENTITY AdvancedCompleteQueryResponse_PersonSuggestion_PersonType = 1
+	// The suggestion is from a THIRD_PARTY_IDENTITY source.
+	AdvancedCompleteQueryResponse_PersonSuggestion_THIRD_PARTY_IDENTITY AdvancedCompleteQueryResponse_PersonSuggestion_PersonType = 2
+	// The suggestion is a group (e.g. a Google Group), not an individual.
+	AdvancedCompleteQueryResponse_PersonSuggestion_GOOGLE_GROUP AdvancedCompleteQueryResponse_PersonSuggestion_PersonType = 3
+)
+
+// Enum value maps for AdvancedCompleteQueryResponse_PersonSuggestion_PersonType.
+var (
+	AdvancedCompleteQueryResponse_PersonSuggestion_PersonType_name = map[int32]string{
+		0: "PERSON_TYPE_UNSPECIFIED",
+		1: "CLOUD_IDENTITY",
+		2: "THIRD_PARTY_IDENTITY",
+		3: "GOOGLE_GROUP",
+	}
+	AdvancedCompleteQueryResponse_PersonSuggestion_PersonType_value = map[string]int32{
+		"PERSON_TYPE_UNSPECIFIED": 0,
+		"CLOUD_IDENTITY":          1,
+		"THIRD_PARTY_IDENTITY":    2,
+		"GOOGLE_GROUP":            3,
+	}
+)
+
+func (x AdvancedCompleteQueryResponse_PersonSuggestion_PersonType) Enum() *AdvancedCompleteQueryResponse_PersonSuggestion_PersonType {
+	p := new(AdvancedCompleteQueryResponse_PersonSuggestion_PersonType)
+	*p = x
+	return p
+}
+
+func (x AdvancedCompleteQueryResponse_PersonSuggestion_PersonType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (AdvancedCompleteQueryResponse_PersonSuggestion_PersonType) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_discoveryengine_v1_completion_service_proto_enumTypes[1].Descriptor()
+}
+
+func (AdvancedCompleteQueryResponse_PersonSuggestion_PersonType) Type() protoreflect.EnumType {
+	return &file_google_cloud_discoveryengine_v1_completion_service_proto_enumTypes[1]
+}
+
+func (x AdvancedCompleteQueryResponse_PersonSuggestion_PersonType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use AdvancedCompleteQueryResponse_PersonSuggestion_PersonType.Descriptor instead.
+func (AdvancedCompleteQueryResponse_PersonSuggestion_PersonType) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_completion_service_proto_rawDescGZIP(), []int{3, 1, 0}
+}
+
+// The type of the content returned for content suggestions.
+type AdvancedCompleteQueryResponse_ContentSuggestion_ContentType int32
+
+const (
+	// Default value.
+	AdvancedCompleteQueryResponse_ContentSuggestion_CONTENT_TYPE_UNSPECIFIED AdvancedCompleteQueryResponse_ContentSuggestion_ContentType = 0
+	// The suggestion is from a Google Workspace source.
+	AdvancedCompleteQueryResponse_ContentSuggestion_GOOGLE_WORKSPACE AdvancedCompleteQueryResponse_ContentSuggestion_ContentType = 1
+	// The suggestion is from a third party source.
+	AdvancedCompleteQueryResponse_ContentSuggestion_THIRD_PARTY AdvancedCompleteQueryResponse_ContentSuggestion_ContentType = 2
+)
+
+// Enum value maps for AdvancedCompleteQueryResponse_ContentSuggestion_ContentType.
+var (
+	AdvancedCompleteQueryResponse_ContentSuggestion_ContentType_name = map[int32]string{
+		0: "CONTENT_TYPE_UNSPECIFIED",
+		1: "GOOGLE_WORKSPACE",
+		2: "THIRD_PARTY",
+	}
+	AdvancedCompleteQueryResponse_ContentSuggestion_ContentType_value = map[string]int32{
+		"CONTENT_TYPE_UNSPECIFIED": 0,
+		"GOOGLE_WORKSPACE":         1,
+		"THIRD_PARTY":              2,
+	}
+)
+
+func (x AdvancedCompleteQueryResponse_ContentSuggestion_ContentType) Enum() *AdvancedCompleteQueryResponse_ContentSuggestion_ContentType {
+	p := new(AdvancedCompleteQueryResponse_ContentSuggestion_ContentType)
+	*p = x
+	return p
+}
+
+func (x AdvancedCompleteQueryResponse_ContentSuggestion_ContentType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (AdvancedCompleteQueryResponse_ContentSuggestion_ContentType) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_discoveryengine_v1_completion_service_proto_enumTypes[2].Descriptor()
+}
+
+func (AdvancedCompleteQueryResponse_ContentSuggestion_ContentType) Type() protoreflect.EnumType {
+	return &file_google_cloud_discoveryengine_v1_completion_service_proto_enumTypes[2]
+}
+
+func (x AdvancedCompleteQueryResponse_ContentSuggestion_ContentType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use AdvancedCompleteQueryResponse_ContentSuggestion_ContentType.Descriptor instead.
+func (AdvancedCompleteQueryResponse_ContentSuggestion_ContentType) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_completion_service_proto_rawDescGZIP(), []int{3, 2, 0}
+}
 
 // Request message for
 // [CompletionService.CompleteQuery][google.cloud.discoveryengine.v1.CompletionService.CompleteQuery]
@@ -68,10 +245,10 @@ type CompleteQueryRequest struct {
 	// * `document` is the default model for regular dataStores.
 	// * `search-history` is the default model for site search dataStores.
 	QueryModel string `protobuf:"bytes,3,opt,name=query_model,json=queryModel,proto3" json:"query_model,omitempty"`
-	// A unique identifier for tracking visitors. For example, this could be
-	// implemented with an HTTP cookie, which should be able to uniquely identify
-	// a visitor on a single device. This unique identifier should not change if
-	// the visitor logs in or out of the website.
+	// Optional. A unique identifier for tracking visitors. For example, this
+	// could be implemented with an HTTP cookie, which should be able to uniquely
+	// identify a visitor on a single device. This unique identifier should not
+	// change if the visitor logs in or out of the website.
 	//
 	// This field should NOT have a fixed value such as `unknown_visitor`.
 	//
@@ -218,6 +395,275 @@ func (x *CompleteQueryResponse) GetTailMatchTriggered() bool {
 	return false
 }
 
+// Request message for
+// [CompletionService.AdvancedCompleteQuery][google.cloud.discoveryengine.v1.CompletionService.AdvancedCompleteQuery]
+// method.
+// .
+type AdvancedCompleteQueryRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The completion_config of the parent dataStore or engine resource
+	// name for which the completion is performed, such as
+	// `projects/*/locations/global/collections/default_collection/dataStores/*/completionConfig`
+	// `projects/*/locations/global/collections/default_collection/engines/*/completionConfig`.
+	CompletionConfig string `protobuf:"bytes,1,opt,name=completion_config,json=completionConfig,proto3" json:"completion_config,omitempty"`
+	// Required. The typeahead input used to fetch suggestions. Maximum length is
+	// 128 characters.
+	//
+	// The query can not be empty for most of the suggestion types. If it is
+	// empty, an `INVALID_ARGUMENT` error is returned. The exception is when the
+	// suggestion_types contains only the type `RECENT_SEARCH`, the query can
+	// be an empty string. The is called "zero prefix" feature, which returns
+	// user's recently searched queries given the empty query.
+	Query string `protobuf:"bytes,2,opt,name=query,proto3" json:"query,omitempty"`
+	// Specifies the autocomplete query model, which only applies to the QUERY
+	// SuggestionType. This overrides any model specified in the Configuration >
+	// Autocomplete section of the Cloud console. Currently supported values:
+	//
+	// * `document` - Using suggestions generated from user-imported documents.
+	// * `search-history` - Using suggestions generated from the past history of
+	// [SearchService.Search][google.cloud.discoveryengine.v1.SearchService.Search]
+	// API calls. Do not use it when there is no traffic for Search API.
+	// * `user-event` - Using suggestions generated from user-imported search
+	// events.
+	// * `document-completable` - Using suggestions taken directly from
+	// user-imported document fields marked as completable.
+	//
+	// Default values:
+	//
+	// * `document` is the default model for regular dataStores.
+	// * `search-history` is the default model for site search dataStores.
+	QueryModel string `protobuf:"bytes,3,opt,name=query_model,json=queryModel,proto3" json:"query_model,omitempty"`
+	// Optional. A unique identifier for tracking visitors. For example, this
+	// could be implemented with an HTTP cookie, which should be able to uniquely
+	// identify a visitor on a single device. This unique identifier should not
+	// change if the visitor logs in or out of the website.
+	//
+	// This field should NOT have a fixed value such as `unknown_visitor`.
+	//
+	// This should be the same identifier as
+	// [UserEvent.user_pseudo_id][google.cloud.discoveryengine.v1.UserEvent.user_pseudo_id]
+	// and
+	// [SearchRequest.user_pseudo_id][google.cloud.discoveryengine.v1.SearchRequest.user_pseudo_id].
+	//
+	// The field must be a UTF-8 encoded string with a length limit of 128
+	UserPseudoId string `protobuf:"bytes,4,opt,name=user_pseudo_id,json=userPseudoId,proto3" json:"user_pseudo_id,omitempty"`
+	// Optional. Information about the end user.
+	//
+	// This should be the same identifier information as
+	// [UserEvent.user_info][google.cloud.discoveryengine.v1.UserEvent.user_info]
+	// and
+	// [SearchRequest.user_info][google.cloud.discoveryengine.v1.SearchRequest.user_info].
+	UserInfo *UserInfo `protobuf:"bytes,9,opt,name=user_info,json=userInfo,proto3" json:"user_info,omitempty"`
+	// Indicates if tail suggestions should be returned if there are no
+	// suggestions that match the full query. Even if set to true, if there are
+	// suggestions that match the full query, those are returned and no
+	// tail suggestions are returned.
+	IncludeTailSuggestions bool `protobuf:"varint,5,opt,name=include_tail_suggestions,json=includeTailSuggestions,proto3" json:"include_tail_suggestions,omitempty"`
+	// Optional. Specification to boost suggestions matching the condition.
+	BoostSpec *AdvancedCompleteQueryRequest_BoostSpec `protobuf:"bytes,6,opt,name=boost_spec,json=boostSpec,proto3" json:"boost_spec,omitempty"`
+	// Optional. Suggestion types to return. If empty or unspecified, query
+	// suggestions are returned. Only one suggestion type is supported at the
+	// moment.
+	SuggestionTypes []AdvancedCompleteQueryRequest_SuggestionType `protobuf:"varint,7,rep,packed,name=suggestion_types,json=suggestionTypes,proto3,enum=google.cloud.discoveryengine.v1.AdvancedCompleteQueryRequest_SuggestionType" json:"suggestion_types,omitempty"`
+	// Optional. Specification of each suggestion type.
+	SuggestionTypeSpecs []*AdvancedCompleteQueryRequest_SuggestionTypeSpec `protobuf:"bytes,10,rep,name=suggestion_type_specs,json=suggestionTypeSpecs,proto3" json:"suggestion_type_specs,omitempty"`
+	// Optional. Experiment ids for this request.
+	ExperimentIds []string `protobuf:"bytes,14,rep,name=experiment_ids,json=experimentIds,proto3" json:"experiment_ids,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AdvancedCompleteQueryRequest) Reset() {
+	*x = AdvancedCompleteQueryRequest{}
+	mi := &file_google_cloud_discoveryengine_v1_completion_service_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AdvancedCompleteQueryRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AdvancedCompleteQueryRequest) ProtoMessage() {}
+
+func (x *AdvancedCompleteQueryRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_completion_service_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AdvancedCompleteQueryRequest.ProtoReflect.Descriptor instead.
+func (*AdvancedCompleteQueryRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_completion_service_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *AdvancedCompleteQueryRequest) GetCompletionConfig() string {
+	if x != nil {
+		return x.CompletionConfig
+	}
+	return ""
+}
+
+func (x *AdvancedCompleteQueryRequest) GetQuery() string {
+	if x != nil {
+		return x.Query
+	}
+	return ""
+}
+
+func (x *AdvancedCompleteQueryRequest) GetQueryModel() string {
+	if x != nil {
+		return x.QueryModel
+	}
+	return ""
+}
+
+func (x *AdvancedCompleteQueryRequest) GetUserPseudoId() string {
+	if x != nil {
+		return x.UserPseudoId
+	}
+	return ""
+}
+
+func (x *AdvancedCompleteQueryRequest) GetUserInfo() *UserInfo {
+	if x != nil {
+		return x.UserInfo
+	}
+	return nil
+}
+
+func (x *AdvancedCompleteQueryRequest) GetIncludeTailSuggestions() bool {
+	if x != nil {
+		return x.IncludeTailSuggestions
+	}
+	return false
+}
+
+func (x *AdvancedCompleteQueryRequest) GetBoostSpec() *AdvancedCompleteQueryRequest_BoostSpec {
+	if x != nil {
+		return x.BoostSpec
+	}
+	return nil
+}
+
+func (x *AdvancedCompleteQueryRequest) GetSuggestionTypes() []AdvancedCompleteQueryRequest_SuggestionType {
+	if x != nil {
+		return x.SuggestionTypes
+	}
+	return nil
+}
+
+func (x *AdvancedCompleteQueryRequest) GetSuggestionTypeSpecs() []*AdvancedCompleteQueryRequest_SuggestionTypeSpec {
+	if x != nil {
+		return x.SuggestionTypeSpecs
+	}
+	return nil
+}
+
+func (x *AdvancedCompleteQueryRequest) GetExperimentIds() []string {
+	if x != nil {
+		return x.ExperimentIds
+	}
+	return nil
+}
+
+// Response message for
+// [CompletionService.AdvancedCompleteQuery][google.cloud.discoveryengine.v1.CompletionService.AdvancedCompleteQuery]
+// method.
+type AdvancedCompleteQueryResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Results of the matched query suggestions. The result list is ordered and
+	// the first result is a top suggestion.
+	QuerySuggestions []*AdvancedCompleteQueryResponse_QuerySuggestion `protobuf:"bytes,1,rep,name=query_suggestions,json=querySuggestions,proto3" json:"query_suggestions,omitempty"`
+	// True if the returned suggestions are all tail suggestions.
+	//
+	// For tail matching to be triggered, include_tail_suggestions in the request
+	// must be true and there must be no suggestions that match the full query.
+	TailMatchTriggered bool `protobuf:"varint,2,opt,name=tail_match_triggered,json=tailMatchTriggered,proto3" json:"tail_match_triggered,omitempty"`
+	// Results of the matched people suggestions. The result list is ordered and
+	// the first result is the top suggestion.
+	PeopleSuggestions []*AdvancedCompleteQueryResponse_PersonSuggestion `protobuf:"bytes,3,rep,name=people_suggestions,json=peopleSuggestions,proto3" json:"people_suggestions,omitempty"`
+	// Results of the matched content suggestions. The result list is ordered and
+	// the first result is the top suggestion.
+	ContentSuggestions []*AdvancedCompleteQueryResponse_ContentSuggestion `protobuf:"bytes,4,rep,name=content_suggestions,json=contentSuggestions,proto3" json:"content_suggestions,omitempty"`
+	// Results of the matched "recent search" suggestions. The result list is
+	// ordered and the first result is the top suggestion.
+	RecentSearchSuggestions []*AdvancedCompleteQueryResponse_RecentSearchSuggestion `protobuf:"bytes,5,rep,name=recent_search_suggestions,json=recentSearchSuggestions,proto3" json:"recent_search_suggestions,omitempty"`
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
+}
+
+func (x *AdvancedCompleteQueryResponse) Reset() {
+	*x = AdvancedCompleteQueryResponse{}
+	mi := &file_google_cloud_discoveryengine_v1_completion_service_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AdvancedCompleteQueryResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AdvancedCompleteQueryResponse) ProtoMessage() {}
+
+func (x *AdvancedCompleteQueryResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_completion_service_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AdvancedCompleteQueryResponse.ProtoReflect.Descriptor instead.
+func (*AdvancedCompleteQueryResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_completion_service_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *AdvancedCompleteQueryResponse) GetQuerySuggestions() []*AdvancedCompleteQueryResponse_QuerySuggestion {
+	if x != nil {
+		return x.QuerySuggestions
+	}
+	return nil
+}
+
+func (x *AdvancedCompleteQueryResponse) GetTailMatchTriggered() bool {
+	if x != nil {
+		return x.TailMatchTriggered
+	}
+	return false
+}
+
+func (x *AdvancedCompleteQueryResponse) GetPeopleSuggestions() []*AdvancedCompleteQueryResponse_PersonSuggestion {
+	if x != nil {
+		return x.PeopleSuggestions
+	}
+	return nil
+}
+
+func (x *AdvancedCompleteQueryResponse) GetContentSuggestions() []*AdvancedCompleteQueryResponse_ContentSuggestion {
+	if x != nil {
+		return x.ContentSuggestions
+	}
+	return nil
+}
+
+func (x *AdvancedCompleteQueryResponse) GetRecentSearchSuggestions() []*AdvancedCompleteQueryResponse_RecentSearchSuggestion {
+	if x != nil {
+		return x.RecentSearchSuggestions
+	}
+	return nil
+}
+
 // Suggestions as search queries.
 type CompleteQueryResponse_QuerySuggestion struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -234,7 +680,7 @@ type CompleteQueryResponse_QuerySuggestion struct {
 
 func (x *CompleteQueryResponse_QuerySuggestion) Reset() {
 	*x = CompleteQueryResponse_QuerySuggestion{}
-	mi := &file_google_cloud_discoveryengine_v1_completion_service_proto_msgTypes[2]
+	mi := &file_google_cloud_discoveryengine_v1_completion_service_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -246,7 +692,7 @@ func (x *CompleteQueryResponse_QuerySuggestion) String() string {
 func (*CompleteQueryResponse_QuerySuggestion) ProtoMessage() {}
 
 func (x *CompleteQueryResponse_QuerySuggestion) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_completion_service_proto_msgTypes[2]
+	mi := &file_google_cloud_discoveryengine_v1_completion_service_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -276,19 +722,542 @@ func (x *CompleteQueryResponse_QuerySuggestion) GetCompletableFieldPaths() []str
 	return nil
 }
 
+// Specification to boost suggestions based on the condition of the
+// suggestion.
+type AdvancedCompleteQueryRequest_BoostSpec struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Condition boost specifications. If a suggestion matches multiple
+	// conditions in the specifications, boost values from these specifications
+	// are all applied and combined in a non-linear way. Maximum number of
+	// specifications is 20.
+	//
+	// Note: Currently only support language condition boost.
+	ConditionBoostSpecs []*AdvancedCompleteQueryRequest_BoostSpec_ConditionBoostSpec `protobuf:"bytes,1,rep,name=condition_boost_specs,json=conditionBoostSpecs,proto3" json:"condition_boost_specs,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+}
+
+func (x *AdvancedCompleteQueryRequest_BoostSpec) Reset() {
+	*x = AdvancedCompleteQueryRequest_BoostSpec{}
+	mi := &file_google_cloud_discoveryengine_v1_completion_service_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AdvancedCompleteQueryRequest_BoostSpec) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AdvancedCompleteQueryRequest_BoostSpec) ProtoMessage() {}
+
+func (x *AdvancedCompleteQueryRequest_BoostSpec) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_completion_service_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AdvancedCompleteQueryRequest_BoostSpec.ProtoReflect.Descriptor instead.
+func (*AdvancedCompleteQueryRequest_BoostSpec) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_completion_service_proto_rawDescGZIP(), []int{2, 0}
+}
+
+func (x *AdvancedCompleteQueryRequest_BoostSpec) GetConditionBoostSpecs() []*AdvancedCompleteQueryRequest_BoostSpec_ConditionBoostSpec {
+	if x != nil {
+		return x.ConditionBoostSpecs
+	}
+	return nil
+}
+
+// Specification of each suggestion type.
+type AdvancedCompleteQueryRequest_SuggestionTypeSpec struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Suggestion type.
+	SuggestionType AdvancedCompleteQueryRequest_SuggestionType `protobuf:"varint,1,opt,name=suggestion_type,json=suggestionType,proto3,enum=google.cloud.discoveryengine.v1.AdvancedCompleteQueryRequest_SuggestionType" json:"suggestion_type,omitempty"`
+	// Optional. Maximum number of suggestions to return for each suggestion
+	// type.
+	MaxSuggestions int32 `protobuf:"varint,2,opt,name=max_suggestions,json=maxSuggestions,proto3" json:"max_suggestions,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *AdvancedCompleteQueryRequest_SuggestionTypeSpec) Reset() {
+	*x = AdvancedCompleteQueryRequest_SuggestionTypeSpec{}
+	mi := &file_google_cloud_discoveryengine_v1_completion_service_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AdvancedCompleteQueryRequest_SuggestionTypeSpec) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AdvancedCompleteQueryRequest_SuggestionTypeSpec) ProtoMessage() {}
+
+func (x *AdvancedCompleteQueryRequest_SuggestionTypeSpec) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_completion_service_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AdvancedCompleteQueryRequest_SuggestionTypeSpec.ProtoReflect.Descriptor instead.
+func (*AdvancedCompleteQueryRequest_SuggestionTypeSpec) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_completion_service_proto_rawDescGZIP(), []int{2, 1}
+}
+
+func (x *AdvancedCompleteQueryRequest_SuggestionTypeSpec) GetSuggestionType() AdvancedCompleteQueryRequest_SuggestionType {
+	if x != nil {
+		return x.SuggestionType
+	}
+	return AdvancedCompleteQueryRequest_SUGGESTION_TYPE_UNSPECIFIED
+}
+
+func (x *AdvancedCompleteQueryRequest_SuggestionTypeSpec) GetMaxSuggestions() int32 {
+	if x != nil {
+		return x.MaxSuggestions
+	}
+	return 0
+}
+
+// Boost applies to suggestions which match a condition.
+type AdvancedCompleteQueryRequest_BoostSpec_ConditionBoostSpec struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// An expression which specifies a boost condition. The syntax is the same
+	// as [filter expression
+	// syntax](https://cloud.google.com/generative-ai-app-builder/docs/filter-search-metadata#filter-expression-syntax).
+	// Currently, the only supported condition is a list of BCP-47 lang codes.
+	//
+	// Example:
+	//
+	// * To boost suggestions in languages `en` or `fr`:
+	// `(lang_code: ANY("en", "fr"))`
+	Condition string `protobuf:"bytes,1,opt,name=condition,proto3" json:"condition,omitempty"`
+	// Strength of the boost, which should be in [-1, 1].
+	// Negative boost means demotion. Default is 0.0.
+	//
+	// Setting to 1.0 gives the suggestions a big promotion. However, it does
+	// not necessarily mean that the top result will be a boosted suggestion.
+	//
+	// Setting to -1.0 gives the suggestions a big demotion. However, other
+	// suggestions that are relevant might still be shown.
+	//
+	// Setting to 0.0 means no boost applied. The boosting condition is
+	// ignored.
+	Boost         float32 `protobuf:"fixed32,2,opt,name=boost,proto3" json:"boost,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AdvancedCompleteQueryRequest_BoostSpec_ConditionBoostSpec) Reset() {
+	*x = AdvancedCompleteQueryRequest_BoostSpec_ConditionBoostSpec{}
+	mi := &file_google_cloud_discoveryengine_v1_completion_service_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AdvancedCompleteQueryRequest_BoostSpec_ConditionBoostSpec) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AdvancedCompleteQueryRequest_BoostSpec_ConditionBoostSpec) ProtoMessage() {}
+
+func (x *AdvancedCompleteQueryRequest_BoostSpec_ConditionBoostSpec) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_completion_service_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AdvancedCompleteQueryRequest_BoostSpec_ConditionBoostSpec.ProtoReflect.Descriptor instead.
+func (*AdvancedCompleteQueryRequest_BoostSpec_ConditionBoostSpec) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_completion_service_proto_rawDescGZIP(), []int{2, 0, 0}
+}
+
+func (x *AdvancedCompleteQueryRequest_BoostSpec_ConditionBoostSpec) GetCondition() string {
+	if x != nil {
+		return x.Condition
+	}
+	return ""
+}
+
+func (x *AdvancedCompleteQueryRequest_BoostSpec_ConditionBoostSpec) GetBoost() float32 {
+	if x != nil {
+		return x.Boost
+	}
+	return 0
+}
+
+// Suggestions as search queries.
+type AdvancedCompleteQueryResponse_QuerySuggestion struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The suggestion for the query.
+	Suggestion string `protobuf:"bytes,1,opt,name=suggestion,proto3" json:"suggestion,omitempty"`
+	// The unique document field paths that serve as the source of this
+	// suggestion if it was generated from completable fields.
+	//
+	// This field is only populated for the document-completable model.
+	CompletableFieldPaths []string `protobuf:"bytes,2,rep,name=completable_field_paths,json=completableFieldPaths,proto3" json:"completable_field_paths,omitempty"`
+	// The name of the dataStore that this suggestion belongs to.
+	DataStore []string `protobuf:"bytes,3,rep,name=data_store,json=dataStore,proto3" json:"data_store,omitempty"`
+	// The score of each suggestion. The score is in the range of [0, 1].
+	Score         float64 `protobuf:"fixed64,4,opt,name=score,proto3" json:"score,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AdvancedCompleteQueryResponse_QuerySuggestion) Reset() {
+	*x = AdvancedCompleteQueryResponse_QuerySuggestion{}
+	mi := &file_google_cloud_discoveryengine_v1_completion_service_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AdvancedCompleteQueryResponse_QuerySuggestion) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AdvancedCompleteQueryResponse_QuerySuggestion) ProtoMessage() {}
+
+func (x *AdvancedCompleteQueryResponse_QuerySuggestion) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_completion_service_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AdvancedCompleteQueryResponse_QuerySuggestion.ProtoReflect.Descriptor instead.
+func (*AdvancedCompleteQueryResponse_QuerySuggestion) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_completion_service_proto_rawDescGZIP(), []int{3, 0}
+}
+
+func (x *AdvancedCompleteQueryResponse_QuerySuggestion) GetSuggestion() string {
+	if x != nil {
+		return x.Suggestion
+	}
+	return ""
+}
+
+func (x *AdvancedCompleteQueryResponse_QuerySuggestion) GetCompletableFieldPaths() []string {
+	if x != nil {
+		return x.CompletableFieldPaths
+	}
+	return nil
+}
+
+func (x *AdvancedCompleteQueryResponse_QuerySuggestion) GetDataStore() []string {
+	if x != nil {
+		return x.DataStore
+	}
+	return nil
+}
+
+func (x *AdvancedCompleteQueryResponse_QuerySuggestion) GetScore() float64 {
+	if x != nil {
+		return x.Score
+	}
+	return 0
+}
+
+// Suggestions as people.
+type AdvancedCompleteQueryResponse_PersonSuggestion struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The suggestion for the query.
+	Suggestion string `protobuf:"bytes,1,opt,name=suggestion,proto3" json:"suggestion,omitempty"`
+	// The type of the person.
+	PersonType AdvancedCompleteQueryResponse_PersonSuggestion_PersonType `protobuf:"varint,2,opt,name=person_type,json=personType,proto3,enum=google.cloud.discoveryengine.v1.AdvancedCompleteQueryResponse_PersonSuggestion_PersonType" json:"person_type,omitempty"`
+	// The document data snippet in the suggestion. Only a subset of fields is
+	// populated.
+	Document *Document `protobuf:"bytes,4,opt,name=document,proto3" json:"document,omitempty"`
+	// The name of the dataStore that this suggestion belongs to.
+	DataStore string `protobuf:"bytes,5,opt,name=data_store,json=dataStore,proto3" json:"data_store,omitempty"`
+	// The score of each suggestion. The score is in the range of [0, 1].
+	Score float64 `protobuf:"fixed64,6,opt,name=score,proto3" json:"score,omitempty"`
+	// The photo uri of the person suggestion.
+	DisplayPhotoUri string `protobuf:"bytes,7,opt,name=display_photo_uri,json=displayPhotoUri,proto3" json:"display_photo_uri,omitempty"`
+	// The destination uri of the person suggestion.
+	DestinationUri string `protobuf:"bytes,8,opt,name=destination_uri,json=destinationUri,proto3" json:"destination_uri,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *AdvancedCompleteQueryResponse_PersonSuggestion) Reset() {
+	*x = AdvancedCompleteQueryResponse_PersonSuggestion{}
+	mi := &file_google_cloud_discoveryengine_v1_completion_service_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AdvancedCompleteQueryResponse_PersonSuggestion) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AdvancedCompleteQueryResponse_PersonSuggestion) ProtoMessage() {}
+
+func (x *AdvancedCompleteQueryResponse_PersonSuggestion) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_completion_service_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AdvancedCompleteQueryResponse_PersonSuggestion.ProtoReflect.Descriptor instead.
+func (*AdvancedCompleteQueryResponse_PersonSuggestion) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_completion_service_proto_rawDescGZIP(), []int{3, 1}
+}
+
+func (x *AdvancedCompleteQueryResponse_PersonSuggestion) GetSuggestion() string {
+	if x != nil {
+		return x.Suggestion
+	}
+	return ""
+}
+
+func (x *AdvancedCompleteQueryResponse_PersonSuggestion) GetPersonType() AdvancedCompleteQueryResponse_PersonSuggestion_PersonType {
+	if x != nil {
+		return x.PersonType
+	}
+	return AdvancedCompleteQueryResponse_PersonSuggestion_PERSON_TYPE_UNSPECIFIED
+}
+
+func (x *AdvancedCompleteQueryResponse_PersonSuggestion) GetDocument() *Document {
+	if x != nil {
+		return x.Document
+	}
+	return nil
+}
+
+func (x *AdvancedCompleteQueryResponse_PersonSuggestion) GetDataStore() string {
+	if x != nil {
+		return x.DataStore
+	}
+	return ""
+}
+
+func (x *AdvancedCompleteQueryResponse_PersonSuggestion) GetScore() float64 {
+	if x != nil {
+		return x.Score
+	}
+	return 0
+}
+
+func (x *AdvancedCompleteQueryResponse_PersonSuggestion) GetDisplayPhotoUri() string {
+	if x != nil {
+		return x.DisplayPhotoUri
+	}
+	return ""
+}
+
+func (x *AdvancedCompleteQueryResponse_PersonSuggestion) GetDestinationUri() string {
+	if x != nil {
+		return x.DestinationUri
+	}
+	return ""
+}
+
+// Suggestions as content.
+type AdvancedCompleteQueryResponse_ContentSuggestion struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The suggestion for the query.
+	Suggestion string `protobuf:"bytes,1,opt,name=suggestion,proto3" json:"suggestion,omitempty"`
+	// The type of the content suggestion.
+	ContentType AdvancedCompleteQueryResponse_ContentSuggestion_ContentType `protobuf:"varint,2,opt,name=content_type,json=contentType,proto3,enum=google.cloud.discoveryengine.v1.AdvancedCompleteQueryResponse_ContentSuggestion_ContentType" json:"content_type,omitempty"`
+	// The document data snippet in the suggestion. Only a subset of fields will
+	// be populated.
+	Document *Document `protobuf:"bytes,4,opt,name=document,proto3" json:"document,omitempty"`
+	// The name of the dataStore that this suggestion belongs to.
+	DataStore string `protobuf:"bytes,5,opt,name=data_store,json=dataStore,proto3" json:"data_store,omitempty"`
+	// The score of each suggestion. The score is in the range of [0, 1].
+	Score float64 `protobuf:"fixed64,6,opt,name=score,proto3" json:"score,omitempty"`
+	// The icon uri of the content suggestion.
+	IconUri string `protobuf:"bytes,7,opt,name=icon_uri,json=iconUri,proto3" json:"icon_uri,omitempty"`
+	// The destination uri of the content suggestion.
+	DestinationUri string `protobuf:"bytes,8,opt,name=destination_uri,json=destinationUri,proto3" json:"destination_uri,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *AdvancedCompleteQueryResponse_ContentSuggestion) Reset() {
+	*x = AdvancedCompleteQueryResponse_ContentSuggestion{}
+	mi := &file_google_cloud_discoveryengine_v1_completion_service_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AdvancedCompleteQueryResponse_ContentSuggestion) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AdvancedCompleteQueryResponse_ContentSuggestion) ProtoMessage() {}
+
+func (x *AdvancedCompleteQueryResponse_ContentSuggestion) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_completion_service_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AdvancedCompleteQueryResponse_ContentSuggestion.ProtoReflect.Descriptor instead.
+func (*AdvancedCompleteQueryResponse_ContentSuggestion) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_completion_service_proto_rawDescGZIP(), []int{3, 2}
+}
+
+func (x *AdvancedCompleteQueryResponse_ContentSuggestion) GetSuggestion() string {
+	if x != nil {
+		return x.Suggestion
+	}
+	return ""
+}
+
+func (x *AdvancedCompleteQueryResponse_ContentSuggestion) GetContentType() AdvancedCompleteQueryResponse_ContentSuggestion_ContentType {
+	if x != nil {
+		return x.ContentType
+	}
+	return AdvancedCompleteQueryResponse_ContentSuggestion_CONTENT_TYPE_UNSPECIFIED
+}
+
+func (x *AdvancedCompleteQueryResponse_ContentSuggestion) GetDocument() *Document {
+	if x != nil {
+		return x.Document
+	}
+	return nil
+}
+
+func (x *AdvancedCompleteQueryResponse_ContentSuggestion) GetDataStore() string {
+	if x != nil {
+		return x.DataStore
+	}
+	return ""
+}
+
+func (x *AdvancedCompleteQueryResponse_ContentSuggestion) GetScore() float64 {
+	if x != nil {
+		return x.Score
+	}
+	return 0
+}
+
+func (x *AdvancedCompleteQueryResponse_ContentSuggestion) GetIconUri() string {
+	if x != nil {
+		return x.IconUri
+	}
+	return ""
+}
+
+func (x *AdvancedCompleteQueryResponse_ContentSuggestion) GetDestinationUri() string {
+	if x != nil {
+		return x.DestinationUri
+	}
+	return ""
+}
+
+// Suggestions from recent search history.
+type AdvancedCompleteQueryResponse_RecentSearchSuggestion struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The suggestion for the query.
+	Suggestion string `protobuf:"bytes,1,opt,name=suggestion,proto3" json:"suggestion,omitempty"`
+	// The time when this recent rearch happened.
+	RecentSearchTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=recent_search_time,json=recentSearchTime,proto3" json:"recent_search_time,omitempty"`
+	// The score of each suggestion. The score is in the range of [0, 1].
+	Score         float64 `protobuf:"fixed64,3,opt,name=score,proto3" json:"score,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AdvancedCompleteQueryResponse_RecentSearchSuggestion) Reset() {
+	*x = AdvancedCompleteQueryResponse_RecentSearchSuggestion{}
+	mi := &file_google_cloud_discoveryengine_v1_completion_service_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AdvancedCompleteQueryResponse_RecentSearchSuggestion) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AdvancedCompleteQueryResponse_RecentSearchSuggestion) ProtoMessage() {}
+
+func (x *AdvancedCompleteQueryResponse_RecentSearchSuggestion) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_completion_service_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AdvancedCompleteQueryResponse_RecentSearchSuggestion.ProtoReflect.Descriptor instead.
+func (*AdvancedCompleteQueryResponse_RecentSearchSuggestion) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_completion_service_proto_rawDescGZIP(), []int{3, 3}
+}
+
+func (x *AdvancedCompleteQueryResponse_RecentSearchSuggestion) GetSuggestion() string {
+	if x != nil {
+		return x.Suggestion
+	}
+	return ""
+}
+
+func (x *AdvancedCompleteQueryResponse_RecentSearchSuggestion) GetRecentSearchTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.RecentSearchTime
+	}
+	return nil
+}
+
+func (x *AdvancedCompleteQueryResponse_RecentSearchSuggestion) GetScore() float64 {
+	if x != nil {
+		return x.Score
+	}
+	return 0
+}
+
 var File_google_cloud_discoveryengine_v1_completion_service_proto protoreflect.FileDescriptor
 
 const file_google_cloud_discoveryengine_v1_completion_service_proto_rawDesc = "" +
 	"\n" +
-	"8google/cloud/discoveryengine/v1/completion_service.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a3google/cloud/discoveryengine/v1/import_config.proto\x1a2google/cloud/discoveryengine/v1/purge_config.proto\x1a#google/longrunning/operations.proto\"\x85\x02\n" +
+	"8google/cloud/discoveryengine/v1/completion_service.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/discoveryengine/v1/common.proto\x1a.google/cloud/discoveryengine/v1/document.proto\x1a3google/cloud/discoveryengine/v1/import_config.proto\x1a2google/cloud/discoveryengine/v1/purge_config.proto\x1a#google/longrunning/operations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8b\x02\n" +
 	"\x14CompleteQueryRequest\x12P\n" +
 	"\n" +
 	"data_store\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
 	"(discoveryengine.googleapis.com/DataStoreR\tdataStore\x12\x1a\n" +
 	"\x05query\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05query\x12\x1f\n" +
 	"\vquery_model\x18\x03 \x01(\tR\n" +
-	"queryModel\x12$\n" +
-	"\x0euser_pseudo_id\x18\x04 \x01(\tR\fuserPseudoId\x128\n" +
+	"queryModel\x12*\n" +
+	"\x0euser_pseudo_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\fuserPseudoId\x128\n" +
 	"\x18include_tail_suggestions\x18\x05 \x01(\bR\x16includeTailSuggestions\"\xa9\x02\n" +
 	"\x15CompleteQueryResponse\x12s\n" +
 	"\x11query_suggestions\x18\x01 \x03(\v2F.google.cloud.discoveryengine.v1.CompleteQueryResponse.QuerySuggestionR\x10querySuggestions\x120\n" +
@@ -297,9 +1266,97 @@ const file_google_cloud_discoveryengine_v1_completion_service_proto_rawDesc = ""
 	"\n" +
 	"suggestion\x18\x01 \x01(\tR\n" +
 	"suggestion\x126\n" +
-	"\x17completable_field_paths\x18\x02 \x03(\tR\x15completableFieldPaths2\xef\x11\n" +
+	"\x17completable_field_paths\x18\x02 \x03(\tR\x15completableFieldPaths\"\xc9\n" +
+	"\n" +
+	"\x1cAdvancedCompleteQueryRequest\x12e\n" +
+	"\x11completion_config\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/discoveryengine.googleapis.com/CompletionConfigR\x10completionConfig\x12\x1a\n" +
+	"\x05query\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05query\x12\x1f\n" +
+	"\vquery_model\x18\x03 \x01(\tR\n" +
+	"queryModel\x12*\n" +
+	"\x0euser_pseudo_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\fuserPseudoId\x12L\n" +
+	"\tuser_info\x18\t \x01(\v2).google.cloud.discoveryengine.v1.UserInfoB\x04\xe2A\x01\x01R\buserInfo\x128\n" +
+	"\x18include_tail_suggestions\x18\x05 \x01(\bR\x16includeTailSuggestions\x12l\n" +
+	"\n" +
+	"boost_spec\x18\x06 \x01(\v2G.google.cloud.discoveryengine.v1.AdvancedCompleteQueryRequest.BoostSpecB\x04\xe2A\x01\x01R\tboostSpec\x12}\n" +
+	"\x10suggestion_types\x18\a \x03(\x0e2L.google.cloud.discoveryengine.v1.AdvancedCompleteQueryRequest.SuggestionTypeB\x04\xe2A\x01\x01R\x0fsuggestionTypes\x12\x8a\x01\n" +
+	"\x15suggestion_type_specs\x18\n" +
+	" \x03(\v2P.google.cloud.discoveryengine.v1.AdvancedCompleteQueryRequest.SuggestionTypeSpecB\x04\xe2A\x01\x01R\x13suggestionTypeSpecs\x12+\n" +
+	"\x0eexperiment_ids\x18\x0e \x03(\tB\x04\xe2A\x01\x01R\rexperimentIds\x1a\xe6\x01\n" +
+	"\tBoostSpec\x12\x8e\x01\n" +
+	"\x15condition_boost_specs\x18\x01 \x03(\v2Z.google.cloud.discoveryengine.v1.AdvancedCompleteQueryRequest.BoostSpec.ConditionBoostSpecR\x13conditionBoostSpecs\x1aH\n" +
+	"\x12ConditionBoostSpec\x12\x1c\n" +
+	"\tcondition\x18\x01 \x01(\tR\tcondition\x12\x14\n" +
+	"\x05boost\x18\x02 \x01(\x02R\x05boost\x1a\xc0\x01\n" +
+	"\x12SuggestionTypeSpec\x12{\n" +
+	"\x0fsuggestion_type\x18\x01 \x01(\x0e2L.google.cloud.discoveryengine.v1.AdvancedCompleteQueryRequest.SuggestionTypeB\x04\xe2A\x01\x01R\x0esuggestionType\x12-\n" +
+	"\x0fmax_suggestions\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x0emaxSuggestions\"~\n" +
+	"\x0eSuggestionType\x12\x1f\n" +
+	"\x1bSUGGESTION_TYPE_UNSPECIFIED\x10\x00\x12\t\n" +
+	"\x05QUERY\x10\x01\x12\n" +
+	"\n" +
+	"\x06PEOPLE\x10\x02\x12\v\n" +
+	"\aCONTENT\x10\x03\x12\x11\n" +
+	"\rRECENT_SEARCH\x10\x04\x12\x14\n" +
+	"\x10GOOGLE_WORKSPACE\x10\x05\"\xb9\x0f\n" +
+	"\x1dAdvancedCompleteQueryResponse\x12{\n" +
+	"\x11query_suggestions\x18\x01 \x03(\v2N.google.cloud.discoveryengine.v1.AdvancedCompleteQueryResponse.QuerySuggestionR\x10querySuggestions\x120\n" +
+	"\x14tail_match_triggered\x18\x02 \x01(\bR\x12tailMatchTriggered\x12~\n" +
+	"\x12people_suggestions\x18\x03 \x03(\v2O.google.cloud.discoveryengine.v1.AdvancedCompleteQueryResponse.PersonSuggestionR\x11peopleSuggestions\x12\x81\x01\n" +
+	"\x13content_suggestions\x18\x04 \x03(\v2P.google.cloud.discoveryengine.v1.AdvancedCompleteQueryResponse.ContentSuggestionR\x12contentSuggestions\x12\x91\x01\n" +
+	"\x19recent_search_suggestions\x18\x05 \x03(\v2U.google.cloud.discoveryengine.v1.AdvancedCompleteQueryResponse.RecentSearchSuggestionR\x17recentSearchSuggestions\x1a\x9e\x01\n" +
+	"\x0fQuerySuggestion\x12\x1e\n" +
+	"\n" +
+	"suggestion\x18\x01 \x01(\tR\n" +
+	"suggestion\x126\n" +
+	"\x17completable_field_paths\x18\x02 \x03(\tR\x15completableFieldPaths\x12\x1d\n" +
+	"\n" +
+	"data_store\x18\x03 \x03(\tR\tdataStore\x12\x14\n" +
+	"\x05score\x18\x04 \x01(\x01R\x05score\x1a\x9a\x04\n" +
+	"\x10PersonSuggestion\x12\x1e\n" +
+	"\n" +
+	"suggestion\x18\x01 \x01(\tR\n" +
+	"suggestion\x12{\n" +
+	"\vperson_type\x18\x02 \x01(\x0e2Z.google.cloud.discoveryengine.v1.AdvancedCompleteQueryResponse.PersonSuggestion.PersonTypeR\n" +
+	"personType\x12E\n" +
+	"\bdocument\x18\x04 \x01(\v2).google.cloud.discoveryengine.v1.DocumentR\bdocument\x12L\n" +
+	"\n" +
+	"data_store\x18\x05 \x01(\tB-\xfaA*\n" +
+	"(discoveryengine.googleapis.com/DataStoreR\tdataStore\x12\x14\n" +
+	"\x05score\x18\x06 \x01(\x01R\x05score\x12*\n" +
+	"\x11display_photo_uri\x18\a \x01(\tR\x0fdisplayPhotoUri\x12'\n" +
+	"\x0fdestination_uri\x18\b \x01(\tR\x0edestinationUri\"i\n" +
+	"\n" +
+	"PersonType\x12\x1b\n" +
+	"\x17PERSON_TYPE_UNSPECIFIED\x10\x00\x12\x12\n" +
+	"\x0eCLOUD_IDENTITY\x10\x01\x12\x18\n" +
+	"\x14THIRD_PARTY_IDENTITY\x10\x02\x12\x10\n" +
+	"\fGOOGLE_GROUP\x10\x03\x1a\xf7\x03\n" +
+	"\x11ContentSuggestion\x12\x1e\n" +
+	"\n" +
+	"suggestion\x18\x01 \x01(\tR\n" +
+	"suggestion\x12\x7f\n" +
+	"\fcontent_type\x18\x02 \x01(\x0e2\\.google.cloud.discoveryengine.v1.AdvancedCompleteQueryResponse.ContentSuggestion.ContentTypeR\vcontentType\x12E\n" +
+	"\bdocument\x18\x04 \x01(\v2).google.cloud.discoveryengine.v1.DocumentR\bdocument\x12L\n" +
+	"\n" +
+	"data_store\x18\x05 \x01(\tB-\xfaA*\n" +
+	"(discoveryengine.googleapis.com/DataStoreR\tdataStore\x12\x14\n" +
+	"\x05score\x18\x06 \x01(\x01R\x05score\x12\x19\n" +
+	"\bicon_uri\x18\a \x01(\tR\aiconUri\x12'\n" +
+	"\x0fdestination_uri\x18\b \x01(\tR\x0edestinationUri\"R\n" +
+	"\vContentType\x12\x1c\n" +
+	"\x18CONTENT_TYPE_UNSPECIFIED\x10\x00\x12\x14\n" +
+	"\x10GOOGLE_WORKSPACE\x10\x01\x12\x0f\n" +
+	"\vTHIRD_PARTY\x10\x02\x1a\x98\x01\n" +
+	"\x16RecentSearchSuggestion\x12\x1e\n" +
+	"\n" +
+	"suggestion\x18\x01 \x01(\tR\n" +
+	"suggestion\x12H\n" +
+	"\x12recent_search_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x10recentSearchTime\x12\x14\n" +
+	"\x05score\x18\x03 \x01(\x01R\x05score2\xbe\x17\n" +
 	"\x11CompletionService\x12\xa0\x02\n" +
-	"\rCompleteQuery\x125.google.cloud.discoveryengine.v1.CompleteQueryRequest\x1a6.google.cloud.discoveryengine.v1.CompleteQueryResponse\"\x9f\x01\x82\xd3\xe4\x93\x02\x98\x01ZR\x12P/v1/{data_store=projects/*/locations/*/collections/*/dataStores/*}:completeQuery\x12B/v1/{data_store=projects/*/locations/*/dataStores/*}:completeQuery\x12\xe5\x03\n" +
+	"\rCompleteQuery\x125.google.cloud.discoveryengine.v1.CompleteQueryRequest\x1a6.google.cloud.discoveryengine.v1.CompleteQueryResponse\"\x9f\x01\x82\xd3\xe4\x93\x02\x98\x01ZR\x12P/v1/{data_store=projects/*/locations/*/collections/*/dataStores/*}:completeQuery\x12B/v1/{data_store=projects/*/locations/*/dataStores/*}:completeQuery\x12\xda\x03\n" +
+	"\x15AdvancedCompleteQuery\x12=.google.cloud.discoveryengine.v1.AdvancedCompleteQueryRequest\x1a>.google.cloud.discoveryengine.v1.AdvancedCompleteQueryResponse\"\xc1\x02\x82\xd3\xe4\x93\x02\xba\x02:\x01*Zm:\x01*\"h/v1/{completion_config=projects/*/locations/*/collections/*/dataStores/*/completionConfig}:completeQueryZj:\x01*\"e/v1/{completion_config=projects/*/locations/*/collections/*/engines/*/completionConfig}:completeQuery\"Z/v1/{completion_config=projects/*/locations/*/dataStores/*/completionConfig}:completeQuery\x12\xe5\x03\n" +
 	"\x1fImportSuggestionDenyListEntries\x12G.google.cloud.discoveryengine.v1.ImportSuggestionDenyListEntriesRequest\x1a\x1d.google.longrunning.Operation\"\xd9\x02\xcaA\x92\x01\n" +
 	"Ggoogle.cloud.discoveryengine.v1.ImportSuggestionDenyListEntriesResponse\x12Ggoogle.cloud.discoveryengine.v1.ImportSuggestionDenyListEntriesMetadata\x82\xd3\xe4\x93\x02\xbc\x01:\x01*ZV:\x01*\"Q/v1/{parent=projects/*/locations/*/dataStores/*}/suggestionDenyListEntries:import\"_/v1/{parent=projects/*/locations/*/collections/*/dataStores/*}/suggestionDenyListEntries:import\x12\xe0\x03\n" +
 	"\x1ePurgeSuggestionDenyListEntries\x12F.google.cloud.discoveryengine.v1.PurgeSuggestionDenyListEntriesRequest\x1a\x1d.google.longrunning.Operation\"\xd6\x02\xcaA\x90\x01\n" +
@@ -307,7 +1364,7 @@ const file_google_cloud_discoveryengine_v1_completion_service_proto_rawDesc = ""
 	"\x1bImportCompletionSuggestions\x12C.google.cloud.discoveryengine.v1.ImportCompletionSuggestionsRequest\x1a\x1d.google.longrunning.Operation\"\xc9\x02\xcaA\x8a\x01\n" +
 	"Cgoogle.cloud.discoveryengine.v1.ImportCompletionSuggestionsResponse\x12Cgoogle.cloud.discoveryengine.v1.ImportCompletionSuggestionsMetadata\x82\xd3\xe4\x93\x02\xb4\x01:\x01*ZR:\x01*\"M/v1/{parent=projects/*/locations/*/dataStores/*}/completionSuggestions:import\"[/v1/{parent=projects/*/locations/*/collections/*/dataStores/*}/completionSuggestions:import\x12\xc7\x03\n" +
 	"\x1aPurgeCompletionSuggestions\x12B.google.cloud.discoveryengine.v1.PurgeCompletionSuggestionsRequest\x1a\x1d.google.longrunning.Operation\"\xc5\x02\xcaA\x88\x01\n" +
-	"Bgoogle.cloud.discoveryengine.v1.PurgeCompletionSuggestionsResponse\x12Bgoogle.cloud.discoveryengine.v1.PurgeCompletionSuggestionsMetadata\x82\xd3\xe4\x93\x02\xb2\x01:\x01*ZQ:\x01*\"L/v1/{parent=projects/*/locations/*/dataStores/*}/completionSuggestions:purge\"Z/v1/{parent=projects/*/locations/*/collections/*/dataStores/*}/completionSuggestions:purge\x1aR\xcaA\x1ediscoveryengine.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\x89\x02\n" +
+	"Bgoogle.cloud.discoveryengine.v1.PurgeCompletionSuggestionsResponse\x12Bgoogle.cloud.discoveryengine.v1.PurgeCompletionSuggestionsMetadata\x82\xd3\xe4\x93\x02\xb2\x01:\x01*ZQ:\x01*\"L/v1/{parent=projects/*/locations/*/dataStores/*}/completionSuggestions:purge\"Z/v1/{parent=projects/*/locations/*/collections/*/dataStores/*}/completionSuggestions:purge\x1a\xc3\x02\xcaA\x1ediscoveryengine.googleapis.com\xd2A\x9e\x02https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/cloud_search.query,https://www.googleapis.com/auth/discoveryengine.assist.readwrite,https://www.googleapis.com/auth/discoveryengine.readwrite,https://www.googleapis.com/auth/discoveryengine.serving.readwriteB\x89\x02\n" +
 	"#com.google.cloud.discoveryengine.v1B\x16CompletionServiceProtoP\x01ZMcloud.google.com/go/discoveryengine/apiv1/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02\x1fGoogle.Cloud.DiscoveryEngine.V1\xca\x02\x1fGoogle\\Cloud\\DiscoveryEngine\\V1\xea\x02\"Google::Cloud::DiscoveryEngine::V1b\x06proto3"
 
 var (
@@ -322,34 +1379,67 @@ func file_google_cloud_discoveryengine_v1_completion_service_proto_rawDescGZIP()
 	return file_google_cloud_discoveryengine_v1_completion_service_proto_rawDescData
 }
 
-var file_google_cloud_discoveryengine_v1_completion_service_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_google_cloud_discoveryengine_v1_completion_service_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_google_cloud_discoveryengine_v1_completion_service_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_google_cloud_discoveryengine_v1_completion_service_proto_goTypes = []any{
-	(*CompleteQueryRequest)(nil),                   // 0: google.cloud.discoveryengine.v1.CompleteQueryRequest
-	(*CompleteQueryResponse)(nil),                  // 1: google.cloud.discoveryengine.v1.CompleteQueryResponse
-	(*CompleteQueryResponse_QuerySuggestion)(nil),  // 2: google.cloud.discoveryengine.v1.CompleteQueryResponse.QuerySuggestion
-	(*ImportSuggestionDenyListEntriesRequest)(nil), // 3: google.cloud.discoveryengine.v1.ImportSuggestionDenyListEntriesRequest
-	(*PurgeSuggestionDenyListEntriesRequest)(nil),  // 4: google.cloud.discoveryengine.v1.PurgeSuggestionDenyListEntriesRequest
-	(*ImportCompletionSuggestionsRequest)(nil),     // 5: google.cloud.discoveryengine.v1.ImportCompletionSuggestionsRequest
-	(*PurgeCompletionSuggestionsRequest)(nil),      // 6: google.cloud.discoveryengine.v1.PurgeCompletionSuggestionsRequest
-	(*longrunningpb.Operation)(nil),                // 7: google.longrunning.Operation
+	(AdvancedCompleteQueryRequest_SuggestionType)(0),                  // 0: google.cloud.discoveryengine.v1.AdvancedCompleteQueryRequest.SuggestionType
+	(AdvancedCompleteQueryResponse_PersonSuggestion_PersonType)(0),    // 1: google.cloud.discoveryengine.v1.AdvancedCompleteQueryResponse.PersonSuggestion.PersonType
+	(AdvancedCompleteQueryResponse_ContentSuggestion_ContentType)(0),  // 2: google.cloud.discoveryengine.v1.AdvancedCompleteQueryResponse.ContentSuggestion.ContentType
+	(*CompleteQueryRequest)(nil),                                      // 3: google.cloud.discoveryengine.v1.CompleteQueryRequest
+	(*CompleteQueryResponse)(nil),                                     // 4: google.cloud.discoveryengine.v1.CompleteQueryResponse
+	(*AdvancedCompleteQueryRequest)(nil),                              // 5: google.cloud.discoveryengine.v1.AdvancedCompleteQueryRequest
+	(*AdvancedCompleteQueryResponse)(nil),                             // 6: google.cloud.discoveryengine.v1.AdvancedCompleteQueryResponse
+	(*CompleteQueryResponse_QuerySuggestion)(nil),                     // 7: google.cloud.discoveryengine.v1.CompleteQueryResponse.QuerySuggestion
+	(*AdvancedCompleteQueryRequest_BoostSpec)(nil),                    // 8: google.cloud.discoveryengine.v1.AdvancedCompleteQueryRequest.BoostSpec
+	(*AdvancedCompleteQueryRequest_SuggestionTypeSpec)(nil),           // 9: google.cloud.discoveryengine.v1.AdvancedCompleteQueryRequest.SuggestionTypeSpec
+	(*AdvancedCompleteQueryRequest_BoostSpec_ConditionBoostSpec)(nil), // 10: google.cloud.discoveryengine.v1.AdvancedCompleteQueryRequest.BoostSpec.ConditionBoostSpec
+	(*AdvancedCompleteQueryResponse_QuerySuggestion)(nil),             // 11: google.cloud.discoveryengine.v1.AdvancedCompleteQueryResponse.QuerySuggestion
+	(*AdvancedCompleteQueryResponse_PersonSuggestion)(nil),            // 12: google.cloud.discoveryengine.v1.AdvancedCompleteQueryResponse.PersonSuggestion
+	(*AdvancedCompleteQueryResponse_ContentSuggestion)(nil),           // 13: google.cloud.discoveryengine.v1.AdvancedCompleteQueryResponse.ContentSuggestion
+	(*AdvancedCompleteQueryResponse_RecentSearchSuggestion)(nil),      // 14: google.cloud.discoveryengine.v1.AdvancedCompleteQueryResponse.RecentSearchSuggestion
+	(*UserInfo)(nil),                               // 15: google.cloud.discoveryengine.v1.UserInfo
+	(*Document)(nil),                               // 16: google.cloud.discoveryengine.v1.Document
+	(*timestamppb.Timestamp)(nil),                  // 17: google.protobuf.Timestamp
+	(*ImportSuggestionDenyListEntriesRequest)(nil), // 18: google.cloud.discoveryengine.v1.ImportSuggestionDenyListEntriesRequest
+	(*PurgeSuggestionDenyListEntriesRequest)(nil),  // 19: google.cloud.discoveryengine.v1.PurgeSuggestionDenyListEntriesRequest
+	(*ImportCompletionSuggestionsRequest)(nil),     // 20: google.cloud.discoveryengine.v1.ImportCompletionSuggestionsRequest
+	(*PurgeCompletionSuggestionsRequest)(nil),      // 21: google.cloud.discoveryengine.v1.PurgeCompletionSuggestionsRequest
+	(*longrunningpb.Operation)(nil),                // 22: google.longrunning.Operation
 }
 var file_google_cloud_discoveryengine_v1_completion_service_proto_depIdxs = []int32{
-	2, // 0: google.cloud.discoveryengine.v1.CompleteQueryResponse.query_suggestions:type_name -> google.cloud.discoveryengine.v1.CompleteQueryResponse.QuerySuggestion
-	0, // 1: google.cloud.discoveryengine.v1.CompletionService.CompleteQuery:input_type -> google.cloud.discoveryengine.v1.CompleteQueryRequest
-	3, // 2: google.cloud.discoveryengine.v1.CompletionService.ImportSuggestionDenyListEntries:input_type -> google.cloud.discoveryengine.v1.ImportSuggestionDenyListEntriesRequest
-	4, // 3: google.cloud.discoveryengine.v1.CompletionService.PurgeSuggestionDenyListEntries:input_type -> google.cloud.discoveryengine.v1.PurgeSuggestionDenyListEntriesRequest
-	5, // 4: google.cloud.discoveryengine.v1.CompletionService.ImportCompletionSuggestions:input_type -> google.cloud.discoveryengine.v1.ImportCompletionSuggestionsRequest
-	6, // 5: google.cloud.discoveryengine.v1.CompletionService.PurgeCompletionSuggestions:input_type -> google.cloud.discoveryengine.v1.PurgeCompletionSuggestionsRequest
-	1, // 6: google.cloud.discoveryengine.v1.CompletionService.CompleteQuery:output_type -> google.cloud.discoveryengine.v1.CompleteQueryResponse
-	7, // 7: google.cloud.discoveryengine.v1.CompletionService.ImportSuggestionDenyListEntries:output_type -> google.longrunning.Operation
-	7, // 8: google.cloud.discoveryengine.v1.CompletionService.PurgeSuggestionDenyListEntries:output_type -> google.longrunning.Operation
-	7, // 9: google.cloud.discoveryengine.v1.CompletionService.ImportCompletionSuggestions:output_type -> google.longrunning.Operation
-	7, // 10: google.cloud.discoveryengine.v1.CompletionService.PurgeCompletionSuggestions:output_type -> google.longrunning.Operation
-	6, // [6:11] is the sub-list for method output_type
-	1, // [1:6] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	7,  // 0: google.cloud.discoveryengine.v1.CompleteQueryResponse.query_suggestions:type_name -> google.cloud.discoveryengine.v1.CompleteQueryResponse.QuerySuggestion
+	15, // 1: google.cloud.discoveryengine.v1.AdvancedCompleteQueryRequest.user_info:type_name -> google.cloud.discoveryengine.v1.UserInfo
+	8,  // 2: google.cloud.discoveryengine.v1.AdvancedCompleteQueryRequest.boost_spec:type_name -> google.cloud.discoveryengine.v1.AdvancedCompleteQueryRequest.BoostSpec
+	0,  // 3: google.cloud.discoveryengine.v1.AdvancedCompleteQueryRequest.suggestion_types:type_name -> google.cloud.discoveryengine.v1.AdvancedCompleteQueryRequest.SuggestionType
+	9,  // 4: google.cloud.discoveryengine.v1.AdvancedCompleteQueryRequest.suggestion_type_specs:type_name -> google.cloud.discoveryengine.v1.AdvancedCompleteQueryRequest.SuggestionTypeSpec
+	11, // 5: google.cloud.discoveryengine.v1.AdvancedCompleteQueryResponse.query_suggestions:type_name -> google.cloud.discoveryengine.v1.AdvancedCompleteQueryResponse.QuerySuggestion
+	12, // 6: google.cloud.discoveryengine.v1.AdvancedCompleteQueryResponse.people_suggestions:type_name -> google.cloud.discoveryengine.v1.AdvancedCompleteQueryResponse.PersonSuggestion
+	13, // 7: google.cloud.discoveryengine.v1.AdvancedCompleteQueryResponse.content_suggestions:type_name -> google.cloud.discoveryengine.v1.AdvancedCompleteQueryResponse.ContentSuggestion
+	14, // 8: google.cloud.discoveryengine.v1.AdvancedCompleteQueryResponse.recent_search_suggestions:type_name -> google.cloud.discoveryengine.v1.AdvancedCompleteQueryResponse.RecentSearchSuggestion
+	10, // 9: google.cloud.discoveryengine.v1.AdvancedCompleteQueryRequest.BoostSpec.condition_boost_specs:type_name -> google.cloud.discoveryengine.v1.AdvancedCompleteQueryRequest.BoostSpec.ConditionBoostSpec
+	0,  // 10: google.cloud.discoveryengine.v1.AdvancedCompleteQueryRequest.SuggestionTypeSpec.suggestion_type:type_name -> google.cloud.discoveryengine.v1.AdvancedCompleteQueryRequest.SuggestionType
+	1,  // 11: google.cloud.discoveryengine.v1.AdvancedCompleteQueryResponse.PersonSuggestion.person_type:type_name -> google.cloud.discoveryengine.v1.AdvancedCompleteQueryResponse.PersonSuggestion.PersonType
+	16, // 12: google.cloud.discoveryengine.v1.AdvancedCompleteQueryResponse.PersonSuggestion.document:type_name -> google.cloud.discoveryengine.v1.Document
+	2,  // 13: google.cloud.discoveryengine.v1.AdvancedCompleteQueryResponse.ContentSuggestion.content_type:type_name -> google.cloud.discoveryengine.v1.AdvancedCompleteQueryResponse.ContentSuggestion.ContentType
+	16, // 14: google.cloud.discoveryengine.v1.AdvancedCompleteQueryResponse.ContentSuggestion.document:type_name -> google.cloud.discoveryengine.v1.Document
+	17, // 15: google.cloud.discoveryengine.v1.AdvancedCompleteQueryResponse.RecentSearchSuggestion.recent_search_time:type_name -> google.protobuf.Timestamp
+	3,  // 16: google.cloud.discoveryengine.v1.CompletionService.CompleteQuery:input_type -> google.cloud.discoveryengine.v1.CompleteQueryRequest
+	5,  // 17: google.cloud.discoveryengine.v1.CompletionService.AdvancedCompleteQuery:input_type -> google.cloud.discoveryengine.v1.AdvancedCompleteQueryRequest
+	18, // 18: google.cloud.discoveryengine.v1.CompletionService.ImportSuggestionDenyListEntries:input_type -> google.cloud.discoveryengine.v1.ImportSuggestionDenyListEntriesRequest
+	19, // 19: google.cloud.discoveryengine.v1.CompletionService.PurgeSuggestionDenyListEntries:input_type -> google.cloud.discoveryengine.v1.PurgeSuggestionDenyListEntriesRequest
+	20, // 20: google.cloud.discoveryengine.v1.CompletionService.ImportCompletionSuggestions:input_type -> google.cloud.discoveryengine.v1.ImportCompletionSuggestionsRequest
+	21, // 21: google.cloud.discoveryengine.v1.CompletionService.PurgeCompletionSuggestions:input_type -> google.cloud.discoveryengine.v1.PurgeCompletionSuggestionsRequest
+	4,  // 22: google.cloud.discoveryengine.v1.CompletionService.CompleteQuery:output_type -> google.cloud.discoveryengine.v1.CompleteQueryResponse
+	6,  // 23: google.cloud.discoveryengine.v1.CompletionService.AdvancedCompleteQuery:output_type -> google.cloud.discoveryengine.v1.AdvancedCompleteQueryResponse
+	22, // 24: google.cloud.discoveryengine.v1.CompletionService.ImportSuggestionDenyListEntries:output_type -> google.longrunning.Operation
+	22, // 25: google.cloud.discoveryengine.v1.CompletionService.PurgeSuggestionDenyListEntries:output_type -> google.longrunning.Operation
+	22, // 26: google.cloud.discoveryengine.v1.CompletionService.ImportCompletionSuggestions:output_type -> google.longrunning.Operation
+	22, // 27: google.cloud.discoveryengine.v1.CompletionService.PurgeCompletionSuggestions:output_type -> google.longrunning.Operation
+	22, // [22:28] is the sub-list for method output_type
+	16, // [16:22] is the sub-list for method input_type
+	16, // [16:16] is the sub-list for extension type_name
+	16, // [16:16] is the sub-list for extension extendee
+	0,  // [0:16] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_discoveryengine_v1_completion_service_proto_init() }
@@ -357,6 +1447,8 @@ func file_google_cloud_discoveryengine_v1_completion_service_proto_init() {
 	if File_google_cloud_discoveryengine_v1_completion_service_proto != nil {
 		return
 	}
+	file_google_cloud_discoveryengine_v1_common_proto_init()
+	file_google_cloud_discoveryengine_v1_document_proto_init()
 	file_google_cloud_discoveryengine_v1_import_config_proto_init()
 	file_google_cloud_discoveryengine_v1_purge_config_proto_init()
 	type x struct{}
@@ -364,13 +1456,14 @@ func file_google_cloud_discoveryengine_v1_completion_service_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_discoveryengine_v1_completion_service_proto_rawDesc), len(file_google_cloud_discoveryengine_v1_completion_service_proto_rawDesc)),
-			NumEnums:      0,
-			NumMessages:   3,
+			NumEnums:      3,
+			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
 		GoTypes:           file_google_cloud_discoveryengine_v1_completion_service_proto_goTypes,
 		DependencyIndexes: file_google_cloud_discoveryengine_v1_completion_service_proto_depIdxs,
+		EnumInfos:         file_google_cloud_discoveryengine_v1_completion_service_proto_enumTypes,
 		MessageInfos:      file_google_cloud_discoveryengine_v1_completion_service_proto_msgTypes,
 	}.Build()
 	File_google_cloud_discoveryengine_v1_completion_service_proto = out.File

@@ -1306,9 +1306,9 @@ const file_google_cloud_sql_v1_cloud_sql_blue_green_deployments_proto_rawDesc = 
 	"createTime\x12J\n" +
 	"\x05state\x18\x04 \x01(\x0e2..google.cloud.sql.v1.BlueGreenDeployment.StateB\x04\xe2A\x01\x03R\x05state\x12S\n" +
 	"\x0fsource_instance\x18\x05 \x01(\tB*\xe2A\x02\x02\x05\xfaA\"\n" +
-	" sqladmin.googleapis.com/InstanceR\x0esourceInstance\x12g\n" +
+	" cloudsql.googleapis.com/InstanceR\x0esourceInstance\x12g\n" +
 	"\x1aswitchover_target_instance\x18\x06 \x01(\tB)\xe2A\x01\x03\xfaA\"\n" +
-	" sqladmin.googleapis.com/InstanceR\x18switchoverTargetInstance\x12'\n" +
+	" cloudsql.googleapis.com/InstanceR\x18switchoverTargetInstance\x12'\n" +
 	"\ferror_detail\x18\a \x01(\tB\x04\xe2A\x01\x03R\verrorDetail\x12v\n" +
 	"\x13deployment_mappings\x18\b \x03(\v2?.google.cloud.sql.v1.BlueGreenDeployment.SourceTargetPairedNodeB\x04\xe2A\x01\x03R\x12deploymentMappings\x12i\n" +
 	"\x10deployment_tasks\x18\t \x01(\v28.google.cloud.sql.v1.BlueGreenDeployment.DeploymentTasksB\x04\xe2A\x01\x03R\x0fdeploymentTasks\x12j\n" +
@@ -1330,7 +1330,7 @@ const file_google_cloud_sql_v1_cloud_sql_blue_green_deployments_proto_rawDesc = 
 	"\ftarget_value\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\vtargetValue\x1a\xd6\x01\n" +
 	"\bNodeInfo\x12E\n" +
 	"\binstance\x18\x01 \x01(\tB)\xe2A\x01\x03\xfaA\"\n" +
-	" sqladmin.googleapis.com/InstanceR\binstance\x12$\n" +
+	" cloudsql.googleapis.com/InstanceR\binstance\x12$\n" +
 	"\n" +
 	"connection\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\n" +
 	"connection\x12\x16\n" +

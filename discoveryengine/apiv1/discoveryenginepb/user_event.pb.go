@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -52,7 +52,6 @@ type UserEvent struct {
 	// * `view-item-list`: View of a panel or ordered list of Documents.
 	// * `view-home-page`: View of the home page.
 	// * `view-category-page`: View of a category page, e.g. Home > Men > Jeans
-	// * `add-feedback`: Add a user feedback.
 	//
 	// Retail-related values:
 	//
@@ -173,8 +172,9 @@ type UserEvent struct {
 	// [RecommendResponse.attribution_token][google.cloud.discoveryengine.v1.RecommendResponse.attribution_token]
 	// to this field.
 	AttributionToken string `protobuf:"bytes,8,opt,name=attribution_token,json=attributionToken,proto3" json:"attribution_token,omitempty"`
-	// The filter syntax consists of an expression language for constructing a
-	// predicate from one or more fields of the documents being filtered.
+	// Optional. The filter syntax consists of an expression language for
+	// constructing a predicate from one or more fields of the documents being
+	// filtered.
 	//
 	// One example is for `search` events, the associated
 	// [SearchRequest][google.cloud.discoveryengine.v1.SearchRequest] may contain
@@ -232,7 +232,7 @@ type UserEvent struct {
 	// The promotion IDs if this is an event associated with promotions.
 	// Currently, this field is restricted to at most one ID.
 	PromotionIds []string `protobuf:"bytes,16,rep,name=promotion_ids,json=promotionIds,proto3" json:"promotion_ids,omitempty"`
-	// Extra user event features to include in the recommendation model.
+	// Optional. Extra user event features to include in the recommendation model.
 	// These attributes must NOT contain data that needs to be parsed or processed
 	// further, e.g. JSON or other encodings.
 	//
@@ -263,7 +263,15 @@ type UserEvent struct {
 	MediaInfo *MediaInfo `protobuf:"bytes,18,opt,name=media_info,json=mediaInfo,proto3" json:"media_info,omitempty"`
 	// Optional. List of panels associated with this event.
 	// Used for page-level impression data.
-	Panels        []*PanelInfo `protobuf:"bytes,22,rep,name=panels,proto3" json:"panels,omitempty"`
+	Panels []*PanelInfo `protobuf:"bytes,22,rep,name=panels,proto3" json:"panels,omitempty"`
+	// Optional. This field is optional except for the `add-feedback` event types.
+	Feedback *Feedback `protobuf:"bytes,23,opt,name=feedback,proto3" json:"feedback,omitempty"`
+	// Optional. Represents the entity for customers that may run multiple
+	// different entities, domains, sites or regions, for example, `Google US`,
+	// `Google Ads`, `Waymo`, `google.com`, `youtube.com`, etc. We recommend that
+	// you set `entity` to get better per-entity search, completion, and
+	// prediction results.
+	Entity        string `protobuf:"bytes,25,opt,name=entity,proto3" json:"entity,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -452,6 +460,20 @@ func (x *UserEvent) GetPanels() []*PanelInfo {
 	return nil
 }
 
+func (x *UserEvent) GetFeedback() *Feedback {
+	if x != nil {
+		return x.Feedback
+	}
+	return nil
+}
+
+func (x *UserEvent) GetEntity() string {
+	if x != nil {
+		return x.Entity
+	}
+	return ""
+}
+
 // Detailed page information.
 type PageInfo struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -556,7 +578,7 @@ func (x *PageInfo) GetReferrerUri() string {
 // Detailed search information.
 type SearchInfo struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The user's search query.
+	// Optional. The user's search query.
 	//
 	// See
 	// [SearchRequest.query][google.cloud.discoveryengine.v1.SearchRequest.query]
@@ -654,7 +676,7 @@ func (x *SearchInfo) GetOffset() int32 {
 // clicked completion info.
 type CompletionInfo struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// End user selected
+	// Optional. End user selected
 	// [CompleteQueryResponse.QuerySuggestion.suggestion][google.cloud.discoveryengine.v1.CompleteQueryResponse.QuerySuggestion.suggestion].
 	SelectedSuggestion string `protobuf:"bytes,1,opt,name=selected_suggestion,json=selectedSuggestion,proto3" json:"selected_suggestion,omitempty"`
 	// End user selected
@@ -1155,7 +1177,7 @@ var File_google_cloud_discoveryengine_v1_user_event_proto protoreflect.FileDescr
 
 const file_google_cloud_discoveryengine_v1_user_event_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/discoveryengine/v1/user_event.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/discoveryengine/v1/common.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb0\v\n" +
+	"0google/cloud/discoveryengine/v1/user_event.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/discoveryengine/v1/common.proto\x1a.google/cloud/discoveryengine/v1/feedback.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa7\f\n" +
 	"\tUserEvent\x12#\n" +
 	"\n" +
 	"event_type\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\teventType\x12-\n" +
@@ -1173,8 +1195,8 @@ const file_google_cloud_discoveryengine_v1_user_event_proto_rawDesc = "" +
 	"\n" +
 	"session_id\x18\x06 \x01(\tR\tsessionId\x12F\n" +
 	"\tpage_info\x18\a \x01(\v2).google.cloud.discoveryengine.v1.PageInfoR\bpageInfo\x12+\n" +
-	"\x11attribution_token\x18\b \x01(\tR\x10attributionToken\x12\x16\n" +
-	"\x06filter\x18\t \x01(\tR\x06filter\x12K\n" +
+	"\x11attribution_token\x18\b \x01(\tR\x10attributionToken\x12\x1c\n" +
+	"\x06filter\x18\t \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12K\n" +
 	"\tdocuments\x18\n" +
 	" \x03(\v2-.google.cloud.discoveryengine.v1.DocumentInfoR\tdocuments\x12@\n" +
 	"\x05panel\x18\v \x01(\v2*.google.cloud.discoveryengine.v1.PanelInfoR\x05panel\x12L\n" +
@@ -1183,13 +1205,15 @@ const file_google_cloud_discoveryengine_v1_user_event_proto_rawDesc = "" +
 	"\x0fcompletion_info\x18\r \x01(\v2/.google.cloud.discoveryengine.v1.CompletionInfoR\x0ecompletionInfo\x12[\n" +
 	"\x10transaction_info\x18\x0e \x01(\v20.google.cloud.discoveryengine.v1.TransactionInfoR\x0ftransactionInfo\x12\x17\n" +
 	"\atag_ids\x18\x0f \x03(\tR\x06tagIds\x12#\n" +
-	"\rpromotion_ids\x18\x10 \x03(\tR\fpromotionIds\x12Z\n" +
+	"\rpromotion_ids\x18\x10 \x03(\tR\fpromotionIds\x12`\n" +
 	"\n" +
-	"attributes\x18\x11 \x03(\v2:.google.cloud.discoveryengine.v1.UserEvent.AttributesEntryR\n" +
+	"attributes\x18\x11 \x03(\v2:.google.cloud.discoveryengine.v1.UserEvent.AttributesEntryB\x04\xe2A\x01\x01R\n" +
 	"attributes\x12I\n" +
 	"\n" +
 	"media_info\x18\x12 \x01(\v2*.google.cloud.discoveryengine.v1.MediaInfoR\tmediaInfo\x12H\n" +
-	"\x06panels\x18\x16 \x03(\v2*.google.cloud.discoveryengine.v1.PanelInfoB\x04\xe2A\x01\x01R\x06panels\x1ao\n" +
+	"\x06panels\x18\x16 \x03(\v2*.google.cloud.discoveryengine.v1.PanelInfoB\x04\xe2A\x01\x01R\x06panels\x12K\n" +
+	"\bfeedback\x18\x17 \x01(\v2).google.cloud.discoveryengine.v1.FeedbackB\x04\xe2A\x01\x01R\bfeedback\x12\x1c\n" +
+	"\x06entity\x18\x19 \x01(\tB\x04\xe2A\x01\x01R\x06entity\x1ao\n" +
 	"\x0fAttributesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12F\n" +
 	"\x05value\x18\x02 \x01(\v20.google.cloud.discoveryengine.v1.CustomAttributeR\x05value:\x028\x01\"\x85\x01\n" +
@@ -1198,15 +1222,15 @@ const file_google_cloud_discoveryengine_v1_user_event_proto_rawDesc = "" +
 	"pageviewId\x12#\n" +
 	"\rpage_category\x18\x02 \x01(\tR\fpageCategory\x12\x10\n" +
 	"\x03uri\x18\x03 \x01(\tR\x03uri\x12!\n" +
-	"\freferrer_uri\x18\x04 \x01(\tR\vreferrerUri\"r\n" +
+	"\freferrer_uri\x18\x04 \x01(\tR\vreferrerUri\"x\n" +
 	"\n" +
-	"SearchInfo\x12!\n" +
-	"\fsearch_query\x18\x01 \x01(\tR\vsearchQuery\x12\x19\n" +
+	"SearchInfo\x12'\n" +
+	"\fsearch_query\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\vsearchQuery\x12\x19\n" +
 	"\border_by\x18\x02 \x01(\tR\aorderBy\x12\x1b\n" +
 	"\x06offset\x18\x03 \x01(\x05H\x00R\x06offset\x88\x01\x01B\t\n" +
-	"\a_offset\"n\n" +
-	"\x0eCompletionInfo\x12/\n" +
-	"\x13selected_suggestion\x18\x01 \x01(\tR\x12selectedSuggestion\x12+\n" +
+	"\a_offset\"t\n" +
+	"\x0eCompletionInfo\x125\n" +
+	"\x13selected_suggestion\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x12selectedSuggestion\x12+\n" +
 	"\x11selected_position\x18\x02 \x01(\x05R\x10selectedPosition\"\x85\x02\n" +
 	"\x0fTransactionInfo\x12\x1f\n" +
 	"\x05value\x18\x01 \x01(\x02B\x04\xe2A\x01\x02H\x00R\x05value\x88\x01\x01\x12 \n" +
@@ -1270,8 +1294,9 @@ var file_google_cloud_discoveryengine_v1_user_event_proto_goTypes = []any{
 	nil,                           // 8: google.cloud.discoveryengine.v1.UserEvent.AttributesEntry
 	(*timestamppb.Timestamp)(nil), // 9: google.protobuf.Timestamp
 	(*UserInfo)(nil),              // 10: google.cloud.discoveryengine.v1.UserInfo
-	(*durationpb.Duration)(nil),   // 11: google.protobuf.Duration
-	(*CustomAttribute)(nil),       // 12: google.cloud.discoveryengine.v1.CustomAttribute
+	(*Feedback)(nil),              // 11: google.cloud.discoveryengine.v1.Feedback
+	(*durationpb.Duration)(nil),   // 12: google.protobuf.Duration
+	(*CustomAttribute)(nil),       // 13: google.cloud.discoveryengine.v1.CustomAttribute
 }
 var file_google_cloud_discoveryengine_v1_user_event_proto_depIdxs = []int32{
 	9,  // 0: google.cloud.discoveryengine.v1.UserEvent.event_time:type_name -> google.protobuf.Timestamp
@@ -1285,14 +1310,15 @@ var file_google_cloud_discoveryengine_v1_user_event_proto_depIdxs = []int32{
 	8,  // 8: google.cloud.discoveryengine.v1.UserEvent.attributes:type_name -> google.cloud.discoveryengine.v1.UserEvent.AttributesEntry
 	7,  // 9: google.cloud.discoveryengine.v1.UserEvent.media_info:type_name -> google.cloud.discoveryengine.v1.MediaInfo
 	6,  // 10: google.cloud.discoveryengine.v1.UserEvent.panels:type_name -> google.cloud.discoveryengine.v1.PanelInfo
-	5,  // 11: google.cloud.discoveryengine.v1.PanelInfo.documents:type_name -> google.cloud.discoveryengine.v1.DocumentInfo
-	11, // 12: google.cloud.discoveryengine.v1.MediaInfo.media_progress_duration:type_name -> google.protobuf.Duration
-	12, // 13: google.cloud.discoveryengine.v1.UserEvent.AttributesEntry.value:type_name -> google.cloud.discoveryengine.v1.CustomAttribute
-	14, // [14:14] is the sub-list for method output_type
-	14, // [14:14] is the sub-list for method input_type
-	14, // [14:14] is the sub-list for extension type_name
-	14, // [14:14] is the sub-list for extension extendee
-	0,  // [0:14] is the sub-list for field type_name
+	11, // 11: google.cloud.discoveryengine.v1.UserEvent.feedback:type_name -> google.cloud.discoveryengine.v1.Feedback
+	5,  // 12: google.cloud.discoveryengine.v1.PanelInfo.documents:type_name -> google.cloud.discoveryengine.v1.DocumentInfo
+	12, // 13: google.cloud.discoveryengine.v1.MediaInfo.media_progress_duration:type_name -> google.protobuf.Duration
+	13, // 14: google.cloud.discoveryengine.v1.UserEvent.AttributesEntry.value:type_name -> google.cloud.discoveryengine.v1.CustomAttribute
+	15, // [15:15] is the sub-list for method output_type
+	15, // [15:15] is the sub-list for method input_type
+	15, // [15:15] is the sub-list for extension type_name
+	15, // [15:15] is the sub-list for extension extendee
+	0,  // [0:15] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_discoveryengine_v1_user_event_proto_init() }
@@ -1301,6 +1327,7 @@ func file_google_cloud_discoveryengine_v1_user_event_proto_init() {
 		return
 	}
 	file_google_cloud_discoveryengine_v1_common_proto_init()
+	file_google_cloud_discoveryengine_v1_feedback_proto_init()
 	file_google_cloud_discoveryengine_v1_user_event_proto_msgTypes[2].OneofWrappers = []any{}
 	file_google_cloud_discoveryengine_v1_user_event_proto_msgTypes[4].OneofWrappers = []any{}
 	file_google_cloud_discoveryengine_v1_user_event_proto_msgTypes[5].OneofWrappers = []any{

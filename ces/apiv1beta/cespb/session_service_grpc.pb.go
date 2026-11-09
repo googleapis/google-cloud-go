@@ -34,9 +34,12 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	SessionService_RunSession_FullMethodName       = "/google.cloud.ces.v1beta.SessionService/RunSession"
-	SessionService_StreamRunSession_FullMethodName = "/google.cloud.ces.v1beta.SessionService/StreamRunSession"
-	SessionService_BidiRunSession_FullMethodName   = "/google.cloud.ces.v1beta.SessionService/BidiRunSession"
+	SessionService_RunSession_FullMethodName                    = "/google.cloud.ces.v1beta.SessionService/RunSession"
+	SessionService_StreamRunSession_FullMethodName              = "/google.cloud.ces.v1beta.SessionService/StreamRunSession"
+	SessionService_BidiRunSession_FullMethodName                = "/google.cloud.ces.v1beta.SessionService/BidiRunSession"
+	SessionService_StreamChatAiAssistant_FullMethodName         = "/google.cloud.ces.v1beta.SessionService/StreamChatAiAssistant"
+	SessionService_CancelAssistantTurn_FullMethodName           = "/google.cloud.ces.v1beta.SessionService/CancelAssistantTurn"
+	SessionService_GenerateOnboardingSuggestions_FullMethodName = "/google.cloud.ces.v1beta.SessionService/GenerateOnboardingSuggestions"
 )
 
 // SessionServiceClient is the client API for SessionService service.
@@ -120,6 +123,20 @@ type SessionServiceClient interface {
 	//     [InterruptionSignal][google.cloud.ces.v1beta.BidiSessionServerMessage.interruption_signal]
 	//     is received (e.g., user barge-in or new agent response).
 	BidiRunSession(ctx context.Context, opts ...grpc.CallOption) (SessionService_BidiRunSessionClient, error)
+	// Runs Arc, the AI assistant, for the specified assistant session in a
+	// streaming fashion.
+	StreamChatAiAssistant(ctx context.Context, in *StreamChatAiAssistantRequest, opts ...grpc.CallOption) (SessionService_StreamChatAiAssistantClient, error)
+	// Cancels the assistant session's in-flight turn, if any: the explicit user
+	// stop for a turn running detached from any stream. A cancel landing on a
+	// task that does not host the turn preempts it through the session turn
+	// epoch instead, ending it within one lease renewal.
+	CancelAssistantTurn(ctx context.Context, in *CancelAssistantTurnRequest, opts ...grpc.CallOption) (*CancelAssistantTurnResponse, error)
+	// Generates personalized onboarding suggestions for the Arc
+	// zero state: classifies the requesting user (new / exploring / returning)
+	// from their assistant-session history in the app and returns suggestion
+	// chips (resume a session, continue work, or start something new) to render
+	// before any message is sent.
+	GenerateOnboardingSuggestions(ctx context.Context, in *GenerateOnboardingSuggestionsRequest, opts ...grpc.CallOption) (*GenerateOnboardingSuggestionsResponse, error)
 }
 
 type sessionServiceClient struct {
@@ -200,6 +217,56 @@ func (x *sessionServiceBidiRunSessionClient) Recv() (*BidiSessionServerMessage, 
 		return nil, err
 	}
 	return m, nil
+}
+
+func (c *sessionServiceClient) StreamChatAiAssistant(ctx context.Context, in *StreamChatAiAssistantRequest, opts ...grpc.CallOption) (SessionService_StreamChatAiAssistantClient, error) {
+	stream, err := c.cc.NewStream(ctx, &SessionService_ServiceDesc.Streams[2], SessionService_StreamChatAiAssistant_FullMethodName, opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &sessionServiceStreamChatAiAssistantClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type SessionService_StreamChatAiAssistantClient interface {
+	Recv() (*StreamChatAiAssistantResponse, error)
+	grpc.ClientStream
+}
+
+type sessionServiceStreamChatAiAssistantClient struct {
+	grpc.ClientStream
+}
+
+func (x *sessionServiceStreamChatAiAssistantClient) Recv() (*StreamChatAiAssistantResponse, error) {
+	m := new(StreamChatAiAssistantResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *sessionServiceClient) CancelAssistantTurn(ctx context.Context, in *CancelAssistantTurnRequest, opts ...grpc.CallOption) (*CancelAssistantTurnResponse, error) {
+	out := new(CancelAssistantTurnResponse)
+	err := c.cc.Invoke(ctx, SessionService_CancelAssistantTurn_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *sessionServiceClient) GenerateOnboardingSuggestions(ctx context.Context, in *GenerateOnboardingSuggestionsRequest, opts ...grpc.CallOption) (*GenerateOnboardingSuggestionsResponse, error) {
+	out := new(GenerateOnboardingSuggestionsResponse)
+	err := c.cc.Invoke(ctx, SessionService_GenerateOnboardingSuggestions_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 // SessionServiceServer is the server API for SessionService service.
@@ -283,6 +350,20 @@ type SessionServiceServer interface {
 	//     [InterruptionSignal][google.cloud.ces.v1beta.BidiSessionServerMessage.interruption_signal]
 	//     is received (e.g., user barge-in or new agent response).
 	BidiRunSession(SessionService_BidiRunSessionServer) error
+	// Runs Arc, the AI assistant, for the specified assistant session in a
+	// streaming fashion.
+	StreamChatAiAssistant(*StreamChatAiAssistantRequest, SessionService_StreamChatAiAssistantServer) error
+	// Cancels the assistant session's in-flight turn, if any: the explicit user
+	// stop for a turn running detached from any stream. A cancel landing on a
+	// task that does not host the turn preempts it through the session turn
+	// epoch instead, ending it within one lease renewal.
+	CancelAssistantTurn(context.Context, *CancelAssistantTurnRequest) (*CancelAssistantTurnResponse, error)
+	// Generates personalized onboarding suggestions for the Arc
+	// zero state: classifies the requesting user (new / exploring / returning)
+	// from their assistant-session history in the app and returns suggestion
+	// chips (resume a session, continue work, or start something new) to render
+	// before any message is sent.
+	GenerateOnboardingSuggestions(context.Context, *GenerateOnboardingSuggestionsRequest) (*GenerateOnboardingSuggestionsResponse, error)
 }
 
 // UnimplementedSessionServiceServer should be embedded to have forward compatible implementations.
@@ -297,6 +378,15 @@ func (UnimplementedSessionServiceServer) StreamRunSession(*RunSessionRequest, Se
 }
 func (UnimplementedSessionServiceServer) BidiRunSession(SessionService_BidiRunSessionServer) error {
 	return status.Errorf(codes.Unimplemented, "method BidiRunSession not implemented")
+}
+func (UnimplementedSessionServiceServer) StreamChatAiAssistant(*StreamChatAiAssistantRequest, SessionService_StreamChatAiAssistantServer) error {
+	return status.Errorf(codes.Unimplemented, "method StreamChatAiAssistant not implemented")
+}
+func (UnimplementedSessionServiceServer) CancelAssistantTurn(context.Context, *CancelAssistantTurnRequest) (*CancelAssistantTurnResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CancelAssistantTurn not implemented")
+}
+func (UnimplementedSessionServiceServer) GenerateOnboardingSuggestions(context.Context, *GenerateOnboardingSuggestionsRequest) (*GenerateOnboardingSuggestionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GenerateOnboardingSuggestions not implemented")
 }
 
 // UnsafeSessionServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -375,6 +465,63 @@ func (x *sessionServiceBidiRunSessionServer) Recv() (*BidiSessionClientMessage, 
 	return m, nil
 }
 
+func _SessionService_StreamChatAiAssistant_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(StreamChatAiAssistantRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(SessionServiceServer).StreamChatAiAssistant(m, &sessionServiceStreamChatAiAssistantServer{stream})
+}
+
+type SessionService_StreamChatAiAssistantServer interface {
+	Send(*StreamChatAiAssistantResponse) error
+	grpc.ServerStream
+}
+
+type sessionServiceStreamChatAiAssistantServer struct {
+	grpc.ServerStream
+}
+
+func (x *sessionServiceStreamChatAiAssistantServer) Send(m *StreamChatAiAssistantResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func _SessionService_CancelAssistantTurn_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CancelAssistantTurnRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SessionServiceServer).CancelAssistantTurn(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SessionService_CancelAssistantTurn_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SessionServiceServer).CancelAssistantTurn(ctx, req.(*CancelAssistantTurnRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SessionService_GenerateOnboardingSuggestions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GenerateOnboardingSuggestionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SessionServiceServer).GenerateOnboardingSuggestions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SessionService_GenerateOnboardingSuggestions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SessionServiceServer).GenerateOnboardingSuggestions(ctx, req.(*GenerateOnboardingSuggestionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // SessionService_ServiceDesc is the grpc.ServiceDesc for SessionService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -385,6 +532,14 @@ var SessionService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RunSession",
 			Handler:    _SessionService_RunSession_Handler,
+		},
+		{
+			MethodName: "CancelAssistantTurn",
+			Handler:    _SessionService_CancelAssistantTurn_Handler,
+		},
+		{
+			MethodName: "GenerateOnboardingSuggestions",
+			Handler:    _SessionService_GenerateOnboardingSuggestions_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
@@ -398,6 +553,11 @@ var SessionService_ServiceDesc = grpc.ServiceDesc{
 			Handler:       _SessionService_BidiRunSession_Handler,
 			ServerStreams: true,
 			ClientStreams: true,
+		},
+		{
+			StreamName:    "StreamChatAiAssistant",
+			Handler:       _SessionService_StreamChatAiAssistant_Handler,
+			ServerStreams: true,
 		},
 	},
 	Metadata: "google/cloud/ces/v1beta/session_service.proto",
