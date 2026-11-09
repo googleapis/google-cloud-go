@@ -75,9 +75,7 @@ func (p *defaultBufferPool) Get(maxSize int) ([]byte, error) {
 	if maxSize <= 0 {
 		return nil, errInvalidBufferSize
 	}
-	p.mu.Lock()
-	b := p.popLocked()
-	p.mu.Unlock()
+	b := p.pop()
 	if b == nil {
 		b = make([]byte, p.blockSize)
 	}
@@ -120,9 +118,11 @@ func (p *defaultBufferPool) Put(buf []byte) {
 	}
 }
 
-// popLocked removes and returns the top cached block, or nil if the cache is
-// empty, and lowers minFree to the new cache size. p.mu must be held.
-func (p *defaultBufferPool) popLocked() []byte {
+// pop removes and returns the top cached block, or nil if the cache is empty,
+// and lowers minFree to the new cache size.
+func (p *defaultBufferPool) pop() []byte {
+	p.mu.Lock()
+	defer p.mu.Unlock()
 	n := len(p.free)
 	if n == 0 {
 		return nil
@@ -134,10 +134,10 @@ func (p *defaultBufferPool) popLocked() []byte {
 	return b
 }
 
-// shrinkLocked drops cached blocks until keep remain. p.mu must be held. It
-// drops from the top of the stack, which is fine because blocks are
-// interchangeable; only the count of unused blocks matters.
+// shrinkLocked drops cached blocks from the bottom of the stack, the ones
+// unused the longest, until keep remain. p.mu must be held.
 func (p *defaultBufferPool) shrinkLocked(keep int) {
+	copy(p.free, p.free[len(p.free)-keep:])
 	clear(p.free[keep:])
 	p.free = p.free[:keep]
 }

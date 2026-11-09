@@ -96,6 +96,10 @@ func TestDefaultBufferPoolGetSizes(t *testing.T) {
 		if len(b2) != tc.wantLen || cap(b2) != testBlockSize {
 			t.Errorf("TryGet(%d): len=%d cap=%d, want len=%d cap=%d", tc.maxSize, len(b2), cap(b2), tc.wantLen, testBlockSize)
 		}
+		// Nothing is allocated ahead of time.
+		if got := p.cached(); got != 0 {
+			t.Errorf("cached = %d before Put, want 0", got)
+		}
 		p.Put(b)
 		p.Put(b2)
 	}
@@ -110,21 +114,6 @@ func TestDefaultBufferPoolInvalidSize(t *testing.T) {
 		if _, ok, err := p.TryGet(n); ok || !errors.Is(err, errInvalidBufferSize) {
 			t.Errorf("TryGet(%d) = %v, %v; want false, %v", n, ok, err, errInvalidBufferSize)
 		}
-	}
-}
-
-// The default pool has no memory limit, so TryGet succeeds even on a cold
-// pool and never throttles parallel segments. Nothing is allocated ahead of
-// time.
-func TestDefaultBufferPoolTryGetNeverRefuses(t *testing.T) {
-	p := newTestBufferPool(t)
-	for i := 0; i < 10; i++ {
-		if _, ok, err := p.TryGet(4 * testBlockSize); !ok || err != nil {
-			t.Fatalf("TryGet #%d = %v, %v; want true, nil", i, ok, err)
-		}
-	}
-	if got := p.cached(); got != 0 {
-		t.Errorf("cached = %d, want 0: nothing should be pre-allocated", got)
 	}
 }
 
@@ -196,29 +185,24 @@ func TestDefaultBufferPoolPutForeignBuffer(t *testing.T) {
 	}
 }
 
-// resetMinFree sets minFree to the current cache size, as a cleaner run does.
-// Tests need it because Put only sets minFree when it starts the cleaner, so
-// Gets made while setting up a test would otherwise leave it lowered.
-func resetMinFree(p *defaultBufferPool) {
-	p.mu.Lock()
-	p.minFree = len(p.free)
-	p.mu.Unlock()
-}
-
 // cacheBlocks Gets n blocks and Puts them all back, so n blocks are cached and
-// minFree is reset to n.
-func cacheBlocks(t *testing.T, p *defaultBufferPool, n int) {
-	t.Helper()
+// minFree is n.
+func cacheBlocks(tb testing.TB, p *defaultBufferPool, n int) {
+	tb.Helper()
 	bufs := make([][]byte, n)
 	for i := range bufs {
-		bufs[i], _ = p.Get(testBlockSize)
+		bufs[i], _ = p.Get(p.blockSize)
 	}
 	for _, b := range bufs {
 		p.Put(b)
 	}
-	resetMinFree(p)
+	// Only the first Put starts the cleaner and sets minFree, so it is 1 here.
+	// Reset it to the cache size, as a cleaner run would.
+	p.mu.Lock()
+	p.minFree = len(p.free)
+	p.mu.Unlock()
 	if got := p.cached(); got != n {
-		t.Fatalf("cached = %d, want %d", got, n)
+		tb.Fatalf("cached = %d, want %d", got, n)
 	}
 }
 
@@ -250,6 +234,13 @@ func TestDefaultBufferPoolShrinksToWorkingSet(t *testing.T) {
 		if got := p.cached(); got != want {
 			t.Fatalf("cached = %d, want %d", got, want)
 		}
+		// Eviction drops the coldest blocks at the bottom, so the warm block
+		// on top survives.
+		got, _ := p.Get(testBlockSize)
+		if &got[0] != &b[0] {
+			t.Fatal("next Get did not return the warm block")
+		}
+		p.Put(got)
 	}
 	// Blocks held across a run are not counted as unused.
 	held, _ := p.Get(testBlockSize)
@@ -410,17 +401,6 @@ func TestDefaultBufferPoolZeroAllocs(t *testing.T) {
 	}
 }
 
-// prewarm caches n blocks in p.
-func prewarm(p *defaultBufferPool, n int) {
-	bufs := make([][]byte, n)
-	for i := range bufs {
-		bufs[i], _ = p.Get(p.blockSize)
-	}
-	for _, b := range bufs {
-		p.Put(b)
-	}
-}
-
 func BenchmarkDefaultBufferPoolSteadyState(b *testing.B) {
 	p := newDefaultBufferPool()
 	defer p.close()
@@ -428,7 +408,7 @@ func BenchmarkDefaultBufferPoolSteadyState(b *testing.B) {
 	const blocksPerPart = 4
 	const partSize = blocksPerPart * poolBlockSize
 	// Cache one part's blocks so the timed loop never grows the pool.
-	prewarm(p, blocksPerPart)
+	cacheBlocks(b, p, blocksPerPart)
 
 	held := make([][]byte, 0, blocksPerPart)
 	b.ReportAllocs()
@@ -452,7 +432,7 @@ func BenchmarkDefaultBufferPoolParallel(b *testing.B) {
 	defer p.close()
 	// Warm the pool with enough blocks for every parallel goroutine so the
 	// timed loop measures steady state rather than pool growth.
-	prewarm(p, 2*runtime.GOMAXPROCS(0))
+	cacheBlocks(b, p, 2*runtime.GOMAXPROCS(0))
 	b.ReportAllocs()
 	b.ResetTimer()
 	b.RunParallel(func(pb *testing.PB) {
