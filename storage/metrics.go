@@ -1075,10 +1075,9 @@ func isPreServerErrorType(errorType string) bool {
 	return false
 }
 
+// recordUnreached increments gcp.storage.client.server.unreached for an
+// attempt that is positively known not to have reached a Cloud Storage server.
 func (cm *clientMetrics) recordUnreached(ctx context.Context, system, method, host, errType string) {
-	if isAmbiguousClientAbort(errType) {
-		return
-	}
 	cm.serverUnreached.Add(ctx, 1, metric.WithAttributes(
 		attribute.String("rpc.method", method),
 		attribute.String("rpc.system.name", system),
@@ -1098,6 +1097,9 @@ func (cm *clientMetrics) recordHTTPServerMetrics(ctx context.Context, resp *http
 		reached = gfeTime != "" || resp.Header.Get(uploadIDHeader) != ""
 	}
 	if !reached {
+		if resp == nil && isAmbiguousClientAbort(errorType) {
+			return
+		}
 		cm.recordUnreached(ctx, "http", logicalMethod, host, errorType)
 		return
 	}
@@ -1149,12 +1151,24 @@ func (cm *clientMetrics) recordServerMetrics(ctx context.Context, headerMD, trai
 	hasGFEUploadID := len(headerMD.Get(uploadIDHeader)) > 0 || len(trailerMD.Get(uploadIDHeader)) > 0
 	var reached bool
 	if isDirectPathPeer(p) {
-		reached = ok || len(headerMD) > 0 || len(trailerMD) > 0 || !isPreServerErrorType(errType)
+		reached = ok || len(headerMD) > 0 || len(trailerMD) > 0 || err == nil
 	} else {
 		reached = ok || hasGFEUploadID
 	}
 
 	if !reached {
+		// On DirectPath, an error without server metadata is only proven
+		// unreached for pre-server transport/auth failures; timeouts,
+		// cancellations, or bare UNAVAILABLE ("transport is closing") are
+		// ambiguous and skipped. On CloudPath, GFE always attaches uploadIDHeader
+		// when reached, so only client-side aborts/timeouts are ambiguous.
+		if isDirectPathPeer(p) {
+			if !isPreServerErrorType(errType) {
+				return
+			}
+		} else if isAmbiguousClientAbort(errType) {
+			return
+		}
 		cm.recordUnreached(ctx, "grpc", logicalMethod, stripPort(target), errType)
 		return
 	}

@@ -1270,6 +1270,22 @@ func TestRecordServerMetrics(t *testing.T) {
 			wantUnreached: 0,
 		},
 		{
+			name:  "DirectPath unavailable without metadata skipped as ambiguous",
+			debug: true,
+			run: func(ctx context.Context, cm *clientMetrics) {
+				cm.recordServerMetrics(ctx, nil, nil, status.Error(codes.Unavailable, "transport is closing"), "GetObject", "storage.googleapis.com", rpcAttrs, dpPeer)
+			},
+			wantUnreached: 0,
+		},
+		{
+			name:  "CloudPath ambiguous client timeout",
+			debug: true,
+			run: func(ctx context.Context, cm *clientMetrics) {
+				cm.recordServerMetrics(ctx, nil, nil, status.Error(codes.DeadlineExceeded, "deadline exceeded"), "GetObject", "storage.googleapis.com", rpcAttrs, cpPeer)
+			},
+			wantUnreached: 0,
+		},
+		{
 			name:  "CloudPath with upload ID and malformed GFE/stats headers",
 			debug: true,
 			run: func(ctx context.Context, cm *clientMetrics) {
@@ -1298,6 +1314,14 @@ func TestRecordServerMetrics(t *testing.T) {
 			debug: false,
 			run: func(ctx context.Context, cm *clientMetrics) {
 				cm.recordHTTPServerMetrics(ctx, &http.Response{Header: make(http.Header)}, "GetObject", "storage.googleapis.com", "UNAVAILABLE", nil)
+			},
+			wantUnreached: 1,
+		},
+		{
+			name:  "HTTP 504 response without GFE headers",
+			debug: true,
+			run: func(ctx context.Context, cm *clientMetrics) {
+				cm.recordHTTPServerMetrics(ctx, &http.Response{StatusCode: http.StatusGatewayTimeout, Header: make(http.Header)}, "GetObject", "storage.googleapis.com", "DEADLINE_EXCEEDED", rpcAttrs)
 			},
 			wantUnreached: 1,
 		},
