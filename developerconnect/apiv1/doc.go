@@ -56,16 +56,11 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	req := &developerconnectpb.CreateAccountConnectorRequest{
+//	req := &developerconnectpb.AddGitRepositoryLinkPullRequestCommentRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/developerconnect/apiv1/developerconnectpb#CreateAccountConnectorRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/developerconnect/apiv1/developerconnectpb#AddGitRepositoryLinkPullRequestCommentRequest.
 //	}
-//	op, err := c.CreateAccountConnector(ctx, req)
-//	if err != nil {
-//		// TODO: Handle error.
-//	}
-//
-//	resp, err := op.Wait(ctx)
+//	resp, err := c.AddGitRepositoryLinkPullRequestComment(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

@@ -425,6 +425,8 @@ type internalSqlInstancesClient interface {
 
 // SqlInstancesClient is a client for interacting with Cloud SQL Admin API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service to manage Cloud SQL instances.
 type SqlInstancesClient struct {
 	// The internal transport-dependent client.
 	internalClient internalSqlInstancesClient
@@ -748,6 +750,8 @@ type sqlInstancesGRPCClient struct {
 
 // NewSqlInstancesClient creates a new sql instances service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
+//
+// Service to manage Cloud SQL instances.
 func NewSqlInstancesClient(ctx context.Context, opts ...option.ClientOption) (*SqlInstancesClient, error) {
 	clientOpts := defaultSqlInstancesGRPCClientOptions()
 	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
@@ -997,6 +1001,8 @@ type sqlInstancesRESTClient struct {
 }
 
 // NewSqlInstancesRESTClient creates a new sql instances service rest client.
+//
+// Service to manage Cloud SQL instances.
 func NewSqlInstancesRESTClient(ctx context.Context, opts ...option.ClientOption) (*SqlInstancesClient, error) {
 	clientOpts := append(defaultSqlInstancesRESTClientOptions(), opts...)
 	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {

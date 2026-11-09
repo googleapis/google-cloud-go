@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go/apphub v1.4.1
 	cloud.google.com/go/config v1.15.1
 	cloud.google.com/go/iam v1.15.1
-	cloud.google.com/go/longrunning v1.4.1
+	cloud.google.com/go/longrunning v1.5.0
 	github.com/googleapis/gax-go/v2 v2.27.0
 	go.opentelemetry.io/otel/trace v1.47.0
 	google.golang.org/api v0.310.0

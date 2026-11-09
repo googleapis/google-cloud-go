@@ -526,13 +526,20 @@ func (s *Session) heartbeatLoop(ctx context.Context) {
 			return
 		}
 		interval := time.Duration(s.heartbeatIntervalNano.Load())
-		if s.activeVRPC() == nil {
+		rpc := s.activeVRPC()
+		if rpc == nil {
 			// Idle session: no heartbeats are expected. Re-check after
 			// one interval so a freshly-started VRPC is picked up.
 			timer.Reset(interval)
 			continue
 		}
 		remaining := time.Until(time.Unix(0, s.nextHeartbeatDeadlineNano.Load()))
+		if s.activeVRPC() != rpc {
+			// The vRPC observed above already drained (or was replaced)
+			// while we sampled the deadline; re-evaluate on the next tick.
+			timer.Reset(interval)
+			continue
+		}
 		// last-frame age = interval - remaining (deadline is set to
 		// now+interval on every inbound/outbound frame via
 		// resetHeartbeatDeadline).

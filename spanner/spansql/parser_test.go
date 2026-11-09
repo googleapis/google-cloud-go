@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"math"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 
@@ -2892,12 +2893,48 @@ func TestParseFailures(t *testing.T) {
 		// Found by fuzzing.
 		// https://github.com/googleapis/google-cloud-go/issues/2196
 		{query, `/*/*/`, "invalid comment termination"},
+		{query, "SELECT " + strings.Repeat("(", 60000) + "1" + strings.Repeat(")", 60000), "deeply nested query expression"},
 	}
 	for _, test := range tests {
 		p := newParser("f", test.in)
 		err := test.f(p)
 		if err == nil && p.Rem() == "" {
 			t.Errorf("%s: parsing [%s] succeeded, should have failed", test.desc, test.in)
+		}
+	}
+}
+
+func TestParseMaxExprDepth(t *testing.T) {
+	// Nesting up to maxExprDepth (1 outer parseExpr + maxExprDepth-1 inner parens or array literals) must succeed.
+	okCases := []string{
+		"SELECT " + strings.Repeat("(", maxExprDepth-1) + "1" + strings.Repeat(")", maxExprDepth-1),
+		"SELECT " + strings.Repeat("[", maxExprDepth-1) + "1" + strings.Repeat("]", maxExprDepth-1),
+	}
+	for _, okSQL := range okCases {
+		if _, err := ParseQuery(okSQL); err != nil {
+			t.Fatalf("ParseQuery at maxExprDepth (len=%d) failed unexpectedly: %v", len(okSQL), err)
+		}
+	}
+
+	// Sequential expressions must reset depth on return and not accumulate across siblings.
+	seqParts := make([]string, maxExprDepth+10)
+	for i := range seqParts {
+		seqParts[i] = "(1)"
+	}
+	if _, err := ParseQuery("SELECT " + strings.Join(seqParts, ", ")); err != nil {
+		t.Fatalf("ParseQuery with sequential expressions failed unexpectedly: %v", err)
+	}
+
+	// Exceeding maxExprDepth via parens, array literals, subqueries, or conditionals must return a parse error.
+	tooDeepCases := []string{
+		"SELECT " + strings.Repeat("(", maxExprDepth) + "1" + strings.Repeat(")", maxExprDepth),
+		"SELECT " + strings.Repeat("[", maxExprDepth) + "1" + strings.Repeat("]", maxExprDepth),
+		"SELECT " + strings.Repeat("(SELECT ", maxExprDepth) + "1" + strings.Repeat(")", maxExprDepth),
+		"SELECT " + strings.Repeat("IF(TRUE, ", maxExprDepth) + "1" + strings.Repeat(", 0)", maxExprDepth),
+	}
+	for _, sql := range tooDeepCases {
+		if _, err := ParseQuery(sql); err == nil || !strings.Contains(err.Error(), "expression too deeply nested") {
+			t.Errorf("ParseQuery(len=%d) = %v, want error containing %q", len(sql), err, "expression too deeply nested")
 		}
 	}
 }

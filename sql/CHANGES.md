@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/sql/v0.5.0...sql/v0.6.0) (2026-11-05)
+
+
+### Features
+
+* Update API sources and regenerate ([#20848](https://github.com/googleapis/google-cloud-go/issues/20848)) ([7437b30](https://github.com/googleapis/google-cloud-go/commit/7437b30bc59a2f6a30b5f101c91b496512fb84a4))
+
 ## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/sql/v0.4.1...sql/v0.5.0) (2026-10-29)
 
 

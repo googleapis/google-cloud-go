@@ -718,3 +718,94 @@ func TestStruct_GetByName(t *testing.T) {
 		})
 	}
 }
+
+func TestResultRow_GetByIndex_StructWithUnnamedFields(t *testing.T) {
+	typeUnnamedStruct := &btpb.Type{
+		Kind: &btpb.Type_StructType{
+			StructType: &btpb.Type_Struct{
+				Fields: []*btpb.Type_Struct_Field{
+					{FieldName: "", Type: typeString},
+					{FieldName: "", Type: typeInt64},
+				},
+			},
+		},
+	}
+	pbMeta := createMetadata(colMeta("struct", typeUnnamedStruct))
+	pbValues := []*btpb.Value{
+		pbArray(pbString("foo"), pbInt64(100)),
+	}
+	rrMeta, err := newResultRowMetadata(pbMeta)
+	if err != nil {
+		t.Fatalf("newResultRowMetadata: %v", err)
+	}
+	row, err := newResultRow(pbValues, pbMeta, rrMeta)
+	if err != nil {
+		t.Fatalf("newResultRow: %v", err)
+	}
+
+	var got Struct
+	if err := row.GetByIndex(0, &got); err != nil {
+		t.Fatalf("GetByIndex(0) error: %v", err)
+	}
+	var f0 string
+	if err := got.GetByIndex(0, &f0); err != nil || f0 != "foo" {
+		t.Fatalf("Struct.GetByIndex(0) = %q, %v; want %q, nil", f0, err, "foo")
+	}
+	var f1 int64
+	if err := got.GetByIndex(1, &f1); err != nil || f1 != 100 {
+		t.Fatalf("Struct.GetByIndex(1) = %d, %v; want %d, nil", f1, err, 100)
+	}
+}
+
+func TestResultRow_GetByIndex_MapWithNullKey(t *testing.T) {
+	typeMapBytesString := &btpb.Type{
+		Kind: &btpb.Type_MapType{
+			MapType: &btpb.Type_Map{
+				KeyType:   typeBytes,
+				ValueType: typeString,
+			},
+		},
+	}
+	pbMeta := createMetadata(colMeta("mapCol", typeMapBytesString))
+	pbValues := []*btpb.Value{
+		pbArray(
+			pbMapEntry(pbNull(), pbString("foo")),
+			pbMapEntry(pbBytes([]byte("bar")), pbNull()),
+		),
+	}
+	rrMeta, err := newResultRowMetadata(pbMeta)
+	if err != nil {
+		t.Fatalf("newResultRowMetadata: %v", err)
+	}
+	row, err := newResultRow(pbValues, pbMeta, rrMeta)
+	if err != nil {
+		t.Fatalf("newResultRow: %v", err)
+	}
+
+	barBase64 := base64.StdEncoding.EncodeToString([]byte("bar"))
+	wantMap := map[any]*string{
+		nil:       ptr("foo"),
+		barBase64: nil,
+	}
+
+	var gotAny any
+	if err := row.GetByIndex(0, &gotAny); err != nil {
+		t.Fatalf("GetByIndex(0, &gotAny) error: %v", err)
+	}
+	if diff := testutil.Diff(wantMap, gotAny); diff != "" {
+		t.Errorf("GetByIndex(0, &gotAny) mismatch (-want +got):\n%s", diff)
+	}
+
+	var gotMapAny map[any]*string
+	if err := row.GetByIndex(0, &gotMapAny); err != nil {
+		t.Fatalf("GetByIndex(0, &gotMapAny) error: %v", err)
+	}
+	if diff := testutil.Diff(wantMap, gotMapAny); diff != "" {
+		t.Errorf("GetByIndex(0, &gotMapAny) mismatch (-want +got):\n%s", diff)
+	}
+
+	var gotMapString map[string]*string
+	if err := row.GetByIndex(0, &gotMapString); err == nil {
+		t.Fatalf("GetByIndex(0, &gotMapString) succeeded, want error for nil map key")
+	}
+}

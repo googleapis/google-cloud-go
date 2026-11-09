@@ -133,6 +133,13 @@ func (p *SessionPoolImpl) Tick(ctx context.Context) {
 		p.mu.Unlock()
 		return
 	}
+	if room := decision.MaxSessions - (p.sl.ReadyCount() + len(p.startingSessions) + p.pendingStarts); delta > room {
+		delta = room
+	}
+	if delta <= 0 {
+		p.mu.Unlock()
+		return
+	}
 	p.pendingStarts += delta
 	p.spawns.Add(delta)
 	p.mu.Unlock()

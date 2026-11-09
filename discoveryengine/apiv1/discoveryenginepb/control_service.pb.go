@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -431,14 +431,14 @@ const file_google_cloud_discoveryengine_v1_control_service_proto_rawDesc = "" +
 	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x84\x01\n" +
 	"\x14ListControlsResponse\x12D\n" +
 	"\bcontrols\x18\x01 \x03(\v2(.google.cloud.discoveryengine.v1.ControlR\bcontrols\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken2\xe5\x0e\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken2\xe3\x0f\n" +
 	"\x0eControlService\x12\xff\x02\n" +
 	"\rCreateControl\x125.google.cloud.discoveryengine.v1.CreateControlRequest\x1a(.google.cloud.discoveryengine.v1.Control\"\x8c\x02\xdaA\x19parent,control,control_id\x82\xd3\xe4\x93\x02\xe9\x01:\acontrolZR:\acontrol\"G/v1/{parent=projects/*/locations/*/collections/*/dataStores/*}/controlsZO:\acontrol\"D/v1/{parent=projects/*/locations/*/collections/*/engines/*}/controls\"9/v1/{parent=projects/*/locations/*/dataStores/*}/controls\x12\xbd\x02\n" +
 	"\rDeleteControl\x125.google.cloud.discoveryengine.v1.DeleteControlRequest\x1a\x16.google.protobuf.Empty\"\xdc\x01\xdaA\x04name\x82\xd3\xe4\x93\x02\xce\x01ZI*G/v1/{name=projects/*/locations/*/collections/*/dataStores/*/controls/*}ZF*D/v1/{name=projects/*/locations/*/collections/*/engines/*/controls/*}*9/v1/{name=projects/*/locations/*/dataStores/*/controls/*}\x12\x91\x03\n" +
 	"\rUpdateControl\x125.google.cloud.discoveryengine.v1.UpdateControlRequest\x1a(.google.cloud.discoveryengine.v1.Control\"\x9e\x02\xdaA\x13control,update_mask\x82\xd3\xe4\x93\x02\x81\x02:\acontrolZZ:\acontrol2O/v1/{control.name=projects/*/locations/*/collections/*/dataStores/*/controls/*}ZW:\acontrol2L/v1/{control.name=projects/*/locations/*/collections/*/engines/*/controls/*}2A/v1/{control.name=projects/*/locations/*/dataStores/*/controls/*}\x12\xc9\x02\n" +
 	"\n" +
 	"GetControl\x122.google.cloud.discoveryengine.v1.GetControlRequest\x1a(.google.cloud.discoveryengine.v1.Control\"\xdc\x01\xdaA\x04name\x82\xd3\xe4\x93\x02\xce\x01ZI\x12G/v1/{name=projects/*/locations/*/collections/*/dataStores/*/controls/*}ZF\x12D/v1/{name=projects/*/locations/*/collections/*/engines/*/controls/*}\x129/v1/{name=projects/*/locations/*/dataStores/*/controls/*}\x12\xdc\x02\n" +
-	"\fListControls\x124.google.cloud.discoveryengine.v1.ListControlsRequest\x1a5.google.cloud.discoveryengine.v1.ListControlsResponse\"\xde\x01\xdaA\x06parent\x82\xd3\xe4\x93\x02\xce\x01ZI\x12G/v1/{parent=projects/*/locations/*/collections/*/dataStores/*}/controlsZF\x12D/v1/{parent=projects/*/locations/*/collections/*/engines/*}/controls\x129/v1/{parent=projects/*/locations/*/dataStores/*}/controls\x1aR\xcaA\x1ediscoveryengine.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\x86\x02\n" +
+	"\fListControls\x124.google.cloud.discoveryengine.v1.ListControlsRequest\x1a5.google.cloud.discoveryengine.v1.ListControlsResponse\"\xde\x01\xdaA\x06parent\x82\xd3\xe4\x93\x02\xce\x01ZI\x12G/v1/{parent=projects/*/locations/*/collections/*/dataStores/*}/controlsZF\x12D/v1/{parent=projects/*/locations/*/collections/*/engines/*}/controls\x129/v1/{parent=projects/*/locations/*/dataStores/*}/controls\x1a\xcf\x01\xcaA\x1ediscoveryengine.googleapis.com\xd2A\xaa\x01https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/discoveryengine.readwrite,https://www.googleapis.com/auth/discoveryengine.serving.readwriteB\x86\x02\n" +
 	"#com.google.cloud.discoveryengine.v1B\x13ControlServiceProtoP\x01ZMcloud.google.com/go/discoveryengine/apiv1/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02\x1fGoogle.Cloud.DiscoveryEngine.V1\xca\x02\x1fGoogle\\Cloud\\DiscoveryEngine\\V1\xea\x02\"Google::Cloud::DiscoveryEngine::V1b\x06proto3"
 
 var (

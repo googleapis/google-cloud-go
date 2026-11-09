@@ -4543,6 +4543,9 @@ func errNotStructElement(i int, v *proto3.Value) error {
 // decodeRowArray decodes proto3.ListValue pb into a NullRow slice according to
 // the structural information given in sppb.StructType ty.
 func decodeRowArray(ty *sppb.StructType, pb *proto3.ListValue) ([]NullRow, error) {
+	if ty == nil {
+		return nil, errNilSpannerStructType()
+	}
 	if pb == nil {
 		return nil, errNilListValue("STRUCT")
 	}
@@ -4610,6 +4613,13 @@ func errDecodeStructField(ty *sppb.StructType, f string, err error) error {
 	return se
 }
 
+// errStructFieldsMismatchVals returns an error for a mismatch between the number
+// of fields and values in a Cloud Spanner STRUCT.
+func errStructFieldsMismatchVals(ty *sppb.StructType, pb *proto3.ListValue) error {
+	return spannerErrorf(codes.FailedPrecondition,
+		"STRUCT has different number of fields(%v) and values(%v)", len(ty.Fields), len(pb.Values))
+}
+
 // decodeSetting contains all the settings for decoding from spanner struct
 type decodeSetting struct {
 	Lenient bool
@@ -4640,6 +4650,12 @@ func decodeStruct(ty *sppb.StructType, pb *proto3.ListValue, ptr interface{}, le
 	}
 	if ty == nil {
 		return errNilSpannerStructType()
+	}
+	if pb == nil {
+		return errNilListValue("STRUCT")
+	}
+	if len(pb.Values) != len(ty.Fields) {
+		return errStructFieldsMismatchVals(ty, pb)
 	}
 	// t holds the structural information of ptr.
 	t := reflect.TypeOf(ptr).Elem()
@@ -4705,6 +4721,15 @@ func isPtrStructPtrSlice(t reflect.Type) bool {
 func decodeStructArray(ty *sppb.StructType, pb *proto3.ListValue, ptr interface{}, lenient bool) error {
 	if pb == nil {
 		return errNilListValue("STRUCT")
+	}
+	if ty == nil {
+		for i, pv := range pb.Values {
+			if _, isNull := pv.Kind.(*proto3.Value_NullValue); isNull {
+				continue
+			}
+			return errDecodeArrayElement(i, pv, "STRUCT", errNilSpannerStructType())
+		}
+		return errNilSpannerStructType()
 	}
 	// Type of the struct pointers stored in the slice that ptr points to.
 	ts := reflect.TypeOf(ptr).Elem().Elem()

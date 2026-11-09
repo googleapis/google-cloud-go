@@ -186,6 +186,8 @@ const (
 	Step_START_FROM_SERVERLESS_NEG Step_State = 31
 	// Initial state: packet originating from a DMS Private Connection.
 	Step_START_FROM_DMS_PRIVATE_CONNECTION Step_State = 48
+	// Initial state: packet originating from a Datastream Private Connection.
+	Step_START_FROM_DATASTREAM_PRIVATE_CONNECTION Step_State = 49
 	// Config checking state: verify ingress firewall rule.
 	Step_APPLY_INGRESS_FIREWALL_RULE Step_State = 4
 	// Config checking state: verify egress firewall rule.
@@ -285,6 +287,7 @@ var (
 		30: "START_FROM_PSC_PUBLISHED_SERVICE",
 		31: "START_FROM_SERVERLESS_NEG",
 		48: "START_FROM_DMS_PRIVATE_CONNECTION",
+		49: "START_FROM_DATASTREAM_PRIVATE_CONNECTION",
 		4:  "APPLY_INGRESS_FIREWALL_RULE",
 		5:  "APPLY_EGRESS_FIREWALL_RULE",
 		6:  "APPLY_ROUTE",
@@ -317,54 +320,55 @@ var (
 		20: "VIEWER_PERMISSION_MISSING",
 	}
 	Step_State_value = map[string]int32{
-		"STATE_UNSPECIFIED":                 0,
-		"START_FROM_INSTANCE":               1,
-		"START_FROM_INTERNET":               2,
-		"START_FROM_GOOGLE_SERVICE":         27,
-		"START_FROM_PRIVATE_NETWORK":        3,
-		"START_FROM_GKE_MASTER":             21,
-		"START_FROM_CLOUD_SQL_INSTANCE":     22,
-		"START_FROM_GKE_POD":                39,
-		"START_FROM_REDIS_INSTANCE":         32,
-		"START_FROM_REDIS_CLUSTER":          33,
-		"START_FROM_CLOUD_FUNCTION":         23,
-		"START_FROM_APP_ENGINE_VERSION":     25,
-		"START_FROM_CLOUD_RUN_REVISION":     26,
-		"START_FROM_CLOUD_RUN_JOB":          50,
-		"START_FROM_STORAGE_BUCKET":         29,
-		"START_FROM_PSC_PUBLISHED_SERVICE":  30,
-		"START_FROM_SERVERLESS_NEG":         31,
-		"START_FROM_DMS_PRIVATE_CONNECTION": 48,
-		"APPLY_INGRESS_FIREWALL_RULE":       4,
-		"APPLY_EGRESS_FIREWALL_RULE":        5,
-		"APPLY_ROUTE":                       6,
-		"APPLY_FORWARDING_RULE":             7,
-		"ANALYZE_LOAD_BALANCER_BACKEND":     28,
-		"SPOOFING_APPROVED":                 8,
-		"ARRIVE_AT_INSTANCE":                9,
-		"ARRIVE_AT_INTERNAL_LOAD_BALANCER":  10,
-		"ARRIVE_AT_EXTERNAL_LOAD_BALANCER":  11,
-		"ARRIVE_AT_HYBRID_SUBNET":           38,
-		"ARRIVE_AT_VPN_GATEWAY":             12,
-		"ARRIVE_AT_VPN_TUNNEL":              13,
-		"ARRIVE_AT_INTERCONNECT_ATTACHMENT": 37,
-		"ARRIVE_AT_VPC_CONNECTOR":           24,
-		"ARRIVE_AT_GKE_POD":                 44,
-		"DIRECT_VPC_EGRESS_CONNECTION":      35,
-		"SERVERLESS_EXTERNAL_CONNECTION":    36,
-		"NGFW_PACKET_INSPECTION":            47,
-		"NAT":                               14,
-		"SKIP_GKE_POD_IP_MASQUERADING":      40,
-		"SKIP_GKE_INGRESS_NETWORK_POLICY":   41,
-		"SKIP_GKE_EGRESS_NETWORK_POLICY":    42,
-		"APPLY_INGRESS_GKE_NETWORK_POLICY":  45,
-		"APPLY_EGRESS_GKE_NETWORK_POLICY":   46,
-		"PROXY_CONNECTION":                  15,
-		"DELIVER":                           16,
-		"DROP":                              17,
-		"FORWARD":                           18,
-		"ABORT":                             19,
-		"VIEWER_PERMISSION_MISSING":         20,
+		"STATE_UNSPECIFIED":                        0,
+		"START_FROM_INSTANCE":                      1,
+		"START_FROM_INTERNET":                      2,
+		"START_FROM_GOOGLE_SERVICE":                27,
+		"START_FROM_PRIVATE_NETWORK":               3,
+		"START_FROM_GKE_MASTER":                    21,
+		"START_FROM_CLOUD_SQL_INSTANCE":            22,
+		"START_FROM_GKE_POD":                       39,
+		"START_FROM_REDIS_INSTANCE":                32,
+		"START_FROM_REDIS_CLUSTER":                 33,
+		"START_FROM_CLOUD_FUNCTION":                23,
+		"START_FROM_APP_ENGINE_VERSION":            25,
+		"START_FROM_CLOUD_RUN_REVISION":            26,
+		"START_FROM_CLOUD_RUN_JOB":                 50,
+		"START_FROM_STORAGE_BUCKET":                29,
+		"START_FROM_PSC_PUBLISHED_SERVICE":         30,
+		"START_FROM_SERVERLESS_NEG":                31,
+		"START_FROM_DMS_PRIVATE_CONNECTION":        48,
+		"START_FROM_DATASTREAM_PRIVATE_CONNECTION": 49,
+		"APPLY_INGRESS_FIREWALL_RULE":              4,
+		"APPLY_EGRESS_FIREWALL_RULE":               5,
+		"APPLY_ROUTE":                              6,
+		"APPLY_FORWARDING_RULE":                    7,
+		"ANALYZE_LOAD_BALANCER_BACKEND":            28,
+		"SPOOFING_APPROVED":                        8,
+		"ARRIVE_AT_INSTANCE":                       9,
+		"ARRIVE_AT_INTERNAL_LOAD_BALANCER":         10,
+		"ARRIVE_AT_EXTERNAL_LOAD_BALANCER":         11,
+		"ARRIVE_AT_HYBRID_SUBNET":                  38,
+		"ARRIVE_AT_VPN_GATEWAY":                    12,
+		"ARRIVE_AT_VPN_TUNNEL":                     13,
+		"ARRIVE_AT_INTERCONNECT_ATTACHMENT":        37,
+		"ARRIVE_AT_VPC_CONNECTOR":                  24,
+		"ARRIVE_AT_GKE_POD":                        44,
+		"DIRECT_VPC_EGRESS_CONNECTION":             35,
+		"SERVERLESS_EXTERNAL_CONNECTION":           36,
+		"NGFW_PACKET_INSPECTION":                   47,
+		"NAT":                                      14,
+		"SKIP_GKE_POD_IP_MASQUERADING":             40,
+		"SKIP_GKE_INGRESS_NETWORK_POLICY":          41,
+		"SKIP_GKE_EGRESS_NETWORK_POLICY":           42,
+		"APPLY_INGRESS_GKE_NETWORK_POLICY":         45,
+		"APPLY_EGRESS_GKE_NETWORK_POLICY":          46,
+		"PROXY_CONNECTION":                         15,
+		"DELIVER":                                  16,
+		"DROP":                                     17,
+		"FORWARD":                                  18,
+		"ABORT":                                    19,
+		"VIEWER_PERMISSION_MISSING":                20,
 	}
 )
 
@@ -1281,6 +1285,8 @@ const (
 	DeliverInfo_CLOUD_RUN_JOB DeliverInfo_Target = 20
 	// Target is a DMS Private Connection. Used only for return traces.
 	DeliverInfo_DMS_PRIVATE_CONNECTION DeliverInfo_Target = 21
+	// Target is a Datastream Private Connection. Used only for return traces.
+	DeliverInfo_DATASTREAM_PRIVATE_CONNECTION DeliverInfo_Target = 22
 )
 
 // Enum value maps for DeliverInfo_Target.
@@ -1307,29 +1313,31 @@ var (
 		19: "GKE_POD",
 		20: "CLOUD_RUN_JOB",
 		21: "DMS_PRIVATE_CONNECTION",
+		22: "DATASTREAM_PRIVATE_CONNECTION",
 	}
 	DeliverInfo_Target_value = map[string]int32{
-		"TARGET_UNSPECIFIED":     0,
-		"INSTANCE":               1,
-		"INTERNET":               2,
-		"GOOGLE_API":             3,
-		"GKE_MASTER":             4,
-		"CLOUD_SQL_INSTANCE":     5,
-		"PSC_PUBLISHED_SERVICE":  6,
-		"PSC_GOOGLE_API":         7,
-		"PSC_VPC_SC":             8,
-		"SERVERLESS_NEG":         9,
-		"STORAGE_BUCKET":         10,
-		"PRIVATE_NETWORK":        11,
-		"CLOUD_FUNCTION":         12,
-		"APP_ENGINE_VERSION":     13,
-		"CLOUD_RUN_REVISION":     14,
-		"GOOGLE_MANAGED_SERVICE": 15,
-		"REDIS_INSTANCE":         16,
-		"REDIS_CLUSTER":          17,
-		"GKE_POD":                19,
-		"CLOUD_RUN_JOB":          20,
-		"DMS_PRIVATE_CONNECTION": 21,
+		"TARGET_UNSPECIFIED":            0,
+		"INSTANCE":                      1,
+		"INTERNET":                      2,
+		"GOOGLE_API":                    3,
+		"GKE_MASTER":                    4,
+		"CLOUD_SQL_INSTANCE":            5,
+		"PSC_PUBLISHED_SERVICE":         6,
+		"PSC_GOOGLE_API":                7,
+		"PSC_VPC_SC":                    8,
+		"SERVERLESS_NEG":                9,
+		"STORAGE_BUCKET":                10,
+		"PRIVATE_NETWORK":               11,
+		"CLOUD_FUNCTION":                12,
+		"APP_ENGINE_VERSION":            13,
+		"CLOUD_RUN_REVISION":            14,
+		"GOOGLE_MANAGED_SERVICE":        15,
+		"REDIS_INSTANCE":                16,
+		"REDIS_CLUSTER":                 17,
+		"GKE_POD":                       19,
+		"CLOUD_RUN_JOB":                 20,
+		"DMS_PRIVATE_CONNECTION":        21,
+		"DATASTREAM_PRIVATE_CONNECTION": 22,
 	}
 )
 
@@ -1916,6 +1924,8 @@ const (
 	DropInfo_DROPPED_INSIDE_CLOUD_SQL_SERVICE DropInfo_Cause = 19
 	// Packet was dropped inside DMS Private Connection.
 	DropInfo_DROPPED_INSIDE_DMS_PRIVATE_CONNECTION DropInfo_Cause = 114
+	// Packet was dropped inside Datastream Private Connection.
+	DropInfo_DROPPED_INSIDE_DATASTREAM_PRIVATE_CONNECTION DropInfo_Cause = 115
 	// Packet was dropped because there is no peering between the originating
 	// network and the Google Managed Services Network.
 	DropInfo_GOOGLE_MANAGED_SERVICE_NO_PEERING DropInfo_Cause = 20
@@ -2166,6 +2176,7 @@ var (
 		18:  "DROPPED_INSIDE_GKE_SERVICE",
 		19:  "DROPPED_INSIDE_CLOUD_SQL_SERVICE",
 		114: "DROPPED_INSIDE_DMS_PRIVATE_CONNECTION",
+		115: "DROPPED_INSIDE_DATASTREAM_PRIVATE_CONNECTION",
 		20:  "GOOGLE_MANAGED_SERVICE_NO_PEERING",
 		38:  "GOOGLE_MANAGED_SERVICE_NO_PSC_ENDPOINT",
 		36:  "GKE_PSC_ENDPOINT_MISSING",
@@ -2276,6 +2287,7 @@ var (
 		"DROPPED_INSIDE_GKE_SERVICE":                                 18,
 		"DROPPED_INSIDE_CLOUD_SQL_SERVICE":                           19,
 		"DROPPED_INSIDE_DMS_PRIVATE_CONNECTION":                      114,
+		"DROPPED_INSIDE_DATASTREAM_PRIVATE_CONNECTION":               115,
 		"GOOGLE_MANAGED_SERVICE_NO_PEERING":                          20,
 		"GOOGLE_MANAGED_SERVICE_NO_PSC_ENDPOINT":                     38,
 		"GKE_PSC_ENDPOINT_MISSING":                                   36,
@@ -2864,6 +2876,7 @@ type Step struct {
 	//	*Step_ServerlessNeg
 	//	*Step_NgfwPacketInspection
 	//	*Step_DmsPrivateConnection
+	//	*Step_DatastreamPrivateConnection
 	StepInfo      isStep_StepInfo `protobuf_oneof:"step_info"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -3277,6 +3290,15 @@ func (x *Step) GetDmsPrivateConnection() *PrivateConnectionInfo {
 	return nil
 }
 
+func (x *Step) GetDatastreamPrivateConnection() *PrivateConnectionInfo {
+	if x != nil {
+		if x, ok := x.StepInfo.(*Step_DatastreamPrivateConnection); ok {
+			return x.DatastreamPrivateConnection
+		}
+	}
+	return nil
+}
+
 type isStep_StepInfo interface {
 	isStep_StepInfo()
 }
@@ -3480,6 +3502,11 @@ type Step_DmsPrivateConnection struct {
 	DmsPrivateConnection *PrivateConnectionInfo `protobuf:"bytes,43,opt,name=dms_private_connection,json=dmsPrivateConnection,proto3,oneof"`
 }
 
+type Step_DatastreamPrivateConnection struct {
+	// Display information of a Datastream Private Connection.
+	DatastreamPrivateConnection *PrivateConnectionInfo `protobuf:"bytes,44,opt,name=datastream_private_connection,json=datastreamPrivateConnection,proto3,oneof"`
+}
+
 func (*Step_Instance) isStep_StepInfo() {}
 
 func (*Step_Firewall) isStep_StepInfo() {}
@@ -3555,6 +3582,8 @@ func (*Step_ServerlessNeg) isStep_StepInfo() {}
 func (*Step_NgfwPacketInspection) isStep_StepInfo() {}
 
 func (*Step_DmsPrivateConnection) isStep_StepInfo() {}
+
+func (*Step_DatastreamPrivateConnection) isStep_StepInfo() {}
 
 // For display only. Metadata associated with a Compute Engine instance.
 type InstanceInfo struct {
@@ -7135,7 +7164,7 @@ const file_google_cloud_networkmanagement_v1_trace_proto_rawDesc = "" +
 	"\x05Trace\x12T\n" +
 	"\rendpoint_info\x18\x01 \x01(\v2/.google.cloud.networkmanagement.v1.EndpointInfoR\fendpointInfo\x12=\n" +
 	"\x05steps\x18\x02 \x03(\v2'.google.cloud.networkmanagement.v1.StepR\x05steps\x12(\n" +
-	"\x10forward_trace_id\x18\x04 \x01(\x05R\x0eforwardTraceId\"\xd3(\n" +
+	"\x10forward_trace_id\x18\x04 \x01(\x05R\x0eforwardTraceId\"\x81*\n" +
 	"\x04Step\x12 \n" +
 	"\vdescription\x18\x01 \x01(\tR\vdescription\x12C\n" +
 	"\x05state\x18\x02 \x01(\x0e2-.google.cloud.networkmanagement.v1.Step.StateR\x05state\x12\x1f\n" +
@@ -7184,8 +7213,8 @@ const file_google_cloud_networkmanagement_v1_trace_proto_rawDesc = "" +
 	"\x0estorage_bucket\x18\x1c \x01(\v24.google.cloud.networkmanagement.v1.StorageBucketInfoH\x00R\rstorageBucket\x12]\n" +
 	"\x0eserverless_neg\x18\x1d \x01(\v24.google.cloud.networkmanagement.v1.ServerlessNegInfoH\x00R\rserverlessNeg\x12s\n" +
 	"\x16ngfw_packet_inspection\x18* \x01(\v2;.google.cloud.networkmanagement.v1.NgfwPacketInspectionInfoH\x00R\x14ngfwPacketInspection\x12p\n" +
-	"\x16dms_private_connection\x18+ \x01(\v28.google.cloud.networkmanagement.v1.PrivateConnectionInfoH\x00R\x14dmsPrivateConnection\"\xf5\n" +
-	"\n" +
+	"\x16dms_private_connection\x18+ \x01(\v28.google.cloud.networkmanagement.v1.PrivateConnectionInfoH\x00R\x14dmsPrivateConnection\x12~\n" +
+	"\x1ddatastream_private_connection\x18, \x01(\v28.google.cloud.networkmanagement.v1.PrivateConnectionInfoH\x00R\x1bdatastreamPrivateConnection\"\xa3\v\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\x17\n" +
 	"\x13START_FROM_INSTANCE\x10\x01\x12\x17\n" +
@@ -7204,7 +7233,8 @@ const file_google_cloud_networkmanagement_v1_trace_proto_rawDesc = "" +
 	"\x19START_FROM_STORAGE_BUCKET\x10\x1d\x12$\n" +
 	" START_FROM_PSC_PUBLISHED_SERVICE\x10\x1e\x12\x1d\n" +
 	"\x19START_FROM_SERVERLESS_NEG\x10\x1f\x12%\n" +
-	"!START_FROM_DMS_PRIVATE_CONNECTION\x100\x12\x1f\n" +
+	"!START_FROM_DMS_PRIVATE_CONNECTION\x100\x12,\n" +
+	"(START_FROM_DATASTREAM_PRIVATE_CONNECTION\x101\x12\x1f\n" +
 	"\x1bAPPLY_INGRESS_FIREWALL_RULE\x10\x04\x12\x1e\n" +
 	"\x1aAPPLY_EGRESS_FIREWALL_RULE\x10\x05\x12\x0f\n" +
 	"\vAPPLY_ROUTE\x10\x06\x12\x19\n" +
@@ -7479,7 +7509,7 @@ const file_google_cloud_networkmanagement_v1_trace_proto_rawDesc = "" +
 	"\x10destination_port\x18\x05 \x01(\x05R\x0fdestinationPort\x12,\n" +
 	"\x12source_network_uri\x18\x06 \x01(\tR\x10sourceNetworkUri\x126\n" +
 	"\x17destination_network_uri\x18\a \x01(\tR\x15destinationNetworkUri\x12(\n" +
-	"\x10source_agent_uri\x18\b \x01(\tR\x0esourceAgentUri\"\xd9\a\n" +
+	"\x10source_agent_uri\x18\b \x01(\tR\x0esourceAgentUri\"\xfc\a\n" +
 	"\vDeliverInfo\x12M\n" +
 	"\x06target\x18\x01 \x01(\x0e25.google.cloud.networkmanagement.v1.DeliverInfo.TargetR\x06target\x12!\n" +
 	"\fresource_uri\x18\x02 \x01(\tR\vresourceUri\x12'\n" +
@@ -7487,7 +7517,7 @@ const file_google_cloud_networkmanagement_v1_trace_proto_rawDesc = "" +
 	"ip_address\x18\x03 \x01(\tB\b\xe2\x8c\xcf\xd7\b\x02\b\x04R\tipAddress\x12%\n" +
 	"\x0estorage_bucket\x18\x04 \x01(\tR\rstorageBucket\x121\n" +
 	"\x15psc_google_api_target\x18\x05 \x01(\tR\x12pscGoogleApiTarget\x12p\n" +
-	"\x13google_service_type\x18\x06 \x01(\x0e2@.google.cloud.networkmanagement.v1.DeliverInfo.GoogleServiceTypeR\x11googleServiceType\"\xb3\x03\n" +
+	"\x13google_service_type\x18\x06 \x01(\x0e2@.google.cloud.networkmanagement.v1.DeliverInfo.GoogleServiceTypeR\x11googleServiceType\"\xd6\x03\n" +
 	"\x06Target\x12\x16\n" +
 	"\x12TARGET_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bINSTANCE\x10\x01\x12\f\n" +
@@ -7513,7 +7543,8 @@ const file_google_cloud_networkmanagement_v1_trace_proto_rawDesc = "" +
 	"\rREDIS_CLUSTER\x10\x11\x12\v\n" +
 	"\aGKE_POD\x10\x13\x12\x11\n" +
 	"\rCLOUD_RUN_JOB\x10\x14\x12\x1a\n" +
-	"\x16DMS_PRIVATE_CONNECTION\x10\x15\"\xac\x01\n" +
+	"\x16DMS_PRIVATE_CONNECTION\x10\x15\x12!\n" +
+	"\x1dDATASTREAM_PRIVATE_CONNECTION\x10\x16\"\xac\x01\n" +
 	"\x11GoogleServiceType\x12#\n" +
 	"\x1fGOOGLE_SERVICE_TYPE_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03IAP\x10\x01\x12$\n" +
@@ -7592,7 +7623,7 @@ const file_google_cloud_networkmanagement_v1_trace_proto_rawDesc = "" +
 	")UNSUPPORTED_GOOGLE_MANAGED_PROJECT_CONFIG\x10\x1f\x12\x1b\n" +
 	"\x17NO_SERVERLESS_IP_RANGES\x10%\x12 \n" +
 	"\x1cIP_VERSION_PROTOCOL_MISMATCH\x10(\x12%\n" +
-	"!GKE_POD_UNKNOWN_ENDPOINT_LOCATION\x10)\"\x8d$\n" +
+	"!GKE_POD_UNKNOWN_ENDPOINT_LOCATION\x10)\"\xbf$\n" +
 	"\bDropInfo\x12G\n" +
 	"\x05cause\x18\x01 \x01(\x0e21.google.cloud.networkmanagement.v1.DropInfo.CauseR\x05cause\x12!\n" +
 	"\fresource_uri\x18\x02 \x01(\tR\vresourceUri\x12\x1b\n" +
@@ -7600,7 +7631,7 @@ const file_google_cloud_networkmanagement_v1_trace_proto_rawDesc = "" +
 	"\x0edestination_ip\x18\x04 \x01(\tR\rdestinationIp\x12\x16\n" +
 	"\x06region\x18\x05 \x01(\tR\x06region\x126\n" +
 	"\x17source_geolocation_code\x18\x06 \x01(\tR\x15sourceGeolocationCode\x12@\n" +
-	"\x1cdestination_geolocation_code\x18\a \x01(\tR\x1adestinationGeolocationCode\"\xbe!\n" +
+	"\x1cdestination_geolocation_code\x18\a \x01(\tR\x1adestinationGeolocationCode\"\xf0!\n" +
 	"\x05Cause\x12\x15\n" +
 	"\x11CAUSE_UNSPECIFIED\x10\x00\x12\x1c\n" +
 	"\x18UNKNOWN_EXTERNAL_ADDRESS\x10\x01\x12\x19\n" +
@@ -7642,7 +7673,8 @@ const file_google_cloud_networkmanagement_v1_trace_proto_rawDesc = "" +
 	"&CLOUD_SQL_INSTANCE_UNAUTHORIZED_ACCESS\x10\x11\x12\x1e\n" +
 	"\x1aDROPPED_INSIDE_GKE_SERVICE\x10\x12\x12$\n" +
 	" DROPPED_INSIDE_CLOUD_SQL_SERVICE\x10\x13\x12)\n" +
-	"%DROPPED_INSIDE_DMS_PRIVATE_CONNECTION\x10r\x12%\n" +
+	"%DROPPED_INSIDE_DMS_PRIVATE_CONNECTION\x10r\x120\n" +
+	",DROPPED_INSIDE_DATASTREAM_PRIVATE_CONNECTION\x10s\x12%\n" +
 	"!GOOGLE_MANAGED_SERVICE_NO_PEERING\x10\x14\x12*\n" +
 	"&GOOGLE_MANAGED_SERVICE_NO_PSC_ENDPOINT\x10&\x12\x1c\n" +
 	"\x18GKE_PSC_ENDPOINT_MISSING\x10$\x12$\n" +
@@ -8025,34 +8057,35 @@ var file_google_cloud_networkmanagement_v1_trace_proto_depIdxs = []int32{
 	62, // 38: google.cloud.networkmanagement.v1.Step.serverless_neg:type_name -> google.cloud.networkmanagement.v1.ServerlessNegInfo
 	63, // 39: google.cloud.networkmanagement.v1.Step.ngfw_packet_inspection:type_name -> google.cloud.networkmanagement.v1.NgfwPacketInspectionInfo
 	64, // 40: google.cloud.networkmanagement.v1.Step.dms_private_connection:type_name -> google.cloud.networkmanagement.v1.PrivateConnectionInfo
-	2,  // 41: google.cloud.networkmanagement.v1.InstanceInfo.status:type_name -> google.cloud.networkmanagement.v1.InstanceInfo.Status
-	3,  // 42: google.cloud.networkmanagement.v1.FirewallInfo.firewall_rule_type:type_name -> google.cloud.networkmanagement.v1.FirewallInfo.FirewallRuleType
-	4,  // 43: google.cloud.networkmanagement.v1.FirewallInfo.target_type:type_name -> google.cloud.networkmanagement.v1.FirewallInfo.TargetType
-	5,  // 44: google.cloud.networkmanagement.v1.RouteInfo.route_type:type_name -> google.cloud.networkmanagement.v1.RouteInfo.RouteType
-	6,  // 45: google.cloud.networkmanagement.v1.RouteInfo.next_hop_type:type_name -> google.cloud.networkmanagement.v1.RouteInfo.NextHopType
-	7,  // 46: google.cloud.networkmanagement.v1.RouteInfo.route_scope:type_name -> google.cloud.networkmanagement.v1.RouteInfo.RouteScope
-	8,  // 47: google.cloud.networkmanagement.v1.GoogleServiceInfo.google_service_type:type_name -> google.cloud.networkmanagement.v1.GoogleServiceInfo.GoogleServiceType
-	9,  // 48: google.cloud.networkmanagement.v1.LoadBalancerInfo.load_balancer_type:type_name -> google.cloud.networkmanagement.v1.LoadBalancerInfo.LoadBalancerType
-	33, // 49: google.cloud.networkmanagement.v1.LoadBalancerInfo.backends:type_name -> google.cloud.networkmanagement.v1.LoadBalancerBackend
-	10, // 50: google.cloud.networkmanagement.v1.LoadBalancerInfo.backend_type:type_name -> google.cloud.networkmanagement.v1.LoadBalancerInfo.BackendType
-	11, // 51: google.cloud.networkmanagement.v1.LoadBalancerBackend.health_check_firewall_state:type_name -> google.cloud.networkmanagement.v1.LoadBalancerBackend.HealthCheckFirewallState
-	12, // 52: google.cloud.networkmanagement.v1.VpnTunnelInfo.routing_type:type_name -> google.cloud.networkmanagement.v1.VpnTunnelInfo.RoutingType
-	13, // 53: google.cloud.networkmanagement.v1.InterconnectAttachmentInfo.type:type_name -> google.cloud.networkmanagement.v1.InterconnectAttachmentInfo.Type
-	14, // 54: google.cloud.networkmanagement.v1.DeliverInfo.target:type_name -> google.cloud.networkmanagement.v1.DeliverInfo.Target
-	15, // 55: google.cloud.networkmanagement.v1.DeliverInfo.google_service_type:type_name -> google.cloud.networkmanagement.v1.DeliverInfo.GoogleServiceType
-	16, // 56: google.cloud.networkmanagement.v1.ForwardInfo.target:type_name -> google.cloud.networkmanagement.v1.ForwardInfo.Target
-	17, // 57: google.cloud.networkmanagement.v1.AbortInfo.cause:type_name -> google.cloud.networkmanagement.v1.AbortInfo.Cause
-	18, // 58: google.cloud.networkmanagement.v1.DropInfo.cause:type_name -> google.cloud.networkmanagement.v1.DropInfo.Cause
-	19, // 59: google.cloud.networkmanagement.v1.IpMasqueradingSkippedInfo.reason:type_name -> google.cloud.networkmanagement.v1.IpMasqueradingSkippedInfo.Reason
-	20, // 60: google.cloud.networkmanagement.v1.GkeNetworkPolicySkippedInfo.reason:type_name -> google.cloud.networkmanagement.v1.GkeNetworkPolicySkippedInfo.Reason
-	21, // 61: google.cloud.networkmanagement.v1.NatInfo.type:type_name -> google.cloud.networkmanagement.v1.NatInfo.Type
-	22, // 62: google.cloud.networkmanagement.v1.NatInfo.cloud_nat_gateway_type:type_name -> google.cloud.networkmanagement.v1.NatInfo.CloudNatGatewayType
-	23, // 63: google.cloud.networkmanagement.v1.LoadBalancerBackendInfo.health_check_firewalls_config_state:type_name -> google.cloud.networkmanagement.v1.LoadBalancerBackendInfo.HealthCheckFirewallsConfigState
-	64, // [64:64] is the sub-list for method output_type
-	64, // [64:64] is the sub-list for method input_type
-	64, // [64:64] is the sub-list for extension type_name
-	64, // [64:64] is the sub-list for extension extendee
-	0,  // [0:64] is the sub-list for field type_name
+	64, // 41: google.cloud.networkmanagement.v1.Step.datastream_private_connection:type_name -> google.cloud.networkmanagement.v1.PrivateConnectionInfo
+	2,  // 42: google.cloud.networkmanagement.v1.InstanceInfo.status:type_name -> google.cloud.networkmanagement.v1.InstanceInfo.Status
+	3,  // 43: google.cloud.networkmanagement.v1.FirewallInfo.firewall_rule_type:type_name -> google.cloud.networkmanagement.v1.FirewallInfo.FirewallRuleType
+	4,  // 44: google.cloud.networkmanagement.v1.FirewallInfo.target_type:type_name -> google.cloud.networkmanagement.v1.FirewallInfo.TargetType
+	5,  // 45: google.cloud.networkmanagement.v1.RouteInfo.route_type:type_name -> google.cloud.networkmanagement.v1.RouteInfo.RouteType
+	6,  // 46: google.cloud.networkmanagement.v1.RouteInfo.next_hop_type:type_name -> google.cloud.networkmanagement.v1.RouteInfo.NextHopType
+	7,  // 47: google.cloud.networkmanagement.v1.RouteInfo.route_scope:type_name -> google.cloud.networkmanagement.v1.RouteInfo.RouteScope
+	8,  // 48: google.cloud.networkmanagement.v1.GoogleServiceInfo.google_service_type:type_name -> google.cloud.networkmanagement.v1.GoogleServiceInfo.GoogleServiceType
+	9,  // 49: google.cloud.networkmanagement.v1.LoadBalancerInfo.load_balancer_type:type_name -> google.cloud.networkmanagement.v1.LoadBalancerInfo.LoadBalancerType
+	33, // 50: google.cloud.networkmanagement.v1.LoadBalancerInfo.backends:type_name -> google.cloud.networkmanagement.v1.LoadBalancerBackend
+	10, // 51: google.cloud.networkmanagement.v1.LoadBalancerInfo.backend_type:type_name -> google.cloud.networkmanagement.v1.LoadBalancerInfo.BackendType
+	11, // 52: google.cloud.networkmanagement.v1.LoadBalancerBackend.health_check_firewall_state:type_name -> google.cloud.networkmanagement.v1.LoadBalancerBackend.HealthCheckFirewallState
+	12, // 53: google.cloud.networkmanagement.v1.VpnTunnelInfo.routing_type:type_name -> google.cloud.networkmanagement.v1.VpnTunnelInfo.RoutingType
+	13, // 54: google.cloud.networkmanagement.v1.InterconnectAttachmentInfo.type:type_name -> google.cloud.networkmanagement.v1.InterconnectAttachmentInfo.Type
+	14, // 55: google.cloud.networkmanagement.v1.DeliverInfo.target:type_name -> google.cloud.networkmanagement.v1.DeliverInfo.Target
+	15, // 56: google.cloud.networkmanagement.v1.DeliverInfo.google_service_type:type_name -> google.cloud.networkmanagement.v1.DeliverInfo.GoogleServiceType
+	16, // 57: google.cloud.networkmanagement.v1.ForwardInfo.target:type_name -> google.cloud.networkmanagement.v1.ForwardInfo.Target
+	17, // 58: google.cloud.networkmanagement.v1.AbortInfo.cause:type_name -> google.cloud.networkmanagement.v1.AbortInfo.Cause
+	18, // 59: google.cloud.networkmanagement.v1.DropInfo.cause:type_name -> google.cloud.networkmanagement.v1.DropInfo.Cause
+	19, // 60: google.cloud.networkmanagement.v1.IpMasqueradingSkippedInfo.reason:type_name -> google.cloud.networkmanagement.v1.IpMasqueradingSkippedInfo.Reason
+	20, // 61: google.cloud.networkmanagement.v1.GkeNetworkPolicySkippedInfo.reason:type_name -> google.cloud.networkmanagement.v1.GkeNetworkPolicySkippedInfo.Reason
+	21, // 62: google.cloud.networkmanagement.v1.NatInfo.type:type_name -> google.cloud.networkmanagement.v1.NatInfo.Type
+	22, // 63: google.cloud.networkmanagement.v1.NatInfo.cloud_nat_gateway_type:type_name -> google.cloud.networkmanagement.v1.NatInfo.CloudNatGatewayType
+	23, // 64: google.cloud.networkmanagement.v1.LoadBalancerBackendInfo.health_check_firewalls_config_state:type_name -> google.cloud.networkmanagement.v1.LoadBalancerBackendInfo.HealthCheckFirewallsConfigState
+	65, // [65:65] is the sub-list for method output_type
+	65, // [65:65] is the sub-list for method input_type
+	65, // [65:65] is the sub-list for extension type_name
+	65, // [65:65] is the sub-list for extension extendee
+	0,  // [0:65] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_networkmanagement_v1_trace_proto_init() }
@@ -8099,6 +8132,7 @@ func file_google_cloud_networkmanagement_v1_trace_proto_init() {
 		(*Step_ServerlessNeg)(nil),
 		(*Step_NgfwPacketInspection)(nil),
 		(*Step_DmsPrivateConnection)(nil),
+		(*Step_DatastreamPrivateConnection)(nil),
 	}
 	file_google_cloud_networkmanagement_v1_trace_proto_msgTypes[5].OneofWrappers = []any{}
 	type x struct{}

@@ -1,6 +1,4 @@
 TestReadRows_Retry_WithRetryInfo_MultipleErrorResponse\|
-TestMutateRows_NoRetry_MissingResponseEntry\|
-TestMutateRows_NoRetry_ErrorNotificationParity\|
 TestExecuteQuery_EmptyResponse\|
 TestExecuteQuery_NestedNullsTest\|
 TestExecuteQuery_FailsOnEmptyMetadata\|

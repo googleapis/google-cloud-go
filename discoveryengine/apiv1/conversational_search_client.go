@@ -2114,6 +2114,9 @@ func (c *conversationalSearchRESTClient) CreateSession(ctx context.Context, req 
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetSessionId() != "" {
+		params.Add("sessionId", fmt.Sprintf("%v", req.GetSessionId()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
