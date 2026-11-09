@@ -161,7 +161,7 @@ type UserProperties struct {
 	// Optional. The advertiser-assessed value of the customer.
 	CustomerValueBucket CustomerValueBucket `protobuf:"varint,2,opt,name=customer_value_bucket,json=customerValueBucket,proto3,enum=google.ads.datamanager.v1.CustomerValueBucket" json:"customer_value_bucket,omitempty"`
 	// Optional. A bucket of any additional [user
-	// properties](https://developers.google.com/analytics/devguides/collection/protocol/ga4/user-properties)
+	// properties](https://support.google.com/analytics/answer/9355671)
 	// for the user associated with this event.
 	AdditionalUserProperties []*UserProperty `protobuf:"bytes,3,rep,name=additional_user_properties,json=additionalUserProperties,proto3" json:"additional_user_properties,omitempty"`
 	unknownFields            protoimpl.UnknownFields
@@ -220,7 +220,7 @@ func (x *UserProperties) GetAdditionalUserProperties() []*UserProperty {
 }
 
 // A bucket of any additional [user
-// properties](https://developers.google.com/analytics/devguides/collection/protocol/ga4/user-properties)
+// properties](https://support.google.com/analytics/answer/9355671)
 // for the user associated with this event.
 type UserProperty struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
