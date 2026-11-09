@@ -1832,15 +1832,6 @@ func TestGRPCWriter_ZeroByteFlushWaitsForFirstAck(t *testing.T) {
 	}
 }
 
-// TestGRPCWriter_ChunkRetryDeadline_QueuedCommandDoesNotArmIdleStopwatch
-// reproduces two races that made OversizedWriteStaleTimerOnClose flaky (#20870):
-//  1. handleCompletion invoked w.progress before w.budget.recordProgress, so a
-//     caller woken by progress could enqueue a command onto writesChan and make
-//     recordProgress see len(writesChan) > 0, re-arming the idle stopwatch.
-//  2. If the last sent quantum was acked while currentCommand.handle was still
-//     running, recordProgress saw currentCommand != nil and armed the
-//     stopwatch; a command queued in writesChan before writeLoop checked for
-//     idleness then kept writesChan non-empty and skipped budget.stop().
 func TestGRPCWriter_ChunkRetryDeadline_QueuedCommandDoesNotArmIdleStopwatch(t *testing.T) {
 	t.Run("ProgressCallbackEnqueuesCommand", func(t *testing.T) {
 		clk := newFakeClock()
@@ -1852,7 +1843,7 @@ func TestGRPCWriter_ChunkRetryDeadline_QueuedCommandDoesNotArmIdleStopwatch(t *t
 			budget:           testBudget(clk, deadline),
 			awaitingFirstAck: true,
 			buf:              make([]byte, 500, 1000),
-			bufUnsentIdx:     350, // 350 sent, 150 (< writeQuantum) unsent.
+			bufUnsentIdx:     350,
 			writeQuantum:     350,
 			chunkSize:        1000,
 			writesChan:       make(chan gRPCWriterCommand, 2),
@@ -1861,15 +1852,11 @@ func TestGRPCWriter_ChunkRetryDeadline_QueuedCommandDoesNotArmIdleStopwatch(t *t
 			progress: func(offset int64) {
 				expiresInCallback = w.budget.expiresAt
 				attemptsInCallback = w.budget.attempts
-				// Simulate a caller woken by ProgressFunc immediately queueing the
-				// next command before handleCompletion returns.
 				w.writesChan <- &checkTimerCmd{timerCh: make(chan time.Time, 1)}
 			},
 		}
 		w.budget.attempts = 3
 		w.budget.start()
-		// Also pre-populate writesChan so handleCompletion sees a queued unread
-		// command when evaluating whether data is still in flight.
 		w.writesChan <- &checkTimerCmd{timerCh: make(chan time.Time, 1)}
 
 		w.handleCompletion(gRPCBidiWriteCompletion{flushOffset: 350})
@@ -1885,11 +1872,8 @@ func TestGRPCWriter_ChunkRetryDeadline_QueuedCommandDoesNotArmIdleStopwatch(t *t
 		ctx := context.Background()
 		clk := newFakeClock()
 		deadline := 100 * time.Millisecond
-		// Hold requestAck until offset 1350 has been processed by handleCompletion
-		// so offset 1350 is guaranteed to be handled inside
-		// gRPCWriterCommandWrite.handle while w.currentCommand != nil, and queue
-		// checkTimerCmd from the progress callback so writesChan is already
-		// non-empty when handle returns.
+		// Hold requestAck until offset 1350 is acked so handleCompletion runs
+		// while w.currentCommand != nil and writesChan is already non-empty.
 		ack1350 := make(chan struct{})
 		timerCh := make(chan time.Time, 1)
 		sender := &mockSender{respondToAllData: true, waitBeforeRequestAck: ack1350}
