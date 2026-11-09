@@ -17,9 +17,11 @@ package storage
 import (
 	"bytes"
 	"context"
+	"encoding/binary"
 	"errors"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -27,9 +29,12 @@ import (
 	"time"
 
 	"cloud.google.com/go/auth"
+	"cloud.google.com/go/storage/internal"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
+	"github.com/google/uuid"
 
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"go.opentelemetry.io/otel/sdk/resource"
@@ -37,6 +42,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/stats"
 	"google.golang.org/grpc/status"
 )
@@ -339,14 +345,14 @@ func TestHTTPMetricsRecording(t *testing.T) {
 				}
 			}
 
-			if m.Name == "gcp.storage.client.gfe.duration" {
+			if m.Name == "gcp.storage.client.server.duration" {
 				hist, ok := m.Data.(metricdata.Histogram[float64])
 				if ok && len(hist.DataPoints) > 0 {
 					if hist.DataPoints[0].Sum != 0.15 {
-						t.Errorf("expected gfe.duration 0.15s, got %v", hist.DataPoints[0].Sum)
+						t.Errorf("expected server.duration 0.15s, got %v", hist.DataPoints[0].Sum)
 					}
 				} else {
-					t.Errorf("expected gfe.duration datapoints")
+					t.Errorf("expected server.duration datapoints")
 				}
 			}
 		}
@@ -376,6 +382,10 @@ func (m *mockClientStream) Header() (metadata.MD, error) {
 
 func (m *mockClientStream) Trailer() metadata.MD {
 	return nil
+}
+
+func (m *mockClientStream) Context() context.Context {
+	return context.Background()
 }
 
 func TestGRPCMetricsRecording(t *testing.T) {
@@ -497,20 +507,20 @@ func TestGRPCMetricsRecording(t *testing.T) {
 				}
 			}
 
-			if m.Name == "gcp.storage.client.gfe.duration" {
+			if m.Name == "gcp.storage.client.server.duration" {
 				hist, ok := m.Data.(metricdata.Histogram[float64])
 				if ok && len(hist.DataPoints) > 0 {
-					foundGfeDuration := false
+					foundServerDuration := false
 					for _, dp := range hist.DataPoints {
 						if dp.Sum == 0.12 {
-							foundGfeDuration = true
+							foundServerDuration = true
 						}
 					}
-					if !foundGfeDuration {
-						t.Errorf("expected gfe.duration 0.12s from stream")
+					if !foundServerDuration {
+						t.Errorf("expected server.duration 0.12s from stream")
 					}
 				} else {
-					t.Errorf("expected gfe.duration datapoints")
+					t.Errorf("expected server.duration datapoints")
 				}
 			}
 		}
@@ -1114,5 +1124,314 @@ func TestRecordStallDuration_BidiWriteObject(t *testing.T) {
 	}
 	if !found {
 		t.Errorf("metric not found")
+	}
+}
+
+func TestKeepFilteredResourceAttribute(t *testing.T) {
+	for _, tc := range []struct {
+		key  string
+		want bool
+	}{
+		{"cloud.platform", true},
+		{"cloud.region", true},
+		{"host.id", true},
+		{"gcp.client.instance_id", true},
+		{"gcp.client.version", true},
+		{"cloud.availability_zone", false},
+		{"service.name", false},
+		{"", false},
+		{"gcp.clientX", false},
+	} {
+		if got := keepFilteredResourceAttribute(tc.key); got != tc.want {
+			t.Errorf("keepFilteredResourceAttribute(%q) = %v, want %v", tc.key, got, tc.want)
+		}
+	}
+}
+
+func TestMetricBaseLabels(t *testing.T) {
+	toMap := func(kvs []attribute.KeyValue) map[string]string {
+		m := make(map[string]string, len(kvs))
+		for _, kv := range kvs {
+			m[string(kv.Key)] = kv.Value.AsString()
+		}
+		return m
+	}
+	first := toMap(metricBaseLabels())
+	second := toMap(metricBaseLabels())
+
+	if len(first) != 4 {
+		t.Fatalf("expected 4 base labels, got %d", len(first))
+	}
+	if first["gcp.client.version"] != internal.Version {
+		t.Errorf("got version %q, want %q", first["gcp.client.version"], internal.Version)
+	}
+	if first["gcp.client.service"] != "storage" {
+		t.Errorf("got service %q, want storage", first["gcp.client.service"])
+	}
+	if first["gcp.client.artifact"] != "cloud.google.com/go/storage" {
+		t.Errorf("got artifact %q, want cloud.google.com/go/storage", first["gcp.client.artifact"])
+	}
+	if _, err := uuid.Parse(first["gcp.client.instance_id"]); err != nil {
+		t.Errorf("expected valid UUID for gcp.client.instance_id, got %q: %v", first["gcp.client.instance_id"], err)
+	}
+	if first["gcp.client.instance_id"] == second["gcp.client.instance_id"] {
+		t.Errorf("expected distinct instance_id values across calls, got %q", first["gcp.client.instance_id"])
+	}
+}
+
+func TestInitMetrics_StandardTier(t *testing.T) {
+	ctx := context.Background()
+	mr := sdkmetric.NewManualReader()
+	provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(mr))
+	defer provider.Shutdown(ctx)
+
+	cm, _, err := initMetrics(ctx, "project-id", &storageConfig{
+		enableOtelMetrics:      true,
+		enableOtelDebugMetrics: false,
+		meterProvider:          provider,
+	})
+	if err != nil {
+		t.Fatalf("initMetrics: %v", err)
+	}
+	if cm.serverUnreached == nil {
+		t.Fatalf("expected server.unreached instrument to be initialized under standard metrics")
+	}
+	if cm.serverDuration != nil {
+		t.Errorf("expected server.duration to remain disabled when debug metrics are off")
+	}
+
+	cmDebug, _, err := initMetrics(ctx, "project-id", &storageConfig{
+		enableOtelMetrics:      true,
+		enableOtelDebugMetrics: true,
+		meterProvider:          provider,
+	})
+	if err != nil {
+		t.Fatalf("initMetrics(debug): %v", err)
+	}
+	if cmDebug.serverUnreached == nil || cmDebug.serverDuration == nil {
+		t.Fatalf("expected both server.unreached and server.duration to be initialized when debug metrics are on")
+	}
+}
+
+func TestRecordServerMetrics(t *testing.T) {
+	var statsBuf [10]byte
+	binary.LittleEndian.PutUint64(statsBuf[2:], uint64(42*time.Millisecond))
+	trailerWithStats := metadata.Pairs("grpc-server-stats-bin", string(statsBuf[:]))
+	dpPeer := &peer.Peer{Addr: &net.TCPAddr{IP: net.ParseIP("34.126.0.10"), Port: 443}}
+	cpPeer := &peer.Peer{Addr: &net.TCPAddr{IP: net.ParseIP("142.250.1.1"), Port: 443}}
+	rpcAttrs := metric.WithAttributes(
+		attribute.String("rpc.method", "GetObject"),
+		attribute.String("rpc.system.name", "grpc"),
+		attribute.String("server.address", "storage.googleapis.com"),
+	)
+
+	httpRespWithUploadID := &http.Response{Header: make(http.Header)}
+	httpRespWithUploadID.Header.Set(uploadIDHeader, "upload-123")
+	httpRespWithUploadID.Header.Set("X-Goog-Gfe-Service-Time", "bad-float")
+
+	for _, tc := range []struct {
+		name          string
+		debug         bool
+		run           func(ctx context.Context, cm *clientMetrics)
+		wantUnreached int64
+		wantDuration  float64
+	}{
+		{
+			name:  "DirectPath with grpc-server-stats-bin",
+			debug: true,
+			run: func(ctx context.Context, cm *clientMetrics) {
+				cm.recordServerMetrics(ctx, nil, trailerWithStats, nil, "GetObject", "storage.googleapis.com", rpcAttrs, dpPeer)
+			},
+			wantUnreached: 0,
+			wantDuration:  0.042,
+		},
+		{
+			name:  "DirectPath success without headers",
+			debug: true,
+			run: func(ctx context.Context, cm *clientMetrics) {
+				cm.recordServerMetrics(ctx, nil, nil, nil, "GetObject", "storage.googleapis.com", rpcAttrs, dpPeer)
+			},
+			wantUnreached: 0,
+		},
+		{
+			name:  "DirectPath pre-response connection error",
+			debug: true,
+			run: func(ctx context.Context, cm *clientMetrics) {
+				cm.recordServerMetrics(ctx, nil, nil, errors.New("connection refused"), "GetObject", "storage.googleapis.com", rpcAttrs, dpPeer)
+			},
+			wantUnreached: 1,
+		},
+		{
+			name:  "DirectPath ambiguous client timeout",
+			debug: true,
+			run: func(ctx context.Context, cm *clientMetrics) {
+				cm.recordServerMetrics(ctx, nil, nil, status.Error(codes.DeadlineExceeded, "deadline exceeded"), "GetObject", "storage.googleapis.com", rpcAttrs, dpPeer)
+			},
+			wantUnreached: 0,
+		},
+		{
+			name:  "DirectPath unavailable without metadata skipped as ambiguous",
+			debug: true,
+			run: func(ctx context.Context, cm *clientMetrics) {
+				cm.recordServerMetrics(ctx, nil, nil, status.Error(codes.Unavailable, "transport is closing"), "GetObject", "storage.googleapis.com", rpcAttrs, dpPeer)
+			},
+			wantUnreached: 0,
+		},
+		{
+			name:  "CloudPath ambiguous client timeout",
+			debug: true,
+			run: func(ctx context.Context, cm *clientMetrics) {
+				cm.recordServerMetrics(ctx, nil, nil, status.Error(codes.DeadlineExceeded, "deadline exceeded"), "GetObject", "storage.googleapis.com", rpcAttrs, cpPeer)
+			},
+			wantUnreached: 0,
+		},
+		{
+			name:  "CloudPath with upload ID and malformed GFE/stats headers",
+			debug: true,
+			run: func(ctx context.Context, cm *clientMetrics) {
+				cm.recordServerMetrics(ctx, metadata.Pairs(uploadIDHeader, "abc", "x-goog-gfe-service-time", "not-a-number"), metadata.Pairs("grpc-server-stats-bin", "short"), nil, "GetObject", "storage.googleapis.com", rpcAttrs, cpPeer)
+			},
+			wantUnreached: 0,
+		},
+		{
+			name:  "CloudPath failure without headers",
+			debug: true,
+			run: func(ctx context.Context, cm *clientMetrics) {
+				cm.recordServerMetrics(ctx, nil, nil, errors.New("connection refused"), "GetObject", "storage.googleapis.com", rpcAttrs, cpPeer)
+			},
+			wantUnreached: 1,
+		},
+		{
+			name:  "HTTP with upload ID and malformed GFE header",
+			debug: true,
+			run: func(ctx context.Context, cm *clientMetrics) {
+				cm.recordHTTPServerMetrics(ctx, httpRespWithUploadID, "GetObject", "storage.googleapis.com", "OK", rpcAttrs)
+			},
+			wantUnreached: 0,
+		},
+		{
+			name:  "HTTP response without headers and debug off",
+			debug: false,
+			run: func(ctx context.Context, cm *clientMetrics) {
+				cm.recordHTTPServerMetrics(ctx, &http.Response{Header: make(http.Header)}, "GetObject", "storage.googleapis.com", "UNAVAILABLE", nil)
+			},
+			wantUnreached: 1,
+		},
+		{
+			name:  "HTTP 504 response without GFE headers",
+			debug: true,
+			run: func(ctx context.Context, cm *clientMetrics) {
+				cm.recordHTTPServerMetrics(ctx, &http.Response{StatusCode: http.StatusGatewayTimeout, Header: make(http.Header)}, "GetObject", "storage.googleapis.com", "DEADLINE_EXCEEDED", rpcAttrs)
+			},
+			wantUnreached: 1,
+		},
+		{
+			name:  "HTTP nil response connection error",
+			debug: true,
+			run: func(ctx context.Context, cm *clientMetrics) {
+				cm.recordHTTPServerMetrics(ctx, nil, "GetObject", "storage.googleapis.com", "CONNECTION_ERROR", rpcAttrs)
+			},
+			wantUnreached: 1,
+		},
+		{
+			name:  "HTTP nil response ambiguous client cancel",
+			debug: true,
+			run: func(ctx context.Context, cm *clientMetrics) {
+				cm.recordHTTPServerMetrics(ctx, nil, "GetObject", "storage.googleapis.com", "CANCELLED", rpcAttrs)
+			},
+			wantUnreached: 0,
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := context.Background()
+			mr := sdkmetric.NewManualReader()
+			provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(mr))
+			defer provider.Shutdown(ctx)
+
+			cm, _, err := initMetrics(ctx, "project-id", &storageConfig{
+				enableOtelMetrics:      true,
+				enableOtelDebugMetrics: tc.debug,
+				meterProvider:          provider,
+			})
+			if err != nil {
+				t.Fatalf("initMetrics: %v", err)
+			}
+			tc.run(ctx, cm)
+
+			var rm metricdata.ResourceMetrics
+			if err := mr.Collect(ctx, &rm); err != nil {
+				t.Fatalf("Collect: %v", err)
+			}
+			var gotUnreached int64
+			var gotDuration float64
+			var gotDurationCount uint64
+			for _, sm := range rm.ScopeMetrics {
+				for _, m := range sm.Metrics {
+					if m.Name == "gcp.storage.client.server.unreached" {
+						for _, dp := range m.Data.(metricdata.Sum[int64]).DataPoints {
+							gotUnreached += dp.Value
+						}
+					}
+					if m.Name == "gcp.storage.client.server.duration" {
+						for _, dp := range m.Data.(metricdata.Histogram[float64]).DataPoints {
+							gotDurationCount += dp.Count
+							gotDuration += dp.Sum
+						}
+					}
+				}
+			}
+			if gotUnreached != tc.wantUnreached {
+				t.Errorf("server.unreached = %d, want %d", gotUnreached, tc.wantUnreached)
+			}
+			if tc.wantDuration == 0 && gotDurationCount != 0 {
+				t.Errorf("server.duration count = %d, want 0", gotDurationCount)
+			}
+			if tc.wantDuration > 0 && (gotDurationCount != 1 || gotDuration < tc.wantDuration-0.001 || gotDuration > tc.wantDuration+0.001) {
+				t.Errorf("server.duration = %v (count=%d), want %v", gotDuration, gotDurationCount, tc.wantDuration)
+			}
+		})
+	}
+}
+
+func TestMetricUnits(t *testing.T) {
+	ctx := context.Background()
+	mr := sdkmetric.NewManualReader()
+	provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(mr))
+	defer provider.Shutdown(ctx)
+
+	cm, _, err := initMetrics(ctx, "project-id", &storageConfig{
+		enableOtelMetrics:      true,
+		enableOtelDebugMetrics: true,
+		meterProvider:          provider,
+	})
+	if err != nil {
+		t.Fatalf("initMetrics: %v", err)
+	}
+	cm.operations.Add(ctx, 1)
+	cm.attempts.Add(ctx, 1)
+	cm.errors.Add(ctx, 1)
+	cm.serverUnreached.Add(ctx, 1)
+	cm.activeRequests.Add(ctx, 1)
+
+	var rm metricdata.ResourceMetrics
+	if err := mr.Collect(ctx, &rm); err != nil {
+		t.Fatalf("Collect: %v", err)
+	}
+	units := make(map[string]string)
+	for _, sm := range rm.ScopeMetrics {
+		for _, m := range sm.Metrics {
+			units[m.Name] = m.Unit
+		}
+	}
+	for name, wantUnit := range map[string]string{
+		"gcp.storage.client.operations":       "{operation}",
+		"gcp.storage.client.attempts":         "{attempt}",
+		"gcp.storage.client.errors":           "{error}",
+		"gcp.storage.client.server.unreached": "{request}",
+		"gcp.storage.client.request.active":   "{request}",
+	} {
+		if units[name] != wantUnit {
+			t.Errorf("metric %s unit = %q, want %q", name, units[name], wantUnit)
+		}
 	}
 }

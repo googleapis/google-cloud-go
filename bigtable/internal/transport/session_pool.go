@@ -131,9 +131,11 @@ type SessionPoolImpl struct {
 	sessionType        SessionType
 	poolName           string
 	startOnce          sync.Once
-	// tickPending debounces tickOnce so a burst of empty-pool kicks
-	// coalesces to at most one active Tick.
-	tickPending atomic.Bool
+	// tickPending coordinates tickOnce: 0 = idle, 1 = Tick running,
+	// 2 = Tick running with a follow-up pass requested. Ensures a kick
+	// arriving after an in-flight Tick has already sampled Stats() in
+	// sizer.Decide() triggers one trailing Tick instead of being dropped.
+	tickPending atomic.Int32
 	// poolID is baked into every session log name for the
 	// channelz → sessionz reverse link.
 	poolID uint64
@@ -290,23 +292,36 @@ func (p *SessionPoolImpl) CheckoutSession(ctx context.Context) (*SessionHandle, 
 			}
 		}
 
-		// Slow path: picker returned nil or 2 checkoutSession raced and returned the same AFE id. Dying sessions leave sl.readyCount
-		// the instant they transition out of Ready (OnClosing), so the
-		// maxSessions gate reflects only live-or-starting sessions —
-		// a miss just means all live sessions are busy.
-		if p.sl.ReadyCount() < p.sizer.MaxSessions() {
-			p.spawnTickOnce(p.poolCtx)
-		}
-
-		// Park in the FIFO waiter queue. Each free-session event wakes
-		// exactly one waiter (queue head). Bracket with waitersCount so
-		// the sizer (via Stats()) sees real queue depth.
+		// Park in the FIFO waiter queue BEFORE kicking Tick or re-checking
+		// ReadyAfes. Ordering:
+		//  1. Push waiter + bump waitersCount so a concurrent signalFree
+		//     can see w and a concurrent Tick sees PendingCount > 0.
+		//  2. Re-check p.closed (in case Close's drainWaitersWithErr ran
+		//     before w joined p.waiters) and len(p.sl.ReadyAfes()) > 0
+		//     (in case onActive / OnSlotDrained enqueued an idle session
+		//     and called signalFree between the fast-path ReadyAfes read
+		//     above and PushBack below).
+		//  3. Kick spawnTickOnce if capacity is still below MaxSessions.
 		w := &waiter{ready: make(chan struct{})}
 		p.waitersMu.Lock()
 		w.elem = p.waiters.PushBack(w)
 		p.waitersMu.Unlock()
-
 		p.waitersCount.Add(1)
+
+		p.mu.Lock()
+		closedNow := p.closed
+		p.mu.Unlock()
+		if closedNow {
+			p.waitersCount.Add(-1)
+			p.removeWaiter(w)
+			return nil, ErrPoolClosed
+		}
+		if len(p.sl.ReadyAfes()) > 0 {
+			p.signalFree()
+		} else if p.sl.ReadyCount() < p.sizer.MaxSessions() {
+			p.spawnTickOnce(p.poolCtx)
+		}
+
 		select {
 		case <-ctx.Done():
 			p.waitersCount.Add(-1)
@@ -377,16 +392,17 @@ func (p *SessionPoolImpl) drainWaitersWithErr(err error) int {
 
 // Stats snapshots ready/inUse/starting/pending counts.
 //
-// The AllHandles walk and the startingSessions read now happen under
-// disjoint locks, so a handle can transition starting → ready between
-// the two reads and be missed by both — StartingCount + ReadyCount is
-// therefore a best-effort snapshot, not a coherent sum. Sizer.Decide
-// is the sole consumer and self-corrects on the next Tick.
+// AllHandles and startingSessions+pendingStarts are snapshotted under a
+// single p.mu critical section (lock order p.mu -> sl.mu, matching
+// onActive) so a handle transitioning starting -> ready in onActive
+// cannot be missed by both reads and cause Sizer.Decide to over-spawn.
+// Per-handle atomic State/outstanding loads run after releasing p.mu.
 func (p *SessionPoolImpl) Stats() *PoolStats {
-	// AllHandles takes its own snapshot under sl.mu — walk it OUTSIDE
-	// p.mu so per-session Load()s can't back up under the pool lock and
-	// stall CheckoutSession. State/outstanding reads are all atomic.
+	p.mu.Lock()
 	handles := p.sl.AllHandles()
+	startingCount := len(p.startingSessions) + p.pendingStarts
+	p.mu.Unlock()
+
 	ready := 0
 	inUse := 0
 	for _, sh := range handles {
@@ -404,13 +420,6 @@ func (p *SessionPoolImpl) Stats() *PoolStats {
 			inUse++
 		}
 	}
-
-	// p.mu bracket is now just around the startingSessions map read +
-	// pendingStarts int read — both plain non-atomic fields the pool
-	// mutates from Tick / createSession under p.mu.
-	p.mu.Lock()
-	startingCount := len(p.startingSessions) + p.pendingStarts
-	p.mu.Unlock()
 
 	return &PoolStats{
 		ReadyCount: ready,
