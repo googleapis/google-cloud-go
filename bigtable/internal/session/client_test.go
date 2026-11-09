@@ -307,19 +307,19 @@ func TestSessionClient_MetricsFactory_ReturnsInjected(t *testing.T) {
 	}
 }
 
-// TestSessionClient_AddSessionLoadListener_NilManagerNoop confirms the
+// TestSessionClient_AddSessionDiversionListener_NilManagerNoop confirms the
 // documented fallback: when no ClientConfigurationManager is wired
 // (stub nil at construction), the returned unregister thunk is a
 // non-nil no-op so callers can call it unconditionally.
-func TestSessionClient_AddSessionLoadListener_NilManagerNoop(t *testing.T) {
+func TestSessionClient_AddSessionDiversionListener_NilManagerNoop(t *testing.T) {
 	sc := newTestClient(t, nil, Config{})
 	defer sc.Close()
 
-	unreg := sc.AddSessionLoadListener(func(float64) {})
-	if unreg == nil {
-		t.Fatal("AddSessionLoadListener returned nil unregister, want non-nil no-op")
+	unregDiv := sc.AddSessionDiversionListener(func(*btpb.SessionClientConfiguration) {})
+	if unregDiv == nil {
+		t.Fatal("AddSessionDiversionListener returned nil unregister, want non-nil no-op")
 	}
-	unreg() // must not panic
+	unregDiv() // must not panic
 }
 
 // TestSessionClient_Close_NilSafe pins the "everything nil" happy path
