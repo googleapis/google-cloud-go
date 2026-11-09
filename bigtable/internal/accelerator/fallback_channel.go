@@ -23,6 +23,7 @@ import (
 
 	v2pb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"cloud.google.com/go/bigtable/internal/accelerator/adapters"
+	btransport "cloud.google.com/go/bigtable/internal/transport"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -148,7 +149,7 @@ func (fc *FallbackChannel) Invoke(ctx context.Context, method string, args, repl
 	}
 
 	instanceID := extractInstanceFromMutateRowReq(req)
-	if !fc.isInstanceTripped(instanceID) && fc.session.useSession(instanceID, req.GetAppProfileId()) {
+	if !fc.isInstanceTripped(instanceID) && fc.session.useSessionForMethod(instanceID, req.GetAppProfileId(), btransport.ScopeMethodMutateRow) {
 		err := fc.session.Invoke(ctx, method, args, reply, opts...)
 		if err == nil {
 			return nil
@@ -263,7 +264,7 @@ func (s *fallbackReadRowsStream) SendMsg(m any) error {
 
 	if s.inner != nil && s.fc != nil {
 		instanceID := extractInstanceFromReadRowsReq(req)
-		if s.fc.isInstanceTripped(instanceID) || !s.fc.session.useSession(instanceID, req.GetAppProfileId()) {
+		if s.fc.isInstanceTripped(instanceID) || !s.fc.session.useSessionForMethod(instanceID, req.GetAppProfileId(), btransport.ScopeMethodReadRow) {
 			s.inner = nil
 		}
 	}

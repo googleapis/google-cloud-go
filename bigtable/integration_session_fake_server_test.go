@@ -113,6 +113,10 @@ type fakeBigtableServer struct {
 	// block until the stream context is cancelled (no reply, no
 	// heartbeat). Decremented under mu as each stall hits.
 	stallVRpcCount int
+
+	// diversionCfg, when non-nil, overrides the default GlobalDiversion(1.0)
+	// returned by GetClientConfiguration.
+	diversionCfg *btpb.SessionDiversionConfiguration
 }
 
 // fakeAttemptErr is one queued reply for a VirtualRpcRequest. RetryInfo is
@@ -345,18 +349,30 @@ func (s *fakeBigtableServer) PingAndWarm(ctx context.Context, req *btpb.PingAndW
 	return &btpb.PingAndWarmResponse{}, nil
 }
 
+func (s *fakeBigtableServer) setSessionDiversionConfiguration(divCfg *btpb.SessionDiversionConfiguration) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.diversionCfg = divCfg
+}
+
 func (s *fakeBigtableServer) GetClientConfiguration(ctx context.Context, req *btpb.GetClientConfigurationRequest) (*btpb.ClientConfiguration, error) {
 	s.mu.Lock()
 	s.getClientConfigCnt++
 	minC, maxC := s.poolMinCount, s.poolMaxCount
+	divCfg := s.diversionCfg
 	s.mu.Unlock()
-	// SessionLoad: 1.0 pins the Diverter to the session path so every
-	// ReadRow/Apply on the TableShim routes through SessionTable. Note: the
-	// AddSessionLoadListener listener is invoked at registration time with
-	// the manager's *default* config (SessionLoad=0), and is only flipped to
-	// 1.0 once this RPC's response is parsed by the configManager. Tests
-	// must wait for that to happen before issuing data calls — see
-	// waitForSessionRouting in the harness.
+	if divCfg == nil {
+		divCfg = &btpb.SessionDiversionConfiguration{
+			DiversionStrategy: &btpb.SessionDiversionConfiguration_GlobalDiversion{
+				GlobalDiversion: &btpb.SessionScopeDiversionConfiguration{
+					SessionLoad: 1.0,
+				},
+			},
+		}
+	}
+	// SessionLoad: 1.0 (plus GlobalDiversion: 1.0 by default) pins the
+	// Diverter to the session path so every session-eligible RPC on the
+	// TableShim routes through SessionTable.
 	//
 	// Explicit SessionPool sizing is included because ClientConfigurationManager
 	// treats server values as authoritative and overwrites the per-pool
@@ -365,7 +381,8 @@ func (s *fakeBigtableServer) GetClientConfiguration(ctx context.Context, req *bt
 	// more sessions than tests expect. See setSessionPoolSizing.
 	return &btpb.ClientConfiguration{
 		SessionConfiguration: &btpb.SessionClientConfiguration{
-			SessionLoad: 1.0,
+			SessionLoad:                   1.0,
+			SessionDiversionConfiguration: divCfg,
 			SessionPoolConfiguration: &btpb.SessionClientConfiguration_SessionPoolConfiguration{
 				MinSessionCount: minC,
 				MaxSessionCount: maxC,

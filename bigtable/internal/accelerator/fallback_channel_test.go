@@ -552,8 +552,8 @@ func TestFallbackChannel_SessionLoadDivertsToClassicWithoutTripping(t *testing.T
 		},
 	}
 	sessionChannel := newTestChannel(t, sc)
-	if sc.loadListener == nil {
-		t.Fatal("expected Channel to register a SessionLoadListener on session.Client")
+	if sc.diversionListener == nil {
+		t.Fatal("expected Channel to register a SessionDiversionListener on session.Client")
 	}
 
 	classicCalls := 0
@@ -595,7 +595,7 @@ func TestFallbackChannel_SessionLoadDivertsToClassicWithoutTripping(t *testing.T
 	}
 
 	// 2. Server updates SessionLoad to 1.0 -> routes MutateRow through session.
-	sc.loadListener(1.0)
+	sc.diversionListener(&v2pb.SessionClientConfiguration{SessionLoad: 1.0})
 	if err := fc.Invoke(context.Background(), v2pb.Bigtable_MutateRow_FullMethodName, &v2pb.MutateRowRequest{
 		TableName: testTableName,
 		RowKey:    []byte("k"),
@@ -607,7 +607,7 @@ func TestFallbackChannel_SessionLoadDivertsToClassicWithoutTripping(t *testing.T
 	}
 
 	// 3. Server lowers SessionLoad back to 0.0 -> routes back to classic without tripping breaker.
-	sc.loadListener(0.0)
+	sc.diversionListener(&v2pb.SessionClientConfiguration{SessionLoad: 0.0})
 	if err := fc.Invoke(context.Background(), v2pb.Bigtable_MutateRow_FullMethodName, &v2pb.MutateRowRequest{
 		TableName: testTableName,
 		RowKey:    []byte("k"),

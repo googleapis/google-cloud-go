@@ -562,7 +562,8 @@ func TestTableShim_ReadRows_SingleRowRoutesToSession(t *testing.T) {
 			},
 		}
 		sess := &mockSessionTable{}
-		shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0))
+		diverter := btransport.NewDiverter(1.0)
+		shim := NewTableShim(classic, sess, diverter)
 		if err := shim.ReadRows(context.Background(), SingleRow("r"), func(Row) bool { return true }, LimitRows(0)); err != nil {
 			t.Fatalf("unexpected err: %v", err)
 		}
@@ -571,6 +572,10 @@ func TestTableShim_ReadRows_SingleRowRoutesToSession(t *testing.T) {
 		}
 		if sess.readRowCalls != 0 {
 			t.Errorf("sess.readRowCalls = %d, want 0 (LimitRows(0) must NOT dial session)", sess.readRowCalls)
+		}
+		snap := diverter.Snapshot()
+		if snap.SessionPicks != 0 || snap.ClassicPicks != 0 {
+			t.Errorf("diverter picks = (session=%d, classic=%d), want (0, 0) when LimitRows(0) defers to classic before diverter check", snap.SessionPicks, snap.ClassicPicks)
 		}
 	})
 
@@ -1033,7 +1038,7 @@ func TestTableShim_Apply_UnimplementedFallsBackToClassic(t *testing.T) {
 
 // TestTableShim_BreakerTrippedSkipsSession: once the counter hits
 // the breaker's configured threshold, subsequent ReadRow /
-// Apply skip the session path outright at useSession(). Threshold
+// Apply skip the session path outright at useSessionForMethod. Threshold
 // overridden to 1 so one Unimplemented trips.
 func TestTableShim_BreakerTrippedSkipsSession(t *testing.T) {
 	classic := &mockClassicTable{}
@@ -1417,5 +1422,82 @@ func TestMaterializedView_ClassicWriteMethodsRejectLocally(t *testing.T) {
 	rmw.Increment("fam", "col", 1)
 	if _, err := mv.ApplyReadModifyWrite(context.Background(), "r1", rmw); !errors.Is(err, session.ErrWriteNotSupported) {
 		t.Errorf("ApplyReadModifyWrite err = %v, want errors.Is(_, ErrWriteNotSupported)", err)
+	}
+}
+
+// TestTableShim_PerScopeDiversion verifies that TableShim consults the
+// Diverter's per-scope ("method:Bigtable.<Method>") session load for each
+// RPC method independently.
+func TestTableShim_PerScopeDiversion(t *testing.T) {
+	diverter := btransport.NewDiverter(0.0)
+	diverter.ApplySessionClientConfiguration(&btpb.SessionClientConfiguration{
+		SessionDiversionConfiguration: &btpb.SessionDiversionConfiguration{
+			DiversionStrategy: &btpb.SessionDiversionConfiguration_PerScopeDiversion_{
+				PerScopeDiversion: &btpb.SessionDiversionConfiguration_PerScopeDiversion{
+					ScopeDiversions: map[string]*btpb.SessionScopeDiversionConfiguration{
+						btransport.ScopeMethodReadRow:           {SessionLoad: 1.0},
+						btransport.ScopeMethodMutateRow:         {SessionLoad: 0.0},
+						btransport.ScopeMethodCheckAndMutateRow: {SessionLoad: 1.0},
+						// ReadModifyWriteRow omitted -> defaults to 0.0 (classic)
+					},
+				},
+			},
+		},
+	})
+
+	sess := &mockSessionTable{
+		readRowFn: func(ctx context.Context, req *btpb.SessionReadRowRequest) (*btpb.SessionReadRowResponse, error) {
+			return &btpb.SessionReadRowResponse{}, nil
+		},
+		checkAndMutateRowFn: func(ctx context.Context, req *btpb.SessionCheckAndMutateRowRequest) (*btpb.SessionCheckAndMutateRowResponse, error) {
+			return &btpb.SessionCheckAndMutateRowResponse{PredicateMatched: true}, nil
+		},
+	}
+	classic := &mockClassicTable{
+		rmwFn: func(ctx context.Context, row string, m *ReadModifyWrite) (Row, error) {
+			return Row{"f": []ReadItem{{Row: row, Column: "f:q", Value: []byte("classic")}}}, nil
+		},
+	}
+	shim := NewTableShim(classic, sess, diverter)
+	ctx := context.Background()
+
+	// 1. ReadRow & single-row ReadRows have method:Bigtable.ReadRow = 1.0 -> session
+	if _, err := shim.ReadRow(ctx, "rk1"); err != nil {
+		t.Fatalf("ReadRow err = %v", err)
+	}
+	if err := shim.ReadRows(ctx, SingleRow("rk2"), func(Row) bool { return true }); err != nil {
+		t.Fatalf("ReadRows(SingleRow) err = %v", err)
+	}
+	if sess.readRowCalls != 2 || classic.readRowCalls != 0 {
+		t.Errorf("ReadRow/SingleRow ReadRows: sess.readRowCalls=%d classic.readRowCalls=%d, want 2 / 0", sess.readRowCalls, classic.readRowCalls)
+	}
+
+	// 2. Non-conditional Apply has method:Bigtable.MutateRow = 0.0 -> classic
+	mut := NewMutation()
+	mut.Set("f", "q", 1000, []byte("v"))
+	if err := shim.Apply(ctx, "rk1", mut); err != nil {
+		t.Fatalf("Apply(non-conditional) err = %v", err)
+	}
+	if sess.mutateRowCalls != 0 || classic.applyCalls != 1 {
+		t.Errorf("Apply(non-conditional): sess.mutateRowCalls=%d classic.applyCalls=%d, want 0 / 1", sess.mutateRowCalls, classic.applyCalls)
+	}
+
+	// 3. Conditional Apply has method:Bigtable.CheckAndMutateRow = 1.0 -> session
+	condMut := NewCondMutation(PassAllFilter(), mut, nil)
+	if err := shim.Apply(ctx, "rk1", condMut); err != nil {
+		t.Fatalf("Apply(conditional) err = %v", err)
+	}
+	if sess.checkAndMutateRowCalls != 1 || classic.applyCalls != 1 {
+		t.Errorf("Apply(conditional): sess.checkAndMutateRowCalls=%d classic.applyCalls=%d, want 1 / 1", sess.checkAndMutateRowCalls, classic.applyCalls)
+	}
+
+	// 4. ApplyReadModifyWrite is omitted from ScopeDiversions (0.0) -> classic
+	rmw := NewReadModifyWrite()
+	rmw.AppendValue("f", "q", []byte("x"))
+	if _, err := shim.ApplyReadModifyWrite(ctx, "rk1", rmw); err != nil {
+		t.Fatalf("ApplyReadModifyWrite err = %v", err)
+	}
+	if sess.readModifyWriteRowCalls != 0 || classic.rmwCalls != 1 {
+		t.Errorf("ApplyReadModifyWrite: sess.readModifyWriteRowCalls=%d classic.rmwCalls=%d, want 0 / 1", sess.readModifyWriteRowCalls, classic.rmwCalls)
 	}
 }
