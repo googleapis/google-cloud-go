@@ -17,6 +17,10 @@
 // Package hypercomputecluster is an auto-generated package for the
 // Cluster Director API.
 //
+// The Cluster Director API lets you deploy, manage, and monitor clusters
+// that run artificial intelligence (AI), machine learning (ML), or high
+// performance computing (HPC) workloads.
+//
 //	NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //
 // # General documentation

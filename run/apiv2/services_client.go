@@ -1059,7 +1059,9 @@ func (c *servicesRESTClient) CreateService(ctx context.Context, req *runpb.Creat
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
-	params.Add("serviceId", fmt.Sprintf("%v", req.GetServiceId()))
+	if req.GetServiceId() != "" {
+		params.Add("serviceId", fmt.Sprintf("%v", req.GetServiceId()))
+	}
 	if req.GetValidateOnly() {
 		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
 	}
@@ -1301,6 +1303,9 @@ func (c *servicesRESTClient) UpdateService(ctx context.Context, req *runpb.Updat
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetAllowMissing() {
 		params.Add("allowMissing", fmt.Sprintf("%v", req.GetAllowMissing()))
+	}
+	if req.GetForceNewRevision() {
+		params.Add("forceNewRevision", fmt.Sprintf("%v", req.GetForceNewRevision()))
 	}
 	if req.GetUpdateMask() != nil {
 		field, err := protojson.Marshal(req.GetUpdateMask())

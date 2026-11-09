@@ -25,12 +25,14 @@ import (
 	sync "sync"
 	unsafe "unsafe"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	api "google.golang.org/genproto/googleapis/api"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
+	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -41,13 +43,74 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Restart policy options for the instance. If not provided, the default is
+// `ON_FAILURE`.
+type Instance_RestartPolicy int32
+
+const (
+	// Unspecified restart policy.
+	Instance_RESTART_POLICY_UNSPECIFIED Instance_RestartPolicy = 0
+	// Always restart the instance.
+	Instance_ALWAYS Instance_RestartPolicy = 1
+	// Restart if the instance terminates with non-zero exit code.
+	Instance_ON_FAILURE Instance_RestartPolicy = 2
+	// Never restart the instance.
+	Instance_NEVER Instance_RestartPolicy = 3
+)
+
+// Enum value maps for Instance_RestartPolicy.
+var (
+	Instance_RestartPolicy_name = map[int32]string{
+		0: "RESTART_POLICY_UNSPECIFIED",
+		1: "ALWAYS",
+		2: "ON_FAILURE",
+		3: "NEVER",
+	}
+	Instance_RestartPolicy_value = map[string]int32{
+		"RESTART_POLICY_UNSPECIFIED": 0,
+		"ALWAYS":                     1,
+		"ON_FAILURE":                 2,
+		"NEVER":                      3,
+	}
+)
+
+func (x Instance_RestartPolicy) Enum() *Instance_RestartPolicy {
+	p := new(Instance_RestartPolicy)
+	*p = x
+	return p
+}
+
+func (x Instance_RestartPolicy) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Instance_RestartPolicy) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_run_v2_instance_proto_enumTypes[0].Descriptor()
+}
+
+func (Instance_RestartPolicy) Type() protoreflect.EnumType {
+	return &file_google_cloud_run_v2_instance_proto_enumTypes[0]
+}
+
+func (x Instance_RestartPolicy) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Instance_RestartPolicy.Descriptor instead.
+func (Instance_RestartPolicy) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_run_v2_instance_proto_rawDescGZIP(), []int{8, 0}
+}
+
 type CreateInstanceRequest struct {
-	state    protoimpl.MessageState `protogen:"open.v1"`
-	Parent   string                 `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	Instance *Instance              `protobuf:"bytes,2,opt,name=instance,proto3" json:"instance,omitempty"`
-	// Required. The unique identifier for the Instance. It must begin with
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The location and project in which this Instance should be
+	// created.
+	Parent   string    `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
+	Instance *Instance `protobuf:"bytes,2,opt,name=instance,proto3" json:"instance,omitempty"`
+	// Optional. The unique identifier for the Instance. It must begin with
 	// letter, and cannot end with hyphen; must contain fewer than 50 characters.
 	// The name of the instance becomes {parent}/instances/{instance_id}.
+	// If not provided, the server will generate a unique `instance_id`.
 	InstanceId string `protobuf:"bytes,3,opt,name=instance_id,json=instanceId,proto3" json:"instance_id,omitempty"`
 	// Optional. Indicates that the request should be validated and default values
 	// populated, without persisting the request or creating any resources.
@@ -114,16 +177,93 @@ func (x *CreateInstanceRequest) GetValidateOnly() bool {
 	return false
 }
 
+// Request message for updating an Instance.
+type UpdateInstanceRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. The list of fields to be updated.
+	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,1,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
+	// Required. The Instance to be updated.
+	Instance *Instance `protobuf:"bytes,2,opt,name=instance,proto3" json:"instance,omitempty"`
+	// Optional. Indicates that the request should be validated and default values
+	// populated, without persisting the request or updating any resources.
+	ValidateOnly bool `protobuf:"varint,3,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
+	// Optional. If set to `true`, and if the Instance does not exist, it will
+	// create a new one. The caller must have `run.instances.create` permissions
+	// if this is set to `true` and the Instance does not exist.
+	AllowMissing  bool `protobuf:"varint,4,opt,name=allow_missing,json=allowMissing,proto3" json:"allow_missing,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateInstanceRequest) Reset() {
+	*x = UpdateInstanceRequest{}
+	mi := &file_google_cloud_run_v2_instance_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateInstanceRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateInstanceRequest) ProtoMessage() {}
+
+func (x *UpdateInstanceRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_run_v2_instance_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateInstanceRequest.ProtoReflect.Descriptor instead.
+func (*UpdateInstanceRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_run_v2_instance_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *UpdateInstanceRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
+	if x != nil {
+		return x.UpdateMask
+	}
+	return nil
+}
+
+func (x *UpdateInstanceRequest) GetInstance() *Instance {
+	if x != nil {
+		return x.Instance
+	}
+	return nil
+}
+
+func (x *UpdateInstanceRequest) GetValidateOnly() bool {
+	if x != nil {
+		return x.ValidateOnly
+	}
+	return false
+}
+
+func (x *UpdateInstanceRequest) GetAllowMissing() bool {
+	if x != nil {
+		return x.AllowMissing
+	}
+	return false
+}
+
 type GetInstanceRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The name of the Instance to retrieve.
+	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GetInstanceRequest) Reset() {
 	*x = GetInstanceRequest{}
-	mi := &file_google_cloud_run_v2_instance_proto_msgTypes[1]
+	mi := &file_google_cloud_run_v2_instance_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -135,7 +275,7 @@ func (x *GetInstanceRequest) String() string {
 func (*GetInstanceRequest) ProtoMessage() {}
 
 func (x *GetInstanceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_run_v2_instance_proto_msgTypes[1]
+	mi := &file_google_cloud_run_v2_instance_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -148,7 +288,7 @@ func (x *GetInstanceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetInstanceRequest.ProtoReflect.Descriptor instead.
 func (*GetInstanceRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_run_v2_instance_proto_rawDescGZIP(), []int{1}
+	return file_google_cloud_run_v2_instance_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *GetInstanceRequest) GetName() string {
@@ -160,7 +300,8 @@ func (x *GetInstanceRequest) GetName() string {
 
 type DeleteInstanceRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	Name  string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Required. The name of the Instance to delete.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. Indicates that the request should be validated without actually
 	// deleting any resources.
 	ValidateOnly bool `protobuf:"varint,2,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
@@ -173,7 +314,7 @@ type DeleteInstanceRequest struct {
 
 func (x *DeleteInstanceRequest) Reset() {
 	*x = DeleteInstanceRequest{}
-	mi := &file_google_cloud_run_v2_instance_proto_msgTypes[2]
+	mi := &file_google_cloud_run_v2_instance_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -185,7 +326,7 @@ func (x *DeleteInstanceRequest) String() string {
 func (*DeleteInstanceRequest) ProtoMessage() {}
 
 func (x *DeleteInstanceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_run_v2_instance_proto_msgTypes[2]
+	mi := &file_google_cloud_run_v2_instance_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -198,7 +339,7 @@ func (x *DeleteInstanceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteInstanceRequest.ProtoReflect.Descriptor instead.
 func (*DeleteInstanceRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_run_v2_instance_proto_rawDescGZIP(), []int{2}
+	return file_google_cloud_run_v2_instance_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *DeleteInstanceRequest) GetName() string {
@@ -226,8 +367,6 @@ func (x *DeleteInstanceRequest) GetEtag() string {
 type ListInstancesRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The location and project to list resources on.
-	// Format: projects/{project}/locations/{location}, where {project} can be
-	// project id or number.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. Maximum number of Instances to return in this call.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
@@ -243,7 +382,7 @@ type ListInstancesRequest struct {
 
 func (x *ListInstancesRequest) Reset() {
 	*x = ListInstancesRequest{}
-	mi := &file_google_cloud_run_v2_instance_proto_msgTypes[3]
+	mi := &file_google_cloud_run_v2_instance_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -255,7 +394,7 @@ func (x *ListInstancesRequest) String() string {
 func (*ListInstancesRequest) ProtoMessage() {}
 
 func (x *ListInstancesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_run_v2_instance_proto_msgTypes[3]
+	mi := &file_google_cloud_run_v2_instance_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -268,7 +407,7 @@ func (x *ListInstancesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListInstancesRequest.ProtoReflect.Descriptor instead.
 func (*ListInstancesRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_run_v2_instance_proto_rawDescGZIP(), []int{3}
+	return file_google_cloud_run_v2_instance_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *ListInstancesRequest) GetParent() string {
@@ -313,7 +452,7 @@ type ListInstancesResponse struct {
 
 func (x *ListInstancesResponse) Reset() {
 	*x = ListInstancesResponse{}
-	mi := &file_google_cloud_run_v2_instance_proto_msgTypes[4]
+	mi := &file_google_cloud_run_v2_instance_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -325,7 +464,7 @@ func (x *ListInstancesResponse) String() string {
 func (*ListInstancesResponse) ProtoMessage() {}
 
 func (x *ListInstancesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_run_v2_instance_proto_msgTypes[4]
+	mi := &file_google_cloud_run_v2_instance_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -338,7 +477,7 @@ func (x *ListInstancesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListInstancesResponse.ProtoReflect.Descriptor instead.
 func (*ListInstancesResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_run_v2_instance_proto_rawDescGZIP(), []int{4}
+	return file_google_cloud_run_v2_instance_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *ListInstancesResponse) GetInstances() []*Instance {
@@ -359,9 +498,6 @@ func (x *ListInstancesResponse) GetNextPageToken() string {
 type StopInstanceRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The name of the Instance to stop.
-	// Format:
-	// `projects/{project}/locations/{location}/instances/{instance}`,
-	// where `{project}` can be project id or number.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. Indicates that the request should be validated without actually
 	// stopping any resources.
@@ -375,7 +511,7 @@ type StopInstanceRequest struct {
 
 func (x *StopInstanceRequest) Reset() {
 	*x = StopInstanceRequest{}
-	mi := &file_google_cloud_run_v2_instance_proto_msgTypes[5]
+	mi := &file_google_cloud_run_v2_instance_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -387,7 +523,7 @@ func (x *StopInstanceRequest) String() string {
 func (*StopInstanceRequest) ProtoMessage() {}
 
 func (x *StopInstanceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_run_v2_instance_proto_msgTypes[5]
+	mi := &file_google_cloud_run_v2_instance_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -400,7 +536,7 @@ func (x *StopInstanceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StopInstanceRequest.ProtoReflect.Descriptor instead.
 func (*StopInstanceRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_run_v2_instance_proto_rawDescGZIP(), []int{5}
+	return file_google_cloud_run_v2_instance_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *StopInstanceRequest) GetName() string {
@@ -427,10 +563,7 @@ func (x *StopInstanceRequest) GetEtag() string {
 // Request message for starting an Instance.
 type StartInstanceRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The name of the Instance to stop.
-	// Format:
-	// `projects/{project}/locations/{location}/instances/{instance}`,
-	// where `{project}` can be project id or number.
+	// Required. The name of the Instance to start.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. Indicates that the request should be validated without actually
 	// stopping any resources.
@@ -444,7 +577,7 @@ type StartInstanceRequest struct {
 
 func (x *StartInstanceRequest) Reset() {
 	*x = StartInstanceRequest{}
-	mi := &file_google_cloud_run_v2_instance_proto_msgTypes[6]
+	mi := &file_google_cloud_run_v2_instance_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -456,7 +589,7 @@ func (x *StartInstanceRequest) String() string {
 func (*StartInstanceRequest) ProtoMessage() {}
 
 func (x *StartInstanceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_run_v2_instance_proto_msgTypes[6]
+	mi := &file_google_cloud_run_v2_instance_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -469,7 +602,7 @@ func (x *StartInstanceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartInstanceRequest.ProtoReflect.Descriptor instead.
 func (*StartInstanceRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_run_v2_instance_proto_rawDescGZIP(), []int{6}
+	return file_google_cloud_run_v2_instance_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *StartInstanceRequest) GetName() string {
@@ -497,12 +630,9 @@ func (x *StartInstanceRequest) GetEtag() string {
 // region.
 type Instance struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The fully qualified name of this Instance. In CreateInstanceRequest, this
-	// field is ignored, and instead composed from CreateInstanceRequest.parent
-	// and CreateInstanceRequest.instance_id.
-	//
-	// Format:
-	// projects/{project}/locations/{location}/instances/{instance_id}
+	// The fully qualified name of this Instance. In `CreateInstanceRequest`, this
+	// field is ignored, and instead composed from `CreateInstanceRequest.parent`
+	// and `CreateInstanceRequest.instance_id`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// User-provided description of the Instance. This field currently has a
 	// 512-character limit.
@@ -513,7 +643,7 @@ type Instance struct {
 	Uid string `protobuf:"bytes,4,opt,name=uid,proto3" json:"uid,omitempty"`
 	// Output only. A number that monotonically increases every time the user
 	// modifies the desired state.
-	// Please note that unlike v1, this is an int64 value. As with most Google
+	// Please note that unlike v1, this is an `int64` value. As with most Google
 	// APIs, its JSON representation will be a `string` instead of an `integer`.
 	Generation  int64             `protobuf:"varint,5,opt,name=generation,proto3" json:"generation,omitempty"`
 	Labels      map[string]string `protobuf:"bytes,6,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
@@ -538,16 +668,13 @@ type Instance struct {
 	// The launch stage as defined by [Google Cloud Platform
 	//
 	//	Launch Stages](https://cloud.google.com/terms/launch-stages).
-	//	Cloud Run supports `ALPHA`, `BETA`, and `GA`. If no value is specified, GA
-	//	is assumed.
-	//	Set the launch stage to a preview stage on input to allow use of preview
-	//	features in that stage. On read (or output), describes whether the
-	//	resource uses preview features.
+	//	Cloud Run supports `ALPHA`, `BETA`, and `GA`. If no value is specified,
+	//	`GA` is assumed. Set the launch stage to a preview stage on input to allow
+	//	use of preview features in that stage. On read (or output), describes
+	//	whether the resource uses preview features.
 	//
-	// <p>
-	//
-	//	For example, if ALPHA is provided as input, but only BETA and GA-level
-	//	features are used, this field will be BETA on output.
+	//	For example, if `ALPHA` is provided as input, but only `BETA` and
+	//	`GA`-level features are used, this field will be `BETA` on output.
 	LaunchStage api.LaunchStage `protobuf:"varint,16,opt,name=launch_stage,json=launchStage,proto3,enum=google.api.LaunchStage" json:"launch_stage,omitempty"`
 	// Settings for the Binary Authorization feature.
 	BinaryAuthorization *BinaryAuthorization `protobuf:"bytes,17,opt,name=binary_authorization,json=binaryAuthorization,proto3" json:"binary_authorization,omitempty"`
@@ -559,6 +686,8 @@ type Instance struct {
 	// Required. Holds the single container that defines the unit of execution for
 	// this Instance.
 	Containers []*Container `protobuf:"bytes,20,rep,name=containers,proto3" json:"containers,omitempty"`
+	// Optional. Configuration for sandboxes.
+	Sandboxes *SandboxConfiguration `protobuf:"bytes,34,opt,name=sandboxes,proto3" json:"sandboxes,omitempty"`
 	// A list of Volumes to make available to containers.
 	Volumes []*Volume `protobuf:"bytes,21,rep,name=volumes,proto3" json:"volumes,omitempty"`
 	// A reference to a customer managed encryption key (CMEK) to use to encrypt
@@ -567,7 +696,7 @@ type Instance struct {
 	EncryptionKey string `protobuf:"bytes,22,opt,name=encryption_key,json=encryptionKey,proto3" json:"encryption_key,omitempty"`
 	// The action to take if the encryption key is revoked.
 	EncryptionKeyRevocationAction EncryptionKeyRevocationAction `protobuf:"varint,24,opt,name=encryption_key_revocation_action,json=encryptionKeyRevocationAction,proto3,enum=google.cloud.run.v2.EncryptionKeyRevocationAction" json:"encryption_key_revocation_action,omitempty"`
-	// If encryption_key_revocation_action is SHUTDOWN, the duration before
+	// If `encryption_key_revocation_action` is `SHUTDOWN`, the duration before
 	// shutting down all instances. The minimum increment is 1 hour.
 	EncryptionKeyShutdownDuration *durationpb.Duration `protobuf:"bytes,25,opt,name=encryption_key_shutdown_duration,json=encryptionKeyShutdownDuration,proto3" json:"encryption_key_shutdown_duration,omitempty"`
 	// Optional. The node selector for the instance.
@@ -576,17 +705,23 @@ type Instance struct {
 	GpuZonalRedundancyDisabled *bool `protobuf:"varint,27,opt,name=gpu_zonal_redundancy_disabled,json=gpuZonalRedundancyDisabled,proto3,oneof" json:"gpu_zonal_redundancy_disabled,omitempty"`
 	// Optional. Provides the ingress settings for this Instance. On output,
 	// returns the currently observed ingress settings, or
-	// INGRESS_TRAFFIC_UNSPECIFIED if no revision is active.
+	// `INGRESS_TRAFFIC_UNSPECIFIED` if no revision is active.
 	Ingress IngressTraffic `protobuf:"varint,28,opt,name=ingress,proto3,enum=google.cloud.run.v2.IngressTraffic" json:"ingress,omitempty"`
-	// Optional. Disables IAM permission check for run.routes.invoke for callers
+	// Optional. Disables IAM permission check for `run.routes.invoke` for callers
 	// of this Instance. For more information, visit
 	// https://cloud.google.com/run/docs/securing/managing-access#invoker_check.
 	InvokerIamDisabled bool `protobuf:"varint,29,opt,name=invoker_iam_disabled,json=invokerIamDisabled,proto3" json:"invoker_iam_disabled,omitempty"`
+	// Optional. Disables public resolution of the default URI of this Instance.
+	DefaultUriDisabled bool `protobuf:"varint,33,opt,name=default_uri_disabled,json=defaultUriDisabled,proto3" json:"default_uri_disabled,omitempty"`
 	// Optional. IAP settings on the Instance.
 	IapEnabled bool `protobuf:"varint,30,opt,name=iap_enabled,json=iapEnabled,proto3" json:"iap_enabled,omitempty"`
+	// Optional. Enables SSH access to the Instance.
+	SshEnabled *bool `protobuf:"varint,32,opt,name=ssh_enabled,json=sshEnabled,proto3,oneof" json:"ssh_enabled,omitempty"`
+	// Optional. Restart policy for the Instance.
+	RestartPolicy Instance_RestartPolicy `protobuf:"varint,35,opt,name=restart_policy,json=restartPolicy,proto3,enum=google.cloud.run.v2.Instance_RestartPolicy" json:"restart_policy,omitempty"`
 	// Output only. The generation of this Instance currently serving traffic. See
 	// comments in `reconciling` for additional information on reconciliation
-	// process in Cloud Run. Please note that unlike v1, this is an int64 value.
+	// process in Cloud Run. Please note that unlike v1, this is an `int64` value.
 	// As with most Google APIs, its JSON representation will be a `string`
 	// instead of an `integer`.
 	ObservedGeneration int64 `protobuf:"varint,40,opt,name=observed_generation,json=observedGeneration,proto3" json:"observed_generation,omitempty"`
@@ -609,8 +744,8 @@ type Instance struct {
 	SatisfiesPzs bool `protobuf:"varint,46,opt,name=satisfies_pzs,json=satisfiesPzs,proto3" json:"satisfies_pzs,omitempty"`
 	// Output only. All URLs serving traffic for this Instance.
 	Urls []string `protobuf:"bytes,45,rep,name=urls,proto3" json:"urls,omitempty"`
-	// Output only. Returns true if the Instance is currently being acted upon by
-	// the system to bring it into the desired state.
+	// Output only. Returns `true` if the Instance is currently being acted upon
+	// by the system to bring it into the desired state.
 	//
 	// When a new Instance is created, or an existing one is updated, Cloud Run
 	// will asynchronously perform all necessary steps to bring the Instance to
@@ -618,7 +753,7 @@ type Instance struct {
 	// reconciliation is in process, `observed_generation` will have a transient
 	// value that might mismatch the intended state.
 	//
-	//	Once reconciliation is over (and this field is false), there are two
+	//	Once reconciliation is over (and this field is `false`), there are two
 	//
 	// possible outcomes: reconciliation succeeded and the serving state matches
 	// the Instance, or there was an error, and reconciliation failed. This state
@@ -633,7 +768,7 @@ type Instance struct {
 
 func (x *Instance) Reset() {
 	*x = Instance{}
-	mi := &file_google_cloud_run_v2_instance_proto_msgTypes[7]
+	mi := &file_google_cloud_run_v2_instance_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -645,7 +780,7 @@ func (x *Instance) String() string {
 func (*Instance) ProtoMessage() {}
 
 func (x *Instance) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_run_v2_instance_proto_msgTypes[7]
+	mi := &file_google_cloud_run_v2_instance_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -658,7 +793,7 @@ func (x *Instance) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Instance.ProtoReflect.Descriptor instead.
 func (*Instance) Descriptor() ([]byte, []int) {
-	return file_google_cloud_run_v2_instance_proto_rawDescGZIP(), []int{7}
+	return file_google_cloud_run_v2_instance_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *Instance) GetName() string {
@@ -794,6 +929,13 @@ func (x *Instance) GetContainers() []*Container {
 	return nil
 }
 
+func (x *Instance) GetSandboxes() *SandboxConfiguration {
+	if x != nil {
+		return x.Sandboxes
+	}
+	return nil
+}
+
 func (x *Instance) GetVolumes() []*Volume {
 	if x != nil {
 		return x.Volumes
@@ -850,11 +992,32 @@ func (x *Instance) GetInvokerIamDisabled() bool {
 	return false
 }
 
+func (x *Instance) GetDefaultUriDisabled() bool {
+	if x != nil {
+		return x.DefaultUriDisabled
+	}
+	return false
+}
+
 func (x *Instance) GetIapEnabled() bool {
 	if x != nil {
 		return x.IapEnabled
 	}
 	return false
+}
+
+func (x *Instance) GetSshEnabled() bool {
+	if x != nil && x.SshEnabled != nil {
+		return *x.SshEnabled
+	}
+	return false
+}
+
+func (x *Instance) GetRestartPolicy() Instance_RestartPolicy {
+	if x != nil {
+		return x.RestartPolicy
+	}
+	return Instance_RESTART_POLICY_UNSPECIFIED
 }
 
 func (x *Instance) GetObservedGeneration() int64 {
@@ -924,13 +1087,19 @@ var File_google_cloud_run_v2_instance_proto protoreflect.FileDescriptor
 
 const file_google_cloud_run_v2_instance_proto_rawDesc = "" +
 	"\n" +
-	"\"google/cloud/run/v2/instance.proto\x12\x13google.cloud.run.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1dgoogle/api/launch_stage.proto\x1a\x19google/api/resource.proto\x1a\x18google/api/routing.proto\x1a#google/cloud/run/v2/condition.proto\x1a*google/cloud/run/v2/container_status.proto\x1a!google/cloud/run/v2/k8s.min.proto\x1a)google/cloud/run/v2/vendor_settings.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe8\x01\n" +
+	"\"google/cloud/run/v2/instance.proto\x12\x13google.cloud.run.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1dgoogle/api/launch_stage.proto\x1a\x19google/api/resource.proto\x1a\x18google/api/routing.proto\x1a#google/cloud/run/v2/condition.proto\x1a*google/cloud/run/v2/container_status.proto\x1a!google/cloud/run/v2/k8s.min.proto\x1a!google/cloud/run/v2/sandbox.proto\x1a)google/cloud/run/v2/vendor_settings.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe8\x01\n" +
 	"\x15CreateInstanceRequest\x12<\n" +
 	"\x06parent\x18\x01 \x01(\tB$\xe2A\x01\x02\xfaA\x1d\x12\x1brun.googleapis.com/InstanceR\x06parent\x12?\n" +
 	"\binstance\x18\x02 \x01(\v2\x1d.google.cloud.run.v2.InstanceB\x04\xe2A\x01\x02R\binstance\x12%\n" +
-	"\vinstance_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"\vinstance_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\n" +
 	"instanceId\x12)\n" +
-	"\rvalidate_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"N\n" +
+	"\rvalidate_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xf1\x01\n" +
+	"\x15UpdateInstanceRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12?\n" +
+	"\binstance\x18\x02 \x01(\v2\x1d.google.cloud.run.v2.InstanceB\x04\xe2A\x01\x02R\binstance\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12)\n" +
+	"\rallow_missing\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fallowMissing\"N\n" +
 	"\x12GetInstanceRequest\x128\n" +
 	"\x04name\x18\x01 \x01(\tB$\xe2A\x01\x02\xfaA\x1d\n" +
 	"\x1brun.googleapis.com/InstanceR\x04name\"\x96\x01\n" +
@@ -957,7 +1126,7 @@ const file_google_cloud_run_v2_instance_proto_rawDesc = "" +
 	"\x04name\x18\x01 \x01(\tB$\xe2A\x01\x02\xfaA\x1d\n" +
 	"\x1brun.googleapis.com/InstanceR\x04name\x12)\n" +
 	"\rvalidate_only\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12\x18\n" +
-	"\x04etag\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"\x82\x13\n" +
+	"\x04etag\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"\xf7\x15\n" +
 	"\bInstance\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x03 \x01(\tR\vdescription\x12\x16\n" +
@@ -987,7 +1156,8 @@ const file_google_cloud_run_v2_instance_proto_rawDesc = "" +
 	"\x0fservice_account\x18\x13 \x01(\tR\x0eserviceAccount\x12D\n" +
 	"\n" +
 	"containers\x18\x14 \x03(\v2\x1e.google.cloud.run.v2.ContainerB\x04\xe2A\x01\x02R\n" +
-	"containers\x125\n" +
+	"containers\x12M\n" +
+	"\tsandboxes\x18\" \x01(\v2).google.cloud.run.v2.SandboxConfigurationB\x04\xe2A\x01\x01R\tsandboxes\x125\n" +
 	"\avolumes\x18\x15 \x03(\v2\x1b.google.cloud.run.v2.VolumeR\avolumes\x12M\n" +
 	"\x0eencryption_key\x18\x16 \x01(\tB&\xfaA#\n" +
 	"!cloudkms.googleapis.com/CryptoKeyR\rencryptionKey\x12{\n" +
@@ -996,9 +1166,13 @@ const file_google_cloud_run_v2_instance_proto_rawDesc = "" +
 	"\rnode_selector\x18\x1a \x01(\v2!.google.cloud.run.v2.NodeSelectorB\x04\xe2A\x01\x01R\fnodeSelector\x12L\n" +
 	"\x1dgpu_zonal_redundancy_disabled\x18\x1b \x01(\bB\x04\xe2A\x01\x01H\x00R\x1agpuZonalRedundancyDisabled\x88\x01\x01\x12C\n" +
 	"\aingress\x18\x1c \x01(\x0e2#.google.cloud.run.v2.IngressTrafficB\x04\xe2A\x01\x01R\aingress\x126\n" +
-	"\x14invoker_iam_disabled\x18\x1d \x01(\bB\x04\xe2A\x01\x01R\x12invokerIamDisabled\x12%\n" +
+	"\x14invoker_iam_disabled\x18\x1d \x01(\bB\x04\xe2A\x01\x01R\x12invokerIamDisabled\x126\n" +
+	"\x14default_uri_disabled\x18! \x01(\bB\x04\xe2A\x01\x01R\x12defaultUriDisabled\x12%\n" +
 	"\viap_enabled\x18\x1e \x01(\bB\x04\xe2A\x01\x01R\n" +
-	"iapEnabled\x125\n" +
+	"iapEnabled\x12*\n" +
+	"\vssh_enabled\x18  \x01(\bB\x04\xe2A\x01\x01H\x01R\n" +
+	"sshEnabled\x88\x01\x01\x12X\n" +
+	"\x0erestart_policy\x18# \x01(\x0e2+.google.cloud.run.v2.Instance.RestartPolicyB\x04\xe2A\x01\x01R\rrestartPolicy\x125\n" +
 	"\x13observed_generation\x18( \x01(\x03B\x04\xe2A\x01\x03R\x12observedGeneration\x12\x1d\n" +
 	"\alog_uri\x18) \x01(\tB\x04\xe2A\x01\x03R\x06logUri\x12S\n" +
 	"\x12terminal_condition\x18* \x01(\v2\x1e.google.cloud.run.v2.ConditionB\x04\xe2A\x01\x03R\x11terminalCondition\x12D\n" +
@@ -1015,14 +1189,24 @@ const file_google_cloud_run_v2_instance_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a>\n" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:s\xeaAp\n" +
-	"\x1brun.googleapis.com/Instance\x12<projects/{project}/locations/{location}/instances/{instance}*\tinstances2\binstanceB \n" +
-	"\x1e_gpu_zonal_redundancy_disabled2\xce\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"V\n" +
+	"\rRestartPolicy\x12\x1e\n" +
+	"\x1aRESTART_POLICY_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
+	"\x06ALWAYS\x10\x01\x12\x0e\n" +
+	"\n" +
+	"ON_FAILURE\x10\x02\x12\t\n" +
+	"\x05NEVER\x10\x03:s\xeaAp\n" +
+	"\x1brun.googleapis.com/Instance\x12<projects/{project}/locations/{location}/instances/{instance}*\tinstances2\binstanceB \n" +
+	"\x1e_gpu_zonal_redundancy_disabledB\x0e\n" +
+	"\f_ssh_enabled2\x9c\x11\n" +
 	"\tInstances\x12\xf9\x01\n" +
 	"\x0eCreateInstance\x12*.google.cloud.run.v2.CreateInstanceRequest\x1a\x1d.google.longrunning.Operation\"\x9b\x01\xcaA\x14\n" +
 	"\bInstance\x12\bInstance\xdaA\x0fparent,instance\x82\xd3\xe4\x93\x029:\binstance\"-/v2/{parent=projects/*/locations/*}/instances\x8a\xd3\xe4\x93\x02-\x12+\n" +
-	"\x06parent\x12!projects/*/locations/{location=*}\x12\xe5\x01\n" +
+	"\x06parent\x12!projects/*/locations/{location=*}\x12\x91\x02\n" +
+	"\x0eUpdateInstance\x12*.google.cloud.run.v2.UpdateInstanceRequest\x1a\x1d.google.longrunning.Operation\"\xb3\x01\xcaA\x14\n" +
+	"\bInstance\x12\bInstance\xdaA\x14instance,update_mask\x82\xd3\xe4\x93\x02B:\binstance26/v2/{instance.name=projects/*/locations/*/instances/*}\x8a\xd3\xe4\x93\x027\x125\n" +
+	"\rinstance.name\x12$projects/*/locations/{location=*}/**\x12\xe5\x01\n" +
 	"\x0eDeleteInstance\x12*.google.cloud.run.v2.DeleteInstanceRequest\x1a\x1d.google.longrunning.Operation\"\x87\x01\xcaA\x14\n" +
 	"\bInstance\x12\bInstance\xdaA\x04name\x82\xd3\xe4\x93\x02/*-/v2/{name=projects/*/locations/*/instances/*}\x8a\xd3\xe4\x93\x02.\x12,\n" +
 	"\x04name\x12$projects/*/locations/{location=*}/**\x12\xc7\x01\n" +
@@ -1033,7 +1217,10 @@ const file_google_cloud_run_v2_instance_proto_rawDesc = "" +
 	"\fStopInstance\x12(.google.cloud.run.v2.StopInstanceRequest\x1a\x1d.google.longrunning.Operation\"[\xcaA\x14\n" +
 	"\bInstance\x12\bInstance\xdaA\x04name\x82\xd3\xe4\x93\x027:\x01*\"2/v2/{name=projects/*/locations/*/instances/*}:stop\x12\xb7\x01\n" +
 	"\rStartInstance\x12).google.cloud.run.v2.StartInstanceRequest\x1a\x1d.google.longrunning.Operation\"\\\xcaA\x14\n" +
-	"\bInstance\x12\bInstance\xdaA\x04name\x82\xd3\xe4\x93\x028:\x01*\"3/v2/{name=projects/*/locations/*/instances/*}:start\x1aF\xcaA\x12run.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformBF\n" +
+	"\bInstance\x12\bInstance\xdaA\x04name\x82\xd3\xe4\x93\x028:\x01*\"3/v2/{name=projects/*/locations/*/instances/*}:start\x12\x91\x01\n" +
+	"\fGetIamPolicy\x12\".google.iam.v1.GetIamPolicyRequest\x1a\x15.google.iam.v1.Policy\"F\x82\xd3\xe4\x93\x02@\x12>/v2/{resource=projects/*/locations/*/instances/*}:getIamPolicy\x12\x94\x01\n" +
+	"\fSetIamPolicy\x12\".google.iam.v1.SetIamPolicyRequest\x1a\x15.google.iam.v1.Policy\"I\x82\xd3\xe4\x93\x02C:\x01*\">/v2/{resource=projects/*/locations/*/instances/*}:setIamPolicy\x12\xba\x01\n" +
+	"\x12TestIamPermissions\x12(.google.iam.v1.TestIamPermissionsRequest\x1a).google.iam.v1.TestIamPermissionsResponse\"O\x82\xd3\xe4\x93\x02I:\x01*\"D/v2/{resource=projects/*/locations/*/instances/*}:testIamPermissions\x1a\x97\x01\xcaA\x12run.googleapis.com\xd2A\x7fhttps://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/run,https://www.googleapis.com/auth/run.readonlyBF\n" +
 	"\x17com.google.cloud.run.v2P\x01Z)cloud.google.com/go/run/apiv2/runpb;runpbb\x06proto3"
 
 var (
@@ -1048,70 +1235,92 @@ func file_google_cloud_run_v2_instance_proto_rawDescGZIP() []byte {
 	return file_google_cloud_run_v2_instance_proto_rawDescData
 }
 
-var file_google_cloud_run_v2_instance_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_google_cloud_run_v2_instance_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_google_cloud_run_v2_instance_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_google_cloud_run_v2_instance_proto_goTypes = []any{
-	(*CreateInstanceRequest)(nil),      // 0: google.cloud.run.v2.CreateInstanceRequest
-	(*GetInstanceRequest)(nil),         // 1: google.cloud.run.v2.GetInstanceRequest
-	(*DeleteInstanceRequest)(nil),      // 2: google.cloud.run.v2.DeleteInstanceRequest
-	(*ListInstancesRequest)(nil),       // 3: google.cloud.run.v2.ListInstancesRequest
-	(*ListInstancesResponse)(nil),      // 4: google.cloud.run.v2.ListInstancesResponse
-	(*StopInstanceRequest)(nil),        // 5: google.cloud.run.v2.StopInstanceRequest
-	(*StartInstanceRequest)(nil),       // 6: google.cloud.run.v2.StartInstanceRequest
-	(*Instance)(nil),                   // 7: google.cloud.run.v2.Instance
-	nil,                                // 8: google.cloud.run.v2.Instance.LabelsEntry
-	nil,                                // 9: google.cloud.run.v2.Instance.AnnotationsEntry
-	(*timestamppb.Timestamp)(nil),      // 10: google.protobuf.Timestamp
-	(api.LaunchStage)(0),               // 11: google.api.LaunchStage
-	(*BinaryAuthorization)(nil),        // 12: google.cloud.run.v2.BinaryAuthorization
-	(*VpcAccess)(nil),                  // 13: google.cloud.run.v2.VpcAccess
-	(*Container)(nil),                  // 14: google.cloud.run.v2.Container
-	(*Volume)(nil),                     // 15: google.cloud.run.v2.Volume
-	(EncryptionKeyRevocationAction)(0), // 16: google.cloud.run.v2.EncryptionKeyRevocationAction
-	(*durationpb.Duration)(nil),        // 17: google.protobuf.Duration
-	(*NodeSelector)(nil),               // 18: google.cloud.run.v2.NodeSelector
-	(IngressTraffic)(0),                // 19: google.cloud.run.v2.IngressTraffic
-	(*Condition)(nil),                  // 20: google.cloud.run.v2.Condition
-	(*ContainerStatus)(nil),            // 21: google.cloud.run.v2.ContainerStatus
-	(*longrunningpb.Operation)(nil),    // 22: google.longrunning.Operation
+	(Instance_RestartPolicy)(0),              // 0: google.cloud.run.v2.Instance.RestartPolicy
+	(*CreateInstanceRequest)(nil),            // 1: google.cloud.run.v2.CreateInstanceRequest
+	(*UpdateInstanceRequest)(nil),            // 2: google.cloud.run.v2.UpdateInstanceRequest
+	(*GetInstanceRequest)(nil),               // 3: google.cloud.run.v2.GetInstanceRequest
+	(*DeleteInstanceRequest)(nil),            // 4: google.cloud.run.v2.DeleteInstanceRequest
+	(*ListInstancesRequest)(nil),             // 5: google.cloud.run.v2.ListInstancesRequest
+	(*ListInstancesResponse)(nil),            // 6: google.cloud.run.v2.ListInstancesResponse
+	(*StopInstanceRequest)(nil),              // 7: google.cloud.run.v2.StopInstanceRequest
+	(*StartInstanceRequest)(nil),             // 8: google.cloud.run.v2.StartInstanceRequest
+	(*Instance)(nil),                         // 9: google.cloud.run.v2.Instance
+	nil,                                      // 10: google.cloud.run.v2.Instance.LabelsEntry
+	nil,                                      // 11: google.cloud.run.v2.Instance.AnnotationsEntry
+	(*fieldmaskpb.FieldMask)(nil),            // 12: google.protobuf.FieldMask
+	(*timestamppb.Timestamp)(nil),            // 13: google.protobuf.Timestamp
+	(api.LaunchStage)(0),                     // 14: google.api.LaunchStage
+	(*BinaryAuthorization)(nil),              // 15: google.cloud.run.v2.BinaryAuthorization
+	(*VpcAccess)(nil),                        // 16: google.cloud.run.v2.VpcAccess
+	(*Container)(nil),                        // 17: google.cloud.run.v2.Container
+	(*SandboxConfiguration)(nil),             // 18: google.cloud.run.v2.SandboxConfiguration
+	(*Volume)(nil),                           // 19: google.cloud.run.v2.Volume
+	(EncryptionKeyRevocationAction)(0),       // 20: google.cloud.run.v2.EncryptionKeyRevocationAction
+	(*durationpb.Duration)(nil),              // 21: google.protobuf.Duration
+	(*NodeSelector)(nil),                     // 22: google.cloud.run.v2.NodeSelector
+	(IngressTraffic)(0),                      // 23: google.cloud.run.v2.IngressTraffic
+	(*Condition)(nil),                        // 24: google.cloud.run.v2.Condition
+	(*ContainerStatus)(nil),                  // 25: google.cloud.run.v2.ContainerStatus
+	(*iampb.GetIamPolicyRequest)(nil),        // 26: google.iam.v1.GetIamPolicyRequest
+	(*iampb.SetIamPolicyRequest)(nil),        // 27: google.iam.v1.SetIamPolicyRequest
+	(*iampb.TestIamPermissionsRequest)(nil),  // 28: google.iam.v1.TestIamPermissionsRequest
+	(*longrunningpb.Operation)(nil),          // 29: google.longrunning.Operation
+	(*iampb.Policy)(nil),                     // 30: google.iam.v1.Policy
+	(*iampb.TestIamPermissionsResponse)(nil), // 31: google.iam.v1.TestIamPermissionsResponse
 }
 var file_google_cloud_run_v2_instance_proto_depIdxs = []int32{
-	7,  // 0: google.cloud.run.v2.CreateInstanceRequest.instance:type_name -> google.cloud.run.v2.Instance
-	7,  // 1: google.cloud.run.v2.ListInstancesResponse.instances:type_name -> google.cloud.run.v2.Instance
-	8,  // 2: google.cloud.run.v2.Instance.labels:type_name -> google.cloud.run.v2.Instance.LabelsEntry
-	9,  // 3: google.cloud.run.v2.Instance.annotations:type_name -> google.cloud.run.v2.Instance.AnnotationsEntry
-	10, // 4: google.cloud.run.v2.Instance.create_time:type_name -> google.protobuf.Timestamp
-	10, // 5: google.cloud.run.v2.Instance.update_time:type_name -> google.protobuf.Timestamp
-	10, // 6: google.cloud.run.v2.Instance.delete_time:type_name -> google.protobuf.Timestamp
-	10, // 7: google.cloud.run.v2.Instance.expire_time:type_name -> google.protobuf.Timestamp
-	11, // 8: google.cloud.run.v2.Instance.launch_stage:type_name -> google.api.LaunchStage
-	12, // 9: google.cloud.run.v2.Instance.binary_authorization:type_name -> google.cloud.run.v2.BinaryAuthorization
-	13, // 10: google.cloud.run.v2.Instance.vpc_access:type_name -> google.cloud.run.v2.VpcAccess
-	14, // 11: google.cloud.run.v2.Instance.containers:type_name -> google.cloud.run.v2.Container
-	15, // 12: google.cloud.run.v2.Instance.volumes:type_name -> google.cloud.run.v2.Volume
-	16, // 13: google.cloud.run.v2.Instance.encryption_key_revocation_action:type_name -> google.cloud.run.v2.EncryptionKeyRevocationAction
-	17, // 14: google.cloud.run.v2.Instance.encryption_key_shutdown_duration:type_name -> google.protobuf.Duration
-	18, // 15: google.cloud.run.v2.Instance.node_selector:type_name -> google.cloud.run.v2.NodeSelector
-	19, // 16: google.cloud.run.v2.Instance.ingress:type_name -> google.cloud.run.v2.IngressTraffic
-	20, // 17: google.cloud.run.v2.Instance.terminal_condition:type_name -> google.cloud.run.v2.Condition
-	20, // 18: google.cloud.run.v2.Instance.conditions:type_name -> google.cloud.run.v2.Condition
-	21, // 19: google.cloud.run.v2.Instance.container_statuses:type_name -> google.cloud.run.v2.ContainerStatus
-	0,  // 20: google.cloud.run.v2.Instances.CreateInstance:input_type -> google.cloud.run.v2.CreateInstanceRequest
-	2,  // 21: google.cloud.run.v2.Instances.DeleteInstance:input_type -> google.cloud.run.v2.DeleteInstanceRequest
-	1,  // 22: google.cloud.run.v2.Instances.GetInstance:input_type -> google.cloud.run.v2.GetInstanceRequest
-	3,  // 23: google.cloud.run.v2.Instances.ListInstances:input_type -> google.cloud.run.v2.ListInstancesRequest
-	5,  // 24: google.cloud.run.v2.Instances.StopInstance:input_type -> google.cloud.run.v2.StopInstanceRequest
-	6,  // 25: google.cloud.run.v2.Instances.StartInstance:input_type -> google.cloud.run.v2.StartInstanceRequest
-	22, // 26: google.cloud.run.v2.Instances.CreateInstance:output_type -> google.longrunning.Operation
-	22, // 27: google.cloud.run.v2.Instances.DeleteInstance:output_type -> google.longrunning.Operation
-	7,  // 28: google.cloud.run.v2.Instances.GetInstance:output_type -> google.cloud.run.v2.Instance
-	4,  // 29: google.cloud.run.v2.Instances.ListInstances:output_type -> google.cloud.run.v2.ListInstancesResponse
-	22, // 30: google.cloud.run.v2.Instances.StopInstance:output_type -> google.longrunning.Operation
-	22, // 31: google.cloud.run.v2.Instances.StartInstance:output_type -> google.longrunning.Operation
-	26, // [26:32] is the sub-list for method output_type
-	20, // [20:26] is the sub-list for method input_type
-	20, // [20:20] is the sub-list for extension type_name
-	20, // [20:20] is the sub-list for extension extendee
-	0,  // [0:20] is the sub-list for field type_name
+	9,  // 0: google.cloud.run.v2.CreateInstanceRequest.instance:type_name -> google.cloud.run.v2.Instance
+	12, // 1: google.cloud.run.v2.UpdateInstanceRequest.update_mask:type_name -> google.protobuf.FieldMask
+	9,  // 2: google.cloud.run.v2.UpdateInstanceRequest.instance:type_name -> google.cloud.run.v2.Instance
+	9,  // 3: google.cloud.run.v2.ListInstancesResponse.instances:type_name -> google.cloud.run.v2.Instance
+	10, // 4: google.cloud.run.v2.Instance.labels:type_name -> google.cloud.run.v2.Instance.LabelsEntry
+	11, // 5: google.cloud.run.v2.Instance.annotations:type_name -> google.cloud.run.v2.Instance.AnnotationsEntry
+	13, // 6: google.cloud.run.v2.Instance.create_time:type_name -> google.protobuf.Timestamp
+	13, // 7: google.cloud.run.v2.Instance.update_time:type_name -> google.protobuf.Timestamp
+	13, // 8: google.cloud.run.v2.Instance.delete_time:type_name -> google.protobuf.Timestamp
+	13, // 9: google.cloud.run.v2.Instance.expire_time:type_name -> google.protobuf.Timestamp
+	14, // 10: google.cloud.run.v2.Instance.launch_stage:type_name -> google.api.LaunchStage
+	15, // 11: google.cloud.run.v2.Instance.binary_authorization:type_name -> google.cloud.run.v2.BinaryAuthorization
+	16, // 12: google.cloud.run.v2.Instance.vpc_access:type_name -> google.cloud.run.v2.VpcAccess
+	17, // 13: google.cloud.run.v2.Instance.containers:type_name -> google.cloud.run.v2.Container
+	18, // 14: google.cloud.run.v2.Instance.sandboxes:type_name -> google.cloud.run.v2.SandboxConfiguration
+	19, // 15: google.cloud.run.v2.Instance.volumes:type_name -> google.cloud.run.v2.Volume
+	20, // 16: google.cloud.run.v2.Instance.encryption_key_revocation_action:type_name -> google.cloud.run.v2.EncryptionKeyRevocationAction
+	21, // 17: google.cloud.run.v2.Instance.encryption_key_shutdown_duration:type_name -> google.protobuf.Duration
+	22, // 18: google.cloud.run.v2.Instance.node_selector:type_name -> google.cloud.run.v2.NodeSelector
+	23, // 19: google.cloud.run.v2.Instance.ingress:type_name -> google.cloud.run.v2.IngressTraffic
+	0,  // 20: google.cloud.run.v2.Instance.restart_policy:type_name -> google.cloud.run.v2.Instance.RestartPolicy
+	24, // 21: google.cloud.run.v2.Instance.terminal_condition:type_name -> google.cloud.run.v2.Condition
+	24, // 22: google.cloud.run.v2.Instance.conditions:type_name -> google.cloud.run.v2.Condition
+	25, // 23: google.cloud.run.v2.Instance.container_statuses:type_name -> google.cloud.run.v2.ContainerStatus
+	1,  // 24: google.cloud.run.v2.Instances.CreateInstance:input_type -> google.cloud.run.v2.CreateInstanceRequest
+	2,  // 25: google.cloud.run.v2.Instances.UpdateInstance:input_type -> google.cloud.run.v2.UpdateInstanceRequest
+	4,  // 26: google.cloud.run.v2.Instances.DeleteInstance:input_type -> google.cloud.run.v2.DeleteInstanceRequest
+	3,  // 27: google.cloud.run.v2.Instances.GetInstance:input_type -> google.cloud.run.v2.GetInstanceRequest
+	5,  // 28: google.cloud.run.v2.Instances.ListInstances:input_type -> google.cloud.run.v2.ListInstancesRequest
+	7,  // 29: google.cloud.run.v2.Instances.StopInstance:input_type -> google.cloud.run.v2.StopInstanceRequest
+	8,  // 30: google.cloud.run.v2.Instances.StartInstance:input_type -> google.cloud.run.v2.StartInstanceRequest
+	26, // 31: google.cloud.run.v2.Instances.GetIamPolicy:input_type -> google.iam.v1.GetIamPolicyRequest
+	27, // 32: google.cloud.run.v2.Instances.SetIamPolicy:input_type -> google.iam.v1.SetIamPolicyRequest
+	28, // 33: google.cloud.run.v2.Instances.TestIamPermissions:input_type -> google.iam.v1.TestIamPermissionsRequest
+	29, // 34: google.cloud.run.v2.Instances.CreateInstance:output_type -> google.longrunning.Operation
+	29, // 35: google.cloud.run.v2.Instances.UpdateInstance:output_type -> google.longrunning.Operation
+	29, // 36: google.cloud.run.v2.Instances.DeleteInstance:output_type -> google.longrunning.Operation
+	9,  // 37: google.cloud.run.v2.Instances.GetInstance:output_type -> google.cloud.run.v2.Instance
+	6,  // 38: google.cloud.run.v2.Instances.ListInstances:output_type -> google.cloud.run.v2.ListInstancesResponse
+	29, // 39: google.cloud.run.v2.Instances.StopInstance:output_type -> google.longrunning.Operation
+	29, // 40: google.cloud.run.v2.Instances.StartInstance:output_type -> google.longrunning.Operation
+	30, // 41: google.cloud.run.v2.Instances.GetIamPolicy:output_type -> google.iam.v1.Policy
+	30, // 42: google.cloud.run.v2.Instances.SetIamPolicy:output_type -> google.iam.v1.Policy
+	31, // 43: google.cloud.run.v2.Instances.TestIamPermissions:output_type -> google.iam.v1.TestIamPermissionsResponse
+	34, // [34:44] is the sub-list for method output_type
+	24, // [24:34] is the sub-list for method input_type
+	24, // [24:24] is the sub-list for extension type_name
+	24, // [24:24] is the sub-list for extension extendee
+	0,  // [0:24] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_run_v2_instance_proto_init() }
@@ -1122,20 +1331,22 @@ func file_google_cloud_run_v2_instance_proto_init() {
 	file_google_cloud_run_v2_condition_proto_init()
 	file_google_cloud_run_v2_container_status_proto_init()
 	file_google_cloud_run_v2_k8s_min_proto_init()
+	file_google_cloud_run_v2_sandbox_proto_init()
 	file_google_cloud_run_v2_vendor_settings_proto_init()
-	file_google_cloud_run_v2_instance_proto_msgTypes[7].OneofWrappers = []any{}
+	file_google_cloud_run_v2_instance_proto_msgTypes[8].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_run_v2_instance_proto_rawDesc), len(file_google_cloud_run_v2_instance_proto_rawDesc)),
-			NumEnums:      0,
-			NumMessages:   10,
+			NumEnums:      1,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
 		GoTypes:           file_google_cloud_run_v2_instance_proto_goTypes,
 		DependencyIndexes: file_google_cloud_run_v2_instance_proto_depIdxs,
+		EnumInfos:         file_google_cloud_run_v2_instance_proto_enumTypes,
 		MessageInfos:      file_google_cloud_run_v2_instance_proto_msgTypes,
 	}.Build()
 	File_google_cloud_run_v2_instance_proto = out.File
