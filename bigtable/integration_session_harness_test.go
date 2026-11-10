@@ -21,6 +21,7 @@ import (
 	"time"
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
+	btransport "cloud.google.com/go/bigtable/internal/transport"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -185,19 +186,27 @@ func newSessionTestHarness(t *testing.T, opts ...harnessOpt) *sessionTestHarness
 
 // waitForSessionRouting polls the client's Diverter (and the server's
 // GetClientConfiguration counter as a backstop) until both confirm that
-// session routing is enabled. Returns once UseSession() reports true; fails
+// session routing is enabled for at least one served method scope. Fails
 // the test on timeout.
 func (h *sessionTestHarness) waitForSessionRouting(timeout time.Duration) {
 	h.t.Helper()
+	hasNonZeroLoad := func(d *btransport.Diverter) bool {
+		for _, load := range d.ScopeSessionLoads() {
+			if load > 0 {
+				return true
+			}
+		}
+		return false
+	}
 	deadline := time.Now().Add(timeout)
 	for time.Now().Before(deadline) {
-		if h.server.getClientConfigCount() >= 1 && h.client.diverter.UseSession() {
+		if h.server.getClientConfigCount() >= 1 && hasNonZeroLoad(h.client.diverter) {
 			return
 		}
 		time.Sleep(10 * time.Millisecond)
 	}
-	h.t.Fatalf("timed out waiting for Diverter to flip to session routing (getClientConfigCount=%d, useSession=%t)",
-		h.server.getClientConfigCount(), h.client.diverter.UseSession())
+	h.t.Fatalf("timed out waiting for Diverter to flip to session routing (getClientConfigCount=%d, scopeLoads=%v)",
+		h.server.getClientConfigCount(), h.client.diverter.ScopeSessionLoads())
 }
 
 func (h *sessionTestHarness) Close() {

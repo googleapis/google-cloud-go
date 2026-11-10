@@ -29,11 +29,23 @@ func TestVRpcDescriptor_Method(t *testing.T) {
 	if MUTATE_ROW.Method() != "MutateRow" {
 		t.Errorf("MUTATE_ROW.Method() = %q, want %q", MUTATE_ROW.Method(), "MutateRow")
 	}
+	if CHECK_AND_MUTATE_ROW.Method() != "CheckAndMutateRow" {
+		t.Errorf("CHECK_AND_MUTATE_ROW.Method() = %q, want %q", CHECK_AND_MUTATE_ROW.Method(), "CheckAndMutateRow")
+	}
+	if READ_MODIFY_WRITE_ROW.Method() != "ReadModifyWriteRow" {
+		t.Errorf("READ_MODIFY_WRITE_ROW.Method() = %q, want %q", READ_MODIFY_WRITE_ROW.Method(), "ReadModifyWriteRow")
+	}
 	if READ_ROW_AUTH_VIEW.Method() != "ReadRow" {
 		t.Errorf("READ_ROW_AUTH_VIEW.Method() = %q, want %q", READ_ROW_AUTH_VIEW.Method(), "ReadRow")
 	}
 	if MUTATE_ROW_AUTH_VIEW.Method() != "MutateRow" {
 		t.Errorf("MUTATE_ROW_AUTH_VIEW.Method() = %q, want %q", MUTATE_ROW_AUTH_VIEW.Method(), "MutateRow")
+	}
+	if CHECK_AND_MUTATE_ROW_AUTH_VIEW.Method() != "CheckAndMutateRow" {
+		t.Errorf("CHECK_AND_MUTATE_ROW_AUTH_VIEW.Method() = %q, want %q", CHECK_AND_MUTATE_ROW_AUTH_VIEW.Method(), "CheckAndMutateRow")
+	}
+	if READ_MODIFY_WRITE_ROW_AUTH_VIEW.Method() != "ReadModifyWriteRow" {
+		t.Errorf("READ_MODIFY_WRITE_ROW_AUTH_VIEW.Method() = %q, want %q", READ_MODIFY_WRITE_ROW_AUTH_VIEW.Method(), "ReadModifyWriteRow")
 	}
 	if READ_ROW_MAT_VIEW.Method() != "ReadRow" {
 		t.Errorf("READ_ROW_MAT_VIEW.Method() = %q, want %q", READ_ROW_MAT_VIEW.Method(), "ReadRow")
@@ -338,5 +350,164 @@ func TestMaterializedViewDescriptors_ReadRow(t *testing.T) {
 
 	if !bytes.Equal(result.Row.Key, []byte("row-key-5")) {
 		t.Errorf("Decoded row key mismatch: expected %q, got %q", "row-key-5", string(result.Row.Key))
+	}
+}
+
+func TestTableDescriptors_CheckAndMutateRow(t *testing.T) {
+	args := CheckAndMutateRowArgs{
+		RowKey: "row-key-cam",
+		PredicateFilter: &btpb.RowFilter{
+			Filter: &btpb.RowFilter_PassAllFilter{PassAllFilter: true},
+		},
+		TrueMutations: []*btpb.Mutation{
+			{Mutation: &btpb.Mutation_DeleteFromRow_{DeleteFromRow: &btpb.Mutation_DeleteFromRow{}}},
+		},
+		FalseMutations: []*btpb.Mutation{
+			{Mutation: &btpb.Mutation_DeleteFromFamily_{DeleteFromFamily: &btpb.Mutation_DeleteFromFamily{FamilyName: "cf1"}}},
+		},
+	}
+
+	encodedBytes, err := CHECK_AND_MUTATE_ROW.Encode(args)
+	if err != nil {
+		t.Fatalf("Failed to encode CHECK_AND_MUTATE_ROW: %v", err)
+	}
+
+	var env btpb.TableRequest
+	if err := proto.Unmarshal(encodedBytes, &env); err != nil {
+		t.Fatalf("Failed to unmarshal TableRequest: %v", err)
+	}
+
+	req := env.GetCheckAndMutateRow()
+	if req == nil {
+		t.Fatalf("Expected CheckAndMutateRow payload, got %T", env.Payload)
+	}
+	if !bytes.Equal(req.Key, []byte("row-key-cam")) {
+		t.Errorf("Key = %q, want %q", string(req.Key), "row-key-cam")
+	}
+	if !req.GetPredicateFilter().GetPassAllFilter() {
+		t.Errorf("PredicateFilter mismatch: %v", req.GetPredicateFilter())
+	}
+	if len(req.GetTrueMutations()) != 1 || len(req.GetFalseMutations()) != 1 {
+		t.Errorf("Mutations mismatch: true=%d false=%d", len(req.GetTrueMutations()), len(req.GetFalseMutations()))
+	}
+
+	respEnvelope := &btpb.TableResponse{
+		Payload: &btpb.TableResponse_CheckAndMutateRow{
+			CheckAndMutateRow: &btpb.SessionCheckAndMutateRowResponse{PredicateMatched: true},
+		},
+	}
+	envelopeBytes, err := proto.Marshal(respEnvelope)
+	if err != nil {
+		t.Fatalf("Failed to marshal TableResponse: %v", err)
+	}
+	decoded, err := CHECK_AND_MUTATE_ROW.Decode(envelopeBytes)
+	if err != nil {
+		t.Fatalf("Failed to decode CHECK_AND_MUTATE_ROW: %v", err)
+	}
+	res, ok := decoded.(*btpb.SessionCheckAndMutateRowResponse)
+	if !ok || !res.GetPredicateMatched() {
+		t.Fatalf("Decoded result = %#v, want PredicateMatched=true", decoded)
+	}
+}
+
+func TestTableDescriptors_ReadModifyWriteRow(t *testing.T) {
+	args := ReadModifyWriteRowArgs{
+		RowKey: "row-key-rmw",
+		Rules: []*btpb.ReadModifyWriteRule{
+			{
+				FamilyName:      "cf1",
+				ColumnQualifier: []byte("col"),
+				Rule:            &btpb.ReadModifyWriteRule_IncrementAmount{IncrementAmount: 5},
+			},
+		},
+	}
+
+	encodedBytes, err := READ_MODIFY_WRITE_ROW.Encode(args)
+	if err != nil {
+		t.Fatalf("Failed to encode READ_MODIFY_WRITE_ROW: %v", err)
+	}
+
+	var env btpb.TableRequest
+	if err := proto.Unmarshal(encodedBytes, &env); err != nil {
+		t.Fatalf("Failed to unmarshal TableRequest: %v", err)
+	}
+
+	req := env.GetReadModifyWriteRow()
+	if req == nil {
+		t.Fatalf("Expected ReadModifyWriteRow payload, got %T", env.Payload)
+	}
+	if !bytes.Equal(req.Key, []byte("row-key-rmw")) {
+		t.Errorf("Key = %q, want %q", string(req.Key), "row-key-rmw")
+	}
+	if len(req.GetRules()) != 1 || req.GetRules()[0].GetIncrementAmount() != 5 {
+		t.Errorf("Rules mismatch: %v", req.GetRules())
+	}
+
+	respEnvelope := &btpb.TableResponse{
+		Payload: &btpb.TableResponse_ReadModifyWriteRow{
+			ReadModifyWriteRow: &btpb.SessionReadModifyWriteRowResponse{
+				Row: &btpb.Row{Key: []byte("row-key-rmw")},
+			},
+		},
+	}
+	envelopeBytes, err := proto.Marshal(respEnvelope)
+	if err != nil {
+		t.Fatalf("Failed to marshal TableResponse: %v", err)
+	}
+	decoded, err := READ_MODIFY_WRITE_ROW.Decode(envelopeBytes)
+	if err != nil {
+		t.Fatalf("Failed to decode READ_MODIFY_WRITE_ROW: %v", err)
+	}
+	res, ok := decoded.(*btpb.SessionReadModifyWriteRowResponse)
+	if !ok || string(res.GetRow().GetKey()) != "row-key-rmw" {
+		t.Fatalf("Decoded result = %#v", decoded)
+	}
+}
+
+func TestAuthorizedViewDescriptors_WriteVRpcs(t *testing.T) {
+	// 1. CheckAndMutateRow
+	camBytes, err := CHECK_AND_MUTATE_ROW_AUTH_VIEW.Encode(CheckAndMutateRowArgs{RowKey: "av-cam"})
+	if err != nil {
+		t.Fatalf("CHECK_AND_MUTATE_ROW_AUTH_VIEW.Encode: %v", err)
+	}
+	var avReq btpb.AuthorizedViewRequest
+	if err := proto.Unmarshal(camBytes, &avReq); err != nil {
+		t.Fatalf("unmarshal AuthorizedViewRequest: %v", err)
+	}
+	if string(avReq.GetCheckAndMutateRow().GetKey()) != "av-cam" {
+		t.Errorf("got key %q, want av-cam", avReq.GetCheckAndMutateRow().GetKey())
+	}
+	camRespBytes, _ := proto.Marshal(&btpb.AuthorizedViewResponse{
+		Payload: &btpb.AuthorizedViewResponse_CheckAndMutateRow{
+			CheckAndMutateRow: &btpb.SessionCheckAndMutateRowResponse{PredicateMatched: true},
+		},
+	})
+	camDecoded, err := CHECK_AND_MUTATE_ROW_AUTH_VIEW.Decode(camRespBytes)
+	if err != nil || !camDecoded.(*btpb.SessionCheckAndMutateRowResponse).GetPredicateMatched() {
+		t.Errorf("CHECK_AND_MUTATE_ROW_AUTH_VIEW.Decode = %v, %v", camDecoded, err)
+	}
+
+	// 2. ReadModifyWriteRow
+	rmwBytes, err := READ_MODIFY_WRITE_ROW_AUTH_VIEW.Encode(ReadModifyWriteRowArgs{RowKey: "av-rmw"})
+	if err != nil {
+		t.Fatalf("READ_MODIFY_WRITE_ROW_AUTH_VIEW.Encode: %v", err)
+	}
+	avReq.Reset()
+	if err := proto.Unmarshal(rmwBytes, &avReq); err != nil {
+		t.Fatalf("unmarshal AuthorizedViewRequest: %v", err)
+	}
+	if string(avReq.GetReadModifyWriteRow().GetKey()) != "av-rmw" {
+		t.Errorf("got key %q, want av-rmw", avReq.GetReadModifyWriteRow().GetKey())
+	}
+	rmwRespBytes, _ := proto.Marshal(&btpb.AuthorizedViewResponse{
+		Payload: &btpb.AuthorizedViewResponse_ReadModifyWriteRow{
+			ReadModifyWriteRow: &btpb.SessionReadModifyWriteRowResponse{
+				Row: &btpb.Row{Key: []byte("av-rmw")},
+			},
+		},
+	})
+	rmwDecoded, err := READ_MODIFY_WRITE_ROW_AUTH_VIEW.Decode(rmwRespBytes)
+	if err != nil || string(rmwDecoded.(*btpb.SessionReadModifyWriteRowResponse).GetRow().GetKey()) != "av-rmw" {
+		t.Errorf("READ_MODIFY_WRITE_ROW_AUTH_VIEW.Decode = %v, %v", rmwDecoded, err)
 	}
 }
