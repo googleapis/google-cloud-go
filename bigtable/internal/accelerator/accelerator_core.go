@@ -227,15 +227,13 @@ func NewChannel(
 func (c *Channel) getOrCreateSessionClient(instanceID, appProfile string) (session.Client, error) {
 	key := clientKey{instance: instanceID, appProfile: appProfile}
 	c.mu.Lock()
+	defer c.mu.Unlock()
 	if c.closed {
-		c.mu.Unlock()
 		return nil, status.Error(codes.Unavailable, "accelerator: channel is closed")
 	}
 	if sc, ok := c.clients[key]; ok {
-		c.mu.Unlock()
 		return sc, nil
 	}
-	c.mu.Unlock()
 
 	ctx := c.ctx
 	if ctx == nil {
@@ -245,23 +243,13 @@ func (c *Channel) getOrCreateSessionClient(instanceID, appProfile string) (sessi
 	if err != nil {
 		return nil, err
 	}
-
-	c.mu.Lock()
-	if c.closed {
-		c.mu.Unlock()
-		_ = sc.Close()
-		return nil, status.Error(codes.Unavailable, "accelerator: channel is closed")
-	}
-	if existing, ok := c.clients[key]; ok {
-		c.mu.Unlock()
-		_ = sc.Close()
-		return existing, nil
+	if c.clients == nil {
+		c.clients = make(map[clientKey]session.Client)
 	}
 	c.clients[key] = sc
 	if c.sc == nil {
 		c.sc = sc
 	}
-	c.mu.Unlock()
 	return sc, nil
 }
 

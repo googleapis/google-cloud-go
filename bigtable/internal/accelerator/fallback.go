@@ -83,15 +83,13 @@ func newClassicFallback(ctx context.Context, project, instance, appProfile strin
 func (f *classicFallback) getOrCreateClient(instanceID, appProfile string) (*bigtable.Client, error) {
 	key := clientKey{instance: instanceID, appProfile: appProfile}
 	f.mu.Lock()
+	defer f.mu.Unlock()
 	if f.closed {
-		f.mu.Unlock()
 		return nil, status.Error(codes.Unavailable, "accelerator fallback: closed")
 	}
 	if c, ok := f.clients[key]; ok {
-		f.mu.Unlock()
 		return c, nil
 	}
-	f.mu.Unlock()
 
 	ctx := f.ctx
 	if ctx == nil {
@@ -104,26 +102,13 @@ func (f *classicFallback) getOrCreateClient(instanceID, appProfile string) (*big
 	if err != nil {
 		return nil, err
 	}
-
-	f.mu.Lock()
-	if f.closed {
-		f.mu.Unlock()
-		_ = c.Close()
-		return nil, status.Error(codes.Unavailable, "accelerator fallback: closed")
-	}
 	if f.clients == nil {
 		f.clients = make(map[clientKey]*bigtable.Client)
-	}
-	if existing, ok := f.clients[key]; ok {
-		f.mu.Unlock()
-		_ = c.Close()
-		return existing, nil
 	}
 	f.clients[key] = c
 	if f.c == nil {
 		f.c = c
 	}
-	f.mu.Unlock()
 	return c, nil
 }
 
