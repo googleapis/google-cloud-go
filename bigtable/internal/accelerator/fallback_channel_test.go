@@ -535,4 +535,86 @@ func TestFallbackChannel_MultiInstance_PerInstanceTripping(t *testing.T) {
 	}
 }
 
+func TestFallbackChannel_SessionLoadDivertsToClassicWithoutTripping(t *testing.T) {
+	sessionCalls := 0
+	sc := &mockSessionClient{
+		table: &mockSessionTableAPI{
+			mutateRowFn: func(_ context.Context, _ *v2pb.SessionMutateRowRequest) (*v2pb.SessionMutateRowResponse, error) {
+				sessionCalls++
+				return &v2pb.SessionMutateRowResponse{}, nil
+			},
+			readRowFn: func(_ context.Context, _ *v2pb.SessionReadRowRequest) (*v2pb.SessionReadRowResponse, error) {
+				sessionCalls++
+				return &v2pb.SessionReadRowResponse{}, nil
+			},
+		},
+	}
+	sessionChannel := newTestChannel(t, sc)
+	if sc.loadListener == nil {
+		t.Fatal("expected Channel to register a SessionLoadListener on session.Client")
+	}
+
+	classicCalls := 0
+	mock := &mockTableAPI{
+		applyFn: func(_ context.Context, _ string, _ *bigtable.Mutation, _ ...bigtable.ApplyOption) error {
+			classicCalls++
+			return nil
+		},
+		readRowFn: func(_ context.Context, _ string, _ ...bigtable.ReadOption) (bigtable.Row, error) {
+			classicCalls++
+			return bigtable.Row{"cf": {{Column: "cf:q", Timestamp: 1, Value: []byte("classic")}}}, nil
+		},
+	}
+	cf := newClassicFallbackWithMock(map[string]bigtable.TableAPI{testTableName: mock})
+	fc := newTestFallbackChannel(sessionChannel, cf)
+
+	// 1. Bootstrap SessionLoad=1.0 routes MutateRow and ReadRows through session.
+	if err := fc.Invoke(context.Background(), v2pb.Bigtable_MutateRow_FullMethodName, &v2pb.MutateRowRequest{
+		TableName: testTableName,
+		RowKey:    []byte("k"),
+	}, &v2pb.MutateRowResponse{}); err != nil {
+		t.Fatalf("Invoke (load=1.0): %v", err)
+	}
+	if sessionCalls != 1 || classicCalls != 0 {
+		t.Fatalf("after load=1.0 Invoke: sessionCalls=%d, classicCalls=%d; want 1, 0", sessionCalls, classicCalls)
+	}
+
+	// 2. Server updates SessionLoad to 0.0 -> MutateRow and ReadRows route to classic without tripping breaker.
+	sc.loadListener(0.0)
+	if err := fc.Invoke(context.Background(), v2pb.Bigtable_MutateRow_FullMethodName, &v2pb.MutateRowRequest{
+		TableName: testTableName,
+		RowKey:    []byte("k"),
+	}, &v2pb.MutateRowResponse{}); err != nil {
+		t.Fatalf("Invoke (load=0.0): %v", err)
+	}
+	stream, err := fc.NewStream(context.Background(), &grpc.StreamDesc{}, v2pb.Bigtable_ReadRows_FullMethodName)
+	if err != nil {
+		t.Fatalf("NewStream (load=0.0): %v", err)
+	}
+	if err := stream.SendMsg(singleKeyReadReq("k")); err != nil {
+		t.Fatalf("SendMsg (load=0.0): %v", err)
+	}
+	if err := stream.RecvMsg(&v2pb.ReadRowsResponse{}); err != nil {
+		t.Fatalf("RecvMsg (load=0.0): %v", err)
+	}
+	if sessionCalls != 1 || classicCalls != 2 {
+		t.Fatalf("after load=0.0 RPCs: sessionCalls=%d, classicCalls=%d; want 1, 2", sessionCalls, classicCalls)
+	}
+	if fc.isInstanceTripped("i") {
+		t.Error("expected SessionLoad=0.0 diversion not to trip the sticky Unimplemented breaker")
+	}
+
+	// 3. Server restores SessionLoad to 1.0 -> traffic resumes on the session path.
+	sc.loadListener(1.0)
+	if err := fc.Invoke(context.Background(), v2pb.Bigtable_MutateRow_FullMethodName, &v2pb.MutateRowRequest{
+		TableName: testTableName,
+		RowKey:    []byte("k"),
+	}, &v2pb.MutateRowResponse{}); err != nil {
+		t.Fatalf("Invoke (load=1.0 restored): %v", err)
+	}
+	if sessionCalls != 2 || classicCalls != 2 {
+		t.Fatalf("after load=1.0 restored: sessionCalls=%d, classicCalls=%d; want 2, 2", sessionCalls, classicCalls)
+	}
+}
+
 // testTableName and newClassicFallbackWithMock are defined in fallback_test.go.

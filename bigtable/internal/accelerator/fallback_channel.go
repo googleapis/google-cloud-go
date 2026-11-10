@@ -135,7 +135,8 @@ func extractInstanceFromReadRowsReq(req *v2pb.ReadRowsRequest) string {
 }
 
 // Invoke implements grpc.ClientConnInterface for unary RPCs (MutateRow).
-// Session is tried first unless the target instance is already tripped; on
+// Session is tried first when the target instance is not tripped and the
+// server-driven SessionLoad diverter selects the session path; on
 // codes.Unimplemented the sticky flag is set and classic is used instead.
 func (fc *FallbackChannel) Invoke(ctx context.Context, method string, args, reply interface{}, opts ...grpc.CallOption) error {
 	if method != v2pb.Bigtable_MutateRow_FullMethodName {
@@ -148,14 +149,20 @@ func (fc *FallbackChannel) Invoke(ctx context.Context, method string, args, repl
 
 	instanceID := extractInstanceFromMutateRowReq(req)
 	if !fc.isInstanceTripped(instanceID) {
-		err := fc.session.Invoke(ctx, method, args, reply, opts...)
-		if err == nil {
-			return nil
-		}
-		if status.Code(err) != codes.Unimplemented {
+		useSess, err := fc.session.useSession(instanceID, req.GetAppProfileId())
+		if err != nil {
 			return err
 		}
-		fc.tripInstance(instanceID)
+		if useSess {
+			err := fc.session.Invoke(ctx, method, args, reply, opts...)
+			if err == nil {
+				return nil
+			}
+			if status.Code(err) != codes.Unimplemented {
+				return err
+			}
+			fc.tripInstance(instanceID)
+		}
 	}
 
 	resource, err := adapters.DefaultMutateRowRequestAdapter.ExtractResource(req)
@@ -260,14 +267,25 @@ func (s *fallbackReadRowsStream) SendMsg(m any) error {
 	s.req = req
 	s.sent = true
 
-	if s.inner != nil && s.fc != nil && s.fc.isInstanceTripped(extractInstanceFromReadRowsReq(req)) {
-		s.inner = nil
+	if s.inner != nil && s.fc != nil {
+		instanceID := extractInstanceFromReadRowsReq(req)
+		if s.fc.isInstanceTripped(instanceID) {
+			s.inner = nil
+		} else if s.fc.session != nil {
+			useSess, err := s.fc.session.useSession(instanceID, req.GetAppProfileId())
+			if err != nil {
+				return err
+			}
+			if !useSess {
+				s.inner = nil
+			}
+		}
 	}
 	if s.inner == nil {
-		// Target instance already tripped — validate shape before going classic.
-		// Without this call, a multi-row or range-scan request would reach
-		// classicFallback.ReadRow and return codes.Internal rather than
-		// codes.Unimplemented, breaking the caller's per-method native fallback.
+		// Target instance already tripped or diverted to classic via SessionLoad —
+		// validate shape before going classic. Without this call, a multi-row or
+		// range-scan request would reach classicFallback.ReadRow and return
+		// codes.Internal rather than codes.Unimplemented.
 		return validateSingleRowReadRequest(req)
 	}
 	// Forward to session. Any error — including Unimplemented for unsupported
