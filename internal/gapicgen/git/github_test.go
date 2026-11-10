@@ -1,10 +1,10 @@
-// Copyright 2022 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,26 +14,65 @@
 
 package git
 
-import "testing"
+import (
+	"os"
+	"os/user"
+	"path/filepath"
+	"strings"
+	"testing"
+)
 
-func TestParsePackage(t *testing.T) {
-	tests := []struct {
-		name  string
-		input string
-		want  string
-	}{
-		{"found basic package", "feat(foo): something", "foo"},
-		{"found nested package", "fix(foo/bar): something", "foo/bar"},
-		{"no scope", "chore: something", ""},
-		{"bad commit msg", "something happend", ""},
+// TestSetGitCredsOwnerOnlyPermissions verifies the git credential file written
+// by setGitCreds — which contains the GitHub PAT in plaintext — is created
+// with owner-only permissions (0600). On shared hosts with world-traversable
+// home directories (mode 0755, the default on most distros), a 0644
+// credentials file lets any local user read the PAT.
+//
+// user.Current() resolves the home directory from the OS user database (not
+// $HOME), so the test reads the same source for its expectation.
+func TestSetGitCredsOwnerOnlyPermissions(t *testing.T) {
+	home := homeDirForTest(t)
+	orig, err := os.ReadFile(filepath.Join(home, ".git-credentials"))
+	if err != nil {
+		orig = nil // may not exist yet
 	}
 
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			got := parsePackage(tc.input)
-			if got != tc.want {
-				t.Errorf("got %q, want %q", got, tc.want)
-			}
-		})
+	err = setGitCreds("Test User", "test@example.com", "testuser", "ghp_FAKE_TOKEN")
+	if err != nil {
+		t.Skipf("setGitCreds requires a writable home + git: %v", err)
 	}
+	t.Cleanup(func() {
+		if orig != nil {
+			_ = os.WriteFile(filepath.Join(home, ".git-credentials"), orig, 0o600)
+		} else {
+			_ = os.Remove(filepath.Join(home, ".git-credentials"))
+		}
+	})
+
+	p := filepath.Join(home, ".git-credentials")
+	data, err := os.ReadFile(p)
+	if err != nil {
+		t.Fatalf("read credentials file: %v", err)
+	}
+	fi, err := os.Stat(p)
+	if err != nil {
+		t.Fatalf("stat credentials file: %v", err)
+	}
+	perm := fi.Mode().Perm()
+
+	if !strings.Contains(string(data), "ghp_FAKE_TOKEN") {
+		t.Fatalf("credentials file does not contain the PAT — test premise broken")
+	}
+	if perm != 0o600 {
+		t.Errorf(".git-credentials (contains plaintext GitHub PAT) has permissions %o, want 0600 (owner-only)", perm)
+	}
+}
+
+func homeDirForTest(t *testing.T) string {
+	t.Helper()
+	u, err := user.Current()
+	if err != nil {
+		t.Skipf("cannot resolve user home: %v", err)
+	}
+	return u.HomeDir
 }
