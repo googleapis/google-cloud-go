@@ -77,6 +77,7 @@ func newClassicFallbackWithMock(mocks map[string]bigtable.TableAPI) *classicFall
 	}
 	return &classicFallback{
 		c:           nil,
+		instance:    testInstance,
 		scopePrefix: scopePrefixFor(testProject, testInstance),
 		mu:          sync.Mutex{},
 		tables:      tables,
@@ -86,7 +87,7 @@ func newClassicFallbackWithMock(mocks map[string]bigtable.TableAPI) *classicFall
 // --- parseTableID ------------------------------------------------------------
 
 func TestParseTableID_HappyPath(t *testing.T) {
-	cf := &classicFallback{scopePrefix: scopePrefixFor("p", "i")}
+	cf := &classicFallback{instance: "i", scopePrefix: scopePrefixFor("p", "i")}
 	got, err := cf.parseTableID("projects/p/instances/i/tables/T")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -97,7 +98,7 @@ func TestParseTableID_HappyPath(t *testing.T) {
 }
 
 func TestParseTableID_WrongProject(t *testing.T) {
-	cf := &classicFallback{scopePrefix: scopePrefixFor("p", "i")}
+	cf := &classicFallback{instance: "i", scopePrefix: scopePrefixFor("p", "i")}
 	_, err := cf.parseTableID("projects/OTHER/instances/i/tables/T")
 	if status.Code(err) != codes.Internal {
 		t.Errorf("got %v, want codes.Internal", err)
@@ -105,7 +106,7 @@ func TestParseTableID_WrongProject(t *testing.T) {
 }
 
 func TestParseTableID_WrongInstance(t *testing.T) {
-	cf := &classicFallback{scopePrefix: scopePrefixFor("p", "i")}
+	cf := &classicFallback{instance: "i", scopePrefix: scopePrefixFor("p", "i")}
 	_, err := cf.parseTableID("projects/p/instances/OTHER/tables/T")
 	if status.Code(err) != codes.Internal {
 		t.Errorf("got %v, want codes.Internal", err)
@@ -113,7 +114,7 @@ func TestParseTableID_WrongInstance(t *testing.T) {
 }
 
 func TestParseTableID_EmptyLeaf(t *testing.T) {
-	cf := &classicFallback{scopePrefix: scopePrefixFor("p", "i")}
+	cf := &classicFallback{instance: "i", scopePrefix: scopePrefixFor("p", "i")}
 	_, err := cf.parseTableID("projects/p/instances/i/tables/")
 	if status.Code(err) != codes.InvalidArgument {
 		t.Errorf("got %v, want codes.InvalidArgument", err)
@@ -121,7 +122,7 @@ func TestParseTableID_EmptyLeaf(t *testing.T) {
 }
 
 func TestParseTableID_LeafWithSlash(t *testing.T) {
-	cf := &classicFallback{scopePrefix: scopePrefixFor("p", "i")}
+	cf := &classicFallback{instance: "i", scopePrefix: scopePrefixFor("p", "i")}
 	_, err := cf.parseTableID("projects/p/instances/i/tables/T/extra")
 	if status.Code(err) != codes.InvalidArgument {
 		t.Errorf("got %v, want codes.InvalidArgument", err)
@@ -131,7 +132,7 @@ func TestParseTableID_LeafWithSlash(t *testing.T) {
 // --- parseAVIDs --------------------------------------------------------------
 
 func TestParseAVIDs_HappyPath(t *testing.T) {
-	cf := &classicFallback{scopePrefix: scopePrefixFor("p", "i")}
+	cf := &classicFallback{instance: "i", scopePrefix: scopePrefixFor("p", "i")}
 	tableID, viewID, err := cf.parseAVIDs("projects/p/instances/i/tables/T/authorizedViews/V")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -145,7 +146,7 @@ func TestParseAVIDs_HappyPath(t *testing.T) {
 }
 
 func TestParseAVIDs_WrongProject(t *testing.T) {
-	cf := &classicFallback{scopePrefix: scopePrefixFor("p", "i")}
+	cf := &classicFallback{instance: "i", scopePrefix: scopePrefixFor("p", "i")}
 	_, _, err := cf.parseAVIDs("projects/OTHER/instances/i/tables/T/authorizedViews/V")
 	if status.Code(err) != codes.Internal {
 		t.Errorf("got %v, want codes.Internal", err)
@@ -153,7 +154,7 @@ func TestParseAVIDs_WrongProject(t *testing.T) {
 }
 
 func TestParseAVIDs_MissingSegment(t *testing.T) {
-	cf := &classicFallback{scopePrefix: scopePrefixFor("p", "i")}
+	cf := &classicFallback{instance: "i", scopePrefix: scopePrefixFor("p", "i")}
 	_, _, err := cf.parseAVIDs("projects/p/instances/i/tables/T")
 	if status.Code(err) != codes.InvalidArgument {
 		t.Errorf("got %v, want codes.InvalidArgument", err)
@@ -161,7 +162,7 @@ func TestParseAVIDs_MissingSegment(t *testing.T) {
 }
 
 func TestParseAVIDs_EmptyViewID(t *testing.T) {
-	cf := &classicFallback{scopePrefix: scopePrefixFor("p", "i")}
+	cf := &classicFallback{instance: "i", scopePrefix: scopePrefixFor("p", "i")}
 	_, _, err := cf.parseAVIDs("projects/p/instances/i/tables/T/authorizedViews/")
 	if status.Code(err) != codes.InvalidArgument {
 		t.Errorf("got %v, want codes.InvalidArgument", err)
@@ -171,7 +172,7 @@ func TestParseAVIDs_EmptyViewID(t *testing.T) {
 // --- parseMVID ---------------------------------------------------------------
 
 func TestParseMVID_HappyPath(t *testing.T) {
-	cf := &classicFallback{scopePrefix: scopePrefixFor("p", "i")}
+	cf := &classicFallback{instance: "i", scopePrefix: scopePrefixFor("p", "i")}
 	got, err := cf.parseMVID("projects/p/instances/i/materializedViews/MV")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -182,7 +183,7 @@ func TestParseMVID_HappyPath(t *testing.T) {
 }
 
 func TestParseMVID_WrongProject(t *testing.T) {
-	cf := &classicFallback{scopePrefix: scopePrefixFor("p", "i")}
+	cf := &classicFallback{instance: "i", scopePrefix: scopePrefixFor("p", "i")}
 	_, err := cf.parseMVID("projects/OTHER/instances/i/materializedViews/MV")
 	if status.Code(err) != codes.Internal {
 		t.Errorf("got %v, want codes.Internal", err)
@@ -190,7 +191,7 @@ func TestParseMVID_WrongProject(t *testing.T) {
 }
 
 func TestParseMVID_EmptyLeaf(t *testing.T) {
-	cf := &classicFallback{scopePrefix: scopePrefixFor("p", "i")}
+	cf := &classicFallback{instance: "i", scopePrefix: scopePrefixFor("p", "i")}
 	_, err := cf.parseMVID("projects/p/instances/i/materializedViews/")
 	if status.Code(err) != codes.InvalidArgument {
 		t.Errorf("got %v, want codes.InvalidArgument", err)

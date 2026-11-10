@@ -87,14 +87,7 @@ func (f *classicFallback) getOrCreateClient(instanceID, appProfile string) (*big
 		f.mu.Unlock()
 		return nil, status.Error(codes.Unavailable, "accelerator fallback: closed")
 	}
-	if f.clients != nil {
-		if c, ok := f.clients[key]; ok {
-			f.mu.Unlock()
-			return c, nil
-		}
-	}
-	if f.c != nil && (f.instance == "" || (f.instance == instanceID && f.appProfile == appProfile)) && len(f.clients) == 0 {
-		c := f.c
+	if c, ok := f.clients[key]; ok {
 		f.mu.Unlock()
 		return c, nil
 	}
@@ -160,15 +153,13 @@ func (f *classicFallback) tableAPI(res adapters.Resource) (bigtable.TableAPI, er
 	}
 
 	f.mu.Lock()
+	if f.closed {
+		f.mu.Unlock()
+		return nil, status.Error(codes.Unavailable, "accelerator fallback: closed")
+	}
 	if t, ok := f.tables[cacheKey]; ok {
 		f.mu.Unlock()
 		return t, nil
-	}
-	if appProfile != "" {
-		if t, ok := f.tables[res.Name]; ok && f.c == nil && len(f.clients) == 0 {
-			f.mu.Unlock()
-			return t, nil
-		}
 	}
 	f.mu.Unlock()
 
@@ -179,6 +170,10 @@ func (f *classicFallback) tableAPI(res adapters.Resource) (bigtable.TableAPI, er
 	}
 
 	f.mu.Lock()
+	if f.closed {
+		f.mu.Unlock()
+		return nil, status.Error(codes.Unavailable, "accelerator fallback: closed")
+	}
 	// Double-check: another goroutine may have raced us and stored a handle.
 	if existing, ok := f.tables[cacheKey]; ok {
 		f.mu.Unlock()
@@ -315,6 +310,7 @@ func (f *classicFallback) Close() error {
 	}
 	f.clients = nil
 	f.c = nil
+	f.tables = nil
 	f.mu.Unlock()
 
 	var errs []error
@@ -327,7 +323,7 @@ func (f *classicFallback) Close() error {
 }
 
 func (f *classicFallback) stripScope(name string) (instanceID, rest string, err error) {
-	if f.instance != "" || !strings.HasSuffix(f.scopePrefix, "/instances/") {
+	if f.instance != "" {
 		rest, ok := strings.CutPrefix(name, f.scopePrefix)
 		if !ok {
 			return "", "", status.Errorf(codes.Internal,

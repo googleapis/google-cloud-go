@@ -50,10 +50,6 @@ func scopePrefixFor(project, instance string) string {
 // targeting any other project (or another instance when pinned) is rejected
 // with InvalidArgument rather than silently rebound onto this daemon's scope.
 func (c *Channel) stripScope(name string) (instanceID, rest string, err error) {
-	if c == nil || c.scopePrefix == "" {
-		return "", "", status.Errorf(codes.InvalidArgument,
-			"accelerator: resource %q is not in this daemon's scope ()", name)
-	}
 	if c.instance != "" {
 		rest, ok := strings.CutPrefix(name, c.scopePrefix)
 		if !ok {

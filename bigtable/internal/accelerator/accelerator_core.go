@@ -235,11 +235,6 @@ func (c *Channel) getOrCreateSessionClient(instanceID, appProfile string) (sessi
 		c.mu.Unlock()
 		return sc, nil
 	}
-	if c.sc != nil && (c.instance == "" || (c.instance == instanceID && c.appProfile == appProfile)) && len(c.clients) == 0 {
-		sc := c.sc
-		c.mu.Unlock()
-		return sc, nil
-	}
 	c.mu.Unlock()
 
 	ctx := c.ctx
