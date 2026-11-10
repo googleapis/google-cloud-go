@@ -1,6 +1,6 @@
 module cloud.google.com/go/spanner
 
-go 1.26.4
+go 1.26.0
 
 retract v1.76.0 // due to https://github.com/googleapis/google-cloud-go/issues/11630
 
@@ -15,7 +15,7 @@ require (
 	github.com/google/go-cmp v0.7.0
 	github.com/google/uuid v1.6.0
 	github.com/googleapis/gax-go/v2 v2.27.0
-	github.com/planetscale/vtprotobuf v0.6.1-0.20260702190614-8ae5a48058df
+	github.com/planetscale/vtprotobuf v0.6.1-0.20240319094008-0393e58bdf10
 	go.opencensus.io v0.24.0
 	go.opentelemetry.io/contrib/detectors/gcp v1.47.0
 	go.opentelemetry.io/otel v1.47.0
