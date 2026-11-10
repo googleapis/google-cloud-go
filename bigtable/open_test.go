@@ -548,6 +548,9 @@ func (n *noopSessionTable) ReadRow(context.Context, *btpb.SessionReadRowRequest)
 func (n *noopSessionTable) MutateRow(context.Context, *btpb.SessionMutateRowRequest) (*btpb.SessionMutateRowResponse, error) {
 	return &btpb.SessionMutateRowResponse{}, nil
 }
+func (n *noopSessionTable) CheckAndMutateRow(context.Context, *btpb.SessionCheckAndMutateRowRequest) (*btpb.SessionCheckAndMutateRowResponse, error) {
+	return &btpb.SessionCheckAndMutateRowResponse{}, nil
+}
 func (n *noopSessionTable) Close() error { return nil }
 
 func newSessionWiredClient(t *testing.T, fsc *fakeSessionClient) *Client {
