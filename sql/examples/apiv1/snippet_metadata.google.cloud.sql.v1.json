@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/sql/apiv1",
-    "version": "0.5.0"
+    "version": "0.6.0"
   },
   "snippets": [
     {
@@ -1581,6 +1581,52 @@
           "fullName": "google.cloud.sql.v1.SqlInstancesClient",
           "shortName": "SqlInstancesClient"
         },
+        "fullName": "google.cloud.sql.v1.SqlInstancesClient.ExecuteSqlReadOnly",
+        "method": {
+          "fullName": "google.cloud.sql.v1.SqlInstancesService.ExecuteSqlReadOnly",
+          "service": {
+            "fullName": "google.cloud.sql.v1.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "ExecuteSqlReadOnly"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesExecuteSqlReadOnlyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.SqlInstancesExecuteSqlReadOnlyResponse",
+        "shortName": "ExecuteSqlReadOnly"
+      },
+      "description": "ExecuteSqlReadOnly execute SQL statements in read-only mode.",
+      "file": "SqlInstancesClient/ExecuteSqlReadOnly/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1_generated_SqlInstancesService_ExecuteSqlReadOnly_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin ExecuteSqlReadOnly Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
         "fullName": "google.cloud.sql.v1.SqlInstancesClient.Export",
         "method": {
           "fullName": "google.cloud.sql.v1.SqlInstancesService.Export",
@@ -2317,6 +2363,52 @@
           "fullName": "google.cloud.sql.v1.SqlInstancesClient",
           "shortName": "SqlInstancesClient"
         },
+        "fullName": "google.cloud.sql.v1.SqlInstancesClient.ReconcileNetworking",
+        "method": {
+          "fullName": "google.cloud.sql.v1.SqlInstancesService.ReconcileNetworking",
+          "service": {
+            "fullName": "google.cloud.sql.v1.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "ReconcileNetworking"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesReconcileNetworkingRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "ReconcileNetworking"
+      },
+      "description": "ReconcileNetworking repairs and recreates networking resources for a Cloud SQL instance. For\nPrivate Service Connect (PSC), this operation recreates PSC DNS write\nendpoints on specified VPC networks and reconciles Private Service Connect\nconnectivity infrastructure for the instance.",
+      "file": "SqlInstancesClient/ReconcileNetworking/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1_generated_SqlInstancesService_ReconcileNetworking_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin ReconcileNetworking Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
         "fullName": "google.cloud.sql.v1.SqlInstancesClient.Reencrypt",
         "method": {
           "fullName": "google.cloud.sql.v1.SqlInstancesService.Reencrypt",
@@ -2777,6 +2869,52 @@
           "fullName": "google.cloud.sql.v1.SqlInstancesClient",
           "shortName": "SqlInstancesClient"
         },
+        "fullName": "google.cloud.sql.v1.SqlInstancesClient.Start",
+        "method": {
+          "fullName": "google.cloud.sql.v1.SqlInstancesService.Start",
+          "service": {
+            "fullName": "google.cloud.sql.v1.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "Start"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesStartRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "Start"
+      },
+      "description": "Start starts a Cloud SQL instance.",
+      "file": "SqlInstancesClient/Start/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1_generated_SqlInstancesService_Start_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin Start Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
         "fullName": "google.cloud.sql.v1.SqlInstancesClient.StartExternalSync",
         "method": {
           "fullName": "google.cloud.sql.v1.SqlInstancesService.StartExternalSync",
@@ -2862,6 +3000,52 @@
         }
       ],
       "title": "sqladmin StartReplica Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1.SqlInstancesClient.Stop",
+        "method": {
+          "fullName": "google.cloud.sql.v1.SqlInstancesService.Stop",
+          "service": {
+            "fullName": "google.cloud.sql.v1.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "Stop"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesStopRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "Stop"
+      },
+      "description": "Stop stops a Cloud SQL instance.",
+      "file": "SqlInstancesClient/Stop/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1_generated_SqlInstancesService_Stop_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin Stop Sample"
     },
     {
       "clientMethod": {
@@ -3282,6 +3466,52 @@
           "fullName": "google.cloud.sql.v1.SqlSslCertsClient",
           "shortName": "SqlSslCertsClient"
         },
+        "fullName": "google.cloud.sql.v1.SqlSslCertsClient.DeleteCustomerManagedCertificate",
+        "method": {
+          "fullName": "google.cloud.sql.v1.SqlSslCertsService.DeleteCustomerManagedCertificate",
+          "service": {
+            "fullName": "google.cloud.sql.v1.SqlSslCertsService",
+            "shortName": "SqlSslCertsService"
+          },
+          "shortName": "DeleteCustomerManagedCertificate"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.DeleteCustomerManagedCertificateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "DeleteCustomerManagedCertificate"
+      },
+      "description": "DeleteCustomerManagedCertificate delete customer managed certificate bundle for an existing Cloud SQL\ninstance.",
+      "file": "SqlSslCertsClient/DeleteCustomerManagedCertificate/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1_generated_SqlSslCertsService_DeleteCustomerManagedCertificate_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin DeleteCustomerManagedCertificate Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1.SqlSslCertsClient",
+          "shortName": "SqlSslCertsClient"
+        },
         "fullName": "google.cloud.sql.v1.SqlSslCertsClient.Get",
         "method": {
           "fullName": "google.cloud.sql.v1.SqlSslCertsService.Get",
@@ -3413,6 +3643,98 @@
         }
       ],
       "title": "sqladmin List Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1.SqlSslCertsClient",
+          "shortName": "SqlSslCertsClient"
+        },
+        "fullName": "google.cloud.sql.v1.SqlSslCertsClient.ListCustomerManagedCertificates",
+        "method": {
+          "fullName": "google.cloud.sql.v1.SqlSslCertsService.ListCustomerManagedCertificates",
+          "service": {
+            "fullName": "google.cloud.sql.v1.SqlSslCertsService",
+            "shortName": "SqlSslCertsService"
+          },
+          "shortName": "ListCustomerManagedCertificates"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.ListCustomerManagedCertificatesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.ListCustomerManagedCertificatesResponse",
+        "shortName": "ListCustomerManagedCertificates"
+      },
+      "description": "ListCustomerManagedCertificates list all customer managed certificate bundles for an existing Cloud SQL\ninstance.",
+      "file": "SqlSslCertsClient/ListCustomerManagedCertificates/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1_generated_SqlSslCertsService_ListCustomerManagedCertificates_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin ListCustomerManagedCertificates Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1.SqlSslCertsClient",
+          "shortName": "SqlSslCertsClient"
+        },
+        "fullName": "google.cloud.sql.v1.SqlSslCertsClient.UpdateCustomerManagedCertificate",
+        "method": {
+          "fullName": "google.cloud.sql.v1.SqlSslCertsService.UpdateCustomerManagedCertificate",
+          "service": {
+            "fullName": "google.cloud.sql.v1.SqlSslCertsService",
+            "shortName": "SqlSslCertsService"
+          },
+          "shortName": "UpdateCustomerManagedCertificate"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.UpdateCustomerManagedCertificateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "UpdateCustomerManagedCertificate"
+      },
+      "description": "UpdateCustomerManagedCertificate upload and update customer managed certificate bundle for an existing Cloud\nSQL instance.",
+      "file": "SqlSslCertsClient/UpdateCustomerManagedCertificate/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1_generated_SqlSslCertsService_UpdateCustomerManagedCertificate_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin UpdateCustomerManagedCertificate Sample"
     },
     {
       "clientMethod": {

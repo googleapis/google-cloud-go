@@ -409,7 +409,7 @@
         "resultType": "LocationIterator",
         "shortName": "ListLocations"
       },
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "Client/ListLocations/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -422,6 +422,52 @@
         }
       ],
       "title": "hypercomputecluster ListLocations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.hypercomputecluster.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.hypercomputecluster.v1beta.Client.ListNodes",
+        "method": {
+          "fullName": "google.cloud.hypercomputecluster.v1beta.HypercomputeCluster.ListNodes",
+          "service": {
+            "fullName": "google.cloud.hypercomputecluster.v1beta.HypercomputeCluster",
+            "shortName": "HypercomputeCluster"
+          },
+          "shortName": "ListNodes"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "hypercomputeclusterpb.ListNodesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "NodeIterator",
+        "shortName": "ListNodes"
+      },
+      "description": "ListNodes lists Nodes in a given cluster.",
+      "file": "Client/ListNodes/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "hypercomputecluster_v1beta_generated_HypercomputeCluster_ListNodes_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "hypercomputecluster ListNodes Sample"
     },
     {
       "clientMethod": {
