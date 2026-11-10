@@ -409,19 +409,17 @@ func TestDefaultListValueFallback_AndNestedBytePool(t *testing.T) {
 	}
 }
 
-func TestFloatAndTimestampStringFallbacks(t *testing.T) {
-	// Non-canonical float strings must fall back to KindString so host codecs handle them identically to stock.
+func TestFloatBytesAndTimestampInvalidStringErrors(t *testing.T) {
+	// Non-canonical float strings must return an error on both DecodeCellValue and PackRowsIntoArena.
 	for _, code := range []sppb.TypeCode{sppb.TypeCode_FLOAT64, sppb.TypeCode_FLOAT32} {
 		typ := &sppb.Type{Code: code}
 		for _, nonCanonical := range []string{"Inf", "+Inf", "-Inf", "+Infinity", "3.14", "1_000.5", "not-a-float"} {
 			val := proto3.NewStringValue(nonCanonical)
-			dv, err := DecodeCellValue(val, typ)
-			if err != nil || dv.Kind != KindString || dv.StrVal != nonCanonical {
-				t.Fatalf("DecodeCellValue(%v, %q): expected KindString %q, got %+v err=%v", code, nonCanonical, nonCanonical, dv, err)
+			if _, err := DecodeCellValue(val, typ); err == nil {
+				t.Fatalf("DecodeCellValue(%v, %q): expected error, got nil", code, nonCanonical)
 			}
-			cells, arena, _, _, err := PackRowsIntoArena([][]*proto3.Value{{val}}, []*sppb.StructType_Field{{Name: "f", Type: typ}})
-			if err != nil || len(cells) != 1 || cells[0].Kind != int32(KindString) || string(arena[cells[0].Offset:cells[0].Offset+cells[0].Len]) != nonCanonical {
-				t.Fatalf("PackRowsIntoArena(%v, %q): expected KindString in arena, got cells=%+v err=%v", code, nonCanonical, cells, err)
+			if _, _, _, _, err := PackRowsIntoArena([][]*proto3.Value{{val}}, []*sppb.StructType_Field{{Name: "f", Type: typ}}); err == nil {
+				t.Fatalf("PackRowsIntoArena(%v, %q): expected error, got nil", code, nonCanonical)
 			}
 		}
 		for _, special := range []string{"Infinity", "-Infinity", "NaN"} {
@@ -441,7 +439,19 @@ func TestFloatAndTimestampStringFallbacks(t *testing.T) {
 		}
 	}
 
-	// Lowercase 't' or 'z' on TIMESTAMP must fall back to KindString (matching time.RFC3339Nano).
+	// Invalid base64 on BYTES or PROTO must return an error.
+	for _, code := range []sppb.TypeCode{sppb.TypeCode_BYTES, sppb.TypeCode_PROTO} {
+		typ := &sppb.Type{Code: code}
+		badB64 := proto3.NewStringValue("!!!not-valid-base64!!!")
+		if _, err := DecodeCellValue(badB64, typ); err == nil {
+			t.Fatalf("DecodeCellValue(%v, invalid base64): expected error, got nil", code)
+		}
+		if _, _, _, _, err := PackRowsIntoArena([][]*proto3.Value{{badB64}}, []*sppb.StructType_Field{{Name: "b", Type: typ}}); err == nil {
+			t.Fatalf("PackRowsIntoArena(%v, invalid base64): expected error, got nil", code)
+		}
+	}
+
+	// Lowercase 't' or 'z' or malformed TIMESTAMP strings must return an error (matching time.RFC3339Nano).
 	tsType := &sppb.Type{Code: sppb.TypeCode_TIMESTAMP}
 	for _, rawTS := range []string{
 		"2026-07-01t12:34:56.123456789Z",
@@ -449,13 +459,11 @@ func TestFloatAndTimestampStringFallbacks(t *testing.T) {
 		"invalid-timestamp",
 	} {
 		val := proto3.NewStringValue(rawTS)
-		dv, err := DecodeCellValue(val, tsType)
-		if err != nil || dv.Kind != KindString || dv.StrVal != rawTS {
-			t.Fatalf("DecodeCellValue(TIMESTAMP, %q): expected KindString fallback, got %+v err=%v", rawTS, dv, err)
+		if _, err := DecodeCellValue(val, tsType); err == nil {
+			t.Fatalf("DecodeCellValue(TIMESTAMP, %q): expected error, got nil", rawTS)
 		}
-		cells, arena, _, _, err := PackRowsIntoArena([][]*proto3.Value{{val}}, []*sppb.StructType_Field{{Name: "ts", Type: tsType}})
-		if err != nil || len(cells) != 1 || cells[0].Kind != int32(KindString) || string(arena[cells[0].Offset:cells[0].Offset+cells[0].Len]) != rawTS {
-			t.Fatalf("PackRowsIntoArena(TIMESTAMP, %q): expected KindString fallback, got cells=%+v err=%v", rawTS, cells, err)
+		if _, _, _, _, err := PackRowsIntoArena([][]*proto3.Value{{val}}, []*sppb.StructType_Field{{Name: "ts", Type: tsType}}); err == nil {
+			t.Fatalf("PackRowsIntoArena(TIMESTAMP, %q): expected error, got nil", rawTS)
 		}
 	}
 
@@ -464,6 +472,10 @@ func TestFloatAndTimestampStringFallbacks(t *testing.T) {
 	dv, err := DecodeCellValue(proto3.NewStringValue(offsetTS), tsType)
 	if err != nil || dv.Kind != KindTimestamp || dv.Int64Val != 1782909296 || dv.Int32Val != 123456789 {
 		t.Fatalf("expected KindTimestamp from RFC3339Nano offset fallback, got %+v err=%v", dv, err)
+	}
+	cells, _, _, _, err := PackRowsIntoArena([][]*proto3.Value{{proto3.NewStringValue(offsetTS)}}, []*sppb.StructType_Field{{Name: "ts", Type: tsType}})
+	if err != nil || len(cells) != 1 || cells[0].Kind != int32(KindTimestamp) || int64(cells[0].NumBits) != 1782909296 || int32(cells[0].Flags) != 123456789 {
+		t.Fatalf("expected KindTimestamp in arena from RFC3339Nano offset fallback, got cells=%+v err=%v", cells, err)
 	}
 }
 
@@ -481,13 +493,16 @@ func TestDecodeRowsAndPackRowsIntoArena_AllTypeCodes(t *testing.T) {
 	largePayload := bytes.Repeat([]byte("abcd"), 128) // 512 bytes to exercise arena growth
 	largeB64 := base64.StdEncoding.EncodeToString(largePayload)
 
+	protoPayload := []byte("proto-bytes-payload")
+	protoB64 := base64.StdEncoding.EncodeToString(protoPayload)
+
 	fields := []*sppb.StructType_Field{
 		{Name: "c_bool", Type: &sppb.Type{Code: sppb.TypeCode_BOOL}},
 		{Name: "c_f64", Type: &sppb.Type{Code: sppb.TypeCode_FLOAT64}},
 		{Name: "c_f32", Type: &sppb.Type{Code: sppb.TypeCode_FLOAT32}},
 		{Name: "c_bytes", Type: &sppb.Type{Code: sppb.TypeCode_BYTES}},
 		{Name: "c_bytes_empty", Type: &sppb.Type{Code: sppb.TypeCode_BYTES}},
-		{Name: "c_bytes_invalid", Type: &sppb.Type{Code: sppb.TypeCode_PROTO}},
+		{Name: "c_proto", Type: &sppb.Type{Code: sppb.TypeCode_PROTO}},
 		{Name: "c_ts", Type: &sppb.Type{Code: sppb.TypeCode_TIMESTAMP}},
 		{Name: "c_str", Type: &sppb.Type{Code: sppb.TypeCode_STRING}},
 		{Name: "c_untyped_bool", Type: &sppb.Type{Code: sppb.TypeCode_TYPE_CODE_UNSPECIFIED}},
@@ -520,7 +535,7 @@ func TestDecodeRowsAndPackRowsIntoArena_AllTypeCodes(t *testing.T) {
 			proto3.NewNumberValue(1.5),
 			proto3.NewStringValue(largeB64),
 			proto3.NewStringValue(""),
-			proto3.NewStringValue("!!!not-valid-base64!!!"),
+			proto3.NewStringValue(protoB64),
 			proto3.NewStringValue("2026-07-01T12:34:56Z"),
 			proto3.NewStringValue("hello"),
 			proto3.NewBoolValue(false),
@@ -554,8 +569,8 @@ func TestDecodeRowsAndPackRowsIntoArena_AllTypeCodes(t *testing.T) {
 	if row[4].Kind != KindBytes || len(row[4].BytesVal) != 0 {
 		t.Fatalf("col 4 (empty BYTES): %+v", row[4])
 	}
-	if row[5].Kind != KindString || row[5].StrVal != "!!!not-valid-base64!!!" {
-		t.Fatalf("col 5 (invalid base64 PROTO fallback): %+v", row[5])
+	if row[5].Kind != KindBytes || !bytes.Equal(row[5].BytesVal, protoPayload) {
+		t.Fatalf("col 5 (PROTO): %+v", row[5])
 	}
 	if row[6].Kind != KindTimestamp || row[6].Int64Val != 1782909296 || row[6].Int32Val != 0 {
 		t.Fatalf("col 6 (TIMESTAMP): %+v", row[6])
@@ -595,7 +610,7 @@ func TestDecodeRowsAndPackRowsIntoArena_AllTypeCodes(t *testing.T) {
 	if cells[4].Kind != int32(KindBytes) || cells[4].Len != 0 {
 		t.Fatalf("arena col 4: %+v", cells[4])
 	}
-	if cells[5].Kind != int32(KindString) || string(arena[cells[5].Offset:cells[5].Offset+cells[5].Len]) != "!!!not-valid-base64!!!" {
+	if cells[5].Kind != int32(KindBytes) || !bytes.Equal(arena[cells[5].Offset:cells[5].Offset+cells[5].Len], protoPayload) {
 		t.Fatalf("arena col 5: %+v", cells[5])
 	}
 	if cells[6].Kind != int32(KindTimestamp) || int64(cells[6].NumBits) != 1782909296 || cells[6].Flags != 0 {
@@ -645,7 +660,7 @@ func TestTimestampBoundaries_CalendarBranches_RaggedRows_ManyCols_AndOutlierRow0
 		}
 	}
 
-	// Invalid calendar dates (non-leap Feb 29, secular non-leap 1900-02-29, month 13, non-digit frac, bad dot) fall back to KindString.
+	// Invalid calendar dates (non-leap Feb 29, secular non-leap 1900-02-29, month 13, non-digit frac, bad dot) must return an error.
 	for _, invalidTS := range []string{
 		"2025-02-29T00:00:00Z",
 		"1900-02-29T00:00:00Z",
@@ -657,9 +672,11 @@ func TestTimestampBoundaries_CalendarBranches_RaggedRows_ManyCols_AndOutlierRow0
 		"202X-07-01T12:34:56Z",
 		"2026-0X-01T12:34:56Z",
 	} {
-		dv, err := DecodeCellValue(proto3.NewStringValue(invalidTS), tsType)
-		if err != nil || dv.Kind != KindString || dv.StrVal != invalidTS {
-			t.Fatalf("DecodeCellValue(%q): expected KindString fallback, got %+v err=%v", invalidTS, dv, err)
+		if _, err := DecodeCellValue(proto3.NewStringValue(invalidTS), tsType); err == nil {
+			t.Fatalf("DecodeCellValue(%q): expected error, got nil", invalidTS)
+		}
+		if _, _, _, _, err := PackRowsIntoArena([][]*proto3.Value{{proto3.NewStringValue(invalidTS)}}, []*sppb.StructType_Field{{Name: "ts", Type: tsType}}); err == nil {
+			t.Fatalf("PackRowsIntoArena(%q): expected error, got nil", invalidTS)
 		}
 	}
 

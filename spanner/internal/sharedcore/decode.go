@@ -309,13 +309,13 @@ func packCellIntoArena(v *proto3.Value, t *sppb.Type, dstIdx int, cells *[]Packe
 	case sppb.TypeCode_BOOL:
 		return packBool(v, dstIdx, cells)
 	case sppb.TypeCode_FLOAT64:
-		return packFloat(v, KindFloat64, code, dstIdx, cells, arenaBytes)
+		return packFloat(v, KindFloat64, code, dstIdx, cells)
 	case sppb.TypeCode_FLOAT32:
-		return packFloat(v, KindFloat32, code, dstIdx, cells, arenaBytes)
+		return packFloat(v, KindFloat32, code, dstIdx, cells)
 	case sppb.TypeCode_BYTES, sppb.TypeCode_PROTO:
 		return packBytes(v, code, dstIdx, cells, arenaBytes)
 	case sppb.TypeCode_TIMESTAMP:
-		return packTimestamp(v, dstIdx, cells, arenaBytes)
+		return packTimestamp(v, dstIdx, cells)
 	case sppb.TypeCode_ARRAY:
 		var elemType *sppb.Type
 		if t != nil {
@@ -378,7 +378,7 @@ func packString(s string, dstIdx int, cells *[]PackedCell, arenaBytes *[]byte) {
 // Note: Both KindFloat64 and KindFloat32 store 64-bit IEEE 754 float64 bits in NumBits
 // because the C ABI union CSpannerCell.num.f64_val is a 64-bit C double read directly
 // by N-API / Python C extensions for both cell kinds.
-func packFloat(v *proto3.Value, kind ValueKind, code sppb.TypeCode, dstIdx int, cells *[]PackedCell, arenaBytes *[]byte) error {
+func packFloat(v *proto3.Value, kind ValueKind, code sppb.TypeCode, dstIdx int, cells *[]PackedCell) error {
 	switch kv := v.Kind.(type) {
 	case *proto3.Value_NumberValue:
 		if kv == nil {
@@ -390,11 +390,11 @@ func packFloat(v *proto3.Value, kind ValueKind, code sppb.TypeCode, dstIdx int, 
 		if kv == nil {
 			return errUnexpectedValueKind(v, code)
 		}
-		if f, ok := parseFloatSpecial(kv.StringValue); ok {
-			(*cells)[dstIdx] = PackedCell{Kind: int32(kind), NumBits: math.Float64bits(f)}
-		} else {
-			packString(kv.StringValue, dstIdx, cells, arenaBytes)
+		f, ok := parseFloatSpecial(kv.StringValue)
+		if !ok {
+			return fmt.Errorf("unexpected string value %q for Spanner type %v", kv.StringValue, code)
 		}
+		(*cells)[dstIdx] = PackedCell{Kind: int32(kind), NumBits: math.Float64bits(f)}
 		return nil
 	default:
 		return errUnexpectedValueKind(v, code)
@@ -422,30 +422,28 @@ func packBytes(v *proto3.Value, code sppb.TypeCode, dstIdx int, cells *[]PackedC
 	dst := (*arenaBytes)[off : off+maxLen]
 	srcBytes := unsafe.Slice(unsafe.StringData(s), len(s))
 	n, err := base64.StdEncoding.Decode(dst, srcBytes)
-	if err == nil {
-		*arenaBytes = (*arenaBytes)[:off+n]
-		(*cells)[dstIdx] = PackedCell{Kind: int32(KindBytes), Offset: uint32(off), Len: uint32(n)}
-		return nil
+	if err != nil {
+		return fmt.Errorf("invalid base64 value for Spanner type %v: %w", code, err)
 	}
-	// Fallback to raw string if non-standard base64 so host codec can handle it.
-	packString(s, dstIdx, cells, arenaBytes)
+	*arenaBytes = (*arenaBytes)[:off+n]
+	(*cells)[dstIdx] = PackedCell{Kind: int32(KindBytes), Offset: uint32(off), Len: uint32(n)}
 	return nil
 }
 
-func packTimestamp(v *proto3.Value, dstIdx int, cells *[]PackedCell, arenaBytes *[]byte) error {
+func packTimestamp(v *proto3.Value, dstIdx int, cells *[]PackedCell) error {
 	sv, ok := v.Kind.(*proto3.Value_StringValue)
 	if !ok || sv == nil {
 		return errUnexpectedValueKind(v, sppb.TypeCode_TIMESTAMP)
 	}
-	if sec, nano, ok := parseRFC3339NanoFast(sv.StringValue); ok {
-		(*cells)[dstIdx] = PackedCell{
-			Kind:    int32(KindTimestamp),
-			Flags:   uint32(nano),
-			NumBits: uint64(sec),
-		}
-		return nil
+	sec, nano, err := parseRFC3339NanoFast(sv.StringValue)
+	if err != nil {
+		return err
 	}
-	packString(sv.StringValue, dstIdx, cells, arenaBytes)
+	(*cells)[dstIdx] = PackedCell{
+		Kind:    int32(KindTimestamp),
+		Flags:   uint32(nano),
+		NumBits: uint64(sec),
+	}
 	return nil
 }
 
@@ -616,10 +614,11 @@ func decodeFloat(v *proto3.Value, kind ValueKind, code sppb.TypeCode) (SpannerVa
 		if kv == nil {
 			return SpannerValue{}, errUnexpectedValueKind(v, code)
 		}
-		if f, ok := parseFloatSpecial(kv.StringValue); ok {
-			return SpannerValue{Kind: kind, Float64Val: f}, nil
+		f, ok := parseFloatSpecial(kv.StringValue)
+		if !ok {
+			return SpannerValue{}, fmt.Errorf("unexpected string value %q for Spanner type %v", kv.StringValue, code)
 		}
-		return SpannerValue{Kind: KindString, StrVal: kv.StringValue}, nil
+		return SpannerValue{Kind: kind, Float64Val: f}, nil
 	default:
 		return SpannerValue{}, errUnexpectedValueKind(v, code)
 	}
@@ -648,14 +647,14 @@ func decodeBytes(v *proto3.Value, code sppb.TypeCode, bytePool *[]byte) (Spanner
 	} else {
 		dst = make([]byte, maxLen)
 	}
-	if n, err := base64.StdEncoding.Decode(dst, srcBytes); err == nil {
-		if fromPool {
-			*bytePool = (*bytePool)[:poolOff+n]
-		}
-		return SpannerValue{Kind: KindBytes, BytesVal: dst[:n:n]}, nil
+	n, err := base64.StdEncoding.Decode(dst, srcBytes)
+	if err != nil {
+		return SpannerValue{}, fmt.Errorf("invalid base64 value for Spanner type %v: %w", code, err)
 	}
-	// Fallback to raw string if non-standard base64 so host codec can handle it.
-	return SpannerValue{Kind: KindString, StrVal: s}, nil
+	if fromPool {
+		*bytePool = (*bytePool)[:poolOff+n]
+	}
+	return SpannerValue{Kind: KindBytes, BytesVal: dst[:n:n]}, nil
 }
 
 func decodeTimestamp(v *proto3.Value) (SpannerValue, error) {
@@ -663,10 +662,11 @@ func decodeTimestamp(v *proto3.Value) (SpannerValue, error) {
 	if !ok || sv == nil {
 		return SpannerValue{}, errUnexpectedValueKind(v, sppb.TypeCode_TIMESTAMP)
 	}
-	if sec, nano, ok := parseRFC3339NanoFast(sv.StringValue); ok {
-		return SpannerValue{Kind: KindTimestamp, Int64Val: sec, Int32Val: nano}, nil
+	sec, nano, err := parseRFC3339NanoFast(sv.StringValue)
+	if err != nil {
+		return SpannerValue{}, err
 	}
-	return SpannerValue{Kind: KindString, StrVal: sv.StringValue}, nil
+	return SpannerValue{Kind: KindTimestamp, Int64Val: sec, Int32Val: nano}, nil
 }
 
 func decodeListValue(
@@ -733,16 +733,16 @@ func parseFloatSpecial(s string) (float64, bool) {
 
 // parseRFC3339NanoFast parses standard Spanner UTC timestamps of the form
 // "YYYY-MM-DDTHH:MM:SSZ" or "YYYY-MM-DDTHH:MM:SS.fffffffffZ" without layout reflection,
-// falling back to time.Parse(time.RFC3339Nano, s) for non-standard formats.
-func parseRFC3339NanoFast(s string) (int64, int32, bool) {
+// falling back to time.Parse(time.RFC3339Nano, s) for non-standard RFC3339Nano offsets.
+func parseRFC3339NanoFast(s string) (int64, int32, error) {
 	if sec, nanos, ok := parseStandardUTCTimestamp(s); ok {
-		return sec, nanos, true
+		return sec, nanos, nil
 	}
 	parsed, err := time.Parse(time.RFC3339Nano, s)
 	if err != nil {
-		return 0, 0, false
+		return 0, 0, fmt.Errorf("invalid RFC3339Nano timestamp %q: %w", s, err)
 	}
-	return parsed.Unix(), int32(parsed.Nanosecond()), true
+	return parsed.Unix(), int32(parsed.Nanosecond()), nil
 }
 
 func parseStandardUTCTimestamp(s string) (int64, int32, bool) {

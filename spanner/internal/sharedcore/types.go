@@ -163,7 +163,7 @@ type StreamRequest struct {
 //   - KindBool:      Flags = 1 (true) or 0 (false).
 //   - KindFloat64:   NumBits = math.Float64bits(v) (matches CSpannerCell.num.f64_val).
 //   - KindFloat32:   NumBits = math.Float64bits(v) (stored as IEEE 754 float64 bits to match CSpannerCell.num.f64_val).
-//   - KindString:    Offset, Len = UTF-8 byte range in ArenaBytes (also emitted as a raw wire-string fallback when FLOAT64/FLOAT32/BYTES/PROTO/TIMESTAMP holds a non-canonical string).
+//   - KindString:    Offset, Len = UTF-8 byte range in ArenaBytes.
 //   - KindBytes:     Offset, Len = decoded binary byte range in ArenaBytes.
 //   - KindTimestamp: NumBits = uint64(unixSeconds) (matches CSpannerCell.num.i64_val), Flags = uint32(nanos) (0..999,999,999).
 //   - KindArray:     Offset = start index in Cells, Len = number of contiguous child cells.
