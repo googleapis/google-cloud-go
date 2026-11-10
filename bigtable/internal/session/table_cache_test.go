@@ -40,6 +40,12 @@ func (n *noopTable) ReadRow(context.Context, *btpb.SessionReadRowRequest) (*btpb
 func (n *noopTable) MutateRow(context.Context, *btpb.SessionMutateRowRequest) (*btpb.SessionMutateRowResponse, error) {
 	return &btpb.SessionMutateRowResponse{}, nil
 }
+func (n *noopTable) CheckAndMutateRow(context.Context, *btpb.SessionCheckAndMutateRowRequest) (*btpb.SessionCheckAndMutateRowResponse, error) {
+	return &btpb.SessionCheckAndMutateRowResponse{}, nil
+}
+func (n *noopTable) ReadModifyWriteRow(context.Context, *btpb.SessionReadModifyWriteRowRequest) (*btpb.SessionReadModifyWriteRowResponse, error) {
+	return &btpb.SessionReadModifyWriteRowResponse{}, nil
+}
 func (n *noopTable) Close() error { return nil }
 
 // newTestTableCache builds a cache with an injectable clock. Sweep
