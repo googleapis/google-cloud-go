@@ -44,32 +44,57 @@ func scopePrefixFor(project, instance string) string {
 	return "projects/" + project + "/instances/" + instance + "/"
 }
 
-// stripScope verifies name begins with this daemon's precomputed project
-// prefix (and pinned instance, if any) and returns the resolved instance ID
-// and the remainder after "projects/<project>/instances/<instance>/". A name
+// stripResourceScope verifies name begins with the precomputed project prefix
+// (and pinnedInstance, if non-empty) and returns the resolved instance ID and
+// the remainder after "projects/<project>/instances/<instance>/". A name
 // targeting any other project (or another instance when pinned) is rejected
-// with InvalidArgument rather than silently rebound onto this daemon's scope.
-func (c *Channel) stripScope(name string) (instanceID, rest string, err error) {
-	if c.instance != "" {
-		rest, ok := strings.CutPrefix(name, c.scopePrefix)
+// with InvalidArgument using errFmt (which must accept name and scope strings).
+func stripResourceScope(scopePrefix, pinnedInstance, errFmt, name string) (instanceID, rest string, err error) {
+	if pinnedInstance != "" {
+		rest, ok := strings.CutPrefix(name, scopePrefix)
 		if !ok {
-			return "", "", status.Errorf(codes.InvalidArgument,
-				"accelerator: resource %q is not in this daemon's scope (%s)",
-				name, strings.TrimSuffix(c.scopePrefix, "/"))
+			return "", "", status.Errorf(codes.InvalidArgument, errFmt, name, strings.TrimSuffix(scopePrefix, "/"))
 		}
-		return c.instance, rest, nil
+		return pinnedInstance, rest, nil
 	}
-	afterProject, ok := strings.CutPrefix(name, c.scopePrefix)
+	afterProject, ok := strings.CutPrefix(name, scopePrefix)
 	if !ok {
-		return "", "", status.Errorf(codes.InvalidArgument,
-			"accelerator: resource %q is not in this daemon's scope (%s)",
-			name, strings.TrimSuffix(strings.TrimSuffix(c.scopePrefix, "instances/"), "/"))
+		return "", "", status.Errorf(codes.InvalidArgument, errFmt,
+			name, strings.TrimSuffix(strings.TrimSuffix(scopePrefix, "instances/"), "/"))
 	}
 	instanceID, rest, ok = strings.Cut(afterProject, "/")
 	if !ok || instanceID == "" {
 		return "", "", malformedResource(name)
 	}
 	return instanceID, rest, nil
+}
+
+// extractInstanceFromResourceName extracts the <instance> segment from a V2
+// resource name ("projects/<project>/instances/<instance>/..."), or returns ""
+// if name does not contain a non-empty instance segment.
+func extractInstanceFromResourceName(name string) string {
+	afterProjects, ok := strings.CutPrefix(name, "projects/")
+	if !ok {
+		return ""
+	}
+	proj, afterProj, ok := strings.Cut(afterProjects, "/instances/")
+	if !ok || proj == "" {
+		return ""
+	}
+	instanceID, _, ok := strings.Cut(afterProj, "/")
+	if !ok {
+		return ""
+	}
+	return instanceID
+}
+
+// stripScope verifies name begins with this daemon's precomputed project
+// prefix (and pinned instance, if any) and returns the resolved instance ID
+// and the remainder after "projects/<project>/instances/<instance>/". A name
+// targeting any other project (or another instance when pinned) is rejected
+// with InvalidArgument rather than silently rebound onto this daemon's scope.
+func (c *Channel) stripScope(name string) (instanceID, rest string, err error) {
+	return stripResourceScope(c.scopePrefix, c.instance, "accelerator: resource %q is not in this daemon's scope (%s)", name)
 }
 
 // leafAfter returns the single path segment following seg at the front of
@@ -87,10 +112,8 @@ func malformedResource(name string) error {
 	return status.Errorf(codes.InvalidArgument, "accelerator: malformed resource name %q", name)
 }
 
-// parseTableName validates that name is a table resource in this daemon's
-// scope and returns the instance ID and table leaf ID.
-func (c *Channel) parseTableName(name string) (instanceID, tableID string, err error) {
-	instanceID, rest, err := c.stripScope(name)
+func parseTableResource(scopePrefix, pinnedInstance, errFmt, name string) (instanceID, tableID string, err error) {
+	instanceID, rest, err := stripResourceScope(scopePrefix, pinnedInstance, errFmt, name)
 	if err != nil {
 		return "", "", err
 	}
@@ -101,10 +124,8 @@ func (c *Channel) parseTableName(name string) (instanceID, tableID string, err e
 	return instanceID, tableID, nil
 }
 
-// parseAuthorizedViewName validates that name is an authorized-view resource in
-// this daemon's scope and returns the instance ID, table ID, and view leaf IDs.
-func (c *Channel) parseAuthorizedViewName(name string) (instanceID, tableID, viewID string, err error) {
-	instanceID, rest, err := c.stripScope(name)
+func parseAuthorizedViewResource(scopePrefix, pinnedInstance, errFmt, name string) (instanceID, tableID, viewID string, err error) {
+	instanceID, rest, err := stripResourceScope(scopePrefix, pinnedInstance, errFmt, name)
 	if err != nil {
 		return "", "", "", err
 	}
@@ -120,10 +141,8 @@ func (c *Channel) parseAuthorizedViewName(name string) (instanceID, tableID, vie
 	return instanceID, tableID, viewID, nil
 }
 
-// parseMaterializedViewName validates that name is a materialized-view resource
-// in this daemon's scope and returns the instance ID and view leaf ID.
-func (c *Channel) parseMaterializedViewName(name string) (instanceID, viewID string, err error) {
-	instanceID, rest, err := c.stripScope(name)
+func parseMaterializedViewResource(scopePrefix, pinnedInstance, errFmt, name string) (instanceID, viewID string, err error) {
+	instanceID, rest, err := stripResourceScope(scopePrefix, pinnedInstance, errFmt, name)
 	if err != nil {
 		return "", "", err
 	}
@@ -132,4 +151,22 @@ func (c *Channel) parseMaterializedViewName(name string) (instanceID, viewID str
 		return "", "", err
 	}
 	return instanceID, viewID, nil
+}
+
+// parseTableName validates that name is a table resource in this daemon's
+// scope and returns the instance ID and table leaf ID.
+func (c *Channel) parseTableName(name string) (instanceID, tableID string, err error) {
+	return parseTableResource(c.scopePrefix, c.instance, "accelerator: resource %q is not in this daemon's scope (%s)", name)
+}
+
+// parseAuthorizedViewName validates that name is an authorized-view resource in
+// this daemon's scope and returns the instance ID, table ID, and view leaf IDs.
+func (c *Channel) parseAuthorizedViewName(name string) (instanceID, tableID, viewID string, err error) {
+	return parseAuthorizedViewResource(c.scopePrefix, c.instance, "accelerator: resource %q is not in this daemon's scope (%s)", name)
+}
+
+// parseMaterializedViewName validates that name is a materialized-view resource
+// in this daemon's scope and returns the instance ID and view leaf ID.
+func (c *Channel) parseMaterializedViewName(name string) (instanceID, viewID string, err error) {
+	return parseMaterializedViewResource(c.scopePrefix, c.instance, "accelerator: resource %q is not in this daemon's scope (%s)", name)
 }

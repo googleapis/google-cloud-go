@@ -17,16 +17,43 @@ package accelerator
 import (
 	"context"
 	"errors"
-	"strings"
 	"sync"
+	"sync/atomic"
+	"time"
 
 	"cloud.google.com/go/bigtable"
 	v2pb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"cloud.google.com/go/bigtable/internal/accelerator/adapters"
+	"cloud.google.com/go/bigtable/internal/session"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
+
+// classicClient is the narrow surface classicFallback needs from
+// *bigtable.Client. Interfaced so unit tests can stub client creation and
+// Close without dialing a real Bigtable server.
+type classicClient interface {
+	OpenTable(table string) bigtable.TableAPI
+	OpenAuthorizedView(table, authorizedView string) bigtable.TableAPI
+	OpenMaterializedView(materializedView string) bigtable.TableAPI
+	Close() error
+}
+
+var newClassicClient = func(
+	ctx context.Context,
+	project, instance string,
+	config bigtable.ClientConfig,
+	opts ...option.ClientOption,
+) (classicClient, error) {
+	return bigtable.NewClientWithConfig(ctx, project, instance, config, opts...)
+}
+
+type fallbackClientEntry struct {
+	c              classicClient
+	lastAccessNano atomic.Int64
+	tables         map[string]struct{}
+}
 
 // classicFallback wraps bigtable.Client(s) for use as a fallback when the
 // session path returns codes.Unimplemented. It operates at the proto level
@@ -43,12 +70,16 @@ type classicFallback struct {
 	instance    string
 	appProfile  string
 	opts        []option.ClientOption
-	c           *bigtable.Client
 	scopePrefix string // "projects/<project>/instances/<instance>/" or "projects/<project>/instances/"
-	mu          sync.Mutex
-	clients     map[clientKey]*bigtable.Client
-	tables      map[string]bigtable.TableAPI // keyed by full V2 resource name (+ app profile)
-	closed      bool
+
+	clientTTL time.Duration
+	nowFn     func() time.Time
+
+	mu      sync.Mutex
+	clients map[clientKey]*fallbackClientEntry
+	loading map[clientKey]*clientLoadState
+	tables  map[string]bigtable.TableAPI // keyed by full V2 resource name (+ app profile)
+	closed  bool
 }
 
 // newClassicFallback constructs a classicFallback scoped to project (and
@@ -63,53 +94,142 @@ func newClassicFallback(ctx context.Context, project, instance, appProfile strin
 		appProfile:  appProfile,
 		opts:        opts,
 		scopePrefix: scopePrefixFor(project, instance),
-		clients:     make(map[clientKey]*bigtable.Client),
+		clients:     make(map[clientKey]*fallbackClientEntry),
+		loading:     make(map[clientKey]*clientLoadState),
 		tables:      make(map[string]bigtable.TableAPI),
 	}
 	if instance != "" {
-		c, err := bigtable.NewClientWithConfig(ctx, project, instance, bigtable.ClientConfig{
+		c, err := newClassicClient(ctx, project, instance, bigtable.ClientConfig{
 			AppProfile:     appProfile,
 			DisableSession: true,
 		}, opts...)
 		if err != nil {
 			return nil, err
 		}
-		cf.c = c
-		cf.clients[clientKey{instance: instance, appProfile: appProfile}] = c
+		entry := &fallbackClientEntry{
+			c:      c,
+			tables: make(map[string]struct{}),
+		}
+		entry.lastAccessNano.Store(cf.now().UnixNano())
+		cf.clients[clientKey{instance: instance, appProfile: appProfile}] = entry
 	}
 	return cf, nil
 }
 
-func (f *classicFallback) getOrCreateClient(instanceID, appProfile string) (*bigtable.Client, error) {
-	key := clientKey{instance: instanceID, appProfile: appProfile}
-	f.mu.Lock()
-	defer f.mu.Unlock()
-	if f.closed {
-		return nil, status.Error(codes.Unavailable, "accelerator fallback: closed")
+func (f *classicFallback) now() time.Time {
+	if f.nowFn != nil {
+		return f.nowFn()
 	}
-	if c, ok := f.clients[key]; ok {
-		return c, nil
-	}
+	return time.Now()
+}
 
-	ctx := f.ctx
-	if ctx == nil {
-		ctx = context.Background()
+func (f *classicFallback) effectiveClientTTL() time.Duration {
+	if f.clientTTL > 0 {
+		return f.clientTTL
 	}
-	c, err := bigtable.NewClientWithConfig(ctx, f.project, instanceID, bigtable.ClientConfig{
-		AppProfile:     appProfile,
-		DisableSession: true,
-	}, f.opts...)
-	if err != nil {
-		return nil, err
+	return session.DefaultTableCacheTTL
+}
+
+func (f *classicFallback) getOrCreateClient(instanceID, appProfile string) (classicClient, error) {
+	key := clientKey{instance: instanceID, appProfile: appProfile}
+	for {
+		f.mu.Lock()
+		if f.closed {
+			f.mu.Unlock()
+			return nil, status.Error(codes.Unavailable, "accelerator fallback: closed")
+		}
+		if entry, ok := f.clients[key]; ok {
+			entry.lastAccessNano.Store(f.now().UnixNano())
+			c := entry.c
+			f.mu.Unlock()
+			return c, nil
+		}
+		if f.loading == nil {
+			f.loading = make(map[clientKey]*clientLoadState)
+		}
+		if ls, ok := f.loading[key]; ok {
+			f.mu.Unlock()
+			<-ls.ready
+			continue
+		}
+		ls := &clientLoadState{ready: make(chan struct{})}
+		f.loading[key] = ls
+		f.mu.Unlock()
+
+		var (
+			c          classicClient
+			err        error
+			evictedCls []classicClient
+		)
+		func() {
+			defer func() {
+				f.mu.Lock()
+				delete(f.loading, key)
+				f.mu.Unlock()
+				close(ls.ready)
+			}()
+
+			ctx := f.ctx
+			if ctx == nil {
+				ctx = context.Background()
+			}
+			c, err = newClassicClient(ctx, f.project, instanceID, bigtable.ClientConfig{
+				AppProfile:     appProfile,
+				DisableSession: true,
+			}, f.opts...)
+			if err != nil {
+				return
+			}
+
+			nowNano := f.now().UnixNano()
+			cutoff := f.now().Add(-f.effectiveClientTTL()).UnixNano()
+
+			f.mu.Lock()
+			if f.closed {
+				f.mu.Unlock()
+				_ = c.Close()
+				c = nil
+				err = status.Error(codes.Unavailable, "accelerator fallback: closed")
+				return
+			}
+			if f.clients == nil {
+				f.clients = make(map[clientKey]*fallbackClientEntry)
+			}
+			evictedCls = f.collectIdleClientsLocked(cutoff, key)
+			entry := &fallbackClientEntry{
+				c:      c,
+				tables: make(map[string]struct{}),
+			}
+			entry.lastAccessNano.Store(nowNano)
+			f.clients[key] = entry
+			f.mu.Unlock()
+		}()
+
+		for _, oldC := range evictedCls {
+			_ = oldC.Close()
+		}
+		return c, err
 	}
-	if f.clients == nil {
-		f.clients = make(map[clientKey]*bigtable.Client)
+}
+
+func (f *classicFallback) collectIdleClientsLocked(cutoff int64, skipKey clientKey) []classicClient {
+	pinnedKey := clientKey{instance: f.instance, appProfile: f.appProfile}
+	var evicted []classicClient
+	for k, entry := range f.clients {
+		if k == skipKey || (f.instance != "" && k == pinnedKey) {
+			continue
+		}
+		if entry.lastAccessNano.Load() < cutoff {
+			for tableKey := range entry.tables {
+				delete(f.tables, tableKey)
+			}
+			if entry.c != nil {
+				evicted = append(evicted, entry.c)
+			}
+			delete(f.clients, k)
+		}
 	}
-	f.clients[key] = c
-	if f.c == nil {
-		f.c = c
-	}
-	return c, nil
+	return evicted
 }
 
 func (f *classicFallback) resolveAppProfile(reqAppProfile string) (string, error) {
@@ -149,7 +269,7 @@ func (f *classicFallback) tableAPI(res adapters.Resource) (bigtable.TableAPI, er
 	f.mu.Unlock()
 
 	// Build the handle outside the lock.
-	t, err := f.buildTableHandle(res, appProfile)
+	instanceID, t, err := f.buildTableHandle(res, appProfile)
 	if err != nil {
 		return nil, err
 	}
@@ -165,6 +285,12 @@ func (f *classicFallback) tableAPI(res adapters.Resource) (bigtable.TableAPI, er
 		return existing, nil
 	}
 	f.tables[cacheKey] = t
+	if entry, ok := f.clients[clientKey{instance: instanceID, appProfile: appProfile}]; ok {
+		if entry.tables == nil {
+			entry.tables = make(map[string]struct{})
+		}
+		entry.tables[cacheKey] = struct{}{}
+	}
 	f.mu.Unlock()
 	return t, nil
 }
@@ -172,40 +298,40 @@ func (f *classicFallback) tableAPI(res adapters.Resource) (bigtable.TableAPI, er
 // buildTableHandle constructs a bigtable.TableAPI for res. It validates that
 // the resource belongs to f's scope before extracting the leaf IDs, so
 // cross-project/cross-instance routing is rejected with InvalidArgument.
-func (f *classicFallback) buildTableHandle(res adapters.Resource, appProfile string) (bigtable.TableAPI, error) {
+func (f *classicFallback) buildTableHandle(res adapters.Resource, appProfile string) (string, bigtable.TableAPI, error) {
 	switch res.Kind {
 	case adapters.ResourceTable:
 		instanceID, tableID, err := f.parseTableIDAndInstance(res.Name)
 		if err != nil {
-			return nil, err
+			return "", nil, err
 		}
 		c, err := f.getOrCreateClient(instanceID, appProfile)
 		if err != nil {
-			return nil, err
+			return "", nil, err
 		}
-		return c.OpenTable(tableID), nil
+		return instanceID, c.OpenTable(tableID), nil
 	case adapters.ResourceAuthorizedView:
 		instanceID, tableID, viewID, err := f.parseAVIDsAndInstance(res.Name)
 		if err != nil {
-			return nil, err
+			return "", nil, err
 		}
 		c, err := f.getOrCreateClient(instanceID, appProfile)
 		if err != nil {
-			return nil, err
+			return "", nil, err
 		}
-		return c.OpenAuthorizedView(tableID, viewID), nil
+		return instanceID, c.OpenAuthorizedView(tableID, viewID), nil
 	case adapters.ResourceMaterializedView:
 		instanceID, mvID, err := f.parseMVIDAndInstance(res.Name)
 		if err != nil {
-			return nil, err
+			return "", nil, err
 		}
 		c, err := f.getOrCreateClient(instanceID, appProfile)
 		if err != nil {
-			return nil, err
+			return "", nil, err
 		}
-		return c.OpenMaterializedView(mvID), nil
+		return instanceID, c.OpenMaterializedView(mvID), nil
 	default:
-		return nil, status.Errorf(codes.Internal, "accelerator fallback: unknown resource kind %v", res.Kind)
+		return "", nil, status.Errorf(codes.Internal, "accelerator fallback: unknown resource kind %v", res.Kind)
 	}
 }
 
@@ -282,19 +408,13 @@ func (f *classicFallback) Close() error {
 		return nil
 	}
 	f.closed = true
-	clients := make([]*bigtable.Client, 0, len(f.clients)+1)
-	seen := make(map[*bigtable.Client]bool, len(f.clients)+1)
-	for _, c := range f.clients {
-		if c != nil && !seen[c] {
-			seen[c] = true
-			clients = append(clients, c)
+	clients := make([]classicClient, 0, len(f.clients))
+	for _, entry := range f.clients {
+		if entry != nil && entry.c != nil {
+			clients = append(clients, entry.c)
 		}
 	}
-	if f.c != nil && !seen[f.c] {
-		clients = append(clients, f.c)
-	}
 	f.clients = nil
-	f.c = nil
 	f.tables = nil
 	f.mu.Unlock()
 
@@ -307,46 +427,17 @@ func (f *classicFallback) Close() error {
 	return errors.Join(errs...)
 }
 
-func (f *classicFallback) stripScope(name string) (instanceID, rest string, err error) {
-	if f.instance != "" {
-		rest, ok := strings.CutPrefix(name, f.scopePrefix)
-		if !ok {
-			return "", "", status.Errorf(codes.InvalidArgument,
-				"accelerator fallback: resource %q is not in scope %s", name, strings.TrimSuffix(f.scopePrefix, "/"))
-		}
-		return f.instance, rest, nil
-	}
-	afterProject, ok := strings.CutPrefix(name, f.scopePrefix)
-	if !ok {
-		return "", "", status.Errorf(codes.InvalidArgument,
-			"accelerator fallback: resource %q is not in scope %s",
-			name, strings.TrimSuffix(strings.TrimSuffix(f.scopePrefix, "instances/"), "/"))
-	}
-	instanceID, rest, ok = strings.Cut(afterProject, "/")
-	if !ok || instanceID == "" {
-		return "", "", malformedResource(name)
-	}
-	return instanceID, rest, nil
-}
+const fallbackScopeErrFmt = "accelerator fallback: resource %q is not in scope %s"
 
 // parseTableID validates that name is in this fallback's scope and returns
-// the table leaf ID. Reuses the package-level scopePrefixFor / leafAfter
-// helpers from resourcename.go (same logic as Channel.parseTableName).
+// the table leaf ID. Reuses the package-level helpers from resourcename.go.
 func (f *classicFallback) parseTableID(name string) (string, error) {
 	_, tableID, err := f.parseTableIDAndInstance(name)
 	return tableID, err
 }
 
 func (f *classicFallback) parseTableIDAndInstance(name string) (instanceID, tableID string, err error) {
-	instanceID, rest, err := f.stripScope(name)
-	if err != nil {
-		return "", "", err
-	}
-	tableID, err = leafAfter(name, rest, "tables/")
-	if err != nil {
-		return "", "", err
-	}
-	return instanceID, tableID, nil
+	return parseTableResource(f.scopePrefix, f.instance, fallbackScopeErrFmt, name)
 }
 
 // parseAVIDs validates that name is in this fallback's scope and returns
@@ -358,20 +449,7 @@ func (f *classicFallback) parseAVIDs(name string) (tableID, viewID string, err e
 }
 
 func (f *classicFallback) parseAVIDsAndInstance(name string) (instanceID, tableID, viewID string, err error) {
-	instanceID, rest, err := f.stripScope(name)
-	if err != nil {
-		return "", "", "", err
-	}
-	afterTables, ok := strings.CutPrefix(rest, "tables/")
-	if !ok {
-		return "", "", "", malformedResource(name)
-	}
-	tableID, viewID, ok = strings.Cut(afterTables, "/authorizedViews/")
-	if !ok || tableID == "" || viewID == "" ||
-		strings.Contains(tableID, "/") || strings.Contains(viewID, "/") {
-		return "", "", "", malformedResource(name)
-	}
-	return instanceID, tableID, viewID, nil
+	return parseAuthorizedViewResource(f.scopePrefix, f.instance, fallbackScopeErrFmt, name)
 }
 
 // parseMVID validates that name is in this fallback's scope and returns
@@ -383,13 +461,5 @@ func (f *classicFallback) parseMVID(name string) (string, error) {
 }
 
 func (f *classicFallback) parseMVIDAndInstance(name string) (instanceID, mvID string, err error) {
-	instanceID, rest, err := f.stripScope(name)
-	if err != nil {
-		return "", "", err
-	}
-	mvID, err = leafAfter(name, rest, "materializedViews/")
-	if err != nil {
-		return "", "", err
-	}
-	return instanceID, mvID, nil
+	return parseMaterializedViewResource(f.scopePrefix, f.instance, fallbackScopeErrFmt, name)
 }

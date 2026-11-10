@@ -18,10 +18,12 @@ import (
 	"context"
 	"sync"
 	"testing"
+	"time"
 
 	"cloud.google.com/go/bigtable"
 	v2pb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"cloud.google.com/go/bigtable/internal/accelerator/adapters"
+	"google.golang.org/api/option"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -76,7 +78,6 @@ func newClassicFallbackWithMock(mocks map[string]bigtable.TableAPI) *classicFall
 		tables[k] = v
 	}
 	return &classicFallback{
-		c:           nil,
 		instance:    testInstance,
 		scopePrefix: scopePrefixFor(testProject, testInstance),
 		mu:          sync.Mutex{},
@@ -327,7 +328,7 @@ func TestClassicFallbackReadRow_DefaultCase_ReturnsUnimplemented(t *testing.T) {
 // --- classicFallback.Close nil guard ----------------------------------------
 
 func TestClassicFallbackClose_NilClient(t *testing.T) {
-	cf := &classicFallback{c: nil}
+	cf := &classicFallback{}
 	if err := cf.Close(); err != nil {
 		t.Errorf("Close with nil client: %v", err)
 	}
@@ -355,5 +356,178 @@ func TestClassicFallbackMutateRow_CallsApply(t *testing.T) {
 	}
 	if gotKey != "thekey" {
 		t.Errorf("Apply called with key %q, want %q", gotKey, "thekey")
+	}
+}
+
+type mockClassicClient struct {
+	table         bigtable.TableAPI
+	openTableHits int
+	lastTable     string
+	openAVHits    int
+	lastAVTable   string
+	lastAVView    string
+	openMVHits    int
+	lastMV        string
+	closeCalled   int
+}
+
+func (m *mockClassicClient) OpenTable(table string) bigtable.TableAPI {
+	m.openTableHits++
+	m.lastTable = table
+	return m.table
+}
+
+func (m *mockClassicClient) OpenAuthorizedView(table, authorizedView string) bigtable.TableAPI {
+	m.openAVHits++
+	m.lastAVTable = table
+	m.lastAVView = authorizedView
+	return m.table
+}
+
+func (m *mockClassicClient) OpenMaterializedView(materializedView string) bigtable.TableAPI {
+	m.openMVHits++
+	m.lastMV = materializedView
+	return m.table
+}
+
+func (m *mockClassicClient) Close() error {
+	m.closeCalled++
+	return nil
+}
+
+func TestClassicFallback_ProjectScoped_MultiInstanceAndAppProfile(t *testing.T) {
+	orig := newClassicClient
+	var (
+		mu      sync.Mutex
+		clients = make(map[clientKey]*mockClassicClient)
+	)
+	newClassicClient = func(
+		_ context.Context,
+		project, instance string,
+		cfg bigtable.ClientConfig,
+		_ ...option.ClientOption,
+	) (classicClient, error) {
+		mu.Lock()
+		defer mu.Unlock()
+		if project != "p" {
+			t.Errorf("newClassicClient project = %q; want p", project)
+		}
+		mc := &mockClassicClient{table: &mockTableAPI{}}
+		clients[clientKey{instance: instance, appProfile: cfg.AppProfile}] = mc
+		return mc, nil
+	}
+	t.Cleanup(func() { newClassicClient = orig })
+
+	now := time.Now()
+	cf, err := newClassicFallback(context.Background(), "p", "", "")
+	if err != nil {
+		t.Fatalf("newClassicFallback: %v", err)
+	}
+	cf.clientTTL = 10 * time.Minute
+	cf.nowFn = func() time.Time { return now }
+
+	// Route Table on inst-a, default app profile.
+	if err := cf.MutateRow(context.Background(), adapters.Resource{
+		Kind: adapters.ResourceTable,
+		Name: "projects/p/instances/inst-a/tables/t1",
+	}, &v2pb.MutateRowRequest{RowKey: []byte("k")}); err != nil {
+		t.Fatalf("MutateRow(inst-a, default): %v", err)
+	}
+
+	// Route Table on inst-a, prof-1 (distinct cache key and client).
+	if err := cf.MutateRow(context.Background(), adapters.Resource{
+		Kind:       adapters.ResourceTable,
+		Name:       "projects/p/instances/inst-a/tables/t1",
+		AppProfile: "prof-1",
+	}, &v2pb.MutateRowRequest{RowKey: []byte("k")}); err != nil {
+		t.Fatalf("MutateRow(inst-a, prof-1): %v", err)
+	}
+
+	// Route AuthorizedView on inst-b, prof-2.
+	if err := cf.MutateRow(context.Background(), adapters.Resource{
+		Kind:       adapters.ResourceAuthorizedView,
+		Name:       "projects/p/instances/inst-b/tables/t2/authorizedViews/av1",
+		AppProfile: "prof-2",
+	}, &v2pb.MutateRowRequest{RowKey: []byte("k")}); err != nil {
+		t.Fatalf("MutateRow(inst-b, prof-2 AV): %v", err)
+	}
+
+	// Route MaterializedView on inst-b, prof-2 (reuses inst-b/prof-2 client).
+	if _, err := cf.ReadRow(context.Background(), adapters.Resource{
+		Kind:       adapters.ResourceMaterializedView,
+		Name:       "projects/p/instances/inst-b/materializedViews/mv1",
+		AppProfile: "prof-2",
+	}, &v2pb.ReadRowsRequest{Rows: &v2pb.RowSet{RowKeys: [][]byte{[]byte("k")}}}); err != nil {
+		t.Fatalf("ReadRow(inst-b, prof-2 MV): %v", err)
+	}
+
+	if len(clients) != 3 {
+		t.Fatalf("expected 3 classic clients; got %d", len(clients))
+	}
+	if mc := clients[clientKey{instance: "inst-b", appProfile: "prof-2"}]; mc == nil || mc.openAVHits != 1 || mc.openMVHits != 1 {
+		t.Errorf("inst-b/prof-2 client stats: %+v", mc)
+	}
+
+	// Advance clock past clientTTL and open inst-c; idle clients should be evicted and closed.
+	now = now.Add(20 * time.Minute)
+	if err := cf.MutateRow(context.Background(), adapters.Resource{
+		Kind: adapters.ResourceTable,
+		Name: "projects/p/instances/inst-c/tables/t3",
+	}, &v2pb.MutateRowRequest{RowKey: []byte("k")}); err != nil {
+		t.Fatalf("MutateRow(inst-c): %v", err)
+	}
+	if clients[clientKey{instance: "inst-a", appProfile: ""}].closeCalled != 1 {
+		t.Errorf("expected idle inst-a client to be closed on eviction; got %d",
+			clients[clientKey{instance: "inst-a", appProfile: ""}].closeCalled)
+	}
+
+	// Close cf and verify remaining active client is closed and subsequent calls return Unavailable.
+	if err := cf.Close(); err != nil {
+		t.Fatalf("Close: %v", err)
+	}
+	if clients[clientKey{instance: "inst-c", appProfile: ""}].closeCalled != 1 {
+		t.Errorf("expected inst-c client to be closed on cf.Close; got %d",
+			clients[clientKey{instance: "inst-c", appProfile: ""}].closeCalled)
+	}
+	err = cf.MutateRow(context.Background(), adapters.Resource{
+		Kind: adapters.ResourceTable,
+		Name: "projects/p/instances/inst-c/tables/t3",
+	}, &v2pb.MutateRowRequest{RowKey: []byte("k")})
+	if status.Code(err) != codes.Unavailable {
+		t.Errorf("MutateRow after Close = %v, want Unavailable", err)
+	}
+}
+
+func TestClassicFallback_PinnedAppProfileEnforcement(t *testing.T) {
+	cf := newClassicFallbackWithMock(map[string]bigtable.TableAPI{
+		testTableName + "\x00ap": &mockTableAPI{},
+	})
+	cf.appProfile = "ap"
+
+	// Empty AppProfile uses pinned "ap".
+	if err := cf.MutateRow(context.Background(), adapters.Resource{
+		Kind: adapters.ResourceTable,
+		Name: testTableName,
+	}, &v2pb.MutateRowRequest{RowKey: []byte("k")}); err != nil {
+		t.Fatalf("MutateRow with empty app profile: %v", err)
+	}
+
+	// Matching AppProfile "ap" succeeds.
+	if err := cf.MutateRow(context.Background(), adapters.Resource{
+		Kind:       adapters.ResourceTable,
+		Name:       testTableName,
+		AppProfile: "ap",
+	}, &v2pb.MutateRowRequest{RowKey: []byte("k")}); err != nil {
+		t.Fatalf("MutateRow with matching app profile: %v", err)
+	}
+
+	// Mismatched AppProfile returns InvalidArgument.
+	err := cf.MutateRow(context.Background(), adapters.Resource{
+		Kind:       adapters.ResourceTable,
+		Name:       testTableName,
+		AppProfile: "wrong-ap",
+	}, &v2pb.MutateRowRequest{RowKey: []byte("k")})
+	if status.Code(err) != codes.InvalidArgument {
+		t.Errorf("MutateRow with mismatched app profile: got %v, want InvalidArgument", err)
 	}
 }
