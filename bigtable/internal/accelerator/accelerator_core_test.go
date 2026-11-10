@@ -803,3 +803,96 @@ func TestComposeUserAgent(t *testing.T) {
 		})
 	}
 }
+
+func TestProjectScopedChannel_RoutesMultipleInstancesAndAppProfiles(t *testing.T) {
+	orig := newSessionClient
+	clients := make(map[clientKey]*mockSessionClient)
+	newSessionClient = func(
+		_ context.Context,
+		project, instance, appProfile, _ string,
+		_ ...option.ClientOption,
+	) (session.Client, error) {
+		if project != "p" {
+			t.Errorf("newSessionClient project = %q; want p", project)
+		}
+		sc := &mockSessionClient{table: &mockSessionTableAPI{}}
+		clients[clientKey{instance: instance, appProfile: appProfile}] = sc
+		return sc, nil
+	}
+	t.Cleanup(func() { newSessionClient = orig })
+
+	channel, err := NewChannel(context.Background(), "p", "", "", "")
+	if err != nil {
+		t.Fatalf("NewChannel: %v", err)
+	}
+	t.Cleanup(func() { _ = channel.Close() })
+
+	// No session.Client dialed at startup when instance is empty.
+	if len(clients) != 0 {
+		t.Fatalf("expected 0 session clients before first RPC; got %d", len(clients))
+	}
+
+	// MutateRow on instance-a, default app profile.
+	if err := channel.Invoke(context.Background(),
+		v2pb.Bigtable_MutateRow_FullMethodName,
+		&v2pb.MutateRowRequest{
+			TableName: "projects/p/instances/inst-a/tables/t1",
+			RowKey:    []byte("k"),
+		}, &v2pb.MutateRowResponse{}); err != nil {
+		t.Fatalf("MutateRow(inst-a, default): %v", err)
+	}
+
+	// MutateRow on instance-a, app-profile-1.
+	if err := channel.Invoke(context.Background(),
+		v2pb.Bigtable_MutateRow_FullMethodName,
+		&v2pb.MutateRowRequest{
+			TableName:    "projects/p/instances/inst-a/tables/t1",
+			AppProfileId: "prof-1",
+			RowKey:       []byte("k"),
+		}, &v2pb.MutateRowResponse{}); err != nil {
+		t.Fatalf("MutateRow(inst-a, prof-1): %v", err)
+	}
+
+	// ReadRows on instance-b, app-profile-2.
+	stream, err := channel.NewStream(context.Background(), nil, v2pb.Bigtable_ReadRows_FullMethodName)
+	if err != nil {
+		t.Fatalf("NewStream: %v", err)
+	}
+	if err := stream.SendMsg(&v2pb.ReadRowsRequest{
+		TableName:    "projects/p/instances/inst-b/tables/t2",
+		AppProfileId: "prof-2",
+		Rows:         &v2pb.RowSet{RowKeys: [][]byte{[]byte("k")}},
+	}); err != nil {
+		t.Fatalf("SendMsg: %v", err)
+	}
+	if err := stream.RecvMsg(&v2pb.ReadRowsResponse{}); err != nil {
+		t.Fatalf("RecvMsg: %v", err)
+	}
+
+	if len(clients) != 3 {
+		t.Fatalf("expected 3 session clients for 3 (instance, appProfile) pairs; got %d", len(clients))
+	}
+	if sc := clients[clientKey{instance: "inst-a", appProfile: ""}]; sc == nil || sc.newTableCalled != 1 || sc.lastTableName != "t1" {
+		t.Errorf("client(inst-a, ''): %+v", sc)
+	}
+	if sc := clients[clientKey{instance: "inst-a", appProfile: "prof-1"}]; sc == nil || sc.newTableCalled != 1 || sc.lastTableName != "t1" {
+		t.Errorf("client(inst-a, 'prof-1'): %+v", sc)
+	}
+	if sc := clients[clientKey{instance: "inst-b", appProfile: "prof-2"}]; sc == nil || sc.newTableCalled != 1 || sc.lastTableName != "t2" {
+		t.Errorf("client(inst-b, 'prof-2'): %+v", sc)
+	}
+
+	// Wrong project is still rejected with InvalidArgument without dialing.
+	err = channel.Invoke(context.Background(),
+		v2pb.Bigtable_MutateRow_FullMethodName,
+		&v2pb.MutateRowRequest{
+			TableName: "projects/other/instances/inst-a/tables/t1",
+			RowKey:    []byte("k"),
+		}, &v2pb.MutateRowResponse{})
+	if got := status.Code(err); got != codes.InvalidArgument {
+		t.Fatalf("wrong project code = %v; want InvalidArgument", got)
+	}
+	if len(clients) != 3 {
+		t.Fatalf("expected no new session client for wrong project; got %d", len(clients))
+	}
+}
