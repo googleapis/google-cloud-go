@@ -18,7 +18,6 @@ import (
 	"context"
 	"sync"
 	"testing"
-	"time"
 
 	"cloud.google.com/go/bigtable"
 	v2pb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
@@ -418,13 +417,10 @@ func TestClassicFallback_ProjectScoped_MultiInstanceAndAppProfile(t *testing.T) 
 	}
 	t.Cleanup(func() { newClassicClient = orig })
 
-	now := time.Now()
 	cf, err := newClassicFallback(context.Background(), "p", "", "")
 	if err != nil {
 		t.Fatalf("newClassicFallback: %v", err)
 	}
-	cf.clientTTL = 10 * time.Minute
-	cf.nowFn = func() time.Time { return now }
 
 	// Route Table on inst-a, default app profile.
 	if err := cf.MutateRow(context.Background(), adapters.Resource{
@@ -468,30 +464,18 @@ func TestClassicFallback_ProjectScoped_MultiInstanceAndAppProfile(t *testing.T) 
 		t.Errorf("inst-b/prof-2 client stats: %+v", mc)
 	}
 
-	// Advance clock past clientTTL and open inst-c; idle clients should be evicted and closed.
-	now = now.Add(20 * time.Minute)
-	if err := cf.MutateRow(context.Background(), adapters.Resource{
-		Kind: adapters.ResourceTable,
-		Name: "projects/p/instances/inst-c/tables/t3",
-	}, &v2pb.MutateRowRequest{RowKey: []byte("k")}); err != nil {
-		t.Fatalf("MutateRow(inst-c): %v", err)
-	}
-	if clients[clientKey{instance: "inst-a", appProfile: ""}].closeCalled != 1 {
-		t.Errorf("expected idle inst-a client to be closed on eviction; got %d",
-			clients[clientKey{instance: "inst-a", appProfile: ""}].closeCalled)
-	}
-
-	// Close cf and verify remaining active client is closed and subsequent calls return Unavailable.
+	// Close cf and verify all clients are closed and subsequent calls return Unavailable.
 	if err := cf.Close(); err != nil {
 		t.Fatalf("Close: %v", err)
 	}
-	if clients[clientKey{instance: "inst-c", appProfile: ""}].closeCalled != 1 {
-		t.Errorf("expected inst-c client to be closed on cf.Close; got %d",
-			clients[clientKey{instance: "inst-c", appProfile: ""}].closeCalled)
+	for k, mc := range clients {
+		if mc.closeCalled != 1 {
+			t.Errorf("expected client %+v to be closed on cf.Close; got %d", k, mc.closeCalled)
+		}
 	}
 	err = cf.MutateRow(context.Background(), adapters.Resource{
 		Kind: adapters.ResourceTable,
-		Name: "projects/p/instances/inst-c/tables/t3",
+		Name: "projects/p/instances/inst-a/tables/t1",
 	}, &v2pb.MutateRowRequest{RowKey: []byte("k")})
 	if status.Code(err) != codes.Unavailable {
 		t.Errorf("MutateRow after Close = %v, want Unavailable", err)

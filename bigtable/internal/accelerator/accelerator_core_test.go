@@ -21,7 +21,6 @@ import (
 	"io"
 	"sync"
 	"testing"
-	"time"
 
 	v2pb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"cloud.google.com/go/bigtable/internal/session"
@@ -943,7 +942,7 @@ func TestChannel_PinnedAppProfileEnforcement(t *testing.T) {
 	}
 }
 
-func TestChannel_SingleFlightAndIdleClientEviction(t *testing.T) {
+func TestChannel_SingleFlightAndMultiClientClose(t *testing.T) {
 	orig := newSessionClient
 	var (
 		mu      sync.Mutex
@@ -965,13 +964,10 @@ func TestChannel_SingleFlightAndIdleClientEviction(t *testing.T) {
 	}
 	t.Cleanup(func() { newSessionClient = orig })
 
-	now := time.Now()
 	channel, err := NewChannel(context.Background(), "p", "", "", "")
 	if err != nil {
 		t.Fatalf("NewChannel: %v", err)
 	}
-	channel.clientTTL = 10 * time.Minute
-	channel.nowFn = func() time.Time { return now }
 	t.Cleanup(func() { _ = channel.Close() })
 
 	// Concurrent requests for the same (instance, appProfile) dial only once.
@@ -992,20 +988,17 @@ func TestChannel_SingleFlightAndIdleClientEviction(t *testing.T) {
 		t.Fatalf("newSessionClient calls for (inst-1, prof-1) = %d; want 1", got)
 	}
 
-	// Advance clock past clientTTL and dial a second instance; inst-1 should be evicted and closed.
-	now = now.Add(20 * time.Minute)
 	if _, err := channel.getOrCreateSessionClient("inst-2", ""); err != nil {
 		t.Fatalf("getOrCreateSessionClient(inst-2): %v", err)
 	}
 
-	if created[clientKey{instance: "inst-1", appProfile: "prof-1"}].closeCalled != 1 {
-		t.Errorf("expected idle inst-1 client to be closed on eviction; closeCalled = %d",
-			created[clientKey{instance: "inst-1", appProfile: "prof-1"}].closeCalled)
-	}
-
-	// Closing the channel closes remaining live clients.
+	// Closing the channel closes all cached clients.
 	if err := channel.Close(); err != nil {
 		t.Fatalf("Close: %v", err)
+	}
+	if created[clientKey{instance: "inst-1", appProfile: "prof-1"}].closeCalled != 1 {
+		t.Errorf("expected inst-1 client to be closed on Channel.Close; closeCalled = %d",
+			created[clientKey{instance: "inst-1", appProfile: "prof-1"}].closeCalled)
 	}
 	if created[clientKey{instance: "inst-2", appProfile: ""}].closeCalled != 1 {
 		t.Errorf("expected inst-2 client to be closed on Channel.Close; closeCalled = %d",

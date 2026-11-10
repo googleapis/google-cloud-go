@@ -19,11 +19,11 @@
 // Channel is scoped to a GCP project (and optionally a pinned instance and
 // appProfile). It owns one or more session.Client instances (keyed by
 // (instance, appProfile)) and a session.TableCache, and dispatches each RPC by
-// resolving a per-resource session.TableAPI through the cache. Handles and
-// lazily created clients are kept warm for reuse and evicted on idle TTL, so a
-// long-lived daemon reclaims idle resources instead of accumulating them
-// forever. Close tears down the cache (releasing cached handles' pools) and
-// then all session.Client instances.
+// resolving a per-resource session.TableAPI through the cache. Table handles
+// are kept warm for reuse and evicted on idle TTL, so a long-lived daemon
+// reclaims idle resources' session pools instead of accumulating one per
+// resource forever. Close tears down the cache (releasing cached handles'
+// pools) and then all session.Client instances.
 package accelerator
 
 import (
@@ -33,8 +33,6 @@ import (
 	"io"
 	"strings"
 	"sync"
-	"sync/atomic"
-	"time"
 
 	v2pb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"cloud.google.com/go/bigtable/internal"
@@ -141,15 +139,6 @@ type clientLoadState struct {
 	ready chan struct{}
 }
 
-// sessionClientEntry wraps a cached session.Client with its last-access
-// timestamp and associated sessionTables handles so idle unpinned clients can
-// evict their table handles before closing.
-type sessionClientEntry struct {
-	sc             session.Client
-	lastAccessNano atomic.Int64
-	tables         map[string]session.TableAPI
-}
-
 // Channel is an in-process grpc.ClientConnInterface backed by
 // internal/session. It is scoped to a GCP project (and optionally a pinned
 // instance/appProfile). When instance is omitted at construction, Channel
@@ -177,11 +166,8 @@ type Channel struct {
 	scopePrefix   string
 	sessionTables *session.TableCache
 
-	clientTTL time.Duration
-	nowFn     func() time.Time
-
 	mu      sync.Mutex
-	clients map[clientKey]*sessionClientEntry
+	clients map[clientKey]session.Client
 	loading map[clientKey]*clientLoadState
 	closed  bool
 }
@@ -228,7 +214,7 @@ func NewChannel(
 		opts:          opts,
 		scopePrefix:   scopePrefixFor(project, instance),
 		sessionTables: session.NewTableCache(session.DefaultTableCacheTTL, session.DefaultTableCacheSweepInterval, nil /* time.Now */),
-		clients:       make(map[clientKey]*sessionClientEntry),
+		clients:       make(map[clientKey]session.Client),
 		loading:       make(map[clientKey]*clientLoadState),
 	}
 	if instance != "" {
@@ -237,28 +223,9 @@ func NewChannel(
 			ch.sessionTables.Close()
 			return nil, err
 		}
-		entry := &sessionClientEntry{
-			sc:     sc,
-			tables: make(map[string]session.TableAPI),
-		}
-		entry.lastAccessNano.Store(ch.now().UnixNano())
-		ch.clients[clientKey{instance: instance, appProfile: appProfile}] = entry
+		ch.clients[clientKey{instance: instance, appProfile: appProfile}] = sc
 	}
 	return ch, nil
-}
-
-func (c *Channel) now() time.Time {
-	if c.nowFn != nil {
-		return c.nowFn()
-	}
-	return time.Now()
-}
-
-func (c *Channel) effectiveClientTTL() time.Duration {
-	if c.clientTTL > 0 {
-		return c.clientTTL
-	}
-	return session.DefaultTableCacheTTL
 }
 
 // getOrCreateSessionClient returns the session.Client for (instanceID, appProfile),
@@ -272,9 +239,7 @@ func (c *Channel) getOrCreateSessionClient(instanceID, appProfile string) (sessi
 			c.mu.Unlock()
 			return nil, status.Error(codes.Unavailable, "accelerator: channel is closed")
 		}
-		if entry, ok := c.clients[key]; ok {
-			entry.lastAccessNano.Store(c.now().UnixNano())
-			sc := entry.sc
+		if sc, ok := c.clients[key]; ok {
 			c.mu.Unlock()
 			return sc, nil
 		}
@@ -291,10 +256,8 @@ func (c *Channel) getOrCreateSessionClient(instanceID, appProfile string) (sessi
 		c.mu.Unlock()
 
 		var (
-			sc            session.Client
-			err           error
-			evictedTables []session.TableAPI
-			evictedScs    []session.Client
+			sc  session.Client
+			err error
 		)
 		func() {
 			defer func() {
@@ -313,9 +276,6 @@ func (c *Channel) getOrCreateSessionClient(instanceID, appProfile string) (sessi
 				return
 			}
 
-			nowNano := c.now().UnixNano()
-			cutoff := c.now().Add(-c.effectiveClientTTL()).UnixNano()
-
 			c.mu.Lock()
 			if c.closed {
 				c.mu.Unlock()
@@ -325,60 +285,13 @@ func (c *Channel) getOrCreateSessionClient(instanceID, appProfile string) (sessi
 				return
 			}
 			if c.clients == nil {
-				c.clients = make(map[clientKey]*sessionClientEntry)
+				c.clients = make(map[clientKey]session.Client)
 			}
-			evictedTables, evictedScs = c.collectIdleClientsLocked(cutoff, key)
-			entry := &sessionClientEntry{
-				sc:     sc,
-				tables: make(map[string]session.TableAPI),
-			}
-			entry.lastAccessNano.Store(nowNano)
-			c.clients[key] = entry
+			c.clients[key] = sc
 			c.mu.Unlock()
 		}()
-
-		for _, tbl := range evictedTables {
-			_ = tbl.Close()
-		}
-		for _, oldSc := range evictedScs {
-			_ = oldSc.Close()
-		}
 		return sc, err
 	}
-}
-
-func (c *Channel) collectIdleClientsLocked(cutoff int64, skipKey clientKey) ([]session.TableAPI, []session.Client) {
-	pinnedKey := clientKey{instance: c.instance, appProfile: c.appProfile}
-	var (
-		evictedTables []session.TableAPI
-		evictedScs    []session.Client
-	)
-	for k, entry := range c.clients {
-		if k == skipKey || (c.instance != "" && k == pinnedKey) {
-			continue
-		}
-		if entry.lastAccessNano.Load() < cutoff {
-			for _, tbl := range entry.tables {
-				evictedTables = append(evictedTables, tbl)
-			}
-			if entry.sc != nil {
-				evictedScs = append(evictedScs, entry.sc)
-			}
-			delete(c.clients, k)
-		}
-	}
-	return evictedTables, evictedScs
-}
-
-func (c *Channel) recordClientTable(key clientKey, cacheKey string, tbl session.TableAPI) {
-	c.mu.Lock()
-	if entry, ok := c.clients[key]; ok {
-		if entry.tables == nil {
-			entry.tables = make(map[string]session.TableAPI)
-		}
-		entry.tables[cacheKey] = tbl
-	}
-	c.mu.Unlock()
 }
 
 // resolveAppProfile returns the effective app profile for an RPC, checking
@@ -465,7 +378,6 @@ func (c *Channel) openHandle(res adapters.Resource) (session.TableAPI, error) {
 	if tbl == nil {
 		return nil, status.Error(codes.Unavailable, "accelerator: channel is closed")
 	}
-	c.recordClientTable(clientKey{instance: instanceID, appProfile: appProfile}, cacheKey, tbl)
 	return tbl, nil
 }
 
@@ -558,9 +470,9 @@ func (c *Channel) Close() error {
 	}
 	c.closed = true
 	clients := make([]session.Client, 0, len(c.clients))
-	for _, entry := range c.clients {
-		if entry != nil && entry.sc != nil {
-			clients = append(clients, entry.sc)
+	for _, sc := range c.clients {
+		if sc != nil {
+			clients = append(clients, sc)
 		}
 	}
 	c.clients = nil
